@@ -53,6 +53,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.encrypt.EncryptUtil;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.util.Validator;
 
 /**
@@ -256,15 +257,29 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 * @return
 	 */
 	public String getDisplayStyle() {
-		String reply = displayStyle;
-		if ((null == reply) || (0 == reply.length()) && isShared()) {
-			reply = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
-		}
-		return reply;
+		return displayStyle;
 	}
 	
 	public void setDisplayStyle(String displayStyle) {
 		this.displayStyle = displayStyle;
+	}
+
+	/**
+	 * Returns the current display style for the user.
+	 * 
+	 * Note that getDisplayStyle() doesn't return this directly as it's
+	 * used during object loading and if it returns something other
+	 * that what's in the object, that value can get written to the
+	 * database.
+	 * 
+	 * @return
+	 */
+	public String getCurrentDisplayStyle() {
+		String reply = getDisplayStyle();
+		if ((null == reply) || (0 == reply.length())) {
+			reply = BinderHelper.getDefaultViewDisplayStyle();
+		}
+		return reply;
 	}
 
 	/**

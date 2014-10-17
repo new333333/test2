@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -139,7 +139,7 @@ function ss_deleteSelectedEntries(operation) {
 </script>
 <c:if test="${empty ss_entryViewStyle}">
   <c:set var="ss_entryViewStyle" value="" scope="request"/>
-  <c:if test="${ssUser.displayStyle == 'newpage' && slidingTableStyle != 'fixed'}">
+  <c:if test="${ssUser.currentDisplayStyle == 'newpage' && slidingTableStyle != 'fixed'}">
     <c:set var="ss_entryViewStyle" value="full" scope="request"/>
   </c:if>
 </c:if>
@@ -760,10 +760,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     entryId="${entry1._docId}" actionUrl="true">
     <ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/>
     <ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}"/></ssf:url>" 
-<c:if test="${slidingTableStyle != 'fixed_view_style_removed' || ssUser.displayStyle != 'iframe'}">
+<c:if test="${slidingTableStyle != 'fixed_view_style_removed' || ssUser.currentDisplayStyle != 'iframe'}">
     onClick="ss_loadEntry(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 </c:if>
-<c:if test="${slidingTableStyle == 'fixed_view_style_removed' && ssUser.displayStyle == 'iframe'}">
+<c:if test="${slidingTableStyle == 'fixed_view_style_removed' && ssUser.currentDisplayStyle == 'iframe'}">
     onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', '${ss_entryViewStyle2}', 'no');return false;" 
 </c:if>
     ><span <%= seenStyle %>><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;
@@ -797,11 +797,11 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     ><ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/>
     <ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}"/></ssf:url>" 
     
-	<c:if test="${slidingTableStyle != 'fixed_view_style_removed' || ssUser.displayStyle != 'iframe'}">
+	<c:if test="${slidingTableStyle != 'fixed_view_style_removed' || ssUser.currentDisplayStyle != 'iframe'}">
     	onClick="ss_loadEntry(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 	</c:if>
 	
-	<c:if test="${slidingTableStyle == 'fixed_view_style_removed' && ssUser.displayStyle == 'iframe'}">
+	<c:if test="${slidingTableStyle == 'fixed_view_style_removed' && ssUser.currentDisplayStyle == 'iframe'}">
     	onClick="ss_loadEntryInPlace(this, '${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', '${ss_entryViewStyle2}', 'no', 'ss_folderEntryTitle_${entry1._docId}');return false;" 
     </c:if>
     <c:if test="${slidingTableStyle == 'fixed'}">

@@ -968,11 +968,7 @@ public class GwtViewHelper {
 			ViewFolderEntryInfo	reply  = new ViewFolderEntryInfo(binderId, entryId);
 			
 			// ...set the user's selected view style... 
-			String viewStyle = GwtServerHelper.getPersonalPreferences(bs, request).getDisplayStyle();
-			if (!(MiscUtil.hasString(viewStyle))) {
-				viewStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
-			}
-			reply.setViewStyle(viewStyle);
+			reply.setViewStyle(GwtServerHelper.getCurrentUser().getCurrentDisplayStyle());
 	
 			// ...if the user has a position for the dialog saved...
 			UserProperties	userProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId());
