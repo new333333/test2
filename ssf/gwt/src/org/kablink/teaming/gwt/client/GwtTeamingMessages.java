@@ -2036,7 +2036,7 @@ public interface GwtTeamingMessages extends Messages
 	String addFilesHtml5PopupBusyPost(int thisOne, int total);
 	String addFilesHtml5PopupClose();
 	String addFilesHtml5PopupCloseAlt();
-	String addFilesHtml5PopupDnDHint(String product);
+	String addFilesHtml5PopupDnDHintProd(String product);
 	String addFilesHtml5PopupFoldersSkipped(String folderNames);
 	String addFilesHtml5PopupHint();
 	String addFilesHtml5PopupProgressItem();
