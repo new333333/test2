@@ -72,7 +72,7 @@
 				</c:if>
 			</fieldset>
 
-			<div class="ss_formBreak"/>
+			<div class="ss_formBreak"></div>
   
 			<fieldset class="ss_fieldset">
 				<legend class="ss_legend"><ssf:nlt tag="filter.terms" text="Filter terms"/> <ssf:showHelp guideName="user" pageId="mngfolder_filter" sectionId="mngfolder_filter_create" /></legend>
@@ -87,7 +87,7 @@
 
 			</fieldset>
   
-			<div class="ss_formBreak"/>
+			<div class="ss_formBreak"></div>
 
 			<div class="ss_buttonBarLeft">
 				<input type="submit" class="ss_submit" name="okBtn" onClick="ss_buttonSelect('ok');"

@@ -118,7 +118,7 @@
 	</div>
 </div>
 
-<div class="ss_formBreak"/>
+<div class="ss_formBreak"></div>
 
 <div class="ss_buttonBarLeft">
 	<input type="submit" class="ss_submit" name="_saveConfigData" value="<ssf:nlt tag="button.apply"/>" />

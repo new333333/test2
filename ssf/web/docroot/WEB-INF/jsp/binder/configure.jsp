@@ -204,7 +204,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	</div>
   </fieldset>
   <br>
-<div class="ss_formBreak"/>
+<div class="ss_formBreak"></div>
 
 	<div class="ss_buttonBarRight margintop3">
 		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
@@ -691,7 +691,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   
 </c:if>
 
-<div class="ss_formBreak"/>
+<div class="ss_formBreak"></div>
 
 <div class="ss_buttonBarRight margintop3">
 	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
