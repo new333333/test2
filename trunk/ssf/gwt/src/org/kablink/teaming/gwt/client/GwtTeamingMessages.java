@@ -1367,12 +1367,14 @@ public interface GwtTeamingMessages extends Messages
 	String adminInfoDlgExpiredLicense( String productName );
 	String adminInfoDlgFilrTasksToBeCompleted();
 	String adminInfoDlgHeader();
+	String adminInfoDlgInstallGuide();
 	String adminInfoDlgLoginAsAdmin();
 	String adminInfoDlgRelease();
 	String adminInfoDlgSelectNetFolderServerType( String serverName );
 	String adminInfoDlgUpgradeDefinitions();
 	String adminInfoDlgUpgradeImportTypelessDN();
 	String adminInfoDlgUpgradeSearchIndex();
+	String adminInfoDlgUpgradeTasksDocumentationLink();
 	String adminInfoDlgUpgradeTasksNotDone();
 	String adminInfoDlgUpgradeTemplates();
 
