@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.binderviews.ProjectManagementWSView;
 import org.kablink.teaming.gwt.client.binderviews.SurveyFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TeamWSView;
+import org.kablink.teaming.gwt.client.binderviews.TeamWorkspacesView;
 import org.kablink.teaming.gwt.client.binderviews.TrashView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
@@ -1958,7 +1959,7 @@ public class ContentControl extends Composite
 	/**
 	 * Handles ShowGenericWSEvent's received by this class.
 	 * 
-	 * Implements the ShowGenericWSEvent.Handler.onShowTeamWS() method.
+	 * Implements the ShowGenericWSEvent.Handler.onShowGenericWS() method.
 	 */
 	@Override
 	public void onShowGenericWS( ShowGenericWSEvent event )
@@ -2207,7 +2208,7 @@ public class ContentControl extends Composite
 	/**
 	 * Handles ShowNetFoldersWSEvent's received by this class.
 	 * 
-	 * Implements the ShowNetFoldersWSEvent.Handler.onShowTeamWS() method.
+	 * Implements the ShowNetFoldersWSEvent.Handler.onShowNetFoldersWS() method.
 	 */
 	@Override
 	public void onShowNetFoldersWS( ShowNetFoldersWSEvent event )
@@ -2268,7 +2269,7 @@ public class ContentControl extends Composite
 	/**
 	 * Handles ShowProjectManagementWSEvent's received by this class.
 	 * 
-	 * Implements the ShowProjectManagementWSEvent.Handler.onShowTeamWS() method.
+	 * Implements the ShowProjectManagementWSEvent.Handler.onShowProjectManagementWS() method.
 	 */
 	@Override
 	public void onShowProjectManagementWS( ShowProjectManagementWSEvent event )
@@ -2385,8 +2386,10 @@ public class ContentControl extends Composite
 			}
 		};
 		
-		// Create a GenericWSView widget for the selected binder.
-		GenericWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		// Create the view widget for the selected binder.
+		if ( TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW )
+		     TeamWorkspacesView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		else GenericWSView.createAsync(      event.getBinderInfo(), event.getViewReady(), vClient );
 	}
 	
 	/**
@@ -2417,7 +2420,7 @@ public class ContentControl extends Composite
 		};
 		
 		// Create a TeamWSView widget for the selected binder.
-		TeamWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		TeamWSView.createAsync(event.getBinderInfo(), event.getViewReady(), vClient);
 	}
 	
 	/**

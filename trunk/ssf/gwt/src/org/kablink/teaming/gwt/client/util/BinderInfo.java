@@ -217,6 +217,26 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	}
 	
 	/**
+	 * Returns true if this BinderInfo defines the root team workspaces
+	 * binder and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinderTeamsRootWS() {
+		return (isBinderWorkspace() && m_wsType.isTeamRoot());
+	}
+	
+	/**
+	 * Returns true if this BinderInfo defines the root team workspaces
+	 * binder in management mode and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinderTeamsRootWSManagement() {
+		return (isBinderWorkspace() && m_wsType.isTeamRootManagement());
+	}
+	
+	/**
 	 * Returns true if this BinderInfo refers to a trash Binder and
 	 * false otherwise.
 	 *

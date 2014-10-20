@@ -2059,6 +2059,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_MANAGE_TEAMS_INFO:
+		{
+			ManageTeamsInfoRpcResponseData result = GwtServerHelper.getManageTeamsInfo( this, getRequest( ri ) );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_MANAGE_USERS_INFO:
 		{
 			ManageUsersInfoRpcResponseData result = GwtServerHelper.getManageUsersInfo( this, getRequest( ri ) );

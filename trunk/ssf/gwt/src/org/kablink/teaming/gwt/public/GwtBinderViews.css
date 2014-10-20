@@ -327,6 +327,11 @@
 		.vibe-taskGraphsStatusBar       {width: 300px;}
 	/* ...End:  Task graphs panel styles. */
 	
+	/* ...Start:  Team Workspaces view styles. */
+		.vibe-teamWorkspacesDataTable {}
+		.vibe-teamWorkspacesFlowPanel {}
+	/* ...End:  Team Workspaces view styles. */
+
 	/* ...Start:  Trash view styles. */
 		.vibe-trashDataTable {}
 		.vibe-trashFlowPanel {}

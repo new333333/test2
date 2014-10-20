@@ -65,14 +65,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.apache.lucene.search.SortField;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
-
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
@@ -4101,7 +4098,19 @@ public class GwtViewHelper {
 				}
 			}
 			
-			// No, we aren't showing the root profiles binder
+			// No, we aren't showing the root profiles binder view
+			// either!  Are we looking at the root team workspaces
+			// binder? 
+			else if (folderInfo.isBinderTeamsRootWS()) {
+				// Yes!
+				baseNameKey = "teams.column.";
+//!				...this needs to be implemented...
+				if (folderInfo.isBinderTeamsRootWSManagement())
+				     columnNames = getColumnsLHMFromAS(new String[]{"title"});
+				else columnNames = getColumnsLHMFromAS(new String[]{"title"});
+			}
+			
+			// No, we aren't showing the root team workspaces binder
 			// either!  Are we viewing a collection?
 			else if (isCollection) {
 				// Yes!  Generate the base key to use for accessing
@@ -5162,6 +5171,9 @@ public class GwtViewHelper {
 			boolean isSurvey                = false;
 			boolean isMobileDevicesViewSpec = folderInfo.isBinderMobileDevices();
 			boolean isProfilesRootWS        = folderInfo.isBinderProfilesRootWS();
+			boolean isTeamsRootWS           = folderInfo.isBinderTeamsRootWS();
+			@SuppressWarnings("unused")
+			boolean isManageTeams           = folderInfo.isBinderTeamsRootWSManagement();
 			boolean isManageUsers           = folderInfo.isBinderProfilesRootWSManagement();
 			boolean isTrash                 = folderInfo.isBinderTrash();
 			switch (folderInfo.getFolderType()) {
@@ -5219,8 +5231,8 @@ public class GwtViewHelper {
 					// No, it isn't for the manage users feature of the
 					// administration console!  Eliminate the
 					// non-person, external and disabled users.
-					options.put(ObjectKeys.SEARCH_IS_PERSON,        Boolean.TRUE);
-					options.put(ObjectKeys.SEARCH_IS_INTERNAL,      Boolean.TRUE);
+					options.put(ObjectKeys.SEARCH_IS_PERSON,             Boolean.TRUE);
+					options.put(ObjectKeys.SEARCH_IS_INTERNAL,           Boolean.TRUE);
 					options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS, Boolean.TRUE);
 				}
 			}
@@ -5282,6 +5294,7 @@ public class GwtViewHelper {
 				Map searchResults;
 				if      (isTrash)                 searchResults = TrashHelper.getTrashEntities(    bs,          binder,              options                               );
 				else if (isProfilesRootWS)        searchResults = getUserEntries(                  bs, request, binder, quickFilter, options                               );
+				else if (isTeamsRootWS)           searchResults = getTeamEntries(                  bs, request, binder, quickFilter, options                               );
 				else if (isCollection)            searchResults = getCollectionEntries(            bs, request, binder, quickFilter, options, collectionType, shareItems   );
 				else if (isMobileDevicesViewSpec) return GwtMobileDeviceHelper.getMobileDeviceRows(bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
 				else {
@@ -7333,6 +7346,23 @@ public class GwtViewHelper {
 		return reply;
 	}
 
+	/*
+	 * Returns a Map of the search results for teams based on the
+	 * criteria in the options Map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map getTeamEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getTeamEntries()");
+		try {
+//!			...this needs to be implemented...
+			return buildEmptyEntryMap();
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+	
 	/*
 	 * Returns a Map of the search results for users based on the
 	 * criteria in the options Map.

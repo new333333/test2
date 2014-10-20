@@ -457,6 +457,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetMailToPublicLinks();
 	String rpcFailure_GetMainPageInfo();
 	String rpcFailure_GetManageMobileDevicesInfo();
+	String rpcFailure_GetManageTeamsInfo();
+	String rpcFailure_GetManageTeamsState();
 	String rpcFailure_GetManageUsersInfo();
 	String rpcFailure_GetManageUsersState();
 	String rpcFailure_GetMobileAppsConfiguration();
@@ -737,6 +739,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ManageNetFolderServersDlg();
 	String codeSplitFailure_ManageMenuPopup();
 	String codeSplitFailure_ManageSavedSearchesDlg();
+	String codeSplitFailure_ManageTeamsDlg();
 	String codeSplitFailure_ManageUsersDlg();
 	String codeSplitFailure_MicroBlogFolderView();
 	String codeSplitFailure_MilestoneFolderView();
@@ -773,6 +776,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_TaskFolderView();
 	String codeSplitFailure_TaskGraphsPanel();
 	String codeSplitFailure_TaskListing();
+	String codeSplitFailure_TeamWorkspacesView();
 	String codeSplitFailure_TeamWSView();
 	String codeSplitFailure_TinyMCEDlg();
 	String codeSplitFailure_TrashView();
@@ -2715,6 +2719,9 @@ public interface GwtTeamingMessages extends Messages
 	String selectPrincipalsWidget_SelectPrincipalsLabel();
 	String selectPrincipalsWidget_TypeCol();
 
+	// Strings used by the 'Manage Teams' dialog.
+	String manageTeamsDlgCaption();
+	
 	// Strings used by the 'Manage Users' dialog.
 	String manageUsersDlgCaption();
 	

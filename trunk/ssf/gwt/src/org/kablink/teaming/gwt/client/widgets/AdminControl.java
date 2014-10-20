@@ -52,6 +52,7 @@ import org.kablink.teaming.gwt.client.event.InvokeManageDatabasePruneDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageMobileDevicesDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageTeamsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeNameCompletionSettingsDlgEvent;
@@ -79,6 +80,7 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.binderviews.MobileDevicesView;
+import org.kablink.teaming.gwt.client.binderviews.TeamWorkspacesView;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDatabasePruneConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
@@ -107,6 +109,7 @@ import org.kablink.teaming.gwt.client.widgets.ManageDatabasePruneDlg.ManageDatab
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFoldersDlg.ManageNetFoldersDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ManageTeamsDlg.ManageTeamsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg.ManageUsersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
 import org.kablink.teaming.gwt.client.widgets.NameCompletionSettingsDlg.NameCompletionSettingsDlgClient;
@@ -167,6 +170,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
 		InvokeManageMobileDevicesDlgEvent.Handler,
+		InvokeManageTeamsDlgEvent.Handler,
 		InvokeManageUsersDlgEvent.Handler,
 		InvokeNameCompletionSettingsDlgEvent.Handler,
 		InvokePrincipalDesktopSettingsDlgEvent.Handler,
@@ -196,6 +200,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
 	private ManageMobileDevicesDlg m_manageMobileDevicesDlg = null;
+	private ManageTeamsDlg m_manageTeamsDlg = null;
 	private ManageUsersDlg m_manageUsersDlg = null;
 	private RunAReportDlg m_runAReportDlg = null;
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
@@ -239,6 +244,8 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
+		TeamingEvents.INVOKE_MANAGE_USERS_DLG,
+		TeamingEvents.INVOKE_MANAGE_TEAMS_DLG,
 		TeamingEvents.INVOKE_NAME_COMPLETION_SETTINGS_DLG,
 		TeamingEvents.INVOKE_PRINCIPAL_DESKTOP_SETTINGS_DLG,
 		TeamingEvents.INVOKE_PRINCIPAL_MOBILE_SETTINGS_DLG,
@@ -442,9 +449,15 @@ public class AdminControl extends TeamingPopupPanel
 			if ( actions != null )
 			{
 				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
+				boolean showTeamWorkspacesView  = TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW;
 				for (GwtAdminAction action : actions )
 				{
 					if ( action.getActionType().equals( AdminAction.MANAGE_MOBILE_DEVICES ) && ( ! showManageMobileDevices ) )
+					{
+						continue;
+					}
+					
+					else if ( action.getActionType().equals( AdminAction.MANAGE_TEAMS ) && ( ! showTeamWorkspacesView ) )
 					{
 						continue;
 					}
@@ -862,6 +875,11 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Fire the event to invoke the "Manage Groups" dialog.
 			InvokeManageGroupsDlgEvent.fireOne();
+		}
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_TEAMS )
+		{
+			// Fire the event to invoke the "Manage Teams" dialog.
+			GwtTeaming.fireEvent( new InvokeManageTeamsDlgEvent( false ) );	// false -> Not a trash view.
 		}
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_RESOURCE_DRIVERS )
 		{
@@ -2707,6 +2725,63 @@ public class AdminControl extends TeamingPopupPanel
 			// Simply initialize and show it.
 			m_manageMobileDevicesDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			ManageMobileDevicesDlg.initAndShow( m_manageMobileDevicesDlg, new MobileDevicesInfo(), x, y, m_dlgWidth, m_dlgHeight );
+		}
+	}
+	
+	/**
+	 * Handles InvokeManageTeamsDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeManageTeamsDlgEvent.Handler.onInvokeManageTeamsDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeManageTeamsDlg( final InvokeManageTeamsDlgEvent event )
+	{
+		// Get the position of the content control.
+		final int x = m_contentControlX;
+		final int y = m_contentControlY;
+		
+		// Have we already created a "Manage Teams" dialog?
+		if ( m_manageTeamsDlg == null )
+		{
+			// No, create one.
+			ManageTeamsDlg.createAsync( new ManageTeamsDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ManageTeamsDlg muDlg )
+				{
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_manageTeamsDlg = muDlg;
+							ManageTeamsDlg.initAndShow( m_manageTeamsDlg, event.isTrashView(), x, y, m_dlgWidth, m_dlgHeight );
+						}
+					} );
+				}
+			},
+			false,	// false -> !auto hide.
+			true,	// true -> modal.
+			x, 
+			y,
+			m_dlgWidth,
+			m_dlgHeight );
+		}
+		
+		else
+		{
+			// Yes, we've already created a "Manage Teams" dialog!
+			// Simply initialize and show it.
+			m_manageTeamsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
+			ManageTeamsDlg.initAndShow( m_manageTeamsDlg, event.isTrashView(), x, y, m_dlgWidth, m_dlgHeight );
 		}
 	}
 	
