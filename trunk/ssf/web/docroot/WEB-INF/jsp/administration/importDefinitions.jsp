@@ -127,7 +127,7 @@
 <div class="ss_divider"></div>
 
 <br/>
-<div class="ss_formBreak"/>
+<div class="ss_formBreak"></div>
 
 <div class="ss_buttonBarLeft">
 

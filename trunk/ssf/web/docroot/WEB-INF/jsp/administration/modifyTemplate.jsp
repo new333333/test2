@@ -171,7 +171,7 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 </c:if>
 
 </table>
-<div class="ss_formBreak"/>
+<div class="ss_formBreak"></div>
 
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.modify"/>" onClick="ss_buttonSelect('okBtn');">
@@ -332,7 +332,7 @@ onchange="ss_ajaxValidate(ss_buildAdapterUrl(ss_AjaxBaseUrl,{operation:'check_te
 </c:if>
 
 </table>
-<div class="ss_formBreak"/>
+<div class="ss_formBreak"></div>
 
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="ss_buttonSelect('okBtn');">

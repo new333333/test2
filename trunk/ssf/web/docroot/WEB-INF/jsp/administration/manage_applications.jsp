@@ -209,7 +209,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 
 <br/>
 
-<div class="ss_formBreak"/>
+<div class="ss_formBreak"></div>
 
 <form class="ss_style ss_form" method="post"
 		  action="<ssf:url action="manage_applications" actionUrl="true"><ssf:param 

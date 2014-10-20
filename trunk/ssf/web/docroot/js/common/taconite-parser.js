@@ -89,10 +89,12 @@ function XhtmlToDOMParser(xml){
         function handleElement(xmlNode){
                 var domElemNode=null;
 				var xmlNodeTagName=xmlNode.tagName.toLowerCase();
-                if(isIE){
-				if(isInlineMode(xmlNode)) {
-                                    return document.createElement("<INPUT " + handleAttributes(domElemNode,xmlNode,true) + ">");
-                                }
+                if(1 == 0 && isIE){
+                	//Current versions of IE (such as IE v11) bomb on the following "createElement" line. 
+                	//But it turns out we can now use the normal code path. So this special IE code is turned off.
+                	if(isInlineMode(xmlNode)) {
+                    	return document.createElement("<INPUT " + handleAttributes(domElemNode,xmlNode,true) + ">");
+                    }
 					if(xmlNodeTagName == "style"){
 						//In internet explorer, we have to use styleSheets array.		
 						var text,rulesArray,styleSheetPtr;

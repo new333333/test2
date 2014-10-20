@@ -263,7 +263,7 @@ function ss_folderTree_showId(id, obj, action) {
 <div class="ss_divider"></div>
 
 <br/>
-<div class="ss_formBreak"/>
+<div class="ss_formBreak"></div>
 
 <div class="ss_buttonBarLeft">
 
@@ -275,13 +275,16 @@ function ss_folderTree_showId(id, obj, action) {
   onClick="ss_cancelButtonCloseWindow();return false;"/>
 
 </div>
-</div>
 <input type="hidden" name="btnClicked"/>
 </form>
+</div>
 
 <iframe id="ss_statusFrame" style="width:200px;height:200px;visibility:hidden;"
   src="<html:rootPath/>js/forum/null.html"
 >Novell Vibe</iframe>
+
+</ssf:form>
+</c:if>
 
 </div>
 <script type="text/javascript">
@@ -289,9 +292,6 @@ var rn = Math.round(Math.random()*999999);
 
 </script>
 
-</ssf:form>
-</c:if>
-</div>
 </div>
 </body>
 </html>

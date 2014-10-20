@@ -163,7 +163,7 @@ function ss_checkForFileSelected() {
 <br/>
  -->
 
-<div class="ss_formBreak"/>
+<div class="ss_formBreak"></div>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="addBtn" onclick="return ss_checkForFileSelected();" value="<ssf:nlt tag="button.add" text="Add"/>">
 </div>
