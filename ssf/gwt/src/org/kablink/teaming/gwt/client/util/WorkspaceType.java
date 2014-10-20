@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -51,6 +51,7 @@ public enum WorkspaceType implements IsSerializable {
 	PROJECT_MANAGEMENT,
 	TEAM,
 	TEAM_ROOT,
+	TEAM_ROOT_MANAGEMENT,
 	TOP,
 	TRASH,
 	USER,
@@ -59,16 +60,6 @@ public enum WorkspaceType implements IsSerializable {
 	OTHER,
 	NOT_A_WORKSPACE;
 	
-	/**
-	 * Returns true if this WorkspaceType value represents a profile
-	 * root and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isProfileRoot() {
-		return (this.equals(PROFILE_ROOT) || this.equals(PROFILE_ROOT_MANAGEMENT));
-	}
-
 	/**
 	 * Returns true if this WorkspaceType value represents a mobile
 	 * devices view, as used by the administration console and false
@@ -82,12 +73,42 @@ public enum WorkspaceType implements IsSerializable {
 	
 	/**
 	 * Returns true if this WorkspaceType value represents a profile
+	 * root and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isProfileRoot() {
+		return (this.equals(PROFILE_ROOT) || this.equals(PROFILE_ROOT_MANAGEMENT));
+	}
+
+	/**
+	 * Returns true if this WorkspaceType value represents a profile
 	 * root as used by the administration console and false otherwise.
 	 * 
 	 * @return
 	 */
 	public boolean isProfileRootManagement() {
 		return this.equals(PROFILE_ROOT_MANAGEMENT);
+	}
+	
+	/**
+	 * Returns true if this WorkspaceType value represents a team
+	 * root and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isTeamRoot() {
+		return (this.equals(TEAM_ROOT) || this.equals(TEAM_ROOT_MANAGEMENT));
+	}
+
+	/**
+	 * Returns true if this WorkspaceType value represents a team
+	 * root as used by the administration console and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isTeamRootManagement() {
+		return this.equals(TEAM_ROOT_MANAGEMENT);
 	}
 	
 	/**

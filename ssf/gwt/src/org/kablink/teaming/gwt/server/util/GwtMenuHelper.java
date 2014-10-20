@@ -1797,6 +1797,44 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem for the root team workspace view.
+	 */
+	private static void constructEntryTeamsRootWSItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, boolean manageTeams) {
+		// If we're not in the manage team version of the root team
+		// workspace viewer...
+		if (!manageTeams) {
+			// ...there are no menu items.  Bail.
+			return;
+		}
+		
+		// If the user can add entries...
+		BinderModule bm = bs.getBinderModule();
+		if (bm.testAccess(ws, BinderOperation.addWorkspace)) {
+//!			...this needs to be implemented...
+		}
+		
+		// Create a 'more' item for additional items.
+		ToolbarItem tbi;
+		ToolbarItem moreTBI = new ToolbarItem("1_more");
+		markTBITitle(moreTBI, "toolbar.more");
+
+		// If sharing is enabled on the root team workspaces binder...
+		if (bs.getSharingModule().testAddShareEntity(ws)) {
+			// ...add the set selected share rights.
+			tbi = new ToolbarItem("1_setShareRights");
+			markTBITitle(tbi, "toolbar.setUserWSShareRights");
+			markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_SHARE_RIGHTS);
+			moreTBI.addNestedItem(tbi);
+		}
+		
+		// Finally, if we added anything to the more toolbar...
+		if (!(moreTBI.getNestedItemsList().isEmpty())) {
+			// ...and the more toolbar to the entry toolbar.
+			entryToolbar.addNestedItem(moreTBI);
+		}
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for trash views.
 	 */
 	private static void constructEntryTrashItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Binder binder) {
@@ -3519,8 +3557,21 @@ public class GwtMenuHelper {
 				}
 			}
 			
-			// No, we aren't returning the toolbar items for the root
+			// No, we aren't returning the toolbar items for root
 			// profiles workspace view either!  Are we returning them
+			// for the root team workspaces view?
+			else if (folderInfo.isBinderTeamsRootWS()) {
+				// Yes!  Can the user access the root team workspaces
+				// binder?
+				if (GwtServerHelper.canUserViewBinder(bs, folderInfo)) {
+					// Yes!  Construct the items for viewing the root
+					// team workspaces binder.
+					constructEntryTeamsRootWSItems(entryToolbar, bs, request, ws, folderInfo.getWorkspaceType().isTeamRootManagement());
+				}
+			}
+			
+			// No, we aren't returning the toolbar items for the root
+			// team workspaces view either!  Are we returning them
 			// for a collection view?
 			else if (isBinderCollection) {
 				// Yes!  Can the user access this collection?

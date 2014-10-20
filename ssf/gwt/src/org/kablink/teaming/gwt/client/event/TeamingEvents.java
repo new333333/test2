@@ -134,6 +134,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_MANAGE_GROUPS_DLG,						// Invokes the "Manage groups" dialog.
 	INVOKE_MANAGE_MOBILE_DEVICES_DLG,				// Invokes the "Manage mobile devices" dialog.
 	INVOKE_MANAGE_USERS_DLG,						// Invokes the "Manage users" dialog.
+	INVOKE_MANAGE_TEAMS_DLG,						// Invokes the "Manage teams" dialog.
 	INVOKE_EDIT_NET_FOLDER_RIGHTS_DLG,				// Invokes the "edit net folder rights" dialog.
 	INVOKE_EDIT_SHARE_RIGHTS_DLG,					// Invokes the "edit share rights" dialog.
 	INVOKE_EDIT_USER_ZONE_SHARE_RIGHTS_DLG,			// Invokes the "edit user zone share rights" dialog.

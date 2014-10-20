@@ -432,6 +432,7 @@ public class WebKeys {
 	public static final String ACTION_CONFIGURATION="configure_configuration";
 	public static final String ACTION_MANAGE_EXTENSIONS="manage_extensions";
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
+	public static final String ACTION_MANAGE_TEAMS="manage_teams";
 	public static final String ACTION_MANAGE_MOBILE_DEVICES="manage_mobile_devices";
 	public static final String ACTION_MANAGE_QUOTAS="manage_quotas";
 	public static final String ACTION_MANAGE_FILE_UPLOAD_LIMITS="manage_file_upload_limits";

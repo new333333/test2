@@ -92,13 +92,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -216,6 +214,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
 import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ManageTeamsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
@@ -2504,6 +2503,7 @@ public class GwtServerHelper {
 		AdaptedPortletURL adaptedUrl;
 		User user;
  		Workspace top = null;
+		Workspace teamWorkspaceBinder = null;
 		ProfileBinder profilesBinder;
 		DefinitionModule definitionModule;
 		LdapModule ldapModule;
@@ -2536,6 +2536,15 @@ public class GwtServerHelper {
  		{}
  		
  		profilesBinder = profileModule.getProfileBinder();
+ 		
+ 		try
+ 		{
+	 		teamWorkspaceBinder = ((Workspace) getCoreDao().loadReservedBinder(
+				ObjectKeys.TEAM_ROOT_INTERNALID,
+				RequestContextHolder.getRequestContext().getZoneId() ));
+ 		}
+ 		catch( Exception e )
+ 		{}
 		
 		// Create an ArrayList that will hold the GwtAdminCategory objects.
 		adminCategories = new ArrayList<GwtAdminCategory>();
@@ -2601,6 +2610,31 @@ public class GwtServerHelper {
 			}
 			catch( AccessControlException e ) {}
 
+			// Are we exposing Vibe features?
+			if ( LicenseChecker.showVibeFeatures() )
+			{
+				// Yes!  Does the user have rights to "Manage teams"?
+				try
+				{
+					if ( ( ( null != teamWorkspaceBinder) && binderModule.testAccess( teamWorkspaceBinder, BinderOperation.manageConfiguration ) ) )
+					{
+						// Yes
+						title = NLT.get( "administration.manage.teams" );
+	
+						adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+						adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_TEAMS );
+						url = adaptedUrl.toString();
+						
+						adminAction = new GwtAdminAction();
+						adminAction.init( title, url, AdminAction.MANAGE_TEAMS );
+						
+						// Add this action to the "management" category
+						managementCategory.addAdminOption( adminAction );
+					}
+				}
+				catch( AccessControlException e ) {}
+			}
+			
 			// Does the user have rights to "Manage shares"?
 			try
 			{
@@ -6644,6 +6678,45 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns a ManageTeamsInfoRpcResponseData object
+	 * containing the information for managing teams.
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ManageTeamsInfoRpcResponseData getManageTeamsInfo(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
+		try {
+			// Construct the ManageTeamsInfoRpcResponseData
+			// object we'll fill in and return.
+	 		Workspace teamWorkspaceBinder = ((Workspace) getCoreDao().loadReservedBinder(
+				ObjectKeys.TEAM_ROOT_INTERNALID,
+				RequestContextHolder.getRequestContext().getZoneId()));
+			BinderInfo bi = getBinderInfo(bs, request, teamWorkspaceBinder.getId());
+			if (!(bi.getWorkspaceType().isTeamRoot())) {
+				GwtLogHelper.error(m_logger, "GwtServerHelper.getManageTeamsInformation():  The workspace type of the team workspaces root binder was incorrect.  Found:  " + bi.getWorkspaceType().name() + ", Expected:  " + WorkspaceType.TEAM_ROOT.name());
+			}
+			bi.setWorkspaceType(WorkspaceType.TEAM_ROOT_MANAGEMENT);
+			ManageTeamsInfoRpcResponseData reply =
+				new ManageTeamsInfoRpcResponseData(
+					bi,
+					NLT.get("administration.manage.teams"));
+
+			// If we get here, reply refers to the
+			// ManageTeamsInfoRpcResponseData object
+			// containing the information about managing teams.  Return
+			// it.
+			return reply;
+		}
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}		
+	}
+
+	/**
 	 * Returns a ManageUsersInfoRpcResponseData object
 	 * containing the information for managing users.
 	 * 
@@ -6670,7 +6743,7 @@ public class GwtServerHelper {
 
 			// If we get here, reply refers to the
 			// ManageUsersInfoRpcResponseData object
-			// containing the information about managing user.  Return
+			// containing the information about managing users.  Return
 			// it.
 			return reply;
 		}
@@ -10162,6 +10235,7 @@ public class GwtServerHelper {
 		case GET_MAILTO_PUBLIC_LINKS:
 		case GET_MAIN_PAGE_INFO:
 		case GET_MANAGE_MOBILE_DEVICES_INFO:
+		case GET_MANAGE_TEAMS_INFO:
 		case GET_MANAGE_USERS_INFO:
 		case GET_MANAGE_USERS_STATE:
 		case GET_MICRO_BLOG_URL:

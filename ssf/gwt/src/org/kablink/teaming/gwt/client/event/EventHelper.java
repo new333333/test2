@@ -1348,6 +1348,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case INVOKE_MANAGE_TEAMS_DLG:
+				// An InvokeManageTeamsDlgEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof InvokeManageTeamsDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeManageTeamsDlgEvent.registerEvent( eventBus, ((InvokeManageTeamsDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_MANAGE_USERS_DLG:
 				// An InvokeManageUsersDlgEvent!  Can the event handler
 				// we were given handle that?
@@ -2857,6 +2866,7 @@ public class EventHelper {
 			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	       hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler);          break;
 			case INVOKE_MANAGE_GROUPS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		           break;
 			case INVOKE_MANAGE_MOBILE_DEVICES_DLG:			   hasHandler = (eventHandler instanceof InvokeManageMobileDevicesDlgEvent.Handler);		   break;
+			case INVOKE_MANAGE_TEAMS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageTeamsDlgEvent.Handler);		           break;
 			case INVOKE_MANAGE_USERS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageUsersDlgEvent.Handler);		           break;
 			case INVOKE_NAME_COMPLETION_SETTINGS_DLG:	       hasHandler = (eventHandler instanceof InvokeNameCompletionSettingsDlgEvent.Handler);		   break;
 			case INVOKE_PRINCIPAL_DESKTOP_SETTINGS_DLG:        hasHandler = (eventHandler instanceof InvokePrincipalDesktopSettingsDlgEvent.Handler);      break;
