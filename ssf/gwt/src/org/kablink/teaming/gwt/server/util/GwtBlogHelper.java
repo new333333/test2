@@ -53,11 +53,13 @@ import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.TemplateBinder;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.BlogArchiveFolder;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveMonth;
@@ -173,7 +175,8 @@ public class GwtBlogHelper
 			itEntries = entries.iterator();
 			DateFormat df = DateFormat.getInstance();
 	    	SimpleDateFormat sf = (SimpleDateFormat)df;
-			//sf.setTimeZone(GwtServerHelper.getCurrentUser().getTimeZone());
+	    	User user = RequestContextHolder.getRequestContext().getUser();
+			sf.setTimeZone(user.getTimeZone());
 	    	sf.applyPattern("yyyyMM");
 
 			while ( itEntries.hasNext() )
