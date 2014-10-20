@@ -1183,7 +1183,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     			addMembership(top, visitorsRole, globalRoot, new ArrayList());
     			addMembership(top, participantsRole, globalRoot, new ArrayList());
     		}
-    		Workspace netFoldersRoot = addNetFoldersRoot(top, stamp);		
+    		if (Utils.checkIfFilr() || Utils.checkIfFilrAndVibe()) {
+    			//Create the net folders workspace only if Filr is enabled
+    			Workspace netFoldersRoot = addNetFoldersRoot(top, stamp);		
+    		}
     		Workspace teamRoot = addTeamRoot(top, stamp);
     		teamRoot.setFunctionMembershipInherited(false);
     		
@@ -1454,26 +1457,30 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return global;
 	}
 	private Workspace addNetFoldersRoot(Workspace top, HistoryStamp stamp) {
-		Workspace netFolders = new Workspace();
-		netFolders.setCreation(stamp);
-		netFolders.setModification(stamp);
-		
-		netFolders.setName("_net_folders");
-		netFolders.setTitle(NLT.get("administration.initial.netFolders.title", "Net Folders"));
-		netFolders.setPathName(top.getPathName() + "/" + netFolders.getTitle());
-		netFolders.setZoneId(top.getId());
-		netFolders.setInternalId(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID);
-		netFolders.setIconName("/icons/workspace.gif");
-		getDefinitionModule().setDefaultBinderDefinition(netFolders);
-		top.addBinder(netFolders);
-		netFolders.setDefinitionsInherited(false);
-		List defs = netFolders.getDefinitions();
-		defs.add(netFolders.getEntryDef());
-		
-		//generate id for top and profiles
-		getCoreDao().save(netFolders);
-		getCoreDao().updateFileName(top, netFolders, null, netFolders.getTitle());
-		return netFolders;
+		if (Utils.checkIfFilr() || Utils.checkIfFilrAndVibe()) {
+			Workspace netFolders = new Workspace();
+			netFolders.setCreation(stamp);
+			netFolders.setModification(stamp);
+			
+			netFolders.setName("_net_folders");
+			netFolders.setTitle(NLT.get("administration.initial.netFolders.title", "Net Folders"));
+			netFolders.setPathName(top.getPathName() + "/" + netFolders.getTitle());
+			netFolders.setZoneId(top.getId());
+			netFolders.setInternalId(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID);
+			netFolders.setIconName("/icons/workspace.gif");
+			getDefinitionModule().setDefaultBinderDefinition(netFolders);
+			top.addBinder(netFolders);
+			netFolders.setDefinitionsInherited(false);
+			List defs = netFolders.getDefinitions();
+			defs.add(netFolders.getEntryDef());
+			
+			//generate id for top and profiles
+			getCoreDao().save(netFolders);
+			getCoreDao().updateFileName(top, netFolders, null, netFolders.getTitle());
+			return netFolders;
+		} else {
+			return null;
+		}
 	}
 	private ProfileBinder addPersonalRoot(Workspace top) {
 		ProfileBinder profiles = new ProfileBinder();
