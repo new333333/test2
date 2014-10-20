@@ -688,17 +688,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 		}
 
-		if (version.intValue() <= 17) {
-			if (Utils.checkIfFilr()) {
-				//In Filr, we must reset all of the definitions and templates and definitions automatically
-				//But this is only done when needed (i.e., update the version if another change is made)
-				getAdminModule().updateDefaultDefinitions(top.getId(), false);
-				getTemplateModule().updateDefaultTemplates(top.getId(), true);
-				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
-				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
-			}
-		}
-		
 		if(version.intValue() <= 18) { 
 			// Upgrade version 18 is the last version that belongs to Filr 1.1 release, and 19 belongs to Vibe Hudson release
 			if (!Utils.checkIfFilr()) { // This is Vibe
@@ -725,7 +714,19 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				getBinderModule().upgradeTeamMembership();
 			}
 		}
-  	}
+
+		if (version.intValue() <= 20) {
+			if (Utils.checkIfFilr()) {
+				//In Filr, we must reset all of the definitions and templates and definitions automatically
+				//But this is only done when needed (i.e., update the version if another change is made)
+				getAdminModule().updateDefaultDefinitions(top.getId(), false);
+				getTemplateModule().updateDefaultTemplates(top.getId(), true);
+				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
+				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
+			}
+		}
+		
+ 	}
  	
  	private void correctFilrRoles(ZoneConfig zoneConfig) {
 		Function function;
