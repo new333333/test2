@@ -392,6 +392,54 @@ public class AdminInfoDlg extends DlgBox
 				++row;
 			}
 		}
+
+		// Are there upgrade tasks to be performed?
+		if ( upgradeInfo.doUpgradeTasksExist() )
+		{
+			HelpData helpData;
+			ClickHandler clickHandler;
+			InlineLabel label;
+			Panel helpPanel;
+			String guideName;
+			
+			// Yes
+			// Add a link to the documentation on upgrade tasks.
+			helpPanel = new FlowPanel();
+			label = new InlineLabel( GwtTeaming.getMessages().adminInfoDlgUpgradeTasksDocumentationLink() );
+			helpPanel.add( label );
+			guideName = GwtTeaming.getMessages().adminInfoDlgInstallGuide();
+			label = new InlineLabel( guideName );
+			label.addStyleName( "adminInfoDlg_docLink" );
+			helpPanel.add( label );
+			
+			++row;
+			table.setWidget( row, 0, helpPanel );
+			++row;
+
+			// Add a click handler for the link to the documentation.
+			clickHandler = new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent clickEvent )
+				{
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							HelpData helpData;
+							
+							helpData = new HelpData();
+							helpData.setGuideName( HelpData.ADMIN_GUIDE );
+							helpData.setPageId( "update_tasks" );
+							
+							GwtClientHelper.invokeHelp( helpData );
+						}
+					} );
+				}
+			};
+			label.addClickHandler( clickHandler );
+		}
 	}
 	
 	/**
