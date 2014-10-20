@@ -476,7 +476,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			
 			// No
 			// Are we dealing with the admin user?
-			if ( Utils.checkIfFilr() && ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
+			if ( ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
 			{
 				// Yes
 				// Don't set the first login date.  We will set it after the admin has

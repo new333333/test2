@@ -1741,7 +1741,7 @@ public class GwtServerHelper {
 			ami.getProfileModule().changePassword( user.getId(), oldPwd, newPwd );
 			
 			// Are we dealing with the built in admin user?
-			if ( Utils.checkIfFilr() && ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
+			if ( ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
 			{
 				// Yes
 				// Is this the admin's first time logging in?

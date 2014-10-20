@@ -951,18 +951,18 @@ public class GwtMainPage extends ResizeComposite
 			// Yes
 			GwtTeaming.fireEvent( new MenuHideEvent() );	// false -> Don't resize the content now...
 			GwtTeaming.fireEvent( new SidebarHideEvent(  false ) );	// ...will happen when the frame has loaded.
-			
-			// Is this the first time the user logged in?
-			if ( m_mainPageInfo.isFirstLogin() )
+		}
+		
+		// Is this the first time the user logged in?
+		if ( m_mainPageInfo.isFirstLogin() )
+		{
+			// Yes
+			// Are we dealing with the admin user?
+			if ( m_mainPageInfo.isSuperUser() )
 			{
 				// Yes
-				// Are we dealing wit the admin user?
-				if ( m_mainPageInfo.isSuperUser() )
-				{
-					// Yes
-					// Invoke the change password dialog.
-					GwtTeaming.fireEvent( new InvokeChangePasswordDlgEvent() );
-				}
+				// Invoke the change password dialog.
+				GwtTeaming.fireEvent( new InvokeChangePasswordDlgEvent() );
 			}
 		}
 	}// end constructMainPage_Finish()
