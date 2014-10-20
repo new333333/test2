@@ -5133,7 +5133,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			try
 			{
-
 				// Create an ldap context that we can use to read the home dir info
 				// from the user object.  We can't use ctx because MS Windows
 				// has a bug where we can't read additional attributes if we are doing paging.
@@ -5222,11 +5221,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						
 						Attribute id=null;
 						id = lAttrs.get(userIdAttribute);
-						if (id == null) continue;
+						if ( id == null )
+						{
+							logger.error( "The attribute: " + userIdAttribute + " does not exist in the ldap directory.  The value of this attribute is used to for the account name." );
+							continue;
+						}
 
 						//map ldap id to sitescapeName
 						ssName = idToName((String)id.get());
-						if (ssName == null) continue;
+						if ( ssName == null )
+						{
+							logger.error( "Unable to read a value for: " + userIdAttribute + " from the ldap directory.  The value of this attribute is used to for the account name." );
+							continue;
+						}
 
 						// Is the name of this user a name that is used for a Teaming system user account?
 						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
