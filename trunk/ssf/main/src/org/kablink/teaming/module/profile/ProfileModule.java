@@ -92,7 +92,7 @@ public interface ProfileModule {
 	/**
 	 * Add profile entries. 
 	 * @param doc
-	 * @param options - additional processing options or null (See ObjectKeys.INPUT_OPTION_DELETE_USE_WORKSPACE)
+	 * @param options - additional processing options or null (See ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE)
 	 * @throws AccessControlException
 	 */
 	public void addEntries(Document doc, Map options) throws AccessControlException;
