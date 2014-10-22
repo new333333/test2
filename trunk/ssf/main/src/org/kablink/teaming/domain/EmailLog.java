@@ -161,7 +161,7 @@ public class EmailLog extends ZonedObject {
 		} catch (MessagingException e2) {
 			fromAddress = NLT.get("mail.noFromAddress");
 		}
-		if (this.getFrom().isEmpty() && !fromAddress.equals("")) {
+		if ((this.getFrom() == null || this.getFrom().isEmpty()) && !fromAddress.equals("")) {
 			this.setFrom(fromAddress);
 		}
   		try {
