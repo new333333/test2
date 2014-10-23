@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
 import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
 import org.kablink.teaming.gwt.client.event.GetManageTitleEvent.ManageTitleCallback;
+import org.kablink.teaming.gwt.client.event.InvokeManageTeamsDlgEvent;
 import org.kablink.teaming.gwt.client.event.MenuLoadedEvent.MenuItem;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
@@ -364,8 +365,8 @@ public class BreadCrumbPanel extends ToolPanelBase
 		
 		// No, we we aren't displaying a bread crumb panel for a
 		// collection!  Are we displaying it for the profile root
-		// workspace or a mobile devices view?
-		else if (m_binderInfo.isBinderProfilesRootWS() || m_binderInfo.isBinderMobileDevices()) {
+		// workspace, root team workspaces or a mobile devices view?
+		else if (m_binderInfo.isBinderProfilesRootWS() || (m_binderInfo.isBinderTeamsRootWS() && TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW) || m_binderInfo.isBinderMobileDevices()) {
 			// Yes!  We don't need a tree, just the image and title.
 			// Create the panel for it...
 			VibeFlowPanel fp = new VibeFlowPanel();
@@ -379,6 +380,14 @@ public class BreadCrumbPanel extends ToolPanelBase
 				case SMALL:   iRes = m_filrImages.profileRoot();        break;
 				case MEDIUM:  iRes = m_filrImages.profileRoot_medium(); break;
 				case LARGE:   iRes = m_filrImages.profileRoot_large();  break;
+				}
+			}
+			else if (m_binderInfo.isBinderTeamsRootWS()) {
+				switch (BinderIconSize.getBreadCrumbIconSize()) {
+				default:
+				case SMALL:   iRes = m_filrImages.teamRoot();        break;
+				case MEDIUM:  iRes = m_filrImages.teamRoot_medium(); break;
+				case LARGE:   iRes = m_filrImages.teamRoot_large();  break;
 				}
 			}
 			else {
@@ -403,13 +412,13 @@ public class BreadCrumbPanel extends ToolPanelBase
 
 			// ...create the title label...
 			String txt;
-			if (m_binderInfo.isBinderProfilesRootWS())
-			     txt = m_messages.vibeDataTable_People();
-			else txt = m_messages.vibeDataTable_MobileDevices();
+			if      (m_binderInfo.isBinderProfilesRootWS()) txt = m_messages.vibeDataTable_People();
+			else if (m_binderInfo.isBinderTeamsRootWS())    txt = m_messages.vibeDataTable_Teams();
+			else                                            txt = m_messages.vibeDataTable_MobileDevices();
 			final InlineLabel il = new InlineLabel(txt);
 			il.addStyleName("vibe-breadCrumbProfiles-label");
 			fp.add(il);
-			if (m_binderInfo.isBinderProfilesRootWSManagement() || m_binderInfo.isBinderMobileDevices()) {
+			if (m_binderInfo.isBinderProfilesRootWSManagement() || m_binderInfo.isBinderTeamsRootWSManagement() || m_binderInfo.isBinderMobileDevices()) {
 				GwtTeaming.fireEvent(
 					new GetManageTitleEvent(
 						m_binderInfo,
@@ -465,6 +474,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 	private boolean needsBinderConfig() {
 		boolean reply = (
 			(!(m_binderInfo.isBinderProfilesRootWSManagement())) &&	// Not on manage users...
+			(!(m_binderInfo.isBinderTeamsRootWSManagement()))    &&	// ...or not on manage teams...
 			(!(m_binderInfo.isBinderMobileDevices()))            &&	// ...or the mobile devices view...
 			(!(m_binderInfo.isBinderTrash())));						// ...or the trash view.
 		
@@ -476,10 +486,11 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * false otherwise.
 	 */
 	private boolean needsTrashLink() {
-		boolean reply = m_binderInfo.isBinderProfilesRootWSManagement();
+		boolean reply = (m_binderInfo.isBinderProfilesRootWSManagement() || m_binderInfo.isBinderTeamsRootWSManagement());
 		if (!reply) {
 			reply = (
 				(!(m_binderInfo.isBinderProfilesRootWS())) &&	// Not on view of users...
+				(!(m_binderInfo.isBinderTeamsRootWS()))    &&	// ...or view of teams...
 				(!(m_binderInfo.isBinderMirroredFolder())) &&	// ...or any mirrored/net folder...
 				(!(m_binderInfo.isBinderMobileDevices()))  &&	// ...or the mobile devices view...
 				(!(m_binderInfo.isBinderTrash())));				// ...or the trash view itself.
@@ -493,6 +504,11 @@ public class BreadCrumbPanel extends ToolPanelBase
 				}
 			}
 		}
+		
+		if ((!reply) && m_binderInfo.isBinderTeamsRootWS() && (!(TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW))) {
+			reply = true;
+		}
+		
 		return reply;
 	}
 	
@@ -503,8 +519,13 @@ public class BreadCrumbPanel extends ToolPanelBase
 	private boolean needsWhatsNewLink() {
 		boolean reply = (
 			(!(m_binderInfo.isBinderProfilesRootWS())) &&	// Not on any view of users...
+			(!(m_binderInfo.isBinderTeamsRootWS()))    &&	// ...or any view of teams...
 			(!(m_binderInfo.isBinderMobileDevices()))  &&	// ...or the mobile devices view...
 			(!(m_binderInfo.isBinderTrash())));				// ...or the trash view.
+		
+		if ((!reply) && m_binderInfo.isBinderTeamsRootWS() && (!(TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW))) {
+			reply = true;
+		}
 		
 		return reply;
 	}
@@ -731,9 +752,18 @@ public class BreadCrumbPanel extends ToolPanelBase
 					true));	// true -> Trash view.
 		}
 		
+		// No, we aren't managing users!  Are we managing teams?
+		else if (m_binderInfo.isBinderTeamsRootWSManagement()) {
+			// Yes!  Simply tell the administration console to view the
+			// trash on the team workspaces binder.
+			GwtTeaming.fireEventAsync(
+				new InvokeManageTeamsDlgEvent(
+					true));	// true -> Trash view.
+		}
+		
 		else {
-			// No, we aren't managing users!  Get the URL to view the
-			// trash on the current BinderInfo...
+			// No, we aren't managing teams either!  Get the URL to
+			// view the trash on the current BinderInfo...
 			GwtClientHelper.executeCommand(new GetTrashUrlCmd(m_binderInfo), new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {

@@ -1617,6 +1617,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// No, this column doesn't show a custom column either!
 			// Does it display assignment information of some sort?
 			else if (AssignmentInfo.isColumnAssigneeInfo(cName) ||
+					 FolderColumn.isColumnTeamMembers(   cName) ||
 			         FolderColumn.isColumnSharedBy(      cName) ||
 			         FolderColumn.isColumnSharedWith(    cName)) {
 				// Yes!  Create an AssignmentColumn for it.

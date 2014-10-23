@@ -1957,6 +1957,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_People();
 	String vibeDataTable_Pin();
 	String vibeDataTable_Select();
+	String vibeDataTable_Teams();
 	String vibeDataTable_TrashConfirmPurge();
 	String vibeDataTable_TrashConfirmPurgeAll();
 	String vibeDataTable_TrashConfirmPurgeAllWithSelections();
@@ -2365,6 +2366,7 @@ public interface GwtTeamingMessages extends Messages
 	String sharedByMe();
 	String sharedWithMe();
 	String sharedPublic();
+	String teamsList();
 
 	// Strings used with the "Share send-to" widget
 	String shareSendToWidget_AllRecipients();
@@ -2815,6 +2817,11 @@ public interface GwtTeamingMessages extends Messages
 	String emptyPeople_Info_1( String company, String product );
 	String emptyPeople_Info_2( String company, String product );
 	String emptyPeople_SubHead();
+	
+	// Strings used for the empty teams view widget.
+	String emptyTeams_Info_1( String company, String product );
+	String emptyTeams_Info_2( String company, String product );
+	String emptyTeams_SubHead();
 	
 	// Strings used in the administration console home page
 	String adminConsoleInfoWidget_AdminGuideLabel();
