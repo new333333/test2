@@ -250,7 +250,6 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_PRINCIPAL_DESKTOP_SETTINGS_DLG,
 		TeamingEvents.INVOKE_PRINCIPAL_MOBILE_SETTINGS_DLG,
 		TeamingEvents.INVOKE_MANAGE_MOBILE_DEVICES_DLG,
-		TeamingEvents.INVOKE_MANAGE_USERS_DLG,
 		TeamingEvents.INVOKE_RUN_A_REPORT_DLG,
 		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
 		

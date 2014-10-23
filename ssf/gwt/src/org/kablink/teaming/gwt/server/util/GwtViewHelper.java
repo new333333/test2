@@ -114,7 +114,10 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow.PrincipalInfoId;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
+import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
+import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.AvatarInfoRpcResponseData;
@@ -139,6 +142,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseDat
 import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
+import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SharedViewStateRpcResponseData;
@@ -283,6 +287,7 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
 
+import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
 import static org.kablink.util.search.Restrictions.like;
 
@@ -1146,6 +1151,11 @@ public class GwtViewHelper {
 				for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)) {
 					ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
 				}
+				
+				// Scan this FolderRow's team memberships tracking each unique ID.
+				for (AssignmentInfo ai:  getAIListFromFR(fr, FolderColumn.COLUMN_TEAM_MEMBERS)) {
+					ListUtil.addLongToListLongIfUnique(principalIds, ai.getId());
+				}
 			}
 	
 			// Construct Maps, mapping the IDs to their titles,
@@ -1208,6 +1218,9 @@ public class GwtViewHelper {
 				fixupAIPublicLinks(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)                                                                                                                   );
 				fixupAIPublicLinks(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)                                                                                                                 );
 				fixupAITeams(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       teamTitles,      teamCounts                                                              );
+				
+				fixupAIUsers(      getAIListFromFR(fr, FolderColumn.COLUMN_TEAM_MEMBERS),                            principalTitles, principalEMAs, userPresence, userExternal, presenceUserWSIds, avatarUrls);
+				fixupAIGroups(     getAIListFromFR(fr, FolderColumn.COLUMN_TEAM_MEMBERS),                            principalTitles, groupCounts                                                             );
 			}		
 	
 			// Finally, one last scan through the List<FolderRow>'s...
@@ -3009,6 +3022,7 @@ public class GwtViewHelper {
 			else if (colName.equals("state"))                {fc.setColumnSearchKey(Constants.WORKFLOW_STATE_CAPTION_FIELD);    fc.setColumnSortKey(Constants.WORKFLOW_STATE_FIELD);               }
 			else if (colName.equals("status"))               {fc.setColumnSearchKey(Constants.STATUS_FIELD);                                                                                       }
 			else if (colName.equals("tasks"))                {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                                        }
+			else if (colName.equals("teamMembers"))          {fc.setColumnSearchKey(FolderColumn.COLUMN_TEAM_MEMBERS);          fc.setColumnSortable(false);                                       }
 			else if (colName.equals("title"))                {fc.setColumnSearchKey(Constants.TITLE_FIELD);                     fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);                   }
 			else if (colName.equals("userType"))             {fc.setColumnSearchKey(Constants.IDENTITY_INTERNAL_FIELD);         fc.setColumnSortKey(Constants.IDENTITY_INTERNAL_FIELD);            }
 			else {
@@ -3068,6 +3082,56 @@ public class GwtViewHelper {
 				else if (colName.equals("location")) {fc.setColumnSearchKey(Constants.PRE_DELETED_FROM_FIELD);  fc.setColumnSortKey("");}
 			}
 		}
+	}
+
+	/*
+	 * Constructs a List<AssignmentInfo>'s for the team membership of a
+	 * Binder.
+	 */
+	private static List<AssignmentInfo> getAIListForTeamMembership(AllModulesInjected bs, Long binderId) throws GwtTeamingException {
+		// Allocate the List<AssignmentInfo>'s to return.
+		ArrayList<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
+
+		// Does the binder have a team group?
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		Long teamGroupId = binder.getTeamGroupId();
+		if (null != teamGroupId) {
+			// Yes!  Does the team group containing any members?
+			ArrayList<GwtTeamingItem> groupMembers = new ArrayList<GwtTeamingItem>();
+			int count = GwtServerHelper.getGroupMembership(
+				bs,
+				groupMembers,
+				String.valueOf(teamGroupId),
+				0,
+				Integer.MAX_VALUE,
+				MembershipFilter.RETRIEVE_ALL_MEMBERS);
+	
+			if (0 < count) {
+				// Yes!  Scan them...
+				for (GwtTeamingItem member:  groupMembers) {
+					// ...adding an appropriate AssignmentInfo to the
+					// ...list for users and nested groups.
+					AssignmentInfo ai;
+					if (member instanceof GwtUser) {
+						GwtUser user = ((GwtUser) member);
+						ai = AssignmentInfo.construct(user.getIdLong(), AssigneeType.INDIVIDUAL);
+					}
+					else if (member instanceof GwtGroup) {
+						GwtGroup group = ((GwtGroup) member); 
+						ai = AssignmentInfo.construct(group.getIdLong(), AssigneeType.GROUP);
+					}
+					
+					else {
+						continue;
+					}
+					reply.add(ai); 
+				}
+			}
+		}
+
+		// If we get here, reply refers to a List<AssignmentInfo> for
+		// the members of group.  Return it.
+		return reply;
 	}
 	
 	/*
@@ -4104,10 +4168,7 @@ public class GwtViewHelper {
 			else if (folderInfo.isBinderTeamsRootWS()) {
 				// Yes!
 				baseNameKey = "teams.column.";
-//!				...this needs to be implemented...
-				if (folderInfo.isBinderTeamsRootWSManagement())
-				     columnNames = getColumnsLHMFromAS(new String[]{"title"});
-				else columnNames = getColumnsLHMFromAS(new String[]{"title"});
+				columnNames = getColumnsLHMFromAS(new String[]{"title", "teamMembers"});
 			}
 			
 			// No, we aren't showing the root team workspaces binder
@@ -4428,7 +4489,7 @@ public class GwtViewHelper {
 			}
 			else {
 				sortDescend = false;
-				if (folderInfo.isBinderProfilesRootWS() || folderInfo.isBinderCollection()) {
+				if (folderInfo.isBinderProfilesRootWS() || folderInfo.isBinderTeamsRootWS() || folderInfo.isBinderCollection()) {
 					sortBy = Constants.SORT_TITLE_FIELD;
 				}
 				else if (folderInfo.isBinderMobileDevices()) {
@@ -5668,8 +5729,18 @@ public class GwtViewHelper {
 										fr.setColumnValue(fc, emai);
 									}
 									
+									// No, the column doesn't contain an e-mail address either!
+									// Does it contain team membership?
+									else if (csk.equals("teamMembers")) {
+										// Yes!  Construct the List<AssignmentInfo>'s from the
+										// binder and add the column data to the list.
+										List<AssignmentInfo> assignmentList = getAIListForTeamMembership(bs, docId);
+										completeAIsRequired = true;
+										fr.setColumnValue_AssignmentInfos(fc, assignmentList);
+									}
+									
 									else {
-										// No, the column doesn't contain an e-mail address either!
+										// No, the column doesn't contain team membership either!
 										// Extract its String value.
 										String value = GwtServerHelper.getStringFromEntryMapValue(
 											emValue,
@@ -7354,8 +7425,29 @@ public class GwtViewHelper {
 	private static Map getTeamEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getTeamEntries()");
 		try {
-//!			...this needs to be implemented...
-			return buildEmptyEntryMap();
+			// Construct the base criteria for finding the child
+			// binders of the given Binder...
+			Criteria crit = new Criteria();
+			crit.add(eq(Constants.DOC_TYPE_FIELD,          Constants.DOC_TYPE_BINDER));
+			crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD, String.valueOf(binder.getId())));
+
+			// ...factor in the appropriate sorting for the search...
+			boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
+			String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+			crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
+			crit.addOrder(new Order(sortBy,                 sortAscend));
+
+			// ...factor in any quick filter in affect...
+			addQuickFilterToCriteria(quickFilter, crit);
+
+			// ...and finally, initiate the search.
+			return
+				bs.getBinderModule().executeSearchQuery(
+					crit,
+					Constants.SEARCH_MODE_NORMAL,
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+					null);
 		}
 		
 		finally {

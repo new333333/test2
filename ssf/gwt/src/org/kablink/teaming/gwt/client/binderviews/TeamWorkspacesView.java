@@ -79,7 +79,8 @@ public class TeamWorkspacesView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(FolderColumn.COLUMN_FULL_NAME, new ColumnWidth(100));
+		columnWidths.put(FolderColumn.COLUMN_TITLE,        new ColumnWidth(70));
+		columnWidths.put(FolderColumn.COLUMN_TEAM_MEMBERS, new ColumnWidth(30));
 	}
 
 	/**
@@ -135,7 +136,7 @@ public class TeamWorkspacesView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected Widget getEmptyTableWidget() {
-		return new EmptyPeopleComposite();
+		return new EmptyTeamsComposite();
 	}
 	
 	/**
@@ -174,7 +175,7 @@ public class TeamWorkspacesView extends DataTableFolderViewBase {
 
 		// If we're showing this panel when in the administration
 		// console... 
-		if (reply && getFolderInfo().getWorkspaceType().isProfileRootManagement()) {
+		if (reply && getFolderInfo().getWorkspaceType().isTeamRootManagement()) {
 			// ...we never show the footer there either.
 			switch (folderPanel) {
 			case FOOTER: reply = false; break;
