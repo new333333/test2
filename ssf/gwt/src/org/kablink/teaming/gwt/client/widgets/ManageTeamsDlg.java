@@ -43,8 +43,8 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
-import org.kablink.teaming.gwt.client.event.InvokeUserShareRightsDlgEvent;
-import org.kablink.teaming.gwt.client.event.SetSelectedUserShareRightsEvent;
+import org.kablink.teaming.gwt.client.event.InvokeBinderShareRightsDlgEvent;
+import org.kablink.teaming.gwt.client.event.SetSelectedBinderShareRightsEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -57,8 +57,8 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
+import org.kablink.teaming.gwt.client.widgets.BinderShareRightsDlg.BinderShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.UserShareRightsDlg.UserShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -82,9 +82,10 @@ public class ManageTeamsDlg extends DlgBox
 		AdministrationExitEvent.Handler,
 		FullUIReloadEvent.Handler,
 		GetManageTitleEvent.Handler,
-		InvokeUserShareRightsDlgEvent.Handler,
-		SetSelectedUserShareRightsEvent.Handler
+		InvokeBinderShareRightsDlgEvent.Handler,
+		SetSelectedBinderShareRightsEvent.Handler
 {
+	private BinderShareRightsDlg			m_binderShareRightsDlg;		// A BinderShareRightsDlg, once one is created.
 	private boolean							m_dlgAttached;				// true when the dialog is attached to the document.        false otherwise.
 	private boolean							m_trashView;				// true if we're viewing the trash on the team workspaces.  false otherwise.
 	private boolean							m_viewReady;				// true once the embedded view is ready.                    false otherwise.
@@ -98,7 +99,6 @@ public class ManageTeamsDlg extends DlgBox
 	private ManageTeamsInfoRpcResponseData	m_manageTeamsInfo;			// Information necessary to run the manage teams dialog.
 	private TeamWorkspacesView				m_twsView;					// The team workspace       view.
 	private TrashView						m_twsTrashView;				// The team workspace trash view.
-	private UserShareRightsDlg				m_userShareRightsDlg;		// A UserShareRightsDlg, once one is created.
 	private VibeFlowPanel					m_rootPanel;				// The panel that holds the dialog's contents.
 
 	// Constant adjustments to the size of the view so that it properly
@@ -113,8 +113,8 @@ public class ManageTeamsDlg extends DlgBox
 		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.GET_MANAGE_TITLE,
-		TeamingEvents.INVOKE_USER_SHARE_RIGHTS_DLG,
-		TeamingEvents.SET_SELECTED_USER_SHARE_RIGHTS,
+		TeamingEvents.INVOKE_BINDER_SHARE_RIGHTS_DLG,
+		TeamingEvents.SET_SELECTED_BINDER_SHARE_RIGHTS,
 	};
 	
 	/*
@@ -314,18 +314,18 @@ public class ManageTeamsDlg extends DlgBox
 	}
 
 	/**
-	 * Handles InvokeUserShareRightsDlgEvent's received by this class.
+	 * Handles InvokeBinderShareRightsDlgEvent's received by this class.
 	 * 
-	 * Implements the InvokeUserShareRightsDlgEvent.Handler.onInvokeUserShareRightsDlg() method.
+	 * Implements the InvokeBinderShareRightsDlgEvent.Handler.onInvokeBinderShareRightsDlg() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onInvokeUserShareRightsDlg(final InvokeUserShareRightsDlgEvent event) {
-		// Have we create a user share rights dialog yet?
-		if (null == m_userShareRightsDlg) {
+	public void onInvokeBinderShareRightsDlg(final InvokeBinderShareRightsDlgEvent event) {
+		// Have we create a binder share rights dialog yet?
+		if (null == m_binderShareRightsDlg) {
 			// No!  Can we create one now?
-			UserShareRightsDlg.createAsync(new UserShareRightsDlgClient() {
+			BinderShareRightsDlg.createAsync(new BinderShareRightsDlgClient() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in 
@@ -333,30 +333,30 @@ public class ManageTeamsDlg extends DlgBox
 				}
 				
 				@Override
-				public void onSuccess(UserShareRightsDlg usrDlg) {
-					// Yes, we created the user share rights dialog!
+				public void onSuccess(BinderShareRightsDlg usrDlg) {
+					// Yes, we created the binder share rights dialog!
 					// Show it.
-					m_userShareRightsDlg = usrDlg;
-					showUserShareRightsDlgAsync(event.getUserIds(), event.getShowRelativeTo());
+					m_binderShareRightsDlg = usrDlg;
+					showBinderShareRightsDlgAsync(event.getBinderIds(), event.getShowRelativeTo());
 				}
 			});
 		}
 		
 		else {
-			// Yes, we have a user share rights dialog!  Show it.
-			showUserShareRightsDlgAsync(event.getUserIds(), event.getShowRelativeTo());
+			// Yes, we have a binder share rights dialog!  Show it.
+			showBinderShareRightsDlgAsync(event.getBinderIds(), event.getShowRelativeTo());
 		}
 	}
 	
 	/**
-	 * Handles SetSelectedUserShareRightsEvent's received by this class.
+	 * Handles SetSelectedBinderShareRightsEvent's received by this class.
 	 * 
-	 * Implements the SetSelectedUserShareRightsEvent.Handler.onSetSelectedUserShareRights() method.
+	 * Implements the SetSelectedBinderShareRightsEvent.Handler.onSetSelectedBinderShareRights() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onSetSelectedUserShareRights(SetSelectedUserShareRightsEvent event) {
+	public void onSetSelectedBinderShareRights(SetSelectedBinderShareRightsEvent event) {
 		// If we don't have a TeamWorkspacesView...
 		if (null == m_twsView) {
 			// ...bail.
@@ -373,15 +373,15 @@ public class ManageTeamsDlg extends DlgBox
 			}
 			
 			// ...extract the selected user ID's from that...
-			final List<Long> selectedUserList = new ArrayList<Long>();
+			final List<Long> selectedBinderList = new ArrayList<Long>();
 			for (EntityId eid:  selectedEntityIds) {
-				selectedUserList.add(eid.getEntityId());
+				selectedBinderList.add(eid.getEntityId());
 			}
 
-			// ...and invoke the user share rights dialog.
+			// ...and invoke the binder share rights dialog.
 			GwtTeaming.fireEventAsync(
-				new InvokeUserShareRightsDlgEvent(
-					selectedUserList));
+				new InvokeBinderShareRightsDlgEvent(
+					selectedBinderList));
 		}
 	}
 
@@ -432,25 +432,25 @@ public class ManageTeamsDlg extends DlgBox
 	}
 	
 	/*
-	 * Asynchronously shows the user share rights dialog.
+	 * Asynchronously shows the binder share rights dialog.
 	 */
-	private void showUserShareRightsDlgAsync(final List<Long> selectedUserList, final UIObject showRelativeTo) {
+	private void showBinderShareRightsDlgAsync(final List<Long> selectedBinderList, final UIObject showRelativeTo) {
 		GwtClientHelper.deferCommand(
 			new ScheduledCommand() {
 				@Override
 				public void execute() {
-					showUserShareRightsDlgNow(selectedUserList, showRelativeTo);
+					showBinderShareRightsDlgNow(selectedBinderList, showRelativeTo);
 				}
 			});
 	}
 
 	/*
-	 * Synchronously shows the user share rights dialog.
+	 * Synchronously shows the binder share rights dialog.
 	 */
-	private void showUserShareRightsDlgNow(final List<Long> selectedUserList, final UIObject showRelativeTo) {
-		UserShareRightsDlg.initAndShow(
-			m_userShareRightsDlg,
-			selectedUserList,
+	private void showBinderShareRightsDlgNow(final List<Long> selectedBinderList, final UIObject showRelativeTo) {
+		BinderShareRightsDlg.initAndShow(
+			m_binderShareRightsDlg,
+			selectedBinderList,
 			showRelativeTo);
 	}
 

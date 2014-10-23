@@ -1069,6 +1069,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_BINDER_SHARE_RIGHTS_DLG:
+				// An InvokeBinderShareRightsDlgEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof InvokeBinderShareRightsDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeBinderShareRightsDlgEvent.registerEvent(eventBus, ((InvokeBinderShareRightsDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_CHANGE_PASSWORD_DLG:
 				// An InvokeChangePasswordDlgEvent!  Can the event handler we were given handle that?
 				if ( eventHandler instanceof InvokeChangePasswordDlgEvent.Handler)
@@ -1924,6 +1933,15 @@ public class EventHelper {
 				if (eventHandler instanceof SetFolderSortEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = SetFolderSortEvent.registerEvent(eventBus, ((SetFolderSortEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case SET_SELECTED_BINDER_SHARE_RIGHTS:
+				// An SetSelectedBinderShareRightsEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof SetSelectedBinderShareRightsEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SetSelectedBinderShareRightsEvent.registerEvent(eventBus, ((SetSelectedBinderShareRightsEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -2836,6 +2854,7 @@ public class EventHelper {
 
 			case INVOKE_ABOUT:							       hasHandler = (eventHandler instanceof InvokeAboutEvent.Handler);                            break;
 			case INVOKE_ADD_NEW_FOLDER:					       hasHandler = (eventHandler instanceof InvokeAddNewFolderEvent.Handler);                     break;
+			case INVOKE_BINDER_SHARE_RIGHTS_DLG:			   hasHandler = (eventHandler instanceof InvokeBinderShareRightsDlgEvent.Handler);		       break;
 			case INVOKE_CHANGE_PASSWORD_DLG:			       hasHandler = (eventHandler instanceof InvokeChangePasswordDlgEvent.Handler);                break;
 			case INVOKE_CLIPBOARD:						       hasHandler = (eventHandler instanceof InvokeClipboardEvent.Handler);                        break;
 			case INVOKE_COLUMN_RESIZER:				           hasHandler = (eventHandler instanceof InvokeColumnResizerEvent.Handler);                    break;
@@ -3043,6 +3062,7 @@ public class EventHelper {
 			case SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES:        hasHandler = (eventHandler instanceof ScheduleWipeSelectedMobileDevicesEvent.Handler);      break;
 			case SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY:  hasHandler = (eventHandler instanceof SetDesktopDownloadAppControlVisibilityEvent.Handler); break;
 			case SET_FOLDER_SORT:                              hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                          break;
+			case SET_SELECTED_BINDER_SHARE_RIGHTS:             hasHandler = (eventHandler instanceof SetSelectedBinderShareRightsEvent.Handler);           break;
 			case SET_SELECTED_USER_DESKTOP_SETTINGS:           hasHandler = (eventHandler instanceof SetSelectedUserDesktopSettingsEvent.Handler);         break;
 			case SET_SELECTED_USER_MOBILE_SETTINGS:            hasHandler = (eventHandler instanceof SetSelectedUserMobileSettingsEvent.Handler);          break;
 			case SET_SELECTED_USER_SHARE_RIGHTS:               hasHandler = (eventHandler instanceof SetSelectedUserShareRightsEvent.Handler);             break;

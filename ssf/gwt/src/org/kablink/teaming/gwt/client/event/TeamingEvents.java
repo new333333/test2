@@ -105,6 +105,7 @@ public enum TeamingEvents implements IsSerializable {
 
 	INVOKE_ABOUT,									// Invokes the About dialog.
 	INVOKE_ADD_NEW_FOLDER,							// Invokes the Add New Folder dialog.
+	INVOKE_BINDER_SHARE_RIGHTS_DLG,					// Invokes the 'binder share rights' dialog.
 	INVOKE_CHANGE_PASSWORD_DLG,						// Invoke the Change Password dialog.
 	INVOKE_CLIPBOARD,								// Invokes the Clipboard dialog.
 	INVOKE_COLUMN_RESIZER,							// Invokes the column resizing dialog.
@@ -323,6 +324,7 @@ public enum TeamingEvents implements IsSerializable {
 	SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES,			// Schedules the selected mobile devices to be wiped.
 	SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,	// Sets the visibility of the desktop application download control. 
 	SET_FOLDER_SORT,								// Sets a folder sort options.
+	SET_SELECTED_BINDER_SHARE_RIGHTS,				// Sets the share               rights   for the selected binders.
 	SET_SELECTED_USER_DESKTOP_SETTINGS,				// Sets the desktop application settings for the selected users.
 	SET_SELECTED_USER_MOBILE_SETTINGS,				// Sets the mobile  application settings for the selected users.
 	SET_SELECTED_USER_SHARE_RIGHTS,					// Sets the share               rights   for the selected users.

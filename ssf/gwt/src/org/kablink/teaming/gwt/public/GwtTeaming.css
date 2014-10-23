@@ -5572,6 +5572,27 @@ td.datePickerMonth {
 	.vibe-userShareRightsDlg-table            {}
 /* End:  User share rights dialog styles. */
 
+/* Start:  Binder share rights dialog styles. */
+	.vibe-binderShareRightsDlg-header           {white-space: normal; color: #666;}
+	.vibe-binderShareRightsDlg-headerCell       {vertical-align: top;}
+	.vibe-binderShareRightsDlg-headerCell2      {padding-top: 10px;}
+	.vibe-binderShareRightsDlg-headerCellCenter {text-align: center;}
+	.vibe-binderShareRightsDlg-headerCellLeft   {text-align: left;}
+	.vibe-binderShareRightsDlg-headerCellSpacer {border-bottom-color: #cccccc; border-bottom-style: solid; border-bottom-width: 1px; padding-top: 10px;}
+	.vibe-binderShareRightsDlg-noZoneSettings   {margin-top: 10px; font-weight: bold;}
+	.vibe-binderShareRightsDlg-panel            {text-align: left; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-binderShareRightsDlg-progressBar      {margin-bottom: 5px; margin-top: 10px;}
+	.vibe-binderShareRightsDlg-progressLabel    {margin-left: 3px;}
+	.vibe-binderShareRightsDlg-progressPanel    {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
+	.vibe-binderShareRightsDlg-progressSpinner  {}
+	.vibe-binderShareRightsDlg-radio            {}
+	.vibe-binderShareRightsDlg-radioCell        {text-align: center;}
+	.vibe-binderShareRightsDlg-row              {color: #666; font-weight: bold;}
+	.vibe-binderShareRightsDlg-rowCell          {}
+	.vibe-binderShareRightsDlg-rowCellForward   {width: 150px;}
+	.vibe-binderShareRightsDlg-table            {}
+/* End:  Binder share rights dialog styles. */
+
 
 /* Start: Net Folder Rights widget styles */
 .netFolderRightsWidget_RightsLabel

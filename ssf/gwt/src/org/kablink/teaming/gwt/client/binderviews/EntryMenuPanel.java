@@ -80,6 +80,7 @@ import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
+import org.kablink.teaming.gwt.client.event.SetSelectedBinderShareRightsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserDesktopSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserMobileSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserShareRightsEvent;
@@ -1250,6 +1251,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case MARK_UNREAD_SELECTED_ENTITIES:                 event = new MarkUnreadSelectedEntitiesEvent(             folderId      ); break;
 					case MOVE_SELECTED_ENTITIES:                        event = new MoveSelectedEntitiesEvent(                   folderId      ); break;
 					case SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES:         event = new ScheduleWipeSelectedMobileDevicesEvent(      m_binderInfo  ); break;
+					case SET_SELECTED_BINDER_SHARE_RIGHTS:              event = new SetSelectedBinderShareRightsEvent(           folderId      ); break;
 					case SET_SELECTED_USER_DESKTOP_SETTINGS:            event = new SetSelectedUserDesktopSettingsEvent(         folderId      ); break;
 					case SET_SELECTED_USER_MOBILE_SETTINGS:             event = new SetSelectedUserMobileSettingsEvent(          folderId      ); break;
 					case SET_SELECTED_USER_SHARE_RIGHTS:                event = new SetSelectedUserShareRightsEvent(             folderId      ); break;
