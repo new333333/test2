@@ -1800,17 +1800,26 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for the root team workspace view.
 	 */
 	private static void constructEntryTeamsRootWSItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, boolean manageTeams) {
-		// If we're not in the manage team version of the root team
-		// workspace viewer...
-		if (!manageTeams) {
-			// ...there are no menu items.  Bail.
-			return;
-		}
-		
 		// If the user can add entries...
 		BinderModule bm = bs.getBinderModule();
 		if (bm.testAccess(ws, BinderOperation.addWorkspace)) {
-//!			...this needs to be implemented...
+			// ...add a 'New Workspace...' menu item.
+			AdaptedPortletURL url = createActionUrl(request);
+			url.setParameter(WebKeys.ACTION,        WebKeys.ACTION_ADD_BINDER);
+			url.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(ws.getId()));
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
+			
+			ToolbarItem addTBI = new ToolbarItem(ADD_WORKSPACE);
+			markTBIPopup(addTBI                             );
+			markTBITitle(addTBI, "toolbar.menu.addWorkspace");
+			markTBIUrl(  addTBI, url                        );
+			entryToolbar.addNestedItem(addTBI);
+		}
+
+		// If the user can delete items from the workspace...
+		if (bm.testAccess(ws, BinderOperation.deleteBinder) || bm.testAccess(ws, BinderOperation.preDeleteBinder)) {
+			// ...add a delete item.
+			constructEntryDeleteItem(entryToolbar);
 		}
 		
 		// Create a 'more' item for additional items.
@@ -1818,12 +1827,13 @@ public class GwtMenuHelper {
 		ToolbarItem moreTBI = new ToolbarItem("1_more");
 		markTBITitle(moreTBI, "toolbar.more");
 
-		// If sharing is enabled on the root team workspaces binder...
-		if (bs.getSharingModule().testAddShareEntity(ws)) {
+		// If we're managing teams and sharing is enabled on the root
+		// team workspaces binder...
+		if (manageTeams && bs.getSharingModule().testAddShareEntity(ws)) {
 			// ...add the set selected share rights.
 			tbi = new ToolbarItem("1_setShareRights");
-			markTBITitle(tbi, "toolbar.setUserWSShareRights");
-			markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_SHARE_RIGHTS);
+			markTBITitle(tbi, "toolbar.setTeamShareRights");
+			markTBIEvent(tbi, TeamingEvents.SET_SELECTED_BINDER_SHARE_RIGHTS);
 			moreTBI.addNestedItem(tbi);
 		}
 		

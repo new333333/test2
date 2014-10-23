@@ -375,6 +375,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetBinderDescription();
 	String rpcFailure_GetBinderFilters();
 	String rpcFailure_GetBinderOwnerAvatarUrl();
+	String rpcFailure_GetBinderSharingRightsInfo();
 	String rpcFailure_GetBinderStats();
 	String rpcFailure_GetBlogArchiveInfo();
 	String rpcFailure_GetBlogPages();
@@ -600,6 +601,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_Search();
 	String rpcFailure_SendForgottenPwdEmail();
 	String rpcFailure_SendNotificationEmail();
+	String rpcFailure_SetBinderSharingRightsInfo();
 	String rpcFailure_SetDesktopAppDownloadVisibility();
 	String rpcFailure_SetEntriesPinState();
 	String rpcFailure_SetHasSeenOesWarning();
@@ -651,6 +653,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_AlertDlg();
 	String codeSplitFailure_BinderOwnerAvatarPanel();
+	String codeSplitFailure_BinderShareRightsDlg();
 	String codeSplitFailure_BlogArchiveCtrl();
 	String codeSplitFailure_BlogFolderView();
 	String codeSplitFailure_BlogGlobalTagsCtrl();
@@ -2753,6 +2756,21 @@ public interface GwtTeamingMessages extends Messages
 	String userShareRightsDlgLabel_Public();
 	String userShareRightsDlgLabel_PublicLinks();
 	String userShareRightsDlgProgress( int done, int total );
+
+	// Strings used by the 'Binder Share Rights' dialog.
+	String binderShareRightsDlgError_SetFailures();
+	String binderShareRightsDlgHeader( int count );
+	String binderShareRightsDlgLabel_Allow();
+	String binderShareRightsDlgLabel_AllowForwarding();
+	String binderShareRightsDlgLabel_AllowSharingWith();
+	String binderShareRightsDlgLabel_Clear();
+	String binderShareRightsDlgLabel_ExternalUsers();
+	String binderShareRightsDlgLabel_InternalUsers();
+	String binderShareRightsDlgLabel_NoChange();
+	String binderShareRightsDlgLabel_NoZoneSettings();
+	String binderShareRightsDlgLabel_Public();
+	String binderShareRightsDlgLabel_PublicLinks();
+	String binderShareRightsDlgProgress( int done, int total );
 
 	// Strings used to represent the different rights
 	String allowAccess();
