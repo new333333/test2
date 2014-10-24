@@ -5551,47 +5551,26 @@ td.datePickerMonth {
 	.vibe-userPropertiesDlg-sectionRow td    {border-top: 1px solid #cccccc; padding-top: 5px;}
 /* End:  User properties dialog styles. */
 
-/* Start:  User share rights dialog styles. */
-	.vibe-userShareRightsDlg-header           {white-space: normal; color: #666;}
-	.vibe-userShareRightsDlg-headerCell       {vertical-align: top;}
-	.vibe-userShareRightsDlg-headerCell2      {padding-top: 10px;}
-	.vibe-userShareRightsDlg-headerCellCenter {text-align: center;}
-	.vibe-userShareRightsDlg-headerCellLeft   {text-align: left;}
-	.vibe-userShareRightsDlg-headerCellSpacer {border-bottom-color: #cccccc; border-bottom-style: solid; border-bottom-width: 1px; padding-top: 10px;}
-	.vibe-userShareRightsDlg-noZoneSettings   {margin-top: 10px; font-weight: bold;}
-	.vibe-userShareRightsDlg-panel            {text-align: left; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
-	.vibe-userShareRightsDlg-progressBar      {margin-bottom: 5px; margin-top: 10px;}
-	.vibe-userShareRightsDlg-progressLabel    {margin-left: 3px;}
-	.vibe-userShareRightsDlg-progressPanel    {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
-	.vibe-userShareRightsDlg-progressSpinner  {}
-	.vibe-userShareRightsDlg-radio            {}
-	.vibe-userShareRightsDlg-radioCell        {text-align: center;}
-	.vibe-userShareRightsDlg-row              {color: #666; font-weight: bold;}
-	.vibe-userShareRightsDlg-rowCell          {}
-	.vibe-userShareRightsDlg-rowCellForward   {width: 150px;}
-	.vibe-userShareRightsDlg-table            {}
-/* End:  User share rights dialog styles. */
-
-/* Start:  Binder share rights dialog styles. */
-	.vibe-binderShareRightsDlg-header           {white-space: normal; color: #666;}
-	.vibe-binderShareRightsDlg-headerCell       {vertical-align: top;}
-	.vibe-binderShareRightsDlg-headerCell2      {padding-top: 10px;}
-	.vibe-binderShareRightsDlg-headerCellCenter {text-align: center;}
-	.vibe-binderShareRightsDlg-headerCellLeft   {text-align: left;}
-	.vibe-binderShareRightsDlg-headerCellSpacer {border-bottom-color: #cccccc; border-bottom-style: solid; border-bottom-width: 1px; padding-top: 10px;}
-	.vibe-binderShareRightsDlg-noZoneSettings   {margin-top: 10px; font-weight: bold;}
-	.vibe-binderShareRightsDlg-panel            {text-align: left; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
-	.vibe-binderShareRightsDlg-progressBar      {margin-bottom: 5px; margin-top: 10px;}
-	.vibe-binderShareRightsDlg-progressLabel    {margin-left: 3px;}
-	.vibe-binderShareRightsDlg-progressPanel    {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
-	.vibe-binderShareRightsDlg-progressSpinner  {}
-	.vibe-binderShareRightsDlg-radio            {}
-	.vibe-binderShareRightsDlg-radioCell        {text-align: center;}
-	.vibe-binderShareRightsDlg-row              {color: #666; font-weight: bold;}
-	.vibe-binderShareRightsDlg-rowCell          {}
-	.vibe-binderShareRightsDlg-rowCellForward   {width: 150px;}
-	.vibe-binderShareRightsDlg-table            {}
-/* End:  Binder share rights dialog styles. */
+/* Start:  Share rights dialogs (user and binder) styles. */
+	.vibe-shareRightsDlg-header           {white-space: normal; color: #666;}
+	.vibe-shareRightsDlg-headerCell       {vertical-align: top;}
+	.vibe-shareRightsDlg-headerCell2      {padding-top: 10px;}
+	.vibe-shareRightsDlg-headerCellCenter {text-align: center;}
+	.vibe-shareRightsDlg-headerCellLeft   {text-align: left;}
+	.vibe-shareRightsDlg-headerCellSpacer {border-bottom-color: #cccccc; border-bottom-style: solid; border-bottom-width: 1px; padding-top: 10px;}
+	.vibe-shareRightsDlg-noZoneSettings   {margin-top: 10px; font-weight: bold;}
+	.vibe-shareRightsDlg-panel            {text-align: left; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-shareRightsDlg-progressBar      {margin-bottom: 5px; margin-top: 10px;}
+	.vibe-shareRightsDlg-progressLabel    {margin-left: 3px;}
+	.vibe-shareRightsDlg-progressPanel    {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
+	.vibe-shareRightsDlg-progressSpinner  {}
+	.vibe-shareRightsDlg-radio            {}
+	.vibe-shareRightsDlg-radioCell        {text-align: center;}
+	.vibe-shareRightsDlg-row              {color: #666; font-weight: bold;}
+	.vibe-shareRightsDlg-rowCell          {}
+	.vibe-shareRightsDlg-rowCellForward   {width: 150px;}
+	.vibe-shareRightsDlg-table            {}
+/* End:  Share rights dialogs (user and binder) styles. */
 
 
 /* Start: Net Folder Rights widget styles */

@@ -37,6 +37,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
+import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
@@ -54,7 +55,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.HoverHintPopup;
 import org.kablink.teaming.gwt.client.widgets.Html5UploadPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
-
 import org.vectomatic.dnd.DataTransferExt;
 import org.vectomatic.file.File;
 import org.vectomatic.file.FileList;
@@ -193,7 +193,20 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	/*
 	 * Invokes an entry viewer on the entry.
 	 */
-	private void invokeViewEntry(final EntryTitleInfo eti, Element pElement) {
+	private void invokeViewEntry(final EntryTitleInfo eti, final Element pElement) {
+		// Ensure we're not in the administration console...
+		GwtTeaming.fireEvent(new AdministrationExitEvent(true));
+		
+		// ...and invoke the view entry.
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				invokeViewEntryNow(eti, pElement);
+			}
+		});
+	}
+	
+	private void invokeViewEntryNow(final EntryTitleInfo eti, Element pElement) {
 		// Is this entry a folder?
 		if (eti.getEntityId().isBinder()) {
 			// Yes!  Can we get a permalink to it?
@@ -217,7 +230,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 					String binderPermalink = responseData.getStringValue();
 					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderPermalink, Instigator.GOTO_CONTENT_URL);
 					if (GwtClientHelper.validateOSBI(osbInfo)) {
-						GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+						GwtTeaming.fireEventAsync(new ChangeContextEvent(osbInfo));
 					}
 				}
 			});
@@ -238,7 +251,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 				@Override
 				public void onSuccess(VibeRpcResponse response) {
 					String viewFolderEntryUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
-					GwtClientHelper.jsShowForumEntry(viewFolderEntryUrl);
+					GwtClientHelper.jsShowForumEntryAsync(viewFolderEntryUrl);
 					markEntryUISeenAsync(eti);
 				}
 			});
@@ -603,7 +616,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		boolean			hasBinderImg    = (null != binderImg);
 		boolean			isHidden        = eti.isHidden();
 		boolean			isTrash         = eti.isTrash();
-		boolean			isProfilesTrash = (isTrash && GwtClientHelper.isBinderInfoProfilesRoot(m_binderInfo));
+		boolean			isProfilesTrash = (isTrash && m_binderInfo.isBinderProfilesRootWS());
 		boolean			isEntry         = entityType.equals("folderEntry");
 		boolean			titleIsLink     = ((!isTrash) || ((!isProfilesTrash) && (null != entityType) && entityType.equals("folderEntry")));
 		boolean			titleIsFileLink = (titleIsLink && eti.isFile());

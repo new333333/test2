@@ -37,11 +37,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Class used to track sharing rights on a per binder basis. 
+ * Class used to track sharing rights on a per entity basis. 
  * 
  * @author drfoster@novell.com
  */
-public class PerBinderShareRightsInfo implements IsSerializable, VibeRpcResponseData {
+public class PerEntityShareRightsInfo implements IsSerializable, VibeRpcResponseData {
 	private boolean m_allowExternal;	//
 	private boolean m_allowForwarding;	//
 	private boolean m_allowInternal;	//
@@ -53,7 +53,7 @@ public class PerBinderShareRightsInfo implements IsSerializable, VibeRpcResponse
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public PerBinderShareRightsInfo() {
+	public PerEntityShareRightsInfo() {
 		// Initialize the super class.
 		super();
 	}
@@ -67,7 +67,7 @@ public class PerBinderShareRightsInfo implements IsSerializable, VibeRpcResponse
 	 * @param allowPublic
 	 * @param allowPublicLinks
 	 */
-	public PerBinderShareRightsInfo(boolean allowExternal, boolean allowForwarding, boolean allowInternal, boolean allowPublic, boolean allowPublicLinks) {
+	public PerEntityShareRightsInfo(boolean allowExternal, boolean allowForwarding, boolean allowInternal, boolean allowPublic, boolean allowPublicLinks) {
 		// Initialize this object...
 		this();
 

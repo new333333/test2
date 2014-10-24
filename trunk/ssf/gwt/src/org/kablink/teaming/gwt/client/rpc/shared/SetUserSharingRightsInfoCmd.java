@@ -34,9 +34,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.kablink.teaming.gwt.client.util.CombinedPerEntityShareRightsInfo;
 
 /**
  * This class holds all of the information necessary to execute the
@@ -45,58 +43,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class SetUserSharingRightsInfoCmd extends VibeRpcCmd {
-	private List<Long>						m_userIds;			//
-	private CombinedPerUserShareRightsInfo	m_sharingRights;	//
-	
-	/**
-	 * Inner class used to track which sharing rights are to be set and
-	 * what they're to be set to on a per user basis.
-	 */
-	public static class CombinedPerUserShareRightsInfo implements IsSerializable {
-		private PerUserShareRightsInfo	m_setFlags;		// Specifies which flags in m_valueFlags get stored.
-		private PerUserShareRightsInfo	m_valueFlags;	//
-		
-		/**
-		 * Constructor method.
-		 * 
-		 * Zero parameter constructor as required by GWT serialization.
-		 */
-		public CombinedPerUserShareRightsInfo() {
-			// Initialize the super class.
-			super();
-		}
-
-		/**
-		 * Constructor method.
-		 * 
-		 * @param setFlags
-		 * @param valueFlags
-		 */
-		public CombinedPerUserShareRightsInfo(PerUserShareRightsInfo setFlags, PerUserShareRightsInfo valueFlags) {
-			// Initialize this object...
-			this();
-			
-			// ...and store the parameters.
-			setSetFlags(  setFlags  );
-			setValueFlags(valueFlags);
-		}
-		
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public PerUserShareRightsInfo getSetFlags()   {return m_setFlags;  }
-		public PerUserShareRightsInfo getValueFlags() {return m_valueFlags;}
-		
-		/**
-		 * Set'er methods.
-		 * 
-		 * @param
-		 */
-		public void setSetFlags(  PerUserShareRightsInfo setFlags)   {m_setFlags   = setFlags;  }
-		public void setValueFlags(PerUserShareRightsInfo valueFlags) {m_valueFlags = valueFlags;}
-	}
+	private List<Long>							m_userIds;			//
+	private CombinedPerEntityShareRightsInfo	m_sharingRights;	//
 	
 	/**
 	 * Constructor method.
@@ -114,7 +62,7 @@ public class SetUserSharingRightsInfoCmd extends VibeRpcCmd {
 	 * @param userIds
 	 * @param sharingRights
 	 */
-	public SetUserSharingRightsInfoCmd(List<Long> userIds, CombinedPerUserShareRightsInfo sharingRights) {
+	public SetUserSharingRightsInfoCmd(List<Long> userIds, CombinedPerEntityShareRightsInfo sharingRights) {
 		// Initialize this object...
 		this();
 		
@@ -128,16 +76,16 @@ public class SetUserSharingRightsInfoCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<Long>                     getUserIds()       {return m_userIds;      }
-	public CombinedPerUserShareRightsInfo getSharingRights() {return m_sharingRights;}
+	public List<Long>                       getUserIds()       {return m_userIds;      }
+	public CombinedPerEntityShareRightsInfo getSharingRights() {return m_sharingRights;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setUserIds(      List<Long> userIds)                           {m_userIds       = userIds;      }
-	public void setSharingRights(CombinedPerUserShareRightsInfo sharingRights) {m_sharingRights = sharingRights;}
+	public void setUserIds(      List<Long>                       userIds)       {m_userIds       = userIds;      }
+	public void setSharingRights(CombinedPerEntityShareRightsInfo sharingRights) {m_sharingRights = sharingRights;}
 	
 	/**
 	 * Returns the command's enumeration value.

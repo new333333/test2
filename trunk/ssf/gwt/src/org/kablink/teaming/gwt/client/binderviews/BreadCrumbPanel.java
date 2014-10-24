@@ -474,6 +474,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 	private boolean needsBinderConfig() {
 		boolean reply = (
 			(!(m_binderInfo.isBinderProfilesRootWSManagement())) &&	// Not on manage users...
+			(!(m_binderInfo.isBinderTeamsRootWSManagement()))    &&	// ...or on manage teams...
 			(!(m_binderInfo.isBinderMobileDevices()))            &&	// ...or the mobile devices view...
 			(!(m_binderInfo.isBinderTrash())));						// ...or the trash view.
 		
@@ -523,7 +524,8 @@ public class BreadCrumbPanel extends ToolPanelBase
 			(!(m_binderInfo.isBinderMobileDevices()))  &&	// ...or the mobile devices view...
 			(!(m_binderInfo.isBinderTrash())));				// ...or the trash view.
 		
-		if ((!reply) && m_binderInfo.isBinderTeamsRootWS() && (!(TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW))) {
+		boolean forceShow = ((!reply) && m_binderInfo.isBinderTeamsRootWS() && (!(TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW)));
+		if (forceShow) {
 			reply = true;
 		}
 		

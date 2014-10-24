@@ -62,7 +62,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.Q
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
+import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -721,7 +721,7 @@ public class UserPropertiesDlg extends DlgBox
 	/*
 	 * Adds information about the user's sharing rights to the grid.
 	 */
-	private void addSharingInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, PerUserShareRightsInfo share, boolean addSectionHeader) {
+	private void addSharingInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, PerEntityShareRightsInfo share, boolean addSectionHeader) {
 		// Does the user have a workspace that we could get the sharing
 		// rights off of?
 		int row = getSectionRow(grid, rf, addSectionHeader);

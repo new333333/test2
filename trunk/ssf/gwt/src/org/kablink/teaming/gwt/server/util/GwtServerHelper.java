@@ -222,8 +222,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcRe
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersStateRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.SetBinderSharingRightsInfoCmd.CombinedPerBinderShareRightsInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.SetUserSharingRightsInfoCmd.CombinedPerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.MarkupStringReplacementCmd;
@@ -249,6 +247,7 @@ import org.kablink.teaming.gwt.client.util.BinderStats;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
+import org.kablink.teaming.gwt.client.util.CombinedPerEntityShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntityId.EntityIdType;
@@ -260,8 +259,7 @@ import org.kablink.teaming.gwt.client.util.GwtMobileOpenInSetting;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
-import org.kablink.teaming.gwt.client.util.PerBinderShareRightsInfo;
-import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
+import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
@@ -3621,7 +3619,7 @@ public class GwtServerHelper {
 			if ((null != binderIds) && (1 == binderIds.size())) {
 				// Yes!  Can we resolve that to a Binder?
 				Set<Binder>					bList = bm.getBinders(binderIds);
-				PerBinderShareRightsInfo	psri  = new PerBinderShareRightsInfo();
+				PerEntityShareRightsInfo	psri  = new PerEntityShareRightsInfo();
 				if (MiscUtil.hasItems(bList)) {
 					Binder b = bList.iterator().next();
 					// Yes!  Are there any work area function
@@ -8904,9 +8902,9 @@ public class GwtServerHelper {
 			// being requested?
 			if ((null != userIds) && (1 == userIds.size())) {
 				// Yes!  Can we resolve that to a User?
-				Long					wsId  = null;
-				List<Principal>			pList = ResolveIds.getPrincipals(userIds);
-				PerUserShareRightsInfo	psri  = new PerUserShareRightsInfo();
+				Long						wsId  = null;
+				List<Principal>				pList = ResolveIds.getPrincipals(userIds);
+				PerEntityShareRightsInfo	psri  = new PerEntityShareRightsInfo();
 				if (MiscUtil.hasItems(pList)) {
 					Principal p = pList.get(0);
 					if (p instanceof UserPrincipal) {
@@ -11807,7 +11805,7 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData setBinderSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, List<Long> binderIds, CombinedPerBinderShareRightsInfo sharingRights) throws GwtTeamingException {
+	public static ErrorListRpcResponseData setBinderSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, List<Long> binderIds, CombinedPerEntityShareRightsInfo sharingRights) throws GwtTeamingException {
 		try {
 			// Create the ErrorListRpcResponseData to return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
@@ -11819,14 +11817,14 @@ public class GwtServerHelper {
 			// We're we given any share rights to set?
 			if (MiscUtil.hasItems(binderIds) && (null != sharingRights)) {
 				// Yes!  Are there any rights actually being set?
-				PerBinderShareRightsInfo setFlags = sharingRights.getSetFlags();
+				PerEntityShareRightsInfo setFlags = sharingRights.getSetFlags();
 				if (!(setFlags.anyFlagsSet())) {
 					// No!  Bail, there's nothing to do.
 					return reply;
 				}
 				
 				// Get the right values to be set.
-				PerBinderShareRightsInfo valueFlags = sharingRights.getValueFlags();
+				PerEntityShareRightsInfo valueFlags = sharingRights.getValueFlags();
 				
 				// Access the Function's we may need to set/clear
 				// on the selected binders...
@@ -12059,7 +12057,7 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData setUserSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, CombinedPerUserShareRightsInfo sharingRights) throws GwtTeamingException {
+	public static ErrorListRpcResponseData setUserSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds, CombinedPerEntityShareRightsInfo sharingRights) throws GwtTeamingException {
 		try {
 			// Create the ErrorListRpcResponseData to return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
@@ -12071,14 +12069,14 @@ public class GwtServerHelper {
 			// We're we given any share rights to set?
 			if (MiscUtil.hasItems(userIds) && (null != sharingRights)) {
 				// Yes!  Are there any rights actually being set?
-				PerUserShareRightsInfo setFlags = sharingRights.getSetFlags();
+				PerEntityShareRightsInfo setFlags = sharingRights.getSetFlags();
 				if (!(setFlags.anyFlagsSet())) {
 					// No!  Bail, there's nothing to do.
 					return reply;
 				}
 				
 				// Get the right values to be set.
-				PerUserShareRightsInfo valueFlags = sharingRights.getValueFlags();
+				PerEntityShareRightsInfo valueFlags = sharingRights.getValueFlags();
 				
 				// Access the Function's we may need to set/clear
 				// on the selected user workspaces...

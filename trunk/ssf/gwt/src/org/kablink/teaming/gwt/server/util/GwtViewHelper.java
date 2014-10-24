@@ -1238,6 +1238,8 @@ public class GwtViewHelper {
 				Collections.sort(getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       comparator);
 				Collections.sort(getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  comparator);
 				Collections.sort(getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            comparator);
+				
+				Collections.sort(getAIListFromFR(fr, FolderColumn.COLUMN_TEAM_MEMBERS),                            comparator);
 			}
 		}
 		

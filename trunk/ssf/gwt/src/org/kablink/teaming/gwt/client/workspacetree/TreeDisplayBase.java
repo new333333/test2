@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageTeamsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
@@ -126,16 +127,28 @@ public abstract class TreeDisplayBase {
 				if (canChangeContext()) {
 					// Yes!  Are we viewing the trash in the manage
 					// user's dialog? 
-					if (isTrash() && GwtClientHelper.isBinderInfoProfilesRoot(m_ti.getBinderInfo())) {
+					if (isTrash() && m_ti.getBinderInfo().isBinderProfilesRootWS()) {
 						// Yes!  Simply tell the dialog to exit the trash viewer.
 						GwtTeaming.fireEventAsync(
 							new InvokeManageUsersDlgEvent(
 								false));	// false -> Not a trash view.
 					}
+					
+					// No, we aren't viewing the trash in the manage
+					// user's dialog!  Are we viewing the trash in the
+					// manage teams dialog?
+					else if (isTrash() && m_ti.getBinderInfo().isBinderTeamsRootWS()) {
+						// Yes!  Simply tell the dialog to exit the trash viewer.
+						GwtTeaming.fireEventAsync(
+							new InvokeManageTeamsDlgEvent(
+								false));	// false -> Not a trash view.
+					}
+					
 					else {
 						// No, we aren't viewing the trash in the
-						// manage user's dialog!  Select the Binder and
-						// tell the WorkspaceTreeControl to handle it.
+						// manage teams dialog either!  Select the
+						// Binder and tell the WorkspaceTreeControl to
+						// handle it.
 						selectBinder(m_ti);
 						GwtTeaming.fireEvent(
 							new ChangeContextEvent(

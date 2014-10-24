@@ -44,8 +44,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class PerUserRightsInfo
 	implements IsSerializable
 {
-	private PerUserShareRightsInfo m_shareRightsInfo;
-	private boolean m_canAccess;
+	private boolean						m_canAccess;		//
+	private PerEntityShareRightsInfo	m_shareRightsInfo;	//
 
 	
 	/**
@@ -63,7 +63,7 @@ public class PerUserRightsInfo
 	 * Constructor method. 
 	 */
 	public PerUserRightsInfo(
-		PerUserShareRightsInfo shareRightsInfo,
+		PerEntityShareRightsInfo shareRightsInfo,
 		boolean canAccess )
 	{
 		this();
@@ -204,7 +204,7 @@ public class PerUserRightsInfo
 	public void setCanReshare( boolean allow )
 	{
 		if ( m_shareRightsInfo == null )
-			m_shareRightsInfo = new PerUserShareRightsInfo();
+			m_shareRightsInfo = new PerEntityShareRightsInfo();
 		
 		m_shareRightsInfo.setAllowForwarding( allow );
 	}
@@ -215,7 +215,7 @@ public class PerUserRightsInfo
 	public void setCanShareExternal( boolean allow )
 	{
 		if ( m_shareRightsInfo == null )
-			m_shareRightsInfo = new PerUserShareRightsInfo();
+			m_shareRightsInfo = new PerEntityShareRightsInfo();
 		
 		m_shareRightsInfo.setAllowExternal( allow );
 	}
@@ -226,7 +226,7 @@ public class PerUserRightsInfo
 	public void setCanShareInternal( boolean allow )
 	{
 		if ( m_shareRightsInfo == null )
-			m_shareRightsInfo = new PerUserShareRightsInfo();
+			m_shareRightsInfo = new PerEntityShareRightsInfo();
 		
 		m_shareRightsInfo.setAllowInternal( allow );
 	}
@@ -237,7 +237,7 @@ public class PerUserRightsInfo
 	public void setCanSharePublic( boolean allow )
 	{
 		if ( m_shareRightsInfo == null )
-			m_shareRightsInfo = new PerUserShareRightsInfo();
+			m_shareRightsInfo = new PerEntityShareRightsInfo();
 		
 		m_shareRightsInfo.setAllowPublic( allow );
 	}
@@ -248,7 +248,7 @@ public class PerUserRightsInfo
 	public void setCanSharePublicLink( boolean allow )
 	{
 		if ( m_shareRightsInfo == null )
-			m_shareRightsInfo = new PerUserShareRightsInfo();
+			m_shareRightsInfo = new PerEntityShareRightsInfo();
 		
 		m_shareRightsInfo.setAllowPublicLinks( allow );
 	}

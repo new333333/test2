@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
-import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
+import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.UserType;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -51,7 +51,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 	private AccountInfo						m_accountInfo;		//
 	private HomeInfo						m_homeInfo;			//
 	private NetFoldersInfo					m_netFoldersInfo;	//
-	private PerUserShareRightsInfo			m_sharingRights;	//
+	private PerEntityShareRightsInfo		m_sharingRights;	//
 	private ProfileEntryInfoRpcResponseData	m_profile;			//
 	private QuotaInfo						m_quotaInfo;		//
 
@@ -294,7 +294,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 	public boolean                         hasQuota()          {return (null != m_quotaInfo);}
 	public HomeInfo                        getHomeInfo()       {return m_homeInfo;           }
 	public NetFoldersInfo                  getNetFoldersInfo() {return m_netFoldersInfo;     }
-	public PerUserShareRightsInfo          getSharingRights()  {return m_sharingRights;      }
+	public PerEntityShareRightsInfo        getSharingRights()  {return m_sharingRights;      }
 	public ProfileEntryInfoRpcResponseData getProfile()        {return m_profile;            }
 	public QuotaInfo                       getQuotaInfo()      {return m_quotaInfo;          }
 	
@@ -306,7 +306,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 	public void setAccountInfo(    AccountInfo                     accountInfo)    {m_accountInfo    = accountInfo;   }
 	public void setHomeInfo(       HomeInfo                        homeInfo)       {m_homeInfo       = homeInfo;      }
 	public void setNetFoldersInfo( NetFoldersInfo                  netFoldersInfo) {m_netFoldersInfo = netFoldersInfo;}
-	public void setSharingRights(  PerUserShareRightsInfo          sharingRights)  {m_sharingRights  = sharingRights; }
+	public void setSharingRights(  PerEntityShareRightsInfo        sharingRights)  {m_sharingRights  = sharingRights; }
 	public void setProfile(        ProfileEntryInfoRpcResponseData profile)        {m_profile        = profile;       }
 	public void setQuotaInfo(      QuotaInfo                       quotaInfo)      {m_quotaInfo      = quotaInfo;     }
 }

@@ -1577,6 +1577,8 @@ public class EntryMenuPanel extends ToolPanelBase
 				
 			case PROFILE_ROOT:
 			case PROFILE_ROOT_MANAGEMENT:
+			case TEAM_ROOT:
+			case TEAM_ROOT_MANAGEMENT:
 				reply = true;
 				break;
 			}

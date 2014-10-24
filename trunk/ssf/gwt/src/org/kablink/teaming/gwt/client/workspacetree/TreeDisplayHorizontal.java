@@ -829,8 +829,8 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			final TreeInfo prevTI = getPreviousTI(ti);
 			if ((null != prevTI) && (isTrash()  || (BinderType.FOLDER == prevTI.getBinderInfo().getBinderType()))) {
 				// Yes!  Is it for a binder other than the profiles
-				// root?
-				if (!(GwtClientHelper.isBinderInfoProfilesRoot(ti.getBinderInfo()))) {
+				// or team workspaces root?
+				if ((!(ti.getBinderInfo().isBinderProfilesRootWS())) && (!(ti.getBinderInfo().isBinderTeamsRootWS()))) {
 					// Yes!  Add an up button to navigate to it...
 					addUpButton(
 						fp,
