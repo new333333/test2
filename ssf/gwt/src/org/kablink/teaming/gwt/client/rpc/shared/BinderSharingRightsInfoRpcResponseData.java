@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.util.PerBinderShareRightsInfo;
+import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -51,7 +51,7 @@ public class BinderSharingRightsInfoRpcResponseData implements IsSerializable, V
 	private boolean 							m_internalEnabled;		//
 	private boolean								m_publicEnabled;		//
 	private boolean								m_publicLinksEnabled;	//
-	private Map<Long, PerBinderShareRightsInfo>	m_binderRightsMap;		//
+	private Map<Long, PerEntityShareRightsInfo>	m_binderRightsMap;		//
 	
 	/**
 	 * Constructor method. 
@@ -63,7 +63,7 @@ public class BinderSharingRightsInfoRpcResponseData implements IsSerializable, V
 		super();
 		
 		// ...and initialize anything else requiring it.
-		m_binderRightsMap = new HashMap<Long, PerBinderShareRightsInfo>();
+		m_binderRightsMap = new HashMap<Long, PerEntityShareRightsInfo>();
 	}
 	
 	/**
@@ -76,21 +76,21 @@ public class BinderSharingRightsInfoRpcResponseData implements IsSerializable, V
 	public boolean                             isInternalEnabled()            {return m_internalEnabled;              }
 	public boolean                             isPublicEnabled()              {return m_publicEnabled;                }
 	public boolean                             isPublicLinksEnabled()         {return m_publicLinksEnabled;           }
-	public Map<Long, PerBinderShareRightsInfo> getBinderRightsMap()           {return m_binderRightsMap;              }
-	public PerBinderShareRightsInfo            getBinderRights(Long binderId) {return m_binderRightsMap.get(binderId);}
+	public Map<Long, PerEntityShareRightsInfo> getBinderRightsMap()           {return m_binderRightsMap;              }
+	public PerEntityShareRightsInfo            getBinderRights(Long binderId) {return m_binderRightsMap.get(binderId);}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void addBinderRights(      Long binderId, PerBinderShareRightsInfo binderRights)       {m_binderRightsMap.put(binderId, binderRights);}
+	public void addBinderRights(      Long binderId, PerEntityShareRightsInfo binderRights)       {m_binderRightsMap.put(binderId, binderRights);}
 	public void setExternalEnabled(   boolean                                 externalEnabled)    {m_externalEnabled    = externalEnabled;       }
 	public void setForwardingEnabled( boolean                                 forwardingEnabled)  {m_forwardingEnabled  = forwardingEnabled;     }
 	public void setInternalEnabled(   boolean                                 internalEnabled)    {m_internalEnabled    = internalEnabled;       }
 	public void setPublicEnabled(     boolean                                 publicEnabled)      {m_publicEnabled      = publicEnabled;         }
 	public void setPublicLinksEnabled(boolean                                 publicLinksEnabled) {m_publicLinksEnabled = publicLinksEnabled;    }
-	public void setBinderRightsMap(   Map<Long, PerBinderShareRightsInfo>     binderRightsMap)    {m_binderRightsMap    = binderRightsMap;       }
+	public void setBinderRightsMap(   Map<Long, PerEntityShareRightsInfo>     binderRightsMap)    {m_binderRightsMap    = binderRightsMap;       }
 	
 	/**
 	 * Returns true if all of the flags are set and false otherwise.

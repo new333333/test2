@@ -39,8 +39,8 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserZoneShareSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.PerUserRightsInfo;
-import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -73,7 +73,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 	private CheckBox m_canGrantReshareCkbox;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private PerUserRightsInfo m_rightsInfo;
-	private PerUserShareRightsInfo m_zoneShareRights;	// The rights the user has been given at the zone level.
+	private PerEntityShareRightsInfo m_zoneShareRights;	// The rights the user has been given at the zone level.
 	
 	/**
 	 * Callback interface to interact with the "Edit Net Folder Rights" dialog asynchronously after it loads. 
@@ -419,11 +419,11 @@ public class EditNetFolderRightsDlg extends DlgBox
 			@Override
 			public void onSuccess( VibeRpcResponse result )
 			{
-				if ( result.getResponseData() instanceof PerUserShareRightsInfo )
+				if ( result.getResponseData() instanceof PerEntityShareRightsInfo )
 				{
 					ScheduledCommand cmd;
 
-					m_zoneShareRights = (PerUserShareRightsInfo) result.getResponseData();
+					m_zoneShareRights = (PerEntityShareRightsInfo) result.getResponseData();
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{

@@ -786,27 +786,6 @@ public class GwtClientHelper {
     }
     
     /**
-     * Returns true if the given BinderInfo represents the profiles
-     * root binder and false otherwise.
-     * 
-     * @param bi
-     * 
-     * @return
-     */
-    public static boolean isBinderInfoProfilesRoot(BinderInfo bi) {
-    	boolean reply;
-    	reply = bi.isBinderWorkspace();
-    	if (reply) {
-			String pbId = getRequestInfo().getProfileBinderId();
-			reply = GwtClientHelper.hasString(pbId);
-			if (reply) {
-				reply = pbId.equals(bi.getBinderId());
-			}
-    	}
-    	return reply;
-    }
-    
-    /**
      * Converts a GWT Date in the timezone of the browser to a time in
      * GMT.
      * 
@@ -1916,6 +1895,15 @@ public class GwtClientHelper {
 	public static native void jsShowForumEntry(String entryUrl) /*-{
 		$wnd.top.ss_showForumEntry(entryUrl);
 	}-*/;
+	
+	public static void jsShowForumEntryAsync(final String entryUrl) {
+		deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				jsShowForumEntry(entryUrl);
+			}
+		});
+	}
 	
 	/**
 	 * Compares two strings by collation.

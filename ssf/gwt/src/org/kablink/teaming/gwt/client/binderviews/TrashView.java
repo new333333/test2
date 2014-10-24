@@ -208,9 +208,9 @@ public class TrashView extends DataTableFolderViewBase {
 		case ACCESSORIES:
 		case DESCRIPTION:
 		case BINDER_OWNER_AVATAR:
-		case FILTER:  reply =  false;                                                                                              break;
-		case FOOTER:  reply = (super.includePanel(folderPanel) && (!(GwtClientHelper.isBinderInfoProfilesRoot(getFolderInfo())))); break;
-		default:      reply =  super.includePanel(folderPanel);                                                                    break;
+		case FILTER:  reply =  false;                                                                                                                           break;
+		case FOOTER:  reply = (super.includePanel(folderPanel) && (!(getFolderInfo().isBinderProfilesRootWS())) && (!(getFolderInfo().isBinderTeamsRootWS()))); break;
+		default:      reply =  super.includePanel(folderPanel);                                                                                                 break;
 		}
 		
 		return reply;

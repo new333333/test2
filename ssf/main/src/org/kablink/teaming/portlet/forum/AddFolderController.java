@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,6 +47,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Element;
+
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -72,14 +73,17 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
+
 import org.springframework.web.portlet.ModelAndView;
 
 /**
+ * ?
+ * 
  * @author Janet McCann
- *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "unused"})
 public class AddFolderController extends SAbstractController {
+	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -87,6 +91,8 @@ public class AddFolderController extends SAbstractController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Boolean isShortForm = PortletRequestUtils.getBooleanParameter(request, "shortForm", false);				
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");				
+		String addEntryFromIFrame = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "");
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
 			Long cfgType = PortletRequestUtils.getRequiredLongParameter(request, "binderConfigId");
@@ -121,6 +127,7 @@ public class AddFolderController extends SAbstractController {
 				// unintended side effect.
 				final Long newIdCopy = newId;
 				RunWithTemplate.runWith(new RunWithCallback() {
+					@Override
 					public Object runWith() {
 						getBinderModule().setTeamMembershipInherited(newIdCopy, inheritTeamMembership);			
 						return null;
@@ -133,6 +140,7 @@ public class AddFolderController extends SAbstractController {
 					if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 					//Save the team members 
 					RunWithTemplate.runWith(new RunWithCallback() {
+						@Override
 						public Object runWith() {
 							getBinderModule().setTeamMembers(newIdCopy, memberIds);
 							return null;
@@ -169,7 +177,6 @@ public class AddFolderController extends SAbstractController {
 					}
 					Set teamMemberIds = getBinderModule().getTeamMemberIds( newBinder );
 					if (!teamMemberIds.isEmpty()) {
-						@SuppressWarnings("unused")
 						Map status = getAdminModule().sendMail(teamMemberIds, null, emailAddress, null, null,
 								NLT.get("binder.announcement", new Object[] {Utils.getUserTitle(user), newBinder.getTitle()}), 
 								new Description(messageBody, Description.FORMAT_HTML));
@@ -177,10 +184,18 @@ public class AddFolderController extends SAbstractController {
 				}
 			}
 			
-			if (isShortForm || operation.equals("add_team_workspace")) {
-				setupReloadBinder(response, newId);
-			} else {
-				setupReloadOpener(response, newId);
+			if (!addEntryFromIFrame.equals("")) {
+				setupReloadBinder(response, binderId);
+				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
+				setupReloadOpener(response, binderId);
+				response.setRenderParameter(WebKeys.NAMESPACE, namespace);
+			}
+			else {
+				if (isShortForm || operation.equals("add_team_workspace")) {
+					setupReloadBinder(response, newId);
+				} else {
+					setupReloadOpener(response, newId);
+				}
 			}
 			
 		} else if (formData.containsKey("addBtn") && WebHelper.isMethodPost(request)) {
@@ -215,6 +230,7 @@ public class AddFolderController extends SAbstractController {
 		}
 			
 	}
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		

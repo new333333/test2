@@ -152,7 +152,7 @@ import org.kablink.teaming.gwt.client.util.GwtFolderEntryType;
 import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
-import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
+import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
@@ -2813,11 +2813,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_USER_ZONE_SHARE_SETTINGS:
 		{
-			GetUserZoneShareSettingsCmd gussCmd;
-			PerUserShareRightsInfo shareSettings;
-			
-			gussCmd = (GetUserZoneShareSettingsCmd) cmd;
-			shareSettings = GwtShareHelper.getUserZoneShareSettings( this, gussCmd.getPrincipalId() );
+			GetUserZoneShareSettingsCmd gussCmd = (GetUserZoneShareSettingsCmd) cmd;
+			PerEntityShareRightsInfo shareSettings = GwtShareHelper.getUserZoneShareSettings( this, gussCmd.getPrincipalId() );
 			response = new VibeRpcResponse( shareSettings );
 			return response;
 		}

@@ -95,7 +95,7 @@ import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
-import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
+import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
@@ -3584,15 +3584,15 @@ public class GwtShareHelper
 	 * 
 	 * @return
 	 */
-	public static PerUserShareRightsInfo getUserZoneShareSettings(
+	public static PerEntityShareRightsInfo getUserZoneShareSettings(
 		AllModulesInjected ami,
 		Long principalId ) throws GwtTeamingException
 	{
-    	PerUserShareRightsInfo shareRights;
+    	PerEntityShareRightsInfo shareRights;
     	Long zoneId;
     	ZoneConfig zoneConfig;
 
-    	shareRights = new PerUserShareRightsInfo( false, false, false, false, false );
+    	shareRights = new PerEntityShareRightsInfo( false, false, false, false, false );
 
 		zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		zoneConfig = ami.getZoneModule().getZoneConfig( zoneId );

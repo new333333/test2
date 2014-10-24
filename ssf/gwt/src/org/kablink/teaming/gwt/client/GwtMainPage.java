@@ -2678,21 +2678,21 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onAdministrationExit( AdministrationExitEvent event )
 	{
-		onAdministrationExitAsync();
+		onAdministrationExitAsync( event.isSkipNavigationOnExit() );
 	}
 	
 	/*
 	 * Asynchronously handles AdministrationExitEvent's received by
 	 * this class.
 	 */
-	private void onAdministrationExitAsync()
+	private void onAdministrationExitAsync( final boolean skipNavigation )
 	{
 		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				onAdministrationExitNow();
+				onAdministrationExitNow( skipNavigation );
 			}// end execute()
 		} );
 	}
@@ -2701,7 +2701,7 @@ public class GwtMainPage extends ResizeComposite
 	 * Synchronously handles AdministrationExitEvent's received by
 	 * this class.
 	 */
-	private void onAdministrationExitNow()
+	private void onAdministrationExitNow( boolean skipNavigation )
 	{
 		// Hide the administration console and its menu.
 		AdminControl.hideControl( m_adminControl );
@@ -2718,7 +2718,8 @@ public class GwtMainPage extends ResizeComposite
 		{
 			m_contentLayoutPanel.showContentControl();
 		}
-		else {
+		else if ( ! skipNavigation )
+		{
 			CollectionType ct;
 			if      ( m_requestInfo.isGuestUser()    ) ct = CollectionType.SHARED_PUBLIC;
 			else if ( m_requestInfo.isExternalUser() ) ct = CollectionType.SHARED_WITH_ME;
@@ -3187,7 +3188,7 @@ public class GwtMainPage extends ResizeComposite
 		if (isAdminActive()) {
 			// ...close it as we won't be in the admin console if
 			// ...we change contexts.
-			onAdministrationExitNow();
+			onAdministrationExitNow( true );
 		}			
 
 		m_contentLayoutPanel.showContentControl();

@@ -44,9 +44,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetUserSharingRightsInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.SetUserSharingRightsInfoCmd.CombinedPerUserShareRightsInfo;
+import org.kablink.teaming.gwt.client.util.CombinedPerEntityShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
+import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.ProgressDlg;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -78,7 +78,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	private InlineLabel								m_progressIndicator;	// Text under the progress bar that displays what's going on.
 	private int										m_totalDone;			// Tracks a running count of users whose sharing rights we've set.
 	private List<Long>								m_userIds;				// The List<Long> of user IDs whose sharing rights are being set.
-	private PerUserShareRightsInfo					m_singleUserRights;		// If the sharing rights are being set for a single user, this contains their current rights setting when the dialog is invoked. 
+	private PerEntityShareRightsInfo				m_singleUserRights;		// If the sharing rights are being set for a single user, this contains their current rights setting when the dialog is invoked. 
 	private ProgressBar								m_progressBar;			// Progress bar displayed while saving the share rights.
 	private UIObject								m_showRelativeTo;		// UIObject to show the dialog relative to.  null -> Center the dialog.
 	private UserSharingRightsInfoRpcResponseData	m_rightsInfo;			// Information about sharing rights available and to be set.
@@ -135,16 +135,16 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		if (null != text) {
 			il.getElement().setInnerText(text);
 		}
-		il.addStyleName(                   "vibe-userShareRightsDlg-header"          );
-		fcf.addStyleName(     row, column, "vibe-userShareRightsDlg-headerCell"      );
+		il.addStyleName(                   "vibe-shareRightsDlg-header"          );
+		fcf.addStyleName(     row, column, "vibe-shareRightsDlg-headerCell"      );
 		if (COLUMN_HEADER != column)
-		     fcf.addStyleName(row, column, "vibe-userShareRightsDlg-headerCellCenter");
-		else fcf.addStyleName(row, column, "vibe-userShareRightsDlg-headerCellLeft"  );
+		     fcf.addStyleName(row, column, "vibe-shareRightsDlg-headerCellCenter");
+		else fcf.addStyleName(row, column, "vibe-shareRightsDlg-headerCellLeft"  );
 		if (ROW_HEADER_2 == row) {
-		     fcf.addStyleName(row, column, "vibe-userShareRightsDlg-headerCell2"     );
+		     fcf.addStyleName(row, column, "vibe-shareRightsDlg-headerCell2"     );
 		}
 		else if (ROW_SPACER == row) {
-		     fcf.addStyleName(row, column, "vibe-userShareRightsDlg-headerCellSpacer");
+		     fcf.addStyleName(row, column, "vibe-shareRightsDlg-headerCellSpacer");
 		}
 		ft.setWidget(         row, column, il);
 	}
@@ -162,8 +162,8 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		String		rbId    = getRBId(rbGroup, column);
 		RadioButton	rb      = new RadioButton(rbGroup);
 		rb.getElement().setId(rbId);
-		rb.addStyleName(              "vibe-userShareRightsDlg-radio"    );
-		fcf.addStyleName(row, column, "vibe-userShareRightsDlg-radioCell");
+		rb.addStyleName(              "vibe-shareRightsDlg-radio"    );
+		fcf.addStyleName(row, column, "vibe-shareRightsDlg-radioCell");
 		ft.setWidget(    row, column, rb);
 		rb.setValue(checked);
 	}
@@ -173,10 +173,10 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	 */
 	private void addRowHeaderCell(FlexTable ft, FlexCellFormatter fcf, int row, int column, String text) {
 		InlineLabel il = new InlineLabel(text);
-		il.addStyleName(                  "vibe-userShareRightsDlg-row"           );
-		fcf.addStyleName(    row, column, "vibe-userShareRightsDlg-rowCell"       );
+		il.addStyleName(                  "vibe-shareRightsDlg-row"           );
+		fcf.addStyleName(    row, column, "vibe-shareRightsDlg-rowCell"       );
 		if ((ROW_FORWARDING == row) && (COLUMN_HEADER == column)) {
-			fcf.addStyleName(row, column, "vibe-userShareRightsDlg-rowCellForward");
+			fcf.addStyleName(row, column, "vibe-shareRightsDlg-rowCellForward");
 		}
 		ft.setWidget(        row, column, il);
 	}
@@ -216,13 +216,13 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	}
 
 	/*
-	 * Returns a CombinedPerUserShareRightsInfo object that reflects
+	 * Returns a CombinedPerEntityShareRightsInfo object that reflects
 	 * the current selections in the dialog.
 	 */
-	private CombinedPerUserShareRightsInfo collectSharingRights() {
+	private CombinedPerEntityShareRightsInfo collectSharingRights() {
 		// Create objects for the set and value flags.
-		PerUserShareRightsInfo setFlags   = new PerUserShareRightsInfo();
-		PerUserShareRightsInfo valueFlags = new PerUserShareRightsInfo();
+		PerEntityShareRightsInfo setFlags   = new PerEntityShareRightsInfo();
+		PerEntityShareRightsInfo valueFlags = new PerEntityShareRightsInfo();
 
 		// Initialize the external set and value flags.
 		boolean hasUnchanged = (null == m_singleUserRights);
@@ -260,10 +260,10 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		     setFlags.setAllowPublicLinks(!(isRBChecked(ROW_PUBLIC_LINKS, COLUMN_NO_CHANGE)));
 		else setFlags.setAllowPublicLinks(isRBChecked != m_singleUserRights.isAllowPublicLinks());
 
-		// Finally, return a CombinderPerUserShareRightsInfo object
+		// Finally, return a CombinderPerEntityShareRightsInfo object
 		// with the set and value flags.
 		return
-			new CombinedPerUserShareRightsInfo(
+			new CombinedPerEntityShareRightsInfo(
 				setFlags,
 				valueFlags);
 	}
@@ -281,7 +281,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	public Panel createContent(Object callbackData) {
 		// Create and return a panel to hold the dialog's content.
 		m_vp = new VibeVerticalPanel(null, null);
-		m_vp.addStyleName("vibe-userShareRightsDlg-panel");
+		m_vp.addStyleName("vibe-shareRightsDlg-panel");
 		return m_vp;
 	}
 
@@ -299,7 +299,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	@Override
 	public boolean editSuccessful(Object callbackData) {
 		// Collect the sharing rights to be set from the dialog...
-		CombinedPerUserShareRightsInfo sharingRights = collectSharingRights();
+		CombinedPerEntityShareRightsInfo sharingRights = collectSharingRights();
 		
 		// ...and start the operation.
 		List<Long>		sourceUserIds   = cloneUserIds(m_userIds);	// We use a clone because we manipulate the list's contents during the operation.
@@ -456,7 +456,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 
 		// ...create the table containing the dialog's content... 
 		FlexTable ft = new VibeFlexTable();
-		ft.addStyleName("vibe-userShareRightsDlg-table");
+		ft.addStyleName("vibe-shareRightsDlg-table");
 		m_vp.add(ft);
 		FlexCellFormatter fcf = ft.getFlexCellFormatter();
 		ft.setCellPadding(4);
@@ -551,23 +551,23 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		if (0 < noZoneSettings) {
 			// ...add a note telling the user.
 			Label l = new Label("* " + m_messages.userShareRightsDlgLabel_NoZoneSettings());
-			l.addStyleName("vibe-userShareRightsDlg-noZoneSettings");
+			l.addStyleName("vibe-shareRightsDlg-noZoneSettings");
 			m_vp.add(l);
 		}
 		
 		// ...define a progress bar...
 		m_progressBar = new ProgressBar(0, m_userIds.size());
-		m_progressBar.addStyleName("vibe-userShareRightsDlg-progressBar");
+		m_progressBar.addStyleName("vibe-shareRightsDlg-progressBar");
 		m_vp.add(m_progressBar);
 		m_progressBar.setVisible(false);
 		
 		m_progressPanel = new VibeFlowPanel();
-		m_progressPanel.addStyleName("vibe-userShareRightsDlg-progressPanel");
+		m_progressPanel.addStyleName("vibe-shareRightsDlg-progressPanel");
 		m_vp.add(m_progressPanel);
 		m_progressPanel.setVisible(false);
-		m_progressPanel.add(buildSpinnerImage("vibe-userShareRightsDlg-progressSpinner"));
+		m_progressPanel.add(buildSpinnerImage("vibe-shareRightsDlg-progressSpinner"));
 		m_progressIndicator = new InlineLabel("");
-		m_progressIndicator.addStyleName("vibe-userShareRightsDlg-progressLabel");
+		m_progressIndicator.addStyleName("vibe-shareRightsDlg-progressLabel");
 		m_progressPanel.add(m_progressIndicator);
 
 		// ...and finally, make sure the buttons are enabled and show

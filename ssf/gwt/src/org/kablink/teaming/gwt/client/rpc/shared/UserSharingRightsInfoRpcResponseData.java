@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
+import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -51,7 +51,7 @@ public class UserSharingRightsInfoRpcResponseData implements IsSerializable, Vib
 	private boolean 							m_internalEnabled;		//
 	private boolean								m_publicEnabled;		//
 	private boolean								m_publicLinksEnabled;	//
-	private Map<Long, PerUserShareRightsInfo>	m_userRightsMap;		//
+	private Map<Long, PerEntityShareRightsInfo>	m_userRightsMap;		//
 	
 	/**
 	 * Constructor method. 
@@ -63,7 +63,7 @@ public class UserSharingRightsInfoRpcResponseData implements IsSerializable, Vib
 		super();
 		
 		// ...and initialize anything else requiring it.
-		m_userRightsMap = new HashMap<Long, PerUserShareRightsInfo>();
+		m_userRightsMap = new HashMap<Long, PerEntityShareRightsInfo>();
 	}
 	
 	/**
@@ -71,26 +71,26 @@ public class UserSharingRightsInfoRpcResponseData implements IsSerializable, Vib
 	 * 
 	 * @return
 	 */
-	public boolean                           isExternalEnabled()        {return m_externalEnabled;          }
-	public boolean                           isForwardingEnabled()      {return m_forwardingEnabled;        }
-	public boolean                           isInternalEnabled()        {return m_internalEnabled;          }
-	public boolean                           isPublicEnabled()          {return m_publicEnabled;            }
-	public boolean                           isPublicLinksEnabled()     {return m_publicLinksEnabled;       }
-	public Map<Long, PerUserShareRightsInfo> getUserRightsMap()         {return m_userRightsMap;            }
-	public PerUserShareRightsInfo            getUserRights(Long userId) {return m_userRightsMap.get(userId);}
+	public boolean                             isExternalEnabled()        {return m_externalEnabled;          }
+	public boolean                             isForwardingEnabled()      {return m_forwardingEnabled;        }
+	public boolean                             isInternalEnabled()        {return m_internalEnabled;          }
+	public boolean                             isPublicEnabled()          {return m_publicEnabled;            }
+	public boolean                             isPublicLinksEnabled()     {return m_publicLinksEnabled;       }
+	public Map<Long, PerEntityShareRightsInfo> getUserRightsMap()         {return m_userRightsMap;            }
+	public PerEntityShareRightsInfo            getUserRights(Long userId) {return m_userRightsMap.get(userId);}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void addUserRights(        Long userId, PerUserShareRightsInfo userRights)         {m_userRightsMap.put(userId, userRights);  }
-	public void setExternalEnabled(   boolean                             externalEnabled)    {m_externalEnabled    = externalEnabled;   }
-	public void setForwardingEnabled( boolean                             forwardingEnabled)  {m_forwardingEnabled  = forwardingEnabled; }
-	public void setInternalEnabled(   boolean                             internalEnabled)    {m_internalEnabled    = internalEnabled;   }
-	public void setPublicEnabled(     boolean                             publicEnabled)      {m_publicEnabled      = publicEnabled;     }
-	public void setPublicLinksEnabled(boolean                             publicLinksEnabled) {m_publicLinksEnabled = publicLinksEnabled;}
-	public void setUserRightsMap(     Map<Long, PerUserShareRightsInfo>   userRightsMap)      {m_userRightsMap      = userRightsMap;     }
+	public void addUserRights(        Long userId, PerEntityShareRightsInfo userRights)         {m_userRightsMap.put(userId, userRights);  }
+	public void setExternalEnabled(   boolean                               externalEnabled)    {m_externalEnabled    = externalEnabled;   }
+	public void setForwardingEnabled( boolean                               forwardingEnabled)  {m_forwardingEnabled  = forwardingEnabled; }
+	public void setInternalEnabled(   boolean                               internalEnabled)    {m_internalEnabled    = internalEnabled;   }
+	public void setPublicEnabled(     boolean                               publicEnabled)      {m_publicEnabled      = publicEnabled;     }
+	public void setPublicLinksEnabled(boolean                               publicLinksEnabled) {m_publicLinksEnabled = publicLinksEnabled;}
+	public void setUserRightsMap(     Map<Long, PerEntityShareRightsInfo>   userRightsMap)      {m_userRightsMap      = userRightsMap;     }
 	
 	/**
 	 * Returns true if all of the flags are set and false otherwise.

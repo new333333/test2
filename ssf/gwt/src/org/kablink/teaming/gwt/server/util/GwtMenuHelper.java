@@ -1808,6 +1808,7 @@ public class GwtMenuHelper {
 			url.setParameter(WebKeys.ACTION,        WebKeys.ACTION_ADD_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(ws.getId()));
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
+			url.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
 			
 			ToolbarItem addTBI = new ToolbarItem(ADD_WORKSPACE);
 			markTBIPopup(addTBI                             );
