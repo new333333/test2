@@ -74,6 +74,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.MenuIds;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
@@ -3450,7 +3451,58 @@ public class GwtMenuHelper {
 						actionToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 					}
 					
+					// Are we running other than Filr?
 					if (!(Utils.checkIfFilr())) {
+						// Yes!  Is team management supported on this
+						// workspace?
+						TeamManagementInfo m_tmi = getTeamManagementInfo(bs, request, String.valueOf(wsId));
+						if ((null != m_tmi) && m_tmi.isTeamManagementEnabled()) {
+							// Yes!  Add the team management items...
+							boolean addTeamSeparator = false;
+							ToolbarItem teamTBI;
+							if (m_tmi.isViewAllowed()) {
+								teamTBI = new ToolbarItem(MenuIds.MANAGE_VIEW_TEAM);
+								markTBITitle(teamTBI, "team.viewTeamMembership");
+								markTBIEvent(teamTBI, TeamingEvents.VIEW_CURRENT_BINDER_TEAM_MEMBERS);
+								actionToolbar.addNestedItem(teamTBI);
+								addTeamSeparator = true;
+							}
+							if (m_tmi.isManageAllowed()) {
+								teamTBI = new ToolbarItem(MenuIds.MANAGE_EDIT_TEAM);
+								markTBITitle(teamTBI, "team.editTeamMembership");
+								teamTBI.setUrl(m_tmi.getManageUrl());
+								teamTBI.addQualifier("popup", "true");
+								teamTBI.addQualifier("popupHeight", String.valueOf(TeamManagementInfo.POPUP_HEIGHT));
+								teamTBI.addQualifier("popupWidth",  String.valueOf(TeamManagementInfo.POPUP_WIDTH ));
+								actionToolbar.addNestedItem(teamTBI);
+								addTeamSeparator = true;
+							}
+							if (m_tmi.isTeamMeetingAllowed()) {
+								teamTBI = new ToolbarItem(MenuIds.MANAGE_MEET_TEAM);
+								markTBITitle(teamTBI, "team.startTeamConference");
+								markTBIUrl(  teamTBI, m_tmi.getTeamMeetingUrl());
+								teamTBI.addQualifier("popup", "true");
+								teamTBI.addQualifier("popupHeight", String.valueOf(TeamManagementInfo.POPUP_HEIGHT));
+								teamTBI.addQualifier("popupWidth",  String.valueOf(TeamManagementInfo.POPUP_WIDTH ));
+								actionToolbar.addNestedItem(teamTBI);
+								addTeamSeparator = true;
+							}
+							if (m_tmi.isSendMailAllowed()) {
+								teamTBI = new ToolbarItem(MenuIds.MANAGE_MAIL_TEAM);
+								markTBITitle(teamTBI, "team.emailTeamMembership");
+								markTBIUrl(  teamTBI, m_tmi.getSendMailUrl());
+								teamTBI.addQualifier("popup", "true");
+								teamTBI.addQualifier("popupHeight", String.valueOf(TeamManagementInfo.POPUP_HEIGHT));
+								teamTBI.addQualifier("popupWidth",  String.valueOf(TeamManagementInfo.POPUP_WIDTH ));
+								actionToolbar.addNestedItem(teamTBI);
+								addTeamSeparator = true;
+							}
+							if (addTeamSeparator) {
+								// ...and add a separator after them.
+								actionToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
+							}
+						}
+						
 						boolean isFavorite = false;
 						List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);
 						for (FavoriteInfo favorite:  favorites) {

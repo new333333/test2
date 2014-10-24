@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
+import org.kablink.teaming.gwt.client.event.CheckManageDlgActiveEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
 import org.kablink.teaming.gwt.client.event.InvokeBinderShareRightsDlgEvent;
@@ -80,6 +81,7 @@ public class ManageTeamsDlg extends DlgBox
 	implements ViewReady,
 		// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler,
+		CheckManageDlgActiveEvent.Handler,
 		FullUIReloadEvent.Handler,
 		GetManageTitleEvent.Handler,
 		InvokeBinderShareRightsDlgEvent.Handler,
@@ -111,6 +113,7 @@ public class ManageTeamsDlg extends DlgBox
 	// this array is used.
 	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
 		TeamingEvents.ADMINISTRATION_EXIT,
+		TeamingEvents.CHECK_MANAGE_DLG_ACTIVE,
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.GET_MANAGE_TITLE,
 		TeamingEvents.INVOKE_BINDER_SHARE_RIGHTS_DLG,
@@ -267,6 +270,18 @@ public class ManageTeamsDlg extends DlgBox
 		setViewSizeIfReady();
 	}
 	
+	/**
+	 * Handles CheckManageDlgActiveEvent's received by this class.
+	 * 
+	 * Implements the CheckManageDlgActiveEvent.Handler.onCheckManageDlgActive() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCheckManageDlgActive(CheckManageDlgActiveEvent event) {
+		event.getManageDlgActiveCallback().manageDlgActive(true);
+	}
+
 	/**
 	 * Called when the manage teams dialog is detached.
 	 * 

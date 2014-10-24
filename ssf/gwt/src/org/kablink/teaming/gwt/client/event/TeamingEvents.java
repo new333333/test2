@@ -283,7 +283,7 @@ public enum TeamingEvents implements IsSerializable {
 
 	CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,			// Changes the Entry Type of the Selected Entities.
 	CHANGE_FAVORITE_STATE,							// Changes the favorites state of a binder.
-	CHECK_MANAGE_USERS_ACTIVE,						// Event to detect if the the manage users facility is active.
+	CHECK_MANAGE_DLG_ACTIVE,						// Event to detect if the administration console's manage facilities (i.e., users or teams) is active.
 	CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES,	// Clears the scheduled wipe state from the selected mobile devices.
 	CLEAR_SELECTED_USERS_ADHOC_FOLDERS,				// Clears the adHoc folder setting for the Selected Users so they revert to the zone setting.
 	CLEAR_SELECTED_USERS_DOWNLOAD,					// Clears the download   setting for the Selected Users so they revert to the zone setting.

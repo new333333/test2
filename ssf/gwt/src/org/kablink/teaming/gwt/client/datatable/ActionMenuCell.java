@@ -78,6 +78,7 @@ import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.UnlockSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.event.ViewCurrentBinderTeamMembersEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
 import org.kablink.teaming.gwt.client.event.ZipAndDownloadFolderEvent;
@@ -105,6 +106,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
@@ -352,13 +354,32 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 				public void execute() {
 					// Does the toolbar item contain a URL to launch?
 					if (hasSimpleUrl) {
-						// Yes!  Launch it in the content frame.
-						OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-							simpleUrl,
-							Instigator.GOTO_CONTENT_URL);
+						// Yes!  Are we supposed to launch it in a
+						// popup window?
+						String popup = simpleTBI.getQualifierValue("popup");
+						if (GwtClientHelper.hasString(popup) && popup.equalsIgnoreCase("true")) {
+							// Yes!  Launch it in one.
+							int popupHeight;
+							try {popupHeight = Integer.parseInt(simpleTBI.getQualifierValue("popupHeight"));}
+							catch (Exception e) {popupHeight = Window.getClientHeight();}
+							
+							int popupWidth;
+							try {popupWidth = Integer.parseInt(simpleTBI.getQualifierValue("popupWidth"));}
+							catch (Exception e) {popupWidth = Window.getClientWidth();}
+							
+							GwtClientHelper.jsLaunchUrlInWindow(simpleUrl, "_blank", popupHeight, popupWidth);
+						}
 						
-						if (GwtClientHelper.validateOSBI(osbInfo)) {
-							GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+						else {
+							// No, it's not for a popup window.  Launch
+							// it in the content frame.
+							OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+								simpleUrl,
+								Instigator.GOTO_CONTENT_URL);
+							
+							if (GwtClientHelper.validateOSBI(osbInfo)) {
+								GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+							}
 						}
 					}
 					
@@ -440,6 +461,10 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 						
 						case MARK_FOLDER_CONTENTS_UNREAD:
 							event = new MarkFolderContentsUnreadEvent(eid.getEntityId(), binderId);
+							break;
+							
+						case VIEW_CURRENT_BINDER_TEAM_MEMBERS:
+							event = new ViewCurrentBinderTeamMembersEvent(eid.getEntityId());
 							break;
 						
 						case ZIP_AND_DOWNLOAD_FOLDER:

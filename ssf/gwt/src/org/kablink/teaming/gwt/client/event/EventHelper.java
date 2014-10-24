@@ -526,12 +526,12 @@ public class EventHelper {
 				}
 				break;
 			
-			case CHECK_MANAGE_USERS_ACTIVE:
-				// An CheckManageUsersActiveEvent!  Can the event
-				// handler we were given handle that?
-				if (eventHandler instanceof CheckManageUsersActiveEvent.Handler) {
+			case CHECK_MANAGE_DLG_ACTIVE:
+				// An CheckManageDlgActiveEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof CheckManageDlgActiveEvent.Handler) {
 					handlerNotDefined = false;
-					registrationHandler = CheckManageUsersActiveEvent.registerEvent(eventBus, ((CheckManageUsersActiveEvent.Handler) eventHandler));
+					registrationHandler = CheckManageDlgActiveEvent.registerEvent(eventBus, ((CheckManageDlgActiveEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -3024,7 +3024,7 @@ public class EventHelper {
 			
 			case CHANGE_ENTRY_TYPE_SELECTED_ENTITIES:          hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntitiesEvent.Handler);        break;
 			case CHANGE_FAVORITE_STATE:                        hasHandler = (eventHandler instanceof ChangeFavoriteStateEvent.Handler);                    break;
-			case CHECK_MANAGE_USERS_ACTIVE:                    hasHandler = (eventHandler instanceof CheckManageUsersActiveEvent.Handler);                 break;
+			case CHECK_MANAGE_DLG_ACTIVE:                      hasHandler = (eventHandler instanceof CheckManageDlgActiveEvent.Handler);                   break;
 			case CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES: hasHandler = (eventHandler instanceof ClearScheduledWipeSelectedMobileDevicesEvent.Handler);break;
 			case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:           hasHandler = (eventHandler instanceof ClearSelectedUsersAdHocFoldersEvent.Handler);         break;
 			case CLEAR_SELECTED_USERS_DOWNLOAD:                hasHandler = (eventHandler instanceof ClearSelectedUsersDownloadEvent.Handler);             break;
