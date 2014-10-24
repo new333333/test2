@@ -575,11 +575,11 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * Asynchronously runs the given instance of the binder share
 	 * rights dialog.
 	 */
-	private static void runDlgAsync(final BinderShareRightsDlg usrDlg, final List<Long> binderIds, final UIObject showRelativeTo) {
+	private static void runDlgAsync(final BinderShareRightsDlg bsrDlg, final String caption, final List<Long> binderIds, final UIObject showRelativeTo) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				usrDlg.runDlgNow(binderIds, showRelativeTo);
+				bsrDlg.runDlgNow(caption, binderIds, showRelativeTo);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -589,13 +589,13 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * Synchronously runs the given instance of the binder share rights
 	 * dialog.
 	 */
-	private void runDlgNow(List<Long> binderIds, UIObject showRelativeTo) {
+	private void runDlgNow(String caption, List<Long> binderIds, UIObject showRelativeTo) {
 		// Store the parameter...
 		m_binderIds      = binderIds;
 		m_showRelativeTo = showRelativeTo;
 		
 		// ...update the dialog's caption...
-		setCaption(m_messages.binderShareRightsDlgHeader(m_binderIds.size()));
+		setCaption(caption);
 
 		// ...and populate the dialog.
 		loadPart1Async();
@@ -813,7 +813,7 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * dialog asynchronously after it loads. 
 	 */
 	public interface BinderShareRightsDlgClient {
-		void onSuccess(BinderShareRightsDlg usrDlg);
+		void onSuccess(BinderShareRightsDlg bsrDlg);
 		void onUnavailable();
 	}
 
@@ -823,35 +823,36 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 */
 	private static void doAsyncOperation(
 			// Parameters to create an instance of the dialog.
-			final BinderShareRightsDlgClient usrDlgClient,
+			final BinderShareRightsDlgClient bsrDlgClient,
 			
 			// Parameters to initialize and show the dialog.
-			final BinderShareRightsDlg	usrDlg,
+			final BinderShareRightsDlg	bsrDlg,
+			final String				caption,
 			final List<Long>			binderIds,
 			final UIObject				showRelativeTo) {
 		GWT.runAsync(BinderShareRightsDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(GwtTeaming.getMessages().codeSplitFailure_BinderShareRightsDlg());
-				if (null != usrDlgClient) {
-					usrDlgClient.onUnavailable();
+				if (null != bsrDlgClient) {
+					bsrDlgClient.onUnavailable();
 				}
 			}
 
 			@Override
 			public void onSuccess() {
 				// Is this a request to create a dialog?
-				if (null != usrDlgClient) {
+				if (null != bsrDlgClient) {
 					// Yes!  Create it and return it via the callback.
-					BinderShareRightsDlg usrDlg = new BinderShareRightsDlg();
-					usrDlgClient.onSuccess(usrDlg);
+					BinderShareRightsDlg bsrDlg = new BinderShareRightsDlg();
+					bsrDlgClient.onSuccess(bsrDlg);
 				}
 				
 				else {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(usrDlg, binderIds, showRelativeTo);
+					runDlgAsync(bsrDlg, caption, binderIds, showRelativeTo);
 				}
 			}
 		});
@@ -861,31 +862,33 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * Loads the BinderShareRightsDlg split point and returns an instance of it
 	 * via the callback.
 	 * 
-	 * @param usrDlgClient
+	 * @param bsrDlgClient
 	 */
-	public static void createAsync(BinderShareRightsDlgClient usrDlgClient) {
-		doAsyncOperation(usrDlgClient, null, null, null);
+	public static void createAsync(BinderShareRightsDlgClient bsrDlgClient) {
+		doAsyncOperation(bsrDlgClient, null, null, null, null);
 	}
 	
 	/**
 	 * Initializes and shows the binder share rights dialog.
 	 * 
-	 * @param usrDlg
+	 * @param bsrDlg
+	 * @param caption
 	 * @param binderIds
 	 * @param showRelativeTo
 	 */
-	public static void initAndShow(BinderShareRightsDlg usrDlg, List<Long> binderIds, UIObject showRelativeTo) {
-		doAsyncOperation(null, usrDlg, binderIds, showRelativeTo);
+	public static void initAndShow(BinderShareRightsDlg bsrDlg, String caption, List<Long> binderIds, UIObject showRelativeTo) {
+		doAsyncOperation(null, bsrDlg, caption, binderIds, showRelativeTo);
 	}
 	
 	/**
 	 * Initializes and shows the binder share rights dialog.
 	 * 
-	 * @param usrDlg
+	 * @param bsrDlg
+	 * @param caption
 	 * @param binderIds
 	 */
-	public static void initAndShow(BinderShareRightsDlg usrDlg, List<Long> binderIds) {
+	public static void initAndShow(BinderShareRightsDlg bsrDlg, String caption, List<Long> binderIds) {
 		// Always use the initial form of the method.
-		initAndShow(usrDlg, binderIds, null);
+		initAndShow(bsrDlg, caption, binderIds, null);
 	}
 }

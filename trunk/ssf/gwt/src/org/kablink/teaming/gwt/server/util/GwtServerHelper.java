@@ -92,11 +92,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -194,6 +196,7 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
+import org.kablink.teaming.gwt.client.rpc.shared.BinderSharingRightsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClipboardUsersRpcResponseData.ClipboardUser;
@@ -219,6 +222,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcRe
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersStateRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SetBinderSharingRightsInfoCmd.CombinedPerBinderShareRightsInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUserSharingRightsInfoCmd.CombinedPerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
@@ -256,6 +260,7 @@ import org.kablink.teaming.gwt.client.util.GwtMobileOpenInSetting;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
+import org.kablink.teaming.gwt.client.util.PerBinderShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
@@ -3563,6 +3568,104 @@ public class GwtServerHelper {
 		}
 		
 		return reply;
+	}
+	
+	/**
+	 * Returns sharing rights information about the system and a list
+	 * of binders, based on their IDs.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BinderSharingRightsInfoRpcResponseData getBinderSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, List<Long> binderIds) throws GwtTeamingException {
+		try {
+			// Create the BinderSharingRightsInfoRpcResponseData to return.
+			BinderSharingRightsInfoRpcResponseData reply = new BinderSharingRightsInfoRpcResponseData();
+
+			// Are there any work area function memberships configured
+			// on the zone?
+	    	ZoneConfig							zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+			AdminModule							am         = bs.getAdminModule();
+			BinderModule						bm         = bs.getBinderModule();
+			List<WorkAreaFunctionMembership>	wafmList   = am.getWorkAreaFunctionMemberships(zoneConfig);
+			if (MiscUtil.hasItems(wafmList)) {
+				// Yes!  Scan them.
+				for (WorkAreaFunctionMembership wafm:  wafmList) {
+					// Is this an internal function that has members?
+					String fiId = am.getFunction(wafm.getFunctionId()).getInternalId();
+					if (MiscUtil.hasString(fiId) && MiscUtil.hasItems(wafm.getMemberIds())) {
+						// Yes!  Check it for being one of the sharing
+						// functions.
+						if      (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID)) reply.setExternalEnabled(   true);
+						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_FORWARD_SHARING_INTERNALID))  reply.setForwardingEnabled( true);
+						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_INTERNAL_SHARING_INTERNALID)) reply.setInternalEnabled(   true);
+						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID))   reply.setPublicEnabled(     true);
+						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_LINK_SHARING_INTERNALID))     reply.setPublicLinksEnabled(true);
+
+						// Once we set all the flags...
+						if (reply.allFlagsSet()) {
+							// ...we can quit looking.
+							break;
+						}
+					}
+				}
+			}
+			
+			// We're we given a single binder whose sharing rights are
+			// being requested?
+			if ((null != binderIds) && (1 == binderIds.size())) {
+				// Yes!  Can we resolve that to a Binder?
+				Set<Binder>					bList = bm.getBinders(binderIds);
+				PerBinderShareRightsInfo	psri  = new PerBinderShareRightsInfo();
+				if (MiscUtil.hasItems(bList)) {
+					Binder b = bList.iterator().next();
+					// Yes!  Are there any work area function
+					// memberships configured on that binder?
+					wafmList = am.getWorkAreaFunctionMemberships(b);
+					if (MiscUtil.hasItems(wafmList)) {
+						// Yes!  Scan them.
+						for (WorkAreaFunctionMembership wafm:  wafmList) {
+							// Is this an internal function
+							// that has owner as a member?
+							String		fiId      = am.getFunction(wafm.getFunctionId()).getInternalId();
+							Set<Long>	memberIds = wafm.getMemberIds();
+							if (MiscUtil.hasString(fiId) && MiscUtil.hasItems(memberIds) && memberIds.contains(ObjectKeys.OWNER_USER_ID)) {
+								// Yes!  Check for it being one
+								// of the sharing functions.
+								if      (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID))     psri.setAllowExternal(   true);
+								else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID))      psri.setAllowForwarding( true);
+								else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID))     psri.setAllowInternal(   true);
+								else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID))       psri.setAllowPublic(     true);
+								else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_LINKS_INTERNALID)) psri.setAllowPublicLinks(true);
+								
+								// Once we set all the flags...
+								if (psri.allFlagsSet()) {
+									// ...we can quit looking.
+									break;
+								}
+							}
+						}
+					}
+				}
+
+				// Add the per binder sharing rights to the reply.
+				reply.addBinderRights(binderIds.get(0), psri);
+			}
+
+			// If we get here, reply refers to the
+			// BinderSharingRightsInfoRpcResponseData containing the
+			// requested sharing rights information.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}		
 	}
 	
 	/**
@@ -8772,6 +8875,7 @@ public class GwtServerHelper {
 			// on the zone?
 	    	ZoneConfig							zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
 			AdminModule							am         = bs.getAdminModule();
+			WorkspaceModule						wm         = bs.getWorkspaceModule();
 			List<WorkAreaFunctionMembership>	wafmList   = am.getWorkAreaFunctionMemberships(zoneConfig);
 			if (MiscUtil.hasItems(wafmList)) {
 				// Yes!  Scan them.
@@ -8824,7 +8928,7 @@ public class GwtServerHelper {
 							// Yes, that user has a workspace ID!  Are
 							// there any work area function memberships
 							// configured on that workspace?
-							wafmList = am.getWorkAreaFunctionMemberships(bs.getWorkspaceModule().getWorkspace(wsId));
+							wafmList = am.getWorkAreaFunctionMemberships(wm.getWorkspace(wsId));
 							if (MiscUtil.hasItems(wafmList)) {
 								// Yes!  Scan them.
 								for (WorkAreaFunctionMembership wafm:  wafmList) {
@@ -11692,6 +11796,99 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Sets the sharing rights information on a collection of binders. 
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderIds
+	 * @param sharingRights
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData setBinderSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, List<Long> binderIds, CombinedPerBinderShareRightsInfo sharingRights) throws GwtTeamingException {
+		try {
+			// Create the ErrorListRpcResponseData to return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+
+			// Access the modules we'll need to set the rights.
+			AdminModule  am = bs.getAdminModule();
+			BinderModule bm = bs.getBinderModule();
+			
+			// We're we given any share rights to set?
+			if (MiscUtil.hasItems(binderIds) && (null != sharingRights)) {
+				// Yes!  Are there any rights actually being set?
+				PerBinderShareRightsInfo setFlags = sharingRights.getSetFlags();
+				if (!(setFlags.anyFlagsSet())) {
+					// No!  Bail, there's nothing to do.
+					return reply;
+				}
+				
+				// Get the right values to be set.
+				PerBinderShareRightsInfo valueFlags = sharingRights.getValueFlags();
+				
+				// Access the Function's we may need to set/clear
+				// on the selected binders...
+				Long allowExternal    = null;
+				Long allowForwarding  = null;
+				Long allowInternal    = null;
+				Long allowPublic      = null;
+				Long allowPublicLinks = null;
+				List<Function> fs = am.getFunctions();
+				for (Function f:  fs) {
+					String fId = f.getInternalId();
+					if (MiscUtil.hasString(fId)) {
+						if      (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID))     allowExternal    = f.getId();
+						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID))      allowForwarding  = f.getId();
+						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID))     allowInternal    = f.getId();
+						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID))       allowPublic      = f.getId();
+						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_LINKS_INTERNALID)) allowPublicLinks = f.getId();
+					}
+				}
+
+				// Can we resolve the binder ID's we're to set the
+				// rights for?
+				Set<Binder> pList = bm.getBinders(binderIds);
+				if (MiscUtil.hasItems(pList)) {
+					// Yes!  Scan them.
+					for (Binder binder: pList) {
+						try {
+							// Set/clear the various sharing rights on
+							// it. 
+							if (setFlags.isAllowExternal())    am.updateWorkAreaFunctionMembership(binder, allowExternal,    valueFlags.isAllowExternal(),    ObjectKeys.OWNER_USER_ID);
+							if (setFlags.isAllowForwarding())  am.updateWorkAreaFunctionMembership(binder, allowForwarding,  valueFlags.isAllowForwarding(),  ObjectKeys.OWNER_USER_ID);
+							if (setFlags.isAllowInternal())    am.updateWorkAreaFunctionMembership(binder, allowInternal,    valueFlags.isAllowInternal(),    ObjectKeys.OWNER_USER_ID);
+							if (setFlags.isAllowPublic())      am.updateWorkAreaFunctionMembership(binder, allowPublic,      valueFlags.isAllowPublic(),      ObjectKeys.OWNER_USER_ID);
+							if (setFlags.isAllowPublicLinks()) am.updateWorkAreaFunctionMembership(binder, allowPublicLinks, valueFlags.isAllowPublicLinks(), ObjectKeys.OWNER_USER_ID);
+						}
+						
+						catch (Exception e) {
+							// Track everything we couldn't set.
+							String binderTitle = binder.getTitle();
+							String messageKey;
+							if (e instanceof AccessControlException) messageKey = "setBinderSharingRightsError.AccssControlException";
+							else                                     messageKey = "setBinderSharingRightsError.OtherException";
+							reply.addError(NLT.get(messageKey, new String[]{binderTitle}));
+							
+							GwtLogHelper.error(m_logger, "GwtServerHelper.setBinderSharingRightsInfo( Binder:  '" + binderTitle + "', EXCEPTION ):  ", e);
+						}
+					}
+				}
+			}
+			
+			// If we get here, reply refers to the
+			// ErrorListRpcResponseData containing any errors detected
+			// in setting the binder sharing rights.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}		
+	}
+	
+	/**
 	 * Sets the visibility state of the desktop application download
 	 * control for the current user.
 	 * 
@@ -11867,6 +12064,10 @@ public class GwtServerHelper {
 			// Create the ErrorListRpcResponseData to return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 
+			// Access the modules we'll need to set the rights.
+			AdminModule		am  = bs.getAdminModule();
+			WorkspaceModule	wm  = bs.getWorkspaceModule();
+			
 			// We're we given any share rights to set?
 			if (MiscUtil.hasItems(userIds) && (null != sharingRights)) {
 				// Yes!  Are there any rights actually being set?
@@ -11886,7 +12087,7 @@ public class GwtServerHelper {
 				Long allowInternal    = null;
 				Long allowPublic      = null;
 				Long allowPublicLinks = null;
-				List<Function> fs = bs.getAdminModule().getFunctions();
+				List<Function> fs = am.getFunctions();
 				for (Function f:  fs) {
 					String fId = f.getInternalId();
 					if (MiscUtil.hasString(fId)) {
@@ -11898,10 +12099,6 @@ public class GwtServerHelper {
 					}
 				}
 
-				// ...and access the modules we'll need to set them.
-				WorkspaceModule	wm  = bs.getWorkspaceModule();
-				AdminModule		am  = bs.getAdminModule();
-				
 				// Can we resolve the user ID's of the users we're to
 				// set the rights for?
 				List<Principal> pList = ResolveIds.getPrincipals(userIds);

@@ -2728,6 +2728,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the 'Manage Teams' dialog.
 	String manageTeamsDlgCaption();
+	String manageTeamsShareRightsDlgHeader( int count );
 	
 	// Strings used by the 'Manage Users' dialog.
 	String manageUsersDlgCaption();
@@ -2759,7 +2760,6 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the 'Binder Share Rights' dialog.
 	String binderShareRightsDlgError_SetFailures();
-	String binderShareRightsDlgHeader( int count );
 	String binderShareRightsDlgLabel_Allow();
 	String binderShareRightsDlgLabel_AllowForwarding();
 	String binderShareRightsDlgLabel_AllowSharingWith();

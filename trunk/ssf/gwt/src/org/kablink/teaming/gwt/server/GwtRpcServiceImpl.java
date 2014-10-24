@@ -1162,6 +1162,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_BINDER_SHARING_RIGHTS_INFO:
+		{
+			GetBinderSharingRightsInfoCmd gbsrCmd = ((GetBinderSharingRightsInfoCmd) cmd);
+			BinderSharingRightsInfoRpcResponseData result = GwtServerHelper.getBinderSharingRightsInfo( this, getRequest( ri ), gbsrCmd.getBinderIds() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_BINDER_TAGS:
 		{
 			GetBinderTagsCmd gbtCmd;
@@ -3750,6 +3758,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case SET_BINDER_SHARING_RIGHTS_INFO:
+		{
+			SetBinderSharingRightsInfoCmd sbsrCmd = ((SetBinderSharingRightsInfoCmd) cmd);
+			ErrorListRpcResponseData result = GwtServerHelper.setBinderSharingRightsInfo( this, getRequest( ri ), sbsrCmd.getBinderIds(), sbsrCmd.getSharingRights() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case SET_DESKTOP_APP_DOWNLOAD_VISIBILITY:
 		{
 			SetDesktopAppDownloadVisibilityCmd sdadvCmd = ((SetDesktopAppDownloadVisibilityCmd) cmd);

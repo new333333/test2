@@ -450,6 +450,7 @@ public class ManageTeamsDlg extends DlgBox
 	private void showBinderShareRightsDlgNow(final List<Long> selectedBinderList, final UIObject showRelativeTo) {
 		BinderShareRightsDlg.initAndShow(
 			m_binderShareRightsDlg,
+			m_messages.manageTeamsShareRightsDlgHeader((null == selectedBinderList) ? 0 : selectedBinderList.size()),
 			selectedBinderList,
 			showRelativeTo);
 	}
