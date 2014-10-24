@@ -51,8 +51,8 @@ import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeFavoriteStateEvent;
-import org.kablink.teaming.gwt.client.event.CheckManageUsersActiveEvent;
-import org.kablink.teaming.gwt.client.event.CheckManageUsersActiveEvent.ManageUsersActiveCallback;
+import org.kablink.teaming.gwt.client.event.CheckManageDlgActiveEvent;
+import org.kablink.teaming.gwt.client.event.CheckManageDlgActiveEvent.ManageDlgActiveCallback;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
@@ -2431,12 +2431,12 @@ public class GwtMainPage extends ResizeComposite
 		if ( isAdminActive() )
 		{
 			// Yes!  This is a hack at best to handle when the JSP
-			// based 'Add user' page closes so that we don't pull the
-			// rug out from under the admin console and/or the manage
-			// users page.  If the manage users page is active, we
-			// simply ask it to reload and otherwise ignore the URL.
-			// Otherwise, the timer will fire and we'll process the URL
-			// as normal.
+			// based 'Add user' or 'New Workspace' page closes so that
+			// we don't pull the rug out from under the admin console
+			// and/or the manage users or teams pages.  If the manage
+			// users or teams page is active, we simply ask it to
+			// reload and otherwise ignore the URL.  Otherwise, the
+			// timer will fire and we'll process the URL as normal.
 			
 			// Create the timer...
 			final Timer timer = new Timer()
@@ -2451,18 +2451,19 @@ public class GwtMainPage extends ResizeComposite
 			};
 			timer.schedule(250);
 			
-			// Fire an event to detect if the manage users facility
-			// is active...
+			// Fire an event to detect if a management facility is
+			// active...
 			GwtTeaming.fireEvent(
-				new CheckManageUsersActiveEvent(
-					new ManageUsersActiveCallback()
+				new CheckManageDlgActiveEvent(
+					new ManageDlgActiveCallback()
 					{
 						@Override
-						public void manageUsersActive( boolean active )
+						public void manageDlgActive( boolean active )
 						{
 							if (active) {
 								// ...and if it is, kill the timer and
-								// ...tell the manage users to reload.
+								// ...tell the management page to
+								// ...reload.
 								timer.cancel();
 								FullUIReloadEvent.fireOneAsync();
 							}
@@ -4064,7 +4065,12 @@ public class GwtMainPage extends ResizeComposite
 	{
 		// To view team members on a binder, we simply navigate to the
 		// binder's permalink with an operation of show_team_members.
-		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
+		Long   binderId = event.getBinderId();
+		String binderIdS;
+		if ( null == binderId )
+		     binderIdS = m_mainPageInfo.getBinderInfo().getBinderId();
+		else binderIdS = String.valueOf( binderId );
+		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd( binderIdS );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override

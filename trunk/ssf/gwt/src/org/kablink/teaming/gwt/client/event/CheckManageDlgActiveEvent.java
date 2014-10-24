@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,29 +37,30 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The CheckManageUsersActiveEvent is used to check whether the 'Manage
- * Users' administration console feature is active
+ * The CheckManageDlgActiveEvent is used to check whether one of the
+ * administration console's management features (i.e., users or teams)
+ * is active
  * 
  * @author drfoster@novell.com
  */
-public class CheckManageUsersActiveEvent extends VibeEventBase<CheckManageUsersActiveEvent.Handler> {
+public class CheckManageDlgActiveEvent extends VibeEventBase<CheckManageDlgActiveEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
-    private ManageUsersActiveCallback m_mutCallback;	//
+    private ManageDlgActiveCallback m_mdCallback;	//
 
     /**
-     * Interface used by the implementor to return whether the manage
-     * user's facility is active.
+     * Interface used by the implementor to return whether a management
+     * facility is active.
      */
-    public interface ManageUsersActiveCallback {
-    	public void manageUsersActive(boolean active);
+    public interface ManageDlgActiveCallback {
+    	public void manageDlgActive(boolean active);
     }
     
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onCheckManageUsersActive(CheckManageUsersActiveEvent event);
+		void onCheckManageDlgActive(CheckManageDlgActiveEvent event);
 	}
 	
 	/**
@@ -67,12 +68,12 @@ public class CheckManageUsersActiveEvent extends VibeEventBase<CheckManageUsersA
 	 * 
 	 * @param mutCallback
 	 */
-	public CheckManageUsersActiveEvent(ManageUsersActiveCallback mutCallback) {
+	public CheckManageDlgActiveEvent(ManageDlgActiveCallback mutCallback) {
 		// Initialize the super class...
 		super();
 		
 		// ...and store the parameter.
-		setManageUsersActiveCallback(mutCallback);
+		setManageDlgActiveCallback(mutCallback);
 	}
 
 	/**
@@ -80,14 +81,14 @@ public class CheckManageUsersActiveEvent extends VibeEventBase<CheckManageUsersA
 	 * 
 	 * @return
 	 */
-	public ManageUsersActiveCallback getManageUsersActiveCallback() {return m_mutCallback;}
+	public ManageDlgActiveCallback getManageDlgActiveCallback() {return m_mdCallback;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setManageUsersActiveCallback(ManageUsersActiveCallback mutCallback) {m_mutCallback = mutCallback;}
+	public void setManageDlgActiveCallback(ManageDlgActiveCallback mutCallback) {m_mdCallback = mutCallback;}
 	
 	/**
 	 * Dispatches this event when one is triggered.
@@ -98,7 +99,7 @@ public class CheckManageUsersActiveEvent extends VibeEventBase<CheckManageUsersA
 	 */
     @Override
     protected void doDispatch(Handler handler) {
-        handler.onCheckManageUsersActive(this);
+        handler.onCheckManageDlgActive(this);
     }
 	
 	/**
@@ -123,7 +124,7 @@ public class CheckManageUsersActiveEvent extends VibeEventBase<CheckManageUsersA
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.CHECK_MANAGE_USERS_ACTIVE;
+		return TeamingEvents.CHECK_MANAGE_DLG_ACTIVE;
 	}
 
 	/**

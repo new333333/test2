@@ -42,7 +42,7 @@ import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
-import org.kablink.teaming.gwt.client.event.CheckManageUsersActiveEvent;
+import org.kablink.teaming.gwt.client.event.CheckManageDlgActiveEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportProfilesDlgEvent;
 import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
@@ -93,7 +93,7 @@ public class ManageUsersDlg extends DlgBox
 	implements ViewReady,
 		// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler,
-		CheckManageUsersActiveEvent.Handler,
+		CheckManageDlgActiveEvent.Handler,
 		FullUIReloadEvent.Handler,
 		GetManageTitleEvent.Handler,
 		ManageUsersFilterEvent.Handler,
@@ -132,7 +132,7 @@ public class ManageUsersDlg extends DlgBox
 	// this array is used.
 	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
 		TeamingEvents.ADMINISTRATION_EXIT,
-		TeamingEvents.CHECK_MANAGE_USERS_ACTIVE,
+		TeamingEvents.CHECK_MANAGE_DLG_ACTIVE,
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.GET_MANAGE_TITLE,
 		TeamingEvents.MANAGE_USERS_FILTER,
@@ -295,15 +295,15 @@ public class ManageUsersDlg extends DlgBox
 	}
 	
 	/**
-	 * Handles CheckManageUsersActiveEvent's received by this class.
+	 * Handles CheckManageDlgActiveEvent's received by this class.
 	 * 
-	 * Implements the CheckManageUsersActiveEvent.Handler.onCheckManageUsersActive() method.
+	 * Implements the CheckManageDlgActiveEvent.Handler.onCheckManageDlgActive() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onCheckManageUsersActive(CheckManageUsersActiveEvent event) {
-		event.getManageUsersActiveCallback().manageUsersActive(true);
+	public void onCheckManageDlgActive(CheckManageDlgActiveEvent event) {
+		event.getManageDlgActiveCallback().manageDlgActive(true);
 	}
 
 	/**
