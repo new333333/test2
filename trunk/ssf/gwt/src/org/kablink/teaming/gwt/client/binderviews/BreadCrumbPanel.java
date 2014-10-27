@@ -366,7 +366,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 		// No, we we aren't displaying a bread crumb panel for a
 		// collection!  Are we displaying it for the profile root
 		// workspace, root team workspaces or a mobile devices view?
-		else if (m_binderInfo.isBinderProfilesRootWS() || (m_binderInfo.isBinderTeamsRootWS() && TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW) || m_binderInfo.isBinderMobileDevices()) {
+		else if (m_binderInfo.isBinderProfilesRootWS() || m_binderInfo.isBinderTeamsRootWS() || m_binderInfo.isBinderMobileDevices()) {
 			// Yes!  We don't need a tree, just the image and title.
 			// Create the panel for it...
 			VibeFlowPanel fp = new VibeFlowPanel();
@@ -505,11 +505,6 @@ public class BreadCrumbPanel extends ToolPanelBase
 			}
 		}
 		
-		boolean forceShow = ((!reply) && m_binderInfo.isBinderTeamsRootWS() && (!(TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW)));
-		if (forceShow) {
-			reply = true;
-		}
-		
 		return reply;
 	}
 	
@@ -523,11 +518,6 @@ public class BreadCrumbPanel extends ToolPanelBase
 			(!(m_binderInfo.isBinderTeamsRootWS()))    &&	// ...or any view of teams...
 			(!(m_binderInfo.isBinderMobileDevices()))  &&	// ...or the mobile devices view...
 			(!(m_binderInfo.isBinderTrash())));				// ...or the trash view.
-		
-		boolean forceShow = ((!reply) && m_binderInfo.isBinderTeamsRootWS() && (!(TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW)));
-		if (forceShow) {
-			reply = true;
-		}
 		
 		return reply;
 	}

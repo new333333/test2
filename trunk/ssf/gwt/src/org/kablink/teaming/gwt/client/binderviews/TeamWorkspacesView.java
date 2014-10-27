@@ -52,8 +52,6 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class TeamWorkspacesView extends DataTableFolderViewBase {
-	public final static boolean	SHOW_TEAM_WORKSPACES_VIEW	= false;	//! DRF (20141020):  Leave false on checkin until it's all working.
-	
 	/*
 	 * Class constructor.
 	 * 

@@ -80,7 +80,6 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.binderviews.MobileDevicesView;
-import org.kablink.teaming.gwt.client.binderviews.TeamWorkspacesView;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDatabasePruneConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
@@ -448,15 +447,9 @@ public class AdminControl extends TeamingPopupPanel
 			if ( actions != null )
 			{
 				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
-				boolean showTeamWorkspacesView  = TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW;
 				for (GwtAdminAction action : actions )
 				{
 					if ( action.getActionType().equals( AdminAction.MANAGE_MOBILE_DEVICES ) && ( ! showManageMobileDevices ) )
-					{
-						continue;
-					}
-					
-					else if ( action.getActionType().equals( AdminAction.MANAGE_TEAMS ) && ( ! showTeamWorkspacesView ) )
 					{
 						continue;
 					}

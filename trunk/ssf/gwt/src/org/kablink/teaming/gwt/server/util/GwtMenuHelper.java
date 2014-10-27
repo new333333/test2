@@ -3460,6 +3460,11 @@ public class GwtMenuHelper {
 							// Yes!  Add the team management items...
 							boolean addTeamSeparator = false;
 							ToolbarItem teamTBI;
+							// DRF (20141027):  I decided NOT to
+							// include the View Team option since the
+							// team members are displayed directly in
+							// the view already.
+/*
 							if (m_tmi.isViewAllowed()) {
 								teamTBI = new ToolbarItem(MenuIds.MANAGE_VIEW_TEAM);
 								markTBITitle(teamTBI, "team.viewTeamMembership");
@@ -3467,6 +3472,7 @@ public class GwtMenuHelper {
 								actionToolbar.addNestedItem(teamTBI);
 								addTeamSeparator = true;
 							}
+*/
 							if (m_tmi.isManageAllowed()) {
 								teamTBI = new ToolbarItem(MenuIds.MANAGE_EDIT_TEAM);
 								markTBITitle(teamTBI, "team.editTeamMembership");

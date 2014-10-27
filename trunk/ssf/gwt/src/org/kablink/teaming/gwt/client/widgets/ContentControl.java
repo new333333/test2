@@ -2387,9 +2387,7 @@ public class ContentControl extends Composite
 		};
 		
 		// Create the view widget for the selected binder.
-		if ( TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW )
-		     TeamWorkspacesView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
-		else GenericWSView.createAsync(      event.getBinderInfo(), event.getViewReady(), vClient );
+		TeamWorkspacesView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
 	}
 	
 	/**
