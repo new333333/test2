@@ -32,18 +32,14 @@
  */
 package org.kablink.teaming.util;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -199,15 +195,33 @@ public class ReleaseInfo {
     public static String getApplianceVersion()
     {
         String versionStr = getApplianceVersionString();
+
         if ( versionStr != null )
         {
-            int index = versionStr.lastIndexOf('.');
-            if (index>=0)
+        	int len;
+        	int separator;
+        	
+        	len = versionStr.length();
+        	separator = '.';
+        	
+        	// Find the 3rd '.', everything before the 3rd '.' is the appliance version
+            int index = versionStr.indexOf( separator );
+            if ( index >= 0 && index < len )
             {
-                return versionStr.substring(0, index);
+            	++index;
+            	index = versionStr.indexOf( separator, index );
+            	if ( index != -1 && index < len )
+            	{
+            		++index;
+            		index = versionStr.indexOf( separator, index );
+            		if ( index != -1 )
+            			return versionStr.substring( 0, index );
+            	}
             }
+
             return versionStr;
         }
+
         return null;
     }
 
@@ -248,67 +262,18 @@ public class ReleaseInfo {
 			file = new File( filePath );
 			if ( file.exists() )
 			{
-				FileInputStream fileInputStream = null;
-				DataInputStream inputStream;
-				InputStreamReader inputStreamReader;
-				BufferedReader reader;
-				
+				Properties prop;
+
+				prop = new Properties();
 				try
 				{
-					String name;
-					
-					fileInputStream = new FileInputStream( file );
-					inputStream = new DataInputStream( fileInputStream );
-					inputStreamReader = new InputStreamReader( inputStream );
-					reader = new BufferedReader( inputStreamReader );
-					
-					// Read the name of the appliance
-					name = reader.readLine();
-					if ( name != null )
-					{
-						String nextLine;
-
-						// Read the version = x.x.x line
-						nextLine = reader.readLine();
-						if ( nextLine != null )
-						{
-							int index;
-							
-							// Find the =
-							index = nextLine.indexOf( '=' );
-							if ( index > 0 )
-							{
-								++index;
-								while ( nextLine.charAt( index ) == ' ' )
-									++index;
-								
-								version = nextLine.substring( index );
-							}
-						}
-					}
+					prop.load( new FileInputStream( filePath ) );
+					version = prop.getProperty( "version" );
 				}
-				catch ( FileNotFoundException ex )
+				catch ( Exception ex )
 				{
-					// This will never happen because we already checked for the existence of the file.
-				}
-				catch ( IOException ioEx )
-				{
-					// Nothing to do
-					m_logger.error( "In ReleaseInfo.getFilrApplianceReleaseInfo(), error reading from /etc/Novell-VA-release" );
-				}
-				finally
-				{
-					if ( fileInputStream != null )
-					{
-						try
-						{
-							fileInputStream.close();
-						}
-						catch ( IOException ex )
-						{
-							m_logger.error( "In ReleaseInfo.getFilrApplianceReleaseInfo(), error closing fileInputStream" );
-						}
-					}
+					m_logger.info( "In ReleaseInfo.getFilrApplianceReleaseInfo(), exception reading version from /etc/Novell-VA-release" );
+					ex.printStackTrace();
 				}
 			}
 			else
