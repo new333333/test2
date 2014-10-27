@@ -1310,10 +1310,16 @@ public class SearchUtils {
 	 * @return
 	 */
 	public static Binder getNetFoldersRootBinder() {
-		return
-			getCoreDao().loadReservedBinder(
+		Binder reply;
+		if (Utils.checkIfFilr() || Utils.checkIfFilrAndVibe()) {
+			reply = getCoreDao().loadReservedBinder(
 				ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
 				RequestContextHolder.getRequestContext().getZoneId());
+		}
+		else {
+			reply = null;
+		}
+		return reply;
 	}
 	
 	/**
