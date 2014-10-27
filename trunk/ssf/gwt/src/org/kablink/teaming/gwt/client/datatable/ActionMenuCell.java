@@ -193,6 +193,16 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 		// ...and then show the action menu.
 		showActionMenuNow(actionMenuImg, actionMenu);
 	}
+
+	/**
+	 * Clears anything in the menu map thereby force all the menus to
+	 * be regenerated.
+	 */
+	public void clearMenuMap() {
+		if (null != m_menuMap) {
+			m_menuMap.clear();
+		}
+	}
 	
 	/*
 	 * Called when the mouse leaves the action menu image.

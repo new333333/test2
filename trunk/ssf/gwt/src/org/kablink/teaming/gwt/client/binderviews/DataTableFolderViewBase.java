@@ -52,6 +52,7 @@ import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.Dele
 import org.kablink.teaming.gwt.client.binderviews.util.DeleteUsersHelper.DeleteUsersCallback;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.datatable.ActionMenuCell;
 import org.kablink.teaming.gwt.client.datatable.ActionMenuColumn;
 import org.kablink.teaming.gwt.client.datatable.ApplyColumnWidths;
 import org.kablink.teaming.gwt.client.datatable.AssignmentColumn;
@@ -2052,13 +2053,29 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	@Override
 	public void onContentChanged(final ContentChangedEvent event) {
-		// If a share changed in the 'Shared by Me' or 'Public'
-		// collection views...
-		if (Change.SHARING.equals(event.getChange())                &&
-				(getFolderInfo().getCollectionType().isSharedByMe() ||
-				 getFolderInfo().getCollectionType().isSharedPublic())) {
-			// ...force the UI to refresh.
-			FullUIReloadEvent.fireOneAsync();
+		// If a share changed...
+		if (Change.SHARING.equals(event.getChange())) {
+			// ...in the 'Shared by Me' or 'Public' collection views...
+			if (getFolderInfo().getCollectionType().isSharedByMe() ||
+				getFolderInfo().getCollectionType().isSharedPublic()) {
+				// ...force the UI to refresh.
+				FullUIReloadEvent.fireOneAsync();
+			}
+			
+			else {
+				// ...otherwise, scan the columns in the table...
+				int c = m_dataTable.getColumnCount();
+				for (int i = 0; i < c; i += 1) {
+					// ...and for all the ActionMenuColumn's...
+					Column<?, ?> col = m_dataTable.getColumn(i);
+					if (col instanceof ActionMenuColumn) {
+						// ...tell their cells to clear their menu
+						// ...maps thereby force the action menus to be
+						// ...regenerated.
+						((ActionMenuCell) col.getCell()).clearMenuMap();
+					}
+				}
+			}
 		}
 	}
 	

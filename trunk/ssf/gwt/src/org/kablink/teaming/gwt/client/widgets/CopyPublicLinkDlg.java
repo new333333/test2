@@ -41,6 +41,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPublicLinksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PublicLinksRpcResponseData;
@@ -247,6 +249,10 @@ public class CopyPublicLinkDlg extends DlgBox {
 				if ((null != plMap) && (!(plMap.isEmpty())))
 				     displayPublicLinks(plMap);
 				else showCreateLinksButton();
+				
+				// The share has been copied, fire an event telling
+				// everybody.
+				GwtTeaming.fireEventAsync(new ContentChangedEvent(Change.SHARING));
 			}
 		});
 	}
