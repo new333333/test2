@@ -77,6 +77,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
+import org.hibernate.CacheMode;
 import org.hibernate.SessionFactory;
 
 import org.kablink.teaming.ObjectKeys;
@@ -130,6 +131,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
@@ -3077,6 +3079,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    	syncResults.setStatus( SyncStatus.STATUS_SYNC_ALREADY_IN_PROGRESS );
 			return;
 		}
+		
+		// (Bug #900745) To avoid the problem disable interaction with the second-level cache
+		CacheMode ldapSyncSecondLevelCacheMode = CacheMode.parse(SPropsUtil.getString("ldap.sync.secondlevel.cache.mode", "ignore").toUpperCase());
+		if(ldapSyncSecondLevelCacheMode != null)
+			SessionUtil.setCacheMode(ldapSyncSecondLevelCacheMode);
 		
 		try
 		{
