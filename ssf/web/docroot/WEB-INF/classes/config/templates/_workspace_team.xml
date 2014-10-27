@@ -12,26 +12,28 @@
   <property name="inheritFunctionMembership">false</property>
   <property name="inheritDefinitions">false</property>
   <property name="inheritTeamMembers">true</property>
-  <workAreaFunctionMembership>
-    <property name="functionName">__role.allowSharing</property>
-    <property name="members">-1 -2</property>
-  </workAreaFunctionMembership>
-  <workAreaFunctionMembership>
-    <property name="functionName">__role.allowSharingPublicLinks</property>
-    <property name="members">-1 -2</property>
-  </workAreaFunctionMembership>
-  <workAreaFunctionMembership>
-    <property name="functionName">__role.allowSharingPublic</property>
-    <property name="members">-1 -2</property>
-  </workAreaFunctionMembership>
-  <workAreaFunctionMembership>
-    <property name="functionName">__role.allowSharingExternal</property>
-    <property name="members">-1 -2</property>
-  </workAreaFunctionMembership>
-  <workAreaFunctionMembership>
-    <property name="functionName">__role.allowSharingForward</property>
-    <property name="members">-1 -2</property>
-  </workAreaFunctionMembership>
+	<!--
+		<workAreaFunctionMembership>
+			<property name="functionName">__role.allowSharing</property>
+			<property name="members">-1 -2</property>
+		</workAreaFunctionMembership>
+		<workAreaFunctionMembership>
+			<property name="functionName">__role.allowSharingPublicLinks</property>
+			<property name="members">-1 -2</property>
+		</workAreaFunctionMembership>
+		<workAreaFunctionMembership>
+			<property name="functionName">__role.allowSharingPublic</property>
+			<property name="members">-1 -2</property>
+		</workAreaFunctionMembership>
+		<workAreaFunctionMembership>
+			<property name="functionName">__role.allowSharingExternal</property>
+			<property name="members">-1 -2</property>
+		</workAreaFunctionMembership>
+		<workAreaFunctionMembership>
+			<property name="functionName">__role.allowSharingForward</property>
+			<property name="members">-1 -2</property>
+		</workAreaFunctionMembership>
+	-->
   <workAreaFunctionMembership>
     <property name="functionName">__role.participant</property>
     <property name="members">-1 -2</property>

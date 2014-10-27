@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.binderviews.TeamWorkspacesView;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -140,10 +139,6 @@ public class AccessoriesPanel extends ToolPanelBase
 		boolean isWorkspace   = ((!isFolder) && m_binderInfo.isBinderWorkspace());
 		boolean isProfileRoot = (isWorkspace && m_binderInfo.getWorkspaceType().isProfileRoot());
 		boolean isTeamRoot    = (isWorkspace && m_binderInfo.getWorkspaceType().isTeamRoot()   );
-		
-		if (isTeamRoot && (!TeamWorkspacesView.SHOW_TEAM_WORKSPACES_VIEW)) {
-			isTeamRoot = false;
-		}
 		
 		// For non-folder, non-profile root, non-team root binders...
 		if ((!isFolder) && (!isProfileRoot) && (!isTeamRoot)) {
