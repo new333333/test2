@@ -190,14 +190,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
 	        		if(tryCount < tryMaxCount) {
 	        			if(logger.isDebugEnabled())
-	        				logger.warn("'add entry' failed due to lock error - Retrying in new transaction", e);
+	        				logger.warn("(" + tryCount + ") 'add entry' failed due to lock error - Retrying in new transaction", e);
 	        			else 
-	        				logger.warn("'add entry' failed due to lock error - Retrying in new transaction: " + e.toString());
+	        				logger.warn("(" + tryCount + ") 'add entry' failed due to lock error - Retrying in new transaction: " + e.toString());
 	        			logger.warn("Retrying 'add entry' in new transaction");
 	        			getCoreDao().refresh(binder);        		
 	        		}
 	        		else {
-        				logger.error("'add entry' failed due to lock error - Aborting", e);	        			
+        				logger.error("(" + tryCount + ") 'add entry' failed due to lock error - Aborting", e);	        			
 	        			throw e;
 	        		}
 	        	}

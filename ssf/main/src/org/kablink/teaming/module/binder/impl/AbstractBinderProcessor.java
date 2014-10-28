@@ -341,13 +341,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
 	        		if(tryCount < tryMaxCount) {
 	        			if(logger.isDebugEnabled())
-	        				logger.warn("'add binder' failed due to lock error - Retrying in new transaction", e);
+	        				logger.warn("(" + tryCount + ") 'add binder' failed due to lock error - Retrying in new transaction", e);
 	        			else 
-	        				logger.warn("'add binder' failed due to lock error - Retrying in new transaction: " + e.toString());
+	        				logger.warn("(" + tryCount + ") 'add binder' failed due to lock error - Retrying in new transaction: " + e.toString());
 	        			getCoreDao().refresh(parent);        		
 	        		}
 	        		else {
-	        			logger.error("'add binder' failed due to lock error - Aborting", e);
+	        			logger.error("(" + tryCount + ") 'add binder' failed due to lock error - Aborting", e);
 	        			throw e;
 	        		}
 	        	}

@@ -725,13 +725,13 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
         	catch(HibernateOptimisticLockingFailureException e) {
         		if(tryCount < tryMaxCount) {
         			if(logger.isDebugEnabled())
-        				logger.warn("'sync entry' failed due to optimistic locking failure - Retrying in new transaction", e);
+        				logger.warn("(" + tryCount + ") 'sync entry' failed due to optimistic locking failure - Retrying in new transaction", e);
         			else 
-        				logger.warn("'sync entry' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
+        				logger.warn("(" + tryCount + ") 'sync entry' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
         			getCoreDao().refresh(entry);        		
         		}
         		else {
-    				logger.error("'sync entry' failed due to optimistic locking failure - Aborting", e);
+    				logger.error("(" + tryCount + ") 'sync entry' failed due to optimistic locking failure - Aborting", e);
         			throw e;
         		}
         	}

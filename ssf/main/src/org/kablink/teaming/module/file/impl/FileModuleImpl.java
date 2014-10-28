@@ -1932,13 +1932,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			} catch (HibernateOptimisticLockingFailureException e) {
         		if(tryCount < tryMaxCount) {
         			if(logger.isDebugEnabled())
-        				logger.warn("'metadata update for file delete' failed due to optimistic locking failure - Retrying in new transaction", e);
+        				logger.warn("(" + tryCount + ") 'metadata update for file delete' failed due to optimistic locking failure - Retrying in new transaction", e);
         			else 
-        				logger.warn("'metadata update for file delete' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
+        				logger.warn("(" + tryCount + ") 'metadata update for file delete' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
         			getCoreDao().refresh(entry);
         		}
         		else {
-    				logger.error("'metadata update for file delete' failed due to optimistic locking failure - Aborting", e);
+    				logger.error("(" + tryCount + ") 'metadata update for file delete' failed due to optimistic locking failure - Aborting", e);
         			throw e;
         		}
 			}
