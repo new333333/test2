@@ -930,7 +930,12 @@ public class EntityIndexUtils {
     }
     private static void addBinderAcls(Document doc, Binder binder, boolean includeTitleAcl) {
     	//This set of binder ACLs is only valid for non-net folder binders. Net folders specify their own ACLs exteranlly
-    	if (!binder.isAclExternallyControlled()) {
+    	//! - - - - -
+    	//! DRF (20141028):  Commented this check out as it broke Net
+    	//! Folders in Filr 1.1.1.
+    	//! - - - - -
+//!    	if (!binder.isAclExternallyControlled())
+    	{
 			//get real binder access
 	    	String[] acls = StringUtil.split(getFolderAclString(binder, includeTitleAcl), " ");
 	    	for(String acl:acls)
