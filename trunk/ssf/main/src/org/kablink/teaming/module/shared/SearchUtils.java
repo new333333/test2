@@ -91,6 +91,7 @@ import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.task.TaskHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.EventHelper;
@@ -672,6 +673,11 @@ public class SearchUtils {
 					if(resourceDriverName == null) 
 						return Boolean.FALSE; // no resource driver
 					return null;
+				}
+				
+				@Override
+				public int getPredictedSuccessRatePercentage() {
+					return SPropsUtil.getInt("netfolders.search.post.filtering.predicted.success.rate.percentage", 25);
 				}
 			});
 			

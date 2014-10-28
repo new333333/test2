@@ -46,4 +46,16 @@ public interface PostFilterCallback {
 	 *         <code>null</code> if the document requires access check against file server
 	 */
 	public Boolean preFilter(Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl);
+	
+	/**
+	 * Return predicted success rate (in percentage) for post filtering.
+	 * The number should be between 0 and 100 non-inclusive. 
+	 * The value of X means that in average about X percentage (%) of the unfiltered
+	 * item returned in the search result from the search service is expected to pass
+	 * the post filtering which performs access check against the external system (i.e.
+	 * a file server).
+	 * 
+	 * @return
+	 */
+	public int getPredictedSuccessRatePercentage();
 }

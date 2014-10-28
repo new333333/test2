@@ -214,6 +214,11 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 				}
 				return null; // needs dynamic check
 			}
+
+			@Override
+			public int getPredictedSuccessRatePercentage() {
+				return SPropsUtil.getInt("search.post.filtering.predicted.success.rate.percentage", 80);
+			}
 		};
 	}
 	
@@ -233,7 +238,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 			return invokeSearch(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size);
 		}
 		
-		int filterPredictedSuccessPercentage = SPropsUtil.getInt("search.post.filtering.predicted.success.rate.percentage", 80);
+		int filterPredictedSuccessPercentage = callback.getPredictedSuccessRatePercentage();
 		
 		if(filterPredictedSuccessPercentage == 0) {
 			// We don't expect any of the items to pass post filtering. Then there is no point in even trying searching.
@@ -246,7 +251,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 			return invokeSearch(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size);			
 		}
 		else if(filterPredictedSuccessPercentage < 0 || filterPredictedSuccessPercentage > 100) {
-			throw new ConfigurationException("The value of search.post.filtering.predicted.success.rate.percentage property must be between 0 and 100 non-inclusive"); 
+			throw new ConfigurationException("The value of filterPredictedSuccessPercentage must be between 0 and 100 non-inclusive"); 
 		}
 		
 		int filterSuccessCount = 0;
