@@ -115,9 +115,6 @@
   <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content.jsp" %>
   <c:set var="ssBinder" value="${ssBinderOriginal}" scope="request"/>
 </c:if>
-<c:if test="${empty mashupBinder}">
-  <div style="padding:4px;"><span class="ss_labelLeftError">No Calendar Specified</span></div>
-</c:if>
 	</div>
   <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
