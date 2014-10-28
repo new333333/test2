@@ -1179,7 +1179,21 @@ public class AccessUtils  {
 			return Collections.EMPTY_MAP;
 		}
 		else {
-			return ((AclResourceDriver)driver).getAclItemPrincipalMapper().toFileSystemGroupIds(RequestContextHolder.getRequestContext().getUser());
+			Map<String, List<String>> result = null;		
+			RequestContext rc = RequestContextHolder.getRequestContext();
+			if(rc != null) {
+				String cacheKey = "fileSystemGroupIds_" + driver.getClass().getName();
+				result = (Map<String, List<String>>) rc.getCacheEntry(cacheKey);
+				if(result == null) {
+					result = ((AclResourceDriver)driver).getAclItemPrincipalMapper().toFileSystemGroupIds(RequestContextHolder.getRequestContext().getUser());
+					if(result != null)
+						rc.setCacheEntry(cacheKey, result);
+				}
+			}
+			else {
+				result = ((AclResourceDriver)driver).getAclItemPrincipalMapper().toFileSystemGroupIds(RequestContextHolder.getRequestContext().getUser());
+			}
+			return result;
 		}
 	}
 	
