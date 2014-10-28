@@ -186,13 +186,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
 	        		if(tryCount < tryMaxCount) {
 	        			if(logger.isDebugEnabled())
-	        				logger.warn("'add reply' failed due to lock error - Retrying in new transaction", e);
+	        				logger.warn("(" + tryCount + ") 'add reply' failed due to lock error - Retrying in new transaction", e);
 	        			else 
-	        				logger.warn("'add reply' failed due to lock error - Retrying in new transaction: " + e.toString());
+	        				logger.warn("(" + tryCount + ") 'add reply' failed due to lock error - Retrying in new transaction: " + e.toString());
 	        			getCoreDao().refresh(parent.getParentBinder());        		
 	        		}
 	        		else {
-        				logger.error("'add reply' failed due to lock error - Aborting", e);
+        				logger.error("(" + tryCount + ") 'add reply' failed due to lock error - Aborting", e);
 	        			throw e;
 	        		}
 	        	}
@@ -220,26 +220,27 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
 	        		if(tryCount < tryMaxCount) {
 	        			if(logger.isDebugEnabled())
-	        				logger.warn("'update parent mod time' failed due to lock error - Retrying in new transaction", e);
+	        				logger.warn("(" + tryCount + ") 'update parent mod time' failed due to lock error - Retrying in new transaction", e);
 	        			else 
-	        				logger.warn("'update parent mod time' failed due to lock error - Retrying in new transaction: " + e.toString());
+	        				logger.warn("(" + tryCount + ") 'update parent mod time' failed due to lock error - Retrying in new transaction: " + e.toString());
 	        			getCoreDao().refresh(parent.getParentBinder());        		
 	        		}
 	        		else {
-        				logger.error("'update parent mod time' failed due to lock error - Aborting", e);
+        				logger.error("(" + tryCount + ") 'update parent mod time' failed due to lock error - Aborting", e);
 	        			throw e;
 	        		}
 	        	}
 	        	catch(HibernateOptimisticLockingFailureException e) {
 	        		if(tryCount < tryMaxCount) {
 	        			if(logger.isDebugEnabled())
-	        				logger.warn("'update parent mod time' failed due to optimistic locking failure - Retrying in new transaction", e);
+	        				logger.warn("(" + tryCount + ") 'update parent mod time' failed due to optimistic locking failure - Retrying in new transaction", e);
 	        			else 
-	        				logger.warn("'update parent mod time' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
+	        				logger.warn("(" + tryCount + ") 'update parent mod time' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
+	        			getCoreDao().refresh(parent);
 	        			getCoreDao().refresh(parent.getParentBinder());        		
 	        		}
 	        		else {
-        				logger.error("'update parent mod time' failed due to optimistic locking failure - Aborting", e);
+        				logger.error("(" + tryCount + ") 'update parent mod time' failed due to optimistic locking failure - Aborting", e);
 	        			throw e;
 	        		}
 	        	}
