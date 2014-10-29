@@ -899,15 +899,6 @@ public class ShareResource extends AbstractResource {
         return _getRecentActivity(includeParentPaths, descriptionFormat, offset, maxCount, criteria, nextUrl, nextParams);
     }
 
-    protected List<SearchableObject> getSharedByChildren(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary,
-                                                         boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
-        if (replaceParent) {
-            return _getSharedEntities(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", onlyLibrary, showHidden,
-                    showUnhidden, true, false, true);
-        }
-        return _getSharedEntities(shareItems, null, null, onlyLibrary, showHidden, showUnhidden, true, false, true);
-    }
-
     protected SharedBinderBrief [] getSharedByBinders(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
             return _getSharedBinders(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", onlyLibrary, showHidden, showUnhidden);
@@ -925,14 +916,6 @@ public class ShareResource extends AbstractResource {
                 onlyLibrary, showHidden, showUnhidden);
     }
 
-    protected List<SearchableObject> getSharedWithChildren(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
-        if (replaceParent) {
-            return _getSharedEntities(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", onlyLibrary, showHidden,
-                    showUnhidden, true, false, true);
-        }
-        return _getSharedEntities(shareItems, null, null, onlyLibrary, showHidden, showUnhidden, true, false, true);
-    }
-
     protected SharedBinderBrief [] getSharedWithBinders(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
             return _getSharedBinders(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", onlyLibrary, showHidden, showUnhidden);
@@ -948,14 +931,6 @@ public class ShareResource extends AbstractResource {
                                              boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
         return _getSharedChanges(shareItems, since, recursive, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.SHARED_WITH_ME_ID,
                 "/self/shared_with_me", onlyLibrary, showHidden, showUnhidden);
-    }
-
-    protected List<SearchableObject> getPublicChildren(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent,
-                                                       boolean showHidden, boolean showUnhidden)  {
-        if (replaceParent) {
-            return _getSharedEntities(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", onlyLibrary, showHidden, showUnhidden, true, false, true);
-        }
-        return _getSharedEntities(shareItems, null, null, onlyLibrary, showHidden, showUnhidden, true, false, true);
     }
 
     protected SharedBinderBrief [] getPublicBinders(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
@@ -1117,185 +1092,10 @@ public class ShareResource extends AbstractResource {
         return changes;
     }
 
-    protected List<SearchableObject> _getSharedEntities(List<Pair<ShareItem, DefinableEntity>> shareItems, Long topId, String topHref, boolean onlyLibrary,
-                                                      boolean showHidden, boolean showUnhidden,
-                                                      boolean folders, boolean entries, boolean files)  {
-        boolean guestEnabled = isGuestAccessEnabled();
-
-        List<Pair<DefinableEntity, List<ShareItem>>> resultList = _getSharedItems(shareItems, topId, onlyLibrary,
-                showHidden, showUnhidden, topId==ObjectKeys.SHARED_BY_ME_ID, false, folders, entries || files);
-
-        List<SearchableObject> results = new ArrayList<SearchableObject>();
-        for (Pair<DefinableEntity, List<ShareItem>> entityShares : resultList) {
-            try {
-                DefinableEntity entity = entityShares.getA();
-                List<ShareItem> shares = entityShares.getB();
-                if (entity instanceof FolderEntry) {
-                    if (entries) {
-                        SharedFolderEntryBrief entryBrief = null;
-                        for (ShareItem shareItem : shares) {
-                            if (entryBrief!=null) {
-                                entryBrief.addShare(ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), guestEnabled));
-                            } else {
-                                entryBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, buildShareRecipient(shareItem), (FolderEntry) entity, guestEnabled);
-                                if (topId!=null) {
-                                    entryBrief.setParentBinder(new ParentBinder(topId, topHref));
-                                }
-                                results.add(entryBrief);
-                            }
-                        }
-                    }
-                    if (files) {
-                        Set<Attachment> attachments = entity.getAttachments();
-                        for (Attachment attachment : attachments) {
-                            if (attachment instanceof FileAttachment) {
-                                SharedFileProperties fileProps = null;
-                                for (ShareItem shareItem : shares) {
-                                    if (fileProps!=null) {
-                                        fileProps.addShare(ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), guestEnabled));
-                                    } else {
-                                        fileProps = ResourceUtil.buildSharedFileProperties(shareItem, buildShareRecipient(shareItem), (FileAttachment) attachment, guestEnabled);
-                                        fileProps.setBinder(new ParentBinder(topId, topHref));
-                                        results.add(fileProps);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else if (entity instanceof Binder) {
-                    SharedBinderBrief binderBrief = null;
-                    for (ShareItem shareItem : shares) {
-                        if (binderBrief!=null) {
-                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), guestEnabled));
-                        } else {
-                            binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, buildShareRecipient(shareItem), (Binder) entity, guestEnabled);
-                            if (topId!=null) {
-                                binderBrief.setParentBinder(new ParentBinder(topId, topHref));
-                            }
-                            results.add(binderBrief);
-                        }
-                    }
-                }
-            } catch (AccessControlException e) {
-                logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + entityShares.getA().getEntityTypedId());
-            }
-        }
-        Collections.sort(results, new Comparator<SearchableObject>() {
-            @Override
-            public int compare(SearchableObject o1, SearchableObject o2) {
-                int result = o1.getDocType().compareTo(o2.getDocType());
-                if (result==0) {
-                    result = o1.getDisplayName().compareTo(o2.getDisplayName());
-                }
-                return result;
-            }
-        });
-        return results;
-    }
-
-    protected List<Pair<DefinableEntity, List<ShareItem>>> _getSharedItems(List<Pair<ShareItem, DefinableEntity>> shareItems, Long topId, boolean onlyLibrary,
-                                                      boolean showHidden, boolean showUnhidden, boolean showExpired, boolean showDeleted,
-                                                      boolean folders, boolean entries)  {
-        Map<Object, Pair<DefinableEntity, List<ShareItem>>> resultMap = new LinkedHashMap<Object, Pair<DefinableEntity, List<ShareItem>>>();
-
-        for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
-            ShareItem shareItem = pair.getA();
-            if (shareItem.isDeleted() && !showDeleted) {
-                // Ignore this share
-            } else if (shareItem.isExpired() && !showExpired) {
-                // Ignore this share
-            } else {
-                Pair<DefinableEntity, List<ShareItem>> sharesByEntity = resultMap.get(shareItem.getSharedEntityIdentifier().getEntityId());
-                try {
-                    if (entries && shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
-                        FolderEntry entry;
-                        if (sharesByEntity!=null) {
-                            entry = (FolderEntry) sharesByEntity.getA();
-                        } else {
-                            entry = (FolderEntry) getDefinableEntity(pair, !showExpired && !showDeleted);
-                        }
-                        if (showToUser(entry, topId, showHidden, showUnhidden, showDeleted)) {
-                            if (sharesByEntity==null) {
-                                sharesByEntity = new Pair<DefinableEntity, List<ShareItem>>(entry, new ArrayList<ShareItem>());
-                                resultMap.put(entry.getId(), sharesByEntity);
-                            }
-                            sharesByEntity.getB().add(shareItem);
-                        }
-                    } else if (folders && shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
-                        Binder binder;
-                        if (sharesByEntity!=null) {
-                            binder = (Binder) sharesByEntity.getA();
-                        } else {
-                            binder = (Binder) getDefinableEntity(pair, !showExpired && !showDeleted);
-                        }
-                        if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden, showDeleted)) {
-                            if (sharesByEntity==null) {
-                                sharesByEntity = new Pair<DefinableEntity, List<ShareItem>>(binder, new ArrayList<ShareItem>());
-                                resultMap.put(binder.getId(), sharesByEntity);
-                            }
-                            sharesByEntity.getB().add(shareItem);
-                        }
-                    }
-                } catch (AccessControlException e) {
-                    logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
-                }
-            }
-        }
-        List<Pair<DefinableEntity, List<ShareItem>>> results = new ArrayList<Pair<DefinableEntity, List<ShareItem>>>();
-        results.addAll(resultMap.values());
-        return results;
-    }
-
     private DefinableEntity getSharedEntity(ShareItem shareItem, boolean accessCheck) {
         return accessCheck ?
                 getSharingModule().getSharedEntity(shareItem) :
                 getSharingModule().getSharedEntityWithoutAccessCheck(shareItem);
-    }
-
-    private boolean showBinderToUser(Binder binder, boolean onlyLibrary, Long collectionId, boolean showHidden, boolean showUnhidden, boolean showDeleted) {
-        if (binder==null) {
-            return false;
-        }
-        if ((!showDeleted && isBinderPreDeleted(binder)) || (onlyLibrary && binder.getEntityType() != EntityIdentifier.EntityType.workspace && !binder.isLibrary())) {
-            return false;
-        }
-        if (showHidden && showUnhidden) {
-            return true;
-        }
-        if (!showHidden && !showUnhidden) {
-            return false;
-        }
-        SearchResultList<Tag> entryTags = getBinderTags(binder, true);
-        for (Tag tag : entryTags.getResults()) {
-            if ((collectionId == ObjectKeys.SHARED_WITH_ME_ID && isHiddenInSharedWithMe(tag)) ||
-                    (collectionId == ObjectKeys.SHARED_BY_ME_ID && isHiddenInSharedByMe(tag))) {
-                return showHidden;
-            }
-        }
-        return showUnhidden;
-    }
-
-    private boolean showToUser(FolderEntry entry, Long collectionId, boolean showHidden, boolean showUnhidden, boolean showDeleted) {
-        if (entry==null) {
-            return false;
-        }
-        if (!showDeleted && _isPreDeleted(entry)) {
-            return false;
-        }
-        if (showHidden && showUnhidden) {
-            return true;
-        }
-        if (!showHidden && !showUnhidden) {
-            return false;
-        }
-        SearchResultList<Tag> entryTags = getEntryTags(entry, true);
-        for (Tag tag : entryTags.getResults()) {
-            if ((collectionId == ObjectKeys.SHARED_WITH_ME_ID && isHiddenInSharedWithMe(tag)) ||
-                    (collectionId == ObjectKeys.SHARED_BY_ME_ID && isHiddenInSharedByMe(tag))) {
-                return showHidden;
-            }
-        }
-        return showUnhidden;
     }
 
     protected BinderTree getSubBinderTree(Long topId, String topHref, SharedBinderBrief [] sharedBinders, Criterion filter, int descriptionFormat) {

@@ -1964,4 +1964,304 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
         throw new NotFoundException(ApiErrorCode.BINDER_NOT_FOUND, "NOT FOUND");
     }
+
+    protected SearchResultList<SearchableObject> _getMyFilesLibraryChildren(Date ifModifiedSince, boolean folders, boolean entries, boolean files, boolean allowJits,
+                                                                          int descriptionFormat, Integer offset, Integer maxCount, String nextUrl) {
+        User user = getLoggedInUser();
+        if (!SearchUtils.userCanAccessMyFiles(this, user)) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+
+        Date lastModified = getMyFilesLibraryModifiedDate(false, allowJits);
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
+        Map<String, Object> nextParams = new HashMap<String, Object>();
+        if (descriptionFormat==Description.FORMAT_HTML) {
+            nextParams.put("description_format", "html");
+        } else {
+            nextParams.put("description_format", "text");
+        }
+        SearchResultList<SearchableObject> results = null;
+        if (SearchUtils.useHomeAsMyFiles(this, user)) {
+            Long homeId = SearchUtils.getHomeFolderId(this, user);
+            if (homeId!=null) {
+                // If we are listing the home folder, use this API because it could trigger JITS.
+                results = getChildren(homeId, SearchUtils.buildLibraryCriterion(true), folders, entries, files, allowJits,
+                                      offset, maxCount, nextUrl, nextParams, descriptionFormat, ifModifiedSince);
+                results.setLastModified(lastModified);
+            }
+        }
+        if (results==null) {
+            // In all other cases, this code will search across the various My Files locations.  JITS is irrelevant.
+            Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, user.getWorkspaceId(), folders, entries, false, files);
+            results = lookUpChildren(crit, descriptionFormat, offset, maxCount, nextUrl, nextParams, lastModified);
+        }
+        setMyFilesParents(results);
+        return results;
+    }
+
+    protected void setMyFilesParents(SearchResultList results) {
+        List<Long> hiddenFolderIds = getEffectiveMyFilesFolderIds();
+        Set<Long> allParentIds = new HashSet(hiddenFolderIds);
+        allParentIds.add(getLoggedInUser().getWorkspaceId());
+        ParentBinder parent = new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files");
+        for (Object obj : results.getResults()) {
+            if (obj instanceof FileProperties && allParentIds.contains(((FileProperties)obj).getBinder().getId())) {
+                ((FileProperties)obj).setBinder(parent);
+            } else if (obj instanceof DefinableEntity && allParentIds.contains(((DefinableEntity)obj).getParentBinder().getId())) {
+                ((DefinableEntity)obj).setParentBinder(parent);
+            } else if (obj instanceof DefinableEntityBrief && allParentIds.contains(((DefinableEntityBrief)obj).getParentBinder().getId())) {
+                ((DefinableEntityBrief)obj).setParentBinder(parent);
+            } else if (obj instanceof BinderChange) {
+                org.kablink.teaming.rest.v1.model.BinderChange binderChange = (org.kablink.teaming.rest.v1.model.BinderChange) obj;
+                if (allParentIds.contains(binderChange.getId()) &&
+                        BinderChange.Action.modify.name().equals(binderChange.getAction())) {
+                    BinderBrief fakeMyFileFolders = getFakeMyFileFolders();
+                    binderChange.setId(fakeMyFileFolders.getId());
+                    binderChange.setBinder(fakeMyFileFolders.asBinder());
+                } else {
+                    org.kablink.teaming.rest.v1.model.Binder binder = ((org.kablink.teaming.rest.v1.model.BinderChange)obj).getBinder();
+                    if (binder!=null && allParentIds.contains(binder.getParentBinder().getId())) {
+                        binder.setParentBinder(parent);
+                    }
+                }
+            } else if (obj instanceof FileChange) {
+                FileProperties file = ((FileChange)obj).getFile();
+                if (file!=null && allParentIds.contains(file.getBinder().getId())) {
+                    file.setBinder(parent);
+                }
+            } else if (obj instanceof FolderEntryChange) {
+                org.kablink.teaming.rest.v1.model.FolderEntry entry = ((FolderEntryChange)obj).getEntry();
+                if (entry!=null && allParentIds.contains(entry.getParentBinder().getId())) {
+                    entry.setParentBinder(parent);
+                }
+            }
+        }
+    }
+
+    protected List<Long> getEffectiveMyFilesFolderIds() {
+        User user = getLoggedInUser();
+        if (SearchUtils.useHomeAsMyFiles(this, user)) {
+            return SearchUtils.getHomeFolderIds(this, user);
+        } else {
+        	List<Long> reply = new ArrayList<Long>();
+        	Long mfId = SearchUtils.getMyFilesFolderId(this, user, false);
+        	if (null != mfId) {
+        		reply.add(mfId);
+        	}
+        	return reply;
+        }
+    }
+
+    protected List<SearchableObject> getSharedByChildren(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, boolean onlyLibrary,
+                                                         boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
+        if (replaceParent) {
+            return _getSharedEntities(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", onlyLibrary, showHidden,
+                    showUnhidden, true, false, true);
+        }
+        return _getSharedEntities(shareItems, null, null, onlyLibrary, showHidden, showUnhidden, true, false, true);
+    }
+
+    protected List<SearchableObject> getSharedWithChildren(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
+        if (replaceParent) {
+            return _getSharedEntities(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", onlyLibrary, showHidden,
+                    showUnhidden, true, false, true);
+        }
+        return _getSharedEntities(shareItems, null, null, onlyLibrary, showHidden, showUnhidden, true, false, true);
+    }
+
+    protected List<SearchableObject> getPublicChildren(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent,
+                                                       boolean showHidden, boolean showUnhidden)  {
+        if (replaceParent) {
+            return _getSharedEntities(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", onlyLibrary, showHidden, showUnhidden, true, false, true);
+        }
+        return _getSharedEntities(shareItems, null, null, onlyLibrary, showHidden, showUnhidden, true, false, true);
+    }
+
+    protected List<SearchableObject> _getSharedEntities(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, Long topId, String topHref, boolean onlyLibrary,
+                                                      boolean showHidden, boolean showUnhidden,
+                                                      boolean folders, boolean entries, boolean files)  {
+        boolean guestEnabled = isGuestAccessEnabled();
+
+        List<Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> resultList = _getSharedItems(shareItems, topId, onlyLibrary,
+                showHidden, showUnhidden, topId==ObjectKeys.SHARED_BY_ME_ID, false, folders, entries || files);
+
+        List<SearchableObject> results = new ArrayList<SearchableObject>();
+        for (Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>> entityShares : resultList) {
+            try {
+                org.kablink.teaming.domain.DefinableEntity entity = entityShares.getA();
+                List<ShareItem> shares = entityShares.getB();
+                if (entity instanceof org.kablink.teaming.domain.FolderEntry) {
+                    if (entries) {
+                        SharedFolderEntryBrief entryBrief = null;
+                        for (ShareItem shareItem : shares) {
+                            if (entryBrief!=null) {
+                                entryBrief.addShare(ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), guestEnabled));
+                            } else {
+                                entryBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, buildShareRecipient(shareItem), (FolderEntry) entity, guestEnabled);
+                                if (topId!=null) {
+                                    entryBrief.setParentBinder(new ParentBinder(topId, topHref));
+                                }
+                                results.add(entryBrief);
+                            }
+                        }
+                    }
+                    if (files) {
+                        Set<Attachment> attachments = entity.getAttachments();
+                        for (Attachment attachment : attachments) {
+                            if (attachment instanceof FileAttachment) {
+                                SharedFileProperties fileProps = null;
+                                for (ShareItem shareItem : shares) {
+                                    if (fileProps!=null) {
+                                        fileProps.addShare(ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), guestEnabled));
+                                    } else {
+                                        fileProps = ResourceUtil.buildSharedFileProperties(shareItem, buildShareRecipient(shareItem), (FileAttachment) attachment, guestEnabled);
+                                        fileProps.setBinder(new ParentBinder(topId, topHref));
+                                        results.add(fileProps);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if (entity instanceof org.kablink.teaming.domain.Binder) {
+                    SharedBinderBrief binderBrief = null;
+                    for (ShareItem shareItem : shares) {
+                        if (binderBrief!=null) {
+                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), guestEnabled));
+                        } else {
+                            binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, buildShareRecipient(shareItem), (Binder) entity, guestEnabled);
+                            if (topId!=null) {
+                                binderBrief.setParentBinder(new ParentBinder(topId, topHref));
+                            }
+                            results.add(binderBrief);
+                        }
+                    }
+                }
+            } catch (AccessControlException e) {
+                logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + entityShares.getA().getEntityTypedId());
+            }
+        }
+        Collections.sort(results, new Comparator<SearchableObject>() {
+            @Override
+            public int compare(SearchableObject o1, SearchableObject o2) {
+                int result = o1.getDocType().compareTo(o2.getDocType());
+                if (result==0) {
+                    result = o1.getDisplayName().compareTo(o2.getDisplayName());
+                }
+                return result;
+            }
+        });
+        return results;
+    }
+
+    protected List<Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> _getSharedItems(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, Long topId, boolean onlyLibrary,
+                                                      boolean showHidden, boolean showUnhidden, boolean showExpired, boolean showDeleted,
+                                                      boolean folders, boolean entries)  {
+        Map<Object, Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> resultMap =
+                new LinkedHashMap<Object, Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>>();
+
+        for (Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity> pair : shareItems) {
+            ShareItem shareItem = pair.getA();
+            if (shareItem.isDeleted() && !showDeleted) {
+                // Ignore this share
+            } else if (shareItem.isExpired() && !showExpired) {
+                // Ignore this share
+            } else {
+                Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>> sharesByEntity = resultMap.get(shareItem.getSharedEntityIdentifier().getEntityId());
+                try {
+                    if (entries && shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                        FolderEntry entry;
+                        if (sharesByEntity!=null) {
+                            entry = (FolderEntry) sharesByEntity.getA();
+                        } else {
+                            entry = (FolderEntry) getDefinableEntity(pair, !showExpired && !showDeleted);
+                        }
+                        if (showToUser(entry, topId, showHidden, showUnhidden, showDeleted)) {
+                            if (sharesByEntity==null) {
+                                sharesByEntity = new Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>(entry, new ArrayList<ShareItem>());
+                                resultMap.put(entry.getId(), sharesByEntity);
+                            }
+                            sharesByEntity.getB().add(shareItem);
+                        }
+                    } else if (folders && shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
+                        Binder binder;
+                        if (sharesByEntity!=null) {
+                            binder = (Binder) sharesByEntity.getA();
+                        } else {
+                            binder = (Binder) getDefinableEntity(pair, !showExpired && !showDeleted);
+                        }
+                        if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden, showDeleted)) {
+                            if (sharesByEntity==null) {
+                                sharesByEntity = new Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>(binder, new ArrayList<ShareItem>());
+                                resultMap.put(binder.getId(), sharesByEntity);
+                            }
+                            sharesByEntity.getB().add(shareItem);
+                        }
+                    }
+                } catch (AccessControlException e) {
+                    logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
+                }
+            }
+        }
+        List<Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> results = new ArrayList<Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>>();
+        results.addAll(resultMap.values());
+        return results;
+    }
+
+    protected boolean showBinderToUser(Binder binder, boolean onlyLibrary, Long collectionId, boolean showHidden, boolean showUnhidden, boolean showDeleted) {
+        if (binder==null) {
+            return false;
+        }
+        if ((!showDeleted && isBinderPreDeleted(binder)) || (onlyLibrary && binder.getEntityType() != EntityIdentifier.EntityType.workspace && !binder.isLibrary())) {
+            return false;
+        }
+        if (showHidden && showUnhidden) {
+            return true;
+        }
+        if (!showHidden && !showUnhidden) {
+            return false;
+        }
+        SearchResultList<Tag> entryTags = getBinderTags(binder, true);
+        for (Tag tag : entryTags.getResults()) {
+            if ((collectionId == ObjectKeys.SHARED_WITH_ME_ID && isHiddenInSharedWithMe(tag)) ||
+                    (collectionId == ObjectKeys.SHARED_BY_ME_ID && isHiddenInSharedByMe(tag))) {
+                return showHidden;
+            }
+        }
+        return showUnhidden;
+    }
+
+    protected boolean showToUser(FolderEntry entry, Long collectionId, boolean showHidden, boolean showUnhidden, boolean showDeleted) {
+        if (entry==null) {
+            return false;
+        }
+        if (!showDeleted && _isPreDeleted(entry)) {
+            return false;
+        }
+        if (showHidden && showUnhidden) {
+            return true;
+        }
+        if (!showHidden && !showUnhidden) {
+            return false;
+        }
+        SearchResultList<Tag> entryTags = getEntryTags(entry, true);
+        for (Tag tag : entryTags.getResults()) {
+            if ((collectionId == ObjectKeys.SHARED_WITH_ME_ID && isHiddenInSharedWithMe(tag)) ||
+                    (collectionId == ObjectKeys.SHARED_BY_ME_ID && isHiddenInSharedByMe(tag))) {
+                return showHidden;
+            }
+        }
+        return showUnhidden;
+    }
+
+    protected SearchResultList<NetFolderBrief> _getNetFolders(int descriptionFormat, int offset, int maxCount, String nextUrl, Map<String, Object> nextParams) {
+        Map map = SearchUtils.searchForNetFolders(this, null, new HashMap());
+        SearchResultList<NetFolderBrief> results = new SearchResultList<NetFolderBrief>();
+        SearchResultBuilderUtil.buildSearchResults(results, new NetFolderBriefBuilder(descriptionFormat), map, nextUrl, nextParams, offset);
+        for (NetFolderBrief binder : results.getResults()) {
+            binder.setParentBinder(new ParentBinder(ObjectKeys.NET_FOLDERS_ID, "/self/net_folders"));
+        }
+        return results;
+    }
 }

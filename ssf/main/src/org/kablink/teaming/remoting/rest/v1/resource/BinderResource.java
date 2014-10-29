@@ -38,16 +38,23 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.fi.AccessDeniedException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.exc.RestExceptionWrapper;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.BinderChildren;
+import org.kablink.teaming.rest.v1.model.ErrorInfo;
 import org.kablink.teaming.rest.v1.model.LibraryInfo;
+import org.kablink.teaming.rest.v1.model.NetFolderBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.util.VibeRuntimeException;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.util.api.ApiErrorCode;
+import org.kablink.util.api.ApiErrorCodeSupport;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criterion;
 import org.kablink.util.search.Junction;
@@ -61,6 +68,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.util.*;
@@ -153,6 +161,84 @@ public class BinderResource extends AbstractResource {
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(toDomainFormat(descriptionFormatStr)), resultsMap, "/binders/legacy_query", nextParams, offset);
         return results;
    	}
+
+    @GET
+    @Path("library_children")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public List<BinderChildren> getLibraryChildren(@QueryParam("id") Set<Long> ids,
+                                                   @QueryParam("first_id") Long firstId,
+                                       @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+                                       @QueryParam("first") @DefaultValue("0") Integer offset,
+                                       @QueryParam("count") @DefaultValue("100") Integer maxCount) {
+        int remainingCount = maxCount;
+        Set<Long> processedIds = new HashSet<Long>();
+        List<BinderChildren> childrenList = new ArrayList<BinderChildren>();
+        int domainFormat = toDomainFormat(descriptionFormatStr);
+
+        if (firstId!=null) {
+            BinderChildren bc = getBinderChildren(firstId, offset, remainingCount, domainFormat);
+            childrenList.add(bc);
+            remainingCount -= bc.getChildrenCount();
+            processedIds.add(firstId);
+        }
+
+        for (Long id : ids) {
+            if (remainingCount>0 && !processedIds.contains(id)) {
+                BinderChildren bc = getBinderChildren(id, 0, remainingCount, domainFormat);
+                childrenList.add(bc);
+                remainingCount -= bc.getChildrenCount();
+                processedIds.add(firstId);
+            }
+        }
+        return childrenList;
+    }
+
+    private BinderChildren getBinderChildren(Long id, int offset, int maxCount, int domainFormat) {
+        ErrorInfo error = null;
+        SearchResultList<SearchableObject> children = null;
+        try {
+            if (id.equals(ObjectKeys.MY_FILES_ID)) {
+                children = _getMyFilesLibraryChildren(null, true, false, true, false, domainFormat, offset, maxCount, null);
+            } else if (id.equals(ObjectKeys.NET_FOLDERS_ID)) {
+                SearchResultList<NetFolderBrief> childrenList = _getNetFolders(domainFormat, 0, -1, null, null);
+                children = new SearchResultList<SearchableObject>();
+                for (NetFolderBrief nf : childrenList.getResults()) {
+                    children.append(nf);
+                }
+            } else if (id.equals(ObjectKeys.SHARED_WITH_ME_ID)) {
+                List<SearchableObject> childrenList = getSharedWithChildren(getSharedWithShareItems(getLoggedInUserId(), false), true, true, false, true);
+                children = new SearchResultList<SearchableObject>();
+                children.appendAll(childrenList);
+            } else if (id.equals(ObjectKeys.SHARED_BY_ME_ID)) {
+                List<SearchableObject> childrenList = getSharedByChildren(getSharedByShareItems(getLoggedInUserId(), false), true, true, false, true);
+                children = new SearchResultList<SearchableObject>();
+                children.appendAll(childrenList);
+            } else if (id.equals(ObjectKeys.PUBLIC_SHARES_ID)) {
+                List<SearchableObject> childrenList = getPublicChildren(getPublicShareItems(false), true, true, false, true);
+                children = new SearchResultList<SearchableObject>();
+                children.appendAll(childrenList);
+            } else {
+                children = getChildren(id, SearchUtils.buildLibraryCriterion(true), true, false, true,
+                        false, offset, maxCount, null, null, domainFormat, null);
+            }
+        } catch (RestExceptionWrapper e) {
+            error = new ErrorInfo(e.getApiErrorCode().name(), e.getLocalizedMessage(), e.getData());
+        } catch (WebApplicationException e) {
+            if (e.getResponse().getEntity() instanceof ErrorInfo) {
+                error = (ErrorInfo) e.getResponse().getEntity();
+            } else {
+                error = new ErrorInfo(ApiErrorCode.SERVER_ERROR.name(), e.getLocalizedMessage());
+            }
+        } catch (RuntimeException e) {
+            if (e instanceof ApiErrorCodeSupport) {
+                error = new ErrorInfo(((ApiErrorCodeSupport)e).getApiErrorCode().name(), e.getLocalizedMessage());
+            } else {
+                error = new ErrorInfo(ApiErrorCode.SERVER_ERROR.name(), e.getLocalizedMessage());
+            }
+        }
+        return new BinderChildren(id, children, error);
+
+    }
 
     /**
      * Returns the Binder with the specified ID.

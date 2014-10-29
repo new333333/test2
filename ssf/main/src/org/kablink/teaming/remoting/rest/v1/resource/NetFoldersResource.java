@@ -138,13 +138,4 @@ public class NetFoldersResource extends AbstractResource {
                 "/net_folders/recent_activity", nextParams);
     }
 
-    protected SearchResultList<NetFolderBrief> _getNetFolders(int descriptionFormat, int offset, int maxCount, String nextUrl, Map<String, Object> nextParams) {
-        Map map = SearchUtils.searchForNetFolders(this, null, new HashMap());
-        SearchResultList<NetFolderBrief> results = new SearchResultList<NetFolderBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new NetFolderBriefBuilder(descriptionFormat), map, nextUrl, nextParams, offset);
-        for (NetFolderBrief binder : results.getResults()) {
-            binder.setParentBinder(new ParentBinder(ObjectKeys.NET_FOLDERS_ID, "/self/net_folders"));
-        }
-        return results;
-    }
 }

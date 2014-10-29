@@ -799,81 +799,6 @@ public class SelfResource extends AbstractFileResource {
         return results;
     }
 
-    private SearchResultList<SearchableObject> _getMyFilesLibraryChildren(Date ifModifiedSince, boolean folders, boolean entries, boolean files, boolean allowJits,
-                                                                          int descriptionFormat, Integer offset, Integer maxCount, String nextUrl) {
-        org.kablink.teaming.domain.User user = getLoggedInUser();
-        if (!SearchUtils.userCanAccessMyFiles(this, user)) {
-            throw new AccessControlException("Personal storage is not allowed.", null);
-        }
-
-        Date lastModified = getMyFilesLibraryModifiedDate(false, allowJits);
-        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
-            throw new NotModifiedException();
-        }
-        Map<String, Object> nextParams = new HashMap<String, Object>();
-        if (descriptionFormat==Description.FORMAT_HTML) {
-            nextParams.put("description_format", "html");
-        } else {
-            nextParams.put("description_format", "text");
-        }
-        SearchResultList<SearchableObject> results = null;
-        if (SearchUtils.useHomeAsMyFiles(this, user)) {
-            Long homeId = SearchUtils.getHomeFolderId(this, user);
-            if (homeId!=null) {
-                // If we are listing the home folder, use this API because it could trigger JITS.
-                results = getChildren(homeId, SearchUtils.buildLibraryCriterion(true), folders, entries, files, allowJits,
-                                      offset, maxCount, nextUrl, nextParams, descriptionFormat, null);
-                results.setLastModified(lastModified);
-            }
-        }
-        if (results==null) {
-            // In all other cases, this code will search across the various My Files locations.  JITS is irrelevant.
-            Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, user.getWorkspaceId(), folders, entries, false, files);
-            results = lookUpChildren(crit, descriptionFormat, offset, maxCount, nextUrl, nextParams, lastModified);
-        }
-        setMyFilesParents(results);
-        return results;
-    }
-
-    private void setMyFilesParents(SearchResultList results) {
-        List<Long> hiddenFolderIds = getEffectiveMyFilesFolderIds();
-        Set<Long> allParentIds = new HashSet(hiddenFolderIds);
-        allParentIds.add(getLoggedInUser().getWorkspaceId());
-        ParentBinder parent = new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files");
-        for (Object obj : results.getResults()) {
-            if (obj instanceof FileProperties && allParentIds.contains(((FileProperties)obj).getBinder().getId())) {
-                ((FileProperties)obj).setBinder(parent);
-            } else if (obj instanceof DefinableEntity && allParentIds.contains(((DefinableEntity)obj).getParentBinder().getId())) {
-                ((DefinableEntity)obj).setParentBinder(parent);
-            } else if (obj instanceof DefinableEntityBrief && allParentIds.contains(((DefinableEntityBrief)obj).getParentBinder().getId())) {
-                ((DefinableEntityBrief)obj).setParentBinder(parent);
-            } else if (obj instanceof BinderChange) {
-                BinderChange binderChange = (BinderChange) obj;
-                if (allParentIds.contains(binderChange.getId()) &&
-                        org.kablink.teaming.domain.BinderChange.Action.modify.name().equals(binderChange.getAction())) {
-                    BinderBrief fakeMyFileFolders = getFakeMyFileFolders();
-                    binderChange.setId(fakeMyFileFolders.getId());
-                    binderChange.setBinder(fakeMyFileFolders.asBinder());
-                } else {
-                    org.kablink.teaming.rest.v1.model.Binder binder = ((BinderChange)obj).getBinder();
-                    if (binder!=null && allParentIds.contains(binder.getParentBinder().getId())) {
-                        binder.setParentBinder(parent);
-                    }
-                }
-            } else if (obj instanceof FileChange) {
-                FileProperties file = ((FileChange)obj).getFile();
-                if (file!=null && allParentIds.contains(file.getBinder().getId())) {
-                    file.setBinder(parent);
-                }
-            } else if (obj instanceof FolderEntryChange) {
-                org.kablink.teaming.rest.v1.model.FolderEntry entry = ((FolderEntryChange)obj).getEntry();
-                if (entry!=null && allParentIds.contains(entry.getParentBinder().getId())) {
-                    entry.setParentBinder(parent);
-                }
-            }
-        }
-    }
-
     private Folder getMyFilesFileParent() {
         org.kablink.teaming.domain.User loggedInUser = getLoggedInUser();
         if (SearchUtils.useHomeAsMyFiles(this, loggedInUser)) {
@@ -899,20 +824,6 @@ public class SelfResource extends AbstractFileResource {
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), map);
         return results.getLastModified();
-    }
-
-    private List<Long> getEffectiveMyFilesFolderIds() {
-        org.kablink.teaming.domain.User user = getLoggedInUser();
-        if (SearchUtils.useHomeAsMyFiles(this, user)) {
-            return SearchUtils.getHomeFolderIds(this, user);
-        } else {
-        	List<Long> reply = new ArrayList<Long>();
-        	Long mfId = SearchUtils.getMyFilesFolderId(this, user, false);
-        	if (null != mfId) {
-        		reply.add(mfId);
-        	}
-        	return reply;
-        }
     }
 
     private SearchResultList<FileProperties> _getMyFilesLibraryFiles(String fileName, boolean recursive,
