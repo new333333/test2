@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.DialogClosedEvent;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
+import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
@@ -104,6 +105,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 	private boolean					m_fixedSize;						//
 	private Integer					m_height;							//
 	private boolean					m_useOverflowAutoOnContent = true;	//
+	private SpinnerPopup			m_dlgBusySpinner;					// A spinner that can be shown while an operation is in progress.
     	
 	private static int				m_uniqueId       = 100;						//
 	private static List<DlgBox>		m_visibleDialogs = new ArrayList<DlgBox>();	//
@@ -791,6 +793,17 @@ public abstract class DlgBox extends TeamingPopupPanel
 		m_superHide = wasSuperHide;
 	}// end hide()
 
+	/**
+	 * If a busy spinner exists, hide it.
+	 */
+	public void hideDlgBusySpinner() {
+		// If we have a busy spinner...
+		if (null != m_dlgBusySpinner) {
+			// ...make sure that it's hidden.
+			m_dlgBusySpinner.hide();
+		}
+	}
+
 	/*
 	 * 
 	 */
@@ -897,6 +910,20 @@ public abstract class DlgBox extends TeamingPopupPanel
 	public void setTourEnabled( boolean enabled )
 	{
 		m_tourButton.setVisible( enabled );
+	}
+	
+	/**
+	 * Shows a busy spinner animation while an operation is going on.
+	 */
+	public void showDlgBusySpinner() {
+		// If we haven't created a busy spinner yet...
+		if (null == m_dlgBusySpinner) {
+			// ...create one now...
+			m_dlgBusySpinner = new SpinnerPopup();
+		}
+
+		// ...and show it.
+		m_dlgBusySpinner.center();
 	}
 	
 	/**
