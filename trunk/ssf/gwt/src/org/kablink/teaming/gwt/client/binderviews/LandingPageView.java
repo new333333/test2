@@ -135,7 +135,7 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 	/**
 	 * Build this landing page for the given ConfigData.
 	 */
-	private void buildLandingPage( ConfigData configData )
+	private void buildLandingPage( final ConfigData configData )
 	{
 		String bgColor;
 		String bgImgUrl;
@@ -217,7 +217,8 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 				m_mainPanel.add( lpWidget );
 
 				// Add the footer to the page
-				addFooter();
+				if ( configData.getHideFooter() == false )
+					addFooter();
 			}
 		} );
 
