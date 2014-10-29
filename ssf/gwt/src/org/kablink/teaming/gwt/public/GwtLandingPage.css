@@ -446,6 +446,7 @@
   	background-color: transparent;
 	border-collapse: collapse;
   	padding: 0px;
+  	table-layout: fixed;
   	text-align:left !important;
   	width: 100%;
 }
