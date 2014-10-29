@@ -87,4 +87,15 @@ public abstract class BaseRestObject {
         }
         additionalLinks.add(link);
     }
+
+    public String findRelatedLink(String relation) {
+        if (additionalLinks!=null) {
+            for (Link link : additionalLinks) {
+                if (link.getRel().equals(relation)) {
+                    return link.getHref();
+                }
+            }
+        }
+        return null;
+    }
 }
