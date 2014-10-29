@@ -92,13 +92,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -8139,9 +8137,19 @@ public class GwtServerHelper {
 				reply = getDateTimeString(((Date) emValue), dateStyle, timeStyle);
 			}
 			
+			// No, it isn't a date either!  Is it a search field
+			// result?
+			else if (emValue instanceof SearchFieldResult) {
+				// Yes!  Take the first string value.
+				String[] emValues = ((SearchFieldResult) emValue).getValueArray().toArray(new String[0]);
+				int emCount = ((null == emValues) ? 0 : emValues.length);
+				if (0 < emCount)
+				     reply = emValues[0];
+				else reply = "";
+			}
 			else {
-				// No, it isn't a date either!  Let the object convert
-				// itself to a string and return that.
+				// No, it isn't a search field result either!  Let the
+				// object convert itself to a string and return that.
 				reply = emValue.toString();
 			}
 		}
