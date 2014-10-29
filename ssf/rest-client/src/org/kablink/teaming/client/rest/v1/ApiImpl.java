@@ -33,211 +33,232 @@
 
 package org.kablink.teaming.client.rest.v1;
 
-import java.io.File;
-import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.type.TypeBindings;
+import org.codehaus.jackson.type.JavaType;
+import org.codehaus.jackson.type.TypeReference;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
-import org.kablink.teaming.rest.v1.model.FileProperties;
-import org.kablink.teaming.rest.v1.model.FileVersionProperties;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import org.kablink.teaming.rest.v1.model.Binder;
+import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.Folder;
+import org.kablink.teaming.rest.v1.model.ReleaseInfo;
+import org.kablink.teaming.rest.v1.model.RootRestObject;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.SearchableObject;
+import org.kablink.teaming.rest.v1.model.User;
+import org.kablink.teaming.rest.v1.model.Workspace;
+import org.kablink.teaming.rest.v1.model.ZoneConfig;
 
 /**
  * @author jong
  *
  */
 public class ApiImpl implements Api {
-	
-	private final String FILE_TEMPLATE_BY_NAME = "file/name/{entityType}/{entityId}/{filename}";
-	private final String FILE_TEMPLATE_BY_ID = "file/id/{fileid}";
-	
+
 	private ApiClient conn;
+    private RootRestObject root;
+    private User self;
 	
 	ApiImpl(ApiClient conn) {
 		this.conn = conn;
 	}
-	
-	public FileProperties writeFile(String entityType, long entityId, String filename, File inFile) {
-		return writeFileContent(entityType, entityId, filename, inFile, null, null, null, null, null);
-	}
-	
-	public FileProperties writeFile(String entityType, long entityId, String filename, InputStream file) {
-		return writeFileContent(entityType, entityId, filename, file, null, null, null, null, null);
-	}
-	
-	public FileProperties writeFile(String fileId, File inFile) {
-		String mt = new MimetypesFileTypeMap().getContentType(inFile.getName());
-		return writeFileContent(fileId, inFile, mt, null, null, null, null, null);
-	}
-	
-	public FileProperties writeFile(String fileId, InputStream file, String mimeType) {
-		return writeFileContent(fileId, file, mimeType, null, null, null, null, null);
-	}
-	
-	public FileProperties writeFile(String entityType, long entityId,
-			String filename, File inFile, String dataName, Date modDate,
-			Integer lastVersionNumber, Integer lastMajorVersionNumber,
-			Integer lastMinorVersionNumber) {
-		return writeFileContent(entityType, entityId, filename, inFile, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-	}
 
-	public FileProperties writeFile(String entityType, long entityId,
-			String filename, InputStream file, String dataName, Date modDate,
-			Integer lastVersionNumber, Integer lastMajorVersionNumber,
-			Integer lastMinorVersionNumber) {
-		return writeFileContent(entityType, entityId, filename, file, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-	}
+    public RootRestObject getRoot() {
+        if (root==null) {
+            root = getJSONResourceBuilder("").get(RootRestObject.class);
+        }
+        return root;
+    }
 
-	public FileProperties writeFile(String fileId, File inFile, String dataName,
-			Date modDate, Integer lastVersionNumber,
-			Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
-		String mt = new MimetypesFileTypeMap().getContentType(inFile.getName());
-		return writeFileContent(fileId, inFile, mt, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-	}
+    @Override
+    public Binder getMyFiles() {
+        return getJSONResourceBuilder(getSelfHref("my_files")).get(Binder.class);
+    }
 
-	public FileProperties writeFile(String fileId, InputStream file,
-			String mimeType, String dataName, Date modDate,
-			Integer lastVersionNumber, Integer lastMajorVersionNumber,
-			Integer lastMinorVersionNumber) {
-		return writeFileContent(fileId, file, mimeType, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-	}
+    @Override
+    public Binder getNetFolders() {
+        return getJSONResourceBuilder(getSelfHref("net_folders")).get(Binder.class);
+    }
 
-	public File readFileAsFile(String entityType, long entityId, String filename) {
-		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME);
-		URI resourceUri = ub.build(entityType, entityId, filename);
-		Client c = conn.getClient();		
-		WebResource r = c.resource(resourceUri);
-		return r.accept(MediaType.WILDCARD).get(File.class);
-	}
-	
-	public InputStream readFile(String entityType, long entityId, String filename) {
-		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME);
-		URI resourceUri = ub.build(entityType, entityId, filename);
-		Client c = conn.getClient();		
-		WebResource r = c.resource(resourceUri);
-		return r.accept(MediaType.WILDCARD).get(InputStream.class);
-	}
-	
-	public File readFileAsFile(String fileId) {
-		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID);
-		URI resourceUri = ub.build(fileId);
-		Client c = conn.getClient();		
-		WebResource r = c.resource(resourceUri);
-		return r.accept(MediaType.WILDCARD).get(File.class);
-	}
-	
-	public InputStream readFile(String fileId) {
-		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID);
-		URI resourceUri = ub.build(fileId);
-		Client c = conn.getClient();		
-		WebResource r = c.resource(resourceUri);
-		return r.accept(MediaType.WILDCARD).get(InputStream.class);
-	}
-	
-	public FileProperties readFileProperties(String entityType, long entityId, String filename) {
-		Client c = conn.getClient();		
-		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("properties").build(entityType, entityId, filename);
-		WebResource r = c.resource(resourceUri);
-		return r.accept(conn.getAcceptableMediaTypes()).get(FileProperties.class);
-	}
-	
-	public FileProperties readFileProperties(String fileId) {
-		Client c = conn.getClient();		
-		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("properties").build(fileId);
-		WebResource r = c.resource(resourceUri);
-		return r.accept(conn.getAcceptableMediaTypes()).get(FileProperties.class);
-	}
-	
-	public FileProperties updateFileProperties(String entityType, long entityId, String filename, FileProperties fileProperties) {
-		Client c = conn.getClient();		
-		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("properties").build(entityType, entityId, filename);
-		WebResource r = c.resource(resourceUri);
-		return r.accept(conn.getAcceptableMediaTypes()).post(FileProperties.class, fileProperties);
-	}
-	
-	public FileProperties updateFileProperties(String fileId, FileProperties fileProperties) {
-		Client c = conn.getClient();		
-		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("properties").build(fileId);
-		WebResource r = c.resource(resourceUri);
-		return r.accept(conn.getAcceptableMediaTypes()).post(FileProperties.class, fileProperties);
-	}
-	
-	public void deleteFile(String entityType, long entityId, String filename) {
-		Client c = conn.getClient();		
-		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).build(entityType, entityId, filename);
-		WebResource r = c.resource(resourceUri);
-		r.accept(conn.getAcceptableMediaTypes()).delete();
-	}
-	
-	public void deleteFile(String fileId) {
-		Client c = conn.getClient();		
-		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).build(fileId);
-		WebResource r = c.resource(resourceUri);
-		r.accept(conn.getAcceptableMediaTypes()).delete();
-	}
-	
-	public SearchResultList<FileVersionProperties> getFileVersions(String entityType, long entityId, String filename) {
-		Client c = conn.getClient();		
-		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME).path("versions").build(entityType, entityId, filename);
-		WebResource r = c.resource(resourceUri);
-		return r.accept(conn.getAcceptableMediaTypes()).get(SearchResultList.class);
-	}
-	
-	public SearchResultList<FileVersionProperties> getFileVersions(String fileId) {
-		Client c = conn.getClient();		
-		URI resourceUri = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_ID).path("versions").build(fileId);
-		WebResource r = c.resource(resourceUri);
-		return r.accept(conn.getAcceptableMediaTypes()).get(SearchResultList.class);
-	}
+    @Override
+    public ReleaseInfo getReleaseInfo() {
+        return getJSONResourceBuilder(getRootHref("release_info")).get(ReleaseInfo.class);
+    }
 
-	private String ISO8601FromDate(Date date) {
+    @Override
+    public User getSelf() {
+        if (self==null) {
+            self = getJSONResourceBuilder(getRootHref("self")).get(User.class);
+        }
+        return self;
+    }
+
+    @Override
+    public Binder getSharedByMe() {
+        return getJSONResourceBuilder(getSelfHref("shared_by_me")).get(Binder.class);
+    }
+
+    @Override
+    public Binder getSharedWithMe() {
+        return getJSONResourceBuilder(getSelfHref("shared_with_me")).get(Binder.class);
+    }
+
+    @Override
+    public ZoneConfig getZoneConfig() {
+        return getJSONResourceBuilder(getRootHref("zone_config")).get(ZoneConfig.class);
+    }
+
+    @Override
+    public Map<Long, SearchResultList<SearchableObject>> listBinderChildren(Long[] binderIds, Integer first, Integer count) {
+        Map<String, Object> params = getFirstAndCountParams(first, count);
+        if (params==null) {
+            params = new HashMap<String, Object>();
+        }
+        params.put("id", binderIds);
+        List results = getJSONResourceBuilder(getRootHref("binder_library_children"), params).get(List.class);
+        Map<Long, SearchResultList<SearchableObject>> finalResults = new LinkedHashMap<Long, SearchResultList<SearchableObject>>();
+        ObjectMapper mapper = this.conn.getObjectMapper();
+        for (Object result : results) {
+            Map resultMap = (Map) result;
+            Long binderId = ((Number)resultMap.get("binder_id")).longValue();
+            Map childMap = (Map)resultMap.get("children");
+            if (childMap!=null) {
+                SearchResultList children = mapper.convertValue(childMap, SearchResultList.class);
+                finalResults.put(binderId, buildSearchableObjectSearchResultList(children));
+            } else {
+                finalResults.put(binderId, new SearchResultList<SearchableObject>());
+            }
+        }
+
+        return finalResults;
+    }
+
+    @Override
+    public SearchResultList<SearchableObject> listChildren(Binder binder) {
+        return listChildren(binder, null, null);
+    }
+
+    public SearchResultList<SearchableObject> listChildren(Binder binder, Integer first, Integer count) {
+        Map<String, Object> params = getFirstAndCountParams(first, count);
+        SearchResultList results = getJSONResourceBuilder(binder.findRelatedLink("library_children"), params).get(SearchResultList.class);
+        return buildSearchableObjectSearchResultList(results);
+    }
+
+    private SearchResultList<SearchableObject> buildSearchableObjectSearchResultList(SearchResultList results) {
+        SearchResultList<SearchableObject> actualResults = new SearchResultList<SearchableObject>(results.getFirst());
+        ObjectMapper mapper = this.conn.getObjectMapper();
+        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        for (Object obj : results.getResults()) {
+            SearchableObject searchObject = null;
+            Map map = (HashMap) obj;
+            String docType = (String) map.get("doc_type");
+            String entityType = (String) map.get("entity_type");
+            if ("binder".equals(docType)) {
+                if ("folder".equals(entityType)) {
+                    map.put("@type", ".Folder");
+                } else if ("workspace".equals(entityType)) {
+                    map.put("@type", ".Workspace");
+                }
+                searchObject = mapper.convertValue(map, Binder.class);
+            } else if ("file".equals(docType)) {
+                map.put("@type", ".FileProperties");
+                searchObject = mapper.convertValue(map, FileProperties.class);
+            }
+            actualResults.append(searchObject);
+        }
+        actualResults.setLastModified(results.getLastModified());
+        actualResults.setNext(results.getNext());
+        actualResults.setTotal(results.getTotal());
+
+        return actualResults;
+    }
+
+    private Map<String, Object> getFirstAndCountParams(Integer first, Integer count) {
+        Map<String, Object> params = null;
+        if (first!=null || count!=null) {
+            params = new HashMap<String, Object>();
+            if (first!=null) {
+                params.put("first", first);
+            }
+            if (count!=null) {
+                params.put("count", count);
+            }
+        }
+        return params;
+    }
+
+
+    private String getRootHref(String name) {
+        RootRestObject root = getRoot();
+        return root.findRelatedLink(name);
+    }
+
+    private String getSelfHref(String name) {
+        User self = getSelf();
+        return self.findRelatedLink(name);
+    }
+
+    private WebResource.Builder getJSONResourceBuilder(String href) {
+        WebResource r = getResource(href);
+        return r.accept(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    private WebResource.Builder getJSONResourceBuilder(String href, Map<String, Object> queryParams) {
+        WebResource r = getResource(href, queryParams);
+        return r.accept(MediaType.APPLICATION_JSON_TYPE);
+    }
+
+    private WebResource getResource(String href) {
+        return getResource(href, null);
+    }
+
+    private WebResource getResource(String href, Map<String, Object> queryParams) {
+        if (href==null) {
+            throw new NullPointerException("href is null");
+        }
+        UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl() + href);
+        if (queryParams!=null) {
+            for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
+                Object value = entry.getValue();
+                if (value instanceof Iterable) {
+                    for (Object val : (Iterable) value) {
+                        ub.queryParam(entry.getKey(), val);
+                    }
+                } else if (value.getClass().isArray()) {
+                    for (Object val : (Object []) value) {
+                        ub.queryParam(entry.getKey(), val);
+                    }
+                } else {
+                    ub.queryParam(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+        URI resourceUri = ub.build();
+        Client c = conn.getClient();
+        return c.resource(resourceUri);
+    }
+
+    private String ISO8601FromDate(Date date) {
 		String dateStr = null;
 		if(date != null) {
 			DateTime dateTime = new DateTime(date);
 			dateStr = ISODateTimeFormat.dateTime().print(dateTime);
 		}
 		return dateStr;
-	}
-	
-	private FileProperties writeFileContent(String entityType, long entityId, String filename, Object file, String dataName, Date modDate, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
-		UriBuilder ub = getFileUriBuilder(FILE_TEMPLATE_BY_NAME, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-		URI resourceUri = ub.build(entityType, entityId, filename);
-		Client c = conn.getClient();		
-		WebResource r = c.resource(resourceUri);
-		String mt = new MimetypesFileTypeMap().getContentType(filename);
-		return r.accept(conn.getAcceptableMediaTypes()).entity(file, mt).post(FileProperties.class);
-	}
-
-	private FileProperties writeFileContent(String fileId, Object file, String mimeType, String dataName, Date modDate, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
-		UriBuilder ub = getFileUriBuilder(FILE_TEMPLATE_BY_ID, dataName, modDate, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
-		URI resourceUri = ub.build(fileId);
-		Client c = conn.getClient();		
-		WebResource r = c.resource(resourceUri);
-		return r.accept(conn.getAcceptableMediaTypes()).entity(file, mimeType).post(FileProperties.class);
-	}
-	
-	private UriBuilder getFileUriBuilder(String fileResourceTemplate, String dataName, Date modDate, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
-		String modDateStr = ISO8601FromDate(modDate);
-		UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl()).path(FILE_TEMPLATE_BY_NAME);
-		if(dataName != null)
-			ub.queryParam("dataName", dataName);
-		if(modDateStr != null)
-			ub.queryParam("modDate", modDateStr);
-		if(lastVersionNumber != null)
-			ub.queryParam("lastVersionNumber", lastVersionNumber);
-		if(lastMajorVersionNumber != null)
-			ub.queryParam("lastMajorVersionNumber", lastMajorVersionNumber);
-		if(lastMinorVersionNumber != null)
-			ub.queryParam("lastMinorVersionNumber", lastMinorVersionNumber);
-		return ub;
 	}
 }

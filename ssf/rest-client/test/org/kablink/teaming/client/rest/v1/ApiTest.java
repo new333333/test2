@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
- * 
+ *
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
  * obtain a copy of the CPAL at http://www.opensource.org/licenses/cpal_1.0. The
@@ -8,15 +8,15 @@
  * have been added to cover use of software over a computer network and provide
  * for limited attribution for the Original Developer. In addition, Exhibit A has
  * been modified to be consistent with Exhibit B.
- * 
+ *
  * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT
  * WARRANTY OF ANY KIND, either express or implied. See the CPAL for the specific
  * language governing rights and limitations under the CPAL.
- * 
+ *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
  * (c) 1998-2009 Novell, Inc. All Rights Reserved.
- * 
+ *
  * Attribution Information:
  * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
@@ -26,11 +26,10 @@
  * Display of Attribution Information is required in Larger Works which are
  * defined in the CPAL as a work which combines Covered Code or portions thereof
  * with code not governed by the terms of the CPAL.
- * 
+ *
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.client.rest.v1;
 
 import org.kablink.teaming.rest.v1.model.Binder;
@@ -44,29 +43,35 @@ import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import java.util.Map;
 
 /**
- * @author jong
- *
+ * User: David
+ * Date: 10/28/14
+ * Time: 2:06 PM
  */
-public interface Api {
-    public static final Long MY_FILES_ID = Long.valueOf(-100);
-    // Reserved id used by the REST API for the "Shared With Me" virtual binder
-    public static final Long SHARED_WITH_ME_ID = Long.valueOf(-101);
-    // Reserved id used by the REST API for the "Shared By Me" virtual binder
-    public static final Long SHARED_BY_ME_ID = Long.valueOf(-102);
-    // Reserved id used by the REST API for the "Net Folders" virtual binder
-    public static final Long NET_FOLDERS_ID = Long.valueOf(-103);
-    // Reserved id used by the REST API for the "Public" virtual binder
-    public static final Long PUBLIC_SHARES_ID = Long.valueOf(-104);
+public class ApiTest {
+    public static void main(String [] args) {
+        ApiClient client = ApiClient.create("https://amethyst.wal.novell.com:8443", "dlewis", "test", "localhost", 8888);
+        Api api = new ApiImpl(client);
 
-    Binder getMyFiles();
-    Binder getNetFolders();
-    ReleaseInfo getReleaseInfo();
-    RootRestObject getRoot();
-    User getSelf();
-    Binder getSharedByMe();
-    Binder getSharedWithMe();
-    ZoneConfig getZoneConfig();
-    Map<Long, SearchResultList<SearchableObject>> listBinderChildren(Long[] binderIds, Integer first, Integer count);
-    SearchResultList<SearchableObject> listChildren(Binder binder);
-    SearchResultList<SearchableObject> listChildren(Binder binder, Integer first, Integer count);
+        RootRestObject root = api.getRoot();
+        ReleaseInfo releaseInfo = api.getReleaseInfo();
+        User self = api.getSelf();
+        ZoneConfig zc = api.getZoneConfig();
+
+        Binder myFiles = api.getMyFiles();
+        Binder netFolder = api.getNetFolders();
+        Binder sharedByMe = api.getSharedByMe();
+        Binder sharedWithMe = api.getSharedWithMe();
+
+        SearchResultList<SearchableObject> children11 = api.listChildren(myFiles, 0, 1);
+        SearchResultList<SearchableObject> children12 = api.listChildren(myFiles, 1, 1);
+        SearchResultList<SearchableObject> children2 = api.listChildren(netFolder);
+        SearchResultList<SearchableObject> children3 = api.listChildren(sharedByMe);
+        SearchResultList<SearchableObject> children4 = api.listChildren(sharedWithMe);
+
+        Map<Long,SearchResultList<SearchableObject>> childrenMap = api.listBinderChildren(new Long[]{
+                Api.MY_FILES_ID, Api.NET_FOLDERS_ID, Api.SHARED_BY_ME_ID, Api.SHARED_WITH_ME_ID
+        }, 0, 100);
+
+        System.out.println();
+    }
 }
