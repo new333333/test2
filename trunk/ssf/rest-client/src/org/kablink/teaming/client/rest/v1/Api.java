@@ -34,6 +34,7 @@
 package org.kablink.teaming.client.rest.v1;
 
 import org.kablink.teaming.rest.v1.model.Binder;
+import org.kablink.teaming.rest.v1.model.BinderChildren;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
 import org.kablink.teaming.rest.v1.model.RootRestObject;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
@@ -41,6 +42,7 @@ import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,7 +68,8 @@ public interface Api {
     Binder getSharedByMe();
     Binder getSharedWithMe();
     ZoneConfig getZoneConfig();
-    Map<Long, SearchResultList<SearchableObject>> listBinderChildren(Long[] binderIds, Integer first, Integer count);
+    List<BinderChildren> listBinderChildren(Long[] binderIds, Integer count);
+    List<BinderChildren> listBinderChildren(Long[] binderIds, Long startingBinderId, Integer first, Integer count);
     SearchResultList<SearchableObject> listChildren(Binder binder);
     SearchResultList<SearchableObject> listChildren(Binder binder, Integer first, Integer count);
 }

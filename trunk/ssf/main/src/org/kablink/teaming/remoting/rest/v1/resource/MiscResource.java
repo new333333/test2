@@ -77,6 +77,7 @@ public class MiscResource extends AbstractResource {
    	public RootRestObject getRootObject() {
         RootRestObject obj = new RootRestObject();
         obj.addAdditionalLink("binders", "/binders");
+        obj.addAdditionalLink("binder_library_children", "/binders/library_children");
         obj.addAdditionalLink("definitions", "/definitions");
         obj.addAdditionalLink("files", "/files");
         obj.addAdditionalLink("folders", "/folders");

@@ -34,6 +34,7 @@
 package org.kablink.teaming.client.rest.v1;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -54,6 +55,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import org.kablink.teaming.rest.v1.model.Binder;
+import org.kablink.teaming.rest.v1.model.BinderChildren;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
@@ -124,25 +126,34 @@ public class ApiImpl implements Api {
     }
 
     @Override
-    public Map<Long, SearchResultList<SearchableObject>> listBinderChildren(Long[] binderIds, Integer first, Integer count) {
+    public List<BinderChildren> listBinderChildren(Long[] binderIds, Integer count) {
+        return listBinderChildren(binderIds, null, null, count);
+    }
+
+    @Override
+    public List<BinderChildren> listBinderChildren(Long[] binderIds, Long startingBinderId, Integer first, Integer count) {
         Map<String, Object> params = getFirstAndCountParams(first, count);
         if (params==null) {
             params = new HashMap<String, Object>();
         }
         params.put("id", binderIds);
+        if (startingBinderId!=null) {
+            params.put("first_id", startingBinderId);
+        }
         List results = getJSONResourceBuilder(getRootHref("binder_library_children"), params).get(List.class);
-        Map<Long, SearchResultList<SearchableObject>> finalResults = new LinkedHashMap<Long, SearchResultList<SearchableObject>>();
+        List<BinderChildren> finalResults = new ArrayList<BinderChildren>();
         ObjectMapper mapper = this.conn.getObjectMapper();
         for (Object result : results) {
-            Map resultMap = (Map) result;
-            Long binderId = ((Number)resultMap.get("binder_id")).longValue();
-            Map childMap = (Map)resultMap.get("children");
-            if (childMap!=null) {
-                SearchResultList children = mapper.convertValue(childMap, SearchResultList.class);
-                finalResults.put(binderId, buildSearchableObjectSearchResultList(children));
-            } else {
-                finalResults.put(binderId, new SearchResultList<SearchableObject>());
+            SearchResultList<SearchableObject> items = null;
+            if (((Map)result).containsKey("children")) {
+                Map searchResultMap = (Map) ((Map) result).remove("children");
+                if (searchResultMap!=null) {
+                    items = buildSearchableObjectSearchResultList(mapper.convertValue(searchResultMap, SearchResultList.class));
+                }
             }
+            BinderChildren binderChildren = mapper.convertValue(result, BinderChildren.class);
+            binderChildren.setChildren(items);
+            finalResults.add(binderChildren);
         }
 
         return finalResults;
@@ -166,17 +177,11 @@ public class ApiImpl implements Api {
         for (Object obj : results.getResults()) {
             SearchableObject searchObject = null;
             Map map = (HashMap) obj;
+            populateType(map);
             String docType = (String) map.get("doc_type");
-            String entityType = (String) map.get("entity_type");
             if ("binder".equals(docType)) {
-                if ("folder".equals(entityType)) {
-                    map.put("@type", ".Folder");
-                } else if ("workspace".equals(entityType)) {
-                    map.put("@type", ".Workspace");
-                }
                 searchObject = mapper.convertValue(map, Binder.class);
             } else if ("file".equals(docType)) {
-                map.put("@type", ".FileProperties");
                 searchObject = mapper.convertValue(map, FileProperties.class);
             }
             actualResults.append(searchObject);
@@ -186,6 +191,20 @@ public class ApiImpl implements Api {
         actualResults.setTotal(results.getTotal());
 
         return actualResults;
+    }
+
+    private void populateType(Map entity) {
+        String docType = (String) entity.get("doc_type");
+        String entityType = (String) entity.get("entity_type");
+        if ("binder".equals(docType)) {
+            if ("folder".equals(entityType)) {
+                entity.put("@type", ".Folder");
+            } else if ("workspace".equals(entityType)) {
+                entity.put("@type", ".Workspace");
+            }
+        } else if ("file".equals(docType)) {
+            entity.put("@type", ".FileProperties");
+        }
     }
 
     private Map<String, Object> getFirstAndCountParams(Integer first, Integer count) {

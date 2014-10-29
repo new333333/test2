@@ -33,6 +33,7 @@
 package org.kablink.teaming.client.rest.v1;
 
 import org.kablink.teaming.rest.v1.model.Binder;
+import org.kablink.teaming.rest.v1.model.BinderChildren;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
 import org.kablink.teaming.rest.v1.model.RootRestObject;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
@@ -40,6 +41,7 @@ import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,7 +51,7 @@ import java.util.Map;
  */
 public class ApiTest {
     public static void main(String [] args) {
-        ApiClient client = ApiClient.create("https://amethyst.wal.novell.com:8443", "dlewis", "test", "localhost", 8888);
+        ApiClient client = ApiClient.create("https://kamas.wal.novell.com:8443", "dlewis", "test");
         Api api = new ApiImpl(client);
 
         RootRestObject root = api.getRoot();
@@ -68,9 +70,13 @@ public class ApiTest {
         SearchResultList<SearchableObject> children3 = api.listChildren(sharedByMe);
         SearchResultList<SearchableObject> children4 = api.listChildren(sharedWithMe);
 
-        Map<Long,SearchResultList<SearchableObject>> childrenMap = api.listBinderChildren(new Long[]{
+        List<BinderChildren> childrenList1 = api.listBinderChildren(new Long[]{
                 Api.MY_FILES_ID, Api.NET_FOLDERS_ID, Api.SHARED_BY_ME_ID, Api.SHARED_WITH_ME_ID
-        }, 0, 100);
+        }, 100);
+
+        List<BinderChildren> childrenList2 = api.listBinderChildren(new Long[]{
+                Api.MY_FILES_ID, Api.NET_FOLDERS_ID, Api.SHARED_BY_ME_ID, Api.SHARED_WITH_ME_ID
+        }, Api.MY_FILES_ID, 4, 10);
 
         System.out.println();
     }
