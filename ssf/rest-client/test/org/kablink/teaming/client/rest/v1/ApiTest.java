@@ -71,7 +71,7 @@ public class ApiTest {
         SearchResultList<SearchableObject> children4 = api.listChildren(sharedWithMe);
 
         List<BinderChildren> childrenList1 = api.listBinderChildren(new Long[]{
-                Api.MY_FILES_ID, Api.NET_FOLDERS_ID, Api.SHARED_BY_ME_ID, Api.SHARED_WITH_ME_ID
+                Api.MY_FILES_ID, Api.NET_FOLDERS_ID, Api.SHARED_BY_ME_ID, Api.SHARED_WITH_ME_ID, -99L
         }, 100);
 
         List<BinderChildren> childrenList2 = api.listBinderChildren(new Long[]{
