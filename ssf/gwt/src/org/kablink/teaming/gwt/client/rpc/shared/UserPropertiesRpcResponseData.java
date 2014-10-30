@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -67,6 +67,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		private boolean		m_perUserAdHoc;		//
 		private boolean		m_perUserDownload;	//
 		private boolean		m_perUserWebAccess;	//
+		private boolean		m_showLastLogin;	//
 		private String		m_lastLogin;		//
 		private String		m_ldapContainer;	//
 		private String		m_ldapDN;			//
@@ -80,8 +81,11 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		 * requirements.
 		 */
 		public AccountInfo() {
-			// Initialize the super class.
+			// Initialize the super class...
 			super();
+			
+			// ...and initialize everything else.
+			setShowLastLogin(true);	// We default to showing the last login.
 		}
 		
 		/**
@@ -98,6 +102,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		public boolean  isPerUserAdHoc()     {return m_perUserAdHoc;             }
 		public boolean  isPerUserDownload()  {return m_perUserDownload;          }
 		public boolean  isPerUserWebAccess() {return m_perUserWebAccess;         }
+		public boolean  isShowLastLogin()    {return m_showLastLogin;            }
 		public boolean  isInternal()         {return m_userType.isInternal();    }
 		public String   getLastLogin()       {return m_lastLogin;                }
 		public String   getLdapContainer()   {return m_ldapContainer;            }
@@ -117,6 +122,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		public void setPerUserAdHoc(    boolean  perUserAdHoc)     {m_perUserAdHoc     = perUserAdHoc;    }
 		public void setPerUserDownload( boolean  perUserDownload)  {m_perUserDownload  = perUserDownload; }
 		public void setPerUserWebAccess(boolean  perUserWebAccess) {m_perUserWebAccess = perUserWebAccess;}
+		public void setShowLastLogin(   boolean  showLastLogin)    {m_showLastLogin    = showLastLogin;   }
 		public void setLastLogin(       String   lastLogin)        {m_lastLogin        = lastLogin;       }
 		public void setLdapContainer(   String   ldapContainer)    {m_ldapContainer    = ldapContainer;   }
 		public void setLdapDN(          String   ldapDN)           {m_ldapDN           = ldapDN;          }
