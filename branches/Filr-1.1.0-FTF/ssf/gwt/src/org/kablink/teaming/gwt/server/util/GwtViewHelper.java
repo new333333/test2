@@ -309,6 +309,11 @@ public class GwtViewHelper {
 	private final static boolean PROFILE_PER_COLUMN	= SPropsUtil.getBoolean("gwt.profile.listview.per.column", false);
 	private final static boolean PROFILE_PER_USER	= SPropsUtil.getBoolean("gwt.profile.listview.per.user",   false);
 	
+	// The following controls whether the 'last login' is displayed in
+	// the user properties dialog in the administration console.  By
+	// default, it is not (the value defaults to false.)
+	private final static boolean SHOW_LAST_LOGIN_IN_USER_PROPERTIES	= SPropsUtil.getBoolean("show.last.login.in.user.properties", false);
+	
 	/*
 	 * Inner class used to compare two AccessInfo's.
 	 * 
@@ -5934,16 +5939,23 @@ public class GwtViewHelper {
 	 * Returns a date/time stamp of the last time the user logged in or
 	 * null if it can't be determined.
 	 */
-	private static Date getLastUserLogin(AllModulesInjected bs, Long userId) {
+	private static Date getLastUserLogin(AllModulesInjected bs, User user) {
 		Date reply = null;
 		
 		try {
-			// Can we get a login report for this user?
+			// Has this user ever logged in?
 			Set<Long> memberIds = new HashSet<Long>();
-			memberIds.add(userId);
+			memberIds.add(user.getId());
+			Date start = user.getFirstLoginDate();
+			if (null == start) {
+				// No!  Then they can't have a last login.
+				return null;
+			}
+			
+			// Can we get a login report for this user?
 			List<Map<String, Object>> loginReport = bs.getReportModule().generateLoginReport(
-				new Date(0),	// Report start.
-				new Date(),		// Report end.
+				start,		// Start the report with their first login...
+				new Date(),	// ...and end it at the current time.
 				WebKeys.URL_REPORT_OPTION_TYPE_SHORT,
 				ReportModule.LAST_LOGIN_SORT,
 				ReportModule.LOGIN_DATE_SORT,
@@ -7019,7 +7031,7 @@ public class GwtViewHelper {
 	}
 	
 	/**
-	 * Returns a UserPropertiesRpcRequestData containing information
+	 * Returns a UserPropertiesRpcResponseData containing information
 	 * managing a user.
 	 * 
 	 * @param bs
@@ -7031,7 +7043,7 @@ public class GwtViewHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static UserPropertiesRpcResponseData getUserProperties(final AllModulesInjected bs, final HttpServletRequest request, final Long userId) throws GwtTeamingException {
+	public static UserPropertiesRpcResponseData getUserProperties(final AllModulesInjected bs, final HttpServletRequest request, final Long userId, boolean includeLastLogin) throws GwtTeamingException {
 		SimpleProfiler.start("GwtViewHelper.getUserProperties()");
 		try {
 			SimpleProfiler.start("GwtViewHelper.getUserProperties(Get profile information)");
@@ -7082,18 +7094,22 @@ public class GwtViewHelper {
 				}
 			}
 
-			SimpleProfiler.start("GwtViewHelper.getUserProperties(Get last login)");
-			try {
-				// ...if we can determine the last time the user logged
-				// ...in...
-				Date lastLogin = getLastUserLogin(bs, userId);
-				if (null != lastLogin) {
-					// ...add that to the reply.
-					ai.setLastLogin(GwtServerHelper.getDateTimeString(lastLogin));
+			// ...if we need to include the last login information...
+			ai.setShowLastLogin(includeLastLogin && SHOW_LAST_LOGIN_IN_USER_PROPERTIES);
+			if (ai.isShowLastLogin()) {
+				SimpleProfiler.start("GwtViewHelper.getUserProperties(Get last login)");
+				try {
+					// ...and if we can determine the last time the
+					// ...user logged in...
+					Date lastLogin = getLastUserLogin(bs, user);
+					if (null != lastLogin) {
+						// ...add that to the reply.
+						ai.setLastLogin(GwtServerHelper.getDateTimeString(lastLogin));
+					}
 				}
-			}
-			finally {
-				SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get last login)");
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get last login)");
+				}
 			}
 
 			SimpleProfiler.start("GwtViewHelper.getUserProperties(Get adHoc setting)");
