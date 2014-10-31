@@ -11807,13 +11807,14 @@ public class GwtServerHelper {
 	 * @param bs
 	 * @param request
 	 * @param binderIds
+	 * @param setTeamMemberRights
 	 * @param sharingRights
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData setBinderSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, List<Long> binderIds, CombinedPerEntityShareRightsInfo sharingRights) throws GwtTeamingException {
+	public static ErrorListRpcResponseData setBinderSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, List<Long> binderIds, boolean setTeamMemberRights, CombinedPerEntityShareRightsInfo sharingRights) throws GwtTeamingException {
 		try {
 			// Create the ErrorListRpcResponseData to return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
@@ -11862,11 +11863,16 @@ public class GwtServerHelper {
 						try {
 							// Set/clear the various sharing rights on
 							// it. 
-							if (setFlags.isAllowExternal())    am.updateWorkAreaFunctionMembership(binder, allowExternal,    valueFlags.isAllowExternal(),    ObjectKeys.OWNER_USER_ID);
-							if (setFlags.isAllowForwarding())  am.updateWorkAreaFunctionMembership(binder, allowForwarding,  valueFlags.isAllowForwarding(),  ObjectKeys.OWNER_USER_ID);
-							if (setFlags.isAllowInternal())    am.updateWorkAreaFunctionMembership(binder, allowInternal,    valueFlags.isAllowInternal(),    ObjectKeys.OWNER_USER_ID);
-							if (setFlags.isAllowPublic())      am.updateWorkAreaFunctionMembership(binder, allowPublic,      valueFlags.isAllowPublic(),      ObjectKeys.OWNER_USER_ID);
-							if (setFlags.isAllowPublicLinks()) am.updateWorkAreaFunctionMembership(binder, allowPublicLinks, valueFlags.isAllowPublicLinks(), ObjectKeys.OWNER_USER_ID);
+							List<Long> memberIds = new ArrayList<Long>();
+							memberIds.add(ObjectKeys.OWNER_USER_ID);
+							if (setTeamMemberRights) {
+								memberIds.add(ObjectKeys.TEAM_MEMBER_ID);
+							}
+							if (setFlags.isAllowExternal())    am.updateWorkAreaFunctionMemberships(binder, allowExternal,    valueFlags.isAllowExternal(),    memberIds);
+							if (setFlags.isAllowForwarding())  am.updateWorkAreaFunctionMemberships(binder, allowForwarding,  valueFlags.isAllowForwarding(),  memberIds);
+							if (setFlags.isAllowInternal())    am.updateWorkAreaFunctionMemberships(binder, allowInternal,    valueFlags.isAllowInternal(),    memberIds);
+							if (setFlags.isAllowPublic())      am.updateWorkAreaFunctionMemberships(binder, allowPublic,      valueFlags.isAllowPublic(),      memberIds);
+							if (setFlags.isAllowPublicLinks()) am.updateWorkAreaFunctionMemberships(binder, allowPublicLinks, valueFlags.isAllowPublicLinks(), memberIds);
 						}
 						
 						catch (Exception e) {

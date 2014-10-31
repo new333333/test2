@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
@@ -76,6 +77,7 @@ import org.kablink.teaming.gwt.client.event.InvokeDownloadDesktopAppEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
+import org.kablink.teaming.gwt.client.event.InvokeWorkspaceShareRightsEvent;
 import org.kablink.teaming.gwt.client.event.JspLayoutChangedEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
@@ -159,6 +161,8 @@ import org.kablink.teaming.gwt.client.widgets.AddNewFolderDlg;
 import org.kablink.teaming.gwt.client.widgets.AddNewFolderDlg.AddNewFolderDlgClient;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
 import org.kablink.teaming.gwt.client.widgets.AdminControl.AdminControlClient;
+import org.kablink.teaming.gwt.client.widgets.BinderShareRightsDlg;
+import org.kablink.teaming.gwt.client.widgets.BinderShareRightsDlg.BinderShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ChangePasswordDlg;
 import org.kablink.teaming.gwt.client.widgets.ChangePasswordDlg.ChangePasswordDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
@@ -239,6 +243,7 @@ public class GwtMainPage extends ResizeComposite
 		InvokeHelpEvent.Handler,
 		InvokeSimpleProfileEvent.Handler,
 		InvokeShareBinderEvent.Handler,
+		InvokeWorkspaceShareRightsEvent.Handler,
 		LoginEvent.Handler,
 		LogoutEvent.Handler,
 		MastheadHideEvent.Handler,
@@ -269,6 +274,7 @@ public class GwtMainPage extends ResizeComposite
 	public static ContentControl m_contentCtrl;
 
 	private AddNewFolderDlg m_addNewFolderDlg = null;
+	private BinderShareRightsDlg m_workspaceShareRightsDlg = null;
 	private VibeDockLayoutPanel m_mainPanel = null;
 	private DockLayoutPanel m_splitLayoutPanel = null;
 	private MainContentLayoutPanel m_contentLayoutPanel = null;
@@ -342,6 +348,7 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.INVOKE_DOWNLOAD_DESKTOP_APP,
 		TeamingEvents.INVOKE_HELP,
 		TeamingEvents.INVOKE_SIMPLE_PROFILE,
+		TeamingEvents.INVOKE_WORKSPACE_SHARE_RIGHTS,
 		
 		// Login/out events.
 		TeamingEvents.LOGIN,
@@ -3400,6 +3407,48 @@ public class GwtMainPage extends ResizeComposite
 	}// end onInvokeHelp()
 	
 	/**
+	 * Handles InvokeWorkspaceShareRightsEvent's received by this class.
+	 * 
+	 * Implements the InvokeWorkspaceShareRightsEvent.Handler.onInvokeWorkspaceShareRights() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeWorkspaceShareRights( final InvokeWorkspaceShareRightsEvent event )
+	{
+		// Have we create a workspace share rights dialog yet?
+		if ( null == m_workspaceShareRightsDlg )
+		{
+			// No!  Can we create one now?
+			BinderShareRightsDlg.createAsync( new BinderShareRightsDlgClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in 
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( BinderShareRightsDlg usrDlg )
+				{
+					// Yes, we created the workspace share rights
+					// dialog!  Show it.
+					m_workspaceShareRightsDlg = usrDlg;
+					showWorkspaceShareRightsDlgAsync( event.getWorkspaceId() );
+				}
+			} );
+		}
+		
+		else
+		{
+			// Yes, we have a binder share rights dialog!  Show
+			// it.
+			showWorkspaceShareRightsDlgAsync( event.getWorkspaceId() );
+		}
+	}
+	
+	/**
 	 * Handles InvokeSimpleProfileEvent's received by this class.
 	 * 
 	 * Implements the InvokeSimpleProfileEvent.Handler.onInvokeSimpleProfile() method.
@@ -4534,6 +4583,36 @@ public class GwtMainPage extends ResizeComposite
 	public interface GwtMainPageClient {
 		void onSuccess(GwtMainPage mainPage);
 		void onUnavailable();
+	}
+
+	/*
+	 * Asynchronously shows the workspace share rights dialog.
+	 */
+	private void showWorkspaceShareRightsDlgAsync( final Long workspaceId )
+	{
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					showWorkspaceShareRightsDlgNow( workspaceId );
+				}
+			} );
+	}
+
+	/*
+	 * Synchronously shows the workspace share rights dialog.
+	 */
+	private void showWorkspaceShareRightsDlgNow( final Long workspaceId )
+	{
+		List<Long> binderIds = new ArrayList<Long>();
+		binderIds.add( workspaceId );
+		BinderShareRightsDlg.initAndShow(
+			m_workspaceShareRightsDlg,
+			GwtTeaming.getMessages().shareWorkspaceRightsDlgHeader( 1 ),
+			binderIds,
+			false );	// false -> Don't set team member rights, just the owner's.
 	}
 
 	/*

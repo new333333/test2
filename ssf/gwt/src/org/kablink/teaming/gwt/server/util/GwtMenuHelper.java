@@ -205,6 +205,7 @@ public class GwtMenuHelper {
 	private final static String WHATS_NEW				= "whatsnew";
 	private final static String WHO_HAS_ACCESS			= "whohasaccess";
 	private final static String WORKFLOW_HISTORY_REPORT	= "workflowHistoryReport";
+	private final static String WORKSPACE_SHARE_RIGHTS	= "wsShareRights";
 	private final static String ZIP_AND_DOWNLOAD		= "zipAndDownload";
 	
 	// Controls whether WebDAV information shows up in footers.
@@ -359,6 +360,9 @@ public class GwtMenuHelper {
 				miscTBI.addNestedItem(constructSendEmailToItem(    request, binder      ));
 				if (GwtShareHelper.isEntitySharable(bs, binder)) {
 					miscTBI.addNestedItem(constructShareBinderItem(request, binder, null));
+				}
+				if ((binder instanceof Workspace) && bs.getSharingModule().isSharingEnabled()) {
+					miscTBI.addNestedItem(constructShareWorkspaceRightsItem(request, binder));
 				}
 				miscTBI.addNestedItem(constructMobileUiItem(       request, binder      ));
 				if (!isFilr) {
@@ -1840,7 +1844,11 @@ public class GwtMenuHelper {
 		if (canSetSharingRights) {
 			// ...add the set selected share rights.
 			tbi = new ToolbarItem("1_setShareRights");
-			markTBITitle(tbi, "toolbar.setShareRights");
+			String titleKey = "toolbar.setShareRights.";
+			if (wt.isGlobalRoot())
+			     titleKey += "Workspace";
+			else titleKey += "Team";
+			markTBITitle(tbi, titleKey);
 			markTBIEvent(tbi, TeamingEvents.SET_SELECTED_BINDER_SHARE_RIGHTS);
 			moreTBI.addNestedItem(tbi);
 		}
@@ -2993,6 +3001,17 @@ public class GwtMenuHelper {
 		markTBITitle(   shareTBI, specificTitleKey                 );
 		markTBIEvent(   shareTBI, TeamingEvents.INVOKE_SHARE_BINDER);
 		markTBIBinderId(shareTBI, binder.getId()                   );
+		return shareTBI;
+	}
+	
+	/*
+	 * Constructs a ToolbarItem to run the share binder rights dialog.
+	 */
+	private static ToolbarItem constructShareWorkspaceRightsItem(HttpServletRequest request, Binder binder) {
+		ToolbarItem     shareTBI = new ToolbarItem(WORKSPACE_SHARE_RIGHTS);
+		markTBITitle(   shareTBI, "toolbar.setShareRights.Workspace");
+		markTBIEvent(   shareTBI, TeamingEvents.INVOKE_WORKSPACE_SHARE_RIGHTS);
+		markTBIBinderId(shareTBI, binder.getId()                             );
 		return shareTBI;
 	}
 	

@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
+import org.kablink.teaming.gwt.client.event.InvokeWorkspaceShareRightsEvent;
 import org.kablink.teaming.gwt.client.event.MarkFolderContentsReadEvent;
 import org.kablink.teaming.gwt.client.event.MarkFolderContentsUnreadEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
@@ -266,6 +267,14 @@ public class ContextMenuItem extends VibeMenuItem {
 							ToolbarItem.getQualifierValueFromList(
 								"binderId",
 								m_eventQualifiers)));
+					break;
+					
+				case INVOKE_WORKSPACE_SHARE_RIGHTS:
+					GwtTeaming.fireEvent(
+						new InvokeWorkspaceShareRightsEvent(
+							Long.parseLong(ToolbarItem.getQualifierValueFromList(
+								"binderId",
+								m_eventQualifiers))));
 					break;
 					
 				case EDIT_CURRENT_BINDER_BRANDING:

@@ -43,10 +43,11 @@ import org.kablink.teaming.gwt.client.util.CombinedPerEntityShareRightsInfo;
  * @author drfoster@novell.com
  */
 public class SetBinderSharingRightsInfoCmd extends VibeRpcCmd {
-	private List<Long>							m_binderIds;		//
-	private CombinedPerEntityShareRightsInfo	m_sharingRights;	//
+	private boolean								m_setTeamMemberRights;	//
+	private List<Long>							m_binderIds;			//
+	private CombinedPerEntityShareRightsInfo	m_sharingRights;		//
 	
-	/**
+	/*
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
@@ -60,15 +61,17 @@ public class SetBinderSharingRightsInfoCmd extends VibeRpcCmd {
 	 * Constructor method.
 	 * 
 	 * @param binderIds
+	 * @param setTeamMemberRights
 	 * @param sharingRights
 	 */
-	public SetBinderSharingRightsInfoCmd(List<Long> binderIds, CombinedPerEntityShareRightsInfo sharingRights) {
+	public SetBinderSharingRightsInfoCmd(List<Long> binderIds, boolean setTeamMemberRights, CombinedPerEntityShareRightsInfo sharingRights) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setBinderIds(    binderIds    );
-		setSharingRights(sharingRights);
+		setBinderIds(          binderIds          );
+		setSetTeamMemberRights(setTeamMemberRights);
+		setSharingRights(      sharingRights      );
 	}
 	
 	/**
@@ -76,16 +79,18 @@ public class SetBinderSharingRightsInfoCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public List<Long>                       getBinderIds()     {return m_binderIds;    }
-	public CombinedPerEntityShareRightsInfo getSharingRights() {return m_sharingRights;}
+	public boolean                          isSetTeamMemberRights() {return m_setTeamMemberRights;}
+	public List<Long>                       getBinderIds()          {return m_binderIds;          }
+	public CombinedPerEntityShareRightsInfo getSharingRights()      {return m_sharingRights;      }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderIds(    List<Long>                       binderIds)     {m_binderIds     = binderIds;    }
-	public void setSharingRights(CombinedPerEntityShareRightsInfo sharingRights) {m_sharingRights = sharingRights;}
+	public void setSetTeamMemberRights(boolean                          setTeamMemberRights) {m_setTeamMemberRights = setTeamMemberRights;}
+	public void setBinderIds(          List<Long>                       binderIds)           {m_binderIds           = binderIds;          }
+	public void setSharingRights(      CombinedPerEntityShareRightsInfo sharingRights)       {m_sharingRights       = sharingRights;      }
 	
 	/**
 	 * Returns the command's enumeration value.
