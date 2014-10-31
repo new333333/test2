@@ -716,6 +716,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_FooterPanel();
 	String codeSplitFailure_ForgottenPwdDlg();
 	String codeSplitFailure_GenericWSView();
+	String codeSplitFailure_GlobalWorkspacesView();
 	String codeSplitFailure_GuestbookFolderView();
 	String codeSplitFailure_HomeWSView();
 	String codeSplitFailure_Html5UploadHelper();
@@ -1951,6 +1952,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Event_End();
 	String vibeDataTable_Event_Duration(String days);
 	String vibeDataTable_Event_Start();
+	String vibeDataTable_Globals();
 	String vibeDataTable_GuestbookInternalErrorOverrideMissing();
 	String vibeDataTable_InternalError_NestedCloudFolderAuthentication();
 	String vibeDataTable_InternalError_UnexpectedRowCount(int rowsRequested, int rowsRead);
@@ -2361,6 +2363,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used with Filr
 	String folders();
+	String globalsList();
 	String mobileDevicesList();
 	String myFiles();
 	String myFilesStorage();
@@ -2728,7 +2731,10 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the 'Manage Teams' dialog.
 	String manageTeamsDlgCaption();
-	String manageTeamsShareRightsDlgHeader( int count );
+	
+	// Strings used by the 'Share Binder Rights' dialog.
+	String shareTeamRightsDlgHeader(      int count );
+	String shareWorkspaceRightsDlgHeader( int count );
 	
 	// Strings used by the 'Manage Users' dialog.
 	String manageUsersDlgCaption();
@@ -2840,6 +2846,11 @@ public interface GwtTeamingMessages extends Messages
 	String emptyTeams_Info_1( String company, String product );
 	String emptyTeams_Info_2( String company, String product );
 	String emptyTeams_SubHead();
+	
+	// Strings used for the empty globals view widget.
+	String emptyGlobals_Info_1( String company, String product );
+	String emptyGlobals_Info_2( String company, String product );
+	String emptyGlobals_SubHead();
 	
 	// Strings used in the administration console home page
 	String adminConsoleInfoWidget_AdminGuideLabel();

@@ -1574,7 +1574,8 @@ public class EntryMenuPanel extends ToolPanelBase
 			case MOBILE_DEVICES:
 				reply = m_binderInfo.getMobileDevicesViewSpec().isSystem();
 				break;
-				
+
+			case GLOBAL_ROOT:
 			case PROFILE_ROOT:
 			case PROFILE_ROOT_MANAGEMENT:
 			case TEAM_ROOT:

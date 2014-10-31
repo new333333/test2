@@ -364,9 +364,9 @@ public class BreadCrumbPanel extends ToolPanelBase
 		}
 		
 		// No, we we aren't displaying a bread crumb panel for a
-		// collection!  Are we displaying it for the profile root
-		// workspace, root team workspaces or a mobile devices view?
-		else if (m_binderInfo.isBinderProfilesRootWS() || m_binderInfo.isBinderTeamsRootWS() || m_binderInfo.isBinderMobileDevices()) {
+		// collection!  Are we displaying it for the profile, global
+		// or team root workspace, or a mobile devices view?
+		else if (m_binderInfo.isBinderProfilesRootWS() || m_binderInfo.isBinderGlobalRootWS() || m_binderInfo.isBinderTeamsRootWS() || m_binderInfo.isBinderMobileDevices()) {
 			// Yes!  We don't need a tree, just the image and title.
 			// Create the panel for it...
 			VibeFlowPanel fp = new VibeFlowPanel();
@@ -380,6 +380,14 @@ public class BreadCrumbPanel extends ToolPanelBase
 				case SMALL:   iRes = m_filrImages.profileRoot();        break;
 				case MEDIUM:  iRes = m_filrImages.profileRoot_medium(); break;
 				case LARGE:   iRes = m_filrImages.profileRoot_large();  break;
+				}
+			}
+			else if (m_binderInfo.isBinderGlobalRootWS()) {
+				switch (BinderIconSize.getBreadCrumbIconSize()) {
+				default:
+				case SMALL:   iRes = m_filrImages.globalRoot();        break;
+				case MEDIUM:  iRes = m_filrImages.globalRoot_medium(); break;
+				case LARGE:   iRes = m_filrImages.globalRoot_large();  break;
 				}
 			}
 			else if (m_binderInfo.isBinderTeamsRootWS()) {
@@ -413,6 +421,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 			// ...create the title label...
 			String txt;
 			if      (m_binderInfo.isBinderProfilesRootWS()) txt = m_messages.vibeDataTable_People();
+			else if (m_binderInfo.isBinderGlobalRootWS())   txt = m_messages.vibeDataTable_Globals();
 			else if (m_binderInfo.isBinderTeamsRootWS())    txt = m_messages.vibeDataTable_Teams();
 			else                                            txt = m_messages.vibeDataTable_MobileDevices();
 			final InlineLabel il = new InlineLabel(txt);

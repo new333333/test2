@@ -50,6 +50,7 @@ public class InvokeBinderShareRightsDlgEvent extends VibeEventBase<InvokeBinderS
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private List<Long>	m_binderIds;		//
+    private Long		m_folderId;			//
 	private UIObject	m_showRelativeTo;	//
 
 	/**
@@ -62,26 +63,28 @@ public class InvokeBinderShareRightsDlgEvent extends VibeEventBase<InvokeBinderS
 	/**
 	 * Constructor methods.
 	 * 
+	 * @param folderId
 	 * @param binderIds
 	 * @param showRelativeTo
 	 */
-	public InvokeBinderShareRightsDlgEvent(List<Long> binderIds, UIObject showRelativeTo) {
+	public InvokeBinderShareRightsDlgEvent(Long folderId, List<Long> binderIds, UIObject showRelativeTo) {
 		// Initialize the super class...
 		super();
 		
 		// ...and store the parameters.
+		setFolderId(      folderId      );
 		setBinderIds(     binderIds     );
 		setShowRelativeTo(showRelativeTo);
 	}
 	
-	public InvokeBinderShareRightsDlgEvent(List<Long> binderIds) {
+	public InvokeBinderShareRightsDlgEvent(Long folderId, List<Long> binderIds) {
 		// Always use the initial form of the constructor.
-		this(binderIds, null);
+		this(folderId, binderIds, null);
 	}
 	
-	public InvokeBinderShareRightsDlgEvent() {
+	public InvokeBinderShareRightsDlgEvent(Long folderId) {
 		// Always use the initial form of the constructor.
-		this(new ArrayList<Long>(), null);
+		this(folderId, new ArrayList<Long>(), null);
 	}
 	
 	/**
@@ -90,6 +93,7 @@ public class InvokeBinderShareRightsDlgEvent extends VibeEventBase<InvokeBinderS
 	 * @return
 	 */
 	public List<Long> getBinderIds()      {return m_binderIds;     }
+	public Long       getFolderId()       {return m_folderId;      }
 	public UIObject   getShowRelativeTo() {return m_showRelativeTo;}
 	
 	/**
@@ -98,6 +102,7 @@ public class InvokeBinderShareRightsDlgEvent extends VibeEventBase<InvokeBinderS
 	 * @param
 	 */
 	public void setBinderIds(     List<Long> binderIds)      {m_binderIds      = binderIds;     }
+	public void setFolderId(      Long       folderId)       {m_folderId       = folderId;      } 
 	public void setShowRelativeTo(UIObject   showRelativeTo) {m_showRelativeTo = showRelativeTo;}
 
 	/**

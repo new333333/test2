@@ -266,6 +266,11 @@
 		.vibe-fileFolderFlowPanel {}
 	/* ...End:  File folder view styles. */
 
+	/* ...Start:  Global Workspaces view styles. */
+		.vibe-globalWorkspacesDataTable {}
+		.vibe-globalWorkspacesFlowPanel {}
+	/* ...End:  Global Workspaces view styles. */
+
 	/* ...Start:  Guest book folder view styles. */
 		.vibe-guestbookFolderDataTable {}
 		.vibe-guestbookFolderFlowPanel {}

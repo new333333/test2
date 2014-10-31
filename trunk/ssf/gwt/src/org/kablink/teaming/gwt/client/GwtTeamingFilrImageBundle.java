@@ -92,6 +92,22 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource folderHome_large();
 		
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_globals_transparent_72.png")
+	public ImageResource globals_transparent_72();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/global.png")
+	public ImageResource globalRoot();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/global_36.png")
+	public ImageResource globalRoot_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/global_48.png")
+	public ImageResource globalRoot_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/android_logo_100.png")
 	public ImageResource logoAndroid();
 	

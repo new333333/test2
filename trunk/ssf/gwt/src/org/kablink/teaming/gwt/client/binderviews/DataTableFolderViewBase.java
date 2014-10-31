@@ -110,6 +110,7 @@ import org.kablink.teaming.gwt.client.event.EnableSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
+import org.kablink.teaming.gwt.client.event.InvokeBinderShareRightsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeCopyFiltersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
@@ -125,6 +126,7 @@ import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MobileDeviceWipeScheduleStateChangedEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
+import org.kablink.teaming.gwt.client.event.SetSelectedBinderShareRightsEvent;
 import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ShowSelectedSharesEvent;
@@ -177,8 +179,11 @@ import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.BinderShareRightsDlg;
+import org.kablink.teaming.gwt.client.widgets.BinderShareRightsDlg.BinderShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeSelectAllHeader;
@@ -215,6 +220,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ProvidesKey;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -249,6 +255,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		EnableSelectedUsersDownloadEvent.Handler,
 		EnableSelectedUsersWebAccessEvent.Handler,
 		HideSelectedSharesEvent.Handler,
+		InvokeBinderShareRightsDlgEvent.Handler,
 		InvokeColumnResizerEvent.Handler,
 		InvokeCopyFiltersDlgEvent.Handler,
 		InvokeDropBoxEvent.Handler,
@@ -264,6 +271,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		MobileDeviceWipeScheduleStateChangedEvent.Handler,
 		MoveSelectedEntitiesEvent.Handler,
 		QuickFilterEvent.Handler,
+		SetSelectedBinderShareRightsEvent.Handler,
 		SharedViewFilterEvent.Handler,
 		ShareSelectedEntitiesEvent.Handler,
 		ShowSelectedSharesEvent.Handler,
@@ -280,6 +288,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ZipAndDownloadFolderEvent.Handler,
 		ZipAndDownloadSelectedFilesEvent.Handler
 {
+	private BinderShareRightsDlg			m_binderShareRightsDlg;		// A BinderShareRightsDlg, once one is created.
 	private boolean							m_fixedLayout;				//
 	private CloudFolderAuthenticationDlg	m_cfaDlg;					//
 	private Column<FolderRow, Boolean>		m_selectColumn;				//
@@ -347,6 +356,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD,
 		TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS,
 		TeamingEvents.HIDE_SELECTED_SHARES,
+		TeamingEvents.INVOKE_BINDER_SHARE_RIGHTS_DLG,
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
 		TeamingEvents.INVOKE_COPY_FILTERS_DLG,
 		TeamingEvents.INVOKE_DROPBOX,
@@ -362,6 +372,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.MOBILE_DEVICE_WIPE_SCHEDULE_CHANGED,
 		TeamingEvents.MOVE_SELECTED_ENTITIES,
 		TeamingEvents.QUICK_FILTER,
+		TeamingEvents.SET_SELECTED_BINDER_SHARE_RIGHTS,
 		TeamingEvents.SHARED_VIEW_FILTER,
 		TeamingEvents.SHARE_SELECTED_ENTITIES,
 		TeamingEvents.SHOW_SELECTED_SHARES,
@@ -2894,6 +2905,53 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
+	 * Handles InvokeBinderShareRightsDlgEvent's received by this class.
+	 * 
+	 * Implements the InvokeBinderShareRightsDlgEvent.Handler.onInvokeBinderShareRightsDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeBinderShareRightsDlg(final InvokeBinderShareRightsDlgEvent event) {
+		// We only support setting binder rights from the root global
+		// or team workspace workspace in management mode.  Is it
+		// supported?
+		WorkspaceType wt = getFolderInfo().getWorkspaceType();
+		if (wt.isGlobalRoot() || wt.isTeamRootManagement()) {
+			// Yes!  Is the event targeted to this folder?
+			Long eventFolderId = event.getFolderId();
+			if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+				// Yes!  Have we create a binder share rights dialog
+				// yet?
+				if (null == m_binderShareRightsDlg) {
+					// No!  Can we create one now?
+					BinderShareRightsDlg.createAsync(new BinderShareRightsDlgClient() {
+						@Override
+						public void onUnavailable() {
+							// Nothing to do.  Error handled in 
+							// asynchronous provider.
+						}
+						
+						@Override
+						public void onSuccess(BinderShareRightsDlg usrDlg) {
+							// Yes, we created the binder share rights
+							// dialog!  Show it.
+							m_binderShareRightsDlg = usrDlg;
+							showBinderShareRightsDlgAsync(event.getBinderIds(), event.getShowRelativeTo());
+						}
+					});
+				}
+				
+				else {
+					// Yes, we have a binder share rights dialog!  Show
+					// it.
+					showBinderShareRightsDlgAsync(event.getBinderIds(), event.getShowRelativeTo());
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Handles InvokeColumnResizerEvent's received by this class.
 	 * 
 	 * Implements the InvokeColumnResizerEvent.Handler.onInvokeColumnResizer() method.
@@ -3493,6 +3551,44 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		});
 	}
 	
+	/**
+	 * Handles SetSelectedBinderShareRightsEvent's received by this class.
+	 * 
+	 * Implements the SetSelectedBinderShareRightsEvent.Handler.onSetSelectedBinderShareRights() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSetSelectedBinderShareRights(SetSelectedBinderShareRightsEvent event) {
+		// We only support setting binder rights from the root global
+		// or team workspace workspace in management mode.  Is it
+		// supported?
+		WorkspaceType wt = getFolderInfo().getWorkspaceType();
+		if (wt.isGlobalRoot() || wt.isTeamRootManagement()) {
+			// Yes!  Is the event targeted to this folder?
+			Long eventFolderId = event.getFolderId();
+			if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+				// Yes!  Get the selected EntityId's...
+				List<EntityId> selectedEntityIds = event.getSelectedEntities();
+				if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+					selectedEntityIds = getSelectedEntityIds();
+				}
+				
+				// ...extract the selected user ID's from that...
+				final List<Long> selectedBinderList = new ArrayList<Long>();
+				for (EntityId eid:  selectedEntityIds) {
+					selectedBinderList.add(eid.getEntityId());
+				}
+	
+				// ...and invoke the binder share rights dialog.
+				GwtTeaming.fireEventAsync(
+					new InvokeBinderShareRightsDlgEvent(
+						eventFolderId,
+						selectedBinderList));
+			}
+		}
+	}
+
 	/**
 	 * Handles SharedViewFilterEvent's received by this class.
 	 * 
@@ -4479,6 +4575,35 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		BinderViewsHelper.shareEntities(selectedEntities);
 	}
 	
+	/*
+	 * Asynchronously shows the binder share rights dialog.
+	 */
+	private void showBinderShareRightsDlgAsync(final List<Long> selectedBinderList, final UIObject showRelativeTo) {
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					showBinderShareRightsDlgNow(selectedBinderList, showRelativeTo);
+				}
+			});
+	}
+
+	/*
+	 * Synchronously shows the binder share rights dialog.
+	 */
+	private void showBinderShareRightsDlgNow(final List<Long> selectedBinderList, final UIObject showRelativeTo) {
+		int binderCount = ((null == selectedBinderList) ? 0 : selectedBinderList.size());
+		String caption;
+		if (getFolderInfo().isBinderGlobalRootWS())
+		     caption = m_messages.shareWorkspaceRightsDlgHeader(binderCount);
+		else caption = m_messages.shareTeamRightsDlgHeader(     binderCount);
+		BinderShareRightsDlg.initAndShow(
+			m_binderShareRightsDlg,
+			caption,
+			selectedBinderList,
+			showRelativeTo);
+	}
+
 	/*
 	 * Synchronously shows the Cloud Folder authentication dialog.
 	 */

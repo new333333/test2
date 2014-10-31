@@ -139,9 +139,11 @@ public class AccessoriesPanel extends ToolPanelBase
 		boolean isWorkspace   = ((!isFolder) && m_binderInfo.isBinderWorkspace());
 		boolean isProfileRoot = (isWorkspace && m_binderInfo.getWorkspaceType().isProfileRoot());
 		boolean isTeamRoot    = (isWorkspace && m_binderInfo.getWorkspaceType().isTeamRoot()   );
+		boolean isGlobalRoot  = (isWorkspace && m_binderInfo.getWorkspaceType().isGlobalRoot() );
 		
-		// For non-folder, non-profile root, non-team root binders...
-		if ((!isFolder) && (!isProfileRoot) && (!isTeamRoot)) {
+		// For non-folder, non-profile root, non-team root, non-global
+		// root binders...
+		if ((!isFolder) && (!isProfileRoot) && (!isTeamRoot) && (!isGlobalRoot)) {
 			// ...we always show the accessories panel when included in
 			// ...the view.
 			showAccessoryPanel();
