@@ -75,6 +75,7 @@ import com.google.gwt.user.client.ui.UIObject;
  */
 public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandler {
 	private BinderSharingRightsInfoRpcResponseData	m_rightsInfo;			// Information about sharing rights available and to be set.
+	private boolean									m_setTeamMemberRights;	// true -> When setting the binder rights, set them for team members too.  false -> Don't.
 	private GwtTeamingMessages						m_messages;				// Access to Vibe's messages.
 	private InlineLabel								m_progressIndicator;	// Text under the progress bar that displays what's going on.
 	private int										m_totalDone;			// Tracks a running count of binders whose sharing rights we've set.
@@ -311,6 +312,7 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 		setBinderSharingRightsAsync(
 			new SetBinderSharingRightsInfoCmd(
 				sourceBinderIds,
+				m_setTeamMemberRights,
 				sharingRights),
 			sourceBinderIds,
 			totalBinderCount,
@@ -575,11 +577,11 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * Asynchronously runs the given instance of the binder share
 	 * rights dialog.
 	 */
-	private static void runDlgAsync(final BinderShareRightsDlg bsrDlg, final String caption, final List<Long> binderIds, final UIObject showRelativeTo) {
+	private static void runDlgAsync(final BinderShareRightsDlg bsrDlg, final String caption, final List<Long> binderIds, final boolean setTeamMemberRights, final UIObject showRelativeTo) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				bsrDlg.runDlgNow(caption, binderIds, showRelativeTo);
+				bsrDlg.runDlgNow(caption, binderIds, setTeamMemberRights, showRelativeTo);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -589,10 +591,11 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * Synchronously runs the given instance of the binder share rights
 	 * dialog.
 	 */
-	private void runDlgNow(String caption, List<Long> binderIds, UIObject showRelativeTo) {
+	private void runDlgNow(String caption, List<Long> binderIds, boolean setTeamMemberRights, UIObject showRelativeTo) {
 		// Store the parameter...
-		m_binderIds      = binderIds;
-		m_showRelativeTo = showRelativeTo;
+		m_binderIds           = binderIds;
+		m_setTeamMemberRights = setTeamMemberRights;  
+		m_showRelativeTo      = showRelativeTo;
 		
 		// ...update the dialog's caption...
 		setCaption(caption);
@@ -829,6 +832,7 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 			final BinderShareRightsDlg	bsrDlg,
 			final String				caption,
 			final List<Long>			binderIds,
+			final boolean				setTeamMemberRights,
 			final UIObject				showRelativeTo) {
 		GWT.runAsync(BinderShareRightsDlg.class, new RunAsyncCallback() {
 			@Override
@@ -852,7 +856,7 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(bsrDlg, caption, binderIds, showRelativeTo);
+					runDlgAsync(bsrDlg, caption, binderIds, setTeamMemberRights, showRelativeTo);
 				}
 			}
 		});
@@ -865,7 +869,7 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * @param bsrDlgClient
 	 */
 	public static void createAsync(BinderShareRightsDlgClient bsrDlgClient) {
-		doAsyncOperation(bsrDlgClient, null, null, null, null);
+		doAsyncOperation(bsrDlgClient, null, null, null, false, null);
 	}
 	
 	/**
@@ -876,8 +880,8 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * @param binderIds
 	 * @param showRelativeTo
 	 */
-	public static void initAndShow(BinderShareRightsDlg bsrDlg, String caption, List<Long> binderIds, UIObject showRelativeTo) {
-		doAsyncOperation(null, bsrDlg, caption, binderIds, showRelativeTo);
+	public static void initAndShow(BinderShareRightsDlg bsrDlg, String caption, List<Long> binderIds, boolean setTeamMemberRights, UIObject showRelativeTo) {
+		doAsyncOperation(null, bsrDlg, caption, binderIds, setTeamMemberRights, showRelativeTo);
 	}
 	
 	/**
@@ -887,8 +891,8 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * @param caption
 	 * @param binderIds
 	 */
-	public static void initAndShow(BinderShareRightsDlg bsrDlg, String caption, List<Long> binderIds) {
+	public static void initAndShow(BinderShareRightsDlg bsrDlg, String caption, List<Long> binderIds, boolean setTeamMemberRights) {
 		// Always use the initial form of the method.
-		initAndShow(bsrDlg, caption, binderIds, null);
+		initAndShow(bsrDlg, caption, binderIds, setTeamMemberRights, null);
 	}
 }

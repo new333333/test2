@@ -152,8 +152,9 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_SIMPLE_PROFILE,							// Invokes the simple profile dialog.
 	INVOKE_SUBSCRIBE,								// Invokes the 'subscribe to this entry' UI.
 	INVOKE_TAG,										// Invokes the 'tag this entry' UI.
-	INVOKE_USER_PROPERTIES_DLG,						// Invokes the 'user properties'                   dialog.
-	INVOKE_USER_SHARE_RIGHTS_DLG,					// Invokes the 'user share rights'                 dialog.
+	INVOKE_USER_PROPERTIES_DLG,						// Invokes the 'user properties'        dialog.
+	INVOKE_USER_SHARE_RIGHTS_DLG,					// Invokes the 'user share rights'      dialog.
+	INVOKE_WORKSPACE_SHARE_RIGHTS,					// Invokes the 'workspace share rights' dialog.
 	
 	JSP_LAYOUT_CHANGED,								// The layout of JSP content has changed.
 	

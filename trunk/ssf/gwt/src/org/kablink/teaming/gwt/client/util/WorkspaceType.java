@@ -103,6 +103,16 @@ public enum WorkspaceType implements IsSerializable {
 	
 	/**
 	 * Returns true if this WorkspaceType value represents a team
+	 * workspace and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isTeam() {
+		return this.equals(TEAM);
+	}
+
+	/**
+	 * Returns true if this WorkspaceType value represents a team
 	 * root workspace and false otherwise.
 	 * 
 	 * @return

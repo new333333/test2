@@ -3758,7 +3758,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SET_BINDER_SHARING_RIGHTS_INFO:
 		{
 			SetBinderSharingRightsInfoCmd sbsrCmd = ((SetBinderSharingRightsInfoCmd) cmd);
-			ErrorListRpcResponseData result = GwtServerHelper.setBinderSharingRightsInfo( this, getRequest( ri ), sbsrCmd.getBinderIds(), sbsrCmd.getSharingRights() );
+			ErrorListRpcResponseData result = GwtServerHelper.setBinderSharingRightsInfo(
+				this,
+				getRequest( ri ),
+				sbsrCmd.getBinderIds(),
+				sbsrCmd.isSetTeamMemberRights(),
+				sbsrCmd.getSharingRights() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

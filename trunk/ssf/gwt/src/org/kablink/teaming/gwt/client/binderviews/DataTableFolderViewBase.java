@@ -4593,14 +4593,16 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void showBinderShareRightsDlgNow(final List<Long> selectedBinderList, final UIObject showRelativeTo) {
 		int binderCount = ((null == selectedBinderList) ? 0 : selectedBinderList.size());
+		boolean setTeamMemberRights = getFolderInfo().isBinderTeamsRootWS();
 		String caption;
-		if (getFolderInfo().isBinderGlobalRootWS())
-		     caption = m_messages.shareWorkspaceRightsDlgHeader(binderCount);
-		else caption = m_messages.shareTeamRightsDlgHeader(     binderCount);
+		if (setTeamMemberRights)
+		     caption = m_messages.shareTeamRightsDlgHeader(     binderCount);
+		else caption = m_messages.shareWorkspaceRightsDlgHeader(binderCount);
 		BinderShareRightsDlg.initAndShow(
 			m_binderShareRightsDlg,
 			caption,
 			selectedBinderList,
+			setTeamMemberRights,
 			showRelativeTo);
 	}
 

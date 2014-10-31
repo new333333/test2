@@ -78,6 +78,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private ToolbarItem			m_trackBinderTBI;		// The binder tracking           toolbar item, if found.
 	private ToolbarItem			m_trackPersonTBI;		// The person tracking           toolbar item, if found.
 	private ToolbarItem			m_trashTBI;				// The trash                     toolbar item, if found.
+	private ToolbarItem			m_wsShareRightsTBI;		// The workspace share rights    toolbar item, if found.
 	
 	private final static String IDBASE = "manage_";	// Base ID for the items created in this menu.
 
@@ -219,6 +220,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		// menu.  Start with the actions section...
 		if (null != m_shareThisTBI) {
 			m_primaryBucket.add(m_shareThisTBI);
+		}
+		if (null != m_wsShareRightsTBI) {
+			m_primaryBucket.add(m_wsShareRightsTBI);
 		}
 		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_folder"            );
 		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_subFolder"         );
@@ -415,12 +419,13 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
-				m_brandingTBI          = tbi.getNestedToolbarItem("branding"   );
-				m_emailContributorsTBI = tbi.getNestedToolbarItem("sendEmail"  );
-				m_shareThisTBI         = tbi.getNestedToolbarItem("share"      );
-				m_trackBinderTBI       = tbi.getNestedToolbarItem("track"      );
-				m_trackPersonTBI       = tbi.getNestedToolbarItem("trackPerson");
-				m_trashTBI             = tbi.getNestedToolbarItem("trash"      );
+				m_brandingTBI          = tbi.getNestedToolbarItem("branding"     );
+				m_emailContributorsTBI = tbi.getNestedToolbarItem("sendEmail"    );
+				m_shareThisTBI         = tbi.getNestedToolbarItem("share"        );
+				m_trackBinderTBI       = tbi.getNestedToolbarItem("track"        );
+				m_trackPersonTBI       = tbi.getNestedToolbarItem("trackPerson"  );
+				m_trashTBI             = tbi.getNestedToolbarItem("trash"        );
+				m_wsShareRightsTBI     = tbi.getNestedToolbarItem("wsShareRights");
 			}
 		}
 		
@@ -433,6 +438,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			 (null != m_shareThisTBI)                                                        ||
 			 (null != m_trackBinderTBI)                                                      ||
 			 (null != m_trackPersonTBI)                                                      ||
+			 (null != m_wsShareRightsTBI)                                                    ||
 			((null != m_calendarImportTBI)   && m_calendarImportTBI.hasNestedToolbarItems()) ||
 			((null != m_commonActionsTBI)    && m_commonActionsTBI.hasNestedToolbarItems())  ||
 			((null != m_trashTBI)            && GwtClientHelper.isLicenseFilr())             ||

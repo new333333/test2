@@ -1529,6 +1529,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case INVOKE_WORKSPACE_SHARE_RIGHTS:
+				// An InvokeWorkspaceShareRightsEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof InvokeWorkspaceShareRightsEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeWorkspaceShareRightsEvent.registerEvent(eventBus, ((InvokeWorkspaceShareRightsEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case JSP_LAYOUT_CHANGED:
 				// An JspLayoutChangedEvent!  Can the event handler we
 				// were given handle that?
@@ -2903,6 +2912,7 @@ public class EventHelper {
 			case INVOKE_TAG:                        	       hasHandler = (eventHandler instanceof InvokeTagEvent.Handler);                              break;
 			case INVOKE_USER_PROPERTIES_DLG:				   hasHandler = (eventHandler instanceof InvokeUserPropertiesDlgEvent.Handler);		           break;
 			case INVOKE_USER_SHARE_RIGHTS_DLG:				   hasHandler = (eventHandler instanceof InvokeUserShareRightsDlgEvent.Handler);		       break;
+			case INVOKE_WORKSPACE_SHARE_RIGHTS:			       hasHandler = (eventHandler instanceof InvokeWorkspaceShareRightsEvent.Handler);		       break;
 			
 			case JSP_LAYOUT_CHANGED:                   	       hasHandler = (eventHandler instanceof JspLayoutChangedEvent.Handler);                       break;
 
