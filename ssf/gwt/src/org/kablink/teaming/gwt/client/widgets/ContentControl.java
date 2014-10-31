@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.binderviews.FolderEntryDlg;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryDlg.FolderEntryDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryView;
 import org.kablink.teaming.gwt.client.binderviews.GenericWSView;
+import org.kablink.teaming.gwt.client.binderviews.GlobalWorkspacesView;
 import org.kablink.teaming.gwt.client.binderviews.GuestbookFolderView;
 import org.kablink.teaming.gwt.client.binderviews.HomeWSView;
 import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
@@ -2014,8 +2015,9 @@ public class ContentControl extends Composite
 			}
 		};
 		
-		// Create a GenericWSView widget for the selected binder.
-		GenericWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		// Create a GlobalWorkspacesView widget for the selected
+		// binder.
+		GlobalWorkspacesView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
 	}
 	
 	/**

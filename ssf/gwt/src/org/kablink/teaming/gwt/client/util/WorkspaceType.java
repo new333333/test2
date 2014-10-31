@@ -61,6 +61,16 @@ public enum WorkspaceType implements IsSerializable {
 	NOT_A_WORKSPACE;
 	
 	/**
+	 * Returns true if this WorkspaceType value represents a global
+	 * root workspace and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isGlobalRoot() {
+		return this.equals(GLOBAL_ROOT);
+	}
+
+	/**
 	 * Returns true if this WorkspaceType value represents a mobile
 	 * devices view, as used by the administration console and false
 	 * otherwise.
@@ -93,7 +103,7 @@ public enum WorkspaceType implements IsSerializable {
 	
 	/**
 	 * Returns true if this WorkspaceType value represents a team
-	 * root and false otherwise.
+	 * root workspace and false otherwise.
 	 * 
 	 * @return
 	 */
@@ -103,7 +113,8 @@ public enum WorkspaceType implements IsSerializable {
 
 	/**
 	 * Returns true if this WorkspaceType value represents a team
-	 * root as used by the administration console and false otherwise.
+	 * root workspace as used by the administration console and false
+	 * otherwise.
 	 * 
 	 * @return
 	 */

@@ -46,7 +46,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -93,6 +92,7 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -1800,7 +1800,7 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for the root team workspace view.
 	 */
-	private static void constructEntryTeamsRootWSItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, boolean manageTeams) {
+	private static void constructEntryRootWSItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, WorkspaceType wt) {
 		// If the user can add entries...
 		BinderModule bm = bs.getBinderModule();
 		if (bm.testAccess(ws, BinderOperation.addWorkspace)) {
@@ -1829,12 +1829,18 @@ public class GwtMenuHelper {
 		ToolbarItem moreTBI = new ToolbarItem("1_more");
 		markTBITitle(moreTBI, "toolbar.more");
 
-		// If we're managing teams and sharing is enabled on the root
-		// team workspaces binder...
-		if (manageTeams && bs.getSharingModule().testAddShareEntity(ws)) {
+		// If sharing is enabled...
+		boolean canSetSharingRights = bs.getSharingModule().isSharingEnabled();
+		if (canSetSharingRights) {
+			// ...and we support sharing from this root workspace...
+			canSetSharingRights =
+				(wt.isTeamRootManagement() ||
+				(wt.isGlobalRoot() && bs.getAdminModule().testAccess(AdminOperation.manageFunction)));
+		}
+		if (canSetSharingRights) {
 			// ...add the set selected share rights.
 			tbi = new ToolbarItem("1_setShareRights");
-			markTBITitle(tbi, "toolbar.setTeamShareRights");
+			markTBITitle(tbi, "toolbar.setShareRights");
 			markTBIEvent(tbi, TeamingEvents.SET_SELECTED_BINDER_SHARE_RIGHTS);
 			moreTBI.addNestedItem(tbi);
 		}
@@ -3628,20 +3634,20 @@ public class GwtMenuHelper {
 			
 			// No, we aren't returning the toolbar items for root
 			// profiles workspace view either!  Are we returning them
-			// for the root team workspaces view?
-			else if (folderInfo.isBinderTeamsRootWS()) {
+			// for the root global or team workspaces view?
+			else if (folderInfo.isBinderTeamsRootWS() || folderInfo.isBinderGlobalRootWS()) {
 				// Yes!  Can the user access the root team workspaces
 				// binder?
 				if (GwtServerHelper.canUserViewBinder(bs, folderInfo)) {
 					// Yes!  Construct the items for viewing the root
-					// team workspaces binder.
-					constructEntryTeamsRootWSItems(entryToolbar, bs, request, ws, folderInfo.getWorkspaceType().isTeamRootManagement());
+					// global or team workspaces binder.
+					constructEntryRootWSItems(entryToolbar, bs, request, ws, folderInfo.getWorkspaceType());
 				}
 			}
 			
 			// No, we aren't returning the toolbar items for the root
-			// team workspaces view either!  Are we returning them
-			// for a collection view?
+			// global or team workspaces view either!  Are we returning
+			// them for a collection view?
 			else if (isBinderCollection) {
 				// Yes!  Can the user access this collection?
 				CollectionType ct = folderInfo.getCollectionType();

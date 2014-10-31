@@ -4174,6 +4174,15 @@ public class GwtViewHelper {
 			}
 			
 			// No, we aren't showing the root team workspaces binder
+			// view either!  Are we looking at the root global
+			// workspaces binder? 
+			else if (folderInfo.isBinderGlobalRootWS()) {
+				// Yes!
+				baseNameKey = "globals.column.";
+				columnNames = getColumnsLHMFromAS(new String[]{"title"});
+			}
+			
+			// No, we aren't showing the root global workspaces binder
 			// either!  Are we viewing a collection?
 			else if (isCollection) {
 				// Yes!  Generate the base key to use for accessing
@@ -4491,7 +4500,7 @@ public class GwtViewHelper {
 			}
 			else {
 				sortDescend = false;
-				if (folderInfo.isBinderProfilesRootWS() || folderInfo.isBinderTeamsRootWS() || folderInfo.isBinderCollection()) {
+				if (folderInfo.isBinderProfilesRootWS() || folderInfo.isBinderGlobalRootWS() || folderInfo.isBinderTeamsRootWS() || folderInfo.isBinderCollection()) {
 					sortBy = Constants.SORT_TITLE_FIELD;
 				}
 				else if (folderInfo.isBinderMobileDevices()) {
@@ -5232,6 +5241,7 @@ public class GwtViewHelper {
 			boolean isGuestbook             = false;
 			boolean isMilestone             = false;
 			boolean isSurvey                = false;
+			boolean isGlobalRootWS          = folderInfo.isBinderGlobalRootWS();
 			boolean isMobileDevicesViewSpec = folderInfo.isBinderMobileDevices();
 			boolean isProfilesRootWS        = folderInfo.isBinderProfilesRootWS();
 			boolean isTeamsRootWS           = folderInfo.isBinderTeamsRootWS();
@@ -5355,10 +5365,10 @@ public class GwtViewHelper {
 				// No, the user isn't currently viewing pinned entries!
 				// Read the entries based on a search.
 				Map searchResults;
-				if      (isTrash)                 searchResults = TrashHelper.getTrashEntities(    bs,          binder,              options                               );
-				else if (isProfilesRootWS)        searchResults = getUserEntries(                  bs, request, binder, quickFilter, options                               );
-				else if (isTeamsRootWS)           searchResults = getTeamEntries(                  bs, request, binder, quickFilter, options                               );
-				else if (isCollection)            searchResults = getCollectionEntries(            bs, request, binder, quickFilter, options, collectionType, shareItems   );
+				if      (isTrash)                         searchResults = TrashHelper.getTrashEntities(    bs,          binder,              options                               );
+				else if (isProfilesRootWS)                searchResults = getUserEntries(                  bs, request, binder, quickFilter, options                               );
+				else if (isGlobalRootWS || isTeamsRootWS) searchResults = getRootWorkspaceEntries(         bs, request, binder, quickFilter, options                               );
+				else if (isCollection)                    searchResults = getCollectionEntries(            bs, request, binder, quickFilter, options, collectionType, shareItems   );
 				else if (isMobileDevicesViewSpec) return GwtMobileDeviceHelper.getMobileDeviceRows(bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
 				else {
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE          );	// Include nested folders.
@@ -6953,6 +6963,44 @@ public class GwtViewHelper {
 		return reply;
 	}
 	
+	/*
+	 * Returns a Map of the search results for root workspaces based on
+	 * the criteria in the options Map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map getRootWorkspaceEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getRootWorkspaceEntries()");
+		try {
+			// Construct the base criteria for finding the child
+			// binders of the given Binder...
+			Criteria crit = new Criteria();
+			crit.add(eq(Constants.DOC_TYPE_FIELD,          Constants.DOC_TYPE_BINDER));
+			crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD, String.valueOf(binder.getId())));
+
+			// ...factor in the appropriate sorting for the search...
+			boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
+			String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
+			crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
+			crit.addOrder(new Order(sortBy,                 sortAscend));
+
+			// ...factor in any quick filter in affect...
+			addQuickFilterToCriteria(quickFilter, crit);
+
+			// ...and finally, initiate the search.
+			return
+				bs.getBinderModule().executeSearchQuery(
+					crit,
+					Constants.SEARCH_MODE_NORMAL,
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+					null);
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+	
 	/**
 	 * Returns a SelectedUsersDetails object containing information
 	 * about the selected users in a List<Long>.
@@ -7419,44 +7467,6 @@ public class GwtViewHelper {
 		return reply;
 	}
 
-	/*
-	 * Returns a Map of the search results for teams based on the
-	 * criteria in the options Map.
-	 */
-	@SuppressWarnings("unchecked")
-	private static Map getTeamEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getTeamEntries()");
-		try {
-			// Construct the base criteria for finding the child
-			// binders of the given Binder...
-			Criteria crit = new Criteria();
-			crit.add(eq(Constants.DOC_TYPE_FIELD,          Constants.DOC_TYPE_BINDER));
-			crit.add(eq(Constants.BINDERS_PARENT_ID_FIELD, String.valueOf(binder.getId())));
-
-			// ...factor in the appropriate sorting for the search...
-			boolean sortAscend = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                   )));
-			String  sortBy     =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      Constants.SORT_TITLE_FIELD);
-			crit.addOrder(new Order(Constants.ENTITY_FIELD, sortAscend));
-			crit.addOrder(new Order(sortBy,                 sortAscend));
-
-			// ...factor in any quick filter in affect...
-			addQuickFilterToCriteria(quickFilter, crit);
-
-			// ...and finally, initiate the search.
-			return
-				bs.getBinderModule().executeSearchQuery(
-					crit,
-					Constants.SEARCH_MODE_NORMAL,
-					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
-					null);
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-	
 	/*
 	 * Returns a Map of the search results for users based on the
 	 * criteria in the options Map.

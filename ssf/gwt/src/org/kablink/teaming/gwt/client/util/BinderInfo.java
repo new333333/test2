@@ -167,6 +167,16 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	}
 
 	/**
+	 * Returns true if this BinderInfo defines the root global
+	 * workspaces binder and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinderGlobalRootWS() {
+		return (isBinderWorkspace() && m_wsType.isGlobalRoot());
+	}
+	
+	/**
 	 * Returns true of this BinderInfo defines a Folder and false
 	 * otherwise.
 	 * 

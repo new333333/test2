@@ -44,8 +44,6 @@ import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.CheckManageDlgActiveEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
-import org.kablink.teaming.gwt.client.event.InvokeBinderShareRightsDlgEvent;
-import org.kablink.teaming.gwt.client.event.SetSelectedBinderShareRightsEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -54,11 +52,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetManageTeamsInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageTeamsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
-import org.kablink.teaming.gwt.client.widgets.BinderShareRightsDlg.BinderShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -69,7 +65,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -83,11 +78,8 @@ public class ManageTeamsDlg extends DlgBox
 		AdministrationExitEvent.Handler,
 		CheckManageDlgActiveEvent.Handler,
 		FullUIReloadEvent.Handler,
-		GetManageTitleEvent.Handler,
-		InvokeBinderShareRightsDlgEvent.Handler,
-		SetSelectedBinderShareRightsEvent.Handler
+		GetManageTitleEvent.Handler
 {
-	private BinderShareRightsDlg			m_binderShareRightsDlg;		// A BinderShareRightsDlg, once one is created.
 	private boolean							m_dlgAttached;				// true when the dialog is attached to the document.        false otherwise.
 	private boolean							m_trashView;				// true if we're viewing the trash on the team workspaces.  false otherwise.
 	private boolean							m_viewReady;				// true once the embedded view is ready.                    false otherwise.
@@ -116,8 +108,6 @@ public class ManageTeamsDlg extends DlgBox
 		TeamingEvents.CHECK_MANAGE_DLG_ACTIVE,
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.GET_MANAGE_TITLE,
-		TeamingEvents.INVOKE_BINDER_SHARE_RIGHTS_DLG,
-		TeamingEvents.SET_SELECTED_BINDER_SHARE_RIGHTS,
 	};
 	
 	/*
@@ -328,78 +318,6 @@ public class ManageTeamsDlg extends DlgBox
 		}
 	}
 
-	/**
-	 * Handles InvokeBinderShareRightsDlgEvent's received by this class.
-	 * 
-	 * Implements the InvokeBinderShareRightsDlgEvent.Handler.onInvokeBinderShareRightsDlg() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onInvokeBinderShareRightsDlg(final InvokeBinderShareRightsDlgEvent event) {
-		// Have we create a binder share rights dialog yet?
-		if (null == m_binderShareRightsDlg) {
-			// No!  Can we create one now?
-			BinderShareRightsDlg.createAsync(new BinderShareRightsDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in 
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(BinderShareRightsDlg usrDlg) {
-					// Yes, we created the binder share rights dialog!
-					// Show it.
-					m_binderShareRightsDlg = usrDlg;
-					showBinderShareRightsDlgAsync(event.getBinderIds(), event.getShowRelativeTo());
-				}
-			});
-		}
-		
-		else {
-			// Yes, we have a binder share rights dialog!  Show it.
-			showBinderShareRightsDlgAsync(event.getBinderIds(), event.getShowRelativeTo());
-		}
-	}
-	
-	/**
-	 * Handles SetSelectedBinderShareRightsEvent's received by this class.
-	 * 
-	 * Implements the SetSelectedBinderShareRightsEvent.Handler.onSetSelectedBinderShareRights() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onSetSelectedBinderShareRights(SetSelectedBinderShareRightsEvent event) {
-		// If we don't have a TeamWorkspacesView...
-		if (null == m_twsView) {
-			// ...bail.
-			return;
-		}
-		
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(m_manageTeamsInfo.getTeamsRootWSInfo().getBinderIdAsLong())) {
-			// Yes!  Get the selected EntityId's...
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = m_twsView.getSelectedEntityIds();
-			}
-			
-			// ...extract the selected user ID's from that...
-			final List<Long> selectedBinderList = new ArrayList<Long>();
-			for (EntityId eid:  selectedEntityIds) {
-				selectedBinderList.add(eid.getEntityId());
-			}
-
-			// ...and invoke the binder share rights dialog.
-			GwtTeaming.fireEventAsync(
-				new InvokeBinderShareRightsDlgEvent(
-					selectedBinderList));
-		}
-	}
-
 	/*
 	 * Sets the view's size once thing are ready for it.
 	 */
@@ -446,30 +364,6 @@ public class ManageTeamsDlg extends DlgBox
 		else if (null != m_twsTrashView) m_twsTrashView.setPixelSize(width, height);
 	}
 	
-	/*
-	 * Asynchronously shows the binder share rights dialog.
-	 */
-	private void showBinderShareRightsDlgAsync(final List<Long> selectedBinderList, final UIObject showRelativeTo) {
-		GwtClientHelper.deferCommand(
-			new ScheduledCommand() {
-				@Override
-				public void execute() {
-					showBinderShareRightsDlgNow(selectedBinderList, showRelativeTo);
-				}
-			});
-	}
-
-	/*
-	 * Synchronously shows the binder share rights dialog.
-	 */
-	private void showBinderShareRightsDlgNow(final List<Long> selectedBinderList, final UIObject showRelativeTo) {
-		BinderShareRightsDlg.initAndShow(
-			m_binderShareRightsDlg,
-			m_messages.manageTeamsShareRightsDlgHeader((null == selectedBinderList) ? 0 : selectedBinderList.size()),
-			selectedBinderList,
-			showRelativeTo);
-	}
-
 	/**
 	 * Called when the contained view reaches the ready state.
 	 * 
