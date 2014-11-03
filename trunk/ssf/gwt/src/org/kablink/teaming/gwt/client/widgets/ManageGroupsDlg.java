@@ -62,9 +62,11 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteGroupsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAllGroupsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GroupType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -1080,6 +1082,7 @@ public class ManageGroupsDlg extends DlgBox implements
 
 			if ( groupInfoPlus != null )
 			{
+				@SuppressWarnings("unused")
 				GroupInfo groupInfo;
 
 				groupInfo = groupInfoPlus.getGroupInfo();
@@ -1433,6 +1436,33 @@ public class ManageGroupsDlg extends DlgBox implements
 				null,
 				m_messages.manageGroupsDlgMobileAppSettings() );
 		}
+		
+		// Admin rights options.
+		morePopup.addSeparator();
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true  -> Ready only.
+					if (!(groups.isEmpty())) {
+						setAdminRightsAsync(groups, true);
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgAdminRightsSet());
+		morePopup.addMenuItem(
+			new Command() {
+				@Override
+				public void execute() {
+					List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true  -> Ready only.
+					if (!(groups.isEmpty())) {
+						setAdminRightsAsync(groups, false);
+					}
+				}
+			},
+			null,
+			m_messages.manageGroupsDlgAdminRightsClear());
 	}
 
 	/*
@@ -1459,5 +1489,47 @@ public class ManageGroupsDlg extends DlgBox implements
 	private List<Long> getSelectedGroupIds(boolean readyOnly) {
 		// Always use the initial form of the method.
 		return getSelectedGroupIds(readyOnly, null);
+	}
+
+	/*
+	 * Asynchronously sets or clears the admin rights on the selected
+	 * groups.
+	 */
+	private void setAdminRightsAsync(final List<Long> groups, final boolean setRights) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				setAdminRightsNow(groups, setRights);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously sets or clears the admin rights on the selected
+	 * groups.
+	 */
+	private void setAdminRightsNow(final List<Long> groups, final boolean setRights) {
+	    showDlgBusySpinner();
+		SetPrincipalsAdminRightsCmd cmd = new SetPrincipalsAdminRightsCmd(groups, setRights);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+			    hideDlgBusySpinner();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_SetPrincipalsAdminRights());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  If we had any errors...
+			    hideDlgBusySpinner();
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.manageGroupsDlg_Error_SavingAdminRights(), erList.getErrorList());
+				}
+			}
+		});
 	}
 }

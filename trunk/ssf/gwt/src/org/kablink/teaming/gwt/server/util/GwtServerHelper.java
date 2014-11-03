@@ -92,11 +92,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -12098,11 +12100,35 @@ public class GwtServerHelper {
 							continue;
 						}
 						
-						// Is this Principal a User?
+						// Is this Principal a Group?
 						boolean pInternal = p.getIdentityInfo().isInternal();
 						String  errKey    = null;
 						String  pTitle    = null;
-						if (p instanceof UserPrincipal) {
+						if (p instanceof GroupPrincipal) {
+							// Yes!  Can we set its admin rights?
+							Group g = ((Group) p);
+							pTitle = g.getTitle();
+							if (g.isDisabled() && setRights) {
+								// You can clear rights from a disabled
+								// group, but not set them.
+								errKey = "setAdminRightsWarning.GroupDisabled";
+							}
+							else if (g.isLdapContainer()) {
+								// You can't set admin rights on an
+								// LDAP container group.
+								errKey = "setAdminRightsWarning.GroupLdapContainer";
+							}
+							else if (!pInternal) {
+								// You can't set admin rights on a
+								// group that can contain external
+								// users.
+								errKey = "setAdminRightsWarning.GroupExternal";
+							}
+						}
+						
+						// No, this Principal is not a Group!  Is it a
+						// User?
+						else if (p instanceof UserPrincipal) {
 							// Yes!  Can we set its admin rights?
 							User u = ((User) p);
 							pTitle = Utils.getUserTitle(u);
@@ -12132,30 +12158,6 @@ public class GwtServerHelper {
 								// A user cannot change their own admin
 								// rights.
 								errKey = "setAdminRightsWarning.UserSelf";
-							}
-						}
-
-						// No, this Principal is not a User!  Is it a
-						// Group?
-						else if (p instanceof GroupPrincipal) {
-							// Yes!  Can we set its admin rights?
-							Group g = ((Group) p);
-							pTitle = g.getTitle();
-							if (g.isDisabled() && setRights) {
-								// You can clear rights from a disabled
-								// group, but not set them.
-								errKey = "setAdminRightsWarning.GroupDisabled";
-							}
-							else if (g.isLdapContainer()) {
-								// You can't set admin rights on an
-								// LDAP container group.
-								errKey = "setAdminRightsWarning.GroupLdapContainer";
-							}
-							else if (!pInternal) {
-								// You can't set admin rights on a
-								// group that can contain external
-								// users.
-								errKey = "setAdminRightsWarning.GroupExternal";
 							}
 						}
 						

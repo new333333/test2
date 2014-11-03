@@ -2268,6 +2268,8 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the Manage Groups dialog
 	String manageGroupsDlgAddGroupLabel();
+	String manageGroupsDlgAdminRightsClear();
+	String manageGroupsDlgAdminRightsSet();
 	String manageGroupsDlgConfirmDelete( String groupNames );
 	String manageGroupsDlgCreatingGroup();
 	String manageGroupsDlgDeleteGroupLabel();
@@ -2276,6 +2278,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgDownload_Clear();
 	String manageGroupsDlgDownload_Disable();
 	String manageGroupsDlgDownload_Enable();
+	String manageGroupsDlg_Error_SavingAdminRights();
 	String manageGroupsDlgEditGroupLabel();
 	String manageGroupsDlgHeader();
 	String manageGroupsDlgMobileAppSettings();
