@@ -84,6 +84,7 @@ public class ApiTest {
 		client.destroy();
 	}
 	
+	/*
 	//@Test
 	public void testReadFilePropertiesByName() throws Exception {
 		System.out.println("Invoking testReadFilePropertiesByName");
@@ -190,4 +191,5 @@ public class ApiTest {
 			threads[i].join();
 		System.out.println("testReadFilePropertiesRepeatedlyAsynchronously completed");
 	}
+	*/
 }
