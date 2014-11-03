@@ -81,6 +81,7 @@ import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedBinderShareRightsEvent;
+import org.kablink.teaming.gwt.client.event.SetSelectedPrincipalsAdminRightsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserDesktopSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserMobileSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserShareRightsEvent;
@@ -1290,6 +1291,11 @@ public class EntryMenuPanel extends ToolPanelBase
 							 m_binderInfo.isBinderCollection()       &&
 							 m_binderInfo.getCollectionType().isMyFiles());
 						event = new InvokeAddNewFolderEvent(folderTargetId, Long.parseLong(folderTemplateId), allowCloudFolder);
+						break;
+						
+					case SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS:
+						String setRights = simpleTBI.getQualifierValue("setRights");
+						event = new SetSelectedPrincipalsAdminRightsEvent(folderId, Boolean.parseBoolean(setRights));
 						break;
 						
 					case SET_FOLDER_SORT:

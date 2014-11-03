@@ -606,6 +606,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SetEntriesPinState();
 	String rpcFailure_SetHasSeenOesWarning();
 	String rpcFailure_SetMobileDevicesWipeScheduledState();
+	String rpcFailure_SetPrincipalsAdminRights();
 	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
 	String rpcFailure_SetUnseen();
@@ -1946,6 +1947,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Confirm_CantSubscribe();
 	String vibeDataTable_Download();
 	String vibeDataTable_Error_MirroredDriverNotConfigured();
+	String vibeDataTable_Error_SavingAdminRights();
 	String vibeDataTable_Empty();
 	String vibeDataTable_Empty_Pinning();
 	String vibeDataTable_Event_AllDay();

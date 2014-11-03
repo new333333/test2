@@ -1954,6 +1954,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS:
+				// An SetSelectedPrincipalsAdminRightsEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof SetSelectedPrincipalsAdminRightsEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SetSelectedPrincipalsAdminRightsEvent.registerEvent(eventBus, ((SetSelectedPrincipalsAdminRightsEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case SET_SELECTED_USER_DESKTOP_SETTINGS:
 				// An SetSelectedUserDesktopSettingsEvent!  Can the
 				// event handler we were given handle that?
@@ -3073,6 +3082,7 @@ public class EventHelper {
 			case SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY:  hasHandler = (eventHandler instanceof SetDesktopDownloadAppControlVisibilityEvent.Handler); break;
 			case SET_FOLDER_SORT:                              hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                          break;
 			case SET_SELECTED_BINDER_SHARE_RIGHTS:             hasHandler = (eventHandler instanceof SetSelectedBinderShareRightsEvent.Handler);           break;
+			case SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS:         hasHandler = (eventHandler instanceof SetSelectedPrincipalsAdminRightsEvent.Handler);       break;
 			case SET_SELECTED_USER_DESKTOP_SETTINGS:           hasHandler = (eventHandler instanceof SetSelectedUserDesktopSettingsEvent.Handler);         break;
 			case SET_SELECTED_USER_MOBILE_SETTINGS:            hasHandler = (eventHandler instanceof SetSelectedUserMobileSettingsEvent.Handler);          break;
 			case SET_SELECTED_USER_SHARE_RIGHTS:               hasHandler = (eventHandler instanceof SetSelectedUserShareRightsEvent.Handler);             break;
