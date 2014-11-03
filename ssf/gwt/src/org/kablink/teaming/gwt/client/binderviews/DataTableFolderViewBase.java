@@ -127,6 +127,7 @@ import org.kablink.teaming.gwt.client.event.MobileDeviceWipeScheduleStateChanged
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedBinderShareRightsEvent;
+import org.kablink.teaming.gwt.client.event.SetSelectedPrincipalsAdminRightsEvent;
 import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ShowSelectedSharesEvent;
@@ -149,6 +150,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCanAddEntitiesToBindersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntityRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
@@ -159,6 +161,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveSharedFilesStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveSharedViewStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetEntriesPinStateCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
@@ -272,6 +275,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		MoveSelectedEntitiesEvent.Handler,
 		QuickFilterEvent.Handler,
 		SetSelectedBinderShareRightsEvent.Handler,
+		SetSelectedPrincipalsAdminRightsEvent.Handler,
 		SharedViewFilterEvent.Handler,
 		ShareSelectedEntitiesEvent.Handler,
 		ShowSelectedSharesEvent.Handler,
@@ -373,6 +377,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.MOVE_SELECTED_ENTITIES,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SET_SELECTED_BINDER_SHARE_RIGHTS,
+		TeamingEvents.SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS,
 		TeamingEvents.SHARED_VIEW_FILTER,
 		TeamingEvents.SHARE_SELECTED_ENTITIES,
 		TeamingEvents.SHOW_SELECTED_SHARES,
@@ -3587,6 +3592,82 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						selectedBinderList));
 			}
 		}
+	}
+
+	/**
+	 * Handles SetSelectedPrincipalsAdminRightsEvent's received by this class.
+	 * 
+	 * Implements the SetSelectedPrincipalsAdminRightsEvent.Handler.onSetSelectedPrincipalsAdminRights() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSetSelectedPrincipalsAdminRights(SetSelectedPrincipalsAdminRightsEvent event) {
+		// We only support setting binder rights from the root personal
+		// workspace in management mode.  Is it supported?
+		WorkspaceType wt = getFolderInfo().getWorkspaceType();
+		if (wt.isProfileRootManagement()) {
+			// Yes!  Is the event targeted to this folder?
+			Long eventBinderId = event.getBinderId();
+			if (eventBinderId.equals(getFolderInfo().getBinderIdAsLong())) {
+				// Yes!  Get the selected EntityId's...
+				List<EntityId> selectedEntityIds = event.getSelectedEntities();
+				if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+					selectedEntityIds = getSelectedEntityIds();
+				}
+				
+				// ...extract the selected user ID's from that...
+				final List<Long> selectedPrincipalsList = new ArrayList<Long>();
+				for (EntityId eid:  selectedEntityIds) {
+					selectedPrincipalsList.add(eid.getEntityId());
+				}
+	
+				// ...and perform the rights set.
+				onSetSelectedPrincipalsAdminRightsAsync(selectedPrincipalsList, event.isSetRights());
+			}
+		}
+	}
+
+	/*
+	 * Asynchronously sets or clears the admin rights on the selected
+	 * principals.
+	 */
+	private void onSetSelectedPrincipalsAdminRightsAsync(final List<Long> selectedPrincipalsList, final boolean setRights) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onSetSelectedPrincipalsAdminRightsNow(selectedPrincipalsList, setRights);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously sets or clears the admin rights on the selected
+	 * principals.
+	 */
+	private void onSetSelectedPrincipalsAdminRightsNow(final List<Long> selectedPrincipalsList, final boolean setRights) {
+	    showBusySpinner();
+		SetPrincipalsAdminRightsCmd cmd = new SetPrincipalsAdminRightsCmd(selectedPrincipalsList, setRights);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+			    hideBusySpinner();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_SetPrincipalsAdminRights());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  If we had any errors...
+			    hideBusySpinner();
+				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
+				if (erList.hasErrors()) {
+					// ...display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.vibeDataTable_Error_SavingAdminRights(), erList.getErrorList());
+				}
+			}
+		});
 	}
 
 	/**

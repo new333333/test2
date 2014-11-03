@@ -1467,7 +1467,7 @@ public class GwtMenuHelper {
 			moreTBI.addNestedItem(tbi);
 		}
 		
-		// ...and add the set selected user desktop and mobile rights.
+		// ...add the set selected user desktop and mobile rights...
 		addNestedSeparatorIfNeeded(moreTBI, (needSep2 || needSeparator));
 		needSeparator =
 		needSep2      = false;
@@ -1481,6 +1481,20 @@ public class GwtMenuHelper {
 			markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_MOBILE_SETTINGS);
 			moreTBI.addNestedItem(tbi);
 		}
+
+		// ...and add the set/clear admin rights.
+		moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+		tbi = new ToolbarItem("1_setAdminRights");
+		markTBITitle(tbi, "toolbar.adminRightsSet");
+		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS);
+		markTBIBoolean(tbi, "setRights", Boolean.TRUE);
+		moreTBI.addNestedItem(tbi);
+		
+		tbi = new ToolbarItem("1_clearAdminRights");
+		markTBITitle(tbi, "toolbar.adminRightsClear");
+		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS);
+		markTBIBoolean(tbi, "setRights", Boolean.FALSE);
+		moreTBI.addNestedItem(tbi);
 				
 		// Finally, if we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {
@@ -4642,6 +4656,12 @@ public class GwtMenuHelper {
 		markTBIBinderId(tbi, String.valueOf(binderId));
 	}
 	
+	/*
+	 * Marks a ToolbarItem with a boolean.
+	 */
+	private static void markTBIBoolean(ToolbarItem tbi, String key, boolean value) {
+		tbi.addQualifier(key, String.valueOf(value));
+	}
 	/*
 	 * Marks a ToolbarItem as needing to calendar show mode.
 	 */

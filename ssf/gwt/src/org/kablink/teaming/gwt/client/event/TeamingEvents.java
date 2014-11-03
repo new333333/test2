@@ -326,6 +326,7 @@ public enum TeamingEvents implements IsSerializable {
 	SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,	// Sets the visibility of the desktop application download control. 
 	SET_FOLDER_SORT,								// Sets a folder sort options.
 	SET_SELECTED_BINDER_SHARE_RIGHTS,				// Sets the share               rights   for the selected binders.
+	SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS,			// Sets admin rights on the selected princiapls (users or groups.)
 	SET_SELECTED_USER_DESKTOP_SETTINGS,				// Sets the desktop application settings for the selected users.
 	SET_SELECTED_USER_MOBILE_SETTINGS,				// Sets the mobile  application settings for the selected users.
 	SET_SELECTED_USER_SHARE_RIGHTS,					// Sets the share               rights   for the selected users.

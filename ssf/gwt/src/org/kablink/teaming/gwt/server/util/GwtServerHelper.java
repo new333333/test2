@@ -10503,6 +10503,7 @@ public class GwtServerHelper {
 		case SET_ENTRIES_PIN_STATE:
 		case SET_HAS_SEEN_OES_WARNING:
 		case SET_MOBILE_DEVICES_WIPE_SCHEDULED_STATE:
+		case SET_PRINCIPALS_ADMIN_RIGHTS:
 		case SET_SEEN:
 		case SET_UNSEEN:
 		case SET_USER_SHARING_RIGHTS_INFO:
@@ -12059,6 +12060,172 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Sets or clears the admin rights on collection of users or
+	 * groups.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param principalIds
+	 * @param setRights
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData setPrincipalsAdminRights(AllModulesInjected bs, HttpServletRequest request, List<Long> principalIds, boolean setRights) throws GwtTeamingException {
+		try {
+			// Create the ErrorListRpcResponseData to return.
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+
+			// We're we given any Principal IDs to set or clear the
+			// rights from?
+			if (MiscUtil.hasItems(principalIds)) {
+				// Yes!  Allocate a List<Long> to track the principal
+				// IDs that we can set the admin rights on.
+				List<Long> validPIDs = new ArrayList<Long>();
+				
+				// What's the current user's ID?
+				Long currentUserId = getCurrentUserId();
+				
+				// Can we resolved the Principal IDs?
+				List<Principal> pList = ResolveIds.getPrincipals(principalIds, false);	// false -> Don't check for active users.
+				if (MiscUtil.hasItems(pList)) {
+					// Yes!  Scan them.
+					for (Principal p:  pList) {
+						// If this Principal has been deleted...
+						if (p.isDeleted()) {
+							// ...skip it.
+							continue;
+						}
+						
+						// Is this Principal a User?
+						boolean pInternal = p.getIdentityInfo().isInternal();
+						String  errKey    = null;
+						String  pTitle    = null;
+						if (p instanceof UserPrincipal) {
+							// Yes!  Can we set its admin rights?
+							User u = ((User) p);
+							pTitle = Utils.getUserTitle(u);
+							if (u.isDisabled() && setRights) {
+								// You can clear rights from a disabled
+								// user, but not set them.
+								errKey = "setAdminRightsWarning.UserDisabled";
+							}
+							else if (!(u.isPerson())) {
+								// You can't set admin rights on
+								// built-in system users.
+								errKey = "setAdminRightsWarning.NotAPerson";
+							}
+							else if (!pInternal) {
+								// You can't set admin rights on
+								// external users.
+								errKey = "setAdminRightsWarning.UserExternal";
+							}
+							else if (u.isAdmin()) {
+								// The built-in admin account can't
+								// have its admin rights changed.
+								if (setRights)
+								     errKey = "setAdminRightsWarning.UserAdmin.set";
+								else errKey = "setAdminRightsWarning.UserAdmin.clear";
+							}
+							else if (currentUserId.equals(u.getId())) {
+								// A user cannot change their own admin
+								// rights.
+								errKey = "setAdminRightsWarning.UserSelf";
+							}
+						}
+
+						// No, this Principal is not a User!  Is it a
+						// Group?
+						else if (p instanceof GroupPrincipal) {
+							// Yes!  Can we set its admin rights?
+							Group g = ((Group) p);
+							pTitle = g.getTitle();
+							if (g.isDisabled() && setRights) {
+								// You can clear rights from a disabled
+								// group, but not set them.
+								errKey = "setAdminRightsWarning.GroupDisabled";
+							}
+							else if (g.isLdapContainer()) {
+								// You can't set admin rights on an
+								// LDAP container group.
+								errKey = "setAdminRightsWarning.GroupLdapContainer";
+							}
+							else if (!pInternal) {
+								// You can't set admin rights on a
+								// group that can contain external
+								// users.
+								errKey = "setAdminRightsWarning.GroupExternal";
+							}
+						}
+						
+						else {
+							// No, it wasn't a Group either!  What ever
+							// it was, we can't handle it.
+							pTitle  = p.getTitle();
+							errKey = "setAdminRightsWarning.UnknownPrincipal";
+						}
+
+						// Is there a problem with setting admin rights
+						// on this Principal?
+						if (null != errKey) {
+							// Yes!  Add the error to the reply and
+							// skip it.
+							reply.addWarning(NLT.get(errKey, new String[]{pTitle}));
+							continue;
+						}
+						
+						// If we get here, this Principal can have its
+						// admin rights set!  Track its ID.
+						validPIDs.add(p.getId());
+					}
+					
+					// Do we have any Principal IDs that we can set the
+					// admin rights on?
+					if (!(validPIDs.isEmpty())) {
+						// Yes!  Can we find the site admin role so we 
+						// can grant or remove them?
+						AdminModule    am  = bs.getAdminModule();
+						List<Function> fs  = am.getFunctions();
+						Long siteAdminRole = null;
+						for (Function f:  fs) {
+							String fId = f.getInternalId();
+							if (MiscUtil.hasString(fId)) {
+								if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID)) {
+									siteAdminRole = f.getId();
+									break;
+								}
+							}
+						}
+						
+						if (null == siteAdminRole) {
+							// No!  Tell the user about the problem.
+							reply.addWarning(NLT.get("setAdminRightsWarning.UnknownSiteAdminRole"));
+						}
+						
+						else {
+							// Yes, we have the site admin role so
+							// we can grant or remove them!  Set/clear
+							// it from the valid Principal IDs.
+					    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+							am.updateWorkAreaFunctionMemberships(zoneConfig, siteAdminRole, setRights, validPIDs);
+						}
+					}
+				}
+			}
+			
+			// If we get here, reply refers to the
+			// ErrorListRpcResponseData containing any errors detected
+			// in setting the admin rights.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}		
+	}
+	
+	/**
 	 * Sets the sharing rights information on user workspaces for a
 	 * collection of users. 
 	 * 
@@ -12110,7 +12277,7 @@ public class GwtServerHelper {
 						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_LINKS_INTERNALID)) allowPublicLinks = f.getId();
 					}
 				}
-
+				
 				// Can we resolve the user ID's of the users we're to
 				// set the rights for?
 				List<Principal> pList = ResolveIds.getPrincipals(userIds);
