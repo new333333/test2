@@ -44,6 +44,7 @@ import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.util.SZoneConfig;
 
 /**
@@ -125,6 +126,27 @@ public final class BuiltInUsersHelper {
 	private static String getZoneDefaultGuestUserName(Long zoneId) {
 		ZoneInfo zi = MiscUtil.getZoneModule().getZoneInfo(zoneId);
 		return SZoneConfig.getZoneDefaultGuestUserName(zi.getZoneName());
+	}
+	
+	/**
+	 * Returns the built-in admin user for the given zone.
+	 * 
+	 * @param zoneId
+	 * 
+	 * @return
+	 */
+	public static User getZoneSuperUser(Long zoneId) {
+		return AccessUtils.getZoneSuperUser(zoneId);
+	}
+	
+	/**
+	 * Returns the built-in admin user for the current zone.
+	 * 
+	 * @return
+	 */
+	public static User getZoneSuperUser() {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		return getZoneSuperUser(zoneId);
 	}
 	
 	/**
