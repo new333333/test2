@@ -66,10 +66,12 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.SortField;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
@@ -7663,116 +7665,122 @@ public class GwtViewHelper {
 				}
 			}
 
-			SimpleProfiler.start("GwtViewHelper.getUserProperties(Get manage net folder information)");
-			final NetFoldersInfo nfi = new NetFoldersInfo();
-			try {
-				// ...add a NetFolderInfo...
-				reply.setNetFoldersInfo(nfi);
-				if (am.testAccess(AdminOperation.manageFunction)) {
-					// ...including whether the user can manage net
-					// ...folders...
-					try {
-						Binder netFoldersParentBinder = SearchUtils.getNetFoldersRootBinder();
-						nfi.setCanManageNetFolders(
-							(null != netFoldersParentBinder) &&
-							LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
-							bs.getBinderModule().testAccess(netFoldersParentBinder, BinderOperation.modifyBinder));
-					}
-					catch (Exception ex) {
-						// Ignore.  If we can't access it, the user can't
-						// manage net folders.
+			// Are we exposing Filr features?
+			if (LicenseChecker.showFilrFeatures()) {
+				// Yes!  Then we need to include net and home folder
+				// information.
+				SimpleProfiler.start("GwtViewHelper.getUserProperties(Get manage net folder information)");
+				final NetFoldersInfo nfi = new NetFoldersInfo();
+				try {
+					// ...add a NetFolderInfo...
+					reply.setNetFoldersInfo(nfi);
+					if (am.testAccess(AdminOperation.manageFunction)) {
+						// ...including whether the user can manage net
+						// ...folders...
+						try {
+							Binder netFoldersParentBinder = SearchUtils.getNetFoldersRootBinder();
+							nfi.setCanManageNetFolders(
+								(null != netFoldersParentBinder) &&
+								LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
+								bs.getBinderModule().testAccess(netFoldersParentBinder, BinderOperation.modifyBinder));
+						}
+						catch (Exception ex) {
+							// Ignore.  If we can't access it, the user
+							// can't manage net folders.
+						}
 					}
 				}
-			}
-			finally {
-				SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get manage net folder information)");
-			}
-
-			// ...some of the information required has to be done as
-			// ...the target user...
-			RunasTemplate.runas(
-				new RunasCallback() {
-					@Override
-					public Object doAs() {
-						SimpleProfiler.start("GwtViewHelper.getUserProperties(Get home folder information)");
-						try {
-							// ...if the user has a home folder...
-							Long homeId = GwtServerHelper.getHomeFolderId(bs, user);
-							if (null != homeId) {
-								String			rootPath = null;
-								Folder			home     = bs.getFolderModule().getFolderWithoutAccessCheck(homeId);
-								ResourceDriver	rd       = home.getResourceDriver();
-								if (null != rd) {
-									String dc = rd.getClass().getName();
-									if (MiscUtil.hasString(dc) && dc.equals("com.novell.teaming.fi.connection.file.FileResourceDriver")) {
-										rootPath = rd.getRootPath();
-									}
-									else {
-										ResourceDriverConfig rdConfig = rd.getConfig();
-										if (null != rdConfig) {
-											rootPath = rdConfig.getRootPath();
-										}
-									}
-								}
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get manage net folder information)");
+				}
 	
-								// ...add information about the home folder...
-								HomeInfo hi = new HomeInfo();
-								hi.setId(          homeId                );
-								hi.setRelativePath(home.getResourcePath());
-								hi.setRootPath(    rootPath              );
-								reply.setHomeInfo(hi);
-							}
-						}
-						finally {
-							SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get home folder information)");
-						}
-
-						SimpleProfiler.start("GwtViewHelper.getUserProperties(Get per net folder information)");
-						try {
-							Map			nfSearch = getCollectionEntries(bs, request, null, null, new HashMap(), CollectionType.NET_FOLDERS, null);
-							List<Map>	nfList   = ((List<Map>) nfSearch.get(ObjectKeys.SEARCH_ENTRIES));
-							if (MiscUtil.hasItems(nfList)) {
-								Long nfBinderId = SearchUtils.getNetFoldersRootBinder().getId();
-								for (Map nfMap:  nfList) {
-									// ...adding an EntryTitleInfo for each
-									// ...to the reply.
-									Long   docId = Long.parseLong(GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DOCID_FIELD));
-									String title = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.TITLE_FIELD);
-									SimpleProfiler.start("GwtViewHelper.getUserProperties(Get per net folder " + title + " information)");
-									try {
-										EntryTitleInfo	eti = new EntryTitleInfo();
-										eti.setSeen(true);
-										eti.setTitle(MiscUtil.hasString(title) ? title : ("--" + NLT.get("entry.noTitle") + "--"));
-										eti.setEntityId(new EntityId(nfBinderId, docId, EntityId.FOLDER));
-										String description = getEntryDescriptionFromMap(request, nfMap);
-										if (MiscUtil.hasString(description)) {
-											eti.setDescription(description);
-											String descriptionFormat = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DESC_FORMAT_FIELD);
-											eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
+				// ...some of the information required has to be done
+				// ...as the target user...
+				RunasTemplate.runas(
+					new RunasCallback() {
+						@Override
+						public Object doAs() {
+							SimpleProfiler.start("GwtViewHelper.getUserProperties(Get home folder information)");
+							try {
+								// ...if the user has a home folder...
+								Long homeId = GwtServerHelper.getHomeFolderId(bs, user);
+								if (null != homeId) {
+									String			rootPath = null;
+									Folder			home     = bs.getFolderModule().getFolderWithoutAccessCheck(homeId);
+									ResourceDriver	rd       = home.getResourceDriver();
+									if (null != rd) {
+										String dc = rd.getClass().getName();
+										if (MiscUtil.hasString(dc) && dc.equals("com.novell.teaming.fi.connection.file.FileResourceDriver")) {
+											rootPath = rd.getRootPath();
 										}
 										else {
-											description = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.ENTITY_PATH);
-											if (MiscUtil.hasString(description)) {
-												eti.setDescription(      description);
-												eti.setDescriptionIsHtml(false      );
+											ResourceDriverConfig rdConfig = rd.getConfig();
+											if (null != rdConfig) {
+												rootPath = rdConfig.getRootPath();
 											}
 										}
-										nfi.addNetFolder(eti);
 									}
-									finally {
-										SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get per net folder " + title + " information)");
+		
+									// ...add information about the
+									// ...home folder...
+									HomeInfo hi = new HomeInfo();
+									hi.setId(          homeId                );
+									hi.setRelativePath(home.getResourcePath());
+									hi.setRootPath(    rootPath              );
+									reply.setHomeInfo(hi);
+								}
+							}
+							finally {
+								SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get home folder information)");
+							}
+	
+							SimpleProfiler.start("GwtViewHelper.getUserProperties(Get per net folder information)");
+							try {
+								Map			nfSearch = getCollectionEntries(bs, request, null, null, new HashMap(), CollectionType.NET_FOLDERS, null);
+								List<Map>	nfList   = ((List<Map>) nfSearch.get(ObjectKeys.SEARCH_ENTRIES));
+								if (MiscUtil.hasItems(nfList)) {
+									Long nfBinderId = SearchUtils.getNetFoldersRootBinder().getId();
+									for (Map nfMap:  nfList) {
+										// ...adding an EntryTitleInfo
+										// ...for each to the reply.
+										Long   docId = Long.parseLong(GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DOCID_FIELD));
+										String title = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.TITLE_FIELD);
+										SimpleProfiler.start("GwtViewHelper.getUserProperties(Get per net folder " + title + " information)");
+										try {
+											EntryTitleInfo	eti = new EntryTitleInfo();
+											eti.setSeen(true);
+											eti.setTitle(MiscUtil.hasString(title) ? title : ("--" + NLT.get("entry.noTitle") + "--"));
+											eti.setEntityId(new EntityId(nfBinderId, docId, EntityId.FOLDER));
+											String description = getEntryDescriptionFromMap(request, nfMap);
+											if (MiscUtil.hasString(description)) {
+												eti.setDescription(description);
+												String descriptionFormat = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DESC_FORMAT_FIELD);
+												eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
+											}
+											else {
+												description = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.ENTITY_PATH);
+												if (MiscUtil.hasString(description)) {
+													eti.setDescription(      description);
+													eti.setDescriptionIsHtml(false      );
+												}
+											}
+											nfi.addNetFolder(eti);
+										}
+										finally {
+											SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get per net folder " + title + " information)");
+										}
 									}
 								}
 							}
+							finally {
+								SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get per net folder information)");
+							}
+							return null;	// Not used.  Doesn't matter what we return.
 						}
-						finally {
-							SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get per net folder information)");
-						}
-						return null;	// Not used.  Doesn't matter what we return.
-					}
-				},
-				WebHelper.getRequiredZoneName(request),
-				userId);
+					},
+					WebHelper.getRequiredZoneName(request),
+					userId);
+			}
 			
 			// If we get here, reply refers to a
 			// UserPropertiesRpcResponseData containing the properties

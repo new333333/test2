@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,6 +48,33 @@ var ss_checkTitleUrl = "<ssf:url
 	<ssf:param name="operation" value="check_binder_title" />
 	</ssf:url>";
 ss_addValidator("ss_titleCheckName", ss_ajax_result_validator);
+
+<% // Are we editing the name of the built-in admin user? %>
+<c:if test="${ssUser.id == ssDefinitionEntry.id && ssUser.admin}">
+	<% // Yes!  We need to confirm that if the name changes, the %>
+	<% // user is OK with restarting the servers.                %>
+	ss_addValidator("ss_titleCheckName", ss_validateBuiltInAdminName, null, null, ss_rejectBuiltInAdminName);
+	function ss_validateBuiltInAdminName() {
+		// Did the name change?
+		var origName = '<ssf:escapeJavaScript><c:out value="${ssUser.name}"/></ssf:escapeJavaScript>';
+		var newName  = document.getElementById('name').value;
+		var reply = (newName == origName);
+		if (!reply) {
+			// Yes!  Is the user sure they want to restart the servers?
+			reply = confirm("<ssf:escapeJavaScript><ssf:nlt tag='validate.adminNameChange.confirmRestart'/></ssf:escapeJavaScript>");
+		}
+		
+		// If we get here, reply is true if the form is valid and false
+		// otherwise.  Return it.
+		return reply;
+	}
+	
+	<% // Called if the user rejects changing the name of the %>
+	<% // built-in admin.                                     %>
+	function ss_rejectBuiltInAdminName(vObj, isError) {
+		window.setTimeout(function(){ss_cancelPopupDiv('ss_validation_errors_div')}, 1);
+	}
+</c:if>
 </script>
 <div class="ss_entryContent">
 <div class="needed-because-of-ie-bug"><div id="ss_titleCheckName" style="display:none; visibility:hidden;" 
@@ -55,10 +82,12 @@ ss_addValidator("ss_titleCheckName", ss_ajax_result_validator);
 <div class="ss_labelAbove"><%= caption %></div>
 <input type="text" size="40" name="name" id="name" value="<c:out value="${ssDefinitionEntry.name}"/>"
 	onchange="ss_ajaxValidate(ss_checkTitleUrl, this, 'name', 'ss_titleCheckName');"
-	<c:if test="${empty ssDefinitionEntry.name}">
+	<c:if test="${(empty ssDefinitionEntry.name) || (ssUser.id == ssDefinitionEntry.id && ssUser.admin)}">
+	  <% // It's editable when the built-in admin is editing their %>
+	  <% // own profile.                                           %>
 	  class="ss_text"
 	</c:if>
-	<c:if test="${!empty ssDefinitionEntry.name}">
+	<c:if test="${(!empty ssDefinitionEntry.name) && (ssUser.id != ssDefinitionEntry.id || (!ssUser.admin))}">
 	  class="ss_text ss_readonly" READONLY="true" 
 	</c:if>
 >
