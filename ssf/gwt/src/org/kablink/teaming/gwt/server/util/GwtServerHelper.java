@@ -303,6 +303,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.sharing.SharingModule.ExternalAddressStatus;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.portlet.administration.ManageSearchIndexController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
 import org.kablink.teaming.portletadapter.portlet.RenderResponseImpl;
@@ -2950,8 +2951,19 @@ public class GwtServerHelper {
 			// Does the user have rights to "Manage the search index"?
 			if ( top != null )
 			{
-				if ( ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) && 
-					  binderModule.testAccess( top, BinderOperation.indexBinder ) )
+				boolean allowIndexing = (
+					ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) && 
+					binderModule.testAccess( top, BinderOperation.indexBinder ) );
+				
+				if ( ( ! allowIndexing ) && ManageSearchIndexController.INDEX_AS_BUILT_IN_ADMIN && adminModule.testAccess( AdminOperation.manageFunction ) )
+				{
+					User builtInAdmin = BuiltInUsersHelper.getZoneSuperUser();
+					allowIndexing = (
+						( null != builtInAdmin ) &&
+						binderModule.testAccess( builtInAdmin, top, BinderOperation.indexBinder, Boolean.FALSE ) );
+				}
+				
+				if ( allowIndexing )
 				{
 					// Yes
 					if ( adminModule.retrieveIndexNodesHA() != null )
