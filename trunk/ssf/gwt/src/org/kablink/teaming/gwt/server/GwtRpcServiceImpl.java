@@ -348,7 +348,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case CHANGE_PASSWORD:
 		{
 			ChangePasswordCmd cpCmd;
-			BooleanRpcResponseData result;
+			ErrorListRpcResponseData result;
 			
 			cpCmd = (ChangePasswordCmd) cmd;
 			result = GwtServerHelper.changePassword( this, cpCmd.getOldPassword(), cpCmd.getNewPassword() );

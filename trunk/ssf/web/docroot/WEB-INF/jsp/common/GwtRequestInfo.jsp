@@ -91,6 +91,7 @@
 		isSiteAdmin:						'${isSiteAdmin}',
 		isGuestUser:						'${isGuestUser}',
 		isExternalUser:						'${isExternalUser}',
+		isLdapUser:							'${isLdapUser}',
 		isTinyMCECapable:					'${isTinyMCECapable}',
 		isUserLoggedIn:						'${isUserLoggedIn}',
 		jsPath:								'<ssf:escapeJavaScript><html:rootPath/>js/</ssf:escapeJavaScript>',

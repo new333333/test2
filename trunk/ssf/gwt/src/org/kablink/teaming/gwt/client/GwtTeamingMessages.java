@@ -2599,6 +2599,7 @@ public interface GwtTeamingMessages extends Messages
 	String editShareDlg_yes();
 
 	// Strings used in the User Actions Popup
+	String userActionsPanel_ChangePassword();
 	String userActionsPanel_PersonalPreferences();
 	String userActionsPanel_ViewProfile();
 	String userActionsPanel_ViewSharedByMe();

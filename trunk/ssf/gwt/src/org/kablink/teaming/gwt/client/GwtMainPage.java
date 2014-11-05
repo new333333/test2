@@ -191,7 +191,6 @@ import org.kablink.teaming.gwt.client.workspacetree.BreadcrumbTreePopup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.Element;
@@ -1594,9 +1593,7 @@ public class GwtMainPage extends ResizeComposite
 			@Override
 			public void onFailure( final Throwable t )
 			{
-				Scheduler.ScheduledCommand cmd;
-
-				cmd = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -1608,8 +1605,7 @@ public class GwtMainPage extends ResizeComposite
 								GwtTeaming.getMessages().rpcFailure_GetBranding(),
 								patches );
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}
 	
 			/**
@@ -1620,19 +1616,17 @@ public class GwtMainPage extends ResizeComposite
 			public void onSuccess( VibeRpcResponse response )
 			{
 				final GwtBrandingData binderBrandingData;
-				Scheduler.ScheduledCommand cmd;
 				
 				binderBrandingData = (GwtBrandingData) response.getResponseData();
 
-				cmd = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand (new ScheduledCommand()
 				{
 					@Override
 					public void execute()
 					{
 						editBranding( binderBrandingData, -1, -1 );
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}
 		};
 		
@@ -1785,19 +1779,16 @@ public class GwtMainPage extends ResizeComposite
 				@Override
 				public void onSuccess( EditBrandingDlg ebDlg )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
 					m_editBrandingDlg = ebDlg;
 					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
 						{
 							editBrandingImpl( brandingData, x, y );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -2063,10 +2054,10 @@ public class GwtMainPage extends ResizeComposite
 		AdministrationEvent.fireOne();
 	}
 	
-	/**
+	/*
 	 * Invoke the change password dialog
 	 */
-	private void invokeChangePasswordDlg()
+	private void invokeChangePasswordDlg( final boolean showPasswordHint )
 	{
 		// Have we instantiated the change password dialog before?
 		if ( null == m_changePwdDlg )
@@ -2083,18 +2074,15 @@ public class GwtMainPage extends ResizeComposite
 				@Override
 				public void onSuccess( final ChangePasswordDlg cpDlg )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
 					m_changePwdDlg = cpDlg;
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
 						{
-							invokeChangePasswordDlg();
+							invokeChangePasswordDlg( showPasswordHint );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			});
 		}
@@ -2102,7 +2090,7 @@ public class GwtMainPage extends ResizeComposite
 		{
 			// Yes, we've instantiated change password dialog already!
 			// Simply show it.
-			m_changePwdDlg.init();
+			m_changePwdDlg.init( showPasswordHint );
 			m_changePwdDlg.show( true );
 		}
 	
@@ -2905,9 +2893,7 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onEditCurrentBinderBranding( EditCurrentBinderBrandingEvent event )
 	{
-		Scheduler.ScheduledCommand schedCmd;
-		
-		schedCmd = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
@@ -2924,9 +2910,7 @@ public class GwtMainPage extends ResizeComposite
 					@Override
 					public void onFailure( final Throwable t )
 					{
-						Scheduler.ScheduledCommand cmd;
-
-						cmd = new Scheduler.ScheduledCommand()
+						GwtClientHelper.deferCommand( new ScheduledCommand()
 						{
 							@Override
 							public void execute()
@@ -2938,8 +2922,7 @@ public class GwtMainPage extends ResizeComposite
 										GwtTeaming.getMessages().rpcFailure_GetBranding(),
 										patches );
 							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						} );
 					}
 			
 					/**
@@ -2950,11 +2933,10 @@ public class GwtMainPage extends ResizeComposite
 					public void onSuccess( VibeRpcResponse response )
 					{
 						final GwtBrandingData siteBrandingData;
-						Scheduler.ScheduledCommand cmd;
 						
 						siteBrandingData = (GwtBrandingData) response.getResponseData();
 
-						cmd = new Scheduler.ScheduledCommand()
+						GwtClientHelper.deferCommand( new ScheduledCommand()
 						{
 							@Override
 							public void execute()
@@ -2980,8 +2962,7 @@ public class GwtMainPage extends ResizeComposite
 
 								editBinderBranding( currentBinderId );
 							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						} );
 					}
 				};
 				
@@ -2989,8 +2970,7 @@ public class GwtMainPage extends ResizeComposite
 				cmd = new GetSiteBrandingCmd();
 				GwtClientHelper.executeCommand( cmd, getSiteBrandingCallback );
 			}
-		};
-		Scheduler.get().scheduleDeferred( schedCmd );
+		} );
 	}// end onEditCurrentBinderBranding()
 	
 	/**
@@ -3314,19 +3294,16 @@ public class GwtMainPage extends ResizeComposite
 	 * Implements the InvokeChangePasswordDlgEvent.Handler.onInvokeChangePasswordDlgEvent() method
 	 */
 	@Override
-	public void onInvokeChangePasswordDlgEvent( InvokeChangePasswordDlgEvent event )
+	public void onInvokeChangePasswordDlgEvent( final InvokeChangePasswordDlgEvent event )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				invokeChangePasswordDlg();
+				invokeChangePasswordDlg( event.isShowPasswordHint() );
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}
 	
 	/**
@@ -4240,8 +4217,6 @@ public class GwtMainPage extends ResizeComposite
 			
 			// Are we in administration mode?
 			if ( isAdminActive() ) {
-				Scheduler.ScheduledCommand cmd;
-				
 				// Yes
 				// Reposition the admin control
 				{
@@ -4264,15 +4239,14 @@ public class GwtMainPage extends ResizeComposite
 				}
 
 				// Tell the admin console to relayout.
-				cmd = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
 					{
 						AdminControl.relayoutPage( m_adminControl );
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}
 			else
 			{

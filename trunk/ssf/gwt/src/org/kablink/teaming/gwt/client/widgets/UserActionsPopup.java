@@ -33,9 +33,11 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
+import org.kablink.teaming.gwt.client.event.InvokeChangePasswordDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDownloadDesktopAppEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
@@ -367,6 +369,19 @@ public class UserActionsPopup extends TeamingPopupPanel
 							GwtTeaming.getImageBundle().userActionsPanel_PersonalPreferences(),
 							new EditPersonalPreferencesEvent() );
 		m_contentPanel.add( actionPanel );
+
+		// Is this the user actions popup for other than the Guest or
+		// an LDAP user?
+		RequestInfo ri = GwtClientHelper.getRequestInfo();
+		if ( ( null != ri ) && ( ! ( ri.isGuestUser() ) ) && ( ! ( ri.isLdapUser() )) )
+		{
+			// Yes!  Add "Change Password"
+			actionPanel = addAction(
+								GwtTeaming.getMessages().userActionsPanel_ChangePassword(),
+								GwtTeaming.getImageBundle().userActionsPanel_ChangePassword(),
+								new InvokeChangePasswordDlgEvent( false ) );	// false -> Don't show the password hint.
+			m_contentPanel.add( actionPanel );
+		}
 		
 		// Add the "News Feed" option
 		if ( GwtClientHelper.isLicenseFilr() == false )

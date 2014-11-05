@@ -42,7 +42,7 @@ import com.google.gwt.core.client.JavaScriptObject;
  * This class wraps a JavaScript object that holds information about
  * the request we are working with.
  * 
- * @author jwootton
+ * @author jwootton@novell.com
  */
 public class RequestInfo extends JavaScriptObject
 {
@@ -728,6 +728,17 @@ public class RequestInfo extends JavaScriptObject
 	public final native boolean isExternalUser()
 	/*-{
 		return (this.getBFromS( this.isExternalUser ));
+	}-*/;
+	
+	/**
+	 * Return the flag that tells us if the logged in user is an
+	 * LDAP user.
+	 * 
+	 * @return
+	 */
+	public final native boolean isLdapUser()
+	/*-{
+		return (this.getBFromS( this.isLdapUser ));
 	}-*/;
 	
 	/**

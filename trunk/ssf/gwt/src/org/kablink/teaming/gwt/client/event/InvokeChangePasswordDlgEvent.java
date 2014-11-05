@@ -48,6 +48,8 @@ public class InvokeChangePasswordDlgEvent extends VibeEventBase<InvokeChangePass
 {
 	public static Type<Handler> TYPE = new Type<Handler>();
 	
+	public boolean m_showPasswordHint;	//
+	
 	/**
 	 * Handler interface for this event.
 	 */
@@ -58,11 +60,36 @@ public class InvokeChangePasswordDlgEvent extends VibeEventBase<InvokeChangePass
 	
 	/**
 	 * Class constructor.
+	 * 
+	 * @param showPasswordHint
+	 */
+	public InvokeChangePasswordDlgEvent(boolean showPasswordHint)
+	{
+		super();
+		setShowPasswordHint( showPasswordHint );
+	}
+	
+	/**
+	 * Class constructor.
 	 */
 	public InvokeChangePasswordDlgEvent()
 	{
-		super();		
+		this( true );
 	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public boolean isShowPasswordHint() { return m_showPasswordHint; }
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param showPasswordHint
+	 */
+	public void setShowPasswordHint( boolean showPasswordHint ) { m_showPasswordHint = showPasswordHint; }
 	
 	/**
 	 * Dispatches this event when one is triggered.

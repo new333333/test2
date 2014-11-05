@@ -40,7 +40,7 @@ import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 /**
  * Images used by GWT Teaming.
  * 
- * @author jwootton
+ * @author jwootton@novell.com
  */
 public interface GwtTeamingImageBundle extends ClientBundle
 {
@@ -755,6 +755,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Masthead/admin_console_2.png")
 	public ImageResource userActionsPanel_Admin();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/change_password.png")
+	public ImageResource userActionsPanel_ChangePassword();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Masthead/icon_download_Vibe_header_b.png")
