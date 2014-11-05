@@ -1538,6 +1538,7 @@ public class GwtUIHelper {
 		// Put out flags indicating if the user is Guest or an external user.
 		model.put("isGuestUser",       currentUser.isShared()                      );
 		model.put("isExternalUser", (!(currentUser.getIdentityInfo().isInternal())));
+		model.put("isLdapUser",        currentUser.getIdentityInfo().isFromLdap()  );
 
 		// Put out the localized short date/time formats to use.
 		Locale locale = currentUser.getLocale();

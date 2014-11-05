@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,13 +42,15 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.ChangePasswordCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -62,11 +63,10 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
-
 /**
  * This dialog is used to change a user's password
- * @author jwootton
- *
+ * 
+ * @author jwootton@novell.com
  */
 public class ChangePasswordDlg extends DlgBox
 	implements
@@ -76,6 +76,7 @@ public class ChangePasswordDlg extends DlgBox
 	private PasswordTextBox m_pwd1TxtBox;
 	private PasswordTextBox m_pwd2TxtBox;
 	private List<HandlerRegistration> m_registeredEventHandlers;
+	private Label m_changePasswordHintLabel;
 	
 	
 	// The following defines the TeamingEvents that are handled by
@@ -97,8 +98,12 @@ public class ChangePasswordDlg extends DlgBox
 	}
 
 
-	/**
+	/*
+	 * Class constructor.
 	 * 
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private ChangePasswordDlg()
 	{
@@ -129,10 +134,10 @@ public class ChangePasswordDlg extends DlgBox
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
-		
-		label = new Label( messages.changePasswordDlg_ChangeDefaultPasswordHint() );
-		label.addStyleName( "changePasswordDlg_Hint" );
-		mainPanel.add( label );
+
+		m_changePasswordHintLabel = new Label( messages.changePasswordDlg_ChangeDefaultPasswordHint() );
+		m_changePasswordHintLabel.addStyleName( "changePasswordDlg_Hint" );
+		mainPanel.add( m_changePasswordHintLabel );
 
 		label = new Label( messages.changePasswordDlg_CurrentPasswordLabel() );
 		label.addStyleName( "changePasswordDlg_Label" );
@@ -151,17 +156,14 @@ public class ChangePasswordDlg extends DlgBox
 		        // Did the user press the enter key?
 		        if ( keyCode == KeyCodes.KEY_ENTER )
 		        {
-		        	Scheduler.ScheduledCommand cmd;
-		        	
-		        	cmd = new Scheduler.ScheduledCommand()
+		        	GwtClientHelper.deferCommand( new ScheduledCommand()
 		        	{
 						@Override
 						public void execute()
 						{
 							okBtnPressed();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 		        }
 			}
 		};
@@ -239,9 +241,23 @@ public class ChangePasswordDlg extends DlgBox
 			@Override
 			public void onSuccess( VibeRpcResponse result )
 			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
+				ErrorListRpcResponseData erList = ( (ErrorListRpcResponseData) result.getResponseData() );
+				final boolean hasErrors = erList.hasErrors(); 
+				if ( hasErrors )
+				{
+					// ...display them.
+					FlowPanel errorPanel = getErrorPanel();
+					errorPanel.clear();
+					for ( ErrorInfo error:  erList.getErrorList() )
+					{
+						Label label = new Label( error.getMessage() );
+						label.addStyleName( "dlgErrorLabel" );
+						errorPanel.add( label );
+					}
+					showErrorPanel();
+				}
+
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute() 
@@ -249,11 +265,14 @@ public class ChangePasswordDlg extends DlgBox
 						hideStatusMsg();
 						setOkEnabled( true );
 
-						// Close this dialog.
-						hide();
+						// If we didn't display any errors...
+						if ( ! hasErrors )
+						{
+							// ...close the dialog.
+							hide();
+						}
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}						
 		};
 		
@@ -373,17 +392,25 @@ public class ChangePasswordDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init()
+	public void init(boolean showChangeHint)
 	{
 		clearErrorPanel();
 		hideErrorPanel();
 		hideStatusMsg();
 		setOkEnabled( true );
+		
+		m_changePasswordHintLabel.setVisible( showChangeHint );
 
 		// Clear existing data in the controls.
 		m_currentPwdTxtBox.setValue( "" );
 		m_pwd1TxtBox.setValue( "" );
 		m_pwd2TxtBox.setValue( "" );
+	}
+	
+	public void init()
+	{
+		// Always use the initial form of the method.
+		init( true );
 	}
 	
 	/**

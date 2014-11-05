@@ -1730,11 +1730,15 @@ public class GwtServerHelper {
 	/**
 	 * Change the current user's password
 	 */
-	public static BooleanRpcResponseData changePassword(
+	public static ErrorListRpcResponseData changePassword(
 		AllModulesInjected ami,
 		String oldPwd,
 		String newPwd ) throws GwtTeamingException
 	{
+		// Allocate an ErrorListRpcResponseData we can return with
+		// any errors from the password change.
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData();
+		
 		try
 		{
 			User user;
@@ -1744,7 +1748,7 @@ public class GwtServerHelper {
 			ami.getProfileModule().changePassword( user.getId(), oldPwd, newPwd );
 			
 			// Are we dealing with the built in admin user?
-			if ( ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
+			if ( user.isAdmin() )
 			{
 				// Yes
 				// Is this the admin's first time logging in?
@@ -1755,7 +1759,7 @@ public class GwtServerHelper {
 				}
 			}
 
-			return new BooleanRpcResponseData( Boolean.TRUE );
+			return reply;
 		}
 		catch ( PasswordMismatchException ex )
 		{
