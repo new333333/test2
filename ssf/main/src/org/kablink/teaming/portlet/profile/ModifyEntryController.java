@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,7 +47,6 @@ import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
@@ -64,10 +64,13 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.ListUtil;
+import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PasswordPolicyHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.GetterUtil;
-
+import org.kablink.util.StringUtil;
 import org.springframework.web.portlet.ModelAndView;
 
 /**
@@ -126,12 +129,13 @@ public class ModifyEntryController extends SAbstractController {
 				MapInputData inputData = getProfileModule().validateUserAttributes(entryId, formData);
 				
 				// Is there a password field on the page?
+	        	String  password = null;
 				boolean passwordChanged = inputData.exists( WebKeys.USER_PROFILE_PASSWORD );
 	            if ( passwordChanged ) 
 	            {
 	            	// Yes
 					// Are the passwords entered by the user the same?
-		        	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
+		        	password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
 		        	String password2 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD2);
 		        	String password3 = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD3);
 		        	if ( password == null || password2 == null || !password.equals(password2) ) {
@@ -181,10 +185,33 @@ public class ModifyEntryController extends SAbstractController {
 		            	passwordChanged = false;
 		            }
 	            }
+
+	            // Is the password being changed?
+	            Date changeDate = null;
+	            if (passwordChanged) {
+		            // Yes!  Is it the admin user changing somebody
+	            	// else's password?
+		            if ((null == user) || (!(user.isAdmin())) || user.getId().equals(entryId)) {
+		            	// No, it's not the admin or it's somebody else
+		            	// changing their own password!  Does the
+		            	// password violate the system's password
+		            	// policy?  
+		            	List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(user, password);
+		            	if (MiscUtil.hasItems(ppViolations)) {
+		            		// Yes!  We need to pass the violations
+		            		// back to the user.
+			            	setupReloadPreviousPage(response, NLT.get("errorcode.password.violatesPolicy"), ppViolations);
+	                		return; 
+		            	}
+		            	
+		            	// The last password change date is now.
+		            	changeDate = new Date();
+		            }
+	            }
 	            
 				getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
 				if (passwordChanged) {
-					getProfileModule().setLastPasswordChange(entryId, new Date());
+					getProfileModule().setLastPasswordChange(entryId, changeDate);
 				}
 				
 				//Now look to see if there were groups specified (but only if allowed to manage these
@@ -244,10 +271,20 @@ public class ModifyEntryController extends SAbstractController {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 	}
-	private void setupReloadPreviousPage(ActionResponse response, String errorMessage) {
+	private void setupReloadPreviousPage(ActionResponse response, String errorMessage, List<String> messageDetails) {
 		//return to view previous page
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_PREVIOUS_PAGE);
-		response.setRenderParameter(WebKeys.ERROR_MESSAGE, errorMessage);		
+		response.setRenderParameter(WebKeys.ERROR_MESSAGE, errorMessage);
+		if (MiscUtil.hasItems(messageDetails)) {
+//!			...this needs to be implemented...
+			response.setRenderParameter(
+				WebKeys.ERROR_MESSAGE_PACKED_DETAILS,
+				StringUtil.pack(messageDetails.toArray(new String[0])));
+		}
+	}
+	private void setupReloadPreviousPage(ActionResponse response, String errorMessage) {
+		// Always use the initial form of the method.
+		setupReloadPreviousPage(response, errorMessage, null);
 	}
 	private void setupCloseWindow(ActionResponse response) {
 		//return to view entry

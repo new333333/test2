@@ -32,8 +32,12 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.kablink.teaming.domain.User;
 
 /**
  * This class contains a collection of methods for dealing with
@@ -51,5 +55,26 @@ public final class PasswordPolicyHelper {
 	 */
 	private PasswordPolicyHelper() {
 		// Nothing to do.
+	}
+	
+	/**
+	 * Validates a given password against the password policy.  If the
+	 * password is valid null is returned.  If it's not valid, a
+	 * List<String> containing one or more reasons why is returned.
+	 * 
+	 * @param user			User changing the password, not the user whose password is being changed.
+	 * @param newPassword	The new password to validate against the policy.
+	 * 
+	 * @return
+	 */
+	public static List<String> getPasswordPolicyViolations(User user, String newPassword) {
+		// If password policy is not enabled...
+		if (!(MiscUtil.getAdminModule().isPasswordPolicyEnabled())) {
+			// ...there can be no violations.
+			return null;
+		}
+		
+//!		...this needs to be implemented...
+		return null;
 	}
 }

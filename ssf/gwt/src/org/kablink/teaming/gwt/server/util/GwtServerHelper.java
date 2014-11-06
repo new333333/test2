@@ -92,13 +92,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -351,6 +349,7 @@ import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.FavoritesLimitExceededException;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
+import org.kablink.teaming.web.util.PasswordPolicyHelper;
 import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 import org.kablink.teaming.web.util.LandingPageProperties;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
@@ -1729,46 +1728,53 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Change the current user's password
+	 * Change the current user's password.
+	 * 
+	 * @param bs
+	 * @param oldPwd
+	 * @param newPwd
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData changePassword(
-		AllModulesInjected ami,
-		String oldPwd,
-		String newPwd ) throws GwtTeamingException
-	{
+	public static ErrorListRpcResponseData changePassword(AllModulesInjected bs, String oldPwd, String newPwd ) throws GwtTeamingException {
 		// Allocate an ErrorListRpcResponseData we can return with
 		// any errors from the password change.
 		ErrorListRpcResponseData reply = new ErrorListRpcResponseData();
 		
-		try
-		{
-			User user;
+		try {
+			// Does the new password violate the system's password policy?
+			User user = getCurrentUser();
+			List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(user, newPwd);
+			if (MiscUtil.hasItems(ppViolations)) {
+				// Yes!  Copy the violations to the response.
+				for (String ppViolation:  ppViolations) {
+					reply.addError(ppViolation);
+				}
+			}
 			
-			// Change the user's password.
-			user = getCurrentUser();
-			ami.getProfileModule().changePassword( user.getId(), oldPwd, newPwd );
-			
-			// Are we dealing with the built in admin user?
-			if ( user.isAdmin() )
-			{
-				// Yes
-				// Is this the admin's first time logging in?
-				if ( user.getFirstLoginDate() == null )
-				{
-					// Remember the login date.
-					ami.getProfileModule().setFirstLoginDate(user.getId());
+			else {
+				// No, the new password doesn't violate the system's
+				// password policy!  Change the user's password.
+				bs.getProfileModule().changePassword(user.getId(), oldPwd, newPwd, false);	// false -> Don't validate password policy.  We took care of that above.
+				
+				// Are we dealing with the built-in admin user?
+				if (user.isAdmin()) {
+					// Yes!  Is this the admin's first time logging in?
+					if (null == user.getFirstLoginDate()) {
+						// Yes!  Remember the login date.
+						bs.getProfileModule().setFirstLoginDate(user.getId());
+					}
 				}
 			}
 
 			return reply;
 		}
-		catch ( PasswordMismatchException ex )
-		{
-			GwtTeamingException gwtEx;
-			
-			gwtEx = GwtLogHelper.getGwtClientException(m_logger, ex );
-			gwtEx.setAdditionalDetails( ex.getLocalizedMessage() );
-			
+		
+		catch (PasswordMismatchException ex) {
+			GwtTeamingException gwtEx = GwtLogHelper.getGwtClientException(m_logger, ex);
+			gwtEx.setAdditionalDetails(ex.getLocalizedMessage());
 			throw gwtEx;
 		}
 	}
