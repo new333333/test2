@@ -472,6 +472,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetNextFolderEntryInfo();
 	String rpcFailure_GetNextFolderEntryInfo_NoAccess();
 	String rpcFailure_GetParentBinderPermalink();
+	String rpcFailure_GetPasswordPolicyConfig();
 	String rpcFailure_GetPersonalPreferences();
 	String rpcFailure_GetPreviousFolderEntryInfo();
 	String rpcFailure_GetPreviousFolderEntryInfo_NoAccess();
@@ -578,6 +579,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveLdapConfig();
 	String rpcFailure_SaveManageUsersState();
 	String rpcFailure_SaveNameCompletionSettings();
+	String rpcFailure_SavePasswordPolicyConfig();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSharedFilesState();
@@ -672,6 +674,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ConfigureAdhocFoldersDlg();
 	String codeSplitFailure_ConfigureFileSyncAppDlg();
 	String codeSplitFailure_ConfigureMobileAppsDlg();
+	String codeSplitFailure_ConfigurePasswordPolicyDlg();
 	String codeSplitFailure_ConfigureUserAccessDlg();
 	String codeSplitFailure_ConfigureUserFileSyncAppDlg();
 	String codeSplitFailure_ConfigureUserMobileAppsDlg();
@@ -2620,6 +2623,10 @@ public interface GwtTeamingMessages extends Messages
 	String configureUserAccessDlg_AllowSelfRegExternalUserAccountLabel();
 	String configureUserAccessDlg_DisableDownloadLabel();
 	String configureUserAccessDlg_DisableWebAccessLabel();
+	
+	// Strings used in the Configure Password Policy dialog
+	String configurePasswordPolicyDlg_Header();
+	String configurePasswordPolicyDlg_EnablePasswordComplexityChecking();
 	
 	// Strings used by the GWT based Folder Entry viewer.
 	String folderEntry_Alt_Close();

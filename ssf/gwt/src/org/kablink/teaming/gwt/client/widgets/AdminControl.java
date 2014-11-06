@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.event.AdministrationActionEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureAdhocFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureMobileAppsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeConfigurePasswordPolicyDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureShareSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditLdapConfigDlgEvent;
@@ -99,6 +100,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMo
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.EditLdapConfigDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditZoneShareSettingsDlg.EditZoneShareSettingsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfigurePasswordPolicyDlg.ConfigurePasswordPolicyDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
@@ -159,6 +161,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigureAdhocFoldersDlgEvent.Handler,
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
 		InvokeConfigureMobileAppsDlgEvent.Handler,
+		InvokeConfigurePasswordPolicyDlgEvent.Handler,
 		InvokeConfigureShareSettingsDlgEvent.Handler,
 		InvokeConfigureUserAccessDlgEvent.Handler,
 		InvokeEditLdapConfigDlgEvent.Handler,
@@ -202,6 +205,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ManageTeamsDlg m_manageTeamsDlg = null;
 	private ManageUsersDlg m_manageUsersDlg = null;
 	private RunAReportDlg m_runAReportDlg = null;
+	private ConfigurePasswordPolicyDlg m_configurePasswordPolicyDlg = null;
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
 	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
 	private EditZoneShareSettingsDlg m_editZoneShareSettingsDlg = null;
@@ -234,6 +238,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_MOBILE_APPS_DLG,
+		TeamingEvents.INVOKE_CONFIGURE_PASSWORD_POLICY_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_SHARE_SETTINGS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
 		TeamingEvents.INVOKE_EDIT_LDAP_CONFIG_DLG,
@@ -447,9 +452,15 @@ public class AdminControl extends TeamingPopupPanel
 			if ( actions != null )
 			{
 				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
+				boolean showPasswordPolicy      = ConfigurePasswordPolicyDlg.SHOW_PASSWORD_POLICY;	//! DRF (20141106):  While debugging.
 				for (GwtAdminAction action : actions )
 				{
 					if ( action.getActionType().equals( AdminAction.MANAGE_MOBILE_DEVICES ) && ( ! showManageMobileDevices ) )
+					{
+						continue;
+					}
+					
+					if ( action.getActionType().equals( AdminAction.CONFIGURE_PASSWORD_POLICY ) && ( ! showPasswordPolicy ))
 					{
 						continue;
 					}
@@ -851,6 +862,12 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Fire the event to invoke the "Configure Mobile apps" dialog.
 			InvokeConfigureMobileAppsDlgEvent.fireOne();
+		}
+		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_PASSWORD_POLICY )
+		{
+			// Fire the event to invoke the "Configure Password Policy" dialog
+			InvokeConfigurePasswordPolicyDlgEvent.fireOne();
+			
 		}
 		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_SHARE_SETTINGS )
 		{
@@ -2119,6 +2136,71 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 
+	/**
+	 * Handles InvokeConfigurePasswordPolicyDlgEvent received by this
+	 * class.
+	 * 
+	 * Implements the InvokeConfigurePasswordPolicyDlgEvent.Handler.onInvokeConfigurePasswordPolicyDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeConfigurePasswordPolicyDlg( InvokeConfigurePasswordPolicyDlgEvent event )
+	{
+		// Get the position of the content control.
+		int x = m_contentControlX;
+		int y = m_contentControlY;
+		
+		// Have we already created a "Configure Password Policy" dialog?
+		if ( null == m_configurePasswordPolicyDlg )
+		{
+			int width;
+			int height;
+			
+			// No, create one.
+			height = m_dlgHeight;
+			width = m_dlgWidth;
+			ConfigurePasswordPolicyDlg.createAsync(
+											false,
+											true, 
+											x, 
+											y,
+											width,
+											height,
+											new ConfigurePasswordPolicyDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ConfigurePasswordPolicyDlg cppDlg )
+				{
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_configurePasswordPolicyDlg = cppDlg;
+							
+							m_configurePasswordPolicyDlg.init();
+							m_configurePasswordPolicyDlg.show();
+						}
+					} );
+				}
+			} );
+		}
+		else
+		{
+			m_configurePasswordPolicyDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
+			m_configurePasswordPolicyDlg.init();
+			m_configurePasswordPolicyDlg.setPopupPosition( x, y );
+			m_configurePasswordPolicyDlg.show();
+		}
+	}
+	
 	/**
 	 * Handles InvokeConfigureShareSettingsDlgEvent received by this class.
 	 * 
