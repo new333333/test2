@@ -202,8 +202,8 @@ public class HelpData
 		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
 		{
 			// Yes
-			url += "/novell-filr-1-1-1";
-			product = "/filr-1-1-1";
+			url += "/novell-filr-1-1";
+			product = "/filr-1-1";
 		}
 		// Are we running Novell Teaming?
 		else if ( GwtMainPage.m_requestInfo.isNovellTeaming() )
