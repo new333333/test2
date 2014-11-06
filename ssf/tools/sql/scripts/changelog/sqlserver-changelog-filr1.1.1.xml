@@ -19,4 +19,18 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="dennis" context="schema" failOnError="true" id="3">
+        <comment>Password policy support for local and external users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="passwordPolicyEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_Principals">
+            <column name="lastPasswordChange" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

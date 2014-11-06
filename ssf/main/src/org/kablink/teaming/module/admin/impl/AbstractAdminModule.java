@@ -623,6 +623,30 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   	 * 
   	 */
   	@Override
+	public boolean isPasswordPolicyEnabled()
+  	{
+  		ZoneConfig zoneConfig;
+
+  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+  		return zoneConfig.isPasswordPolicyEnabled(); 		
+  	}
+  	
+  	/**
+  	 * 
+  	 */
+  	@Override
+	public void setPasswordPolicyEnabled( boolean enabled ) 
+  	{
+  		ZoneConfig zoneConfig;
+
+  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+  		zoneConfig.setPasswordPolicyEnabled( enabled );
+  	}
+
+  	/**
+  	 * 
+  	 */
+  	@Override
 	public boolean isWebAccessEnabled()
   	{
   		ZoneConfig zoneConfig;

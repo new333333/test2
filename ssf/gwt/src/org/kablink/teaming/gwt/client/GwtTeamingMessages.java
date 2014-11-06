@@ -2625,6 +2625,7 @@ public interface GwtTeamingMessages extends Messages
 	String configureUserAccessDlg_DisableWebAccessLabel();
 	
 	// Strings used in the Configure Password Policy dialog
+	String configurePasswordPolicyDlg_ConfirmForcePasswordChanges();
 	String configurePasswordPolicyDlg_Header();
 	String configurePasswordPolicyDlg_EnablePasswordComplexityChecking();
 	

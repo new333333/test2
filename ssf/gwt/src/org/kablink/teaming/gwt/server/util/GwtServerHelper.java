@@ -218,6 +218,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
 import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageTeamsInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
@@ -7181,6 +7182,19 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return the password policy configuration
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 */
+	public static PasswordPolicyConfig getPasswordPolicyConfig(AllModulesInjected bs, HttpServletRequest request) {
+		PasswordPolicyConfig config = new PasswordPolicyConfig(bs.getAdminModule().isPasswordPolicyEnabled());
+		return config;
+	}
+	
+	/**
 	 * Returns a GwtPresenceInfo object for a User.
 	 * 
 	 * @param user
@@ -11259,6 +11273,24 @@ public class GwtServerHelper {
 		}
 	}
 	
+	
+	/**
+	 * Save the PasswordPolicyConfig information.
+	 * 
+	 * @param bs
+	 * @param passwordPolicyConfig
+	 * @param forcePasswordChange
+	 * 
+	 * @return
+	 */
+	public static Boolean savePasswordPolicyConfig(AllModulesInjected bs, PasswordPolicyConfig passwordPolicyConfig, boolean forcePasswordChange) {
+		boolean passwordPolicyEnabled = passwordPolicyConfig.isPasswordPolicyEnabled();
+		bs.getAdminModule().setPasswordPolicyEnabled(passwordPolicyEnabled);
+		if (passwordPolicyEnabled && forcePasswordChange) {
+//!			...this needs to be implemented...			
+		}
+		return Boolean.TRUE;
+	}
 	
 	/**
 	 * Saves a search based on its tab ID and SavedSearchInfo.

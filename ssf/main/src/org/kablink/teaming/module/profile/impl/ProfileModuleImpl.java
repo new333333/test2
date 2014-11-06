@@ -2585,6 +2585,7 @@ public void changePassword(Long userId, String oldPassword, String newPassword) 
       }
       
       user.setPassword(newPassword);
+      setLastPasswordChange(user, new Date());
       EncryptUtil.clearCachedPassword(userId);
   }
   
@@ -2758,7 +2759,19 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 		user.setFirstLoginDate(new Date()); // Set it to current date/time.
     }
     
-
+    //RW transaction
+    @Override
+    public void setLastPasswordChange(User user, Date lastPasswordChange) {
+ 	    user.setLastPasswordChange(lastPasswordChange);
+    }
+    
+    //RW transaction
+    @Override
+    public void setLastPasswordChange(Long userId, Date lastPasswordChange) {
+    	// Always use the initial form of the method.
+		setLastPasswordChange(getUser(userId, true), lastPasswordChange);
+    }
+    
     /**
      * Returns a User's workspace pre-deleted flag.
      * 

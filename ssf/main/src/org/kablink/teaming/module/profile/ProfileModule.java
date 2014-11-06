@@ -873,6 +873,12 @@ public interface ProfileModule {
     public List<TeamInfo> getUserTeams(Long userId);
     
     public void setFirstLoginDate(Long userId);
+    
+    /**
+     * Interacts with a user's last password changed date.
+     */
+    public void setLastPasswordChange(User user,   Date lastPasswordChange);
+    public void setLastPasswordChange(Long userId, Date lastPasswordChange);
 
     /**
      * Interacts with a user's workspace pre-deleted flag.

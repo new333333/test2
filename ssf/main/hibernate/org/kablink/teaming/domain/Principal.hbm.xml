@@ -113,6 +113,7 @@
 	    <subclass name="org.kablink.teaming.domain.User" node="User" discriminator-value="user" dynamic-update="true">
 	      <property name="displayStyle" length="16"/>
 	      <property name="firstLoginDate" column="loginDate"/>
+	      <property name="lastPasswordChange"/>
 	      <property name="firstName" access="field" length="64"/>
 	      <property name="lastName" access="field" length="64"/>
 	      <property name="middleName" access="field" length="64"/>

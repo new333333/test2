@@ -30,6 +30,7 @@
 	<property name="adHocFoldersEnabled" access="field"/>
 	<property name="fileArchivingEnabled" access="field"/>
 	<property name="downloadEnabled" access="field"/>
+	<property name="passwordPolicyEnabled" access="field"/>
 	<property name="webAccessEnabled" access="field"/>
 	<property name="auditTrailKeepDays" access="field"/>
 	<property name="auditTrailEnabled" access="field"/>

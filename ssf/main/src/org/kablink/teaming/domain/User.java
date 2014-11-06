@@ -124,6 +124,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected Locale locale;//set by hibernate access="field"
 	protected TimeZone timeZone;//set by hibernate access="field"
     protected Date firstLoginDate; // This indicates the date/time at which the user logged into Vibe for the first time
+    protected Date lastPasswordChange; // This indicates the date/time at which the user last changed their password
     protected String displayStyle;
     protected String password; //set by hibernate access="field"
     protected String pwdenc; // set by hibernate access="field"
@@ -292,6 +293,18 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	
 	public void setFirstLoginDate(Date firstLoginDate) {
 		this.firstLoginDate = firstLoginDate;
+	}
+     
+	/**
+	 * @hibernate.property 
+	 * @return
+	 */
+	public Date getLastPasswordChange() {
+		return lastPasswordChange;
+	}
+	
+	public void setLastPasswordChange(Date lastPasswordChange) {
+		this.lastPasswordChange = lastPasswordChange;
 	}
      
     /**
