@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -2236,6 +2237,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_PASSWORD_POLICY_CONFIG:
+		{
+			PasswordPolicyConfig config = GwtServerHelper.getPasswordPolicyConfig( this, req );
+			response = new VibeRpcResponse( config );
+			return response;
+		}
+		
 		case GET_PERSONAL_PREFERENCES:
 		{
 			GwtPersonalPreferences prefs;
@@ -3499,6 +3507,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			sncsCmd = ((SaveNameCompletionSettingsCmd) cmd);
 			result = GwtServerHelper.saveNameCompletionSettings( this, sncsCmd.getSettings() );
 			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case SAVE_PASSWORD_POLICY_CONFIG:
+		{
+			SavePasswordPolicyConfigCmd sppcCmd = ((SavePasswordPolicyConfigCmd) cmd);
+			Boolean result = GwtServerHelper.savePasswordPolicyConfig( this, sppcCmd.getPasswordPolicyConfig(), sppcCmd.isForcePasswordChange() );
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		

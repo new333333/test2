@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This changelog defines schema changes in Filr 1.1 and Vibe Hudson -->
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
     <changeSet author="jay" context="schema" failOnError="true" id="1">
@@ -15,6 +14,20 @@
         <comment>Association with a team group</comment>
         <addColumn tableName="SS_Forums">
             <column name="teamGroupId" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="3">
+        <comment>Password policy support for local and external users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="passwordPolicyEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_Principals">
+            <column name="lastPasswordChange" type="DATETIME">
                 <constraints nullable="true" />
             </column>
         </addColumn>

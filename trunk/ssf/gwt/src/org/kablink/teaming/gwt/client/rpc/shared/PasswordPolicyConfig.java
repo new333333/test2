@@ -41,18 +41,29 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class PasswordPolicyConfig implements IsSerializable, VibeRpcResponseData {
-	private boolean	m_enablePasswordComplexityChecking;	//
+	private boolean	m_passwordPolicyEnabled;	//
 	
+	/**
+	 * Constructor method. 
+	 * 
+	 * @param passwordPolicyEnabled
+	 */
+	public PasswordPolicyConfig(boolean paswordPolicyEnabled) {
+		// Initialize the super class...
+		super();
+
+		// ...and store the parameter.
+		setPasswordPolicyEnabled(paswordPolicyEnabled);
+	}
+
 	/**
 	 * Constructor method. 
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
 	public PasswordPolicyConfig() {
-		// Initialize the super class.
-		super();
-		
-		setEnablePasswordComplexityChecking(false);
+		// Initialize this object.
+		this(false);
 	}
 
 	/**
@@ -60,12 +71,12 @@ public class PasswordPolicyConfig implements IsSerializable, VibeRpcResponseData
 	 * 
 	 * @return
 	 */
-	public boolean getEnablePasswordComplexityChecking() {return m_enablePasswordComplexityChecking;}
+	public boolean isPasswordPolicyEnabled() {return m_passwordPolicyEnabled;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEnablePasswordComplexityChecking(boolean enablePasswordComplexityChecking) {m_enablePasswordComplexityChecking = enablePasswordComplexityChecking;}
+	public void setPasswordPolicyEnabled(boolean passwordPolicyEnabled) {m_passwordPolicyEnabled = passwordPolicyEnabled;}
 }

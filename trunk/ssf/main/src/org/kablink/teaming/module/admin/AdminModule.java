@@ -199,6 +199,8 @@ public interface AdminModule {
     public void setAdHocFoldersEnabled( boolean enabled );
     public boolean isDownloadEnabled();
     public void setDownloadEnabled( boolean enabled );
+    public boolean isPasswordPolicyEnabled();
+    public void setPasswordPolicyEnabled( boolean enabled );
     public boolean isWebAccessEnabled();
     public void setWebAccessEnabled( boolean enabled );
     public boolean isFileArchivingEnabled();

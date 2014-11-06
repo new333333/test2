@@ -42,6 +42,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
+import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -65,8 +68,8 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 {
 	public final static boolean SHOW_PASSWORD_POLICY	= false;	//! DRF (20141106):  Leave false on checkin until it's all working.
 	
-	private CheckBox			m_enablePasswordComplexityCB;	//
-	private GwtTeamingMessages	m_messages;						//
+	private CheckBox			m_passwordPolicyEnabledCB;	//
+	private GwtTeamingMessages	m_messages;					//
 	
 	/*
 	 */
@@ -109,8 +112,8 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 		// Add the enable password complexity checking checkbox;
 		FlowPanel panel = new FlowPanel();
 		panel.addStyleName("marginbottom2");
-		m_enablePasswordComplexityCB = new CheckBox(m_messages.configurePasswordPolicyDlg_EnablePasswordComplexityChecking());
-		panel.add(m_enablePasswordComplexityCB);
+		m_passwordPolicyEnabledCB = new CheckBox(m_messages.configurePasswordPolicyDlg_EnablePasswordComplexityChecking());
+		panel.add(m_passwordPolicyEnabledCB);
 		mainPanel.add(panel);
 		
 		return mainPanel;
@@ -135,39 +138,61 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 	 */
 	@Override
 	public boolean editSuccessful(Object obj) {
-		// Execute a GWT RPC command to save the password policy
+		// Create the GWT RPC command to save the password policy
 		// configuration.
-		SavePasswordPolicyConfigCmd cmd = new SavePasswordPolicyConfigCmd();
-		cmd.setConfig((PasswordPolicyConfig) obj);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_SavePasswordPolicyConfig() );
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				if ((null != response.getResponseData()) && (response.getResponseData() instanceof BooleanRpcResponseData)) {
-					BooleanRpcResponseData responseData = ((BooleanRpcResponseData) response.getResponseData());
-					if (responseData.getBooleanValue()) {
-						hide();
-					}
+		PasswordPolicyConfig config = ((PasswordPolicyConfig) obj);
+		final SavePasswordPolicyConfigCmd cmd = new SavePasswordPolicyConfigCmd(config);
+		
+		// Is the password policy being enabled?
+		if (config.isPasswordPolicyEnabled()) {
+			// Yes!  Does the user want to force all local and external
+			// users to change their password the next time they login?
+			ConfirmDlg.createAsync(new ConfirmDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}
-			}
-		});
+				
+				@Override
+				public void onSuccess(ConfirmDlg cDlg) {
+					ConfirmDlg.initAndShow(
+						cDlg,
+						new ConfirmCallback() {
+							@Override
+							public void dialogReady() {
+								// Ignored.  We don't really care when
+								// the dialog is ready.
+							}
+
+							@Override
+							public void accepted() {
+								// Yes!  Set the command to force a
+								// password change and send it.
+								cmd.setForcePasswordChange(true);
+								savePasswordPolicyConfigAsync(cmd);
+							}
+
+							@Override
+							public void rejected() {
+								// No!  Send the command as is.
+								savePasswordPolicyConfigAsync(cmd);
+							}
+						},
+						m_messages.configurePasswordPolicyDlg_ConfirmForcePasswordChanges());
+				}
+			});
+		}
+		else {
+			// No, password policy is being disabled!  Simply send
+			// the command.
+			savePasswordPolicyConfigAsync(cmd);
+		}
 		
 		// Returning false will prevent the dialog from closing.  We
 		// will close the dialog after we successfully save the
 		// password policy configuration.
 		return false;
-	}
-	
-	/*
-	 */
-	private boolean getEnablePasswordComplexityChecking() {
-		return m_enablePasswordComplexityCB.getValue();
 	}
 	
 	/**
@@ -179,9 +204,7 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 	 */
 	@Override
 	public Object getDataFromDlg() {
-		PasswordPolicyConfig config = new PasswordPolicyConfig();
-		config.setEnablePasswordComplexityChecking(getEnablePasswordComplexityChecking());
-		return config;
+		return new PasswordPolicyConfig(m_passwordPolicyEnabledCB.getValue());
 	}
 	
 	
@@ -194,7 +217,7 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 	 */
 	@Override
 	public FocusWidget getFocusWidget() {
-		return m_enablePasswordComplexityCB;
+		return m_passwordPolicyEnabledCB;
 	}
 	
 	/**
@@ -232,7 +255,7 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 						public void execute() {
 							init(config);
 						}
-					} );
+					});
 				}
 			}
 		});
@@ -241,8 +264,8 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 	/**
 	 */
 	public void init() {
-		if (null != m_enablePasswordComplexityCB) {
-			m_enablePasswordComplexityCB.setValue(false);
+		if (null != m_passwordPolicyEnabledCB) {
+			m_passwordPolicyEnabledCB.setValue(false);
 		}
 		
 		// Issue an RPC request to get the password policy information
@@ -253,11 +276,49 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 	/*
 	 */
 	private void init(PasswordPolicyConfig config) {
-		if (null != m_enablePasswordComplexityCB) {
-			m_enablePasswordComplexityCB.setValue(config.getEnablePasswordComplexityChecking());
+		if (null != m_passwordPolicyEnabledCB) {
+			m_passwordPolicyEnabledCB.setValue(config.isPasswordPolicyEnabled());
 		}
 		
 		danceDlg();
+	}
+
+	/*
+	 * Asynchronously saves the password policy configuration by
+	 * sending the specific RPC command to the server.
+	 */
+	private void savePasswordPolicyConfigAsync(final SavePasswordPolicyConfigCmd cmd) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				savePasswordPolicyConfigNow(cmd);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously saves the password policy configuration by
+	 * sending the specific RPC command to the server.
+	 */
+	private void savePasswordPolicyConfigNow(final SavePasswordPolicyConfigCmd cmd) {
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_SavePasswordPolicyConfig());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				if ((null != response.getResponseData()) && (response.getResponseData() instanceof BooleanRpcResponseData)) {
+					BooleanRpcResponseData responseData = ((BooleanRpcResponseData) response.getResponseData());
+					if (responseData.getBooleanValue()) {
+						hide();
+					}
+				}
+			}
+		});
 	}
 	
 	

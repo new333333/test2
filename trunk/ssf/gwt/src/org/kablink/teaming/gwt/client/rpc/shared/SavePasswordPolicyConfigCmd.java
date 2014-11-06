@@ -39,7 +39,21 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  * @author drfoster@novell.com
  */
 public class SavePasswordPolicyConfigCmd extends VibeRpcCmd {
+	private boolean					m_forcePasswordChange;	//
 	private PasswordPolicyConfig	m_passwordPolicyConfig;	//
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param passwordPolicyConfig
+	 */
+	public SavePasswordPolicyConfigCmd(PasswordPolicyConfig passwordPolicyConfig) {
+		// Initialize the super class...
+		super();
+		
+		// ...and store the parameter.
+		setPasswordPolicyConfig(passwordPolicyConfig);
+	}
 	
 	/**
 	 * Constructor method.
@@ -47,8 +61,8 @@ public class SavePasswordPolicyConfigCmd extends VibeRpcCmd {
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
 	public SavePasswordPolicyConfigCmd() {
-		// Initialize the super class.
-		super();
+		// Initialize the this object.
+		this(null);
 	}
 	
 	/**
@@ -56,14 +70,16 @@ public class SavePasswordPolicyConfigCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public PasswordPolicyConfig getConfig() {return m_passwordPolicyConfig;}
+	public boolean              isForcePasswordChange()   {return m_forcePasswordChange; }
+	public PasswordPolicyConfig getPasswordPolicyConfig() {return m_passwordPolicyConfig;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setConfig(PasswordPolicyConfig config) {m_passwordPolicyConfig = config;}
+	public void setForcePasswordChange( boolean              forcePasswordChange)  {m_forcePasswordChange  = forcePasswordChange; }
+	public void setPasswordPolicyConfig(PasswordPolicyConfig passwordPolicyConfig) {m_passwordPolicyConfig = passwordPolicyConfig;}
 	
 	/**
 	 * Returns the command's enumeration value.
