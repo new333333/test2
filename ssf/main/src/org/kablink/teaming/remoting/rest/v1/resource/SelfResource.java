@@ -158,6 +158,8 @@ public class SelfResource extends AbstractFileResource {
         if (getEffectivePublicCollectionSetting((org.kablink.teaming.domain.User) entry)) {
             user.addAdditionalLink("public_shares", "/self/public_shares");
         }
+        user.addAdditionalLink("my_teams", "/self/my_teams");
+        user.addAdditionalLink("my_favorites", "/self/my_favorites");
 //        user.addAdditionalPermaLink("my_files", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_MY_FILES));
 //        user.addAdditionalPermaLink("net_folders", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
         user.addAdditionalPermaLink("shared_with_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_WITH_ME));
@@ -776,6 +778,28 @@ public class SelfResource extends AbstractFileResource {
         throw new NotFoundException(ApiErrorCode.DEVICE_NOT_FOUND, "No device with ID: " + id);
     }
 
+    @GET
+    @Path("/my_teams")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public BinderBrief getMyTeams(@QueryParam("library_info") @DefaultValue("false") boolean libraryInfo) {
+        BinderBrief fakeFolder = getFakeMyTeams();
+        if (libraryInfo) {
+            //fakeMyFileFolders.setLibraryInfo(getMyFilesLibraryInfo());
+        }
+        return fakeFolder;
+    }
+
+    @GET
+    @Path("/my_favorites")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public BinderBrief getMyFavorites(@QueryParam("library_info") @DefaultValue("false") boolean libraryInfo) {
+        BinderBrief fakeFolder = getFakeMyFavorites();
+        if (libraryInfo) {
+            //fakeMyFileFolders.setLibraryInfo(getMyFilesLibraryInfo());
+        }
+        return fakeFolder;
+    }
+
     private org.kablink.teaming.domain.MobileDevice toMobileDevice(MobileDevice mobileDevice) {
         validateMandatoryField(mobileDevice, "getId");
         org.kablink.teaming.domain.MobileDevice device = new org.kablink.teaming.domain.MobileDevice(getLoggedInUserId(), mobileDevice.getId());
@@ -872,24 +896,6 @@ public class SelfResource extends AbstractFileResource {
         BinderBrief binder = ResourceUtil.buildBinderBrief(myWorkspace);
         //TODO: localize
         binder.setTitle("My Workspace");
-        return binder;
-    }
-
-    private BinderBrief getFakeMyTeams() {
-        BinderBrief binder = new BinderBrief();
-        //TODO: localize
-        binder.setTitle("My Teams");
-        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace_team.png"));
-        binder.addAdditionalLink("child_binders", "/self/teams");
-        return binder;
-    }
-
-    private BinderBrief getFakeMyFavorites() {
-        BinderBrief binder = new BinderBrief();
-        //TODO: localize
-        binder.setTitle("My Favorites");
-        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace_star.png"));
-        binder.addAdditionalLink("child_binders", "/self/favorites");
         return binder;
     }
 }

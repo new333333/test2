@@ -216,6 +216,10 @@ public interface ObjectKeys {
 	public static final Long NET_FOLDERS_ID = Long.valueOf(-103);
     // Reserved id used by the REST API for the "Public" virtual binder
 	public static final Long PUBLIC_SHARES_ID = Long.valueOf(-104);
+    // Reserved id used by the REST API for the "My Teams" virtual binder
+	public static final Long MY_TEAMS_ID = Long.valueOf(-105);
+    // Reserved id used by the REST API for the "My Workspaces" virtual binder
+	public static final Long My_FAVORITES_ID = Long.valueOf(-106);
 	//Use -1 to reserve binderId field.  Shouldn't be generated as real binderId. Used for global definitions cause mysql won't enforce the namekey unique
 	//constraint if field is null.  Also used for global userProperties, cause null cannot be used in key field.
 	public static final Long RESERVED_BINDER_ID=Long.valueOf(-1);
