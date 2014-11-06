@@ -1,0 +1,320 @@
+/**
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * 
+ * This work is governed by the Common Public Attribution License Version 1.0 (the
+ * "CPAL"); you may not use this file except in compliance with the CPAL. You may
+ * obtain a copy of the CPAL at http://www.opensource.org/licenses/cpal_1.0. The
+ * CPAL is based on the Mozilla Public License Version 1.1 but Sections 14 and 15
+ * have been added to cover use of software over a computer network and provide
+ * for limited attribution for the Original Developer. In addition, Exhibit A has
+ * been modified to be consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT
+ * WARRANTY OF ANY KIND, either express or implied. See the CPAL for the specific
+ * language governing rights and limitations under the CPAL.
+ * 
+ * The Original Code is ICEcore, now called Kablink. The Original Developer is
+ * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * 
+ * Attribution Information:
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
+ * Attribution URL: [www.kablink.org]
+ * Graphic Image as provided in the Covered Code
+ * [ssf/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are
+ * defined in the CPAL as a work which combines Covered Code or portions thereof
+ * with code not governed by the terms of the CPAL.
+ * 
+ * NOVELL and the Novell logo are registered trademarks and Kablink and the
+ * Kablink logos are trademarks of Novell, Inc.
+ */
+package org.kablink.teaming.gwt.client.widgets;
+
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetPasswordPolicyConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SavePasswordPolicyConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyConfig;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
+import org.kablink.teaming.gwt.client.widgets.DlgBox;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Panel;
+
+/**
+ * Implements the Configure Password Policy dialog for the
+ * administration console.
+ * 
+ * @author drfoster@novell.com
+ */
+public class ConfigurePasswordPolicyDlg extends DlgBox 
+	implements EditSuccessfulHandler
+{
+	public final static boolean SHOW_PASSWORD_POLICY	= false;	//! DRF (20141106):  Leave false on checkin until it's all working.
+	
+	private CheckBox			m_enablePasswordComplexityCB;	//
+	private GwtTeamingMessages	m_messages;						//
+	
+	/*
+	 */
+	private ConfigurePasswordPolicyDlg(boolean autoHide, boolean modal, int xPos, int yPos, int width, int height) {
+		// Initialize the super class...
+		super(
+			autoHide,
+			modal,
+			xPos,
+			yPos,
+			new Integer(width),
+			new Integer(height),
+			DlgButtonMode.OkCancel);
+		
+		// ...initialize the data members...
+		m_messages = GwtTeaming.getMessages();
+		
+		// ...and create the header, content and footer of this dialog.
+		createAllDlgContent(
+			GwtTeaming.getMessages().configurePasswordPolicyDlg_Header(),
+			this,
+			null,
+			null);
+	}
+
+	/**
+	 * Creates all the controls that make up the dialog.
+	 * 
+	 * Implements the DlgBox.createContent() abstract method.
+	 * 
+	 * @param callbackData (unused)
+	 * 
+	 * @return
+	 */
+	@Override
+	public Panel createContent(Object props) {
+		FlowPanel mainPanel = new FlowPanel();
+		mainPanel.setStyleName("teamingDlgBoxContent");
+
+		// Add the enable password complexity checking checkbox;
+		FlowPanel panel = new FlowPanel();
+		panel.addStyleName("marginbottom2");
+		m_enablePasswordComplexityCB = new CheckBox(m_messages.configurePasswordPolicyDlg_EnablePasswordComplexityChecking());
+		panel.add(m_enablePasswordComplexityCB);
+		mainPanel.add(panel);
+		
+		return mainPanel;
+	}
+	
+	/*
+	 */
+	private void danceDlg() {
+	}
+	
+	/**
+	 * This gets called when the user presses OK.
+	 * 
+	 * Issues an RPC request to save the password policy configuration.
+	 * 
+	 * Implements the EditSuccessfulHandler.editSuccessful() interface
+	 * method.
+	 * 
+	 * @param callbackData
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean editSuccessful(Object obj) {
+		// Execute a GWT RPC command to save the password policy
+		// configuration.
+		SavePasswordPolicyConfigCmd cmd = new SavePasswordPolicyConfigCmd();
+		cmd.setConfig((PasswordPolicyConfig) obj);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_SavePasswordPolicyConfig() );
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				if ((null != response.getResponseData()) && (response.getResponseData() instanceof BooleanRpcResponseData)) {
+					BooleanRpcResponseData responseData = ((BooleanRpcResponseData) response.getResponseData());
+					if (responseData.getBooleanValue()) {
+						hide();
+					}
+				}
+			}
+		});
+		
+		// Returning false will prevent the dialog from closing.  We
+		// will close the dialog after we successfully save the
+		// password policy configuration.
+		return false;
+	}
+	
+	/*
+	 */
+	private boolean getEnablePasswordComplexityChecking() {
+		return m_enablePasswordComplexityCB.getValue();
+	}
+	
+	/**
+	 * Returns the edited PasswordPolicyConfig.
+	 * 
+	 * Implements the DlgBox.getDataFromDlg() abstract method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public Object getDataFromDlg() {
+		PasswordPolicyConfig config = new PasswordPolicyConfig();
+		config.setEnablePasswordComplexityChecking(getEnablePasswordComplexityChecking());
+		return config;
+	}
+	
+	
+	/**
+	 * Returns the Widget to give the focus to.
+	 * 
+	 * Implements the DlgBox.getFocusWidget() abstract method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public FocusWidget getFocusWidget() {
+		return m_enablePasswordComplexityCB;
+	}
+	
+	/**
+	 */
+	@Override
+	public HelpData getHelpData() {
+		HelpData helpData = new HelpData();
+		helpData.setGuideName(HelpData.ADMIN_GUIDE);
+		helpData.setPageId("passwordPolicy");
+		
+		return helpData;
+	}
+
+	/*
+	 * Issue an RPC request to get the password policy information from
+	 * the server.
+	 */
+	private void getPasswordPolicyConfigFromServer() {
+		// Execute an RPC command asking the server for the password
+		// policy information.
+		GwtClientHelper.executeCommand(new GetPasswordPolicyConfigCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetPasswordPolicyConfig());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				if ((null != response.getResponseData()) && (response.getResponseData() instanceof PasswordPolicyConfig)) {
+					final PasswordPolicyConfig config = ((PasswordPolicyConfig) response.getResponseData());
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							init(config);
+						}
+					} );
+				}
+			}
+		});
+	}
+	
+	/**
+	 */
+	public void init() {
+		if (null != m_enablePasswordComplexityCB) {
+			m_enablePasswordComplexityCB.setValue(false);
+		}
+		
+		// Issue an RPC request to get the password policy information
+		// from the server.
+		getPasswordPolicyConfigFromServer();
+	}
+	
+	/*
+	 */
+	private void init(PasswordPolicyConfig config) {
+		if (null != m_enablePasswordComplexityCB) {
+			m_enablePasswordComplexityCB.setValue(config.getEnablePasswordComplexityChecking());
+		}
+		
+		danceDlg();
+	}
+	
+	
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	/* The following code is used to load the split point containing */
+	/* the password policy dialog and perform some operation on it.  */
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	
+	/**
+	 * Callback interface to interact with the 'configure password
+	 * policy' dialog asynchronously after it loads. 
+	 */
+	public interface ConfigurePasswordPolicyDlgClient {
+		void onSuccess(ConfigurePasswordPolicyDlg cppDlg);
+		void onUnavailable();
+	}
+	
+	/**
+	 * Loads the ConfigurePasswordPolicyDlg split point and returns an
+	 * instance of it via the callback.
+	 *
+	 * @param autoHide
+	 * @param modal
+	 * @param left
+	 * @param top
+	 * @param width
+	 * @param height
+	 * @param cppDlgClient
+	 */
+	public static void createAsync(
+		final boolean							autoHide,
+		final boolean							modal,
+		final int								left,
+		final int								top,
+		final int								width,
+		final int								height,
+		final ConfigurePasswordPolicyDlgClient	cppDlgClient) {
+		GWT.runAsync(ConfigurePasswordPolicyDlg.class, new RunAsyncCallback() {
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_ConfigurePasswordPolicyDlg());
+				if (null != cppDlgClient) {
+					cppDlgClient.onUnavailable();
+				}
+			}
+
+			@Override
+			public void onSuccess() {
+				ConfigurePasswordPolicyDlg cppDlg = new ConfigurePasswordPolicyDlg(
+					autoHide,
+					modal,
+					left,
+					top,
+					width,
+					height);
+				cppDlgClient.onSuccess(cppDlg);
+			}
+		});
+	}
+}

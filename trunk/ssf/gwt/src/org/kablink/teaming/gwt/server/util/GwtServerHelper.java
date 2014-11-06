@@ -3122,7 +3122,25 @@ public class GwtServerHelper {
 					systemCategory.addAdminOption( adminAction );
 				}
 			}
-			else
+
+			// Does the user have rights to "manage password policies"?
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure_passwordPolicy" );
+
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_PASSWORD_POLICY );
+				url = adaptedUrl.toString();
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.CONFIGURE_PASSWORD_POLICY );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+			
+			if ( ! isFilr )
 			{
 				// The following are the Vibe specific 'System' actions not
 				// addressed by Lynn's Filr redesign of this category.  He
@@ -10379,6 +10397,7 @@ public class GwtServerHelper {
 		case GET_NEXT_PREVIOUS_FOLDER_ENTRY_INFO:
 		case GET_NUMBER_OF_MEMBERS:
 		case GET_PARENT_BINDER_PERMALINK:
+		case GET_PASSWORD_POLICY_CONFIG:
 		case GET_PERSONAL_PREFERENCES:
 		case GET_PRESENCE_INFO:
 		case GET_PRINCIPAL_FILE_SYNC_APP_CONFIG:
@@ -10492,6 +10511,7 @@ public class GwtServerHelper {
 		case SAVE_MULTIPLE_DOWNLOAD_SETTINGS:
 		case SAVE_MULTIPLE_WEBACCESS_SETTINGS:
 		case SAVE_NAME_COMPLETION_SETTINGS:
+		case SAVE_PASSWORD_POLICY_CONFIG:
 		case SAVE_PERSONAL_PREFERENCES:
 		case SAVE_PRINCIPAL_FILE_SYNC_APP_CONFIG:
 		case SAVE_PRINCIPAL_MOBILE_APPS_CONFIGURATION:

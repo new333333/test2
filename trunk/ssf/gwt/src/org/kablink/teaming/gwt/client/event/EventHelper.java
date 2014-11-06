@@ -90,13 +90,14 @@ public class EventHelper {
 		case INVOKE_CONFIGURE_COLUMNS:				reply = new InvokeConfigureColumnsEvent();        break;
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
 		case INVOKE_CONFIGURE_MOBILE_APPS_DLG:		reply = new InvokeConfigureMobileAppsDlgEvent();  break;
-		case INVOKE_CONFIGURE_SHARE_SETTINGS_DLG:	reply = new InvokeConfigureShareSettingsDlgEvent(); break;
+		case INVOKE_CONFIGURE_PASSWORD_POLICY_DLG:	reply = new InvokeConfigurePasswordPolicyDlgEvent(); break;
+		case INVOKE_CONFIGURE_SHARE_SETTINGS_DLG:	reply = new InvokeConfigureShareSettingsDlgEvent();  break;
 		case INVOKE_CONFIGURE_USER_ACCESS_DLG:		reply = new InvokeConfigureUserAccessDlgEvent();  break;
 		case INVOKE_DOWNLOAD_DESKTOP_APP:           reply = new InvokeDownloadDesktopAppEvent();      break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
 		case INVOKE_IMPORT_PROFILES_DLG:			reply = new InvokeImportProfilesDlgEvent();		  break;
-		case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:			reply = new InvokeNetFolderGlobalSettingsDlgEvent();	  	  break;
+		case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:	reply = new InvokeNetFolderGlobalSettingsDlgEvent(); break;
 		case INVOKE_LDAP_SYNC_RESULTS_DLG:			reply = new InvokeLdapSyncResultsDlgEvent();	  break;
 		case INVOKE_MANAGE_DATABASE_PRUNE_DLG:		reply = new InvokeManageDatabasePruneDlgEvent();  break;
 		case INVOKE_MANAGE_NET_FOLDERS_DLG:			reply = new InvokeManageNetFoldersDlgEvent();	  break;
@@ -1138,6 +1139,15 @@ public class EventHelper {
 				{
 					handlerNotDefined = false;
 					registrationHandler = InvokeConfigureMobileAppsDlgEvent.registerEvent( eventBus, ((InvokeConfigureMobileAppsDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case INVOKE_CONFIGURE_PASSWORD_POLICY_DLG:
+				// An InvokeConfigurePasswordPolicyDlgEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof InvokeConfigurePasswordPolicyDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeConfigurePasswordPolicyDlgEvent.registerEvent(eventBus, ((InvokeConfigurePasswordPolicyDlgEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2880,6 +2890,7 @@ public class EventHelper {
 			case INVOKE_CONFIGURE_COLUMNS:				       hasHandler = (eventHandler instanceof InvokeConfigureColumnsEvent.Handler);                 break;
 			case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	       hasHandler = (eventHandler instanceof InvokeConfigureFileSyncAppDlgEvent.Handler);          break;
 			case INVOKE_CONFIGURE_MOBILE_APPS_DLG:	       	   hasHandler = (eventHandler instanceof InvokeConfigureMobileAppsDlgEvent.Handler);           break;
+			case INVOKE_CONFIGURE_PASSWORD_POLICY_DLG:		   hasHandler = (eventHandler instanceof InvokeConfigurePasswordPolicyDlgEvent.Handler);       break;
 			case INVOKE_CONFIGURE_SHARE_SETTINGS_DLG:	       hasHandler = (eventHandler instanceof InvokeConfigureShareSettingsDlgEvent.Handler);        break;
 			case INVOKE_CONFIGURE_USER_ACCESS_DLG:		       hasHandler = (eventHandler instanceof InvokeConfigureUserAccessDlgEvent.Handler);           break;
 			case INVOKE_COPY_FILTERS_DLG:                      hasHandler = (eventHandler instanceof InvokeCopyFiltersDlgEvent.Handler);                   break;

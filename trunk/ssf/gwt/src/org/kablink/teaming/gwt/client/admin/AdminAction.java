@@ -54,6 +54,7 @@ public enum AdminAction implements IsSerializable
 	CONFIGURE_MOBILE_ACCESS( "Configure mobile access" ),
 	CONFIGURE_MOBILE_APPS( "Configure Mobile Apps" ),
 	CONFIGURE_NAME_COMPLETION( "Configure name completion settings" ),
+	CONFIGURE_PASSWORD_POLICY( "Configure password policy" ),
 	CONFIGURE_ROLE_DEFINITIONS( "Configure role definitions" ),
 	CONFIGURE_SCHEDULE( "Configure weekend and holiday schedule" ),
 	CONFIGURE_SEARCH_INDEX( "Configure search index" ),
