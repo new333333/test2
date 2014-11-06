@@ -135,6 +135,10 @@ public class BinderResource extends AbstractResource {
                 results.append(getFakeNetFolders());
             } else if (id.equals(ObjectKeys.PUBLIC_SHARES_ID)) {
                 results.append(getFakePublicShares());
+            } else if (id.equals(ObjectKeys.MY_TEAMS_ID)) {
+                results.append(getFakeMyTeams());
+            } else if (id.equals(ObjectKeys.My_FAVORITES_ID)) {
+                results.append(getFakeMyFavorites());
             }
         }
 

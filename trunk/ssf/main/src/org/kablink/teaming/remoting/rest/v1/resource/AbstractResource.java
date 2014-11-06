@@ -1592,6 +1592,36 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return binder;
     }
 
+    protected BinderBrief getFakeMyTeams() {
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setId(ObjectKeys.MY_TEAMS_ID);
+        binder.setTitle("My Teams");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace_team.png"));
+        Long userId = getLoggedInUserId();
+        binder.setLink("/self/my_teams");
+        String baseUri = LinkUriUtil.getUserLinkUri(userId);
+        binder.addAdditionalLink("child_binders", baseUri + "/teams");
+        binder.addAdditionalLink("child_library_folders", baseUri + "/teams");
+        binder.addAdditionalLink("library_children", baseUri + "/teams");
+        return binder;
+    }
+
+    protected BinderBrief getFakeMyFavorites() {
+        BinderBrief binder = new BinderBrief();
+        //TODO: localize
+        binder.setId(ObjectKeys.My_FAVORITES_ID);
+        binder.setTitle("My Favorites");
+        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace_star.png"));
+        Long userId = getLoggedInUserId();
+        binder.setLink("/self/my_favorites");
+        String baseUri = LinkUriUtil.getUserLinkUri(userId);
+        binder.addAdditionalLink("child_binders", baseUri + "/favorites");
+        binder.addAdditionalLink("child_library_folders", baseUri + "/favorites");
+        binder.addAdditionalLink("library_children", baseUri + "/favorites");
+        return binder;
+    }
+
     protected Access getAccessRole(org.kablink.teaming.domain.FolderEntry entry) {
         AccessControlManager accessControlManager = getAccessControlManager();
         User loggedInUser = getLoggedInUser();
