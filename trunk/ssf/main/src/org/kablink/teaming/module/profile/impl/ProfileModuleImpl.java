@@ -53,7 +53,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.ApplicationExistsException;
 import org.kablink.teaming.ApplicationGroupExistsException;
 import org.kablink.teaming.GroupExistsException;
@@ -147,11 +146,11 @@ import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.BuiltInUsersHelper;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PasswordPolicyHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -2566,7 +2565,7 @@ public Map getUsers() {
   }
 
   @Override
-public void changePassword(Long userId, String oldPassword, String newPassword) {
+public void changePassword(Long userId, String oldPassword, String newPassword, boolean validateAgainstPolicy) {
 	  if(newPassword == null || newPassword.equals(""))
 		  throw new PasswordMismatchException("errorcode.password.cannotBeNull");
 	  User user = getUser(userId, true);
@@ -2583,10 +2582,39 @@ public void changePassword(Long userId, String oldPassword, String newPassword) 
     		  // The user didn't enter the old/current password or they entered it incorrectly.
     		  throw new PasswordMismatchException("errorcode.password.invalid");
       }
+
+      // Is this the admin user changing somebody else's password?
+      User currentUser = RequestContextHolder.getRequestContext().getUser();
+      Date changeDate;
+      if ((null != currentUser) && currentUser.isAdmin() && (!(user.isAdmin()))) {
+    	  // Yes!  The we clear the target user's last change date
+    	  // thereby forcing them to change their password on their
+    	  // next login.
+    	  changeDate = null;
+      }
+
+      else {
+    	  // No, it's not the admin or it's somebody else changing
+    	  // their own password.
+    	  List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(((null == currentUser) ? user : currentUser), newPassword);
+    	  if (MiscUtil.hasItems(ppViolations)) {
+    		  // No!  Throw an exception with the violations.
+    		  throw new PasswordMismatchException("errorcode.password.violatesPolicy", ppViolations);
+      	}
+    	  
+    	  // The last password change date is now.
+    	  changeDate = new Date();
+      }
       
       user.setPassword(newPassword);
-      setLastPasswordChange(user, new Date());
+      setLastPasswordChange(user, changeDate);
       EncryptUtil.clearCachedPassword(userId);
+  }
+  
+  @Override
+public void changePassword(Long userId, String oldPassword, String newPassword) {
+	  // Always use the initial form of the method.
+	  changePassword(userId, oldPassword, newPassword, true);	// true -> Validate the new password against the system password policy.
   }
   
   @Override

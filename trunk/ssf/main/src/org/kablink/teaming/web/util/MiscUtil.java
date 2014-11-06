@@ -55,11 +55,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.*;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -74,7 +74,6 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.HttpHeaders;
-
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -101,6 +100,7 @@ public final class MiscUtil
 	private final static String	BROWSER_SUPPORTS_NPAPI	= "browserSupportsNPAPI";
 	
 	// Initialized by the first call to get...Module();
+	private static AdminModule		m_adminModule;		//
 	private static FolderModule		m_folderModule;		//
 	private static ProfileModule	m_profileModule;	//
 	private static ZoneModule		m_zoneModule;		//
@@ -1492,6 +1492,19 @@ public final class MiscUtil
 		return reply;
 	}
 	
+	/**
+	 * Returns an instance of an AdminModule.
+	 * 
+	 * @return
+	 */
+	public static AdminModule getAdminModule() {
+		if ( null == m_adminModule )
+		{
+			m_adminModule = ( (AdminModule) SpringContextUtil.getBean( "adminModule" ));
+		}
+		return m_adminModule;
+	}
+
 	/**
 	 * Returns an instance of a FolderModule.
 	 * 
