@@ -402,45 +402,33 @@ public class NetFolderHelper
 			ConnectionTestStatus status = null;
 			Binder netFolderBinder;
 			boolean syncNeeded = false;
-			boolean doTestConnection;
 			
 			// Yes
 			canSyncNetFolder = true;
 			
-			doTestConnection = SPropsUtil.getBoolean( "test.connection.on.homedir.creation", true );
-			
-			// Test the connection
-			if ( doTestConnection )
+			// Does a net folder already exist for this user's home directory
+			netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
+																binderModule,
+																user.getWorkspaceId() );
+			if ( netFolderBinder == null )
 			{
-				status = testNetFolderConnection(
-												rdConfig.getName(),
-												rdConfig.getDriverType(),
-												rdConfig.getRootPath(),
-												path,
-												rdConfig.getAccountName(),
-												rdConfig.getPassword() );
-			}
-			else
-			{
-				// Pretend the connection was ok
-				status = new ConnectionTestStatus( ConnectionTestStatusCode.NORMAL, "artificial result" );
-			}
-			
-			// Only create the net folder if we can successfully make a connection
-			if ( status != null && status.getCode() == ConnectionTestStatusCode.NORMAL )
-			{
-				// Does a net folder already exist for this user's home directory
-				netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
-																	binderModule,
-																	user.getWorkspaceId() );
-				if ( netFolderBinder == null )
+				// No, create one.
+				// Only create the net folder if we can successfully make a connection
+				status = testNetFolderConnectionForHomeDirCreation(
+																rdConfig.getName(),
+																rdConfig.getDriverType(),
+																rdConfig.getRootPath(),
+																path,
+																rdConfig.getAccountName(),
+																rdConfig.getPassword() );
+				
+				if ( status != null && status.getCode() == ConnectionTestStatusCode.NORMAL )
 				{
 					String folderName;
 					Long zoneId;
 					ScheduleInfo scheduleInfo;
 					Schedule schedule;
 		
-					// No, create one.
 					folderName = NLT.get( "netfolder.default.homedir.name", user.getLocale() );
 					m_logger.info( "About to create a net folder called: " + folderName + ", for the users home directory for user: " + user.getName() );
 					
@@ -464,7 +452,7 @@ public class NetFolderHelper
 							int offset;
 							int offsetHour;
 							int hour;
-	
+
 							tz = currentUser.getTimeZone();
 							offset = tz.getOffset( now.getTime() );
 							offsetHour = offset / (1000*60*60);
@@ -478,7 +466,7 @@ public class NetFolderHelper
 					}
 					schedule.setMinutes( "0" );
 					scheduleInfo.setSchedule( schedule );
-	
+
 					// Create a net folder in the user's workspace
 					netFolderBinder = NetFolderHelper.createNetFolder(
 																templateModule,
@@ -498,7 +486,7 @@ public class NetFolderHelper
 																null,
 																Boolean.FALSE,
 																Boolean.TRUE );
-	
+
 					// As the fix for bug 831849 we must call getCoreDao().clear() before we call
 					// NetFolderHelper.saveJitsSettings().  If we don't, saveJitsSettings() throws
 					// a DuplicateKeyException.
@@ -523,66 +511,80 @@ public class NetFolderHelper
 					
 					syncNeeded = false;
 				}
-				else
+			}
+			else
+			{
+				// A home dir net folder already exists for this user.
+				// Are we supposed to try and update an existing net folder?
+				if ( updateExistingNetFolder )
 				{
-					// A home dir net folder already exists for this user.
-					// Are we supposed to try and update an existing net folder?
-					if ( updateExistingNetFolder )
+					String currentServerUNC = null;
+					
+					// Yes
+					// Get the server unc path that is currently being used by the user's home dir net folder.
 					{
-						String currentServerUNC = null;
+						ResourceDriver driver;
 						
-						// Yes
-						// Get the server unc path that is currently being used by the user's home dir net folder.
+						driver = netFolderBinder.getResourceDriver();
+						if ( driver != null )
 						{
-							ResourceDriver driver;
+							ResourceDriverConfig currentRdConfig;
 							
-							driver = netFolderBinder.getResourceDriver();
-							if ( driver != null )
-							{
-								ResourceDriverConfig currentRdConfig;
-								
-								currentRdConfig = driver.getConfig();
-								if ( currentRdConfig != null )
-									currentServerUNC = currentRdConfig.getRootPath();
-							}
+							currentRdConfig = driver.getConfig();
+							if ( currentRdConfig != null )
+								currentServerUNC = currentRdConfig.getRootPath();
 						}
-								
-						// Did any information about the home directory change?
-						if ( (serverUNC != null && serverUNC.equalsIgnoreCase( currentServerUNC ) == false) ||
-							 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
+					}
+							
+					// Did any information about the home directory change?
+					if ( (serverUNC != null && serverUNC.equalsIgnoreCase( currentServerUNC ) == false) ||
+						 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
+					{
+						// Yes
+						status = testNetFolderConnectionForHomeDirCreation(
+																		rdConfig.getName(),
+																		rdConfig.getDriverType(),
+																		rdConfig.getRootPath(),
+																		path,
+																		rdConfig.getAccountName(),
+																		rdConfig.getPassword() );
+
+						if ( status != null && status.getCode() == ConnectionTestStatusCode.NORMAL )
 						{
+							m_logger.info( "About to modify a net folder called: " + netFolderBinder.getName() + ", for the users home directory for user: " + user.getName() );
+							
 							// Update the folder's resource driver name and relative path.
 							folderModule.modifyNetFolder(
 													netFolderBinder.getId(),
 													rdConfig.getName(),
 													path );
-							
-				   			syncNeeded = false;
 						}
+						
+			   			syncNeeded = false;
 					}
 				}
-				
-				// Do we need to sync the home directory net folder?
-				if ( syncNeeded )
+			}
+			
+			// Do we need to sync the home directory net folder?
+			if ( syncNeeded )
+			{
+				// Yes
+				// Can we sync the home directory net folder?
+				if ( canSyncNetFolder )
 				{
-					// Yes
-					// Can we sync the home directory net folder?
-					if ( canSyncNetFolder )
+					// Yes, sync it.
+					try
 					{
-						// Yes, sync it.
-						try
-						{
-							final Long binderId;
-							
-							binderId = netFolderBinder.getId();
-	
-							m_logger.info( "About to sync home directory net folder: " + binderId );
-							folderModule.enqueueFullSynchronize( binderId );
-						}
-						catch ( Exception e )
-						{
-							m_logger.error( "Error syncing next net folder: " + netFolderBinder.getName() + ", " + e.toString() );
-						}
+						final Long binderId;
+						
+						binderId = netFolderBinder.getId();
+
+						m_logger.info( "About to sync home directory net folder: " + binderId );
+						folderModule.enqueueFullSynchronize( binderId );
+					}
+					catch ( Exception e )
+					{
+						m_logger.error( "Error syncing next net folder: " + netFolderBinder.getName() + ", " + e.toString() );
 					}
 				}
 			}
@@ -1460,6 +1462,44 @@ public class NetFolderHelper
         AdminHelper.setAssignedRights(ami, binder, roleTypes, roles);
     }
 
+    /**
+     * 
+     */
+    private static ConnectionTestStatus testNetFolderConnectionForHomeDirCreation(
+		String driverName,
+		DriverType driverType,
+		String rootPath,
+		String subPath,
+		String proxyName,
+		String proxyPwd )
+    {
+    	boolean doTestConnection;
+    	ConnectionTestStatus status;
+    	
+		m_logger.info( "In testNetFolderConnectionForHomeDirCreation() rootPath: " + rootPath + " subPath: " + subPath );
+		
+		doTestConnection = SPropsUtil.getBoolean( "test.connection.on.homedir.creation", true );
+		
+		// Test the connection
+		if ( doTestConnection )
+		{
+			status = testNetFolderConnection(
+											driverName,
+											driverType,
+											rootPath,
+											subPath,
+											proxyName,
+											proxyPwd );
+		}
+		else
+		{
+			// Pretend the connection was ok
+			status = new ConnectionTestStatus( ConnectionTestStatusCode.NORMAL, "artificial result" );
+		}
+    	
+		return status;
+    }
+    
     /**
      * 
      */
