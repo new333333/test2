@@ -229,6 +229,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UserAccessConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
@@ -3594,13 +3595,17 @@ public class GwtServerHelper {
 				GroupInfo groupInfo;
 				
 				groupInfo = new GroupInfo();
-				
-				groupInfo.setId( nextGroup.getId() );
+
+				Long groupId = nextGroup.getId();
+				groupInfo.setId( groupId );
 				groupInfo.setTitle( nextGroup.getTitle() );
 				groupInfo.setName( nextGroup.getName() );
 				groupInfo.setDesc( nextGroup.getDescription().getText() );
 				groupInfo.setIsFromLdap( nextGroup.getIdentityInfo().isFromLdap() );
 				groupInfo.setDn( nextGroup.getForeignName() );
+				
+				boolean hasAdminRights = MiscUtil.isSiteAdminMember( groupId );
+				groupInfo.setAdminRights( NLT.get( hasAdminRights ? "general.Yes" : "general.No" ));
 				
 				reply.add( groupInfo );
 			}
@@ -12148,19 +12153,17 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData setPrincipalsAdminRights(AllModulesInjected bs, HttpServletRequest request, List<Long> principalIds, boolean setRights) throws GwtTeamingException {
+	public static SetPrincipalsAdminRightsRpcResponseData setPrincipalsAdminRights(AllModulesInjected bs, HttpServletRequest request, List<Long> principalIds, boolean setRights) throws GwtTeamingException {
 		try {
 			// Create the ErrorListRpcResponseData to return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
+			SetPrincipalsAdminRightsRpcResponseData reply = new SetPrincipalsAdminRightsRpcResponseData(new ArrayList<ErrorInfo>());
+			List<Long> validPIDs = new ArrayList<Long>();
+			reply.setSuccessfulSets(validPIDs);
 
 			// We're we given any Principal IDs to set or clear the
 			// rights from?
 			if (MiscUtil.hasItems(principalIds)) {
-				// Yes!  Allocate a List<Long> to track the principal
-				// IDs that we can set the admin rights on.
-				List<Long> validPIDs = new ArrayList<Long>();
-				
-				// What's the current user's ID?
+				// Yes!  What's the current user's ID?
 				Long currentUserId = getCurrentUserId();
 				
 				// Can we resolved the Principal IDs?
@@ -12247,7 +12250,7 @@ public class GwtServerHelper {
 						if (null != errKey) {
 							// Yes!  Add the error to the reply and
 							// skip it.
-							reply.addWarning(NLT.get(errKey, new String[]{pTitle}));
+							reply.addError(NLT.get(errKey, new String[]{pTitle}));
 							continue;
 						}
 						
@@ -12264,7 +12267,8 @@ public class GwtServerHelper {
 						Long siteAdminRole = MiscUtil.getSiteAdminRoleId();
 						if (null == siteAdminRole) {
 							// No!  Tell the user about the problem.
-							reply.addWarning(NLT.get("setAdminRightsWarning.UnknownSiteAdminRole"));
+							reply.addError(NLT.get("setAdminRightsWarning.UnknownSiteAdminRole"));
+							validPIDs.clear();
 						}
 						
 						else {

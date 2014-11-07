@@ -1482,19 +1482,22 @@ public class GwtMenuHelper {
 			moreTBI.addNestedItem(tbi);
 		}
 
-		// ...and add the set/clear admin rights.
-		moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-		tbi = new ToolbarItem("1_setAdminRights");
-		markTBITitle(tbi, "toolbar.adminRightsSet");
-		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS);
-		markTBIBoolean(tbi, "setRights", Boolean.TRUE);
-		moreTBI.addNestedItem(tbi);
-		
-		tbi = new ToolbarItem("1_clearAdminRights");
-		markTBITitle(tbi, "toolbar.adminRightsClear");
-		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS);
-		markTBIBoolean(tbi, "setRights", Boolean.FALSE);
-		moreTBI.addNestedItem(tbi);
+		// ...if the current user is the built-in admin user...
+		if (GwtServerHelper.getCurrentUser().isAdmin()) {
+			// ...and add the set/clear admin rights.
+			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+			tbi = new ToolbarItem("1_setAdminRights");
+			markTBITitle(tbi, "toolbar.adminRightsSet");
+			markTBIEvent(tbi, TeamingEvents.SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS);
+			markTBIBoolean(tbi, "setRights", Boolean.TRUE);
+			moreTBI.addNestedItem(tbi);
+			
+			tbi = new ToolbarItem("1_clearAdminRights");
+			markTBITitle(tbi, "toolbar.adminRightsClear");
+			markTBIEvent(tbi, TeamingEvents.SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS);
+			markTBIBoolean(tbi, "setRights", Boolean.FALSE);
+			moreTBI.addNestedItem(tbi);
+		}
 				
 		// Finally, if we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {

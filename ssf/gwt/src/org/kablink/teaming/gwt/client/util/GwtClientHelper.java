@@ -1038,6 +1038,16 @@ public class GwtClientHelper {
 	}
 	
 	/**
+	 * Returns true if the logged in user is built-in admin user and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isBuiltInAdmin() {
+		return getRequestInfo().isBuiltInAdmin();
+	}
+
+	/**
 	 * Returns true if Cloud Folders are enabled and false otherwise.
 	 * 
 	 * @return

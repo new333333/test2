@@ -88,6 +88,7 @@
 		isLicenseVibe:						'${isLicenseVibe}',
 		isQuotasDiskQuotaExceeded:			'${ss_diskQuotaExceeded}',
 		isQuotasEnabled:					'${ss_quotasEnabled}',
+		isBuiltInAdmin:						'${isBuiltInAdmin}',
 		isSiteAdmin:						'${isSiteAdmin}',
 		isGuestUser:						'${isGuestUser}',
 		isExternalUser:						'${isExternalUser}',
