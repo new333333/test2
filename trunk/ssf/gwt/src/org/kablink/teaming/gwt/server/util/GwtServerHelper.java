@@ -92,11 +92,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -11889,6 +11891,7 @@ public class GwtServerHelper {
 	 * @param bs
 	 * @param request
 	 * @param binderIds
+	 * @param setAllUsersRights
 	 * @param setTeamMemberRights
 	 * @param sharingRights
 	 * 
@@ -11896,7 +11899,7 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData setBinderSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, List<Long> binderIds, boolean setTeamMemberRights, CombinedPerEntityShareRightsInfo sharingRights) throws GwtTeamingException {
+	public static ErrorListRpcResponseData setBinderSharingRightsInfo(AllModulesInjected bs, HttpServletRequest request, List<Long> binderIds, boolean setAllUsersRights, boolean setTeamMemberRights, CombinedPerEntityShareRightsInfo sharingRights) throws GwtTeamingException {
 		try {
 			// Create the ErrorListRpcResponseData to return.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
@@ -11949,6 +11952,12 @@ public class GwtServerHelper {
 							memberIds.add(ObjectKeys.OWNER_USER_ID);
 							if (setTeamMemberRights) {
 								memberIds.add(ObjectKeys.TEAM_MEMBER_ID);
+							}
+							if (setAllUsersRights) {
+								Long allUsersGroupId = Utils.getAllUsersGroupId();
+								if (null != allUsersGroupId) {
+									memberIds.add(allUsersGroupId);
+								}
 							}
 							if (setFlags.isAllowExternal())    am.updateWorkAreaFunctionMemberships(binder, allowExternal,    valueFlags.isAllowExternal(),    memberIds);
 							if (setFlags.isAllowForwarding())  am.updateWorkAreaFunctionMemberships(binder, allowForwarding,  valueFlags.isAllowForwarding(),  memberIds);

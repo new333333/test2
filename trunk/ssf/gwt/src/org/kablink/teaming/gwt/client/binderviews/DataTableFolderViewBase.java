@@ -4693,7 +4693,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			m_binderShareRightsDlg,
 			caption,
 			selectedBinderList,
-			setTeamMemberRights,
+			(!setTeamMemberRights),	// true -> Set all users   rights.  false -> Don't.
+			setTeamMemberRights,	// true -> Set team member rights.  false -> Don't.
 			showRelativeTo);
 	}
 

@@ -4586,7 +4586,8 @@ public class GwtMainPage extends ResizeComposite
 			m_workspaceShareRightsDlg,
 			GwtTeaming.getMessages().shareWorkspaceRightsDlgHeader( 1 ),
 			binderIds,
-			false );	// false -> Don't set team member rights, just the owner's.
+			true,		// true  -> In addition to the owner, set all user rights.
+			false );	// false -> Don't set team member rights.
 	}
 
 	/*

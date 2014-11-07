@@ -22,14 +22,16 @@
 .displayNone        { display: none;           }
 .displayNone2       { display: none !important;}
 
-.padding3   {padding:        3px;           }
-.padding3b  {padding:        3px !important;}
-.padding5   {padding:        5px;           }
-.padding5b  {padding:        5px !important;}
-.padding5R  {padding-right:  5px;           }
-.padding15R {padding-right: 15px;           }
-.padding2L  {padding-left:   2px;           }
-.padding10T {padding-top:   10px;           }
+.padding3   {padding:         3px;           }
+.padding3b  {padding:         3px !important;}
+.padding5   {padding:         5px;           }
+.padding5b  {padding:         5px !important;}
+.padding5R  {padding-right:   5px;           }
+.padding15R {padding-right:  15px;           }
+.padding2L  {padding-left:    2px;           }
+.padding10T {padding-top:    10px;           }
+.padding5B  {padding-bottom:  5px;           }
+.padding10B {padding-bottom: 10px;           }
 
 .vibe-fullScroll       {overflow:   auto;}
 .vibe-horizontalScroll {overflow-x: auto; overflow-y: hidden;}
@@ -5558,6 +5560,7 @@ td.datePickerMonth {
 	.vibe-shareRightsDlg-headerCellCenter {text-align: center;}
 	.vibe-shareRightsDlg-headerCellLeft   {text-align: left;}
 	.vibe-shareRightsDlg-headerCellSpacer {border-bottom-color: #cccccc; border-bottom-style: solid; border-bottom-width: 1px; padding-top: 10px;}
+	.vibe-shareRightsDlg-hint             {color: #4D6D8B; font-size: 1em; width: 400px;}
 	.vibe-shareRightsDlg-noZoneSettings   {margin-top: 10px; font-weight: bold;}
 	.vibe-shareRightsDlg-panel            {text-align: left; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
 	.vibe-shareRightsDlg-progressBar      {margin-bottom: 5px; margin-top: 10px;}
