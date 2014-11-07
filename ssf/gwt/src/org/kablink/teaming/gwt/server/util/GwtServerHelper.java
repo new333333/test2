@@ -12261,19 +12261,7 @@ public class GwtServerHelper {
 					if (!(validPIDs.isEmpty())) {
 						// Yes!  Can we find the site admin role so we 
 						// can grant or remove them?
-						AdminModule    am  = bs.getAdminModule();
-						List<Function> fs  = am.getFunctions();
-						Long siteAdminRole = null;
-						for (Function f:  fs) {
-							String fId = f.getInternalId();
-							if (MiscUtil.hasString(fId)) {
-								if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID)) {
-									siteAdminRole = f.getId();
-									break;
-								}
-							}
-						}
-						
+						Long siteAdminRole = MiscUtil.getSiteAdminRoleId();
 						if (null == siteAdminRole) {
 							// No!  Tell the user about the problem.
 							reply.addWarning(NLT.get("setAdminRightsWarning.UnknownSiteAdminRole"));
@@ -12284,7 +12272,7 @@ public class GwtServerHelper {
 							// we can grant or remove them!  Set/clear
 							// it from the valid Principal IDs.
 					    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-							am.updateWorkAreaFunctionMemberships(zoneConfig, siteAdminRole, setRights, validPIDs);
+					    	bs.getAdminModule().updateWorkAreaFunctionMemberships(zoneConfig, siteAdminRole, setRights, validPIDs);
 						}
 					}
 				}

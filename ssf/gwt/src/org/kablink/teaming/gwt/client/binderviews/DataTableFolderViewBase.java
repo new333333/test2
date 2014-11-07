@@ -3663,9 +3663,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			    hideBusySpinner();
 				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
 				if (erList.hasErrors()) {
-					// ...display them.
+					// ...display them...
 					GwtClientHelper.displayMultipleErrors(m_messages.vibeDataTable_Error_SavingAdminRights(), erList.getErrorList());
 				}
+				
+				// ...and force the UI to refresh to reflect the
+				// ...change.
+				FullUIReloadEvent.fireOneAsync();
 			}
 		});
 	}
