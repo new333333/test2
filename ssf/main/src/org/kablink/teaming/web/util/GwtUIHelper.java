@@ -1760,10 +1760,10 @@ public class GwtUIHelper {
 		{
 			Boolean allowSharePoint;
 			
-			allowSharePoint = SPropsUtil.getBoolean( "allow.sharepoint.as.server.type", false );
+			allowSharePoint = SPropsUtil.getBoolean( "allow.sharepoint.as.server.type", true );
 			model.put( "allowSharePointAsAServerType", allowSharePoint );
 
-			allowSharePoint = SPropsUtil.getBoolean( "allow.sharepoint.2013", false );
+			allowSharePoint = SPropsUtil.getBoolean( "allow.sharepoint.2013", true );
 			model.put( "allowSharePoint2013AsAServerType", allowSharePoint );
 
 			allowSharePoint = SPropsUtil.getBoolean( "allow.sharepoint.2010", false );
