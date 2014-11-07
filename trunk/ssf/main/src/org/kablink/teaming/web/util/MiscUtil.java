@@ -45,6 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.mail.internet.AddressException;
@@ -58,6 +59,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -65,6 +67,8 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
+import org.kablink.teaming.security.function.Function;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -101,6 +105,7 @@ public final class MiscUtil
 	
 	// Initialized by the first call to get...Module();
 	private static AdminModule		m_adminModule;		//
+	private static CoreDao			m_coreDao;			//
 	private static FolderModule		m_folderModule;		//
 	private static ProfileModule	m_profileModule;	//
 	private static ZoneModule		m_zoneModule;		//
@@ -1264,11 +1269,13 @@ public final class MiscUtil
 		return reply;
 	}
 
-    public static String getPrimaryFileName(DefinableEntity de) {
+    public static String getPrimaryFileName( DefinableEntity de )
+    {
         String fName = null;
-        FileAttachment fa = MiscUtil.getPrimaryFileAttachment( de );
+        FileAttachment fa = getPrimaryFileAttachment( de );
         FileItem fi = fa.getFileItem();
-        if ( null != fi ) {
+        if ( null != fi )
+        {
             fName = fi.getName();
         }
         return fName;
@@ -1493,6 +1500,74 @@ public final class MiscUtil
 	}
 	
 	/**
+	 * Returns the ID of the site admin role.
+	 * 
+	 * @return
+	 */
+	public static Long getSiteAdminRoleId()
+	{
+		List<Function> fs  = getAdminModule().getFunctions();
+		Long reply = null;
+		for ( Function f:  fs )
+		{
+			String fId = f.getInternalId();
+			if ( hasString( fId ) )
+			{
+				if ( fId.equalsIgnoreCase( ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID ) )
+				{
+					reply = f.getId();
+					break;
+				}
+			}
+		}
+		return reply;
+	}
+
+	/**
+	 * Returns true if the given ID is has site admin rights directly
+	 * assigned to them and false otherwise.
+	 * 
+	 * Note that this is NOT the same as asking if the member has site
+	 *    admin rights!  This is checking whether a memberId has a
+	 *    direct assignment of the rights, not an effective assignment
+	 *    of them.
+	 * 
+	 * @param memberId
+	 * 
+	 * @return
+	 */
+	public static boolean isSiteAdminMember( Long memberId )
+	{
+		// Are there any work area function memberships defined on the
+		// zone?
+    	boolean reply = false;
+    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+    	AdminModule am = getAdminModule();
+		List<WorkAreaFunctionMembership> wafmList = am.getWorkAreaFunctionMemberships( zoneConfig );
+		if ( hasItems( wafmList ) )
+		{
+			// Yes!  Scan them.
+			for ( WorkAreaFunctionMembership wafm:  wafmList )
+			{
+				// Is this the site admin role?
+				String fiId = am.getFunction( wafm.getFunctionId() ).getInternalId();
+				if ( hasString( fiId ) && fiId.equalsIgnoreCase( ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID ) )
+				{
+					// Yes!  Is the given member a member of it?
+					Set<Long> memberIds = wafm.getMemberIds();
+					reply = ( ( null != memberIds ) && memberIds.contains( memberId ) );
+					break;
+				}
+			}
+		}
+		
+		// If we get here, reply contains true if the given member has
+		// site admin rights assigned to it and false otherwise.
+		// Return it.
+		return reply;
+	}
+	
+	/**
 	 * Returns an instance of an AdminModule.
 	 * 
 	 * @return
@@ -1505,6 +1580,20 @@ public final class MiscUtil
 		return m_adminModule;
 	}
 
+	/**
+	 * Returns an instance of a CoreDao.
+	 * 
+	 * @return
+	 */
+	public static CoreDao getCoreDao()
+	{
+		if ( null == m_coreDao )
+		{
+			m_coreDao = ((CoreDao) SpringContextUtil.getBean( "coreDao" ));
+		}
+		return m_coreDao;
+	}
+	
 	/**
 	 * Returns an instance of a FolderModule.
 	 * 

@@ -1447,7 +1447,7 @@ public class GwtViewHelper {
 	 * including the PrincipalInfo's and MobileDevicesInfo's for each
 	 * row.
 	 */
-	private static void completeUserInfo(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList, boolean isProfilesRootWS, boolean isManageUsers, boolean isFilr) {
+	private static void completeUserInfo(AllModulesInjected bs, HttpServletRequest request, List<FolderColumn> fcList, List<FolderRow> frList, boolean isProfilesRootWS, boolean isManageUsers, boolean isFilr) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completeUserInfo()");
 		try {
 			// If we don't have any FolderRow's to complete...
@@ -1478,9 +1478,10 @@ public class GwtViewHelper {
 				try {
 					// Build a List<PrincipalInfo> from the List<Long> of
 					// principal IDs.
-					List<PrincipalInfo>     piList =                  new ArrayList<PrincipalInfo>();
-					List<MobileDevicesInfo> mdList = (isManageUsers ? new ArrayList<MobileDevicesInfo>() : null);
-					getUserInfoFromPIds(bs, request, piList, mdList, principalIds);
+					List<PrincipalInfo>     piList   =                  new ArrayList<PrincipalInfo>();
+					List<MobileDevicesInfo> mdList   = (isManageUsers ? new ArrayList<MobileDevicesInfo>() : null);
+					List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(principalIds, false);
+					getUserInfoFromPIds(bs, request, piList, mdList, uwsPairs);
 					for (PrincipalInfo pi:  piList) {
 						boolean includeIt = 							// Include it in...
 							((!isFilr)                              ||	// ...Vibe...
@@ -1539,6 +1540,48 @@ public class GwtViewHelper {
 										break;
 									}
 								}
+							}
+
+							// Can we find the User associated with
+							// this row?
+							Long rowUserId = fr.getEntityId().getEntityId();
+							User rowUser   = null;
+							for (UserWorkspacePair uwsPair:  uwsPairs) {
+								User uwsUser = uwsPair.getUser();
+								if (uwsUser.getId().equals(rowUserId)) {
+									rowUser = uwsUser;
+									break;
+								}
+							}
+							String adminRights = "";
+							String isAdmin     = "";
+							if (null != rowUser) {
+								// Yes!  Is it somebody that may have
+								// administrator rights set on?
+								if ((!(rowUser.isAdmin())) && rowUser.isPerson() && rowUser.getIdentityInfo().isInternal()) {
+									// Yes!  Check out their
+									// administrator rights
+									// assignments.
+									String resKey = (MiscUtil.isSiteAdminMember(rowUserId) ? "general.Yes" : "general.No");
+									adminRights   = NLT.get(resKey);
+									
+									resKey  = (bs.getAdminModule().testUserAccess(rowUser, AdminOperation.manageFunction) ? "general.Yes" : "general.No");
+									isAdmin = NLT.get(resKey);
+								}
+							}
+							
+							// If we can find the columns for them...
+							FolderColumn rightsCol = FolderColumn.getFolderColumnByEleName(fcList, FolderColumn.COLUMN_ADMIN_RIGHTS);
+							if (null != rightsCol) {
+								// ...store the administrator rights
+								// ...settings in the row.
+								fr.setColumnValue(rightsCol, adminRights);
+							}
+							rightsCol= FolderColumn.getFolderColumnByEleName(fcList, FolderColumn.COLUMN_IS_ADMIN);
+							if (null != rightsCol) {
+								// ...store the administrator rights
+								// ...settings in the row.
+								fr.setColumnValue(rightsCol, isAdmin);
 							}
 						}
 					}
@@ -2992,7 +3035,8 @@ public class GwtViewHelper {
 		else dateCSK = Constants.MODIFICATION_DATE_FIELD;
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
-			if      (colName.equals("author"))               {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);           }
+			if      (colName.equals("adminRights"))          {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMIN_RIGHTS);          fc.setColumnSortable(false);                                       }
+			else if (colName.equals("author"))               {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);           }
 			else if (colName.equals("comments"))             {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                                              }
 			else if (colName.equals("date"))                 {fc.setColumnSearchKey(dateCSK);                                                                                                      }
 			else if (colName.equals("description"))          {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                                         }
@@ -3010,6 +3054,7 @@ public class GwtViewHelper {
 			else if (colName.equals("fullName"))             {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);                   }
 			else if (colName.equals("guest"))                {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);           }
 			else if (colName.equals("html"))                 {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                                      }
+			else if (colName.equals("isAdmin"))              {fc.setColumnSearchKey(FolderColumn.COLUMN_IS_ADMIN);              fc.setColumnSortable(false);                                       }
 			else if (colName.equals("location"))             {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                                  }
 			else if (colName.equals("loginId"))              {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                                    }
 			else if (colName.equals("netfolder_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);      fc.setColumnSortable(false);                                       }
@@ -4158,8 +4203,8 @@ public class GwtViewHelper {
 				baseNameKey = "profiles.column.";
 				if (folderInfo.isBinderProfilesRootWSManagement()) {
 					if (ReleaseInfo.isLicenseRequiredEdition() && LicenseChecker.showFilrFeatures())
-					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "emailAddress", "mobileDevices", "loginId"});
-					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "emailAddress",                  "loginId"});
+					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "adminRights", "isAdmin", "emailAddress", "mobileDevices", "loginId"});
+					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "adminRights", "isAdmin", "emailAddress",                  "loginId"});
 				}
 				else {
 					columnNames = getColumnsLHMFromAS(new String[]{"fullName", "emailAddress", "loginId"});
@@ -5150,7 +5195,8 @@ public class GwtViewHelper {
 						if (MiscUtil.hasItems(userIds)) {
 							// ...add PrincipalInfo's for them to the
 							// ...UserListInfo.
-							getUserInfoFromPIds(bs, request, userListInfo.getUsers(), null ,userIds);
+							List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(userIds, false);
+							getUserInfoFromPIds(bs, request, userListInfo.getUsers(), null ,uwsPairs);
 						}
 					}
 				}
@@ -5999,7 +6045,7 @@ public class GwtViewHelper {
 			
 			// Walk the List<FolderRow>'s performing any remaining
 			// fixups on each as necessary.
-			completeUserInfo(bs, request, folderRows, isProfilesRootWS, isManageUsers, isFilr);
+			completeUserInfo(bs, request, folderColumns, folderRows, isProfilesRootWS, isManageUsers, isFilr);
 
 			// Is the user viewing pinned entries?
 			if (viewPinnedEntries) {
@@ -6575,12 +6621,11 @@ public class GwtViewHelper {
 	 * Given a List<Long> of principal IDs read from entry maps,
 	 * returns an equivalent List<PrincipalInfo> object.
 	 */
-	private static void getUserInfoFromPIds(AllModulesInjected bs, HttpServletRequest request, List<PrincipalInfo> piList, List<MobileDevicesInfo> mdList, Collection<Long> principalIds) {
+	private static void getUserInfoFromPIds(AllModulesInjected bs, HttpServletRequest request, List<PrincipalInfo> piList, List<MobileDevicesInfo> mdList, List<UserWorkspacePair> uwsPairs) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserInfoFromPIds()");
 		try {
 			// Can we map the List<Long> of principal IDs to any
 			// UserWorkspacePair's?
-			List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(principalIds, false);
 			if (MiscUtil.hasItems(uwsPairs)) {
 				// Yes!  Scan them.
 				MobileDeviceModule mdm = bs.getMobileDeviceModule();
@@ -6660,8 +6705,9 @@ public class GwtViewHelper {
 	private static PrincipalInfo getPIFromPId(AllModulesInjected bs, HttpServletRequest request, Long pId) {
 		List<Long> pIds = new ArrayList<Long>();
 		pIds.add(pId);
-		List<PrincipalInfo> piList = new ArrayList<PrincipalInfo>();
-		getUserInfoFromPIds(bs, request, piList, null, pIds);
+		List<PrincipalInfo>     piList   = new ArrayList<PrincipalInfo>();
+		List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(pIds, false);
+		getUserInfoFromPIds(bs, request, piList, null, uwsPairs);
 		PrincipalInfo reply;
 		if (MiscUtil.hasItems(piList))
 		     reply = piList.get(0);	// There will only ever be one.
