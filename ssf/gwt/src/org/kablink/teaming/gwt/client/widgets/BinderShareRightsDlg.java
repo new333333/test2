@@ -75,6 +75,7 @@ import com.google.gwt.user.client.ui.UIObject;
  */
 public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandler {
 	private BinderSharingRightsInfoRpcResponseData	m_rightsInfo;			// Information about sharing rights available and to be set.
+	private boolean									m_setAllUsersRights;	// true -> When setting the binder rights, set them for all  users too.    false -> Don't.
 	private boolean									m_setTeamMemberRights;	// true -> When setting the binder rights, set them for team members too.  false -> Don't.
 	private GwtTeamingMessages						m_messages;				// Access to Vibe's messages.
 	private InlineLabel								m_progressIndicator;	// Text under the progress bar that displays what's going on.
@@ -313,6 +314,7 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 			new SetBinderSharingRightsInfoCmd(
 				sourceBinderIds,
 				m_setTeamMemberRights,
+				m_setAllUsersRights,
 				sharingRights),
 			sourceBinderIds,
 			totalBinderCount,
@@ -448,6 +450,22 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 		// Clear the panel that holds the content...
 		m_vp.clear();
 
+		// ...add some hints about rights rights will be set...
+		Label l = new Label(m_messages.binderShareRightsDlgHint_Owner());
+		l.addStyleName("vibe-shareRightsDlg-hint");
+		m_vp.add(l);
+		if (m_setAllUsersRights) {
+			l = new Label(m_messages.binderShareRightsDlgHint_AllUsers());
+			l.addStyleName("vibe-shareRightsDlg-hint");
+			m_vp.add(l);
+		}
+		if (m_setTeamMemberRights) {
+			l = new Label(m_messages.binderShareRightsDlgHint_TeamMembers());
+			l.addStyleName("vibe-shareRightsDlg-hint");
+			m_vp.add(l);
+		}
+		l.addStyleName("padding10B");
+
 		// ...create the table containing the dialog's content... 
 		FlexTable ft = new VibeFlexTable();
 		ft.addStyleName("vibe-shareRightsDlg-table");
@@ -544,7 +562,7 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 		// ...level...
 		if (0 < noZoneSettings) {
 			// ...add a note telling the user.
-			Label l = new Label("* " + m_messages.binderShareRightsDlgLabel_NoZoneSettings());
+			l = new Label("* " + m_messages.binderShareRightsDlgLabel_NoZoneSettings());
 			l.addStyleName("vibe-shareRightsDlg-noZoneSettings");
 			m_vp.add(l);
 		}
@@ -577,11 +595,11 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * Asynchronously runs the given instance of the binder share
 	 * rights dialog.
 	 */
-	private static void runDlgAsync(final BinderShareRightsDlg bsrDlg, final String caption, final List<Long> binderIds, final boolean setTeamMemberRights, final UIObject showRelativeTo) {
+	private static void runDlgAsync(final BinderShareRightsDlg bsrDlg, final String caption, final List<Long> binderIds, final boolean setAllUsersRights, final boolean setTeamMemberRights, final UIObject showRelativeTo) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				bsrDlg.runDlgNow(caption, binderIds, setTeamMemberRights, showRelativeTo);
+				bsrDlg.runDlgNow(caption, binderIds, setAllUsersRights, setTeamMemberRights, showRelativeTo);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -591,9 +609,10 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * Synchronously runs the given instance of the binder share rights
 	 * dialog.
 	 */
-	private void runDlgNow(String caption, List<Long> binderIds, boolean setTeamMemberRights, UIObject showRelativeTo) {
+	private void runDlgNow(String caption, List<Long> binderIds, boolean setAllUsersRights, boolean setTeamMemberRights, UIObject showRelativeTo) {
 		// Store the parameter...
 		m_binderIds           = binderIds;
+		m_setAllUsersRights   = setAllUsersRights;
 		m_setTeamMemberRights = setTeamMemberRights;  
 		m_showRelativeTo      = showRelativeTo;
 		
@@ -832,6 +851,7 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 			final BinderShareRightsDlg	bsrDlg,
 			final String				caption,
 			final List<Long>			binderIds,
+			final boolean				setAllUsersRights,
 			final boolean				setTeamMemberRights,
 			final UIObject				showRelativeTo) {
 		GWT.runAsync(BinderShareRightsDlg.class, new RunAsyncCallback() {
@@ -856,7 +876,7 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(bsrDlg, caption, binderIds, setTeamMemberRights, showRelativeTo);
+					runDlgAsync(bsrDlg, caption, binderIds, setAllUsersRights, setTeamMemberRights, showRelativeTo);
 				}
 			}
 		});
@@ -869,7 +889,7 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * @param bsrDlgClient
 	 */
 	public static void createAsync(BinderShareRightsDlgClient bsrDlgClient) {
-		doAsyncOperation(bsrDlgClient, null, null, null, false, null);
+		doAsyncOperation(bsrDlgClient, null, null, null, false, false, null);
 	}
 	
 	/**
@@ -878,10 +898,12 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * @param bsrDlg
 	 * @param caption
 	 * @param binderIds
+	 * @param setAllusersRights
+	 * @param setTeamMemberRights
 	 * @param showRelativeTo
 	 */
-	public static void initAndShow(BinderShareRightsDlg bsrDlg, String caption, List<Long> binderIds, boolean setTeamMemberRights, UIObject showRelativeTo) {
-		doAsyncOperation(null, bsrDlg, caption, binderIds, setTeamMemberRights, showRelativeTo);
+	public static void initAndShow(BinderShareRightsDlg bsrDlg, String caption, List<Long> binderIds, boolean setAllUsersRights, boolean setTeamMemberRights, UIObject showRelativeTo) {
+		doAsyncOperation(null, bsrDlg, caption, binderIds, setAllUsersRights, setTeamMemberRights, showRelativeTo);
 	}
 	
 	/**
@@ -890,9 +912,11 @@ public class BinderShareRightsDlg extends DlgBox implements EditSuccessfulHandle
 	 * @param bsrDlg
 	 * @param caption
 	 * @param binderIds
+	 * @param setAllUsersRights
+	 * @param setTeamMemberRights
 	 */
-	public static void initAndShow(BinderShareRightsDlg bsrDlg, String caption, List<Long> binderIds, boolean setTeamMemberRights) {
+	public static void initAndShow(BinderShareRightsDlg bsrDlg, String caption, List<Long> binderIds, boolean setAllUsersRights, boolean setTeamMemberRights) {
 		// Always use the initial form of the method.
-		initAndShow(bsrDlg, caption, binderIds, setTeamMemberRights, null);
+		initAndShow(bsrDlg, caption, binderIds, setAllUsersRights, setTeamMemberRights, null);
 	}
 }

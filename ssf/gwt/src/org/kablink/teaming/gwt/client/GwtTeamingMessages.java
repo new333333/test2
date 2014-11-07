@@ -2781,6 +2781,9 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the 'Binder Share Rights' dialog.
 	String binderShareRightsDlgError_SetFailures();
+	String binderShareRightsDlgHint_AllUsers();
+	String binderShareRightsDlgHint_Owner();
+	String binderShareRightsDlgHint_TeamMembers();
 	String binderShareRightsDlgLabel_Allow();
 	String binderShareRightsDlgLabel_AllowForwarding();
 	String binderShareRightsDlgLabel_AllowSharingWith();

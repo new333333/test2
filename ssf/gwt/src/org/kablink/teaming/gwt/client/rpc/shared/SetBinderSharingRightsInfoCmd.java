@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.util.CombinedPerEntityShareRightsInfo;
  * @author drfoster@novell.com
  */
 public class SetBinderSharingRightsInfoCmd extends VibeRpcCmd {
+	private boolean								m_setAllUsersRights;	//
 	private boolean								m_setTeamMemberRights;	//
 	private List<Long>							m_binderIds;			//
 	private CombinedPerEntityShareRightsInfo	m_sharingRights;		//
@@ -61,15 +62,17 @@ public class SetBinderSharingRightsInfoCmd extends VibeRpcCmd {
 	 * Constructor method.
 	 * 
 	 * @param binderIds
+	 * @param setAllUsersMemberRights
 	 * @param setTeamMemberRights
 	 * @param sharingRights
 	 */
-	public SetBinderSharingRightsInfoCmd(List<Long> binderIds, boolean setTeamMemberRights, CombinedPerEntityShareRightsInfo sharingRights) {
+	public SetBinderSharingRightsInfoCmd(List<Long> binderIds, boolean setAllUsersRights, boolean setTeamMemberRights, CombinedPerEntityShareRightsInfo sharingRights) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
 		setBinderIds(          binderIds          );
+		setSetAllUsersRights(  setAllUsersRights  );
 		setSetTeamMemberRights(setTeamMemberRights);
 		setSharingRights(      sharingRights      );
 	}
@@ -79,6 +82,7 @@ public class SetBinderSharingRightsInfoCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
+	public boolean                          isSetAllUsersRights()   {return m_setAllUsersRights;  }
 	public boolean                          isSetTeamMemberRights() {return m_setTeamMemberRights;}
 	public List<Long>                       getBinderIds()          {return m_binderIds;          }
 	public CombinedPerEntityShareRightsInfo getSharingRights()      {return m_sharingRights;      }
@@ -88,6 +92,7 @@ public class SetBinderSharingRightsInfoCmd extends VibeRpcCmd {
 	 * 
 	 * @param
 	 */
+	public void setSetAllUsersRights(  boolean                          setAllUsersRights)   {m_setAllUsersRights   = setAllUsersRights;  }
 	public void setSetTeamMemberRights(boolean                          setTeamMemberRights) {m_setTeamMemberRights = setTeamMemberRights;}
 	public void setBinderIds(          List<Long>                       binderIds)           {m_binderIds           = binderIds;          }
 	public void setSharingRights(      CombinedPerEntityShareRightsInfo sharingRights)       {m_sharingRights       = sharingRights;      }

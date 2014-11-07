@@ -3779,6 +3779,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				this,
 				getRequest( ri ),
 				sbsrCmd.getBinderIds(),
+				sbsrCmd.isSetAllUsersRights(),
 				sbsrCmd.isSetTeamMemberRights(),
 				sbsrCmd.getSharingRights() );
 			response = new VibeRpcResponse( result );
