@@ -1553,20 +1553,30 @@ public class GwtViewHelper {
 									break;
 								}
 							}
-							String adminRights = "";
-							String isAdmin     = "";
+							String adminRights = "-";
+							String isAdmin     = "-";
 							if (null != rowUser) {
 								// Yes!  Is it somebody that may have
-								// administrator rights set on?
+								// administrator rights set on them?
 								if ((!(rowUser.isAdmin())) && rowUser.isPerson() && rowUser.getIdentityInfo().isInternal()) {
-									// Yes!  Check out their
+									// Yes!  Check their
 									// administrator rights
-									// assignments.
+									// assignment...
 									String resKey = (MiscUtil.isSiteAdminMember(rowUserId) ? "general.Yes" : "general.No");
 									adminRights   = NLT.get(resKey);
 									
 									resKey  = (bs.getAdminModule().testUserAccess(rowUser, AdminOperation.manageFunction) ? "general.Yes" : "general.No");
 									isAdmin = NLT.get(resKey);
+								}
+
+								// No, this isn't somebody that may
+								// have administrator rights set on
+								// them!  Is it the built-in admin
+								// user?
+								else if (rowUser.isAdmin()) {
+									// Yes!  Show them, at least, as
+									// being an administrator.
+									isAdmin = NLT.get("general.Yes");
 								}
 							}
 							

@@ -1535,6 +1535,10 @@ public class GwtUIHelper {
 		boolean isSiteAdmin = bs.getAdminModule().testAccess(AdminOperation.manageFunction);
 		model.put("isSiteAdmin", Boolean.toString(isSiteAdmin));
 		
+		// Put out the flag indicating if the user is the built-in
+		// administrator.
+		model.put("isBuiltInAdmin", Boolean.toString(currentUser.isAdmin()));
+		
 		// Put out flags indicating if the user is Guest or an external user.
 		model.put("isGuestUser",       currentUser.isShared()                      );
 		model.put("isExternalUser", (!(currentUser.getIdentityInfo().isInternal())));

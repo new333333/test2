@@ -709,6 +709,17 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the flag that tells us if the logged in user is the
+	 * built-in admin user.
+	 * 
+	 * @return
+	 */
+	public final native boolean isBuiltInAdmin()
+	/*-{
+		return (this.getBFromS( this.isBuiltInAdmin ));
+	}-*/;
+
+	/**
 	 * Return the flag that tells us if the logged in user is the Guest
 	 * user.
 	 * 

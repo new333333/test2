@@ -147,6 +147,7 @@ import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesToBindersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
@@ -162,6 +163,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveSharedFilesStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveSharedViewStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetEntriesPinStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
@@ -3661,15 +3663,19 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			public void onSuccess(VibeRpcResponse response) {
 				// We're done.  If we had any errors...
 			    hideBusySpinner();
-				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
-				if (erList.hasErrors()) {
+			    SetPrincipalsAdminRightsRpcResponseData responseData = ((SetPrincipalsAdminRightsRpcResponseData) response.getResponseData()); 
+				List<ErrorInfo> erList = responseData.getErrorList();
+				if (GwtClientHelper.hasItems(erList)) {
 					// ...display them...
-					GwtClientHelper.displayMultipleErrors(m_messages.vibeDataTable_Error_SavingAdminRights(), erList.getErrorList());
+					GwtClientHelper.displayMultipleErrors(m_messages.vibeDataTable_Error_SavingAdminRights(), erList);
 				}
-				
-				// ...and force the UI to refresh to reflect the
-				// ...change.
-				FullUIReloadEvent.fireOneAsync();
+
+				// ...and if we changed anything...
+				if (GwtClientHelper.hasItems(responseData.getSuccessfulSets())) {
+					// ...force the UI to refresh to reflect the
+					// ...change.
+					FullUIReloadEvent.fireOneAsync();
+				}
 			}
 		});
 	}

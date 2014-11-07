@@ -3823,7 +3823,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SET_PRINCIPALS_ADMIN_RIGHTS:
 		{
 			SetPrincipalsAdminRightsCmd sparCmd = ((SetPrincipalsAdminRightsCmd) cmd);
-			ErrorListRpcResponseData result = GwtServerHelper.setPrincipalsAdminRights( this, getRequest( ri ), sparCmd.getPrincipalIds(), sparCmd.isSetRights() );
+			SetPrincipalsAdminRightsRpcResponseData result = GwtServerHelper.setPrincipalsAdminRights( this, getRequest( ri ), sparCmd.getPrincipalIds(), sparCmd.isSetRights() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

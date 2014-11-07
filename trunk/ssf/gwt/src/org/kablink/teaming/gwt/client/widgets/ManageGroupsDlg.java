@@ -63,10 +63,12 @@ import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteGroupsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAllGroupsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GroupType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -522,6 +524,20 @@ public class ManageGroupsDlg extends DlgBox implements
 			}
 		};
 		m_groupsTable.addColumn(nameCol, m_messages.manageGroupsDlgNameCol());
+
+		// Add the "Admin Rights?" column
+		nameCol = new TextColumn<GroupInfoPlus>() {
+			@Override
+			public String getValue(GroupInfoPlus groupInfoPlus) {
+				GroupInfo groupInfo = groupInfoPlus.getGroupInfo();
+				String adminRights = groupInfo.getAdminRights();
+				if (adminRights == null)
+					adminRights = "";
+
+				return adminRights;
+			}
+		};
+		m_groupsTable.addColumn(nameCol, m_messages.manageGroupsDlgAdminRightsCol());
 
 		// Create a pager
 		{
@@ -1360,10 +1376,11 @@ public class ManageGroupsDlg extends DlgBox implements
 				},
 				null,
 				m_messages.manageGroupsDlgDownload_Clear());
+			
+			morePopup.addSeparator();
 		}
 		
 		// WebAccess options.
-		morePopup.addSeparator();
 		morePopup.addMenuItem(
 			new Command() {
 				@Override
@@ -1436,33 +1453,36 @@ public class ManageGroupsDlg extends DlgBox implements
 				null,
 				m_messages.manageGroupsDlgMobileAppSettings() );
 		}
-		
-		// Admin rights options.
-		morePopup.addSeparator();
-		morePopup.addMenuItem(
-			new Command() {
-				@Override
-				public void execute() {
-					List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true  -> Ready only.
-					if (!(groups.isEmpty())) {
-						setAdminRightsAsync(groups, true);
+
+		// Is this the built-in admin user?
+		if (GwtClientHelper.isBuiltInAdmin()) {
+			// Admin rights options.
+			morePopup.addSeparator();
+			morePopup.addMenuItem(
+				new Command() {
+					@Override
+					public void execute() {
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true  -> Ready only.
+						if (!(groups.isEmpty())) {
+							setAdminRightsAsync(groups, true);
+						}
 					}
-				}
-			},
-			null,
-			m_messages.manageGroupsDlgAdminRightsSet());
-		morePopup.addMenuItem(
-			new Command() {
-				@Override
-				public void execute() {
-					List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true  -> Ready only.
-					if (!(groups.isEmpty())) {
-						setAdminRightsAsync(groups, false);
+				},
+				null,
+				m_messages.manageGroupsDlgAdminRightsSet());
+			morePopup.addMenuItem(
+				new Command() {
+					@Override
+					public void execute() {
+						List<Long> groups = getSelectedGroupIds(true, emptyWarning);	// true  -> Ready only.
+						if (!(groups.isEmpty())) {
+							setAdminRightsAsync(groups, false);
+						}
 					}
-				}
-			},
-			null,
-			m_messages.manageGroupsDlgAdminRightsClear());
+				},
+				null,
+				m_messages.manageGroupsDlgAdminRightsClear());
+		}
 	}
 
 	/*
@@ -1524,10 +1544,27 @@ public class ManageGroupsDlg extends DlgBox implements
 			public void onSuccess(VibeRpcResponse response) {
 				// We're done.  If we had any errors...
 			    hideDlgBusySpinner();
-				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
-				if (erList.hasErrors()) {
+			    SetPrincipalsAdminRightsRpcResponseData responseData = ((SetPrincipalsAdminRightsRpcResponseData) response.getResponseData()); 
+				List<ErrorInfo> erList = responseData.getErrorList();
+				if ( GwtClientHelper.hasItems( erList ) )
+				{
 					// ...display them.
-					GwtClientHelper.displayMultipleErrors(m_messages.manageGroupsDlg_Error_SavingAdminRights(), erList.getErrorList());
+					GwtClientHelper.displayMultipleErrors( m_messages.manageGroupsDlg_Error_SavingAdminRights(), erList );
+				}
+
+				// If we changed anything...
+				if ( GwtClientHelper.hasItems( responseData.getSuccessfulSets() ) )
+				{
+					// ...update the table to reflect the fact that a
+					// ...group was modified.
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							init();
+						}
+					} );
 				}
 			}
 		});
