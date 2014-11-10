@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,13 +45,14 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ManageUsersStateRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	private ManageUsersState	m_manageUsersState;	//
 	
-	/**
+	/*
 	 * Class constructor.
 	 * 
 	 * For GWT serialization, must have a zero parameter
 	 * constructor.
 	 */
-	public ManageUsersStateRpcResponseData() {
+	private ManageUsersStateRpcResponseData() {
+		// Initialize the super class.
 		super();
 	}
 
@@ -75,15 +76,19 @@ public class ManageUsersStateRpcResponseData implements IsSerializable, VibeRpcR
 	 * @param showExternal
 	 * @param showDisabled
 	 * @param showEnabled
+	 * @param showSiteAdmins
+	 * @param showNonSiteAdmins
 	 */
-	public ManageUsersStateRpcResponseData(boolean showInternal, boolean showExternal, boolean showDisabled, boolean showEnabled) {
+	public ManageUsersStateRpcResponseData(boolean showInternal, boolean showExternal, boolean showDisabled, boolean showEnabled, boolean showSiteAdmins, boolean showNonSiteAdmins) {
 		// Initialize this object.
 		this(
 			new ManageUsersState(
 				showInternal,
 				showExternal,
 				showDisabled,
-				showEnabled));
+				showEnabled,
+				showSiteAdmins,
+				showNonSiteAdmins));
 	}
 	
 	/**

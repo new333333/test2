@@ -371,10 +371,12 @@ public class ManageUsersDlg extends DlgBox
 		EntryMenuPanel		emp = m_pwsView.getEntryMenuPanel();
 		ManageUsersState	mus = emp.getManageUsersState().createCopy();
 		switch (event.getManageUsersFilter()) {
-		case SHOW_DISABLED_USERS:  mus.setShowDisabled(!(mus.isShowDisabled())); break;
-		case SHOW_ENABLED_USERS:   mus.setShowEnabled( !(mus.isShowEnabled()));  break;
-		case SHOW_EXTERNAL_USERS:  mus.setShowExternal(!(mus.isShowExternal())); break;
-		case SHOW_INTERNAL_USERS:  mus.setShowInternal(!(mus.isShowInternal())); break;
+		case SHOW_DISABLED_USERS:   mus.setShowDisabled(     !(mus.isShowDisabled()));      break;
+		case SHOW_ENABLED_USERS:    mus.setShowEnabled(      !(mus.isShowEnabled()));       break;
+		case SHOW_EXTERNAL_USERS:   mus.setShowExternal(     !(mus.isShowExternal()));      break;
+		case SHOW_INTERNAL_USERS:   mus.setShowInternal(     !(mus.isShowInternal()));      break;
+		case SHOW_SITE_ADMINS:      mus.setShowSiteAdmins(   !(mus.isShowSiteAdmins()));    break;
+		case SHOW_NON_SITE_ADMINS:  mus.setShowNonSiteAdmins(!(mus.isShowNonSiteAdmins())); break;
 		}
 
 		// ...save it...

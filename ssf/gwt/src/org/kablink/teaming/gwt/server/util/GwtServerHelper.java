@@ -417,10 +417,12 @@ public class GwtServerHelper {
 	private static final String LOCAL_DESKTOP_APPS_BASE = ("/../" + LOCAL_DESKTOP_APPS_NODE);
 	
 	// Keys used to store user management state in the session cache.
-	private static final String CACHED_MANAGE_USERS_SHOW_EXTERNAL	= "manageUsersShowExternal";
-	private static final String CACHED_MANAGE_USERS_SHOW_ENABLED	= "manageUsersShowEnabled";
-	private static final String CACHED_MANAGE_USERS_SHOW_DISABLED	= "manageUsersShowDisabled";
-	private static final String CACHED_MANAGE_USERS_SHOW_INTERNAL	= "manageUsersShowInternal";
+	private static final String CACHED_MANAGE_USERS_SHOW_EXTERNAL			= "manageUsersShowExternal";
+	private static final String CACHED_MANAGE_USERS_SHOW_ENABLED			= "manageUsersShowEnabled";
+	private static final String CACHED_MANAGE_USERS_SHOW_DISABLED			= "manageUsersShowDisabled";
+	private static final String CACHED_MANAGE_USERS_SHOW_INTERNAL			= "manageUsersShowInternal";
+	private static final String CACHED_MANAGE_USERS_SHOW_SITE_ADMINS		= "manageUsersShowSiteAdmins";
+	private static final String CACHED_MANAGE_USERS_SHOW_NON_SITE_ADMINS	= "manageUsersShowNonSiteAdmins";
 
 	// Default value for whether we ignore SSL certificates when
 	// dealing with download the desktop application.  The value
@@ -6919,15 +6921,19 @@ public class GwtServerHelper {
 			Boolean showEnabled  = ((Boolean) hSession.getAttribute(CACHED_MANAGE_USERS_SHOW_ENABLED));
 			Boolean showDisabled = ((Boolean) hSession.getAttribute(CACHED_MANAGE_USERS_SHOW_DISABLED));
 			Boolean showInternal = ((Boolean) hSession.getAttribute(CACHED_MANAGE_USERS_SHOW_INTERNAL));
+			Boolean showSiteAdmins = ((Boolean) hSession.getAttribute(CACHED_MANAGE_USERS_SHOW_SITE_ADMINS));
+			Boolean showNonSiteAdmins = ((Boolean) hSession.getAttribute(CACHED_MANAGE_USERS_SHOW_NON_SITE_ADMINS));
 
 			// Construct the ManageUsersStateRpcResponseData
 			// object to return.
 			ManageUsersStateRpcResponseData reply =
 				new ManageUsersStateRpcResponseData(
-					((null == showInternal) || showInternal),
-					((null == showExternal) || showExternal),
-					((null == showDisabled) || showDisabled),
-					((null == showEnabled)  || showEnabled));
+					((null == showInternal)      || showInternal),
+					((null == showExternal)      || showExternal),
+					((null == showDisabled)      || showDisabled),
+					((null == showEnabled)       || showEnabled),
+					((null == showSiteAdmins)    || showSiteAdmins),
+					((null == showNonSiteAdmins) || showNonSiteAdmins));
 
 			// If we get here, reply refers to the
 			// ManageUsersStateRpcResponseData object
@@ -11207,10 +11213,12 @@ public class GwtServerHelper {
 		try {
 			// Store/remove the values from the cache and return true.
 			HttpSession hSession = getCurrentHttpSession();
-			if (mus.isShowDisabled()) hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_DISABLED); else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_DISABLED, Boolean.FALSE);
-			if (mus.isShowEnabled())  hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_ENABLED);  else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_ENABLED,  Boolean.FALSE);
-			if (mus.isShowExternal()) hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_EXTERNAL); else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_EXTERNAL, Boolean.FALSE);
-			if (mus.isShowInternal()) hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_INTERNAL); else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_INTERNAL, Boolean.FALSE);
+			if (mus.isShowDisabled())      hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_DISABLED);        else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_DISABLED,        Boolean.FALSE);
+			if (mus.isShowEnabled())       hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_ENABLED);         else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_ENABLED,         Boolean.FALSE);
+			if (mus.isShowExternal())      hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_EXTERNAL);        else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_EXTERNAL,        Boolean.FALSE);
+			if (mus.isShowInternal())      hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_INTERNAL);        else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_INTERNAL,        Boolean.FALSE);
+			if (mus.isShowSiteAdmins())    hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_SITE_ADMINS);     else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_SITE_ADMINS,     Boolean.FALSE);
+			if (mus.isShowNonSiteAdmins()) hSession.removeAttribute(CACHED_MANAGE_USERS_SHOW_NON_SITE_ADMINS); else hSession.setAttribute(CACHED_MANAGE_USERS_SHOW_NON_SITE_ADMINS, Boolean.FALSE);
 			return Boolean.TRUE;
 		}
 		catch (Exception ex) {

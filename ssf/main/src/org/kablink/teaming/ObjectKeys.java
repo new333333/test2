@@ -527,6 +527,8 @@ public interface ObjectKeys {
     public static final String SEARCH_IS_EXTERNAL = "searchIsExternal";
     public static final String SEARCH_IS_DISABLED_PRINCIPALS = "searchIsDisabledUsers";
     public static final String SEARCH_IS_ENABLED_PRINCIPALS  = "searchIsEnabledUsers";
+    public static final String SEARCH_IS_SITE_ADMINS = "searchIsSiteAdmins";
+    public static final String SEARCH_IS_NON_SITE_ADMINS = "searchIsNonSiteAdmins";
     
     //Search Result Identifier
     public static final String SEARCH_RESULTS_DISPLAY="ss_searchResultListing";

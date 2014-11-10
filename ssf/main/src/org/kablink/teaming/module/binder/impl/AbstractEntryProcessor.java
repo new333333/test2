@@ -1651,6 +1651,22 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 
+           	// Handle any admin/non-admin principal filtering.
+           	Boolean isSiteAdmins     = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_SITE_ADMINS))     : null);
+           	Boolean isNonSiteAdmins  = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_NON_SITE_ADMINS)) : null);
+           	if ((null != isSiteAdmins) && isSiteAdmins) {
+           		// This term will only include site administrators.
+           		SearchFilter searchTermFilter = new SearchFilter();
+           		searchTermFilter.addAndSiteAdminFilter(true);
+               	searchFilter.appendFilter(searchTermFilter.getFilter());
+           	}
+           	if ((null != isNonSiteAdmins) && isNonSiteAdmins) {
+           		// This term will only include non-site administrators.
+           		SearchFilter searchTermFilter = new SearchFilter();
+           		searchTermFilter.addAndSiteAdminFilter(false);
+               	searchFilter.appendFilter(searchTermFilter.getFilter());
+           	}
+
            	// Handle any virtual/physical filtering.
         	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_MODE_TYPE)) {
         		ListFolderHelper.ModeType mode = ((ListFolderHelper.ModeType) options.get(ObjectKeys.FOLDER_MODE_TYPE));
@@ -1920,7 +1936,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         fillInIndexDocWithCommonPart(indexDoc, binder, entry, fieldsOnly);
     }
     
-
     @Override
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
 		return processChangeLogWithSaveFlag(entry, operation, true);
