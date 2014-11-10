@@ -42,6 +42,8 @@ import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.FieldFactory;
@@ -105,6 +107,12 @@ public class ProfileIndexUtils {
     public static void addDisabled(Document doc, User user) {
         Field disabledUserField = FieldFactory.createFieldStoredNotAnalyzed(DISABLED_PRINCIPAL_FIELD, String.valueOf(user.isDisabled()));
         doc.add(disabledUserField);
+    }
+
+    public static void addSiteAdmin(Document doc, User user) {
+    	boolean isSiteAdmin = MiscUtil.getAdminModule().testUserAccess(user, AdminOperation.manageFunction);
+        Field siteAdminField = FieldFactory.createFieldStoredNotAnalyzed(SITE_ADMIN_FIELD, String.valueOf(isSiteAdmin));
+        doc.add(siteAdminField);
     }
 
     public static void addAvatarId(Document doc, User user) {

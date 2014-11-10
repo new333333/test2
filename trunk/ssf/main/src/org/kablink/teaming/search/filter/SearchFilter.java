@@ -439,6 +439,21 @@ public class SearchFilter {
 			SearchFilterKeys.FilterValueTypeBoolean);
 	}
 	
+	public void addAndSiteAdminFilter(boolean siteAdmin) {
+		newCurrentFilterTermsBlock();
+		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
+
+		addSiteAdminFilter(siteAdmin);
+	}
+	
+	public void addSiteAdminFilter(boolean siteAdmin) {
+		addFieldFilter(
+			Constants.SITE_ADMIN_FIELD,
+			SearchFilterKeys.FilterTypeEntryDefinition,
+			String.valueOf(siteAdmin),
+			SearchFilterKeys.FilterValueTypeBoolean);
+	}
+	
 	public void addAssignmentFilter(String searchTerm) {
 		addFieldFilter(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}

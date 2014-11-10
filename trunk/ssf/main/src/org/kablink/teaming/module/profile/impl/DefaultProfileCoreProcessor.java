@@ -45,6 +45,7 @@ import java.util.TimeZone;
 import java.util.Locale;
 
 import org.dom4j.Element;
+
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
@@ -671,6 +672,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 			ProfileIndexUtils.addIdentityInfo(indexDoc, user);
 			ProfileIndexUtils.addEmail(indexDoc, user);
 			ProfileIndexUtils.addDisabled(indexDoc, user);
+			ProfileIndexUtils.addSiteAdmin(indexDoc, user);
 			ProfileIndexUtils.addIsLdapContainer( indexDoc, (User)entry );
 			ProfileIndexUtils.addIsTeamGroup( indexDoc, (User)entry );
 		} else if(entry instanceof Group) {

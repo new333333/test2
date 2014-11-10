@@ -3064,7 +3064,7 @@ public class GwtViewHelper {
 			else if (colName.equals("fullName"))             {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);                   }
 			else if (colName.equals("guest"))                {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);           }
 			else if (colName.equals("html"))                 {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                                      }
-			else if (colName.equals("isAdmin"))              {fc.setColumnSearchKey(FolderColumn.COLUMN_IS_ADMIN);              fc.setColumnSortable(false);                                       }
+			else if (colName.equals("isAdmin"))              {fc.setColumnSearchKey(FolderColumn.COLUMN_IS_ADMIN);              fc.setColumnSortKey(Constants.SITE_ADMIN_FIELD);                   }
 			else if (colName.equals("location"))             {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                                  }
 			else if (colName.equals("loginId"))              {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                                    }
 			else if (colName.equals("netfolder_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);      fc.setColumnSortable(false);                                       }
@@ -5336,12 +5336,15 @@ public class GwtViewHelper {
 					// Yes!  If the filters are such that we wouldn't
 					// get any results...
 					ManageUsersState mus = GwtServerHelper.getManageUsersState(bs, request).getManageUsersState();
-					boolean disabled = mus.isShowDisabled();
-					boolean enabled  = mus.isShowEnabled();
-					boolean external = mus.isShowExternal();
-					boolean internal = mus.isShowInternal();
-					if (((!external) && (!internal)) ||
-						((!enabled)  && (!disabled))) {
+					boolean disabled      = mus.isShowDisabled();
+					boolean enabled       = mus.isShowEnabled();
+					boolean external      = mus.isShowExternal();
+					boolean internal      = mus.isShowInternal();
+					boolean siteAdmins    = mus.isShowSiteAdmins();
+					boolean nonSiteAdmins = mus.isShowNonSiteAdmins();
+					if (((!external)   && (!internal)) ||
+						((!enabled)    && (!disabled)) ||
+						((!siteAdmins) && (!nonSiteAdmins))) {
 						// ...simply return an empty list.
 						return buildEmptyFolderRows();
 						
@@ -5352,10 +5355,15 @@ public class GwtViewHelper {
 					else if (internal)             options.put(ObjectKeys.SEARCH_IS_INTERNAL,            Boolean.TRUE);
 					else if (external)             options.put(ObjectKeys.SEARCH_IS_EXTERNAL,            Boolean.TRUE);
 
-					// ...and apply the enabled/disabled filtering.
+					// ...apply the enabled/disabled filtering...
 					if      (enabled  && disabled) /* Default includes both. */ ;
 					else if (enabled)              options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS,  Boolean.TRUE);
 					else if (disabled)             options.put(ObjectKeys.SEARCH_IS_DISABLED_PRINCIPALS, Boolean.TRUE);
+					
+					// ...and apply the admin/non-admin filtering.
+					if      (siteAdmins  && nonSiteAdmins) /* Default includes both. */ ;
+					else if (siteAdmins)           options.put(ObjectKeys.SEARCH_IS_SITE_ADMINS,         Boolean.TRUE);
+					else if (nonSiteAdmins)        options.put(ObjectKeys.SEARCH_IS_NON_SITE_ADMINS,     Boolean.TRUE);
 				}
 				
 				else {

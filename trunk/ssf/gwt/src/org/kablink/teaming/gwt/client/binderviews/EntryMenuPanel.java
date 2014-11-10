@@ -195,10 +195,12 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * Inner class used to encapsulate the manage users filter items.
 	 */
 	public static class ManageUserFilterItems {
-		private VibeMenuItem	m_enabledFilter;	//
-		private VibeMenuItem	m_externalFilter;	//
-		private VibeMenuItem	m_disabledFilter;	//
-		private VibeMenuItem	m_internalFilter;	//
+		private VibeMenuItem	m_enabledFilter;		//
+		private VibeMenuItem	m_externalFilter;		//
+		private VibeMenuItem	m_disabledFilter;		//
+		private VibeMenuItem	m_internalFilter;		//
+		private VibeMenuItem	m_siteAdminsFilter;		//
+		private VibeMenuItem	m_nonSiteAdminsFilter;	//
 		
 		/**
 		 * Constructor method.
@@ -207,16 +209,20 @@ public class EntryMenuPanel extends ToolPanelBase
 		 * @param external
 		 * @param disabled
 		 * @param enabled
+		 * @param siteAdmins
+		 * @param nonSiteAdmins
 		 */
-		public ManageUserFilterItems(VibeMenuItem internal, VibeMenuItem external, VibeMenuItem disabled, VibeMenuItem enabled) {
+		public ManageUserFilterItems(VibeMenuItem internal, VibeMenuItem external, VibeMenuItem disabled, VibeMenuItem enabled, VibeMenuItem siteAdmins, VibeMenuItem nonSiteAdmins) {
 			// Initialize the super class...
 			super();
 			
 			// ...and store the parameters.
-			setInternalFilter(internal);
-			setExternalFilter(external);
-			setDisabledFilter(disabled);
-			setEnabledFilter( enabled );
+			setInternalFilter(      internal     );
+			setExternalFilter(      external     );
+			setDisabledFilter(      disabled     );
+			setEnabledFilter(       enabled      );
+			setSiteAdminsFilter(    siteAdmins   );
+			setNonSiteAdminsFilter( nonSiteAdmins);
 		}
 		
 		/**
@@ -224,20 +230,24 @@ public class EntryMenuPanel extends ToolPanelBase
 		 * 
 		 * @return
 		 */
-		public VibeMenuItem getEnabledFilter()  {return m_enabledFilter; }
-		public VibeMenuItem getExternalFilter() {return m_externalFilter;}
-		public VibeMenuItem getDisabledFilter() {return m_internalFilter;}
-		public VibeMenuItem getInternalFilter() {return m_disabledFilter;}
+		public VibeMenuItem getEnabledFilter()       {return m_enabledFilter;      }
+		public VibeMenuItem getExternalFilter()      {return m_externalFilter;     }
+		public VibeMenuItem getDisabledFilter()      {return m_internalFilter;     }
+		public VibeMenuItem getInternalFilter()      {return m_disabledFilter;     }
+		public VibeMenuItem getSiteAdminsFilter()    {return m_siteAdminsFilter;   }
+		public VibeMenuItem getNonSiteAdminsFilter() {return m_nonSiteAdminsFilter;}
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setEnabledFilter( VibeMenuItem enabled)  {m_enabledFilter  = enabled; }
-		public void setExternalFilter(VibeMenuItem external) {m_externalFilter = external;}
-		public void setDisabledFilter(VibeMenuItem disabled) {m_disabledFilter = disabled;}
-		public void setInternalFilter(VibeMenuItem internal) {m_internalFilter = internal;}
+		public void setEnabledFilter(      VibeMenuItem enabled)       {m_enabledFilter       = enabled;      }
+		public void setExternalFilter(     VibeMenuItem external)      {m_externalFilter      = external;     }
+		public void setDisabledFilter(     VibeMenuItem disabled)      {m_disabledFilter      = disabled;     }
+		public void setInternalFilter(     VibeMenuItem internal)      {m_internalFilter      = internal;     }
+		public void setSiteAdminsFilter(   VibeMenuItem siteAdmins)    {m_siteAdminsFilter    = siteAdmins;   }
+		public void setNonSiteAdminsFilter(VibeMenuItem nonSiteAdmins) {m_nonSiteAdminsFilter = nonSiteAdmins;}
 	}
 	
 	/**
@@ -887,15 +897,19 @@ public class EntryMenuPanel extends ToolPanelBase
 			
 			// ...construct the menu items and store them so they can
 			// ...be easily accessed by the manage users dialog.
-			boolean disabled    = m_manageUsersState.isShowDisabled();
-			boolean enabled     = m_manageUsersState.isShowEnabled();
-			boolean external    = m_manageUsersState.isShowExternal();
-			boolean internal    = m_manageUsersState.isShowInternal();
+			boolean disabled      = m_manageUsersState.isShowDisabled();
+			boolean enabled       = m_manageUsersState.isShowEnabled();
+			boolean external      = m_manageUsersState.isShowExternal();
+			boolean internal      = m_manageUsersState.isShowInternal();
+			boolean siteAdmins    = m_manageUsersState.isShowSiteAdmins();
+			boolean nonSiteAdmins = m_manageUsersState.isShowNonSiteAdmins();
 			m_manageUserFilters = new ManageUserFilterItems(
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_INTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_InternalFilter(), internal),
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_EXTERNAL_USERS, m_messages.vibeEntryMenu_ManageUsers_ExternalFilter(), external),
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_DISABLED_USERS, m_messages.vibeEntryMenu_ManageUsers_DisabledFilter(), disabled),
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_ENABLED_USERS,  m_messages.vibeEntryMenu_ManageUsers_EnabledFilter(),  enabled));
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_INTERNAL_USERS,  m_messages.vibeEntryMenu_ManageUsers_InternalFilter(),      internal),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_EXTERNAL_USERS,  m_messages.vibeEntryMenu_ManageUsers_ExternalFilter(),      external),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_DISABLED_USERS,  m_messages.vibeEntryMenu_ManageUsers_DisabledFilter(),      disabled),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_ENABLED_USERS,   m_messages.vibeEntryMenu_ManageUsers_EnabledFilter(),       enabled),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_SITE_ADMINS,     m_messages.vibeEntryMenu_ManageUsers_SiteAdminsFilter(),    siteAdmins),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_NON_SITE_ADMINS, m_messages.vibeEntryMenu_ManageUsers_NonSiteAdminsFilter(), nonSiteAdmins));
 
 			// If the filtering that's in affect causes the list to be
 			// empty...

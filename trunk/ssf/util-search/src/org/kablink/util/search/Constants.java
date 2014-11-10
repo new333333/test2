@@ -278,6 +278,7 @@ public class Constants {
 	public static final String EMAIL_FIELD = "emailAddress";
 	public static final String EMAIL_DOMAIN_FIELD = "emailAddress_Domain";
 	public static final String DISABLED_PRINCIPAL_FIELD = "disabledUser";
+	public static final String SITE_ADMIN_FIELD = "siteAdminUser";
 	public static final String RESERVEDID_FIELD = "_reservedId";
 	public static final String WORKSPACE_ID_FIELD = "_workspaceId";
 	public static final String AVATAR_ID_FIELD = "_avatarId";
