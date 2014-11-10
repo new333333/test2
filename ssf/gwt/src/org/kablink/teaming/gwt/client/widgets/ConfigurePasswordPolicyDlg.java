@@ -66,8 +66,6 @@ import com.google.gwt.user.client.ui.Panel;
 public class ConfigurePasswordPolicyDlg extends DlgBox 
 	implements EditSuccessfulHandler
 {
-	public final static boolean SHOW_PASSWORD_POLICY	= false;	//! DRF (20141106):  Leave false on checkin until it's all working.
-	
 	private CheckBox			m_passwordPolicyEnabledCB;	//
 	private GwtTeamingMessages	m_messages;					//
 	
@@ -143,8 +141,9 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 		PasswordPolicyConfig config = ((PasswordPolicyConfig) obj);
 		final SavePasswordPolicyConfigCmd cmd = new SavePasswordPolicyConfigCmd(config);
 		
-		// Is the password policy being enabled?
-		if (config.isPasswordPolicyEnabled()) {
+		// Is the password policy being enabled and do we support
+		// password expirations?
+		if (config.isPasswordPolicyEnabled() && GwtClientHelper.isPasswordsCanExpire()) {
 			// Yes!  Does the user want to force all local and external
 			// users to change their password the next time they login?
 			ConfirmDlg.createAsync(new ConfirmDlgClient() {
@@ -184,8 +183,8 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 			});
 		}
 		else {
-			// No, password policy is being disabled!  Simply send
-			// the command.
+			// No, password policy is being disabled or we don't
+			// support password expiration!  Simply send the command.
 			savePasswordPolicyConfigAsync(cmd);
 		}
 		

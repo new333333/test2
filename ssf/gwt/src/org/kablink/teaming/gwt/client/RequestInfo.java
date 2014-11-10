@@ -379,6 +379,28 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Returns true if password policy is enabled and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public final native boolean isPasswordPolicyEnabled()
+	/*-{
+		return this.getBFromS( this.passwordPolicyEnabled);
+	}-*/;
+
+	/**
+	 * Returns true if password expiration is enabled and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public final native boolean isPasswordsCanExpire()
+	/*-{
+		return this.getBFromS( this.passwordsCanExpire );
+	}-*/;
+
+	/**
 	 * Return the user's short date pattern.
 	 * 
 	 * @return

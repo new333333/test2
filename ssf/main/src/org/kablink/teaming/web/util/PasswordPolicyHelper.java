@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.util.SPropsUtil;
 
 /**
  * This class contains a collection of methods for dealing with
@@ -47,6 +48,11 @@ import org.kablink.teaming.domain.User;
  */
 public final class PasswordPolicyHelper {
 	protected static Log m_logger = LogFactory.getLog(PasswordPolicyHelper.class);
+
+	// Static flags defining various aspects of password policy
+	// enablement.
+	public static final boolean PASSWORD_POLICY_ENABLED =  SPropsUtil.getBoolean("password.policy.enabled",    false);
+	public static final boolean PASSWORDS_CAN_EXPIRE    = (SPropsUtil.getBoolean("password.policy.expiration", true ) && PASSWORD_POLICY_ENABLED);
 	
 	/*
 	 * Class constructor.
@@ -69,7 +75,7 @@ public final class PasswordPolicyHelper {
 	 */
 	public static List<String> getPasswordPolicyViolations(User user, String newPassword) {
 		// If password policy is not enabled...
-		if (!(MiscUtil.getAdminModule().isPasswordPolicyEnabled())) {
+		if ((!PASSWORD_POLICY_ENABLED) || (!(MiscUtil.getAdminModule().isPasswordPolicyEnabled()))) {
 			// ...there can be no violations.
 			return null;
 		}

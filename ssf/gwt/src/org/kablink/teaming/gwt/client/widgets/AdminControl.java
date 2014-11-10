@@ -452,7 +452,7 @@ public class AdminControl extends TeamingPopupPanel
 			if ( actions != null )
 			{
 				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
-				boolean showPasswordPolicy      = ConfigurePasswordPolicyDlg.SHOW_PASSWORD_POLICY;	//! DRF (20141106):  While debugging.
+				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
 				for (GwtAdminAction action : actions )
 				{
 					if ( action.getActionType().equals( AdminAction.MANAGE_MOBILE_DEVICES ) && ( ! showManageMobileDevices ) )
