@@ -1432,13 +1432,107 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					// be a leaf node.  Ignore non-leaf selections.
 					if ( selection.isLeaf() )
 					{
-						m_proxyNameTxtBox.setValue( selection.getDn() );
+						NetFolderRootType selectedServerType;
+						String proxyName;
+						
+						selectedServerType = getSelectedRootType();
+						if ( selectedServerType == NetFolderRootType.SHARE_POINT_2013 ||
+							 selectedServerType == NetFolderRootType.SHARE_POINT_2010 )
+						{
+							proxyName = getSharePointProxyName( selection.getDn() );
+						}
+						else
+							proxyName = selection.getDn();
+
+						m_proxyNameTxtBox.setValue( proxyName );
 						m_ldapBrowserDlg.hide();
 					}
 				}
 			},
 			m_ldapServerList,		// List of LDAP servers that can be browsed.
 			m_browseProxyDnBtn );	// The dialog is positioned relative to this.
+	}
+	
+	/**
+	 * For the given dn, return the proxy name in the format SharePoint expects
+	 * Given a dn, cn=foo,cn=bar,dc=123,dc=com, we would return 123.com/foo
+	 */
+	private String getSharePointProxyName( String dn )
+	{
+		String domainName = null;
+		String userName = null;
+		
+		if ( dn == null || dn.length() == 0 )
+			return dn;
+		
+		// Get the domain name
+		{
+			StringBuffer strBuff;
+			String[] parts;
+			
+			strBuff = new StringBuffer();
+			
+			parts = dn.split( "dc=" );
+			if ( parts != null && parts.length > 1 )
+			{
+				int i;
+				
+				for ( i = 1; i < parts.length; ++i )
+				{
+					String part;
+					int index;
+					
+					// Does this part have a ',' in it?
+					part = parts[i];
+					index = part.indexOf( ',' );
+					if ( index >= 0 )
+					{
+						// Yes
+						strBuff.append( part.substring( 0, index ) );
+						strBuff.append( '.' );
+					}
+					else
+						strBuff.append( part );
+				}
+				
+				domainName = strBuff.toString();
+			}
+		}
+		
+		// Get the user name
+		{
+			String[] parts;
+			
+			parts = dn.split( "cn=" );
+			if ( parts != null && parts.length > 0 )
+			{
+				int index;
+				int i;
+				
+				for (i = 0; i < parts.length && userName == null; ++i)
+				{
+					String part;
+					
+					part = parts[i];
+					if ( part != null && part.length() > 0 )
+					{
+						// Grab the first cn=
+						index = part.indexOf( ',' );
+						if ( index >= 0 )
+							userName = part.substring( 0, index );
+						else
+							userName = part;
+					}
+				}
+			}
+		}
+		
+		if ( domainName != null && userName != null )
+			return domainName + "/" + userName;
+
+		// If we get here we could not construct a domain-name/user-name string.
+		// Just return the dn
+		return dn;
 	}
 	
 	/**
