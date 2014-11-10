@@ -9378,15 +9378,15 @@ function ss_urlEncode(str) {
 	}
 	else {
 		r = escape(str,1);
-		r=replace(r, "+", "%2B");
-		r=replace(r, " ", "+");
+		r = ss_replaceSubStrAll(r, "+", "%2B");
+		r = ss_replaceSubStrAll(r, " ", "+");
 	}
 	
 	return r;
 }
    
 function ss_urlDecode(str) {
-	str = replace(str, "+", " ");
+	str = ss_replaceSubStrAll(str, "+", " ");
 	if (decodeURIComponent) {
 		return decodeURIComponent(str);
 	}
