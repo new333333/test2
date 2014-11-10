@@ -11570,12 +11570,19 @@ public class GwtServerHelper {
 				
 				catch (Exception ex) {
 					// Save the error in the response...
-					User user = ((User) pm.getEntry(pId));
+					Principal p = pm.getEntry(pId);
 					String cause;
-					if (user.isDisabled())
-					     cause = NLT.get("save.user.mobile.app.config.error.disabled.user");
-					else cause = ex.getLocalizedMessage();
-					String[] errorArgs = new String[] {user.getTitle(), cause};
+					if (p.isDisabled()) {
+						String key;
+						if (principalsAreUsers)
+						     key = "save.user.mobile.app.config.error.disabled.user";
+						else key = "save.user.mobile.app.config.error.disabled.group";
+						cause = NLT.get(key);
+					}
+					else {
+						cause = ex.getLocalizedMessage();
+					}
+					String[] errorArgs = new String[] {p.getTitle(), cause};
 					String errMsg = NLT.get("save.user.mobile.app.config.error", errorArgs);
 					responseData.addError( errMsg );
 
