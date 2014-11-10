@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,13 +34,38 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<script type="text/javascript">
+	function displayReloadDetails() {
+		var details = "<ssf:escapeJavaScript>${ss_errorMessagePackedDetails}</ssf:escapeJavaScript>";
+		if (details && (0 < details.length)) {
+			var detailList = ss_unpack(details);
+			var count = detailList.length;
+			if (0 < count) {
+				var divObj = document.getElementById('reloadDetailsDiv');
+				divObj.appendChild(document.createElement("br"));
+				for (var i = 0; i < count; i += 1) {
+					var span = document.createElement("span");
+					divObj.appendChild(span);
+					span.appendChild(document.createTextNode(detailList[i]));
+					divObj.appendChild(document.createElement("br"));
+				}
+			}
+		}
+	}
+	ss_createOnLoadObj("displayReloadDetails", displayReloadDetails);
+</script>
+
 <ssf:form title='<%= NLT.get("general.error") %>'>
 <c:if test="${!empty ss_errorMessage}">
   <span>${ss_errorMessage}</span>
+</c:if>
+<c:if test="${!empty ss_errorMessagePackedDetails}">
+	<div id="reloadDetailsDiv">
+	</div>
 </c:if>
 <br/>
 <br/>
 <input type="button" value="<ssf:nlt tag="button.goBack"/>" 
   onClick="self.window.history.back();return false;" >
 </ssf:form>
-

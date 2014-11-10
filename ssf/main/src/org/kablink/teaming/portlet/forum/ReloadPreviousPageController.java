@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,31 +40,33 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
-import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.springframework.web.portlet.ModelAndView;
 
-
-
 /**
+ * ?
+ * 
  * @author Peter Hurley
- *
  */
 public class ReloadPreviousPageController  extends SAbstractController {
+	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
+	@Override
+	
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
  		
 		String errorMessage = PortletRequestUtils.getStringParameter(request, WebKeys.ERROR_MESSAGE, "");
 		model.put(WebKeys.ERROR_MESSAGE, errorMessage);
+		
+		String details = PortletRequestUtils.getStringParameter(request, WebKeys.ERROR_MESSAGE_PACKED_DETAILS, "");
+		model.put(WebKeys.ERROR_MESSAGE_PACKED_DETAILS, details);
 
 		return new ModelAndView("forum/reload_previous_page", model);
 	}
-
 }
