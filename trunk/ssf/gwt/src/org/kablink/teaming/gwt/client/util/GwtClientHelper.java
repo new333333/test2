@@ -1254,6 +1254,28 @@ public class GwtClientHelper {
 	public static boolean isLicenseVibeEnabled() {
 		return getLicenseType().isVibeEnabled();
 	}
+	
+	/**
+	 * Returns true if password policy is enabled and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isPasswordPolicyEnabled() {
+		RequestInfo ri = getRequestInfo();
+		return ((null != ri) && ri.isPasswordPolicyEnabled());
+	}
+
+	/**
+	 * Returns true if password expiration is enabled and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isPasswordsCanExpire() {
+		RequestInfo ri = getRequestInfo();
+		return ((null != ri) && ri.isPasswordsCanExpire());
+	}
 
 	/**
 	 * Returns true if we should expose Filr features and false

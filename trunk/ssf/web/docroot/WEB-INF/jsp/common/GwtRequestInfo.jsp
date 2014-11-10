@@ -98,6 +98,8 @@
 		jsPath:								'<ssf:escapeJavaScript><html:rootPath/>js/</ssf:escapeJavaScript>',
 		language:							'${ssUserLocaleLanguage}',
 		locale:								'${ssUserLocale}',
+		passwordPolicyEnabled:				'${passwordPolicyEnabled}',
+		passwordsCanExpire:					'${passwordsCanExpire}',
 		shortDatePattern:					'${shortDatePattern}',
 		shortTimePattern:					'${shortTimePattern}',
 		showFilrFeatures:					'${showFilrFeatures}',
