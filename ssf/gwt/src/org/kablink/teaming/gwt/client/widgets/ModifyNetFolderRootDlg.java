@@ -1528,7 +1528,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 		
 		if ( domainName != null && userName != null )
-			return domainName + "/" + userName;
+			return domainName + "\\" + userName;
 
 		// If we get here we could not construct a domain-name/user-name string.
 		// Just return the dn
