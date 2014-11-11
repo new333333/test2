@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureMobileAppsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigurePasswordPolicyDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureShareSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeEditKeyShieldConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditLdapConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeNetFolderGlobalSettingsDlgEvent;
@@ -164,6 +165,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigurePasswordPolicyDlgEvent.Handler,
 		InvokeConfigureShareSettingsDlgEvent.Handler,
 		InvokeConfigureUserAccessDlgEvent.Handler,
+		InvokeEditKeyShieldConfigDlgEvent.Handler,
 		InvokeEditLdapConfigDlgEvent.Handler,
 		InvokeEditNetFolderDlgEvent.Handler,
 		InvokeNetFolderGlobalSettingsDlgEvent.Handler,
@@ -241,6 +243,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_PASSWORD_POLICY_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_SHARE_SETTINGS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
+		TeamingEvents.INVOKE_EDIT_KEYSHIELD_CONFIG_DLG,
 		TeamingEvents.INVOKE_EDIT_LDAP_CONFIG_DLG,
 		TeamingEvents.INVOKE_EDIT_NET_FOLDER_DLG,
 		TeamingEvents.INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG,
@@ -938,6 +941,11 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the "Net Folder Global Settings" dialog.
 			InvokeNetFolderGlobalSettingsDlgEvent.fireOne();
 		}
+		else if ( adminAction.getActionType() == AdminAction.KEYSHIELD_CONFIG )
+		{
+			// Fire the event to invoke the "Edit KeyShield configuration" dialog.
+			InvokeEditKeyShieldConfigDlgEvent.fireOne();
+		}
 		else if ( adminAction.getActionType() == AdminAction.LDAP_CONFIG )
 		{
 			// Fire the event to invoke the "Edit ldap configuration" dialog.
@@ -1054,6 +1062,14 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}// end hideTreeControl()
 	
+	
+	/**
+	 * 
+	 */
+	private void invokeEditKeyShieldConfigDlg()
+	{
+		Window.alert( "Not yet implemented" );
+	}
 	
 	/**
 	 * 
@@ -2334,6 +2350,27 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}
 	
+	/**
+	 * Handles InvokeEditKeyShieldConfigDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeEditKeyShieldConfigDlgEvent.Handler.onInvokeEditKeyShieldConfigDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeEditKeyShieldConfigDlg( InvokeEditKeyShieldConfigDlgEvent event )
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				invokeEditKeyShieldConfigDlg();
+			}
+		} );
+	}
+	
+
 	/**
 	 * Handles InvokeEditLdapConfigDlgEvent received by this class.
 	 * 

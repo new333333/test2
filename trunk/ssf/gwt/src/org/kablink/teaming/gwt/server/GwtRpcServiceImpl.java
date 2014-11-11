@@ -49,7 +49,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -80,6 +79,7 @@ import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtEmailPublicLinkResults;
+import org.kablink.teaming.gwt.client.GwtKeyShieldConfig;
 import org.kablink.teaming.gwt.client.GwtNetFolderGlobalSettings;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
@@ -1976,6 +1976,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return new VibeRpcResponse( responseData );
 		}
 		
+		case GET_KEYSHIELD_CONFIG:
+		{
+			GwtKeyShieldConfig config;
+			
+			config = GwtServerHelper.getKeyShieldConfig();
+			return new VibeRpcResponse( config );
+		}
+		
 		case GET_LANDING_PAGE_DATA:
 		{
 			GetLandingPageDataCmd glpdCmd;
@@ -3420,6 +3428,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveFolderSortCmd sfsCmd = ((SaveFolderSortCmd) cmd);
 			Boolean result = saveFolderSort( ri, sfsCmd.getBinderInfo(), sfsCmd.getSortKey(), sfsCmd.getSortAscending() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
+			return response;
+		}
+		
+		case SAVE_KEYSHIELD_CONFIG:
+		{
+			SaveKeyShieldConfigCmd skcCmd;
+			SaveKeyShieldConfigRpcResponseData responseData;
+			
+			skcCmd = (SaveKeyShieldConfigCmd) cmd;
+			responseData = GwtServerHelper.saveKeyShieldConfig( skcCmd.getConfig() );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
