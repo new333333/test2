@@ -412,6 +412,7 @@ public class WebKeys {
 	public static final String ACTION_AJAX_REQUEST = "__ajax_request";
 	public static final String ACTION_AJAX_FIND = "__ajax_find";
 	public static final String ACTION_EMAIL_REPORT="email_report";
+	public static final String ACTION_KEYSHIELD_CONFIGURE = "configure_keyshield";
 	public static final String ACTION_LDAP_CONFIGURE="configure_ldap";
 	public static final String ACTION_LICENSE_REPORT="license_report";
 	public static final String ACTION_LOGIN_REPORT="login_report";

@@ -92,13 +92,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -159,6 +157,7 @@ import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
+import org.kablink.teaming.gwt.client.GwtKeyShieldConfig;
 import org.kablink.teaming.gwt.client.GwtNetFolderGlobalSettings;
 import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
@@ -219,6 +218,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.
 import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageTeamsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyConfig;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveKeyShieldConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
@@ -3308,6 +3308,27 @@ public class GwtServerHelper {
 				// Add this action to the "system" category
 				systemCategory.addAdminOption( adminAction );
 			}
+			
+			// Are we running the Enterprise version of Teaming or Filr?
+			if ( ReleaseInfo.isLicenseRequiredEdition() == true || isFilr )
+			{
+				// Yes
+				// Does the user have the rights to manage KeyShield SSO?
+				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				{
+					title = NLT.get( "administration.configure_keyshield" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_KEYSHIELD_CONFIGURE );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.KEYSHIELD_CONFIG );
+					
+					// Add this action to the "system" category
+					systemCategory.addAdminOption( adminAction );
+				}
+			}
 
 			// Does the user have the rights to "ldap configuration"?
 			if ( ldapModule.testAccess(LdapOperation.manageLdap ) )
@@ -6313,6 +6334,19 @@ public class GwtServerHelper {
 		}
 		
 		return lpProperties;
+	}
+	
+	/**
+	 * 
+	 */
+	public static GwtKeyShieldConfig getKeyShieldConfig()
+	{
+		GwtKeyShieldConfig config;
+		
+		//!!!
+		config = GwtKeyShieldConfig.getGwtKeyShieldConfig();
+		
+		return config;
 	}
 	
 	/**
@@ -10402,6 +10436,7 @@ public class GwtServerHelper {
 		case GET_INHERITED_LANDING_PAGE_PROPERTIES:
 		case GET_IS_USER_EXTERNAL:
 		case GET_IS_DYNAMIC_GROUP_MEMBERSHIP_ALLOWED:
+		case GET_KEYSHIELD_CONFIG:
 		case GET_NET_FOLDER_GLOBAL_SETTINGS:
 		case GET_LANDING_PAGE_DATA:
 		case GET_LDAP_CONFIG:
@@ -10536,6 +10571,7 @@ public class GwtServerHelper {
 		case SAVE_FOLDER_FILTERS:
 		case SAVE_FOLDER_PINNING_STATE:
 		case SAVE_FOLDER_SORT:
+		case SAVE_KEYSHIELD_CONFIG:
 		case SAVE_NET_FOLDER_GLOBAL_SETTINGS:
 		case SAVE_LDAP_CONFIG:
 		case SAVE_MANAGE_USERS_STATE:
@@ -11163,6 +11199,15 @@ public class GwtServerHelper {
 		}
 	}
 
+	/**
+	 * 
+	 */
+	public static SaveKeyShieldConfigRpcResponseData saveKeyShieldConfig( GwtKeyShieldConfig config )
+	{
+		//!!!
+		return new SaveKeyShieldConfigRpcResponseData();
+	}
+	
 	/**
 	 * Save the given Jits zone config
 	 */
