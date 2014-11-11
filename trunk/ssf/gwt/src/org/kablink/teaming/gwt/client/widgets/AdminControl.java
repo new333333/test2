@@ -99,6 +99,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.Configure
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
+import org.kablink.teaming.gwt.client.widgets.EditKeyShieldConfigDlg.EditKeyShieldConfigDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.EditLdapConfigDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditZoneShareSettingsDlg.EditZoneShareSettingsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigurePasswordPolicyDlg.ConfigurePasswordPolicyDlgClient;
@@ -217,6 +218,7 @@ public class AdminControl extends TeamingPopupPanel
 	private EditBrandingDlg m_editSiteBrandingDlg = null;
 	private EditLdapConfigDlg m_editLdapConfigDlg = null;
 	private NameCompletionSettingsDlg m_nameCompletionSettingsDlg = null;
+	private EditKeyShieldConfigDlg m_editKeyShieldConfigDlg = null;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	
@@ -1068,7 +1070,52 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private void invokeEditKeyShieldConfigDlg()
 	{
-		Window.alert( "Not yet implemented" );
+		// Have we created the dialog yet?
+		if ( m_editKeyShieldConfigDlg == null )
+		{
+			// Create the dialog.
+			EditKeyShieldConfigDlg.createDlg(
+									false,
+									true,
+									m_contentControlX,
+									m_contentControlY,
+									m_dlgWidth,
+									m_dlgHeight,
+									new EditKeyShieldConfigDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( EditKeyShieldConfigDlg ekcDlg )
+				{
+					m_editKeyShieldConfigDlg = ekcDlg;
+
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							invokeEditKeyShieldConfigDlg();
+						}
+					} );
+				}
+			} );
+		}
+		else
+		{
+			// Show the dialog.
+			EditKeyShieldConfigDlg.initAndShow(
+										m_editKeyShieldConfigDlg,
+										m_dlgWidth,
+										m_dlgHeight,
+										m_contentControlX,
+										m_contentControlY,
+										null );
+		}
 	}
 	
 	/**
