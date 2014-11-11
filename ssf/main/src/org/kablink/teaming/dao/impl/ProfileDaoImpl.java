@@ -1690,6 +1690,10 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 				} catch (Exception ex) {
 					//contension
 					uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);   
+	   				if (null == uProps) {
+	   					logger.error("Exception in loadUserProperties(userId)", ex);
+	   					throw ex;
+	   				}
 				}
 			}
 			return uProps;
@@ -1734,6 +1738,10 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	   			} catch (Exception ex) {
 	   				//contension?
 	   				uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);
+	   				if (null == uProps) {
+	   					logger.error("Exception in loadUserProperties(userId, binderId)", ex);
+	   					throw ex;
+	   				}
 	   			}
 	    	}
 			return uProps;
