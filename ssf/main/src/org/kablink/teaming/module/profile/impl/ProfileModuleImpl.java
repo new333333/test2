@@ -53,6 +53,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ApplicationExistsException;
 import org.kablink.teaming.ApplicationGroupExistsException;
 import org.kablink.teaming.GroupExistsException;
@@ -151,6 +152,7 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -1196,16 +1198,29 @@ public Map getGroups(Map options) {
 
 	/**
 	 * Index all of the entries found in the given Collection
+	 * 
 	 * @param entries
+	 * 
+	 * @return
 	 */
 	@Override
-	public IndexErrors indexEntries( Collection<Principal> entries )
-	{
-        ProfileCoreProcessor processor;
-
-        processor = loadProcessor( getProfileBinder() );
-        
-        return processor.indexEntries( entries );
+	public IndexErrors indexEntries(Collection<Principal> entries) {
+        ProfileCoreProcessor processor = loadProcessor(getProfileBinder());
+        return processor.indexEntries(entries);
+	}
+	
+	/**
+	 * Index all of the entries found in the given Collection
+	 * 
+	 * @param entries
+	 * @param skipFileContentIndexing
+	 * 
+	 * @return
+	 */
+	@Override
+	public IndexErrors indexEntries(Collection<Principal> entries, boolean skipFileContentIndexing) {
+        ProfileCoreProcessor processor = loadProcessor(getProfileBinder());
+        return processor.indexEntries(entries, skipFileContentIndexing);
 	}
 	
 	/**

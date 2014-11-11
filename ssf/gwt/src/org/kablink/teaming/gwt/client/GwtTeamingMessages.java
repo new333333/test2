@@ -1787,6 +1787,7 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppMinutesLabel();
 	String fileSyncApp_OnSaveUnknownException( String desc );
 	String fileSyncAppUseGlobalSettings();
+	String fileSyncAppUseGroupSettings();
 	String fileSyncAppUseUserSettings();
 	
 	// Strings used in the Manage Database Logs dialog
@@ -2978,6 +2979,7 @@ public interface GwtTeamingMessages extends Messages
 	String configureMobileAppsDlgOpenIn_WhiteList();
 	String configureMobileAppsDlgScreenCaptureAndroid();
 	String configureMobileAppsDlgUseGlobalSettings();
+	String configureMobileAppsDlgUseGroupSettings();
 	String configureMobileAppsDlgUseUserSettings();
 	String configureMobileAppsDlgWhiteListAndroid();
 	String configureMobileAppsDlgWhiteListIos();

@@ -1565,9 +1565,9 @@ public class GwtViewHelper {
 									boolean isSiteAdmin = bs.getAdminModule().testUserAccess(rowUser, AdminOperation.manageFunction);
 									
 									String resKey;
-									if      (MiscUtil.isSiteAdminMember(rowUserId)) resKey = "siteAdmin.direct";
-									else if (isSiteAdmin)                           resKey = "siteAdmin.fromGroup";
-									else                                            resKey = "siteAdmin.none";
+									if      (AdminHelper.isSiteAdminMember(rowUserId)) resKey = "siteAdmin.direct";
+									else if (isSiteAdmin)                              resKey = "siteAdmin.fromGroup";
+									else                                               resKey = "siteAdmin.none";
 									adminRights   = NLT.get(resKey);
 									
 									resKey  = (isSiteAdmin ? "general.Yes" : "general.No");

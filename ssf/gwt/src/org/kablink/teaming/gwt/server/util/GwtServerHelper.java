@@ -92,11 +92,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -3629,7 +3631,7 @@ public class GwtServerHelper {
 				groupInfo.setIsFromLdap( nextGroup.getIdentityInfo().isFromLdap() );
 				groupInfo.setDn( nextGroup.getForeignName() );
 				
-				boolean hasAdminRights = MiscUtil.isSiteAdminMember( groupId );
+				boolean hasAdminRights = AdminHelper.isSiteAdminMember( groupId );
 				groupInfo.setAdminRights( NLT.get( hasAdminRights ? "general.Yes" : "general.No" ));
 				
 				reply.add( groupInfo );
@@ -12343,9 +12345,18 @@ public class GwtServerHelper {
 						else {
 							// Yes, we have the site admin role so
 							// we can grant or remove them!  Set/clear
-							// it from the valid Principal IDs.
+							// it from the valid Principal IDs...
 					    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
 					    	bs.getAdminModule().updateWorkAreaFunctionMemberships(zoneConfig, siteAdminRole, setRights, validPIDs);
+					    	
+					    	// ...and force the them to be re-indexed
+					    	// ...so that we correctly pickup the
+					    	// ...current siteAdminUser field in the index.
+					    	bs.getProfileModule().indexEntries(
+					    		ResolveIds.getPrincipals(
+					    			validPIDs,
+					    			false),	// false -> Skip inactive entities.  We'll have weeded them out of the list above anyway.
+					    		true);		// true  -> Skip file content indexing.  All we really care about is getting the siteAdminUser indexing correct on User's.
 						}
 					}
 				}

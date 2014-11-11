@@ -40,12 +40,14 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -967,6 +969,44 @@ public class AdminHelper {
                 ami.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
         AdminHelper.setAssignedRights(ami, zoneConfig, roleTypes, roles);
     }
-
-
+    
+	/**
+	 * Returns true if the given ID is has site admin rights directly
+	 * assigned to them and false otherwise.
+	 * 
+	 * Note that this is NOT the same as asking if the member has site
+	 *    admin rights!  This is checking whether a memberId has a
+	 *    direct assignment of the rights, not an effective assignment
+	 *    of them.
+	 * 
+	 * @param memberId
+	 * 
+	 * @return
+	 */
+	public static boolean isSiteAdminMember(Long memberId) {
+		// Are there any work area function memberships defined on the
+		// zone?
+    	boolean reply = false;
+    	ZoneConfig zoneConfig = MiscUtil.getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+    	AdminModule am = MiscUtil.getAdminModule();
+		List<WorkAreaFunctionMembership> wafmList = am.getWorkAreaFunctionMemberships(zoneConfig);
+		if (MiscUtil.hasItems(wafmList)) {
+			// Yes!  Scan them.
+			for (WorkAreaFunctionMembership wafm:  wafmList) {
+				// Is this the site admin role?
+				String fiId = am.getFunction(wafm.getFunctionId()).getInternalId();
+				if (MiscUtil.hasString(fiId) && fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID)) {
+					// Yes!  Is the given member a member of it?
+					Set<Long> memberIds = wafm.getMemberIds();
+					reply = ((null != memberIds) && memberIds.contains(memberId));
+					break;
+				}
+			}
+		}
+		
+		// If we get here, reply contains true if the given member has
+		// site admin rights assigned to it and false otherwise.
+		// Return it.
+		return reply;
+	}
 }

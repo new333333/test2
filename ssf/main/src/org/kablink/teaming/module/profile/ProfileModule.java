@@ -465,10 +465,15 @@ public interface ProfileModule {
 	public IndexErrors indexEntry(Principal entry);
 	
 	/**
-	 * Index all of the entries found in the given Collection
+	 * Index all of the entries found in the given Collection.
+	 * 
 	 * @param entries
+	 * @param skipFileContentIndexing
+	 * 
+	 * @return
 	 */
-	public IndexErrors indexEntries( Collection<Principal> entries );
+	public IndexErrors indexEntries(Collection<Principal> entries);
+	public IndexErrors indexEntries(Collection<Principal> entries, boolean skipFileContentIndexing);
 	
 	public MapInputData validateUserAttributes(Long userId, Map formData);
 	
