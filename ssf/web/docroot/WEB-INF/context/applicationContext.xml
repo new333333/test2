@@ -803,6 +803,7 @@
 				<prop key="setUserMiniBlog">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+				<prop key="save*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteUserByName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="changePassword">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>

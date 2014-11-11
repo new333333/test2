@@ -3180,6 +3180,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
      * 
      * @param pConfig
      */
+    //RW transaction
     @Override
     public void savePrincipalDesktopAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalDesktopAppsConfig config) {
     	// If we don't have anything to save...
@@ -3214,6 +3215,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 		}
     }
     
+    //RW transaction
     @Override
     public void savePrincipalDesktopAppsConfig(Long principalId, boolean principalIsUser, PrincipalDesktopAppsConfig config) {
     	// Always use the initial form of the method.
