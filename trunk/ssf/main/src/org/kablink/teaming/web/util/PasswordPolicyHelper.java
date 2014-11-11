@@ -32,12 +32,22 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.GroupPrincipal;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.search.filter.SearchFilter;
+import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 
 /**
@@ -51,8 +61,9 @@ public final class PasswordPolicyHelper {
 
 	// Static flags defining various aspects of password policy
 	// enablement.
-	public static final boolean PASSWORD_POLICY_ENABLED =  SPropsUtil.getBoolean("password.policy.enabled",    false);
-	public static final boolean PASSWORDS_CAN_EXPIRE    = (SPropsUtil.getBoolean("password.policy.expiration", true ) && PASSWORD_POLICY_ENABLED);
+	public static final boolean PASSWORD_POLICY_ENABLED			=  SPropsUtil.getBoolean("password.policy.enabled",      false                            );
+	public static final boolean PASSWORDS_CAN_EXPIRE			= (SPropsUtil.getBoolean("password.policy.expiration",   true ) && PASSWORD_POLICY_ENABLED);
+	public static final int     PASSWORD_CHANGE_USER_MAX_HITS	=  SPropsUtil.getInt(    "password.policy.user.maxHits", 1000                             );
 	
 	/*
 	 * Class constructor.
@@ -63,6 +74,98 @@ public final class PasswordPolicyHelper {
 		// Nothing to do.
 	}
 	
+	/**
+	 * Forces all non-LDAP person User's to change their password on
+	 * their next login.
+	 * 
+	 * @param bs
+	 */
+	@SuppressWarnings("unchecked")
+	public static void forceAllUsersToChangePassword(AllModulesInjected bs) {
+		// Setup a filter for person's...
+		SearchFilter searchTermFilter = new SearchFilter();
+		searchTermFilter.addPersonFlagFilter(true);
+
+		// ...setup the search options...
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_MAX_HITS,      new Integer(PASSWORD_CHANGE_USER_MAX_HITS));
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
+		
+		// ...and process the User's, page by page.
+		int		count;
+		Integer	offset = 0;
+		do {
+			options.put(ObjectKeys.SEARCH_OFFSET, offset);
+			count   = forceAllUsersToChangePasswordImpl(bs, options);
+			offset += count;
+		} while (count == PASSWORD_CHANGE_USER_MAX_HITS);
+	}
+
+	/*
+	 * Implementation method that actually forces a group of User's to
+	 * change their password on their next login.
+	 */
+	@SuppressWarnings("unchecked")
+	private static int forceAllUsersToChangePasswordImpl(AllModulesInjected bs, Map options) {
+		// Perform the search.
+		ProfileModule pm = bs.getProfileModule();
+		Map userMaps = pm.getUsers(options);
+		int reply = 0;
+
+		// Did we get any entries back?
+		if (MiscUtil.hasItems(userMaps)) {
+			List<Map<String, String>> userEntryMapList = ((List<Map<String, String>>) userMaps.get(ObjectKeys.SEARCH_ENTRIES));
+			reply = ((null == userEntryMapList) ? 0 : userEntryMapList.size());
+			if (0 < reply) {
+				// Yes!  Scan them...
+				List<Long> userIds = new ArrayList<Long>();
+				for (Map<String, String> userEntryMap:  userEntryMapList) {
+					// ...collecting their user IDs so we can resolved
+					// ...them all at once.
+					String userId = userEntryMap.get("_docId");
+					if (MiscUtil.hasString(userId)) {
+						userIds.add(Long.parseLong(userId));
+					}
+				}
+				
+				// Do we have any user IDs?
+				if (!(userIds.isEmpty())) {
+					// Can we resolved them?
+					List<Principal> pList = ResolveIds.getPrincipals(userIds, false);
+					if (MiscUtil.hasItems(pList)) {
+						// Yes!  Scan them.
+						for (Principal p:  pList) {
+							// If it's a Group?
+							if (p instanceof GroupPrincipal) {
+								// ...ignore it.
+								continue;
+							}
+	
+							// No, it's not a Group!  Is it a User?
+							if (p instanceof UserPrincipal) {
+								// Yes!  If it's not a person or it's
+								// from LDAP...
+								User u = ((User) p);
+								if ((!(u.isPerson())) || u.getIdentityInfo().isFromLdap()) {
+									// ...ignore it.
+									continue;
+								}
+								
+								// ...otherwise, clear out it's last
+								// ...password changed setting.
+								pm.setLastPasswordChange(u, null);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// If we get here, reply contains a count of the User's we
+		// processed.  Return it.
+		return reply;
+	}
+
 	/**
 	 * Validates a given password against the password policy.  If the
 	 * password is valid null is returned.  If it's not valid, a

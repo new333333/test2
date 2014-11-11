@@ -92,13 +92,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -11352,11 +11350,18 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static Boolean savePasswordPolicyConfig(AllModulesInjected bs, PasswordPolicyConfig passwordPolicyConfig, boolean forcePasswordChange) {
+		// Save the password policy configuration.
 		boolean passwordPolicyEnabled = passwordPolicyConfig.isPasswordPolicyEnabled();
 		bs.getAdminModule().setPasswordPolicyEnabled(passwordPolicyEnabled);
+		
+		// If we just enabled password policy, are we supposed for
+		// force User's to change the password?
 		if (passwordPolicyEnabled && forcePasswordChange) {
-//!			...this needs to be implemented...			
+			// Yes!  Do it.
+			PasswordPolicyHelper.forceAllUsersToChangePassword(bs);
 		}
+		
+		// If we get here, we simply always return true.
 		return Boolean.TRUE;
 	}
 	
