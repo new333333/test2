@@ -1562,10 +1562,15 @@ public class GwtViewHelper {
 									// Yes!  Check their
 									// administrator rights
 									// assignment...
-									String resKey = (MiscUtil.isSiteAdminMember(rowUserId) ? "general.Yes" : "general.No");
+									boolean isSiteAdmin = bs.getAdminModule().testUserAccess(rowUser, AdminOperation.manageFunction);
+									
+									String resKey;
+									if      (MiscUtil.isSiteAdminMember(rowUserId)) resKey = "siteAdmin.direct";
+									else if (isSiteAdmin)                           resKey = "siteAdmin.fromGroup";
+									else                                            resKey = "siteAdmin.none";
 									adminRights   = NLT.get(resKey);
 									
-									resKey  = (bs.getAdminModule().testUserAccess(rowUser, AdminOperation.manageFunction) ? "general.Yes" : "general.No");
+									resKey  = (isSiteAdmin ? "general.Yes" : "general.No");
 									isAdmin = NLT.get(resKey);
 								}
 
@@ -4213,8 +4218,8 @@ public class GwtViewHelper {
 				baseNameKey = "profiles.column.";
 				if (folderInfo.isBinderProfilesRootWSManagement()) {
 					if (ReleaseInfo.isLicenseRequiredEdition() && LicenseChecker.showFilrFeatures())
-					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "adminRights", "isAdmin", "emailAddress", "mobileDevices", "loginId"});
-					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "adminRights", "isAdmin", "emailAddress",                  "loginId"});
+					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "isAdmin", "adminRights", "emailAddress", "mobileDevices", "loginId"});
+					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "isAdmin", "adminRights", "emailAddress",                  "loginId"});
 				}
 				else {
 					columnNames = getColumnsLHMFromAS(new String[]{"fullName", "emailAddress", "loginId"});
