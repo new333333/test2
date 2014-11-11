@@ -415,6 +415,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFooterToolbarItems();
 	String rpcFailure_GetGroupActionToolbarItems();
 	String rpcFailure_GetHtml5Specs();
+	String rpcFailure_GetKeyShieldConfig();
 	String rpcFailure_GetNetFolderGlobalSettings();
 	String rpcFailure_GetLandingPageData();
 	String rpcFailure_GetLdapConfig();
@@ -576,6 +577,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveFolderFilters();
 	String rpcFailure_SaveFolderPinningState();
 	String rpcFailure_SaveFolderSort();
+	String rpcFailure_SaveKeyShieldConfig();
 	String rpcFailure_SaveLdapConfig();
 	String rpcFailure_SaveManageUsersState();
 	String rpcFailure_SaveNameCompletionSettings();
@@ -693,6 +695,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_DiscussionWSView();
 	String codeSplitFailure_DownloadPanel();
 	String codeSplitFailure_EditBrandingDlg();
+	String codeSplitFailure_EditKeyShieldConfigDlg();
 	String codeSplitFailure_EditLdapConfigDlg();
 	String codeSplitFailure_EditLdapSearchDlg();
 	String codeSplitFailure_EditLdapServerConfigDlg();
@@ -3506,4 +3509,15 @@ public interface GwtTeamingMessages extends Messages
 	String copyFiltersDlgCaptionGlobal();
 	String copyFiltersDlgCaptionPersonal();
 	String copyFiltersDlgSelectSource();
+	
+	// Strings used by the KeyShield SSO Configuration dialog
+	String editKeyShieldConfigDlg_ApiAuthKeyLabel();
+	String editKeyShieldConfigDlg_EnableKeyShieldLabel();
+	String editKeyShieldConfigDlg_Header();
+	String editKeyShieldConfigDlg_HttpConnectionTimeoutLabel();
+	String editKeyShieldConfigDlg_MilliSecondsLabel();
+	String editKeyShieldConfigDlg_ReadingConfig();
+	String editKeyShieldConfigDlg_SavingConfig();
+	String editKeyShieldConfigDlg_ServerUrlLabel();
+	
 }// end GwtTeamingMessages
