@@ -6353,4 +6353,20 @@ td.datePickerMonth {
 
 
 
+
+/* Start: Edit KeyShield SSO Configuration dialog */
+
+.editKeyShieldConfigDlg_MilliSecondsLabel
+{
+	margin-left: 5px;
+}
+
+.editKeyShieldConfigDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: .9em;
+}
+
+/* End: Edit KeyShield SSO Configuration dialog */
+
 /* End Of File */

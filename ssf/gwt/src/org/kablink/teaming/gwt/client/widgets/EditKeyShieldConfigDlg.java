@@ -65,6 +65,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -88,6 +89,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 	private TextBox m_serverUrlTextBox;
 	private TextBox m_timeoutTextBox;
 	private TextBox m_apiAuthKeyTextBox;
+	private TextBox m_authConnectorNamesTextBox;
 
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
@@ -140,6 +142,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		FlowPanel tmpPanel;
 		int row = 0;
 		FlexTable table;
+		FlexTable.FlexCellFormatter cellFormatter; 
 		
 		messages = GwtTeaming.getMessages();
 		
@@ -150,7 +153,8 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		mainPanel.add( m_enableKeyShieldCheckbox );
 		
 		table = new FlexTable();
-		table.setCellSpacing( 4 );
+		table.setCellSpacing( 8 );
+		cellFormatter = table.getFlexCellFormatter();
 		mainPanel.add( table );
 		
 		// Add a little space
@@ -174,31 +178,6 @@ public class EditKeyShieldConfigDlg extends DlgBox
 			++row;
 		}
 		
-		// Add the HTTP connection timeout controls
-		{
-			FlexTable tmpTable;
-			
-			tmpPanel = new FlowPanel();
-			label = new Label( messages.editKeyShieldConfigDlg_HttpConnectionTimeoutLabel() );
-			tmpPanel.add( label );
-			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
-
-			tmpTable = new FlexTable();
-			
-			m_timeoutTextBox = new TextBox();
-			m_timeoutTextBox.setVisibleLength( 6 );
-			m_timeoutTextBox.addKeyPressHandler( this );
-			tmpTable.setWidget( 0, 0, m_timeoutTextBox );
-			
-			tmpPanel = new FlowPanel();
-			label = new Label( messages.editKeyShieldConfigDlg_MilliSecondsLabel() );
-			tmpPanel.add( label );
-			tmpTable.setHTML( 0, 1, tmpPanel.getElement().getInnerHTML()  );
-			
-			table.setWidget( row, 1, tmpTable );
-			++row;
-		}
-		
 		// Add the API authorization key
 		{
 			tmpPanel = new FlowPanel();
@@ -209,6 +188,48 @@ public class EditKeyShieldConfigDlg extends DlgBox
 			m_apiAuthKeyTextBox = new TextBox();
 			m_apiAuthKeyTextBox.setVisibleLength( 30 );
 			table.setWidget( row, 1, m_apiAuthKeyTextBox );
+			++row;
+		}
+		
+		// Add the HTTP connection timeout controls
+		{
+			InlineLabel tmpLabel;
+			
+			tmpPanel = new FlowPanel();
+			label = new Label( messages.editKeyShieldConfigDlg_HttpConnectionTimeoutLabel() );
+			tmpPanel.add( label );
+			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
+
+			tmpPanel = new FlowPanel();
+			m_timeoutTextBox = new TextBox();
+			m_timeoutTextBox.setVisibleLength( 4 );
+			m_timeoutTextBox.addKeyPressHandler( this );
+			tmpPanel.add( m_timeoutTextBox );
+			
+			tmpLabel = new InlineLabel( messages.editKeyShieldConfigDlg_MilliSecondsLabel() );
+			tmpLabel.addStyleName( "editKeyShieldConfigDlg_MilliSecondsLabel" );
+			tmpPanel.add( tmpLabel );
+			
+			table.setWidget( row, 1, tmpPanel );
+			++row;
+		}
+		
+		// Add the controls for entering the authentication connector names
+		{
+			// Add a hint.
+			tmpPanel = new FlowPanel();
+			label = new Label( messages.editKeyShieldConfigDlg_AuthConnectorNamesHint() );
+			label.getElement().getStyle().setWidth( 600, Unit.PX );
+			label.addStyleName( "editKeyShieldConfigDlg_Hint" );
+			tmpPanel.add( label );
+			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
+			cellFormatter.setColSpan( row, 0, 2 );
+			++row;
+			
+			m_authConnectorNamesTextBox = new TextBox();
+			m_authConnectorNamesTextBox.setVisibleLength( 40 );
+			table.setWidget( row, 0, m_authConnectorNamesTextBox );
+			cellFormatter.setColSpan( row, 0, 2 );
 			++row;
 		}
 		
@@ -284,6 +305,20 @@ public class EditKeyShieldConfigDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private String getAuthConnectorNames()
+	{
+		String value;
+		
+		value = m_authConnectorNamesTextBox.getValue();
+		if ( value == null )
+			return "";
+		
+		return value;
+	}
+	
+	/**
 	 * Get the data from the controls in the dialog box.
 	 */
 	@Override
@@ -294,6 +329,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		config = GwtKeyShieldConfig.getGwtKeyShieldConfig();
 		
 		config.setApiAuthKey( getApiAuthKey() );
+		config.setAuthConnectorNames( getAuthConnectorNames() );
 		config.setHttpConnectionTimeout( getHttpConnectionTimeout() );
 		config.setIsEnabled( getIsKeyShieldEnabled() );
 		config.setServerUrl( getServerUrl() );
@@ -429,6 +465,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		m_serverUrlTextBox.setValue( "" );
 		m_timeoutTextBox.setValue( "" );
 		m_apiAuthKeyTextBox.setValue( "" );
+		m_authConnectorNamesTextBox.setValue( "" );
 
 		if ( config == null )
 			return;
@@ -439,6 +476,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		m_serverUrlTextBox.setValue( m_config.getServerUrl() );
 		m_timeoutTextBox.setValue( String.valueOf( m_config.getHttpConnectionTimeout() ) );
 		m_apiAuthKeyTextBox.setValue( m_config.getApiAuthKey() );
+		m_authConnectorNamesTextBox.setValue( m_config.getAuthConnectorNames() );
 	}
 	
 	/**
@@ -464,6 +502,10 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		
 		value = getApiAuthKey();
 		if ( value != null && value.equalsIgnoreCase( m_config.getApiAuthKey() ) == false )
+			return true;
+		
+		value = getAuthConnectorNames();
+		if ( value != null && value.equalsIgnoreCase( m_config.getAuthConnectorNames() ) == false )
 			return true;
 		
 		// If we get here, nothing has changed.

@@ -3516,6 +3516,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the KeyShield SSO Configuration dialog
 	String editKeyShieldConfigDlg_ApiAuthKeyLabel();
+	String editKeyShieldConfigDlg_AuthConnectorNamesHint();
 	String editKeyShieldConfigDlg_EnableKeyShieldLabel();
 	String editKeyShieldConfigDlg_Header();
 	String editKeyShieldConfigDlg_HttpConnectionTimeoutLabel();
