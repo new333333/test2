@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -124,6 +125,7 @@ import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PasswordPolicyHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebHelper;
@@ -1499,12 +1501,15 @@ public class GwtMenuHelper {
 			moreTBI.addNestedItem(tbi);
 		}
 
-		// Add the force users to change password option.
-		moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-		tbi = new ToolbarItem("1_forcePasswordChange");
-		markTBITitle(tbi, "toolbar.force.users.to.change.password");
-		markTBIEvent(tbi, TeamingEvents.FORCE_SELECTED_USERS_TO_CHANGE_PASSWORD);
-		moreTBI.addNestedItem(tbi);
+		// If passwords can expire...
+		if (PasswordPolicyHelper.passwordExpirationEnabled()) {
+			// ...add the force users to change password option.
+			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+			tbi = new ToolbarItem("1_forcePasswordChange");
+			markTBITitle(tbi, "toolbar.force.users.to.change.password");
+			markTBIEvent(tbi, TeamingEvents.FORCE_SELECTED_USERS_TO_CHANGE_PASSWORD);
+			moreTBI.addNestedItem(tbi);
+		}
 				
 		// Finally, if we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {

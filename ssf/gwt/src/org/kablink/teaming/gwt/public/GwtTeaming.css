@@ -1254,6 +1254,11 @@ body, table td, select
 	font-weight: bold;
 }
 
+.red
+{
+	color: red;
+}
+
 .bulletListItem
 {
 	margin-left: 1em;

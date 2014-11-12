@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.server;
 
 import java.io.File;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -49,6 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -2253,6 +2255,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			String permalink = getParentBinderPermalink( ri, gpbpCmd.getBinderId(), gpbpCmd.isShowCollectionOnUserWS() );
 			StringRpcResponseData responseData = new StringRpcResponseData( permalink );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_PASSWORD_EXPIRATION:
+		{
+			// Return the current user's password expiration status.
+			response = new VibeRpcResponse( getPasswordExpirationInfo( GwtServerHelper.getCurrentUser() ) );
 			return response;
 		}
 		
@@ -7217,6 +7226,45 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		
 		return null;
+	}
+
+	/*
+	 * Constructs and returns a PasswordExpirationRpcResponseData
+	 * describing the given user's password status.
+	 */
+	private static PasswordExpirationRpcResponseData getPasswordExpirationInfo( User user )
+	{
+		// Can the user's password expire?
+		Date    expirationDate = PasswordPolicyHelper.getUsersPasswordExpiration( user );
+		boolean aboutToExpire;
+		String  expirationString;
+		if ( null == expirationDate )
+		{
+			// No!
+			expirationString = null;
+			aboutToExpire    = false;
+		}
+		else
+		{
+			// Yes, the user's password can expire!  Is it expired
+			// now?
+			long expirationTime = expirationDate.getTime();
+			if ( expirationTime < new Date().getTime() ) {
+				// Yes!
+				expirationString = NLT.get("general.password.expired");
+				aboutToExpire    = true;
+			}
+			else {
+				// No, it not expired yet!
+				expirationString = GwtServerHelper.getDateString( expirationDate, DateFormat.MEDIUM, user.getTimeZone());
+				long warningTime = PasswordPolicyHelper.getPasswordWarningDate().getTime();
+				aboutToExpire    = (expirationTime < warningTime);
+			}
+		}
+		
+		// Return a PasswordExpirationRpcResponseData with the
+		// settings.
+		return new PasswordExpirationRpcResponseData( expirationString, aboutToExpire );
 	}
 
 	/**
