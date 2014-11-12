@@ -474,6 +474,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetNextFolderEntryInfo();
 	String rpcFailure_GetNextFolderEntryInfo_NoAccess();
 	String rpcFailure_GetParentBinderPermalink();
+	String rpcFailure_GetPasswordExpiration();
 	String rpcFailure_GetPasswordPolicyConfig();
 	String rpcFailure_GetPersonalPreferences();
 	String rpcFailure_GetPreviousFolderEntryInfo();
@@ -1357,6 +1358,7 @@ public interface GwtTeamingMessages extends Messages
 	String profileInsufficientViewProfileRights();
 	String profileFollowing();
 	String profileAboutMe();
+	String profileDataPasswordExpires();
 	String profileDataQuota();
 	String profileQuotaMegaBytes(String size);
 	String profileQuotaUsed();

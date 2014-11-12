@@ -65,22 +65,23 @@ import org.kablink.teaming.util.SimpleProfiler;
 public final class PasswordPolicyHelper {
 	protected static Log m_logger = LogFactory.getLog(PasswordPolicyHelper.class);
 
-	// Static flags defining various aspects of password policy
-	// enablement.
-	public static final boolean	PASSWORD_POLICY_ENABLED			=  SPropsUtil.getBoolean("password.policy.enabled",         false                            );
-	public static final boolean PASSWORDS_CAN_EXPIRE			= (SPropsUtil.getBoolean("password.policy.expiration",      true ) && PASSWORD_POLICY_ENABLED);
-	public static final int		PASSWORD_CHANGE_USER_MAX_HITS	=  SPropsUtil.getInt(    "password.policy.user.maxHits",    1000                             );
-	public static final int		PASSWORD_EXPIRATION_DAYS		=  SPropsUtil.getInt(    "password.policy.expiration.days",   90                             );
+	// Constants defining various aspects of password policy enablement
+	// loaded from the ssf*.properites files.
+	public  static final boolean	PASSWORD_POLICY_ENABLED				=  SPropsUtil.getBoolean("password.policy.enabled",                 false                            );
+	public  static final boolean	PASSWORDS_CAN_EXPIRE				= (SPropsUtil.getBoolean("password.policy.expiration",              true ) && PASSWORD_POLICY_ENABLED);
+	private static final int		PASSWORD_CHANGE_USER_MAX_HITS		=  SPropsUtil.getInt(    "password.policy.user.maxHits",            1000                             );
+	private static final int		PASSWORD_EXPIRATION_DAYS			=  SPropsUtil.getInt(    "password.policy.expiration.days",         90                               );
+	private static final int		PASSWORD_EXPIRATION_WARNING_DAYS	=  SPropsUtil.getInt(    "password.policy.expiration.warning.days", 5                                );
 
 	// Constants used to calculate password expirations.
-	private static final int	HOURS_PER_DAY      = 24;
-	private static final int	SECONDS_PER_MINUTE = 60;
-	private static final int	MINUTES_PER_HOUR   = 60;
+	private static final int		HOURS_PER_DAY						= 24;
+	private static final int		SECONDS_PER_MINUTE					= 60;
+	private static final int		MINUTES_PER_HOUR					= 60;
 	  
-	private static final int 	MILLIS_PER_SECOND = 1000;
-	private static final int 	MILLIS_PER_MINUTE = (SECONDS_PER_MINUTE * MILLIS_PER_SECOND);
-	private static final long	MILLIS_PER_HOUR   = (MINUTES_PER_HOUR   * MILLIS_PER_MINUTE);
-	private static final long	MILLIS_PER_DAY    = (HOURS_PER_DAY      * MILLIS_PER_HOUR  );
+	private static final int		MILLIS_PER_SECOND					= 1000;
+	private static final int		MILLIS_PER_MINUTE					= (SECONDS_PER_MINUTE * MILLIS_PER_SECOND);
+	private static final long		MILLIS_PER_HOUR						= (MINUTES_PER_HOUR   * MILLIS_PER_MINUTE);
+	private static final long		MILLIS_PER_DAY						= (HOURS_PER_DAY      * MILLIS_PER_HOUR  );
 	
 	/*
 	 * Class constructor.
@@ -239,6 +240,15 @@ public final class PasswordPolicyHelper {
 							continue;
 						}
 						
+						// If it's the Guest account...
+						if (u.isShared()) {
+							// ...ignore it.
+							if (null != errList) {
+								errList.add(NLT.get("forceUserPasswordChangeError.Guest", new String[]{pTitle}));
+							}
+							continue;
+						}
+						
 						// ...otherwise, clear out their last
 						// ...password changed setting.
 						pm.setLastPasswordChange(u, null);
@@ -260,7 +270,7 @@ public final class PasswordPolicyHelper {
 	 */
 	public static List<String> getPasswordPolicyViolations(User user, String newPassword) {
 		// If password policy is not enabled...
-		if ((!PASSWORD_POLICY_ENABLED) || (!(MiscUtil.getAdminModule().isPasswordPolicyEnabled()))) {
+		if (!(passwordPolicyEnabled())) {
 			// ...there can be no violations.
 			return null;
 		}
@@ -282,11 +292,18 @@ public final class PasswordPolicyHelper {
 	 */
 	public static Date getUsersPasswordExpiration(User user) {
 		// If password expiration is not enabled...
-		if (!passwordExpirationEnabled()) {
+		if (!(passwordExpirationEnabled())) {
 			// ...it can never expire.  Return null.
 			return null;
 		}
 
+		// If the user is a built-in system account, Guest or from
+		// LDAP...
+		if ((!(user.isPerson())) || user.isShared() || user.getIdentityInfo().isFromLdap()) {
+			// ...their password never expires.
+			return null;
+		}
+		
 		// If the user has never changed their password (or the admin
 		// is forcing them to change it)..
 		Date lastChange = user.getLastPasswordChange();
@@ -301,12 +318,35 @@ public final class PasswordPolicyHelper {
 	}
 	
 	/**
-	 * Returns true if password expiration is enabled and false
-	 * otherwise.
+	 * Returns the date before which users should be warned their
+	 * password is about to expire.
+	 *
+	 * Returns:  The current date/time plus the configured number of
+	 *           of warning days.
+	 *
+	 * @return
+	 */
+	public static Date getPasswordWarningDate() {
+		return new Date(new Date().getTime() + (PASSWORD_EXPIRATION_WARNING_DAYS * PasswordPolicyHelper.MILLIS_PER_DAY));
+	}
+	
+	/**
+	 * Returns true if password expiration is currently enabled and
+	 * false otherwise.
 	 * 
 	 * @return
 	 */
 	public static boolean passwordExpirationEnabled() {
-		return PASSWORDS_CAN_EXPIRE; 
+		return (PASSWORDS_CAN_EXPIRE && passwordPolicyEnabled()); 
+	}
+
+	/**
+	 * Returns true if password policy is currently enabled and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean passwordPolicyEnabled() {
+		return (PASSWORD_POLICY_ENABLED && MiscUtil.getAdminModule().isPasswordPolicyEnabled());
 	}
 }

@@ -47,7 +47,9 @@ import org.kablink.teaming.gwt.client.event.ViewResourceLibraryEvent;
 import org.kablink.teaming.gwt.client.event.ViewTeamingFeedEvent;
 import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDiskUsageInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetPasswordExpirationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PasswordExpirationRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -77,6 +79,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 {
 	private AlertDlg  m_trashInfoDlg;
 	private FlowPanel m_namePanel;
+	private FlexTable m_passwordExpirationTable;
 	private FlexTable m_quotaTable;
 	private FlowPanel m_footerPanel;
 	private FlowPanel m_contentPanel;
@@ -165,6 +168,21 @@ public class UserActionsPopup extends TeamingPopupPanel
 				m_namePanel.addStyleName( "userActionsPopup_NamePanel" );
 				m_namePanel.getElement().setInnerText( userName );
 
+				// Add a table that will be used to hold information
+				// about the user's password expiring.  When this popup
+				// is shown we will issue an rpc request to get that
+				// information.
+				m_passwordExpirationTable = new FlexTable();
+				m_passwordExpirationTable.setCellPadding( 0 );
+				m_passwordExpirationTable.setCellSpacing( 0 );
+				m_passwordExpirationTable.addStyleName( "statsTable" );
+				m_passwordExpirationTable.setVisible( false );
+				m_namePanel.add( m_passwordExpirationTable );
+				
+				String passwordExpirationTitle = GwtTeaming.getMessages().profileDataPasswordExpires();
+				Label passwordExpirationTitleLabel = new Label( passwordExpirationTitle );
+				m_passwordExpirationTable.setHTML( 0, 0, passwordExpirationTitleLabel.toString() );
+
 				// Add a table that will be used to hold quota information.
 				// When this popup is shown we will issue an rpc request to get the quota info
 				m_quotaTable = new FlexTable();
@@ -200,7 +218,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 			
 			topPanel.add( table );
 		}
-		
+
 		// Create the actions panel
 		actionsPanel = createActionsPanel( userName );
 		topPanel.add( actionsPanel );
@@ -519,6 +537,31 @@ public class UserActionsPopup extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Issue an rpc request to get the password expiration for the
+	 * logged in user.
+	 */
+	private void getPasswordExpirationFromServer()
+	{
+		GwtClientHelper.executeCommand( new GetPasswordExpirationCmd(), new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				// display error
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetPasswordExpiration() );
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				initPasswordExpirationUI( (PasswordExpirationRpcResponseData ) response.getResponseData() );
+			}
+		} );
+	}
+	
+	/**
 	 * Hide the logout link.  We will do this if we are running in captive mode.
 	 */
 	public void hideLogoutLink()
@@ -570,6 +613,29 @@ public class UserActionsPopup extends TeamingPopupPanel
 		{
 			m_quotaTable.setVisible( false );
 		}
+	}
+	
+	/**
+	 * Initialize the ui with the given password expiration
+	 */
+	private void initPasswordExpirationUI( PasswordExpirationRpcResponseData passwordExpiration )
+	{
+		String dateString = passwordExpiration.getDateString();
+		if ( ! ( GwtClientHelper.hasString( dateString )))
+		{
+			m_passwordExpirationTable.setVisible( false );
+			return;
+		}
+		
+		// Add the expiration in the first row.
+		InlineLabel l = new InlineLabel( dateString );
+		l.addStyleName( "bold" );
+		if ( passwordExpiration.isAboutToExpire() )
+		{
+			l.addStyleName( "red" );
+		}
+		m_passwordExpirationTable.setHTML( 0, 1, l.toString() );
+		m_passwordExpirationTable.setVisible( true );
 	}
 	
 	/*
@@ -666,6 +732,19 @@ public class UserActionsPopup extends TeamingPopupPanel
 				public void execute()
 				{
 					getDiskQuotaDataFromServer();
+				}
+			} );
+		}
+		
+		// Issue an rpc request to get the password expiration
+		// information.
+		{
+			GwtClientHelper.deferCommand( new ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					getPasswordExpirationFromServer();
 				}
 			} );
 		}
