@@ -48,6 +48,7 @@ public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData
 	private String m_serverUrl;
 	private int m_httpConnectionTimeout;	// Timeout in milliseconds
 	private String m_apiAuthKey;
+	private String m_authConnectorNames;
 	
 	/**
 	 * Constructor method. 
@@ -60,6 +61,7 @@ public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData
 		m_serverUrl = null;
 		m_httpConnectionTimeout = 250;
 		m_apiAuthKey = null;
+		m_authConnectorNames = null;
 	}
 
 	/**
@@ -76,6 +78,14 @@ public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData
 	public String getApiAuthKey()
 	{
 		return m_apiAuthKey;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getAuthConnectorNames()
+	{
+		return m_authConnectorNames;
 	}
 	
 	/**
@@ -108,6 +118,14 @@ public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData
 	public void setApiAuthKey( String authKey )
 	{
 		m_apiAuthKey = authKey;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAuthConnectorNames( String authConnectorNames )
+	{
+		m_authConnectorNames = authConnectorNames;
 	}
 	
 	/**
