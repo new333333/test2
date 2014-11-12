@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.event.EnableSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.ForceSelectedUsersToChangePasswordEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.HideAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
@@ -1253,6 +1254,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:           event = new EnableSelectedUsersAdHocFoldersEvent(        folderId      ); break;
 					case ENABLE_SELECTED_USERS_DOWNLOAD:                event = new EnableSelectedUsersDownloadEvent(            folderId      ); break;
 					case ENABLE_SELECTED_USERS_WEBACCESS:               event = new EnableSelectedUsersWebAccessEvent(           folderId      ); break;
+					case FORCE_SELECTED_USERS_TO_CHANGE_PASSWORD:       event = new ForceSelectedUsersToChangePasswordEvent(     folderId      ); break;
 					case HIDE_ACCESSORIES:                              event = new HideAccessoriesEvent(                        folderId      ); break;
 					case HIDE_SELECTED_SHARES:                          event = new HideSelectedSharesEvent(                     folderId      ); break;
 					case HIDE_USER_LIST:                                event = new HideUserListEvent(                           folderId      ); break;

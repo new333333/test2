@@ -92,11 +92,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -10346,6 +10348,7 @@ public class GwtServerHelper {
 		case EXPAND_SUBTASKS:
 		case EXPAND_VERTICAL_BUCKET:
 		case FIND_USER_BY_EMAIL_ADDRESS:
+		case FORCE_USERS_TO_CHANGE_PASSWORD:
 		case GET_ACCESSORY_STATUS:
 		case GET_ACTIVITY_STREAM_DATA:
 		case GET_ACTIVITY_STREAM_PARAMS:
@@ -12264,18 +12267,18 @@ public class GwtServerHelper {
 							if (g.isDisabled() && setRights) {
 								// You can clear rights from a disabled
 								// group, but not set them.
-								errKey = "setAdminRightsWarning.GroupDisabled";
+								errKey = "setAdminRightsError.GroupDisabled";
 							}
 							else if (g.isLdapContainer()) {
 								// You can't set admin rights on an
 								// LDAP container group.
-								errKey = "setAdminRightsWarning.GroupLdapContainer";
+								errKey = "setAdminRightsError.GroupLdapContainer";
 							}
 							else if (!pInternal) {
 								// You can't set admin rights on a
 								// group that can contain external
 								// users.
-								errKey = "setAdminRightsWarning.GroupExternal";
+								errKey = "setAdminRightsError.GroupExternal";
 							}
 						}
 						
@@ -12288,29 +12291,29 @@ public class GwtServerHelper {
 							if (u.isDisabled() && setRights) {
 								// You can clear rights from a disabled
 								// user, but not set them.
-								errKey = "setAdminRightsWarning.UserDisabled";
+								errKey = "setAdminRightsError.UserDisabled";
 							}
 							else if (!(u.isPerson())) {
 								// You can't set admin rights on
 								// built-in system users.
-								errKey = "setAdminRightsWarning.NotAPerson";
+								errKey = "setAdminRightsError.NotAPerson";
 							}
 							else if (!pInternal) {
 								// You can't set admin rights on
 								// external users.
-								errKey = "setAdminRightsWarning.UserExternal";
+								errKey = "setAdminRightsError.UserExternal";
 							}
 							else if (u.isAdmin()) {
 								// The built-in admin account can't
 								// have its admin rights changed.
 								if (setRights)
-								     errKey = "setAdminRightsWarning.UserAdmin.set";
-								else errKey = "setAdminRightsWarning.UserAdmin.clear";
+								     errKey = "setAdminRightsError.UserAdmin.set";
+								else errKey = "setAdminRightsError.UserAdmin.clear";
 							}
 							else if (currentUserId.equals(u.getId())) {
 								// A user cannot change their own admin
 								// rights.
-								errKey = "setAdminRightsWarning.UserSelf";
+								errKey = "setAdminRightsError.UserSelf";
 							}
 						}
 						
@@ -12318,7 +12321,7 @@ public class GwtServerHelper {
 							// No, it wasn't a Group either!  What ever
 							// it was, we can't handle it.
 							pTitle  = p.getTitle();
-							errKey = "setAdminRightsWarning.UnknownPrincipal";
+							errKey = "setAdminRightsError.UnknownPrincipal";
 						}
 
 						// Is there a problem with setting admin rights
@@ -12343,7 +12346,7 @@ public class GwtServerHelper {
 						Long siteAdminRole = MiscUtil.getSiteAdminRoleId();
 						if (null == siteAdminRole) {
 							// No!  Tell the user about the problem.
-							reply.addError(NLT.get("setAdminRightsWarning.UnknownSiteAdminRole"));
+							reply.addError(NLT.get("setAdminRightsError.UnknownSiteAdminRole"));
 							validPIDs.clear();
 						}
 						

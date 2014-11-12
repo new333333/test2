@@ -108,6 +108,7 @@ import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.ForceSelectedUsersToChangePasswordEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeBinderShareRightsDlgEvent;
@@ -152,6 +153,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ForceUsersToChangePasswordCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCanAddEntitiesToBindersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntityRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
@@ -259,6 +261,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		EnableSelectedUsersAdHocFoldersEvent.Handler,
 		EnableSelectedUsersDownloadEvent.Handler,
 		EnableSelectedUsersWebAccessEvent.Handler,
+		ForceSelectedUsersToChangePasswordEvent.Handler,
 		HideSelectedSharesEvent.Handler,
 		InvokeBinderShareRightsDlgEvent.Handler,
 		InvokeColumnResizerEvent.Handler,
@@ -361,6 +364,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD,
 		TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS,
+		TeamingEvents.FORCE_SELECTED_USERS_TO_CHANGE_PASSWORD,
 		TeamingEvents.HIDE_SELECTED_SHARES,
 		TeamingEvents.INVOKE_BINDER_SHARE_RIGHTS_DLG,
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
@@ -2888,6 +2892,84 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 	}
 	
+	/**
+	 * Handles ForceSelectedUsersToChangePasswordEvent's received by this class.
+	 * 
+	 * Implements the ForceSelectedUsersToChangePasswordEvent.Handler.onForceSelectedUsersToChangePassword() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onForceSelectedUsersToChangePassword(ForceSelectedUsersToChangePasswordEvent event) {
+		// We only support forcing users to change their password from
+		// the root personal workspace in management mode.  Is it
+		// supported?
+		WorkspaceType wt = getFolderInfo().getWorkspaceType();
+		if (wt.isProfileRootManagement()) {
+			// Yes!  Is the event targeted to this folder?
+			Long eventBinderId = event.getBinderId();
+			if (eventBinderId.equals(getFolderInfo().getBinderIdAsLong())) {
+				// Yes!  Get the selected EntityId's...
+				List<EntityId> selectedEntityIds = event.getSelectedEntities();
+				if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+					selectedEntityIds = getSelectedEntityIds();
+				}
+				
+				// ...extract the selected user ID's from that...
+				final List<Long> selectedPrincipalsList = new ArrayList<Long>();
+				for (EntityId eid:  selectedEntityIds) {
+					selectedPrincipalsList.add(eid.getEntityId());
+				}
+	
+				// ...and force the users to change their password.
+				onForceSelectedUsersToChangePasswordAsync(selectedPrincipalsList);
+			}
+		}
+	}
+
+	/*
+	 * Asynchronously forces the selected users to change their
+	 * password after their next successful login.
+	 */
+	private void onForceSelectedUsersToChangePasswordAsync(final List<Long> selectedPrincipalsList) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onForceSelectedUsersToChangePasswordNow(selectedPrincipalsList);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously forces the selected users to change their
+	 * password after their next successful login.
+	 */
+	private void onForceSelectedUsersToChangePasswordNow(final List<Long> selectedPrincipalsList) {
+	    showBusySpinner();
+		ForceUsersToChangePasswordCmd cmd = new ForceUsersToChangePasswordCmd(selectedPrincipalsList);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+			    hideBusySpinner();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_ForceUsersToChangePassword());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  If we had any errors...
+			    hideBusySpinner();
+			    ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData()); 
+				List<ErrorInfo> erList = responseData.getErrorList();
+				if (GwtClientHelper.hasItems(erList)) {
+					// ...display them...
+					GwtClientHelper.displayMultipleErrors(m_messages.vibeDataTable_Error_ForcingPasswordChange(), erList);
+				}
+			}
+		});
+	}
+
 	/**
 	 * Handles HideSelectedSharesEvent's received by this class.
 	 * 

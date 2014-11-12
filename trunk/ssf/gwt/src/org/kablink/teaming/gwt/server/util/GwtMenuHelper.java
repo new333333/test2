@@ -1498,6 +1498,13 @@ public class GwtMenuHelper {
 			markTBIBoolean(tbi, "setRights", Boolean.FALSE);
 			moreTBI.addNestedItem(tbi);
 		}
+
+		// Add the force users to change password option.
+		moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+		tbi = new ToolbarItem("1_forcePasswordChange");
+		markTBITitle(tbi, "toolbar.force.users.to.change.password");
+		markTBIEvent(tbi, TeamingEvents.FORCE_SELECTED_USERS_TO_CHANGE_PASSWORD);
+		moreTBI.addNestedItem(tbi);
 				
 		// Finally, if we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {
