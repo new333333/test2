@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -147,8 +147,10 @@ public class ErrorListRpcResponseData implements IsSerializable, VibeRpcResponse
 	 * 
 	 * @param
 	 */
-	public void addError(  String error)   {addMessage(error,   ErrorLevel.ERROR);  }
-	public void addWarning(String warning) {addMessage(warning, ErrorLevel.WARNING);}
+	public void addError(   String       error)    {addMessage( error,    ErrorLevel.ERROR);  }
+	public void addErrors(  List<String> errors)   {addMessages(errors,   ErrorLevel.ERROR);  }
+	public void addWarning( String       warning)  {addMessage( warning,  ErrorLevel.WARNING);}
+	public void addWarnings(List<String> warnings) {addMessages(warnings, ErrorLevel.WARNING);}
 	
 	/**
 	 * Get'er methods.
@@ -232,5 +234,16 @@ public class ErrorListRpcResponseData implements IsSerializable, VibeRpcResponse
 
 		// Add the message to the list.
 		m_errorList.add(new ErrorInfo(message, level));
+	}
+	
+	/*
+	 * Adds a list of messages to the list.
+	 */
+	private void addMessages(List<String> messages, ErrorLevel level) {
+		if (null != messages) {
+			for (String message: messages) {
+				addMessage(message, level);
+			}
+		}
 	}
 }

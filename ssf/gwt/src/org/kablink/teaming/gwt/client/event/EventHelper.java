@@ -851,6 +851,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case FORCE_SELECTED_USERS_TO_CHANGE_PASSWORD:
+				// An ForceSelectedUsersToChangePasswordEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof ForceSelectedUsersToChangePasswordEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ForceSelectedUsersToChangePasswordEvent.registerEvent(eventBus, ((ForceSelectedUsersToChangePasswordEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case FULL_UI_RELOAD:
 				// An FullUIReloadEvent!  Can the event handler we were
 				// given handle that?
@@ -3091,6 +3100,7 @@ public class EventHelper {
 			case FIND_CONTROL_BROWSE:                          hasHandler = (eventHandler instanceof FindControlBrowseEvent.Handler);                      break;
 			case FOLDER_ENTRY_ACTION_COMPLETE:                 hasHandler = (eventHandler instanceof FolderEntryActionCompleteEvent.Handler);              break;
 			case FORCE_FILES_UNLOCK:                           hasHandler = (eventHandler instanceof ForceFilesUnlockEvent.Handler);                       break;
+			case FORCE_SELECTED_USERS_TO_CHANGE_PASSWORD:      hasHandler = (eventHandler instanceof ForceSelectedUsersToChangePasswordEvent.Handler);     break;
 			case GET_MANAGE_TITLE:                             hasHandler = (eventHandler instanceof GetManageTitleEvent.Handler);                         break;
 			case GET_MASTHEAD_LEFT_EDGE:                       hasHandler = (eventHandler instanceof GetMastHeadLeftEdgeEvent.Handler);                    break;
 			case HIDE_SELECTED_SHARES:                         hasHandler = (eventHandler instanceof HideSelectedSharesEvent.Handler);                     break;

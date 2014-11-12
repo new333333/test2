@@ -236,6 +236,7 @@ import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
+import org.kablink.teaming.web.util.PasswordPolicyHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.SelectNetFolderServerTypeTask;
 import org.kablink.teaming.web.util.TrashHelper;
@@ -905,6 +906,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			ForceFilesUnlockCmd ffuCmd = ((ForceFilesUnlockCmd) cmd);
 			BooleanRpcResponseData result = GwtViewHelper.forceFilesUnlock( this, getRequest( ri ), ffuCmd.getEntityIds() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case FORCE_USERS_TO_CHANGE_PASSWORD:
+		{
+			ForceUsersToChangePasswordCmd fcpCmd = ((ForceUsersToChangePasswordCmd) cmd);
+			List<String> errList = PasswordPolicyHelper.forceUsersToChangePassword( this, getRequest( ri ), fcpCmd.getUserIds() );
+			ErrorListRpcResponseData result = new ErrorListRpcResponseData();
+			result.addErrors(errList);
 			response = new VibeRpcResponse( result );
 			return response;
 		}

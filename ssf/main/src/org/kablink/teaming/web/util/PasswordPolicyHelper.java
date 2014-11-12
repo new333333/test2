@@ -33,12 +33,16 @@
 package org.kablink.teaming.web.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
@@ -47,8 +51,10 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 
 /**
  * This class contains a collection of methods for dealing with
@@ -61,9 +67,20 @@ public final class PasswordPolicyHelper {
 
 	// Static flags defining various aspects of password policy
 	// enablement.
-	public static final boolean PASSWORD_POLICY_ENABLED			=  SPropsUtil.getBoolean("password.policy.enabled",      false                            );
-	public static final boolean PASSWORDS_CAN_EXPIRE			= (SPropsUtil.getBoolean("password.policy.expiration",   true ) && PASSWORD_POLICY_ENABLED);
-	public static final int     PASSWORD_CHANGE_USER_MAX_HITS	=  SPropsUtil.getInt(    "password.policy.user.maxHits", 1000                             );
+	public static final boolean	PASSWORD_POLICY_ENABLED			=  SPropsUtil.getBoolean("password.policy.enabled",         false                            );
+	public static final boolean PASSWORDS_CAN_EXPIRE			= (SPropsUtil.getBoolean("password.policy.expiration",      true ) && PASSWORD_POLICY_ENABLED);
+	public static final int		PASSWORD_CHANGE_USER_MAX_HITS	=  SPropsUtil.getInt(    "password.policy.user.maxHits",    1000                             );
+	public static final int		PASSWORD_EXPIRATION_DAYS		=  SPropsUtil.getInt(    "password.policy.expiration.days",   90                             );
+
+	// Constants used to calculate password expirations.
+	private static final int	HOURS_PER_DAY      = 24;
+	private static final int	SECONDS_PER_MINUTE = 60;
+	private static final int	MINUTES_PER_HOUR   = 60;
+	  
+	private static final int 	MILLIS_PER_SECOND = 1000;
+	private static final int 	MILLIS_PER_MINUTE = (SECONDS_PER_MINUTE * MILLIS_PER_SECOND);
+	private static final long	MILLIS_PER_HOUR   = (MINUTES_PER_HOUR   * MILLIS_PER_MINUTE);
+	private static final long	MILLIS_PER_DAY    = (HOURS_PER_DAY      * MILLIS_PER_HOUR  );
 	
 	/*
 	 * Class constructor.
@@ -127,37 +144,12 @@ public final class PasswordPolicyHelper {
 						userIds.add(Long.parseLong(userId));
 					}
 				}
-				
-				// Do we have any user IDs?
-				if (!(userIds.isEmpty())) {
-					// Can we resolved them?
-					List<Principal> pList = ResolveIds.getPrincipals(userIds, false);
-					if (MiscUtil.hasItems(pList)) {
-						// Yes!  Scan them.
-						for (Principal p:  pList) {
-							// If it's a Group?
-							if (p instanceof GroupPrincipal) {
-								// ...ignore it.
-								continue;
-							}
-	
-							// No, it's not a Group!  Is it a User?
-							if (p instanceof UserPrincipal) {
-								// Yes!  If it's not a person or it's
-								// from LDAP...
-								User u = ((User) p);
-								if ((!(u.isPerson())) || u.getIdentityInfo().isFromLdap()) {
-									// ...ignore it.
-									continue;
-								}
-								
-								// ...otherwise, clear out it's last
-								// ...password changed setting.
-								pm.setLastPasswordChange(u, null);
-							}
-						}
-					}
-				}
+
+				// Force these users to change their password.
+				forceUsersToChangePasswordImpl(
+					bs,
+					userIds,
+					null);	// null -> We don't want any errors to be returned since we tightly control what's selected.
 			}
 		}
 		
@@ -166,6 +158,96 @@ public final class PasswordPolicyHelper {
 		return reply;
 	}
 
+	/**
+	 * Forces the selected users to change their password after their
+	 * next successful login.  Returns an ErrorListRpcResponseData
+	 * containing any errors that occur.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userIds
+	 * 
+	 * @return
+	 */
+	public static List<String> forceUsersToChangePassword(AllModulesInjected bs, HttpServletRequest request, List<Long> userIds) {
+		SimpleProfiler.start("PasswordPolicyHelper.forceUsersToChangePassword()");
+		try {
+			// Allocate an error list response we can return.
+			List<String> reply = new ArrayList<String>();
+
+			// Force the users to change their password.
+			forceUsersToChangePasswordImpl(bs, userIds, reply);
+			
+			// If we get here, reply refers to an
+			// ErrorListRpcResponseData containing any errors we
+			// encountered.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			m_logger.error("PasswordPolicyHelper.forceUsersToChangePassword( SOURCE EXCEPTION ):  ", e);
+			throw e;
+		}
+		
+		finally {
+			SimpleProfiler.stop("PasswordPolicyHelper.forceUsersToChangePassword()");
+		}
+	}
+
+	/*
+	 * Forces a collection of users, based on their ID, to change their
+	 * password after their next successful login.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void forceUsersToChangePasswordImpl(AllModulesInjected bs, List<Long> userIds, List<String> errList) {
+		// Do we have any user IDs?
+		if (MiscUtil.hasItems(userIds)) {
+			// Can we resolved them?
+			List<Principal> pList = ResolveIds.getPrincipals(userIds, false);
+			if (MiscUtil.hasItems(pList)) {
+				// Yes!  Scan them.
+				ProfileModule pm = bs.getProfileModule();
+				for (Principal p:  pList) {
+					// If it's a Group...
+					String pTitle = p.getTitle();
+					if (p instanceof GroupPrincipal) {
+						// ...ignore it.
+						if (null != errList) {
+							errList.add(NLT.get("forceUserPasswordChangeError.Group", new String[]{pTitle}));
+						}
+						continue;
+					}
+
+					// No, it's not a Group!  Is it a User?
+					if (p instanceof UserPrincipal) {
+						// Yes!  If it's not a person...
+						User u = ((User) p);
+						if (!(u.isPerson())) {
+							// ...ignore it.
+							if (null != errList) {
+								errList.add(NLT.get("forceUserPasswordChangeError.BuiltInUser", new String[]{pTitle}));
+							}
+							continue;
+						}
+						
+						// If it's from LDAP...
+						if (u.getIdentityInfo().isFromLdap()) {
+							// ...ignore it.
+							if (null != errList) {
+								errList.add(NLT.get("forceUserPasswordChangeError.LDAP", new String[]{pTitle}));
+							}
+							continue;
+						}
+						
+						// ...otherwise, clear out their last
+						// ...password changed setting.
+						pm.setLastPasswordChange(u, null);
+					}
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Validates a given password against the password policy.  If the
 	 * password is valid null is returned.  If it's not valid, a
@@ -185,5 +267,46 @@ public final class PasswordPolicyHelper {
 		
 //!		...this needs to be implemented...
 		return null;
+	}
+	
+	/**
+	 * Returns a date/time stamp of when the given user's password
+	 * expires.
+	 * 
+	 * Returns null if the user's password never expires (i.e., if
+	 * password policy or password expiration is disabled, ...)
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Date getUsersPasswordExpiration(User user) {
+		// If password expiration is not enabled...
+		if (!passwordExpirationEnabled()) {
+			// ...it can never expire.  Return null.
+			return null;
+		}
+
+		// If the user has never changed their password (or the admin
+		// is forcing them to change it)..
+		Date lastChange = user.getLastPasswordChange();
+		if (null == lastChange) {
+			// ...we consider it expired since the beginning of time.
+			return new Date(0);
+		}
+
+		// Return the date/time stamp that the user's password expires.
+		long lcTime = lastChange.getTime();
+		return new Date(lcTime + (MILLIS_PER_DAY * PASSWORD_EXPIRATION_DAYS));
+	}
+	
+	/**
+	 * Returns true if password expiration is enabled and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean passwordExpirationEnabled() {
+		return PASSWORDS_CAN_EXPIRE; 
 	}
 }

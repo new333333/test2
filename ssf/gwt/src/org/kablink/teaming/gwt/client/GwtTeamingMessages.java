@@ -363,6 +363,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_FindUserByEmailAddress();
 	String rpcFailure_FolderDoesNotExist();
 	String rpcFailure_ForceFilesUnlock();
+	String rpcFailure_ForceUsersToChangePassword();
 	String rpcFailure_GetAccessoryStatus();
 	String rpcFailure_GetActivityStreamParams();
 	String rpcFailure_GetActivityStreamsTree();
@@ -1955,6 +1956,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
 	String vibeDataTable_Confirm_CantSubscribe();
 	String vibeDataTable_Download();
+	String vibeDataTable_Error_ForcingPasswordChange();
 	String vibeDataTable_Error_MirroredDriverNotConfigured();
 	String vibeDataTable_Error_SavingAdminRights();
 	String vibeDataTable_Empty();
