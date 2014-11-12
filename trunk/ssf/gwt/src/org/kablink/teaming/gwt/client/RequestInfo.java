@@ -534,6 +534,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Return the login user ID.
+	 * 
+	 * @return
+	 */
+	public final native String getLoginUserId()
+	/*-{
+		return this.loginUserId;
+	}-*/;
+	
+	/**
 	 * Return the URL we should use when we are trying to log in.
 	 * 
 	 * @return

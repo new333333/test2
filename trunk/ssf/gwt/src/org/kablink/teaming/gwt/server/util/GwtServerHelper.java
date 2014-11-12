@@ -355,6 +355,7 @@ import org.kablink.teaming.web.util.FavoritesLimitExceededException;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.PasswordPolicyHelper;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 import org.kablink.teaming.web.util.LandingPageProperties;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
@@ -1738,22 +1739,36 @@ public class GwtServerHelper {
 	 * Change the current user's password.
 	 * 
 	 * @param bs
+	 * @param request
 	 * @param oldPwd
 	 * @param newPwd
+	 * @param userId
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData changePassword(AllModulesInjected bs, String oldPwd, String newPwd ) throws GwtTeamingException {
+	public static ErrorListRpcResponseData changePassword(final AllModulesInjected bs, final HttpServletRequest request, final String oldPwd, final String newPwd, final Long userId) throws GwtTeamingException {
 		// Allocate an ErrorListRpcResponseData we can return with
 		// any errors from the password change.
 		ErrorListRpcResponseData reply = new ErrorListRpcResponseData();
 		
 		try {
-			// Does the new password violate the system's password policy?
-			User user = getCurrentUser();
-			List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(user, newPwd);
+			// Who we change the password for?
+			boolean isCurrentUser = (null == userId);
+			User    currentUser   = getCurrentUser();
+			User pwChangeUser;
+			if (isCurrentUser) {
+				pwChangeUser = currentUser;
+			}
+			else {
+				pwChangeUser  = ((User) bs.getProfileModule().getEntry(userId));
+				isCurrentUser = ((null != currentUser) && userId.equals(currentUser.getId()));
+			}
+			
+			// Does the new password violate the system's password
+			// policy for that user?
+			List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(pwChangeUser, newPwd);
 			if (MiscUtil.hasItems(ppViolations)) {
 				// Yes!  Copy the violations to the response.
 				for (String ppViolation:  ppViolations) {
@@ -1763,15 +1778,36 @@ public class GwtServerHelper {
 			
 			else {
 				// No, the new password doesn't violate the system's
-				// password policy!  Change the user's password.
-				bs.getProfileModule().changePassword(user.getId(), oldPwd, newPwd, false);	// false -> Don't validate password policy.  We took care of that above.
+				// password policy!  Change the user's password.  Are
+				// the built-in admin or are we changing the password
+				// for the currently logged in user?
+				if (isCurrentUser || currentUser.isAdmin()) {
+					// Yes!  We can change it directly without worry of
+					// an access control violation.
+					changePasswordImpl(bs, oldPwd, newPwd, userId, false);	// false -> Don't validate password policy.  We took care of that above.
+				}
+				
+				else {
+					// Otherwise, we have to change it as the user
+					// whose password is being changed.
+					RunasTemplate.runas(
+						new RunasCallback() {
+							@Override
+							public Object doAs() {
+								changePasswordImpl(bs, oldPwd, newPwd, userId, false);	// false -> Don't validate password policy.  We took care of that above.
+								return null;
+							}
+						},
+						WebHelper.getRequiredZoneName(request),
+						userId);
+				}
 				
 				// Are we dealing with the built-in admin user?
-				if (user.isAdmin()) {
+				if (pwChangeUser.isAdmin()) {
 					// Yes!  Is this the admin's first time logging in?
-					if (null == user.getFirstLoginDate()) {
+					if (null == pwChangeUser.getFirstLoginDate()) {
 						// Yes!  Remember the login date.
-						bs.getProfileModule().setFirstLoginDate(user.getId());
+						bs.getProfileModule().setFirstLoginDate(pwChangeUser.getId());
 					}
 				}
 			}
@@ -1784,6 +1820,10 @@ public class GwtServerHelper {
 			gwtEx.setAdditionalDetails(ex.getLocalizedMessage());
 			throw gwtEx;
 		}
+	}
+	
+	private static void changePasswordImpl(AllModulesInjected bs, String oldPwd, String newPwd, Long userId, boolean validatePolicy) {
+		bs.getProfileModule().changePassword(userId, oldPwd, newPwd, validatePolicy);
 	}
 	
 	/**

@@ -77,6 +77,7 @@ public class ChangePasswordDlg extends DlgBox
 	private PasswordTextBox m_pwd2TxtBox;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private Label m_changePasswordHintLabel;
+	private Long m_userId;
 	
 	
 	// The following defines the TeamingEvents that are handled by
@@ -282,7 +283,7 @@ public class ChangePasswordDlg extends DlgBox
 
 			showStatusMsg( GwtTeaming.getMessages().changePasswordDlg_ChangingPassword() );
 
-			cmd = new ChangePasswordCmd( getOldPwd(), getNewPwd() );
+			cmd = new ChangePasswordCmd( getOldPwd(), getNewPwd(), m_userId );
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
 	}
@@ -392,14 +393,18 @@ public class ChangePasswordDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init(boolean showChangeHint)
+	public void init( String changeHint, Long userId )
 	{
+		m_userId = userId;
+		
 		clearErrorPanel();
 		hideErrorPanel();
 		hideStatusMsg();
 		setOkEnabled( true );
 		
-		m_changePasswordHintLabel.setVisible( showChangeHint );
+		boolean hasHint = GwtClientHelper.hasString( changeHint );
+		m_changePasswordHintLabel.setVisible( hasHint );
+		m_changePasswordHintLabel.setText( hasHint ? changeHint : "" );
 
 		// Clear existing data in the controls.
 		m_currentPwdTxtBox.setValue( "" );
@@ -407,10 +412,16 @@ public class ChangePasswordDlg extends DlgBox
 		m_pwd2TxtBox.setValue( "" );
 	}
 	
+	public void init( String changeHint )
+	{
+		// Always use the initial form of the method.
+		init( changeHint, null );	// null -> Change it for the currently logged in user.
+	}
+	
 	public void init()
 	{
 		// Always use the initial form of the method.
-		init( true );
+		init( GwtTeaming.getMessages().changePasswordDlg_ChangeDefaultPasswordHint() );
 	}
 	
 	/**

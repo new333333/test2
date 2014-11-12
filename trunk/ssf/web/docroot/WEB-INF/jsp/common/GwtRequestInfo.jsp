@@ -118,6 +118,7 @@
 		loginPostUrl:						'<ssf:escapeJavaScript>${ss_loginPostUrl}</ssf:escapeJavaScript>',
 		loginRefererUrl:					'<ssf:escapeJavaScript>${loginRefererUrl}</ssf:escapeJavaScript>',
 		loginStatus:						'<ssf:escapeJavaScript>${ss_loginStatus}</ssf:escapeJavaScript>',
+		loginUserId:						'${ss_loginUserId}',
 		modifyUrl:							'${ss_modifyEntryAdapter}',
 		namespace:                          '${ss_namespace}',
 		productName:						'${productName}',

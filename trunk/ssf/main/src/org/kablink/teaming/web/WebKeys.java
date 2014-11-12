@@ -1147,6 +1147,7 @@ public class WebKeys {
     public static final String LOGIN_OPEN_ID_PROVIDER_URL = "ss_login_open_id_provider_url";
     public static final String LOGIN_STATUS = "ss_loginStatus";
     public static final String LOGIN_URL="ss_loginUrl";
+    public static final String LOGIN_USER_ID="ss_loginUserId";
     public static final String LOGIN_POST_URL="ss_loginPostUrl";
     public static final String LOGOUT_URL="ss_logoutUrl";
     public static final String AJAX_STATUS="ss_ajaxStatus";

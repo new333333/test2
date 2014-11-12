@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.DialogClosedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.WindowTitleSetEvent;
@@ -62,6 +63,7 @@ import org.kablink.teaming.gwt.client.util.AgentBase;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.ChangePasswordDlg.ChangePasswordDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ForgottenPwdDlg.ForgottenPwdDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
 
@@ -116,7 +118,9 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 @SuppressWarnings("unused")
 public class LoginDlg extends DlgBox
-	implements WindowTitleSetEvent.Handler
+	implements
+		DialogClosedEvent.Handler,
+		WindowTitleSetEvent.Handler
 {
 	private FlowPanel m_mainPanel = null;
 	private FormPanel m_formPanel = null;
@@ -144,6 +148,7 @@ public class LoginDlg extends DlgBox
 	private Button m_registerBtn;
 	private Button m_pwdResetBtn;
 	private ForgottenPwdDlg m_forgottenPwdDlg = null;
+	private ChangePasswordDlg m_changePwdDlg = null;
 
 	private String m_loginUrl = null;
 	private String m_springSecurityRedirect = null;	// This values tells Teaming what URL to go to after the user authenticates.
@@ -151,6 +156,7 @@ public class LoginDlg extends DlgBox
 	private GwtSelfRegistrationInfo m_selfRegInfo = null;
 	private boolean m_requestedLoginInfo = false;
 	private LoginStatus m_loginStatus;
+	private Long m_loginUserId;
 	private boolean m_initialized = false;
 	private int m_numAttempts = 0;
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
@@ -167,6 +173,7 @@ public class LoginDlg extends DlgBox
 		PromptForPwdReset,
 		PwdResetVerified,
 		WebAccessRestricted,
+		PasswordExpired,
 	}
 	
 	// The following defines the TeamingEvents that are handled by
@@ -174,6 +181,7 @@ public class LoginDlg extends DlgBox
 	// this array is used.
 	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[]
 	{
+		TeamingEvents.DIALOG_CLOSED,
 		TeamingEvents.WINDOW_TITLE_SET,
 	};
 	
@@ -321,6 +329,11 @@ public class LoginDlg extends DlgBox
 				
 				setPopupPosition( x, y );
 				setGlassStyleName( "loginDlgBox_Glass" );
+				
+				if ( LoginStatus.PasswordExpired.equals( m_loginStatus ) )
+				{
+					showChangePasswordDlgAsync( m_loginUserId );
+				}
 			}
 		} );
 	}
@@ -700,6 +713,7 @@ public class LoginDlg extends DlgBox
 		case PromptForLogin:
 		case PwdResetVerified:
 		case WebAccessRestricted:
+		case PasswordExpired:
 			// Hide or show the self registration controls.
 			updateSelfRegistrationControls( m_selfRegInfo );
 
@@ -1290,7 +1304,7 @@ public class LoginDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void showDlg( boolean allowCancel, LoginStatus loginStatus )
+	public void showDlg( boolean allowCancel, LoginStatus loginStatus, Long loginUserId )
 	{
 		debugAlert( "In LoginDlg.showDlg()" );
 		
@@ -1302,6 +1316,7 @@ public class LoginDlg extends DlgBox
 		}
 
 		m_loginStatus = loginStatus;
+		m_loginUserId = loginUserId;
 
 		switch ( loginStatus )
 		{
@@ -1310,6 +1325,10 @@ public class LoginDlg extends DlgBox
 			showRegularLoginUI();
 		    showLoginFailedMsg( loginStatus );
 		    break;
+		    
+		case PasswordExpired:
+			showRegularLoginUI();
+			break;
 			
 		case RegistrationRequired:
 			showExternalUserRegistrationUI();
@@ -1340,6 +1359,12 @@ public class LoginDlg extends DlgBox
 
 		// Issue an ajax request to get self registration info and a list of open id providers
 		getLoginInfoFromServer( loginStatus );
+	}
+	
+	public void showDlg( boolean allowCancel, LoginStatus loginStatus )
+	{
+		// Always use the initial form of this method.
+		showDlg( allowCancel, loginStatus, null );
 	}
 	
 	/**
@@ -1944,6 +1969,64 @@ public class LoginDlg extends DlgBox
 		m_loginFailedMsg.setText(    msg  );
 		m_loginFailedMsg.setVisible( true );
 	}// end hideLoginFailedMsg()
+
+
+	/*
+	 * Asynchronously runs the change password dialog so the given
+	 * user can change their password.
+	 */
+	private void showChangePasswordDlgAsync( final Long userId )
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute() {
+				showChangePasswordDlgNow( userId );
+			}
+		} );
+	}
+	
+	/*
+	 * Synchronously runs the change password dialog so the given
+	 * user can change their password.
+	 */
+	private void showChangePasswordDlgNow( final Long userId )
+	{
+		// Have we instantiated the change password dialog before?
+		if ( null == m_changePwdDlg )
+		{
+			// No!  Instantiate one now.
+			ChangePasswordDlg.createAsync( new ChangePasswordDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ChangePasswordDlg cpDlg )
+				{
+					m_changePwdDlg = cpDlg;
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							showChangePasswordDlgNow( userId );
+						}
+					} );
+				}
+			});
+		}
+		else
+		{
+			// Yes, we've instantiated change password dialog already!
+			// Simply show it.
+			m_changePwdDlg.init( GwtTeaming.getMessages().loginDlg_PasswordExpiredHint(), userId );
+			m_changePwdDlg.show( true                                                            );
+		}
+	}
 	
 	/**
 	 * Show or hide the controls dealing with self registration depending on the values in
@@ -2020,6 +2103,29 @@ public class LoginDlg extends DlgBox
 		{
 			m_forgottenPwdDlg.init();
 			m_forgottenPwdDlg.showRelativeTo( m_forgotPwdLink );
+		}
+	}
+
+	/**
+	 * Handles DialogClosedEvent's received by this class.
+	 * 
+	 * Implements the DialogClosedSetEvent.Handler.onDialogClosed() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDialogClosed(DialogClosedEvent event) {
+		// Is this a notification that the ChangePasswordDlg is
+		// closing?
+		DlgBox eventDialog = event.getDlgBox();
+		if ( ( null != m_changePwdDlg ) && ( m_changePwdDlg == eventDialog ) )
+		{
+			// Yes!  Put the focus in the LoginDlg's focus widget.
+			final FocusWidget fw = getFocusWidget();
+			if ( null != fw )
+			{
+				GwtClientHelper.setFocusDelayed( fw );
+			}
 		}
 	}
 	
