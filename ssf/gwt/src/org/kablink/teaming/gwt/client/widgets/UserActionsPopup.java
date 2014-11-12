@@ -397,7 +397,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 			actionPanel = addAction(
 								GwtTeaming.getMessages().userActionsPanel_ChangePassword(),
 								GwtTeaming.getImageBundle().userActionsPanel_ChangePassword(),
-								new InvokeChangePasswordDlgEvent( false ) );	// false -> Don't show the password hint.
+								new InvokeChangePasswordDlgEvent( null ) );	// null -> Don't show a password change hint.
 			m_contentPanel.add( actionPanel );
 		}
 		

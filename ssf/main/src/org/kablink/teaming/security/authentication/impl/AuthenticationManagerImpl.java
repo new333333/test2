@@ -89,6 +89,8 @@ import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BuiltInUsersHelper;
 import org.kablink.teaming.web.util.NetFolderHelper;
+import org.kablink.teaming.web.util.PasswordPolicyHelper;
+import org.kablink.teaming.web.util.PasswordPolicyHelper.PasswordStatus;
 import org.kablink.util.api.ApiErrorCode;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -352,6 +354,27 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				UserAccountNotActiveException uaEx = new UserAccountNotActiveException(NLT.get("error.webAccessRestricted"));
 				uaEx.setApiErrorCode(ApiErrorCode.USERACCOUNT_WEBACCESS_BLOCKED);
 				throw uaEx;
+			}
+
+			// What's the status of the user's password?
+			PasswordStatus ps = PasswordPolicyHelper.getUsersPasswordStatus(user); 
+			switch (ps) {
+			case EXPIRED:
+				// It's expired!  Don't allow things to proceed.
+				UserAccountNotActiveException uaEx = new UserAccountNotActiveException(NLT.get("error.passwordExpired"));
+				uaEx.setApiErrorCode(ApiErrorCode.PASSWORD_EXPIRED);
+				uaEx.setUserId(user.getId());
+				throw uaEx;
+				
+			default:
+				// Unexpected value!  Log it as an error...
+                logger.error("AuthenticationManagerImpl.authenticate( BOGUS PASSWORD STATUS ):  " + ps.name());
+                
+				// ...and fall through and handle it as having been
+                // ...valid.
+				
+			case VALID:
+				break;
 			}
 			
 			// Again, the user account already exists, so we can safely rule out creation situation.

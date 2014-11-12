@@ -355,7 +355,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ErrorListRpcResponseData result;
 			
 			cpCmd = (ChangePasswordCmd) cmd;
-			result = GwtServerHelper.changePassword( this, cpCmd.getOldPassword(), cpCmd.getNewPassword() );
+			result = GwtServerHelper.changePassword( this, getRequest( ri ), cpCmd.getOldPassword(), cpCmd.getNewPassword(), cpCmd.getUserId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

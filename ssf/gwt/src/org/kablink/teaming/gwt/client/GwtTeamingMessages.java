@@ -900,6 +900,7 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlg_OrLabel();
 	String loginDlg_PwdLabel();
 	String loginDlg_pwdRequired();
+	String loginDlg_PasswordExpiredHint();
 	String loginDlg_PasswordResetComplete();
 	String loginDlg_PasswordResetRequested();
 	String loginDlg_PwdResetFailed();

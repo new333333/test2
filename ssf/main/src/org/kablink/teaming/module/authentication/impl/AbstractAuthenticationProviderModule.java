@@ -601,16 +601,17 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     			if(result instanceof SynchNotifiableAuthentication)
 	    				((SynchNotifiableAuthentication)result).synchDone();
 	    			return successfulAuthentication(result);
-	    		} catch(AuthenticationException e) {
-	    			exc = e;
 	    		} catch(UserAccountNotActiveException e) {
 	    			UserIdNotActiveException unaEx = new UserIdNotActiveException(e.getMessage());
 	    			unaEx.setApiErrorCode(e.getApiErrorCode());
+	    			unaEx.setUserId(e.getUserId());
 	    			exc = unaEx;
 	    		} catch(UserDoesNotExistException e) {
 	    			if(authenticationServiceProvider == AuthenticationServiceProvider.OPENID)
 	    				exc = new UserAccountNotProvisionedException(e.getMessage());
-	    		}
+				} catch(AuthenticationException e) {
+					exc = e;
+				}
 	    		catch ( IncorrectResultSizeDataAccessException irsdaEx )
 	    		{
 	    			String errDesc;

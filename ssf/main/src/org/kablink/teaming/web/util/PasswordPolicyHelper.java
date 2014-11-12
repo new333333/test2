@@ -82,6 +82,15 @@ public final class PasswordPolicyHelper {
 	private static final int		MILLIS_PER_MINUTE					= (SECONDS_PER_MINUTE * MILLIS_PER_SECOND);
 	private static final long		MILLIS_PER_HOUR						= (MINUTES_PER_HOUR   * MILLIS_PER_MINUTE);
 	private static final long		MILLIS_PER_DAY						= (HOURS_PER_DAY      * MILLIS_PER_HOUR  );
+
+	/**
+	 * Enumeration that represents a User's current password status.
+	 * 
+	 */
+	public enum PasswordStatus {
+		EXPIRED,
+		VALID,
+	}
 	
 	/*
 	 * Class constructor.
@@ -316,6 +325,22 @@ public final class PasswordPolicyHelper {
 		long lcTime = lastChange.getTime();
 		return new Date(lcTime + (MILLIS_PER_DAY * PASSWORD_EXPIRATION_DAYS));
 	}
+
+	/**
+	 * Returns a PasswordStatus enumeration value specifying the given
+	 * user's current password status.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static PasswordStatus getUsersPasswordStatus(User user) {
+		PasswordStatus reply;
+		if (isUsersPasswordExpired(user))
+		     reply = PasswordStatus.EXPIRED;
+		else reply = PasswordStatus.VALID;
+		return reply;
+	}
 	
 	/**
 	 * Returns the date before which users should be warned their
@@ -328,6 +353,26 @@ public final class PasswordPolicyHelper {
 	 */
 	public static Date getPasswordWarningDate() {
 		return new Date(new Date().getTime() + (PASSWORD_EXPIRATION_WARNING_DAYS * PasswordPolicyHelper.MILLIS_PER_DAY));
+	}
+
+	/**
+	 * Returns true if a user's password is expired and false otherwise.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static boolean isUsersPasswordExpired(User user) {
+		// If the user's password can't expire...
+		Date expirationDate = getUsersPasswordExpiration(user);
+		if (null == expirationDate) {
+			// ...it can't be expired.
+			return false;
+		}
+
+		// Is the user's password expired?
+		long expirationTime = expirationDate.getTime();
+		return (expirationTime < new Date().getTime());
 	}
 	
 	/**

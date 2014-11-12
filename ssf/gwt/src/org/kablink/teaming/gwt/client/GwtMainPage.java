@@ -1885,7 +1885,7 @@ public class GwtMainPage extends ResizeComposite
 		return m_requestInfo.getLoginOpenIdProviderUrl();
 	}
 	
-	/**
+	/*
 	 * Get the login status from the request info
 	 */
 	private LoginStatus getLoginStatus()
@@ -1901,6 +1901,8 @@ public class GwtMainPage extends ResizeComposite
 				loginStatus = LoginStatus.AuthenticationFailed;
 			else if ( status.equalsIgnoreCase( "webAccessRestricted" ) )
 				loginStatus = LoginStatus.WebAccessRestricted;
+			else if ( status.equalsIgnoreCase( "passwordExpired" ) )
+				loginStatus = LoginStatus.PasswordExpired;
 			else if ( status.equalsIgnoreCase( "registrationRequired" ) )
 				loginStatus = LoginStatus.RegistrationRequired;
 			else if ( status.equalsIgnoreCase( "promptForLogin" ) )
@@ -1912,6 +1914,19 @@ public class GwtMainPage extends ResizeComposite
 		}
 			
 		return loginStatus;
+	}
+	
+	/*
+	 * Get the login user ID from the request info
+	 */
+	private Long getLoginUserId()
+	{
+		String userIdS = m_requestInfo.getLoginUserId();
+		Long userId;
+		if ( GwtClientHelper.hasString( userIdS ) )
+		     userId = Long.parseLong( userIdS );
+		else userId = null;
+		return userId;
 	}
 	
 	/**
@@ -2057,7 +2072,7 @@ public class GwtMainPage extends ResizeComposite
 	/*
 	 * Invoke the change password dialog
 	 */
-	private void invokeChangePasswordDlg( final boolean showPasswordHint )
+	private void invokeChangePasswordDlg( final String changeHint )
 	{
 		// Have we instantiated the change password dialog before?
 		if ( null == m_changePwdDlg )
@@ -2080,7 +2095,7 @@ public class GwtMainPage extends ResizeComposite
 						@Override
 						public void execute()
 						{
-							invokeChangePasswordDlg( showPasswordHint );
+							invokeChangePasswordDlg( changeHint );
 						}
 					} );
 				}
@@ -2090,8 +2105,8 @@ public class GwtMainPage extends ResizeComposite
 		{
 			// Yes, we've instantiated change password dialog already!
 			// Simply show it.
-			m_changePwdDlg.init( showPasswordHint );
-			m_changePwdDlg.show( true );
+			m_changePwdDlg.init( changeHint );
+			m_changePwdDlg.show( true       );
 		}
 	
 	}
@@ -2161,11 +2176,10 @@ public class GwtMainPage extends ResizeComposite
 	{
 		if ( m_loginDlg != null )
 		{
-			LoginStatus loginStatus;
-			
-			loginStatus = getLoginStatus();
-			
-			m_loginDlg.showDlg( allowCancel, loginStatus );
+			m_loginDlg.showDlg(
+				allowCancel,
+				getLoginStatus(),
+				getLoginUserId() );
 		}
 		else
 		{
@@ -3301,7 +3315,7 @@ public class GwtMainPage extends ResizeComposite
 			@Override
 			public void execute()
 			{
-				invokeChangePasswordDlg( event.isShowPasswordHint() );
+				invokeChangePasswordDlg( event.getChangeHint() );
 			}
 		} );
 	}

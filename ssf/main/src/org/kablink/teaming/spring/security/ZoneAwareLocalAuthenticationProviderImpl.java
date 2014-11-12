@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,17 +36,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
 import org.kablink.teaming.module.authentication.IdentityInfoObtainable;
 import org.kablink.teaming.module.authentication.LocalAuthentication;
+import org.kablink.teaming.module.authentication.UserIdNotActiveException;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.util.api.ApiErrorCode;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -56,20 +58,28 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
 public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalAuthenticationProvider {
-	
 	protected String zoneName;
 	
+	@Override
 	public void setZoneName(String zoneName) throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		this.zoneName = zoneName;
 	}
 
+	@Override
 	public Authentication authenticate(Authentication authentication)
 			throws AuthenticationException {
 		return doAuthenticate(authentication);
 	}
 
+	@Override
 	public boolean supports(Class authentication) {
 		return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
 	}
@@ -94,6 +104,15 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 		} catch(UserDoesNotExistException e) {
 			throw new UsernameNotFoundException("No such user", e);
 		} catch(UserAccountNotActiveException e) {
+			ApiErrorCode apiEC = e.getApiErrorCode();
+			switch (apiEC) {
+			case PASSWORD_EXPIRED:
+			case USERACCOUNT_WEBACCESS_BLOCKED:
+    			UserIdNotActiveException unaEx = new UserIdNotActiveException(e.getMessage());
+    			unaEx.setApiErrorCode(e.getApiErrorCode());
+    			unaEx.setUserId(e.getUserId());
+    			throw unaEx;
+			}
 			throw new UsernameNotFoundException("User account disabled or deleted", e);
 		}	
 	}
@@ -120,6 +139,7 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 	    	super(principal, credentials, authorities);
 	    	this.user = user;
 	    }
+		@Override
 		public void synchDone() {}
 		
 		@Override

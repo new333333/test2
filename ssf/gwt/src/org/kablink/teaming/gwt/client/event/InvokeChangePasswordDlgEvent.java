@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,7 +48,7 @@ public class InvokeChangePasswordDlgEvent extends VibeEventBase<InvokeChangePass
 {
 	public static Type<Handler> TYPE = new Type<Handler>();
 	
-	public boolean m_showPasswordHint;	//
+	public String m_changeHint;	//
 	
 	/**
 	 * Handler interface for this event.
@@ -61,12 +61,12 @@ public class InvokeChangePasswordDlgEvent extends VibeEventBase<InvokeChangePass
 	/**
 	 * Class constructor.
 	 * 
-	 * @param showPasswordHint
+	 * @param changeHint
 	 */
-	public InvokeChangePasswordDlgEvent(boolean showPasswordHint)
+	public InvokeChangePasswordDlgEvent(String changeHint)
 	{
 		super();
-		setShowPasswordHint( showPasswordHint );
+		setChangeHint( changeHint );
 	}
 	
 	/**
@@ -74,7 +74,7 @@ public class InvokeChangePasswordDlgEvent extends VibeEventBase<InvokeChangePass
 	 */
 	public InvokeChangePasswordDlgEvent()
 	{
-		this( true );
+		this( GwtTeaming.getMessages().changePasswordDlg_ChangeDefaultPasswordHint() );
 	}
 	
 	/**
@@ -82,14 +82,14 @@ public class InvokeChangePasswordDlgEvent extends VibeEventBase<InvokeChangePass
 	 * 
 	 * @return
 	 */
-	public boolean isShowPasswordHint() { return m_showPasswordHint; }
+	public String getChangeHint() { return m_changeHint; }
 
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param showPasswordHint
+	 * @param changeHint
 	 */
-	public void setShowPasswordHint( boolean showPasswordHint ) { m_showPasswordHint = showPasswordHint; }
+	public void setChangeHint( String changeHint ) { m_changeHint = changeHint; }
 	
 	/**
 	 * Dispatches this event when one is triggered.
