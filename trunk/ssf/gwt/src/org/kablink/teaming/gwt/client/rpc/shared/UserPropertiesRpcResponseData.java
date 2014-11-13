@@ -68,6 +68,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		private boolean		m_perUserDownload;	//
 		private boolean		m_perUserWebAccess;	//
 		private boolean		m_showLastLogin;	//
+		private boolean		m_userHasLoggedIn;	//
 		private String		m_lastLogin;		//
 		private String		m_ldapContainer;	//
 		private String		m_ldapDN;			//
@@ -103,6 +104,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		public boolean  isPerUserDownload()  {return m_perUserDownload;          }
 		public boolean  isPerUserWebAccess() {return m_perUserWebAccess;         }
 		public boolean  isShowLastLogin()    {return m_showLastLogin;            }
+		public boolean  isUserHasLoggedIn()  {return m_userHasLoggedIn;          }
 		public boolean  isInternal()         {return m_userType.isInternal();    }
 		public String   getLastLogin()       {return m_lastLogin;                }
 		public String   getLdapContainer()   {return m_ldapContainer;            }
@@ -123,6 +125,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		public void setPerUserDownload( boolean  perUserDownload)  {m_perUserDownload  = perUserDownload; }
 		public void setPerUserWebAccess(boolean  perUserWebAccess) {m_perUserWebAccess = perUserWebAccess;}
 		public void setShowLastLogin(   boolean  showLastLogin)    {m_showLastLogin    = showLastLogin;   }
+		public void setUserHasLoggedIn( boolean  userHasLoggedIn)  {m_userHasLoggedIn  = userHasLoggedIn; }
 		public void setLastLogin(       String   lastLogin)        {m_lastLogin        = lastLogin;       }
 		public void setLdapContainer(   String   ldapContainer)    {m_ldapContainer    = ldapContainer;   }
 		public void setLdapDN(          String   ldapDN)           {m_ldapDN           = ldapDN;          }

@@ -7598,6 +7598,7 @@ public class GwtViewHelper {
 				ai.setLoginId(user.getName());
 				ai.setFromOpenId(userII.isFromOpenid());
 				ai.setUserType(getUserType(user));
+				ai.setUserHasLoggedIn(null != user.getFirstLoginDate());
 			}
 			finally {
 				SimpleProfiler.stop("GwtViewHelper.getUserProperties(Gather basic account information)");
@@ -7620,7 +7621,7 @@ public class GwtViewHelper {
 
 			// ...if we need to include the last login information...
 			ai.setShowLastLogin(includeLastLogin && SHOW_LAST_LOGIN_IN_USER_PROPERTIES);
-			if (ai.isShowLastLogin()) {
+			if (ai.isShowLastLogin() && ai.isUserHasLoggedIn()) {
 				SimpleProfiler.start("GwtViewHelper.getUserProperties(Get last login)");
 				try {
 					// ...and if we can determine the last time the

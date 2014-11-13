@@ -3040,6 +3040,7 @@ public interface GwtTeamingMessages extends Messages
 	String userPropertiesDlgLabel_LdapContainer();
 	String userPropertiesDlgLabel_LdapDN();
 	String userPropertiesDlgLabel_NetFolders();
+	String userPropertiesDlgLabel_NeverLoggedIn();
 	String userPropertiesDlgLabel_PersonalStorage();
 	String userPropertiesDlgLabel_Quota();
 	String userPropertiesDlgLabel_Sharing();

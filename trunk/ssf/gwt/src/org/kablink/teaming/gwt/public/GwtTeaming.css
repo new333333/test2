@@ -37,8 +37,9 @@
 .vibe-horizontalScroll {overflow-x: auto; overflow-y: hidden;}
 .vibe-verticalScroll   {overflow-y: auto; overflow-x: hidden;}
 
-.white    {color: white !important;}
-.width1px {width: 1px;}
+.white      {color: white !important;}
+.width1px   {width: 1px;}
+.width300px {width: 300px;}
 
 .whitespace-normal
 {
