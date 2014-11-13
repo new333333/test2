@@ -1762,7 +1762,7 @@ public class GwtServerHelper {
 				pwChangeUser = currentUser;
 			}
 			else {
-				pwChangeUser  = ((User) bs.getProfileModule().getEntry(userId));
+				pwChangeUser  = ((User) bs.getProfileModule().getEntry(userId, false));	// false -> Don't do an access check.
 				isCurrentUser = ((null != currentUser) && userId.equals(currentUser.getId()));
 			}
 			
