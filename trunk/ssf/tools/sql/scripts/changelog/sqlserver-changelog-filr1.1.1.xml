@@ -39,11 +39,21 @@
 	        <column name="zoneId" type="NUMERIC(19,0)">
 	            <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_KeyShieldConfig"/>
 	        </column>
-	        <column name="enabled" type="TINYINT"/>
-	        <column name="serverUrl" type="NVARCHAR(255)"/>
-	        <column name="httpTimeout" type="INT"/>
-	        <column name="apiAuthKey" type="VARCHAR(128)"/>
-	        <column name="authConnectorNames" type="VARCHAR(128)"/>
+	        <column name="enabled" type="TINYINT">
+                <constraints nullable="false"/>
+	        </column>
+	        <column name="serverUrl" type="NVARCHAR(128)">
+                <constraints nullable="false"/>
+	        </column>
+	        <column name="httpTimeout" type="INT">
+                <constraints nullable="true" />
+	        </column>
+	        <column name="apiAuthKey" type="VARCHAR(128)">
+                <constraints nullable="true" />
+	        </column>
+	        <column name="authConnectorNames" type="VARCHAR(128)">
+                <constraints nullable="true" />
+	        </column>
 	    </createTable>
     </changeSet>
     

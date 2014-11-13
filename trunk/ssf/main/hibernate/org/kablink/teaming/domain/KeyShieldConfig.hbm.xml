@@ -8,7 +8,7 @@
       <generator class="assigned"/>
 	</id>
 	<property name="enabled" access="field"/>
-	<property name="serverUrl" access="field" length="255"/>
+	<property name="serverUrl" access="field" length="128"/>
 	<property name="httpTimeout" access="field"/>
 	<property name="apiAuthKey" access="field" length="128"/>
 	<property name="authConnectorNames" access="field" length="128"/>
