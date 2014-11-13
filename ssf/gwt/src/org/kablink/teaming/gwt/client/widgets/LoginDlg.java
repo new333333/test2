@@ -53,6 +53,8 @@ import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.datatable.ApplyColumnWidths;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CompleteExternalUserSelfRegistrationCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLoginInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RequestResetPwdCmd;
@@ -69,7 +71,6 @@ import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolder
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -538,17 +539,14 @@ public class LoginDlg extends DlgBox
 				@Override
 				public void onLoad(LoadEvent event)
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
 						{
 							centerAndShow();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 			img.addErrorHandler( new ErrorHandler()
@@ -556,17 +554,14 @@ public class LoginDlg extends DlgBox
 				@Override
 				public void onError( ErrorEvent event )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
 						{
 							centerAndShow();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 			m_headerPanel.add( img );
@@ -617,17 +612,14 @@ public class LoginDlg extends DlgBox
 				@Override
 				public void onValueChange( ValueChangeEvent<java.lang.Boolean> event )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
 							danceOpenIdControls();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			};
 			m_useOpenIdCkbox.addValueChangeHandler( valueChangeHandler );
@@ -669,22 +661,20 @@ public class LoginDlg extends DlgBox
 							@Override
 							public void onClick( ClickEvent event )
 							{
-								Scheduler.ScheduledCommand cmd;
 								OpenIDAuthProviderImg img;
 								final GwtOpenIDAuthenticationProvider selectedProvider;
 								
 								img = (OpenIDAuthProviderImg) event.getSource();
 								selectedProvider = img.getProvider();
 								
-								cmd = new Scheduler.ScheduledCommand()
+								GwtClientHelper.deferCommand( new ScheduledCommand()
 								{
 									@Override
 									public void execute() 
 									{
 										handleOpenIDAuthProviderSelected( selectedProvider );
 									}
-								};
-								Scheduler.get().scheduleDeferred( cmd );
+								} );
 							}
 						} );
 						
@@ -933,9 +923,7 @@ public class LoginDlg extends DlgBox
 			@Override
 			public void onFailure( final Throwable t )
 			{
-				Scheduler.ScheduledCommand cmd;
-
-				cmd = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -949,8 +937,7 @@ public class LoginDlg extends DlgBox
 	
 						createHeaderNow( null );
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}
 	
 			/**
@@ -961,19 +948,17 @@ public class LoginDlg extends DlgBox
 			public void onSuccess( VibeRpcResponse response )
 			{
 				final GwtBrandingData brandingData;
-				Scheduler.ScheduledCommand cmd;
 				
 				brandingData = (GwtBrandingData) response.getResponseData();
 
-				cmd = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
 					{
 						createHeaderNow( brandingData );
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 				
 			}
 		};
@@ -1016,27 +1001,37 @@ public class LoginDlg extends DlgBox
 			public void onSuccess( VibeRpcResponse response )
 			{
 				debugAlert( "In CompleteExternalUserSelfRegistrationCmd / onSuccess()" );
-				if ( response.getResponseData() != null && response.getResponseData() instanceof BooleanRpcResponseData )
+				if ( response.getResponseData() != null && response.getResponseData() instanceof ErrorListRpcResponseData )
 				{
-					BooleanRpcResponseData responseData;
-					
-					responseData = (BooleanRpcResponseData) response.getResponseData();
-					if ( responseData.getBooleanValue() == true )
+					ErrorListRpcResponseData responseData = ( (ErrorListRpcResponseData) response.getResponseData() );
+					List<ErrorInfo> errList = responseData.getErrorList();
+					if ( GwtClientHelper.hasItems( errList ) )
 					{
-						ScheduledCommand cmd;
-						
-						cmd = new ScheduledCommand()
+						for (ErrorInfo err:  errList) {
+							FlowPanel errorPanel = getErrorPanel();
+							errorPanel.clear();
+							for ( ErrorInfo error:  errList )
+							{
+								Label label = new Label( error.getMessage() );
+								label.addStyleName( "dlgErrorLabel" );
+								errorPanel.add( label );
+							}
+							showErrorPanel();
+						}
+					}
+					else
+					{
+						GwtClientHelper.deferCommand( new ScheduledCommand()
 						{
 							@Override
 							public void execute()
 							{
+								clearErrorPanel();
+								hideErrorPanel();
 								showExternalUserRegConfirmation();
 							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						} );
 					}
-					else
-						Window.alert( GwtTeaming.getMessages().loginDlg_externalUserSelfRegFailed() );
 				}
 			}
 		};
@@ -1129,17 +1124,14 @@ public class LoginDlg extends DlgBox
 					}
 					else
 					{
-						ScheduledCommand cmd;
-						
-						cmd = new ScheduledCommand()
+						GwtClientHelper.deferCommand( new ScheduledCommand()
 						{
 							@Override
 							public void execute()
 							{
 								showExternalUserPasswordResetRequestedUI();
 							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						} );
 					}
 				}
 			}
@@ -1460,17 +1452,14 @@ public class LoginDlg extends DlgBox
 				@Override
 				public void onClick( ClickEvent event )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
 							handleClickOnRegisterBtn();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -1646,17 +1635,14 @@ public class LoginDlg extends DlgBox
 				@Override
 				public void onClick( ClickEvent event )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
 							handleClickOnResetPwdBtn();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -1892,17 +1878,14 @@ public class LoginDlg extends DlgBox
 				@Override
 				public void onClick( ClickEvent event )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
 							invokeForgottenPwdDlg();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			};
 			m_forgotPwdLink.addClickHandler( clickHandler );
@@ -1930,9 +1913,7 @@ public class LoginDlg extends DlgBox
 				@Override
 				public void onClick( ClickEvent event )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -1945,8 +1926,7 @@ public class LoginDlg extends DlgBox
 							// Invoke the "Create User" page in a new window.
 							Window.open( url, "self_reg_create_new_account", "height=750,resizeable,scrollbars,width=750" );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}//end onClick()
 			};
 			m_selfRegLink.addClickHandler( clickHandler );
@@ -2082,9 +2062,7 @@ public class LoginDlg extends DlgBox
 				@Override
 				public void onSuccess( final ForgottenPwdDlg fpDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -2094,8 +2072,7 @@ public class LoginDlg extends DlgBox
 							fpDlg.init();
 							fpDlg.showRelativeTo( m_forgotPwdLink );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}

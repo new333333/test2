@@ -406,7 +406,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case COMPLETE_EXTERNAL_USER_SELF_REGISTRATION:
 		{
 			CompleteExternalUserSelfRegistrationCmd srCmd;
-			Boolean result;
+			ErrorListRpcResponseData result;
 			
 			srCmd = (CompleteExternalUserSelfRegistrationCmd) cmd;
 			result = GwtServerHelper.completeExternalUserSelfRegistration(
@@ -416,7 +416,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 																		srCmd.getLastName(),
 																		srCmd.getPwd(),
 																		srCmd.getInvitationUrl() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
