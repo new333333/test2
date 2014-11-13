@@ -4,7 +4,7 @@
                  
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/context/webdav-security.xml</param-value>
+		<param-value>/WEB-INF/context/webdav-security.xml /WEB-INF/context/security-auth-kshield.xml</param-value>
 	</context-param>
 
 	<listener>

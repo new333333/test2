@@ -32,10 +32,13 @@
  */
 package org.kablink.teaming.asmodule.security.authentication;
 
+import java.util.Map;
+
 public class AuthenticationContextHolder {
 
     private static final ThreadLocal<String> AUTHENTICATOR = new ThreadLocal<String>();
     private static final ThreadLocal<String> ENABLE_KEY = new ThreadLocal<String>();
+	private static final ThreadLocal<Map<String,Object>> ldapAuthenticationInfo = new ThreadLocal<Map<String,Object>>();
 
     public static void setAuthenticationContext(String authenticator, String enableKey) {
     	AUTHENTICATOR.set((authenticator == null)? null : authenticator.toLowerCase());
@@ -49,6 +52,21 @@ public class AuthenticationContextHolder {
     public static String getEnableKey() {
     	return ENABLE_KEY.get();
     }
+
+	public static void putLdapAuthenticationInfo(String key, Object value) {
+		Map<String,Object> map = ldapAuthenticationInfo.get();
+		if(map != null) {
+			map.put(key, value);
+		}
+	}
+	
+	public static Object getLdapAuthenticationInfo(String key) {
+		Map<String,Object> map = ldapAuthenticationInfo.get();
+		if(map != null)
+			return map.get(key);
+		else
+			return null;
+	}
 
 	public static void clear() {
 		setAuthenticationContext(null,null);

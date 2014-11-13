@@ -65,7 +65,6 @@ import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.spring.security.ldap.LdapAuthenticationProvider;
-import org.kablink.teaming.spring.security.AuthenticationThreadLocal;
 import org.kablink.teaming.spring.security.OpenIDAuthenticationProvider;
 import org.kablink.teaming.spring.security.SsfContextMapper;
 import org.kablink.teaming.spring.security.SynchNotifiableAuthentication;
@@ -401,8 +400,6 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
     {
 		long begin = System.nanoTime();
 		
-		AuthenticationThreadLocal.init();
-		
 		try {
 			// The following hack(?) is necessary to handle the pre-authentication situation where
 			// initial authentication request is made in the context of no user, yet at least one
@@ -473,8 +470,6 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 			}
 		}
 		finally {
-			AuthenticationThreadLocal.clear();
-			
 			if(logger.isDebugEnabled())
 				logger.debug("Authenticating '" + authentication.getName() + "' - " +
 					((System.nanoTime() - begin)/1000000.0) + " ms");
@@ -482,34 +477,45 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
     }
 
 	private void updateLastRegularAuthenticationTimeIfApplicable(Authentication authentication) {
-		if(cacheUsingAuthenticators.contains(getAuthenticator())) {
+		if(cacheUsingAuthenticators.contains(getAuthenticator()) && !(authentication instanceof PreAuthenticatedAuthenticationToken)) {
 			lastRegularAuthenticationTimes.put(authentication.getName(), System.currentTimeMillis());
 		}
 	}
 	
-	private boolean useRegularAuthentication(Authentication authentication) {
+	/*
+	 * Return true if authenticating against local database (e.g. local or external users whose 
+	 * credentials are stored in the database, or LDAP users using their locally cached credential, etc.)
+	 * Return false if authenticating against external identity source such as LDAP server or
+	 * the user is already preauthenticated via IDP/SP SSO service in which case validation is
+	 * performed rather than authentication.
+	 */
+	private boolean useLocalAuthentication(Authentication authentication) {
+		if(authentication instanceof PreAuthenticatedAuthenticationToken)
+			return false; // Since preauthentication doesn't make password available, local authentication will fail no matter what
+		
+    	// Are we dealing with one of Teaming's system accounts such as "admin" or "guest"?
 		if(BuiltInUsersHelper.isSystemUserAccount(authentication.getName()))
-			return false; // must use local authentication
+			return true; // must use local authentication
 		
 		if(!cacheUsingAuthenticators.contains(getAuthenticator()))
-			return true; // must use regular authentication
+			return false; // must use regular authentication
 		
 		Long lastRegularAuthenticationTime = lastRegularAuthenticationTimes.get(authentication.getName());
 		if(lastRegularAuthenticationTime == null) {
 			if(logger.isDebugEnabled())
 				logger.debug("user='" + authentication.getName() + "' authenticator='" + getAuthenticator() + "' - Use regular auth because first time");
-			return true; // First time logging in through this server since the server started - must use regular authentication
+			return false; // First time logging in through this server since the server started - must use regular authentication
 		}
 		
 		if(System.currentTimeMillis() - lastRegularAuthenticationTime > cacheUsingAuthenticatorTimeout * 1000) {
 			if(logger.isDebugEnabled())
 				logger.debug("user='" + authentication.getName() + "' authenticator='" + getAuthenticator() + "' - Use regular auth because cache time limit has passed");
-			return true; // The specified time limit has passed since the last time the user used regular authentication - must use regular authentication again
+			return false; // The specified time limit has passed since the last time the user used regular authentication - must use regular authentication again
 		}
 		else {
 			if(logger.isTraceEnabled())
 				logger.trace("user='" + authentication.getName() + "' authenticator='" + getAuthenticator() + "' - Use local cache");
-			return false; // Still within time limit. Can use locally cached credential.
+			return true; // Still within time limit. Can use locally cached credential.
 		}
 	}
 	
@@ -531,13 +537,32 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
        		Authentication result = null;
        		Object credentials = authentication.getCredentials();
        		
-        	// Are we dealing with one of Teaming's system accounts such as "admin" or "guest"?
-        	if (useRegularAuthentication(authentication))
-        	{
-        		boolean userIsInternal;
+       		if(useLocalAuthentication(authentication)) {
+       			// Skip non-local authentication. Authenticate only against local database.
+     			SimpleProfiler.start( "3a-system account: localProviders.get(zone).authenticate(authentication)" );
+    			result = localProviders.get(zone).authenticate(authentication);
+     			SimpleProfiler.stop( "3a-system account: localProviders.get(zone).authenticate(authentication)" );
+
+    			// This is not used for authentication or profile synchronization but merely to log the authenticator.
+     			SimpleProfiler.start( "4a-system account: AuthenticationManagerUtil.authenticate()" );
+    			AuthenticationManagerUtil.authenticate(AuthenticationServiceProvider.LOCAL,
+    					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
+    					(String) result.getName(), 
+    					(String) credentials,
+    					false, 
+    					false,
+    					false,
+                        false,
+    					true, 
+    					(Map) result.getPrincipal(), getAuthenticator());			
+     			SimpleProfiler.stop( "4a-system account: AuthenticationManagerUtil.authenticate()" );
+
+    			return successfulAuthentication(result);
+       		}
+       		else {
         		AuthenticationServiceProvider authenticationServiceProvider = AuthenticationServiceProvider.UNKNOWN;
         		
-        		// No, try to do an ldap authentication.
+        		// Try to do an ldap authentication.
         		// This will also try local authentication as fallback, if configured to do so.
 	    		try {
 	    			// Perform authentication
@@ -549,8 +574,6 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     			updateLastRegularAuthenticationTimeIfApplicable(authentication);
 	     			
 	     			String loginName = getLoginName(result);
-	     			
-	     			userIsInternal = isAuthenticatedUserInternal(result);
 	     			
 	     			authenticationServiceProvider = getAuthenticationServiceProvider(result);
 	     			
@@ -582,6 +605,13 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     				createUser = false;
 	     				passwordAutoSynch = false;
 	     				ignorePassword = true;
+	     			}
+
+	     			if(AuthenticationServiceProvider.PRE == authenticationServiceProvider) {
+	     				// If preauthentication, override the default settings.	    	     				
+	     				createUser = false; // Don't allow preauthenticated user to self provision himself.
+	     				passwordAutoSynch = false; // Preauthentication doesn't make password available.
+	     				ignorePassword = true; // Authentication has already been done. The only thing left is validation.
 	     			}
 
 	     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate" );
@@ -624,28 +654,6 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	    			exc = new UserIdNotUniqueException( errDesc );
 	    		}
         	}
-        	else { // Yes, system account or should use cached LDAP credential
-     			// Do not try non-local authentication. Authenticate only against local users.
-     			SimpleProfiler.start( "3a-system account: localProviders.get(zone).authenticate(authentication)" );
-    			result = localProviders.get(zone).authenticate(authentication);
-     			SimpleProfiler.stop( "3a-system account: localProviders.get(zone).authenticate(authentication)" );
-
-    			// This is not used for authentication or profile synchronization but merely to log the authenticator.
-     			SimpleProfiler.start( "4a-system account: AuthenticationManagerUtil.authenticate()" );
-    			AuthenticationManagerUtil.authenticate(AuthenticationServiceProvider.LOCAL,
-    					getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
-    					(String) result.getName(), 
-    					(String) credentials,
-    					false, 
-    					false,
-    					false,
-                        false,
-    					true, 
-    					(Map) result.getPrincipal(), getAuthenticator());			
-     			SimpleProfiler.stop( "4a-system account: AuthenticationManagerUtil.authenticate()" );
-
-    			return successfulAuthentication(result);
-    		}
     	}
     	
     	if(exc != null)
@@ -705,8 +713,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	private String getLoginName(Authentication result) {
 		String loginName;
 		if(result instanceof PreAuthenticatedAuthenticationToken) {
-			// Integrated Windows Authentication through integration with IIS
 			PreAuthenticatedAuthenticationToken preAuth = (PreAuthenticatedAuthenticationToken) result;
+			// To take care of Integrated Windows Authentication through integration with IIS
 			loginName = WindowsUtil.getSamaccountname((String) result.getName());
 		}
 		else {
@@ -848,7 +856,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	}
 	
 	private void checkPasswordRequirement(Authentication authentication) {
-		if(authentication instanceof OpenIDAuthenticationToken)
+		if(authentication instanceof OpenIDAuthenticationToken || authentication instanceof PreAuthenticatedAuthenticationToken)
 			return;
 		
 		// Don't allow anyone to log in without specifying a password (to prevent successful

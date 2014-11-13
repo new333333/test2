@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
@@ -78,7 +79,6 @@ import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.security.authentication.UserMismatchException;
-import org.kablink.teaming.spring.security.AuthenticationThreadLocal;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SessionUtil;
@@ -750,7 +750,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		
 		LdapConnectionConfig ldapConnectionConfig = null;
 		
-		String ldapConnectionConfigId = (String) AuthenticationThreadLocal.get("ldapConnectionConfigId");
+		String ldapConnectionConfigId = (String) AuthenticationContextHolder.getLdapAuthenticationInfo("ldapConnectionConfigId");
 		
 		if(ldapConnectionConfigId != null) {
 			try {
