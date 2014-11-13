@@ -42,6 +42,7 @@ import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
+import org.kablink.teaming.module.keyshield.KeyShieldModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.mobiledevice.MobileDeviceModule;
@@ -145,4 +146,7 @@ public interface AllModulesInjected {
 	
 	void setMobileDeviceModule(MobileDeviceModule mobileDeviceModule);
 	MobileDeviceModule getMobileDeviceModule();
+	
+	void setKeyShieldModule( KeyShieldModule keyShieldModule );
+	KeyShieldModule getKeyShieldModule();
 }

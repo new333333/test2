@@ -44,6 +44,7 @@ import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
+import org.kablink.teaming.module.keyshield.KeyShieldModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.mobiledevice.MobileDeviceModule;
@@ -87,6 +88,7 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	private ZoneModule zoneModule;
 	private SharingModule sharingModule;
 	private MobileDeviceModule mobileDeviceModule;
+	private KeyShieldModule keyShieldModule;
 
 	@Override
 	public void setBinderModule(BinderModule binderModule) {
@@ -344,5 +346,26 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	@Override
 	public void setMobileDeviceModule(MobileDeviceModule mobileDeviceModule) {
 		this.mobileDeviceModule = mobileDeviceModule;
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public KeyShieldModule getKeyShieldModule()
+	{
+		if ( keyShieldModule == null )
+			keyShieldModule = (KeyShieldModule) SpringContextUtil.getBean( "keyShieldModule" );
+		
+		return keyShieldModule;
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public void setKeyShieldModule( KeyShieldModule keyShieldModule )
+	{
+		this.keyShieldModule = keyShieldModule;
 	}
 }

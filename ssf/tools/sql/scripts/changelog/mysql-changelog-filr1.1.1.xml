@@ -32,5 +32,29 @@
             </column>
         </addColumn>
     </changeSet>
-    
+
+    <changeSet author="jay" context="schema" failOnError="true" id="4">
+        <comment>KeyShield SSO Configuration</comment>
+        <createTable tableName="SS_KeyShieldConfig">
+        	<column name="zoneId" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="enabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="serverUrl" type="VARCHAR(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="httpTimeout" type="INT">
+                <constraints nullable="true" />
+            </column>
+            <column name="apiAuthKey" type="VARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+            <column name="authConnectorNames" type="VARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+	</changeSet>
+	    
 </databaseChangeLog>

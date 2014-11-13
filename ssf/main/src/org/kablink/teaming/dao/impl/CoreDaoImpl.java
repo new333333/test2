@@ -49,7 +49,6 @@ import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
@@ -69,7 +68,6 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.exception.ConstraintViolationException;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.LongIdComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -103,6 +101,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.FolderEntryStats;
 import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.IndexNode;
+import org.kablink.teaming.domain.KeyShieldConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.LoginInfo;
@@ -144,7 +143,6 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.dao.hibernate.DynamicDialect;
-
 import org.kablink.util.search.Junction;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -3673,4 +3671,27 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "executeHearbeatQuery(String)");
     	}	        
 	}
- }
+
+	/**
+	 * 
+	 */
+	@Override
+	public KeyShieldConfig loadKeyShieldConfig( Long zoneId )
+	{
+		KeyShieldConfig keyShieldConfig;
+		long begin = System.nanoTime();
+	
+		try
+		{
+			keyShieldConfig = (KeyShieldConfig)load( KeyShieldConfig.class, zoneId );
+			if ( keyShieldConfig == null )
+				keyShieldConfig = new KeyShieldConfig( zoneId );
+    	}
+    	finally
+    	{
+    		end( begin, "loadKeyShieldConfig(Long)" );
+    	}
+		
+		return keyShieldConfig;
+	}
+}

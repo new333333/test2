@@ -1993,7 +1993,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GwtKeyShieldConfig config;
 			
-			config = GwtServerHelper.getKeyShieldConfig();
+			config = GwtServerHelper.getKeyShieldConfig( this );
 			return new VibeRpcResponse( config );
 		}
 		
