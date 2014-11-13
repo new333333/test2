@@ -33,4 +33,18 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="jay" context="schema" failOnError="true" id="4">
+        <comment>KeyShield SSO Configuration</comment>
+        <createTable tableName="SS_KEYSHIELDCONFIG">
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_KEYSHIELDCONFIG"/>
+            </column>
+            <column name="ENABLED" type="NUMBER(1,0)"/>
+            <column name="SERVERURL" type="VARCHAR2(255 CHAR)"/>
+            <column name="HTTPTIMEOUT" type="NUMBER(10,0)"/>
+            <column name="APIAUTHKEY" type="VARCHAR2(128 CHAR)"/>
+            <column name="AUTHCONNECTORNAMES" type="VARCHAR2(128 CHAR)"/>
+        </createTable>
+	</changeSet>
+	    
 </databaseChangeLog>

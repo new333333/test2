@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.EntityDashboard;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.IndexNode;
+import org.kablink.teaming.domain.KeyShieldConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.NotifyStatus;
@@ -65,7 +66,6 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.UserDashboard;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
-
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -311,4 +311,6 @@ public interface CoreDao {
 	public List<Long> getSubBinderIds(Binder binder);
 	
 	public void executeHeartbeatQuery(String heartbeatQuery);
+	
+	public KeyShieldConfig loadKeyShieldConfig( Long zoneId );
 }

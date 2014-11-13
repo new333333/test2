@@ -92,13 +92,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -127,6 +125,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
+import org.kablink.teaming.domain.KeyShieldConfig;
 import org.kablink.teaming.domain.MobileAppsConfig;
 import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.domain.MobileOpenInWhiteLists;
@@ -295,6 +294,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.ical.AttendedEntries;
+import org.kablink.teaming.module.keyshield.KeyShieldModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapModule.LdapOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
@@ -6381,15 +6381,49 @@ public class GwtServerHelper {
 	/**
 	 * 
 	 */
-	public static GwtKeyShieldConfig getKeyShieldConfig()
+	public static GwtKeyShieldConfig getKeyShieldConfig( AllModulesInjected ami )
 	{
-		GwtKeyShieldConfig config;
+		KeyShieldModule keyShieldModule;
+		GwtKeyShieldConfig config = null;
+		KeyShieldConfig keyShieldConfig = null;
+
+		keyShieldModule = ami.getKeyShieldModule();
 		
-		//!!!
-		config = GwtKeyShieldConfig.getGwtKeyShieldConfig();
+		try
+		{
+			keyShieldConfig = keyShieldModule.getKeyShieldConfig( RequestContextHolder.getRequestContext().getZoneId() );
+		}
+		catch ( Exception ex )
+		{
+			ex.printStackTrace();
+		}
+
+		if ( keyShieldConfig == null )
+			config = GwtKeyShieldConfig.getGwtKeyShieldConfig();
+		else
+			config = getGwtKeyShieldConfigFromKeyShieldConfig( keyShieldConfig );
 		
 		return config;
 	}
+	
+	/**
+	 *
+	 */
+	private static GwtKeyShieldConfig getGwtKeyShieldConfigFromKeyShieldConfig( KeyShieldConfig keyShieldConfig )
+	{
+		GwtKeyShieldConfig config;
+		
+		config = GwtKeyShieldConfig.getGwtKeyShieldConfig();
+		
+		config.setApiAuthKey( keyShieldConfig.getApiAuthKey() );
+		config.setAuthConnectorNames( keyShieldConfig.getAuthConnectorNames() );
+		config.setHttpConnectionTimeout( keyShieldConfig.getHttpTimeout() );
+		config.setIsEnabled( keyShieldConfig.getEnabled() );
+		config.setServerUrl( keyShieldConfig.getServerUrl() );
+		
+		return config;
+	}
+	
 	
 	/**
 	 * Return a GwtJitsZoneConfig object that holds the jits zone config data.
