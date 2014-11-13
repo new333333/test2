@@ -206,15 +206,29 @@ public class UserPropertiesDlg extends DlgBox
 	/*
 	 * Adds information about the user's Home folder to the grid.
 	 */
-	private void addHomeInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, HomeInfo home, boolean addSectionHeader) {
+	private void addHomeInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo ai, HomeInfo home, boolean addSectionHeader) {
 		// If we're not showing Filr features...
 		if (!(GwtClientHelper.showFilrFeatures())) {
 			// ...we don't show home folder information.
 			return;
 		}
+
+		// If the user has never logged in...
+		int row = getSectionRow(grid, rf, addSectionHeader);
+		if (!(ai.isUserHasLoggedIn())) {
+			// ...they won't have a Home folder for them to display.
+			// ...Display a message to that affect.
+			InlineLabel il = addLabeledText(
+				grid,
+				row,
+				m_messages.userPropertiesDlgLabel_Home(),
+				m_messages.userPropertiesDlgLabel_NeverLoggedIn());
+			il.setWordWrap(true);
+			il.addStyleName("width300px");
+			return;
+		}
 		
 		// Add a home section.
-		int row = getSectionRow(grid, rf, addSectionHeader);
 		boolean hasHome = (null != home);
 		addLabeledText(
 			grid,
@@ -298,7 +312,7 @@ public class UserPropertiesDlg extends DlgBox
 	/*
 	 * Adds information about the user's identity to the grid.
 	 */
-	private void addIdentityInfo(FlexTable grid, FlexCellFormatter cf) {
+	private void addIdentityInfo(FlexTable grid, FlexCellFormatter cf, AccountInfo ai) {
 		int		row;
 		String	title;
 
@@ -347,7 +361,7 @@ public class UserPropertiesDlg extends DlgBox
 	/*
 	 * Adds a labeled item to the grid.
 	 */
-	private void addLabeledText(FlexTable grid, int row, String label, String text, boolean showUnknown) {
+	private InlineLabel addLabeledText(FlexTable grid, int row, String label, String text, boolean showUnknown) {
 		// Validate the text...
 		if (null == text) {
 			text = "";
@@ -363,11 +377,12 @@ public class UserPropertiesDlg extends DlgBox
 
 		// ...and add the labeled widget to the grid.
 		addLabeledWidget(grid, row, label, il);
+		return il;
 	}
 	
-	private void addLabeledText(FlexTable grid, int row, String label, String value) {
+	private InlineLabel addLabeledText(FlexTable grid, int row, String label, String value) {
 		// Always use the initial form of the method.
-		addLabeledText(grid, row, label, value, false);
+		return addLabeledText(grid, row, label, value, false);
 	}
 
 	/*
@@ -389,15 +404,30 @@ public class UserPropertiesDlg extends DlgBox
 	/*
 	 * Adds information about the user's Net Folders to the grid.
 	 */
-	private void addNetFoldersInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, NetFoldersInfo netFolders, boolean addSectionHeader) {
+	private void addNetFoldersInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo ai, NetFoldersInfo netFolders, boolean addSectionHeader) {
 		// If we're not showing Filr features...
 		if (!(GwtClientHelper.showFilrFeatures())) {
 			// ...we don't show net folder information.
 			return;
 		}
 		
-		// If the current user can manage net folders...
+		// If the user has never logged in...
 		int row = getSectionRow(grid, rf, addSectionHeader);
+		if (!(ai.isUserHasLoggedIn())) {
+			// ...they won't have any Net Folders information for them
+			// ...to display.  Display a message to that affect.
+			InlineLabel il = addLabeledText(
+				grid,
+				row,
+				m_messages.userPropertiesDlgLabel_NetFolders(),
+				m_messages.userPropertiesDlgLabel_NeverLoggedIn());
+			il.setWordWrap( true        );
+			il.addStyleName("width300px");
+			return;
+		}
+		
+		
+		// If the current user can manage net folders...
 		rf.addStyleName(row, "vibe-userPropertiesDlg-nfRow");
 		if (netFolders.canManageNetFolders()) {
 			// ...add a button allowing them to do so.
@@ -604,7 +634,7 @@ public class UserPropertiesDlg extends DlgBox
 	/*
 	 * Adds information about the user's profile to the grid.
 	 */
-	private void addProfileInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, ProfileEntryInfoRpcResponseData profile, boolean addSectionHeader) {
+	private void addProfileInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo ai, ProfileEntryInfoRpcResponseData profile, boolean addSectionHeader) {
 		// Are there any profile attributes to add?
 		Map<String, ProfileAttribute>	attrMap   = profile.getProfileEntryInfo();
 		Set<String>						attrKeys  = attrMap.keySet();
@@ -657,7 +687,7 @@ public class UserPropertiesDlg extends DlgBox
 	/*
 	 * Adds information about the user's disk quota to the grid.
 	 */
-	private void addQuotaInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, QuotaInfo quota, boolean addSectionHeader) {
+	private void addQuotaInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo ai, QuotaInfo quota, boolean addSectionHeader) {
 		// If quotas are completely disabled...
 		int row = getSectionRow(grid, rf, addSectionHeader);
 		if (null == quota) {
@@ -721,7 +751,7 @@ public class UserPropertiesDlg extends DlgBox
 	/*
 	 * Adds information about the user's sharing rights to the grid.
 	 */
-	private void addSharingInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, PerEntityShareRightsInfo share, boolean addSectionHeader) {
+	private void addSharingInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo ai, PerEntityShareRightsInfo share, boolean addSectionHeader) {
 		// Does the user have a workspace that we could get the sharing
 		// rights off of?
 		int row = getSectionRow(grid, rf, addSectionHeader);
@@ -996,14 +1026,15 @@ public class UserPropertiesDlg extends DlgBox
 
 		// ...add the various components of what we know about the
 		// ...user...
-		addIdentityInfo(       grid, cf                                                 );
-		addProfileInfo(        grid, cf, rf, m_userProperties.getProfile(),        false);	// false -> Don't add with a section header.
-		addAccountInfo(        grid, cf, rf, m_userProperties.getAccountInfo(),    true );	// true  ->       Add with a section header.
-		addHomeInfo(           grid, cf, rf, m_userProperties.getHomeInfo(),       true );	// true  ->       Add with a section header.
-		addPersonalStorageInfo(grid, cf, rf, m_userProperties.getAccountInfo(),    true );	// true  ->       Add with a section header.
-		addQuotaInfo(          grid, cf, rf, m_userProperties.getQuotaInfo(),      true );	// true  ->       Add with a section header.
-		addSharingInfo(        grid, cf, rf, m_userProperties.getSharingRights(),  true );	// true  ->       Add with a section header.
-		addNetFoldersInfo(     grid, cf, rf, m_userProperties.getNetFoldersInfo(), true );	// true  ->       Add with a section header.
+		AccountInfo ai = m_userProperties.getAccountInfo();
+		addIdentityInfo(       grid, cf,     ai                                             );
+		addProfileInfo(        grid, cf, rf, ai, m_userProperties.getProfile(),        false);	// false -> Don't add with a section header.
+		addAccountInfo(        grid, cf, rf, ai,                                       true );	// true  ->       Add with a section header.
+		addHomeInfo(           grid, cf, rf, ai, m_userProperties.getHomeInfo(),       true );	// true  ->       Add with a section header.
+		addPersonalStorageInfo(grid, cf, rf, ai,                                       true );	// true  ->       Add with a section header.
+		addQuotaInfo(          grid, cf, rf, ai, m_userProperties.getQuotaInfo(),      true );	// true  ->       Add with a section header.
+		addSharingInfo(        grid, cf, rf, ai, m_userProperties.getSharingRights(),  true );	// true  ->       Add with a section header.
+		addNetFoldersInfo(     grid, cf, rf, ai, m_userProperties.getNetFoldersInfo(), true );	// true  ->       Add with a section header.
 		
 		// ...and finally, show the dialog.
 		if (m_showDialog) {
