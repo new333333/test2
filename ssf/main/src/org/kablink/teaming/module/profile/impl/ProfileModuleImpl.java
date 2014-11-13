@@ -1159,15 +1159,23 @@ public Map getGroups(Map options) {
 	public Principal getEntry(String name) {
 		return getProfileDao().findPrincipalByName(name, RequestContextHolder.getRequestContext().getZoneId());
 	}
+	
 	//RO transaction
 	@Override
-	public Principal getEntry(Long principalId) {
+	public Principal getEntry(Long principalId, boolean checkAccess) {
         Principal p = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);              
 		//give users read access to their own entry
-		if (!RequestContextHolder.getRequestContext().getUser().equals(p))
+		if ((!RequestContextHolder.getRequestContext().getUser().equals(p)) && checkAccess)
     		checkReadAccess(p);			
         return p;
     }
+	
+	//RO transaction
+	@Override
+	public Principal getEntry(Long principalId) {
+		// Always use the initial form of the method.
+		return getEntry(principalId, true);	// true -> Check access by default.
+	}
 
 	@Override
 	public SortedSet<Principal> getPrincipals(Collection<Long> ids, boolean checkProfilesAccess) {

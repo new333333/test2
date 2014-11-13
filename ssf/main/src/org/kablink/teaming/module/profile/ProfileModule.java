@@ -252,8 +252,9 @@ public interface ProfileModule {
 	 * @return
 	 * @throws AccessControlException
 	 */
-	public Principal getEntry(Long userId)
-		throws AccessControlException;
+	public Principal getEntry(Long userId)                      throws AccessControlException;
+	public Principal getEntry(Long userId, boolean checkAccess) throws AccessControlException;
+	
 	/**
 	 * Get the workspace for a user
 	 * @param principaId
