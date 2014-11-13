@@ -32,8 +32,8 @@
  */
 package org.kablink.teaming.spring.security.ldap;
 
+import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.module.ldap.LdapModule;
-import org.kablink.teaming.spring.security.AuthenticationThreadLocal;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -83,7 +83,7 @@ public class LdapAuthenticationProvider extends org.springframework.security.lda
     		Authentication result = super.authenticate(authentication);
     		
     		// If still here, it means that the authentication was successful.
-    		AuthenticationThreadLocal.put("ldapConnectionConfigId", ldapConnectionConfigId);
+    		AuthenticationContextHolder.putLdapAuthenticationInfo("ldapConnectionConfigId", ldapConnectionConfigId);
     		
     		return result;
     	}

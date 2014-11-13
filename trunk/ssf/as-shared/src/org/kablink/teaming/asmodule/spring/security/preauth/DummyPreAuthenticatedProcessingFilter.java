@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,39 +30,36 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.spring.security;
+package org.kablink.teaming.asmodule.spring.security.preauth;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 /**
+ * This is a dummy implementation of a pre-authenticated processing filter whose
+ * sole purpose is to terminate the pre-authentication so that the authentication
+ * pipeline can continue with the rest of the filters defined in the system.
+ * 
  * @author jong
  *
  */
-public class AuthenticationThreadLocal {
+public class DummyPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
-	private static final ThreadLocal<Map<String,Object>> ldapAuthenticationInfo = new ThreadLocal<Map<String,Object>>();
-	
-	public static void init() {
-		ldapAuthenticationInfo.set(new HashMap<String,Object>());
+	/* (non-Javadoc)
+	 * @see org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter#getPreAuthenticatedPrincipal(javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
+		return null;
 	}
-	
-	public static void clear() {
-		ldapAuthenticationInfo.set(null);
+
+	/* (non-Javadoc)
+	 * @see org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter#getPreAuthenticatedCredentials(javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
+		return null;
 	}
-	
-	public static void put(String key, Object value) {
-		Map<String,Object> map = ldapAuthenticationInfo.get();
-		if(map != null) {
-			map.put(key, value);
-		}
-	}
-	
-	public static Object get(String key) {
-		Map<String,Object> map = ldapAuthenticationInfo.get();
-		if(map != null)
-			return map.get(key);
-		else
-			return null;
-	}
+
 }
