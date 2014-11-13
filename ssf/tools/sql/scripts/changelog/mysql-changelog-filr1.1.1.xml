@@ -39,11 +39,11 @@
         	<column name="zoneId" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="enabled" type="BIT">
-                <constraints nullable="true" />
+            <column name="enabled" type="BIT" defaultValue="false">
+                <constraints nullable="false"/>
             </column>
-            <column name="serverUrl" type="VARCHAR(255)">
-                <constraints nullable="true" />
+            <column name="serverUrl" type="VARCHAR(128)">
+                <constraints nullable="false" />
             </column>
             <column name="httpTimeout" type="INT">
                 <constraints nullable="true" />

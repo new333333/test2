@@ -31,23 +31,14 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.domain;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-
-import org.kablink.teaming.security.function.WorkArea;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 
 /**
  * 
  * @author jwootton@novell.com
  */
-public class KeyShieldConfig extends ZonedObject implements WorkArea
+public class KeyShieldConfig extends ZonedObject
 {
-	public static final String WORKAREA_TYPE = "keyShield";
-	
-	private Boolean enabled; // access="field"
+	private boolean enabled = false; // access="field"
 	private String serverUrl;
 	private Integer httpTimeout;
 	private String apiAuthKey;
@@ -88,7 +79,7 @@ public class KeyShieldConfig extends ZonedObject implements WorkArea
 	/**
 	 * 
 	 */
-	public Boolean getEnabled()
+	public boolean getEnabled()
 	{
 		return enabled;
 	}
@@ -128,7 +119,7 @@ public class KeyShieldConfig extends ZonedObject implements WorkArea
 	/**
 	 * 
 	 */
-	public void setEnabled( Boolean enabled )
+	public void setEnabled( boolean enabled )
 	{
 		this.enabled = enabled;
 	}
@@ -158,145 +149,4 @@ public class KeyShieldConfig extends ZonedObject implements WorkArea
 		this.zoneId = zoneId;
 	}
 
-	/**
-	 * 
-	 */
-    //
-    @Override
-	public Long getWorkAreaId()
-    {
-    	return getZoneId();
-    }
-    
-    /**
-     * 
-     */
-    @Override
-	public String getWorkAreaType()
-    {
-    	return WORKAREA_TYPE;
-    }
-    
-    /**
-     * 
-     */
-    @Override
-	public WorkArea getParentWorkArea()
-    {
-    	return null;
-    }
-    
-    /**
-     * 
-     */
-    @Override
-	public boolean isFunctionMembershipInheritanceSupported()
-    {
-    	return false;
-    }
-    
-    /**
-     * 
-     */
-    @Override
-	public boolean isFunctionMembershipInherited()
-    {
-    	return false;
-    }
-  
-    /**
-     * 
-     */
-    @Override
-    public void setFunctionMembershipInherited( boolean functionMembershipInherited )
-    {
-    }
-    
-    /**
-     * 
-     */
-    @Override
-    public boolean isExtFunctionMembershipInherited()
-    {
-    	return false;
-    }
- 
-    /**
-     * 
-     */
-    @Override
-    public void setExtFunctionMembershipInherited( boolean extFunctionMembershipInherited )
-    {
-    }
-    
-    /**
-     * 
-     */
-    @Override
-	public Long getOwnerId()
-    {
-    	return null;
-    }
-    
-    /**
-     * 
-     */
-    @Override
-	public Principal getOwner()
-    {
-    	return null;
-    }
-    
-    /**
-     * 
-     */
-    @Override
-	public void setOwner( Principal owner )
-    {
-    }
-    
-    /**
-     * 
-     */
-    @Override
-	public boolean isTeamMembershipInherited()
-    {
-    	return false;
-    }
-    
-    /**
-     * 
-     */
-    @Override
-	public Set<Long> getChildWorkAreas()
-	{
-    	return new HashSet<Long>();
-    }
-    
-    /**
-     * 
-     */
-    @Override
-	public boolean isAclExternallyControlled()
-    {
-    	return Boolean.FALSE;
-    }
-    
-    /**
-     * 
-     */
-    @Override
-	public List<WorkAreaOperation> getExternallyControlledRights()
-	{
-    	return new ArrayList<WorkAreaOperation>();
-    }
-    
-    /**
-     * 
-     */
-    @Override
-	public String getRegisteredRoleType()
-    {
-    	return "";
-    }
 }
