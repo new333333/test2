@@ -286,6 +286,14 @@ public final class PasswordPolicyHelper {
 		
 //!		...this needs to be implemented...
 		return null;
+
+/*
+		List<String> reply = new ArrayList<String>();
+		reply.add("This is the 1st violation.");
+		reply.add("This is the 2nd violation.");
+		reply.add("This is the 3rd violation.");
+		return reply;
+*/
 	}
 	
 	/**

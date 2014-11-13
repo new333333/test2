@@ -92,11 +92,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -1829,7 +1831,7 @@ public class GwtServerHelper {
 	/**
 	 * Complete the self registration of an external user
 	 */
-	public static Boolean completeExternalUserSelfRegistration(
+	public static ErrorListRpcResponseData completeExternalUserSelfRegistration(
 		AllModulesInjected ami,
 		Long extUserId,
 		String firstName,
@@ -1837,6 +1839,7 @@ public class GwtServerHelper {
 		String pwd,
 		String invitationUrl )
 	{
+		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 		try
 		{
 			ProfileDao profileDao;
@@ -1847,37 +1850,52 @@ public class GwtServerHelper {
 			// Get the external user.
 			profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
 			extUser = profileDao.loadUser( extUserId, RequestContextHolder.getRequestContext().getZoneId() );
-			
-			updates = new HashMap();
-			updates.put( ObjectKeys.FIELD_USER_PASSWORD, pwd );
-			updates.put( ObjectKeys.FIELD_USER_FIRSTNAME, firstName );
-			updates.put( ObjectKeys.FIELD_USER_LASTNAME, lastName );
 
-			ami.getProfileModule().modifyUserFromPortal( extUser.getId(), updates, null );
-			
-			ExternalUserUtil.markAsCredentialed( extUser );
-			
-			// invitationUrl is the original url the user was sent in the first share e-mail.
-			// We need to replace "euet=xxx" with "euet=some new token value".
-			if ( invitationUrl != null && invitationUrl.length() > 0 )
-			{
-    			String newToken;
-
-			    // Create a new token
-				newToken = ExternalUserUtil.encodeUserTokenWithNewSeed( extUser );
-
-				confirmationUrl = ExternalUserUtil.replaceTokenInUrl(invitationUrl, newToken);
+			// Does the given password violate policy?
+			List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(extUser, pwd);
+			if (MiscUtil.hasItems(ppViolations)) {
+				// Yes!  Copy the violations to the response.
+				for (String ppViolation:  ppViolations) {
+					reply.addError(ppViolation);
+				}
 			}
-
-			// Send an e-mail informing the user that their registration is complete.
-			EmailHelper.sendConfirmationToExternalUser( ami, extUserId, confirmationUrl );
+			
+			else {
+				// No, this password is valid!
+				updates = new HashMap();
+				updates.put( ObjectKeys.FIELD_USER_PASSWORD, pwd );
+				updates.put( ObjectKeys.FIELD_USER_FIRSTNAME, firstName );
+				updates.put( ObjectKeys.FIELD_USER_LASTNAME, lastName );
+	
+				ProfileModule pm = ami.getProfileModule();
+				pm.modifyUserFromPortal(  extUser.getId(), updates, null );
+				pm.setLastPasswordChange( extUser,         new Date()    );	// Consider the user's password as having just been changed.
+				
+				ExternalUserUtil.markAsCredentialed( extUser );
+				
+				// invitationUrl is the original url the user was sent in the first share e-mail.
+				// We need to replace "euet=xxx" with "euet=some new token value".
+				if ( invitationUrl != null && invitationUrl.length() > 0 )
+				{
+	    			String newToken;
+	
+				    // Create a new token
+					newToken = ExternalUserUtil.encodeUserTokenWithNewSeed( extUser );
+	
+					confirmationUrl = ExternalUserUtil.replaceTokenInUrl(invitationUrl, newToken);
+				}
+	
+				// Send an e-mail informing the user that their registration is complete.
+				EmailHelper.sendConfirmationToExternalUser( ami, extUserId, confirmationUrl );
+			}
 		}
 		catch ( Exception ex )
 		{
-			return false;
+			reply.addError(NLT.get("relevance.selfRegistration.Exception"));
+			return reply;
 		}
 		
-		return true;
+		return reply;
 	}
 	
 	/*
