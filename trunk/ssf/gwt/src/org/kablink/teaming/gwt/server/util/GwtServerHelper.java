@@ -6425,6 +6425,29 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * 
+	 */
+	private static KeyShieldConfig getKeyShieldConfigFromGwtKeyShieldConfig(
+		Long zoneId,
+		GwtKeyShieldConfig config )
+	{
+		KeyShieldConfig keyShieldConfig;
+		
+		keyShieldConfig = new KeyShieldConfig( zoneId );
+		
+		if ( config != null )
+		{
+			keyShieldConfig.setApiAuthKey( config.getApiAuthKey() );
+			keyShieldConfig.setAuthConnectorNames( config.getAuthConnectorNames() );
+			keyShieldConfig.setEnabled( config.isEnabled() );
+			keyShieldConfig.setHttpTimeout( config.getHttpConnectionTimeout() );
+			keyShieldConfig.setServerUrl( config.getServerUrl() );
+		}
+		
+		return keyShieldConfig;
+	}
+	
+	/**
 	 *
 	 */
 	private static GwtKeyShieldConfig getGwtKeyShieldConfigFromKeyShieldConfig( KeyShieldConfig keyShieldConfig )
@@ -11298,10 +11321,35 @@ public class GwtServerHelper {
 	/**
 	 * 
 	 */
-	public static SaveKeyShieldConfigRpcResponseData saveKeyShieldConfig( GwtKeyShieldConfig config )
+	public static SaveKeyShieldConfigRpcResponseData saveKeyShieldConfig(
+		AllModulesInjected ami,
+		GwtKeyShieldConfig config )
 	{
-		//!!!
-		return new SaveKeyShieldConfigRpcResponseData();
+		KeyShieldModule keyShieldModule;
+		SaveKeyShieldConfigRpcResponseData responseData;
+
+		responseData = new SaveKeyShieldConfigRpcResponseData();
+		responseData.setSaveSuccessfull( false );
+
+		keyShieldModule = ami.getKeyShieldModule();
+		
+		try
+		{
+			KeyShieldConfig keyShieldConfig;
+			Long zoneId;
+			
+			zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			keyShieldConfig = getKeyShieldConfigFromGwtKeyShieldConfig( zoneId, config );
+			
+			keyShieldModule.saveKeyShieldConfig( zoneId, keyShieldConfig );
+			responseData.setSaveSuccessfull( true );
+		}
+		catch ( Exception ex )
+		{
+			ex.printStackTrace();
+		}
+
+		return responseData;
 	}
 	
 	/**

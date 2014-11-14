@@ -605,6 +605,8 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		SaveKeyShieldConfigCmd cmd;
 
 		showStatusMsg( GwtTeaming.getMessages().editKeyShieldConfigDlg_SavingConfig() );
+		clearErrorPanel();
+		hideErrorPanel();
 
 		callback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -626,17 +628,35 @@ public class EditKeyShieldConfigDlg extends DlgBox
 				if ( response.getResponseData() != null &&
 					 response.getResponseData() instanceof SaveKeyShieldConfigRpcResponseData )
 				{
-					Scheduler.ScheduledCommand cmd;
+					SaveKeyShieldConfigRpcResponseData responseData;
 					
-					cmd = new Scheduler.ScheduledCommand()
+					responseData = (SaveKeyShieldConfigRpcResponseData) response.getResponseData();
+					if ( responseData.getSaveSuccessfull() == true )
 					{
-						@Override
-						public void execute() 
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
 						{
-							m_config = (GwtKeyShieldConfig) getDataFromDlg();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+							@Override
+							public void execute() 
+							{
+								hide();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+					else
+					{
+						FlowPanel errorPanel;
+						Label label;
+						
+						errorPanel = getErrorPanel();
+						label = new Label( GwtTeaming.getMessages().editKeyShieldConfigDlg_ErrorSavingConfig() );
+						label.addStyleName( "dlgErrorLabel" );
+						errorPanel.add( label );
+						
+						showErrorPanel();
+					}
 				}
 			}
 		}; 

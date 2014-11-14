@@ -47,4 +47,8 @@ public interface KeyShieldModule
 	 */
 	public KeyShieldConfig getKeyShieldConfig( Long zoneId ) throws NoObjectByTheIdException;
 
+	/**
+	 * Save the given KeyShieldConfig data to the db
+	 */
+	public void saveKeyShieldConfig( Long zoneId, KeyShieldConfig newKeyShieldConfig );
 }
