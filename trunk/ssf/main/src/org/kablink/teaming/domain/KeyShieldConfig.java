@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.domain;
 
+import java.util.Iterator;
+import java.util.TreeSet;
+
 /**
  * 
  * @author jwootton@novell.com
@@ -42,7 +45,7 @@ public class KeyShieldConfig extends ZonedObject
 	private String serverUrl;
 	private Integer httpTimeout;
 	private String apiAuthKey;
-	private String authConnectorNames;
+	private String authConnectorNames;	// Names are separated by a ','
 
 	/**
 	 * 
@@ -94,6 +97,34 @@ public class KeyShieldConfig extends ZonedObject
 	/**
 	 * 
 	 */
+	public TreeSet<String> getAuthConnectorNamesAsSet()
+	{
+		TreeSet<String> returnValue;
+		
+		returnValue = new TreeSet<String>();
+		
+		if ( authConnectorNames != null && authConnectorNames.length() > 0 )
+		{
+			String[] names;
+			
+			names = authConnectorNames.split( "," );
+			if ( names != null )
+			{
+				for ( String nextName: names )
+				{
+					returnValue.add( nextName );
+				}
+			}
+			else
+				returnValue.add( authConnectorNames );
+		}
+		
+		return returnValue;
+	}
+	
+	/**
+	 * 
+	 */
 	public boolean getEnabled()
 	{
 		return enabled;
@@ -129,6 +160,38 @@ public class KeyShieldConfig extends ZonedObject
 	public void setAuthConnectorNames( String names )
 	{
 		this.authConnectorNames = names;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAuthConnectorNamesFromSet( TreeSet<String> setOfNames )
+	{
+		String value = null;
+		
+		if ( setOfNames != null )
+		{
+			StringBuffer strBuff;
+			Iterator<String> iter;
+
+			strBuff = new StringBuffer();
+			
+			iter = setOfNames.iterator();
+			while ( iter.hasNext() )
+			{
+				String nextName;
+				
+				nextName = iter.next();
+				if ( strBuff.length() > 0 )
+					strBuff.append( ',' );
+				
+				strBuff.append( nextName );
+			}
+			
+			value = strBuff.toString().toLowerCase();
+		}
+		
+		setAuthConnectorNames( value );
 	}
 	
 	/**

@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client;
 
+import java.util.TreeSet;
+
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -48,7 +50,7 @@ public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData
 	private String m_serverUrl;
 	private int m_httpConnectionTimeout;	// Timeout in milliseconds
 	private String m_apiAuthKey;
-	private String m_authConnectorNames;
+	private TreeSet<String> m_setOfAuthConnectorNames;
 	
 	/**
 	 * Constructor method. 
@@ -61,7 +63,7 @@ public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData
 		m_serverUrl = null;
 		m_httpConnectionTimeout = 250;
 		m_apiAuthKey = null;
-		m_authConnectorNames = null;
+		m_setOfAuthConnectorNames = null;
 	}
 
 	/**
@@ -83,9 +85,9 @@ public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData
 	/**
 	 * 
 	 */
-	public String getAuthConnectorNames()
+	public TreeSet<String> getAuthConnectorNames()
 	{
-		return m_authConnectorNames;
+		return m_setOfAuthConnectorNames;
 	}
 	
 	/**
@@ -123,9 +125,9 @@ public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData
 	/**
 	 * 
 	 */
-	public void setAuthConnectorNames( String authConnectorNames )
+	public void setAuthConnectorNames( TreeSet<String> authConnectorNames )
 	{
-		m_authConnectorNames = authConnectorNames;
+		m_setOfAuthConnectorNames = authConnectorNames;
 	}
 	
 	/**
