@@ -44,6 +44,32 @@ import org.kablink.teaming.module.zone.ZoneException;
 public class KeyShieldModuleImpl extends CommonDependencyInjection
 	implements KeyShieldModule
 {
+	/**
+	 * Delete the KeyShieldConfig associated with the given zone id
+	 */
+	@Override
+	public void deleteKeyShieldConfig( Long zoneId )
+	{
+		KeyShieldConfig config;
+		
+		if ( zoneId == null )
+			return;
+		
+		config = getCoreDao().loadKeyShieldConfig( zoneId );
+		if ( config != null )
+		{
+			try
+			{
+				getCoreDao().delete( config );
+			}
+			catch ( Exception ex )
+			{
+				logger.warn( "Error deleting KeyShieldConfig for zone: " + zoneId );
+				ex.printStackTrace();
+			}
+		}
+	}
+	
  	/**
  	 * 
  	 * @param zoneId

@@ -6462,7 +6462,17 @@ public class GwtServerHelper {
 		
 		config.setApiAuthKey( keyShieldConfig.getApiAuthKey() );
 		config.setAuthConnectorNames( keyShieldConfig.getAuthConnectorNames() );
-		config.setHttpConnectionTimeout( keyShieldConfig.getHttpTimeout() );
+		
+		{
+			Integer timeout;
+			
+			timeout = keyShieldConfig.getHttpTimeout();
+			if ( timeout == null )
+				config.setHttpConnectionTimeout( 250 );
+			else
+				config.setHttpConnectionTimeout( timeout );
+		}
+		
 		config.setIsEnabled( keyShieldConfig.getEnabled() );
 		config.setServerUrl( keyShieldConfig.getServerUrl() );
 		
