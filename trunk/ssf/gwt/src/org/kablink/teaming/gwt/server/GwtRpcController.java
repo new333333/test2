@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,12 +38,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.web.util.WebHelper;
+
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -55,13 +57,12 @@ import com.google.gwt.user.server.rpc.RPC;
 import com.google.gwt.user.server.rpc.RPCRequest;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
-
 /**
- * 
+ * ?
+ *  
  * @author jwootton
- *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "unchecked"})
 public class GwtRpcController extends RemoteServiceServlet
 	implements
         Controller, ServletContextAware
@@ -69,13 +70,13 @@ public class GwtRpcController extends RemoteServiceServlet
 	private Log 				m_logger = LogFactory.getLog(GwtRpcController.class);
     private ServletContext		m_servletContext;
     private RemoteService		m_remoteService;
-	@SuppressWarnings("unchecked")
 	private Class				m_remoteServiceClass;
 
     /**
      * 
      */
-    public ModelAndView handleRequest(
+    @Override
+	public ModelAndView handleRequest(
     	HttpServletRequest request,
         HttpServletResponse response) throws Exception
     {
@@ -100,28 +101,36 @@ public class GwtRpcController extends RemoteServiceServlet
 
             Object[] parameters = rpcRequest.getParameters();
             
+    		String cmdName = "Unknown";
             if ( m_logger.isDebugEnabled() )
             {
-            	String methodName;
-            	
-            	methodName = rpcRequest.getMethod().getName();
+                String methodName = rpcRequest.getMethod().getName();
             	if ( methodName.equalsIgnoreCase( "executeCommand" ) )
             	{
-            		String cmdName = "Unknown";
-            		
             		// Get the name of the command we are trying to execute.
             		if ( parameters != null && parameters.length > 1 && parameters[1] instanceof VibeRpcCmd )
             		{
             			cmdName = ((VibeRpcCmd)parameters[1]).getClass().getSimpleName();
             		}
-        			m_logger.debug( "--> Executing rpc command:  " + cmdName );
+        			m_logger.debug( "Executing GWT RPC command:  " + cmdName );
             	}
             	else
-            		m_logger.debug( "!!! Processing old style rpc request:  " + methodName );
+            	{
+            		m_logger.debug( "Executing old style GWT RPC request:  " + methodName );
+            		cmdName = methodName;
+            	}
             }
 
-        	// Run the parameters through the XSS checker.
-            performXSSChecks( parameters );
+    		long opBegin = System.nanoTime();
+    		try
+    		{
+            	// Run the parameters through the XSS checker.
+    			performXSSChecks( parameters );
+    		}
+    		finally
+    		{
+    			debugLogOperationTime( cmdName, "performASSChecks()", opBegin );
+    		}
             
             // Is the first parameter to the method is an
             // HttpRequestInfo object.?
@@ -170,8 +179,16 @@ public class GwtRpcController extends RemoteServiceServlet
             	}
             }
             
-            // Delegate work to the spring injected service.
-            results = RPC.invokeAndEncodeResponse( m_remoteService, rpcRequest.getMethod(), parameters );
+    		opBegin = System.nanoTime();
+    		try
+    		{
+                // Delegate work to the spring injected service.
+    			results = RPC.invokeAndEncodeResponse( m_remoteService, rpcRequest.getMethod(), parameters );
+    		}
+    		finally
+    		{
+    			debugLogOperationTime( cmdName, "RPC.invokeAndEncodeResponse()", opBegin );
+    		}
             	
             return results;
         }
@@ -198,7 +215,8 @@ public class GwtRpcController extends RemoteServiceServlet
     /**
      * 
      */
-    public void setServletContext( ServletContext servletContext )
+    @Override
+	public void setServletContext( ServletContext servletContext )
     {
         m_servletContext = servletContext;
     }// end setServletContext()
@@ -217,7 +235,8 @@ public class GwtRpcController extends RemoteServiceServlet
     /**
      * Traces any unexpected failures and bubbles up the exception.
      */
-    protected void doUnexpectedFailure(Throwable t) {
+    @Override
+	protected void doUnexpectedFailure(Throwable t) {
     	m_logger.debug("GwtRpcController.doUnexpectedFailure(EXCEPTION):  ", t);
     	super.doUnexpectedFailure(t);
     }
@@ -237,5 +256,18 @@ public class GwtRpcController extends RemoteServiceServlet
 				GwtServerHelper.performXSSCheckOnRpcCmd( (VibeRpcCmd) parameters[i] ); 
 			}
 		}
-    }// end performXSSChecks()    
+    }// end performXSSChecks()
+    
+    /*
+     * Write information about how long an operation took to the log if
+     * debug is enabled.
+     */
+    private void debugLogOperationTime( String cmdName, String operation, long opBegin )
+    {
+		if ( m_logger.isDebugEnabled() )
+		{
+			double diff = ( ( System.nanoTime() - opBegin ) / 1000000.0 );
+			m_logger.info( "..." + cmdName + ":" + operation + " took " + diff + " ms to complete." );
+		}
+    }// end debugLogOperationTime()
 }// end GwtRpcController
