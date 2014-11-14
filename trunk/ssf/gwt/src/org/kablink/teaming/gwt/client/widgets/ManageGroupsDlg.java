@@ -293,8 +293,8 @@ public class ManageGroupsDlg extends DlgBox implements
 			menuPanel = new FlowPanel();
 			menuPanel.addStyleName("groupManagementMenuPanel");
 
-			// Add an "Add" button.
-			label = new InlineLabel(m_messages.manageGroupsDlgAddGroupLabel());
+			// Add a "New" button.
+			label = new InlineLabel(m_messages.manageGroupsDlgNewGroupLabel());
 			label.addStyleName("groupManagementBtn");
 			label.addClickHandler(new ClickHandler() {
 				@Override

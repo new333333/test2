@@ -1875,12 +1875,18 @@ public interface GwtTeamingMessages extends Messages
 	String vibeEntryMenu_CopyFilters();
 	String vibeEntryMenu_GlobalizeFilter(String filterName);
 	String vibeEntryMenu_ManageFilters();
-	String vibeEntryMenu_ManageUsers_EnabledFilter();
-	String vibeEntryMenu_ManageUsers_ExternalFilter();
-	String vibeEntryMenu_ManageUsers_DisabledFilter();
-	String vibeEntryMenu_ManageUsers_InternalFilter();
-	String vibeEntryMenu_ManageUsers_SiteAdminsFilter();
-	String vibeEntryMenu_ManageUsers_NonSiteAdminsFilter();
+	String vibeEntryMenu_ManageUsers_EnabledFilter_Hide();
+	String vibeEntryMenu_ManageUsers_EnabledFilter_Show();
+	String vibeEntryMenu_ManageUsers_ExternalFilter_Hide();
+	String vibeEntryMenu_ManageUsers_ExternalFilter_Show();
+	String vibeEntryMenu_ManageUsers_DisabledFilter_Hide();
+	String vibeEntryMenu_ManageUsers_DisabledFilter_Show();
+	String vibeEntryMenu_ManageUsers_InternalFilter_Hide();
+	String vibeEntryMenu_ManageUsers_InternalFilter_Show();
+	String vibeEntryMenu_ManageUsers_SiteAdminsFilter_Hide();
+	String vibeEntryMenu_ManageUsers_SiteAdminsFilter_Show();
+	String vibeEntryMenu_ManageUsers_NonSiteAdminsFilter_Hide();
+	String vibeEntryMenu_ManageUsers_NonSiteAdminsFilter_Show();
 	String vibeEntryMenu_ManageUsers_Warning_NoUsers1();
 	String vibeEntryMenu_ManageUsers_Warning_NoUsers2(); 
 	String vibeEntryMenu_PersonalizeFilter(String filterName);
@@ -2281,7 +2287,6 @@ public interface GwtTeamingMessages extends Messages
 	String manageCommentsDlgComments(int cCount);
 	
 	// Strings used in the Manage Groups dialog
-	String manageGroupsDlgAddGroupLabel();
 	String manageGroupsDlgAdminCol();
 	String manageGroupsDlgAdminRightsClear();
 	String manageGroupsDlgAdminRightsSet();
@@ -2300,6 +2305,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgModifyingGroup();
 	String manageGroupsDlgMoreLabel();
 	String manageGroupsDlgNameCol();
+	String manageGroupsDlgNewGroupLabel();
 	String manageGroupsDlgNoGroupsLabel();
 	String manageGroupsDlgPersonalStorage_Clear();
 	String manageGroupsDlgPersonalStorage_Disable();

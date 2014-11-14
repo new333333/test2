@@ -399,13 +399,24 @@ public class EntryMenuPanel extends ToolPanelBase
 	/*
 	 * Constructs and returns a manage users filter item.
 	 */
-	private VibeMenuItem constructManageUsersFilterItem(PopupMenu filterDropdownMenu, ManageUsersFilter muf, String mufText, boolean mufChecked) {
+	private VibeMenuItem constructManageUsersFilterItem(PopupMenu filterDropdownMenu, ManageUsersFilter muf, boolean mufChecked, boolean separatorBefore) {
+		if (separatorBefore) {
+			filterDropdownMenu.addSeparator();
+		}
+		String mufText = null;
+		switch (muf) {
+		case SHOW_DISABLED_USERS:   mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_DisabledFilter_Hide()      : m_messages.vibeEntryMenu_ManageUsers_DisabledFilter_Show());      break;
+		case SHOW_ENABLED_USERS:    mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_EnabledFilter_Hide()       : m_messages.vibeEntryMenu_ManageUsers_EnabledFilter_Show());       break;
+		case SHOW_INTERNAL_USERS:   mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_InternalFilter_Hide()      : m_messages.vibeEntryMenu_ManageUsers_InternalFilter_Show());      break;
+		case SHOW_EXTERNAL_USERS:   mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_ExternalFilter_Hide()      : m_messages.vibeEntryMenu_ManageUsers_ExternalFilter_Show());      break;
+		case SHOW_SITE_ADMINS:      mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_SiteAdminsFilter_Hide()    : m_messages.vibeEntryMenu_ManageUsers_SiteAdminsFilter_Show());    break;
+		case SHOW_NON_SITE_ADMINS:  mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_NonSiteAdminsFilter_Hide() : m_messages.vibeEntryMenu_ManageUsers_NonSiteAdminsFilter_Show()); break;
+		}
 		VibeMenuItem reply = filterDropdownMenu.addMenuItem(
 			new ManageUsersFilterEvent(muf),
 			null,
 			mufText);
 		reply.getElement().setId(muf.name());
-		reply.setCheckedState(mufChecked);
 		return reply;
 	}
 	
@@ -905,12 +916,12 @@ public class EntryMenuPanel extends ToolPanelBase
 			boolean siteAdmins    = m_manageUsersState.isShowSiteAdmins();
 			boolean nonSiteAdmins = m_manageUsersState.isShowNonSiteAdmins();
 			m_manageUserFilters = new ManageUserFilterItems(
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_INTERNAL_USERS,  m_messages.vibeEntryMenu_ManageUsers_InternalFilter(),      internal),
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_EXTERNAL_USERS,  m_messages.vibeEntryMenu_ManageUsers_ExternalFilter(),      external),
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_DISABLED_USERS,  m_messages.vibeEntryMenu_ManageUsers_DisabledFilter(),      disabled),
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_ENABLED_USERS,   m_messages.vibeEntryMenu_ManageUsers_EnabledFilter(),       enabled),
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_SITE_ADMINS,     m_messages.vibeEntryMenu_ManageUsers_SiteAdminsFilter(),    siteAdmins),
-				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_NON_SITE_ADMINS, m_messages.vibeEntryMenu_ManageUsers_NonSiteAdminsFilter(), nonSiteAdmins));
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_INTERNAL_USERS,  internal,      false),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_EXTERNAL_USERS,  external,      false),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_DISABLED_USERS,  disabled,      true ),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_ENABLED_USERS,   enabled,       false),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_SITE_ADMINS,     siteAdmins,    true ),
+				constructManageUsersFilterItem(filterDropdownMenu, ManageUsersFilter.SHOW_NON_SITE_ADMINS, nonSiteAdmins, false));
 
 			// If the filtering that's in affect causes the list to be
 			// empty...
