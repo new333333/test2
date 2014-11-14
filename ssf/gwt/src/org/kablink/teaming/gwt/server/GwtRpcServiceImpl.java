@@ -3457,7 +3457,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveKeyShieldConfigRpcResponseData responseData;
 			
 			skcCmd = (SaveKeyShieldConfigCmd) cmd;
-			responseData = GwtServerHelper.saveKeyShieldConfig( skcCmd.getConfig() );
+			responseData = GwtServerHelper.saveKeyShieldConfig( this, skcCmd.getConfig() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

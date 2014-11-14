@@ -63,6 +63,21 @@ public class KeyShieldConfig extends ZonedObject
 	/**
 	 * 
 	 */
+	public void copy( KeyShieldConfig config )
+	{
+		if ( config == null )
+			return;
+		
+		setApiAuthKey( config.getApiAuthKey() );
+		setAuthConnectorNames( config.getAuthConnectorNames() );
+		setEnabled( config.getEnabled() );
+		setHttpTimeout( config.getHttpTimeout() );
+		setServerUrl( config.getServerUrl() );
+	}
+	
+	/**
+	 * 
+	 */
 	public String getApiAuthKey()
 	{
 		return apiAuthKey;

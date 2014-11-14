@@ -53,6 +53,32 @@ public class KeyShieldModuleImpl extends CommonDependencyInjection
 	@Override
 	public KeyShieldConfig getKeyShieldConfig( Long zoneId ) throws ZoneException
 	{
-		return getCoreDao().loadKeyShieldConfig( zoneId );
+		KeyShieldConfig config;
+		
+		config = getCoreDao().loadKeyShieldConfig( zoneId );
+
+		if ( config == null )
+			config = new KeyShieldConfig( zoneId );
+
+		return config;
+	}
+	
+	/**
+	 * Update the db with the given KeyShieldConfig data
+	 */
+	@Override
+	public void saveKeyShieldConfig( Long zoneId, KeyShieldConfig config )
+	{
+		KeyShieldConfig currentConfig;
+		
+		// Create a KeyShieldConfig object if one doesn't already exist in the db for the given zone.
+		currentConfig = getCoreDao().loadKeyShieldConfig( zoneId );
+		if ( currentConfig == null )
+			currentConfig = new KeyShieldConfig( zoneId );
+		
+		// Make a copy of the config data that was passed to us.
+		currentConfig.copy( config );
+		
+		getCoreDao().save( currentConfig );
 	}
 }

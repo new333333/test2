@@ -44,10 +44,29 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class SaveKeyShieldConfigRpcResponseData
 	implements IsSerializable, VibeRpcResponseData
 {
+	private boolean m_success;
+	
 	/**
 	 * 
 	 */
 	public SaveKeyShieldConfigRpcResponseData()
 	{
+		m_success = false;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getSaveSuccessfull()
+	{
+		return m_success;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setSaveSuccessfull( boolean success )
+	{
+		m_success = success;
 	}
 }

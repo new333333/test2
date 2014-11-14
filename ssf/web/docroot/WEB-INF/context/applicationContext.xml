@@ -1600,6 +1600,7 @@ text/calendar											  ics
 			    <prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			    <prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
 			    <prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			    <prop key="save*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>			

@@ -3678,14 +3678,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	@Override
 	public KeyShieldConfig loadKeyShieldConfig( Long zoneId )
 	{
-		KeyShieldConfig keyShieldConfig;
+		KeyShieldConfig keyShieldConfig = null;
 		long begin = System.nanoTime();
 	
 		try
 		{
 			keyShieldConfig = (KeyShieldConfig)load( KeyShieldConfig.class, zoneId );
-			if ( keyShieldConfig == null )
-				keyShieldConfig = new KeyShieldConfig( zoneId );
     	}
     	finally
     	{

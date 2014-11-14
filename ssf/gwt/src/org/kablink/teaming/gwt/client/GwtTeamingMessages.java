@@ -3520,6 +3520,7 @@ public interface GwtTeamingMessages extends Messages
 	String editKeyShieldConfigDlg_ApiAuthKeyLabel();
 	String editKeyShieldConfigDlg_AuthConnectorNamesHint();
 	String editKeyShieldConfigDlg_EnableKeyShieldLabel();
+	String editKeyShieldConfigDlg_ErrorSavingConfig();
 	String editKeyShieldConfigDlg_Header();
 	String editKeyShieldConfigDlg_HttpConnectionTimeoutLabel();
 	String editKeyShieldConfigDlg_MilliSecondsLabel();
