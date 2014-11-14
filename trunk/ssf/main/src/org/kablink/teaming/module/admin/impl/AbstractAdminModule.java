@@ -57,13 +57,11 @@ import javax.mail.SendFailedException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.velocity.VelocityContext;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
-
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -147,6 +145,7 @@ import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.ConditionalClause;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionExistsException;
+import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.security.function.RemoteAddrCondition;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
@@ -171,7 +170,6 @@ import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailAuthenticationException;
@@ -357,6 +355,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
 			}
    		} else if (workArea instanceof ZoneConfig) {
+			User user = RequestContextHolder.getRequestContext().getUser();
+   			if (user.isDisabled() || user.isDeleted() || user.isShared() || !user.getIdentityInfo().isInternal()) {
+   				//External users the guest user or disabled and deleted accounts are not allowed to do any of these functions
+   				throw OperationAccessControlExceptionNoName.newInstance(user.getName(), 
+   	        			operation.toString(), workArea);
+   			}
 			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    		} else {
    			switch (operation) {
@@ -428,6 +432,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	@Override
 	public void checkUserAccess(User user, AdminOperation operation) {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
+		if (user.isDisabled() || user.isDeleted() || user.isShared() || !user.getIdentityInfo().isInternal()) {
+			//External users the guest user or disabled and deleted accounts are not allowed to do any of these functions
+			throw OperationAccessControlExceptionNoName.newInstance(user.getName(), 
+        			operation.toString(), top);
+		}
 		switch (operation) {
 			case manageFunction:
 			case manageFunctionCondition:

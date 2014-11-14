@@ -461,6 +461,13 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	public void checkOperation(User user, WorkArea workArea, 
 			WorkAreaOperation workAreaOperation) 
     	throws AccessControlException {
+		if (WorkAreaOperation.ZONE_ADMINISTRATION.equals(workAreaOperation)) {
+			if (user.isDisabled() || user.isDeleted() || user.isShared() || !user.getIdentityInfo().isInternal()) {
+   				//External users the guest user or disabled and deleted accounts are not allowed to do zone admistration functions
+   				throw OperationAccessControlExceptionNoName.newInstance(user.getName(), 
+   						workAreaOperation.toString(), workArea);
+   			}
+		}
         if (!testOperation(user, workArea, workAreaOperation)) {
         	if (workArea instanceof Entry && ((Entry)workArea).hasEntryAcl() && ((Entry)workArea).isIncludeFolderAcl()) {
         		//See if the parent or the entry is allowing access
