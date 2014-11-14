@@ -3690,7 +3690,11 @@ public class GwtServerHelper {
 				groupInfo.setDn( nextGroup.getForeignName() );
 				
 				boolean hasAdminRights = AdminHelper.isSiteAdminMember( groupId );
-				groupInfo.setAdminRights( NLT.get( hasAdminRights ? "general.Yes" : "general.No" ));
+				String adminRights;
+				if (hasAdminRights)
+				     adminRights = NLT.get( "siteAdmin.admin" );
+				else adminRights = "";
+				groupInfo.setAdminRights( adminRights );
 				
 				reply.add( groupInfo );
 			}

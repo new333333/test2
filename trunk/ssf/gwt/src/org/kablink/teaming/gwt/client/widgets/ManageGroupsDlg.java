@@ -62,7 +62,6 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteGroupsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAllGroupsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupsRpcResponseData;
@@ -525,7 +524,7 @@ public class ManageGroupsDlg extends DlgBox implements
 		};
 		m_groupsTable.addColumn(nameCol, m_messages.manageGroupsDlgNameCol());
 
-		// Add the "Admin Rights?" column
+		// Add the "Admin" column
 		nameCol = new TextColumn<GroupInfoPlus>() {
 			@Override
 			public String getValue(GroupInfoPlus groupInfoPlus) {
@@ -537,7 +536,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				return adminRights;
 			}
 		};
-		m_groupsTable.addColumn(nameCol, m_messages.manageGroupsDlgAdminRightsCol());
+		m_groupsTable.addColumn(nameCol, m_messages.manageGroupsDlgAdminCol());
 
 		// Create a pager
 		{

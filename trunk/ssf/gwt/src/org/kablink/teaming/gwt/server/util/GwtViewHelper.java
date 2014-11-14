@@ -1553,25 +1553,21 @@ public class GwtViewHelper {
 									break;
 								}
 							}
-							String adminRights = "-";
-							String isAdmin     = "-";
+							String adminRights = NLT.get("general.NA");
 							if (null != rowUser) {
 								// Yes!  Is it somebody that may have
 								// administrator rights set on them?
 								if ((!(rowUser.isAdmin())) && rowUser.isPerson() && rowUser.getIdentityInfo().isInternal()) {
-									// Yes!  Check their
-									// administrator rights
-									// assignment...
+									// Yes!  Check their administrator
+									// rights assignment...
 									boolean isSiteAdmin = bs.getAdminModule().testUserAccess(rowUser, AdminOperation.manageFunction);
-									
-									String resKey;
+									String  resKey;
 									if      (AdminHelper.isSiteAdminMember(rowUserId)) resKey = "siteAdmin.direct";
-									else if (isSiteAdmin)                              resKey = "siteAdmin.fromGroup";
-									else                                               resKey = "siteAdmin.none";
-									adminRights   = NLT.get(resKey);
-									
-									resKey  = (isSiteAdmin ? "general.Yes" : "general.No");
-									isAdmin = NLT.get(resKey);
+									else if (isSiteAdmin)                              resKey = "siteAdmin.group";
+									else                                               resKey = null;
+									if (null == resKey)
+									     adminRights = "";
+									else adminRights   = NLT.get(resKey);
 								}
 
 								// No, this isn't somebody that may
@@ -1579,24 +1575,18 @@ public class GwtViewHelper {
 								// them!  Is it the built-in admin
 								// user?
 								else if (rowUser.isAdmin()) {
-									// Yes!  Show them, at least, as
-									// being an administrator.
-									isAdmin = NLT.get("general.Yes");
+									// Yes!  Show them as being the
+									// built-in admin.
+									adminRights = NLT.get("siteAdmin.builtIn");
 								}
 							}
 							
 							// If we can find the columns for them...
-							FolderColumn rightsCol = FolderColumn.getFolderColumnByEleName(fcList, FolderColumn.COLUMN_ADMIN_RIGHTS);
+							FolderColumn rightsCol = FolderColumn.getFolderColumnByEleName(fcList, FolderColumn.COLUMN_ADMIN);
 							if (null != rightsCol) {
 								// ...store the administrator rights
 								// ...settings in the row.
 								fr.setColumnValue(rightsCol, adminRights);
-							}
-							rightsCol= FolderColumn.getFolderColumnByEleName(fcList, FolderColumn.COLUMN_IS_ADMIN);
-							if (null != rightsCol) {
-								// ...store the administrator rights
-								// ...settings in the row.
-								fr.setColumnValue(rightsCol, isAdmin);
 							}
 						}
 					}
@@ -3050,7 +3040,7 @@ public class GwtViewHelper {
 		else dateCSK = Constants.MODIFICATION_DATE_FIELD;
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
-			if      (colName.equals("adminRights"))          {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMIN_RIGHTS);          fc.setColumnSortable(false);                                       }
+			if      (colName.equals("admin"))                {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMIN);                 fc.setColumnSortKey(Constants.SITE_ADMIN_FIELD);                   }
 			else if (colName.equals("author"))               {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);           }
 			else if (colName.equals("comments"))             {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                                              }
 			else if (colName.equals("date"))                 {fc.setColumnSearchKey(dateCSK);                                                                                                      }
@@ -3069,7 +3059,6 @@ public class GwtViewHelper {
 			else if (colName.equals("fullName"))             {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);                   }
 			else if (colName.equals("guest"))                {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);           }
 			else if (colName.equals("html"))                 {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                                      }
-			else if (colName.equals("isAdmin"))              {fc.setColumnSearchKey(FolderColumn.COLUMN_IS_ADMIN);              fc.setColumnSortKey(Constants.SITE_ADMIN_FIELD);                   }
 			else if (colName.equals("location"))             {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                                  }
 			else if (colName.equals("loginId"))              {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                                    }
 			else if (colName.equals("netfolder_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);      fc.setColumnSortable(false);                                       }
@@ -4218,8 +4207,8 @@ public class GwtViewHelper {
 				baseNameKey = "profiles.column.";
 				if (folderInfo.isBinderProfilesRootWSManagement()) {
 					if (ReleaseInfo.isLicenseRequiredEdition() && LicenseChecker.showFilrFeatures())
-					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "isAdmin", "adminRights", "emailAddress", "mobileDevices", "loginId"});
-					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "isAdmin", "adminRights", "emailAddress",                  "loginId"});
+					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "admin", "emailAddress", "mobileDevices", "loginId"});
+					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "admin", "emailAddress",                  "loginId"});
 				}
 				else {
 					columnNames = getColumnsLHMFromAS(new String[]{"fullName", "emailAddress", "loginId"});
