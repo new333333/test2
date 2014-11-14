@@ -192,6 +192,10 @@ public class EntryMenuPanel extends ToolPanelBase
 	private final static String	TBI_SHARE_NAME	= "1_share";
 	private final static String TBI_WIPE_NAME	= "1_wipe";
 	
+	// The following controls whether the Manage Users dialog's
+	// filtering users checks or show vs. hide options.
+	private final static boolean MANAGE_USER_FILTERS_WITH_CHECKS	= true;
+	
 	/**
 	 * Inner class used to encapsulate the manage users filter items.
 	 */
@@ -404,19 +408,34 @@ public class EntryMenuPanel extends ToolPanelBase
 			filterDropdownMenu.addSeparator();
 		}
 		String mufText = null;
-		switch (muf) {
-		case SHOW_DISABLED_USERS:   mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_DisabledFilter_Hide()      : m_messages.vibeEntryMenu_ManageUsers_DisabledFilter_Show());      break;
-		case SHOW_ENABLED_USERS:    mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_EnabledFilter_Hide()       : m_messages.vibeEntryMenu_ManageUsers_EnabledFilter_Show());       break;
-		case SHOW_INTERNAL_USERS:   mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_InternalFilter_Hide()      : m_messages.vibeEntryMenu_ManageUsers_InternalFilter_Show());      break;
-		case SHOW_EXTERNAL_USERS:   mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_ExternalFilter_Hide()      : m_messages.vibeEntryMenu_ManageUsers_ExternalFilter_Show());      break;
-		case SHOW_SITE_ADMINS:      mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_SiteAdminsFilter_Hide()    : m_messages.vibeEntryMenu_ManageUsers_SiteAdminsFilter_Show());    break;
-		case SHOW_NON_SITE_ADMINS:  mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_NonSiteAdminsFilter_Hide() : m_messages.vibeEntryMenu_ManageUsers_NonSiteAdminsFilter_Show()); break;
+		if (MANAGE_USER_FILTERS_WITH_CHECKS) {
+			switch (muf) {
+			case SHOW_DISABLED_USERS:   mufText = m_messages.vibeEntryMenu_ManageUsers_DisabledFilter_Show();      break;
+			case SHOW_ENABLED_USERS:    mufText = m_messages.vibeEntryMenu_ManageUsers_EnabledFilter_Show();       break;
+			case SHOW_INTERNAL_USERS:   mufText = m_messages.vibeEntryMenu_ManageUsers_InternalFilter_Show();      break;
+			case SHOW_EXTERNAL_USERS:   mufText = m_messages.vibeEntryMenu_ManageUsers_ExternalFilter_Show();      break;
+			case SHOW_SITE_ADMINS:      mufText = m_messages.vibeEntryMenu_ManageUsers_SiteAdminsFilter_Show();    break;
+			case SHOW_NON_SITE_ADMINS:  mufText = m_messages.vibeEntryMenu_ManageUsers_NonSiteAdminsFilter_Show(); break;
+			}
+		}
+		else {
+			switch (muf) {
+			case SHOW_DISABLED_USERS:   mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_DisabledFilter_Hide()      : m_messages.vibeEntryMenu_ManageUsers_DisabledFilter_Show());      break;
+			case SHOW_ENABLED_USERS:    mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_EnabledFilter_Hide()       : m_messages.vibeEntryMenu_ManageUsers_EnabledFilter_Show());       break;
+			case SHOW_INTERNAL_USERS:   mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_InternalFilter_Hide()      : m_messages.vibeEntryMenu_ManageUsers_InternalFilter_Show());      break;
+			case SHOW_EXTERNAL_USERS:   mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_ExternalFilter_Hide()      : m_messages.vibeEntryMenu_ManageUsers_ExternalFilter_Show());      break;
+			case SHOW_SITE_ADMINS:      mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_SiteAdminsFilter_Hide()    : m_messages.vibeEntryMenu_ManageUsers_SiteAdminsFilter_Show());    break;
+			case SHOW_NON_SITE_ADMINS:  mufText = (mufChecked ? m_messages.vibeEntryMenu_ManageUsers_NonSiteAdminsFilter_Hide() : m_messages.vibeEntryMenu_ManageUsers_NonSiteAdminsFilter_Show()); break;
+			}
 		}
 		VibeMenuItem reply = filterDropdownMenu.addMenuItem(
 			new ManageUsersFilterEvent(muf),
 			null,
 			mufText);
 		reply.getElement().setId(muf.name());
+		if (MANAGE_USER_FILTERS_WITH_CHECKS) {
+			reply.setCheckedState(mufChecked);
+		}
 		return reply;
 	}
 	
@@ -926,9 +945,10 @@ public class EntryMenuPanel extends ToolPanelBase
 			// If the filtering that's in affect causes the list to be
 			// empty...
 			String warn;
-			if      ((!disabled) && (!enabled))  warn = m_messages.vibeEntryMenu_ManageUsers_Warning_NoUsers1();
-			else if ((!internal) && (!external)) warn = m_messages.vibeEntryMenu_ManageUsers_Warning_NoUsers2();
-			else                                 warn = null;
+			if      ((!disabled)   && (!enabled))       warn = m_messages.vibeEntryMenu_ManageUsers_Warning_NoUsers1();
+			else if ((!internal)   && (!external))      warn = m_messages.vibeEntryMenu_ManageUsers_Warning_NoUsers2();
+			else if ((!siteAdmins) && (!nonSiteAdmins)) warn = m_messages.vibeEntryMenu_ManageUsers_Warning_NoUsers3();
+			else                                        warn = null;
 			if (null != warn) {
 				// ...tell the user about it.
 				GwtClientHelper.deferredAlert(warn);

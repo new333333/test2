@@ -1889,6 +1889,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeEntryMenu_ManageUsers_NonSiteAdminsFilter_Show();
 	String vibeEntryMenu_ManageUsers_Warning_NoUsers1();
 	String vibeEntryMenu_ManageUsers_Warning_NoUsers2(); 
+	String vibeEntryMenu_ManageUsers_Warning_NoUsers3(); 
 	String vibeEntryMenu_PersonalizeFilter(String filterName);
 	String vibeEntryMenu_SharedView_HiddenFilter();
 	String vibeEntryMenu_SharedView_NonHiddenFilter();
