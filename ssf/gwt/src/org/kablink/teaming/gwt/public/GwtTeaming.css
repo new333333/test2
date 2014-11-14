@@ -6357,15 +6357,25 @@ td.datePickerMonth {
 
 /* Start: Edit KeyShield SSO Configuration dialog */
 
-.editKeyShieldConfigDlg_MilliSecondsLabel
+.editKeyShieldConfigDlg_ConnectorNamesSpacing
 {
-	margin-left: 5px;
+	margin-top: 2px;
 }
 
 .editKeyShieldConfigDlg_Hint
 {
 	color: #4D6D8B;
 	font-size: .9em;
+}
+
+.editKeyShieldConfigDlg_MilliSecondsLabel
+{
+	margin-left: 5px;
+}
+
+.editKeyShieldConfigDlg_TestConnectionSpacing
+{
+	margin-top: 8px;
 }
 
 /* End: Edit KeyShield SSO Configuration dialog */

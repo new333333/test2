@@ -3979,6 +3979,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case TEST_KEYSHIELD_CONNECTION:
+		{
+			TestKeyShieldConnectionCmd tkcCmd;
+			TestKeyShieldConnectionResponse responseData;
+			
+			tkcCmd = (TestKeyShieldConnectionCmd) cmd;
+			responseData = GwtServerHelper.testKeyShieldConnection( tkcCmd.getKeyShieldConfig() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case TEST_NET_FOLDER_CONNECTION:
 		{
 			TestNetFolderConnectionCmd tcCmd;

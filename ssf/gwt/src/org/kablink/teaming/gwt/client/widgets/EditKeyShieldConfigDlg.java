@@ -46,6 +46,8 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetKeyShieldConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveKeyShieldConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveKeyShieldConfigRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TestKeyShieldConnectionCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TestKeyShieldConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
@@ -56,11 +58,14 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -84,6 +89,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		KeyPressHandler
 {
 	private GwtKeyShieldConfig m_config;
+	private boolean m_testConnectionInProgress = false;
 	
 	private CheckBox m_enableKeyShieldCheckbox;
 	private TextBox m_serverUrlTextBox;
@@ -142,7 +148,6 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		FlowPanel tmpPanel;
 		int row = 0;
 		FlexTable table;
-		FlexTable.FlexCellFormatter cellFormatter; 
 		
 		messages = GwtTeaming.getMessages();
 		
@@ -154,7 +159,6 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		
 		table = new FlexTable();
 		table.setCellSpacing( 8 );
-		cellFormatter = table.getFlexCellFormatter();
 		mainPanel.add( table );
 		
 		// Add a little space
@@ -216,23 +220,79 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		
 		// Add the controls for entering the authentication connector names
 		{
+			// Add a little space
+			{
+				tmpPanel = new FlowPanel();
+				tmpPanel.addStyleName( "editKeyShieldConfigDlg_ConnectorNamesSpacing" );
+				table.setWidget( row, 0, tmpPanel );
+				++row;
+			}
+			
 			// Add a hint.
 			tmpPanel = new FlowPanel();
 			label = new Label( messages.editKeyShieldConfigDlg_AuthConnectorNamesHint() );
 			label.getElement().getStyle().setWidth( 600, Unit.PX );
 			label.addStyleName( "editKeyShieldConfigDlg_Hint" );
 			tmpPanel.add( label );
-			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
-			cellFormatter.setColSpan( row, 0, 2 );
+			table.setHTML( row, 1, tmpPanel.getElement().getInnerHTML() );
 			++row;
+			
+			tmpPanel = new FlowPanel();
+			label = new Label( messages.editKeyShieldConfigDlg_ConnectorNamesLabel() );
+			tmpPanel.add( label );
+			table.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
 			
 			m_authConnectorNamesTextBox = new TextBox();
 			m_authConnectorNamesTextBox.setVisibleLength( 40 );
-			table.setWidget( row, 0, m_authConnectorNamesTextBox );
-			cellFormatter.setColSpan( row, 0, 2 );
+			table.setWidget( row, 1, m_authConnectorNamesTextBox );
 			++row;
 		}
 		
+		// Add a "test connection" button
+		{
+			Button testConnectionBtn;
+			
+			// Add a little space
+			{
+				tmpPanel = new FlowPanel();
+				tmpPanel.addStyleName( "editKeyShieldConfigDlg_TestConnectionSpacing" );
+				table.setWidget( row, 0, tmpPanel );
+				++row;
+			}
+			
+			// Add "Test connection" button
+			testConnectionBtn = new Button( messages.editKeyShieldConfigDlg_TestConnectionLabel() );
+			testConnectionBtn.addStyleName( "teamingButton" );
+			testConnectionBtn.addClickHandler( new ClickHandler()
+			{
+				/**
+				 * 
+				 */
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						@Override
+						public void execute()
+						{
+							testConnection();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+				
+			} );
+			
+			table.setWidget( row, 0, testConnectionBtn );
+			++row;
+		}
+
 		return mainPanel;
 	}
 
@@ -453,6 +513,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 	 */
 	private void init()
 	{
+		m_testConnectionInProgress = false;
 		getKeyShieldConfigurationFromServer();
 	}
 	
@@ -666,6 +727,68 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		cmd.setConfig( config );
 		
 		GwtClientHelper.executeCommand( cmd, callback );
+	}
+	
+	/**
+	 * 
+	 */
+	private void testConnection()
+	{
+		AsyncCallback<VibeRpcResponse> rpcCallback;
+		TestKeyShieldConnectionCmd cmd;
+		GwtKeyShieldConfig config;
+
+		if ( m_testConnectionInProgress == true )
+			return;
+		
+		showStatusMsg( GwtTeaming.getMessages().testConnection_InProgressLabel() );
+	
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				String errMsg;
+
+				hideStatusMsg();
+				m_testConnectionInProgress = false;
+				errMsg = GwtTeaming.getMessages().rpcFailure_ErrorTestingKeyShieldConnection();
+				Window.alert( errMsg );
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				TestKeyShieldConnectionResponse response;
+				String msg;
+				
+				hideStatusMsg();
+				m_testConnectionInProgress = false;
+				response = (TestKeyShieldConnectionResponse) result.getResponseData();
+				switch ( response.getStatusCode() )
+				{
+				case NORMAL:
+					msg = GwtTeaming.getMessages().testConnection_Normal();
+					break;
+				
+				case FAILED:
+					msg = GwtTeaming.getMessages().testConnection_FailedError();
+					break;
+				
+				case UNKNOWN:
+				default:
+					msg = GwtTeaming.getMessages().testConnection_UnknownStatus();
+					break;
+				}
+				
+				Window.alert( msg );
+			}						
+		};
+		
+		// Issue an rpc request to test net folder root connection
+		config = (GwtKeyShieldConfig) getDataFromDlg();
+		cmd = new TestKeyShieldConnectionCmd( config );
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	
 	/*

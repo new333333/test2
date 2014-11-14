@@ -92,13 +92,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -236,6 +234,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TestKeyShieldConnectionResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.TestKeyShieldConnectionResponse.GwtKeyShieldConnectionTestStatusCode;
 import org.kablink.teaming.gwt.client.rpc.shared.UserAccessConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
@@ -10754,6 +10754,7 @@ public class GwtServerHelper {
 		case SYNC_NET_FOLDERS:
 		case SYNC_NET_FOLDER_SERVER:
 		case TEST_GROUP_MEMBERSHIP_LDAP_QUERY:
+		case TEST_KEYSHIELD_CONNECTION:
 		case TEST_NET_FOLDER_CONNECTION:
 		case TRACK_BINDER:
 		case TRASH_PURGE_ALL:
@@ -12765,6 +12766,19 @@ public class GwtServerHelper {
 		}
 		
 		return count;
+	}
+	
+	/**
+	 * Test the connection for the given KeyShield configuration
+	 */
+	public static TestKeyShieldConnectionResponse testKeyShieldConnection( GwtKeyShieldConfig gwtConfig )
+	{
+		TestKeyShieldConnectionResponse response;
+		
+		response = new TestKeyShieldConnectionResponse();
+		response.setStatusCode( GwtKeyShieldConnectionTestStatusCode.NORMAL );
+		
+		return response;
 	}
 	
 	/**
