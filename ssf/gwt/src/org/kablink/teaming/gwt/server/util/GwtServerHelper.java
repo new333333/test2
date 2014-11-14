@@ -1770,7 +1770,7 @@ public class GwtServerHelper {
 			
 			// Does the new password violate the system's password
 			// policy for that user?
-			List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(pwChangeUser, newPwd);
+			List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(pwChangeUser, pwChangeUser, newPwd);
 			if (MiscUtil.hasItems(ppViolations)) {
 				// Yes!  Copy the violations to the response.
 				for (String ppViolation:  ppViolations) {
@@ -1852,7 +1852,7 @@ public class GwtServerHelper {
 			extUser = profileDao.loadUser( extUserId, RequestContextHolder.getRequestContext().getZoneId() );
 
 			// Does the given password violate policy?
-			List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(extUser, pwd);
+			List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(extUser, extUser, pwd);
 			if (MiscUtil.hasItems(ppViolations)) {
 				// Yes!  Copy the violations to the response.
 				for (String ppViolation:  ppViolations) {

@@ -64,7 +64,6 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
-import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PasswordPolicyHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -131,6 +130,7 @@ public class ModifyEntryController extends SAbstractController {
 				// Is there a password field on the page?
 	        	String  password = null;
 				boolean passwordChanged = inputData.exists( WebKeys.USER_PROFILE_PASSWORD );
+				User pwdUser = null;
 	            if ( passwordChanged ) 
 	            {
 	            	// Yes
@@ -152,6 +152,7 @@ public class ModifyEntryController extends SAbstractController {
 		        	} catch(AccessControlException ex) {}
 		        	
 		            Principal p = getProfileModule().getEntry(entryId);
+		            pwdUser = ((User) p);
 		            if (binder == null || !getProfileModule().testAccess(binder, ProfileOperation.manageEntries) ||
 		            		!(p instanceof User) || user.getName().equals(p.getName()) || ((User)p).isSuper()) {
 		            	String passwordOriginal = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD_ORIGINAL);
@@ -196,7 +197,7 @@ public class ModifyEntryController extends SAbstractController {
 		            	// changing their own password!  Does the
 		            	// password violate the system's password
 		            	// policy?  
-		            	List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(user, password);
+		            	List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(user, pwdUser, password);
 		            	if (MiscUtil.hasItems(ppViolations)) {
 		            		// Yes!  We need to pass the violations
 		            		// back to the user.

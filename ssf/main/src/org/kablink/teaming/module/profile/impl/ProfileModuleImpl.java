@@ -2619,7 +2619,8 @@ public void changePassword(Long userId, String oldPassword, String newPassword, 
       else {
     	  // No, it's not the admin or it's somebody else changing
     	  // their own password.
-    	  List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(((null == currentUser) ? user : currentUser), newPassword);
+    	  User localeUser = ((null == currentUser) ? user : currentUser);
+    	  List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(localeUser, user, newPassword);
     	  if (MiscUtil.hasItems(ppViolations)) {
     		  // No!  Throw an exception with the violations.
     		  throw new PasswordMismatchException("errorcode.password.violatesPolicy", ppViolations);
