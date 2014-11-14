@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -67,12 +68,29 @@ public final class PasswordPolicyHelper {
 
 	// Constants defining various aspects of password policy enablement
 	// loaded from the ssf*.properites files.
-	public  static final boolean	PASSWORD_POLICY_ENABLED				=  SPropsUtil.getBoolean("password.policy.enabled",                 false                            );
-	public  static final boolean	PASSWORDS_CAN_EXPIRE				= (SPropsUtil.getBoolean("password.policy.expiration",              true ) && PASSWORD_POLICY_ENABLED);
-	private static final int		PASSWORD_CHANGE_USER_MAX_HITS		=  SPropsUtil.getInt(    "password.policy.user.maxHits",            1000                             );
-	private static final int		PASSWORD_EXPIRATION_DAYS			=  SPropsUtil.getInt(    "password.policy.expiration.days",         90                               );
-	private static final int		PASSWORD_EXPIRATION_WARNING_DAYS	=  SPropsUtil.getInt(    "password.policy.expiration.warning.days", 5                                );
+	public  static final boolean		PASSWORD_POLICY_ENABLED						=  SPropsUtil.getBoolean("password.policy.enabled",                 true                             );
+	public  static final boolean		PASSWORD_EXPIRATION_ENABLED					= (SPropsUtil.getBoolean("password.policy.expiration",              false) && PASSWORD_POLICY_ENABLED);
+	private static final int			PASSWORD_EXPIRATION_CHANGE_USER_MAX_HITS	=  SPropsUtil.getInt(    "password.policy.expiration.user.maxHits", 1000                             );
+	private static final int			PASSWORD_EXPIRATION_DAYS					=  SPropsUtil.getInt(    "password.policy.expiration.days",         90                               );
+	private static final int			PASSWORD_EXPIRATION_WARNING_DAYS			=  SPropsUtil.getInt(    "password.policy.expiration.warning.days", 5                                );
+	private static final int			PASSWORD_MINIMUM_LENGTH						=  SPropsUtil.getInt(    "password.policy.minimum.password.length", 8                                );
 
+	// The following defines the characters recognized as being a
+	// symbol when evaluating a password for password policy
+	// violations.
+	private static final char[]			PASSWORD_SYMBOLS							= new char[]{'~', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '+', '{', '}', '[', ']', '|', '\\', '?', '/', ',', '.', '<', '>'};
+	private static final StringBuffer	PASSWORD_SYMBOLS_BUFFER 					= new StringBuffer();
+	static {
+		// Stored in a StringBuffer to facilitate return password
+		// policy violation errors.
+		for (int i = 0; i < PASSWORD_SYMBOLS.length; i += 1) {
+			if (0 < i) {
+				PASSWORD_SYMBOLS_BUFFER.append(" ");
+			}
+			PASSWORD_SYMBOLS_BUFFER.append(PASSWORD_SYMBOLS[i]);
+		}
+	}
+	
 	// Constants used to calculate password expirations.
 	private static final int		HOURS_PER_DAY						= 24;
 	private static final int		SECONDS_PER_MINUTE					= 60;
@@ -100,6 +118,94 @@ public final class PasswordPolicyHelper {
 	private PasswordPolicyHelper() {
 		// Nothing to do.
 	}
+
+	/*
+	 * Returns the password violation string for when a password
+	 * doesn't contain any symbols.
+	 */
+	private static String buildNoSymbolsMessage(Locale locale) {
+		return NLT.get("password.validation.noSymbols", new String[]{PASSWORD_SYMBOLS_BUFFER.toString()}, locale);
+	}
+	
+	/*
+	 * Returns true of a password contains lower case characters and
+	 * false otherwise.
+	 */
+	private static boolean containsLowerCase(String pwd, int pwdLength) {
+		boolean reply = false;
+		for (int i = 0; i < pwdLength; i += 1) {
+			char c = pwd.charAt(i);
+			if (('a' <= c) && ('z' >= c)) {
+				reply = true;
+				break;
+			}
+		}
+		return reply;
+	}	
+
+	/*
+	 * Returns true if a password contains the given name and false
+	 * otherwise.
+	 */
+	private static boolean containsName(String pwdLC, int pwdLength, String name) {
+		// If we don't have a password or name...
+		if ((0 == pwdLength) || (null == name) || (0 == name.length())) {
+			// ...it can't contain the name.
+			return false;
+		}
+		
+		// Does it contain the name?
+		return ((0 < pwdLength) && pwdLC.contains(name.toLowerCase()));
+	}
+	/*
+	 * Returns true of a password contains numeric characters and false
+	 * otherwise.
+	 */
+	private static boolean containsNumeric(String pwd, int pwdLength) {
+		boolean reply = false;
+		for (int i = 0; i < pwdLength; i += 1) {
+			char c = pwd.charAt(i);
+			if (('0' <= c) && ('9' >= c)) {
+				reply = true;
+				break;
+			}
+		}
+		return reply;
+	}
+	
+	/*
+	 * Returns true of a password contains symbol characters and false
+	 * otherwise.
+	 */
+	private static boolean containsSymbols(String pwd, int pwdLength) {
+		boolean reply = false;
+		for (int i = 0; i < pwdLength; i += 1) {
+			char c = pwd.charAt(i);
+			for (char sc:  PASSWORD_SYMBOLS) {
+				if (sc == c) {
+					reply = true;
+					break;
+				}
+			}
+		}
+		return reply;
+	}	
+	
+	/*
+	 * Returns true of a password contains upper case characters and
+	 * false otherwise.
+	 */
+	private static boolean containsUpperCase(String pwd, int pwdLength) {
+		boolean reply = false;
+		for (int i = 0; i < pwdLength; i += 1) {
+			char c = pwd.charAt(i);
+			if (('A' <= c) && ('Z' >= c)) {
+				reply = true;
+				break;
+			}
+		}
+		return reply;
+	}	
 	
 	/**
 	 * Forces all non-LDAP person User's to change their password on
@@ -115,7 +221,7 @@ public final class PasswordPolicyHelper {
 
 		// ...setup the search options...
 		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_MAX_HITS,      new Integer(PASSWORD_CHANGE_USER_MAX_HITS));
+		options.put(ObjectKeys.SEARCH_MAX_HITS,      new Integer(PASSWORD_EXPIRATION_CHANGE_USER_MAX_HITS));
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
 		
 		// ...and process the User's, page by page.
@@ -125,7 +231,7 @@ public final class PasswordPolicyHelper {
 			options.put(ObjectKeys.SEARCH_OFFSET, offset);
 			count   = forceAllUsersToChangePasswordImpl(bs, options);
 			offset += count;
-		} while (count == PASSWORD_CHANGE_USER_MAX_HITS);
+		} while (count == PASSWORD_EXPIRATION_CHANGE_USER_MAX_HITS);
 	}
 
 	/*
@@ -272,28 +378,77 @@ public final class PasswordPolicyHelper {
 	 * password is valid null is returned.  If it's not valid, a
 	 * List<String> containing one or more reasons why is returned.
 	 * 
-	 * @param user			User changing the password, not the user whose password is being changed.
+	 * @param localeUser	User changing the password.            (May not be whose password is being changed.)
+	 * @param pwdUser		User whose password is being changed.  (May not be who is changing it.)
 	 * @param newPassword	The new password to validate against the policy.
 	 * 
 	 * @return
 	 */
-	public static List<String> getPasswordPolicyViolations(User user, String newPassword) {
+	public static List<String> getPasswordPolicyViolations(User localeUser, User pwdUser, String newPassword) {
 		// If password policy is not enabled...
 		if (!(passwordPolicyEnabled())) {
 			// ...there can be no violations.
 			return null;
 		}
-		
-//!		...this needs to be implemented...
-		return null;
 
-/*
+		// Allocate a List<String> we can return with any password
+		// policy violations we detect.
 		List<String> reply = new ArrayList<String>();
-		reply.add("This is the 1st violation.");
-		reply.add("This is the 2nd violation.");
-		reply.add("This is the 3rd violation.");
+
+		// What locale should we generate any violations in?
+		Locale locale = localeUser.getLocale();
+		if (null == locale) {
+			locale = NLT.getDefaultLocale();
+		}
+		
+		// Is the password long enough?
+		int pwdLength = ((null == newPassword) ? 0 : newPassword.length());
+		if (PASSWORD_MINIMUM_LENGTH > pwdLength) {
+			// No!  That's a violation.
+			reply.add(NLT.get("password.validation.tooShort", new String[]{String.valueOf(PASSWORD_MINIMUM_LENGTH)}, locale));
+		}
+		
+		// Does it contain lower case, upper case and numeric characters?
+		int hasCount = 0;
+		boolean hasLower   = containsLowerCase(newPassword, pwdLength); if (hasLower)   hasCount += 1;
+		boolean hasUpper   = containsUpperCase(newPassword, pwdLength); if (hasUpper)   hasCount += 1;
+		boolean hasNumeric = containsNumeric(  newPassword, pwdLength); if (hasNumeric) hasCount += 1;
+		if (3 > hasCount) {
+			// No!  It's missing one or more of them.  Does it contain
+			// any symbol characters?
+			boolean hasSymbols = containsSymbols(newPassword, pwdLength);
+			if (hasSymbols) {
+				hasCount += 1;
+			}
+
+			// Have we found 3 of the 3 required items?
+			if (3 > hasCount) {
+				// No!  Then it's in violation of policy.  List the
+				// reasons for failure.
+				                 reply.add(NLT.get("password.validation.needs3",    locale));
+				if (!hasLower)   reply.add(NLT.get("password.validation.noLower",   locale));
+				if (!hasUpper)   reply.add(NLT.get("password.validation.noUpper",   locale));
+				if (!hasNumeric) reply.add(NLT.get("password.validation.noNumeric", locale));
+				if (!hasSymbols) reply.add(buildNoSymbolsMessage(                   locale));
+			}
+		}
+
+		// If the password contains any part of the user's name, that's
+		// a violation.
+		String pwdLC = newPassword.toLowerCase();
+		if (containsName(pwdLC, pwdLength, pwdUser.getName()))      reply.add(NLT.get("password.validation.userId",    locale));
+		if (containsName(pwdLC, pwdLength, pwdUser.getFirstName())) reply.add(NLT.get("password.validation.firstName", locale));
+		if (containsName(pwdLC, pwdLength, pwdUser.getLastName()))  reply.add(NLT.get("password.validation.lastName",  locale));
+
+		// If where are any violations, we need to insert the violation
+		// header at the top of the list.
+		if (reply.isEmpty())
+		     reply = null;
+		else reply.add(0, NLT.get("password.validation.header", locale));
+			
+		// If we get here, reply refers to the List<String> containing
+		// any password violations.  Return it.
 		return reply;
-*/
 	}
 	
 	/**
@@ -390,7 +545,7 @@ public final class PasswordPolicyHelper {
 	 * @return
 	 */
 	public static boolean passwordExpirationEnabled() {
-		return (PASSWORDS_CAN_EXPIRE && passwordPolicyEnabled()); 
+		return (PASSWORD_EXPIRATION_ENABLED && passwordPolicyEnabled()); 
 	}
 
 	/**
