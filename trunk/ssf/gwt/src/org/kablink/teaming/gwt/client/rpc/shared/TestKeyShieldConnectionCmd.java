@@ -33,30 +33,26 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRootType;
+import org.kablink.teaming.gwt.client.GwtKeyShieldConfig;
+
 
 
 
 /**
  * This class holds all of the information necessary to execute the
- * "test net folder connection" command.
+ * "test KeyShield connection" command.
  * 
  * @author jwootton
  *
  */
-public class TestNetFolderConnectionCmd extends VibeRpcCmd
+public class TestKeyShieldConnectionCmd extends VibeRpcCmd
 {
-	private String m_rootName;
-	private NetFolderRootType m_rootType;
-	private String m_rootPath;
-	private String m_subPath;
-	private String m_proxyName;
-	private String m_proxyPwd;
+	private GwtKeyShieldConfig m_keyShieldConfig;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public TestNetFolderConnectionCmd()
+	public TestKeyShieldConnectionCmd()
 	{
 		super();
 	}
@@ -64,20 +60,9 @@ public class TestNetFolderConnectionCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public TestNetFolderConnectionCmd(
-		String rootName,
-		NetFolderRootType rootType,
-		String rootPath,
-		String subPath,
-		String proxyName,
-		String proxyPwd )
+	public TestKeyShieldConnectionCmd( GwtKeyShieldConfig config )
 	{
-		m_rootName = rootName;
-		m_rootType = rootType;
-		m_rootPath = rootPath;
-		m_subPath = subPath;
-		m_proxyName = proxyName;
-		m_proxyPwd = proxyPwd;
+		m_keyShieldConfig = config;
 	}
 	
 	/**
@@ -90,54 +75,14 @@ public class TestNetFolderConnectionCmd extends VibeRpcCmd
 	@Override
 	public int getCmdType()
 	{
-		return VibeRpcCmdType.TEST_NET_FOLDER_CONNECTION.ordinal();
+		return VibeRpcCmdType.TEST_KEYSHIELD_CONNECTION.ordinal();
 	}
 
 	/**
 	 * 
 	 */
-	public String getProxyName()
+	public GwtKeyShieldConfig getKeyShieldConfig()
 	{
-		return m_proxyName;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getProxyPwd()
-	{
-		return m_proxyPwd;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getRootName()
-	{
-		return m_rootName;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getRootPath()
-	{
-		return m_rootPath;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getSubPath()
-	{
-		return m_subPath;
-	}
-	
-	/**
-	 * 
-	 */
-	public NetFolderRootType getRootType()
-	{
-		return m_rootType;
+		return m_keyShieldConfig;
 	}
 }

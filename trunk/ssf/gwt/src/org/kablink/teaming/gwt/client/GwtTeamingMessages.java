@@ -625,6 +625,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SyncNetFolderServer();
 	String rpcFailure_SyncNetFolderRoots();
 	String rpcFailure_TestGroupMembershipCriteria();
+	String rpcFailure_ErrorTestingKeyShieldConnection();
 	String rpcFailure_ErrorTestingNetFolderServerConnection();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
@@ -2627,6 +2628,7 @@ public interface GwtTeamingMessages extends Messages
 	String userActionsPanel_ViewSharedByMe();
 
 	// Strings used when testing a net folder and net folder server connection
+	String testConnection_FailedError();
 	String testConnection_InProgressLabel();
 	String testConnection_NetworkError();
 	String testConnection_Normal();
@@ -3526,6 +3528,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used by the KeyShield SSO Configuration dialog
 	String editKeyShieldConfigDlg_ApiAuthKeyLabel();
 	String editKeyShieldConfigDlg_AuthConnectorNamesHint();
+	String editKeyShieldConfigDlg_ConnectorNamesLabel();
 	String editKeyShieldConfigDlg_EnableKeyShieldLabel();
 	String editKeyShieldConfigDlg_ErrorSavingConfig();
 	String editKeyShieldConfigDlg_Header();
@@ -3534,5 +3537,6 @@ public interface GwtTeamingMessages extends Messages
 	String editKeyShieldConfigDlg_ReadingConfig();
 	String editKeyShieldConfigDlg_SavingConfig();
 	String editKeyShieldConfigDlg_ServerUrlLabel();
+	String editKeyShieldConfigDlg_TestConnectionLabel();
 	
 }// end GwtTeamingMessages
