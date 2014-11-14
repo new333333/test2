@@ -34,7 +34,9 @@ package org.kablink.teaming.gwt.client.widgets;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.TreeSet;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
@@ -367,13 +369,61 @@ public class EditKeyShieldConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private String getAuthConnectorNames()
+	private TreeSet<String> getAuthConnectorNames()
 	{
 		String value;
+		TreeSet<String> retValue;
+		
+		retValue = new TreeSet<String>();
 		
 		value = m_authConnectorNamesTextBox.getValue();
-		if ( value == null )
-			return "";
+		if ( value != null )
+		{
+			String[] names;
+			
+			names = value.split( "," );
+			if ( names != null )
+			{
+				for ( String nextName: names )
+				{
+					retValue.add( nextName );
+				}
+			}
+			else
+				retValue.add( value );
+		}
+		
+		return retValue;
+	}
+	
+	/**
+	 * 
+	 */
+	private String convertTreeSetToCommaDelimitedString( TreeSet<String> set )
+	{
+		String value = "";
+		
+		if ( set != null )
+		{
+			StringBuffer strBuff;
+			Iterator<String> iter;
+
+			strBuff = new StringBuffer();
+			
+			iter = set.iterator();
+			while ( iter.hasNext() )
+			{
+				String nextName;
+				
+				nextName = iter.next();
+				if ( strBuff.length() > 0 )
+					strBuff.append( ',' );
+				
+				strBuff.append( nextName );
+			}
+			
+			value = strBuff.toString().toLowerCase();
+		}
 		
 		return value;
 	}
@@ -537,7 +587,14 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		m_serverUrlTextBox.setValue( m_config.getServerUrl() );
 		m_timeoutTextBox.setValue( String.valueOf( m_config.getHttpConnectionTimeout() ) );
 		m_apiAuthKeyTextBox.setValue( m_config.getApiAuthKey() );
-		m_authConnectorNamesTextBox.setValue( m_config.getAuthConnectorNames() );
+		
+		{
+			String value;
+			
+			value = convertTreeSetToCommaDelimitedString( m_config.getAuthConnectorNames() );
+
+			m_authConnectorNamesTextBox.setValue( value );
+		}
 	}
 	
 	/**
@@ -565,9 +622,21 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		if ( value != null && value.equalsIgnoreCase( m_config.getApiAuthKey() ) == false )
 			return true;
 		
-		value = getAuthConnectorNames();
-		if ( value != null && value.equalsIgnoreCase( m_config.getAuthConnectorNames() ) == false )
-			return true;
+		{
+			String value1;
+			String value2;
+			TreeSet<String> set1;
+			TreeSet<String> set2;
+			
+			set1 = getAuthConnectorNames();
+			value1 = convertTreeSetToCommaDelimitedString( set1 );
+			
+			set2 = m_config.getAuthConnectorNames();
+			value2 = convertTreeSetToCommaDelimitedString( set2 );
+			
+			if ( value1.equalsIgnoreCase( value2 ) == false )
+				return true;
+		}
 		
 		// If we get here, nothing has changed.
 		return false;
