@@ -40,6 +40,11 @@ import org.kablink.teaming.domain.KeyShieldConfig;
 public interface KeyShieldModule
 {
 	/**
+	 * Delete the KeyShieldConfig associated with the given zone id
+	 */
+	public void deleteKeyShieldConfig( Long zoneId );
+	
+	/**
 	 * Returns KeyShield configuration
 	 * 
 	 * @param zoneId
