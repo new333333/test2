@@ -74,12 +74,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -167,7 +165,6 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Restrictions;
-
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.multipart.MultipartFile;
@@ -5340,6 +5337,12 @@ public class BinderHelper {
 	
 	/*
 	 */
+	private static CoreDao getCoreDao() {
+		return ((CoreDao) SpringContextUtil.getBean("coreDao"));
+	}
+	
+	/*
+	 */
 	private static ResourceDriverManager getResourceDriverManager() {
 		return ((ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager"));
 	}
@@ -5815,6 +5818,27 @@ public class BinderHelper {
  						new String[] {binder.getPathName(), destination.getPathName()});			   
  		   }
  	   }
+    }
+    
+    public static void copyOrMoveEntryCheckUniqueFileNames(Binder destination, Entry entry) 
+    		throws TitleException {
+    	//get Entry Children
+    	if (entry instanceof FolderEntry) {
+    		List entries = getFolderDao().loadEntryDescendants((FolderEntry)entry);
+        	entries.add(entry);
+        	// Check file titles in the entries
+       		for (Iterator iter=entries.iterator(); iter.hasNext();) {
+       			FolderEntry e = (FolderEntry)iter.next();
+       	    	Collection<FileAttachment> atts = entry.getFileAttachments();
+       	    	for (FileAttachment att : atts) {
+       	    		String fileName = att.getFileItem().getName();
+	       			if (getCoreDao().isFileNameRegistered(destination.getId(), fileName)) {
+	       				throw new TitleException(fileName);
+	       			}
+       	    	}
+       		}
+    	}
+
     }
 
     /**
