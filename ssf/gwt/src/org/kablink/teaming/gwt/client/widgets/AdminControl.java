@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditKeyShieldConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditLdapConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageAdministratorsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeNetFolderGlobalSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageDatabasePruneDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageMobileDevicesDlgEvent;
@@ -107,6 +108,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUs
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
+import org.kablink.teaming.gwt.client.widgets.ManageAdministratorsDlg.ManageAdministratorsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.NetFolderGlobalSettingsDlg.NetFolderGlobalSettingsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageDatabasePruneDlg.ManageDatabasePruneDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
@@ -170,6 +172,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeEditLdapConfigDlgEvent.Handler,
 		InvokeEditNetFolderDlgEvent.Handler,
 		InvokeNetFolderGlobalSettingsDlgEvent.Handler,
+		InvokeManageAdministratorsDlgEvent.Handler,
 		InvokeManageDatabasePruneDlgEvent.Handler,
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
@@ -200,6 +203,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ConfigureMobileAppsDlg m_configureMobileAppsDlg = null;
 	private ConfigureUserMobileAppsDlg m_configureUserMobileAppsDlg = null;
 	private ConfigureUserFileSyncAppDlg m_configureUserFileSyncAppDlg = null;
+	private ManageAdministratorsDlg m_manageAdministratorsDlg = null;
 	private ManageDatabasePruneDlg m_manageDatabasePruneDlg = null;
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
@@ -249,6 +253,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_EDIT_LDAP_CONFIG_DLG,
 		TeamingEvents.INVOKE_EDIT_NET_FOLDER_DLG,
 		TeamingEvents.INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG,
+		TeamingEvents.INVOKE_MANAGE_ADMINISTRATORS_DLG,
 		TeamingEvents.INVOKE_MANAGE_DATABASE_PRUNE_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
@@ -456,8 +461,9 @@ public class AdminControl extends TeamingPopupPanel
 			actions = category.getActions();
 			if ( actions != null )
 			{
-				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
-				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
+				boolean showManageAdministrators = ManageAdministratorsDlg.SHOW_MANAGE_ADMINISTRATORS;
+				boolean showManageMobileDevices  = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
+				boolean showPasswordPolicy       = GwtClientHelper.isPasswordPolicyEnabled();
 				for (GwtAdminAction action : actions )
 				{
 					if ( action.getActionType().equals( AdminAction.MANAGE_MOBILE_DEVICES ) && ( ! showManageMobileDevices ) )
@@ -466,6 +472,11 @@ public class AdminControl extends TeamingPopupPanel
 					}
 					
 					if ( action.getActionType().equals( AdminAction.CONFIGURE_PASSWORD_POLICY ) && ( ! showPasswordPolicy ))
+					{
+						continue;
+					}
+					
+					if ( action.getActionType().equals( AdminAction.MANAGE_ADMINISTRATORS ) && ( ! showManageAdministrators ))
 					{
 						continue;
 					}
@@ -884,6 +895,11 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the "Configure User Access" dialog
 			InvokeConfigureUserAccessDlgEvent.fireOne();
 			
+		}
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_ADMINISTRATORS )
+		{
+			// Fire the event to invoke the "Manage Administrators" dialog.
+			GwtTeaming.fireEvent( new InvokeManageAdministratorsDlgEvent() );
 		}
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_GROUPS )
 		{
@@ -2525,6 +2541,63 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Handles InvokeManageAdministratorsDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeManageAdministratorsDlgEvent.Handler.onInvokeManageAdministratorsDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeManageAdministratorsDlg( final InvokeManageAdministratorsDlgEvent event )
+	{
+		// Get the position of the content control.
+		final int x = m_contentControlX;
+		final int y = m_contentControlY;
+		
+		// Have we already created a "Manage Administrators" dialog?
+		if ( m_manageAdministratorsDlg == null )
+		{
+			// No, create one.
+			ManageAdministratorsDlg.createAsync( new ManageAdministratorsDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ManageAdministratorsDlg muDlg )
+				{
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_manageAdministratorsDlg = muDlg;
+							ManageAdministratorsDlg.initAndShow( m_manageAdministratorsDlg, x, y, m_dlgWidth, m_dlgHeight );
+						}
+					} );
+				}
+			},
+			false,	// false -> !auto hide.
+			true,	// true -> modal.
+			x, 
+			y,
+			m_dlgWidth,
+			m_dlgHeight );
+		}
+		
+		else
+		{
+			// Yes, we've already created a "Manage Administrators" dialog!
+			// Simply initialize and show it.
+			m_manageAdministratorsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
+			ManageAdministratorsDlg.initAndShow( m_manageAdministratorsDlg, x, y, m_dlgWidth, m_dlgHeight );
+		}
+	}
+	
+	/**
 	 * Handles InvokeManageDatabasePruneDlgEvent received by this class.
 	 * 
 	 * Implements the InvokeManageDatabasePruneDlgEvent.Handler.onInvokeManageDatabasePruneDlg() method.
@@ -3626,5 +3699,4 @@ public class AdminControl extends TeamingPopupPanel
 			}
 		} );
 	}
-
 }// end AdminControl

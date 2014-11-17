@@ -133,6 +133,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_IMPORT_PROFILES_DLG,						// Invokes the "Import Profiles" dialog.
 	INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG,			// Invokes the "Net Folder Global Settings" dialog.
 	INVOKE_LDAP_SYNC_RESULTS_DLG,					// Invokes the "Ldap sync results" dialog.
+	INVOKE_MANAGE_ADMINISTRATORS_DLG,				// Invokes the "Manage administrators" dialog.
 	INVOKE_MANAGE_DATABASE_PRUNE_DLG,				// Invokes the "Manage database prune" dialog.
 	INVOKE_MANAGE_GROUPS_DLG,						// Invokes the "Manage groups" dialog.
 	INVOKE_MANAGE_MOBILE_DEVICES_DLG,				// Invokes the "Manage mobile devices" dialog.

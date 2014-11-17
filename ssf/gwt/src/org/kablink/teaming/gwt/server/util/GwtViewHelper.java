@@ -3138,6 +3138,23 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Returns a Map of the search results for administrators based on
+	 * the criteria in the options Map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map getAdministratorEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getAdministratorEntries()");
+		try {
+//!			...this needs to be implemented...
+			return buildEmptyEntryMap();
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+	
+	/*
 	 * Constructs a List<AssignmentInfo>'s for the team membership of a
 	 * Binder.
 	 */
@@ -4201,7 +4218,15 @@ public class GwtViewHelper {
 			}
 			
 			// No, we aren't showing a mobile devices view either!  Are
-			// we looking at the root profiles binder? 
+			// we looking at the root profiles binder in administrators
+			// mode?
+			else if (folderInfo.isBinderAdministratorManagement()) {
+				baseNameKey = "administrators.column.";
+				columnNames = getColumnsLHMFromAS(new String[]{"title"});
+			}
+			
+			// No, we aren't showing an administrators view either!
+			// Are we looking at the root profiles binder? 
 			else if (folderInfo.isBinderProfilesRootWS()) {
 				// Yes!
 				baseNameKey = "profiles.column.";
@@ -5297,6 +5322,7 @@ public class GwtViewHelper {
 			boolean isMobileDevicesViewSpec = folderInfo.isBinderMobileDevices();
 			boolean isProfilesRootWS        = folderInfo.isBinderProfilesRootWS();
 			boolean isTeamsRootWS           = folderInfo.isBinderTeamsRootWS();
+			boolean isManageAdministrators  = folderInfo.isBinderAdministratorManagement();
 			@SuppressWarnings("unused")
 			boolean isManageTeams           = folderInfo.isBinderTeamsRootWSManagement();
 			boolean isManageUsers           = folderInfo.isBinderProfilesRootWSManagement();
@@ -5358,6 +5384,11 @@ public class GwtViewHelper {
 					if      (siteAdmins  && nonSiteAdmins) /* Default includes both. */ ;
 					else if (siteAdmins)           options.put(ObjectKeys.SEARCH_IS_SITE_ADMINS,         Boolean.TRUE);
 					else if (nonSiteAdmins)        options.put(ObjectKeys.SEARCH_IS_NON_SITE_ADMINS,     Boolean.TRUE);
+				}
+				
+				else if (isManageAdministrators) {
+					// No options.
+//!					...this needs to be implemented...
 				}
 				
 				else {
@@ -5426,6 +5457,7 @@ public class GwtViewHelper {
 				// Read the entries based on a search.
 				Map searchResults;
 				if      (isTrash)                         searchResults = TrashHelper.getTrashEntities(    bs,          binder,              options                               );
+				else if (isManageAdministrators)          searchResults = getAdministratorEntries(         bs, request, binder, quickFilter, options                               );
 				else if (isProfilesRootWS)                searchResults = getUserEntries(                  bs, request, binder, quickFilter, options                               );
 				else if (isGlobalRootWS || isTeamsRootWS) searchResults = getRootWorkspaceEntries(         bs, request, binder, quickFilter, options                               );
 				else if (isCollection)                    searchResults = getCollectionEntries(            bs, request, binder, quickFilter, options, collectionType, shareItems   );

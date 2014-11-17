@@ -92,11 +92,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -217,6 +219,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
 import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ManageAdministratorsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageTeamsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveKeyShieldConfigRpcResponseData;
@@ -2711,6 +2714,27 @@ public class GwtServerHelper {
 						// Add this action to the "management" category
 						managementCategory.addAdminOption( adminAction );
 					}
+				}
+				catch( AccessControlException e ) {}
+			}
+			
+			// Is this the built-in administrator?
+			if ( user.isAdmin() )
+			{
+				try
+				{
+					// Add a Manage Administrators action to the
+					// "management" category
+					title = NLT.get( "administration.manage.administrators" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_ADMINISTRATORS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_ADMINISTRATORS );
+					
+					managementCategory.addAdminOption( adminAction );
 				}
 				catch( AccessControlException e ) {}
 			}
@@ -6994,6 +7018,42 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns a ManageAdministratorsInfoRpcResponseData object
+	 * containing the information for managing administrators.
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ManageAdministratorsInfoRpcResponseData getManageAdministratorsInfo(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
+		try {
+			// Construct the ManageAdministratorsInfoRpcResponseData
+			// object we'll fill in and return.
+			BinderInfo bi = getBinderInfo(bs, request, bs.getProfileModule().getProfileBinderId());
+			if (!(bi.getWorkspaceType().isProfileRoot())) {
+				GwtLogHelper.error(m_logger, "GwtServerHelper.getManageAdministratorsInformation():  The workspace type of the profile root binder was incorrect.  Found:  " + bi.getWorkspaceType().name() + ", Expected:  " + WorkspaceType.PROFILE_ROOT.name());
+			}
+			bi.setWorkspaceType(WorkspaceType.ADMINISTRATOR_MANAGEMENT);
+			ManageAdministratorsInfoRpcResponseData reply =
+				new ManageAdministratorsInfoRpcResponseData(
+					bi,
+					NLT.get("administration.manage.administrators"));
+
+			// If we get here, reply refers to the
+			// ManageAdministratorsInfoRpcResponseData object
+			// containing the information about managing
+			// administrators.  Return it.
+			return reply;
+		}
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(m_logger, ex);
+		}		
+	}
+
+	/**
 	 * Returns a ManageTeamsInfoRpcResponseData object
 	 * containing the information for managing teams.
 	 * 
@@ -10581,6 +10641,7 @@ public class GwtServerHelper {
 		case GET_LOGIN_INFO:
 		case GET_MAILTO_PUBLIC_LINKS:
 		case GET_MAIN_PAGE_INFO:
+		case GET_MANAGE_ADMINISTRATORS_INFO:
 		case GET_MANAGE_MOBILE_DEVICES_INFO:
 		case GET_MANAGE_TEAMS_INFO:
 		case GET_MANAGE_USERS_INFO:

@@ -1347,6 +1347,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case INVOKE_MANAGE_ADMINISTRATORS_DLG:
+				// An InvokeManageAdministratorsDlgEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof InvokeManageAdministratorsDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeManageAdministratorsDlgEvent.registerEvent( eventBus, ((InvokeManageAdministratorsDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_MANAGE_DATABASE_PRUNE_DLG:
 				// An InvokeManageDatabasePruneDlgEvent!  Can the event handler we were given handle that?
 				if ( eventHandler instanceof InvokeManageDatabasePruneDlgEvent.Handler)
@@ -2930,6 +2939,7 @@ public class EventHelper {
 			case INVOKE_IMPORT_PROFILES_DLG:				   hasHandler = (eventHandler instanceof InvokeImportProfilesDlgEvent.Handler);		           break;
 			case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:		   hasHandler = (eventHandler instanceof InvokeNetFolderGlobalSettingsDlgEvent.Handler); 	   break;
 			case INVOKE_LDAP_SYNC_RESULTS_DLG:			       hasHandler = (eventHandler instanceof InvokeLdapSyncResultsDlgEvent.Handler); 	           break;
+			case INVOKE_MANAGE_ADMINISTRATORS_DLG:			   hasHandler = (eventHandler instanceof InvokeManageAdministratorsDlgEvent.Handler);		   break;
 			case INVOKE_MANAGE_DATABASE_PRUNE_DLG:			   hasHandler = (eventHandler instanceof InvokeManageDatabasePruneDlgEvent.Handler); 	       break;
 			case INVOKE_MANAGE_NET_FOLDERS_DLG:			       hasHandler = (eventHandler instanceof InvokeManageNetFoldersDlgEvent.Handler); 	           break;
 			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	       hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler);          break;
