@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.module.folder.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -45,11 +46,10 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-
 import org.hibernate.exception.LockAcquisitionException;
-
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
@@ -93,11 +93,11 @@ import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.util.Validator;
-
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
@@ -592,6 +592,18 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 	   
 	   BinderHelper.copyEntryCheckMirrored(binder, source, destination);
 
+	   if (destination.isLibrary()) {
+		   //Check that there wouldn't be any duplicate file names because of this move
+		   try {
+			   BinderHelper.copyOrMoveEntryCheckUniqueFileNames(destination, source);
+		   } catch(Exception e) {
+			   //Cannot copy this entry because it will violate the unique names requirement
+			   FilesErrors errors = new FilesErrors();
+			   errors.addProblem(new FilesErrors.Problem("",  source.getTitle(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, e));
+			   throw new WriteFilesException(errors);
+		   }
+	   }
+
 	   List<FolderEntry>children = getFolderDao().loadEntryDescendants((FolderEntry)source);
 	   children.add(0, (FolderEntry)source);
 	   getCoreDao().bulkLoadCollections(children);
@@ -778,6 +790,11 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
     	if (fEntry.getTopEntry() != null)
     		throw new NotSupportedException("errorcode.notsupported.moveReply");
     	BinderHelper.moveEntryCheckMirrored(binder, entry, destination);
+    	
+    	if (destination.isLibrary()) {
+    		//Check that there wouldn't be any duplicate file names because of this move
+    		BinderHelper.copyOrMoveEntryCheckUniqueFileNames(destination, entry);
+    	}
     	
     	//Remove this entry from the RSS index
     	Set<Entry> entriesToDelete = new HashSet<Entry>();
