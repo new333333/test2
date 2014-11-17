@@ -65,6 +65,7 @@ public enum AdminAction implements IsSerializable
 	KEYSHIELD_CONFIG( "KeyShield configuration" ),
 	NET_FOLDER_GLOBAL_SETTINGS( "Net Folder Global Settings" ),
 	LDAP_CONFIG( "LDAP configuration" ),
+	MANAGE_ADMINISTRATORS( "Manage administrators" ),
 	MANAGE_APPLICATIONS( "Manage applications" ),
 	MANAGE_APPLICATION_GROUPS( "Manage application groups" ),
 	MANAGE_DATABASE_PRUNE( "Manage database prune" ),

@@ -2081,6 +2081,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_MANAGE_ADMINISTRATORS_INFO:
+		{
+			ManageAdministratorsInfoRpcResponseData result = GwtServerHelper.getManageAdministratorsInfo( this, getRequest( ri ) );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_MANAGE_MOBILE_DEVICES_INFO:
 		{
 			GetManageMobileDevicesInfoCmd gmmdiCmd = ((GetManageMobileDevicesInfoCmd) cmd); 

@@ -366,7 +366,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 		// No, we we aren't displaying a bread crumb panel for a
 		// collection!  Are we displaying it for the profile, global
 		// or team root workspace, or a mobile devices view?
-		else if (m_binderInfo.isBinderProfilesRootWS() || m_binderInfo.isBinderGlobalRootWS() || m_binderInfo.isBinderTeamsRootWS() || m_binderInfo.isBinderMobileDevices()) {
+		else if (m_binderInfo.isBinderAdministratorManagement() || m_binderInfo.isBinderProfilesRootWS() || m_binderInfo.isBinderGlobalRootWS() || m_binderInfo.isBinderTeamsRootWS() || m_binderInfo.isBinderMobileDevices()) {
 			// Yes!  We don't need a tree, just the image and title.
 			// Create the panel for it...
 			VibeFlowPanel fp = new VibeFlowPanel();
@@ -374,7 +374,15 @@ public class BreadCrumbPanel extends ToolPanelBase
 
 			// ...create the image...
 			ImageResource iRes;
-			if (m_binderInfo.isBinderProfilesRootWS()) {
+			if (m_binderInfo.isBinderAdministratorManagement()) {
+				switch (BinderIconSize.getBreadCrumbIconSize()) {
+				default:
+				case SMALL:   iRes = m_filrImages.adminRoot();        break;
+				case MEDIUM:  iRes = m_filrImages.adminRoot_medium(); break;
+				case LARGE:   iRes = m_filrImages.adminRoot_large();  break;
+				}
+			}
+			else if (m_binderInfo.isBinderProfilesRootWS()) {
 				switch (BinderIconSize.getBreadCrumbIconSize()) {
 				default:
 				case SMALL:   iRes = m_filrImages.profileRoot();        break;
@@ -420,14 +428,15 @@ public class BreadCrumbPanel extends ToolPanelBase
 
 			// ...create the title label...
 			String txt;
-			if      (m_binderInfo.isBinderProfilesRootWS()) txt = m_messages.vibeDataTable_People();
-			else if (m_binderInfo.isBinderGlobalRootWS())   txt = m_messages.vibeDataTable_Globals();
-			else if (m_binderInfo.isBinderTeamsRootWS())    txt = m_messages.vibeDataTable_Teams();
-			else                                            txt = m_messages.vibeDataTable_MobileDevices();
+			if      (m_binderInfo.isBinderAdministratorManagement()) txt = m_messages.vibeDataTable_People();
+			else if (m_binderInfo.isBinderProfilesRootWS())          txt = m_messages.vibeDataTable_People();
+			else if (m_binderInfo.isBinderGlobalRootWS())            txt = m_messages.vibeDataTable_Globals();
+			else if (m_binderInfo.isBinderTeamsRootWS())             txt = m_messages.vibeDataTable_Teams();
+			else                                                     txt = m_messages.vibeDataTable_MobileDevices();
 			final InlineLabel il = new InlineLabel(txt);
 			il.addStyleName("vibe-breadCrumbProfiles-label");
 			fp.add(il);
-			if (m_binderInfo.isBinderProfilesRootWSManagement() || m_binderInfo.isBinderTeamsRootWSManagement() || m_binderInfo.isBinderMobileDevices()) {
+			if (m_binderInfo.isBinderAdministratorManagement() || m_binderInfo.isBinderProfilesRootWSManagement() || m_binderInfo.isBinderTeamsRootWSManagement() || m_binderInfo.isBinderMobileDevices()) {
 				GwtTeaming.fireEvent(
 					new GetManageTitleEvent(
 						m_binderInfo,
@@ -482,7 +491,8 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 */
 	private boolean needsBinderConfig() {
 		boolean reply = (
-			(!(m_binderInfo.isBinderProfilesRootWSManagement())) &&	// Not on manage users...
+			(!(m_binderInfo.isBinderAdministratorManagement()))  &&	// Not on manage administrators...
+			(!(m_binderInfo.isBinderProfilesRootWSManagement())) &&	// ...or on manage users...
 			(!(m_binderInfo.isBinderTeamsRootWSManagement()))    &&	// ...or on manage teams...
 			(!(m_binderInfo.isBinderMobileDevices()))            &&	// ...or the mobile devices view...
 			(!(m_binderInfo.isBinderTrash())));						// ...or the trash view.
@@ -498,11 +508,12 @@ public class BreadCrumbPanel extends ToolPanelBase
 		boolean reply = (m_binderInfo.isBinderProfilesRootWSManagement() || m_binderInfo.isBinderTeamsRootWSManagement());
 		if (!reply) {
 			reply = (
-				(!(m_binderInfo.isBinderProfilesRootWS())) &&	// Not on view of users...
-				(!(m_binderInfo.isBinderTeamsRootWS()))    &&	// ...or view of teams...
-				(!(m_binderInfo.isBinderMirroredFolder())) &&	// ...or any mirrored/net folder...
-				(!(m_binderInfo.isBinderMobileDevices()))  &&	// ...or the mobile devices view...
-				(!(m_binderInfo.isBinderTrash())));				// ...or the trash view itself.
+				(!(m_binderInfo.isBinderAdministratorManagement())) &&	// Not on view of administrators...
+				(!(m_binderInfo.isBinderProfilesRootWS()))          &&	// ...or view of users...
+				(!(m_binderInfo.isBinderTeamsRootWS()))             &&	// ...or view of teams...
+				(!(m_binderInfo.isBinderMirroredFolder()))          &&	// ...or any mirrored/net folder...
+				(!(m_binderInfo.isBinderMobileDevices()))           &&	// ...or the mobile devices view...
+				(!(m_binderInfo.isBinderTrash())));						// ...or the trash view itself.
 			
 			if (reply) {
 				if (m_binderInfo.isBinderCollection()) {
@@ -523,10 +534,11 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 */
 	private boolean needsWhatsNewLink() {
 		boolean reply = (
-			(!(m_binderInfo.isBinderProfilesRootWS())) &&	// Not on any view of users...
-			(!(m_binderInfo.isBinderTeamsRootWS()))    &&	// ...or any view of teams...
-			(!(m_binderInfo.isBinderMobileDevices()))  &&	// ...or the mobile devices view...
-			(!(m_binderInfo.isBinderTrash())));				// ...or the trash view.
+			(!(m_binderInfo.isBinderAdministratorManagement())) &&	// Not on a view of administrators...
+			(!(m_binderInfo.isBinderProfilesRootWS()))          &&	// ...or any view of users...
+			(!(m_binderInfo.isBinderTeamsRootWS()))             &&	// ...or any view of teams...
+			(!(m_binderInfo.isBinderMobileDevices()))           &&	// ...or the mobile devices view...
+			(!(m_binderInfo.isBinderTrash())));						// ...or the trash view.
 		
 		return reply;
 	}
@@ -744,7 +756,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * Synchronously runs the trash viewer on the current BinderInfo.
 	 */
 	private void viewTrashNow() {
-		// Are we managing users?
+		// Are managing users?
 		if (m_binderInfo.isBinderProfilesRootWSManagement()) {
 			// Yes!  Simply tell the administration console to view the
 			// trash on the personal workspaces binder.
@@ -753,7 +765,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 					true));	// true -> Trash view.
 		}
 		
-		// No, we aren't managing users!  Are we managing teams?
+		// No, we aren't managing users either!  Are we managing teams?
 		else if (m_binderInfo.isBinderTeamsRootWSManagement()) {
 			// Yes!  Simply tell the administration console to view the
 			// trash on the team workspaces binder.

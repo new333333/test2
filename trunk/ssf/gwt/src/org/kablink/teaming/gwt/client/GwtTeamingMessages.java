@@ -459,6 +459,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMailToPublicLinks();
 	String rpcFailure_GetMainPageInfo();
+	String rpcFailure_GetManageAdministratorsInfo();
 	String rpcFailure_GetManageMobileDevicesInfo();
 	String rpcFailure_GetManageTeamsInfo();
 	String rpcFailure_GetManageTeamsState();
@@ -659,6 +660,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_AddNewFolderDlg();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
+	String codeSplitFailure_AdministratorsView();
 	String codeSplitFailure_AlertDlg();
 	String codeSplitFailure_BinderOwnerAvatarPanel();
 	String codeSplitFailure_BinderShareRightsDlg();
@@ -744,6 +746,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_MailToPanel();
 	String codeSplitFailure_MainMenuControl();
 	String codeSplitFailure_MainPage();
+	String codeSplitFailure_ManageAdministratorsDlg();
 	String codeSplitFailure_ManageCommentsComposite();
 	String codeSplitFailure_ManageCommentsDlg();
 	String codeSplitFailure_ManageDatabasePruneDlg();
@@ -1912,6 +1915,7 @@ public interface GwtTeamingMessages extends Messages
 	String folderColumnsDlgShow();
 	
 	// Strings used by various widgets of the Vibe Data table.
+	String vibeDataTable_Administrators();
 	String vibeDataTable_Alt_CancelWipe();
 	String vibeDataTable_Alt_CollapseDescription();
 	String vibeDataTable_Alt_Comments();
@@ -2390,6 +2394,7 @@ public interface GwtTeamingMessages extends Messages
 	String createBlogPageDlg_noNameSpecified();
 
 	// Strings used with Filr
+	String administratorsList();
 	String folders();
 	String globalsList();
 	String mobileDevicesList();
@@ -2764,6 +2769,9 @@ public interface GwtTeamingMessages extends Messages
 	String selectPrincipalsWidget_SelectPrincipalsLabel();
 	String selectPrincipalsWidget_TypeCol();
 
+	// Strings used by the 'Manage Administrators' dialog.
+	String manageAdministratorsDlgCaption();
+	
 	// Strings used by the 'Manage Teams' dialog.
 	String manageTeamsDlgCaption();
 	
@@ -2840,6 +2848,11 @@ public interface GwtTeamingMessages extends Messages
 	String editNetFolderRightsDlg_ShareLinkLabel();
 	String editNetFolderRightsDlg_SharePublicLabel();
 
+	// Strings used for the empty administrators view widget.
+	String emptyAdministrators_Info_1( String company, String product );
+	String emptyAdministrators_Info_2( String company, String product );
+	String emptyAdministrators_SubHead();
+	
 	// Strings used for the empty collection view widget.
 	String emptyCollection_Info_MyFiles( String product );
 	String emptyCollection_Info_SharedByMe_1( String product );

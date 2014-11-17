@@ -41,6 +41,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public enum WorkspaceType implements IsSerializable {
+	ADMINISTRATOR_MANAGEMENT,	// When used within          the administration console.
 	DISCUSSIONS,
 	GLOBAL_ROOT,
 	LANDING_PAGE,
@@ -50,8 +51,8 @@ public enum WorkspaceType implements IsSerializable {
 	PROFILE_ROOT_MANAGEMENT,	// When used within          the administration console.
 	PROJECT_MANAGEMENT,
 	TEAM,
-	TEAM_ROOT,
-	TEAM_ROOT_MANAGEMENT,
+	TEAM_ROOT,					// When used anywhere except the administration console.
+	TEAM_ROOT_MANAGEMENT,		// When used within          the administration console.
 	TOP,
 	TRASH,
 	USER,
@@ -59,6 +60,17 @@ public enum WorkspaceType implements IsSerializable {
 	
 	OTHER,
 	NOT_A_WORKSPACE;
+	
+	/**
+	 * Returns true if this WorkspaceType value represents a profile
+	 * root as used for administrator management by the administration
+	 * console and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isAdministratorManagement() {
+		return this.equals(ADMINISTRATOR_MANAGEMENT);
+	}
 	
 	/**
 	 * Returns true if this WorkspaceType value represents a global
@@ -88,7 +100,7 @@ public enum WorkspaceType implements IsSerializable {
 	 * @return
 	 */
 	public boolean isProfileRoot() {
-		return (this.equals(PROFILE_ROOT) || this.equals(PROFILE_ROOT_MANAGEMENT));
+		return (this.equals(PROFILE_ROOT) || this.equals(PROFILE_ROOT_MANAGEMENT)  || this.equals(ADMINISTRATOR_MANAGEMENT));
 	}
 
 	/**

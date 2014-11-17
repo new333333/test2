@@ -16,6 +16,11 @@
 		.vibe-accessoriesPanel {}
 	/* ...End:  Accessory styles. */
 	
+	/* ...Start:  Administrators view styles. */
+		.vibe-administratorsDataTable {}
+		.vibe-administratorsFlowPanel {}
+	/* ...End:  Administrators view styles. */
+
 	/* ...Start:  Bread crumb panel styles. */
 		.vibe-breadCrumbCollection-image   {vertical-align: middle; margin-right: 5px; margin-bottom: 3px;}
 		.vibe-breadCrumbCollection-label   {font-size: 1.4em; color: #1f1f1f; padding: 0px 10px 2px 0px; white-space: nowrap;}

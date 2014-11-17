@@ -157,6 +157,16 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	}
 	
 	/**
+	 * Returns true if this BinderInfo defines the root profiles binder
+	 * in administrator management mode and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinderAdministratorManagement() {
+		return (isBinderWorkspace() && m_wsType.isAdministratorManagement());
+	}
+	
+	/**
 	 * Returns true of this BinderInfo defines a Collection and false
 	 * otherwise.
 	 * 
