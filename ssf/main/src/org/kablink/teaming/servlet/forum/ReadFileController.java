@@ -190,9 +190,13 @@ public class ReadFileController extends AbstractReadFileController {
 						try {
 							if (entity.getEntityType().equals(EntityType.folderEntry)) {
 								fileStream = getFileModule().readFile(entity.getParentBinder(), entity, (FileAttachment)attachment);
+								// Mark it in the audit trail.
+								getReportModule().addFileInfo(AuditType.download, (FileAttachment)attachment);
 							} else if (entity.getEntityType().equals(EntityType.folder) || 
 									entity.getEntityType().equals(EntityType.workspace)) {
 								fileStream = getFileModule().readFile((Binder)entity, entity, (FileAttachment)attachment);
+								// Mark it in the audit trail.
+								getReportModule().addFileInfo(AuditType.download, (FileAttachment)attachment);
 							} else {
 								zipOut.finish();
 								return null;
@@ -260,9 +264,13 @@ public class ReadFileController extends AbstractReadFileController {
 					try {
 						if (entity.getEntityType().equals(EntityType.folderEntry)) {
 							fileStream = getFileModule().readFile(entity.getParentBinder(), entity, fileAtt);
+							// Mark it in the audit trail.
+							getReportModule().addFileInfo(AuditType.download, fileAtt);
 						} else if (entity.getEntityType().equals(EntityType.folder) || 
 								entity.getEntityType().equals(EntityType.workspace)) {
 							fileStream = getFileModule().readFile((Binder)entity, entity, fileAtt);
+							// Mark it in the audit trail.
+							getReportModule().addFileInfo(AuditType.download, fileAtt);
 						} else {
 							zipOut.finish();
 							return null;
@@ -730,7 +738,6 @@ public class ReadFileController extends AbstractReadFileController {
 									String.valueOf(FileHelper.getLength(parent, entity, fa)));
 							}
 							getFileModule().readFile(parent, entity, fa, response.getOutputStream());
-							
 							// Mark it in the audit trail.
 							getReportModule().addFileInfo(AuditType.download, fa);
 						}
@@ -851,6 +858,8 @@ public class ReadFileController extends AbstractReadFileController {
 					*/
 					setDateTimeOnZipArchiveEntry(zae, fileAtt);
 					zipOut.closeArchiveEntry();
+					// Mark it in the audit trail.
+					getReportModule().addFileInfo(AuditType.download, fileAtt);
 				} catch (Exception e) {
 					logger.error("Error reading file", e);
 				}

@@ -672,9 +672,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 
 	private static final String[] activityTypes = new String[]
-	             {AuditTrail.AuditType.add.name(), AuditTrail.AuditType.view.name(),
+	             {AuditTrail.AuditType.add.name(), AuditTrail.AuditType.view.name(), AuditTrail.AuditType.download.name(),
 				  AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name(),
-				  AuditTrail.AuditType.preDelete.name(), AuditTrail.AuditType.restore.name()};
+				  AuditTrail.AuditType.preDelete.name(), AuditTrail.AuditType.restore.name(),
+				  AuditTrail.AuditType.acl.name()};
 	
 	protected HashMap<String,Object> addBlankRow(List<Map<String, Object>> report, Long binderId, String title, Long parentId) {
 		HashMap<String,Object> row = new HashMap<String,Object>();
