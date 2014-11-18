@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
@@ -1552,7 +1553,8 @@ public class ManageGroupsDlg extends DlgBox implements
 				}
 
 				// If we changed anything...
-				if ( GwtClientHelper.hasItems( responseData.getSuccessfulSets() ) )
+				final Map<Long, String> adminRightsChangeMap = responseData.getAdminRightsChangeMap();
+				if ( GwtClientHelper.hasItems( adminRightsChangeMap ) )
 				{
 					// ...update the table to reflect the fact that a
 					// ...group was modified.
@@ -1561,7 +1563,22 @@ public class ManageGroupsDlg extends DlgBox implements
 						@Override
 						public void execute()
 						{
-							init();
+							List<GroupInfoPlus>	rows   = m_groupsTable.getVisibleItems();
+							Set<Long>			keySet = adminRightsChangeMap.keySet();
+							for ( Long key:  keySet )
+							{
+								int rowIndex = 0;
+								for ( GroupInfoPlus row : rows ) {
+									Long rowId = row.getGroupInfo().getId();
+									if ( rowId.equals( key ) )
+									{
+										row.getGroupInfo().setAdminRights( adminRightsChangeMap.get( key ) );
+										m_groupsTable.redrawRow( rowIndex );
+										break;
+									}
+									rowIndex += 1;
+								}
+							}
 						}
 					} );
 				}
