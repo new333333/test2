@@ -86,6 +86,7 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
+
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -94,7 +95,7 @@ import org.springframework.util.FileCopyUtils;
  * @author ?
  */
 @SuppressWarnings("unchecked")
-public class DefaultEmailPoster  extends CommonDependencyInjection implements EmailPoster {
+public class DefaultEmailPoster extends CommonDependencyInjection implements EmailPoster {
 	/*
 	 * Inner class used to track where an entry's description comes
 	 * from.
@@ -229,7 +230,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		 * 
 		 * @return
 		 */
-		@SuppressWarnings("unused")
 		public String getContentId() throws MessagingException {
 			return m_contentId;
 		}
@@ -380,7 +380,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 				if (null == exMsg) {
 					exMsg = ex.getMessage();
 				}
-				logger.error("Could not transfer to file", ex);
+				logger.error("Could not transfer to file (1)", ex);
 				throw new IOException("Could not transfer to file: " + exMsg);
 			}
 			finally {
@@ -389,7 +389,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 						in.close();
 					}
 					catch(Exception e) {
-						logger.error("Could not transfer to file");
+						logger.error("Could not transfer to file (2)");
 					}
 				}
 				if (null != out) {
@@ -397,7 +397,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 						out.close();
 					}
 					catch(Exception e) {
-						logger.error("Could not transfer to file");
+						logger.error("Could not transfer to file (3)");
 					}
 				}
 			}
@@ -507,9 +507,9 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 						exMsg = ex.getMessage();
 					}
 					try {
-						emailLog.setComments("Error posting the message from:  '" + MimeUtility.decodeText(from.toUnicodeString()) + "', Error:  " + exMsg);
+						emailLog.setComments("Error posting the message from (1):  '" + MimeUtility.decodeText(from.toUnicodeString()) + "', Error:  " + exMsg);
 					} catch (UnsupportedEncodingException e) {
-						emailLog.setComments("Error posting the message from:  '" + from.toString() + "', Error:  " + exMsg);
+						emailLog.setComments("Error posting the message from (2):  '" + from.toString() + "', Error:  " + exMsg);
 					}
 					emailLog.setStatus(EmailLogStatus.error);
 					throw ex;
@@ -532,9 +532,13 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 					exMsg = ex.getMessage();
 				}
 				try {
-					logger.error("Error posting the message from:  '" + MimeUtility.decodeText(from.toUnicodeString()) + "', Error:  " + exMsg);
+					if (logger.isDebugEnabled())
+					     logger.debug("Error posting the message from (3):  '" + MimeUtility.decodeText(from.toUnicodeString()) + "', Error:  " + exMsg, ex);
+					else logger.error("Error posting the message from (4):  '" + MimeUtility.decodeText(from.toUnicodeString()) + "', Error:  " + exMsg    );
 				} catch (UnsupportedEncodingException e) {
-					logger.error("Error posting the message from:  '" + from.toString() + "', Error:  " + exMsg);
+					if (logger.isDebugEnabled())
+					     logger.debug("Error posting the message from (5):  '" + from.toString() + "', Error:  " + exMsg, ex);
+					else logger.error("Error posting the message from (6):  '" + from.toString() + "', Error:  " + exMsg    );
 				}
 				
 				// If it failed and it's from self, don't reply or we

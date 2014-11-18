@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,6 +48,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
@@ -63,8 +64,10 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.smtp.SMTPManager;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.web.util.MiscUtil;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+
 import org.subethamail.smtp.MessageContext;
 import org.subethamail.smtp.MessageHandler;
 import org.subethamail.smtp.MessageHandlerFactory;
@@ -75,9 +78,12 @@ import org.subethamail.smtp.auth.EasyAuthenticationHandlerFactory;
 import org.subethamail.smtp.auth.UsernamePasswordValidator;
 import org.subethamail.smtp.server.SMTPServer;
 
-
+/**
+ * Implementation class wrapping the inbound SMTP email server.
+ * 
+ * @author ?
+ */
 public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPManager, SMTPManagerImplMBean, InitializingBean, DisposableBean {
-
 	private Log m_logger = LogFactory.getLog(getClass());
 	
 	private boolean m_enabled = false;
@@ -93,6 +99,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		m_enabled = enabled;
 		m_logger.debug("Inbound SMTP Server:  " + (enabled ? "Enabled." : "Disabled."));
 	}
+	@Override
 	public boolean isEnabled() {
 		return m_enabled;
 	}
@@ -101,6 +108,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		m_tls = tls;
 		m_logger.debug("Inbound SMTP Server:  " + (tls ? "Will announce TLS support." : "Will not announce TLS support."));
 	}
+	@Override
 	public boolean isTls() {
 		return m_tls;
 	}
@@ -112,6 +120,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		m_bindAddress = bindAddress;
 		m_logger.debug("Inbound SMTP Server:  m_bindAddress is set to:  \"" + ((null == bindAddress) ? "null" : bindAddress) + "\".");
 	}
+	@Override
 	public String getBindAddress() {
 		return m_bindAddress;
 	}
@@ -123,6 +132,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		m_username = username;
 		m_logger.debug("Inbound SMTP Server:  m_username is set to:  \"" + ((null == username) ? "null" : username) + "\".");
 	}
+	@Override
 	public String getUsername() {
 		return m_username;
 	}
@@ -142,6 +152,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		m_port = port;
 		m_logger.debug("Inbound SMTP Server:  m_port is set to:  \"" + port + "\".");
 	}
+	@Override
 	public int getPort() {
 		return m_port;
 	}
@@ -162,6 +173,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		return m_binderModule;
 	}
 	
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		// Is the inbound SMTP m_server is not m_enabled...
 		if(!(isEnabled())) {
@@ -209,6 +221,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 			// The MessageHandler to use for messages as they're
 			// received.
 			new MessageHandlerFactory() {
+				@Override
 				public MessageHandler create(MessageContext ctx) {
 					return new Handler();
 				}
@@ -230,6 +243,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		m_server.start();
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		if(m_server != null) {
 			m_server.stop();
@@ -245,6 +259,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 			m_logger.debug("Inbound SMTP Server:  Authentication enabled.");
 		}
 		
+		@Override
 		public void login(String username, String password) throws LoginFailedException {
 			m_logger.debug("Inbound SMTP Server:  login('" + username + "')");
 			if ((!(MiscUtil.hasString(username))) || (!(username.equalsIgnoreCase(m_username))) ||
@@ -267,14 +282,17 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 			m_recipients = new LinkedList<Recipient>();
 		}
 
+		@Override
 		public void done() {
 			// Nothing to do.
 		}
 		
+		@Override
 		public void from(String from) throws RejectException {
 			m_from = from;
 		}
 		
+		@Override
 		public void recipient(String recipient) throws RejectException {
 			// Parse m_recipients now, so other m_recipients can be handled
 			// by someone else.
@@ -302,6 +320,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 			m_recipients.add(new Recipient(recipient, simpleUrl));
 		}
 		
+		@Override
 		@SuppressWarnings("unchecked")
 		public void data(InputStream data) throws TooMuchDataException, IOException, RejectException {
 			Session session = Session.getDefaultInstance(new Properties());
