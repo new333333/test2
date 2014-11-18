@@ -300,13 +300,13 @@
 	           For the same reason we cannot use ${} substitution to pass property values of this bean
 	           since sPropsUtil is not in service yet. Instead, we pass the name of property to the bean
 	           and have the bean retrieve the value from the properties files. -->
-	<bean id="symmetricStringEncryptor" class="org.kablink.util.encrypt.ExtendedPBEStringEncryptor" depends-on="rawSsfProperties">
+	<bean id="symmetricStringEncryptor" class="org.kablink.util.encrypt.ExtendedPBEStringEncryptorBean" depends-on="rawSsfProperties">
     	<property name="algorithm"><value>${symmetric.string.encryptor.algorithm}</value></property>
   	</bean>
   	
   	<!--  This is old encryptor implementing old algorithm. This encryptor is used in all versions of Vibe including Hudson.
   	      Also Filr code prior to 1.0 release (that is, during development) also used this encryptor. -->
-	<bean id="symmetricStringEncryptor_firstGen" class="org.kablink.util.encrypt.ExtendedPBEStringEncryptor" depends-on="rawSsfProperties">
+	<bean id="symmetricStringEncryptor_firstGen" class="org.kablink.util.encrypt.ExtendedPBEStringEncryptorBean" depends-on="rawSsfProperties">
     	<property name="algorithm"><value>PBEWithMD5AndDES</value></property>
   	</bean>
   	
