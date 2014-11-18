@@ -33,51 +33,36 @@
 
 package org.kablink.teaming.client.rest.v1;
 
-import java.net.URI;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
-
-import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.type.TypeBindings;
-import org.codehaus.jackson.type.JavaType;
-import org.codehaus.jackson.type.TypeReference;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
 import org.kablink.teaming.rest.v1.model.Binder;
+import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChildren;
 import org.kablink.teaming.rest.v1.model.FileProperties;
-import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
 import org.kablink.teaming.rest.v1.model.RootRestObject;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
+import org.kablink.teaming.rest.v1.model.Share;
 import org.kablink.teaming.rest.v1.model.User;
-import org.kablink.teaming.rest.v1.model.Workspace;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 
 /**
  * @author jong
  *
  */
-public class ApiImpl implements Api {
+public class ApiImpl extends BaseApiImpl implements Api {
 
-	private ApiClient conn;
     private RootRestObject root;
-    private User self;
-	
-	ApiImpl(ApiClient conn) {
-		this.conn = conn;
+
+	public ApiImpl(ApiClient conn) {
+		super(conn);
 	}
 
     public RootRestObject getRoot() {
@@ -89,7 +74,8 @@ public class ApiImpl implements Api {
 
     @Override
     public Binder getMyFiles() {
-        return getJSONResourceBuilder(getSelfHref("my_files")).get(Binder.class);
+        String my_files = getSelfHref("my_files");
+        return getJSONResourceBuilder(my_files).get(Binder.class);
     }
 
     @Override
@@ -104,10 +90,7 @@ public class ApiImpl implements Api {
 
     @Override
     public User getSelf() {
-        if (self==null) {
-            self = getJSONResourceBuilder(getRootHref("self")).get(User.class);
-        }
-        return self;
+        return getJSONResourceBuilder(getRootHref("self")).get(User.class);
     }
 
     @Override
@@ -123,6 +106,33 @@ public class ApiImpl implements Api {
     @Override
     public ZoneConfig getZoneConfig() {
         return getJSONResourceBuilder(getRootHref("zone_config")).get(ZoneConfig.class);
+    }
+
+    public FileProperties uploadFile(Binder parent, String fileName, boolean overwriteExisting, InputStream content) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("file_name", fileName);
+        params.put("overwrite_existing", overwriteExisting);
+        return getJSONResourceBuilder(parent.findRelatedLink("child_library_files"), params).type("application/octet-stream")
+                .post(FileProperties.class, content);
+    }
+
+    @Override
+    public Share shareFile(FileProperties file, Share share) {
+        return getJSONResourceBuilder(file.findRelatedLink("shares")).post(Share.class, share);
+    }
+
+    @Override
+    public SearchResultList<BinderBrief> getTopLevelFolders() {
+        SearchResultList results = getJSONResourceBuilder(getSelfHref("roots")).get(SearchResultList.class);
+        return buildBinderBriefSearchResultList(results);
+    }
+
+    @Override
+    public SearchResultList<BinderBrief> getBinders(Long[] binderIds) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("id", binderIds);
+        SearchResultList results = getJSONResourceBuilder(getRootHref("binders"), params).get(SearchResultList.class);
+        return buildBinderBriefSearchResultList(results);
     }
 
     @Override
@@ -170,58 +180,6 @@ public class ApiImpl implements Api {
         return buildSearchableObjectSearchResultList(results);
     }
 
-    private SearchResultList<SearchableObject> buildSearchableObjectSearchResultList(SearchResultList results) {
-        SearchResultList<SearchableObject> actualResults = new SearchResultList<SearchableObject>(results.getFirst());
-        ObjectMapper mapper = this.conn.getObjectMapper();
-        mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        for (Object obj : results.getResults()) {
-            SearchableObject searchObject = null;
-            Map map = (HashMap) obj;
-            populateType(map);
-            String docType = (String) map.get("doc_type");
-            if ("binder".equals(docType)) {
-                searchObject = mapper.convertValue(map, Binder.class);
-            } else if ("file".equals(docType)) {
-                searchObject = mapper.convertValue(map, FileProperties.class);
-            }
-            actualResults.append(searchObject);
-        }
-        actualResults.setLastModified(results.getLastModified());
-        actualResults.setNext(results.getNext());
-        actualResults.setTotal(results.getTotal());
-
-        return actualResults;
-    }
-
-    private void populateType(Map entity) {
-        String docType = (String) entity.get("doc_type");
-        String entityType = (String) entity.get("entity_type");
-        if ("binder".equals(docType)) {
-            if ("folder".equals(entityType)) {
-                entity.put("@type", ".Folder");
-            } else if ("workspace".equals(entityType)) {
-                entity.put("@type", ".Workspace");
-            }
-        } else if ("file".equals(docType)) {
-            entity.put("@type", ".FileProperties");
-        }
-    }
-
-    private Map<String, Object> getFirstAndCountParams(Integer first, Integer count) {
-        Map<String, Object> params = null;
-        if (first!=null || count!=null) {
-            params = new HashMap<String, Object>();
-            if (first!=null) {
-                params.put("first", first);
-            }
-            if (count!=null) {
-                params.put("count", count);
-            }
-        }
-        return params;
-    }
-
-
     private String getRootHref(String name) {
         RootRestObject root = getRoot();
         return root.findRelatedLink(name);
@@ -231,53 +189,4 @@ public class ApiImpl implements Api {
         User self = getSelf();
         return self.findRelatedLink(name);
     }
-
-    private WebResource.Builder getJSONResourceBuilder(String href) {
-        WebResource r = getResource(href);
-        return r.accept(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    private WebResource.Builder getJSONResourceBuilder(String href, Map<String, Object> queryParams) {
-        WebResource r = getResource(href, queryParams);
-        return r.accept(MediaType.APPLICATION_JSON_TYPE);
-    }
-
-    private WebResource getResource(String href) {
-        return getResource(href, null);
-    }
-
-    private WebResource getResource(String href, Map<String, Object> queryParams) {
-        if (href==null) {
-            throw new NullPointerException("href is null");
-        }
-        UriBuilder ub = UriBuilder.fromUri(conn.getBaseUrl() + href);
-        if (queryParams!=null) {
-            for (Map.Entry<String, Object> entry : queryParams.entrySet()) {
-                Object value = entry.getValue();
-                if (value instanceof Iterable) {
-                    for (Object val : (Iterable) value) {
-                        ub.queryParam(entry.getKey(), val);
-                    }
-                } else if (value.getClass().isArray()) {
-                    for (Object val : (Object []) value) {
-                        ub.queryParam(entry.getKey(), val);
-                    }
-                } else {
-                    ub.queryParam(entry.getKey(), entry.getValue());
-                }
-            }
-        }
-        URI resourceUri = ub.build();
-        Client c = conn.getClient();
-        return c.resource(resourceUri);
-    }
-
-    private String ISO8601FromDate(Date date) {
-		String dateStr = null;
-		if(date != null) {
-			DateTime dateTime = new DateTime(date);
-			dateStr = ISODateTimeFormat.dateTime().print(dateTime);
-		}
-		return dateStr;
-	}
 }

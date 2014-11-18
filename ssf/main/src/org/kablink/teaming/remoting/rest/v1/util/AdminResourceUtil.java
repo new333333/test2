@@ -39,6 +39,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
@@ -46,6 +47,8 @@ import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.Recipient;
+import org.kablink.teaming.rest.v1.model.Share;
+import org.kablink.teaming.rest.v1.model.ShareRecipient;
 import org.kablink.teaming.rest.v1.model.SharingPermission;
 import org.kablink.teaming.rest.v1.model.admin.AssignedRight;
 import org.kablink.teaming.rest.v1.model.admin.AssignedSharingPermission;
@@ -384,5 +387,11 @@ public class AdminResourceUtil {
         model.setNodeIPAddress(syncStats.getStatusIpv4Address());
         model.setStartDate(syncStats.getStartDate());
         return model;
+    }
+
+    public static Share buildShare(ShareItem shareItem, org.kablink.teaming.domain.DefinableEntity sharedEntity, ShareRecipient recipient, boolean guestEnabled) {
+        Share share = ResourceUtil.buildShare(shareItem, sharedEntity, recipient, guestEnabled);
+        share.setLink(AdminLinkUriUtil.getShareLinkUri(share.getId()));
+        return share;
     }
 }

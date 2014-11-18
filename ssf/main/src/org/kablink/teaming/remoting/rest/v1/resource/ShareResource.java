@@ -1193,18 +1193,6 @@ public class ShareResource extends AbstractResource {
         return results;
     }
 
-    private List<Pair<ShareItem, DefinableEntity>> getAllPublicShareParts(ShareItem item) {
-        ShareItemSelectSpec spec = new ShareItemSelectSpec();
-        spec.setSharerId(item.getSharerId());
-        spec.setLatest(true);
-        spec.setSharedEntityIdentifier(item.getSharedEntityIdentifier());
-        List<Pair<ShareItem, DefinableEntity>> allShareItems = getShareItems(spec, null, false, true, false, false);
-        if (allShareItems.size()==0) {
-            throw new IllegalStateException("Could not find public shares corresponding to share with id: " + item.getId());
-        }
-        return allShareItems;
-    }
-
     private ShareItem _getShareItem(Long id) {
         ShareItem share = getSharingModule().getShareItem(id);
         if (share.isDeleted() || !share.isLatest() || !share.getSharerId().equals(getLoggedInUserId())) {

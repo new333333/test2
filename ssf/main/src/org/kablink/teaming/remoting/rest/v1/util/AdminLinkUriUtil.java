@@ -18,5 +18,9 @@ public class AdminLinkUriUtil {
         return "/admin/user_sources/" + id;
     }
 
+    public static String getShareLinkUri(Long id) {
+        return "/admin/shares/" + id;
+    }
+
 
 }

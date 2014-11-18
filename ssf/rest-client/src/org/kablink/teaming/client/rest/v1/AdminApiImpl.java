@@ -33,8 +33,13 @@
 
 package org.kablink.teaming.client.rest.v1;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.rest.v1.model.Binder;
-import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChildren;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
@@ -44,40 +49,75 @@ import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.Share;
 import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
+import org.kablink.teaming.rest.v1.model.admin.PersonalStorage;
+import org.kablink.teaming.rest.v1.model.admin.WebAppConfig;
 
-import java.io.InputStream;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author jong
+ * @author david
  *
  */
-public interface Api {
-    public static final Long MY_FILES_ID = Long.valueOf(-100);
-    // Reserved id used by the REST API for the "Shared With Me" virtual binder
-    public static final Long SHARED_WITH_ME_ID = Long.valueOf(-101);
-    // Reserved id used by the REST API for the "Shared By Me" virtual binder
-    public static final Long SHARED_BY_ME_ID = Long.valueOf(-102);
-    // Reserved id used by the REST API for the "Net Folders" virtual binder
-    public static final Long NET_FOLDERS_ID = Long.valueOf(-103);
-    // Reserved id used by the REST API for the "Public" virtual binder
-    public static final Long PUBLIC_SHARES_ID = Long.valueOf(-104);
+public class AdminApiImpl extends BaseApiImpl implements AdminApi {
 
-    Binder getMyFiles();
-    Binder getNetFolders();
-    ReleaseInfo getReleaseInfo();
-    RootRestObject getRoot();
-    User getSelf();
-    Binder getSharedByMe();
-    Binder getSharedWithMe();
-    ZoneConfig getZoneConfig();
-    SearchResultList<BinderBrief> getTopLevelFolders();
-    SearchResultList<BinderBrief> getBinders(Long [] binderIds);
-    List<BinderChildren> listBinderChildren(Long[] binderIds, Integer count);
-    List<BinderChildren> listBinderChildren(Long[] binderIds, Long startingBinderId, Integer first, Integer count);
-    SearchResultList<SearchableObject> listChildren(Binder binder);
-    SearchResultList<SearchableObject> listChildren(Binder binder, Integer first, Integer count);
-    FileProperties uploadFile(Binder parent, String fileName, boolean overwriteExisting, InputStream content);
-    Share shareFile(FileProperties file, Share share);
+    private RootRestObject root;
+
+    public AdminApiImpl(ApiClient conn) {
+		super(conn);
+        root = getRoot();
+	}
+
+    public RootRestObject getRoot() {
+        if (root==null) {
+            root = getJSONResourceBuilder("/admin").get(RootRestObject.class);
+        }
+        return root;
+    }
+
+    @Override
+    public SearchResultList<Share> getPublicShares() {
+        SearchResultList shareList = getJSONResourceBuilder(getRootHref("public_shares")).get(SearchResultList.class);
+        return buildSearchResultList(Share.class, shareList);
+    }
+
+    @Override
+    public void deleteShare(Share share) {
+        WebResource.Builder builder = getJSONResourceBuilder(share.getLink());
+        builder.delete();
+    }
+
+    @Override
+    public PersonalStorage getPersonalStorage() {
+        return getJSONResourceBuilder(getRootHref("personal_storage")).get(PersonalStorage.class);
+    }
+
+    @Override
+    public PersonalStorage setPersonalStorage(PersonalStorage personalStorage) {
+        WebResource.Builder builder = getJSONResourceBuilder(getRootHref("personal_storage"));
+        return builder.put(PersonalStorage.class, personalStorage);
+    }
+
+    @Override
+    public WebAppConfig getWebAppConfig() {
+        return getJSONResourceBuilder(getRootHref("web_application")).get(WebAppConfig.class);
+    }
+
+    @Override
+    public WebAppConfig setWebAppConfig(WebAppConfig config) {
+        WebResource.Builder builder = getJSONResourceBuilder(getRootHref("web_application"));
+        return builder.put(WebAppConfig.class, config);
+    }
+
+    private String getRootHref(String name) {
+        RootRestObject root = getRoot();
+        return root.findRelatedLink(name);
+    }
+
 }

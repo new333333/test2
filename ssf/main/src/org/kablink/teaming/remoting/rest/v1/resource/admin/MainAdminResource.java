@@ -70,6 +70,8 @@ public class MainAdminResource extends AbstractAdminResource {
         obj.addAdditionalLink("net_folder_servers", "/admin/net_folder_servers");
         obj.addAdditionalLink("net_folders", "/admin/net_folders");
         obj.addAdditionalLink("personal_storage", "/admin/personal_storage");
+        obj.addAdditionalLink("public_shares", "/admin/shares/public");
+        obj.addAdditionalLink("shares", "/admin/shares");
         obj.addAdditionalLink("share_settings", "/admin/share_settings");
         obj.addAdditionalLink("user_sources", "/admin/user_sources");
         obj.addAdditionalLink("user_source_sync", "/admin/user_sources/sync");
