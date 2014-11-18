@@ -56,5 +56,14 @@
 	        </column>
 	    </createTable>
     </changeSet>
-    
+
+    <changeSet author="david" context="schema" failOnError="true" id="5">
+        <comment>Last modified time for the zone config record</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="lastModified" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

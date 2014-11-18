@@ -33,6 +33,7 @@
 package org.kablink.teaming.dao.interceptor;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.hibernate.CallbackException;
 import org.hibernate.EmptyInterceptor;
@@ -40,6 +41,7 @@ import org.hibernate.type.Type;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.ZoneConfig;
 
 
 public class ZoneInterceptor extends EmptyInterceptor {
@@ -50,7 +52,16 @@ public class ZoneInterceptor extends EmptyInterceptor {
 	public boolean onFlushDirty(Object entity, Serializable id, 
 			Object[] currentState, Object[] previousState, String[] propertyNames,
 			Type[] types) throws CallbackException {
-		return injectZoneId(entity, id, currentState, propertyNames);
+        boolean modified = false;
+        if (entity instanceof ZoneConfig) {
+            for (int i=0; i< propertyNames.length; i++) {
+                if ("lastModified".equals(propertyNames[i])) {
+                    currentState[i] = new Date();
+                    modified = true;
+                }
+            }
+        }
+		return injectZoneId(entity, id, currentState, propertyNames) || modified;
 	}
 
 	@Override

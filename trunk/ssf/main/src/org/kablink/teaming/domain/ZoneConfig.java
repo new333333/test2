@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.domain;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
@@ -52,7 +53,8 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public static final String WORKAREA_TYPE = "zone";
 	
 	public static Integer ZONE_LATEST_VERSION=21;  //This is used to introduce changes and fix things up between releases.
-	private Integer upgradeVersion=ZONE_LATEST_VERSION; 
+	private Integer upgradeVersion=ZONE_LATEST_VERSION;
+    private Date lastModified;
 	private AuthenticationConfig authenticationConfig;
 	private HomePageConfig homePageConfig;
 	private WeekendsAndHolidaysConfig weekendsAndHolidaysConfig;
@@ -114,6 +116,14 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	{
 		this.zoneId = zoneId;
 	}
+
+    public Date getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
+    }
 
     public Integer getUpgradeVersion() {
         return this.upgradeVersion;
