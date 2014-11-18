@@ -1472,7 +1472,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return AdminHelper.getEffectivePublicCollectionSetting(this, user);
     }
 
-    protected BinderBrief getFakeMyFileFolders() {
+    protected BinderBrief getFakeMyFileFolders(boolean checkIfValid) {
+        if (checkIfValid && !SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            return null;
+        }
         org.kablink.teaming.domain.User user = getLoggedInUser();
         Binder folderParent = getMyFilesFolderParent();
         BinderBrief binder = new BinderBrief();
@@ -1568,7 +1571,11 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return binder;
     }
 
-    protected BinderBrief getFakePublicShares() {
+    protected BinderBrief getFakePublicShares(boolean checkIfValid) {
+        if (checkIfValid && !getEffectivePublicCollectionSetting(getLoggedInUser())) {
+            return null;
+        }
+
         BinderBrief binder = new BinderBrief();
         //TODO: localize
         binder.setId(ObjectKeys.PUBLIC_SHARES_ID);
@@ -2047,7 +2054,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 org.kablink.teaming.rest.v1.model.BinderChange binderChange = (org.kablink.teaming.rest.v1.model.BinderChange) obj;
                 if (allParentIds.contains(binderChange.getId()) &&
                         BinderChange.Action.modify.name().equals(binderChange.getAction())) {
-                    BinderBrief fakeMyFileFolders = getFakeMyFileFolders();
+                    BinderBrief fakeMyFileFolders = getFakeMyFileFolders(false);
                     binderChange.setId(fakeMyFileFolders.getId());
                     binderChange.setBinder(fakeMyFileFolders.asBinder());
                 } else {
@@ -2293,5 +2300,17 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             binder.setParentBinder(new ParentBinder(ObjectKeys.NET_FOLDERS_ID, "/self/net_folders"));
         }
         return results;
+    }
+
+    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getAllPublicShareParts(ShareItem item) {
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setSharerId(item.getSharerId());
+        spec.setLatest(true);
+        spec.setSharedEntityIdentifier(item.getSharedEntityIdentifier());
+        List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> allShareItems = getShareItems(spec, null, false, true, false, false);
+        if (allShareItems.size()==0) {
+            throw new IllegalStateException("Could not find public shares corresponding to share with id: " + item.getId());
+        }
+        return allShareItems;
     }
 }

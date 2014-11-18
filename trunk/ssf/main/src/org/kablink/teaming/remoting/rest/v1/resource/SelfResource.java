@@ -80,6 +80,7 @@ import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.api.ApiErrorCode;
@@ -245,11 +246,27 @@ public class SelfResource extends AbstractFileResource {
     @Path("/roots")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<BinderBrief> getRoots() {
+
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
-        results.appendAll(new BinderBrief[] {
-                getFakeMyWorkspace(), getFakeMyTeams(), getFakeMyFavorites(),
-                ResourceUtil.buildBinderBrief(getBinderModule().getBinder(getWorkspaceModule().getTopWorkspaceId()))
-        });
+        if (Utils.checkIfFilr()) {
+            BinderBrief root = getFakeMyFileFolders(true);
+            if (root!=null) {
+                results.append(root);
+            }
+            results.append(getFakeSharedWithMe());
+            results.append(getFakeSharedByMe());
+            results.append(getFakeNetFolders());
+            root = getFakePublicShares(true);
+            if (root!=null) {
+                results.append(root);
+            }
+        } else {
+            results.appendAll(new BinderBrief[] {
+                    getFakeMyWorkspace(), getFakeMyTeams(), getFakeMyFavorites(),
+                    ResourceUtil.buildBinderBrief(getBinderModule().getBinder(getWorkspaceModule().getTopWorkspaceId()))
+            });
+        }
+
         return results;
     }
 
@@ -264,13 +281,21 @@ public class SelfResource extends AbstractFileResource {
     @Path("/public_shares")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public BinderBrief getPublicShares() {
-        return getFakePublicShares();
+        BinderBrief fakePublicShares = getFakePublicShares(true);
+        if (fakePublicShares==null) {
+            throw new AccessControlException("Access to the public collection is not allowed.", null);
+        }
+        return fakePublicShares;
     }
 
     @GET
     @Path("/public_shares/library_info")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public LibraryInfo getPublicLibraryInfo() {
+        BinderBrief fakePublicShares = getFakePublicShares(true);
+        if (fakePublicShares==null) {
+            throw new AccessControlException("Access to the public collection is not allowed.", null);
+        }
         return getPublicSharesLibraryInfo();
     }
 
@@ -313,10 +338,10 @@ public class SelfResource extends AbstractFileResource {
     public BinderBrief getMyFiles(@QueryParam("library_info") @DefaultValue("false") boolean libraryInfo) {
         org.kablink.teaming.domain.User loggedInUser = getLoggedInUser();
 
-        if (!SearchUtils.userCanAccessMyFiles(this, loggedInUser)) {
+        BinderBrief fakeMyFileFolders = getFakeMyFileFolders(true);
+        if (fakeMyFileFolders==null) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
-        BinderBrief fakeMyFileFolders = getFakeMyFileFolders();
         if (libraryInfo) {
             fakeMyFileFolders.setLibraryInfo(getMyFilesLibraryInfo());
         }

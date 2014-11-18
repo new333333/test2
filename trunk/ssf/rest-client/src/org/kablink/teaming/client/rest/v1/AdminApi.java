@@ -32,52 +32,23 @@
  */
 package org.kablink.teaming.client.rest.v1;
 
-import org.kablink.teaming.rest.v1.model.Binder;
-import org.kablink.teaming.rest.v1.model.BinderChildren;
-import org.kablink.teaming.rest.v1.model.ReleaseInfo;
 import org.kablink.teaming.rest.v1.model.RootRestObject;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
-import org.kablink.teaming.rest.v1.model.SearchableObject;
-import org.kablink.teaming.rest.v1.model.User;
-import org.kablink.teaming.rest.v1.model.ZoneConfig;
-
-import java.util.List;
-import java.util.Map;
+import org.kablink.teaming.rest.v1.model.Share;
+import org.kablink.teaming.rest.v1.model.admin.PersonalStorage;
+import org.kablink.teaming.rest.v1.model.admin.WebAppConfig;
 
 /**
  * User: David
- * Date: 10/28/14
- * Time: 2:06 PM
+ * Date: 11/17/14
+ * Time: 10:43 AM
  */
-public class ApiTest {
-    public static void main(String [] args) {
-        ApiClient client = ApiClient.create("https://kamas.wal.novell.com:8443", "dlewis", "test");
-        Api api = new ApiImpl(client);
-
-        RootRestObject root = api.getRoot();
-        ReleaseInfo releaseInfo = api.getReleaseInfo();
-        User self = api.getSelf();
-        ZoneConfig zc = api.getZoneConfig();
-
-        Binder myFiles = api.getMyFiles();
-        Binder netFolder = api.getNetFolders();
-        Binder sharedByMe = api.getSharedByMe();
-        Binder sharedWithMe = api.getSharedWithMe();
-
-        SearchResultList<SearchableObject> children11 = api.listChildren(myFiles, 0, 1);
-        SearchResultList<SearchableObject> children12 = api.listChildren(myFiles, 1, 1);
-        SearchResultList<SearchableObject> children2 = api.listChildren(netFolder);
-        SearchResultList<SearchableObject> children3 = api.listChildren(sharedByMe);
-        SearchResultList<SearchableObject> children4 = api.listChildren(sharedWithMe);
-
-        List<BinderChildren> childrenList1 = api.listBinderChildren(new Long[]{
-                Api.MY_FILES_ID, Api.NET_FOLDERS_ID, Api.SHARED_BY_ME_ID, Api.SHARED_WITH_ME_ID, -99L
-        }, 100);
-
-        List<BinderChildren> childrenList2 = api.listBinderChildren(new Long[]{
-                Api.MY_FILES_ID, Api.NET_FOLDERS_ID, Api.SHARED_BY_ME_ID, Api.SHARED_WITH_ME_ID
-        }, Api.MY_FILES_ID, 4, 10);
-
-        System.out.println();
-    }
+public interface AdminApi {
+    void deleteShare(Share share);
+    RootRestObject getRoot();
+    PersonalStorage getPersonalStorage();
+    PersonalStorage  setPersonalStorage(PersonalStorage personalStorage);
+    SearchResultList<Share> getPublicShares();
+    WebAppConfig getWebAppConfig();
+    WebAppConfig setWebAppConfig(WebAppConfig config);
 }

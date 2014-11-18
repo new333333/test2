@@ -130,11 +130,17 @@ public class BinderResource extends AbstractResource {
             } else if (id.equals(ObjectKeys.SHARED_WITH_ME_ID)) {
                 results.append(getFakeSharedWithMe());
             } else if (id.equals(ObjectKeys.MY_FILES_ID)) {
-                results.append(getFakeMyFileFolders());
+                BinderBrief binder = getFakeMyFileFolders(true);
+                if (binder!=null) {
+                    results.append(binder);
+                }
             } else if (id.equals(ObjectKeys.NET_FOLDERS_ID)) {
                 results.append(getFakeNetFolders());
             } else if (id.equals(ObjectKeys.PUBLIC_SHARES_ID)) {
-                results.append(getFakePublicShares());
+                BinderBrief binder = getFakePublicShares(true);
+                if (binder!=null) {
+                    results.append(binder);
+                }
             } else if (id.equals(ObjectKeys.MY_TEAMS_ID)) {
                 results.append(getFakeMyTeams());
             } else if (id.equals(ObjectKeys.My_FAVORITES_ID)) {
