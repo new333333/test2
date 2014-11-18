@@ -34,7 +34,6 @@ package org.kablink.util.encrypt;
 
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * This class is used to conditionally create an encryptor implementing strong encryption only
@@ -46,7 +45,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author jong
  *
  */
-public class ExtendedPBEStringEncryptor implements PBEStringEncryptor, InitializingBean {
+public class ExtendedPBEStringEncryptor implements PBEStringEncryptor {
 	
     // Symmetric encryption algorithm used with Filr product beginning with 1.0 release (second generation)
     public static final String SYMMETRIC_ENCRYPTION_ALGORITHM_SECOND_GEN = "PBEWITHSHA256AND128BITAES-CBC-BC";
@@ -81,15 +80,7 @@ public class ExtendedPBEStringEncryptor implements PBEStringEncryptor, Initializ
 		this.generation = generation;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		initialize();
-	}
-	
-	private void initialize() throws Exception {
+	protected void initialize() {
 		if(algorithm == null)
 			throw new IllegalArgumentException("Algorithm must be specifled");
 		delegatee = new org.jasypt.encryption.pbe.StandardPBEStringEncryptor();
@@ -134,13 +125,7 @@ public class ExtendedPBEStringEncryptor implements PBEStringEncryptor, Initializ
 
 	/// Convenience factory methods to be used outside of Spring context
 	
-	public static ExtendedPBEStringEncryptor create(String algorithm) {
-		ExtendedPBEStringEncryptor encryptor = new ExtendedPBEStringEncryptor();
-		encryptor.setAlgorithm(algorithm);
-		return encryptor;
-	}
-	
-	public static ExtendedPBEStringEncryptor create(String algorithm, String encryptorPassword) throws Exception {
+	public static ExtendedPBEStringEncryptor create(String algorithm, String encryptorPassword)  {
 		ExtendedPBEStringEncryptor encryptor = new ExtendedPBEStringEncryptor();
 		encryptor.setAlgorithm(algorithm);
 		encryptor.setPassword(encryptorPassword);
@@ -148,7 +133,7 @@ public class ExtendedPBEStringEncryptor implements PBEStringEncryptor, Initializ
 		return encryptor;
 	}
 	
-	public static ExtendedPBEStringEncryptor createFirstGen(String encryptorPassword) throws Exception {
+	public static ExtendedPBEStringEncryptor createFirstGen(String encryptorPassword) {
 		ExtendedPBEStringEncryptor encryptor = new ExtendedPBEStringEncryptor();
 		encryptor.setAlgorithm(SYMMETRIC_ENCRYPTION_ALGORITHM_FIRST_GEN);
 		encryptor.setPassword(encryptorPassword);
