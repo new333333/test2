@@ -1041,6 +1041,25 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/*
+	 * Returns the FolderColumn of a named FolderColumn from a
+	 * List<FolderColumn>.
+	 */
+	private static FolderColumn getColumnByName(List<FolderColumn> folderColumns, String cName) {
+		// Scan the List<FolderColumn>...
+		for (FolderColumn fc:  folderColumns) {
+			// ...is this the column in question?
+			if (fc.getColumnName().equals(cName)) {
+				// Yes!  Return its display index.
+				return fc;
+			}
+		}
+
+		// If we get here, we couldn't find the column in question. 
+		// Return null.
+		return null;
+	}
+	
+	/*
 	 * Returns the index of a named FolderColumn from a
 	 * List<FolderColumn>.
 	 */
@@ -3753,10 +3772,30 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				}
 
 				// ...and if we changed anything...
-				if (GwtClientHelper.hasItems(responseData.getSuccessfulSets())) {
-					// ...force the UI to refresh to reflect the
-					// ...change.
-					FullUIReloadEvent.fireOneAsync();
+				final Map<Long, String> adminRightsChangeMap = responseData.getAdminRightsChangeMap(); 
+				if (GwtClientHelper.hasItems(adminRightsChangeMap)) {
+					// ...force the rows that changed to refresh to
+					// ...reflect the change.
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							List<FolderRow> rows     = m_dataTable.getVisibleItems();
+							FolderColumn	adminCol = getColumnByName(m_folderColumnsList, FolderColumn.COLUMN_ADMIN);
+							Set<Long>		keySet   = adminRightsChangeMap.keySet();
+							for (Long key:  keySet) {
+								int rowIndex = 0;
+								for (FolderRow row : rows) {
+									EntityId rowEID = row.getEntityId();
+									if (rowEID.getEntityId().equals(key)) {
+										row.setColumnValue(adminCol, adminRightsChangeMap.get(key));
+										m_dataTable.redrawRow(rowIndex);
+										break;
+									}
+									rowIndex += 1;
+								}
+							}
+						}
+					});
 				}
 			}
 		});

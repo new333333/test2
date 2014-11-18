@@ -1555,30 +1555,9 @@ public class GwtViewHelper {
 							}
 							String adminRights = NLT.get("general.NA");
 							if (null != rowUser) {
-								// Yes!  Is it somebody that may have
-								// administrator rights set on them?
-								if ((!(rowUser.isAdmin())) && rowUser.isPerson() && rowUser.getIdentityInfo().isInternal()) {
-									// Yes!  Check their administrator
-									// rights assignment...
-									boolean isSiteAdmin = bs.getAdminModule().testUserAccess(rowUser, AdminOperation.manageFunction);
-									String  resKey;
-									if      (AdminHelper.isSiteAdminMember(rowUserId)) resKey = "siteAdmin.direct";
-									else if (isSiteAdmin)                              resKey = "siteAdmin.group";
-									else                                               resKey = null;
-									if (null == resKey)
-									     adminRights = "";
-									else adminRights   = NLT.get(resKey);
-								}
-
-								// No, this isn't somebody that may
-								// have administrator rights set on
-								// them!  Is it the built-in admin
-								// user?
-								else if (rowUser.isAdmin()) {
-									// Yes!  Show them as being the
-									// built-in admin.
-									adminRights = NLT.get("siteAdmin.builtIn");
-								}
+								// Yes!  Get the display string for
+								// their admin rights.
+								adminRights = getPrincipalAdminRightsString(bs, rowUser);
 							}
 							
 							// If we can find the columns for them...
@@ -6786,7 +6765,57 @@ public class GwtViewHelper {
 		pi.setAvatarUrl(GwtServerHelper.getUserAvatarUrl(bs, request, user));
 		return pi;
 	}
-	
+
+	/**
+	 * Returns the display string to use for the 'Admin' column in a
+	 * view for a Principal's admin rights.
+	 * 
+	 * @param bs
+	 * @param p
+	 * 
+	 * @return
+	 */
+	public static String getPrincipalAdminRightsString(AllModulesInjected bs, Principal p) {
+		Long pId = p.getId();
+		boolean hasAdminRights = AdminHelper.isSiteAdminMember(pId);
+		
+		String reply = "";
+		if ((p instanceof GroupPrincipal) || (p instanceof Group)) {
+			if (hasAdminRights)
+			     reply = NLT.get( "siteAdmin.admin" );
+			else reply = "";
+		}
+		
+		else if (p instanceof UserPrincipal) {
+			User user = ((User) p );
+			reply = NLT.get("general.NA");
+			if ((!(user.isAdmin())) && user.isPerson() && user.getIdentityInfo().isInternal()) {
+				// Yes!  Check their administrator
+				// rights assignment...
+				boolean isSiteAdmin = bs.getAdminModule().testUserAccess(user, AdminOperation.manageFunction);
+				String  resKey;
+				if      (hasAdminRights) resKey = "siteAdmin.direct";
+				else if (isSiteAdmin)    resKey = "siteAdmin.group";
+				else                     resKey = null;
+				if (null == resKey)
+				     reply = "";
+				else reply   = NLT.get(resKey);
+			}
+			
+			// No, this isn't somebody that may
+			// have administrator rights set on
+			// them!  Is it the built-in admin
+			// user?
+			else if (user.isAdmin()) {
+				// Yes!  Show them as being the
+				// built-in admin.
+				reply = NLT.get("siteAdmin.builtIn");
+			}
+		}
+		
+		return reply;
+	}
+
 	/**
 	 * Returns a ProfileEntryInfoRpcRequestData containing information
 	 * about a user's profile.

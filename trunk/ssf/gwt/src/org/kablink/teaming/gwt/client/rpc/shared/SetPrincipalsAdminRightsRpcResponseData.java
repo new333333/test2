@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 
@@ -45,8 +46,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class SetPrincipalsAdminRightsRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private ErrorListRpcResponseData	m_errorList;		//
-	private List<Long>					m_successfulSets;	//
+	private ErrorListRpcResponseData	m_errorList;			//
+	private Map<Long, String>			m_adminRightsChangeMap;	//
 	
 	/**
 	 * Constructor method.
@@ -76,14 +77,14 @@ public class SetPrincipalsAdminRightsRpcResponseData implements IsSerializable, 
 	 * 
 	 * @return
 	 */
-	public List<Long> getSuccessfulSets() {return m_successfulSets;}
+	public Map<Long, String> getAdminRightsChangeMap() {return m_adminRightsChangeMap;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setSuccessfulSets(List<Long> successfulSets) {m_successfulSets = successfulSets;}
+	public void setAdminRightsChangeMap(Map<Long, String> adminRightsChangeMap) {m_adminRightsChangeMap = adminRightsChangeMap;}
 	
 	/**
 	 * Adds an error to the list.

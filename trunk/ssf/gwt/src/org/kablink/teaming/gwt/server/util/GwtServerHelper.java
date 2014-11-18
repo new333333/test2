@@ -3712,13 +3712,7 @@ public class GwtServerHelper {
 				groupInfo.setDesc( nextGroup.getDescription().getText() );
 				groupInfo.setIsFromLdap( nextGroup.getIdentityInfo().isFromLdap() );
 				groupInfo.setDn( nextGroup.getForeignName() );
-				
-				boolean hasAdminRights = AdminHelper.isSiteAdminMember( groupId );
-				String adminRights;
-				if (hasAdminRights)
-				     adminRights = NLT.get( "siteAdmin.admin" );
-				else adminRights = "";
-				groupInfo.setAdminRights( adminRights );
+				groupInfo.setAdminRights( GwtViewHelper.getPrincipalAdminRightsString( ami,  nextGroup ) );
 				
 				reply.add( groupInfo );
 			}
@@ -12451,10 +12445,12 @@ public class GwtServerHelper {
 	 */
 	public static SetPrincipalsAdminRightsRpcResponseData setPrincipalsAdminRights(AllModulesInjected bs, HttpServletRequest request, List<Long> principalIds, boolean setRights) throws GwtTeamingException {
 		try {
-			// Create the ErrorListRpcResponseData to return.
+			// Create the SetPrincipalsAdminsRightsRpcResponseData to
+			// return.
 			SetPrincipalsAdminRightsRpcResponseData reply = new SetPrincipalsAdminRightsRpcResponseData(new ArrayList<ErrorInfo>());
 			List<Long> validPIDs = new ArrayList<Long>();
-			reply.setSuccessfulSets(validPIDs);
+			Map<Long, String> adminRightsChangeMap = new HashMap<Long, String>();
+			reply.setAdminRightsChangeMap(adminRightsChangeMap);
 
 			// We're we given any Principal IDs to set or clear the
 			// rights from?
@@ -12573,6 +12569,18 @@ public class GwtServerHelper {
 							// it from the valid Principal IDs...
 					    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
 					    	bs.getAdminModule().updateWorkAreaFunctionMemberships(zoneConfig, siteAdminRole, setRights, validPIDs);
+
+					    	// ...setup the adminRightsChangeMap with
+					    	// ...the new admin rights display string
+					    	// ...for each item...
+					    	for (Long id:  validPIDs) {
+					    		for (Principal p:  pList) {
+					    			if (id.equals(p.getId())) {
+					    				adminRightsChangeMap.put(id, GwtViewHelper.getPrincipalAdminRightsString(bs, p));
+					    				break;
+					    			}
+					    		}
+					    	}
 					    	
 					    	// ...and force the them to be re-indexed
 					    	// ...so that we correctly pickup the
