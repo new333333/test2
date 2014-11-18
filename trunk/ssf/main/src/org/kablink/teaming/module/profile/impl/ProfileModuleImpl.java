@@ -1242,11 +1242,25 @@ public Map getGroups(Map options) {
 	@Override
 	public MapInputData validateUserAttributes(Long userId, Map formData) {
 		User user = (User) getEntry(userId);
+
+		Map modifiableFormData = new HashMap(formData);
+
 		if (user == null || !user.getIdentityInfo().isFromLdap()) {
 			//We only need to validate users that are synced from Ldap
-			return new MapInputData(formData);
+			
+			// Don't ever let the user change the "name" field.
+			// However, the admin user can change their name
+			if ( user != null && user.isAdmin() == false )
+			{
+				if ( modifiableFormData.containsKey( ObjectKeys.FIELD_PRINCIPAL_NAME ) )
+				{
+					modifiableFormData.remove( ObjectKeys.FIELD_PRINCIPAL_NAME );
+				}
+			}
+					
+			MapInputData newInputData = new MapInputData( modifiableFormData );
+			return newInputData;
 		}
-		Map modifiableFormData = new HashMap(formData);
 		try {
 			Map<String, String> userAttributes = getLdapModule().getLdapUserAttributes(user);
 			if (null == userAttributes) {

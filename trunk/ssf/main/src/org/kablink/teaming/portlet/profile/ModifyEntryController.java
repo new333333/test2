@@ -180,9 +180,7 @@ public class ModifyEntryController extends SAbstractController {
 		            		password.equals(password3)) {
 		            	//Don't allow blank password (either on purpose or by accident)
 		            	//  password3 is a hidden field indicating what was put in the password field as a dummy value
-		            	Map writeableFormData = new HashMap(formData);
-		            	writeableFormData.remove(WebKeys.USER_PROFILE_PASSWORD);
-		            	inputData = new MapInputData(writeableFormData);
+		            	inputData.remove( WebKeys.USER_PROFILE_PASSWORD );
 		            	passwordChanged = false;
 		            }
 	            }
