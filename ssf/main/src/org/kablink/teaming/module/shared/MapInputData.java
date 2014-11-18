@@ -132,5 +132,14 @@ public class MapInputData implements InputDataAccessor {
 	public boolean isFieldsOnly() {
 		return this.fieldsOnly;
 	}
+	
+	/**
+	 * Remove the given field from the map
+	 */
+	public void remove( String key )
+	{
+		if ( key != null && source != null && exists( key ) )
+			source.remove( key );
+	}
 
 }
