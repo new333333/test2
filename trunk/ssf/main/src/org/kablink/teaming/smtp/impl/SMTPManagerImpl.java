@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.smtp.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -83,6 +84,7 @@ import org.subethamail.smtp.server.SMTPServer;
  * 
  * @author ?
  */
+@SuppressWarnings("unused")
 public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPManager, SMTPManagerImplMBean, InitializingBean, DisposableBean {
 	private Log m_logger = LogFactory.getLog(getClass());
 	
@@ -327,7 +329,32 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 			SessionUtil.sessionStartup();
 			try {
 				MimeMessage msgs[] = new MimeMessage[1];
+
 				msgs[0] = new MimeMessage(session, data);
+				/*
+					// - - - - - - - - - - - - - - - - - - - - - - - - 
+					// DRF (20141119):  I added this to debug a MIME
+					//    stream a customer was having problems with.
+					//    If you use this block in place of the
+					//    'new MimeMessage(session, data);' above and
+					//    set a breakpoint on the 'ba = s.getBytes();',
+					//    you can patch 's' with your MIME string so
+					//    that it gets processed instead of thet data
+					//    passed in.
+					// - - - - - - - - - - - - - - - - - - - - - - - -
+ 
+					byte[] baIn = new byte[data.available()];
+					int baSize = data.read(baIn);
+					byte[] ba = new byte[baSize];
+					System.arraycopy(baIn, 0, ba, 0, baSize);
+					String s = new String(ba);
+					
+					ba = s.getBytes();	// Breakpoint here to patch 's'!!!
+										
+					ByteArrayInputStream bais = new ByteArrayInputStream(ba);
+					msgs[0] = new MimeMessage(session, bais);	//! data);
+				*/
+				
 				boolean msgInitiallyDeleted = msgs[0].isSet(Flags.Flag.DELETED);
 				List errors = new ArrayList();
 				for(Recipient recipient : m_recipients) {
