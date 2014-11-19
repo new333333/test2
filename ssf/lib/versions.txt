@@ -70,7 +70,7 @@ Jackrabbit SPI Commons 1.4
 Jackson 1.9.2 (high-performance JSON processor needed by Jersey; This includes core-asl, jaxrs, mapper-asl, and xc)
 Jakarta Taglibs Standard 1.1
 Jasypt 1.7
-JavaMail 1.4.4 (Oracle's reference implementation)
+JavaMail 1.5.2 (Oracle's reference implementation)
 java_uno.jar (from OpenOffice 2.0)
 java_uno_accessbridge.jar (from OpenOffice 2.0)
 javassist 3.12.0.GA (from Hibernate distribution, needed by Hibernate)
