@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.domain;
 
+import java.util.Date;
+
 /**
  * ?
  * 
@@ -45,6 +47,9 @@ public abstract class UserPrincipal extends Principal {
 	protected Boolean downloadEnabled;
 	protected Boolean webAccessEnabled;
 	protected Boolean adHocFoldersEnabled;
+    // lastConfigUpdate is updated whenever one of the above values changes.  It is specifically
+    // used in the last-modified time calculation for the /self/my_files/library_children REST API.
+    protected Date lastConfigUpdate;
     
 	// For use by Hibernate only
 	protected UserPrincipal() {
@@ -113,5 +118,13 @@ public abstract class UserPrincipal extends Principal {
     }
     public void setAdHocFoldersEnabled(Boolean adHocFoldersEnabled) {
     	this.adHocFoldersEnabled = adHocFoldersEnabled;
+    }
+
+    public Date getLastConfigUpdate() {
+        return lastConfigUpdate;
+    }
+
+    public void setLastConfigUpdate(Date lastConfigUpdate) {
+        this.lastConfigUpdate = lastConfigUpdate;
     }
 }

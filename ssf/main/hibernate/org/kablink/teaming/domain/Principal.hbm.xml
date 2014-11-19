@@ -94,6 +94,7 @@
 	  	<property name="downloadEnabled" access="field"/>
 	  	<property name="webAccessEnabled" access="field"/>
 	  	<property name="adHocFoldersEnabled" access="field"/>
+        <property name="lastConfigUpdate" access="field"/>
 	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
 	      <!--<cache usage="read-write"/>-->
 	      <key column="userId"/>

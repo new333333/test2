@@ -733,7 +733,8 @@ public void setStatusDate(Date statusDate) {
 public void setDiskQuota(long megabytes) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    user.setDiskQuota(megabytes);
-   }  
+        user.setLastConfigUpdate(new Date());
+   }
 
    //RW transaction
    @Override
@@ -784,6 +785,7 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
      	for (Long id : userIds) {
 			User user = (User)getProfileDao().loadUserDeadOrAlive(id, RequestContextHolder.getRequestContext().getZoneId());
 			user.setDiskQuota(megabytes);
+            user.setLastConfigUpdate(new Date());
      	}
 	}
    
@@ -851,6 +853,7 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 					//We have to always check the members in case there are new members being added to the group
 					Long originalGroupQuota = group.getDiskQuota();
 					group.setDiskQuota(newQuotaMegabytes);
+                    group.setLastConfigUpdate(new Date());
 					List gIds = new ArrayList();
 					gIds.add(group.getId());
 					Set<Long> memberIds = getProfileDao().explodeGroups(gIds, zoneId);
@@ -901,6 +904,7 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
      	for (Long id : userIds) {
 			User user = (User)getProfileDao().loadUserDeadOrAlive(id, RequestContextHolder.getRequestContext().getZoneId());
 			user.setFileSizeLimit(fileSizeLimit);
+            user.setLastConfigUpdate(new Date());
      	}
 	}
    
@@ -977,6 +981,7 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
 				//We always have to check each user in case there are new users being added to the group
 				Long originalFileSizeLimit = group.getFileSizeLimit();	//Can be null
 				group.setFileSizeLimit(newFileSizeLimit);
+                group.setLastConfigUpdate(new Date());
 				List gIds = new ArrayList();
 				gIds.add(group.getId());
 				Set memberIds = getProfileDao().explodeGroups(gIds, zoneId);
@@ -2886,6 +2891,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     public void setDownloadEnabled(Long upId, Boolean downloadEnabled) {
    		UserPrincipal up = getUserPrincipal(upId, true, false);
 		up.setDownloadEnabled(downloadEnabled);
+        up.setLastConfigUpdate(new Date());
     }
 
     /**
@@ -2911,6 +2917,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     public void setWebAccessEnabled(Long upId, Boolean webAccessEnabled) {
    		UserPrincipal up = getUserPrincipal(upId, true, false);
 		up.setWebAccessEnabled(webAccessEnabled);
+        up.setLastConfigUpdate(new Date());
     }
 
     /**
@@ -2936,6 +2943,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     public void setAdHocFoldersEnabled(Long upId, Boolean adHocFoldersEnabled) {
    		UserPrincipal up = getUserPrincipal(upId, true, false);
 		up.setAdHocFoldersEnabled(adHocFoldersEnabled);
+        up.setLastConfigUpdate(new Date());
     }
 
     /**

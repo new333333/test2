@@ -66,4 +66,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="david" context="schema" failOnError="true" id="6">
+        <comment>Last modified time for the user or group configuration</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="lastConfigUpdate" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
