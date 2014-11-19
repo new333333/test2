@@ -107,6 +107,11 @@ public class ApiImpl extends BaseApiImpl implements Api {
     }
 
     @Override
+    public Binder getPublicShares() {
+        return getJSONResourceBuilder(getSelfHref("public_shares")).get(Binder.class);
+    }
+
+    @Override
     public ZoneConfig getZoneConfig() {
         return getJSONResourceBuilder(getRootHref("zone_config")).get(ZoneConfig.class);
     }

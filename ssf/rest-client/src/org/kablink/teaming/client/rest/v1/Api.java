@@ -72,6 +72,7 @@ public interface Api {
     User getSelf();
     Binder getSharedByMe();
     Binder getSharedWithMe();
+    Binder getPublicShares();
     ZoneConfig getZoneConfig();
     SearchResultList<BinderBrief> getTopLevelFolders();
     SearchResultList<BinderBrief> getBinders(Long [] binderIds);

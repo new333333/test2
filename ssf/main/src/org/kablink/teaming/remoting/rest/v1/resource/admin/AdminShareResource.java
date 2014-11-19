@@ -38,7 +38,9 @@ import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
@@ -73,10 +75,26 @@ import java.util.List;
 public class AdminShareResource extends AbstractAdminResource {
 
     @GET
-    public SearchResultList<Share> getAllShares() {
+    public SearchResultList<Share> getShares(@QueryParam("shared_by") Long sharedById,
+                                             @QueryParam("shared_with") Long sharedWithId,
+                                             @QueryParam("include_expired") @DefaultValue("false") Boolean includeExpired) {
         ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        if (sharedById!=null) {
+            spec.setSharerId(sharedById);
+        }
+        if (sharedWithId!=null) {
+            Principal entry = getProfileModule().getEntry(sharedWithId, true);
+            if (entry instanceof User) {
+                spec.setRecipients(sharedWithId, null, null);
+            } else if (entry instanceof Group) {
+                spec.setRecipients(null, sharedWithId, null);
+            } else {
+                // Assume team?
+                spec.setRecipients(null, null, sharedWithId);
+            }
+        }
         spec.setLatest(true);
-        return getShareSearchResultList(spec, false, true, true);
+        return getShareSearchResultList(spec, includeExpired, true, true);
     }
 
     @GET
