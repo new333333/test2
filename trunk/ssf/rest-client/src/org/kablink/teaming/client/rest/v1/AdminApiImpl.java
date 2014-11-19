@@ -82,6 +82,22 @@ public class AdminApiImpl extends BaseApiImpl implements AdminApi {
     }
 
     @Override
+    public SearchResultList<Share> getSharesByUser(User user) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("shared_by", user.getId());
+        SearchResultList shareList = getJSONResourceBuilder(getRootHref("shares"), params).get(SearchResultList.class);
+        return buildSearchResultList(Share.class, shareList);
+    }
+
+    @Override
+    public SearchResultList<Share> getSharesWithUser(User user) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("shared_with", user.getId());
+        SearchResultList shareList = getJSONResourceBuilder(getRootHref("shares"), params).get(SearchResultList.class);
+        return buildSearchResultList(Share.class, shareList);
+    }
+
+    @Override
     public SearchResultList<Share> getPublicShares() {
         SearchResultList shareList = getJSONResourceBuilder(getRootHref("public_shares")).get(SearchResultList.class);
         return buildSearchResultList(Share.class, shareList);

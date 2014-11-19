@@ -32,26 +32,31 @@
  */
 package org.kablink.teaming.client.rest.v1;
 
-import org.kablink.teaming.rest.v1.model.RootRestObject;
-import org.kablink.teaming.rest.v1.model.SearchResultList;
-import org.kablink.teaming.rest.v1.model.Share;
-import org.kablink.teaming.rest.v1.model.User;
-import org.kablink.teaming.rest.v1.model.admin.PersonalStorage;
-import org.kablink.teaming.rest.v1.model.admin.WebAppConfig;
+import junit.framework.TestCase;
+
+import java.util.Date;
 
 /**
  * User: David
- * Date: 11/17/14
- * Time: 10:43 AM
+ * Date: 10/28/14
+ * Time: 2:06 PM
  */
-public interface AdminApi {
-    void deleteShare(Share share);
-    RootRestObject getRoot();
-    PersonalStorage getPersonalStorage();
-    PersonalStorage  setPersonalStorage(PersonalStorage personalStorage);
-    SearchResultList<Share> getSharesByUser(User user);
-    SearchResultList<Share> getSharesWithUser(User user);
-    SearchResultList<Share> getPublicShares();
-    WebAppConfig getWebAppConfig();
-    WebAppConfig setWebAppConfig(WebAppConfig config);
+public class PublicSharesTest extends TestCase {
+    private ApiTestBinding binding;
+
+    @Override
+    protected void setUp() throws Exception {
+        binding = new ApiTestBinding();
+    }
+
+    public PublicSharesTest() {
+    }
+
+    public void testWhen200PublicSharesThenPublicShareCountIs200() throws InterruptedException {
+        binding.whenNoPublicShares();
+        for (int i=0; i<200; i++) {
+            binding.whenPublicShare(binding.whenFileExistsInAdminMyFiles(i));
+        }
+        binding.thenPublicShareCountIs(200);
+    }
 }

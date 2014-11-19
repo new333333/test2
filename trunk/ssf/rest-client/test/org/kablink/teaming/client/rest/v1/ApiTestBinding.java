@@ -24,9 +24,9 @@ import java.util.Date;
  */
 public class ApiTestBinding {
     private AdminApi adminApi;
-    private Api clientApiAsAdmin;
-    private Api clientApiAsHomelessUser;
-    private Api clientApiAsLdapUser;
+    public Api clientApiAsAdmin;
+    public Api clientApiAsHomelessUser;
+    public Api clientApiAsLdapUser;
 
     public ApiTestBinding() {
         ApiClient homelessClient = ApiClient.create("https://kamas.wal.novell.com:8443", "nohome", "novell");
@@ -53,6 +53,20 @@ public class ApiTestBinding {
         } catch (NotModifiedException e) {
             Assert.fail();
         }
+    }
+
+    public void thenSharedWithMeCountIs(int count) {
+        Binder publicShares = clientApiAsLdapUser.getSharedWithMe();
+        SearchResultList<SearchableObject> searchableObjectSearchResultList = clientApiAsLdapUser.listChildren(publicShares, 0, 100);
+        Assert.assertEquals((long)count, (long)searchableObjectSearchResultList.getCount());
+        Assert.assertEquals((long)count, (long)searchableObjectSearchResultList.getTotal());
+    }
+
+    public void thenPublicShareCountIs(int count) {
+        Binder publicShares = clientApiAsLdapUser.getPublicShares();
+        SearchResultList<SearchableObject> searchableObjectSearchResultList = clientApiAsLdapUser.listChildren(publicShares);
+        Assert.assertEquals((long)count, (long)searchableObjectSearchResultList.getCount());
+        Assert.assertEquals((long)count, (long)searchableObjectSearchResultList.getTotal());
     }
 
     public void thenMyFilesLibraryChildrenNotChanged(Date origModTime) {
@@ -108,15 +122,18 @@ public class ApiTestBinding {
         Assert.assertFalse(webAppConfig.getAllowGuestAccess());
     }
 
-    public FileProperties whenFileExistsInAdminMyFiles() {
+    public FileProperties whenFileExistsInAdminMyFiles(int counter) {
         Api clientApi = new ApiImpl(((AdminApiImpl)adminApi).conn);
         Binder myFiles = clientApi.getMyFiles();
-        return clientApi.uploadFile(myFiles, "test.txt", true, new ByteArrayInputStream("Test contents".getBytes()));
+        return clientApi.uploadFile(myFiles, "test" + counter + ".txt", true, new ByteArrayInputStream(("Test contents " + counter).getBytes()));
     }
 
     public void whenPublicShare() {
+        whenPublicShare(whenFileExistsInAdminMyFiles(1));
+    }
+
+    public void whenPublicShare(FileProperties file) {
         Api clientApi = new ApiImpl(((AdminApiImpl)adminApi).conn);
-        FileProperties file = whenFileExistsInAdminMyFiles();
         Share share = new Share();
         ShareRecipient recipient = new ShareRecipient();
         recipient.setType("public");
@@ -128,9 +145,30 @@ public class ApiTestBinding {
         clientApi.shareFile(file, share);
     }
 
+    public void whenSharedWithUser(FileProperties file, User user) {
+        Api clientApi = new ApiImpl(((AdminApiImpl)adminApi).conn);
+        Share share = new Share();
+        ShareRecipient recipient = new ShareRecipient();
+        recipient.setType("user");
+        recipient.setId(user.getId());
+        share.setRecipient(recipient);
+        Access access = new Access();
+        access.setRole("VIEWER");
+        share.setAccess(access);
+        share.setSharedEntity(file.getOwningEntity());
+        clientApi.shareFile(file, share);
+    }
+
     public void whenNoPublicShares() {
         SearchResultList<Share> publicShares = adminApi.getPublicShares();
         for (Share share : publicShares.getResults()) {
+            adminApi.deleteShare(share);
+        }
+    }
+
+    public void whenNoSharesWithUser(User user) {
+        SearchResultList<Share> shares = adminApi.getSharesWithUser(user);
+        for (Share share : shares.getResults()) {
             adminApi.deleteShare(share);
         }
     }
