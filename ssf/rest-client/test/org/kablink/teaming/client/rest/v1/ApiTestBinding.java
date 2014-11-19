@@ -7,6 +7,7 @@ import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.Share;
 import org.kablink.teaming.rest.v1.model.ShareRecipient;
 import org.kablink.teaming.rest.v1.model.User;
@@ -14,23 +15,54 @@ import org.kablink.teaming.rest.v1.model.admin.PersonalStorage;
 import org.kablink.teaming.rest.v1.model.admin.WebAppConfig;
 
 import java.io.ByteArrayInputStream;
+import java.util.Date;
 
 /**
  * User: David
  * Date: 11/18/14
  * Time: 9:48 AM
  */
-public class ApiTestBinder {
+public class ApiTestBinding {
     private AdminApi adminApi;
     private Api clientApiAsAdmin;
     private Api clientApiAsHomelessUser;
+    private Api clientApiAsLdapUser;
 
-    public ApiTestBinder() {
+    public ApiTestBinding() {
         ApiClient homelessClient = ApiClient.create("https://kamas.wal.novell.com:8443", "nohome", "novell");
+        ApiClient ldapClient = ApiClient.create("https://kamas.wal.novell.com:8443", "dlewis2", "novell");
         ApiClient adminClient = ApiClient.create("https://kamas.wal.novell.com:8443", "admin", "novell");
         clientApiAsHomelessUser = new ApiImpl(homelessClient);
+        clientApiAsLdapUser = new ApiImpl(ldapClient);
         clientApiAsAdmin = new ApiImpl(adminClient);
         adminApi = new AdminApiImpl(adminClient);
+    }
+
+    public Date givenMyFilesLibraryChildrenLastModifiedTime() {
+        Binder myFiles = clientApiAsLdapUser.getMyFiles();
+        SearchResultList<SearchableObject> searchableObjectSearchResultList = clientApiAsLdapUser.listChildren(myFiles);
+        return searchableObjectSearchResultList.getLastModified();
+    }
+
+    public void thenMyFilesLibraryChildrenChanged(Date origModTime) {
+        Binder myFiles = clientApiAsLdapUser.getMyFiles();
+        try {
+            SearchResultList<SearchableObject> searchableObjectSearchResultList = clientApiAsLdapUser.listChildren(myFiles, origModTime);
+            Date newModTime = searchableObjectSearchResultList.getLastModified();
+            Assert.assertTrue(origModTime.before(newModTime));
+        } catch (NotModifiedException e) {
+            Assert.fail();
+        }
+    }
+
+    public void thenMyFilesLibraryChildrenNotChanged(Date origModTime) {
+        Binder myFiles = clientApiAsLdapUser.getMyFiles();
+        try {
+            SearchResultList<SearchableObject> searchableObjectSearchResultList = clientApiAsLdapUser.listChildren(myFiles, origModTime);
+            Assert.fail();
+        } catch (NotModifiedException e) {
+            // Expected
+        }
     }
 
     public void whenGuestEnabledAndPublicShare() {
@@ -122,6 +154,13 @@ public class ApiTestBinder {
     public void whenPersonalStorageDisabled() {
         PersonalStorage storage = new PersonalStorage();
         storage.setAllowPersonalStorage(false);
+        this.adminApi.setPersonalStorage(storage);
+    }
+
+    public void whenPersonalStorageChanges() {
+        PersonalStorage current = this.adminApi.getPersonalStorage();
+        PersonalStorage storage = new PersonalStorage();
+        storage.setAllowPersonalStorage(!current.getAllowPersonalStorage());
         this.adminApi.setPersonalStorage(storage);
     }
 

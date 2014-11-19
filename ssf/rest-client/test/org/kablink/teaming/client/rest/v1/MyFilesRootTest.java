@@ -50,11 +50,11 @@ import java.util.List;
  * Time: 2:06 PM
  */
 public class MyFilesRootTest extends TestCase {
-    private ApiTestBinder binder;
+    private ApiTestBinding binder;
 
     @Override
     protected void setUp() throws Exception {
-        binder = new ApiTestBinder();
+        binder = new ApiTestBinding();
     }
 
     public MyFilesRootTest() {

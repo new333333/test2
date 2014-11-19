@@ -35,10 +35,13 @@ package org.kablink.teaming.client.rest.v1;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import org.kablink.teaming.rest.v1.model.Binder;
@@ -171,12 +174,32 @@ public class ApiImpl extends BaseApiImpl implements Api {
 
     @Override
     public SearchResultList<SearchableObject> listChildren(Binder binder) {
-        return listChildren(binder, null, null);
+        return listChildren(binder, null, null, null);
     }
 
+    @Override
+    public SearchResultList<SearchableObject> listChildren(Binder binder, Date ifModifiedSince) {
+        return listChildren(binder, null, null, ifModifiedSince);
+    }
+
+    @Override
     public SearchResultList<SearchableObject> listChildren(Binder binder, Integer first, Integer count) {
+        return listChildren(binder, first, count, null);
+    }
+
+    @Override
+    public SearchResultList<SearchableObject> listChildren(Binder binder, Integer first, Integer count, Date ifModifiedSince) {
         Map<String, Object> params = getFirstAndCountParams(first, count);
-        SearchResultList results = getJSONResourceBuilder(binder.findRelatedLink("library_children"), params).get(SearchResultList.class);
+        WebResource.Builder builder = getJSONResourceBuilder(binder.findRelatedLink("library_children"), params);
+        if (ifModifiedSince!=null) {
+            builder.header("If-Modified-Since", Rfc1123FromDate(ifModifiedSince));
+        }
+        ClientResponse response = builder.get(ClientResponse.class);
+        if (response.getStatus()==304) {
+            throw new NotModifiedException();
+        }
+        SearchResultList results = response.getEntity(SearchResultList.class);
+        results.setLastModified(response.getLastModified());
         return buildSearchableObjectSearchResultList(results);
     }
 

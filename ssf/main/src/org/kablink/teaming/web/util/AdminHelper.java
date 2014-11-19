@@ -33,6 +33,7 @@
 package org.kablink.teaming.web.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -266,6 +267,23 @@ public class AdminHelper {
 			return Boolean.TRUE;
 		}
 	}
+
+    public static Date getEffectiveAdhocFolderSettingDate(AllModulesInjected ami, User user) {
+        Date effDate = null;
+        if (Utils.checkIfFilr()) {
+            ZoneConfig zoneConfig = ami.getZoneModule().getZoneConfig(user.getZoneId());
+            effDate = DateHelper.max(zoneConfig.getLastModified(), user.getLastConfigUpdate());
+            List<Group> groups = GwtUIHelper.getGroups(user.getId());
+            if (MiscUtil.hasItems(groups)) {
+                // Yes!  Scan them.
+                for (Group group:  groups) {
+                    effDate = DateHelper.max(group.getLastConfigUpdate(), effDate);
+                }
+            }
+        }
+        return effDate;
+    }
+
 
 	/**
 	 * Return the 'AdHoc folder' setting from the zone.

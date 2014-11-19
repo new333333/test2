@@ -88,6 +88,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.AdminHelper;
+import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.HttpHeaders;
@@ -1427,7 +1428,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             hiddenFolderIds.add(getMyFilesFolderParent().getId());
             ids = hiddenFolderIds.toArray(new Long[hiddenFolderIds.size()]);
         }
-        return getLibraryModifiedDate(ids, recursive, false);
+        return DateHelper.max(getLibraryModifiedDate(ids, recursive, false), AdminHelper.getEffectiveAdhocFolderSettingDate(this, getLoggedInUser()));
     }
 
     protected LibraryInfo getMyFilesLibraryInfo() {
@@ -1447,6 +1448,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             populateMirroredLibraryInfo(libraryInfo, homeFolderIds);
             libraryInfo.setAllowClientInitiatedSync(true);
         }
+        libraryInfo.setModifiedDate(DateHelper.max(libraryInfo.getModifiedDate(),
+                AdminHelper.getEffectiveAdhocFolderSettingDate(this, getLoggedInUser())));
         return libraryInfo;
     }
 
@@ -2035,6 +2038,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             results = lookUpChildren(crit, descriptionFormat, offset, maxCount, nextUrl, nextParams, lastModified);
         }
         setMyFilesParents(results);
+        results.updateLastModified(AdminHelper.getEffectiveAdhocFolderSettingDate(this, user));
         return results;
     }
 

@@ -46,6 +46,7 @@ import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -77,7 +78,9 @@ public interface Api {
     List<BinderChildren> listBinderChildren(Long[] binderIds, Integer count);
     List<BinderChildren> listBinderChildren(Long[] binderIds, Long startingBinderId, Integer first, Integer count);
     SearchResultList<SearchableObject> listChildren(Binder binder);
+    SearchResultList<SearchableObject> listChildren(Binder binder, Date ifModifiedSince);
     SearchResultList<SearchableObject> listChildren(Binder binder, Integer first, Integer count);
+    SearchResultList<SearchableObject> listChildren(Binder binder, Integer first, Integer count, Date ifModifiedSince);
     FileProperties uploadFile(Binder parent, String fileName, boolean overwriteExisting, InputStream content);
     Share shareFile(FileProperties file, Share share);
 }
