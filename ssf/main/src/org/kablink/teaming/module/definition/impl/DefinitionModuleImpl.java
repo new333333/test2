@@ -1239,10 +1239,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							//  the workflow id and the state names
 							newPropertyEle.addAttribute("workflowDefinitionId", value);
 							String[] workflowStateNames = (String[]) inputData.getValues("workflowStateNames");
-							for (int j=0; j<workflowStateNames.length; ++j) {
-								if (Validator.isNull(workflowStateNames[j])) continue;
-								Element workflowCondition = newPropertyEle.addElement("workflowState");
-								workflowCondition.addAttribute("name", Html.replaceSpecialChars(workflowStateNames[j].trim()));
+							if (workflowStateNames != null) {
+								for (int j=0; j<workflowStateNames.length; ++j) {
+									if (Validator.isNull(workflowStateNames[j])) continue;
+									Element workflowCondition = newPropertyEle.addElement("workflowState");
+									workflowCondition.addAttribute("name", Html.replaceSpecialChars(workflowStateNames[j].trim()));
+								}
 							}
 						}
 					}
