@@ -35,7 +35,7 @@
 //We use ss_mobile to minimize the size of the common javascript routines loaded
 
 //Routine to create a new "onLoadObj" object
-//onLoadObj objects are set up whenever you want to call something at onLoad time.
+//onLoadObj objects are set up whenever you want to call something at  time.
 var ss_onLoadList = new Array();
 var ss_onLoadRoutineLoaded;
 function ss_createOnLoadObj(name, initName) {
@@ -273,3 +273,157 @@ function ss_saveCheckBoxValue(box, hiddenFieldId) {
 		}
 	}
 }
+
+//Common onSubmit handler
+//This function will call the desired routines at form submit time
+//unless the onClick for the submit button called ss_selectButton('cancelBtn').
+//If any routine returns "false", then this routine returns false.
+function ss_onSubmit(obj, checkIfButtonClicked) {
+	if (ss_buttonSelected == "cancelBtn" || ss_buttonSelected == "closeBtn") {
+		return true;
+	}
+	var result = true;
+	// After all of the other checks are done, and if the result is still true,
+	// check if the required fields are filled in.
+	// Do this last in case some fields get filled in by the other routines
+	if (result && !ss_checkForRequiredFields(obj)) result = false;
+	return result;
+}
+
+//Check for required fields
+//Return false if there is a field left blank (after giving a alert)
+function ss_checkForRequiredFields(obj) {
+	var objs = ss_getElementsByClass("ss_required", obj, "span")
+	for (var i_obj = 0; i_obj < objs.length; i_obj++) {
+		var id = objs[i_obj].id.substring(12);
+		var title = objs[i_obj].title;
+		// See if the form element is empty
+		eleObj = obj[id];
+		eleObj0 = eleObj
+		if (eleObj != null && typeof(eleObj) != 'undefined' && typeof(eleObj.length) != 'undefined') eleObj0 = eleObj[0];
+		try {
+			if (eleObj0 != null && typeof eleObj0 != 'undefined') {
+				if (eleObj0.tagName.toLowerCase() == 'input' && eleObj0.type.toLowerCase() == 'radio') {
+					for (var j = 0; j < eleObj.length; j++) {
+						var radioClicked = false;
+						if (eleObj[j].checked) {
+							// alert('radio found: '+eleObj[j].value);
+							radioClicked = true;
+							break;
+						}
+					}
+					if (radioClicked) continue;
+				} else if (typeof(eleObj.tagName) != 'undefined' && eleObj.tagName.toLowerCase() == 'select') {
+					if (typeof(eleObj.selectedIndex) != 'undefined') {
+						//Check that something with a non-blank caption is selected
+						if (eleObj.selectedIndex >= 0 && 
+								(eleObj.multiple || eleObj.options[eleObj.selectedIndex].text != "")) {
+							// alert('selection found: '+eleObj0.value);
+							continue;
+						}
+					}
+				} else if (eleObj0.tagName.toLowerCase() == 'input' && 
+						(eleObj0.type.toLowerCase() == 'text' || eleObj0.type.toLowerCase() == 'hidden' ||
+						 eleObj0.type.toLowerCase() == 'file')) {
+					if (typeof(eleObj0.value) != 'undefined' && ss_trim(eleObj0.value) != "") {
+						// alert('text found: xxx'+eleObj0.value+'xxx');
+						continue;
+					}
+					var formObj = ss_findOwningElement(eleObj0, "form");
+					
+					//See if it is a file browse option and there is a request to create a file instead
+					var fileNameId = "createFileName_" + id;
+					var fileTypeId = "createFileType_" + id;
+					var fnObj = null;
+					for (var j = 0; j < formObj.elements.length; j++) {
+						if (formObj.elements[j].name == fileNameId) fnObj = formObj.elements[j];
+					}
+					if (fnObj != null && typeof(fnObj) != 'undefined' && typeof(fnObj.length) != 'undefined') fnObj = fnObj[0];
+					var ftObj = null;
+					for (var j = 0; j < formObj.elements.length; j++) {
+						if (formObj.elements[j].name == timeId) ftObj = formObj.elements[j];
+					}
+					if (ftObj != null && typeof(ftObj) != 'undefined' && typeof(ftObj.length) != 'undefined') ftObj = ftObj[0];
+					if ((fnObj != null && fnObj.value != null && fnObj.value != '')) {
+						// alert('create file found: '+fnObj.value);
+						continue;
+					}					
+					
+					// See if this is a date field.
+					var dateId = id + "_fullDate";
+					var timeId = id + "_0_fullTime";
+					var dObj = null;
+					for (var j = 0; j < formObj.elements.length; j++) {
+						if (formObj.elements[j].name == dateId) dObj = formObj.elements[j];
+					}
+					if (dObj != null && typeof(dObj) != 'undefined' && typeof(dObj.length) != 'undefined') dObj = dObj[0];
+					var tObj = null;
+					for (var j = 0; j < formObj.elements.length; j++) {
+						if (formObj.elements[j].name == timeId) tObj = formObj.elements[j];
+					}
+					if (tObj != null && typeof(tObj) != 'undefined' && typeof(tObj.length) != 'undefined') tObj = tObj[0];
+					if ((dObj != null && dObj.value != '') || (tObj != null && tObj.value != '')) {
+						// alert('date found: '+dObj.value);
+						continue;
+					}
+	
+					// See if this is an event
+					var startId = "dp_" + id + "_";
+					var endId = "dp2_" + id + "_";
+					var sObj = obj[startId]
+					if (typeof(sObj) != 'undefined' && typeof(sObj.length) != 'undefined') sObj = sObj[0];
+					var eObj = obj[endId]
+					if (typeof(eObj) != 'undefined' && typeof(eObj.length) != 'undefined') eObj = eObj[0];
+					if ((sObj && sObj.value != '') || (eObj && eObj.value != '')) {
+						// alert('event found: '+sObj.value);
+						continue;
+					}
+				} else if (eleObj0.tagName.toLowerCase() == 'textarea') {
+					if (typeof(eleObj0.value) != 'undefined') {
+						var pattern = new RegExp("[\\s]*\\S");
+						if (pattern.test(eleObj0.value) ) {
+							// alert('textarea found: //'+eleObj0.value+'//');
+							continue;
+						}
+					}
+				}
+
+				// No special cases, just tell the user what field has to be
+				// filled in
+				if (typeof ss_viewing_entry_history == "undefined") alert(title);
+				return false;
+			}
+		} catch(e) {
+			alert('Error processing element: '+id + ', ' + e);
+		}
+	}
+	return true;
+}
+
+function ss_getElementsByClass(classPattern, node, tag) {
+	var classElements = new Array();
+	if (node == null)
+		node = document;
+	if (tag == null)
+		tag = '*';
+	var els = node.getElementsByTagName(tag);
+	var elsLen = els.length;
+	var pattern = new RegExp("(^|\\s)"+classPattern+"(\\s|$)");
+	for (i = 0, j = 0; i < elsLen; i++) {
+		if (pattern.test(els[i].className) ) {
+			classElements[j] = els[i];
+			j++;
+		}
+	}
+	return classElements;
+}
+
+function ss_trim(str) {
+    // skip leading and trailing whitespace
+    // and return everything in between
+    var x=str;
+    x=x.replace(/^\s*(.*)/, "$1");
+    x=x.replace(/(.*?)\s*$/, "$1");
+    return x;
+};
+

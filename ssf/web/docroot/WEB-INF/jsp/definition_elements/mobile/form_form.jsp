@@ -91,7 +91,8 @@
 				value="${ssEntry.id}"/><ssf:param name="entryType"
 				value="${entryType}"/><ssf:param name="_entryOperationType"
 				value="${operationType}"/><ssf:param name="_entryDelayWorkflow"
-				value="${ssEntryDelayWorkflow}"/></ssf:url>">
+				value="${ssEntryDelayWorkflow}"/></ssf:url>"
+	  onSubmit="return ss_onSubmit(this, true);">
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	  configElement="<%= item %>" 
 	  configJspStyle="${ssConfigJspStyle}" />
