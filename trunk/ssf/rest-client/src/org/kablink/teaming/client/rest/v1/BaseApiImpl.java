@@ -38,6 +38,7 @@ import com.sun.jersey.api.client.WebResource;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
@@ -51,6 +52,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -192,8 +194,18 @@ public class BaseApiImpl {
 		String dateStr = null;
 		if(date != null) {
 			DateTime dateTime = new DateTime(date);
-			dateStr = ISODateTimeFormat.dateTime().print(dateTime);
+			dateStr = ISODateTimeFormat.dateTime().withZoneUTC().print(dateTime);
 		}
+		return dateStr;
+	}
+
+    protected String Rfc1123FromDate(Date date) {
+		String dateStr = null;
+		if(date != null) {
+			DateTime dateTime = new DateTime(date);
+			dateStr = DateTimeFormat.forPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'").withZoneUTC().withLocale(Locale.US).print(dateTime);
+		}
+
 		return dateStr;
 	}
 }

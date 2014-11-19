@@ -81,6 +81,7 @@ import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.api.ApiErrorCode;
@@ -587,8 +588,9 @@ public class SelfResource extends AbstractFileResource {
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
-        }
+    }
         SearchResultList<FileProperties> resultList = _getMyFilesLibraryFiles(fileName, recursive, includeParentPaths, offset, maxCount);
+        resultList.updateLastModified(AdminHelper.getEffectiveAdhocFolderSettingDate(this, getLoggedInUser()));
         return Response.ok(resultList).lastModified(lastModified).build();
     }
 

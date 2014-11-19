@@ -63,6 +63,7 @@ import org.kablink.teaming.util.ObjectPropertyNotFoundException;
 import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
 import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.dom4j.Element;
@@ -1077,30 +1078,10 @@ public class ResourceUtil {
     }
 
     public static Date max(Date d1, Date d2) {
-        if (d1==null) {
-            return d2;
-        }
-        if (d2==null) {
-            return d1;
-        }
-        if (d1.compareTo(d2)>=0) {
-            return d1;
-        } else {
-            return d2;
-        }
+        return DateHelper.max(d1, d2);
     }
 
     public static Date min(Date d1, Date d2) {
-        if (d1==null) {
-            return d2;
-        }
-        if (d2==null) {
-            return d1;
-        }
-        if (d1.compareTo(d2)<=0) {
-            return d1;
-        } else {
-            return d2;
-        }
+        return DateHelper.min(d1, d2);
     }
 }
