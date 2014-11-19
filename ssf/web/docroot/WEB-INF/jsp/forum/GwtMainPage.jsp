@@ -364,6 +364,9 @@
 			</tbody>
 		</table>
 		
+		<!-- If needed, show the Text Verification controls. -->
+		<%@ include file="/WEB-INF/jsp/definition_elements/textVerification.jsp" %>
+
 		<table cellspacing="4" class="dlgContent" style="margin: 10px;">
 			<colgroup>
 				<col>

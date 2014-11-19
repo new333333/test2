@@ -4173,6 +4173,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case VALIDATE_CAPTCHA:
+		{
+			ValidateCaptchaCmd vcCmd;
+			BooleanRpcResponseData responseData;
+			Boolean result;
+			
+			vcCmd = (ValidateCaptchaCmd) cmd;
+			result = GwtServerHelper.validateCaptcha( this, getRequest( ri ), vcCmd.getText() );
+			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case VALIDATE_EMAIL_ADDRESS:
 		{
 			ValidateEmailAddressCmd vemCmd;

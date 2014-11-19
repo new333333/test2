@@ -58,6 +58,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorI
 import org.kablink.teaming.gwt.client.rpc.shared.GetLoginInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RequestResetPwdCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateCaptchaCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.Agent;
@@ -148,6 +149,8 @@ public class LoginDlg extends DlgBox
 	private FlowPanel m_selfRegPanel;
 	private Button m_registerBtn;
 	private Button m_pwdResetBtn;
+	private Image m_captchaImg;
+	private TextBox m_captchaResponseTxtBox;
 	private ForgottenPwdDlg m_forgottenPwdDlg = null;
 	private ChangePasswordDlg m_changePwdDlg = null;
 
@@ -162,6 +165,8 @@ public class LoginDlg extends DlgBox
 	private int m_numAttempts = 0;
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private String m_preLoginTitle;
+	private boolean m_captchaAlreadyChecked = false;
+	
 	
 	/**
 	 * 
@@ -398,48 +403,64 @@ public class LoginDlg extends DlgBox
 			@Override
 			public void onSubmit( SubmitEvent event )
 			{
-				// Hide the "login failed" message.
-				hideLoginFailedMsg();
-				
-				// Show the the "authenticating..." message.
-				showAuthenticatingMsg();
-				
-				// Are we using OpenID to authenticate
-				if ( getUseOpenIDAuthentication() )
+				// Do we need to check the captcha?
+				if ( m_captchaImg.isVisible() && m_captchaAlreadyChecked == false )
 				{
-					// Yes
-					m_formPanel.setAction( "/ssf/j_spring_openid_security_check" );		
-					m_formPanel.getElement().setAttribute( "name", "oidf" );
-				}
+					AsyncCallback<VibeRpcResponse> rpcCallback;
+					ValidateCaptchaCmd cmd;
 
-				// If we're redirecting the login to a readFile URL...
-				if ( m_redirectIsReadFile )
-				{
-					GwtClientHelper.deferCommand( new ScheduledCommand()
+					// Yes
+					rpcCallback = new AsyncCallback<VibeRpcResponse>()
 					{
+						/**
+						 * 
+						 */
 						@Override
-						public void execute()
+						public void onFailure( Throwable t )
 						{
-							// ...clear the content of the login
-							// ...dialog...
-							m_mainPanel.clear();
-							
-							// ...and display a message about the file
-							// ...download.
-							FlowPanel dlMsgPanel = new FlowPanel();
-							dlMsgPanel.addStyleName( "loginDlg_downloadingFileMsgPanel" );
-							m_mainPanel.add( dlMsgPanel );
-							
-							Label readingLabel = new Label( GwtTeaming.getMessages().loginDlgDownloadingFile1() );
-							readingLabel.addStyleName( "loginDlg_downloadingFileMsg1" );
-							dlMsgPanel.add( readingLabel );
-							readingLabel = new Label( GwtTeaming.getMessages().loginDlgDownloadingFile2() );
-							readingLabel.addStyleName( "loginDlg_downloadingFileMsg2" );
-							dlMsgPanel.add( readingLabel );
-							
+							// Don't call GwtClientHelper.handleGwtRPCFailure() like we would normally do.  If the
+							// session has expired, handleGwtRPCFailure() will invoke this login dialog again
+							// and we will be in an infinite loop.
+							// GwtClientHelper.handleGwtRPCFailure(
+							//	t,
+							//	GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
+							debugAlert( "In ValidateCaptchaCmd / onFailure()" );
 						}
-					} );
+				
+						/**
+						 * 
+						 * @param result
+						 */
+						@Override
+						public void onSuccess( VibeRpcResponse response )
+						{
+							if ( response.getResponseData() != null && response.getResponseData() instanceof BooleanRpcResponseData )
+							{
+								BooleanRpcResponseData responseData;
+								
+								responseData = (BooleanRpcResponseData) response.getResponseData();
+								if ( responseData.getBooleanValue() == true )
+								{
+									m_captchaAlreadyChecked = true;
+									m_formPanel.submit();
+								}
+								else
+								{
+									Window.alert( GwtTeaming.getMessages().loginDlg_InvalidCaptcha() );
+								}
+							}
+						}
+					};
+					
+					// Cancel the form from being submitted.  If the captcha is valid we will submit the form
+					event.cancel();
+					
+					// Issue an ajax request to check the captcha
+					cmd = new ValidateCaptchaCmd( getCaptchaResponse() );
+					GwtClientHelper.executeCommand( cmd, rpcCallback );
 				}
+				else
+					doOnSubmitWork();
 			}
 		});
 
@@ -776,6 +797,68 @@ public class LoginDlg extends DlgBox
 		}
 	}
 	
+	/**
+	 * 
+	 */
+	private void doOnSubmitWork()
+	{
+		m_captchaAlreadyChecked = false;
+		
+		// Hide the "login failed" message.
+		hideLoginFailedMsg();
+		
+		// Show the the "authenticating..." message.
+		showAuthenticatingMsg();
+		
+		// Are we using OpenID to authenticate
+		if ( getUseOpenIDAuthentication() )
+		{
+			// Yes
+			m_formPanel.setAction( "/ssf/j_spring_openid_security_check" );		
+			m_formPanel.getElement().setAttribute( "name", "oidf" );
+		}
+
+		// If we're redirecting the login to a readFile URL...
+		if ( m_redirectIsReadFile )
+		{
+			GwtClientHelper.deferCommand( new ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					// ...clear the content of the login
+					// ...dialog...
+					m_mainPanel.clear();
+					
+					// ...and display a message about the file
+					// ...download.
+					FlowPanel dlMsgPanel = new FlowPanel();
+					dlMsgPanel.addStyleName( "loginDlg_downloadingFileMsgPanel" );
+					m_mainPanel.add( dlMsgPanel );
+					
+					Label readingLabel = new Label( GwtTeaming.getMessages().loginDlgDownloadingFile1() );
+					readingLabel.addStyleName( "loginDlg_downloadingFileMsg1" );
+					dlMsgPanel.add( readingLabel );
+					readingLabel = new Label( GwtTeaming.getMessages().loginDlgDownloadingFile2() );
+					readingLabel.addStyleName( "loginDlg_downloadingFileMsg2" );
+					dlMsgPanel.add( readingLabel );
+					
+				}
+			} );
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private String getCaptchaResponse()
+	{
+		if ( m_captchaResponseTxtBox != null && m_captchaResponseTxtBox.isVisible() )
+			return m_captchaResponseTxtBox.getValue();
+		
+		return "";
+	}
+
 	/**
 	 * 
 	 */
@@ -1820,6 +1903,19 @@ public class LoginDlg extends DlgBox
 			m_pwdTxtBox = PasswordTextBox.wrap( pwdTxtBoxElement );
 		}
 		
+		// Add the controls needed for captcha
+		{
+			Element captchaElement;
+			
+			captchaElement = Document.get().getElementById( "kaptcha-img" );
+			if ( captchaElement != null )
+				m_captchaImg = Image.wrap( captchaElement );
+			
+			captchaElement = Document.get().getElementById( "kaptcha-repsponse" );
+			if ( captchaElement != null )
+				m_captchaResponseTxtBox = TextBox.wrap( captchaElement );
+		}
+		
 		// Add a "login failed" label to the dialog.
 		{
 			Element loginFailedElement;
@@ -1922,7 +2018,7 @@ public class LoginDlg extends DlgBox
 							
 							// Get the url we need to invoke the "Create User" page.
 							url = m_selfRegInfo.getCreateUserUrl();
-							
+
 							// Invoke the "Create User" page in a new window.
 							Window.open( url, "self_reg_create_new_account", "height=750,resizeable,scrollbars,width=750" );
 						}

@@ -57,8 +57,7 @@
 	
 	</script>
 
-	<div style="padding-bottom: .4em; padding-top: .25em;">
-		<span class="ss_labelAbove"><label for="kaptcha-response"><ssf:nlt tag="text_verification.label" /></label></span>
+	<div style="padding-bottom: .4em; padding-top: .25em;" id="textVerificationDiv">
 		<div style="padding-left: .5em;">
 			<div><ssf:nlt tag="text_verification.instructions" /></div>
 			<table>
@@ -84,11 +83,6 @@
 					<td>
 						<input id="kaptcha-repsponse" name="kaptcha-response" class="ss_text" type="text" />
 						<input id="kaptcha-exists" name="kaptcha-exists" value="true" type="hidden" />
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<ssf:nlt tag="text_verification.caseinsensitive" />
 					</td>
 				</tr>
 			</table>
