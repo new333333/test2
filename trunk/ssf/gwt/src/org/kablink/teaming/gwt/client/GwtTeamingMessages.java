@@ -899,6 +899,7 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlg_FirstNameLabel();
 	String loginDlg_ForgottenPwd();
 	String loginDlg_firstNameRequired();
+	String loginDlg_InvalidCaptcha();
 	String loginDlg_LastNameLabel();
 	String loginDlg_lastNameRequired();
 	String loginDlg_OrLabel();

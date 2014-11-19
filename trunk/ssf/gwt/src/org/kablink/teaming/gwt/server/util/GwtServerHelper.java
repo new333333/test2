@@ -92,13 +92,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -10826,6 +10824,7 @@ public class GwtServerHelper {
 		case UNTRACK_BINDER:
 		case UNTRACK_PERSON:
 		case UPLOAD_FILE_BLOB:
+		case VALIDATE_CAPTCHA:
 		case VALIDATE_EMAIL_ADDRESS:
 		case VALIDATE_ENTRY_EVENTS:
 		case VALIDATE_SHARE_LISTS:
@@ -12979,6 +12978,31 @@ public class GwtServerHelper {
 		return userHasHomeFolder(bs, getCurrentUser());
 	}
 
+	/**
+	 * Returns true if the given text matches the captcha
+	 */
+	public static boolean validateCaptcha(
+		AllModulesInjected ami,
+		HttpServletRequest httpServletRequest,
+		String text )
+	{
+		String kaptchaExpected;
+		
+		if ( text == null || text.length() == 0 || httpServletRequest == null )
+			return false;
+		
+		// Get the text used to create the kaptcha image.  It is stored in the http session.
+		kaptchaExpected = (String) httpServletRequest.getSession().getAttribute( com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY );
+		
+		if ( kaptchaExpected == null || !kaptchaExpected.equalsIgnoreCase( text  ) )
+		{
+			// The text entered by the user did not match the text used to create the kaptcha image.
+			return false;
+		}
+		
+		return true;
+	}
+	
 	/**
 	 * Returns true if baseUrl is a valid desktop application download
 	 * URL and false otherwise.
