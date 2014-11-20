@@ -82,7 +82,7 @@ public class ManageAdministratorsDlg extends DlgBox
 		FullUIReloadEvent.Handler,
 		GetManageTitleEvent.Handler
 {
-	public final static boolean	SHOW_MANAGE_ADMINISTRATORS	= true;	//! DRF (20141117):  Leave false on checkin until it's working.
+	public final static boolean	SHOW_MANAGE_ADMINISTRATORS	= false;	//! DRF (20141117):  Leave false on checkin until it's working.
 	
 	private boolean									m_dlgAttached;				// true when the dialog is attached to the document, false otherwise.
 	private boolean									m_viewReady;				// true once the embedded view is ready,             false otherwise.
