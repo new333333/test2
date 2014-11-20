@@ -58,6 +58,8 @@ import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetVerificationException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToVerificationException;
 import org.kablink.teaming.extuser.ExternalUserUtil;
+import org.kablink.teaming.module.authentication.AuthenticationModule;
+import org.kablink.teaming.module.authentication.FailedAuthenticationMonitor;
 import org.kablink.teaming.module.authentication.UserIdNotActiveException;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
@@ -402,6 +404,24 @@ public class LoginController  extends SAbstractControllerRetry {
 		{
 			model.put(WebKeys.URL, refererUrl);
 			model.put( "loginRefererUrl", refererUrl );
+		}
+		
+		{
+			AuthenticationModule authModule;
+			
+			authModule = getAuthenticationModule();
+			if ( authModule instanceof FailedAuthenticationMonitor )
+			{
+				FailedAuthenticationMonitor faMonitor;
+				
+				// Has a brute-force attack been detected?
+				faMonitor = (FailedAuthenticationMonitor) authModule;
+				if ( faMonitor.isBruteForceAttackInProgress() )
+				{
+					// Yes, require captcha on the login dialog.
+					model.put( "ssDoTextVerification", "true" );
+				}
+			}
 		}
 		
 		boolean durangoUI = GwtUIHelper.isGwtUIActive(request);

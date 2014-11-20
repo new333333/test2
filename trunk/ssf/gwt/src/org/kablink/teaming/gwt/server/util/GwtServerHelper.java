@@ -13006,21 +13006,7 @@ public class GwtServerHelper {
 		HttpServletRequest httpServletRequest,
 		String text )
 	{
-		String kaptchaExpected;
-		
-		if ( text == null || text.length() == 0 || httpServletRequest == null )
-			return false;
-		
-		// Get the text used to create the kaptcha image.  It is stored in the http session.
-		kaptchaExpected = (String) httpServletRequest.getSession().getAttribute( com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY );
-		
-		if ( kaptchaExpected == null || !kaptchaExpected.equalsIgnoreCase( text  ) )
-		{
-			// The text entered by the user did not match the text used to create the kaptcha image.
-			return false;
-		}
-		
-		return true;
+		return Utils.isCaptchaValid( httpServletRequest, text );
 	}
 	
 	/**

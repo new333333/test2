@@ -32,15 +32,15 @@
  */
 package org.kablink.teaming;
 
-import org.kablink.teaming.exception.UncheckedCodedException;
 import org.kablink.util.api.ApiErrorCode;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * This class is used when we find the user did not enter the captcha text correctly.
  * @author jwootton
  *
  */
-public class TextVerificationException extends UncheckedCodedException
+public class TextVerificationException extends AuthenticationException
 {
 	private static final String TextVerificationException_ErrorCode = "errorcode.textverification.mismatch";
 	
@@ -50,18 +50,19 @@ public class TextVerificationException extends UncheckedCodedException
 	 */
     public TextVerificationException()
     {
-        super(TextVerificationException_ErrorCode);
+        super( TextVerificationException_ErrorCode );
     }
     
-    public int getHttpStatusCode() {
+    public int getHttpStatusCode()
+    {
     	return 400; // Bad Request
     }
 
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
 	 */
-	@Override
-	public ApiErrorCode getApiErrorCode() {
+	public ApiErrorCode getApiErrorCode()
+	{
 		return ApiErrorCode.BAD_INPUT;
 	}
 
