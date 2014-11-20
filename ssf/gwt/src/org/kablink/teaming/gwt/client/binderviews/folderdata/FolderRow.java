@@ -54,8 +54,8 @@ import org.kablink.teaming.gwt.client.util.ShareDateInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
 import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
+import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
-import org.kablink.teaming.gwt.client.util.UserAndGroupType;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -93,7 +93,7 @@ public class FolderRow implements IsSerializable {
 	private Map<String, List<ShareExpirationInfo>>	m_rowShareExpirationInfos;	// A map of column names to List<ShareExpirationInfo>'s           possibly stored for a column.
 	private Map<String, List<ShareMessageInfo>>		m_rowShareMessageInfos;		// A map of column names to List<ShareMessageInfo>'s              possibly stored for a column.
 	private Map<String, String>						m_rowStrings;				// A map of column names to String values                         possibly stored for a column.
-	private Map<String, UserAndGroupType>			m_rowUserAndGroupTypes;		// A map of column names to UserAndGroupType values               possibly stored for a column.
+	private Map<String, PrincipalType>			    m_rowPrincipalTypes;		// A map of column names to PrincipalType values                  possibly stored for a column.
 	private String									m_rowFamily;				// Family type of this row's entity.
 	
 	private transient Object						m_serverMobileDevice;		// Used on the server side to refer a MobileDevice object when that's what the row represents.
@@ -197,7 +197,7 @@ public class FolderRow implements IsSerializable {
 	public Map<String, List<TaskFolderInfo>>	getRowTaskFolderInfoListsMap()         {validateMapTaskFolders();      return m_rowTaskFolderInfos; } 
 	public Map<String, ViewFileInfo>			getRowViewFilesMap()                   {validateMapViews();            return m_rowViewFiles;       } 
 	public Map<String, String>					getRowStringsMap()                     {validateMapStrings();          return m_rowStrings;         }
-	public Map<String, UserAndGroupType>		getRowUserAndGroupTypesMap()           {validateMapUserAndGroupTypes();return m_rowUserAndGroupTypes;}
+	public Map<String, PrincipalType>			getRowPrincipalTypesMap()              {validateMapPrincipalTypes();   return m_rowPrincipalTypes;  }
 	public Object								getServerMobileDevice()                {                               return m_serverMobileDevice; }
 	public String								getBinderIcon(BinderIconSize iconSize) {return m_binderIcons.getBinderIcon(iconSize);               }
 	public String								getRowFamily()                         {return m_rowFamily;                                         }
@@ -231,20 +231,20 @@ public class FolderRow implements IsSerializable {
 	 */
 	public void setColumnValue(FolderColumn fc, Object v) {
 		String vk = getValueKey(fc);
-		if      (v instanceof String)              {validateMapStrings();          m_rowStrings.put(         vk, ((String)              v));}
-		else if (v instanceof CommentsInfo)        {validateMapComments();         m_rowComments.put(        vk, ((CommentsInfo)        v));}
-		else if (v instanceof DescriptionHtml)     {validateMapDescriptionHtmls(); m_rowDescriptionHtmls.put(vk, ((DescriptionHtml)     v));}
-		else if (v instanceof EmailAddressInfo)    {validateMapEmailAddresses();   m_rowEmailAddresses.put(  vk, ((EmailAddressInfo)    v));}
-		else if (v instanceof EntryEventInfo)      {validateMapEvents();           m_rowEntryEvents.put(     vk, ((EntryEventInfo)      v));}
-		else if (v instanceof EntryLinkInfo)       {validateMapLinks();            m_rowEntryLinks.put(      vk, ((EntryLinkInfo)       v));}
-		else if (v instanceof EntryTitleInfo)      {validateMapTitles();           m_rowEntryTitles.put(     vk, ((EntryTitleInfo)      v));}
-		else if (v instanceof GuestInfo)           {validateMapGuests();           m_rowGuests.put(          vk, ((GuestInfo)           v));}
-		else if (v instanceof MobileDevicesInfo)   {validateMapMobileDevices();    m_rowMobileDevices.put(   vk, ((MobileDevicesInfo)   v));}
-		else if (v instanceof PrincipalInfo)       {validateMapPrincipals();       m_rowPrincipals.put(      vk, ((PrincipalInfo)       v));}
-		else if (v instanceof PrincipalInfoId)     {validateMapPrincipalIds();     m_rowPrincipalIds.put(    vk, ((PrincipalInfoId)     v));}
-		else if (v instanceof UserAndGroupType)    {validateMapUserAndGroupTypes();m_rowUserAndGroupTypes.put(vk,((UserAndGroupType)    v));}
-		else if (v instanceof ViewFileInfo)        {validateMapViews();            m_rowViewFiles.put(       vk, ((ViewFileInfo)        v));}
-		else                                       {validateMapStrings();          m_rowStrings.put(         vk, v.toString());             }
+		if      (v instanceof String)            {validateMapStrings();          m_rowStrings.put(         vk, ((String)            v));}
+		else if (v instanceof CommentsInfo)      {validateMapComments();         m_rowComments.put(        vk, ((CommentsInfo)      v));}
+		else if (v instanceof DescriptionHtml)   {validateMapDescriptionHtmls(); m_rowDescriptionHtmls.put(vk, ((DescriptionHtml)   v));}
+		else if (v instanceof EmailAddressInfo)  {validateMapEmailAddresses();   m_rowEmailAddresses.put(  vk, ((EmailAddressInfo)  v));}
+		else if (v instanceof EntryEventInfo)    {validateMapEvents();           m_rowEntryEvents.put(     vk, ((EntryEventInfo)    v));}
+		else if (v instanceof EntryLinkInfo)     {validateMapLinks();            m_rowEntryLinks.put(      vk, ((EntryLinkInfo)     v));}
+		else if (v instanceof EntryTitleInfo)    {validateMapTitles();           m_rowEntryTitles.put(     vk, ((EntryTitleInfo)    v));}
+		else if (v instanceof GuestInfo)         {validateMapGuests();           m_rowGuests.put(          vk, ((GuestInfo)         v));}
+		else if (v instanceof MobileDevicesInfo) {validateMapMobileDevices();    m_rowMobileDevices.put(   vk, ((MobileDevicesInfo) v));}
+		else if (v instanceof PrincipalInfo)     {validateMapPrincipals();       m_rowPrincipals.put(      vk, ((PrincipalInfo)     v));}
+		else if (v instanceof PrincipalInfoId)   {validateMapPrincipalIds();     m_rowPrincipalIds.put(    vk, ((PrincipalInfoId)   v));}
+		else if (v instanceof PrincipalType)     {validateMapPrincipalTypes();   m_rowPrincipalTypes.put(  vk, ((PrincipalType)     v));}
+		else if (v instanceof ViewFileInfo)      {validateMapViews();            m_rowViewFiles.put(       vk, ((ViewFileInfo)      v));}
+		else                                     {validateMapStrings();          m_rowStrings.put(         vk, v.toString());           }
 	}
 	
 	public void setColumnValue_AssignmentInfos(FolderColumn fc, List<AssignmentInfo> aiList) {
@@ -510,14 +510,14 @@ public class FolderRow implements IsSerializable {
 	}
 
 	/**
-	 * Returns the UserAndGroupType value for a specific column.
+	 * Returns the PrincipalType value for a specific column.
 	 * 
 	 * @param fc
 	 * 
 	 * @return
 	 */
-	public UserAndGroupType getColumnValueAsUserAndGroupType(FolderColumn fc) {
-		return ((null == m_rowUserAndGroupTypes) ? null : m_rowUserAndGroupTypes.get(getValueKey(fc)));
+	public PrincipalType getColumnValueAsPrincipalType(FolderColumn fc) {
+		return ((null == m_rowPrincipalTypes) ? null : m_rowPrincipalTypes.get(getValueKey(fc)));
 	}
 
 	/**
@@ -736,15 +736,15 @@ public class FolderRow implements IsSerializable {
 	}
 	
 	/**
-	 * Returns true if a column's value is a UserAndGroupType and false
+	 * Returns true if a column's value is a PrincipalType and false
 	 * otherwise.
 	 * 
 	 * @param fc
 	 * 
 	 * @return
 	 */
-	public boolean isColumnValueUserAndGroupType(FolderColumn fc) {
-		return ((null != m_rowUserAndGroupTypes) && (null != m_rowUserAndGroupTypes.get(getValueKey(fc))));
+	public boolean isColumnValuePrincipalType(FolderColumn fc) {
+		return ((null != m_rowPrincipalTypes) && (null != m_rowPrincipalTypes.get(getValueKey(fc))));
 	}
 
 	/**
@@ -788,6 +788,6 @@ public class FolderRow implements IsSerializable {
 	private void validateMapShareExpirations() {if (null == m_rowShareExpirationInfos)	m_rowShareExpirationInfos	= new HashMap<String, List<ShareExpirationInfo>>();}
 	private void validateMapShareMessages()    {if (null == m_rowShareMessageInfos)		m_rowShareMessageInfos		= new HashMap<String, List<ShareMessageInfo>>();   }
 	private void validateMapStrings()          {if (null == m_rowStrings)				m_rowStrings				= new HashMap<String, String>();                   }
-	private void validateMapUserAndGroupTypes(){if (null == m_rowUserAndGroupTypes)		m_rowUserAndGroupTypes		= new HashMap<String, UserAndGroupType>();         }
+	private void validateMapPrincipalTypes()   {if (null == m_rowPrincipalTypes)		m_rowPrincipalTypes			= new HashMap<String, PrincipalType>();            }
 	private void validateMapViews()            {if (null == m_rowViewFiles)				m_rowViewFiles				= new HashMap<String, ViewFileInfo>();             }
 }

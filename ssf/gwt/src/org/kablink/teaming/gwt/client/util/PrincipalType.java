@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,12 +35,13 @@ package org.kablink.teaming.gwt.client.util;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Enumeration used to communicate the type of a user between the
- * client and the server as part of a GWT RPC request.
+ * Enumeration used to communicate the type of a principal (user or
+ * group) between the client and the server as part of a GWT RPC request.
  * 
  * @author drfoster@novell.com
  */
-public enum UserType implements IsSerializable {
+public enum PrincipalType implements IsSerializable {
+	// User classifications.
 	EXTERNAL_GUEST,			// Guest.
 	EXTERNAL_OPEN_ID,		// External user who has authenticated via OpenID
 	EXTERNAL_OTHERS,		// All other externals
@@ -49,6 +50,11 @@ public enum UserType implements IsSerializable {
 	INTERNAL_PERSON_ADMIN,	// System defined admin.
 	INTERNAL_PERSON_OTHERS,	// All other non-LDAP person users.
 	INTERNAL_SYSTEM,		// All systems users (e.g., File Sync Agent, ...)
+
+	// Group classifications.
+	LDAP_GROUP,				// Groups imported from LDAP.
+	LOCAL_GROUP,			// All non-system, non-LDAP groups. 
+	SYSTEM_GROUP,			// System groups.
 							//
 	UNKNOWN;				// Could not be classified.
 
@@ -66,6 +72,13 @@ public enum UserType implements IsSerializable {
 		default:               reply = false; break;
 		}
 		return reply;
+	}
+
+	public boolean isGroup() {
+		return
+			(isLdapGroup() ||
+			isLocalGroup() ||
+			isSystemGroup());
 	}
 	
 	public boolean isGuest() {
@@ -90,5 +103,21 @@ public enum UserType implements IsSerializable {
 	
 	public boolean isLocal() {
 		return (!(INTERNAL_LDAP.equals(this)));
+	}
+	
+	public boolean isLdapGroup() {
+		return LDAP_GROUP.equals(this);
+	}
+	
+	public boolean isLocalGroup() {
+		return LOCAL_GROUP.equals(this);
+	}
+	
+	public boolean isSystemGroup() {
+		return SYSTEM_GROUP.equals(this);
+	}
+	
+	public boolean isUser() {
+		return ((!(isGroup())) && (!(UNKNOWN.equals(this))));
 	}
 }

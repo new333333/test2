@@ -85,7 +85,7 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
-import org.kablink.teaming.gwt.client.util.UserType;
+import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.widgets.EditShareNoteDlg.EditShareNoteDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditShareRightsDlg.EditShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
@@ -369,7 +369,7 @@ public class ShareThisDlg extends DlgBox
 			switch ( shareItem.getRecipientType() )
 			{
 			case USER:
-			case EXTERNAL_USER:  ir = shareItem.getRecipientUserTypeImage(); break;
+			case EXTERNAL_USER:  ir = shareItem.getRecipientPrincipalTypeImage(); break;
 			case GROUP:          ir = m_dtImages.groupType_Local();          break;
 			case TEAM:           ir = m_dtImages.team();                     break;
 			case PUBLIC_TYPE:    ir = m_dtImages.publicSharee();             break;
@@ -949,7 +949,7 @@ public class ShareThisDlg extends DlgBox
 					shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 				else
 					shareItem.setRecipientType( GwtRecipientType.USER );
-				shareItem.setRecipientUserType( user.getUserType() );
+				shareItem.setRecipientPrincipalType( user.getPrincipalType() );
 				
 				recipientId = user.getUserId();
 				if ( recipientId != null && recipientId.length() > 0 )
@@ -991,7 +991,7 @@ public class ShareThisDlg extends DlgBox
 				shareItem = new GwtShareItem();
 				shareItem.setRecipientName( group.getShortDisplayName() );
 				shareItem.setRecipientType( GwtRecipientType.GROUP );
-				shareItem.setRecipientUserType( UserType.UNKNOWN );
+				shareItem.setRecipientPrincipalType( PrincipalType.UNKNOWN );
 				shareItem.setRecipientId( Long.valueOf( group.getId() ) );
 			}
 			// Are we dealing with the "Public" entity?
@@ -1013,7 +1013,7 @@ public class ShareThisDlg extends DlgBox
 				shareItem = new GwtPublicShareItem();
 				shareItem.setRecipientName( publicEntity.getName() );
 				shareItem.setRecipientType( GwtRecipientType.PUBLIC_TYPE );
-				shareItem.setRecipientUserType( UserType.UNKNOWN );
+				shareItem.setRecipientPrincipalType( PrincipalType.UNKNOWN );
 				shareItem.setRecipientId( publicEntity.getIdLong() );
 			}
 
@@ -2190,7 +2190,7 @@ public class ShareThisDlg extends DlgBox
 
 			shareItem = new GwtShareItem();
 			shareItem.setRecipientType( GwtRecipientType.TEAM );
-			shareItem.setRecipientUserType( UserType.UNKNOWN );
+			shareItem.setRecipientPrincipalType( PrincipalType.UNKNOWN );
 
 			// Yes
 			// Go through each team and see if the entities have already been shared with that team.
@@ -2772,7 +2772,7 @@ public class ShareThisDlg extends DlgBox
 										shareItem.setRecipientId( Long.valueOf( nextTeamInfo.getBinderId() ) );
 										shareItem.setRecipientName( nextTeamInfo.getTitle() );
 										shareItem.setRecipientType( GwtRecipientType.TEAM );
-										shareItem.setRecipientUserType( UserType.UNKNOWN );
+										shareItem.setRecipientPrincipalType( PrincipalType.UNKNOWN );
 										shareItem.setShareRights( getDefaultShareRights() );
 										shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
 										
@@ -3820,7 +3820,7 @@ public class ShareThisDlg extends DlgBox
 							// Yes
 							gwtUser = new GwtUser();
 							gwtUser.setInternal( false );
-							gwtUser.setUserType( UserType.EXTERNAL_OTHERS );
+							gwtUser.setPrincipalType( PrincipalType.EXTERNAL_OTHERS );
 							gwtUser.setName( emailAddress );
 							gwtUser.setUserId( userId );
 							

@@ -101,7 +101,7 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
-import org.kablink.teaming.gwt.client.util.UserType;
+import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.SendMailErrorWrapper;
@@ -652,7 +652,7 @@ public class GwtShareHelper
 						gwtPublic.setName( NLT.get( "share.recipientType.title.public" ) );
 						publicShareItem.setRecipientName( gwtPublic.getName() );
 						publicShareItem.setRecipientType( GwtRecipientType.PUBLIC_TYPE );
-						publicShareItem.setRecipientUserType( UserType.UNKNOWN );
+						publicShareItem.setRecipientPrincipalType( PrincipalType.UNKNOWN );
 						publicShareItem.setRecipientId( gwtPublic.getIdLong() );
 
 						// Remember the 2 share items that make up "share public"
@@ -1683,7 +1683,7 @@ public class GwtShareHelper
 						name = getGroupName( ami, nextShareItem );
 						gwtShareItem.setRecipientName( name );
 						gwtShareItem.setRecipientType( GwtRecipientType.GROUP );
-						gwtShareItem.setRecipientUserType( UserType.UNKNOWN );
+						gwtShareItem.setRecipientPrincipalType( PrincipalType.UNKNOWN );
 						break;
 						
 					case user:
@@ -1702,7 +1702,7 @@ public class GwtShareHelper
 							else
 								gwtShareItem.setRecipientType( GwtRecipientType.USER );
 							
-							gwtShareItem.setRecipientUserType( GwtViewHelper.getUserType( user ) );
+							gwtShareItem.setRecipientPrincipalType( GwtViewHelper.getPrincipalType( user ) );
 						}
 						else
 							m_logger.error( "could not find the user: " + nextShareItem.getRecipientId().toString() );

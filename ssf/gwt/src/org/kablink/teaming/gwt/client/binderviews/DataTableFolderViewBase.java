@@ -72,13 +72,13 @@ import org.kablink.teaming.gwt.client.datatable.MobileDevicesColumn;
 import org.kablink.teaming.gwt.client.datatable.MobileDeviceWipeScheduledColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceCell.PresenceClickAction;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
+import org.kablink.teaming.gwt.client.datatable.PrincipalTypeColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
 import org.kablink.teaming.gwt.client.datatable.ShareStringValueColumn;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg.SizeColumnsDlgClient;
 import org.kablink.teaming.gwt.client.datatable.StringColumn;
 import org.kablink.teaming.gwt.client.datatable.TaskFolderColumn;
-import org.kablink.teaming.gwt.client.datatable.UserAndGroupTypeColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
 import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
@@ -181,11 +181,10 @@ import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
-import org.kablink.teaming.gwt.client.util.UserAndGroupType;
-import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
@@ -1847,11 +1846,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// No, this column isn't a mobile device wipe scheduled
 			// either!  Is it a user type?
 			else if (FolderColumn.isColumnUserType(cName)) {
-				// Yes!  Create a UserAndGroupTypeColumn for it.
-				column = new UserAndGroupTypeColumn<FolderRow>(fc) {
+				// Yes!  Create a PrincipalTypeColumn for it.
+				column = new PrincipalTypeColumn<FolderRow>(fc) {
 					@Override
-					public UserAndGroupType getValue(FolderRow fr) {
-						return fr.getColumnValueAsUserAndGroupType(fc);
+					public PrincipalType getValue(FolderRow fr) {
+						return fr.getColumnValueAsPrincipalType(fc);
 					}
 				};
 			}

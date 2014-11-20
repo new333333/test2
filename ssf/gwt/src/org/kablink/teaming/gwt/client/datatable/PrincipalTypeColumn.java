@@ -33,20 +33,20 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.util.UserAndGroupType;
+import org.kablink.teaming.gwt.client.util.PrincipalType;
 
 /**
- * A column that displays a user or group type image.
+ * A column that displays a principal type image.
  *
  * @param <T> is a FolderRow.
  * 
  * @author drfoster@novell.com
  */
-public abstract class UserAndGroupTypeColumn<T> extends VibeColumn<T, UserAndGroupType> {
+public abstract class PrincipalTypeColumn<T> extends VibeColumn<T, PrincipalType> {
   /**
    * Constructor method.
    */
-  public UserAndGroupTypeColumn(FolderColumn fc) {
-	  super(fc, new UserAndGroupTypeCell());
+  public PrincipalTypeColumn(FolderColumn fc) {
+	  super(fc, new PrincipalTypeCell());
   }
 }
