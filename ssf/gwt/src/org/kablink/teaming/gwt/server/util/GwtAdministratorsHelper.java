@@ -63,6 +63,8 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
+import org.kablink.teaming.gwt.client.util.PrincipalAdminType;
+import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -155,7 +157,7 @@ public class GwtAdministratorsHelper {
 					if (GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
 						GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts     );
 						GwtEventHelper.setAssignmentInfoHover(  ai, principalTitles );
-						ai.setPresenceDude("pics/group_icon_small.png");
+						ai.setPresenceDude("pics/group_icon_small2.png");
 					}
 					break;
 				}
@@ -212,8 +214,8 @@ public class GwtAdministratorsHelper {
 							}
 						}
 						
-						else if (FolderColumn.isColumnUserType(cName)) {
-							// A UserType column!  We don't do
+						else if (FolderColumn.isColumnPrincipalType(cName)) {
+							// A PrincipalType column!  We don't do
 							// filtering on that.
 						}
 						
@@ -291,10 +293,11 @@ public class GwtAdministratorsHelper {
 						fr.setColumnValue_AssignmentInfos(fc, aiList);
 					}
 					
-					else if (FolderColumn.isColumnUserType(cName)) {
-						// The User type column!  Generate value for
-						// it.
-						fr.setColumnValue(fc, GwtViewHelper.getPrincipalType(adminPrincipal));
+					else if (FolderColumn.isColumnPrincipalType(cName)) {
+						// The principal type column!  Generate value
+						// for it.
+						PrincipalType pt = GwtViewHelper.getPrincipalType(adminPrincipal);
+						fr.setColumnValue(fc, new PrincipalAdminType(pt, true));
 					}
 					
 					else if (FolderColumn.isColumnAdminRights(cName)) {

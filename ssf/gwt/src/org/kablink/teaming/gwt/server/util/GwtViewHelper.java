@@ -184,6 +184,7 @@ import org.kablink.teaming.gwt.client.util.FolderEntryDetails.ShareInfo;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails.UserInfo;
 import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
+import org.kablink.teaming.gwt.client.util.PrincipalAdminType;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
@@ -1447,6 +1448,7 @@ public class GwtViewHelper {
 	 * including the PrincipalInfo's and MobileDevicesInfo's for each
 	 * row.
 	 */
+	@SuppressWarnings("unchecked")
 	private static void completeUserInfo(AllModulesInjected bs, HttpServletRequest request, List<FolderColumn> fcList, List<FolderRow> frList, boolean isProfilesRootWS, boolean isManageUsers, boolean isFilr) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completeUserInfo()");
 		try {
@@ -1478,9 +1480,10 @@ public class GwtViewHelper {
 				try {
 					// Build a List<PrincipalInfo> from the List<Long> of
 					// principal IDs.
-					List<PrincipalInfo>     piList   =                  new ArrayList<PrincipalInfo>();
-					List<MobileDevicesInfo> mdList   = (isManageUsers ? new ArrayList<MobileDevicesInfo>() : null);
-					List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(principalIds, false);
+					List<Principal>			principals = ResolveIds.getPrincipals(principalIds, false);
+					List<PrincipalInfo>     piList     =                  new ArrayList<PrincipalInfo>();
+					List<MobileDevicesInfo> mdList     = (isManageUsers ? new ArrayList<MobileDevicesInfo>() : null);
+					List<UserWorkspacePair> uwsPairs   = getUserWorkspacePairs(principalIds, principals, false);
 					getUserInfoFromPIds(bs, request, piList, mdList, uwsPairs);
 					for (PrincipalInfo pi:  piList) {
 						boolean includeIt = 							// Include it in...
@@ -1566,6 +1569,36 @@ public class GwtViewHelper {
 								// ...store the administrator rights
 								// ...settings in the row.
 								fr.setColumnValue(rightsCol, adminRights);
+							}
+						}
+						
+						// Does this row have an PrincipalAdminType's that
+						// need fixing?
+						Map<String, PrincipalAdminType> patMap = fr.getRowPrincipalAdminTypesMap();
+						if (!(patMap.isEmpty())) {
+							// Yes!  Can we find the row's Principal in
+							// the Principal's we read above?
+							Long      rowEntityId  = fr.getEntityId().getEntityId();
+							Principal rowPrincipal = null;
+							for (Principal p:  principals) {
+								if (p.getId().equals(rowEntityId)) {
+									rowPrincipal = p;
+									break;
+								}
+							}
+							if (null != rowPrincipal) {
+								// Yes!  Scan the PrincipalAdminTYpe's
+								// (should only be one)...
+								for (String key:  patMap.keySet()) {
+									// ...ensuring each has the correct
+									// ...admin flag.
+									boolean admin;
+									PrincipalAdminType pat = patMap.get(key);
+									if (pat.getPrincipalType().isUser())
+									     admin = bs.getAdminModule().testUserAccess(((User) rowPrincipal), AdminOperation.manageFunction);
+									else admin = AdminHelper.isSiteAdminMember(rowEntityId);
+									pat.setAdmin(admin);
+								}
 							}
 						}
 					}
@@ -3061,7 +3094,7 @@ public class GwtViewHelper {
 			else if (colName.equals("tasks"))                {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                                        }
 			else if (colName.equals("teamMembers"))          {fc.setColumnSearchKey(FolderColumn.COLUMN_TEAM_MEMBERS);          fc.setColumnSortable(false);                                       }
 			else if (colName.equals("title"))                {fc.setColumnSearchKey(Constants.TITLE_FIELD);                     fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);                   }
-			else if (colName.equals("userType"))             {fc.setColumnSearchKey(Constants.IDENTITY_INTERNAL_FIELD);         fc.setColumnSortKey(Constants.IDENTITY_INTERNAL_FIELD);            }
+			else if (colName.equals("principalType"))             {fc.setColumnSearchKey(Constants.IDENTITY_INTERNAL_FIELD);         fc.setColumnSortKey(Constants.IDENTITY_INTERNAL_FIELD);            }
 			else {
 				// Does the column name contain multiple parts wrapped
 				// in a single value?
@@ -4190,7 +4223,7 @@ public class GwtViewHelper {
 			// mode?
 			else if (isManageAdmins) {
 				baseNameKey = "administrators.column.";
-				columnNames = getColumnsLHMFromAS(new String[]{"administrator", "userType", "adminRights", "emailAddress", "loginId"});
+				columnNames = getColumnsLHMFromAS(new String[]{"administrator", "principalType", "adminRights", "emailAddress", "loginId"});
 			}
 			
 			// No, we aren't showing an administrators view either!
@@ -4200,8 +4233,8 @@ public class GwtViewHelper {
 				baseNameKey = "profiles.column.";
 				if (folderInfo.isBinderProfilesRootWSManagement()) {
 					if (ReleaseInfo.isLicenseRequiredEdition() && LicenseChecker.showFilrFeatures())
-					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "adminRights", "emailAddress", "mobileDevices", "loginId"});
-					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "adminRights", "emailAddress",                  "loginId"});
+					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "principalType", "adminRights", "emailAddress", "mobileDevices", "loginId"});
+					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "principalType", "adminRights", "emailAddress",                  "loginId"});
 				}
 				else {
 					columnNames = getColumnsLHMFromAS(new String[]{"fullName", "emailAddress", "loginId"});
@@ -5201,7 +5234,7 @@ public class GwtViewHelper {
 						if (MiscUtil.hasItems(userIds)) {
 							// ...add PrincipalInfo's for them to the
 							// ...UserListInfo.
-							List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(userIds, false);
+							List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(userIds, null, false);
 							getUserInfoFromPIds(bs, request, userListInfo.getUsers(), null ,uwsPairs);
 						}
 					}
@@ -5959,8 +5992,9 @@ public class GwtViewHelper {
 										// No, we aren't working a comments count field either!
 										// Are we working on the internal/external flag of a user?
 										else if (csk.equals(Constants.IDENTITY_INTERNAL_FIELD)) {
-											// Yes!  Store a user type for it.
-											fr.setColumnValue(fc, getPrincipalType(bs, request, entityId));
+											// Yes!  Store a principal type for it.
+											PrincipalType pt = getPrincipalType(bs, request, entityId);
+											fr.setColumnValue(fc, new PrincipalAdminType(pt, false));	// Will correct in the completeUserInfo() call below.
 										}
 										
 										else {
@@ -6726,7 +6760,7 @@ public class GwtViewHelper {
 		List<Long> pIds = new ArrayList<Long>();
 		pIds.add(pId);
 		List<PrincipalInfo>     piList   = new ArrayList<PrincipalInfo>();
-		List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(pIds, false);
+		List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(pIds, null, false);
 		getUserInfoFromPIds(bs, request, piList, null, uwsPairs);
 		PrincipalInfo reply;
 		if (MiscUtil.hasItems(piList))
@@ -7644,7 +7678,8 @@ public class GwtViewHelper {
 				reply.setAccountInfo(ai);
 				ai.setLoginId(user.getName());
 				ai.setFromOpenId(userII.isFromOpenid());
-				ai.setPrincipalType(getUserType(user));
+				ai.setPrincipalType(getPrincipalType(user));
+				ai.setAdmin(bs.getAdminModule().testUserAccess(user, AdminOperation.manageFunction));
 				ai.setUserHasLoggedIn(null != user.getFirstLoginDate());
 			}
 			finally {
@@ -8006,10 +8041,10 @@ public class GwtViewHelper {
 		
 		catch (Exception ex) {
 			// Log the exception.
-			GwtLogHelper.debug(m_logger, "GwtViewHelper.getUserType( SOURCE EXCEPTION ):  ", ex);
+			GwtLogHelper.debug(m_logger, "GwtViewHelper.getPrincipalType( SOURCE EXCEPTION ):  ", ex);
 		}
 		
-		// If we get here, reply refers to the UserType of the
+		// If we get here, reply refers to the PrincipalType of the
 		// EntityId.  Return it.
 		return reply;
 	}
@@ -8053,18 +8088,20 @@ public class GwtViewHelper {
 	 * List<UserWorkspacePair> of the User/Workspace pairs for the IDs.
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<UserWorkspacePair> getUserWorkspacePairs(Collection <Long> principalIds, boolean resolveWorkspaces) {
+	private static List<UserWorkspacePair> getUserWorkspacePairs(Collection <Long> principalIds, List<Principal> principals, boolean resolveWorkspaces) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserWorkspacePairs()");
 		try {
 			SimpleProfiler.start("GwtViewHelper.getUserWorkspacePairs(Resolve users)");
 			List<User> users = new ArrayList<User>();
 			List<Long> wsIds = new ArrayList<Long>();
 			try {
-				// Can we resolve the List<Long> to a list of Principal
-				// objects?
-				List principals;
-				try                  {principals = ResolveIds.getPrincipals(principalIds, false);}
-				catch (Exception ex) {principals = null;                                         }
+				// If we weren't given one...
+				if (null == principals) {
+					// ...can we resolve the List<Long> to a list of
+					// ...Principal objects?
+					try                  {principals = ResolveIds.getPrincipals(principalIds, false);}
+					catch (Exception ex) {principals = null;                                         }
+				}
 				if (MiscUtil.hasItems(principals)) {
 					// Yes!  Scan them.
 					for (Object o:  principals) {

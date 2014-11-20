@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.Comparator;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.datatable.PrincipalTypeCell;
+import org.kablink.teaming.gwt.client.datatable.PrincipalAdminTypeCell;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -299,7 +299,8 @@ public class GwtShareItem
 	 */
 	public String getRecipientPrincipalTypeAsString()
 	{
-		return PrincipalTypeCell.getPrincipalTypeAlt(m_recipientPrincipalType);
+		PrincipalAdminType pat = new PrincipalAdminType(m_recipientPrincipalType, false);	// false -> Use the non-admin version of things.
+		return PrincipalAdminTypeCell.getPrincipalAdminTypeAlt(pat);
 	}
 	
 	/**
@@ -307,7 +308,8 @@ public class GwtShareItem
 	 */
 	public ImageResource getRecipientPrincipalTypeImage()
 	{
-		return PrincipalTypeCell.getPrincipalTypeImage(m_recipientPrincipalType);
+		PrincipalAdminType pat = new PrincipalAdminType(m_recipientPrincipalType, false);	// false -> Use the non-admin version of things.
+		return PrincipalAdminTypeCell.getPrincipalAdminTypeImage(pat);
 	}
 	
 	/**

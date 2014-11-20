@@ -181,6 +181,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	private VibeMenuItem					m_detailsMenu;				//
 	private VibeMenuItem					m_moreMenu;					//
 	private VibeMenuItem					m_moreSingleItem;			//
+	private VibeMenuItem					m_setAdminRightsMenu;		//
 	private VibeMenuItem					m_shareMenu;				//
 	private VibeMenuItem					m_shareSingleItem;			//
 	private VibeMenuItem					m_trashPurgeAllMenu;		//
@@ -1383,16 +1384,25 @@ public class EntryMenuPanel extends ToolPanelBase
 		case TRASH_RESTORE_ALL:               m_trashRestoreAllMenu      = reply; break;
 		case TRASH_RESTORE_SELECTED_ENTITIES: m_trashRestoreSelectedMenu = reply; break;
 		case VIEW_SELECTED_ENTRY:             m_detailsMenu              = reply; break;
+		
+		case SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS:
+			if (m_binderInfo.isBinderAdministratorManagement()) {
+				m_setAdminRightsMenu = reply;
+			}
+			break;
+			
 		case SHARE_SELECTED_ENTITIES:
 			if ((null == m_shareMenu) && (null == m_shareSingleItem)) {
 				m_shareSingleItem = reply;
 			}
 			break;
 		}
+		
 		reply.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
 		if (menuIsSimpleImageButton) {
 			reply.addStyleName("vibe-entryMenuBarSimpleImageButton");
 		}
+		
 		if (null != menuBar)
 		     menuBar.addItem(      reply);
 		else popupMenu.addMenuItem(reply);
@@ -1516,6 +1526,12 @@ public class EntryMenuPanel extends ToolPanelBase
 		if (null != m_deleteMenu) {
 			// ...enable disable it.
 			setMenuItemEnabled(m_deleteMenu, enable);
+		}
+		
+		// If we have a set admin rights menu item...
+		if (null != m_setAdminRightsMenu) {
+			// ...enable disable it.
+			setMenuItemEnabled(m_setAdminRightsMenu, enable);
 		}
 
 		// If we have a more popup menu item...

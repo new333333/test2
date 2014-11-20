@@ -140,8 +140,16 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource groupType_LDAP();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/group_LDAPAdmin.png")
+	public ImageResource groupType_LDAPAdmin();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/group_Local.png")
 	public ImageResource groupType_Local();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/group_LocalAdmin.png")
+	public ImageResource groupType_LocalAdmin();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/group_System.png")
@@ -160,8 +168,16 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource internalUser_LDAP();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/adminUser_LDAP.png")
+	public ImageResource internalUser_LDAPAdmin();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/adminUser.png")
 	public ImageResource internalUser_PersonAdmin();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/adminBuilt_in.png")
+	public ImageResource internalUser_PersonAdminBuiltIn();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/internalUser.png")

@@ -60,6 +60,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 	 * account.
 	 */
 	public static class AccountInfo implements IsSerializable {
+		private boolean			m_admin;			// true -> Has site administration rights.  false -> Doesn't.
 		private boolean			m_canDownload;		//
 		private boolean			m_fromOpenId;		//
 		private boolean			m_hasAdHocFolders;	//
@@ -94,6 +95,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		 * 
 		 * @return
 		 */
+		public boolean       isAdmin()            {return m_admin;                         }
 		public boolean       canDownload()        {return m_canDownload;                   }
 		public boolean       isFromLdap()         {return m_principalType.isInternalLdap();}
 		public boolean       isFromLocal()        {return m_principalType.isLocal();       }
@@ -117,6 +119,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		 * 
 		 * @param
 		 */
+		public void setAdmin(           boolean       admin)            {m_admin            = admin;           }
 		public void setCanDownload(     boolean       canDownload)      {m_canDownload      = canDownload;     }
 		public void setFromOpenId(      boolean       fromOpenId)       {m_fromOpenId       = fromOpenId;      }
 		public void setHasAdHocFolders( boolean       hasAdHocFolders)  {m_hasAdHocFolders  = hasAdHocFolders; }

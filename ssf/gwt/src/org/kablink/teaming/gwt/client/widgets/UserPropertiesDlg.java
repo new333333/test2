@@ -42,7 +42,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.datatable.PrincipalTypeCell;
+import org.kablink.teaming.gwt.client.datatable.PrincipalAdminTypeCell;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
@@ -63,7 +63,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
-import org.kablink.teaming.gwt.client.util.PrincipalType;
+import org.kablink.teaming.gwt.client.util.PrincipalAdminType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -167,9 +167,9 @@ public class UserPropertiesDlg extends DlgBox
 
 		// ...add the type of account...
 		row = grid.getRowCount();
-		PrincipalType pt = account.getPrincipalType();
-		ImageResource ir = PrincipalTypeCell.getPrincipalTypeImage(pt);
-		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString(), PrincipalTypeCell.getPrincipalTypeAlt(pt));
+		PrincipalAdminType pat = new PrincipalAdminType(account.getPrincipalType(), account.isAdmin());
+		ImageResource ir = PrincipalAdminTypeCell.getPrincipalAdminTypeImage(pat);
+		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString(), PrincipalAdminTypeCell.getPrincipalAdminTypeAlt(pat));
 		i.addStyleName("vibe-userPropertiesDlg-attrImage");
 		addLabeledWidget(grid, row, m_messages.userPropertiesDlgLabel_Type(), i);
 

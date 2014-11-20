@@ -1925,11 +1925,15 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_ExternalUser_Guest();
 	String vibeDataTable_Alt_ExternalUser_Others();
 	String vibeDataTable_Alt_InternalUser_LDAP();
+	String vibeDataTable_Alt_InternalUser_LDAPAdmin();
 	String vibeDataTable_Alt_InternalUser_PersonAdmin();
 	String vibeDataTable_Alt_InternalUser_PersonOthers();
+	String vibeDataTable_Alt_InternalUser_PersonOthersAdmin();
 	String vibeDataTable_Alt_InternalUser_System();
 	String vibeDataTable_Alt_Ldap_Group();
+	String vibeDataTable_Alt_Ldap_GroupAdmin();
 	String vibeDataTable_Alt_Local_Group();
+	String vibeDataTable_Alt_Local_GroupAdmin();
 	String vibeDataTable_Alt_MobileDevices();
 	String vibeDataTable_Alt_MobileDevices_None();
 	String vibeDataTable_Alt_UnknownGroupType();

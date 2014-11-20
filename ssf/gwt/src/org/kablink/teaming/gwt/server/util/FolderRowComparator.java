@@ -48,8 +48,8 @@ import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.PrincipalAdminType;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
-import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.util.NLT;
@@ -352,15 +352,15 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 		}
 		
 		// No, this column isn't the wipe scheduled status of a
-		// mobile device either!  Is it a user type column?
-		else if (FolderColumn.isColumnUserType(cName)) {
-			PrincipalType pt = fr.getColumnValueAsPrincipalType(fc);
-			reply = ((null == pt) ? "" : pt.name());
+		// mobile device either!  Is it a principal type column?
+		else if (FolderColumn.isColumnPrincipalType(cName)) {
+			PrincipalAdminType pat = fr.getColumnValueAsPrincipalAdminType(fc);
+			reply = ((null == pat) ? "" : pat.getPrincipalType().name());
 		}
 		
 		else {
-			// No, this column isn't a user type either!  Simply return
-			// its string value.
+			// No, this column isn't a principal type either!  Simply
+			// return its string value.
 			reply = fr.getColumnValueAsString(fc);
 		}
 
