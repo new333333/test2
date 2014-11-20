@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.binderviews.AdministratorsView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.event.AddPrincipalAdminRightsEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.CheckManageDlgActiveEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
@@ -53,6 +54,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -63,6 +65,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -73,6 +76,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class ManageAdministratorsDlg extends DlgBox
 	implements ViewReady,
 		// Event handlers implemented by this class.
+		AddPrincipalAdminRightsEvent.Handler,
 		AdministrationExitEvent.Handler,
 		CheckManageDlgActiveEvent.Handler,
 		FullUIReloadEvent.Handler,
@@ -102,6 +106,7 @@ public class ManageAdministratorsDlg extends DlgBox
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.ADD_PRINCIPAL_ADMIN_RIGHTS,
 		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.CHECK_MANAGE_DLG_ACTIVE,
 		TeamingEvents.FULL_UI_RELOAD,
@@ -227,6 +232,48 @@ public class ManageAdministratorsDlg extends DlgBox
 		helpData.setGuideName(HelpData.ADMIN_GUIDE);
 		helpData.setPageId("administrators");
 		return helpData;
+	}
+
+	/*
+	 * Asynchronously invokes a FindCtrl to add administration rights
+	 * to the selected principals.
+	 */
+	private void invokeAddRightsAsync(final UIObject showRelativeTo) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				invokeAddRightsNow(showRelativeTo);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously invokes a FindCtrl to add administration rights
+	 * to the selected principals.
+	 */
+	private void invokeAddRightsNow(final UIObject showRelativeTo) {
+//!		...this needs to be implemented...
+		GwtClientHelper.deferredAlert("ManageAdministratorsDlg.invokeAddRightsNow():  ...this needs to be implemented...");
+	}
+	
+	/**
+	 * Handles AddPrincipalAdminRightsEvent's received by this class.
+	 * 
+	 * Implements the AddPrincipalAdminRightsEvent.Handler.onAddPrincipalAdminRights() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAddPrincipalAdminRights(AddPrincipalAdminRightsEvent event) {
+		// We only support setting binder rights from the root personal
+		// workspace in management mode or manage administrators.  Is
+		// it supported?
+		BinderInfo bi = m_manageAdministratorsInfo.getProfilesRootWSInfo();
+		WorkspaceType wt = bi.getWorkspaceType();
+		if (wt.isAdministratorManagement()) {
+			// Yes!  Is the event targeted to this view!
+			invokeAddRightsAsync(event.getShowRelativeTo());
+		}
 	}
 
 	/**
