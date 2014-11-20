@@ -40,6 +40,7 @@ package org.kablink.teaming.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Iterator;
@@ -78,6 +79,7 @@ public abstract class Principal extends Entry implements IPrincipal {
     protected String samAccountName;
     protected String domainName;
     protected List memberOf;//initialized by hiberate access=field
+    protected Date memberOfLastModified;
     protected Long workspaceId;
     protected List iMemberOf;
     protected String internalId;
@@ -387,9 +389,17 @@ public abstract class Principal extends Entry implements IPrincipal {
 			Group g = (Group)iter.next();
 			g.getMembers().remove(this);
 		}
-     } 	
+     }
 
-    //overload 
+    public Date getMemberOfLastModified() {
+        return memberOfLastModified;
+    }
+
+    public void setMemberOfLastModified(Date memberOfLastModified) {
+        this.memberOfLastModified = memberOfLastModified;
+    }
+
+    //overload
     public AverageRating getAverageRating() {
    	 	return null;
     }

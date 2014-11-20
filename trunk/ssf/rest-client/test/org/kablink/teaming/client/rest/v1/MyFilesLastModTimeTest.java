@@ -54,7 +54,7 @@ public class MyFilesLastModTimeTest extends TestCase {
 
     public void testWhenGlobalPersonalStorageChangesThenMyFilesLibraryChildrenChanged() throws InterruptedException {
         Date date = binding.givenMyFilesLibraryChildrenLastModifiedTime();
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         binding.whenPersonalStorageChanges();
         binding.thenMyFilesLibraryChildrenChanged(date);
     }

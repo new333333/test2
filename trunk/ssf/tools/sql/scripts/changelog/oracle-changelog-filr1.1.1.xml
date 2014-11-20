@@ -63,7 +63,7 @@
     <changeSet author="david" context="schema" failOnError="true" id="5">
         <comment>Last modified time for the zone config record</comment>
         <addColumn tableName="SS_ZoneConfig">
-            <column name="lastModified" type="TIMESTAMP(6)">
+            <column name="adHocFoldersLastModified" type="TIMESTAMP(6)">
                 <constraints nullable="true" />
             </column>
         </addColumn>
@@ -72,7 +72,13 @@
     <changeSet author="david" context="schema" failOnError="true" id="6">
         <comment>Last modified time for the user or group configuration</comment>
         <addColumn tableName="SS_Principals">
-            <column name="lastConfigUpdate" type="TIMESTAMP(6)">
+            <column name="adHocFoldersLastModified" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+            <column name="memberOfLastModified" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+            <column name="membersLastModified" type="TIMESTAMP(6)">
                 <constraints nullable="true" />
             </column>
         </addColumn>

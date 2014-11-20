@@ -602,6 +602,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
   		zoneConfig.setAdHocFoldersEnabled( enabled );
+        zoneConfig.setAdHocFoldersLastModified(new Date());
   	}
 
   	/**

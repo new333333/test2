@@ -272,12 +272,13 @@ public class AdminHelper {
         Date effDate = null;
         if (Utils.checkIfFilr()) {
             ZoneConfig zoneConfig = ami.getZoneModule().getZoneConfig(user.getZoneId());
-            effDate = DateHelper.max(zoneConfig.getLastModified(), user.getLastConfigUpdate());
+            effDate = DateHelper.max(zoneConfig.getAdHocFoldersLastModified(), user.getAdHocFoldersLastModified());
+            effDate = DateHelper.max(effDate, user.getMemberOfLastModified());
             List<Group> groups = GwtUIHelper.getGroups(user.getId());
             if (MiscUtil.hasItems(groups)) {
                 // Yes!  Scan them.
                 for (Group group:  groups) {
-                    effDate = DateHelper.max(group.getLastConfigUpdate(), effDate);
+                    effDate = DateHelper.max(group.getAdHocFoldersLastModified(), effDate);
                 }
             }
         }
