@@ -128,7 +128,7 @@ public class ZoneInterceptor extends EmptyInterceptor {
 		if(entity instanceof LastUpdateTimeAware) {
             for (int i=0; i< propertyNames.length; i++) {
                 if ("lastUpdateTime".equals(propertyNames[i])) {
-                    state[i] = new Date();
+                    state[i] = new Long(System.currentTimeMillis());
                     modified = true;
                 }
             }
