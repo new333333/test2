@@ -40,9 +40,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
@@ -54,6 +56,7 @@ import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
+import org.kablink.teaming.module.authentication.FailedAuthenticationMonitor;
 import org.kablink.teaming.module.authentication.IdentityInfoObtainable;
 import org.kablink.teaming.module.authentication.LocalAuthentication;
 import org.kablink.teaming.module.authentication.UserAccountNotProvisionedException;
@@ -61,6 +64,7 @@ import org.kablink.teaming.module.authentication.UserIdNotActiveException;
 import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
@@ -80,10 +84,11 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.WindowsUtil;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BuiltInUsersHelper;
 import org.kablink.util.Validator;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.security.core.Authentication;
@@ -97,6 +102,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.ldap.authentication.BindAuthenticator;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -107,7 +113,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  */
 @SuppressWarnings({"unchecked", "unused", "deprecation"})
 public abstract class AbstractAuthenticationProviderModule extends BaseAuthenticationModule
-		implements AuthenticationProvider, InitializingBean {
+		implements AuthenticationProvider, FailedAuthenticationMonitor, InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	protected Map<Long, ProviderManager> nonLocalAuthenticators = null;
@@ -427,6 +433,19 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 				boolean hadSession = SessionUtil.sessionActive();
 				try {
 					if (!hadSession) SessionUtil.sessionStartup();
+
+					// Does authentication require captcha?
+					// If we have detected a brute-force attack we will require captcha for
+					// web-based authentication.
+					if ( doesAuthenticationRequireCaptcha() )
+					{
+						// Yes
+						if ( isCaptchaValid( authentication ) == false )
+						{
+							logger.warn( "Authentication attempt failed because a captcha response was invalid.  Name: " + authentication.getName() );
+							throw new TextVerificationException();
+						}
+					}
 					
 					SimpleProfiler.start( "1-AuthenticationModuleImpl.doAuthenticate()");
 					Authentication retVal = doAuthenticate(authentication);
@@ -447,7 +466,9 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 			catch(AuthenticationException e) {
 				String ipAddr;
 				
-				unsuccessfulAuthentication(authentication);
+				if ( (e instanceof TextVerificationException) == false )
+					unsuccessfulAuthentication(authentication);
+				
 				String exDesc;				
 				Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
 				if ( e.getCause() != null )
@@ -670,7 +691,12 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	
 	private Authentication unsuccessfulAuthentication(Authentication result) {
 		if(LoginInfo.AUTHENTICATOR_WEB.equals(getAuthenticator()))
+		{
 			GangliaMonitoring.incrementFailedLogins(); // This metric is applicable only with web client (browser)
+			
+			recordFailedAuthentication( result );
+		}
+		
 		return result;
 	}
 	
@@ -867,5 +893,59 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	
 	private LdapModule getLdapModule() {
 		return (LdapModule) SpringContextUtil.getBean("ldapModule");
+	}
+	
+	/**
+	 * Record the failed authentication attempt
+	 */
+	private void recordFailedAuthentication( Authentication authentication )
+	{
+	/*
+		ipAddr = ZoneContextHolder.getClientAddr();
+		if ( ipAddr == null || ipAddr.length() == 0 )
+			ipAddr = "unknown";
+		
+		logger.warn( "[client " + ipAddr + "] user " + authentication.getName() + ": authentication failure: " + exDesc );
+		//!!!
+	 */
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public boolean isBruteForceAttackInProgress()
+	{
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean doesAuthenticationRequireCaptcha()
+	{
+		String authenticatorName;
+		
+		authenticatorName = getAuthenticator();
+		if ( authenticatorName != null && authenticatorName.equalsIgnoreCase( "web" ) )
+			return isBruteForceAttackInProgress();
+			
+		return false;
+		
+	}
+	
+	/**
+	 * 
+	 */
+	private boolean isCaptchaValid( Authentication authentication )
+	{
+		HttpServletRequest httpServletRequest;
+		String text = null;
+		
+		httpServletRequest = ZoneContextHolder.getHttpServletRequest();
+		if ( httpServletRequest != null )
+			text = httpServletRequest.getParameter( WebKeys.TEXT_VERIFICATION_RESPONSE );
+		
+		return Utils.isCaptchaValid( httpServletRequest, text );
 	}
 }

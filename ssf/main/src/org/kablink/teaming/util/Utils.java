@@ -44,14 +44,13 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
-
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -1024,4 +1023,29 @@ public class Utils {
 		}
 		return result;
 	}
+
+	/**
+	 * Returns true if the given text matches the captcha
+	 */
+	public static boolean isCaptchaValid(
+		HttpServletRequest httpServletRequest,
+		String text )
+	{
+		String kaptchaExpected;
+		
+		if ( text == null || text.length() == 0 || httpServletRequest == null )
+			return false;
+		
+		// Get the text used to create the kaptcha image.  It is stored in the http session.
+		kaptchaExpected = (String) httpServletRequest.getSession().getAttribute( com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY );
+		
+		if ( kaptchaExpected == null || !kaptchaExpected.equalsIgnoreCase( text  ) )
+		{
+			// The text entered by the user did not match the text used to create the kaptcha image.
+			return false;
+		}
+		
+		return true;
+	}
+	
 }
