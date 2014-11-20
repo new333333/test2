@@ -51,7 +51,6 @@ import org.joda.time.DateTimeZone;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -76,6 +75,7 @@ import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.FolderConfigHelper;
+import org.kablink.teaming.web.tree.SearchTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -543,8 +543,9 @@ public class AddEntryController extends SAbstractController {
 				}
 			
 				try {
+					//Add a default tree for use by any "places" form elements on the entry form.
 					Workspace ws = getWorkspaceModule().getTopWorkspace();
-					model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
+					model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new SearchTreeHelper()),1));
 				} catch(AccessControlException e) {}
 			
 				parseInitialCalendarEventData(model, request, TaskHelper.isTaskEntryType(family));
