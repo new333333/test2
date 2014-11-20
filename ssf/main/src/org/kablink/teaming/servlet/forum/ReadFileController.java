@@ -572,7 +572,7 @@ public class ReadFileController extends AbstractReadFileController {
 													}
 													getFileModule().readFile(parent, entity, fa, response.getOutputStream());
 													//Report the file download in the audit trail
-													getReportModule().addFileInfo(AuditType.download, fa, recipient);
+													getReportModule().addFileInfo(AuditType.view, fa, recipient);
 												}
 												catch(Exception e) {
 													logger.error("Error reading file", e);
@@ -598,7 +598,7 @@ public class ReadFileController extends AbstractReadFileController {
 														response.setHeader("Cache-Control", "private");
 														if (entity != null && parent != null) {
 															getConvertedFileModule().readCacheHtmlFile(request.getRequestURI(), shareItem, parent, entity, fa, response.getOutputStream());
-															getReportModule().addFileInfo(AuditType.download, fa, recipient);
+															getReportModule().addFileInfo(AuditType.view, fa, recipient);
 														}
 														return null;
 													}
@@ -739,7 +739,7 @@ public class ReadFileController extends AbstractReadFileController {
 							}
 							getFileModule().readFile(parent, entity, fa, response.getOutputStream());
 							// Mark it in the audit trail.
-							getReportModule().addFileInfo(AuditType.download, fa);
+							getReportModule().addFileInfo(AuditType.view, fa);
 						}
 						catch(Exception e) {
 							logger.error("Error reading file", e);
