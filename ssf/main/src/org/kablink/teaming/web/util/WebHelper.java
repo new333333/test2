@@ -336,18 +336,20 @@ public class WebHelper {
 			user = tmpUser;
 			putContext(ses, user);
 
-			if(!user.isShared() || 
-					SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
-				final HttpSession session = ses;
-				// Make sure to run it in the user's context.			
-				RunasTemplate.runas(new RunasCallback() {
-					@Override
-					public Object doAs() {
-						String infoId = getAccessTokenManager().createTokenInfoSession(user.getId(), ses.getId());
-						session.setAttribute(WebKeys.TOKEN_INFO_ID, infoId);
-						return null;
-					}
-				}, user);						
+			if(!Utils.checkIfFilr()) { // Do this only for Vibe
+				if(!user.isShared() || 
+						SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
+					final HttpSession session = ses;
+					// Make sure to run it in the user's context.			
+					RunasTemplate.runas(new RunasCallback() {
+						@Override
+						public Object doAs() {
+							String infoId = getAccessTokenManager().createTokenInfoSession(user.getId(), ses.getId());
+							session.setAttribute(WebKeys.TOKEN_INFO_ID, infoId);
+							return null;
+						}
+					}, user);						
+				}
 			}
 		}
 		
