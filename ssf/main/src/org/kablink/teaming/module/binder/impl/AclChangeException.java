@@ -39,7 +39,7 @@ import org.kablink.util.api.ApiErrorCode;
 public class AclChangeException extends VibeRuntimeException {
 
     public int getHttpStatusCode() {
-    	return 200; // Forbidden
+    	return 409; // Forbidden
     }
 
 	/* (non-Javadoc)

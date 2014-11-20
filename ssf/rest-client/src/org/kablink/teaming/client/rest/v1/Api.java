@@ -35,6 +35,7 @@ package org.kablink.teaming.client.rest.v1;
 
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.BinderChildren;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
@@ -82,6 +83,7 @@ public interface Api {
     SearchResultList<SearchableObject> listChildren(Binder binder, Date ifModifiedSince);
     SearchResultList<SearchableObject> listChildren(Binder binder, Integer first, Integer count);
     SearchResultList<SearchableObject> listChildren(Binder binder, Integer first, Integer count, Date ifModifiedSince);
+    BinderChanges listChanges(Binder binder, Date since, Integer count);
     FileProperties uploadFile(Binder parent, String fileName, boolean overwriteExisting, InputStream content);
     Share shareFile(FileProperties file, Share share);
 }

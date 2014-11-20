@@ -48,6 +48,7 @@ import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.remoting.rest.v1.exc.AdhocSettingChangedException;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
@@ -107,6 +108,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -483,9 +485,20 @@ public class SelfResource extends AbstractFileResource {
         } else {
             parent = getMyFilesFileParent();
         }
-        BinderChanges binderChanges = getBinderChanges(new Long[]{parent.getId()}, null, since, recursive, descriptionFormatStr, maxCount, "/my_files/library_changes");
-        setMyFilesParents(binderChanges);
-        return binderChanges;
+        if (since==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'since' query parameter");
+        }
+        try {
+            Date sinceDate = dateFormat.parse(since);
+            if (sinceDate.before(AdminHelper.getEffectiveAdhocFolderSettingDate(this, getLoggedInUser()))) {
+                throw new AdhocSettingChangedException();
+            }
+            BinderChanges binderChanges = getBinderChanges(new Long[]{parent.getId()}, null, since, recursive, descriptionFormatStr, maxCount, "/my_files/library_changes");
+            setMyFilesParents(binderChanges);
+            return binderChanges;
+        } catch (ParseException e) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Invalid date in the 'since' query parameter");
+        }
     }
 
     @GET

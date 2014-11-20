@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
@@ -42,6 +43,22 @@ public class ApiTestBinding {
         Binder myFiles = clientApiAsLdapUser.getMyFiles();
         SearchResultList<SearchableObject> searchableObjectSearchResultList = clientApiAsLdapUser.listChildren(myFiles);
         return searchableObjectSearchResultList.getLastModified();
+    }
+
+    public void thenMyFilesLibraryLibraryChangesFails(Date since) {
+        Binder myFiles = clientApiAsLdapUser.getMyFiles();
+        try {
+            BinderChanges changes = clientApiAsLdapUser.listChanges(myFiles, since, 10);
+            Assert.fail();
+        } catch (ConflictException e) {
+            // Expected
+        }
+    }
+
+    public void thenMyFilesLibraryLibraryChangesReturnsNothing(Date since) {
+        Binder myFiles = clientApiAsLdapUser.getMyFiles();
+        BinderChanges changes = clientApiAsLdapUser.listChanges(myFiles, since, 10);
+        Assert.assertEquals(0, (long)changes.getCount());
     }
 
     public void thenMyFilesLibraryChildrenChanged(Date origModTime) {

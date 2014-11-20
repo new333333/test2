@@ -46,6 +46,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.BinderChildren;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
@@ -70,7 +71,7 @@ public class ApiImpl extends BaseApiImpl implements Api {
 
     public RootRestObject getRoot() {
         if (root==null) {
-            root = getJSONResourceBuilder("").get(RootRestObject.class);
+            root = get(getJSONResourceBuilder(""), RootRestObject.class);
         }
         return root;
     }
@@ -78,42 +79,42 @@ public class ApiImpl extends BaseApiImpl implements Api {
     @Override
     public Binder getMyFiles() {
         String my_files = getSelfHref("my_files");
-        return getJSONResourceBuilder(my_files).get(Binder.class);
+        return get(getJSONResourceBuilder(my_files), Binder.class);
     }
 
     @Override
     public Binder getNetFolders() {
-        return getJSONResourceBuilder(getSelfHref("net_folders")).get(Binder.class);
+        return get(getJSONResourceBuilder(getSelfHref("net_folders")), Binder.class);
     }
 
     @Override
     public ReleaseInfo getReleaseInfo() {
-        return getJSONResourceBuilder(getRootHref("release_info")).get(ReleaseInfo.class);
+        return get(getJSONResourceBuilder(getRootHref("release_info")), ReleaseInfo.class);
     }
 
     @Override
     public User getSelf() {
-        return getJSONResourceBuilder(getRootHref("self")).get(User.class);
+        return get(getJSONResourceBuilder(getRootHref("self")), User.class);
     }
 
     @Override
     public Binder getSharedByMe() {
-        return getJSONResourceBuilder(getSelfHref("shared_by_me")).get(Binder.class);
+        return get(getJSONResourceBuilder(getSelfHref("shared_by_me")), Binder.class);
     }
 
     @Override
     public Binder getSharedWithMe() {
-        return getJSONResourceBuilder(getSelfHref("shared_with_me")).get(Binder.class);
+        return get(getJSONResourceBuilder(getSelfHref("shared_with_me")), Binder.class);
     }
 
     @Override
     public Binder getPublicShares() {
-        return getJSONResourceBuilder(getSelfHref("public_shares")).get(Binder.class);
+        return get(getJSONResourceBuilder(getSelfHref("public_shares")), Binder.class);
     }
 
     @Override
     public ZoneConfig getZoneConfig() {
-        return getJSONResourceBuilder(getRootHref("zone_config")).get(ZoneConfig.class);
+        return get(getJSONResourceBuilder(getRootHref("zone_config")), ZoneConfig.class);
     }
 
     public FileProperties uploadFile(Binder parent, String fileName, boolean overwriteExisting, InputStream content) {
@@ -131,7 +132,7 @@ public class ApiImpl extends BaseApiImpl implements Api {
 
     @Override
     public SearchResultList<BinderBrief> getTopLevelFolders() {
-        SearchResultList results = getJSONResourceBuilder(getSelfHref("roots")).get(SearchResultList.class);
+        SearchResultList results = get(getJSONResourceBuilder(getSelfHref("roots")), SearchResultList.class);
         return buildBinderBriefSearchResultList(results);
     }
 
@@ -139,7 +140,7 @@ public class ApiImpl extends BaseApiImpl implements Api {
     public SearchResultList<BinderBrief> getBinders(Long[] binderIds) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", binderIds);
-        SearchResultList results = getJSONResourceBuilder(getRootHref("binders"), params).get(SearchResultList.class);
+        SearchResultList results = get(getJSONResourceBuilder(getRootHref("binders"), params), SearchResultList.class);
         return buildBinderBriefSearchResultList(results);
     }
 
@@ -158,7 +159,7 @@ public class ApiImpl extends BaseApiImpl implements Api {
         if (startingBinderId!=null) {
             params.put("first_id", startingBinderId);
         }
-        List results = getJSONResourceBuilder(getRootHref("binder_library_children"), params).get(List.class);
+        List results = get(getJSONResourceBuilder(getRootHref("binder_library_children"), params), List.class);
         List<BinderChildren> finalResults = new ArrayList<BinderChildren>();
         ObjectMapper mapper = this.conn.getObjectMapper();
         for (Object result : results) {
@@ -200,12 +201,20 @@ public class ApiImpl extends BaseApiImpl implements Api {
             builder.header("If-Modified-Since", Rfc1123FromDate(ifModifiedSince));
         }
         ClientResponse response = builder.get(ClientResponse.class);
-        if (response.getStatus()==304) {
-            throw new NotModifiedException();
+        if (response.getStatus()!=200) {
+            handleError(response);
         }
         SearchResultList results = response.getEntity(SearchResultList.class);
         results.setLastModified(response.getLastModified());
         return buildSearchableObjectSearchResultList(results);
+    }
+
+    @Override
+    public BinderChanges listChanges(Binder binder, Date since, Integer count) {
+        Map<String, Object> params = getFirstAndCountParams(null, count);
+        params.put("since", since);
+        WebResource.Builder builder = getJSONResourceBuilder(binder.findRelatedLink("library_changes"), params);
+        return get(builder, BinderChanges.class);
     }
 
     private String getRootHref(String name) {
