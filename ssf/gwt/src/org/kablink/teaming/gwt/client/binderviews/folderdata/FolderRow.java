@@ -55,7 +55,7 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
 import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
-import org.kablink.teaming.gwt.client.util.UserType;
+import org.kablink.teaming.gwt.client.util.UserAndGroupType;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -93,7 +93,7 @@ public class FolderRow implements IsSerializable {
 	private Map<String, List<ShareExpirationInfo>>	m_rowShareExpirationInfos;	// A map of column names to List<ShareExpirationInfo>'s           possibly stored for a column.
 	private Map<String, List<ShareMessageInfo>>		m_rowShareMessageInfos;		// A map of column names to List<ShareMessageInfo>'s              possibly stored for a column.
 	private Map<String, String>						m_rowStrings;				// A map of column names to String values                         possibly stored for a column.
-	private Map<String, UserType>					m_rowUserTypes;				// A map of column names to UserType values                       possibly stored for a column.
+	private Map<String, UserAndGroupType>			m_rowUserAndGroupTypes;		// A map of column names to UserAndGroupType values               possibly stored for a column.
 	private String									m_rowFamily;				// Family type of this row's entity.
 	
 	private transient Object						m_serverMobileDevice;		// Used on the server side to refer a MobileDevice object when that's what the row represents.
@@ -197,7 +197,7 @@ public class FolderRow implements IsSerializable {
 	public Map<String, List<TaskFolderInfo>>	getRowTaskFolderInfoListsMap()         {validateMapTaskFolders();      return m_rowTaskFolderInfos; } 
 	public Map<String, ViewFileInfo>			getRowViewFilesMap()                   {validateMapViews();            return m_rowViewFiles;       } 
 	public Map<String, String>					getRowStringsMap()                     {validateMapStrings();          return m_rowStrings;         }
-	public Map<String, UserType>				getRowUserTypesMap()                   {validateMapUserTypes();        return m_rowUserTypes;       }
+	public Map<String, UserAndGroupType>		getRowUserAndGroupTypesMap()           {validateMapUserAndGroupTypes();return m_rowUserAndGroupTypes;}
 	public Object								getServerMobileDevice()                {                               return m_serverMobileDevice; }
 	public String								getBinderIcon(BinderIconSize iconSize) {return m_binderIcons.getBinderIcon(iconSize);               }
 	public String								getRowFamily()                         {return m_rowFamily;                                         }
@@ -242,7 +242,7 @@ public class FolderRow implements IsSerializable {
 		else if (v instanceof MobileDevicesInfo)   {validateMapMobileDevices();    m_rowMobileDevices.put(   vk, ((MobileDevicesInfo)   v));}
 		else if (v instanceof PrincipalInfo)       {validateMapPrincipals();       m_rowPrincipals.put(      vk, ((PrincipalInfo)       v));}
 		else if (v instanceof PrincipalInfoId)     {validateMapPrincipalIds();     m_rowPrincipalIds.put(    vk, ((PrincipalInfoId)     v));}
-		else if (v instanceof UserType)            {validateMapUserTypes();        m_rowUserTypes.put(       vk, ((UserType)            v));}
+		else if (v instanceof UserAndGroupType)    {validateMapUserAndGroupTypes();m_rowUserAndGroupTypes.put(vk,((UserAndGroupType)    v));}
 		else if (v instanceof ViewFileInfo)        {validateMapViews();            m_rowViewFiles.put(       vk, ((ViewFileInfo)        v));}
 		else                                       {validateMapStrings();          m_rowStrings.put(         vk, v.toString());             }
 	}
@@ -510,14 +510,14 @@ public class FolderRow implements IsSerializable {
 	}
 
 	/**
-	 * Returns the UserType value for a specific column.
+	 * Returns the UserAndGroupType value for a specific column.
 	 * 
 	 * @param fc
 	 * 
 	 * @return
 	 */
-	public UserType getColumnValueAsUserType(FolderColumn fc) {
-		return ((null == m_rowUserTypes) ? null : m_rowUserTypes.get(getValueKey(fc)));
+	public UserAndGroupType getColumnValueAsUserAndGroupType(FolderColumn fc) {
+		return ((null == m_rowUserAndGroupTypes) ? null : m_rowUserAndGroupTypes.get(getValueKey(fc)));
 	}
 
 	/**
@@ -736,15 +736,15 @@ public class FolderRow implements IsSerializable {
 	}
 	
 	/**
-	 * Returns true if a column's value is a UserType and false
+	 * Returns true if a column's value is a UserAndGroupType and false
 	 * otherwise.
 	 * 
 	 * @param fc
 	 * 
 	 * @return
 	 */
-	public boolean isColumnValueUserType(FolderColumn fc) {
-		return ((null != m_rowUserTypes) && (null != m_rowUserTypes.get(getValueKey(fc))));
+	public boolean isColumnValueUserAndGroupType(FolderColumn fc) {
+		return ((null != m_rowUserAndGroupTypes) && (null != m_rowUserAndGroupTypes.get(getValueKey(fc))));
 	}
 
 	/**
@@ -788,6 +788,6 @@ public class FolderRow implements IsSerializable {
 	private void validateMapShareExpirations() {if (null == m_rowShareExpirationInfos)	m_rowShareExpirationInfos	= new HashMap<String, List<ShareExpirationInfo>>();}
 	private void validateMapShareMessages()    {if (null == m_rowShareMessageInfos)		m_rowShareMessageInfos		= new HashMap<String, List<ShareMessageInfo>>();   }
 	private void validateMapStrings()          {if (null == m_rowStrings)				m_rowStrings				= new HashMap<String, String>();                   }
-	private void validateMapUserTypes()        {if (null == m_rowUserTypes)				m_rowUserTypes				= new HashMap<String, UserType>();                 }
+	private void validateMapUserAndGroupTypes(){if (null == m_rowUserAndGroupTypes)		m_rowUserAndGroupTypes		= new HashMap<String, UserAndGroupType>();         }
 	private void validateMapViews()            {if (null == m_rowViewFiles)				m_rowViewFiles				= new HashMap<String, ViewFileInfo>();             }
 }

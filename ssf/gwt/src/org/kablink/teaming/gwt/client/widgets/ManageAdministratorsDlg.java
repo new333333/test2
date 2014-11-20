@@ -80,8 +80,8 @@ public class ManageAdministratorsDlg extends DlgBox
 {
 	public final static boolean	SHOW_MANAGE_ADMINISTRATORS	= false;	//! DRF (20141117):  Leave false on checkin until it's working.
 	
-	private boolean									m_dlgAttached;				// true when the dialog is attached to the document.        false otherwise.
-	private boolean									m_viewReady;				// true once the embedded view is ready.                    false otherwise.
+	private boolean									m_dlgAttached;				// true when the dialog is attached to the document, false otherwise.
+	private boolean									m_viewReady;				// true once the embedded view is ready,             false otherwise.
 	private GwtTeamingMessages						m_messages;					// Access to Vibe's messages.
 	private int										m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
 	private int										m_showX;					// The x and...

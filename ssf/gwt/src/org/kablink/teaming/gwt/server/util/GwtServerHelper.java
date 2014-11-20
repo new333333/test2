@@ -5062,7 +5062,19 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static EmailAddressInfo getEmailAddressInfoFromEntryMap(AllModulesInjected bs, Map entryMap) {
-		User      user          = ((User) getValueFromEntryMap(entryMap, Constants.PRINCIPAL_FIELD));
+		User user = ((User) getValueFromEntryMap(entryMap, Constants.PRINCIPAL_FIELD));
+		return getEmailAddressInfoFromUser(user);
+	}
+	
+	/**
+	 * Returns a user's EmailAddressInfo.
+	 * 
+	 * @param bs
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static EmailAddressInfo getEmailAddressInfoFromUser(User user) {
 		String    userEMA       = ((null == user) ? null : user.getEmailAddress());
 		Workspace userWS        = getUserWorkspace(user);
 		boolean   userHasWS     = (null != userWS); 

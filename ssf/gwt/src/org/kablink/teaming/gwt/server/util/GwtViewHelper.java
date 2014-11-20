@@ -187,6 +187,7 @@ import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
+import org.kablink.teaming.gwt.client.util.UserAndGroupType;
 import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -1561,7 +1562,7 @@ public class GwtViewHelper {
 							}
 							
 							// If we can find the columns for them...
-							FolderColumn rightsCol = FolderColumn.getFolderColumnByEleName(fcList, FolderColumn.COLUMN_ADMIN);
+							FolderColumn rightsCol = FolderColumn.getFolderColumnByEleName(fcList, FolderColumn.COLUMN_ADMIN_RIGHTS);
 							if (null != rightsCol) {
 								// ...store the administrator rights
 								// ...settings in the row.
@@ -3019,7 +3020,8 @@ public class GwtViewHelper {
 		else dateCSK = Constants.MODIFICATION_DATE_FIELD;
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
-			if      (colName.equals("admin"))                {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMIN);                 fc.setColumnSortKey(Constants.SITE_ADMIN_FIELD);                   }
+			if      (colName.equals("administrator"))        {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMINISTRATOR);                                                                            }
+			else if (colName.equals("adminRights"))          {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMIN_RIGHTS);          fc.setColumnSortKey(Constants.SITE_ADMIN_FIELD);                   }
 			else if (colName.equals("author"))               {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);           }
 			else if (colName.equals("comments"))             {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                                              }
 			else if (colName.equals("date"))                 {fc.setColumnSearchKey(dateCSK);                                                                                                      }
@@ -3116,23 +3118,6 @@ public class GwtViewHelper {
 		}
 	}
 
-	/*
-	 * Returns a Map of the search results for administrators based on
-	 * the criteria in the options Map.
-	 */
-	@SuppressWarnings("unchecked")
-	private static Map getAdministratorEntries(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getAdministratorEntries()");
-		try {
-//!			...this needs to be implemented...
-			return buildEmptyEntryMap();
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-	
 	/*
 	 * Constructs a List<AssignmentInfo>'s for the team membership of a
 	 * Binder.
@@ -4201,7 +4186,7 @@ public class GwtViewHelper {
 			// mode?
 			else if (folderInfo.isBinderAdministratorManagement()) {
 				baseNameKey = "administrators.column.";
-				columnNames = getColumnsLHMFromAS(new String[]{"title"});
+				columnNames = getColumnsLHMFromAS(new String[]{"administrator", "userType", "adminRights", "emailAddress", "loginId"});
 			}
 			
 			// No, we aren't showing an administrators view either!
@@ -4211,8 +4196,8 @@ public class GwtViewHelper {
 				baseNameKey = "profiles.column.";
 				if (folderInfo.isBinderProfilesRootWSManagement()) {
 					if (ReleaseInfo.isLicenseRequiredEdition() && LicenseChecker.showFilrFeatures())
-					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "admin", "emailAddress", "mobileDevices", "loginId"});
-					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "admin", "emailAddress",                  "loginId"});
+					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "adminRights", "emailAddress", "mobileDevices", "loginId"});
+					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "adminRights", "emailAddress",                  "loginId"});
 				}
 				else {
 					columnNames = getColumnsLHMFromAS(new String[]{"fullName", "emailAddress", "loginId"});
@@ -4546,6 +4531,12 @@ public class GwtViewHelper {
 				propSortDescend += cName;
 			}
 			
+			else if (folderInfo.isBinderAdministratorManagement()) {
+				String cName     = ".administrators.";
+				propSortBy      += cName;
+				propSortDescend += cName;
+			}
+			
 			// How should the folder be sorted?
 			String	sortBy = ((String) userFolderProperties.getProperty(propSortBy));
 			boolean sortDescend;
@@ -4555,7 +4546,10 @@ public class GwtViewHelper {
 			}
 			else {
 				sortDescend = false;
-				if (folderInfo.isBinderProfilesRootWS() || folderInfo.isBinderGlobalRootWS() || folderInfo.isBinderTeamsRootWS() || folderInfo.isBinderCollection()) {
+				if (folderInfo.isBinderAdministratorManagement()) {
+					sortBy = FolderColumn.COLUMN_ADMIN_RIGHTS;
+				}
+				else if (folderInfo.isBinderProfilesRootWS() || folderInfo.isBinderGlobalRootWS() || folderInfo.isBinderTeamsRootWS() || folderInfo.isBinderCollection()) {
 					sortBy = Constants.SORT_TITLE_FIELD;
 				}
 				else if (folderInfo.isBinderMobileDevices()) {
@@ -5367,7 +5361,6 @@ public class GwtViewHelper {
 				
 				else if (isManageAdministrators) {
 					// No options.
-//!					...this needs to be implemented...
 				}
 				
 				else {
@@ -5435,12 +5428,12 @@ public class GwtViewHelper {
 				// No, the user isn't currently viewing pinned entries!
 				// Read the entries based on a search.
 				Map searchResults;
-				if      (isTrash)                         searchResults = TrashHelper.getTrashEntities(    bs,          binder,              options                               );
-				else if (isManageAdministrators)          searchResults = getAdministratorEntries(         bs, request, binder, quickFilter, options                               );
-				else if (isProfilesRootWS)                searchResults = getUserEntries(                  bs, request, binder, quickFilter, options                               );
-				else if (isGlobalRootWS || isTeamsRootWS) searchResults = getRootWorkspaceEntries(         bs, request, binder, quickFilter, options                               );
-				else if (isCollection)                    searchResults = getCollectionEntries(            bs, request, binder, quickFilter, options, collectionType, shareItems   );
-				else if (isMobileDevicesViewSpec) return GwtMobileDeviceHelper.getMobileDeviceRows(bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
+				if      (isMobileDevicesViewSpec)         return          GwtMobileDeviceHelper.getMobileDeviceRows(    bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
+				else if (isManageAdministrators)          return          GwtAdministratorsHelper.getAdministratorsRows(bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
+				else if (isTrash)                         searchResults = TrashHelper.getTrashEntities(                 bs,          binder,              options                               );
+				else if (isProfilesRootWS)                searchResults = getUserEntries(                               bs, request, binder, quickFilter, options                               );
+				else if (isGlobalRootWS || isTeamsRootWS) searchResults = getRootWorkspaceEntries(                      bs, request, binder, quickFilter, options                               );
+				else if (isCollection)                    searchResults = getCollectionEntries(                         bs, request, binder, quickFilter, options, collectionType, shareItems   );
 				else {
 					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE          );	// Include nested folders.
 					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);	// Sort folders separately from entries.
@@ -5963,7 +5956,8 @@ public class GwtViewHelper {
 										// Are we working on the internal/external flag of a user?
 										else if (csk.equals(Constants.IDENTITY_INTERNAL_FIELD)) {
 											// Yes!  Store a user type for it.
-											fr.setColumnValue(fc, getUserType(bs, request, entityId));
+											UserAndGroupType ugt = new UserAndGroupType(getPrincipalType(bs, request, entityId));
+											fr.setColumnValue(fc, ugt);
 										}
 										
 										else {
@@ -7926,14 +7920,20 @@ public class GwtViewHelper {
 	/**
 	 * Given a User, returns the type of that user.
 	 * 
-	 * @param user
+	 * @param principal
 	 * 
 	 * @return
 	 */
 	public static UserType getUserType(User user) {
+		return getPrincipalType(user);
+	}
+	
+	public static UserType getPrincipalType(Principal principal) {
 		// Are they an internal user?
-		UserType reply;
-		IdentityInfo ui = user.getIdentityInfo();
+		UserType reply = UserType.UNKNOWN;
+		IdentityInfo ui = principal.getIdentityInfo();
+		boolean isUser = (principal instanceof User);
+		User    user   = (isUser ? ((User) principal) : null);
 		if (ui.isInternal()) {
 			// Yes!  Are they from LDAP?
 			if (ui.isFromLdap()) {
@@ -7942,46 +7942,43 @@ public class GwtViewHelper {
 			}
 			else {
 				// No, they're not from LDAP!  Is it a person?
-				if (user.isPerson()) {
+				if (isUser && user.isPerson()) {
 					// Yes!
-					if (user.isReserved() && user.getInternalId().equalsIgnoreCase(ObjectKeys.SUPER_USER_INTERNALID))
+					if (principal.isReserved() && principal.getInternalId().equalsIgnoreCase(ObjectKeys.SUPER_USER_INTERNALID))
 					     reply = UserType.INTERNAL_PERSON_ADMIN;
 					else reply = UserType.INTERNAL_PERSON_OTHERS;
 				}
 				else {
 					// No, it's not a person!
-					reply = UserType.INTERNAL_SYSTEM;
+					reply = (isUser ? UserType.INTERNAL_SYSTEM : UserType.INTERNAL_PERSON_OTHERS);
 				}
 			}
 		}
-		else {
+		else if (isUser) {
 			// No, it's not an internal user!  Is it the Guest user?
-			if (user.isShared())
-			     reply = UserType.EXTERNAL_GUEST;
-			else if ( ui.isFromOpenid() && ui.isFromLocal() == false )
-				reply = UserType.EXTERNAL_OPEN_ID;
-			else
-				reply = UserType.EXTERNAL_OTHERS;
+			if      (user.isShared())                            reply = UserType.EXTERNAL_GUEST;
+			else if (ui.isFromOpenid() && (!(ui.isFromLocal()))) reply = UserType.EXTERNAL_OPEN_ID;
+			else                                                 reply = UserType.EXTERNAL_OTHERS;
 		}
-		
+
 		// If we get here, reply refers to the UserType of the User.
 		// Return it.
 		return reply;
 	}
 	
 	/*
-	 * Given an EntityId that describes a user, returns the type of
-	 * user.
+	 * Given an EntityId that describes a Principal (user or group),
+	 * returns the type of Principal.
 	 */
-	private static UserType getUserType(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) {
+	private static UserType getPrincipalType(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) {
 		UserType reply = UserType.UNKNOWN;
 		
 		try {
 			// Can we access the User?
 			Principal p = bs.getProfileModule().getEntry(entityId.getEntityId());
-			if ((null != p) && (p instanceof User)) {
+			if (null != p) {
 				// Yes!  What type are they?
-				reply = getUserType(((User) p));
+				reply = getPrincipalType(p);
 			}
 		}
 		
