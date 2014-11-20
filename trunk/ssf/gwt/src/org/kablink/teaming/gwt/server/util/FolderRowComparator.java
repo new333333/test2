@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
+import org.kablink.teaming.gwt.client.util.UserAndGroupType;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.util.NLT;
 
@@ -176,7 +177,7 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 		
 		// Is this a column that should show a download link for?
 		String cName = fc.getColumnEleName();
-		if (FolderColumn.isColumnDownload(cName)) {
+		if (FolderColumn.isColumnDownload(cName) || FolderColumn.isColumnAdminRights(cName)) {
 			// Yes!  Use its string value as the reply.
 			reply = fr.getColumnValueAsString(fc);
 		}
@@ -350,9 +351,16 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 			}
 		}
 		
+		// No, this column isn't the wipe scheduled status of a
+		// mobile device either!  Is it a user type column?
+		else if (FolderColumn.isColumnUserType(cName)) {
+			UserAndGroupType ugt = fr.getColumnValueAsUserAndGroupType(fc);
+			reply = ((null == ugt) ? "" : ugt.getUserType().name());
+		}
+		
 		else {
-			// No, this column isn't the wipe scheduled status of a
-			// mobile device either!  Simply return its string value.
+			// No, this column isn't a user type either!  Simply return
+			// its string value.
 			reply = fr.getColumnValueAsString(fc);
 		}
 

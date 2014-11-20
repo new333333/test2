@@ -78,7 +78,7 @@ import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg.SizeColumnsDlgClient;
 import org.kablink.teaming.gwt.client.datatable.StringColumn;
 import org.kablink.teaming.gwt.client.datatable.TaskFolderColumn;
-import org.kablink.teaming.gwt.client.datatable.UserTypeColumn;
+import org.kablink.teaming.gwt.client.datatable.UserAndGroupTypeColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
 import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
@@ -184,6 +184,7 @@ import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
+import org.kablink.teaming.gwt.client.util.UserAndGroupType;
 import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -1846,11 +1847,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// No, this column isn't a mobile device wipe scheduled
 			// either!  Is it a user type?
 			else if (FolderColumn.isColumnUserType(cName)) {
-				// Yes!  Create a UserTypeColumn for it.
-				column = new UserTypeColumn<FolderRow>(fc) {
+				// Yes!  Create a UserAndGroupTypeColumn for it.
+				column = new UserAndGroupTypeColumn<FolderRow>(fc) {
 					@Override
-					public UserType getValue(FolderRow fr) {
-						return fr.getColumnValueAsUserType(fc);
+					public UserAndGroupType getValue(FolderRow fr) {
+						return fr.getColumnValueAsUserAndGroupType(fc);
 					}
 				};
 			}
@@ -3780,7 +3781,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						@Override
 						public void execute() {
 							List<FolderRow> rows     = m_dataTable.getVisibleItems();
-							FolderColumn	adminCol = getColumnByName(m_folderColumnsList, FolderColumn.COLUMN_ADMIN);
+							FolderColumn	adminCol = getColumnByName(m_folderColumnsList, FolderColumn.COLUMN_ADMIN_RIGHTS);
 							Set<Long>		keySet   = adminRightsChangeMap.keySet();
 							for (Long key:  keySet) {
 								int rowIndex = 0;

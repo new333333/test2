@@ -42,7 +42,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.datatable.UserTypeCell;
+import org.kablink.teaming.gwt.client.datatable.UserAndGroupTypeCell;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
@@ -63,6 +63,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
+import org.kablink.teaming.gwt.client.util.UserAndGroupType;
 import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -168,8 +169,9 @@ public class UserPropertiesDlg extends DlgBox
 		// ...add the type of account...
 		row = grid.getRowCount();
 		UserType userType = account.getUserType();
-		ImageResource ir = UserTypeCell.getUserTypeImage(userType);
-		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString(), UserTypeCell.getUserTypeAlt(userType));
+		UserAndGroupType ugt = new UserAndGroupType(userType);
+		ImageResource ir = UserAndGroupTypeCell.getUserAndGroupTypeImage(ugt);
+		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString(), UserAndGroupTypeCell.getUserAndGroupTypeAlt(ugt));
 		i.addStyleName("vibe-userPropertiesDlg-attrImage");
 		addLabeledWidget(grid, row, m_messages.userPropertiesDlgLabel_Type(), i);
 

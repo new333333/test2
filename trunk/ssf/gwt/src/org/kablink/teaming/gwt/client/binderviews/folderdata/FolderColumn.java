@@ -60,7 +60,8 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	private String			m_columnType;			// The type for this column (only used for custom columns.)
 
 	// The following are the various predefined names used for columns.
-	public final static String COLUMN_ADMIN					= "admin";
+	public final static String COLUMN_ADMIN_RIGHTS			= "adminRights";
+	public final static String COLUMN_ADMINISTRATOR			= "administrator";
 	public final static String COLUMN_AUTHOR				= "author";
 	public final static String COLUMN_COMMENTS				= "comments";
 	public final static String COLUMN_DATE					= "date";
@@ -253,7 +254,8 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public static boolean isColumnAdmin(              String       columnName) {return columnName.equals(FolderColumn.COLUMN_ADMIN);                }
+	public static boolean isColumnAdminRights(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_ADMIN_RIGHTS);         }
+	public static boolean isColumnAdministrator(      String       columnName) {return columnName.equals(FolderColumn.COLUMN_ADMINISTRATOR);        }
 	public static boolean isColumnAccess(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_ACCESS);         }
 	public static boolean isColumnComments(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_COMMENTS);             }
 	public static boolean isColumnCustom(             FolderColumn column)     {return column.isCustomColumn();                                     }
@@ -268,6 +270,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public static boolean isColumnFamily(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_FAMILY);               }
 	public static boolean isColumnFullName(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_FULL_NAME);            }
 	public static boolean isColumnGuest(              String       columnName) {return columnName.equals(FolderColumn.COLUMN_GUEST);                }
+	public static boolean isColumnLoginId(            String       columnName) {return columnName.equals(FolderColumn.COLUMN_LOGIN_ID);             }
 	public static boolean isColumnMobileDevices(      String       columnName) {return columnName.equals(FolderColumn.COLUMN_MOBILE_DEVICES);       }
 	public static boolean isColumnNetFolderAccess(    String       columnName) {return columnName.equals(FolderColumn.COLUMN_NETFOLDER_ACCESS);     }
 	public static boolean isColumnRating(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_RATING);               }

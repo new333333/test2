@@ -81,7 +81,7 @@ public class PersonalWorkspacesView extends DataTableFolderViewBase {
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
 		columnWidths.put(FolderColumn.COLUMN_FULL_NAME,      new ColumnWidth(30)         );
 		columnWidths.put(FolderColumn.COLUMN_USER_TYPE,      new ColumnWidth(60, Unit.PX));	// Manage users only.
-		columnWidths.put(FolderColumn.COLUMN_ADMIN,          new ColumnWidth(75, Unit.PX));	// Manage users only.
+		columnWidths.put(FolderColumn.COLUMN_ADMIN_RIGHTS,   new ColumnWidth(75, Unit.PX));	// Manage users only.
 		columnWidths.put(FolderColumn.COLUMN_EMAIL_ADDRESS,  new ColumnWidth(50)         );
 		columnWidths.put(FolderColumn.COLUMN_MOBILE_DEVICES, new ColumnWidth(70, Unit.PX));	// Manage users only.
 		columnWidths.put(FolderColumn.COLUMN_LOGIN_ID,       new ColumnWidth(20)         );

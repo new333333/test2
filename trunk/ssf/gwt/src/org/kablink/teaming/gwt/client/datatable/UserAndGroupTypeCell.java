@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,7 +36,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.UserType;
+import org.kablink.teaming.gwt.client.util.UserAndGroupType;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -47,15 +47,15 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Image;
 
 /**
- * Data table cell that represents a type of user.
+ * Data table cell that represents a type of user or group.
  * 
  * @author drfoster@novell.com
  */
-public class UserTypeCell extends AbstractCell<UserType> {
+public class UserAndGroupTypeCell extends AbstractCell<UserAndGroupType> {
 	/**
 	 * Constructor method.
 	 */
-	public UserTypeCell() {
+	public UserAndGroupTypeCell() {
 		// Initialize the super class.
 		super();
 	}
@@ -63,24 +63,35 @@ public class UserTypeCell extends AbstractCell<UserType> {
 	/**
 	 * Returns the title string to add to a user type <IMG>.
 	 * 
-	 * @param userType
+	 * @param ugt
 	 * 
 	 * @return
 	 */
-	public static String getUserTypeAlt(UserType userType) {
+	public static String getUserAndGroupTypeAlt(UserAndGroupType ugt) {
 		GwtTeamingMessages messages = GwtTeaming.getMessages();
 		String reply;
-		switch (userType) {
-		case EXTERNAL_GUEST:          reply = messages.vibeDataTable_Alt_ExternalUser_Guest();        break;
-		case EXTERNAL_OPEN_ID:
-		case EXTERNAL_OTHERS:
-			reply = messages.vibeDataTable_Alt_ExternalUser_Others();
-			break;
-		case INTERNAL_LDAP:           reply = messages.vibeDataTable_Alt_InternalUser_LDAP();         break;
-		case INTERNAL_PERSON_ADMIN:   reply = messages.vibeDataTable_Alt_InternalUser_PersonAdmin();  break;
-		case INTERNAL_PERSON_OTHERS:  reply = messages.vibeDataTable_Alt_InternalUser_PersonOthers(); break;
-		case INTERNAL_SYSTEM:         reply = messages.vibeDataTable_Alt_InternalUser_System();       break;
-		default:                      reply = messages.vibeDataTable_Alt_UnknownUser();               break;
+		if (ugt.isGroup()) {
+			switch (ugt.getUserType()) {
+			default:
+			case INTERNAL_PERSON_OTHERS:  reply = messages.vibeDataTable_Alt_Local_Group();  break;
+			case INTERNAL_LDAP:           reply = messages.vibeDataTable_Alt_Ldap_Group();   break;
+			case INTERNAL_SYSTEM:         reply = messages.vibeDataTable_Alt_System_Group(); break;
+			}
+		}
+		
+		else {
+			switch (ugt.getUserType()) {
+			case EXTERNAL_GUEST:          reply = messages.vibeDataTable_Alt_ExternalUser_Guest();        break;
+			case EXTERNAL_OPEN_ID:
+			case EXTERNAL_OTHERS:
+				reply = messages.vibeDataTable_Alt_ExternalUser_Others();
+				break;
+			case INTERNAL_LDAP:           reply = messages.vibeDataTable_Alt_InternalUser_LDAP();         break;
+			case INTERNAL_PERSON_ADMIN:   reply = messages.vibeDataTable_Alt_InternalUser_PersonAdmin();  break;
+			case INTERNAL_PERSON_OTHERS:  reply = messages.vibeDataTable_Alt_InternalUser_PersonOthers(); break;
+			case INTERNAL_SYSTEM:         reply = messages.vibeDataTable_Alt_InternalUser_System();       break;
+			default:                      reply = messages.vibeDataTable_Alt_UnknownUser();               break;
+			}
 		}
 		return reply;
 	}
@@ -88,24 +99,35 @@ public class UserTypeCell extends AbstractCell<UserType> {
 	/**
 	 * Returns the ImageResource to use for a user type <IMG>.
 	 * 
-	 * @param userType
+	 * @param ugt
 	 * 
 	 * @return
 	 */
-	public static ImageResource getUserTypeImage(UserType userType) {
+	public static ImageResource getUserAndGroupTypeImage(UserAndGroupType ugt) {
 		GwtTeamingDataTableImageBundle images = GwtTeaming.getDataTableImageBundle();
 		ImageResource reply;
-		switch (userType) {
-		case EXTERNAL_GUEST:          reply = images.externalUser_Guest();        break;
-		case EXTERNAL_OPEN_ID:
-		case EXTERNAL_OTHERS:
-			reply = images.externalUser_Others();
-			break;
-		case INTERNAL_LDAP:           reply = images.internalUser_LDAP();         break;
-		case INTERNAL_PERSON_ADMIN:   reply = images.internalUser_PersonAdmin();  break;
-		case INTERNAL_PERSON_OTHERS:  reply = images.internalUser_PersonOthers(); break;
-		case INTERNAL_SYSTEM:         reply = images.internalUser_System();       break;
-		default:                      reply = images.unknownUser();               break;
+		if (ugt.isGroup()) {
+			switch (ugt.getUserType()) {
+			default:
+			case INTERNAL_PERSON_OTHERS:  reply = images.groupType_Local();  break;
+			case INTERNAL_LDAP:           reply = images.groupType_LDAP();   break;
+			case INTERNAL_SYSTEM:         reply = images.groupType_System(); break;
+			}
+		}
+		
+		else {
+			switch (ugt.getUserType()) {
+			case EXTERNAL_GUEST:          reply = images.externalUser_Guest();        break;
+			case EXTERNAL_OPEN_ID:
+			case EXTERNAL_OTHERS:
+				reply = images.externalUser_Others();
+				break;
+			case INTERNAL_LDAP:           reply = images.internalUser_LDAP();         break;
+			case INTERNAL_PERSON_ADMIN:   reply = images.internalUser_PersonAdmin();  break;
+			case INTERNAL_PERSON_OTHERS:  reply = images.internalUser_PersonOthers(); break;
+			case INTERNAL_SYSTEM:         reply = images.internalUser_System();       break;
+			default:                      reply = images.unknownUser();               break;
+			}
 		}
 		return reply;		
 	}
@@ -114,15 +136,15 @@ public class UserTypeCell extends AbstractCell<UserType> {
 	 * Called to render an instance of this cell.
 	 * 
 	 * @param context
-	 * @param userType
+	 * @param ugt
 	 * @param sb
 	 * 
 	 * Overrides AbstractCell.render()
 	 */
 	@Override
-	public void render(Context context, UserType userType, SafeHtmlBuilder sb) {
-		// If we weren't given a UserType...
-		if (null == userType) {
+	public void render(Context context, UserAndGroupType ugt, SafeHtmlBuilder sb) {
+		// If we weren't given a UserAndGroupType...
+		if (null == ugt) {
 			// ...bail.  Cell widgets can pass null to cells if the
 			// ...underlying data contains a null, or if the data
 			// ...arrives out of order.
@@ -131,14 +153,14 @@ public class UserTypeCell extends AbstractCell<UserType> {
 		}
 
 		// Create the HTML for the user type image...
-		ImageResource ir = getUserTypeImage(userType);
-		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString(), getUserTypeAlt(userType));
+		ImageResource ir = getUserAndGroupTypeImage(ugt);
+		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString(), getUserAndGroupTypeAlt(ugt));
 		i.addStyleName("vibe-dataTableUserType-image");
-		VibeFlowPanel userTypePanel = new VibeFlowPanel();
-		userTypePanel.addStyleName("vibe-dataTableUserType-panel");
-		userTypePanel.add(i);
+		VibeFlowPanel ugtPanel = new VibeFlowPanel();
+		ugtPanel.addStyleName("vibe-dataTableUserType-panel");
+		ugtPanel.add(i);
 		VibeFlowPanel html = new VibeFlowPanel();
-		html.add(userTypePanel);
+		html.add(ugtPanel);
 		
 		// ...and render that into the cell.
 		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(html.getElement().getInnerHTML());
