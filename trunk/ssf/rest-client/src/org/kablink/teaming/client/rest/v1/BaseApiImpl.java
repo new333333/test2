@@ -34,6 +34,8 @@
 package org.kablink.teaming.client.rest.v1;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterface;
 import com.sun.jersey.api.client.WebResource;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -42,6 +44,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.ErrorInfo;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
@@ -52,6 +55,7 @@ import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -180,6 +184,8 @@ public class BaseApiImpl {
                     for (Object val : (Object []) value) {
                         ub.queryParam(entry.getKey(), val);
                     }
+                } else if (value instanceof Date) {
+                    ub.queryParam(entry.getKey(), ISO8601FromDate((Date) value));
                 } else {
                     ub.queryParam(entry.getKey(), entry.getValue());
                 }
@@ -194,7 +200,7 @@ public class BaseApiImpl {
 		String dateStr = null;
 		if(date != null) {
 			DateTime dateTime = new DateTime(date);
-			dateStr = ISODateTimeFormat.dateTime().withZoneUTC().print(dateTime);
+			dateStr = ISODateTimeFormat.dateTimeNoMillis().withZoneUTC().print(dateTime);
 		}
 		return dateStr;
 	}
@@ -208,4 +214,30 @@ public class BaseApiImpl {
 
 		return dateStr;
 	}
+
+    protected <T> T get(UniformInterface uniformInterface, Class<T> clss) {
+        ClientResponse response = uniformInterface.get(ClientResponse.class);
+        if (response.getStatus()!=200) {
+            handleError(response);
+        }
+        return response.getEntity(clss);
+    }
+
+    protected void handleError(ClientResponse response) {
+        HttpException exception = null;
+        ErrorInfo err = null;
+        List<String> contentTypeList = response.getHeaders().get("Content-Type");
+        if (contentTypeList!=null && contentTypeList.contains("application/json")) {
+            err = response.getEntity(ErrorInfo.class);
+        }
+        if (exception==null) {
+            int code = response.getStatus();
+            if (code==304) {
+                throw new NotModifiedException(err);
+            } else if (code==409) {
+                throw new ConflictException(err);
+            }
+        }
+    }
+
 }

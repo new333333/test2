@@ -64,4 +64,16 @@ public class MyFilesLastModTimeTest extends TestCase {
         binding.thenMyFilesLibraryChildrenNotChanged(date);
     }
 
+    public void testWhenGlobalPersonalStorageChangesThenMyFilesLibraryChangesFails() throws InterruptedException {
+        Date date = binding.givenMyFilesLibraryChildrenLastModifiedTime();
+        Thread.sleep(2000);
+        binding.whenPersonalStorageChanges();
+        binding.thenMyFilesLibraryLibraryChangesFails(date);
+    }
+
+    public void testWhenNothingThenMyFilesLibraryLibraryChangesReturnsNothing() {
+        Date date = binding.givenMyFilesLibraryChildrenLastModifiedTime();
+        binding.thenMyFilesLibraryLibraryChangesReturnsNothing(date);
+    }
+
 }

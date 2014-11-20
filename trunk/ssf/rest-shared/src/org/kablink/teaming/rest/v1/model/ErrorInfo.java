@@ -57,4 +57,12 @@ public class ErrorInfo {
         this.message = message;
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        if (message!=null) {
+            return code + " (" + message + ")";
+        }
+        return code;
+    }
 }

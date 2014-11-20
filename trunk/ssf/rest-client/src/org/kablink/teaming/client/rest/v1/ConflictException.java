@@ -40,12 +40,12 @@ import org.kablink.teaming.rest.v1.model.ErrorInfo;
  * Date: 11/19/14
  * Time: 2:19 PM
  */
-public class NotModifiedException extends HttpException {
-    public NotModifiedException() {
-        super(304);
+public class ConflictException extends HttpException {
+    public ConflictException() {
+        super(409);
     }
 
-    public NotModifiedException(ErrorInfo error) {
-        super(304, error);
+    public ConflictException(ErrorInfo error) {
+        super(409, error);
     }
 }

@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.client.rest.v1;
 
+import org.kablink.teaming.rest.v1.model.ErrorInfo;
+
 /**
  * User: David
  * Date: 11/19/14
@@ -40,16 +42,23 @@ package org.kablink.teaming.client.rest.v1;
  */
 public class HttpException extends RuntimeException {
     private int code;
-    private String message;
+    private ErrorInfo error;
 
     public HttpException(int code) {
-        super();
         this.code = code;
     }
 
-    public HttpException(int code, String message) {
-        super("(" + code + ") " + message);
+    public HttpException(int code, ErrorInfo error) {
         this.code = code;
-        this.message = message;
+        this.error = error;
+    }
+
+    @Override
+    public String getMessage() {
+        String message = "HTTP error " + code;
+        if (error!=null) {
+            message += ": " + error.toString();
+        }
+        return message;
     }
 }
