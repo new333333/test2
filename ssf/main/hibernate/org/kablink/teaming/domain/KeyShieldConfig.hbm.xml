@@ -12,5 +12,6 @@
 	<property name="httpTimeout" access="field"/>
 	<property name="apiAuthKey" access="field" length="128"/>
 	<property name="authConnectorNames" access="field" length="128"/>
+	<property name="lastUpdateTime" access="field"/>
   </class>
 </hibernate-mapping>

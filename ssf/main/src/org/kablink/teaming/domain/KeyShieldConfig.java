@@ -39,13 +39,14 @@ import java.util.TreeSet;
  * 
  * @author jwootton@novell.com
  */
-public class KeyShieldConfig extends ZonedObject
+public class KeyShieldConfig extends ZonedObject implements LastUpdateTimeAware
 {
 	private boolean enabled = false; // access="field"
 	private String serverUrl;
 	private Integer httpTimeout;
 	private String apiAuthKey;
 	private String authConnectorNames;	// Names are separated by a ','
+	private Long lastUpdateTime;
 
 	/**
 	 * 
@@ -225,6 +226,11 @@ public class KeyShieldConfig extends ZonedObject
 	public void setZoneId( Long zoneId )
 	{
 		this.zoneId = zoneId;
+	}
+
+	@Override
+	public Long getLastUpdateTime() {
+		return lastUpdateTime;
 	}
 
 }

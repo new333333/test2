@@ -41,8 +41,7 @@ import org.hibernate.type.Type;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.ZoneConfig;
-
+import org.kablink.teaming.domain.LastUpdateTimeAware;
 
 public class ZoneInterceptor extends EmptyInterceptor {
 
@@ -52,22 +51,17 @@ public class ZoneInterceptor extends EmptyInterceptor {
 	public boolean onFlushDirty(Object entity, Serializable id, 
 			Object[] currentState, Object[] previousState, String[] propertyNames,
 			Type[] types) throws CallbackException {
-        boolean modified = false;
-        if (entity instanceof ZoneConfig) {
-            for (int i=0; i< propertyNames.length; i++) {
-                if ("lastModified".equals(propertyNames[i])) {
-                    currentState[i] = new Date();
-                    modified = true;
-                }
-            }
-        }
+		boolean modified = injectLastUpdateTime(entity, id, currentState, propertyNames);
+		
 		return injectZoneId(entity, id, currentState, propertyNames) || modified;
 	}
 
 	@Override
 	public boolean onSave(Object entity, Serializable id, Object[] state, 
 			String[] propertyNames, Type[] types) throws CallbackException {
-		return injectZoneId(entity, id, state, propertyNames);
+		boolean modified = injectLastUpdateTime(entity, id, state, propertyNames);
+
+		return injectZoneId(entity, id, state, propertyNames) || modified;
 	}
 	
 	@Override
@@ -127,6 +121,19 @@ public class ZoneInterceptor extends EmptyInterceptor {
 		
 		return false;
 		//throw new CallbackException("Domain object " + id + " is missing " + ZONE_ID_FIELD_NAME + " field");		
+	}
+	
+	protected boolean injectLastUpdateTime(Object entity, Serializable id, Object[] state, String[] propertyNames) throws CallbackException {
+		boolean modified = false;
+		if(entity instanceof LastUpdateTimeAware) {
+            for (int i=0; i< propertyNames.length; i++) {
+                if ("lastUpdateTime".equals(propertyNames[i])) {
+                    state[i] = new Date();
+                    modified = true;
+                }
+            }
+		}
+		return modified;
 	}
 	
 	private Long getContextZoneId() throws CallbackException {

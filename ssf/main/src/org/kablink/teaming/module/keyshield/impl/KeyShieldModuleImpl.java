@@ -64,8 +64,7 @@ public class KeyShieldModuleImpl extends CommonDependencyInjection
 			}
 			catch ( Exception ex )
 			{
-				logger.warn( "Error deleting KeyShieldConfig for zone: " + zoneId );
-				ex.printStackTrace();
+				logger.warn( "Error deleting KeyShieldConfig for zone: " + zoneId, ex );
 			}
 		}
 	}
