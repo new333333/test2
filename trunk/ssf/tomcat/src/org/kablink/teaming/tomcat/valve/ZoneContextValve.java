@@ -69,6 +69,7 @@ public class ZoneContextValve extends ValveBase {
 		ZoneContextHolder.setServerPort(request.getServerPort());
 		ZoneContextHolder.setClientAddr(request.getRemoteAddr());
 		ZoneContextHolder.setSecure(request.isSecure());
+		ZoneContextHolder.setHttpServletRequest(request);
 		
 		// Static parts
 		ZoneContextHolder.setWebappName(webappName);
