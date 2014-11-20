@@ -229,7 +229,7 @@ public class ViewFileController extends SAbstractController {
 					response.setHeader("Cache-Control", "private");
 					getConvertedFileModule().readCacheHtmlFile(request.getRequestURI(), parent, entity, fa, response.getOutputStream());
 					GangliaMonitoring.incrementFilePreviewRequests();
-					getReportModule().addFileInfo(AuditType.download, fa);
+					getReportModule().addFileInfo(AuditType.view, fa);
 					return null;
 				}
 				catch(Exception e) {
@@ -335,7 +335,7 @@ public class ViewFileController extends SAbstractController {
 									String.valueOf(FileHelper.getLength(parent, entity, fa)));
 							}
 							getFileModule().readFile(parent, entity, fa, response.getOutputStream());
-							getReportModule().addFileInfo(AuditType.download, fa);
+							getReportModule().addFileInfo(AuditType.view, fa);
 						}
 						else {
 							response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.cantDownload"));
