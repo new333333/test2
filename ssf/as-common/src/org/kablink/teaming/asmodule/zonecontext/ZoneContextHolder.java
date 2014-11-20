@@ -35,6 +35,8 @@ package org.kablink.teaming.asmodule.zonecontext;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class ZoneContextHolder {
 	
     private static final ThreadLocal<String> SERVER_NAME = new ThreadLocal<String>();
@@ -43,6 +45,7 @@ public class ZoneContextHolder {
     private static final ThreadLocal<String> CLIENT_ADDR = new ThreadLocal<String>();
     private static final ThreadLocal<String> WEBAPP_NAME = new ThreadLocal<String>();
     private static final ThreadLocal<Boolean> USE_RUNTIME_CONTEXT = new ThreadLocal<Boolean>();
+    private static final ThreadLocal<HttpServletRequest> HTTP_SERVLET_REQUEST = new ThreadLocal<HttpServletRequest>();
     // Used by application to set arbitrary properties. The properties can be set any time during the life cycle
     // of the request, and cleared at the very end of the request.
     private static final ThreadLocal<Map<Object,Object>> PROPERTIES = new ThreadLocal<Map<Object,Object>>();
@@ -112,6 +115,14 @@ public class ZoneContextHolder {
     	properties.put(key, value);
     }
     
+    public static HttpServletRequest getHttpServletRequest() {
+    	return HTTP_SERVLET_REQUEST.get();
+    }
+    
+    public static void setHttpServletRequest(HttpServletRequest httpServletRequest) {
+    	HTTP_SERVLET_REQUEST.set(httpServletRequest);
+    }
+    
     public static void clear() {
     	SERVER_NAME.set(null);
     	SERVER_PORT.set(null);
@@ -119,6 +130,7 @@ public class ZoneContextHolder {
     	CLIENT_ADDR.set(null);
     	WEBAPP_NAME.set(null);
     	USE_RUNTIME_CONTEXT.set(null);
+    	HTTP_SERVLET_REQUEST.set(null);
     	Map<Object,Object> properties = PROPERTIES.get();
     	if(properties != null)
     		properties.clear();
