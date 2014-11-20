@@ -79,7 +79,7 @@ public class AdministratorsView extends DataTableFolderViewBase {
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
 		columnWidths.put(FolderColumn.COLUMN_ADMINISTRATOR,  new ColumnWidth(50)         );
-		columnWidths.put(FolderColumn.COLUMN_USER_TYPE,      new ColumnWidth(60, Unit.PX));
+		columnWidths.put(FolderColumn.COLUMN_PRINCIPAL_TYPE, new ColumnWidth(60, Unit.PX));
 		columnWidths.put(FolderColumn.COLUMN_ADMIN_RIGHTS,   new ColumnWidth(75, Unit.PX));
 		columnWidths.put(FolderColumn.COLUMN_EMAIL_ADDRESS,  new ColumnWidth(30)         );
 		columnWidths.put(FolderColumn.COLUMN_LOGIN_ID,       new ColumnWidth(20)         );

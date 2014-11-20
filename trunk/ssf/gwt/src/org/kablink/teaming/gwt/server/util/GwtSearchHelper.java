@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Description;
@@ -1017,7 +1018,7 @@ public class GwtSearchHelper
 				// Yes!  Construct a GwtUser object for it.
 				reply = new GwtUser();
 				reply.setInternal(user.getIdentityInfo().isInternal());
-				reply.setPrincipalType( GwtViewHelper.getUserType( user ) );
+				reply.setPrincipalType( GwtViewHelper.getPrincipalType( user ) );
 				reply.setUserId( user.getId() );
 				reply.setName( user.getName() );
 				reply.setTitle( Utils.getUserTitle( user ) );

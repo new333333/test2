@@ -72,7 +72,7 @@ import org.kablink.teaming.gwt.client.datatable.MobileDevicesColumn;
 import org.kablink.teaming.gwt.client.datatable.MobileDeviceWipeScheduledColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceCell.PresenceClickAction;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
-import org.kablink.teaming.gwt.client.datatable.PrincipalTypeColumn;
+import org.kablink.teaming.gwt.client.datatable.PrincipalAdminTypeColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
 import org.kablink.teaming.gwt.client.datatable.ShareStringValueColumn;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg;
@@ -180,8 +180,8 @@ import org.kablink.teaming.gwt.client.util.EntryPinInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
+import org.kablink.teaming.gwt.client.util.PrincipalAdminType;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
-import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
@@ -1844,20 +1844,20 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 			
 			// No, this column isn't a mobile device wipe scheduled
-			// either!  Is it a user type?
-			else if (FolderColumn.isColumnUserType(cName)) {
+			// either!  Is it a principal type?
+			else if (FolderColumn.isColumnPrincipalType(cName)) {
 				// Yes!  Create a PrincipalTypeColumn for it.
-				column = new PrincipalTypeColumn<FolderRow>(fc) {
+				column = new PrincipalAdminTypeColumn<FolderRow>(fc) {
 					@Override
-					public PrincipalType getValue(FolderRow fr) {
-						return fr.getColumnValueAsPrincipalType(fc);
+					public PrincipalAdminType getValue(FolderRow fr) {
+						return fr.getColumnValueAsPrincipalAdminType(fc);
 					}
 				};
 			}
 			
 			else {
-				// No, this column isn't a user type either!  Define a
-				// StringColumn for it.
+				// No, this column isn't a principal type either!
+				// Define a StringColumn for it.
 				column = new StringColumn<FolderRow>(fc) {
 					@Override
 					public String getValue(FolderRow fr) {

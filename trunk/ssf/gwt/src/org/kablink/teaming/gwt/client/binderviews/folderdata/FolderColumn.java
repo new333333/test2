@@ -84,6 +84,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public final static String COLUMN_LOGIN_ID				= "loginId";
 	public final static String COLUMN_MOBILE_DEVICES		= "mobileDevices";
 	public final static String COLUMN_NETFOLDER_ACCESS		= "netfolder_access";
+	public final static String COLUMN_PRINCIPAL_TYPE		= "principalType";
 	public final static String COLUMN_RATING				= "rating";
 	public final static String COLUMN_RESPONSIBLE			= "responsible";
 	public final static String COLUMN_SHARE_ACCESS			= "share_access";
@@ -98,7 +99,6 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public final static String COLUMN_TASKS					= "tasks";
 	public final static String COLUMN_TEAM_MEMBERS			= "teamMembers";
 	public final static String COLUMN_TITLE					= "title";
-	public final static String COLUMN_USER_TYPE				= "userType";
 	
 	// The following are the various internal names used for columns.
 	public final static String COLUMN_SELECT				= "--select--";
@@ -275,10 +275,10 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public static boolean isColumnNetFolderAccess(    String       columnName) {return columnName.equals(FolderColumn.COLUMN_NETFOLDER_ACCESS);     }
 	public static boolean isColumnRating(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_RATING);               }
 	public static boolean isColumnPresence(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_AUTHOR);               }
+	public static boolean isColumnPrincipalType(      String       columnName) {return columnName.equals(FolderColumn.COLUMN_PRINCIPAL_TYPE);       }
 	public static boolean isColumnTaskFolders(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_TASKS);                }
 	public static boolean isColumnTeamMembers(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_TEAM_MEMBERS);         }
 	public static boolean isColumnTitle(              String       columnName) {return columnName.equals(FolderColumn.COLUMN_TITLE);                }
-	public static boolean isColumnUserType(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_USER_TYPE);            }
 	public static boolean isColumnView(               String       columnName) {return columnName.equals(FolderColumn.COLUMN_HTML);                 }
 	public static boolean isColumnSharedBy(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_SHARED_BY);      }
 	public static boolean isColumnSharedWith(         String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_SHARED_WITH);    }

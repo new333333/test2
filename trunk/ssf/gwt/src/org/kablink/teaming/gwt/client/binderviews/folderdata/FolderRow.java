@@ -54,7 +54,7 @@ import org.kablink.teaming.gwt.client.util.ShareDateInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
 import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
-import org.kablink.teaming.gwt.client.util.PrincipalType;
+import org.kablink.teaming.gwt.client.util.PrincipalAdminType;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 
@@ -93,7 +93,7 @@ public class FolderRow implements IsSerializable {
 	private Map<String, List<ShareExpirationInfo>>	m_rowShareExpirationInfos;	// A map of column names to List<ShareExpirationInfo>'s           possibly stored for a column.
 	private Map<String, List<ShareMessageInfo>>		m_rowShareMessageInfos;		// A map of column names to List<ShareMessageInfo>'s              possibly stored for a column.
 	private Map<String, String>						m_rowStrings;				// A map of column names to String values                         possibly stored for a column.
-	private Map<String, PrincipalType>			    m_rowPrincipalTypes;		// A map of column names to PrincipalType values                  possibly stored for a column.
+	private Map<String, PrincipalAdminType>			m_rowPrincipalAdminTypes;	// A map of column names to PrincipalAdminType values             possibly stored for a column.
 	private String									m_rowFamily;				// Family type of this row's entity.
 	
 	private transient Object						m_serverMobileDevice;		// Used on the server side to refer a MobileDevice object when that's what the row represents.
@@ -176,31 +176,31 @@ public class FolderRow implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean								isHomeDir()                            {                               return m_homeDir;            }
-	public boolean								isMyFilesDir()                         {                               return m_myFilesDir;         }
-	public boolean								isPinned()                             {                               return m_pinned;             }
-	public EntityId								getEntityId()                          {                               return m_entityId;           }
-	public List<FolderColumn>					getColumns()                           {                               return m_columns;            }
-	public Map<String, Boolean>					getRowOverdueDates()                   {validateMapOverdueDates();     return m_rowOverdueDates;    }
-	public Map<String, Boolean>					getRowWipesScheduled()                 {validateMapWipesScheduled();   return m_rowWipesScheduled;  }
-	public Map<String, CommentsInfo>			getRowCommentsMap()                    {validateMapComments();         return m_rowComments;        } 
-	public Map<String, DescriptionHtml>			getRowDescriptionHtmlMap()             {validateMapDescriptionHtmls(); return m_rowDescriptionHtmls;}
-	public Map<String, EmailAddressInfo>		getRowEmailAddressMap()                {validateMapEmailAddresses();   return m_rowEmailAddresses;  }
-	public Map<String, EntryEventInfo>			getRowEntryEventMap()                  {validateMapEvents();           return m_rowEntryEvents;     }
-	public Map<String, EntryLinkInfo>			getRowEntryLinkMap()                   {validateMapLinks();            return m_rowEntryLinks;      }
-	public Map<String, EntryTitleInfo>			getRowEntryTitlesMap()                 {validateMapTitles();           return m_rowEntryTitles;     }
-	public Map<String, GuestInfo>				getRowGuestsMap()                      {validateMapGuests();           return m_rowGuests;          }
-	public Map<String, List<AssignmentInfo>>	getRowAssigneeInfoListsMap()           {validateMapAssignees();        return m_rowAssigneeInfos;   }
-	public Map<String, MobileDevicesInfo>		getRowMobileDevicesMap()               {validateMapMobileDevices();    return m_rowMobileDevices;   } 
-	public Map<String, PrincipalInfo>			getRowPrincipalsMap()                  {validateMapPrincipals();       return m_rowPrincipals;      }
-	public Map<String, PrincipalInfoId>			getRowPrincipalIdsMap()                {validateMapPrincipalIds();     return m_rowPrincipalIds;    }
-	public Map<String, List<TaskFolderInfo>>	getRowTaskFolderInfoListsMap()         {validateMapTaskFolders();      return m_rowTaskFolderInfos; } 
-	public Map<String, ViewFileInfo>			getRowViewFilesMap()                   {validateMapViews();            return m_rowViewFiles;       } 
-	public Map<String, String>					getRowStringsMap()                     {validateMapStrings();          return m_rowStrings;         }
-	public Map<String, PrincipalType>			getRowPrincipalTypesMap()              {validateMapPrincipalTypes();   return m_rowPrincipalTypes;  }
-	public Object								getServerMobileDevice()                {                               return m_serverMobileDevice; }
-	public String								getBinderIcon(BinderIconSize iconSize) {return m_binderIcons.getBinderIcon(iconSize);               }
-	public String								getRowFamily()                         {return m_rowFamily;                                         }
+	public boolean								isHomeDir()                            {                                  return m_homeDir;               }
+	public boolean								isMyFilesDir()                         {                                  return m_myFilesDir;            }
+	public boolean								isPinned()                             {                                  return m_pinned;                }
+	public EntityId								getEntityId()                          {                                  return m_entityId;              }
+	public List<FolderColumn>					getColumns()                           {                                  return m_columns;               }
+	public Map<String, Boolean>					getRowOverdueDates()                   {validateMapOverdueDates();        return m_rowOverdueDates;       }
+	public Map<String, Boolean>					getRowWipesScheduled()                 {validateMapWipesScheduled();      return m_rowWipesScheduled;     }
+	public Map<String, CommentsInfo>			getRowCommentsMap()                    {validateMapComments();            return m_rowComments;           } 
+	public Map<String, DescriptionHtml>			getRowDescriptionHtmlMap()             {validateMapDescriptionHtmls();    return m_rowDescriptionHtmls;   }
+	public Map<String, EmailAddressInfo>		getRowEmailAddressMap()                {validateMapEmailAddresses();      return m_rowEmailAddresses;     }
+	public Map<String, EntryEventInfo>			getRowEntryEventMap()                  {validateMapEvents();              return m_rowEntryEvents;        }
+	public Map<String, EntryLinkInfo>			getRowEntryLinkMap()                   {validateMapLinks();               return m_rowEntryLinks;         }
+	public Map<String, EntryTitleInfo>			getRowEntryTitlesMap()                 {validateMapTitles();              return m_rowEntryTitles;        }
+	public Map<String, GuestInfo>				getRowGuestsMap()                      {validateMapGuests();              return m_rowGuests;             }
+	public Map<String, List<AssignmentInfo>>	getRowAssigneeInfoListsMap()           {validateMapAssignees();           return m_rowAssigneeInfos;      }
+	public Map<String, MobileDevicesInfo>		getRowMobileDevicesMap()               {validateMapMobileDevices();       return m_rowMobileDevices;      } 
+	public Map<String, PrincipalInfo>			getRowPrincipalsMap()                  {validateMapPrincipals();          return m_rowPrincipals;         }
+	public Map<String, PrincipalInfoId>			getRowPrincipalIdsMap()                {validateMapPrincipalIds();        return m_rowPrincipalIds;       }
+	public Map<String, List<TaskFolderInfo>>	getRowTaskFolderInfoListsMap()         {validateMapTaskFolders();         return m_rowTaskFolderInfos;    } 
+	public Map<String, ViewFileInfo>			getRowViewFilesMap()                   {validateMapViews();               return m_rowViewFiles;          } 
+	public Map<String, String>					getRowStringsMap()                     {validateMapStrings();             return m_rowStrings;            }
+	public Map<String, PrincipalAdminType>		getRowPrincipalAdminTypesMap()         {validateMapPrincipalAdminTypes(); return m_rowPrincipalAdminTypes;}
+	public Object								getServerMobileDevice()                {                                  return m_serverMobileDevice;    }
+	public String								getBinderIcon(BinderIconSize iconSize) {return m_binderIcons.getBinderIcon(iconSize);                     }
+	public String								getRowFamily()                         {return m_rowFamily;                                               }
 
 	/**
 	 * Set'er methods.
@@ -231,20 +231,20 @@ public class FolderRow implements IsSerializable {
 	 */
 	public void setColumnValue(FolderColumn fc, Object v) {
 		String vk = getValueKey(fc);
-		if      (v instanceof String)            {validateMapStrings();          m_rowStrings.put(         vk, ((String)            v));}
-		else if (v instanceof CommentsInfo)      {validateMapComments();         m_rowComments.put(        vk, ((CommentsInfo)      v));}
-		else if (v instanceof DescriptionHtml)   {validateMapDescriptionHtmls(); m_rowDescriptionHtmls.put(vk, ((DescriptionHtml)   v));}
-		else if (v instanceof EmailAddressInfo)  {validateMapEmailAddresses();   m_rowEmailAddresses.put(  vk, ((EmailAddressInfo)  v));}
-		else if (v instanceof EntryEventInfo)    {validateMapEvents();           m_rowEntryEvents.put(     vk, ((EntryEventInfo)    v));}
-		else if (v instanceof EntryLinkInfo)     {validateMapLinks();            m_rowEntryLinks.put(      vk, ((EntryLinkInfo)     v));}
-		else if (v instanceof EntryTitleInfo)    {validateMapTitles();           m_rowEntryTitles.put(     vk, ((EntryTitleInfo)    v));}
-		else if (v instanceof GuestInfo)         {validateMapGuests();           m_rowGuests.put(          vk, ((GuestInfo)         v));}
-		else if (v instanceof MobileDevicesInfo) {validateMapMobileDevices();    m_rowMobileDevices.put(   vk, ((MobileDevicesInfo) v));}
-		else if (v instanceof PrincipalInfo)     {validateMapPrincipals();       m_rowPrincipals.put(      vk, ((PrincipalInfo)     v));}
-		else if (v instanceof PrincipalInfoId)   {validateMapPrincipalIds();     m_rowPrincipalIds.put(    vk, ((PrincipalInfoId)   v));}
-		else if (v instanceof PrincipalType)     {validateMapPrincipalTypes();   m_rowPrincipalTypes.put(  vk, ((PrincipalType)     v));}
-		else if (v instanceof ViewFileInfo)      {validateMapViews();            m_rowViewFiles.put(       vk, ((ViewFileInfo)      v));}
-		else                                     {validateMapStrings();          m_rowStrings.put(         vk, v.toString());           }
+		if      (v instanceof String)             {validateMapStrings();             m_rowStrings.put(            vk, ((String)             v));}
+		else if (v instanceof CommentsInfo)       {validateMapComments();            m_rowComments.put(           vk, ((CommentsInfo)       v));}
+		else if (v instanceof DescriptionHtml)    {validateMapDescriptionHtmls();    m_rowDescriptionHtmls.put(   vk, ((DescriptionHtml)    v));}
+		else if (v instanceof EmailAddressInfo)   {validateMapEmailAddresses();      m_rowEmailAddresses.put(     vk, ((EmailAddressInfo)   v));}
+		else if (v instanceof EntryEventInfo)     {validateMapEvents();              m_rowEntryEvents.put(        vk, ((EntryEventInfo)     v));}
+		else if (v instanceof EntryLinkInfo)      {validateMapLinks();               m_rowEntryLinks.put(         vk, ((EntryLinkInfo)      v));}
+		else if (v instanceof EntryTitleInfo)     {validateMapTitles();              m_rowEntryTitles.put(        vk, ((EntryTitleInfo)     v));}
+		else if (v instanceof GuestInfo)          {validateMapGuests();              m_rowGuests.put(             vk, ((GuestInfo)          v));}
+		else if (v instanceof MobileDevicesInfo)  {validateMapMobileDevices();       m_rowMobileDevices.put(      vk, ((MobileDevicesInfo)  v));}
+		else if (v instanceof PrincipalInfo)      {validateMapPrincipals();          m_rowPrincipals.put(         vk, ((PrincipalInfo)      v));}
+		else if (v instanceof PrincipalInfoId)    {validateMapPrincipalIds();        m_rowPrincipalIds.put(       vk, ((PrincipalInfoId)    v));}
+		else if (v instanceof PrincipalAdminType) {validateMapPrincipalAdminTypes(); m_rowPrincipalAdminTypes.put(vk, ((PrincipalAdminType) v));}
+		else if (v instanceof ViewFileInfo)       {validateMapViews();               m_rowViewFiles.put(          vk, ((ViewFileInfo)       v));}
+		else                                      {validateMapStrings();             m_rowStrings.put(            vk, v.toString());            }
 	}
 	
 	public void setColumnValue_AssignmentInfos(FolderColumn fc, List<AssignmentInfo> aiList) {
@@ -510,14 +510,14 @@ public class FolderRow implements IsSerializable {
 	}
 
 	/**
-	 * Returns the PrincipalType value for a specific column.
+	 * Returns the PrincipalAdminType value for a specific column.
 	 * 
 	 * @param fc
 	 * 
 	 * @return
 	 */
-	public PrincipalType getColumnValueAsPrincipalType(FolderColumn fc) {
-		return ((null == m_rowPrincipalTypes) ? null : m_rowPrincipalTypes.get(getValueKey(fc)));
+	public PrincipalAdminType getColumnValueAsPrincipalAdminType(FolderColumn fc) {
+		return ((null == m_rowPrincipalAdminTypes) ? null : m_rowPrincipalAdminTypes.get(getValueKey(fc)));
 	}
 
 	/**
@@ -736,15 +736,15 @@ public class FolderRow implements IsSerializable {
 	}
 	
 	/**
-	 * Returns true if a column's value is a PrincipalType and false
-	 * otherwise.
+	 * Returns true if a column's value is a PrincipalAdminType and
+	 * false otherwise.
 	 * 
 	 * @param fc
 	 * 
 	 * @return
 	 */
-	public boolean isColumnValuePrincipalType(FolderColumn fc) {
-		return ((null != m_rowPrincipalTypes) && (null != m_rowPrincipalTypes.get(getValueKey(fc))));
+	public boolean isColumnValuePrincipalAdminType(FolderColumn fc) {
+		return ((null != m_rowPrincipalAdminTypes) && (null != m_rowPrincipalAdminTypes.get(getValueKey(fc))));
 	}
 
 	/**
@@ -769,25 +769,25 @@ public class FolderRow implements IsSerializable {
 	/*
 	 * Validates that the various Maps have been defined.
 	 */
-	private void validateMapAssignees()        {if (null == m_rowAssigneeInfos)			m_rowAssigneeInfos			= new HashMap<String, List<AssignmentInfo>>();     }
-	private void validateMapOverdueDates()     {if (null == m_rowOverdueDates)  		m_rowOverdueDates			= new HashMap<String, Boolean>();                  }
-	private void validateMapWipesScheduled()   {if (null == m_rowWipesScheduled)  		m_rowWipesScheduled			= new HashMap<String, Boolean>();                  }
-	private void validateMapComments()         {if (null == m_rowComments)				m_rowComments				= new HashMap<String, CommentsInfo>();             }
-	private void validateMapDescriptionHtmls() {if (null == m_rowDescriptionHtmls)		m_rowDescriptionHtmls		= new HashMap<String, DescriptionHtml>();          }
-	private void validateMapEmailAddresses()   {if (null == m_rowEmailAddresses)		m_rowEmailAddresses			= new HashMap<String, EmailAddressInfo>();         }
-	private void validateMapEvents()           {if (null == m_rowEntryEvents)			m_rowEntryEvents			= new HashMap<String, EntryEventInfo>();           }
-	private void validateMapGuests()           {if (null == m_rowGuests)		    	m_rowGuests			    	= new HashMap<String, GuestInfo>();                }
-	private void validateMapLinks()            {if (null == m_rowEntryLinks)			m_rowEntryLinks				= new HashMap<String, EntryLinkInfo>();            }
-	private void validateMapMobileDevices()    {if (null == m_rowMobileDevices)			m_rowMobileDevices			= new HashMap<String, MobileDevicesInfo>();        }
-	private void validateMapPrincipals()       {if (null == m_rowPrincipals)			m_rowPrincipals				= new HashMap<String, PrincipalInfo>();            }
-	private void validateMapPrincipalIds()     {if (null == m_rowPrincipalIds)			m_rowPrincipalIds			= new HashMap<String, PrincipalInfoId>();          }
-	private void validateMapTaskFolders()      {if (null == m_rowTaskFolderInfos)		m_rowTaskFolderInfos		= new HashMap<String, List<TaskFolderInfo>>();     }
-	private void validateMapTitles()           {if (null == m_rowEntryTitles)			m_rowEntryTitles			= new HashMap<String, EntryTitleInfo>();           }
-	private void validateMapShareAccesses()    {if (null == m_rowShareAccessInfos)		m_rowShareAccessInfos		= new HashMap<String, List<ShareAccessInfo>>();    }
-	private void validateMapShareDates()       {if (null == m_rowShareDateInfos)		m_rowShareDateInfos			= new HashMap<String, List<ShareDateInfo>>();      }
-	private void validateMapShareExpirations() {if (null == m_rowShareExpirationInfos)	m_rowShareExpirationInfos	= new HashMap<String, List<ShareExpirationInfo>>();}
-	private void validateMapShareMessages()    {if (null == m_rowShareMessageInfos)		m_rowShareMessageInfos		= new HashMap<String, List<ShareMessageInfo>>();   }
-	private void validateMapStrings()          {if (null == m_rowStrings)				m_rowStrings				= new HashMap<String, String>();                   }
-	private void validateMapPrincipalTypes()   {if (null == m_rowPrincipalTypes)		m_rowPrincipalTypes			= new HashMap<String, PrincipalType>();            }
-	private void validateMapViews()            {if (null == m_rowViewFiles)				m_rowViewFiles				= new HashMap<String, ViewFileInfo>();             }
+	private void validateMapAssignees()           {if (null == m_rowAssigneeInfos)			m_rowAssigneeInfos			= new HashMap<String, List<AssignmentInfo>>();     }
+	private void validateMapOverdueDates()        {if (null == m_rowOverdueDates)  			m_rowOverdueDates			= new HashMap<String, Boolean>();                  }
+	private void validateMapWipesScheduled()      {if (null == m_rowWipesScheduled)  		m_rowWipesScheduled			= new HashMap<String, Boolean>();                  }
+	private void validateMapComments()            {if (null == m_rowComments)				m_rowComments				= new HashMap<String, CommentsInfo>();             }
+	private void validateMapDescriptionHtmls()    {if (null == m_rowDescriptionHtmls)		m_rowDescriptionHtmls		= new HashMap<String, DescriptionHtml>();          }
+	private void validateMapEmailAddresses()      {if (null == m_rowEmailAddresses)			m_rowEmailAddresses			= new HashMap<String, EmailAddressInfo>();         }
+	private void validateMapEvents()              {if (null == m_rowEntryEvents)			m_rowEntryEvents			= new HashMap<String, EntryEventInfo>();           }
+	private void validateMapGuests()              {if (null == m_rowGuests)		    		m_rowGuests			    	= new HashMap<String, GuestInfo>();                }
+	private void validateMapLinks()               {if (null == m_rowEntryLinks)				m_rowEntryLinks				= new HashMap<String, EntryLinkInfo>();            }
+	private void validateMapMobileDevices()       {if (null == m_rowMobileDevices)			m_rowMobileDevices			= new HashMap<String, MobileDevicesInfo>();        }
+	private void validateMapPrincipals()          {if (null == m_rowPrincipals)				m_rowPrincipals				= new HashMap<String, PrincipalInfo>();            }
+	private void validateMapPrincipalIds()        {if (null == m_rowPrincipalIds)			m_rowPrincipalIds			= new HashMap<String, PrincipalInfoId>();          }
+	private void validateMapTaskFolders()         {if (null == m_rowTaskFolderInfos)		m_rowTaskFolderInfos		= new HashMap<String, List<TaskFolderInfo>>();     }
+	private void validateMapTitles()              {if (null == m_rowEntryTitles)			m_rowEntryTitles			= new HashMap<String, EntryTitleInfo>();           }
+	private void validateMapShareAccesses()       {if (null == m_rowShareAccessInfos)		m_rowShareAccessInfos		= new HashMap<String, List<ShareAccessInfo>>();    }
+	private void validateMapShareDates()          {if (null == m_rowShareDateInfos)			m_rowShareDateInfos			= new HashMap<String, List<ShareDateInfo>>();      }
+	private void validateMapShareExpirations()    {if (null == m_rowShareExpirationInfos)	m_rowShareExpirationInfos	= new HashMap<String, List<ShareExpirationInfo>>();}
+	private void validateMapShareMessages()       {if (null == m_rowShareMessageInfos)		m_rowShareMessageInfos		= new HashMap<String, List<ShareMessageInfo>>();   }
+	private void validateMapStrings()             {if (null == m_rowStrings)				m_rowStrings				= new HashMap<String, String>();                   }
+	private void validateMapPrincipalAdminTypes() {if (null == m_rowPrincipalAdminTypes)	m_rowPrincipalAdminTypes	= new HashMap<String, PrincipalAdminType>();       }
+	private void validateMapViews()               {if (null == m_rowViewFiles)				m_rowViewFiles				= new HashMap<String, ViewFileInfo>();             }
 }

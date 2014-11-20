@@ -33,7 +33,7 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.util.PrincipalType;
+import org.kablink.teaming.gwt.client.util.PrincipalAdminType;
 
 /**
  * A column that displays a principal type image.
@@ -42,11 +42,11 @@ import org.kablink.teaming.gwt.client.util.PrincipalType;
  * 
  * @author drfoster@novell.com
  */
-public abstract class PrincipalTypeColumn<T> extends VibeColumn<T, PrincipalType> {
+public abstract class PrincipalAdminTypeColumn<T> extends VibeColumn<T, PrincipalAdminType> {
   /**
    * Constructor method.
    */
-  public PrincipalTypeColumn(FolderColumn fc) {
-	  super(fc, new PrincipalTypeCell());
+  public PrincipalAdminTypeColumn(FolderColumn fc) {
+	  super(fc, new PrincipalAdminTypeCell());
   }
 }
