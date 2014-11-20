@@ -57,7 +57,6 @@ import org.kablink.teaming.security.accesstoken.AccessTokenManager;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.WebHelper;
 
@@ -122,42 +121,40 @@ public class DispatchServer extends GenericServlet {
 
 			WebHelper.putContext(ses, user);
 
-			if(!Utils.checkIfFilr()) { // Do this only for Vibe
-				final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
-				if(infoId == null) { 
-					if(!user.isShared() || 
-							SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
-						// Make sure to run it in the user's context.			
-						RunasTemplate.runas(new RunasCallback() {
-							public Object doAs() {
-								String infoId = accessTokenManager.createTokenInfoSession(user.getId(), ses.getId());
-								ses.setAttribute(WebKeys.TOKEN_INFO_ID, infoId);
-								return null;
-							}
-						}, user);						
-					}
+			final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
+			if(infoId == null) { 
+				if(!user.isShared() || 
+						SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
+					// Make sure to run it in the user's context.			
+					RunasTemplate.runas(new RunasCallback() {
+						public Object doAs() {
+							String infoId = accessTokenManager.createTokenInfoSession(user.getId(), ses.getId());
+							ses.setAttribute(WebKeys.TOKEN_INFO_ID, infoId);
+							return null;
+						}
+					}, user);						
 				}
-				else if (!user.getId().equals(oldUserId)) {
-					// The portal is re-using the same session while changing the owner(user). 
-					if(!user.isShared() || 
-							SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
-						RunasTemplate.runas(new RunasCallback() {
-							public Object doAs() {
-								accessTokenManager.updateTokenInfoSession(infoId, user.getId(), ses.getId());
-								return null;
-							}
-						}, user);						
-					}
-					else {
-						// The current user is guest and the configuration doesn't allow guest to use interactive tokens.
-						// Run this in the old user's context.			
-						RunasTemplate.runas(new RunasCallback() {
-							public Object doAs() {
-								accessTokenManager.destroyTokenInfoSession(infoId);
-								return null;
-							}
-						}, user.getZoneId(), oldUserId);									
-					}
+			}
+			else if (!user.getId().equals(oldUserId)) {
+				// The portal is re-using the same session while changing the owner(user). 
+				if(!user.isShared() || 
+						SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
+					RunasTemplate.runas(new RunasCallback() {
+						public Object doAs() {
+							accessTokenManager.updateTokenInfoSession(infoId, user.getId(), ses.getId());
+							return null;
+						}
+					}, user);						
+				}
+				else {
+					// The current user is guest and the configuration doesn't allow guest to use interactive tokens.
+					// Run this in the old user's context.			
+					RunasTemplate.runas(new RunasCallback() {
+						public Object doAs() {
+							accessTokenManager.destroyTokenInfoSession(infoId);
+							return null;
+						}
+					}, user.getZoneId(), oldUserId);									
 				}
 			}
 		}
