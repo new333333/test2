@@ -320,6 +320,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case ADD_PRINCIPAL_ADMIN_RIGHTS:
+				// An AddPrincipalAdminRightsEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof AddPrincipalAdminRightsEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = AddPrincipalAdminRightsEvent.registerEvent(eventBus, ((AddPrincipalAdminRightsEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case ADMINISTRATION:
 				// An AdministrationEvent!  Can the event handler we
 				// were given handle that?
@@ -3083,6 +3092,7 @@ public class EventHelper {
 			case VIEW_WHATS_UNSEEN_IN_BINDER:			       hasHandler = (eventHandler instanceof ViewWhatsUnseenInBinderEvent.Handler);                break;
 			case VIEW_WHO_HAS_ACCESS:                  	       hasHandler = (eventHandler instanceof ViewWhoHasAccessEvent.Handler);                       break;
 			
+			case ADD_PRINCIPAL_ADMIN_RIGHTS:                   hasHandler = (eventHandler instanceof AddPrincipalAdminRightsEvent.Handler);                break;
 			case CHANGE_ENTRY_TYPE_SELECTED_ENTITIES:          hasHandler = (eventHandler instanceof ChangeEntryTypeSelectedEntitiesEvent.Handler);        break;
 			case CHANGE_FAVORITE_STATE:                        hasHandler = (eventHandler instanceof ChangeFavoriteStateEvent.Handler);                    break;
 			case CHECK_MANAGE_DLG_ACTIVE:                      hasHandler = (eventHandler instanceof CheckManageDlgActiveEvent.Handler);                   break;

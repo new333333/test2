@@ -197,6 +197,7 @@ public class GwtAdministratorsHelper {
 							if (GwtViewHelper.valueContainsQuickFilter(ai.getTitle(), quickFilter)) {
 								// ...add the row to the reply list.
 								reply.add(fr);
+								break;
 							}
 						}
 						
@@ -207,6 +208,7 @@ public class GwtAdministratorsHelper {
 							if ((null != eai) && GwtViewHelper.valueContainsQuickFilter(eai.getEmailAddress(), quickFilter)) {
 								// ...add the row to the reply list.
 								reply.add(fr);
+								break;
 							}
 						}
 						
@@ -223,6 +225,7 @@ public class GwtAdministratorsHelper {
 							if (GwtViewHelper.valueContainsQuickFilter(sv, quickFilter)) {
 								// ...add the row to the reply list.
 								reply.add(fr);
+								break;
 							}
 						}
 					}
@@ -344,6 +347,7 @@ public class GwtAdministratorsHelper {
 						GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      FolderColumn.COLUMN_ADMIN_RIGHTS),
 						GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false                           ),
 						folderColumns);
+				
 				Collections.sort(adminRows, comparator);
 			}
 				

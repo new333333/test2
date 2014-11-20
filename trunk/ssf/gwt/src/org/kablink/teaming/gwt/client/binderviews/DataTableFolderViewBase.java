@@ -3707,9 +3707,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	@Override
 	public void onSetSelectedPrincipalsAdminRights(SetSelectedPrincipalsAdminRightsEvent event) {
 		// We only support setting binder rights from the root personal
-		// workspace in management mode.  Is it supported?
+		// workspace in management mode or manage administrators.  Is
+		// it supported?
 		WorkspaceType wt = getFolderInfo().getWorkspaceType();
-		if (wt.isProfileRootManagement()) {
+		if (wt.isAdministratorManagement() || wt.isProfileRootManagement()) {
 			// Yes!  Is the event targeted to this folder?
 			Long eventBinderId = event.getBinderId();
 			if (eventBinderId.equals(getFolderInfo().getBinderIdAsLong())) {

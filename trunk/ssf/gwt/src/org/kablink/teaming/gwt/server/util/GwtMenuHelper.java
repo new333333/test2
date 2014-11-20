@@ -972,6 +972,25 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem for the root manage administrators
+	 * view.
+	 */
+	private static void constructEntryManageAdminsItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws) {
+		// Add an 'Add' rights item...
+		ToolbarItem manageAdminTBI = new ToolbarItem("1_addAdminRights");
+		markTBITitle(manageAdminTBI, "toolbar.admin.addRights");
+		markTBIEvent(manageAdminTBI, TeamingEvents.ADD_PRINCIPAL_ADMIN_RIGHTS);
+		entryToolbar.addNestedItem(manageAdminTBI);
+		
+		// ...and a 'Remove' rights item...
+		manageAdminTBI = new ToolbarItem("1_removeAdminRights");
+		markTBITitle(manageAdminTBI, "toolbar.admin.removeRights");
+		markTBIEvent(manageAdminTBI, TeamingEvents.SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS);
+		markTBIBoolean(manageAdminTBI, "setRights", Boolean.FALSE);
+		entryToolbar.addNestedItem(manageAdminTBI);
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for managing the shares for the
 	 * selected entries.
 	 */
@@ -3632,12 +3651,13 @@ public class GwtMenuHelper {
 			constructEntryPinnedItem(entryToolbar, bs, request, folder);
 
 			// Are we returning the toolbar items for other than a
-			// trash or collections view and are we in other than Filr
-			// mode?
+			// trash, collections mobile devices or administrator
+			// management view and are we in other than Filr mode?
 			boolean isBinderCollection    = folderInfo.isBinderCollection();
+			boolean isBinderManageAdmins  = folderInfo.isBinderAdministratorManagement();
 			boolean isBinderMobileDevices = folderInfo.isBinderMobileDevices();
 			boolean isBinderTrash         = folderInfo.isBinderTrash();
-			if ((!isBinderTrash) && (!isBinderCollection) && (!isBinderMobileDevices) && (!(Utils.checkIfFilr()))) {
+			if ((!isBinderTrash) && (!isBinderCollection) && (!isBinderMobileDevices) && (!isBinderManageAdmins) && (!(Utils.checkIfFilr()))) {
 				// Yes!  Add the configure accessories item to the
 				// toolbar...
 				constructEntryConfigureAccessories(
@@ -3669,8 +3689,17 @@ public class GwtMenuHelper {
 			}
 			
 			// No, we aren't returning the toolbar items for a trash
-			// view!  Are we returning them for the root profiles
-			// workspace view?
+			// view!  Are we returning them for the administrator
+			// management view?
+			else if (isBinderManageAdmins) {
+				// Yes!  Construct the items for managing
+				// administrators.
+				constructEntryManageAdminsItems(entryToolbar, bs, request, ws);
+			}
+			
+			// No, we aren't returning the toolbar items for the
+			// administrator management view either!  Are we returning
+			// them for the root profiles workspace view?
 			else if (folderInfo.isBinderProfilesRootWS()) {
 				// Yes!  Can the user access the root profiles binder?
 				if (GwtServerHelper.canUserViewBinder(bs, folderInfo)) {

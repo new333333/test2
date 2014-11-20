@@ -285,6 +285,7 @@ public enum TeamingEvents implements IsSerializable {
 	VIEW_WHATS_NEW_IN_BINDER,						// Shows the items that are new    in the current binder.
 	VIEW_WHO_HAS_ACCESS,							// Opens the who has access viewer on an item.
 
+	ADD_PRINCIPAL_ADMIN_RIGHTS,						// Allows selection of users or groups to add administration rights to.
 	CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,			// Changes the Entry Type of the Selected Entities.
 	CHANGE_FAVORITE_STATE,							// Changes the favorites state of a binder.
 	CHECK_MANAGE_DLG_ACTIVE,						// Event to detect if the administration console's manage facilities (i.e., users or teams) is active.

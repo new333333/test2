@@ -3010,17 +3010,21 @@ public class GwtViewHelper {
 	 *    contain multiple parts was reverse engineered from that used
 	 *    by folder_view_common2.jsp or view_trash.jsp.
 	 */
-	private static void fixupFCs(List<FolderColumn> fcList, boolean isTrash, boolean isCollection, CollectionType ct, boolean isFileFolder) {
+	private static void fixupFCs(List<FolderColumn> fcList, boolean isTrash, boolean isCollection, CollectionType ct, boolean isFileFolder, boolean isManageAdmins) {
 		// We need to handle the columns that were added for
 		// collections.
 		String dateCSK;
 		if (isFileFolder || (isCollection && (ct.isMyFiles() || ct.isNetFolders())))
 		     dateCSK = Constants.FILE_TIME_FIELD; 
 		else dateCSK = Constants.MODIFICATION_DATE_FIELD;
+		String adminRightsCSK;
+		if (isManageAdmins)
+		     adminRightsCSK = FolderColumn.COLUMN_ADMIN_RIGHTS;
+		else adminRightsCSK = Constants.SITE_ADMIN_FIELD;
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
 			if      (colName.equals("administrator"))        {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMINISTRATOR);                                                                            }
-			else if (colName.equals("adminRights"))          {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMIN_RIGHTS);          fc.setColumnSortKey(Constants.SITE_ADMIN_FIELD);                   }
+			else if (colName.equals("adminRights"))          {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMIN_RIGHTS);          fc.setColumnSortKey(adminRightsCSK);                               }
 			else if (colName.equals("author"))               {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);           }
 			else if (colName.equals("comments"))             {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                                              }
 			else if (colName.equals("date"))                 {fc.setColumnSearchKey(dateCSK);                                                                                                      }
@@ -4159,7 +4163,8 @@ public class GwtViewHelper {
 			// Are we showing the trash on this folder?
 			String baseNameKey;
 			CollectionType collectionType = folderInfo.getCollectionType();
-			boolean        isMobileDevicesView = folderInfo.getWorkspaceType().isMobileDevices();
+			boolean        isManageAdmins      = folderInfo.isBinderAdministratorManagement();
+			boolean        isMobileDevicesView = folderInfo.isBinderMobileDevices();
 			boolean        isFileFolder        = ((null != folder) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)));
 			boolean        isCollection        = folderInfo.isBinderCollection();
 			boolean        isTrash             = folderInfo.isBinderTrash();
@@ -4183,7 +4188,7 @@ public class GwtViewHelper {
 			// No, we aren't showing a mobile devices view either!  Are
 			// we looking at the root profiles binder in administrators
 			// mode?
-			else if (folderInfo.isBinderAdministratorManagement()) {
+			else if (isManageAdmins) {
 				baseNameKey = "administrators.column.";
 				columnNames = getColumnsLHMFromAS(new String[]{"administrator", "userType", "adminRights", "emailAddress", "loginId"});
 			}
@@ -4404,7 +4409,7 @@ public class GwtViewHelper {
 
 			// Walk the List<FolderColumn>'s performing fixups on each
 			// as necessary.
-			fixupFCs(fcList, isTrash, isCollection, collectionType, isFileFolder);
+			fixupFCs(fcList, isTrash, isCollection, collectionType, isFileFolder, isManageAdmins);
 			
 
 			if (includeConfigurationInfo && (!isTrash) && (!isCollection)) {
@@ -6774,7 +6779,7 @@ public class GwtViewHelper {
 		String reply = "";
 		if ((p instanceof GroupPrincipal) || (p instanceof Group)) {
 			if (hasAdminRights)
-			     reply = NLT.get( "siteAdmin.admin" );
+			     reply = NLT.get( "siteAdmin.group" );
 			else reply = "";
 		}
 		

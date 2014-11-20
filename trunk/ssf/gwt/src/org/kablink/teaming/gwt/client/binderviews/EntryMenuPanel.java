@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.MenuIds;
+import org.kablink.teaming.gwt.client.event.AddPrincipalAdminRightsEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowHintEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
@@ -174,6 +175,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	private VibeFlowPanel					m_filtersPanel;				//
 	private VibeFlowPanel					m_quickFilterPanel;			//
 	private VibeMenuBar						m_entryMenu;				//
+	private VibeMenuItem					m_addAdminRightsMenu;		//
 	private VibeMenuItem					m_addFilesMenu;				//
 	private VibeMenuItem					m_deleteMenu;				//
 	private VibeMenuItem					m_detailsMenu;				//
@@ -1316,6 +1318,10 @@ public class EntryMenuPanel extends ToolPanelBase
 					case VIEW_SELECTED_ENTRY:                           event = new ViewSelectedEntryEvent(                      folderId      ); break;
 					case ZIP_AND_DOWNLOAD_SELECTED_FILES:               event = new ZipAndDownloadSelectedFilesEvent(            folderId, true); break;
 					
+					case ADD_PRINCIPAL_ADMIN_RIGHTS:
+						event = new AddPrincipalAdminRightsEvent(folderId, m_addAdminRightsMenu);
+						break;
+					
 					case CALENDAR_SHOW:
 						int calendarShow = Integer.parseInt(simpleTBI.getQualifierValue("calendarShow"));
 						event = new CalendarShowEvent(folderId, CalendarShow.getEnum(calendarShow));
@@ -1368,6 +1374,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		});
 		reply.getElement().setId(simpleTBI.getName());
 		switch (simpleTBI.getTeamingEvent()) {
+		case ADD_PRINCIPAL_ADMIN_RIGHTS:      m_addAdminRightsMenu       = reply; break;
 		case INVOKE_DROPBOX:                  m_addFilesMenu             = reply; break;
 		case DELETE_SELECTED_ENTITIES:        m_deleteMenu               = reply; break;
 		case DELETE_SELECTED_MOBILE_DEVICES:  m_deleteMenu               = reply; break;
@@ -1628,6 +1635,7 @@ public class EntryMenuPanel extends ToolPanelBase
 				reply = m_binderInfo.getMobileDevicesViewSpec().isSystem();
 				break;
 
+			case ADMINISTRATOR_MANAGEMENT:
 			case GLOBAL_ROOT:
 			case PROFILE_ROOT:
 			case PROFILE_ROOT_MANAGEMENT:
