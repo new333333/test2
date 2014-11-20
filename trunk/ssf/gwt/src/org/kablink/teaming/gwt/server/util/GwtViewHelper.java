@@ -187,8 +187,6 @@ import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
-import org.kablink.teaming.gwt.client.util.UserAndGroupType;
-import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
@@ -198,6 +196,7 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
 import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
+import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
 import org.kablink.teaming.gwt.client.util.UploadInfo;
@@ -5956,8 +5955,7 @@ public class GwtViewHelper {
 										// Are we working on the internal/external flag of a user?
 										else if (csk.equals(Constants.IDENTITY_INTERNAL_FIELD)) {
 											// Yes!  Store a user type for it.
-											UserAndGroupType ugt = new UserAndGroupType(getPrincipalType(bs, request, entityId));
-											fr.setColumnValue(fc, ugt);
+											fr.setColumnValue(fc, getPrincipalType(bs, request, entityId));
 										}
 										
 										else {
@@ -7641,7 +7639,7 @@ public class GwtViewHelper {
 				reply.setAccountInfo(ai);
 				ai.setLoginId(user.getName());
 				ai.setFromOpenId(userII.isFromOpenid());
-				ai.setUserType(getUserType(user));
+				ai.setPrincipalType(getUserType(user));
 				ai.setUserHasLoggedIn(null != user.getFirstLoginDate());
 			}
 			finally {
@@ -7924,45 +7922,64 @@ public class GwtViewHelper {
 	 * 
 	 * @return
 	 */
-	public static UserType getUserType(User user) {
+	public static PrincipalType getUserType(User user) {
 		return getPrincipalType(user);
 	}
 	
-	public static UserType getPrincipalType(Principal principal) {
-		// Are they an internal user?
-		UserType reply = UserType.UNKNOWN;
+	public static PrincipalType getPrincipalType(Principal principal) {
+		// Is the Principal a User?
+		PrincipalType reply = PrincipalType.UNKNOWN;
 		IdentityInfo ui = principal.getIdentityInfo();
 		boolean isUser = (principal instanceof User);
-		User    user   = (isUser ? ((User) principal) : null);
-		if (ui.isInternal()) {
-			// Yes!  Are they from LDAP?
-			if (ui.isFromLdap()) {
-				// Yes!
-				reply = UserType.INTERNAL_LDAP;
-			}
-			else {
-				// No, they're not from LDAP!  Is it a person?
-				if (isUser && user.isPerson()) {
+		if (isUser) {
+			// Yes!  Are they an internal user?
+			User user = ((User) principal);
+			if (ui.isInternal()) {
+				// Yes!  Are they from LDAP?
+				if (ui.isFromLdap()) {
 					// Yes!
-					if (principal.isReserved() && principal.getInternalId().equalsIgnoreCase(ObjectKeys.SUPER_USER_INTERNALID))
-					     reply = UserType.INTERNAL_PERSON_ADMIN;
-					else reply = UserType.INTERNAL_PERSON_OTHERS;
+					reply = PrincipalType.INTERNAL_LDAP;
 				}
 				else {
-					// No, it's not a person!
-					reply = (isUser ? UserType.INTERNAL_SYSTEM : UserType.INTERNAL_PERSON_OTHERS);
+					// No, they're not from LDAP!  Is it a person?
+					if (isUser && user.isPerson()) {
+						// Yes!
+						if (principal.isReserved() && principal.getInternalId().equalsIgnoreCase(ObjectKeys.SUPER_USER_INTERNALID))
+						     reply = PrincipalType.INTERNAL_PERSON_ADMIN;
+						else reply = PrincipalType.INTERNAL_PERSON_OTHERS;
+					}
+					else {
+						// No, it's not a person!
+						reply = (isUser ? PrincipalType.INTERNAL_SYSTEM : PrincipalType.INTERNAL_PERSON_OTHERS);
+					}
 				}
 			}
+			else {
+				// No, it's not an internal user!  Is it the Guest user?
+				if      (user.isShared())                            reply = PrincipalType.EXTERNAL_GUEST;
+				else if (ui.isFromOpenid() && (!(ui.isFromLocal()))) reply = PrincipalType.EXTERNAL_OPEN_ID;
+				else                                                 reply = PrincipalType.EXTERNAL_OTHERS;
+			}
 		}
-		else if (isUser) {
-			// No, it's not an internal user!  Is it the Guest user?
-			if      (user.isShared())                            reply = UserType.EXTERNAL_GUEST;
-			else if (ui.isFromOpenid() && (!(ui.isFromLocal()))) reply = UserType.EXTERNAL_OPEN_ID;
-			else                                                 reply = UserType.EXTERNAL_OTHERS;
+		
+		else {
+			// No, it's not a User!  It must be a Group!  Is it from
+			// LDAP?
+			if (ui.isFromLdap()) {
+				// Yes!
+				reply = PrincipalType.LDAP_GROUP;
+			}
+			else {
+				// No, it's not from LDAP!  Is it a system or local
+				// group.
+				if (principal.isReserved())
+				     reply = PrincipalType.SYSTEM_GROUP;
+				else reply = PrincipalType.LOCAL_GROUP;
+			}
 		}
 
-		// If we get here, reply refers to the UserType of the User.
-		// Return it.
+		// If we get here, reply refers to the PrincipalType of the
+		// Principal.  Return it.
 		return reply;
 	}
 	
@@ -7970,8 +7987,8 @@ public class GwtViewHelper {
 	 * Given an EntityId that describes a Principal (user or group),
 	 * returns the type of Principal.
 	 */
-	private static UserType getPrincipalType(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) {
-		UserType reply = UserType.UNKNOWN;
+	private static PrincipalType getPrincipalType(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) {
+		PrincipalType reply = PrincipalType.UNKNOWN;
 		
 		try {
 			// Can we access the User?

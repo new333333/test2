@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,7 +41,7 @@ import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.GwtPrincipal.PrincipalType;
+import org.kablink.teaming.gwt.client.GwtPrincipal.PrincipalClassification;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
@@ -58,7 +58,6 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -124,7 +123,7 @@ public class SelectPrincipalsWidget extends Composite
 			panel = new FlowPanel();
 			
 			name = principal.getName();
-			if ( principal.getType() == PrincipalType.GROUP )
+			if ( principal.getType() == PrincipalClassification.GROUP )
 			{
 				if ( "allusers".equalsIgnoreCase( name ) || "allextusers".equalsIgnoreCase( name ) )
 					name = principal.getTitle();
@@ -135,7 +134,7 @@ public class SelectPrincipalsWidget extends Composite
 			panel.add( m_nameLabel );
 			
 			// If we are dealing with a group, let the user click on the group.
-			if ( principal.getType() == PrincipalType.GROUP )
+			if ( principal.getType() == PrincipalClassification.GROUP )
 			{
 				m_nameLabel.addClickHandler( this );
 				m_nameLabel.addMouseOverHandler( this );
@@ -262,6 +261,7 @@ public class SelectPrincipalsWidget extends Composite
 	/**
 	 * 
 	 */
+	@SuppressWarnings("unused")
 	public SelectPrincipalsWidget()
 	{
 		FlowPanel mainPanel;
@@ -930,11 +930,11 @@ public class SelectPrincipalsWidget extends Composite
 			label.addStyleName( "gwtUI_nowrap" );
 			width = getColWidth( col );
 			m_principalsTable.setWidget( 0, col, label );
-			DOM.setElementAttribute( m_principalsCellFormatter.getElement( 0, col ), "width", width );
+			m_principalsCellFormatter.getElement( 0, col ).setAttribute( "width", width );
 		}
 		
 		m_principalsTable.setHTML( 0, col, "&nbsp;" );	// The delete image will go in this column.
-		DOM.setElementAttribute( m_principalsCellFormatter.getElement( 0, col ), "width", "14px" );
+		m_principalsCellFormatter.getElement( 0, col ).setAttribute( "width", "14px" );
 		++col;
 
 		m_numCols = col;

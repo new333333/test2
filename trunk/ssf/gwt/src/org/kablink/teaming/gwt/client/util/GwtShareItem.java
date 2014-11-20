@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.Comparator;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.datatable.UserAndGroupTypeCell;
+import org.kablink.teaming.gwt.client.datatable.PrincipalTypeCell;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -58,7 +58,7 @@ public class GwtShareItem
 	private Long m_recipientId;
 	private String m_recipientName;
 	private GwtRecipientType m_recipientType;
-	private UserType m_recipientUserType;
+	private PrincipalType m_recipientPrincipalType;
 	private Long m_sharedById;
 	private String m_sharedByName;
 	private ShareRights m_shareRights;
@@ -113,7 +113,7 @@ public class GwtShareItem
 		m_recipientName = null;
 		m_recipientId = null;
 		m_recipientType = GwtRecipientType.UNKNOWN;
-		m_recipientUserType = UserType.UNKNOWN;
+		m_recipientPrincipalType = PrincipalType.UNKNOWN;
 		m_sharedById = null;
 		m_sharedByName = null;
 		m_shareRights = new ShareRights();
@@ -263,9 +263,9 @@ public class GwtShareItem
 	/**
 	 * 
 	 */
-	public UserType getRecipientUserType()
+	public PrincipalType getRecipientPrincipalType()
 	{
-		return m_recipientUserType;
+		return m_recipientPrincipalType;
 	}
 	
 	/**
@@ -273,8 +273,8 @@ public class GwtShareItem
 	 */
 	public String getRecipientTypeAsString()
 	{
-		if ( m_recipientType.isUser() && ( ! m_recipientUserType.equals( UserType.UNKNOWN ) ) )
-			return getRecipientUserTypeAsString();
+		if ( m_recipientType.isUser() && ( ! m_recipientPrincipalType.equals( PrincipalType.UNKNOWN ) ) )
+			return getRecipientPrincipalTypeAsString();
 		
 		if ( m_recipientType == GwtRecipientType.USER )
 			return GwtTeaming.getMessages().shareRecipientTypeUser();
@@ -297,19 +297,17 @@ public class GwtShareItem
 	/**
 	 * 
 	 */
-	public String getRecipientUserTypeAsString()
+	public String getRecipientPrincipalTypeAsString()
 	{
-		UserAndGroupType ugt = new UserAndGroupType(m_recipientUserType);
-		return UserAndGroupTypeCell.getUserAndGroupTypeAlt(ugt);
+		return PrincipalTypeCell.getPrincipalTypeAlt(m_recipientPrincipalType);
 	}
 	
 	/**
 	 * 
 	 */
-	public ImageResource getRecipientUserTypeImage()
+	public ImageResource getRecipientPrincipalTypeImage()
 	{
-		UserAndGroupType ugt = new UserAndGroupType(m_recipientUserType);
-		return UserAndGroupTypeCell.getUserAndGroupTypeImage(ugt);
+		return PrincipalTypeCell.getPrincipalTypeImage(m_recipientPrincipalType);
 	}
 	
 	/**
@@ -470,9 +468,9 @@ public class GwtShareItem
 	/**
 	 * 
 	 */
-	public void setRecipientUserType( UserType type )
+	public void setRecipientPrincipalType( PrincipalType type )
 	{
-		m_recipientUserType = type;
+		m_recipientPrincipalType = type;
 	}
 	
 	/**

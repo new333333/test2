@@ -37,7 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
-import org.kablink.teaming.gwt.client.util.UserType;
+import org.kablink.teaming.gwt.client.util.PrincipalType;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -60,20 +60,20 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 	 * account.
 	 */
 	public static class AccountInfo implements IsSerializable {
-		private boolean		m_canDownload;		//
-		private boolean		m_fromOpenId;		//
-		private boolean		m_hasAdHocFolders;	//
-		private boolean		m_hasWebAccess;		//
-		private boolean		m_perUserAdHoc;		//
-		private boolean		m_perUserDownload;	//
-		private boolean		m_perUserWebAccess;	//
-		private boolean		m_showLastLogin;	//
-		private boolean		m_userHasLoggedIn;	//
-		private String		m_lastLogin;		//
-		private String		m_ldapContainer;	//
-		private String		m_ldapDN;			//
-		private String		m_loginId;			//
-		private UserType	m_userType;			//
+		private boolean			m_canDownload;		//
+		private boolean			m_fromOpenId;		//
+		private boolean			m_hasAdHocFolders;	//
+		private boolean			m_hasWebAccess;		//
+		private boolean			m_perUserAdHoc;		//
+		private boolean			m_perUserDownload;	//
+		private boolean			m_perUserWebAccess;	//
+		private boolean			m_showLastLogin;	//
+		private boolean			m_userHasLoggedIn;	//
+		private String			m_lastLogin;		//
+		private String			m_ldapContainer;	//
+		private String			m_ldapDN;			//
+		private String			m_loginId;			//
+		private PrincipalType	m_principalType;	//
 		
 		/**
 		 * Constructor method.
@@ -94,43 +94,43 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		 * 
 		 * @return
 		 */
-		public boolean  canDownload()        {return m_canDownload;              }
-		public boolean  isFromLdap()         {return m_userType.isInternalLdap();}
-		public boolean  isFromLocal()        {return m_userType.isLocal();       }
-		public boolean  isFromOpenId()       {return m_fromOpenId;               }
-		public boolean  hasAdHocFolders()    {return m_hasAdHocFolders;          }
-		public boolean  hasWebAccess()       {return m_hasWebAccess;             }
-		public boolean  isPerUserAdHoc()     {return m_perUserAdHoc;             }
-		public boolean  isPerUserDownload()  {return m_perUserDownload;          }
-		public boolean  isPerUserWebAccess() {return m_perUserWebAccess;         }
-		public boolean  isShowLastLogin()    {return m_showLastLogin;            }
-		public boolean  isUserHasLoggedIn()  {return m_userHasLoggedIn;          }
-		public boolean  isInternal()         {return m_userType.isInternal();    }
-		public String   getLastLogin()       {return m_lastLogin;                }
-		public String   getLdapContainer()   {return m_ldapContainer;            }
-		public String   getLdapDN()          {return m_ldapDN;                   }
-		public String   getLoginId()         {return m_loginId;                  }
-		public UserType getUserType()        {return m_userType;                 }
+		public boolean       canDownload()        {return m_canDownload;                   }
+		public boolean       isFromLdap()         {return m_principalType.isInternalLdap();}
+		public boolean       isFromLocal()        {return m_principalType.isLocal();       }
+		public boolean       isFromOpenId()       {return m_fromOpenId;                    }
+		public boolean       hasAdHocFolders()    {return m_hasAdHocFolders;               }
+		public boolean       hasWebAccess()       {return m_hasWebAccess;                  }
+		public boolean       isPerUserAdHoc()     {return m_perUserAdHoc;                  }
+		public boolean       isPerUserDownload()  {return m_perUserDownload;               }
+		public boolean       isPerUserWebAccess() {return m_perUserWebAccess;              }
+		public boolean       isShowLastLogin()    {return m_showLastLogin;                 }
+		public boolean       isUserHasLoggedIn()  {return m_userHasLoggedIn;               }
+		public boolean       isInternal()         {return m_principalType.isInternal();    }
+		public String        getLastLogin()       {return m_lastLogin;                     }
+		public String        getLdapContainer()   {return m_ldapContainer;                 }
+		public String        getLdapDN()          {return m_ldapDN;                        }
+		public String        getLoginId()         {return m_loginId;                       }
+		public PrincipalType getPrincipalType()   {return m_principalType;                 }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setCanDownload(     boolean  canDownload)      {m_canDownload      = canDownload;     }
-		public void setFromOpenId(      boolean  fromOpenId)       {m_fromOpenId       = fromOpenId;      }
-		public void setHasAdHocFolders( boolean  hasAdHocFolders)  {m_hasAdHocFolders  = hasAdHocFolders; }
-		public void setHasWebAccess(    boolean  hasWebAccess)     {m_hasWebAccess     = hasWebAccess;    }
-		public void setPerUserAdHoc(    boolean  perUserAdHoc)     {m_perUserAdHoc     = perUserAdHoc;    }
-		public void setPerUserDownload( boolean  perUserDownload)  {m_perUserDownload  = perUserDownload; }
-		public void setPerUserWebAccess(boolean  perUserWebAccess) {m_perUserWebAccess = perUserWebAccess;}
-		public void setShowLastLogin(   boolean  showLastLogin)    {m_showLastLogin    = showLastLogin;   }
-		public void setUserHasLoggedIn( boolean  userHasLoggedIn)  {m_userHasLoggedIn  = userHasLoggedIn; }
-		public void setLastLogin(       String   lastLogin)        {m_lastLogin        = lastLogin;       }
-		public void setLdapContainer(   String   ldapContainer)    {m_ldapContainer    = ldapContainer;   }
-		public void setLdapDN(          String   ldapDN)           {m_ldapDN           = ldapDN;          }
-		public void setLoginId(         String   loginId)          {m_loginId          = loginId;         }
-		public void setUserType(        UserType userType)         {m_userType         = userType;        }
+		public void setCanDownload(     boolean       canDownload)      {m_canDownload      = canDownload;     }
+		public void setFromOpenId(      boolean       fromOpenId)       {m_fromOpenId       = fromOpenId;      }
+		public void setHasAdHocFolders( boolean       hasAdHocFolders)  {m_hasAdHocFolders  = hasAdHocFolders; }
+		public void setHasWebAccess(    boolean       hasWebAccess)     {m_hasWebAccess     = hasWebAccess;    }
+		public void setPerUserAdHoc(    boolean       perUserAdHoc)     {m_perUserAdHoc     = perUserAdHoc;    }
+		public void setPerUserDownload( boolean       perUserDownload)  {m_perUserDownload  = perUserDownload; }
+		public void setPerUserWebAccess(boolean       perUserWebAccess) {m_perUserWebAccess = perUserWebAccess;}
+		public void setShowLastLogin(   boolean       showLastLogin)    {m_showLastLogin    = showLastLogin;   }
+		public void setUserHasLoggedIn( boolean       userHasLoggedIn)  {m_userHasLoggedIn  = userHasLoggedIn; }
+		public void setLastLogin(       String        lastLogin)        {m_lastLogin        = lastLogin;       }
+		public void setLdapContainer(   String        ldapContainer)    {m_ldapContainer    = ldapContainer;   }
+		public void setLdapDN(          String        ldapDN)           {m_ldapDN           = ldapDN;          }
+		public void setLoginId(         String        loginId)          {m_loginId          = loginId;         }
+		public void setPrincipalType(   PrincipalType principalType)    {m_principalType    = principalType;   }
 	}
 	
 	/**

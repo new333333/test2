@@ -63,7 +63,6 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
-import org.kablink.teaming.gwt.client.util.UserAndGroupType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -292,8 +291,7 @@ public class GwtAdministratorsHelper {
 					else if (FolderColumn.isColumnUserType(cName)) {
 						// The User type column!  Generate value for
 						// it.
-						UserAndGroupType ugt = new UserAndGroupType(GwtViewHelper.getPrincipalType(adminPrincipal), adminIsGroup);
-						fr.setColumnValue(fc, ugt);
+						fr.setColumnValue(fc, GwtViewHelper.getPrincipalType(adminPrincipal));
 					}
 					
 					else if (FolderColumn.isColumnAdminRights(cName)) {

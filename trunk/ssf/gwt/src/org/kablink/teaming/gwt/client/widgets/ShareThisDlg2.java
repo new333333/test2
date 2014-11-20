@@ -86,7 +86,7 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
-import org.kablink.teaming.gwt.client.util.UserType;
+import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.AlertDlg;
 import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgClient;
@@ -421,7 +421,7 @@ public class ShareThisDlg2 extends DlgBox
 					shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 				else
 					shareItem.setRecipientType( GwtRecipientType.USER );
-				shareItem.setRecipientUserType( user.getUserType() );
+				shareItem.setRecipientPrincipalType( user.getPrincipalType() );
 				
 				recipientId = user.getUserId();
 				if ( recipientId != null && recipientId.length() > 0 )
@@ -463,7 +463,7 @@ public class ShareThisDlg2 extends DlgBox
 				shareItem = new GwtShareItem();
 				shareItem.setRecipientName( group.getShortDisplayName() );
 				shareItem.setRecipientType( GwtRecipientType.GROUP );
-				shareItem.setRecipientUserType( UserType.UNKNOWN );
+				shareItem.setRecipientPrincipalType( PrincipalType.UNKNOWN );
 				shareItem.setRecipientId( Long.valueOf( group.getId() ) );
 			}
 			// Are we dealing with the "Public" entity?
@@ -485,7 +485,7 @@ public class ShareThisDlg2 extends DlgBox
 				shareItem = new GwtPublicShareItem();
 				shareItem.setRecipientName( publicEntity.getName() );
 				shareItem.setRecipientType( GwtRecipientType.PUBLIC_TYPE );
-				shareItem.setRecipientUserType( UserType.UNKNOWN );
+				shareItem.setRecipientPrincipalType( PrincipalType.UNKNOWN );
 				shareItem.setRecipientId( publicEntity.getIdLong() );
 			}
 
@@ -2237,7 +2237,7 @@ public class ShareThisDlg2 extends DlgBox
 					// Yes
 					gwtUser = new GwtUser();
 					gwtUser.setInternal( false );
-					gwtUser.setUserType( UserType.EXTERNAL_OTHERS );
+					gwtUser.setPrincipalType( PrincipalType.EXTERNAL_OTHERS );
 					gwtUser.setName( emailAddr );
 					gwtUser.setUserId( userId );
 					gwtUser.setEmail( emailAddr );
@@ -3502,7 +3502,7 @@ public class ShareThisDlg2 extends DlgBox
 							// Yes
 							gwtUser = new GwtUser();
 							gwtUser.setInternal( false );
-							gwtUser.setUserType( UserType.EXTERNAL_OTHERS );
+							gwtUser.setPrincipalType( PrincipalType.EXTERNAL_OTHERS );
 							gwtUser.setName( emailAddress );
 							gwtUser.setUserId( userId );
 							gwtUser.setEmail( emailAddress );

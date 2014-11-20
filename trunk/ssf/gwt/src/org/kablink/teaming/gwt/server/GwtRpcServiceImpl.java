@@ -837,7 +837,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 								{
 									// No
 									// Did we find an external user?
-									if ( gwtUser.getUserType().isExternal() )
+									if ( gwtUser.getPrincipalType().isExternal() )
 									{
 										// Yes
 										// Are we supposed to validate the email address?

@@ -48,7 +48,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SendForgottenPwdEmailCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.UserType;
+import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -258,11 +258,11 @@ public class ForgottenPwdDlg extends DlgBox
 							// Did we get a user?
 							if ( gwtUser != null )
 							{
-								UserType userType;
+								PrincipalType userType;
 
 								// Yes
-								userType = gwtUser.getUserType();
-								if ( userType == UserType.EXTERNAL_OTHERS ) 
+								userType = gwtUser.getPrincipalType();
+								if ( userType == PrincipalType.EXTERNAL_OTHERS ) 
 								{
 									ExtUserProvState extUserProvState;
 
@@ -273,7 +273,7 @@ public class ForgottenPwdDlg extends DlgBox
 										sendEmail = true;
 									}
 								}
-								else if ( userType == UserType.EXTERNAL_OPEN_ID )
+								else if ( userType == PrincipalType.EXTERNAL_OPEN_ID )
 									sendEmail = true;
 								
 								if ( sendEmail )
@@ -438,7 +438,7 @@ public class ForgottenPwdDlg extends DlgBox
 							{
 								String msg;
 								
-								if ( user.getUserType() == UserType.EXTERNAL_OPEN_ID )
+								if ( user.getPrincipalType() == PrincipalType.EXTERNAL_OPEN_ID )
 									msg = GwtTeaming.getMessages().forgottenPwdDlg_SelfRegistrationEmailSent();
 								else
 									msg = GwtTeaming.getMessages().forgottenPwdDlg_ForgottenPwdEmailSent();

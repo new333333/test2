@@ -1017,7 +1017,7 @@ public class GwtSearchHelper
 				// Yes!  Construct a GwtUser object for it.
 				reply = new GwtUser();
 				reply.setInternal(user.getIdentityInfo().isInternal());
-				reply.setUserType( GwtViewHelper.getUserType( user ) );
+				reply.setPrincipalType( GwtViewHelper.getUserType( user ) );
 				reply.setUserId( user.getId() );
 				reply.setName( user.getName() );
 				reply.setTitle( Utils.getUserTitle( user ) );

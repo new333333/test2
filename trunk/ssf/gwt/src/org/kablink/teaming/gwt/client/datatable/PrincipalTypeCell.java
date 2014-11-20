@@ -36,7 +36,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.UserAndGroupType;
+import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -47,87 +47,73 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Image;
 
 /**
- * Data table cell that represents a type of user or group.
+ * Data table cell that represents a type of principal.
  * 
  * @author drfoster@novell.com
  */
-public class UserAndGroupTypeCell extends AbstractCell<UserAndGroupType> {
+public class PrincipalTypeCell extends AbstractCell<PrincipalType> {
 	/**
 	 * Constructor method.
 	 */
-	public UserAndGroupTypeCell() {
+	public PrincipalTypeCell() {
 		// Initialize the super class.
 		super();
 	}
 
 	/**
-	 * Returns the title string to add to a user type <IMG>.
+	 * Returns the title string to add to a principal type <IMG>.
 	 * 
-	 * @param ugt
+	 * @param pt
 	 * 
 	 * @return
 	 */
-	public static String getUserAndGroupTypeAlt(UserAndGroupType ugt) {
+	public static String getPrincipalTypeAlt(PrincipalType pt) {
 		GwtTeamingMessages messages = GwtTeaming.getMessages();
 		String reply;
-		if (ugt.isGroup()) {
-			switch (ugt.getUserType()) {
-			default:
-			case INTERNAL_PERSON_OTHERS:  reply = messages.vibeDataTable_Alt_Local_Group();  break;
-			case INTERNAL_LDAP:           reply = messages.vibeDataTable_Alt_Ldap_Group();   break;
-			case INTERNAL_SYSTEM:         reply = messages.vibeDataTable_Alt_System_Group(); break;
-			}
-		}
+		switch (pt) {
+		// Users.
+		case EXTERNAL_GUEST:          reply = messages.vibeDataTable_Alt_ExternalUser_Guest();        break;
+		case EXTERNAL_OPEN_ID:
+		case EXTERNAL_OTHERS:         reply = messages.vibeDataTable_Alt_ExternalUser_Others();       break;
+		case INTERNAL_LDAP:           reply = messages.vibeDataTable_Alt_InternalUser_LDAP();         break;
+		case INTERNAL_PERSON_ADMIN:   reply = messages.vibeDataTable_Alt_InternalUser_PersonAdmin();  break;
+		case INTERNAL_PERSON_OTHERS:  reply = messages.vibeDataTable_Alt_InternalUser_PersonOthers(); break;
+		case INTERNAL_SYSTEM:         reply = messages.vibeDataTable_Alt_InternalUser_System();       break;
+		default:                      reply = messages.vibeDataTable_Alt_UnknownUser();               break;
 		
-		else {
-			switch (ugt.getUserType()) {
-			case EXTERNAL_GUEST:          reply = messages.vibeDataTable_Alt_ExternalUser_Guest();        break;
-			case EXTERNAL_OPEN_ID:
-			case EXTERNAL_OTHERS:
-				reply = messages.vibeDataTable_Alt_ExternalUser_Others();
-				break;
-			case INTERNAL_LDAP:           reply = messages.vibeDataTable_Alt_InternalUser_LDAP();         break;
-			case INTERNAL_PERSON_ADMIN:   reply = messages.vibeDataTable_Alt_InternalUser_PersonAdmin();  break;
-			case INTERNAL_PERSON_OTHERS:  reply = messages.vibeDataTable_Alt_InternalUser_PersonOthers(); break;
-			case INTERNAL_SYSTEM:         reply = messages.vibeDataTable_Alt_InternalUser_System();       break;
-			default:                      reply = messages.vibeDataTable_Alt_UnknownUser();               break;
-			}
+		// Groups.
+		case LOCAL_GROUP:             reply = messages.vibeDataTable_Alt_Local_Group();               break;
+		case LDAP_GROUP:              reply = messages.vibeDataTable_Alt_Ldap_Group();                break;
+		case SYSTEM_GROUP:            reply = messages.vibeDataTable_Alt_System_Group();              break;
 		}
 		return reply;
 	}
 	
 	/**
-	 * Returns the ImageResource to use for a user type <IMG>.
+	 * Returns the ImageResource to use for a principal type <IMG>.
 	 * 
-	 * @param ugt
+	 * @param pt
 	 * 
 	 * @return
 	 */
-	public static ImageResource getUserAndGroupTypeImage(UserAndGroupType ugt) {
+	public static ImageResource getPrincipalTypeImage(PrincipalType pt) {
 		GwtTeamingDataTableImageBundle images = GwtTeaming.getDataTableImageBundle();
 		ImageResource reply;
-		if (ugt.isGroup()) {
-			switch (ugt.getUserType()) {
-			default:
-			case INTERNAL_PERSON_OTHERS:  reply = images.groupType_Local();  break;
-			case INTERNAL_LDAP:           reply = images.groupType_LDAP();   break;
-			case INTERNAL_SYSTEM:         reply = images.groupType_System(); break;
-			}
-		}
-		
-		else {
-			switch (ugt.getUserType()) {
-			case EXTERNAL_GUEST:          reply = images.externalUser_Guest();        break;
-			case EXTERNAL_OPEN_ID:
-			case EXTERNAL_OTHERS:
-				reply = images.externalUser_Others();
-				break;
-			case INTERNAL_LDAP:           reply = images.internalUser_LDAP();         break;
-			case INTERNAL_PERSON_ADMIN:   reply = images.internalUser_PersonAdmin();  break;
-			case INTERNAL_PERSON_OTHERS:  reply = images.internalUser_PersonOthers(); break;
-			case INTERNAL_SYSTEM:         reply = images.internalUser_System();       break;
-			default:                      reply = images.unknownUser();               break;
-			}
+		switch (pt) {
+		// Users.
+		case EXTERNAL_GUEST:          reply = images.externalUser_Guest();        break;
+		case EXTERNAL_OPEN_ID:
+		case EXTERNAL_OTHERS:         reply = images.externalUser_Others();       break;
+		case INTERNAL_LDAP:           reply = images.internalUser_LDAP();         break;
+		case INTERNAL_PERSON_ADMIN:   reply = images.internalUser_PersonAdmin();  break;
+		case INTERNAL_PERSON_OTHERS:  reply = images.internalUser_PersonOthers(); break;
+		case INTERNAL_SYSTEM:         reply = images.internalUser_System();       break;
+		default:                      reply = images.unknownUser();               break;
+
+		// Groups.
+		case LOCAL_GROUP:             reply = images.groupType_Local();           break;
+		case LDAP_GROUP:              reply = images.groupType_LDAP();            break;
+		case SYSTEM_GROUP:            reply = images.groupType_System();          break;
 		}
 		return reply;		
 	}
@@ -136,15 +122,15 @@ public class UserAndGroupTypeCell extends AbstractCell<UserAndGroupType> {
 	 * Called to render an instance of this cell.
 	 * 
 	 * @param context
-	 * @param ugt
+	 * @param pt
 	 * @param sb
 	 * 
 	 * Overrides AbstractCell.render()
 	 */
 	@Override
-	public void render(Context context, UserAndGroupType ugt, SafeHtmlBuilder sb) {
-		// If we weren't given a UserAndGroupType...
-		if (null == ugt) {
+	public void render(Context context, PrincipalType pt, SafeHtmlBuilder sb) {
+		// If we weren't given a PrincipalType...
+		if (null == pt) {
 			// ...bail.  Cell widgets can pass null to cells if the
 			// ...underlying data contains a null, or if the data
 			// ...arrives out of order.
@@ -152,9 +138,9 @@ public class UserAndGroupTypeCell extends AbstractCell<UserAndGroupType> {
 			return;
 		}
 
-		// Create the HTML for the user type image...
-		ImageResource ir = getUserAndGroupTypeImage(ugt);
-		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString(), getUserAndGroupTypeAlt(ugt));
+		// Create the HTML for the principal type image...
+		ImageResource ir = getPrincipalTypeImage(pt);
+		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString(), getPrincipalTypeAlt(pt));
 		i.addStyleName("vibe-dataTableUserType-image");
 		VibeFlowPanel ugtPanel = new VibeFlowPanel();
 		ugtPanel.addStyleName("vibe-dataTableUserType-panel");
