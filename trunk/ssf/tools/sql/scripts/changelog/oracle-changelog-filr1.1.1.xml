@@ -54,6 +54,9 @@
             <column name="AUTHCONNECTORNAMES" type="VARCHAR2(128 CHAR)">
                 <constraints nullable="true" />
             </column>
+            <column name="LASTUPDATETIME" type="NUMBER(19,0)">
+            	<constraints nullable="false" />
+            </column>
         </createTable>
 	</changeSet>
 
