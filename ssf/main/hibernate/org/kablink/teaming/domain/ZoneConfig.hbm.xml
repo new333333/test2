@@ -7,7 +7,6 @@
     <id unsaved-value="null" name="zoneId">
       <generator class="assigned"/>
 	</id>
-    <property name="lastModified"/>
 	<property name="upgradeVersion"/>
 	<property name="mobileAccessEnabled" access="field"/>
 	<property name="diskQuotasEnabled" access="field"/>
@@ -29,6 +28,7 @@
 	<property name="localeLanguage" access="field" length="16"/>
 	<property name="localeCountry" access="field" length="16"/>
 	<property name="adHocFoldersEnabled" access="field"/>
+    <property name="adHocFoldersLastModified"/>
 	<property name="fileArchivingEnabled" access="field"/>
 	<property name="downloadEnabled" access="field"/>
 	<property name="passwordPolicyEnabled" access="field"/>

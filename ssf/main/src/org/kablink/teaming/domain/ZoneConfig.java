@@ -54,7 +54,6 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	
 	public static Integer ZONE_LATEST_VERSION=21;  //This is used to introduce changes and fix things up between releases.
 	private Integer upgradeVersion=ZONE_LATEST_VERSION;
-    private Date lastModified;
 	private AuthenticationConfig authenticationConfig;
 	private HomePageConfig homePageConfig;
 	private WeekendsAndHolidaysConfig weekendsAndHolidaysConfig;
@@ -80,6 +79,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private String localeLanguage;
 	private String localeCountry;
 	private Boolean adHocFoldersEnabled;
+    private Date adHocFoldersLastModified;
 	private Boolean fileArchivingEnabled;
 	private Boolean passwordPolicyEnabled;
 	private Boolean downloadEnabled;
@@ -116,14 +116,6 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	{
 		this.zoneId = zoneId;
 	}
-
-    public Date getLastModified() {
-        return lastModified;
-    }
-
-    public void setLastModified(Date lastModified) {
-        this.lastModified = lastModified;
-    }
 
     public Integer getUpgradeVersion() {
         return this.upgradeVersion;
@@ -525,8 +517,16 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	{
 		adHocFoldersEnabled = Boolean.valueOf( enabled );
 	}
-	
-	/**
+
+    public Date getAdHocFoldersLastModified() {
+        return adHocFoldersLastModified;
+    }
+
+    public void setAdHocFoldersLastModified(Date adHocFoldersLastModified) {
+        this.adHocFoldersLastModified = adHocFoldersLastModified;
+    }
+
+    /**
 	 * 
 	 */
 	public boolean isDownloadEnabled()

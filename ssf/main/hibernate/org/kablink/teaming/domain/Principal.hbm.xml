@@ -94,7 +94,8 @@
 	  	<property name="downloadEnabled" access="field"/>
 	  	<property name="webAccessEnabled" access="field"/>
 	  	<property name="adHocFoldersEnabled" access="field"/>
-        <property name="lastConfigUpdate" access="field"/>
+        <property name="adHocFoldersLastModified" access="field"/>
+        <property name="memberOfLastModified" access="field"/>
 	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
 	      <!--<cache usage="read-write"/>-->
 	      <key column="userId"/>
@@ -106,6 +107,7 @@
 	        <key column="groupId"/>
 	        <many-to-many fetch="join" class="org.kablink.teaming.domain.UserPrincipal" column="userId"/>
 	      </bag>
+          <property name="membersLastModified" access="field"/>
 	      <property name="dynamic" access="field"/>
 	      <property name="ldapQuery" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
 	      <property name="ldapContainer" access="field"></property>

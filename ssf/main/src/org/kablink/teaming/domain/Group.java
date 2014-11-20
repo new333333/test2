@@ -101,7 +101,8 @@ public class Group extends UserPrincipal implements GroupPrincipal {
 	}
 	
 	private List members;  //initialized by hibernate access=field  
-    
+    protected Date membersLastModified;
+
     private Boolean dynamic = Boolean.FALSE; //initialized by hibernate access=field
     private String ldapQuery;
     
@@ -149,14 +150,14 @@ public class Group extends UserPrincipal implements GroupPrincipal {
 			for (Iterator iter=newM.iterator(); iter.hasNext();) {
 				UserPrincipal p = (UserPrincipal)iter.next();
 				p.getMemberOf().add(this);
-                p.setLastConfigUpdate(new Date());
+                p.setMemberOfLastModified(new Date());
 			}
 			for (Iterator iter=remM.iterator(); iter.hasNext();) {
 				UserPrincipal p = (UserPrincipal)iter.next();
 				p.getMemberOf().remove(this);
-                p.setLastConfigUpdate(new Date());
+                p.setMemberOfLastModified(new Date());
             }
-            setLastConfigUpdate(new Date());
+            setMembersLastModified(new Date());
         }
   	} 	
     
@@ -170,10 +171,8 @@ public class Group extends UserPrincipal implements GroupPrincipal {
 	    	if (members.contains(member)) return;
 	    	members.add(member);
 	    	member.getMemberOf().add(this);
-            if (member instanceof UserPrincipal) {
-                ((UserPrincipal)member).setLastConfigUpdate(new Date());
-            }
-            setLastConfigUpdate(new Date());
+            member.setMemberOfLastModified(new Date());
+            setMembersLastModified(new Date());
         }
     }
     public void removeMember(IPrincipal member) {
@@ -184,14 +183,20 @@ public class Group extends UserPrincipal implements GroupPrincipal {
 			if (members == null) members = new ArrayList();
 	    	members.remove(member);
 	    	member.getMemberOf().remove(this);
-            if (member instanceof UserPrincipal) {
-                ((UserPrincipal)member).setLastConfigUpdate(new Date());
-            }
-            setLastConfigUpdate(new Date());
+            member.setMemberOfLastModified(new Date());
+            setMembersLastModified(new Date());
     	}
     }
-    
-	public boolean isDynamic() {
+
+    public Date getMembersLastModified() {
+        return membersLastModified;
+    }
+
+    public void setMembersLastModified(Date membersLastModified) {
+        this.membersLastModified = membersLastModified;
+    }
+
+    public boolean isDynamic() {
 		if(dynamic != null)
 			return dynamic.booleanValue();
 		else
