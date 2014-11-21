@@ -111,9 +111,9 @@ public class GwtPublic extends GwtPrincipal implements IsSerializable
 	 * 
 	 */
 	@Override
-	public PrincipalClassification getType()
+	public PrincipalClass getPrincipalClass()
 	{
-		return PrincipalClassification.PUBLIC_TYPE;
+		return PrincipalClass.PUBLIC_TYPE;
 	}
 
 	/**

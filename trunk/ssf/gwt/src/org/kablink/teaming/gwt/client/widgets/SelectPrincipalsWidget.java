@@ -41,7 +41,7 @@ import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.GwtPrincipal.PrincipalClassification;
+import org.kablink.teaming.gwt.client.GwtPrincipal.PrincipalClass;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
@@ -123,7 +123,7 @@ public class SelectPrincipalsWidget extends Composite
 			panel = new FlowPanel();
 			
 			name = principal.getName();
-			if ( principal.getType() == PrincipalClassification.GROUP )
+			if ( principal.getPrincipalClass() == PrincipalClass.GROUP )
 			{
 				if ( "allusers".equalsIgnoreCase( name ) || "allextusers".equalsIgnoreCase( name ) )
 					name = principal.getTitle();
@@ -134,7 +134,7 @@ public class SelectPrincipalsWidget extends Composite
 			panel.add( m_nameLabel );
 			
 			// If we are dealing with a group, let the user click on the group.
-			if ( principal.getType() == PrincipalClassification.GROUP )
+			if ( principal.getPrincipalClass() == PrincipalClass.GROUP )
 			{
 				m_nameLabel.addClickHandler( this );
 				m_nameLabel.addMouseOverHandler( this );
