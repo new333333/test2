@@ -2778,6 +2778,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the 'Manage Administrators' dialog.
 	String manageAdministratorsDlgCaption();
+	String manageAdministratorsDlgErrorInvalidSearchResult();
 	
 	// Strings used by the 'Manage Teams' dialog.
 	String manageTeamsDlgCaption();
