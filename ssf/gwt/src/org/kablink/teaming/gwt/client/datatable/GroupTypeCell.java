@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GroupType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -76,23 +75,25 @@ public class GroupTypeCell extends AbstractCell<GroupType>
 
 		messages = GwtTeaming.getMessages();
 
-		switch ( groupType )
+		if ( groupType.isAdmin() )
 		{
-		case INTERNAL_LDAP:
-			reply = messages.vibeDataTable_Alt_Ldap_Group();
-			break;
-			
-		case INTERNAL_SYSTEM:
-			reply = messages.vibeDataTable_Alt_System_Group();
-			break;
-		
-		case INTERNAL_LOCAL:
-			reply = messages.vibeDataTable_Alt_Local_Group();
-			break;
-			
-		default:
-			reply = messages.vibeDataTable_Alt_UnknownGroupType();
-			break;
+			switch ( groupType.getGroupClass() )
+			{
+			case INTERNAL_LDAP:    reply = messages.vibeDataTable_Alt_Ldap_GroupAdmin();  break;
+			case INTERNAL_SYSTEM:  reply = messages.vibeDataTable_Alt_System_Group();     break;
+			case INTERNAL_LOCAL:   reply = messages.vibeDataTable_Alt_Local_GroupAdmin(); break;
+			default:               reply = messages.vibeDataTable_Alt_UnknownGroupType(); break;
+			}
+		}
+		else
+		{
+			switch ( groupType.getGroupClass() )
+			{
+			case INTERNAL_LDAP:    reply = messages.vibeDataTable_Alt_Ldap_Group();       break;
+			case INTERNAL_SYSTEM:  reply = messages.vibeDataTable_Alt_System_Group();     break;
+			case INTERNAL_LOCAL:   reply = messages.vibeDataTable_Alt_Local_Group();      break;
+			default:               reply = messages.vibeDataTable_Alt_UnknownGroupType(); break;
+			}
 		}
 		
 		return reply;

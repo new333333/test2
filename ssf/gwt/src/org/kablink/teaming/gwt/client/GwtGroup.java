@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client;
 
 import org.kablink.teaming.gwt.client.util.GroupType;
+import org.kablink.teaming.gwt.client.util.GroupType.GroupClass;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.resources.client.ImageResource;
@@ -109,7 +110,7 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 		if ( m_groupType != null )
 			imgResource = GwtClientHelper.getGroupTypeImage( m_groupType );
 		else
-			imgResource = GwtClientHelper.getGroupTypeImage( GroupType.UNKNOWN );
+			imgResource = GwtClientHelper.getGroupTypeImage( new GroupType( GroupClass.UNKNOWN, false ) );
 		
 		return imgResource.getSafeUri().asString();
 	}

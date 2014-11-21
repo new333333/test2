@@ -1947,6 +1947,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_StarGold();
 	String vibeDataTable_Alt_StarGray();
 	String vibeDataTable_Alt_System_Group();
+	String vibeDataTable_Alt_System_GroupAdmin();
 	String vibeDataTable_Alt_UnpinEntry();
 	String vibeDataTable_Alt_View();
 	String vibeDataTable_ColumnResizer();
@@ -2331,6 +2332,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgWebAccess_Clear();
 	String manageGroupsDlgWebAccess_Disable();
 	String manageGroupsDlgWebAccess_Enable();
+	String manageGroupsDlgGroup();
 	
 	// Strings used in the Modify Group dialog
 	String addGroupDlgHeader();
@@ -3556,5 +3558,4 @@ public interface GwtTeamingMessages extends Messages
 	String editKeyShieldConfigDlg_SavingConfig();
 	String editKeyShieldConfigDlg_ServerUrlLabel();
 	String editKeyShieldConfigDlg_TestConnectionLabel();
-	
 }// end GwtTeamingMessages

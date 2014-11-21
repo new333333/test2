@@ -69,8 +69,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetGroupsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData.AdminRights;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GroupType;
+import org.kablink.teaming.gwt.client.util.GroupType.GroupClass;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -452,10 +454,10 @@ public class ManageGroupsDlg extends DlgBox implements
 
 					groupInfo = groupInfoPlus.getGroupInfo();
 
-					if (groupInfo.getIsFromLdap())
-						return GroupType.INTERNAL_LDAP;
+					if ( groupInfo.getIsFromLdap() )
+						return new GroupType( GroupClass.INTERNAL_LDAP, groupInfo.isAdmin() );
 
-					return GroupType.INTERNAL_LOCAL;
+					return new GroupType( GroupClass.INTERNAL_LOCAL, groupInfo.isAdmin() );
 				}
 			};
 			m_groupsTable.addColumn(typeCol, m_messages.manageGroupsDlgTypeCol());
@@ -530,10 +532,10 @@ public class ManageGroupsDlg extends DlgBox implements
 			@Override
 			public String getValue(GroupInfoPlus groupInfoPlus) {
 				GroupInfo groupInfo = groupInfoPlus.getGroupInfo();
-				String adminRights = groupInfo.getAdminRights();
-				if (adminRights == null)
-					adminRights = "";
-
+				String adminRights;
+				if ( groupInfo.isAdmin() )
+				     adminRights = m_messages.manageGroupsDlgGroup();
+				else adminRights = "";
 				return adminRights;
 			}
 		};
@@ -1553,7 +1555,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				}
 
 				// If we changed anything...
-				final Map<Long, String> adminRightsChangeMap = responseData.getAdminRightsChangeMap();
+				final Map<Long, AdminRights> adminRightsChangeMap = responseData.getAdminRightsChangeMap();
 				if ( GwtClientHelper.hasItems( adminRightsChangeMap ) )
 				{
 					// ...update the table to reflect the fact that a
@@ -1572,7 +1574,7 @@ public class ManageGroupsDlg extends DlgBox implements
 									Long rowId = row.getGroupInfo().getId();
 									if ( rowId.equals( key ) )
 									{
-										row.getGroupInfo().setAdminRights( adminRightsChangeMap.get( key ) );
+										row.getGroupInfo().setAdmin( adminRightsChangeMap.get( key ).isAdmin() );
 										m_groupsTable.redrawRow( rowIndex );
 										break;
 									}

@@ -236,6 +236,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData.AdminRights;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TestKeyShieldConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.TestKeyShieldConnectionResponse.GwtKeyShieldConnectionTestStatusCode;
@@ -262,6 +263,7 @@ import org.kablink.teaming.gwt.client.util.EntityId.EntityIdType;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GroupType;
+import org.kablink.teaming.gwt.client.util.GroupType.GroupClass;
 import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.GwtMobileOpenInSetting;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -3712,7 +3714,7 @@ public class GwtServerHelper {
 				groupInfo.setDesc( nextGroup.getDescription().getText() );
 				groupInfo.setIsFromLdap( nextGroup.getIdentityInfo().isFromLdap() );
 				groupInfo.setDn( nextGroup.getForeignName() );
-				groupInfo.setAdminRights( GwtViewHelper.getPrincipalAdminRightsString( ami,  nextGroup ) );
+				groupInfo.setAdmin( AdminHelper.isSiteAdminMember( groupId ) );
 				
 				reply.add( groupInfo );
 			}
@@ -8031,25 +8033,38 @@ public class GwtServerHelper {
 	
 	/**
 	 * Return a GroupType from the given group.
+	 * 
+	 * @param group
+	 * 
+	 * @return
 	 */
-	public static GroupType getGroupType( Principal group )
-	{
-		IdentityInfo identityInfo;
+	public static GroupType getGroupType(Principal group) {
+		GroupClass gc;
+		if (null == group) {
+			gc = GroupClass.UNKNOWN;
+		}
 		
-		if ( group == null )
-			return GroupType.UNKNOWN;
+		else if ( group.isReserved() ) {
+			gc = GroupClass.INTERNAL_SYSTEM;
+		}
 		
-		if ( group.isReserved() )
-			return GroupType.INTERNAL_SYSTEM;
+		else {
+			IdentityInfo identityInfo = group.getIdentityInfo();
+			if ( identityInfo == null ) {
+				gc = GroupClass.UNKNOWN;
+			}
 			
-		identityInfo = group.getIdentityInfo();
-		if ( identityInfo == null )
-			return GroupType.UNKNOWN;
+			else if ( identityInfo.isFromLdap() ) {
+				gc = GroupClass.INTERNAL_LDAP;
+			}
+			
+			else {
+				gc= GroupClass.INTERNAL_LOCAL;
+			}
+		}
 		
-		if ( identityInfo.isFromLdap() )
-			return GroupType.INTERNAL_LDAP;
-		
-		return GroupType.INTERNAL_LOCAL;
+		boolean admin = ((null != group) ? AdminHelper.isSiteAdminMember(group.getId()) : false);
+		return new GroupType(gc, admin);
 	}
 	
 	/**
@@ -12468,7 +12483,7 @@ public class GwtServerHelper {
 			// return.
 			SetPrincipalsAdminRightsRpcResponseData reply = new SetPrincipalsAdminRightsRpcResponseData(new ArrayList<ErrorInfo>());
 			List<Long> validPIDs = new ArrayList<Long>();
-			Map<Long, String> adminRightsChangeMap = new HashMap<Long, String>();
+			Map<Long, AdminRights> adminRightsChangeMap = new HashMap<Long, AdminRights>();
 			reply.setAdminRightsChangeMap(adminRightsChangeMap);
 
 			// We're we given any Principal IDs to set or clear the
@@ -12595,7 +12610,12 @@ public class GwtServerHelper {
 					    	for (Long id:  validPIDs) {
 					    		for (Principal p:  pList) {
 					    			if (id.equals(p.getId())) {
-					    				adminRightsChangeMap.put(id, GwtViewHelper.getPrincipalAdminRightsString(bs, p));
+					    				boolean admin;
+					    				if (p instanceof GroupPrincipal)
+					    				     admin = AdminHelper.isSiteAdminMember(p.getId());
+					    				else admin = bs.getAdminModule().testUserAccess(((User) p), AdminOperation.manageFunction);
+					    				AdminRights ar = new AdminRights(GwtViewHelper.getPrincipalAdminRightsString(bs, p), admin);
+					    				adminRightsChangeMap.put(id, ar);
 					    				break;
 					    			}
 					    		}

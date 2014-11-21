@@ -40,34 +40,80 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author jwootton@novell.com
  */
-public enum GroupType implements IsSerializable
+public class GroupType implements IsSerializable
 {
-	INTERNAL_LDAP,			// Users imported from LDAP.
-	INTERNAL_LOCAL,			// Not from ldap
-	INTERNAL_SYSTEM,		// Systems group (e.g., File Sync Agent, ...)
-	UNKNOWN;				// Could not be classified.
-
+	private boolean 	m_admin;		//
+	private GroupClass	m_groupClass;	//
+	
 	/**
-	 * 
 	 */
-	public boolean isLdap()
+	public enum GroupClass implements IsSerializable {
+		INTERNAL_LDAP,			// Users imported from LDAP.
+		INTERNAL_LOCAL,			// Not from ldap
+		INTERNAL_SYSTEM,		// Systems group (e.g., File Sync Agent, ...)
+		UNKNOWN;				// Could not be classified.
+	
+		/**
+		 */
+		public boolean isLdap()
+		{
+			return INTERNAL_LDAP.equals( this );
+		}
+		
+		/**
+		 * 
+		 */
+		public boolean isLocal()
+		{
+			return ( INTERNAL_LOCAL.equals( this ) );
+		}
+		
+		/**
+		 * 
+		 */
+		public boolean isSystem()
+		{
+			return ( INTERNAL_SYSTEM.equals( this ) );
+		}
+	}
+	
+	/*
+	 * Constructor method.
+	 * 
+	 * Zero parameter constructor required for GWT serialization.
+	 */
+	private GroupType()
 	{
-		return INTERNAL_LDAP.equals( this );
+		super();
 	}
 	
 	/**
+	 * Constructor method.
 	 * 
+	 * @param groupClass
+	 * @param admin
 	 */
-	public boolean isLocal()
+	public GroupType( GroupClass groupClass, boolean admin )
 	{
-		return ( INTERNAL_LOCAL.equals( this ) );
+		this();
+		
+		setGroupClass( groupClass );
+		setAdmin(      admin      );
 	}
 	
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public boolean isSystem()
-	{
-		return ( INTERNAL_SYSTEM.equals( this ) );
-	}
+	public boolean    isAdmin()       {return m_admin;     }
+	public GroupClass getGroupClass() {return m_groupClass;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setAdmin(      boolean    admin )      { m_admin      = admin;      }
+	public void setGroupClass( GroupClass groupClass ) { m_groupClass = groupClass; }
 }
