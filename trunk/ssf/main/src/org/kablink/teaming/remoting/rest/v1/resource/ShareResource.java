@@ -637,7 +637,7 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/public")
     public SearchResultList<Share> getPublicShares() {
-        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
+        ShareItemSelectSpec spec = getPublicSpec();
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<Pair<ShareItem, DefinableEntity>> shareItems = getShareItems(spec, null, false, true, false);
         for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
@@ -829,7 +829,7 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
+        ShareItemSelectSpec spec = getPublicSpec();
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.PUBLIC_SHARES_ID, null, recursive,
                 includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
                 toDomainFormat(descriptionFormatStr), offset, maxCount, "/shares/public/library_entities", spec,
@@ -869,7 +869,7 @@ public class ShareResource extends AbstractResource {
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         nextParams.put("description_format", descriptionFormatStr);
 
-        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
+        ShareItemSelectSpec spec = getPublicSpec();
         return _getRecentActivity(ObjectKeys.PUBLIC_SHARES_ID, includeParentPaths, toDomainFormat(descriptionFormatStr), offset, maxCount, spec,
                 null, "/shares/public/recent_activity", nextParams, showHidden, showUnhidden, true, false);
     }

@@ -1133,10 +1133,17 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getPublicShareItems(Boolean deleted) {
-        Long userId = getLoggedInUserId();
-        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        ShareItemSelectSpec spec = getPublicSpec();
         spec.deleted = deleted;
         return getShareItems(spec, null, true, true, false);
+    }
+
+    protected ShareItemSelectSpec getPublicSpec() {
+        User guest = getProfileModule().getGuestUser();
+        ShareItemSelectSpec spec = new ShareItemSelectSpec();
+        spec.setRecipients(guest.getId(), null, null);
+        spec.setLatest(true);
+        return spec;
     }
 
     protected Date getSharedByLibraryModifiedDate(Long userId, boolean recursive) {
