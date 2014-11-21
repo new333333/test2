@@ -1370,7 +1370,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	
 	private LinkedList<Map<String,Object>> generateShortLoginReportList(List logins) {
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+		User user = RequestContextHolder.getRequestContext().getUser();
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz");
+		sdFormat.setTimeZone(user.getTimeZone());
 		
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
@@ -1390,7 +1392,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	
 	private LinkedList<Map<String,Object>> generateLongLoginReportList(List logins) {
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+		User user = RequestContextHolder.getRequestContext().getUser();
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz");
+		sdFormat.setTimeZone(user.getTimeZone());
 		
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
@@ -1409,7 +1413,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	
 	private LinkedList<Map<String,Object>> generateShortActivityByUserReportList(List activities, String reportType) {
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+		User user = RequestContextHolder.getRequestContext().getUser();
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz");
+		sdFormat.setTimeZone(user.getTimeZone());
 		
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		if (activities == null) return report;
