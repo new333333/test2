@@ -177,9 +177,9 @@ public class GwtUser extends GwtPrincipal
 	 * 
 	 */
 	@Override
-	public PrincipalClassification getType()
+	public PrincipalClass getPrincipalClass()
 	{
-		return PrincipalClassification.USER;
+		return PrincipalClass.USER;
 	}
 	
 	/**

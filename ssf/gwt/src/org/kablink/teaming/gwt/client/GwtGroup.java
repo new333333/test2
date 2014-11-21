@@ -154,9 +154,9 @@ public class GwtGroup extends GwtPrincipal implements IsSerializable
 	 * 
 	 */
 	@Override
-	public PrincipalClassification getType()
+	public PrincipalClass getPrincipalClass()
 	{
-		return PrincipalClassification.GROUP;
+		return PrincipalClass.GROUP;
 	}
 
 	/**

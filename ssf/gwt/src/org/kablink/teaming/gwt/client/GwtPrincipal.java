@@ -48,7 +48,7 @@ public abstract class GwtPrincipal extends GwtTeamingItem
 	/**
 	 * 
 	 */
-	public enum PrincipalClassification implements IsSerializable
+	public enum PrincipalClass implements IsSerializable
 	{
 		USER,
 		GROUP,
@@ -96,20 +96,20 @@ public abstract class GwtPrincipal extends GwtTeamingItem
 	/**
 	 * 
 	 */
-	public abstract PrincipalClassification getType();
+	public abstract PrincipalClass getPrincipalClass();
 	
 	/**
 	 * 
 	 */
 	public String getTypeAsString()
 	{
-		PrincipalClassification type;
+		PrincipalClass pClass;
 		
-		type = getType();
-		if ( type == PrincipalClassification.USER )
+		pClass = getPrincipalClass();
+		if ( pClass == PrincipalClass.USER )
 			return GwtTeaming.getMessages().modifyNetFolderServerDlg_User();
 
-		if ( type == PrincipalClassification.GROUP )
+		if ( pClass == PrincipalClass.GROUP )
 			return GwtTeaming.getMessages().modifyNetFolderServerDlg_Group();
 		
 		return "Unknown principal type";
