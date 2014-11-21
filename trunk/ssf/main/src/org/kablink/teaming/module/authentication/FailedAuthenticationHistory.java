@@ -50,7 +50,6 @@ import org.springframework.security.core.Authentication;
  */
 public class FailedAuthenticationHistory
 {
-	private int m_maxHistorySize;
 	private int m_inLastNumSeconds;
 	private int m_numFailedLogins;
 	
@@ -62,7 +61,6 @@ public class FailedAuthenticationHistory
 	 */
 	private FailedAuthenticationHistory()
 	{
-		m_maxHistorySize = SPropsUtil.getInt( "failed.user.authentication.history.max.size", 500 );
 		m_inLastNumSeconds = SPropsUtil.getInt( "brute.force.attack.in.last.num.seconds", 10 );
 		m_numFailedLogins = SPropsUtil.getInt( "brute.force.attack.num.failed.logins", 3 );
 		m_listOfFailures = new Hashtable<String,FailedUserAuthenticationHistory>();
@@ -78,9 +76,6 @@ public class FailedAuthenticationHistory
 	{
 		String name;
 		FailedUserAuthenticationHistory userHistory;
-		
-		if ( m_listOfFailures.size() >= m_maxHistorySize )
-			return;
 		
 		name = authentication.getName();
 		if ( name == null || name.length() == 0 )
