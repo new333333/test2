@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.module.authentication.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -56,6 +57,7 @@ import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
+import org.kablink.teaming.module.authentication.FailedAuthenticationHistory;
 import org.kablink.teaming.module.authentication.FailedAuthenticationMonitor;
 import org.kablink.teaming.module.authentication.IdentityInfoObtainable;
 import org.kablink.teaming.module.authentication.LocalAuthentication;
@@ -127,11 +129,15 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	protected Set<String> cacheUsingAuthenticators;
 	protected int cacheUsingAuthenticatorTimeout; // in seconds
 	protected ConcurrentHashMap<String, Long> lastRegularAuthenticationTimes;
+
+	protected boolean m_recordFailedAuthentications = false;
+	protected FailedAuthenticationHistory m_failedAuthenticationHistory = null;
 	
 	public AbstractAuthenticationProviderModule() throws ClassNotFoundException {
 		nonLocalAuthenticators = new HashMap<Long, ProviderManager>();
 		localProviders = new HashMap<Long, ZoneAwareLocalAuthenticationProvider>();
 		lastUpdates = new ConcurrentHashMap<Long, Long>();
+		m_recordFailedAuthentications = SPropsUtil.getBoolean( "failed.user.authentication.history", false ); 
 	}
 
 	@Override
@@ -437,7 +443,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 					// Does authentication require captcha?
 					// If we have detected a brute-force attack we will require captcha for
 					// web-based authentication.
-					if ( doesAuthenticationRequireCaptcha() )
+					if ( doesAuthenticationRequireCaptcha( getAuthenticator() ) )
 					{
 						// Yes
 						if ( isCaptchaValid( authentication ) == false )
@@ -693,10 +699,10 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		if(LoginInfo.AUTHENTICATOR_WEB.equals(getAuthenticator()))
 		{
 			GangliaMonitoring.incrementFailedLogins(); // This metric is applicable only with web client (browser)
-			
-			recordFailedAuthentication( result );
 		}
 		
+		recordFailedAuthentication( result );
+
 		return result;
 	}
 	
@@ -900,14 +906,21 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	 */
 	private void recordFailedAuthentication( Authentication authentication )
 	{
-	/*
+		String ipAddr;
+		Date now;
+		
+		if ( m_recordFailedAuthentications == false )
+			return;
+		
+		if ( m_failedAuthenticationHistory == null )
+			m_failedAuthenticationHistory = FailedAuthenticationHistory.getFailedAuthenticationHistory();
+
 		ipAddr = ZoneContextHolder.getClientAddr();
 		if ( ipAddr == null || ipAddr.length() == 0 )
 			ipAddr = "unknown";
-		
-		logger.warn( "[client " + ipAddr + "] user " + authentication.getName() + ": authentication failure: " + exDesc );
-		//!!!
-	 */
+
+		now = new Date();
+		m_failedAuthenticationHistory.addFailure( authentication, ipAddr, now.getTime() );
 	}
 	
 	/**
@@ -916,19 +929,22 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	@Override
 	public boolean isBruteForceAttackInProgress()
 	{
+		if ( m_failedAuthenticationHistory != null )
+			return m_failedAuthenticationHistory.isBruteForceAttackInProgress();
+		
 		return false;
 	}
 	
 	/**
 	 * 
 	 */
-	public boolean doesAuthenticationRequireCaptcha()
+	@Override
+	public boolean doesAuthenticationRequireCaptcha( String authenticatorName )
 	{
-		String authenticatorName;
-		
-		authenticatorName = getAuthenticator();
-		if ( authenticatorName != null && authenticatorName.equalsIgnoreCase( "web" ) )
+		if ( authenticatorName != null && authenticatorName.equalsIgnoreCase( LoginInfo.AUTHENTICATOR_WEB ) )
+		{
 			return isBruteForceAttackInProgress();
+		}
 			
 		return false;
 		

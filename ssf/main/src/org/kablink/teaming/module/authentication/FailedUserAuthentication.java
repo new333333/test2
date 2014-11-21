@@ -36,11 +36,98 @@ package org.kablink.teaming.module.authentication;
 
 
 /**
+ * This class is used to hold information about a user's failed login.
+ * 
  * @author jwootton@novell.com
  *
  */
-public interface FailedAuthenticationMonitor
+public class FailedUserAuthentication
 {
-	public boolean doesAuthenticationRequireCaptcha( String authenticatorName );
-	public boolean isBruteForceAttackInProgress();
+	private String m_name;
+	private String m_pwdUsed;
+	private String m_ipAddr;	// IP address where the authentication request came from
+	private Long m_time;		// Date/time in milliseconds the authentication request happened.
+	
+	/**
+	 * 
+	 */
+	private FailedUserAuthentication()
+	{
+		m_name = null;
+		m_pwdUsed = null;
+		m_ipAddr = null;
+		m_time = null;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIpAddr( String ipAddr )
+	{
+		m_ipAddr = ipAddr;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setName( String name )
+	{
+		m_name = name;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setPwdUsed( String pwdUsed )
+	{
+		m_pwdUsed = pwdUsed;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setTime( long timeInMilliseconds )
+	{
+		m_time = new Long( timeInMilliseconds );
+	}
+	
+	/**
+	 * 
+	 */
+	public String getIpAddr()
+	{
+		return m_ipAddr;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getName()
+	{
+		return m_name;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getPwdUsed()
+	{
+		return m_pwdUsed;
+	}
+	
+	/**
+	 * 
+	 */
+	public Long getTime()
+	{
+		return m_time;
+	}
+	
+	/**
+	 * 
+	 */
+	public static FailedUserAuthentication getFailedUserAuthentication()
+	{
+		return new FailedUserAuthentication();
+	}
 }
