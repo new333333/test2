@@ -3791,7 +3791,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 								// ...otherwise, update the rows that
 								// ...were changed.
 								List<FolderRow> rows     = m_dataTable.getVisibleItems();
-								FolderColumn	adminCol = getColumnByName(m_folderColumnsList, FolderColumn.COLUMN_ADMIN_RIGHTS);
+								FolderColumn	adminCol = getColumnByName(m_folderColumnsList, FolderColumn.COLUMN_ADMIN_RIGHTS  );
+								FolderColumn	ptCol    = getColumnByName(m_folderColumnsList, FolderColumn.COLUMN_PRINCIPAL_TYPE);
 								Set<Long>		keySet   = adminRightsChangeMap.keySet();
 								for (Long key:  keySet) {
 									int rowIndex = 0;
@@ -3799,8 +3800,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 										EntityId rowEID = row.getEntityId();
 										if (rowEID.getEntityId().equals(key)) {
 											AdminRights ar = adminRightsChangeMap.get(key);
-											row.setColumnValue(                    adminCol, ar.getAdminRights()  );
-											row.getColumnValueAsPrincipalAdminType(adminCol).setAdmin(ar.isAdmin());
+											row.setColumnValue(                    adminCol,       ar.getAdminRights());
+											row.getColumnValueAsPrincipalAdminType(ptCol).setAdmin(ar.isAdmin()       );
 											m_dataTable.redrawRow(rowIndex);
 											break;
 										}
