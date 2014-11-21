@@ -37,6 +37,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.util.SPropsUtil;
 import org.springframework.security.core.Authentication;
 
@@ -50,6 +52,8 @@ import org.springframework.security.core.Authentication;
  */
 public class FailedUserAuthenticationHistory
 {
+	private Log m_logger = LogFactory.getLog( getClass() );
+
 	private String m_userName;	// Name of the user we are tracking
 	private int m_maxHistorySize;
 	private ConcurrentLinkedDeque<FailedUserAuthentication> m_listOfFailures;
@@ -89,6 +93,8 @@ public class FailedUserAuthenticationHistory
 			failedUserAuth.setTime( time );
 			
 			m_listOfFailures.push( failedUserAuth );
+			
+			m_logger.debug( "Recording failed authentication for user: " + name + " from ip address: " + ipAddr );
 		}
 	}
 	
@@ -127,7 +133,10 @@ public class FailedUserAuthenticationHistory
 		numFailures = getNumberOfFailedAuthentications( now.getTime(), inLastNumSeconds );
 		
 		if ( numFailures >= maxNumFailedLogins )
+		{
+			m_logger.debug( "brute-force attack detected for user: " + m_userName );
 			return true;
+		}
 		
 		// If we get here we do not think a brute-force attack is happening.
 		return false;
