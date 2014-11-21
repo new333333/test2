@@ -192,6 +192,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource internalUser_System();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/adminUser_System.png")
+	public ImageResource internalUser_SystemAdmin();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/move_down.gif")
 	public ImageResource moveDown();
 

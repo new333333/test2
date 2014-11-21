@@ -12516,12 +12516,12 @@ public class GwtServerHelper {
 								// group, but not set them.
 								errKey = "setAdminRightsError.GroupDisabled";
 							}
-							else if (g.isLdapContainer()) {
+							else if (g.isLdapContainer() && setRights) {
 								// You can't set admin rights on an
 								// LDAP container group.
 								errKey = "setAdminRightsError.GroupLdapContainer";
 							}
-							else if (!pInternal) {
+							else if ((!pInternal)  && setRights) {
 								// You can't set admin rights on a
 								// group that can contain external
 								// users.
@@ -12540,12 +12540,12 @@ public class GwtServerHelper {
 								// user, but not set them.
 								errKey = "setAdminRightsError.UserDisabled";
 							}
-							else if (!(u.isPerson())) {
+							else if ((!(u.isPerson())) && setRights) {
 								// You can't set admin rights on
 								// built-in system users.
 								errKey = "setAdminRightsError.NotAPerson";
 							}
-							else if (!pInternal) {
+							else if ((!pInternal) && setRights) {
 								// You can't set admin rights on
 								// external users.
 								errKey = "setAdminRightsError.UserExternal";

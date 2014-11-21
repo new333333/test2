@@ -78,21 +78,23 @@ public class PrincipalAdminTypeCell extends AbstractCell<PrincipalAdminType> {
 		
 		// Internal system users.
 		case INTERNAL_PERSON_ADMIN:           reply = messages.vibeDataTable_Alt_InternalUser_PersonAdmin();       break;
-		case INTERNAL_SYSTEM:                 reply = messages.vibeDataTable_Alt_InternalUser_System();            break;
 		
 		// Internal local users.
 		case INTERNAL_LDAP:
-		case INTERNAL_PERSON_OTHERS: {
+		case INTERNAL_PERSON_OTHERS:
+		case INTERNAL_SYSTEM:  {
 			if (pat.isAdmin()) {
 				switch (pat.getPrincipalType()) {
 				case INTERNAL_LDAP:           reply = messages.vibeDataTable_Alt_InternalUser_LDAPAdmin();         break;
 				case INTERNAL_PERSON_OTHERS:  reply = messages.vibeDataTable_Alt_InternalUser_PersonOthersAdmin(); break;
+				case INTERNAL_SYSTEM:         reply = messages.vibeDataTable_Alt_InternalUser_SystemAdmin();       break;
 				}
 			}
 			else {
 				switch (pat.getPrincipalType()) {
 				case INTERNAL_LDAP:           reply = messages.vibeDataTable_Alt_InternalUser_LDAP();              break;
 				case INTERNAL_PERSON_OTHERS:  reply = messages.vibeDataTable_Alt_InternalUser_PersonOthers();      break;
+				case INTERNAL_SYSTEM:         reply = messages.vibeDataTable_Alt_InternalUser_System();            break;
 				}
 			}
 			break;
@@ -101,7 +103,7 @@ public class PrincipalAdminTypeCell extends AbstractCell<PrincipalAdminType> {
 		// Groups.
 		case LOCAL_GROUP:
 		case LDAP_GROUP:
-		case SYSTEM_GROUP: {
+		case SYSTEM_GROUP:  {
 			if (pat.isAdmin()) {
 				switch (pat.getPrincipalType()) {
 				case LOCAL_GROUP:             reply = messages.vibeDataTable_Alt_Local_GroupAdmin();               break;
@@ -143,21 +145,23 @@ public class PrincipalAdminTypeCell extends AbstractCell<PrincipalAdminType> {
 		
 		// Internal system users.
 		case INTERNAL_PERSON_ADMIN:           reply = images.internalUser_PersonAdminBuiltIn(); break;
-		case INTERNAL_SYSTEM:                 reply = images.internalUser_System();             break;
 		
 		// Internal local users.
 		case INTERNAL_LDAP:
-		case INTERNAL_PERSON_OTHERS: {
+		case INTERNAL_PERSON_OTHERS:
+		case INTERNAL_SYSTEM:  {
 			if (pat.isAdmin()) {
 				switch (pat.getPrincipalType()) {
 				case INTERNAL_LDAP:           reply = images.internalUser_LDAPAdmin();          break;
 				case INTERNAL_PERSON_OTHERS:  reply = images.internalUser_PersonAdmin();        break;
+				case INTERNAL_SYSTEM:         reply = images.internalUser_SystemAdmin();        break;
 				}
 			}
 			else {
 				switch (pat.getPrincipalType()) {
 				case INTERNAL_LDAP:           reply = images.internalUser_LDAP();               break;
 				case INTERNAL_PERSON_OTHERS:  reply = images.internalUser_PersonOthers();       break;
+				case INTERNAL_SYSTEM:         reply = images.internalUser_System();             break;
 				}
 			}
 			break;
@@ -166,7 +170,7 @@ public class PrincipalAdminTypeCell extends AbstractCell<PrincipalAdminType> {
 		// Groups.
 		case LOCAL_GROUP:
 		case LDAP_GROUP:
-		case SYSTEM_GROUP: {
+		case SYSTEM_GROUP:  {
 			if (pat.isAdmin()) {
 				switch (pat.getPrincipalType()) {
 				case LOCAL_GROUP:             reply = images.groupType_LocalAdmin();            break;
