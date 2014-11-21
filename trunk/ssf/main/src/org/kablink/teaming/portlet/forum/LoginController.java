@@ -50,6 +50,7 @@ import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -414,9 +415,9 @@ public class LoginController  extends SAbstractControllerRetry {
 			{
 				FailedAuthenticationMonitor faMonitor;
 				
-				// Has a brute-force attack been detected?
+				// Does authentication require captcha?
 				faMonitor = (FailedAuthenticationMonitor) authModule;
-				if ( faMonitor.isBruteForceAttackInProgress() )
+				if ( faMonitor.doesAuthenticationRequireCaptcha( LoginInfo.AUTHENTICATOR_WEB ) )
 				{
 					// Yes, require captcha on the login dialog.
 					model.put( "ssDoTextVerification", "true" );
