@@ -461,7 +461,6 @@ public class AdminControl extends TeamingPopupPanel
 			actions = category.getActions();
 			if ( actions != null )
 			{
-				boolean showManageAdministrators = ManageAdministratorsDlg.SHOW_MANAGE_ADMINISTRATORS;
 				boolean showManageMobileDevices  = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
 				boolean showPasswordPolicy       = GwtClientHelper.isPasswordPolicyEnabled();
 				for (GwtAdminAction action : actions )
@@ -472,11 +471,6 @@ public class AdminControl extends TeamingPopupPanel
 					}
 					
 					if ( action.getActionType().equals( AdminAction.CONFIGURE_PASSWORD_POLICY ) && ( ! showPasswordPolicy ))
-					{
-						continue;
-					}
-					
-					if ( action.getActionType().equals( AdminAction.MANAGE_ADMINISTRATORS ) && ( ! showManageAdministrators ))
 					{
 						continue;
 					}

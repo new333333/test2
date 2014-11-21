@@ -5505,8 +5505,10 @@ td.datePickerMonth {
 /* End:  Manage teams dialog styles. */
 
 /* Start:  Manage administrators dialog styles. */
-	.vibe-manageAdministratorsDlg           {}
-	.vibe-manageAdministratorsDlg-rootPanel {background-color: white;}
+	.vibe-manageAdministratorsDlg            {}
+	.vibe-manageAdministratorsDlg-findPopup  {background-color: transparent; z-index: 2000; padding: 0px !important;}
+	.vibe-manageAdministratorsDlg-findWidget {margin-top: 2px; display: inline;}
+	.vibe-manageAdministratorsDlg-rootPanel  {background-color: white;}
 /* End:  Manage administrators dialog styles. */
 
 /* Start:  Import profiles dialog styles. */

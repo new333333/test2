@@ -34,7 +34,9 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.binderviews.AdministratorsView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
@@ -42,20 +44,31 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.AddPrincipalAdminRightsEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.CheckManageDlgActiveEvent;
+import org.kablink.teaming.gwt.client.event.FindControlBrowseEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
+import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
+import org.kablink.teaming.gwt.client.GwtPrincipal;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetManageAdministratorsInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageAdministratorsInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData.AdminRights;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.FindControlBrowserPopup;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -65,7 +78,9 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -79,13 +94,15 @@ public class ManageAdministratorsDlg extends DlgBox
 		AddPrincipalAdminRightsEvent.Handler,
 		AdministrationExitEvent.Handler,
 		CheckManageDlgActiveEvent.Handler,
+		FindControlBrowseEvent.Handler,
 		FullUIReloadEvent.Handler,
-		GetManageTitleEvent.Handler
+		GetManageTitleEvent.Handler,
+		SearchFindResultsEvent.Handler
 {
-	public final static boolean	SHOW_MANAGE_ADMINISTRATORS	= false;	//! DRF (20141117):  Leave false on checkin until it's working.
-	
+	private AdministratorsView						m_adminView;				// The administrators view.
 	private boolean									m_dlgAttached;				// true when the dialog is attached to the document, false otherwise.
 	private boolean									m_viewReady;				// true once the embedded view is ready,             false otherwise.
+	private FindCtrl								m_findControl;				// The search widget.
 	private GwtTeamingMessages						m_messages;					// Access to Vibe's messages.
 	private int										m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
 	private int										m_showX;					// The x and...
@@ -94,7 +111,7 @@ public class ManageAdministratorsDlg extends DlgBox
 	private int										m_showCY;					// ...height of the dialog.
 	private List<HandlerRegistration>				m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ManageAdministratorsInfoRpcResponseData	m_manageAdministratorsInfo;	// Information necessary to run the manage administrators dialog.
-	private AdministratorsView						m_adminView;				// The administrators view.
+	private TeamingPopupPanel						m_findPopupPanel;			// The popup panel that will host m_findControl.
 	private VibeFlowPanel							m_rootPanel;				// The panel that holds the dialog's contents.
 
 	// Constant adjustments to the size of the view so that it properly
@@ -109,8 +126,10 @@ public class ManageAdministratorsDlg extends DlgBox
 		TeamingEvents.ADD_PRINCIPAL_ADMIN_RIGHTS,
 		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.CHECK_MANAGE_DLG_ACTIVE,
+		TeamingEvents.FIND_CONTROL_BROWSE,
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.GET_MANAGE_TITLE,
+		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
 	
 	/*
@@ -147,6 +166,58 @@ public class ManageAdministratorsDlg extends DlgBox
 			maDlgClient); 
 	}
 
+	/*
+	 * Asynchronously add administrator rights to the given Principal.
+	 */
+	private void addAdminRightsToPrincipalAsync(final GwtPrincipal adminPrincipal) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				addAdminRightsToPrincipalNow(adminPrincipal);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously add administrator rights to the given Principal.
+	 */
+	private void addAdminRightsToPrincipalNow(final GwtPrincipal adminPrincipal) {
+		// Set the administrator rights.
+		showDlgBusySpinner();
+		List<Long> pids = new ArrayList<Long>();
+		pids.add(adminPrincipal.getIdLong());
+		SetPrincipalsAdminRightsCmd cmd = new SetPrincipalsAdminRightsCmd(pids, true);	// true -> Add rights.
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				// No!  Tell the user about the problem.
+				hideDlgBusySpinner();
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_SetPrincipalsAdminRights());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// If we got any errors...
+				hideDlgBusySpinner();
+			    SetPrincipalsAdminRightsRpcResponseData responseData = ((SetPrincipalsAdminRightsRpcResponseData) result.getResponseData()); 
+				List<ErrorInfo> erList = responseData.getErrorList();
+				if (GwtClientHelper.hasItems(erList)) {
+					// ...display them...
+					GwtClientHelper.displayMultipleErrors(m_messages.vibeDataTable_Error_SavingAdminRights(), erList);
+				}
+
+				// ...and if we changed anything...
+				final Map<Long, AdminRights> adminRightsChangeMap = responseData.getAdminRightsChangeMap(); 
+				if (GwtClientHelper.hasItems(adminRightsChangeMap)) {
+					// ...and force the UI to refresh.
+					FullUIReloadEvent.fireOneAsync();
+				}
+			}
+		});
+	}
+	
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
@@ -252,8 +323,60 @@ public class ManageAdministratorsDlg extends DlgBox
 	 * to the selected principals.
 	 */
 	private void invokeAddRightsNow(final UIObject showRelativeTo) {
-//!		...this needs to be implemented...
-		GwtClientHelper.deferredAlert("ManageAdministratorsDlg.invokeAddRightsNow():  ...this needs to be implemented...");
+		// Show the find control's popup panel relative to the given
+		// UIObject...
+		m_findPopupPanel.showRelativeTo(showRelativeTo);
+		
+		// ...and give it the focus.
+		FocusWidget fw = m_findControl.getFocusWidget();
+		if (null != fw) {
+			GwtClientHelper.setFocusDelayed(fw);
+		}
+	}
+	
+	/*
+	 * Asynchronously loads the find control.
+	 */
+	private void loadPart1Async() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the find control.
+	 */
+	private void loadPart1Now() {
+		FindCtrl.createAsync(this, SearchType.PRINCIPAL, new FindCtrlClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(FindCtrl findCtrl) {
+				// Store the FindCtrl...
+				m_findControl = findCtrl;
+				m_findControl.addStyleName("vibe-manageAdministratorsDlg-findWidget");
+
+				// ...tell it the kind of principals we want...
+				m_findControl.setSearchForExternalPrincipals(false);
+				m_findControl.setSearchForInternalPrincipals(true );
+				m_findControl.setSearchForLdapGroups(        true );
+
+				// ...wrap in in a TeamingPopupPanel...
+				m_findPopupPanel = new TeamingPopupPanel(true);	// true -> This popup is auto hide.
+				m_findPopupPanel.addStyleName("vibe-manageAdministratorsDlg-findPopup");
+				m_findPopupPanel.setWidget(m_findControl);
+
+				// ...and finish populating the dialog.
+				populateDlgAsync();
+			}
+		});
 	}
 	
 	/**
@@ -335,6 +458,21 @@ public class ManageAdministratorsDlg extends DlgBox
 	}
 
 	/**
+	 * Handles FindControlBrowseEvent's received by this class.
+	 * 
+	 * Implements the FindControlBrowseEvent.Handler.onFindControlBrowse()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onFindControlBrowse(FindControlBrowseEvent event) {
+		// Simply invoke the find browser using the parameters from the
+		// event.
+		FindControlBrowserPopup.doBrowse(event.getFindControl(), event.getFindStart());
+	}
+	
+	/**
 	 * Handles FullUIReloadEvent's received by this class.
 	 * 
 	 * Implements the FullUIReloadEvent.Handler.onFullUIReload() method.
@@ -365,6 +503,36 @@ public class ManageAdministratorsDlg extends DlgBox
 		}
 	}
 
+	/**
+	 * Handles SearchFindResultsEvent's received by this class.
+	 * 
+	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchFindResults(SearchFindResultsEvent event) {
+		// If the find results aren't for the manage administrators
+		// dialog...
+		if (!(((Widget) event.getSource()).equals(this))) {
+			// ...ignore the event.
+			return;
+		}
+		
+		// Hide the find widgets.
+		m_findControl.hideSearchResults();
+		m_findControl.clearText();
+		m_findPopupPanel.hide();
+
+		// If the search result is a GwtPrincipal, add administrator
+		// rights to it.
+		GwtTeamingItem obj = event.getSearchResults();
+		if (obj instanceof GwtPrincipal)
+		     addAdminRightsToPrincipalAsync(((GwtPrincipal) obj));
+		else GwtClientHelper.deferredAlert(m_messages.manageAdministratorsDlgErrorInvalidSearchResult());
+	}
+	
 	/*
 	 * Sets the view's size once thing are ready for it.
 	 */
@@ -516,7 +684,7 @@ public class ManageAdministratorsDlg extends DlgBox
 		m_showCY = height;
 		
 		// ...and start populating the dialog.
-		populateDlgAsync();
+		loadPart1Async();
 	}
 
 	/*
