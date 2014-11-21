@@ -156,6 +156,10 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource groupType_System();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/DataTable/group_SystemAdmin.png")
+	public ImageResource groupType_SystemAdmin();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/group_Unknown.png")
 	public ImageResource groupType_Unknown();
 	

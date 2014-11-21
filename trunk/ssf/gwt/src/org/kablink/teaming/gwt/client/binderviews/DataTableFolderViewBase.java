@@ -166,6 +166,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveSharedViewStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetEntriesPinStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData.AdminRights;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
@@ -3773,26 +3774,38 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				}
 
 				// ...and if we changed anything...
-				final Map<Long, String> adminRightsChangeMap = responseData.getAdminRightsChangeMap(); 
+				final Map<Long, AdminRights> adminRightsChangeMap = responseData.getAdminRightsChangeMap(); 
 				if (GwtClientHelper.hasItems(adminRightsChangeMap)) {
 					// ...force the rows that changed to refresh to
 					// ...reflect the change.
 					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
-							List<FolderRow> rows     = m_dataTable.getVisibleItems();
-							FolderColumn	adminCol = getColumnByName(m_folderColumnsList, FolderColumn.COLUMN_ADMIN_RIGHTS);
-							Set<Long>		keySet   = adminRightsChangeMap.keySet();
-							for (Long key:  keySet) {
-								int rowIndex = 0;
-								for (FolderRow row : rows) {
-									EntityId rowEID = row.getEntityId();
-									if (rowEID.getEntityId().equals(key)) {
-										row.setColumnValue(adminCol, adminRightsChangeMap.get(key));
-										m_dataTable.redrawRow(rowIndex);
-										break;
+							// If we're removing rights in the manage
+							// administrators view...
+							if ((!setRights) && getFolderInfo().isBinderAdministratorManagement()) {
+								// ...force the full UI to refresh...
+								FullUIReloadEvent.fireOneAsync();
+							}
+							else {
+								// ...otherwise, update the rows that
+								// ...were changed.
+								List<FolderRow> rows     = m_dataTable.getVisibleItems();
+								FolderColumn	adminCol = getColumnByName(m_folderColumnsList, FolderColumn.COLUMN_ADMIN_RIGHTS);
+								Set<Long>		keySet   = adminRightsChangeMap.keySet();
+								for (Long key:  keySet) {
+									int rowIndex = 0;
+									for (FolderRow row : rows) {
+										EntityId rowEID = row.getEntityId();
+										if (rowEID.getEntityId().equals(key)) {
+											AdminRights ar = adminRightsChangeMap.get(key);
+											row.setColumnValue(                    adminCol, ar.getAdminRights()  );
+											row.getColumnValueAsPrincipalAdminType(adminCol).setAdmin(ar.isAdmin());
+											m_dataTable.redrawRow(rowIndex);
+											break;
+										}
+										rowIndex += 1;
 									}
-									rowIndex += 1;
 								}
 							}
 						}
@@ -4494,7 +4507,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	    initTableColumns(selectionModel);
 	    
 	    // Add the provider that supplies FolderRow's for the table.
-		FolderRowAsyncProvider folderRowProvider = new FolderRowAsyncProvider(m_dataTable, keyProvider);
+	    FolderRowAsyncProvider folderRowProvider = new FolderRowAsyncProvider(m_dataTable, keyProvider);
 	    folderRowProvider.addDataDisplay(m_dataTable);
 
 	    // Add the table and pager to the view.

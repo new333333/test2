@@ -47,7 +47,56 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class SetPrincipalsAdminRightsRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	private ErrorListRpcResponseData	m_errorList;			//
-	private Map<Long, String>			m_adminRightsChangeMap;	//
+	private Map<Long, AdminRights>		m_adminRightsChangeMap;	//
+	
+	/**
+	 * Inner class used to encapsulate an admin rights display string
+	 * with a boolean indicating whether the entity has admin rights.
+	 */
+	public static class AdminRights implements IsSerializable {
+		private boolean	m_admin;	    //
+		private String	m_adminRights;	//
+
+		/*
+		 * Constructor method.
+		 * 
+		 * Zero parameter constructor required for GWT serialization.
+		 */
+		private AdminRights() {
+			super();
+		}
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param adminRights
+		 * @param admin
+		 */
+		public AdminRights(String adminRights, boolean admin) {
+			// Initialize this object...
+			this();
+			
+			// ...and store the parameters.
+			setAdminRights(adminRights);
+			setAdmin(      admin      );
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isAdmin()        {return m_admin;      }
+		public String  getAdminRights() {return m_adminRights;}
+
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setAdmin(      boolean admin)       {m_admin       = admin;      }
+		public void setAdminRights(String  adminRights) {m_adminRights = adminRights;}
+	}
 	
 	/**
 	 * Constructor method.
@@ -77,14 +126,14 @@ public class SetPrincipalsAdminRightsRpcResponseData implements IsSerializable, 
 	 * 
 	 * @return
 	 */
-	public Map<Long, String> getAdminRightsChangeMap() {return m_adminRightsChangeMap;}
+	public Map<Long, AdminRights> getAdminRightsChangeMap() {return m_adminRightsChangeMap;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setAdminRightsChangeMap(Map<Long, String> adminRightsChangeMap) {m_adminRightsChangeMap = adminRightsChangeMap;}
+	public void setAdminRightsChangeMap(Map<Long, AdminRights> adminRightsChangeMap) {m_adminRightsChangeMap = adminRightsChangeMap;}
 	
 	/**
 	 * Adds an error to the list.

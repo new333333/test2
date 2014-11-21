@@ -565,35 +565,30 @@ public class GwtClientHelper {
 	 * 
 	 * @return
 	 */
-	public static ImageResource getGroupTypeImage( GroupType groupType )
-	{
-		GwtTeamingDataTableImageBundle images;
+	public static ImageResource getGroupTypeImage(GroupType groupType) {
+		GwtTeamingDataTableImageBundle images = GwtTeaming.getDataTableImageBundle();
 		ImageResource reply;
-
-		images = GwtTeaming.getDataTableImageBundle();
-
-		if ( groupType == null )
-			return images.groupType_Unknown();
-
-		switch ( groupType )
-		{
-		case INTERNAL_LDAP:
-			reply = images.groupType_LDAP();
-			break;
-			
-		case INTERNAL_SYSTEM:
-			reply = images.groupType_System();
-			break;
-		
-		case INTERNAL_LOCAL:
-			reply = images.groupType_Local();
-			break;
-			
-		default:
+		if (null == groupType) {
 			reply = images.groupType_Unknown();
-			break;
 		}
-		
+		else {
+			if (groupType.isAdmin()) {
+				switch (groupType.getGroupClass()) {
+				case INTERNAL_LDAP:    reply = images.groupType_LDAPAdmin();   break;
+				case INTERNAL_SYSTEM:  reply = images.groupType_SystemAdmin(); break;
+				case INTERNAL_LOCAL:   reply = images.groupType_LocalAdmin();  break;
+				default:               reply = images.groupType_Unknown();     break;
+				}
+			}
+			else {
+				switch (groupType.getGroupClass()) {
+				case INTERNAL_LDAP:    reply = images.groupType_LDAP();        break;
+				case INTERNAL_SYSTEM:  reply = images.groupType_System();      break;
+				case INTERNAL_LOCAL:   reply = images.groupType_Local();       break;
+				default:               reply = images.groupType_Unknown();     break;
+				}
+			}
+		}
 		return reply;		
 	}
 	

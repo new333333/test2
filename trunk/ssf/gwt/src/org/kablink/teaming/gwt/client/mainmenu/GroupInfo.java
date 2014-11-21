@@ -50,8 +50,8 @@ public class GroupInfo
 	implements IsSerializable, VibeRpcResponseData
 {
 	private Long m_id;			// The group's id.
-	private String m_adminRights;	// Localized string containing 'Yes' if the group has admin rights set on it and 'No' if it doesn't.
-	private String m_title;			// The group's title.
+	private boolean m_admin;	// true -> The group has admin rights.  false -> It doesn't.
+	private String m_title;		// The group's title.
 	private String m_name;		// The group's name
 	private String m_desc;		// The group's description
 	private String m_fqdn;		// If the group came from ldap, the group's fully qualified dn
@@ -75,17 +75,17 @@ public class GroupInfo
 	/**
 	 * 
 	 */
-	public String getAdminRights()
+	public boolean isAdmin()
 	{
-		return m_adminRights;
+		return m_admin;
 	}
 	
 	/**
 	 * 
 	 */
-	public void setAdminRights( String adminRights )
+	public void setAdmin( boolean admin )
 	{
-		m_adminRights = adminRights;
+		m_admin = admin;
 	}
 	
 	/**

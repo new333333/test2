@@ -98,26 +98,26 @@ public class PrincipalAdminTypeCell extends AbstractCell<PrincipalAdminType> {
 			break;
 		}
 		
-		// Local groups.
+		// Groups.
 		case LOCAL_GROUP:
-		case LDAP_GROUP: {
+		case LDAP_GROUP:
+		case SYSTEM_GROUP: {
 			if (pat.isAdmin()) {
 				switch (pat.getPrincipalType()) {
 				case LOCAL_GROUP:             reply = messages.vibeDataTable_Alt_Local_GroupAdmin();               break;
 				case LDAP_GROUP:              reply = messages.vibeDataTable_Alt_Ldap_GroupAdmin();                break;
+				case SYSTEM_GROUP:            reply = messages.vibeDataTable_Alt_System_GroupAdmin();              break;
 				}
 			}
 			else {
 				switch (pat.getPrincipalType()) {
 				case LOCAL_GROUP:             reply = messages.vibeDataTable_Alt_Local_Group();                    break;
 				case LDAP_GROUP:              reply = messages.vibeDataTable_Alt_Ldap_Group();                     break;
+				case SYSTEM_GROUP:            reply = messages.vibeDataTable_Alt_System_Group();                   break;
 				}
 			}
 			break;
 		}
-		
-		// System groups.
-		case SYSTEM_GROUP:                    reply = messages.vibeDataTable_Alt_System_Group();                   break;
 		
 		// Unknown.
 		default:                              reply = messages.vibeDataTable_Alt_UnknownUser();                    break;
@@ -163,26 +163,26 @@ public class PrincipalAdminTypeCell extends AbstractCell<PrincipalAdminType> {
 			break;
 		}
 
-		// Local groups.
+		// Groups.
 		case LOCAL_GROUP:
-		case LDAP_GROUP: {
+		case LDAP_GROUP:
+		case SYSTEM_GROUP: {
 			if (pat.isAdmin()) {
 				switch (pat.getPrincipalType()) {
-				case LOCAL_GROUP:             reply = images.groupType_LocalAdmin();           break;
-				case LDAP_GROUP:              reply = images.groupType_LDAPAdmin();            break;
+				case LOCAL_GROUP:             reply = images.groupType_LocalAdmin();            break;
+				case LDAP_GROUP:              reply = images.groupType_LDAPAdmin();             break;
+				case SYSTEM_GROUP:            reply = images.groupType_SystemAdmin();           break;
 				}
 			}
 			else {
 				switch (pat.getPrincipalType()) {
 				case LOCAL_GROUP:             reply = images.groupType_Local();                 break;
 				case LDAP_GROUP:              reply = images.groupType_LDAP();                  break;
+				case SYSTEM_GROUP:            reply = images.groupType_System();                break;
 				}
 			}
 			break;
 		}
-		
-		// System groups.
-		case SYSTEM_GROUP:                    reply = images.groupType_System();                break;
 		
 		// Unknown.
 		default:                              reply = images.unknownUser();                     break;
