@@ -1930,6 +1930,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Alt_InternalUser_PersonOthers();
 	String vibeDataTable_Alt_InternalUser_PersonOthersAdmin();
 	String vibeDataTable_Alt_InternalUser_System();
+	String vibeDataTable_Alt_InternalUser_SystemAdmin();
 	String vibeDataTable_Alt_Ldap_Group();
 	String vibeDataTable_Alt_Ldap_GroupAdmin();
 	String vibeDataTable_Alt_Local_Group();
