@@ -1583,26 +1583,5 @@ text/calendar											  ics
 	
 	<!-- ================= To make server/node address available to bean context declaratively during context initialization =============== -->
 	<bean id="nodeAddress" class="org.kablink.teaming.util.NetworkUtil"/>
-
-
-	<!-- =============================== KeyShield Support ============================== -->
-	<bean id="keyShieldModule"  parent="moduleTransactionProxy">
-		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
-		<property name="target">
-			<bean class="org.kablink.teaming.module.keyshield.impl.KeyShieldModuleImpl">
-				<property name="coreDao"><ref bean="coreDao"/></property>
-			</bean>
-		</property>
-		<!-- Transaction is managed using transactionTemplate -->
-		<property name="transactionAttributes">
-			<props>
-				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-			    <prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-			    <prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
-			    <prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-			    <prop key="save*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-			</props>
-		</property>
-	</bean>			
 	
 </beans>

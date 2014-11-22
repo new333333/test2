@@ -41,7 +41,7 @@ import org.kablink.teaming.module.zone.ZoneException;
  * 
  * @author jwootton@novell.com
  */
-public class KeyShieldModuleImpl extends CommonDependencyInjection
+public class NullKeyShieldModule extends CommonDependencyInjection
 	implements KeyShieldModule
 {
 	/**
@@ -50,23 +50,6 @@ public class KeyShieldModuleImpl extends CommonDependencyInjection
 	@Override
 	public void deleteKeyShieldConfig( Long zoneId )
 	{
-		KeyShieldConfig config;
-		
-		if ( zoneId == null )
-			return;
-		
-		config = getCoreDao().loadKeyShieldConfig( zoneId );
-		if ( config != null )
-		{
-			try
-			{
-				getCoreDao().delete( config );
-			}
-			catch ( Exception ex )
-			{
-				logger.warn( "Error deleting KeyShieldConfig for zone: " + zoneId, ex );
-			}
-		}
 	}
 	
  	/**
@@ -78,14 +61,7 @@ public class KeyShieldModuleImpl extends CommonDependencyInjection
 	@Override
 	public KeyShieldConfig getKeyShieldConfig( Long zoneId ) throws ZoneException
 	{
-		KeyShieldConfig config;
-		
-		config = getCoreDao().loadKeyShieldConfig( zoneId );
-
-		if ( config == null )
-			config = new KeyShieldConfig( zoneId );
-
-		return config;
+		return null;
 	}
 	
 	/**
@@ -94,16 +70,10 @@ public class KeyShieldModuleImpl extends CommonDependencyInjection
 	@Override
 	public void saveKeyShieldConfig( Long zoneId, KeyShieldConfig config )
 	{
-		KeyShieldConfig currentConfig;
-		
-		// Create a KeyShieldConfig object if one doesn't already exist in the db for the given zone.
-		currentConfig = getCoreDao().loadKeyShieldConfig( zoneId );
-		if ( currentConfig == null )
-			currentConfig = new KeyShieldConfig( zoneId );
-		
-		// Make a copy of the config data that was passed to us.
-		currentConfig.copy( config );
-		
-		getCoreDao().save( currentConfig );
 	}
+
+	@Override
+	public void testConnection(KeyShieldConfig keyShieldConfig) throws Exception {
+	}
+	
 }

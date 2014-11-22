@@ -56,4 +56,14 @@ public interface KeyShieldModule
 	 * Save the given KeyShieldConfig data to the db
 	 */
 	public void saveKeyShieldConfig( Long zoneId, KeyShieldConfig newKeyShieldConfig );
+	
+	/**
+	 * Tests if a connection can successfully be established to the KeyShield SSO server
+	 * using the information in the configuration.
+	 * It returns normally if successful. It will throw an exception if connection attempt fails.
+	 * 
+	 * @param keyShieldConfig
+	 * @throws Exception
+	 */
+	public void testConnection(KeyShieldConfig keyShieldConfig) throws Exception;
 }
