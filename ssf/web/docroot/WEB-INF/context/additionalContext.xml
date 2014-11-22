@@ -157,4 +157,7 @@
 	
 	<!-- <bean id="cache" class="org.kablink.teaming.cache.impl.NullCache"/>-->
 	
+	<!-- =============================== KeyShield Support ============================== -->
+	<bean id="keyShieldModule" class="org.kablink.teaming.module.keyshield.impl.NullKeyShieldModule"/>		
+	
 </beans>
