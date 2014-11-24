@@ -301,7 +301,7 @@ public class ManageAdministratorsDlg extends DlgBox
 	public HelpData getHelpData() {
 		HelpData helpData = new HelpData();
 		helpData.setGuideName(HelpData.ADMIN_GUIDE);
-		helpData.setPageId("administrators");
+		helpData.setPageId("administrators_manage");
 		return helpData;
 	}
 
