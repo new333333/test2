@@ -89,7 +89,6 @@ public class FailedUserAuthenticationHistory
 			failedUserAuth = FailedUserAuthentication.getFailedUserAuthentication();
 			failedUserAuth.setIpAddr( ipAddr );
 			failedUserAuth.setName( name );
-			failedUserAuth.setPwdUsed( (String)authentication.getCredentials() );
 			failedUserAuth.setTime( time );
 			
 			m_listOfFailures.push( failedUserAuth );

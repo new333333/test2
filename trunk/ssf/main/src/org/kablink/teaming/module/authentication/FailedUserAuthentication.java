@@ -44,7 +44,6 @@ package org.kablink.teaming.module.authentication;
 public class FailedUserAuthentication
 {
 	private String m_name;
-	private String m_pwdUsed;
 	private String m_ipAddr;	// IP address where the authentication request came from
 	private Long m_time;		// Date/time in milliseconds the authentication request happened.
 	
@@ -54,7 +53,6 @@ public class FailedUserAuthentication
 	private FailedUserAuthentication()
 	{
 		m_name = null;
-		m_pwdUsed = null;
 		m_ipAddr = null;
 		m_time = null;
 	}
@@ -73,14 +71,6 @@ public class FailedUserAuthentication
 	public void setName( String name )
 	{
 		m_name = name;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setPwdUsed( String pwdUsed )
-	{
-		m_pwdUsed = pwdUsed;
 	}
 	
 	/**
@@ -105,14 +95,6 @@ public class FailedUserAuthentication
 	public String getName()
 	{
 		return m_name;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getPwdUsed()
-	{
-		return m_pwdUsed;
 	}
 	
 	/**
