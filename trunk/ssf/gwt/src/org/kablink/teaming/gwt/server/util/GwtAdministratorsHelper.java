@@ -393,10 +393,9 @@ public class GwtAdministratorsHelper {
 			}
 		}
 		
-		List<Principal> pList = ResolveIds.getPrincipals(memberIds);
-		
+		List<Principal> pList = ((null == memberIds) ? new ArrayList<Principal>() : ResolveIds.getPrincipals(memberIds));
 		User builtInAdmin = BuiltInUsersHelper.getZoneSuperUser();
-		if ((null != builtInAdmin) && (!(memberIds.contains(builtInAdmin.getId())))) {
+		if ((null != builtInAdmin) && ((null == memberIds) || (!(memberIds.contains(builtInAdmin.getId()))))) {
 			pList.add(0, builtInAdmin);
 		}
 		
