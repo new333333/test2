@@ -136,7 +136,6 @@ import org.kablink.teaming.gwt.client.RequestInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -2542,12 +2541,10 @@ public class ContentControl extends Composite
 	@Override
 	public void onViewForumEntry( final ViewForumEntryEvent event )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
 		// Close the "what's new" page if it is up.
 		ActivityStreamExitEvent.fireOne( ExitMode.EXIT_FOR_CONTEXT_SWITCH );
 		
-		cmd = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute() 
@@ -2558,8 +2555,7 @@ public class ContentControl extends Composite
 					false,	// false -> Not a history action.
 					null );	// null  -> No history Filr masthead action.
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}
 	
 	/**
@@ -2705,5 +2701,4 @@ public class ContentControl extends Composite
 			}
 		} );
 	}
-
 }// end ContentControl
