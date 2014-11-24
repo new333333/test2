@@ -2355,14 +2355,14 @@ public class GwtClientHelper {
 	 */
 	public static void setFocusDelayed(final FocusWidget focusWidget) {
 		// Set the focus in the given widget after 1/2 second delay.
-		Timer timer = new Timer() {
+		deferCommand(new ScheduledCommand() {
 			@Override
-			public void run() {
+			public void execute() {
 				// Give the focus to the widget.
 				setFocusNow(focusWidget);
 			}
-		};
-		timer.schedule(500);
+		},
+		500);
 	}
 	
 	public static void setFocusNow(FocusWidget focusWidget) {
