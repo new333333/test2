@@ -283,7 +283,6 @@ public class GwtMainPage extends ResizeComposite
 	private String m_searchTabId = "";
 	private EditBrandingDlg m_editBrandingDlg = null;
 	private PersonalPreferencesDlg m_personalPrefsDlg = null;
-	private LoginDlg m_loginDlg = null;
 	private KeyDownSet m_keyDownSet = null;
 	private TagThisDlg m_tagThisDlg = null;
 	private ChangePasswordDlg m_changePwdDlg = null;
@@ -2116,6 +2115,9 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void invokeLoginDlg( final boolean allowCancel )
 	{
+		LoginDlgClient dlgClient;
+		String refererUrl;
+		
 		// Is login allowed through our standard login dialog?  This will be disabled if
 		// we are running behind a single-sign on product such as NAM.
 		if ( m_requestInfo.isFormLoginAllowed() == false )
@@ -2127,66 +2129,37 @@ public class GwtMainPage extends ResizeComposite
 			return;
 		}
 
-		if ( m_loginDlg == null )
-		{
-			LoginDlgClient dlgClient;
-			String refererUrl;
-			
-			// Get the url to go to after the user logs in.
-			refererUrl = m_requestInfo.getLoginRefererUrl();
-			
-			dlgClient = new LoginDlgClient()
-			{
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( LoginDlg dlg )
-				{
-					m_loginDlg = dlg;
-					invokeLoginDlgImpl( allowCancel );
-				}
-				
-			};
-			
-			LoginDlg.createAsync(
-							false, 
-							true, 
-							0, 
-							0, 
-							null,
-							m_requestInfo.getLoginUrl(),
-							refererUrl,
-							dlgClient );
-		}
+		// Get the url to go to after the user logs in.
+		refererUrl = m_requestInfo.getLoginRefererUrl();
 		
-		else
+		dlgClient = new LoginDlgClient()
 		{
-			invokeLoginDlgImpl( allowCancel );
-		}
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess( LoginDlg dlg )
+			{
+				dlg.showDlg(
+						allowCancel,
+						getLoginStatus(),
+						getLoginUserId() );
+			}
+		};
+		
+		LoginDlg.createAsync(
+						false, 
+						true, 
+						0, 
+						0, 
+						null,
+						m_requestInfo.getLoginUrl(),
+						refererUrl,
+						dlgClient );
 	}// end invokeLoginDlg()
-	
-	/**
-	 * 
-	 */
-	private void invokeLoginDlgImpl( final boolean allowCancel )
-	{
-		if ( m_loginDlg != null )
-		{
-			m_loginDlg.showDlg(
-				allowCancel,
-				getLoginStatus(),
-				getLoginUserId() );
-		}
-		else
-		{
-			Window.alert( "In invokeLoginDlgImpl() and m_loginDlg is null" );
-		}
-	}//end involeLoginDlgImpl()
-	
 	
 	/**
 	 * This method is used to invoke the "Share this" dialog from jsp code.

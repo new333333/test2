@@ -162,7 +162,6 @@ public class LoginDlg extends DlgBox
 	private LoginStatus m_loginStatus;
 	private Long m_loginUserId;
 	private boolean m_initialized = false;
-	private int m_numAttempts = 0;
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private String m_preLoginTitle;
 	private boolean m_captchaAlreadyChecked = false;
@@ -408,6 +407,7 @@ public class LoginDlg extends DlgBox
 				{
 					AsyncCallback<VibeRpcResponse> rpcCallback;
 					ValidateCaptchaCmd cmd;
+					HttpRequestInfo httpRequestInfo;
 
 					// Yes
 					rpcCallback = new AsyncCallback<VibeRpcResponse>()
@@ -457,7 +457,11 @@ public class LoginDlg extends DlgBox
 					
 					// Issue an ajax request to check the captcha
 					cmd = new ValidateCaptchaCmd( getCaptchaResponse() );
-					GwtClientHelper.executeCommand( cmd, rpcCallback );
+					// We want to issue the rpc requests without a user login id so that the GwtRpcController
+					// doesn't think the session has timed out.
+					httpRequestInfo = HttpRequestInfo.createHttpRequestInfo();
+					httpRequestInfo.setUserLoginId( null );
+					GwtClientHelper.executeCommand( cmd, httpRequestInfo, rpcCallback );
 				}
 				else
 					doOnSubmitWork();
@@ -920,6 +924,7 @@ public class LoginDlg extends DlgBox
 		if ( m_requestedLoginInfo == false )
 		{
 			AsyncCallback<VibeRpcResponse> rpcCallback;
+			HttpRequestInfo httpRequestInfo;
 			
 			m_requestedLoginInfo = true;
 
@@ -963,7 +968,11 @@ public class LoginDlg extends DlgBox
 			// Issue an ajax request to get login information
 			debugAlert( "about to execute GetLoginInfoCmd" );
 			cmd = new GetLoginInfoCmd();
-			GwtClientHelper.executeCommand( cmd, rpcCallback );
+			// We want to issue the rpc requests without a user login id so that the GwtRpcController
+			// doesn't think the session has timed out.
+			httpRequestInfo = HttpRequestInfo.createHttpRequestInfo();
+			httpRequestInfo.setUserLoginId( null );
+			GwtClientHelper.executeCommand( cmd, httpRequestInfo, rpcCallback );
 		}
 	}
 	
@@ -996,6 +1005,7 @@ public class LoginDlg extends DlgBox
 	{
 		AsyncCallback<VibeRpcResponse> getSiteBrandingCallback;
 		GetSiteBrandingCmd cmd;
+		HttpRequestInfo httpRequestInfo;
 
 		// Create the callback that will be used when we issue an ajax call to get the site branding
 		getSiteBrandingCallback = new AsyncCallback<VibeRpcResponse>()
@@ -1011,13 +1021,9 @@ public class LoginDlg extends DlgBox
 					@Override
 					public void execute()
 					{
-						String[] patches = null;
-
-						GwtClientHelper.handleGwtRPCFailure(
-								t,
-								GwtTeaming.getMessages().rpcFailure_GetBranding(),
-								patches );
-	
+						// Don't call GwtClientHelper.handleGwtRPCFailure() like we would normally do.  If the
+						// session has expired, handleGwtRPCFailure() will invoke this login dialog again
+						// and we will be in an infinite loop.
 						createHeaderNow( null );
 					}
 				} );
@@ -1048,7 +1054,11 @@ public class LoginDlg extends DlgBox
 		
 		// Issue an ajax request to get the site branding data.
 		cmd = new GetSiteBrandingCmd();
-		GwtClientHelper.executeCommand( cmd, getSiteBrandingCallback );
+		// We want to issue the rpc requests without a user login id so that the GwtRpcController
+		// doesn't think the session has timed out.
+		httpRequestInfo = HttpRequestInfo.createHttpRequestInfo();
+		httpRequestInfo.setUserLoginId( null );
+		GwtClientHelper.executeCommand( cmd, httpRequestInfo, getSiteBrandingCallback );
 	}
 	
 	/**
@@ -1058,6 +1068,7 @@ public class LoginDlg extends DlgBox
 	{
 		CompleteExternalUserSelfRegistrationCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback;
+		HttpRequestInfo httpRequestInfo;
 		
 		rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -1132,7 +1143,11 @@ public class LoginDlg extends DlgBox
 														getLastName(),
 														getPwd1(),
 														GwtTeaming.getMainPage().getLoginInvitationUrl() );
-		GwtClientHelper.executeCommand( cmd, rpcCallback );
+		// We want to issue the rpc requests without a user login id so that the GwtRpcController
+		// doesn't think the session has timed out.
+		httpRequestInfo = HttpRequestInfo.createHttpRequestInfo();
+		httpRequestInfo.setUserLoginId( null );
+		GwtClientHelper.executeCommand( cmd, httpRequestInfo, rpcCallback );
 	}
 	
 	/**
@@ -1142,6 +1157,7 @@ public class LoginDlg extends DlgBox
 	{
 		RequestResetPwdCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback;
+		HttpRequestInfo httpRequestInfo;
 		
 		rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -1230,7 +1246,11 @@ public class LoginDlg extends DlgBox
 		cmd = new RequestResetPwdCmd(
 							getExtUserId(),
 							getPwd1() );
-		GwtClientHelper.executeCommand( cmd, rpcCallback );
+		// We want to issue the rpc requests without a user login id so that the GwtRpcController
+		// doesn't think the session has timed out.
+		httpRequestInfo = HttpRequestInfo.createHttpRequestInfo();
+		httpRequestInfo.setUserLoginId( null );
+		GwtClientHelper.executeCommand( cmd, httpRequestInfo, rpcCallback );
 	}
 	
 	/**
@@ -1382,8 +1402,7 @@ public class LoginDlg extends DlgBox
 	public void showDlg( boolean allowCancel, LoginStatus loginStatus, Long loginUserId )
 	{
 		debugAlert( "In LoginDlg.showDlg()" );
-		
-		m_numAttempts = 0;
+
 		if ( m_initialized )
 		{
 			centerAndShow();
@@ -1434,12 +1453,6 @@ public class LoginDlg extends DlgBox
 
 		// Issue an ajax request to get self registration info and a list of open id providers
 		getLoginInfoFromServer( loginStatus );
-	}
-	
-	public void showDlg( boolean allowCancel, LoginStatus loginStatus )
-	{
-		// Always use the initial form of this method.
-		showDlg( allowCancel, loginStatus, null );
 	}
 	
 	/**
