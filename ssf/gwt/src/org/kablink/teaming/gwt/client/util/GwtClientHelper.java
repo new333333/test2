@@ -555,7 +555,18 @@ public class GwtClientHelper {
 	 * Execute the given command via GWT's rpc mechanism
 	 */
 	public static void executeCommand(VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback) {
-		GwtTeaming.getRpcService().executeCommand(HttpRequestInfo.createHttpRequestInfo(), cmd, callback);
+		executeCommand( cmd, HttpRequestInfo.createHttpRequestInfo(), callback );
+	}	
+
+	/**
+	 * Execute the given command via GWT's rpc mechanism
+	 */
+	public static void executeCommand(
+		VibeRpcCmd cmd,
+		HttpRequestInfo httpRequestInfo,
+		AsyncCallback<VibeRpcResponse> callback)
+	{
+		GwtTeaming.getRpcService().executeCommand( httpRequestInfo, cmd, callback );
 	}	
 
 	/**
