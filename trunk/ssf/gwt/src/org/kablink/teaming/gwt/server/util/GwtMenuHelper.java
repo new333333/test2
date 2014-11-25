@@ -231,10 +231,17 @@ public class GwtMenuHelper {
 	 * @param clearTab
 	 */
 	public static void addBinderToRecentPlaces(HttpServletRequest request, Binder binder, boolean clearTab) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.addBinderToRecentPlaces()");
 		try {
-			BinderHelper.initTabs(Tabs.getTabs(request), binder, true);
+			try {
+				BinderHelper.initTabs(Tabs.getTabs(request), binder, true);
+			}
+			catch (Exception e) {}	// Ignored.
 		}
-		catch (Exception e) {}	// Ignored.
+		
+		finally {
+			gsp.stop();
+		}
 	}
 	
 	public static void addBinderToRecentPlaces(HttpServletRequest request, Binder binder) {
@@ -321,12 +328,19 @@ public class GwtMenuHelper {
 	 * Based on ListFolderHelper.buildFolderToolbars()
 	 */
 	private static void buildFolderMenuItems(AllModulesInjected bs, HttpServletRequest request, Folder folder, boolean isMyFilesStorage, List<ToolbarItem> tbiList) {
-		boolean isFilr = Utils.checkIfFilr();
-		tbiList.add(constructFolderItems(           isFilr, WebKeys.FOLDER_TOOLBAR,             bs, request, folder, isMyFilesStorage, EntityType.folder));
-		tbiList.add(constructFolderViewsItems(      isFilr, WebKeys.FOLDER_VIEWS_TOOLBAR,       bs, request, folder                                     ));
-		tbiList.add(constructCalendarImportItems(   isFilr, WebKeys.CALENDAR_IMPORT_TOOLBAR,    bs, request, folder                                     ));		
-		tbiList.add(constructWhatsNewItems(         isFilr, WebKeys.WHATS_NEW_TOOLBAR,          bs, request, folder,                   EntityType.folder));
-		tbiList.add(constructEmailSubscriptionItems(isFilr, WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR, bs, request, folder                                     ));
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.buildFolderMenuItems()");
+		try {
+			boolean isFilr = Utils.checkIfFilr();
+			tbiList.add(constructFolderItems(           isFilr, WebKeys.FOLDER_TOOLBAR,             bs, request, folder, isMyFilesStorage, EntityType.folder));
+			tbiList.add(constructFolderViewsItems(      isFilr, WebKeys.FOLDER_VIEWS_TOOLBAR,       bs, request, folder                                     ));
+			tbiList.add(constructCalendarImportItems(   isFilr, WebKeys.CALENDAR_IMPORT_TOOLBAR,    bs, request, folder                                     ));		
+			tbiList.add(constructWhatsNewItems(         isFilr, WebKeys.WHATS_NEW_TOOLBAR,          bs, request, folder,                   EntityType.folder));
+			tbiList.add(constructEmailSubscriptionItems(isFilr, WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR, bs, request, folder                                     ));
+		}
+		
+		finally {
+			gsp.stop();
+		}
 	}
 	
 	/*
@@ -336,44 +350,51 @@ public class GwtMenuHelper {
 	 * Based on GwtUIHelper.buildGwtMiscToolbar()
 	 */
 	private static void buildMiscMenuItems(AllModulesInjected bs, HttpServletRequest request, Binder binder, EntityType binderType, List<ToolbarItem> tbiList) {
-		// Generate the GWT miscellaneous ToolbarItem.
-		ToolbarItem miscTBI = new ToolbarItem(WebKeys.GWT_MISC_TOOLBAR);
-		tbiList.add(miscTBI);
-
-		// Add the about to it.
-		miscTBI.addNestedItem(constructAboutItem());
-		
-		// Do we have a binder and are we running as other than
-		// guest?
-		if ((null != binder) && (!(GwtServerHelper.getCurrentUser().isShared()))) {
-			// Yes!
-			boolean isFilr = Utils.checkIfFilr();
-
-			if (!isFilr) {
-				// Add a ToolbarItem for editing its branding.
-				miscTBI.addNestedItem(constructEditBrandingItem(bs, binder, binderType));
-			}
-
-			// Is this other than the profiles binder?
-			if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {
-				// Yes!  Add the various binder based
-				// ToolbarItem's.
-				miscTBI.addNestedItem(constructClipboardItem()                           );
-				miscTBI.addNestedItem(constructSendEmailToItem(    request, binder      ));
-				if (GwtShareHelper.isEntitySharable(bs, binder)) {
-					miscTBI.addNestedItem(constructShareBinderItem(request, binder, null));
-				}
-				if ((binder instanceof Workspace) && bs.getSharingModule().isSharingEnabled()) {
-					miscTBI.addNestedItem(constructShareWorkspaceRightsItem(request, binder));
-				}
-				miscTBI.addNestedItem(constructMobileUiItem(       request, binder      ));
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.buildMiscMenuItems()");
+		try {
+			// Generate the GWT miscellaneous ToolbarItem.
+			ToolbarItem miscTBI = new ToolbarItem(WebKeys.GWT_MISC_TOOLBAR);
+			tbiList.add(miscTBI);
+	
+			// Add the about to it.
+			miscTBI.addNestedItem(constructAboutItem());
+			
+			// Do we have a binder and are we running as other than
+			// guest?
+			if ((null != binder) && (!(GwtServerHelper.getCurrentUser().isShared()))) {
+				// Yes!
+				boolean isFilr = Utils.checkIfFilr();
+	
 				if (!isFilr) {
-					miscTBI.addNestedItems(constructTrackBinderItem(bs,     binder      ));
+					// Add a ToolbarItem for editing its branding.
+					miscTBI.addNestedItem(constructEditBrandingItem(bs, binder, binderType));
 				}
-				if (isBinderTrashEnabled(binder)) {
-					miscTBI.addNestedItem(constructTrashItem(      request, binder      ));
+	
+				// Is this other than the profiles binder?
+				if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {
+					// Yes!  Add the various binder based
+					// ToolbarItem's.
+					miscTBI.addNestedItem(constructClipboardItem()                           );
+					miscTBI.addNestedItem(constructSendEmailToItem(    request, binder      ));
+					if (GwtShareHelper.isEntitySharable(bs, binder)) {
+						miscTBI.addNestedItem(constructShareBinderItem(request, binder, null));
+					}
+					if ((binder instanceof Workspace) && bs.getSharingModule().isSharingEnabled()) {
+						miscTBI.addNestedItem(constructShareWorkspaceRightsItem(request, binder));
+					}
+					miscTBI.addNestedItem(constructMobileUiItem(       request, binder      ));
+					if (!isFilr) {
+						miscTBI.addNestedItems(constructTrackBinderItem(bs,     binder      ));
+					}
+					if (isBinderTrashEnabled(binder)) {
+						miscTBI.addNestedItem(constructTrashItem(      request, binder      ));
+					}
 				}
 			}
+		}
+		
+		finally {
+			gsp.stop();
 		}
 	}
 	
@@ -384,7 +405,14 @@ public class GwtMenuHelper {
 	 * Based on ProfilesBinderHelper.buildViewFolderToolbars()
 	 */
 	private static void buildProfilesMenuItems(AllModulesInjected bs, HttpServletRequest request, ProfileBinder pb, List<ToolbarItem> tbiList) {
-		tbiList.add(constructFolderItems(Utils.checkIfFilr(), WebKeys.FOLDER_TOOLBAR, bs, request, pb, false, EntityType.profiles));
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.buildProfilesMenuItems()");
+		try {
+			tbiList.add(constructFolderItems(Utils.checkIfFilr(), WebKeys.FOLDER_TOOLBAR, bs, request, pb, false, EntityType.profiles));
+		}
+		
+		finally {
+			gsp.stop();
+		}
 	}
 	
 	/*
@@ -394,9 +422,16 @@ public class GwtMenuHelper {
 	 * Based on WorkspaceTreeHelper.buildWorkspaceToolbar()
 	 */
 	private static void buildWorkspaceMenuItems(AllModulesInjected bs, HttpServletRequest request, Workspace ws, List<ToolbarItem> tbiList) {
-		boolean isFilr = Utils.checkIfFilr();
-		tbiList.add(constructFolderItems(  isFilr, WebKeys.FOLDER_TOOLBAR,    bs, request, ws, false, EntityType.workspace));
-		tbiList.add(constructWhatsNewItems(isFilr, WebKeys.WHATS_NEW_TOOLBAR, bs, request, ws,        EntityType.workspace));
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.buildWorkspaceMenuItems()");
+		try {
+			boolean isFilr = Utils.checkIfFilr();
+			tbiList.add(constructFolderItems(  isFilr, WebKeys.FOLDER_TOOLBAR,    bs, request, ws, false, EntityType.workspace));
+			tbiList.add(constructWhatsNewItems(isFilr, WebKeys.WHATS_NEW_TOOLBAR, bs, request, ws,        EntityType.workspace));
+		}
+		
+		finally {
+			gsp.stop();
+		}
 	}
 	
 	/*
@@ -539,18 +574,25 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem to run the branding editor on a binder.
 	 */
 	private static ToolbarItem constructEditBrandingItem(AllModulesInjected bs, Binder binder, EntityType binderType) {
-		if (bs.getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
-			String menuKey = "toolbar.menu.brand.";
-			if      (EntityType.workspace == binderType) menuKey += "workspace";
-			else if (EntityType.folder    == binderType) menuKey += "folder";
-			else if (EntityType.profiles  == binderType) menuKey += "workspace";
-			else                                         return null;
-			ToolbarItem ebTBI = new ToolbarItem(BRANDING);
-			markTBITitle(ebTBI, menuKey                                   );
-			markTBIEvent(ebTBI, TeamingEvents.EDIT_CURRENT_BINDER_BRANDING);
-			return ebTBI;
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.constructEditBrandingItem()");
+		try {
+			if (bs.getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
+				String menuKey = "toolbar.menu.brand.";
+				if      (EntityType.workspace == binderType) menuKey += "workspace";
+				else if (EntityType.folder    == binderType) menuKey += "folder";
+				else if (EntityType.profiles  == binderType) menuKey += "workspace";
+				else                                         return null;
+				ToolbarItem ebTBI = new ToolbarItem(BRANDING);
+				markTBITitle(ebTBI, menuKey                                   );
+				markTBIEvent(ebTBI, TeamingEvents.EDIT_CURRENT_BINDER_BRANDING);
+				return ebTBI;
+			}
+			return null;
 		}
-		return null;
+		
+		finally {
+			gsp.stop();
+		}
 	}
 	
 	/*
@@ -2661,76 +2703,96 @@ public class GwtMenuHelper {
 	 * Constructs the ToolbarItem's for the footer on a folder entry.
 	 */
 	private static void constructFooterFolderEntryItems(ToolbarItem footerToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
-		// Is the entity in the trash?
-		if (!(fe.isPreDeleted())) {
-			// No!  Generate the toolbar item for the permalink to the
-			// entry.
-			FileAttachment	fa        = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
-			Binder			feBinder  = fe.getParentBinder();
-			boolean			hasEvents = MiscUtil.hasItems(fe.getEvents());
-
-			String	key;
-			String	webDavUrl;
-			boolean	hasWebDavUrl;
-			if (INCLUDE_FOOTER_WEBDAV_URLS) {
-				webDavUrl    = ((null == fa) ? null : SsfsUtil.getInternalAttachmentUrl(request, feBinder, fe, fa));
-				hasWebDavUrl = MiscUtil.hasString(webDavUrl     );
-				if      (hasEvents && hasWebDavUrl) key = "toolbar.menu.folderEntryPermalink.iCal.webdav";
-				else if (hasEvents)                 key = "toolbar.menu.folderEntryPermalink.iCal";
-				else if (hasWebDavUrl)              key = "toolbar.menu.folderEntryPermalink.webdav";
-				else                                key = "toolbar.menu.folderEntryPermalink";
-			}
-			else {
-				webDavUrl    = null;
-				hasWebDavUrl = false;
-				if (hasEvents) key = "toolbar.menu.folderEntryPermalink.iCal";
-				else           key = "toolbar.menu.folderEntryPermalink";
-			}
-			String permaLink = PermaLinkUtil.getPermalink(request, fe);
-			ToolbarItem permalinkTBI = new ToolbarItem(PERMALINK);
-			markTBITitle(permalinkTBI, key          );
-			markTBIUrl(  permalinkTBI, permaLink    );
-			footerToolbar.addNestedItem(permalinkTBI);
-			
-			// If the entry has an attachment and the user has rights
-			// to download it...
-			boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
-			if ((null != fa) && canDownload) {
-				// ...and it's a file entry...
-				String family = GwtServerHelper.getFolderEntityFamily(bs, fe);
-				if (GwtServerHelper.isFamilyFile(family)) {
-					// ...and we can get it's download permalink...
-					String downloadPermalink;
-					try                  {downloadPermalink = GwtServerHelper.getDownloadFileUrl(request, bs, feBinder.getId(), fe.getId(), true);}	// true -> Return a permalink URL.
-					catch (Exception ex) {downloadPermalink = null;}
-					if (MiscUtil.hasString(downloadPermalink)) {
-						//...add a toolbar item for that.
-						ToolbarItem downloadFileTBI = new ToolbarItem(FILE_DOWNLOAD);
-						markTBITitle(downloadFileTBI, "toolbar.menu.fileDownloadPermalink");
-						markTBIUrl(  downloadFileTBI, downloadPermalink);
-						footerToolbar.addNestedItem(downloadFileTBI);
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.constructFooterFolderEntryItems()");
+		try {
+			// Is the entity in the trash?
+			if (!(fe.isPreDeleted())) {
+				// No!  Generate the toolbar item for the permalink to the
+				// entry.
+				FileAttachment	fa        = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
+				Binder			feBinder  = fe.getParentBinder();
+				boolean			hasEvents = MiscUtil.hasItems(fe.getEvents());
+	
+				String	key;
+				String	webDavUrl;
+				boolean	hasWebDavUrl;
+				if (INCLUDE_FOOTER_WEBDAV_URLS) {
+					SimpleProfiler.start("GwtMenuHelper.constructFooterFolderEntryItems( INCLUDE_FOOTER_WEBDAV_URLS )");
+					try {
+						webDavUrl    = ((null == fa) ? null : SsfsUtil.getInternalAttachmentUrl(request, feBinder, fe, fa));
+						hasWebDavUrl = MiscUtil.hasString(webDavUrl     );
+						if      (hasEvents && hasWebDavUrl) key = "toolbar.menu.folderEntryPermalink.iCal.webdav";
+						else if (hasEvents)                 key = "toolbar.menu.folderEntryPermalink.iCal";
+						else if (hasWebDavUrl)              key = "toolbar.menu.folderEntryPermalink.webdav";
+						else                                key = "toolbar.menu.folderEntryPermalink";
+					}
+					finally {
+						SimpleProfiler.stop("GwtMenuHelper.constructFooterFolderEntryItems( INCLUDE_FOOTER_WEBDAV_URLS )");
 					}
 				}
+				else {
+					webDavUrl    = null;
+					hasWebDavUrl = false;
+					if (hasEvents) key = "toolbar.menu.folderEntryPermalink.iCal";
+					else           key = "toolbar.menu.folderEntryPermalink";
+				}
+				
+				SimpleProfiler.start("GwtMenuHelper.constructFooterFolderEntryItems( PERMALINK )");
+				try {
+					String permaLink = PermaLinkUtil.getPermalink(request, fe);
+					ToolbarItem permalinkTBI = new ToolbarItem(PERMALINK);
+					markTBITitle(permalinkTBI, key          );
+					markTBIUrl(  permalinkTBI, permaLink    );
+					footerToolbar.addNestedItem(permalinkTBI);
+				}
+				finally {
+					SimpleProfiler.stop("GwtMenuHelper.constructFooterFolderEntryItems( PERMALINK )");
+				}
+				
+				// If the entry has an attachment and the user has rights
+				// to download it...
+				boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
+				if ((null != fa) && canDownload) {
+					// ...and it's a file entry...
+					String family = GwtServerHelper.getFolderEntityFamily(bs, fe);
+					if (GwtServerHelper.isFamilyFile(family)) {
+						// ...and we can get it's download permalink...
+						String downloadPermalink;
+						try                  {downloadPermalink = GwtServerHelper.getDownloadFileUrl(request, bs, feBinder.getId(), fe.getId(), true);}	// true -> Return a permalink URL.
+						catch (Exception ex) {downloadPermalink = null;}
+						if (MiscUtil.hasString(downloadPermalink)) {
+							//...add a toolbar item for that.
+							ToolbarItem downloadFileTBI = new ToolbarItem(FILE_DOWNLOAD);
+							markTBITitle(downloadFileTBI, "toolbar.menu.fileDownloadPermalink");
+							markTBIUrl(  downloadFileTBI, downloadPermalink);
+							footerToolbar.addNestedItem(downloadFileTBI);
+						}
+					}
+				}
+				
+				// Does the entry have any events defined on it?
+				if (hasEvents) {
+					// Yes!  Generate an iCal URL toolbar item.
+					String icalUrl = org.kablink.teaming.ical.util.UrlUtil.getICalURLHttp(request, String.valueOf(fe.getParentBinder().getId()), String.valueOf(fe.getId()));
+					ToolbarItem icalTBI = new ToolbarItem(ICALENDAR);
+					markTBITitle(icalTBI, "toolbar.menu.iCalendar" );
+					markTBIUrl(  icalTBI, icalUrl                  );
+					footerToolbar.addNestedItem(icalTBI);
+				}
+				
+				// Can we get a WebDAV URL for this entry?
+				if (hasWebDavUrl) {
+					// Yes!  Generate a WebDAV URL toolbar item.
+					ToolbarItem webDavTBI = new ToolbarItem(WEBDAVURL);
+					markTBITitle(webDavTBI, "toolbar.menu.webdavUrl" );
+					markTBIUrl(  webDavTBI, webDavUrl                );
+					footerToolbar.addNestedItem(webDavTBI            );
+				}
 			}
-			
-			// Does the entry have any events defined on it?
-			if (hasEvents) {
-				// Yes!  Generate an iCal URL toolbar item.
-				String icalUrl = org.kablink.teaming.ical.util.UrlUtil.getICalURLHttp(request, String.valueOf(fe.getParentBinder().getId()), String.valueOf(fe.getId()));
-				ToolbarItem icalTBI = new ToolbarItem(ICALENDAR);
-				markTBITitle(icalTBI, "toolbar.menu.iCalendar" );
-				markTBIUrl(  icalTBI, icalUrl                  );
-				footerToolbar.addNestedItem(icalTBI);
-			}
-			
-			// Can we get a WebDAV URL for this entry?
-			if (hasWebDavUrl) {
-				// Yes!  Generate a WebDAV URL toolbar item.
-				ToolbarItem webDavTBI = new ToolbarItem(WEBDAVURL);
-				markTBITitle(webDavTBI, "toolbar.menu.webdavUrl" );
-				markTBIUrl(  webDavTBI, webDavUrl                );
-				footerToolbar.addNestedItem(webDavTBI            );
-			}
+		}
+		
+		finally {
+			gsp.stop();
 		}
 	}
 
@@ -3023,19 +3085,26 @@ public class GwtMenuHelper {
 	 * in the JSP code) dialog. 
 	 */
 	private static ToolbarItem constructSendEmailToItem(HttpServletRequest request, Binder binder) {
-		User user = GwtServerHelper.getCurrentUser();
-		if (MiscUtil.hasString(user.getEmailAddress()) && (!(user.isShared()))) {
-			ToolbarItem sendEmailToTBI = new ToolbarItem(SEND_EMAIL             );
-			markTBITitle(sendEmailToTBI, "toolbar.menu.sendMail"                );
-			markTBIEvent(sendEmailToTBI, TeamingEvents.INVOKE_SEND_EMAIL_TO_TEAM);
-			AdaptedPortletURL url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
-			url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-			url.setParameter(WebKeys.USER_IDS_TO_ADD, InvokeSendEmailToTeamEvent.CONTRIBUTOR_IDS_PLACEHOLER);
-			markTBIUrl(sendEmailToTBI, url);
-			return sendEmailToTBI;
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.constructSendEmailToItem()");
+		try {
+			User user = GwtServerHelper.getCurrentUser();
+			if (MiscUtil.hasString(user.getEmailAddress()) && (!(user.isShared()))) {
+				ToolbarItem sendEmailToTBI = new ToolbarItem(SEND_EMAIL             );
+				markTBITitle(sendEmailToTBI, "toolbar.menu.sendMail"                );
+				markTBIEvent(sendEmailToTBI, TeamingEvents.INVOKE_SEND_EMAIL_TO_TEAM);
+				AdaptedPortletURL url = createActionUrl(request);
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+				url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+				url.setParameter(WebKeys.USER_IDS_TO_ADD, InvokeSendEmailToTeamEvent.CONTRIBUTOR_IDS_PLACEHOLER);
+				markTBIUrl(sendEmailToTBI, url);
+				return sendEmailToTBI;
+			}
+			return null;
 		}
-		return null;
+		
+		finally {
+			gsp.stop();
+		}
 	}
 
 	/*
@@ -3067,24 +3136,31 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem to change the UI to mobile.
 	 */
 	private static ToolbarItem constructMobileUiItem(HttpServletRequest request, Binder binder) {
-		// Are we running in a mobile browser?
-		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
-		if (BrowserSniffer.is_mobile(request, userAgents)) {
-			// Yes!  Construct a URL to go to the mobile UI...
-			AdaptedPortletURL url = new AdaptedPortletURL(request, SS_FORUM, true, true);
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_MOBILE_UI);
-
-			// ...generate a ToolbarItem for it...
-			ToolbarItem mobileTBI = new ToolbarItem(MOBILE_UI);
-			markTBITitle(mobileTBI, "toolbar.menu.mobileUI"         );
-			markTBIEvent(mobileTBI, TeamingEvents.GOTO_PERMALINK_URL);
-			markTBIUrl(  mobileTBI, url                             );
-			
-			// ...and return it.
-			return mobileTBI;
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.constructMobileUiItem()");
+		try {
+			// Are we running in a mobile browser?
+			String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+			if (BrowserSniffer.is_mobile(request, userAgents)) {
+				// Yes!  Construct a URL to go to the mobile UI...
+				AdaptedPortletURL url = new AdaptedPortletURL(request, SS_FORUM, true, true);
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_MOBILE_UI);
+	
+				// ...generate a ToolbarItem for it...
+				ToolbarItem mobileTBI = new ToolbarItem(MOBILE_UI);
+				markTBITitle(mobileTBI, "toolbar.menu.mobileUI"         );
+				markTBIEvent(mobileTBI, TeamingEvents.GOTO_PERMALINK_URL);
+				markTBIUrl(  mobileTBI, url                             );
+				
+				// ...and return it.
+				return mobileTBI;
+			}
+			return null;
 		}
-		return null;
+		
+		finally {
+			gsp.stop();
+		}
 	}
 	
 	/*
@@ -3092,33 +3168,47 @@ public class GwtMenuHelper {
 	 * for the binder.
 	 */
 	private static List<ToolbarItem> constructTrackBinderItem(AllModulesInjected bs, Binder binder) {
-		List<ToolbarItem> tbTBIs = new ArrayList<ToolbarItem>();
-		List<TrackInfo> tiList = GwtUIHelper.getTrackInfoList(bs, binder);
-		for (TrackInfo ti:  tiList) {
-			ToolbarItem tbTBI = new ToolbarItem(ti.m_tbName);
-			markTBITitle(tbTBI, ti.m_resourceKey                 );
-			markTBIEvent(tbTBI, TeamingEvents.valueOf(ti.m_event));
-			tbTBIs.add(tbTBI);
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.constructTrackBinderItem()");
+		try {
+			List<ToolbarItem> tbTBIs = new ArrayList<ToolbarItem>();
+			List<TrackInfo> tiList = GwtUIHelper.getTrackInfoList(bs, binder);
+			for (TrackInfo ti:  tiList) {
+				ToolbarItem tbTBI = new ToolbarItem(ti.m_tbName);
+				markTBITitle(tbTBI, ti.m_resourceKey                 );
+				markTBIEvent(tbTBI, TeamingEvents.valueOf(ti.m_event));
+				tbTBIs.add(tbTBI);
+			}
+			return tbTBIs;
 		}
-		return tbTBIs;
+		
+		finally {
+			gsp.stop();
+		}
 	}
 
 	/*
 	 * Constructs a ToolbarItem to view the trash on an binder.
 	 */
 	private static ToolbarItem constructTrashItem(HttpServletRequest request, Binder binder) {		
-		// Construct a permalink URL to the trash for the binder...
-		String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
-		String trashPermalink  = GwtUIHelper.getTrashPermalink(binderPermalink);
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.constructTrashItem()");
+		try {
+			// Construct a permalink URL to the trash for the binder...
+			String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
+			String trashPermalink  = GwtUIHelper.getTrashPermalink(binderPermalink);
+			
+			// ...construct a ToolbarItem for it...
+			ToolbarItem trashTBI = new ToolbarItem(TRASH);
+			markTBITitle(trashTBI, "toolbar.menu.trash.view"       );
+			markTBIEvent(trashTBI, TeamingEvents.GOTO_PERMALINK_URL);
+			markTBIUrl(  trashTBI, trashPermalink                  );
+	
+			// ...and return it.
+			return trashTBI;
+		}
 		
-		// ...construct a ToolbarItem for it...
-		ToolbarItem trashTBI = new ToolbarItem(TRASH);
-		markTBITitle(trashTBI, "toolbar.menu.trash.view"       );
-		markTBIEvent(trashTBI, TeamingEvents.GOTO_PERMALINK_URL);
-		markTBIUrl(  trashTBI, trashPermalink                  );
-
-		// ...and return it.
-		return trashTBI;
+		finally {
+			gsp.stop();
+		}
 	}
 	
 	/*
@@ -3390,7 +3480,7 @@ public class GwtMenuHelper {
 	 * @return
 	 */
 	public static GetToolbarItemsRpcResponseData getEntityActionToolbarItems(AllModulesInjected bs, HttpServletRequest request, BinderInfo binderInfo, EntityId entityId) {
-		SimpleProfiler.start("GwtMenuHelper.getEntityToolbarItems()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.getEntityToolbarItems()");
 		try {
 			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
 			// that we'll return.
@@ -3611,7 +3701,7 @@ public class GwtMenuHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtMenuHelper.getEntityToolbarItems()");
+			gsp.stop();
 		}
 	}
 	
@@ -3627,7 +3717,7 @@ public class GwtMenuHelper {
 	 * @return
 	 */
 	public static GetFolderToolbarItemsRpcResponseData getFolderToolbarItems(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) {
-		SimpleProfiler.start("GwtMenuHelper.getFolderToolbarItems()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.getFolderToolbarItems()");
 		try {
 			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
 			// that we'll return...
@@ -3872,7 +3962,7 @@ public class GwtMenuHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtMenuHelper.getFolderToolbarItems()");
+			gsp.stop();
 		}
 	}
 	
@@ -3888,7 +3978,7 @@ public class GwtMenuHelper {
 	 * @return
 	 */
 	public static List<ToolbarItem> getFooterToolbarItems(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) {
-		SimpleProfiler.start("GwtMenuHelper.getFooterToolbarItems()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.getFooterToolbarItems()");
 		try {
 			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
 			// that we'll return...
@@ -3926,7 +4016,7 @@ public class GwtMenuHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtMenuHelper.getFooterToolbarItems()");
+			gsp.stop();
 		}
 	}
 
@@ -3942,7 +4032,7 @@ public class GwtMenuHelper {
 	 * @return
 	 */
 	public static GetToolbarItemsRpcResponseData getGroupActionToolbarItems(AllModulesInjected bs, HttpServletRequest request, Long groupId) {
-		SimpleProfiler.start("GwtMenuHelper.getGroupActionToolbarItems()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.getGroupActionToolbarItems()");
 		try {
 			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
 			// that we'll return.
@@ -3962,7 +4052,7 @@ public class GwtMenuHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtMenuHelper.getGroupActionToolbarItems()");
+			gsp.stop();
 		}
 	}
 	
@@ -4066,7 +4156,7 @@ public class GwtMenuHelper {
 	 * @return
 	 */
 	public static TeamManagementInfo getTeamManagementInfo(AllModulesInjected bs, HttpServletRequest request, String binderId) {
-		SimpleProfiler.start("GwtMenuHelper.getTeamManagementInfo()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.getTeamManagementInfo()");
 		try {
 			// Construct a base TeamManagementInfo object to return.
 			TeamManagementInfo reply = new TeamManagementInfo();
@@ -4129,7 +4219,7 @@ public class GwtMenuHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtMenuHelper.getTeamManagementInfo()");
+			gsp.stop();
 		}
 	}
 
@@ -4144,7 +4234,7 @@ public class GwtMenuHelper {
 	 * @return
 	 */
 	public static List<ToolbarItem> getToolbarItems(AllModulesInjected bs, HttpServletRequest request, String binderIdS) {
-		SimpleProfiler.start("GwtMenuHelper.getToolbarItems()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.getToolbarItems()");
 		try {
 			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
 			// that we'll return...
@@ -4178,7 +4268,7 @@ public class GwtMenuHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtMenuHelper.getToolbarItems()");
+			gsp.stop();
 		}
 	}
 
@@ -4193,7 +4283,7 @@ public class GwtMenuHelper {
 	 * @return
 	 */
 	public static List<ToolbarItem> getViewEntryToolbarItems(AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
-		SimpleProfiler.start("GwtMenuHelper.getViewEntryToolbarItems()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.getViewEntryToolbarItems()");
 		try {
 			// Allocate a List<ToolbarItem> we can return with the
 			// view entry toolbar items.
@@ -4591,7 +4681,7 @@ public class GwtMenuHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtMenuHelper.getViewEntryToolbarItems()");
+			gsp.stop();
 		}
 	}
 
@@ -4620,16 +4710,23 @@ public class GwtMenuHelper {
 	 * and false otherwise.
 	 */
 	private static boolean isBinderTrashEnabled(Binder binder) {
-		boolean reply = true;
-		if (binder instanceof Folder) {
-			reply = true;
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtMenuHelper.isBinderTrashEnabled()");
+		try {
+			boolean reply = true;
+			if (binder instanceof Folder) {
+				reply = true;
+			}
+			else if (binder instanceof Workspace) {
+				reply =
+					((!(BinderHelper.isBinderProfilesRootWS(  binder))) &&
+					 (!(BinderHelper.isBinderNetFoldersRootWS(binder))));
+			}
+			return reply;
 		}
-		else if (binder instanceof Workspace) {
-			reply =
-				((!(BinderHelper.isBinderProfilesRootWS(  binder))) &&
-				 (!(BinderHelper.isBinderNetFoldersRootWS(binder))));
+		
+		finally {
+			gsp.stop();
 		}
-		return reply;
 	}
 
 	/*

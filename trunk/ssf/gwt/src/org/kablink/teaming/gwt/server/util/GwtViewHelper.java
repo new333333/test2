@@ -7649,7 +7649,7 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static UserPropertiesRpcResponseData getUserProperties(final AllModulesInjected bs, final HttpServletRequest request, final Long userId, boolean includeLastLogin) throws GwtTeamingException {
-		SimpleProfiler.start("GwtViewHelper.getUserProperties()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserProperties()");
 		try {
 			SimpleProfiler.start("GwtViewHelper.getUserProperties(Get profile information)");
 			final UserPropertiesRpcResponseData reply;
@@ -7951,7 +7951,7 @@ public class GwtViewHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtViewHelper.getUserProperties()");
+			gsp.stop();
 		}
 	}
 

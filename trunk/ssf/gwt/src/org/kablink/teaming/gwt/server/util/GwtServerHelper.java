@@ -895,8 +895,8 @@ public class GwtServerHelper {
 	 * @param filterUserList
 	 */
 	public static void addQuickFilterToSearch(Map options, String quickFilter, boolean filterUserList) {
-		SimpleProfiler.start("GwtServerHelper.addQuickFilterToSearch()");
-			try {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.addQuickFilterToSearch()");
+		try {
 			// If we weren't given a quick filter to add...
 		    quickFilter = ((null == quickFilter) ? "" : quickFilter.trim());
 			if (0 == quickFilter.length()) {
@@ -953,7 +953,7 @@ public class GwtServerHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtServerHelper.addQuickFilterToSearch()");
+			gsp.stop();
 		}
 	}
 	
@@ -1659,7 +1659,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static boolean canUserViewBinder(AllModulesInjected bs, User user, BinderInfo bi) {
-		SimpleProfiler.start("GwtServerHelper.canUserViewBinder()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.canUserViewBinder()");
 		try {
 			boolean	reply;
 			if (bi.isBinderCollection()) {
@@ -1676,7 +1676,7 @@ public class GwtServerHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtServerHelper.canUserViewBinder()");
+			gsp.stop();
 		}
 	}
 	
@@ -5749,17 +5749,24 @@ public class GwtServerHelper {
 	 * @param validateAsFileEntry
 	 */
 	public static FileAttachment getFileEntrysFileAttachment(AllModulesInjected bs, FolderEntry fileEntry, boolean validateAsFileEntry) {
-		// Is the FolderEntry a file entry?
-		FileAttachment reply = null;
-		if ((!validateAsFileEntry) || isFamilyFile(getFolderEntityFamily(bs, fileEntry))) {
-			// Yes!  Can we find its primary file attachment?
-			reply = MiscUtil.getPrimaryFileAttachment(fileEntry);
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.getFileEntrysFileAttachment()");
+		try {
+			// Is the FolderEntry a file entry?
+			FileAttachment reply = null;
+			if ((!validateAsFileEntry) || isFamilyFile(getFolderEntityFamily(bs, fileEntry))) {
+				// Yes!  Can we find its primary file attachment?
+				reply = MiscUtil.getPrimaryFileAttachment(fileEntry);
+			}
+			
+			// If we get here, reply refers to the to the file entry's
+			// FileAttachment or null if the entry isn't a file entry or an
+			// attachment can't be found.  Return it.
+	        return reply;
 		}
 		
-		// If we get here, reply refers to the to the file entry's
-		// FileAttachment or null if the entry isn't a file entry or an
-		// attachment can't be found.  Return it.
-        return reply;
+		finally {
+			gsp.stop();
+		}
 	}
 	
 	public static FileAttachment getFileEntrysFileAttachment(AllModulesInjected bs, FolderEntry fileEntry) {
@@ -7454,7 +7461,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static GwtPresenceInfo getPresenceInfo(User user) {
-		SimpleProfiler.start("GwtServerHelper.getPresenceInfo()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.getPresenceInfo()");
 		try {
 			GwtPresenceInfo gwtPresence = new GwtPresenceInfo();
 			try {
@@ -7496,7 +7503,7 @@ public class GwtServerHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtServerHelper.getPresenceInfo()");
+			gsp.stop();
 		}
 	}
 
@@ -9041,7 +9048,7 @@ public class GwtServerHelper {
 	 * Returns the URL for a principal's avatar.
 	 */
 	private static String getAvatarUrlImpl(AllModulesInjected bs, HttpServletRequest request, Principal p, User u) {
-		SimpleProfiler.start("GwtServerHelper.getAvatarUrlImpl()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.getAvatarUrlImpl()");
 		try {
 			// Can we access any avatars for the Principal or User?
 			String reply = null;
@@ -9068,7 +9075,7 @@ public class GwtServerHelper {
 		}
 		
 		finally {
-			SimpleProfiler.stop("GwtServerHelper.getAvatarUrlImpl()");
+			gsp.stop();
 		}
 	}
 

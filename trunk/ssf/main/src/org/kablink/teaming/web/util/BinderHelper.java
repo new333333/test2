@@ -74,10 +74,12 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -148,6 +150,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SimpleMultipartFile;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlFileUtil;
@@ -165,6 +168,7 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Restrictions;
+
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.multipart.MultipartFile;
@@ -5496,38 +5500,45 @@ public class BinderHelper {
 	 */
 	@SuppressWarnings("deprecation")
 	public static boolean isBinderMyFilesStorage(Binder binder, boolean updateBinderFlags) {
-		// If we weren't given a binder or it's not a folder...
-		if ((null == binder) || (!(binder instanceof Folder))) {
-			// ...it's not a My Files Storage folder.
-			return false;
+		SimpleProfiler.start("BinderHelper.isBinderMyFilesStorage(()");
+		try {
+			// If we weren't given a binder or it's not a folder...
+			if ((null == binder) || (!(binder instanceof Folder))) {
+				// ...it's not a My Files Storage folder.
+				return false;
+			}
+	
+			// If the binder says it's a My Files Storage folder...
+	    	boolean reply = binder.isMyFilesDir();
+	    	if (reply) {
+	    		// ...there's nothing more to do.  Return what it
+	    		// ...said.
+	    		return reply;
+	    	}
+	
+	    	// If the binder has a My Files Storage marker...
+	    	Boolean mfDir = ((Boolean) binder.getProperty(ObjectKeys.BINDER_PROPERTY_MYFILES_DIR_DEPRECATED));
+	    	if (null != mfDir) {
+	    		// ...use that value...
+	    		reply = mfDir.booleanValue();
+	
+	    		// ...and if we're supposed to...
+	    		if (updateBinderFlags) {
+		    		// ...clean things up so all we'll use from here on is
+		    		// ...what's on the binder.
+		    		updateBinderMyFilesDirMarkers(binder);
+	    		}
+	    	}
+	
+	    	// If we get here, reply is true if the binder was recognized
+	    	// as a My Files Storage folder and false otherwise.  Return
+	    	// it.
+	    	return reply;
 		}
-
-		// If the binder says it's a My Files Storage folder...
-    	boolean reply = binder.isMyFilesDir();
-    	if (reply) {
-    		// ...there's nothing more to do.  Return what it
-    		// ...said.
-    		return reply;
-    	}
-
-    	// If the binder has a My Files Storage marker...
-    	Boolean mfDir = ((Boolean) binder.getProperty(ObjectKeys.BINDER_PROPERTY_MYFILES_DIR_DEPRECATED));
-    	if (null != mfDir) {
-    		// ...use that value...
-    		reply = mfDir.booleanValue();
-
-    		// ...and if we're supposed to...
-    		if (updateBinderFlags) {
-	    		// ...clean things up so all we'll use from here on is
-	    		// ...what's on the binder.
-	    		updateBinderMyFilesDirMarkers(binder);
-    		}
-    	}
-
-    	// If we get here, reply is true if the binder was recognized
-    	// as a My Files Storage folder and false otherwise.  Return
-    	// it.
-    	return reply;
+		
+		finally {
+			SimpleProfiler.stop("BinderHelper.isBinderMyFilesStorage(()");
+		}
 	}
 	
 	public static boolean isBinderMyFilesStorage(Binder binder) {
