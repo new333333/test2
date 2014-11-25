@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -46,6 +47,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -407,25 +409,32 @@ public class SsfsUtil {
 		return supportApplets(httpReq);
 	}
 	public static boolean supportApplets(HttpServletRequest req) {
-		Boolean allowed = SPropsUtil.getBoolean("applet.support.in.application", false);
-		if (!allowed) {
-			return false;
+		SimpleProfiler.start("SsfsUtil.supportApplets()");
+		try {
+			Boolean allowed = SPropsUtil.getBoolean("applet.support.in.application", false);
+			if (!allowed) {
+				return false;
+			}
+			
+			// Special check for Mac.
+			String platform = BrowserSniffer.getOSInfo(req).toString();
+			if (platform.equals("mac")) {
+				String[] browsers = SPropsUtil.getStringArray("applet.support.in.mac.browsers", ",");
+				for (int i = 0; i < browsers.length; i++) {
+					if (browsers[i].equals("firefox") && BrowserSniffer.is_mozilla_5(req)
+							&& !BrowserSniffer.is_safari(req)
+							&& !BrowserSniffer.is_chrome(req)) return true;
+					if (browsers[i].equals("safari") && BrowserSniffer.is_safari(req)) return true;
+					if (browsers[i].equals("chrome") && BrowserSniffer.is_chrome(req)) return true;
+				}
+				return false;
+			}
+			return true;
 		}
 		
-		// Special check for Mac.
-		String platform = BrowserSniffer.getOSInfo(req).toString();
-		if (platform.equals("mac")) {
-			String[] browsers = SPropsUtil.getStringArray("applet.support.in.mac.browsers", ",");
-			for (int i = 0; i < browsers.length; i++) {
-				if (browsers[i].equals("firefox") && BrowserSniffer.is_mozilla_5(req)
-						&& !BrowserSniffer.is_safari(req)
-						&& !BrowserSniffer.is_chrome(req)) return true;
-				if (browsers[i].equals("safari") && BrowserSniffer.is_safari(req)) return true;
-				if (browsers[i].equals("chrome") && BrowserSniffer.is_chrome(req)) return true;
-			}
-			return false;
+		finally {
+			SimpleProfiler.stop("SsfsUtil.supportApplets()");
 		}
-		return true;
 	}
 	
 	private static boolean isHudsonWebdavEnabled() {

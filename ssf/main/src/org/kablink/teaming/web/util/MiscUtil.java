@@ -72,6 +72,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -1225,48 +1226,57 @@ public final class MiscUtil
 	@SuppressWarnings("unchecked")
 	public static FileAttachment getPrimaryFileAttachment( DefinableEntity de )
 	{
-		// Do we have a DefinableEntity that's a FolderEntry?
-		FileAttachment reply = null;
-		if ( ( null != de ) && ( de instanceof FolderEntry ) )
+		SimpleProfiler.start( "MiscUtil.getPrimaryFileAttachment()" );
+		try
 		{
-			// Yes!  Does that entry have a primary file attribute?
-			FolderEntry fe = ((FolderEntry) de);
-			Map model  = new HashMap();
-			DefinitionHelper.getPrimaryFile( fe, model );
-			String attrName = ((String) model.get( WebKeys.PRIMARY_FILE_ATTRIBUTE ) );
-			if ( hasString( attrName ) )
+			// Do we have a DefinableEntity that's a FolderEntry?
+			FileAttachment reply = null;
+			if ( ( null != de ) && ( de instanceof FolderEntry ) )
 			{
-				// Yes!  Can we access the custom attribute values for
-				// that attribute?
-				CustomAttribute ca = fe.getCustomAttribute( attrName );
-				if ( null != ca )
+				// Yes!  Does that entry have a primary file attribute?
+				FolderEntry fe = ((FolderEntry) de);
+				Map model  = new HashMap();
+				DefinitionHelper.getPrimaryFile( fe, model );
+				String attrName = ((String) model.get( WebKeys.PRIMARY_FILE_ATTRIBUTE ) );
+				if ( hasString( attrName ) )
 				{
-					// Yes!  Does it contain any FileAttachment's?
-					Collection values = ca.getValueSet();
-					if ( hasItems( values ) )
+					// Yes!  Can we access the custom attribute values for
+					// that attribute?
+					CustomAttribute ca = fe.getCustomAttribute( attrName );
+					if ( null != ca )
 					{
+						// Yes!  Does it contain any FileAttachment's?
+						Collection values = ca.getValueSet();
+						if ( hasItems( values ) )
+						{
+							// Yes!  Return the first one.
+							reply = ((FileAttachment) values.iterator().next());
+						}
+					}
+				}
+		
+				// Do we have the FileAttachment for the entry yet?
+				if ( null == reply )
+				{
+					// No!  Does it have any attachments?
+					Collection<FileAttachment> atts = fe.getFileAttachments();
+					if ( hasItems( atts ) ) {
 						// Yes!  Return the first one.
-						reply = ((FileAttachment) values.iterator().next());
+						reply = ((FileAttachment) atts.iterator().next());
 					}
 				}
 			}
 	
-			// Do we have the FileAttachment for the entry yet?
-			if ( null == reply )
-			{
-				// No!  Does it have any attachments?
-				Collection<FileAttachment> atts = fe.getFileAttachments();
-				if ( hasItems( atts ) ) {
-					// Yes!  Return the first one.
-					reply = ((FileAttachment) atts.iterator().next());
-				}
-			}
+			// If we get here, reply refers to the DefinableEntity's
+			//primary file attachment or is null if one can't be
+			//determined.  Return it.
+			return reply;
 		}
-
-		// If we get here, reply refers to the DefinableEntity's
-		//primary file attachment or is null if one can't be
-		//determined.  Return it.
-		return reply;
+		
+		finally
+		{
+			SimpleProfiler.stop( "MiscUtil.getPrimaryFileAttachment()" );
+		}
 	}
 
     public static String getPrimaryFileName( DefinableEntity de )
