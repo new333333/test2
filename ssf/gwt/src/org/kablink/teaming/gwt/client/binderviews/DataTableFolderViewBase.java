@@ -3544,6 +3544,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		GwtClientHelper.executeCommand(
 				new GetFolderRowsCmd(
 					getFolderInfo(),
+					getFolderDisplayData(),
 					m_folderColumnsList,
 					range.getStart(),
 					rowsRequested,

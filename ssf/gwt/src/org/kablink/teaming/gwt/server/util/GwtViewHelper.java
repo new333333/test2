@@ -5289,6 +5289,7 @@ public class GwtViewHelper {
 	 * @param bs
 	 * @param request
 	 * @param folderInfo
+	 * @param folderDisplayData
 	 * @param folderColumns
 	 * @param start
 	 * @param length
@@ -5298,7 +5299,7 @@ public class GwtViewHelper {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderColumn> folderColumns, int start, int length, String quickFilter, String authenticationGuid) throws GwtTeamingException {
+	public static FolderRowsRpcResponseData getFolderRows(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, FolderDisplayDataRpcResponseData folderDisplayData, List<FolderColumn> folderColumns, int start, int length, String quickFilter, String authenticationGuid) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderRows()");
 		try {
 			// Is this a binder the user can view?
@@ -5411,9 +5412,8 @@ public class GwtViewHelper {
 			}
 			
 			// Factor in the user's sorting selection.
-			FolderDisplayDataRpcResponseData fdd = getFolderDisplayData(bs, request, folderInfo);
-			String	sortBy           = fdd.getFolderSortBy();
-			boolean	sortDescend      = fdd.getFolderSortDescend();
+			String	sortBy           = folderDisplayData.getFolderSortBy();
+			boolean	sortDescend      = folderDisplayData.getFolderSortDescend();
 			options.put(ObjectKeys.SEARCH_SORT_BY,      sortBy     );
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, sortDescend);
 
@@ -6107,8 +6107,8 @@ public class GwtViewHelper {
 				// current sort criteria.
 				Comparator<FolderRow> comparator =
 					new FolderRowComparator(
-						fdd.getFolderSortBy(),
-						fdd.getFolderSortDescend(),
+						folderDisplayData.getFolderSortBy(),
+						folderDisplayData.getFolderSortDescend(),
 						folderColumns);
 				
 				Collections.sort(folderRows, comparator);
