@@ -12879,13 +12879,31 @@ public class GwtServerHelper {
 	/**
 	 * Test the connection for the given KeyShield configuration
 	 */
-	public static TestKeyShieldConnectionResponse testKeyShieldConnection( GwtKeyShieldConfig gwtConfig )
+	public static TestKeyShieldConnectionResponse testKeyShieldConnection(
+		AllModulesInjected ami,
+		GwtKeyShieldConfig gwtConfig )
 	{
 		TestKeyShieldConnectionResponse response;
-		
+		KeyShieldModule keyShieldModule;
+		KeyShieldConfig keyShieldConfig = null;
+
 		response = new TestKeyShieldConnectionResponse();
-		response.setStatusCode( GwtKeyShieldConnectionTestStatusCode.NORMAL );
+		keyShieldModule = ami.getKeyShieldModule();
 		
+		try
+		{
+			keyShieldConfig = getKeyShieldConfigFromGwtKeyShieldConfig(
+																	RequestContextHolder.getRequestContext().getZoneId(),
+																	gwtConfig );
+			
+			keyShieldModule.testConnection( keyShieldConfig );
+			response.setStatusCode( GwtKeyShieldConnectionTestStatusCode.NORMAL );
+		}
+		catch ( Exception ex )
+		{
+			response.setStatusCode( GwtKeyShieldConnectionTestStatusCode.FAILED );
+		}
+
 		return response;
 	}
 	

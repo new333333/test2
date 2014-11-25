@@ -3992,7 +3992,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			TestKeyShieldConnectionResponse responseData;
 			
 			tkcCmd = (TestKeyShieldConnectionCmd) cmd;
-			responseData = GwtServerHelper.testKeyShieldConnection( tkcCmd.getKeyShieldConfig() );
+			responseData = GwtServerHelper.testKeyShieldConnection( this, tkcCmd.getKeyShieldConfig() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
