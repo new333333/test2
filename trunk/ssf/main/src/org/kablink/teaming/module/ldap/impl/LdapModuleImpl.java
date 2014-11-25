@@ -628,8 +628,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			if ( logErrors || logger.isDebugEnabled() )
 			{
-				logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " " + ex.toString() );
-				ex.printStackTrace();
+				logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " ", ex );
 			}
 		}
 		
@@ -813,8 +812,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				if ( logErrors || logger.isDebugEnabled() )
 				{
-					logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " " + ex.toString() );
-					ex.printStackTrace();
+					logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn, ex );
 				}
 			}
 		}
@@ -881,8 +879,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				if ( logErrors || logger.isDebugEnabled() )
 				{
-					logger.error( "Error reading homeDrive and homeDirectory attributes from the user: " + userDn + " " + ex.toString() );
-					ex.printStackTrace();
+					logger.error( "Error reading homeDrive and homeDirectory attributes from the user: " + userDn, ex );
 				}
 			}
 		}
@@ -1152,8 +1149,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				if ( logErrors || logger.isDebugEnabled() )
 				{
-					logger.error( "Error reading attributes from the server object: " + serverDn + " " + ex.toString() );
-					ex.printStackTrace();
+					logger.error( "Error reading attributes from the server object: " + serverDn, ex );
 				}
 			}
 		}
@@ -1236,8 +1232,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			if ( logErrors )
 			{
-				logger.error( "In readStringAttribute(), exception: " + ex.toString() );
-				ex.printStackTrace();
+				logger.error( "In readStringAttribute(), exception: ", ex );
 			}
 		}
 		
@@ -1310,8 +1305,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				if ( logErrors || logger.isDebugEnabled() )
 				{
-					logger.error( "Error reading attributes from the volume object: " + volumeDn + " " + ex.toString() );
-					ex.printStackTrace();
+					logger.error( "Error reading attributes from the volume object: " + volumeDn, ex );
 				}
 			}
 		}
@@ -1396,8 +1390,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						}
 						catch ( IOException ex )
 						{
-							logger.error( "In getDynamicGroupMembers(), call to new PagedResultsControl() threw an exception: " + ex.toString() );
-							ex.printStackTrace();
+							logger.error( "In getDynamicGroupMembers(), call to new PagedResultsControl() threw an exception: ", ex );
 							
 							return listOfMembers;
 						}
@@ -1447,16 +1440,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							catch ( IOException ex )
 							{
 								cookie = null;
-								logger.error( "In getDynamicGroupMembers(), call to new PagedResultsControl() threw an exception: " + ex.toString() );
-								ex.printStackTrace();
+								logger.error( "In getDynamicGroupMembers(), call to new PagedResultsControl() threw an exception: ", ex );
 							}
 							
 						} while ( (cookie != null) && (cookie.length != 0) );
 					}
 			  		catch ( Exception ex )
 			  		{
-			  			logger.error( "In getDynamicGroupMembers(), exceptions was thrown: " );
-			  			ex.printStackTrace();
+			  			logger.error( "In getDynamicGroupMembers(), exceptions was thrown: ", ex );
 			  		}
 			  		finally
 			  		{
@@ -2234,8 +2225,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		catch ( Exception ex )
 		{
-			logger.error( "readDomainNameFromAD() caught exception: " + ex.toString() );
-			ex.printStackTrace();
+			logger.error( "readDomainNameFromAD() caught exception: ", ex );
 		}
 		finally
 		{
@@ -3164,8 +3154,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  		{
 	  				errorSyncingUsers = true;
 
-	  				logger.error( "syncUsers() threw an exception: " + ex.toString() );
-	  				ex.printStackTrace();
+	  				logger.error( "syncUsers() threw an exception: ", ex );
 	  				
 	  				if ( ex instanceof NamingException )
 		  			{
@@ -3207,8 +3196,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						}
 						catch (NamingException namingEx)
 				  		{
-							logger.error( "closing user context threw an exception: " + namingEx.toString() );
-							namingEx.printStackTrace();
+							logger.error( "closing user context threw an exception: ", namingEx );
 							
 				  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
 				  			//!!! errors and return them instead of just throwing an exception for the first
@@ -3261,8 +3249,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			catch ( Exception ex )
 			{
-				logger.info( "userCoordinator.wrapUp() threw an exception: " + ex.toString() );
-				ex.printStackTrace();
+				logger.info( "userCoordinator.wrapUp() threw an exception: ", ex );
   				
 	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
 	  			//!!! errors and return them instead of just throwing an exception for the first
@@ -3282,8 +3269,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				if ( ldapSyncEx != null )
 				{
-					logger.error( "Exception encountered while syncing users: " + ldapSyncEx.toString() );
-					ldapSyncEx.printStackTrace();
+					logger.error( "Exception encountered while syncing users: ", ldapSyncEx );
 		   			throw ldapSyncEx;
 				}
 
@@ -3324,8 +3310,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  		catch (Exception ex)
 		  		{
 		  			errorSyncingGroups = true;
-		  			logger.error( "syncGroups() threw an exception: " + ex.toString() );
-		  			ex.printStackTrace();
+		  			logger.error( "syncGroups() threw an exception: ", ex );
 
 	  				if ( ex instanceof NamingException )
 		  			{
@@ -3368,8 +3353,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						}
 						catch (NamingException namingEx)
 				  		{
-							logger.error( "closing group context threw an exception: " + namingEx.toString() );
-							namingEx.printStackTrace();
+							logger.error( "closing group context threw an exception: ", namingEx );
 							
 				  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
 				  			//!!! errors and return them instead of just throwing an exception for the first
@@ -3410,8 +3394,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				if ( ldapSyncEx != null )
 				{
-					logger.error( "Exception encountered while syncing groups: " );
-					ldapSyncEx.printStackTrace();
+					logger.error( "Exception encountered while syncing groups: ", ldapSyncEx );
 		   			throw ldapSyncEx;
 				}
 
@@ -3427,8 +3410,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		}
 	   		catch( Exception ex )
 	   		{
-  				logger.error( "groupCoordinator.deleteObsoleteGroups() threw exception: " + ex.toString() );
-  				ex.printStackTrace();
+  				logger.error( "groupCoordinator.deleteObsoleteGroups() threw exception: ", ex );
   				
 	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
 	  			//!!! errors and return them instead of just throwing an exception for the first
@@ -3465,8 +3447,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		}
 	   		catch( Exception ex )
 	   		{
-  				logger.error( "updateDynamicGroupMembership() threw exception: " + ex.toString() );
-  				ex.printStackTrace();
+  				logger.error( "updateDynamicGroupMembership() threw exception: ", ex );
   				
 	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
 	  			//!!! errors and return them instead of just throwing an exception for the first
@@ -3491,8 +3472,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		}
 	   		catch ( Exception ex )
 	   		{
-  				logger.error( "m_containerCoordinator.wrapUp() threw exception: " + ex.toString() );
-  				ex.printStackTrace();
+  				logger.error( "m_containerCoordinator.wrapUp() threw exception: ", ex );
   				
 	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
 	  			//!!! errors and return them instead of just throwing an exception for the first
@@ -3522,8 +3502,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		}
 	   		catch ( Exception ex )
 	   		{
-  				logger.error( "Removing admin task to run ldap sync threw exception: " + ex.toString() );
-  				ex.printStackTrace();
+  				logger.error( "Removing admin task to run ldap sync threw exception: ", ex );
   				
 	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
 	  			//!!! errors and return them instead of just throwing an exception for the first
@@ -3621,8 +3600,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					catch ( Exception ex )
 					{
-						logger.info( "In reindexPrincipals(), getProfileModule().getEntry() threw an exception." );
-						ex.printStackTrace();
+						logger.info( "In reindexPrincipals(), getProfileModule().getEntry() threw an exception.", ex );
 					}
 				}
 				
@@ -3630,8 +3608,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			catch ( Exception ex )
 			{
-				logger.error( "In reindexPrincipals(), Utils.reIndexPrincipals() threw an exception: " );
-				ex.printStackTrace();
+				logger.error( "In reindexPrincipals(), Utils.reIndexPrincipals() threw an exception: ", ex );
 			}
 		}
 
@@ -5073,18 +5050,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    }
 	    catch (NamingException e)
 	    {
-	        logger.info( "PagedSearch failed." );
-	        e.printStackTrace();
+	        logger.info( "PagedSearch failed.", e );
 	    }
 	    catch (IOException ie)
 	    {
-	        logger.info( "PagedSearch failed." );
-	        ie.printStackTrace();
+	        logger.info( "PagedSearch failed.", ie );
 	    }
 	    catch ( Exception e )
 	    {
-	    	logger.info( "PagedSearch failed." );
-	    	e.printStackTrace();
+	    	logger.info( "PagedSearch failed.", e );
 	    }
 	    
 	    return true;
@@ -5147,8 +5121,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			catch ( Exception ex )
 	  		{
-				logger.error( "In syncUsers(), the call to getUserContext() threw an exception.  Home directory information will NOT be read." );
-				ex.printStackTrace();
+				logger.error( "In syncUsers(), the call to getUserContext() threw an exception.  Home directory information will NOT be read.", ex );
 				
 				// It is ok to continue.  We won't try to read the home dir info
 	  		}
@@ -5181,8 +5154,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 				catch ( IOException ex )
 				{
-					logger.error( "Call to new PagedResultsControl() threw an exception: " + ex.toString() );
-					ex.printStackTrace();
+					logger.error( "Call to new PagedResultsControl() threw an exception: ", ex );
 				}
 
 				do
@@ -5323,8 +5295,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					catch ( IOException ex )
 					{
 						cookie = null;
-						logger.error( "Call to PagedResultsControl() threw an exception: " + ex.toString() );
-						ex.printStackTrace();
+						logger.error( "Call to PagedResultsControl() threw an exception: ", ex );
 					}
 					
 					if ( m_showTiming )
@@ -5364,8 +5335,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		catch ( Exception ex )
 		{
-			logger.error( "In syncUsers(), closing ldapContextForReadingHomeDirInfo.close() threw an exception." );
-			ex.printStackTrace();
+			logger.error( "In syncUsers(), closing ldapContextForReadingHomeDirInfo.close() threw an exception.", ex );
 		}
 
 		logger.info( "Finished syncUsers()" );
@@ -5988,8 +5958,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 				catch ( IOException ex )
 				{
-					logger.error( "In syncGroups(), call to new PagedResultsControl() threw an exception: " + ex.toString() );
-					ex.printStackTrace();
+					logger.error( "In syncGroups(), call to new PagedResultsControl() threw an exception: ", ex );
 				}
 				
 				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
@@ -6115,8 +6084,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					catch ( IOException ex )
 					{
 						cookie = null;
-						logger.error( "In syncGroups(), call to PagedResultsControl() threw an exception: " + ex.toString() );
-						ex.printStackTrace();
+						logger.error( "In syncGroups(), call to PagedResultsControl() threw an exception: ", ex );
 					}
 
 					// clear cache to prevent thrashing resulted from prolonged use of a single session
@@ -6324,8 +6292,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		catch ( Exception ex )
 		{
 			listOfMembers = null;
-			logger.error( "In getGroupMembershipFromAD(), exception: " + ex.toString() );
-			ex.printStackTrace();
+			logger.error( "In getGroupMembershipFromAD(), exception: ", ex );
 		}
 		finally
 		{
@@ -6336,8 +6303,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			catch ( Exception ex )
 			{
-				logger.error( "in getGroupMembershipFromAD(), ctx.close() threw an exception: " + ex.toString() );
-				ex.printStackTrace();
+				logger.error( "in getGroupMembershipFromAD(), ctx.close() threw an exception: ", ex );
 			}
 		}
 		
@@ -6461,8 +6427,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					catch ( IOException ex )
 					{
-						logger.error( "Call to new PagedResultsControl() threw an exception: " + ex.toString() );
-						ex.printStackTrace();
+						logger.error( "Call to new PagedResultsControl() threw an exception: ", ex );
 					}
 
 					do
@@ -6510,8 +6475,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						catch ( IOException ex )
 						{
 							cookie = null;
-							logger.error( "Call to PagedResultsControl() threw an exception: " + ex.toString() );
-							ex.printStackTrace();
+							logger.error( "Call to PagedResultsControl() threw an exception: ", ex );
 						}
 
 					} while ( (cookie != null) && (cookie.length != 0) );
@@ -7112,8 +7076,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		catch ( Exception ex )
 		{
-			logger.error( "getMaxPwdAge() caught an exception: " + ex.toString() );
-			ex.printStackTrace();
+			logger.error( "getMaxPwdAge() caught an exception: ", ex );
 		}
 		finally
 		{
@@ -7162,8 +7125,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			catch ( NamingException ex )
 			{
 				// Nothing to do.
-				logger.error( "getPasswordLastSet() caught an exception: " + ex.toString() );
-				ex.printStackTrace();
+				logger.error( "getPasswordLastSet() caught an exception: ", ex );
 			}
 		}
 	
@@ -7207,8 +7169,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			catch ( Exception ex )
 			{
 				// Nothing to do.
-				logger.error( "getPasswordExpires() threw an exception: " + ex.toString() );
-				ex.printStackTrace();
+				logger.error( "getPasswordExpires() threw an exception: ", ex );
 			}
 		}
 
@@ -7691,8 +7652,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	}
 	   	catch ( Exception ex )
 	   	{
-	   		logger.error( "An error happened updating a user in the batch of users: " + ex.toString() );
-	   		ex.printStackTrace();
+	   		logger.error( "An error happened updating a user in the batch of users: ", ex );
 	   		
 	   		// Try to update each user in the list
 		   	for (int i=0; foundEntries != null && i < foundEntries.size() && processor != null; ++i)
@@ -7718,8 +7678,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   		}
 		   		catch ( Exception ex2 )
 		   		{
-		   			logger.error( "2nd attempt to update the user failed: " + ex2.toString() );
-		   			ex2.printStackTrace();
+		   			logger.error( "2nd attempt to update the user failed: ", ex2 );
 		   		}
 		   	}
 	   	}
@@ -7747,8 +7706,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			catch ( Exception ex )
 			{
-				logger.error( "Error updating db for renamed user: " + nextUser.getName() + " Exception: " + ex.toString() );
-				ex.printStackTrace();
+				logger.error( "Error updating db for renamed user: " + nextUser.getName() + " Exception: ", ex );
 			}
 		}
 	}
@@ -8183,8 +8141,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		catch ( Exception ex )
 		{
-			logger.info( "Unable to create the home directory net folder server for: " + homeDirInfo.getServerAddr() + " " + ex.toString() );
-			ex.printStackTrace();
+			logger.info( "Unable to create the home directory net folder server for: " + homeDirInfo.getServerAddr() + " ", ex );
 		}
 	}
 	
@@ -8286,8 +8243,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		catch ( Exception ex )
 		{
-			logger.info( "Unable to create the home directory net folder for user: " + user.getTitle() + " " + ex.toString() );
-			ex.printStackTrace();
+			logger.info( "Unable to create the home directory net folder for user: " + user.getTitle() + " ", ex );
 		}
 	}
 
@@ -8402,8 +8358,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			nextUser = new ArrayList();
 
 			// An error happened trying to create one of the users in the batch.  Log the error
-			logger.error( "An error occurred attempting to create a batch of users: " + ex.toString() );
-			ex.printStackTrace();
+			logger.error( "An error occurred attempting to create a batch of users: ", ex );
 		
 			newUsers.clear();
 			
