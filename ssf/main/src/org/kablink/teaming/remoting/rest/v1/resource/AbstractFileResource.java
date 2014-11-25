@@ -130,7 +130,8 @@ abstract public class AbstractFileResource extends AbstractResource {
         if (forceOverwrite || FileUtils.matchesTopMostVersion(attachment, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber)) {
             modifyDefinableEntityWithFile(entity, dataName, attachment.getFileItem().getName(), is, modDate, expectedMd5);
         } else {
-            throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file");
+            throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file",
+                    ResourceUtil.buildFileProperties(attachment));
         }
         return ResourceUtil.buildFileProperties(attachment);
     }
@@ -158,7 +159,8 @@ abstract public class AbstractFileResource extends AbstractResource {
             if (FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber)) {
                 modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate, expectedMd5);
             } else {
-                throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file");
+                throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file",
+                        ResourceUtil.buildFileProperties(fa));
             }
         } else {
             if (update!=null && update) {
