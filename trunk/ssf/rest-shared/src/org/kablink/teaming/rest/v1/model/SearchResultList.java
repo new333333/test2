@@ -77,7 +77,7 @@ public class SearchResultList<T> {
     }
 
     public void updateLastModified(Date lastModified) {
-        if (this.lastModified==null || this.lastModified.before(lastModified)) {
+        if (lastModified!=null && (this.lastModified==null || this.lastModified.before(lastModified))) {
             this.lastModified = lastModified;
         }
     }
