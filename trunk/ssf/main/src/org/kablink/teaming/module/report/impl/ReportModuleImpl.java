@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -59,6 +59,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -104,9 +105,16 @@ import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"deprecation", "unchecked", "unused"})
 public class ReportModuleImpl extends HibernateDaoSupport implements ReportModule {
 	protected Set enabledTypes=new HashSet();
 	protected boolean allEnabled=false;
@@ -119,13 +127,16 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected AdminModule adminModule;
 	protected ProfileModule profileModule;
 	protected Map<String, String> authenticatorFrequency = new HashMap<String, String>();
+
 	private final static String AUTHENTICATOR_FREQUENCY_DAILY_STRICT = "daily_strict";
 	private final static String AUTHENTICATOR_FREQUENCY_DAILY_SOFT = "daily_soft";
 	private final static String AUTHENTICATOR_FREQUENCY_ALL = "all";
 	private final static String AUTHENTICATOR_FREQUENCY_NONE = "none";
 	private final static String AUTHENTICATOR_FREQUENCY_DEFAULT = AUTHENTICATOR_FREQUENCY_DAILY_SOFT;
 	private final static long MEGABYTES = 1024L * 1024L;
+	
 	private static ConcurrentHashMap<String, Integer> loginInfoLastDays = new ConcurrentHashMap<String, Integer>();
+	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
 	}
@@ -187,6 +198,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     /**
      * Called after bean is initialized.  
      */
+	@Override
 	protected void initDao() throws Exception {
  		//build set of enabled types
  		String [] audits = SPropsUtil.getStringArray("audit", ",");
@@ -226,6 +238,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			return AUTHENTICATOR_FREQUENCY_DEFAULT;
 	}
 	
+	@Override
 	public void addAuditTrail(AuditTrail auditTrail) {
 		//only log if enabled
 		if (getAdminModule().isAuditTrailEnabled()) {
@@ -286,29 +299,36 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		c.set(Calendar.MILLISECOND, 0);
 		return c.getTime();
 	}
+	@Override
 	public void addAuditTrail(AuditType type, DefinableEntity entity) {
 		addAuditTrail(new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity));
 	}
+	@Override
 	public void addAuditTrail(AuditType type, User user, DefinableEntity entity) {
 		addAuditTrail(new AuditTrail(type, user, entity));
 	}
+	@Override
 	public void addAuditTrail(AuditType type, DefinableEntity entity, Date startDate) {
 		addAuditTrail(new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity, startDate));	
 	}
+	@Override
 	public void addAuditTrail(AuditType type, DefinableEntity entity, Date startDate, String description) {
 		AuditTrail auditTrail = new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity, startDate);
 		auditTrail.setDescription(description);
 		addAuditTrail(auditTrail);	
 	}
+	@Override
 	public void addAuditTrail(AuditType type, DefinableEntity entity, String description) {
 		AuditTrail auditTrail = new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity);
 		auditTrail.setDescription(description);
 		addAuditTrail(auditTrail);
 	}
+	@Override
 	public void addLoginInfo(LoginInfo loginInfo) {
 		addAuditTrail(loginInfo);		
 	}
 
+	@Override
 	public void addStatusInfo(User user) {
 		if (user.getStatus() != null && !user.getStatus().equals("")) {
 			AuditTrail auditTrail = new AuditTrail(AuditType.userStatus, user, user);
@@ -317,11 +337,13 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		}
 	}
 
+	@Override
 	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		addFileInfo(type, attachment, user);
 	}
 
+	@Override
 	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment, User asUser) {
 		AuditTrail audit = new AuditTrail(type, asUser, attachment.getOwner().getEntity());
 		audit.setDescription(attachment.getFileItem().getName());
@@ -330,12 +352,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		
 	}
 
+	@Override
 	public void addTokenInfo(User requester, User requestee, Long applicationId) {
 		AuditTrail audit = new AuditTrail(AuditTrail.AuditType.token, requester, requestee);
 		audit.setApplicationId(applicationId);
 		addAuditTrail(audit);
 	}
 	
+	@Override
 	public void addEmailLog(EmailLog emailLog) {
 		try {
 			getCoreDao().save(emailLog);
@@ -344,12 +368,15 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		}
 	}
 	
+	@Override
 	public void addLicenseStats(LicenseStats stats) {
 		getCoreDao().save(stats);
 	}
+	@Override
 	public List<User> getUsersActivity(final DefinableEntity entity, final AuditType type, final Date startDate, final Date endDate) {
 		
 		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				Criteria crit = session.createCriteria(AuditTrail.class)
 					.setProjection(Projections.distinct(Projections.projectionList() 
@@ -366,11 +393,13 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return getProfileDao().loadUsers(ids, entity.getZoneId());
 	}
 	
+	@Override
 	public List<Map<String,Object>> getEntriesViewed(final Long ownerId, 
 			final Date startDate, final Date endDate, Integer returnCount) {
 		
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				Criteria crit = session.createCriteria(AuditTrail.class)
 					.setProjection(Projections.distinct(Projections.projectionList() 
@@ -418,6 +447,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 	
+	@Override
 	public List<Map<String,Object>> getUsersStatuses(final Long[] userIds,
 			final Date startDate, final Date endDate, Integer returnCount) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -491,6 +521,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 	
+	@Override
 	public Collection<ActivityInfo> getActivity(final AuditType limitType, 
 			final Date startDate, final Date endDate, final Binder binder) {
 		Object[] entityTypes = new Object[] {EntityType.folder.name(), EntityType.workspace.name(),
@@ -499,14 +530,17 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBoxMax")), binder);
 		
 	}
+	@Override
 	public Collection<ActivityInfo> getActivity(final AuditType limitType, 
 			final Date startDate, final Date endDate, final Object[] entityTypes, final Integer returnCount) {
 		return getActivity(limitType, startDate, endDate, entityTypes, returnCount, null);
 	}
 	
+	@Override
 	public Collection<ActivityInfo> getActivity(final AuditType limitType, 
 			final Date startDate, final Date endDate, final Object[] entityTypes, final Integer returnCount, final Binder binder) {
 		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				Criteria crit = session.createCriteria(AuditTrail.class)
 					.setProjection(Projections.projectionList() 
@@ -560,6 +594,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return list;
 	}
 
+	@Override
 	public List<ChangeLog> getDeletedBinderLogs(Set<Long> binderIds) {
 		if (binderIds == null || binderIds.isEmpty()) return new ArrayList<ChangeLog>();
 		
@@ -574,6 +609,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		entityTypes[1] = EntityIdentifier.EntityType.workspace.name();
 
 		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				Criteria crit = session.createCriteria(ChangeLog.class)
 				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
@@ -585,6 +621,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return ids;
 	}
 
+	@Override
 	public List<ChangeLog> getDeletedEntryLogs(Set<Long> entryIds) {
 		if (entryIds == null || entryIds.isEmpty()) return new ArrayList<ChangeLog>();
 		
@@ -596,6 +633,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		}
 
 		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				Criteria crit = session.createCriteria(ChangeLog.class)
 				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
@@ -608,9 +646,11 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 
 
+	@Override
 	public LicenseStats getLicenseHighWaterMark(final Calendar startDate, final Calendar endDate)
 	{
 		List marks = (List) getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				List result = null;
 				try {
@@ -653,6 +693,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return stats;
 	}
 
+	@Override
 	public List<Map<String,Object>> generateReport(Collection binderIds, boolean byTeamMembers, boolean byAllUsers, 
 			Date startDate, Date endDate) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
@@ -720,6 +761,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			userIds = null;
 		}
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
 				List auditTrail = null;
@@ -777,6 +819,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		}
 	}
 	
+	@Override
 	public List<Map<String,Object>> generateActivityReport(final Long binderId, final Long entryId) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		final FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
@@ -786,6 +829,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						getBinderModule().testAccess(binder, BinderOperation.report))) {
 
 			List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+				@Override
 				public Object doInHibernate(Session session) throws HibernateException {
 					List auditTrail = null;
 					try {
@@ -827,12 +871,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	return report;
 	}
 
+	@Override
 	public List<Map<String,Object>> generateActivityReportByUser(final Set<Long> userIdsToReport,
 			final Set<Long> userIdsToSkip, final Date startDate, final Date endDate, final String reportType) {
         final User user = RequestContextHolder.getRequestContext().getUser();
         getAdminModule().checkAccess(AdminOperation.report);
 
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				List auditTrail = null;
 				try {
@@ -869,6 +915,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return generateShortActivityByUserReportList(result, reportType);
 	}
 
+	@Override
 	public List<Map<String,Object>> generateAccessReportByUser(final Long userId,
 			final Date startDate, final Date endDate, final String reportType) {
         final User user = RequestContextHolder.getRequestContext().getUser();
@@ -924,12 +971,13 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
 	public List<Map<String,Object>> generateEmailReport(final Date startDate, final Date endDate, final String reportType) {
         final User user = RequestContextHolder.getRequestContext().getUser();
         getAdminModule().checkAccess(AdminOperation.report);
 
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				List emailLog = null;
 				try {
@@ -970,6 +1018,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return generateEmailReportList(result, reportType);
 	}
 
+	@Override
 	public List<Map<String,Object>> generateXssReport(final List binderIds, final Date startDate, final Date endDate, 
 			final String reportType) {
         final User user = RequestContextHolder.getRequestContext().getUser();
@@ -1100,11 +1149,13 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 	
+	@Override
 	public Map<String, Object> generateEntryAclReport(final Folder folder) {
 		getFolderModule().checkAccess(folder, FolderOperation.report);
 		Map<String, Object> report = new HashMap<String, Object>();
 		//First, get the number of entries in the binder
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				List auditTrail = null;
 				try {
@@ -1211,6 +1262,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 
+	@Override
 	public List<Map<String,Object>> generateLoginReport(final Date startDate, final Date endDate, 
 			String optionType, String sortType, String sortType2, Set memberIds) {
 		getAdminModule().checkAccess(AdminOperation.report);
@@ -1224,6 +1276,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				final Set tempIds = memberIds;
 				
 				result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+					@Override
 					public Object doInHibernate(Session session) throws HibernateException {
 			
 						List auditTrail = session.createCriteria(LoginInfo.class)
@@ -1241,6 +1294,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			}
 			else {
 				result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+					@Override
 					public Object doInHibernate(Session session) throws HibernateException {
 			
 						List auditTrail = session.createCriteria(LoginInfo.class)
@@ -1282,6 +1336,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				final Set tempIds = memberIds;
 				
 				result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+					@Override
 					public Object doInHibernate(Session session) throws HibernateException {
 			
 						List auditTrail = session.createCriteria(LoginInfo.class)
@@ -1299,6 +1354,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			}
 			else {
 				result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+						@Override
 						public Object doInHibernate(Session session) throws HibernateException {
 				
 							List auditTrail = session.createCriteria(LoginInfo.class)
@@ -1371,7 +1427,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	
 	private LinkedList<Map<String,Object>> generateShortLoginReportList(List logins) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz");
+		SimpleDateFormat sdFormat = new SimpleDateFormat(LOGIN_REPORT_DATE_FORMAT);
 		sdFormat.setTimeZone(user.getTimeZone());
 		
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
@@ -1393,7 +1449,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	
 	private LinkedList<Map<String,Object>> generateLongLoginReportList(List logins) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz");
+		SimpleDateFormat sdFormat = new SimpleDateFormat(LOGIN_REPORT_DATE_FORMAT);
 		sdFormat.setTimeZone(user.getTimeZone());
 		
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
@@ -1414,7 +1470,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	
 	private LinkedList<Map<String,Object>> generateShortActivityByUserReportList(List activities, String reportType) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz");
+		SimpleDateFormat sdFormat = new SimpleDateFormat(LOGIN_REPORT_DATE_FORMAT);
 		sdFormat.setTimeZone(user.getTimeZone());
 		
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
@@ -1461,6 +1517,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 	
+	@Override
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection binderIds, Date startDate, Date endDate) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
@@ -1483,6 +1540,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 		if (!getBinderModule().testAccess(binder, BinderOperation.report)) return;
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				List auditTrail = null;
 				try {
@@ -1587,6 +1645,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}// end getAverageTimeInWorkflowState()
 
 
+	@Override
 	public List<Map<String,Object>> generateWorkflowStateCountReport(Collection binderIds) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
@@ -1605,6 +1664,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected void generateWorkflowStateCountRow(List<Map<String, Object>> report, final Binder binder) {
 		if (!getBinderModule().testAccess(binder, BinderOperation.report)) return;
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				List states = null;
 				try {
@@ -1652,6 +1712,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			this.binderKey = binderKey;
 			this.userId = userId;
 		}
+		@Override
 		public boolean equals(Object o) {
 			if(o instanceof QKey) {
 				QKey other = (QKey) o;
@@ -1661,6 +1722,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			return false;
 		}
 		
+		@Override
 		public int hashCode() {
 			int code = 0;
 			if(binderKey != null) {
@@ -1672,6 +1734,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			return code;
 		}
 		
+		@Override
 		public int compareTo(QKey other) {
 			int res = 0;
 			if(userId != null) {
@@ -1683,10 +1746,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			return res;
 		}
 	}
+	@Override
 	public List<Map<String,Object>> generateQuotaReport(final QuotaOption option, Long threshold) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
 		List sizes = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				List l = null;
 				try {
@@ -1739,6 +1804,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		HashMap<String, Binder> binderMap = new HashMap<String, Binder>();
 		if(option != QuotaOption.UsersOnly) {
 			binders = (List)getHibernateTemplate().execute(new HibernateCallback() {
+				@Override
 				public Object doInHibernate(Session session) throws HibernateException {
 					List l = null;
 					try {
@@ -1783,6 +1849,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 	
+	@Override
 	public List<Map<String,Object>> generateExceededDiskQuotaReport() {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
@@ -1790,6 +1857,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		final int i_defaultQuota = defaultQuota;
 		List results = null;
 		results = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				List l = null;
 				try {
@@ -1842,6 +1910,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 	
+	@Override
 	public List<Map<String,Object>> generateExceededHighWaterDiskQuotaReport() {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		
@@ -1852,6 +1921,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		
 		List results = null;
 		results = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				List l = null;
 				try {
@@ -1904,10 +1974,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 
+	@Override
 	public List<Map<String,Object>> generateUserDiskUsageReport(final UserQuotaOption option) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		List results = null;
 		results = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				String orderBy = "w.modification_date ASC";
 				if ( option != UserQuotaOption.Age) { 
@@ -1950,10 +2022,11 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 		return report;
 	}
-	@SuppressWarnings("unchecked")
+	@Override
 	public List<LicenseStats> generateLicenseReport(final Date startDate, final Date endDate) {
 		getAdminModule().checkAccess(AdminOperation.report);
 		return (List<LicenseStats>) getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 		
 				List auditTrail = session.createCriteria(LicenseStats.class)
@@ -1966,6 +2039,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			}});
 	}
 	
+	@Override
 	public List<Long> getDeletedFolderEntryIds(final String family, final Date startDate, final Date endDate) {
 		List data = getAuditTrails(new String[]{AuditType.delete.name(), AuditType.preDelete.name(), AuditType.restore.name()}, null, family, startDate, endDate);
 		
@@ -1979,6 +2053,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return new ArrayList<Long>(deletes);
 	}
 
+	@Override
 	public List<Long> getDeletedFolderEntryIds(final long[] folderIds, final String family, final Date startDate, final Date endDate) {
 		List data = getAuditTrails(new String[]{AuditType.delete.name(), AuditType.preDelete.name(), AuditType.restore.name()}, folderIds, family, startDate, endDate);
 
@@ -1992,6 +2067,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return new ArrayList<Long>(deletes);
 	}
 
+	@Override
 	public List<Long> getRestoredFolderEntryIds(final long[] folderIds, final String family, final Date startDate, final Date endDate) {
 		List data = getAuditTrails(new String[]{AuditType.delete.name(), AuditType.preDelete.name(), AuditType.restore.name()}, folderIds, family, startDate, endDate);
 
@@ -2004,6 +2080,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	
 	private List<Object> getAuditTrails(final String[] auditTypes, final long[] folderIds, final String family, final Date startDate, final Date endDate) {
 		return (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				Criteria crit = session.createCriteria(AuditTrail.class)
 				.setProjection(Projections.projectionList() 
@@ -2066,8 +2143,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return new TreeSet[] {deletes, preDeletes, restores};
 	}
 	
+	@Override
 	public List<Long> getMovedFolderEntryIds(final Date startDate, final Date endDate) {
 		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 				Criteria crit = session.createCriteria(ChangeLog.class)
 					.setProjection(Projections.distinct(Projections.projectionList() 
@@ -2130,6 +2209,7 @@ class TimeInterval
 		}
 	}
 	
+	@Override
 	public String toString()
 	{
 		StringBuffer buf = new StringBuffer();
