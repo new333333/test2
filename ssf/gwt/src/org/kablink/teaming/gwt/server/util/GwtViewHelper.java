@@ -6480,7 +6480,7 @@ public class GwtViewHelper {
 				String lastLogin = ((String) loginMap.get(ReportModule.LAST_LOGIN));	// Example:  '2012-12-17 02:24:01 PM'
 				if (MiscUtil.hasString(lastLogin)) {
 					// Yes!  Parse and return it.
-					SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss aa");
+					SimpleDateFormat fmt = new SimpleDateFormat(ReportModule.LOGIN_REPORT_DATE_FORMAT);
 					reply = fmt.parse(lastLogin);
 				}
 			}
