@@ -31,6 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.web.util;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -74,8 +75,7 @@ import org.kablink.util.Validator;
  */
 @SuppressWarnings("unchecked")
 public class WebUrlUtil {
-	
-    //ReadFile operation types
+    // ReadFile operation types.
     public static final String FILE_URL_TYPE_ZIP="zip";
     public static final String FILE_URL_TYPE_SHARE="share";
     public static final String FILE_URL_TYPE_FOLDER_CSV="folderCsv";
@@ -766,30 +766,50 @@ public class WebUrlUtil {
 	}
 
 	/*
-	 * This routine is used to get Public Link URLs. 
-	 * Public Links result from creating a ShareItem with a recipientType of publicLink
-	 * Those ShareItems contain a pass key that allows the file to be publicaly read
-	 * There are two supported operations: publicLink and publicLinkHtml
-	 * The publicLink operation downloads the file
-	 * The publicLinkHtml operation displays the converted HTML of the file.
+	 * This routine is used to get Public Link URLs.
+	 *  
+	 * Public Links result from creating a ShareItem with a
+	 * recipientType of publicLink.  Those ShareItems contain a pass
+	 * key that allows the file to be publicly read.  There are two
+	 * supported operations:  publicLink and publicLinkHtml.  The
+	 * publicLink operation downloads the file.  The publicLinkHtml
+	 * operation displays the converted HTML of the file.
 	 */
-	private static String getSharedPublicFileUrlImpl(String webPath, Long shareItemId, String passKey, String operation, String fileName) {
-		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
+	private static String getSharedPublicFileUrlImpl(Long shareItemId, String passKey, String operation, String fileName) {
+		// We build the base URL using an AdaptedPortletURL so that we
+		// get the same protocol, domain and part as returned by
+		// PermaLinkUtil.getPermalinkForEmail().
+		Boolean oldUseRTContext = ZoneContextHolder.getUseRuntimeContext();
+		ZoneContextHolder.setUseRuntimeContext(Boolean.FALSE);
+		AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		url.setCrawler(false);
+		ZoneContextHolder.setUseRuntimeContext(oldUseRTContext);
+		String baseUrl = url.toString();
+		int pos = baseUrl.indexOf("a/do?");
+		baseUrl = (baseUrl.substring(0, pos) + "s/");
+		
+		StringBuffer webUrl = new StringBuffer(baseUrl + WebKeys.ACTION_READ_FILE);
 		webUrl.append(Constants.SLASH + WebKeys.URL_ENTITY_TYPE_SHARE);
 		webUrl.append(Constants.SLASH + String.valueOf(shareItemId));
 		webUrl.append(Constants.SLASH + passKey); 
 		webUrl.append(Constants.SLASH + operation); 
 		webUrl.append(Constants.SLASH + urlEncodeFilename(fileName)); 
-		return webUrl.toString();
+		String reply = webUrl.toString();
+		if (PermaLinkUtil.forceSecureLinksInEmail()) {
+			reply = PermaLinkUtil.forceHTTPSInUrl(reply);
+		}
+		return reply;
 	}
 	
 	/**
-	 * This routine is used to get Public Link URLs. 
-	 * Public Links result from creating a ShareItem with a recipientType of publicLink
-	 * Those ShareItems contain a pass key that allows the file to be publicaly read
-	 * There are two supported operations: publicLink and publicLinkHtml
-	 * The publicLink operation downloads the file
-	 * The publicLinkHtml operation displays the converted HTML of the file.
+	 * This routine is used to get Public Link URLs.
+	 *  
+	 * Public Links result from creating a ShareItem with a
+	 * recipientType of publicLink.  Those ShareItems contain a pass
+	 * key that allows the file to be publicly read.  There are two
+	 * supported operations:  publicLink and publicLinkHtml.  The
+	 * publicLink operation downloads the file.  The publicLinkHtml
+	 * operation displays the converted HTML of the file.
 	 * 
 	 * @param hRequest
 	 * @param shareItemId
@@ -801,16 +821,18 @@ public class WebUrlUtil {
 	 */
 	public static String getSharedPublicFileUrl(HttpServletRequest hRequest, Long shareItemId, String passKey, String operation, String fileName) {
 		// Always use the implementation form of the method.
-		return getSharedPublicFileUrlImpl(WebUrlUtil.getServletRootURL(hRequest, null), shareItemId, passKey, operation, fileName);
+		return getSharedPublicFileUrlImpl(shareItemId, passKey, operation, fileName);
 	}
 
 	/**
-	 * This routine is used to get Public Link URLs. 
-	 * Public Links result from creating a ShareItem with a recipientType of publicLink
-	 * Those ShareItems contain a pass key that allows the file to be publicaly read
-	 * There are two supported operations: publicLink and publicLinkHtml
-	 * The publicLink operation downloads the file
-	 * The publicLinkHtml operation displays the converted HTML of the file.
+	 * This routine is used to get Public Link URLs.
+	 *  
+	 * Public Links result from creating a ShareItem with a
+	 * recipientType of publicLink.  Those ShareItems contain a pass
+	 * key that allows the file to be publicly read.  There are two
+	 * supported operations:  publicLink and publicLinkHtml.  The
+	 * publicLink operation downloads the file.  The publicLinkHtml
+	 * operation displays the converted HTML of the file.
 	 * 
 	 * @param hRequest
 	 * @param shareItemId
@@ -822,7 +844,7 @@ public class WebUrlUtil {
 	 */
 	public static String getSharedPublicFileUrl(PortletRequest pRequest, Long shareItemId, String passKey, String operation, String fileName) {
 		// Always use the implementation form of the method.
-		return getSharedPublicFileUrlImpl(WebUrlUtil.getServletRootURL(pRequest), shareItemId, passKey, operation, fileName);
+		return getSharedPublicFileUrlImpl(shareItemId, passKey, operation, fileName);
 	}
 
 	public static String getSSFContextRootURL(PortletRequest req) {
