@@ -105,6 +105,7 @@ public class TaskHelper {
 	public static final String ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME	= "assignment_groups";
 	public static final String ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME			= "assignment";
 	public static final String ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME	= "assignment_teams";
+	public static final String COMPLETED_DATE_TASK_ENTRY_ATTRIBUTE_NAME		= "completedDate";
 	public static final String COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME			= "completed";
 	public static final String PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME			= "priority";	
 	public static final String STATUS_TASK_ENTRY_ATTRIBUTE_NAME				= "status";
@@ -746,7 +747,7 @@ public class TaskHelper {
 			}
 			
 			// ...and use that to update the completion date, as necessary.
-			processTaskCompletionDate(task, c);
+			processTaskCompletionDate(task, c, inputData);
 	
 			// Does the entry data contain a completed value?
 			Object o = entryData.get(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
@@ -846,7 +847,7 @@ public class TaskHelper {
 	 * Called when a task is modified or created to process the
 	 * completion date.
 	 */
-	private static void processTaskCompletionDate(Entry task, String completeS) {
+	private static void processTaskCompletionDate(Entry task, String completeS, InputDataAccessor inputData) {
 		// Do we have a 'complete' setting for a FolderEntry?
 		if ((!(MiscUtil.hasString(completeS))) || (!(task instanceof FolderEntry))) {
 			// No!  Nothing to do.
@@ -873,8 +874,9 @@ public class TaskHelper {
 		
 		// If the task is now being marked completed...
 		if (complete) {
-			// ...write the current date/time as the completion date.
-			task.addCustomAttribute(TASK_COMPLETED_DATE_ATTRIBUTE, new Date());
+			// ...write the completion date/time to the entry.
+			Date idDate = inputData.getDateValue(COMPLETED_DATE_TASK_ENTRY_ATTRIBUTE_NAME);
+			task.addCustomAttribute(TASK_COMPLETED_DATE_ATTRIBUTE, ((null == idDate) ? new Date() : idDate));
 		}		
 	}
 
