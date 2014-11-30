@@ -128,6 +128,7 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.TitleException;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserDashboard;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
@@ -3691,5 +3692,18 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}
 		
 		return keyShieldConfig;
+	}
+	
+	@Override
+	public void nullifyUserPassword(Long userId) {
+		Session session = getSessionFactory().openSession();
+		try {
+			User user = (User) session.get(User.class, userId);
+			user.setPassword(null);
+		}
+		finally {
+			session.flush();
+			session.close();
+		}
 	}
 }

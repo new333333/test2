@@ -313,4 +313,6 @@ public interface CoreDao {
 	public void executeHeartbeatQuery(String heartbeatQuery);
 	
 	public KeyShieldConfig loadKeyShieldConfig( Long zoneId );
+	
+	public void nullifyUserPassword(Long userId);
 }

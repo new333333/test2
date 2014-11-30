@@ -344,4 +344,8 @@ public class RequestContext {
 	public String getClientIdentity() {
 		return getUserName() + "@" + ZoneContextHolder.getClientAddr();
 	}
+	
+	public String getUserPrintString() {
+		return "'" + userName + "' (id=" + userId + ")";
+	}
 }
