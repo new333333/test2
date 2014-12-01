@@ -151,6 +151,7 @@ public abstract class WorkflowControlledEntry extends Entry
 	    return true;
 	}
 
+	//This routine returns true if the workflow entry is in a state that allows "folder default" access (or not in any state)
 	public boolean isWorkAreaAccess(WfAcl.AccessType type) {
 	    Set states = getWorkflowStates();
 	    if ((states == null) || states.isEmpty()) return true; 
