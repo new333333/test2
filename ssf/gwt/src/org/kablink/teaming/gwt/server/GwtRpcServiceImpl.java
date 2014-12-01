@@ -2275,8 +2275,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_PASSWORD_POLICY_CONFIG:
 		{
-			PasswordPolicyConfig config = GwtServerHelper.getPasswordPolicyConfig( this, req );
-			response = new VibeRpcResponse( config );
+			PasswordPolicyConfig ppConfig = GwtServerHelper.getPasswordPolicyConfig( this, req );
+			response = new VibeRpcResponse( ppConfig );
+			return response;
+		}
+		
+		case GET_PASSWORD_POLICY_INFO:
+		{
+			PasswordPolicyInfoRpcResponseData ppInfo = GwtServerHelper.getPasswordPolicyInfo( this, req );
+			response = new VibeRpcResponse( ppInfo );
 			return response;
 		}
 		

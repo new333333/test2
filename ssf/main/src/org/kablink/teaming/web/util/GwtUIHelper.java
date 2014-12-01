@@ -1535,9 +1535,8 @@ public class GwtUIHelper {
 		boolean isSiteAdmin = bs.getAdminModule().testAccess(AdminOperation.manageFunction);
 		model.put("isSiteAdmin", Boolean.toString(isSiteAdmin));
 		
-		// Put out the flags regarding password policy.
-		model.put("passwordPolicyEnabled", Boolean.toString(PasswordPolicyHelper.PASSWORD_POLICY_ENABLED    ));
-		model.put("passwordsCanExpire",    Boolean.toString(PasswordPolicyHelper.PASSWORD_EXPIRATION_ENABLED));
+		// Put out the flag regarding password policy.
+		model.put("passwordPolicyEnabled", Boolean.toString(PasswordPolicyHelper.PASSWORD_POLICY_ENABLED));
 		
 		// Put out the flag indicating if the user is the built-in
 		// administrator.

@@ -1273,17 +1273,6 @@ public class GwtClientHelper {
 	}
 
 	/**
-	 * Returns true if password expiration is enabled and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isPasswordsCanExpire() {
-		RequestInfo ri = getRequestInfo();
-		return ((null != ri) && ri.isPasswordsCanExpire());
-	}
-
-	/**
 	 * Returns true if we should expose Filr features and false
 	 * otherwise.
 	 * 
