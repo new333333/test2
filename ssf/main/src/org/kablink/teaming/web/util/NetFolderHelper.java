@@ -530,12 +530,13 @@ public class NetFolderHelper
 					if ( updateExistingNetFolder )
 					{
 						String currentServerUNC = null;
+						String normalizedPath = null;
+						String currentBinderPath = null;
+						ResourceDriver driver = null;
 						
 						// Yes
 						// Get the server unc path that is currently being used by the user's home dir net folder.
 						{
-							ResourceDriver driver;
-							
 							driver = netFolderBinder.getResourceDriver();
 							if ( driver != null )
 							{
@@ -546,16 +547,37 @@ public class NetFolderHelper
 									currentServerUNC = currentRdConfig.getRootPath();
 							}
 						}
-								
+
+						if ( driver != null )
+						{
+							// Normalize the path the net folder will use
+							normalizedPath = driver.normalizedResourcePath( path );
+						}
+						
+						currentBinderPath = netFolderBinder.getResourcePath();
+						
 						// Did any information about the home directory change?
 						if ( (serverUNC != null && serverUNC.equalsIgnoreCase( currentServerUNC ) == false) ||
-							 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
+							 normalizedPath != null && normalizedPath.equalsIgnoreCase( currentBinderPath ) == false )
 						{
+							String msg;
+							
+							if ( currentServerUNC == null )
+								currentServerUNC = "";
+							
+							if ( currentBinderPath == null )
+								currentBinderPath = "";
+							
+							m_logger.info( "-----> Home-dir net folder info has changed!!!!" );
+							m_logger.info( "-----> Current server unc: " + currentServerUNC );
+							m_logger.info( "-----> New server unc: " + serverUNC );
+							m_logger.info( "-----> Current net folder path: " + currentBinderPath );
+							m_logger.info( "-----> New net folder path: " + normalizedPath );
 							// Update the folder's resource driver name and relative path.
 							folderModule.modifyNetFolder(
 													netFolderBinder.getId(),
 													rdConfig.getName(),
-													path );
+													normalizedPath );
 							
 				   			syncNeeded = false;
 						}
