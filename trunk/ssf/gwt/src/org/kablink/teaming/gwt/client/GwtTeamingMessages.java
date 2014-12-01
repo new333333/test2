@@ -477,6 +477,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetParentBinderPermalink();
 	String rpcFailure_GetPasswordExpiration();
 	String rpcFailure_GetPasswordPolicyConfig();
+	String rpcFailure_GetPasswordPolicyInfo();
 	String rpcFailure_GetPersonalPreferences();
 	String rpcFailure_GetPreviousFolderEntryInfo();
 	String rpcFailure_GetPreviousFolderEntryInfo_NoAccess();
@@ -2661,6 +2662,15 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the Configure Password Policy dialog
 	String configurePasswordPolicyDlg_ConfirmForcePasswordChanges();
 	String configurePasswordPolicyDlg_Header();
+	String configurePasswordPolicyDlg_Hint();
+	String configurePasswordPolicyDlg_Hint_AtLeast3();
+	String configurePasswordPolicyDlg_Hint_Expiration(int expirationDays);
+	String configurePasswordPolicyDlg_Hint_Lower();
+	String configurePasswordPolicyDlg_Hint_MinimumLength(int minimumLength);
+	String configurePasswordPolicyDlg_Hint_NoName();
+	String configurePasswordPolicyDlg_Hint_Number();
+	String configurePasswordPolicyDlg_Hint_Symbol(String symbols);
+	String configurePasswordPolicyDlg_Hint_Upper();
 	String configurePasswordPolicyDlg_EnablePasswordComplexityChecking();
 	
 	// Strings used by the GWT based Folder Entry viewer.

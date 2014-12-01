@@ -71,14 +71,14 @@ public final class PasswordPolicyHelper {
 	public  static final boolean		PASSWORD_POLICY_ENABLED						=  SPropsUtil.getBoolean("password.policy.enabled",                 true                             );
 	public  static final boolean		PASSWORD_EXPIRATION_ENABLED					= (SPropsUtil.getBoolean("password.policy.expiration",              false) && PASSWORD_POLICY_ENABLED);
 	private static final int			PASSWORD_EXPIRATION_CHANGE_USER_MAX_HITS	=  SPropsUtil.getInt(    "password.policy.expiration.user.maxHits", 1000                             );
-	private static final int			PASSWORD_EXPIRATION_DAYS					=  SPropsUtil.getInt(    "password.policy.expiration.days",         90                               );
-	private static final int			PASSWORD_EXPIRATION_WARNING_DAYS			=  SPropsUtil.getInt(    "password.policy.expiration.warning.days", 5                                );
-	private static final int			PASSWORD_MINIMUM_LENGTH						=  SPropsUtil.getInt(    "password.policy.minimum.password.length", 8                                );
+	public  static final int			PASSWORD_EXPIRATION_DAYS					=  SPropsUtil.getInt(    "password.policy.expiration.days",         90                               );
+	public  static final int			PASSWORD_EXPIRATION_WARNING_DAYS			=  SPropsUtil.getInt(    "password.policy.expiration.warning.days", 5                                );
+	public  static final int			PASSWORD_MINIMUM_LENGTH						=  SPropsUtil.getInt(    "password.policy.minimum.password.length", 8                                );
 
 	// The following defines the characters recognized as being a
 	// symbol when evaluating a password for password policy
 	// violations.
-	private static final char[]			PASSWORD_SYMBOLS							= new char[]{'~', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '+', '{', '}', '[', ']', '|', '\\', '?', '/', ',', '.', '<', '>'};
+	public  static final char[]			PASSWORD_SYMBOLS							= new char[]{'~', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '+', '{', '}', '[', ']', '|', '\\', '?', '/', ',', '.', '<', '>'};
 	private static final StringBuffer	PASSWORD_SYMBOLS_BUFFER 					= new StringBuffer();
 	static {
 		// Stored in a StringBuffer to facilitate return password

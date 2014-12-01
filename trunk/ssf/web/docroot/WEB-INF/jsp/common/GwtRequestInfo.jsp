@@ -99,7 +99,6 @@
 		language:							'${ssUserLocaleLanguage}',
 		locale:								'${ssUserLocale}',
 		passwordPolicyEnabled:				'${passwordPolicyEnabled}',
-		passwordsCanExpire:					'${passwordsCanExpire}',
 		shortDatePattern:					'${shortDatePattern}',
 		shortTimePattern:					'${shortTimePattern}',
 		showFilrFeatures:					'${showFilrFeatures}',

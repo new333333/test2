@@ -6268,7 +6268,16 @@ td.datePickerMonth {
 
 /* End: Name Completion Settings dialog */
 
-/* Start:  Styles used in the "Edit Share" widget. */
+/* Start:  Styles used in the 'Configure Password Policy' dialog. */
+	.vibe-configPasswordPolicyDlg                 {}
+	.vibe-configPasswordPolicyDlg-checkPanel      {margin-bottom: 0.5em;}
+	.vibe-configPasswordPolicyDlg-hintLabel       {margin-left: 10px;}
+	.vibe-configPasswordPolicyDlg-hintLabel3of    {margin-left: 20px;}
+	.vibe-configPasswordPolicyDlg-hintLabelHeader {font-size: 16px !important;}
+	.vibe-configPasswordPolicyDlg-hintPanel       {color: #4D6D8B; font-size: 13px; margin-bottom: 0.5em;}
+/* End:  Styles used in the 'Configure Password Policy' dialog. */
+
+/* Start:  Styles used in the "Configure Mobile Applications" dialog. */
 	.configMobileAppsDlg_AndroidPanel {padding-top: 5px; padding-left: 20px;}  
 	.configMobileAppsDlg_IosPanel     {padding-top: 5px; padding-left: 20px;}  
 	.configMobileAppsDlg_List         {width: 250px;}

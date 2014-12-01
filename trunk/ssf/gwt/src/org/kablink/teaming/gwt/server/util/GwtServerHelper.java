@@ -222,6 +222,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageAdministratorsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageTeamsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyConfig;
+import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveKeyShieldConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
@@ -342,7 +343,6 @@ import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
@@ -7454,6 +7454,26 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return information about what password policy entails.
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 */
+	public static PasswordPolicyInfoRpcResponseData getPasswordPolicyInfo(AllModulesInjected bs, HttpServletRequest request) {
+		PasswordPolicyInfoRpcResponseData ppInfo = new PasswordPolicyInfoRpcResponseData();
+		
+		ppInfo.setExpirationEnabled(    PasswordPolicyHelper.PASSWORD_EXPIRATION_ENABLED     );
+		ppInfo.setExpirationDays(       PasswordPolicyHelper.PASSWORD_EXPIRATION_DAYS        );
+		ppInfo.setExpirationWarningDays(PasswordPolicyHelper.PASSWORD_EXPIRATION_WARNING_DAYS);
+		ppInfo.setMinimumLength(        PasswordPolicyHelper.PASSWORD_MINIMUM_LENGTH         );
+		ppInfo.setSymbols(              PasswordPolicyHelper.PASSWORD_SYMBOLS                );
+		
+		return ppInfo;
+	}
+	
+	/**
 	 * Returns a GwtPresenceInfo object for a User.
 	 * 
 	 * @param user
@@ -10688,6 +10708,7 @@ public class GwtServerHelper {
 		case GET_PARENT_BINDER_PERMALINK:
 		case GET_PASSWORD_EXPIRATION:
 		case GET_PASSWORD_POLICY_CONFIG:
+		case GET_PASSWORD_POLICY_INFO:
 		case GET_PERSONAL_PREFERENCES:
 		case GET_PRESENCE_INFO:
 		case GET_PRINCIPAL_FILE_SYNC_APP_CONFIG:

@@ -37,6 +37,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPasswordPolicyConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetPasswordPolicyInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePasswordPolicyConfigCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -55,6 +57,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 
 /**
@@ -66,12 +69,14 @@ import com.google.gwt.user.client.ui.Panel;
 public class ConfigurePasswordPolicyDlg extends DlgBox 
 	implements EditSuccessfulHandler
 {
-	private CheckBox			m_passwordPolicyEnabledCB;	//
-	private GwtTeamingMessages	m_messages;					//
+	private CheckBox							m_passwordPolicyEnabledCB;	//
+	private FlowPanel							m_hintPanel;				//
+	private GwtTeamingMessages					m_messages;					//
+	private PasswordPolicyInfoRpcResponseData	m_passwordPolicyInfo;		//
 	
 	/*
 	 */
-	private ConfigurePasswordPolicyDlg(boolean autoHide, boolean modal, int xPos, int yPos, int width, int height) {
+	private ConfigurePasswordPolicyDlg(boolean autoHide, boolean modal, int xPos, int yPos, int width, int height, ConfigurePasswordPolicyDlgClient	cppDlgClient) {
 		// Initialize the super class...
 		super(
 			autoHide,
@@ -90,7 +95,7 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 			GwtTeaming.getMessages().configurePasswordPolicyDlg_Header(),
 			this,
 			null,
-			null);
+			cppDlgClient);
 	}
 
 	/**
@@ -104,19 +109,94 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 	 */
 	@Override
 	public Panel createContent(Object props) {
+		// Create the dialog's main content panel...
 		FlowPanel mainPanel = new FlowPanel();
-		mainPanel.setStyleName("teamingDlgBoxContent");
+		mainPanel.setStyleName("vibe-configPasswordPolicyDlg teamingDlgBoxContent");
 
-		// Add the enable password complexity checking checkbox;
+		// ...add the panel we'll display a hint about password policy
+		// ...to...
+		m_hintPanel = new FlowPanel();
+		m_hintPanel.addStyleName("vibe-configPasswordPolicyDlg-hintPanel");
+		mainPanel.add(m_hintPanel);
+		
+		// ...add the enable password complexity checking checkbox...
 		FlowPanel panel = new FlowPanel();
-		panel.addStyleName("marginbottom2");
+		panel.addStyleName("vibe-configPasswordPolicyDlg-checkPanel");
 		m_passwordPolicyEnabledCB = new CheckBox(m_messages.configurePasswordPolicyDlg_EnablePasswordComplexityChecking());
 		panel.add(m_passwordPolicyEnabledCB);
 		mainPanel.add(panel);
-		
+
+		// ...request the password policy information to populate the
+		// ...rest of the content...
+		loadPart1Async((ConfigurePasswordPolicyDlgClient) props);
+
+		// ...and return the main content panel.
 		return mainPanel;
 	}
+
+	/*
+	 * Asynchronously completes the creation of the dialog's content.
+	 */
+	private void createHintContentAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				createHintContentNow();
+			}
+		});
+	}
 	
+	/*
+	 * Synchronously completes the creation of the dialog's content.
+	 */
+	private void createHintContentNow() {
+		Label l = new Label(m_messages.configurePasswordPolicyDlg_Hint());
+		l.addStyleName("vibe-configPasswordPolicyDlg-hintLabelHeader");
+		m_hintPanel.add(l);
+		
+		if (m_passwordPolicyInfo.isExpirationEnabled()) {
+			l = new Label(m_messages.configurePasswordPolicyDlg_Hint_Expiration(m_passwordPolicyInfo.getExpirationDays()));
+			l.addStyleName("vibe-configPasswordPolicyDlg-hintLabel");
+			m_hintPanel.add(l);
+		}
+		
+		l = new Label(m_messages.configurePasswordPolicyDlg_Hint_MinimumLength(m_passwordPolicyInfo.getMinimumLength()));
+		l.addStyleName("vibe-configPasswordPolicyDlg-hintLabel");
+		m_hintPanel.add(l);
+		
+		l = new Label(m_messages.configurePasswordPolicyDlg_Hint_NoName());
+		l.addStyleName("vibe-configPasswordPolicyDlg-hintLabel");
+		m_hintPanel.add(l);
+		
+		l = new Label(m_messages.configurePasswordPolicyDlg_Hint_AtLeast3());
+		l.addStyleName("vibe-configPasswordPolicyDlg-hintLabel");
+		m_hintPanel.add(l);
+		
+		l = new Label(m_messages.configurePasswordPolicyDlg_Hint_Lower());
+		l.addStyleName("vibe-configPasswordPolicyDlg-hintLabel3of");
+		m_hintPanel.add(l);
+		
+		l = new Label(m_messages.configurePasswordPolicyDlg_Hint_Upper());
+		l.addStyleName("vibe-configPasswordPolicyDlg-hintLabel3of");
+		m_hintPanel.add(l);
+		
+		l = new Label(m_messages.configurePasswordPolicyDlg_Hint_Number());
+		l.addStyleName("vibe-configPasswordPolicyDlg-hintLabel3of");
+		m_hintPanel.add(l);
+		
+		StringBuffer symbolsBuffer = new StringBuffer();
+		char[]       symbolsArray  = m_passwordPolicyInfo.getSymbols();
+		for (int i = 0; i < symbolsArray.length; i += 1) {
+			if (0 < i) {
+				symbolsBuffer.append(" ");
+			}
+			symbolsBuffer.append(symbolsArray[i]);
+		}
+		l = new Label(m_messages.configurePasswordPolicyDlg_Hint_Symbol(symbolsBuffer.toString()));
+		l.addStyleName("vibe-configPasswordPolicyDlg-hintLabel3of");
+		m_hintPanel.add(l);
+	}
+
 	/*
 	 */
 	private void danceDlg() {
@@ -143,7 +223,7 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 		
 		// Is the password policy being enabled and do we support
 		// password expirations?
-		if (config.isPasswordPolicyEnabled() && GwtClientHelper.isPasswordsCanExpire()) {
+		if (config.isPasswordPolicyEnabled() && m_passwordPolicyInfo.isExpirationEnabled()) {
 			// Yes!  Does the user want to force all local and external
 			// users to change their password the next time they login?
 			ConfirmDlg.createAsync(new ConfirmDlgClient() {
@@ -283,6 +363,45 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 	}
 
 	/*
+	 * Asynchronously loads the password policy information and
+	 * completes the construction of the dialog's content.
+	 */
+	private void loadPart1Async(final ConfigurePasswordPolicyDlgClient cppDlgClient) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now(cppDlgClient);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the password policy information and
+	 * completes the construction of the dialog's content.
+	 */
+	private void loadPart1Now(final ConfigurePasswordPolicyDlgClient cppDlgClient) {
+		// Execute an RPC command asking the server for the password
+		// policy information.
+		final ConfigurePasswordPolicyDlg cppDlg = this;
+		GwtClientHelper.executeCommand(new GetPasswordPolicyInfoCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetPasswordPolicyInfo());
+				cppDlgClient.onUnavailable();
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				m_passwordPolicyInfo = ((PasswordPolicyInfoRpcResponseData) response.getResponseData());
+				createHintContentAsync();
+				cppDlgClient.onSuccess(cppDlg);
+			}
+		});
+	}
+	
+	/*
 	 * Asynchronously saves the password policy configuration by
 	 * sending the specific RPC command to the server.
 	 */
@@ -366,14 +485,17 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 
 			@Override
 			public void onSuccess() {
-				ConfigurePasswordPolicyDlg cppDlg = new ConfigurePasswordPolicyDlg(
+				// Upon successful construction of the dialog, the
+				// client's onSuccess() handler will be called.  See
+				// the implementation of loadPart1Now() above.
+				new ConfigurePasswordPolicyDlg(
 					autoHide,
 					modal,
 					left,
 					top,
 					width,
-					height);
-				cppDlgClient.onSuccess(cppDlg);
+					height,
+					cppDlgClient);
 			}
 		});
 	}
