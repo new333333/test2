@@ -929,31 +929,23 @@ public class EntityIndexUtils {
     	addBinderAcls(doc, binder, false);
     }
     private static void addBinderAcls(Document doc, Binder binder, boolean includeTitleAcl) {
-    	//This set of binder ACLs is only valid for non-net folder binders. Net folders specify their own ACLs exteranlly
-    	//! - - - - -
-    	//! DRF (20141028):  Commented this check out as it broke Net
-    	//! Folders in Filr 1.1.1.
-    	//! - - - - -
-//!    	if (!binder.isAclExternallyControlled())
-    	{
-			//get real binder access
-	    	String[] acls = StringUtil.split(getFolderAclString(binder, includeTitleAcl), " ");
-	    	for(String acl:acls)
-	    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.FOLDER_ACL_FIELD, acl));
-			//get team members
-	    	acls = StringUtil.split(getFolderTeamAclString(binder), " ");
-	    	for(String acl:acls)
-	    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.TEAM_ACL_FIELD, acl));
-			//add binder owner
-			Long owner = binder.getOwnerId();
-			String ownerStr = Constants.EMPTY_ACL_FIELD;
-			if (owner != null) ownerStr = owner.toString();  //TODO fix this
-			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.BINDER_OWNER_ACL_FIELD, ownerStr));    	
-			//Add sharing acls
-			addSharingIds(doc, binder);
-			//Add the net folder root ACL
-			addRootAcl(doc, binder);
-    	}
+		//get real binder access
+    	String[] acls = StringUtil.split(getFolderAclString(binder, includeTitleAcl), " ");
+    	for(String acl:acls)
+    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.FOLDER_ACL_FIELD, acl));
+		//get team members
+    	acls = StringUtil.split(getFolderTeamAclString(binder), " ");
+    	for(String acl:acls)
+    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.TEAM_ACL_FIELD, acl));
+		//add binder owner
+		Long owner = binder.getOwnerId();
+		String ownerStr = Constants.EMPTY_ACL_FIELD;
+		if (owner != null) ownerStr = owner.toString();  //TODO fix this
+		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.BINDER_OWNER_ACL_FIELD, ownerStr));    	
+		//Add sharing acls
+		addSharingIds(doc, binder);
+		//Add the net folder root ACL
+		addRootAcl(doc, binder);
     }
     //Add acl fields for binder for storage in dom4j documents.
     //In this case replace owner with real owner in _folderAcl
@@ -1078,40 +1070,52 @@ public class EntityIndexUtils {
     	//IMPORTANT: CALLS MADE WITH "rss=true" WILL RENDER ALL NET FOLDER ENTRIES VISIBLE TO SEARCH!!!!!! 
     	//Only RSS should use this rss mode. Net folders are not supportted in RSS.
     	if (entry instanceof WorkflowSupport) {
+       		Entry e = (Entry)entry;
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
        		// Add the Entry_ACL field
-       		if (wEntry.hasAclSet()) {
+       		if (wEntry.hasAclSet() && !e.isAclExternallyControlled()) {
+       			//There is a workflow in play, and this is not a Net Folder file
+       			//Workflow access settings are currently not valid for net folder files.
        			String[] acls = StringUtil.split(getWfEntryAccess(wEntry), " ");
 	       		for(String acl:acls) {
 	       			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
 	       		}
-	       		//add binder access
-	    		addBinderAcls(doc, binder);
+	       		//add binder access if "folder default" is specified
+       			if (wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
+       				// In addition to entry-level ACL, this entry is also inheriting ACLs from its parent folder.
+	    			markEntryAsInheritingAcls(doc, binder, e, rss);
+       			}
+
        		} else {
 	       		//add entry access. 
 	       		if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
 	       			//Make sure to use the acl of the top entry since replies use the top entry acl (unless they specify their own acl)
 	       			entry = ((FolderEntry)entry).getTopEntry();
 	       			wEntry = (WorkflowSupport)entry;
+	       			e = (Entry)entry;
 	       		}
-	       		if (wEntry.hasAclSet()) {
+	       		//Re-check if there is a workflow in play (since we may have changed wEntry)
+	       		//As above, Note that workflow access settings are currently not valid for net folder files.
+	       		if (wEntry.hasAclSet() && !e.isAclExternallyControlled()) {
 	       			//This must have been a reply not running a workflow, so check the top entry workflow ACL
 	       			String[] acls = StringUtil.split(getWfEntryAccess(wEntry), " ");
 	       			for(String acl:acls) {
 	       				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
 	       			}
-	           		//add binder access
-	        		addBinderAcls(doc, binder);
-	       		}
-	       		else {
-	       			Entry e = (Entry)entry;
-	       			if(e.isAclExternallyControlled()) {
+	           		//add binder access if "folder default" is specified
+	       			if (wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
+	       				// In addition to entry-level ACL, this entry is also inheriting ACLs from its parent folder.
+		    			markEntryAsInheritingAcls(doc, binder, e, rss);
+	       			}
+
+		       	} else {
+	       			if (e.isAclExternallyControlled()) {
 	       				// Since the "all important" read right comes from external ACL in this case, 
 	       				// it doesn't matter whether the entry is inheriting its Vibe-managed ACLs from
 	       				// the parent or not. Simply put, Vibe-managed ACLs will play no role here 
 	       				// as far as ACL indexing is concerned, because read right will never originate
 	       				// from the Vibe-managed ACLs.
-	       				if(e.hasEntryExternalAcl()) {
+	       				if (e.hasEntryExternalAcl()) {
 	       					// This entry has its own external ACL. We need to index it. 
 			       			addEntryAcls(doc, binder, e);
 	       				}
@@ -1120,12 +1124,11 @@ public class EntityIndexUtils {
 	       					// parent folder through its external ACL, then she shall have same access to this entry. 
 			    			markEntryAsInheritingAcls(doc, binder, e, rss);
 	       				}
-	       			}
-	       			else {
+	       			} else {
 	       				if (e.hasEntryAcl()) {
 			    			//The entry has its own ACL specified
 			       			addEntryAcls(doc, binder, e);
-			       			if(e.isIncludeFolderAcl()) {
+			       			if (e.isIncludeFolderAcl()) {
 			       				// In addition to entry-level ACL, this entry is also inheriting ACLs from its parent folder.
 				    			markEntryAsInheritingAcls(doc, binder, e, rss);
 			       			}
