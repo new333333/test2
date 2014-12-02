@@ -3569,5 +3569,6 @@ public interface GwtTeamingMessages extends Messages
 	String editKeyShieldConfigDlg_ReadingConfig();
 	String editKeyShieldConfigDlg_SavingConfig();
 	String editKeyShieldConfigDlg_ServerUrlLabel();
+	String editKeyShieldConfigDlg_StackTraceLabel();
 	String editKeyShieldConfigDlg_TestConnectionLabel();
 }// end GwtTeamingMessages

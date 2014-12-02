@@ -6394,6 +6394,21 @@ td.datePickerMonth {
 	margin-top: 8px;
 }
 
+.editKeyShieldDlg_StackTracePanel
+{
+	height: 200px;
+	margin-top: 4px;
+	overflow: auto;
+}
+
+.editKeyShieldDlg_SeeStackTraceLabel
+{
+	color: #036f9f;
+	cursor: pointer;
+	margin-top: 6px;
+	text-decoration: none;
+}
+
 /* End: Edit KeyShield SSO Configuration dialog */
 
 /* End Of File */

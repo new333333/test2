@@ -60,6 +60,7 @@ public class AlertDlg extends DlgBox {
 	private GwtTeamingMessages	m_messages;			// Access to Vibe's messages.
 	private String				m_alertText;		// The text to alert the user with.
 	private UIObject			m_showRelativeTo;	// UIObject to show the dialog relative to.  null -> Center it.
+	private Panel				m_alertContent;		// Additional content to be shown besides m_alertText
 
 	/*
 	 * Class constructor.
@@ -142,6 +143,8 @@ public class AlertDlg extends DlgBox {
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgNow() {
+		int row = 0;
+		
 		// Clear anything already in the dialog's panel.
 		m_dlgPanel.clear();
 
@@ -151,11 +154,21 @@ public class AlertDlg extends DlgBox {
 		m_dlgPanel.add(grid);
 		FlexCellFormatter gridCellFmt = grid.getFlexCellFormatter();
 
-		// ...and add the alert text.  The following will handle
-		// ...embedded \n characters and other escapes.
-		grid.setHTML(0, 0, new SafeHtmlBuilder().appendEscapedLines(m_alertText).toSafeHtml());
-		gridCellFmt.addStyleName(0, 0, "vibe-alertDlg_NameLabel");
-		gridCellFmt.setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+		if ( m_alertText != null )
+		{
+			// ...and add the alert text.  The following will handle
+			// ...embedded \n characters and other escapes.
+			grid.setHTML(row, 0, new SafeHtmlBuilder().appendEscapedLines(m_alertText).toSafeHtml());
+			gridCellFmt.addStyleName(row, 0, "vibe-alertDlg_NameLabel");
+			gridCellFmt.setVerticalAlignment(row, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+			++row;
+		}
+		
+		if ( m_alertContent != null )
+		{
+			grid.setWidget( row, 0, m_alertContent );
+			++row;
+		}
 
 		// Finally, show the dialog.
 		if (null == m_showRelativeTo)
@@ -166,11 +179,11 @@ public class AlertDlg extends DlgBox {
 	/*
 	 * Asynchronously runs the given instance of the alert dialog.
 	 */
-	private static void runDlgAsync(final AlertDlg aDlg, final String alertText, final UIObject showRelativeTo) {
+	private static void runDlgAsync(final AlertDlg aDlg, final String alertText, final UIObject showRelativeTo, final Panel alertContent) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				aDlg.runDlgNow(alertText, showRelativeTo);
+				aDlg.runDlgNow(alertText, showRelativeTo, alertContent );
 			}
 		});
 	}
@@ -178,10 +191,11 @@ public class AlertDlg extends DlgBox {
 	/*
 	 * Synchronously runs the given instance of the alert dialog.
 	 */
-	private void runDlgNow(String alertText, final UIObject showRelativeTo) {
+	private void runDlgNow(String alertText, final UIObject showRelativeTo, Panel alertContent ) {
 		// Store the parameters...
 		m_alertText      = alertText;
 		m_showRelativeTo = showRelativeTo;
+		m_alertContent = alertContent;
 
 		// ...and start populating the dialog.
 		populateDlgAsync();
@@ -215,7 +229,8 @@ public class AlertDlg extends DlgBox {
 			// initAndShow() parameters,
 			final AlertDlg	aDlg,
 			final String	alertText,
-			final UIObject	showRelativeTo) {
+			final UIObject	showRelativeTo,
+			final Panel		alertContent ) {
 		GWT.runAsync(AlertDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -238,7 +253,7 @@ public class AlertDlg extends DlgBox {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(aDlg, alertText, showRelativeTo);
+					runDlgAsync(aDlg, alertText, showRelativeTo, alertContent );
 				}
 			}
 		});
@@ -253,7 +268,7 @@ public class AlertDlg extends DlgBox {
 	 * @param modal
 	 */
 	public static void createAsync(AlertDlgClient aDlgClient, boolean autoHide, boolean modal) {
-		doAsyncOperation(aDlgClient, autoHide, modal, null, null, null);
+		doAsyncOperation(aDlgClient, autoHide, modal, null, null, null, null);
 	}
 	
 	public static void createAsync(AlertDlgClient aDlgClient) {
@@ -268,12 +283,28 @@ public class AlertDlg extends DlgBox {
 	 * @param alertText
 	 * @param showRelativeTo
 	 */
-	public static void initAndShow(AlertDlg aDlg, String alertText, UIObject showRelativeTo) {
-		doAsyncOperation(null, false, false, aDlg, alertText, showRelativeTo);
+	public static void initAndShow(AlertDlg aDlg, String alertText, UIObject showRelativeTo, Panel alertContent ) {
+		doAsyncOperation(null, false, false, aDlg, alertText, showRelativeTo, alertContent );
+	}
+	
+	/**
+	 * 
+	 */
+	public static void initAndShow( AlertDlg aDlg, String alertText, UIObject showRelativeTo )
+	{
+		initAndShow( aDlg, alertText, showRelativeTo, null );
 	}
 	
 	public static void initAndShow(AlertDlg aDlg, String alertText) {
 		// Always use the initial form of the method.
-		initAndShow(aDlg, alertText, null);
+		initAndShow(aDlg, alertText, null, null );
+	}
+	
+	/**
+	 * 
+	 */
+	public static void initAndShow( AlertDlg aDlg, Panel alertContent )
+	{
+		initAndShow( aDlg, null, null, alertContent );
 	}
 }
