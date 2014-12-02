@@ -158,6 +158,20 @@
 							entryIframeFrame.style.height = parseInt(iframeMinimum) + "px";
 						}
 					}
+
+					// Do we have an <IFRAME> within an <IFRAME> and
+					// the inner <IFRAME> has content (i.e., it's not
+					// null.html)?
+					var popupFrame = window.frames['ss_showentryframe'].document.getElementById('ss_showpopupframe');
+					if ((null != popupFrame) && (0 >= popupFrame.src.indexOf('null.html'))) {
+						// Yes!  Scolling will be managed by the inner
+						// <IFRAME>.  Turn it off on the host
+						// <IFRAME>'s <BODY> tag.
+						var bodies = window.frames['ss_showentryframe'].document.getElementsByTagName('body');
+						for (var i = 0; i < bodies.length; i += 1) {
+							bodies[i].style.overflow = "hidden";
+						}
+					}
 				} catch(e) {
 					//alert('Error during frame resizing: ' + e)
 				}
