@@ -305,7 +305,7 @@ public class ConfigurePasswordPolicyDlg extends DlgBox
 	public HelpData getHelpData() {
 		HelpData helpData = new HelpData();
 		helpData.setGuideName(HelpData.ADMIN_GUIDE);
-		helpData.setPageId("passwordPolicy");
+		helpData.setPageId("passwordpolicy");
 		
 		return helpData;
 	}
