@@ -47,6 +47,8 @@ public class TestKeyShieldConnectionResponse
 	implements IsSerializable, VibeRpcResponseData
 {
 	GwtKeyShieldConnectionTestStatusCode m_statusCode;
+	String m_statusDesc = null;
+	String m_stackTrace = null;
 	
 	/**
 	 * This class represents the ConnectionTestStatusCode
@@ -74,6 +76,14 @@ public class TestKeyShieldConnectionResponse
 	}
 	
 	/**
+	 * If the test connection failed, we may have a stack trace showing the problem.
+	 */
+	public String getStackTrace()
+	{
+		return m_stackTrace;
+	}
+	
+	/**
 	 * 
 	 */
 	public GwtKeyShieldConnectionTestStatusCode getStatusCode()
@@ -84,8 +94,32 @@ public class TestKeyShieldConnectionResponse
 	/**
 	 * 
 	 */
+	public String getStatusDescription()
+	{
+		return m_statusDesc;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setStackTrace( String stackTrace )
+	{
+		m_stackTrace = stackTrace;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setStatusCode( GwtKeyShieldConnectionTestStatusCode statusCode )
 	{
 		m_statusCode = statusCode;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setStatusDescription( String desc )
+	{
+		m_statusDesc = desc;
 	}
 }

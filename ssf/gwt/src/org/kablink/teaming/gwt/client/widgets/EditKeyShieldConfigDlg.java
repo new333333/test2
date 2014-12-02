@@ -65,6 +65,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -98,6 +100,8 @@ public class EditKeyShieldConfigDlg extends DlgBox
 	private TextBox m_timeoutTextBox;
 	private TextBox m_apiAuthKeyTextBox;
 	private TextBox m_authConnectorNamesTextBox;
+	private FlowPanel m_alertPanel;
+	private FlowPanel m_stackTracePanel;
 
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
@@ -829,10 +833,11 @@ public class EditKeyShieldConfigDlg extends DlgBox
 			public void onSuccess( VibeRpcResponse result )
 			{
 				TestKeyShieldConnectionResponse response;
-				String msg;
+				String msg = null;
 				
 				hideStatusMsg();
 				m_testConnectionInProgress = false;
+				m_alertPanel = null;
 				response = (TestKeyShieldConnectionResponse) result.getResponseData();
 				switch ( response.getStatusCode() )
 				{
@@ -841,7 +846,69 @@ public class EditKeyShieldConfigDlg extends DlgBox
 					break;
 				
 				case FAILED:
-					msg = GwtTeaming.getMessages().testConnection_FailedError();
+					// Create a panel that will display the cause of the failure and a link
+					// the user can click on to see the stack trace.
+					{
+						Label label;
+						String labelText;
+						String statusDesc;
+						String stackTrace;
+						
+						m_alertPanel = new FlowPanel();
+						
+						labelText = GwtTeaming.getMessages().testConnection_FailedError();
+						
+						statusDesc = response.getStatusDescription();
+						if ( statusDesc != null && statusDesc.length() > 0 )
+						{
+							labelText += " - " + statusDesc;
+						}
+
+						label = new Label( labelText );
+						m_alertPanel.add( label );
+						
+						// Do we have a stack trace?
+						stackTrace = response.getStackTrace();
+						if ( stackTrace != null && stackTrace.length() > 0 )
+						{
+							SafeHtmlBuilder shBuilder;
+							SafeHtml safeHtml;
+							
+							// Yes
+							// Add a link the user can click on to see the stack trace.
+							label = new Label( GwtTeaming.getMessages().editKeyShieldConfigDlg_StackTraceLabel() );
+							label.addStyleName( "editKeyShieldDlg_SeeStackTraceLabel" );
+							label.addClickHandler( new ClickHandler()
+							{
+								@Override
+								public void onClick( ClickEvent event )
+								{
+									Scheduler.ScheduledCommand cmd;
+									
+									cmd = new ScheduledCommand()
+									{
+										@Override
+										public void execute()
+										{
+											m_stackTracePanel.setVisible( !m_stackTracePanel.isVisible() );
+										}
+									};
+									Scheduler.get().scheduleDeferred( cmd );
+								}
+							});
+							m_alertPanel.add( label );
+							
+							m_stackTracePanel = new FlowPanel();
+							m_stackTracePanel.setVisible( false );
+							m_stackTracePanel.addStyleName( "editKeyShieldDlg_StackTracePanel" );
+							shBuilder = new SafeHtmlBuilder().appendEscapedLines( stackTrace );
+							safeHtml = shBuilder.toSafeHtml();
+							label = new Label( safeHtml.asString() );
+							m_stackTracePanel.add( label );
+							
+							m_alertPanel.add( m_stackTracePanel );
+						}
+					}
 					break;
 				
 				case UNKNOWN:
@@ -850,7 +917,10 @@ public class EditKeyShieldConfigDlg extends DlgBox
 					break;
 				}
 				
-				Window.alert( msg );
+				if ( msg != null )
+					GwtClientHelper.alertViaDlg( msg );
+				else if ( m_alertPanel != null )
+					GwtClientHelper.alertViaDlg( m_alertPanel );
 			}						
 		};
 		

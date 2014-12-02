@@ -89,6 +89,7 @@ import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
@@ -211,6 +212,51 @@ public class GwtClientHelper {
 				@Override
 				public void execute() {
 					AlertDlg.initAndShow(m_alertDlg, msg);
+				}
+			});
+		}
+	}
+	
+	/**
+	 * Displays an alert using a GWT alert dialog.
+	 * 
+	 * @param
+	 */
+	public static void alertViaDlg(
+		final Panel contentPanel )
+	{
+		// Have we created an instance of an AlertDlg yet?
+		if ( null == m_alertDlg )
+		{
+			// No!  Create one now...
+			AlertDlg.createAsync( new AlertDlgClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(AlertDlg aDlg)
+				{
+					// ...save it and use it to display the message.
+					m_alertDlg = aDlg;
+					alertViaDlg( contentPanel );
+				}
+			});
+		}
+		else
+		{
+			// Yes, we've created an instance of an AlertDlg!  Use it
+			// to display the message.
+			deferCommand(new ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					AlertDlg.initAndShow( m_alertDlg, contentPanel );
 				}
 			});
 		}

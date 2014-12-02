@@ -33,11 +33,13 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -92,13 +94,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -12930,6 +12930,32 @@ public class GwtServerHelper {
 		catch ( Exception ex )
 		{
 			response.setStatusCode( GwtKeyShieldConnectionTestStatusCode.FAILED );
+			
+			// Capture a description of the exception
+			{
+				Throwable cause;
+				String desc = null;
+
+				cause = ex.getCause();
+				if ( cause != null )
+					desc = cause.getMessage();
+				else
+					desc = ex.getMessage();
+				
+				response.setStatusDescription( desc );
+			}
+			
+			// Capture the stack trace
+			{
+				ByteArrayOutputStream outputStream;
+				PrintStream printStream;
+				
+				outputStream = new ByteArrayOutputStream();
+				printStream = new PrintStream( outputStream );
+				ex.printStackTrace( printStream );
+				
+				response.setStackTrace( outputStream.toString() );
+			}
 		}
 
 		return response;
