@@ -1547,6 +1547,9 @@ public class GwtUIHelper {
 		model.put("isExternalUser", (!(currentUser.getIdentityInfo().isInternal())));
 		model.put("isLdapUser",        currentUser.getIdentityInfo().isFromLdap()  );
 
+		// Add a flag that indicates whether the a user is logged in.
+		model.put( "isUserLoggedIn", !WebHelper.isGuestLoggedIn( request ) );
+		
 		// Put out the localized short date/time formats to use.
 		Locale locale = currentUser.getLocale();
 		if (null == locale) {

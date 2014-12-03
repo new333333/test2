@@ -222,12 +222,12 @@ public class UtilityElementWidget extends VibeWidget
 			else if ( type == UtilityElement.LINK_TO_TRACK_FOLDER_OR_WORKSPACE )
 			{
 				title = GwtTeaming.getMessages().utilityElementFollowWorkspace();
-				isValid = GwtTeaming.getMainPage().isUserLoggedIn();
+				isValid = GwtTeaming.m_requestInfo.isUserLoggedIn();
 			}
 			else if ( type == UtilityElement.LINK_TO_SHARE_FOLDER_OR_WORKSPACE )
 			{
 				title = GwtTeaming.getMessages().utilityElementShareWorkspace();
-				isValid = GwtTeaming.getMainPage().isUserLoggedIn();
+				isValid = GwtTeaming.m_requestInfo.isUserLoggedIn();
 			}
 			else if ( type == UtilityElement.LINK_TO_ADMIN_PAGE )
 			{
@@ -243,7 +243,7 @@ public class UtilityElementWidget extends VibeWidget
 			else if ( type == UtilityElement.SIGNIN_FORM )
 			{
 				title = GwtTeaming.getMessages().utilityElementLogIn();
-				isValid = !GwtTeaming.getMainPage().isUserLoggedIn();
+				isValid = !GwtTeaming.m_requestInfo.isUserLoggedIn();
 			}
 			else
 			{
