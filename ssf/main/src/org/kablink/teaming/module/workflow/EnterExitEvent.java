@@ -615,7 +615,9 @@ public class EnterExitEvent extends AbstractActionHandler {
 			    			if (!updates.isEmpty()) {
 			    				EntryProcessor processor = (EntryProcessor)((ProcessorManager)SpringContextUtil.getBean("modelProcessorManager")).getProcessor(parent, parent.getProcessorKey(EntryProcessor.PROCESSOR_KEY));
 			    				try {
-			    					processor.modifyEntry(parent, entry, new MapInputData(updates), null, null, null, null);
+			    					Map options = new HashMap();
+			    					options.put(ObjectKeys.INPUT_OPTION_NO_DEFAULTS, Boolean.TRUE);
+			    					processor.modifyEntry(parent, entry, new MapInputData(updates), null, null, null, options);
 			    				} catch(Exception e) {
 			    					//The modify failed, log it on the console
 			    					logger.error("Error setting entry data from a workflow: (" +

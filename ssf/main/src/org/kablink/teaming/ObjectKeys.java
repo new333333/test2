@@ -678,6 +678,7 @@ public interface ObjectKeys {
     public static final String INPUT_OPTION_DELAY_WORKFLOW="org.kablink.teaming.options.delay_workflow_processing";
     public static final String INPUT_OPTION_DO_WORKFLOW="org.kablink.teaming.options.do_workflow_processing";
     public static final String INPUT_OPTION_NO_WORKFLOW="org.kablink.teaming.options.no_workflow_processing";
+    public static final String INPUT_OPTION_NO_DEFAULTS="org.kablink.teaming.options.no_defaults";
     public static final String INPUT_OPTION_CREATION_NAME="org.kablink.teaming.options.entity.creation.name";
     public static final String INPUT_OPTION_CREATION_ID="org.kablink.teaming.options.entity.creation.id";
     public static final String INPUT_OPTION_CREATION_DATE="org.kablink.teaming.options.entity.creation.timestamp";
