@@ -2812,7 +2812,7 @@ public class ExportHelper {
 				binderModule.setBinderMaxFileSize(binder.getId(), Long.valueOf(versionsMaxFileSize));
 			}
 			String fileEncryptionEnabled = versionControls.attributeValue("fileEncryptionEnabled", null);
-			if (fileEncryptionEnabled != null) {
+			if (fileEncryptionEnabled != null && Boolean.valueOf(fileEncryptionEnabled)) {
 				binderModule.setBinderFileEncryptionEnabled(binder.getId(), Boolean.valueOf(fileEncryptionEnabled), filesErrors);
 			}
 		}
