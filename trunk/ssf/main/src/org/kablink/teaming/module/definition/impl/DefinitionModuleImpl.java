@@ -2132,10 +2132,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
     @Override
 	public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems) {
-    	return getEntryData(definitionTree, inputData, fileItems, false);
+    	return getEntryData(definitionTree, inputData, fileItems, false, null);
     }
     @Override
-	public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems, boolean fieldsOnly) {
+	public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems, boolean fieldsOnly, Map options) {
 		//access check not needed = have tree already
         User user = RequestContextHolder.getRequestContext().getUser();
 
@@ -2220,32 +2220,34 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					processInputDataItem(itemName, nameValue, inputData, entryData,
 				    		fileItems, fileData, entryDataErrors, null, titleGenerated, titleSource);
 				}
-				//See if there are any default settings for select boxes that were missed
-				for (Element nextItem: itItems) {
-					itemName = (String) nextItem.attributeValue("name", "");
-					if (itemName.equals("selectbox")) {
-						//Get the form element name (property name)
-						nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
-						if (!Validator.isNull(nameValue) && (!entryData.containsKey(nameValue) || entryData.get(nameValue) == null)) {
-							//There is no value for this item. See if there was a form element 
-							if (!inputData.exists("__selectboxSpecified_" + nameValue)) {
-								//There wasn't a form item, so go see if there is a default for this field
-								List<Element> defItems = nextItem.selectNodes(".//item[@name='selectboxSelection']/properties/property[@name='default' and @value='true']");
-								if (!defItems.isEmpty()) {
-									//There are some defaults. Go add them to the entryData list
-									List<String> valuesList = new ArrayList();
-									for (Element defItem : defItems) {
-										valuesList.add(DefinitionUtils.getPropertyValue(defItem.getParent().getParent(), "name"));
-									}
-									if (valuesList.size() == 1) {
-										String value = valuesList.get(0);
-										entryData.put(nameValue, value);
-									} else if (valuesList.size() > 1) {
-										String[] values = new String[valuesList.size()];
-										for (int i = 0; i < valuesList.size(); i++) {
-											values[i] = valuesList.get(i);
+				if (options == null || !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_DEFAULTS))) {
+					//See if there are any default settings for select boxes that were missed
+					for (Element nextItem: itItems) {
+						itemName = (String) nextItem.attributeValue("name", "");
+						if (itemName.equals("selectbox")) {
+							//Get the form element name (property name)
+							nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
+							if (!Validator.isNull(nameValue) && (!entryData.containsKey(nameValue) || entryData.get(nameValue) == null)) {
+								//There is no value for this item. See if there was a form element 
+								if (!inputData.exists("__selectboxSpecified_" + nameValue)) {
+									//There wasn't a form item, so go see if there is a default for this field
+									List<Element> defItems = nextItem.selectNodes(".//item[@name='selectboxSelection']/properties/property[@name='default' and @value='true']");
+									if (!defItems.isEmpty()) {
+										//There are some defaults. Go add them to the entryData list
+										List<String> valuesList = new ArrayList();
+										for (Element defItem : defItems) {
+											valuesList.add(DefinitionUtils.getPropertyValue(defItem.getParent().getParent(), "name"));
 										}
-										entryData.put(nameValue, values);
+										if (valuesList.size() == 1) {
+											String value = valuesList.get(0);
+											entryData.put(nameValue, value);
+										} else if (valuesList.size() > 1) {
+											String[] values = new String[valuesList.size()];
+											for (int i = 0; i < valuesList.size(); i++) {
+												values[i] = valuesList.get(i);
+											}
+											entryData.put(nameValue, values);
+										}
 									}
 								}
 							}

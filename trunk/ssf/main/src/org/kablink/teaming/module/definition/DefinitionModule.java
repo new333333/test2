@@ -127,7 +127,7 @@ public interface DefinitionModule {
 	 * @return
 	 */
 	public Map getEntryData(Document def, InputDataAccessor inputData, Map fileItems);
-	public Map getEntryData(Document def, InputDataAccessor inputData, Map fileItems, boolean fieldsOnly);
+	public Map getEntryData(Document def, InputDataAccessor inputData, Map fileItems, boolean fieldsOnly, Map options);
 	public Map getEntryDefinitionElements(String id);
 	public List<Long> getBindersUsingEntryDef(String entryDefId, String sourceName);
 	public Map getWorkflowDefinitionStates(String id);
