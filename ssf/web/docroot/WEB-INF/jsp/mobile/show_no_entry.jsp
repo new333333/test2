@@ -47,18 +47,16 @@
   <div class="folders">
     <div class="folder-content">
 
-	  <div>
-  		<span style="padding: 10px; color: #fff;"><ssf:nlt tag="nav.noEntries"/></span>
-	  </div>
+	  <div style="padding: 10px; color: #fff;"><ssf:nlt tag="nav.noEntries"/></div>
 
 	  <c:if test="${!empty ssEntryId}">
-		<div style="padding-top:20px;">
+		<div style="padding:20px;">
 		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 					folderId="${ssBinder.id}" 
 					entryId="${ssEntryId}"
 					action="__ajax_mobile" 
 					operation="mobile_show_entry" 
-					actionUrl="false" />"><ssf:nlt tag="nav.back"/></a>
+					actionUrl="false" />"><img src="<html:rootPath/>images/mobile/nl_left_20.png" border="0" align="absmiddle"/></a>
 		</div>
 	  </c:if>
 	</div>

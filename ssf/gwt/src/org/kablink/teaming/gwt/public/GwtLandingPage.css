@@ -424,9 +424,15 @@
 {
 }
 
-.listWidgetTitleLabel, .listWidgetTitleLabel_dark
+.listWidgetTitleLabel
 {
 	color: #135c8f;
+	font-size: 14px;
+	line-height: 15px;
+}
+.listWidgetTitleLabel_dark
+{
+	color: #f6f6f6;
 	font-size: 14px;
 	line-height: 15px;
 }

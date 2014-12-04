@@ -46,10 +46,10 @@
       <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" 
         <c:if test="<%= !isAutoComplete %>"> autocomplete="off" </c:if>
       >
-        <table border="0" cellspacing="3" style="margin-left: 20px;">
+        <table border="0" cellspacing="4">
 		<tr>
 			<td>
-			  <img height="180" width="130" src="<html:rootPath/>images/mobile/login_MobileTeaming.png"/>
+			  <img height="180" width="200" src="<html:rootPath/>images/mobile/login_MobileTeaming.png"/>
 			</td>
 		</tr>
         <tr>
@@ -59,7 +59,7 @@
 		</tr>	
         <tr>
 		    <td>
-               <input type="text" style="width:180px; font-size: 14px;" name="j_username" id="j_username"/>
+               <input type="text" style="width:200px; font-size: 14px;" name="j_username" id="j_username"/>
             </td>
         </tr>
         <tr>
@@ -69,7 +69,7 @@
 		</td>
 		<tr>	
             <td>
-              <input type="password" style="width:180px; font-size: 14px;" name="j_password" id="j_password"/>
+              <input type="password" style="width:200px; font-size: 14px;" name="j_password" id="j_password"/>
             </td>
         </tr>
 
@@ -98,8 +98,8 @@
 </c:if>
 
           <tr>
-            <td align="right" style="padding-top: 10px;">
-              <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="login"/>"/>
+            <td style="padding-top: 10px;">
+              <input style="padding: 5px;" type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="login"/>"/>
             </td>
           </tr>
         </table>

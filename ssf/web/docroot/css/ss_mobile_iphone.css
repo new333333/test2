@@ -25,7 +25,7 @@ select {
 input[type=button], input[type=submit], input[type=reset] { 
 	font-size: 1em;
 	}
-input[type=text] {
+input[type=text], input[type=password] {
 	padding: 5px;
 	border-radius: 3px;
 	border: 1px solid #b8b8b8;
@@ -60,7 +60,7 @@ span.pad-left20 select {
 	}
 
 #contentDetail { 
-	padding: 0 20px; 
+	padding: 0 20px;
 	}
 
 .header { 
@@ -68,7 +68,7 @@ span.pad-left20 select {
 	font-size: 16px;
 	text-align: center;
 	padding-top: 35px;
-	background-color: #ededed;
+	background-color: #eceeec;
 	font-weight: bold; 
 	width: 100%;
 	}
@@ -83,6 +83,10 @@ span.pad-left20 select {
 	border: 1px solid transparent;
 	white-space:nowrap;
 }
+.search img {
+	width: 25px;
+	height: 25px;
+	}
 
 .homelink { 
 	position: relative;
@@ -93,6 +97,10 @@ span.pad-left20 select {
 	padding: 2px 6px 0 10px;
 	border: 1px solid transparent;
 	white-space:nowrap;
+	}
+.homelink img {
+	width: 25px;
+	height: 25px;
 	}
 
 .backlink { 
@@ -108,15 +116,16 @@ span.pad-left20 select {
 	font-size: .6em;
 	}	
 .action-dialog { 
+	position: absolute;
 	display: none;
-	top: 38px; 
+	top: 63px; 
 	left: 5px;
 	right: 5px;
 	padding: 10px;
-	border-bottom: 1px solid #b8b8b8;
+	border: 1px solid #b8b8b8;
 	background: #fafafa;
 	}
-
+#calendar-show-filter-menu {top:30px }
 .search	a, .homelink a { 
 	color: #fff;
 	}
@@ -125,7 +134,7 @@ span.pad-left20 select {
 	top: 0px; 
 	left: 0px; 
 	padding: 10px;
-	background-color: #ededed;
+	background-color: #eceeec;
 	border-bottom: 1px solid #b8b8b8;
 	white-space: nowrap;
 	vertical-align: middle;
@@ -144,16 +153,25 @@ span.pad-left20 select {
 	margin-bottom: .5em;
 	}
 .dialog-content { 
-	margin-bottom: .3em;
+	margin-top: 10px;
+	margin-bottom: 10px;
 	}
 
 .menu-spacer { 
-	border-top: 2px solid #d2d5d1;
+	border-top: 1px solid #d2d5d1;
 	margin-top: 5px;
+	margin-bottom: 5px;
 	height: 5px;
 	line-height:.5em;
 	}
-.menu-item {padding-left: .5em; margin-bottom: 10px}
+.close-menu {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	}
+.close-menu input {width: 25px; height: 25px;}	
+
+.menu-item {padding-left: .5em; padding-right: 30px; margin-bottom: 15px;}
 .menu-item a { font-size: 1.2em; padding-bottom: 4px; font-weight: normal;}
 .menu-curlevel {font-weight: bold;}	
 
@@ -253,7 +271,7 @@ span.pad-left20 select {
 	position: relative;
 	}
 .folder-content {
-	background-color: #c4c4c4;
+	background-color: #ccc;
 	}
 	
 .folder-head {
@@ -261,11 +279,11 @@ span.pad-left20 select {
 	color: #fafafa;
 	font-size: .85em;
 	text-align: center;
-	font-weight: bold;
+	font-weight: normal;
 	vertical-align: middle;
 	padding: 2px 10px;
 	letter-spacing: 1px;
-	background:#b8b8b8 url(images/mobile/trans10_black_blend.png) repeat-x top;
+	background:#ccc;
 	}
 
 .folder-item {
@@ -316,9 +334,10 @@ span.pad-left20 select {
 
 .entry-title div.doc-number {
 	color: #666;
-	padding-right: 5px;
+	padding-right: 0px;
 	font-size: 14px;
 	font-weight: normal;
+	display: inline;
 	}
 .entry-content {
 	font-size: 16px;
@@ -368,14 +387,17 @@ span.pad-left20 select {
 	}
 .entry-comment-label {
 	position: absolute;
-	right: 8px;
+	right: 5px;
 	top: 2px;
 	color: #000;
 	font-size: 14px;
 	font-weight: bold;
 	text-align: center;
 	padding: 5px 8px;
-	background:url(images/mobile/comments_22.png) no-repeat center;
+	background:url(images/mobile/comments_25.png) no-repeat center;
+	width: 25px;
+	height: 25px;
+	line-height: 22px;
 	}
 .entry a.mk-comment, a.remove-action {
 	font-size:12px;
@@ -569,7 +591,7 @@ h6 {
 	color: #fff;
 	font-size: .6em;
 	font-weight: bold;
-	background-color: #505354;
+	background-color: #949494;
 	cursor: default;
 	text-transform: uppercase;
 	padding: 3px;
@@ -577,7 +599,6 @@ h6 {
 	}
 .ss_mobile_calendar_header {
 	font-size: 1.3em;
-	font-weight: bold;
 	color: #fff;
 	padding-right: 20px;
 	padding-left: 20px;
@@ -663,8 +684,8 @@ div.ss_mobile_calendar_entries_family_header span {
 div.ss_mobile_calendar_no_entries_content {
 	padding: 20px;
 	padding-bottom: 100px;
-	color: #cccccc;
-	background-color: #949494;
+	color: #fff;
+	background-color: #cccccc;
 }
 div.ss_mobile_calendar_no_entries_content span {
 	font-size: .9em;

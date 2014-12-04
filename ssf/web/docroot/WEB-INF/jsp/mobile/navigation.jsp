@@ -36,8 +36,12 @@
 <%@ page import="org.kablink.teaming.domain.Binder" %>
 
   <div id="hierarchy-dialog" class="action-dialog" style="display:none; z-index:2;">
+	<div class="close-menu">
+	  <input id="hierarchy-cancel" type="image" src="<html:rootPath/>images/icons/close_menu.png" 
+	    name="hierarchyhCancel" onClick="ss_hideMenu('hierarchy-dialog');return false;" />
+	</div>
     <div class="dialog-head">
-      <span><ssf:nlt tag="mobile.navigation"/></span>
+      <span><ssf:nlt tag="title.goto"/></span>
     </div>
     <div class="dialog-content">
     <c:set var="navPadding" value="0"/>
@@ -111,9 +115,4 @@
 	  </div>
 	</c:if>
   </div>
-
-	<div>
-	  <input id="hierarchy-cancel" type="button" value="<ssf:nlt tag="button.close"/>" 
-	    name="hierarchyhCancel" onClick="ss_hideMenu('hierarchy-dialog');return false;" />
-	</div>
   </div>

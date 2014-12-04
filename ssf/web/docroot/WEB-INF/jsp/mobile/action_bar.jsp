@@ -38,38 +38,45 @@
  <table cellspacing="0" cellpadding="0" width="100%">
  <tr>
  <td>
-  <a class="hierarchy-a actionimg" href="javascript: ;" onClick="ss_toggleDivVisibility('hierarchy-dialog');return false;">
-    <img src="<html:rootPath/>images/mobile/nl_browse_hierarchy_20.png" border="0" align="absmiddle"/>
-  </a>
   
 <c:if test="${!ss_hideMiniBlog}">
   <a href="javascript: ;" 
     onClick="ss_toggleDivVisibility('micro-blog-edit');ss_selectElement('micro-blog-text');return false;"><ssf:nlt tag="miniblog"/></a>
 </c:if>
+
+  <c:if test="${ssDefinitionFamily == 'calendar'}">
+    <%@ include file="/WEB-INF/jsp/mobile/calendar_today_button.jsp" %>
+  </c:if>  
   
   <c:if test="${!empty ss_new_actions}">
-    <c:set var="actionTitle"><ssf:nlt tag="mobile.newEntry"/></c:set>
-    <c:if test="${!empty ssAddReplyTitle}">
-      <c:set var="actionTitle" value="${ssAddReplyTitle}"/>
-    </c:if>
-    
     <c:if test="${fn:length(ss_new_actions) == 1}">
-      <c:forEach var="action" items="${ss_new_actions}">
-        <a class="actions-a" href="${action.url}" 
-          title="${action.title}">${actionTitle}</a>
-      </c:forEach>
+		<c:choose>
+			<c:when test="${!empty ssAddReplyTitle}">
+				<c:forEach var="action" items="${ss_new_actions}">
+				<a class="actions-a" href="${action.url}" 
+				  title="${action.title}"><img src="<html:rootPath/>css/images/mobile/reply_25.png" border="0" align="absmiddle"/></a>
+				</c:forEach>
+			</c:when>
+			<c:otherwise>
+				<c:forEach var="action" items="${ss_new_actions}">
+				<a class="actions-a" href="${action.url}" 
+				  title="${action.title}"><img src="<html:rootPath/>css/images/mobile/new_25.png" border="0" align="absmiddle"/></a>
+				</c:forEach>
+			</c:otherwise>
+		</c:choose>	
     </c:if>
     <c:if test="${fn:length(ss_new_actions) > 1}">
       <a class="actions-a" href="javascript: ;" 
-        onClick="ss_toggleDivVisibility('new-actions-menu');return false;">${actionTitle}</a>
+        onClick="ss_toggleDivVisibility('new-actions-menu');return false;"><img src="<html:rootPath/>css/images/mobile/new_25.png" border="0" align="absmiddle"/></a>
     </c:if>
   </c:if>  
 
   <c:if test="${!empty ss_modify_actions}">
      <c:if test="${fn:length(ss_modify_actions) == 1}">
-      <c:forEach var="action" items="${ss_modify_actions}">
-        <a class="actions-a" href="${action.url}" 
-          title="${action.title}"><ssf:nlt tag="Edit"/></a>
+      <c:forEach var="action" items="${ss_modify_actions}">	  
+		  <a class="action-a actionimg" href="${action.url}" title="${action.title}">
+			<img src="<html:rootPath/>css/images/mobile/edit_25.png" border="0" align="absmiddle"/>
+		  </a>
       </c:forEach>
     </c:if>
   </c:if>  
@@ -77,19 +84,20 @@
   <c:if test="${!empty ss_delete_actions}">
      <c:if test="${fn:length(ss_delete_actions) == 1}">
       <c:forEach var="action" items="${ss_delete_actions}">
-        <a class="actions-a" href="${action.url}" 
-          title="${action.title}"><ssf:nlt tag="Delete"/></a>
+		  <a class="action-a actionimg" href="${action.url}" title="${action.title}">
+			<img src="<html:rootPath/>css/images/mobile/delete_25.png" border="0" align="absmiddle"/>
+		  </a>
       </c:forEach>
     </c:if>
   </c:if>  
 
-  <c:if test="${ssDefinitionFamily == 'calendar'}">
-    <%@ include file="/WEB-INF/jsp/mobile/calendar_today_button.jsp" %>
-  </c:if>  
+  <a class="hierarchy-a actionimg" href="javascript: ;" onClick="ss_toggleDivVisibility('hierarchy-dialog');return false;">
+    <img src="<html:rootPath/>css/images/mobile/hierarchy_25.png" border="0" align="absmiddle"/>
+  </a>
 
   <c:if test="${!empty ss_actions}">
-    <a class="actions-a" href="javascript: ;" 
-      onClick="ss_toggleDivVisibility('actions-menu');return false;"><ssf:nlt tag="mobile.actions"/></a>
+    <a class="actions-a actionimg" href="javascript: ;" 
+      onClick="ss_toggleDivVisibility('actions-menu');return false;"><img src="<html:rootPath/>css/images/mobile/more_menu_25.png" border="0" align="absmiddle"/></a>
   </c:if>  
  </td>
  <td align="right">

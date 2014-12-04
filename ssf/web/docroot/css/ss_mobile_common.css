@@ -3,7 +3,7 @@ body  { color: black; font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regu
 th, tr, td, table { font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular }
 p, li, ol, ul, td  { font-size: 0.9em }
 td label   { font-size: 0.85em ; padding-right: 0.2em; }
-span.login-label {color: #ededed;}
+span.login-label {color: #c4c4c4;}
 tr.tablecolumnhead td  { color: black; font-weight: bold; font-size: 0.75em; background-color: #edeeec; border-bottom: 1px solid black }
 tr.tablecolumnfooter td  { color: black; font-weight: bold; font-size: 0.75em; background-color: #edeeec; border-top: 1px solid black }
 tr.rule2 td { font-size:.75em; padding-bottom: 3px; border-bottom: 1px solid #babdb6 }
@@ -33,11 +33,12 @@ td.noitem, .noitem { font-size: 0.9em; font-style: italic; margin: 1em; padding:
 	vertical-align: text-bottom;
 	}
 
-	input[type="text"] {
+	input[type="text"], input[type="password"] {
 	font-size: 13px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	padding: 5px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}
 	
 	/* general table styles     */
