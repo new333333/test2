@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,6 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.web.util;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -746,14 +748,30 @@ public class WebUrlUtil {
 	 * The publicLink operation downloads the file
 	 * The publicLinkHtml operation displays the converted HTML of the file.
 	 */
-	private static String getSharedPublicFileUrlImpl(String webPath, Long shareItemId, String passKey, String operation, String fileName) {
-		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
+	private static String getSharedPublicFileUrlImpl(Long shareItemId, String passKey, String operation, String fileName) {
+		// We build the base URL using an AdaptedPortletURL so that we
+		// get the same protocol, domain and part as returned by
+		// PermaLinkUtil.getPermalinkForEmail().
+		Boolean oldUseRTContext = ZoneContextHolder.getUseRuntimeContext();
+		ZoneContextHolder.setUseRuntimeContext(Boolean.FALSE);
+		AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		url.setCrawler(false);
+		ZoneContextHolder.setUseRuntimeContext(oldUseRTContext);
+		String baseUrl = url.toString();
+		int pos = baseUrl.indexOf("a/do?");
+		baseUrl = (baseUrl.substring(0, pos) + "s/");
+
+		StringBuffer webUrl = new StringBuffer(baseUrl + WebKeys.ACTION_READ_FILE);
 		webUrl.append(Constants.SLASH + WebKeys.URL_ENTITY_TYPE_SHARE);
 		webUrl.append(Constants.SLASH + String.valueOf(shareItemId));
 		webUrl.append(Constants.SLASH + passKey); 
 		webUrl.append(Constants.SLASH + operation); 
 		webUrl.append(Constants.SLASH + urlEncodeFilename(fileName)); 
-		return webUrl.toString();
+		String reply = webUrl.toString();
+		if (PermaLinkUtil.forceSecureLinksInEmail()) {
+			reply = PermaLinkUtil.forceHTTPSInUrl(reply);
+		}
+		return reply;
 	}
 	
 	/**
@@ -774,7 +792,7 @@ public class WebUrlUtil {
 	 */
 	public static String getSharedPublicFileUrl(HttpServletRequest hRequest, Long shareItemId, String passKey, String operation, String fileName) {
 		// Always use the implementation form of the method.
-		return getSharedPublicFileUrlImpl(WebUrlUtil.getServletRootURL(hRequest, null), shareItemId, passKey, operation, fileName);
+		return getSharedPublicFileUrlImpl(shareItemId, passKey, operation, fileName);
 	}
 
 	/**
@@ -795,7 +813,7 @@ public class WebUrlUtil {
 	 */
 	public static String getSharedPublicFileUrl(PortletRequest pRequest, Long shareItemId, String passKey, String operation, String fileName) {
 		// Always use the implementation form of the method.
-		return getSharedPublicFileUrlImpl(WebUrlUtil.getServletRootURL(pRequest), shareItemId, passKey, operation, fileName);
+		return getSharedPublicFileUrlImpl(shareItemId, passKey, operation, fileName);
 	}
 
 	public static String getSSFContextRootURL(PortletRequest req) {
