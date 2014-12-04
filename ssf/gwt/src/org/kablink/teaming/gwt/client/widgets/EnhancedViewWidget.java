@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -52,12 +51,10 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-
-
 /**
- * 
+ * ?
+ *  
  * @author jwootton
- *
  */
 public class EnhancedViewWidget extends VibeWidget
 {
@@ -266,7 +263,7 @@ public class EnhancedViewWidget extends VibeWidget
 		if ( $wnd.top.ss_executeJavascript != null && (typeof $wnd.top.ss_executeJavascript != 'undefined') )
 		{
 			//$wnd.alert( 'found ss_executeJavascript()' );
-			$wnd.top.ss_executeJavascript( element, false );
+			$wnd.top.ss_executeJavascript( element, true );
 		}
 	}-*/;
 
@@ -330,6 +327,7 @@ public class EnhancedViewWidget extends VibeWidget
 						{
 							m_mainPanel.getElement().setInnerHTML( m_html );
 							executeJavaScript( m_mainPanel.getElement() );
+							GwtClientHelper.jsOnLoadInit();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -415,4 +413,3 @@ public class EnhancedViewWidget extends VibeWidget
 		return m_mainPanel;
 	}
 }
-
