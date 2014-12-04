@@ -84,4 +84,25 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="7">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="STATUSDATE_BINDERSTATE"/>
+        </preConditions>
+        <comment>Drop old statusDate_binderState index, if exists, from SS_BinderState table</comment>
+        <dropIndex indexName="STATUSDATE_BINDERSTATE" tableName="SS_BINDERSTATE"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="8">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="STATUSANDDATE_BINDERSTATE"/>
+            </not>
+        </preConditions>
+        <comment>Create index on fullSync_status,fullSync_statusDate columns in SS_BinderState table</comment>
+        <createIndex indexName="STATUSANDDATE_BINDERSTATE" tableName="SS_BINDERSTATE" unique="false">
+            <column name="FULLSYNC_STATUS"/>
+            <column name="FULLSYNC_STATUSDATE"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
