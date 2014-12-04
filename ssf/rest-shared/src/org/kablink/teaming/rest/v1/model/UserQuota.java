@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
- * 
+ *
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
  * obtain a copy of the CPAL at http://www.opensource.org/licenses/cpal_1.0. The
@@ -8,15 +8,15 @@
  * have been added to cover use of software over a computer network and provide
  * for limited attribution for the Original Developer. In addition, Exhibit A has
  * been modified to be consistent with Exhibit B.
- * 
+ *
  * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT
  * WARRANTY OF ANY KIND, either express or implied. See the CPAL for the specific
  * language governing rights and limitations under the CPAL.
- * 
+ *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
- * 
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ *
  * Attribution Information:
  * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
@@ -26,44 +26,49 @@
  * Display of Attribution Information is required in Larger Works which are
  * defined in the CPAL as a work which combines Covered Code or portions thereof
  * with code not governed by the terms of the CPAL.
- * 
+ *
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming;
+package org.kablink.teaming.rest.v1.model;
 
-import org.kablink.util.api.ApiErrorCode;
-
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author jong
- *
+ * User: david
+ * Date: 5/16/12
+ * Time: 2:51 PM
  */
-public class UserQuotaException extends DataQuotaException {
-
-	private static final String errorCode = "quota.exceeded.error.message";
+@XmlRootElement(name = "user_quota")
+public class UserQuota {
     private Long diskSpaceUsed;
     private Long diskSpaceQuota;
 
-	public UserQuotaException(String fileName, Long diskSpaceQuota, Long diskSpaceUsed) {
-		super(errorCode, new Object[]{fileName});
+    public UserQuota() {
+    }
+
+    public UserQuota(Long diskSpaceQuota, Long diskSpaceUsed) {
         this.diskSpaceQuota = diskSpaceQuota;
         this.diskSpaceUsed = diskSpaceUsed;
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
-	 */
-	@Override
-	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.USER_QUOTA_EXCEEDED;
-	}
+    @XmlElement(name="disk_space_used")
+    public Long getDiskSpaceUsed() {
+        return diskSpaceUsed;
+    }
 
+    public void setDiskSpaceUsed(Long diskSpaceUsed) {
+        this.diskSpaceUsed = diskSpaceUsed;
+    }
+
+    @XmlElement(name="disk_space_quota")
     public Long getDiskSpaceQuota() {
         return diskSpaceQuota;
     }
 
-    public Long getDiskSpaceUsed() {
-        return diskSpaceUsed;
+    public void setDiskSpaceQuota(Long diskSpaceQuota) {
+        this.diskSpaceQuota = diskSpaceQuota;
     }
+
 }

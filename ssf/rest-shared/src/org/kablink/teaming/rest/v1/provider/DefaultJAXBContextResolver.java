@@ -123,6 +123,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             TemplateBrief.class,
             User.class,
             UserBrief.class,
+            UserQuota.class,
             Workspace.class,
             ZoneConfig.class,
 

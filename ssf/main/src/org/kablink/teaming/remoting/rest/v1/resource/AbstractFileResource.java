@@ -2,6 +2,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
+import org.kablink.teaming.UserQuotaException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.fi.FileNotFoundException;
@@ -20,6 +21,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.RestExceptionWrapper;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
+import org.kablink.teaming.rest.v1.model.UserQuota;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
@@ -68,20 +70,34 @@ abstract public class AbstractFileResource extends AbstractResource {
 
         org.kablink.teaming.domain.FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
 
-        if(entry != null) {
-            if (!replaceExisting) {
-                throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file with the name already exists.", ResourceUtil.buildFileProperties(entry.getPrimaryFileAttachment()));
+        try {
+            if(entry != null) {
+                if (!replaceExisting) {
+                    throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file with the name already exists.", ResourceUtil.buildFileProperties(entry.getPrimaryFileAttachment()));
+                }
+                // An entry containing a file with this name exists.
+                if(logger.isDebugEnabled())
+                    logger.debug("createNew: updating existing file '" + fileName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + folder.getId());
+                FolderUtils.modifyLibraryEntry(entry, fileName, null, is, null, dateFromISO8601(modDateISO8601), expectedMd5, true, null, null);
             }
-            // An entry containing a file with this name exists.
-            if(logger.isDebugEnabled())
-                logger.debug("createNew: updating existing file '" + fileName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + folder.getId());
-            FolderUtils.modifyLibraryEntry(entry, fileName, null, is, null, dateFromISO8601(modDateISO8601), expectedMd5, true, null, null);
-        }
-        else {
-            // We need to create a new entry
-            if(logger.isDebugEnabled())
-                logger.debug("createNew: creating new file '" + fileName + "' + in folder " + folder.getId());
-            entry = FolderUtils.createLibraryEntry(folder, fileName, is, dateFromISO8601(modDateISO8601), expectedMd5, true);
+            else {
+                // We need to create a new entry
+                if(logger.isDebugEnabled())
+                    logger.debug("createNew: creating new file '" + fileName + "' + in folder " + folder.getId());
+                entry = FolderUtils.createLibraryEntry(folder, fileName, is, dateFromISO8601(modDateISO8601), expectedMd5, true);
+            }
+        } catch (UserQuotaException e) {
+            throw new RestExceptionWrapper(e, e, e, new UserQuota(e.getDiskSpaceQuota(), e.getDiskSpaceUsed()));
+        } catch (WriteFilesException e) {
+            if (e.getApiErrorCode()==ApiErrorCode.USER_QUOTA_EXCEEDED) {
+                Exception rootException = e.getErrors().getProblems().get(0).getException();
+                if (rootException instanceof UserQuotaException) {
+                    throw new RestExceptionWrapper(e, e, e,
+                            new UserQuota(((UserQuotaException)rootException).getDiskSpaceQuota(),
+                                    ((UserQuotaException)rootException).getDiskSpaceUsed()));
+                }
+            }
+            throw e;
         }
         return ResourceUtil.buildFileProperties(entry.getFileAttachment(fileName));
     }
@@ -343,14 +359,28 @@ abstract public class AbstractFileResource extends AbstractResource {
     }
 
     protected void modifyDefinableEntityWithFile(DefinableEntity entity, String dataName, String filename, InputStream is, Date modDate, String expectedMd5) throws WriteFilesException, WriteEntryDataException {
-        if (entity instanceof FolderEntry) {
-            FileUtils.modifyFolderEntryWithFile((FolderEntry) entity, dataName, filename, is, modDate, expectedMd5);
-        } else if (entity instanceof Principal) {
-            FileUtils.modifyPrincipalWithFile((Principal) entity, dataName, filename, is, modDate, expectedMd5);
-        } else if (entity instanceof Binder) {
-            FileUtils.modifyBinderWithFile((Binder) entity, dataName, filename, is);
-        } else {
-            throw new InternalServerErrorException(ApiErrorCode.SERVER_ERROR, "Don't know how to save file in entity of type: " + entity.getClass().getName());
+        try {
+            if (entity instanceof FolderEntry) {
+                FileUtils.modifyFolderEntryWithFile((FolderEntry) entity, dataName, filename, is, modDate, expectedMd5);
+            } else if (entity instanceof Principal) {
+                FileUtils.modifyPrincipalWithFile((Principal) entity, dataName, filename, is, modDate, expectedMd5);
+            } else if (entity instanceof Binder) {
+                FileUtils.modifyBinderWithFile((Binder) entity, dataName, filename, is);
+            } else {
+                throw new InternalServerErrorException(ApiErrorCode.SERVER_ERROR, "Don't know how to save file in entity of type: " + entity.getClass().getName());
+            }
+        } catch (UserQuotaException e) {
+            throw new RestExceptionWrapper(e, e, e, new UserQuota(e.getDiskSpaceQuota(), e.getDiskSpaceUsed()));
+        } catch (WriteFilesException e) {
+            if (e.getApiErrorCode()==ApiErrorCode.USER_QUOTA_EXCEEDED) {
+                Exception rootException = e.getErrors().getProblems().get(0).getException();
+                if (rootException instanceof UserQuotaException) {
+                    throw new RestExceptionWrapper(e, e, e,
+                            new UserQuota(((UserQuotaException)rootException).getDiskSpaceQuota(),
+                                    ((UserQuotaException)rootException).getDiskSpaceUsed()));
+                }
+            }
+            throw e;
         }
     }
 
