@@ -44,6 +44,8 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * @author drfoster@novell.com
  */
 public class LoginEvent extends VibeEventBase<LoginEvent.Handler> {
+	private String m_refererUrl;
+	
     public static Type<Handler> TYPE = new Type<Handler>();
 
 	/**
@@ -58,6 +60,7 @@ public class LoginEvent extends VibeEventBase<LoginEvent.Handler> {
 	 */
 	public LoginEvent() {
 		super();
+		m_refererUrl = null;
 	}
 	
 	/**
@@ -103,6 +106,14 @@ public class LoginEvent extends VibeEventBase<LoginEvent.Handler> {
 	public TeamingEvents getEventEnum() {
 		return TeamingEvents.LOGIN;
 	}
+	
+	/**
+	 * 
+	 */
+	public String getRefererUrl()
+	{
+		return m_refererUrl;
+	}
 		
 	/**
 	 * Registers this event on the given event bus and returns its
@@ -115,5 +126,13 @@ public class LoginEvent extends VibeEventBase<LoginEvent.Handler> {
 	 */
 	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
 		return eventBus.addHandler(TYPE, handler);
+	}
+	
+	/**
+	 * 
+	 */
+	public void setRefererUrl( String refererUrl )
+	{
+		m_refererUrl = refererUrl;
 	}
 }

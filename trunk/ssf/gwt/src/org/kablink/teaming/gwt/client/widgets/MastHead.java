@@ -983,7 +983,15 @@ public class MastHead extends Composite
 			{
 				if ( eventSource == m_loginLink )
 				{
-					LoginEvent.fireOne();
+					LoginEvent loginEvent;
+					String refererUrl;
+					
+					// When the user logs in, send them to the base url.
+					loginEvent = new LoginEvent();
+					refererUrl = Window.Location.getProtocol() + "//" + Window.Location.getHost();
+					loginEvent.setRefererUrl( refererUrl );
+					
+					GwtTeaming.fireEvent( loginEvent );
 				}
 				else if ( eventSource == m_userName || eventSource == m_userNamePanel )
 				{
