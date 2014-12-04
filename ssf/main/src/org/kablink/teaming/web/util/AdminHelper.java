@@ -45,6 +45,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
@@ -59,6 +60,7 @@ import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
 import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 import org.kablink.teaming.util.ResolveIds;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.Utils;
 
 /**
@@ -222,6 +224,15 @@ public class AdminHelper {
 	 * @return
 	 */
 	public static Boolean getAdhocFolderSettingFromUserOrGroup(AllModulesInjected bs, Long upId, boolean idIsUser) {
+		// Always use the implementation form of the method.
+		return getAdhocFolderSettingFromUserOrGroupImpl(bs, upId, null, idIsUser);
+	}
+
+	/*
+	 * Return the 'AdHoc folder' setting from the given user or group.
+	 * (i.e., a UserPrinciapl object.)
+	 */
+	private static Boolean getAdhocFolderSettingFromUserOrGroupImpl(AllModulesInjected bs, Long upId, UserPrincipal up, boolean idIsUser) {
 		// Are we running Filr?
 		if (Utils.checkIfFilr()) {
 			// Yes!  If we have an ID...
@@ -229,7 +240,10 @@ public class AdminHelper {
 				// ...read the 'allow AdHoc folder' setting from the
 				// ...UserPrincipal. Did we find it?
 				ProfileModule pm = bs.getProfileModule();
-				Boolean reply = pm.getAdHocFoldersEnabled(upId);
+				Boolean reply;
+				if (null == up) 
+				     reply = pm.getAdHocFoldersEnabled(upId);
+				else reply = up.isAdHocFoldersEnabled();
 				if ((null == reply) && idIsUser) {
 					try {
 						// No!  Assume upId is that of a user and look
@@ -293,59 +307,65 @@ public class AdminHelper {
 	 * @return
 	 */
 	public static Boolean getEffectiveAdhocFolderSetting(AllModulesInjected bs, User user) {
-		// Are we running Filr?
-		Boolean reply;
-		if (Utils.checkIfFilr()) {
-			// Yes!  Do we have a user?  
-			if (null !=  user) {
-				// Yes!  Do they have an adHoc override?
-				Long userId = user.getId();
-				reply = getAdhocFolderSettingFromUserOrGroup(bs, userId, true);
-				if (null == reply) {
-					// No!  Is the user the member of any groups?
-					List<Group> groups = GwtUIHelper.getGroups(userId);
-					if (MiscUtil.hasItems(groups)) {
-						// Yes!  Scan them.
-						for (Group group:  groups) {
-							// Does this group have an adHoc folder
-							// override?
-							Boolean gAdHoc = group.isAdHocFoldersEnabled();
-							if (null != gAdHoc) {
-								// Yes!  Use it as the override and if
-								// it's true...
-								reply =  gAdHoc;
-								if (reply) {
-									// ...we're done looking.
-									break;
+		SimpleProfiler.start("AdminHelper.getEffectiveAdhocFolderSetting()");
+		try {
+			// Are we running Filr?
+			Boolean reply;
+			if (Utils.checkIfFilr()) {
+				// Yes!  Do we have a user?  
+				if (null !=  user) {
+					// Yes!  Do they have an adHoc override?
+					reply = getAdhocFolderSettingFromUserOrGroupImpl(bs, user.getId(), user, true);
+					if (null == reply) {
+						// No!  Is the user the member of any groups?
+						List<Group> groups = GwtUIHelper.getGroups(user);
+						if (MiscUtil.hasItems(groups)) {
+							// Yes!  Scan them.
+							for (Group group:  groups) {
+								// Does this group have an adHoc folder
+								// override?
+								Boolean gAdHoc = group.isAdHocFoldersEnabled();
+								if (null != gAdHoc) {
+									// Yes!  Use it as the override and if
+									// it's true...
+									reply =  gAdHoc;
+									if (reply) {
+										// ...we're done looking.
+										break;
+									}
 								}
 							}
 						}
 					}
 				}
+				
+				else {
+					// No, we don't have a user!  There is no effective
+					// setting.
+					reply = null;
+				}
+			
+				// Did we find a setting for the user?
+				if (null == reply) {
+					// No!  Read the global setting.
+					reply = getAdhocFolderSettingFromZone(bs);
+				}
 			}
 			
 			else {
-				// No, we don't have a user!  There is no effective
-				// setting.
-				reply = null;
+				// No, we aren't running Filr!  Vibe users always get adHoc
+				// folders.
+				reply = Boolean.TRUE;
 			}
-		
-			// Did we find a setting for the user?
-			if (null == reply) {
-				// No!  Read the global setting.
-				reply = getAdhocFolderSettingFromZone(bs);
-			}
+	
+			// If we get here, reply contains true if AdHoc folders are
+			// supported and false otherwise.  Return it.
+			return reply;
 		}
 		
-		else {
-			// No, we aren't running Filr!  Vibe users always get adHoc
-			// folders.
-			reply = Boolean.TRUE;
+		finally {
+			SimpleProfiler.stop("AdminHelper.getEffectiveAdhocFolderSetting()");
 		}
-
-		// If we get here, reply contains true if AdHoc folders are
-		// supported and false otherwise.  Return it.
-		return reply;
 	}
 	
 	/**
@@ -361,47 +381,54 @@ public class AdminHelper {
 	 * @return
 	 */
 	public static PrincipalDesktopAppsConfig getEffectiveDesktopAppsConfigOverride(AllModulesInjected bs, User user) {
-		PrincipalDesktopAppsConfig reply = null;
-		
-		// Does the user have a desktop applications override?
-		Long                       userId = user.getId();
-		ProfileModule              pm     = bs.getProfileModule();
-		PrincipalDesktopAppsConfig pDAC   = pm.getPrincipalDesktopAppsConfig(userId);
-		if ((null == pDAC) || pDAC.getUseDefaultSettings()) {
-			// No!  Is the user the member of any groups?
-			List<Group> groups = GwtUIHelper.getGroups(userId);
-			if (MiscUtil.hasItems(groups)) {
-				// Yes!  Scan them.
-				for (Group group:  groups) {
-					// Does this group have a desktop applications
-					// override?
-					pDAC = pm.getPrincipalDesktopAppsConfig(group.getId());
-					if ((null != pDAC) && (!(pDAC.getUseDefaultSettings()))) {
-						if (null == reply)
-						     reply = pDAC;
-						else addPrincipalDACToPrincipalDAC(reply, pDAC);
+		SimpleProfiler.start("AdminHelper.getEffectiveDesktopAppsConfigOverride()");
+		try {
+			PrincipalDesktopAppsConfig reply = null;
+			
+			// Does the user have a desktop applications override?
+			Long                       userId = user.getId();
+			ProfileModule              pm     = bs.getProfileModule();
+			PrincipalDesktopAppsConfig pDAC   = pm.getPrincipalDesktopAppsConfig(userId);
+			if ((null == pDAC) || pDAC.getUseDefaultSettings()) {
+				// No!  Is the user the member of any groups?
+				List<Group> groups = GwtUIHelper.getGroups(user);
+				if (MiscUtil.hasItems(groups)) {
+					// Yes!  Scan them.
+					for (Group group:  groups) {
+						// Does this group have a desktop applications
+						// override?
+						pDAC = pm.getPrincipalDesktopAppsConfig(group.getId());
+						if ((null != pDAC) && (!(pDAC.getUseDefaultSettings()))) {
+							if (null == reply)
+							     reply = pDAC;
+							else addPrincipalDACToPrincipalDAC(reply, pDAC);
+						}
 					}
 				}
 			}
+			
+			else {
+				// Yes, the user has a mobile applications override!
+				// Factor it into the reply.
+				reply = pDAC;
+			}
+	
+			// If we don't have a PrincipalDesktopAppsConfig to return...
+			if (null == reply) {
+				// ...return one that indicates the system defaults are to
+				// ...be used.
+				reply = new PrincipalDesktopAppsConfig();
+				reply.setUseDefaultSettings(true);
+			}
+	
+			// If we get here, Refers to the effective PrincipalDesktopAppsConfig for
+			// the user.  Return it.
+			return reply;
 		}
 		
-		else {
-			// Yes, the user has a mobile applications override!
-			// Factor it into the reply.
-			reply = pDAC;
+		finally {
+			SimpleProfiler.stop("AdminHelper.getEffectiveDesktopAppsConfigOverride()");
 		}
-
-		// If we don't have a PrincipalDesktopAppsConfig to return...
-		if (null == reply) {
-			// ...return one that indicates the system defaults are to
-			// ...be used.
-			reply = new PrincipalDesktopAppsConfig();
-			reply.setUseDefaultSettings(true);
-		}
-
-		// If we get here, Refers to the effective PrincipalDesktopAppsConfig for
-		// the user.  Return it.
-		return reply;
 	}
 	
 	/**
@@ -467,59 +494,65 @@ public class AdminHelper {
 	 * @return
 	 */
 	public static Boolean getEffectiveDownloadSetting(AllModulesInjected bs, User user) {
-		// Are we running Filr?
-		Boolean reply;
-		if (Utils.checkIfFilr()) {
-			// Yes!  Do we have a user?  
-			if (null !=  user) {
-				// Yes!  Do they have a download override?
-				Long userId = user.getId();
-				reply = getDownloadSettingFromUserOrGroup(bs, user.getId());
-				if (null == reply) {
-					// No!  Is the user the member of any groups?
-					List<Group> groups = GwtUIHelper.getGroups(userId);
-					if (MiscUtil.hasItems(groups)) {
-						// Yes!  Scan them.
-						for (Group group:  groups) {
-							// Does this group have a download
-							// override?
-							Boolean gDownload = getDownloadSettingFromUserOrGroup(bs, group.getId());
-							if (null != gDownload) {
-								// Yes!  Use it as the override and if
-								// it's true...
-								reply =  gDownload;
-								if (reply) {
-									// ...we're done looking.
-									break;
+		SimpleProfiler.start("AdminHelper.getEffectiveDownloadSetting()");
+		try {
+			// Are we running Filr?
+			Boolean reply;
+			if (Utils.checkIfFilr()) {
+				// Yes!  Do we have a user?  
+				if (null !=  user) {
+					// Yes!  Do they have a download override?
+					reply = user.isDownloadEnabled();
+					if (null == reply) {
+						// No!  Is the user the member of any groups?
+						List<Group> groups = GwtUIHelper.getGroups(user);
+						if (MiscUtil.hasItems(groups)) {
+							// Yes!  Scan them.
+							for (Group group:  groups) {
+								// Does this group have a download
+								// override?
+								Boolean gDownload = group.isDownloadEnabled();
+								if (null != gDownload) {
+									// Yes!  Use it as the override and if
+									// it's true...
+									reply =  gDownload;
+									if (reply) {
+										// ...we're done looking.
+										break;
+									}
 								}
 							}
 						}
-					}
-			     }
+				     }
+				}
+				
+				else {
+					// No, we don't have a user!  There is no effective
+					// setting.
+					reply = null;
+				}
+			
+				// Did we find a setting for the user?
+				if (null == reply) {
+					// No!  Read the global setting.
+					reply = getDownloadSettingFromZone(bs);
+				}
 			}
 			
 			else {
-				// No, we don't have a user!  There is no effective
-				// setting.
-				reply = null;
+				// No, we aren't running Filr!  Vibe users can always
+				// download.
+				reply = Boolean.TRUE;
 			}
-		
-			// Did we find a setting for the user?
-			if (null == reply) {
-				// No!  Read the global setting.
-				reply = getDownloadSettingFromZone(bs);
-			}
+	
+			// If we get here, reply contains true if downloads are
+			// enabled and false otherwise.  Return it.
+			return reply;
 		}
 		
-		else {
-			// No, we aren't running Filr!  Vibe users can always
-			// download.
-			reply = Boolean.TRUE;
+		finally {
+			SimpleProfiler.stop("AdminHelper.getEffectiveDownloadSetting()");
 		}
-
-		// If we get here, reply contains true if downloads are
-		// enabled and false otherwise.  Return it.
-		return reply;
 	}
 	
 	/**
@@ -540,53 +573,60 @@ public class AdminHelper {
 	 * @return
 	 */
 	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, User user, FileLinkLocation fll) {
-		// Is this Filr?
-		FileLinkAction reply;
-		if (Utils.checkIfFilr()) {
-			// Yes!
-			boolean        canDownload   = getEffectiveDownloadSetting(bs, user);
-			FileLinkAction defaultFLA    = (canDownload ? FileLinkAction.DOWNLOAD : FileLinkAction.VIEW_HTML_ELSE_DETAILS);
-			FileLinkAction calculatedFLA = null;
-			if (!(user.isShared())) {
-				UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
-				String flaS = ((String) userProperties.getProperty(ObjectKeys.FILE_LINK_ACTION));
-				if (!(MiscUtil.hasString(flaS))) {
-					flaS = String.valueOf(FileLinkAction.DOWNLOAD.ordinal());
-				}
-				try {
-					int flaI      = Integer.parseInt(      flaS);
-					calculatedFLA = FileLinkAction.getEnum(flaI);
-					if (!canDownload) {
-						switch (calculatedFLA) {
-						case DOWNLOAD:
-						case VIEW_HTML_ELSE_DOWNLOAD:
-							calculatedFLA = FileLinkAction.VIEW_HTML_ELSE_DETAILS;
-							break;
-							
-						default:
-							break;
+		SimpleProfiler.start("AdminHelper.getEffectiveFileLinkAction()");
+		try {
+			// Is this Filr?
+			FileLinkAction reply;
+			if (Utils.checkIfFilr()) {
+				// Yes!
+				boolean        canDownload   = getEffectiveDownloadSetting(bs, user);
+				FileLinkAction defaultFLA    = (canDownload ? FileLinkAction.DOWNLOAD : FileLinkAction.VIEW_HTML_ELSE_DETAILS);
+				FileLinkAction calculatedFLA = null;
+				if (!(user.isShared())) {
+					UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+					String flaS = ((String) userProperties.getProperty(ObjectKeys.FILE_LINK_ACTION));
+					if (!(MiscUtil.hasString(flaS))) {
+						flaS = String.valueOf(FileLinkAction.DOWNLOAD.ordinal());
+					}
+					try {
+						int flaI      = Integer.parseInt(      flaS);
+						calculatedFLA = FileLinkAction.getEnum(flaI);
+						if (!canDownload) {
+							switch (calculatedFLA) {
+							case DOWNLOAD:
+							case VIEW_HTML_ELSE_DOWNLOAD:
+								calculatedFLA = FileLinkAction.VIEW_HTML_ELSE_DETAILS;
+								break;
+								
+							default:
+								break;
+							}
 						}
 					}
+					catch (NumberFormatException nfe) {
+						m_logger.warn("AdminHelper.getEffectiveFileLinkAction():  file link action is not an integer.", nfe);
+					}
 				}
-				catch (NumberFormatException nfe) {
-					m_logger.warn("AdminHelper.getEffectiveFileLinkAction():  file link action is not an integer.", nfe);
-				}
+				reply = ((null == calculatedFLA) ? defaultFLA : calculatedFLA);
 			}
-			reply = ((null == calculatedFLA) ? defaultFLA : calculatedFLA);
+			
+			else {
+				// No, this isn't Filr!  For Vibe, we download from the
+				// search results and view details from everywhere else.
+				reply = 
+					(fll.isSearchResults()      ?
+						FileLinkAction.DOWNLOAD :
+						FileLinkAction.VIEW_DETAILS);
+			}
+	
+			// If we get here, reply contains the user's effective
+			// FileLinkAction.  Return it.
+			return reply;
 		}
 		
-		else {
-			// No, this isn't Filr!  For Vibe, we download from the
-			// search results and view details from everywhere else.
-			reply = 
-				(fll.isSearchResults()      ?
-					FileLinkAction.DOWNLOAD :
-					FileLinkAction.VIEW_DETAILS);
+		finally {
+			SimpleProfiler.stop("AdminHelper.getEffectiveFileLinkAction()");
 		}
-
-		// If we get here, reply contains the user's effective
-		// FileLinkAction.  Return it.
-		return reply;
 	}
 	
 	public static FileLinkAction getEffectiveFileLinkAction(AllModulesInjected bs, User user) {
@@ -627,47 +667,54 @@ public class AdminHelper {
 	 * @return
 	 */
 	public static PrincipalMobileAppsConfig getEffectiveMobileAppsConfigOverride(AllModulesInjected bs, User user) {
-		PrincipalMobileAppsConfig reply = null;
-		
-		// Does the user have a mobile applications override?
-		Long                      userId = user.getId();
-		ProfileModule             pm     = bs.getProfileModule();
-		PrincipalMobileAppsConfig pMAC   = pm.getPrincipalMobileAppsConfig(userId);
-		if ((null == pMAC) || pMAC.getUseDefaultSettings()) {
-			// No!  Is the user the member of any groups?
-			List<Group> groups = GwtUIHelper.getGroups(userId);
-			if (MiscUtil.hasItems(groups)) {
-				// Yes!  Scan them.
-				for (Group group:  groups) {
-					// Does this group have a mobile applications
-					// override?
-					pMAC = pm.getPrincipalMobileAppsConfig(group.getId());
-					if ((null != pMAC) && (!(pMAC.getUseDefaultSettings()))) {
-						if (null == reply)
-						     reply = pMAC;
-						else addPrincipalMACToPrincipalMAC(reply, pMAC);
+		SimpleProfiler.start("AdminHelper.getEffectiveMobileAppsConfigOverride()");
+		try {
+			PrincipalMobileAppsConfig reply = null;
+			
+			// Does the user have a mobile applications override?
+			Long                      userId = user.getId();
+			ProfileModule             pm     = bs.getProfileModule();
+			PrincipalMobileAppsConfig pMAC   = pm.getPrincipalMobileAppsConfig(userId);
+			if ((null == pMAC) || pMAC.getUseDefaultSettings()) {
+				// No!  Is the user the member of any groups?
+				List<Group> groups = GwtUIHelper.getGroups(user);
+				if (MiscUtil.hasItems(groups)) {
+					// Yes!  Scan them.
+					for (Group group:  groups) {
+						// Does this group have a mobile applications
+						// override?
+						pMAC = pm.getPrincipalMobileAppsConfig(group.getId());
+						if ((null != pMAC) && (!(pMAC.getUseDefaultSettings()))) {
+							if (null == reply)
+							     reply = pMAC;
+							else addPrincipalMACToPrincipalMAC(reply, pMAC);
+						}
 					}
 				}
 			}
+			
+			else {
+				// Yes, the user has a mobile applications override!
+				// Factor it into the reply.
+				reply = pMAC;
+			}
+	
+			// If we don't have a PrincipalMobileAppsConfig to return...
+			if (null == reply) {
+				// ...return one that indicates the system defaults are to
+				// ...be used.
+				reply = new PrincipalMobileAppsConfig();
+				reply.setUseDefaultSettings(true);
+			}
+	
+			// If we get here, Refers to the effective PrincipalMobileAppsConfig for
+			// the user.  Return it.
+			return reply;
 		}
 		
-		else {
-			// Yes, the user has a mobile applications override!
-			// Factor it into the reply.
-			reply = pMAC;
+		finally {
+			SimpleProfiler.stop("AdminHelper.getEffectiveMobileAppsConfigOverride()");
 		}
-
-		// If we don't have a PrincipalMobileAppsConfig to return...
-		if (null == reply) {
-			// ...return one that indicates the system defaults are to
-			// ...be used.
-			reply = new PrincipalMobileAppsConfig();
-			reply.setUseDefaultSettings(true);
-		}
-
-		// If we get here, Refers to the effective PrincipalMobileAppsConfig for
-		// the user.  Return it.
-		return reply;
 	}
 	
 	/**
@@ -683,43 +730,50 @@ public class AdminHelper {
 	 * @return
 	 */
 	public static Boolean getEffectivePublicCollectionSetting(AllModulesInjected bs, User user) {
-		// Do we have a user?
-		Boolean reply;
-		if (null !=  user) {
-			// Yes!  Is it Guest?
-			if (user.isShared()) {
-				// Yes!  Guest ALWAYS has a public collection.
-				reply = Boolean.TRUE;
-			}
-
-			// No, it isn't Guest! Is it an external user?
-			else if (!(user.getIdentityInfo().isInternal())) {
-				// Yes!  External users NEVER have a public collection.
-				reply = Boolean.FALSE;
+		SimpleProfiler.start("AdminHelper.getEffectivePublicCollectionSetting()");
+		try {
+			// Do we have a user?
+			Boolean reply;
+			if (null !=  user) {
+				// Yes!  Is it Guest?
+				if (user.isShared()) {
+					// Yes!  Guest ALWAYS has a public collection.
+					reply = Boolean.TRUE;
+				}
+	
+				// No, it isn't Guest! Is it an external user?
+				else if (!(user.getIdentityInfo().isInternal())) {
+					// Yes!  External users NEVER have a public collection.
+					reply = Boolean.FALSE;
+				}
+				
+				else {
+					// No!  Are there any public shares active?
+					reply = bs.getSharingModule().arePublicSharesActive();
+					if (reply) {
+						// Yes!  Check whether the user has hidden their
+						// public collection in their preferences.
+						UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+						Boolean value = ((Boolean) userProperties.getProperty(ObjectKeys.HIDE_PUBLIC_COLLECTION));
+						reply = ((null == value) || (!value));
+					}
+				}
 			}
 			
 			else {
-				// No!  Are there any public shares active?
-				reply = bs.getSharingModule().arePublicSharesActive();
-				if (reply) {
-					// Yes!  Check whether the user has hidden their
-					// public collection in their preferences.
-					UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
-					Boolean value = ((Boolean) userProperties.getProperty(ObjectKeys.HIDE_PUBLIC_COLLECTION));
-					reply = ((null == value) || (!value));
-				}
+				// No, we don't have a user!  There is no effective
+				// setting.
+				reply = Boolean.FALSE;
 			}
+		
+			// If we get here, reply contains true if the user see's a
+			// public collection false otherwise.  Return it.
+			return reply;
 		}
 		
-		else {
-			// No, we don't have a user!  There is no effective
-			// setting.
-			reply = Boolean.FALSE;
+		finally {
+			SimpleProfiler.stop("AdminHelper.getEffectivePublicCollectionSetting()");
 		}
-	
-		// If we get here, reply contains true if the user see's a
-		// public collection false otherwise.  Return it.
-		return reply;
 	}
 	
 	/**
@@ -736,60 +790,66 @@ public class AdminHelper {
 	 * @return
 	 */
 	public static Boolean getEffectiveWebAccessSetting(AdminModule am, ProfileModule pm, User user) {
-		// Do we have a user?
-		Boolean reply;
-		if (null !=  user) {
-			// Yes!  Is it the system admin?
-			if (user.isSuper()) {
-				// Yes!  The admin is ALWAYS allowed to use the web
-				// access client.
-				reply = Boolean.TRUE;
-			}
-			
-			else {
-				// No!  The user isn't the admin.  Does the user have a
-				// web access override?
-				Long userId = user.getId();
-				reply = getWebAccessSettingFromUserOrGroup(pm, userId);
-				if (null == reply) {
-					// No!  Is the user the member of any groups?
-					List<Group> groups = GwtUIHelper.getGroups(userId);
-					if (MiscUtil.hasItems(groups)) {
-						// Yes!  Scan them.
-						for (Group group:  groups) {
-							// Does this group have a web access
-							// override?
-							Boolean gAccess = getWebAccessSettingFromUserOrGroup(pm, group.getId());
-							if (null != gAccess) {
-								// Yes!  Use it as the override and if
-								// it's true...
-								reply =  gAccess;
-								if (reply) {
-									// ...we're done looking.
-									break;
+		SimpleProfiler.start("AdminHelper.getEffectiveWebAccessSetting()");
+		try {
+			// Do we have a user?
+			Boolean reply;
+			if (null !=  user) {
+				// Yes!  Is it the system admin?
+				if (user.isSuper()) {
+					// Yes!  The admin is ALWAYS allowed to use the web
+					// access client.
+					reply = Boolean.TRUE;
+				}
+				
+				else {
+					// No!  The user isn't the admin.  Does the user have a
+					// web access override?
+					reply = user.isWebAccessEnabled();
+					if (null == reply) {
+						// No!  Is the user the member of any groups?
+						List<Group> groups = GwtUIHelper.getGroups(user);
+						if (MiscUtil.hasItems(groups)) {
+							// Yes!  Scan them.
+							for (Group group:  groups) {
+								// Does this group have a web access
+								// override?
+								Boolean gAccess = group.isWebAccessEnabled();
+								if (null != gAccess) {
+									// Yes!  Use it as the override and if
+									// it's true...
+									reply =  gAccess;
+									if (reply) {
+										// ...we're done looking.
+										break;
+									}
 								}
 							}
 						}
 					}
 				}
 			}
+			
+			else {
+				// No, we don't have a user!  There is no effective
+				// setting.
+				reply = null;
+			}
+		
+			// Did we find a setting for the user?
+			if (null == reply) {
+				// No!  Read the global setting.
+				reply = getWebAccessSettingFromZone(am);
+			}
+	
+			// If we get here, reply contains true if web access is
+			// enabled and false otherwise.  Return it.
+			return reply;
 		}
 		
-		else {
-			// No, we don't have a user!  There is no effective
-			// setting.
-			reply = null;
+		finally {
+			SimpleProfiler.stop("AdminHelper.getEffectiveWebAccessSetting()");
 		}
-	
-		// Did we find a setting for the user?
-		if (null == reply) {
-			// No!  Read the global setting.
-			reply = getWebAccessSettingFromZone(am);
-		}
-
-		// If we get here, reply contains true if web access is
-		// enabled and false otherwise.  Return it.
-		return reply;
 	}
 	
 	public static Boolean getEffectiveWebAccessSetting(AllModulesInjected bs, User user) {
@@ -967,6 +1027,4 @@ public class AdminHelper {
                 ami.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
         AdminHelper.setAssignedRights(ami, zoneConfig, roleTypes, roles);
     }
-
-
 }
