@@ -35,7 +35,10 @@ package org.kablink.teaming.jobs;
 import org.kablink.teaming.domain.Workspace;
 
 public interface ZoneSchedule {
-	   public void startScheduledJobs(Workspace zone);
-	   public void stopScheduledJobs(Workspace zone);
+	// Called on zone startup such as initializing existing zones at server startup or adding new zones.
+	public void startScheduledJobs(Workspace zone);
+	// Called on zone delete. 
+	// Note that this is NOT called for existing zones at server shutdown. It is called only when zone is deleted.
+	public void stopScheduledJobs(Workspace zone);
 
 }
