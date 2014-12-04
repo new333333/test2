@@ -2715,13 +2715,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				// strict conformance - allow a transaction only if the user quota
 				// will not be exceeded after the transaction commits.
 				if(userQuota < user.getDiskSpaceUsed() + fileSize)
-					throw new UserQuotaException(fileName);					
+					throw new UserQuotaException(fileName, userQuota, user.getDiskSpaceUsed());
 			}
 			else {
 				// soft conformance - allow a transaction if the user quota wasn't
 				// exceeded when the transaction began.
 				if ((userQuota < user.getDiskSpaceUsed()))
-					throw new UserQuotaException(fileName);
+					throw new UserQuotaException(fileName, userQuota, user.getDiskSpaceUsed());
 			}
 		}
 	}
