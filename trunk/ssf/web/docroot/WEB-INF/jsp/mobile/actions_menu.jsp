@@ -34,9 +34,10 @@
 %>
 
 <div id="actions-menu" class="action-dialog" style="display:none; z-index:2;">
-    <div class="dialog-head">
-      <span><ssf:nlt tag="mobile.actions"/></span>
-    </div>
+	<div id="actions-button" class="close-menu">
+	  <input id="actions-menu-close" type="image" src="<html:rootPath/>images/icons/close_menu.png" 
+	    name="actionsmenuclose" onClick="ss_hideMenu('actions-menu');return false;" />
+	</div>
     <div class="dialog-content">
       <c:forEach var="action" items="${ss_actions}">
         <c:if test="${empty action.spacer}">
@@ -50,10 +51,5 @@
 		</c:if>
       </c:forEach>
     </div>
-	<div class="menu-spacer">&nbsp;</div>
-	<div id="actions-button">
-	  <input id="actions-menu-close" type="button" value="<ssf:nlt tag="button.close"/>" 
-	    name="actionsmenuclose" onClick="ss_hideMenu('actions-menu');return false;" />
-	</div>
 </div>
 

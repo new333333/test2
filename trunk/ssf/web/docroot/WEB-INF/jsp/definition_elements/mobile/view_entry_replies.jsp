@@ -40,7 +40,6 @@
   <c:if test="${!empty ssFolderEntryDescendants}">
 
 <div class="folder-head">
-  <img class="margin5r" align="absmiddle" src="<html:rootPath/>images/mobile/comments_16.png"/>
   <c:if test="${!empty property_caption}">
     <span>${property_caption}</span>
   </c:if>
@@ -55,7 +54,7 @@
   <jsp:useBean id="reply" type="org.kablink.teaming.domain.Entry" />
   <c:if test="${ssEntry == reply.parentEntry}">
     <c:set var="commentClass" value="comment entry"/>
-    <c:set var="commentImg" value="comments_22.png"/>
+    <c:set var="commentImg" value="comments_25.png"/>
   </c:if>
   <c:if test="${ssEntry != reply.parentEntry}">
     <c:set var="commentClass" value="comment2 entry"/>

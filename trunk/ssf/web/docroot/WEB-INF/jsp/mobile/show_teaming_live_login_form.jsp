@@ -38,7 +38,7 @@
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
 <div>
-  <img height="225" width="320" src="<html:rootPath/>images/mobile/login_MobileTeaming.png"/>
+  <img src="<html:rootPath/>images/mobile/login_MobileTeaming.png"/>
 </div>
 
 <div>

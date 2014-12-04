@@ -51,7 +51,7 @@
 			  <div class="homelink">
 				<c:if test="${!ss_hideMiniBlog}">
 					  <a href="javascript: ;" 
-						onClick="ss_toggleDivVisibility('micro-blog-edit');ss_selectElement('micro-blog-text');return false;"><img src="<html:rootPath/>images/icons/miniblog_20.png" border="0"></a>
+						onClick="ss_toggleDivVisibility('micro-blog-edit');ss_selectElement('micro-blog-text');return false;"><img src="<html:rootPath/>images/icons/miniblog_40.png" border="0"></a>
 				</c:if>
 			  </div>
 			</td>
@@ -63,7 +63,7 @@
 			<td valign="top" align="right" width="1%">
 			  <div class="search">
 				<a href="javascript: ;" 
-				  onClick="ss_toggleDivVisibility('search-dialog');return false;"><img src="<html:rootPath/>images/icons/search_20.png" border="0"></a>
+				  onClick="ss_toggleDivVisibility('search-dialog');return false;"><img src="<html:rootPath/>images/icons/search_40.png" border="0"></a>
 			  </div>
 			</td>
 		</tr>
