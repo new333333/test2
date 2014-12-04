@@ -932,7 +932,7 @@ public class GwtMainPage extends ResizeComposite
 					@Override
 					public void execute()
 					{
-						invokeLoginDlg( canCancel );
+						invokeLoginDlg( canCancel, null );
 					}
 				} );
 			}
@@ -1223,7 +1223,7 @@ public class GwtMainPage extends ResizeComposite
 	private native void initInvokeLoginDlgJS( GwtMainPage gwtMainPage ) /*-{
 		$wnd.ss_invokeLoginDlg = function( allowCancel )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeLoginDlg(Z)( allowCancel );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeLoginDlg(ZLjava/lang/String;)( allowCancel, null );
 		}
 	}-*/;
 
@@ -2057,7 +2057,7 @@ public class GwtMainPage extends ResizeComposite
 	public void handleSessionExpired()
 	{
 		// Invoke the login dialog.
-		invokeLoginDlg( false );
+		invokeLoginDlg( false, null );
 	}
 	
 	/**
@@ -2113,10 +2113,9 @@ public class GwtMainPage extends ResizeComposite
 	/**
 	 * Invoke the "login" dialog.
 	 */
-	private void invokeLoginDlg( final boolean allowCancel )
+	private void invokeLoginDlg( final boolean allowCancel, String refererUrl )
 	{
 		LoginDlgClient dlgClient;
-		String refererUrl;
 		
 		// Is login allowed through our standard login dialog?  This will be disabled if
 		// we are running behind a single-sign on product such as NAM.
@@ -2128,10 +2127,10 @@ public class GwtMainPage extends ResizeComposite
 			Window.Location.reload();
 			return;
 		}
-
-		// Get the url to go to after the user logs in.
-		refererUrl = m_requestInfo.getLoginRefererUrl();
 		
+		if ( refererUrl == null || refererUrl.length() == 0 )
+			refererUrl = m_requestInfo.getLoginRefererUrl();
+
 		dlgClient = new LoginDlgClient()
 		{
 			@Override
@@ -3211,12 +3210,16 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onLogin( LoginEvent event )
 	{
+		final String refererUrl;
+		
+		refererUrl = event.getRefererUrl();
+		
 		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute() 
 			{
-				invokeLoginDlg( true );
+				invokeLoginDlg( true, refererUrl );
 			}
 		} );
 	}// end onLogin()
