@@ -75,7 +75,7 @@
 						style="display: none; "
 					</c:if>
 					>
-				    <div><span class="ss_mobile_small"><ssf:nlt tag="event.time"/></span></div>
+				    <div><span class="ss_mobile_small"><ssf:nlt tag="event.time"/><span style="padding-left: 10px;"><ssf:nlt tag="mobile.timeFormat"/></span></span></div>
 					<input type="text" 
 						id="event_start_time_${prefix}" 
 						name="${dateId}_0_fullTime" 
@@ -94,7 +94,6 @@
 						startTimeWidgetId="event_start_time_${prefix}"
 						endDateWidgetId="event_end_${prefix}"
 						endTimeWidgetId="event_end_time_${prefix}" />
-					<div><span class="ss_mobile_small"><ssf:nlt tag="mobile.timeFormat"/></span></div>
 						
 					<input type="hidden" name="${dateId}_timezoneid" value="${ssUser.timeZone.ID}" />
 					<input type="hidden" name="${dateId}_skipTime" id="${dateId}_skipTime_${prefix}"
@@ -139,7 +138,7 @@
 							style="display: none; "
 						</c:if>			
 						>
-						<div><span class="ss_mobile_small"><ssf:nlt tag="event.time"/></span></div>
+				    	<div><span class="ss_mobile_small"><ssf:nlt tag="event.time"/><span style="padding-left: 10px;"><ssf:nlt tag="mobile.timeFormat"/></span></span></div>
 						<input type="text" 
 							id="event_end_time_${prefix}" 
 							name="${dateId2}_0_fullTime" 
@@ -159,7 +158,6 @@
 							endDateWidgetId="event_end_${prefix}"
 							endTimeWidgetId="event_end_time_${prefix}" />
 							
-						<div><span class="ss_mobile_small"><ssf:nlt tag="mobile.timeFormat"/></span></div>
 						<input type="hidden" name="${dateId2}_timezoneid" value="${ssUser.timeZone.ID}" />
 						<input type="hidden" name="${dateId2}_skipTime" id="${dateId2}_skipTime_${prefix}"
 							<c:choose>

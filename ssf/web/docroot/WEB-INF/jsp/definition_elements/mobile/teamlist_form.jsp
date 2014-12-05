@@ -50,23 +50,27 @@
 	}
 %>
 </c:if>
-<div class="ss_entryContent">
-<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
-<c:forEach var="teamItem" items="<%= teamListSet %>">
-	<div style="margin-left:2em">
-	  ${teamItem.title}
-	  <a href="javascript: ;" 
-	    onClick="ss_delete_hidden_field(this, '${ss_form_form_formName}', '${property_name}', '${teamItem.id}');return false;"
-	  ><img src="<html:rootPath/>images/mobile/delete.png"></a>
-	  <input type="hidden" name="${property_name}" value="${teamItem.id}"/>
+<div class="ss_entryContent" style="border-bottom: 1px solid #b8b8b8; padding-bottom: 10px;">
+	<div class="ss_labelAbove">
+		<c:out value="${property_caption}"/>
+	  <span>
+		<input type="hidden" name="_entryOperationType" value="${ssOperationType}" />
+		<input type="submit" name="addUGTBtn" value="<ssf:nlt tag="userlist.addTeam"/>"
+		  onClick="ss_setUGT('${ss_form_form_formName}', '${property_name}', 'team');" />
+	  </span>
 	</div>
-</c:forEach>
-
-  <div>
-	<input type="hidden" name="_entryOperationType" value="${ssOperationType}" />
-	<input type="submit" name="addUGTBtn" value="<ssf:nlt tag="userlist.addTeam"/>"
-	  onClick="ss_setUGT('${ss_form_form_formName}', '${property_name}', 'team');"
-	/>
-  </div>
-
+	  <c:forEach var="teamItem" items="<%= teamListSet %>">
+	<div style="margin-left: 20px; padding-top: 8px; ">
+		  ${teamItem.title}
+		  <a href="javascript: ;" 
+			onClick="ss_delete_hidden_field(this, '${ss_form_form_formName}', '${property_name}', '${teamItem.id}');return false;"
+		  ><img style="padding-left: 5px" align="absmiddle" src="<html:rootPath/>images/icons/close_gray16.png"></a>
+		  <input type="hidden" name="${property_name}" value="${teamItem.id}"/>
+		</div>
+	  </c:forEach>
 </div>
+
+
+
+
+

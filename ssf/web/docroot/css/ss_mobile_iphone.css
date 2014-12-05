@@ -20,7 +20,7 @@ textarea {
 	border: 1px solid #b8b8b8;
 	}
 select { 
-	font-size: 1em;
+	font-size: 2em;
 	}
 input[type=button], input[type=submit], input[type=reset] { 
 	font-size: 1em;
@@ -179,8 +179,9 @@ span.pad-left20 select {
 	color: black;
 	} 	
 #micro-blog-date {
-	padding-left: 20px;
-	color: #949691;	
+	padding-left: 10px;
+	color: #505354;
+	font-weight: normal;	
 	}
 #micro-blog-clear {
 	margin-left: 1em; 
@@ -297,7 +298,7 @@ span.pad-left20 select {
 .folder-item {
 	font-size: 1.1em;
 	background-color: #fff;
-	padding: 5px 15px 5px 15px;
+	padding: 10px 15px 10px 15px;
 	border-bottom: 1px solid #e0e0e0;
 	white-space: nowrap;
 	overflow: hidden;
@@ -393,6 +394,9 @@ span.pad-left20 select {
 .entry-type span {
 	padding: 2px 5px;
 	}
+.label-gray {
+	color: #666;
+	}	
 .entry-comment-label {
 	position: absolute;
 	right: 5px;
@@ -755,12 +759,11 @@ div.ss_mobile_calendar_no_entries_content span {
 	font-size: 1em;
 	font-weight: bold;
 	vertical-align: middle;
-	padding: 25px 5px 5px 10px;
+	padding: 15px 5px 5px 10px;
 	letter-spacing: 1px;
-	background-color: #f0f1ef;
+	background-color: #eceeec;
 	}
 .ss_form_subhead {
-	 font-weight: bold;
 	 color: #333;
 	 }
 .ss_form_subhead a:hover{

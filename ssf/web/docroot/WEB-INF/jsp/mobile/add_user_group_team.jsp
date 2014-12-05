@@ -72,9 +72,9 @@ function ss_submitSelectForm${ssElementName}(url) {
 				value="${ssEntryOperationType}"/><ssf:param name="_entryDelayWorkflow"
 				value="${ssEntryDelayWorkflow}"/></ssf:url>">
 		  <label for="searchText">
-		    <c:if test="${ss_type == 'user'}"><span class="ss_bold"><ssf:nlt tag="navigation.findUser"/></span></c:if>
-		    <c:if test="${ss_type == 'group'}"><span class="ss_bold"><ssf:nlt tag="navigation.findGroup"/></span></c:if>
-		    <c:if test="${ss_type == 'team'}"><span class="ss_bold"><ssf:nlt tag="navigation.findTeam"/></span></c:if>
+		    <c:if test="${ss_type == 'user'}"><span class="label-gray"><ssf:nlt tag="navigation.findUser"/></span></c:if>
+		    <c:if test="${ss_type == 'group'}"><span class="label-gray"><ssf:nlt tag="navigation.findGroup"/></span></c:if>
+		    <c:if test="${ss_type == 'team'}"><span class="label-gray"><ssf:nlt tag="navigation.findTeam"/></span></c:if>
 		  </label>
 		  <input type="text" size="15" name="searchText" id="searchText" autocomplete="off"
 		    value="<ssf:escapeQuotes>${ss_searchText}</ssf:escapeQuotes>"/>
@@ -85,7 +85,7 @@ function ss_submitSelectForm${ssElementName}(url) {
 		  </form>
 		</div>
 
-	  <div class="pad-left20 marginbottom2">
+	  <div class="marginbottom2">
 	    <form method="post" name="selectIdForm${ssElementName}" id="selectIdForm${ssElementName}">
 		  <c:forEach var="user" items="${ssUsers}" >
 		    <div class="folder-item">
@@ -118,7 +118,7 @@ function ss_submitSelectForm${ssElementName}(url) {
 
   <c:if test="${!empty ss_prevPage || !empty ss_nextPage}">
     <br/>
-	<div class="pad-left20 marginbottom2">
+	<div class="marginbottom2">
 	  <c:if test="${!empty ss_prevPage}">
 		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 			action="__ajax_mobile" 
