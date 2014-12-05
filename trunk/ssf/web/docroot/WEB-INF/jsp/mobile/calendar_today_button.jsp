@@ -108,4 +108,4 @@ Date nextDate = calendarNextDate.getTime();
 			<ssf:param name="year" value="<%= strTodayYear %>" />
 			<ssf:param name="ssGridType" value="day" />
 			<ssf:param name="ssGridSize" value="1" />
-		  </ssf:url>"><ssf:nlt tag="button.today"/></a>
+		  </ssf:url>"><img src="<html:rootPath/>css/images/mobile/today_25.png" border="0" align="absmiddle"/></a>
