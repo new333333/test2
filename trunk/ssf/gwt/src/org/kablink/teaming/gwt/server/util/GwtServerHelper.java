@@ -449,6 +449,11 @@ public class GwtServerHelper {
 	private static final boolean FOLLOW_DESKTOP_APP_DOWNLOAD_URL_REDIRECTS	= true;
 	private static final String  FOLLOW_DESKTOP_APP_DOWNLOAD_URL_KEY		= "follow.desktop.app.download.url.redirects";
 	
+	// landing_page_calendar.jsp and landing_page_my_calendar_events.jsp require a unique prefix
+	// so there can be more than one calendar on a landing page.
+	// m_landingPageCalendarPrefix is used to maintain a unique value
+	private static int m_landingPageCalendarPrefix = 10;
+	
 	/**
 	 * Inner class used to compare two AssignmentInfo's.
 	 */
@@ -2284,6 +2289,11 @@ public class GwtServerHelper {
 						request.setAttribute( "mashup_view", "view" );
 					}
 				}
+				
+				// landing_page_calendar.jsp and landing_page_my_calendar_events.jsp require a unique prefix
+				// so there can be more than one calendar on a landing page.
+				request.setAttribute( "landingPageCalendarPrefix", String.valueOf( m_landingPageCalendarPrefix ) );
+				++m_landingPageCalendarPrefix;
 			}
 			
 			// Execute the jsp
