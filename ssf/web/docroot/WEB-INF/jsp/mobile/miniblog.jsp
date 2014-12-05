@@ -44,16 +44,20 @@
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
 
   <div id="micro-blog-edit" class="action-dialog" style="display: none;z-index:2;">
-    <div class="dialog-head">
-      <span><label for="miniblogText"><ssf:nlt tag="miniblog"/></label></span>
-      <span id="micro-blog-date">
-        <c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
-          <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-		        value="${ssUser.statusDate}" type="both" 
-			    timeStyle="short" dateStyle="short" />
-        </c:if>
-      </span>
-    </div>
+	<div class="close-menu">
+        <input id="micro-blog-cancel" type="image" src="<html:rootPath/>images/icons/close_menu.png" 
+          name="PostBlogCancel" onClick="ss_hideMenu('micro-blog-edit');return false;"/>
+	</div>
+	<div class="dialog-head">
+	  <span><label for="miniblogText"><ssf:nlt tag="miniblog"/></label></span>
+	  <span id="micro-blog-date">
+		<c:if test="${!empty ssUser.status && !empty ssUser.statusDate}">
+		  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				value="${ssUser.statusDate}" type="both" 
+				timeStyle="short" dateStyle="short" />
+		</c:if>
+	  </span>
+	</div>
 	<form id="microblogForm" method="post" action="${ss_microblog_post_url}">
 			
 	  <!-- necessary "cols" attribute is set to 20 for Blackberry and is overridden by CSS -->
@@ -63,8 +67,6 @@
       <div id="micro-blog-buttons">
         <input id="micro-blog-post" type="submit" value="<ssf:nlt tag="button.post"/>" 
           name="miniblogBtn" onClick="ss_hideMenu('micro-blog-edit');return true;" />
-        <input id="micro-blog-cancel" type="button" value="<ssf:nlt tag="button.cancel"/>" 
-          name="PostBlogCancel" onClick="ss_hideMenu('micro-blog-edit');return false;"/>
         <input id="micro-blog-clear" type="reset" value="<ssf:nlt tag="button.clear"/>" name="ClearBlog"
           onclick="ss_clearStatusMobile('micro-blog-text');return false;"/>
       </div>

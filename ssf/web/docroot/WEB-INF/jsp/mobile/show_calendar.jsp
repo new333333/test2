@@ -100,76 +100,6 @@ Date nextDate = calendarNextDate.getTime();
 %>
 
 <div class="folders">
-    <div class="folder-head" style="letter-spacing: 0; padding: 5px;">
-		<form id="calendarShowFilterForm" name="calendarShowFilterForm" 
-		  method="post" 
-		  action="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="__ajax_mobile" operation="mobile_show_folder" 
-		    actionUrl="true" 
-		    folderId="${ssBinder.id}" />"
-		>
-        <table cellspacing="0" cellpadding="0" width="100%">
-        <tr>
-          <td valign="top" width="40%" nowrap>
-          
-          <a href="javascript: ;" 
-      		  onClick="ss_toggleDivVisibility('calendar-show-filter-menu');return false;" style="color: #fff; font-size: 1.4em;">
-      	    <span><ssf:nlt tag="calendar.navi.chooseMode"/></span>&nbsp;
-      	    <span>
-              <c:if test="${ss_calendarEventType == 'event'}"><ssf:nlt tag="calendar.navi.mode.alt.physical"/></c:if>
-              <c:if test="${ss_calendarEventType == 'creation'}"><ssf:nlt tag="calendar.navi.mode.alt.physical.byCreation"/></c:if>
-              <c:if test="${ss_calendarEventType == 'activity'}"><ssf:nlt tag="calendar.navi.mode.alt.physical.byActivity"/></c:if>
-              <c:if test="${ss_calendarEventType == 'virtual'}"><ssf:nlt tag="calendar.navi.mode.alt.virtual"/></c:if>
-            </span>&nbsp;<img border="0" 
-      		  src="<html:rootPath/>images/pics/menudown.gif"/>
-      	  </a>
-          
-			<div id="calendar-show-filter-menu" class="action-dialog" 
-			  style="display:none; z-index:2; font-size: 1.2em;">
-			    <div class="dialog-content">
-		      		<div class="menu-item">
-				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				        action="__ajax_mobile" operation="mobile_show_folder" 
-				        folderId="${ssBinder.id}" 
-				        actionUrl="true" ><ssf:param name="eventType" value="event"/></ssf:url>"
-				      ><ssf:nlt tag="calendar.navi.mode.alt.physical"/></a>
-				    </div>
-				</div>
-			    <div class="dialog-content">
-		      		<div class="menu-item">
-				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				        action="__ajax_mobile" operation="mobile_show_folder" 
-				        folderId="${ssBinder.id}" 
-				        actionUrl="true" ><ssf:param name="eventType" value="creation"/></ssf:url>"
-				      ><ssf:nlt tag="calendar.navi.mode.alt.physical.byCreation"/></a>
-				    </div>
-				</div>
-			    <div class="dialog-content">
-		      		<div class="menu-item">
-				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				        action="__ajax_mobile" operation="mobile_show_folder" 
-				        folderId="${ssBinder.id}" 
-				        actionUrl="true" ><ssf:param name="eventType" value="activity"/></ssf:url>"
-				      ><ssf:nlt tag="calendar.navi.mode.alt.physical.byActivity"/></a>
-				    </div>
-				</div>
-			    <div class="dialog-content">
-		      		<div class="menu-item">
-				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				        action="__ajax_mobile" operation="mobile_show_folder" 
-				        folderId="${ssBinder.id}" 
-				        actionUrl="true" ><ssf:param name="eventType" value="virtual"/></ssf:url>"
-				      ><ssf:nlt tag="calendar.navi.mode.alt.virtual"/></a>
-				    </div>
-				</div>
-			</div>
-		  </td>
-		  
-		</tr>
-		</table>
-		</form>
-    </div>
-
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr class="ss_mobile_calendar_monthyear">
   <td align="center" valign="middle">
@@ -322,6 +252,71 @@ Date nextDate = calendarNextDate.getTime();
       </tbody>
      </table>
 
+    <div>
+		<form id="calendarShowFilterForm" name="calendarShowFilterForm" 
+		  method="post" 
+		  action="<ssf:url adapter="true" portletName="ss_forum" 
+		    action="__ajax_mobile" operation="mobile_show_folder" 
+		    actionUrl="true" 
+		    folderId="${ssBinder.id}" />"
+		>
+        <div class="folder-select">
+          
+          <a href="javascript: ;" 
+      		  onClick="ss_toggleDivVisibility('calendar-show-filter-menu');return false;">
+      	    <span style="color: #949494;"><ssf:nlt tag="calendar.navi.chooseMode"/></span>
+      	    <span  style="color: #000; padding-left: 7px; padding-right: 5px;">
+              <c:if test="${ss_calendarEventType == 'event'}"><ssf:nlt tag="calendar.navi.mode.alt.physical"/></c:if>
+              <c:if test="${ss_calendarEventType == 'creation'}"><ssf:nlt tag="calendar.navi.mode.alt.physical.byCreation"/></c:if>
+              <c:if test="${ss_calendarEventType == 'activity'}"><ssf:nlt tag="calendar.navi.mode.alt.physical.byActivity"/></c:if>
+              <c:if test="${ss_calendarEventType == 'virtual'}"><ssf:nlt tag="calendar.navi.mode.alt.virtual"/></c:if>
+            </span>
+			<img border="0" src="<html:rootPath/>images/pics/menu_sm.png"/>
+      	  </a>
+          
+			<div id="calendar-show-filter-menu" class="action-dialog" 
+			  style="display:none; z-index:2; font-size: 1.2em;">
+			    <div class="dialog-content">
+		      		<div class="menu-item">
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_show_folder" 
+				        folderId="${ssBinder.id}" 
+				        actionUrl="true" ><ssf:param name="eventType" value="event"/></ssf:url>"
+				      ><ssf:nlt tag="calendar.navi.mode.alt.physical"/></a>
+				    </div>
+				</div>
+			    <div class="dialog-content">
+		      		<div class="menu-item">
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_show_folder" 
+				        folderId="${ssBinder.id}" 
+				        actionUrl="true" ><ssf:param name="eventType" value="creation"/></ssf:url>"
+				      ><ssf:nlt tag="calendar.navi.mode.alt.physical.byCreation"/></a>
+				    </div>
+				</div>
+			    <div class="dialog-content">
+		      		<div class="menu-item">
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_show_folder" 
+				        folderId="${ssBinder.id}" 
+				        actionUrl="true" ><ssf:param name="eventType" value="activity"/></ssf:url>"
+				      ><ssf:nlt tag="calendar.navi.mode.alt.physical.byActivity"/></a>
+				    </div>
+				</div>
+			    <div class="dialog-content">
+		      		<div class="menu-item">
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_show_folder" 
+				        folderId="${ssBinder.id}" 
+				        actionUrl="true" ><ssf:param name="eventType" value="virtual"/></ssf:url>"
+				      ><ssf:nlt tag="calendar.navi.mode.alt.virtual"/></a>
+				    </div>
+				</div>
+			</div>
+		</div>
+		</form>
+    </div>
+
 	<c:set var="lastCalDayDate" value=""/>
 	<c:set var="lastFamilyType" value=""/>
 	<table class="ss_mobile_calendar" cellspacing="0" cellpadding="0">
@@ -379,13 +374,6 @@ Date nextDate = calendarNextDate.getTime();
 		<%  } %>
 	    <c:if test="${familyType != lastFamilyType}">
 	    <c:set var="lastFamilyType" value="${familyType }" />
-	    <tr>
-			<td colspan="2">
-			<div class="ss_mobile_calendar_entries_family_header">
-			  <span><ssf:nlt tag='<%= "family."+familyType %>'/></span>
-			</div>
-			</td>
-	    </tr>
 		</c:if>
 	    <c:if test="${calDayDate != lastCalDayDate}">
 	    <tr>
@@ -453,7 +441,7 @@ Date nextDate = calendarNextDate.getTime();
         </c:if>
       </div>
 	  <div class="ss_mobile_calendar_no_entries_content">
-	    <div style="color: #fff;"><ssf:nlt tag="folder.NoResults"/></div>
+	  	<ssf:nlt tag="mobile.calendar.NoEvents"/>
 	  </div>
 	</c:if>
 </div>
