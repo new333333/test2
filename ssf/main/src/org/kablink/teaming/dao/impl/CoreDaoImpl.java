@@ -3389,7 +3389,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
     @Override
     public List getAuditTrailEntries(final Long zoneId, final Date sinceDate,
-                                     final boolean recursive,
                                      final List<Long> entityIds,
                                      final AuditTrail.AuditType[] types,
                                      final EntityType [] entityTypes, final int maxResults) {
