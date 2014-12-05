@@ -145,8 +145,10 @@ public class EncryptedClassPathConfigFiles
 	        				String encVal = encryptor.encrypt(val);
 	        				int beginIndex = origStr.indexOf(eProps[i]+"=");
 	        				int index = origStr.indexOf("=", beginIndex+eProps[i].length());
-	        				index = origStr.indexOf(val, index+1);
-	        				String strToReplace = origStr.substring(beginIndex, index+val.length());
+	        				// (Bug #908400) To handle escaped backslash (if any) included in the property value.
+	        				String valAsWrittenInFile = val.replace("\\", "\\\\");
+	        				index = origStr.indexOf(valAsWrittenInFile, index+1);
+	        				String strToReplace = origStr.substring(beginIndex, index+valAsWrittenInFile.length());
 	        				String strToReplaceWith;
 	        				if(encryptor.getGeneration() == 2)
 	        					strToReplaceWith = eProps[i] + "=" + PropertyEncrypt.getDecoratedEncryptedValue_second_gen(encVal);
