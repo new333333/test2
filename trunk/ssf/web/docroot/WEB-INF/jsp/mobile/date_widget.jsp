@@ -50,11 +50,6 @@
 </c:if>
 <table>
   <tr class="ss_dateinput">
-   <th><span class="ss_mobile_small"><ssf:nlt tag="calendar.Day"/></span></th>
-   <th><span class="ss_mobile_small"><ssf:nlt tag="calendar.Month"/></span></th>
-   <th><span class="ss_mobile_small"><ssf:nlt tag="calendar.Year"/></span></th>
-  </tr>
-  <tr class="ss_dateinput">
    <td>
 	<select name="${ss_dateWidgetId}_date">
 	  <option value="0" >--</option>

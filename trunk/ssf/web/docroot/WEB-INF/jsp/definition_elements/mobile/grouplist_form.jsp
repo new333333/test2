@@ -51,21 +51,25 @@
 %>
 </c:if>
 <div class="ss_entryContent">
-<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
-<c:forEach var="groupItem" items="<%= groupListSet %>">
-	<div style="margin-left:2em">
+	<div class="ss_labelAbove">
+		<c:out value="${property_caption}"/>
+	  <span>
+		<input type="hidden" name="_entryOperationType" value="${ssOperationType}" />
+		<input type="submit" name="addUGTBtn" value="<ssf:nlt tag="userlist.addGroup"/>"
+		  onClick="ss_setUGT('${ss_form_form_formName}', '${property_name}', 'group');" />
+	  </span>
+	</div>
+  <c:forEach var="groupItem" items="<%= groupListSet %>">
+	<div style="margin-left: 20px; padding-top: 8px; ">
 	  ${groupItem.title}
 	  <a href="javascript: ;" 
 	    onClick="ss_delete_hidden_field(this, '${ss_form_form_formName}', '${property_name}', '${groupItem.id}');return false;"
-	  ><img src="<html:rootPath/>images/mobile/delete.png"></a>
+	  ><img style="padding-left: 5px" align="absmiddle" src="<html:rootPath/>images/icons/close_gray16.png"></a>
 	  <input type="hidden" name="${property_name}" value="${groupItem.id}"/>
 	</div>
-</c:forEach>
-
-	<div>
-	<input type="hidden" name="_entryOperationType" value="${ssOperationType}" />
-	<input type="submit" name="addUGTBtn" value="<ssf:nlt tag="userlist.addGroup"/>"
-	  onClick="ss_setUGT('${ss_form_form_formName}', '${property_name}', 'group');"
-	/>
-	</div>
+  </c:forEach>
 </div>
+
+
+
+
