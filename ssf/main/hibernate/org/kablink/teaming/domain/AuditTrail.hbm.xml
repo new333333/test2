@@ -8,17 +8,17 @@
       <generator class="uuid.hex"/>
     </id>
     <discriminator type="char" column="type"/>
-    <property name="zoneId" access="field" index="search_audit"/>
-    <property name="startDate" index="search_audit"/>
-    <property name="startBy" index="search_audit"/>
+    <property name="zoneId" access="field"/>
+    <property name="startDate" index="startDate_audit"/>
+    <property name="startBy" index="startBy_audit"/>
     <property name="endBy"/>
     <property name="endDate"/>
    	<property name="entityType" length="16" index="entityOwner_audit"/>
  	<property name="entityId" index="entityOwner_audit"/>
+	<property name="transactionType" length="16" index="ttype_obkey_audit"/>
     <property name="owningBinderId" index="owningBinder_audit"/>
- 	<property name="owningBinderKey" length="255" />
+ 	<property name="owningBinderKey" length="255" index="ttype_obkey_audit"/>
  	<property name="description" length="512"/>
-	<property name="transactionType" length="16"/>
  	<property name="fileId">
  		<column name="fileId" sql-type="char(32)"/>
  	</property>
