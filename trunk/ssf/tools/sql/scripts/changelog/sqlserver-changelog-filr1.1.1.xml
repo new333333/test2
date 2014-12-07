@@ -105,4 +105,49 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="9">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="search_audit"/>
+        </preConditions>
+        <comment>Drop search_audit index from SS_AuditTrail table</comment>
+        <dropIndex indexName="search_audit" tableName="SS_AuditTrail"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="startDate_audit"/>
+            </not>
+        </preConditions>
+        <comment>Create index on startDate column in SS_AuditTrail table</comment>
+        <createIndex indexName="startDate_audit" schemaName="dbo" tableName="SS_AuditTrail" unique="false">
+            <column name="startDate"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="11">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="startBy_audit"/>
+            </not>
+        </preConditions>
+        <comment>Create index on startBy column in SS_AuditTrail table</comment>
+        <createIndex indexName="startBy_audit" schemaName="dbo" tableName="SS_AuditTrail" unique="false">
+            <column name="startBy"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ttype_obkey_audit"/>
+            </not>
+        </preConditions>
+        <comment>Create index on transactionType and owningBinderKey columns in SS_AuditTrail table</comment>
+        <createIndex indexName="ttype_obkey_audit" schemaName="dbo" tableName="SS_AuditTrail" unique="false">
+            <column name="transactionType"/>
+            <column name="owningBinderKey"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
