@@ -1497,6 +1497,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, user.getId().toString(), PermaLinkUtil.COLLECTION_MY_FILES));
         String baseUri = "/self/my_files";
         binder.setLink(baseUri);
+        binder.setMirrored(SearchUtils.useHomeAsMyFiles(this, user));
         binder.addAdditionalLink("child_binders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
