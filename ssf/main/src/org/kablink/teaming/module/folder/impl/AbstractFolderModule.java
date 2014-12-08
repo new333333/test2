@@ -312,7 +312,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
      
 	@Override
 	public boolean testReadAccess(User user, WorkArea workArea, boolean checkSharing) {
-		return getAccessControlManager().testOperation(user, workArea, WorkAreaOperation.CREATE_ENTRIES, checkSharing);
+		return getAccessControlManager().testOperation(user, workArea, WorkAreaOperation.READ_ENTRIES, checkSharing);
 	}
 
 	@Override
