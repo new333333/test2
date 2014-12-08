@@ -521,6 +521,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetTrackedPlaces();
 	String rpcFailure_GetTrashUrl();
 	String rpcFailure_GetTree();
+	String rpcFailure_GetUpdateLogsConfig();
 	String rpcFailure_GetUpgradeInfo();
 	String rpcFailure_GetUserAccessInfo();
 	String rpcFailure_GetUserAvatar();
@@ -602,6 +603,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveTaskPriority();
 	String rpcFailure_SaveTaskSort();
 	String rpcFailure_SaveTaskStatus();
+	String rpcFailure_SaveUpdateLogsConfig();
 	String rpcFailure_SaveUserAccessConfig();
 	String rpcFailure_SaveUserListStatus();
 	String rpcFailure_SaveWhatsNewShowSetting();
@@ -684,6 +686,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ConfigureMobileAppsDlg();
 	String codeSplitFailure_ConfigurePasswordPolicyDlg();
 	String codeSplitFailure_ConfigureUserAccessDlg();
+	String codeSplitFailure_ConfigureUpdateLogsDlg();
 	String codeSplitFailure_ConfigureUserFileSyncAppDlg();
 	String codeSplitFailure_ConfigureUserMobileAppsDlg();
 	String codeSplitFailure_ConfirmDlg();
@@ -2672,6 +2675,11 @@ public interface GwtTeamingMessages extends Messages
 	String configurePasswordPolicyDlg_Hint_Symbol(String symbols);
 	String configurePasswordPolicyDlg_Hint_Upper();
 	String configurePasswordPolicyDlg_EnablePasswordComplexityChecking();
+	
+	// Strings used in the Configure Update Logs dialog
+	String configureUpdateLogsDlg_AutoUpdateLogs();
+	String configureUpdateLogsDlg_Header();
+	String configureUpdateLogsDlg_Hint();
 	
 	// Strings used by the GWT based Folder Entry viewer.
 	String folderEntry_Alt_Close();

@@ -92,6 +92,7 @@ public class EventHelper {
 		case INVOKE_CONFIGURE_MOBILE_APPS_DLG:		reply = new InvokeConfigureMobileAppsDlgEvent();  break;
 		case INVOKE_CONFIGURE_PASSWORD_POLICY_DLG:	reply = new InvokeConfigurePasswordPolicyDlgEvent(); break;
 		case INVOKE_CONFIGURE_SHARE_SETTINGS_DLG:	reply = new InvokeConfigureShareSettingsDlgEvent();  break;
+		case INVOKE_CONFIGURE_UPDATE_LOGS_DLG:	    reply = new InvokeConfigureUpdateLogsDlgEvent();  break;
 		case INVOKE_CONFIGURE_USER_ACCESS_DLG:		reply = new InvokeConfigureUserAccessDlgEvent();  break;
 		case INVOKE_DOWNLOAD_DESKTOP_APP:           reply = new InvokeDownloadDesktopAppEvent();      break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
@@ -1175,6 +1176,15 @@ public class EventHelper {
 				{
 					handlerNotDefined = false;
 					registrationHandler = InvokeConfigureShareSettingsDlgEvent.registerEvent( eventBus, ((InvokeConfigureShareSettingsDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case INVOKE_CONFIGURE_UPDATE_LOGS_DLG:
+				// An InvokeConfigureUpdateLogsDlgEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof InvokeConfigureUpdateLogsDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeConfigureUpdateLogsDlgEvent.registerEvent(eventBus, ((InvokeConfigureUpdateLogsDlgEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -2930,6 +2940,7 @@ public class EventHelper {
 			case INVOKE_CONFIGURE_MOBILE_APPS_DLG:	       	   hasHandler = (eventHandler instanceof InvokeConfigureMobileAppsDlgEvent.Handler);           break;
 			case INVOKE_CONFIGURE_PASSWORD_POLICY_DLG:		   hasHandler = (eventHandler instanceof InvokeConfigurePasswordPolicyDlgEvent.Handler);       break;
 			case INVOKE_CONFIGURE_SHARE_SETTINGS_DLG:	       hasHandler = (eventHandler instanceof InvokeConfigureShareSettingsDlgEvent.Handler);        break;
+			case INVOKE_CONFIGURE_UPDATE_LOGS_DLG:		       hasHandler = (eventHandler instanceof InvokeConfigureUpdateLogsDlgEvent.Handler);           break;
 			case INVOKE_CONFIGURE_USER_ACCESS_DLG:		       hasHandler = (eventHandler instanceof InvokeConfigureUserAccessDlgEvent.Handler);           break;
 			case INVOKE_COPY_FILTERS_DLG:                      hasHandler = (eventHandler instanceof InvokeCopyFiltersDlgEvent.Handler);                   break;
 			case INVOKE_DOWNLOAD_DESKTOP_APP:                  hasHandler = (eventHandler instanceof InvokeDownloadDesktopAppEvent.Handler);               break;

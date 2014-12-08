@@ -29,6 +29,7 @@
 	<property name="localeCountry" access="field" length="16"/>
 	<property name="adHocFoldersEnabled" access="field"/>
     <property name="adHocFoldersLastModified"/>
+	<property name="autoApplyDeferredUpdateLogs" access="field"/>
 	<property name="fileArchivingEnabled" access="field"/>
 	<property name="downloadEnabled" access="field"/>
 	<property name="passwordPolicyEnabled" access="field"/>

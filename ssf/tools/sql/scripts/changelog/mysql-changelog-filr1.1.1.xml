@@ -147,4 +147,13 @@
         <sql>create index ttype_obkey_audit on SS_AuditTrail (transactionType(2),owningBinderKey(251));</sql>       
     </changeSet>
 
+    <changeSet author="dennis" context="schema" failOnError="true" id="13">
+        <comment>Automatically apply deferred update logs in background</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="autoApplyDeferredUpdateLogs" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

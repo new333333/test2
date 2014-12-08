@@ -201,6 +201,8 @@ public interface AdminModule {
     public void setDownloadEnabled( boolean enabled );
     public boolean isPasswordPolicyEnabled();
     public void setPasswordPolicyEnabled( boolean enabled );
+    public boolean isAutoApplyDeferredUpdateLogs();
+    public void setAutoApplyDeferredUpdateLogs( boolean autoApplyDeferredUpdateLogs );
     public boolean isWebAccessEnabled();
     public void setWebAccessEnabled( boolean enabled );
     public boolean isFileArchivingEnabled();

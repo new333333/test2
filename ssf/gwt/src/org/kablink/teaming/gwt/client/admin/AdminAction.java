@@ -50,6 +50,7 @@ public enum AdminAction implements IsSerializable
 	CONFIGURE_FILE_VERSION_AGING( "Configure file version aging" ),
 	CONFIGURE_FOLDER_INDEX( "Configure folder index" ),
 	CONFIGURE_FOLDER_SEARCH_NODES( "Configure folder search nodes" ),
+	CONFIGURE_FOLDER_UPDATE_LOGS( "Configure folder update logs" ),
 	CONFIGURE_HOME_PAGE( "Configure home page" ),
 	CONFIGURE_MOBILE_ACCESS( "Configure mobile access" ),
 	CONFIGURE_MOBILE_APPS( "Configure Mobile Apps" ),
