@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
@@ -69,6 +68,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowStateHistory;
 import org.kablink.teaming.domain.Workspace;
@@ -104,7 +104,6 @@ import org.kablink.teaming.util.LocaleUtils;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.util.Validator;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -679,8 +678,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				// for each user and group.
 				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_IMPORT_TYPELESS_DN, null );
 
-				// Admin needs to re-index
-				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, null );
+				// Admin needs to re-index, set the flag to false. (Do not set it to null!!! There are checks later on for null.)
+				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "false" );
 
 				// We don't need to perform the other admin tasks.
 				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true" );
@@ -723,6 +722,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				getTemplateModule().updateDefaultTemplates(top.getId(), true);
 				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
 				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
+			}
+			
+			//This change should not require a re-index
+			UserProperties adminUserProperties = getProfileModule().getUserProperties( superU.getId() );
+			if (null == adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX )) {
+				//The index flag got set to null at the beginning of the upgradeZoneTx routine
+				//So, unless the search index flag was explititly set to 'false' later, then we don't need to re-index
+				getProfileModule().setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true" );
 			}
 		}
 		
