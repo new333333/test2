@@ -6116,7 +6116,7 @@ public class GwtViewHelper {
 
 			// If we have a quick filter and we processing a
 			// 'Shared by/with Me' collection and we have some rows...
-			if (MiscUtil.hasString(quickFilter) && (isCollectionSharedByMe || isCollectionSharedWithMe) && (!(folderRows.isEmpty()))) {
+			if (MiscUtil.hasString(quickFilter) && (isCollectionSharedByMe || isCollectionSharedWithMe || isCollectionSharedPublic) && (!(folderRows.isEmpty()))) {
 				// ...we need to apply the quick filter to the
 				// ...List<FolderRow>.
 				folderRows = filterSharedMeFolderRows(
