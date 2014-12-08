@@ -429,6 +429,7 @@ public class WebKeys {
 	public static final String ACTION_RELOAD_PARENT="reload_parent";
 	public static final String ACTION_FOLDER_INDEX_CONFIGURE="configure_index";
 	public static final String ACTION_FOLDER_SEARCH_NODES_CONFIGURE="configure_search_nodes";
+	public static final String ACTION_FOLDER_SEARCH_UPDATE_LOGS_CONFIGURE="configure_update_logs_nodes";
 	public static final String ACTION_DEFINITION_IMPORT="import_definition";
 	public static final String ACTION_DEFINITION_EXPORT="export_definition";
 	public static final String ACTION_CONFIGURATION="configure_configuration";

@@ -31,6 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.domain;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -79,6 +80,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private String localeLanguage;
 	private String localeCountry;
 	private Boolean adHocFoldersEnabled;
+	private Boolean autoApplyDeferredUpdateLogs;
     private Date adHocFoldersLastModified;
 	private Boolean fileArchivingEnabled;
 	private Boolean passwordPolicyEnabled;
@@ -525,6 +527,25 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
     public void setAdHocFoldersLastModified(Date adHocFoldersLastModified) {
         this.adHocFoldersLastModified = adHocFoldersLastModified;
     }
+
+	/**
+	 * 
+	 */
+	public boolean isAutoApplyDeferredUpdateLogs()
+	{
+		if ( autoApplyDeferredUpdateLogs == null )
+			return true;
+		
+		return autoApplyDeferredUpdateLogs.booleanValue();
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAutoApplyDeferredUpdateLogs( boolean autoApply )
+	{
+		autoApplyDeferredUpdateLogs = Boolean.valueOf( autoApply );
+	}
 
     /**
 	 * 

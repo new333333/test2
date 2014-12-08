@@ -94,11 +94,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -241,6 +243,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResp
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TestKeyShieldConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.TestKeyShieldConnectionResponse.GwtKeyShieldConnectionTestStatusCode;
+import org.kablink.teaming.gwt.client.rpc.shared.UpdateLogsConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.UserAccessConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
@@ -3078,7 +3081,7 @@ public class GwtServerHelper {
 				if ( allowIndexing )
 				{
 					// Yes
-					if ( adminModule.retrieveIndexNodesHA() != null )
+					if ( ( adminModule.retrieveIndexNodesHA() != null ) || SPropsUtil.getBoolean( "force.ha.index.config", false ) )
 					{
 						GwtAdminCategory manageSearchIndexCategory;
 						
@@ -3113,6 +3116,21 @@ public class GwtServerHelper {
 							
 							adminAction = new GwtAdminAction();
 							adminAction.init( title, url, AdminAction.CONFIGURE_FOLDER_SEARCH_NODES );
+							
+							// Add this action to the "manage search index" category
+							manageSearchIndexCategory.addAdminOption( adminAction );
+						}
+						
+						// Add an "Update Logs" action
+						{
+							title = NLT.get( "administration.search.title.updateLogs" );
+							
+							adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+							adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_FOLDER_SEARCH_UPDATE_LOGS_CONFIGURE );
+							url = adaptedUrl.toString();
+							
+							adminAction = new GwtAdminAction();
+							adminAction.init( title, url, AdminAction.CONFIGURE_FOLDER_UPDATE_LOGS );
 							
 							// Add this action to the "manage search index" category
 							manageSearchIndexCategory.addAdminOption( adminAction );
@@ -8691,6 +8709,19 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return the update logs configuration
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 */
+	public static UpdateLogsConfig getUpdateLogsConfig(AllModulesInjected bs, HttpServletRequest request) {
+		UpdateLogsConfig config = new UpdateLogsConfig(bs.getAdminModule().isAutoApplyDeferredUpdateLogs());
+		return config;
+	}
+	
+	/**
 	 * Returns the Object from an entry map.
 	 * 
 	 * @param em
@@ -10763,6 +10794,7 @@ public class GwtServerHelper {
 		case GET_TOOLBAR_ITEMS:
 		case GET_TOP_RANKED:
 		case GET_TRASH_URL:
+		case GET_UPDATE_LOGS_CONFIG:
 		case GET_UPGRADE_INFO:
 		case GET_USER_ACCESS_CONFIG:
 		case GET_USER_AVATAR:
@@ -10851,6 +10883,7 @@ public class GwtServerHelper {
 		case SAVE_TASK_STATUS:
 		case SAVE_SEARCH:
 		case SAVE_TAG_SORT_ORDER:
+		case SAVE_UPDATE_LOGS_CONFIG:
 		case SAVE_USER_ACCESS_CONFIG:
 		case SAVE_USER_LIST_STATUS:
 		case SAVE_WEBACCESS_SETTING:
@@ -11761,6 +11794,23 @@ public class GwtServerHelper {
 		return Boolean.TRUE;
 	}
 
+	/**
+	 * Save the UpdateLogsConfig information.
+	 * 
+	 * @param bs
+	 * @param updateLogsConfig
+	 * 
+	 * @return
+	 */
+	public static Boolean saveUpdateLogsConfig(AllModulesInjected bs, UpdateLogsConfig updateLogsConfig) {
+		// Save the update logs configuration.
+		boolean autoApplyDeferredUpdateLogs = updateLogsConfig.isAutoApplyDeferredUpdateLogs();
+		bs.getAdminModule().setAutoApplyDeferredUpdateLogs(autoApplyDeferredUpdateLogs);
+		
+		// If we get here, we simply always return true.
+		return Boolean.TRUE;
+	}
+	
 	/**
 	 * Save the UserAccessConfig information.  This includes 'allow
 	 * guest access', 'allow self registration', 'allow external users'

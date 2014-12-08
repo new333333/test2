@@ -150,4 +150,13 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="dennis" context="schema" failOnError="true" id="13">
+        <comment>Automatically apply deferred update logs in background</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="AUTOAPPLYDEFERREDUPDATELOGS" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureMobileAppsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigurePasswordPolicyDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureShareSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeConfigureUpdateLogsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditKeyShieldConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditLdapConfigDlgEvent;
@@ -99,6 +100,7 @@ import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMobileAppsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfigureUpdateLogsDlg.ConfigureUpdateLogsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditKeyShieldConfigDlg.EditKeyShieldConfigDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.EditLdapConfigDlgClient;
@@ -168,6 +170,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigurePasswordPolicyDlgEvent.Handler,
 		InvokeConfigureShareSettingsDlgEvent.Handler,
 		InvokeConfigureUserAccessDlgEvent.Handler,
+		InvokeConfigureUpdateLogsDlgEvent.Handler,
 		InvokeEditKeyShieldConfigDlgEvent.Handler,
 		InvokeEditLdapConfigDlgEvent.Handler,
 		InvokeEditNetFolderDlgEvent.Handler,
@@ -213,6 +216,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ManageUsersDlg m_manageUsersDlg = null;
 	private RunAReportDlg m_runAReportDlg = null;
 	private ConfigurePasswordPolicyDlg m_configurePasswordPolicyDlg = null;
+	private ConfigureUpdateLogsDlg m_configureUpdateLogsDlg = null;
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
 	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
 	private EditZoneShareSettingsDlg m_editZoneShareSettingsDlg = null;
@@ -248,6 +252,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_MOBILE_APPS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_PASSWORD_POLICY_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_SHARE_SETTINGS_DLG,
+		TeamingEvents.INVOKE_CONFIGURE_UPDATE_LOGS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
 		TeamingEvents.INVOKE_EDIT_KEYSHIELD_CONFIG_DLG,
 		TeamingEvents.INVOKE_EDIT_LDAP_CONFIG_DLG,
@@ -461,8 +466,9 @@ public class AdminControl extends TeamingPopupPanel
 			actions = category.getActions();
 			if ( actions != null )
 			{
-				boolean showManageMobileDevices  = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
-				boolean showPasswordPolicy       = GwtClientHelper.isPasswordPolicyEnabled();
+				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
+				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
+				boolean showUpdateLogs          = ConfigureUpdateLogsDlg.SHOW_UPDATE_LOGS;
 				for (GwtAdminAction action : actions )
 				{
 					if ( action.getActionType().equals( AdminAction.MANAGE_MOBILE_DEVICES ) && ( ! showManageMobileDevices ) )
@@ -471,6 +477,11 @@ public class AdminControl extends TeamingPopupPanel
 					}
 					
 					if ( action.getActionType().equals( AdminAction.CONFIGURE_PASSWORD_POLICY ) && ( ! showPasswordPolicy ))
+					{
+						continue;
+					}
+					
+					if ( action.getActionType().equals( AdminAction.CONFIGURE_FOLDER_UPDATE_LOGS ) && ( ! showUpdateLogs ))
 					{
 						continue;
 					}
@@ -877,7 +888,11 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Fire the event to invoke the "Configure Password Policy" dialog
 			InvokeConfigurePasswordPolicyDlgEvent.fireOne();
-			
+		}
+		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_FOLDER_UPDATE_LOGS )
+		{
+			// Fire the event to invoke the "Configure Update Logs" dialog
+			InvokeConfigureUpdateLogsDlgEvent.fireOne();
 		}
 		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_SHARE_SETTINGS )
 		{
@@ -2208,7 +2223,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}
 	
-
 	/**
 	 * Handles InvokeConfigurePasswordPolicyDlgEvent received by this
 	 * class.
@@ -2340,6 +2354,71 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 
+	/**
+	 * Handles InvokeConfigureUpdateLogsDlgEvent received by this
+	 * class.
+	 * 
+	 * Implements the InvokeConfigureUpdateLogsDlgEvent.Handler.onInvokeConfigureUpdateLogsDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeConfigureUpdateLogsDlg( InvokeConfigureUpdateLogsDlgEvent event )
+	{
+		// Get the position of the content control.
+		int x = m_contentControlX;
+		int y = m_contentControlY;
+		
+		// Have we already created a "Configure Update Logs" dialog?
+		if ( null == m_configureUpdateLogsDlg )
+		{
+			int width;
+			int height;
+			
+			// No, create one.
+			height = m_dlgHeight;
+			width = m_dlgWidth;
+			ConfigureUpdateLogsDlg.createAsync(
+											false,
+											true, 
+											x, 
+											y,
+											width,
+											height,
+											new ConfigureUpdateLogsDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final ConfigureUpdateLogsDlg culDlg )
+				{
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							m_configureUpdateLogsDlg = culDlg;
+							
+							m_configureUpdateLogsDlg.init();
+							m_configureUpdateLogsDlg.show();
+						}
+					} );
+				}
+			} );
+		}
+		else
+		{
+			m_configureUpdateLogsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
+			m_configureUpdateLogsDlg.init();
+			m_configureUpdateLogsDlg.setPopupPosition( x, y );
+			m_configureUpdateLogsDlg.show();
+		}
+	}
+	
 	/**
 	 * Handles InvokeConfigureUserAccessDlgEvent received by this class.
 	 * 

@@ -2502,6 +2502,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_UPDATE_LOGS_CONFIG:
+		{
+			UpdateLogsConfig ulConfig = GwtServerHelper.getUpdateLogsConfig( this, req );
+			response = new VibeRpcResponse( ulConfig );
+			return response;
+		}
+		
 		case GET_ZIP_DOWNLOAD_FILES_URL:
 		{
 			GetZipDownloadFilesUrlCmd gzdfuCmd = ((GetZipDownloadFilesUrlCmd) cmd);
@@ -3727,6 +3734,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			stsoCmd = (SaveTagSortOrderCmd) cmd;
 			result = saveTagSortOrder( ri, stsoCmd.getSortOrder() );
 			responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case SAVE_UPDATE_LOGS_CONFIG:
+		{
+			SaveUpdateLogsConfigCmd sulcCmd = ((SaveUpdateLogsConfigCmd) cmd);
+			Boolean result = GwtServerHelper.saveUpdateLogsConfig( this, sulcCmd.getUpdateLogsConfig() );
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
