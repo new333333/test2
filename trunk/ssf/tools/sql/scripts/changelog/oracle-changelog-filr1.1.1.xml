@@ -105,52 +105,7 @@
         </createIndex>
     </changeSet>
 
-    <changeSet author="jong" context="schema" failOnError="true" id="9">
-        <preConditions onFail="MARK_RAN">
-            <indexExists indexName="SEARCH_AUDIT"/>
-        </preConditions>
-        <comment>Drop search_audit index from SS_AuditTrail table</comment>
-        <dropIndex indexName="SEARCH_AUDIT" tableName="SS_AUDITTRAIL"/>        
-    </changeSet>
-
-    <changeSet author="jong" context="schema" failOnError="true" id="10">
-        <preConditions onFail="MARK_RAN">
-            <not>
-            	<indexExists indexName="STARTDATE_AUDIT"/>
-            </not>
-        </preConditions>
-        <comment>Create index on startDate column in SS_AuditTrail table</comment>
-        <createIndex indexName="STARTDATE_AUDIT" tableName="SS_AUDITTRAIL" unique="false">
-            <column name="STARTDATE"/>
-        </createIndex>
-    </changeSet>
-
-    <changeSet author="jong" context="schema" failOnError="true" id="11">
-        <preConditions onFail="MARK_RAN">
-            <not>
-            	<indexExists indexName="STARTBY_AUDIT"/>
-            </not>
-        </preConditions>
-        <comment>Create index on startBy column in SS_AuditTrail table</comment>
-        <createIndex indexName="STARTBY_AUDIT" tableName="SS_AUDITTRAIL" unique="false">
-            <column name="STARTBY"/>
-        </createIndex>
-    </changeSet>
-
-    <changeSet author="jong" context="schema" failOnError="true" id="12">
-        <preConditions onFail="MARK_RAN">
-            <not>
-            	<indexExists indexName="TTYPE_OBKEY_AUDIT"/>
-            </not>
-        </preConditions>
-        <comment>Create index on transactionType and owningBinderKey columns in SS_AuditTrail table</comment>
-        <createIndex indexName="TTYPE_OBKEY_AUDIT" tableName="SS_AUDITTRAIL" unique="false">
-            <column name="TRANSACTIONTYPE"/>
-            <column name="OWNINGBINDERKEY"/>
-        </createIndex>
-    </changeSet>
-
-    <changeSet author="dennis" context="schema" failOnError="true" id="13">
+    <changeSet author="dennis" context="schema" failOnError="true" id="9">
         <comment>Automatically apply deferred update logs in background</comment>
         <addColumn tableName="SS_ZONECONFIG">
             <column name="AUTOAPPLYDEFERREDUPDATELOGS" type="NUMBER(1,0)">
