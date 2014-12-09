@@ -44,9 +44,7 @@ import java.util.Set;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.SortField;
-
 import org.dom4j.Element;
-
 import org.hibernate.exception.LockAcquisitionException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
@@ -73,6 +71,7 @@ import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -100,13 +99,13 @@ import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.FieldFactory;
-
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
@@ -1948,6 +1947,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	}
     
 	private ChangeLog processChangeLogWithSaveFlag(DefinableEntity entry, String operation, boolean saveIt) {
+		AdminModule adminModule = (AdminModule) SpringContextUtil.getBean("adminModule");
+		if (!adminModule.isChangeLogEnabled()) {
+			//Don't build the ChangeLog object if it isn't going to be logged
+			return null;
+		}
 		if (entry instanceof Binder) 
 			return processChangeLog((Binder)entry, operation);
 		ChangeLog changes = ChangeLogUtils.createAndBuild(entry, operation);
