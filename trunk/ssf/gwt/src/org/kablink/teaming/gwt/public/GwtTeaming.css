@@ -6278,10 +6278,11 @@ td.datePickerMonth {
 /* End:  Styles used in the 'Configure Password Policy' dialog. */
 
 /* Start:  Styles used in the 'Configure Update Logs' dialog. */
-	.vibe-configUpdateLogsDlg            {}
-	.vibe-configUpdateLogsDlg-checkPanel {margin-bottom: 0.5em;}
-	.vibe-configUpdateLogsDlg-hintLabel  {margin-left: 10px;}
-	.vibe-configUpdateLogsDlg-hintPanel  {color: #4D6D8B; font-size: 13px; margin-bottom: 0.5em;}
+	.vibe-configUpdateLogsDlg                 {}
+	.vibe-configUpdateLogsDlg-checkPanel      {margin-bottom: 0.5em;}
+	.vibe-configUpdateLogsDlg-hintLabel       {margin-left: 10px;}
+	.vibe-configUpdateLogsDlg-hintLabelHeader {font-size: 16px !important;}
+	.vibe-configUpdateLogsDlg-hintPanel       {color: #4D6D8B; font-size: 13px; margin-bottom: 0.5em;}
 /* End:  Styles used in the 'Configure Update Logs' dialog. */
 
 /* Start:  Styles used in the "Configure Mobile Applications" dialog. */

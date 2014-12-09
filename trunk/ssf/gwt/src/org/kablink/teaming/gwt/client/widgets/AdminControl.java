@@ -468,7 +468,6 @@ public class AdminControl extends TeamingPopupPanel
 			{
 				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
 				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
-				boolean showUpdateLogs          = ConfigureUpdateLogsDlg.SHOW_UPDATE_LOGS;
 				for (GwtAdminAction action : actions )
 				{
 					if ( action.getActionType().equals( AdminAction.MANAGE_MOBILE_DEVICES ) && ( ! showManageMobileDevices ) )
@@ -477,11 +476,6 @@ public class AdminControl extends TeamingPopupPanel
 					}
 					
 					if ( action.getActionType().equals( AdminAction.CONFIGURE_PASSWORD_POLICY ) && ( ! showPasswordPolicy ))
-					{
-						continue;
-					}
-					
-					if ( action.getActionType().equals( AdminAction.CONFIGURE_FOLDER_UPDATE_LOGS ) && ( ! showUpdateLogs ))
 					{
 						continue;
 					}
