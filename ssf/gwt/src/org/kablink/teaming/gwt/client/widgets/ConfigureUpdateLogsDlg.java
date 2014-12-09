@@ -64,8 +64,6 @@ import com.google.gwt.user.client.ui.Panel;
 public class ConfigureUpdateLogsDlg extends DlgBox 
 	implements EditSuccessfulHandler
 {
-	public final static boolean	SHOW_UPDATE_LOGS = false;	//! DRF (20141208):  Leave false on checkin until it's all working.
-	
 	private CheckBox			m_autoApplyDeferredUpdateLogsCB;	//
 	private GwtTeamingMessages	m_messages;							//
 	
@@ -132,7 +130,7 @@ public class ConfigureUpdateLogsDlg extends DlgBox
 	 */
 	private void createHintContent(FlowPanel hintPanel) {
 		Label l = new Label(m_messages.configureUpdateLogsDlg_Hint());
-		l.addStyleName("vibe-configUpdateLogsDlg-hintLabel");
+		l.addStyleName("vibe-configUpdateLogsDlg-hintLabel vibe-configUpdateLogsDlg-hintLabelHeader");
 		hintPanel.add(l);
 	}
 
