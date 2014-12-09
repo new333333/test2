@@ -468,6 +468,7 @@ public interface ObjectKeys {
     public static final String SEARCH_USER_MAX_HITS = "userMaxHits";
     public static final String SEARCH_USER_OFFSET = "userOffset";
     public static final String SEARCH_INCLUDE_NESTED_BINDERS = "includeNestedBinders";
+    public static final String SEARCH_INCLUDE_NESTED_ENTRIES= "includeNestedEntries";
     public static final String SEARCH_SCOPE = "scope";
     public static final String SEARCH_SCOPE_ALL = "all";
     public static final String SEARCH_SCOPE_MY_FILES = "myFiles";
