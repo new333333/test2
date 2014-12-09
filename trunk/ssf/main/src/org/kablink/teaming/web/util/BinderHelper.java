@@ -74,12 +74,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -168,7 +166,6 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Restrictions;
-
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.multipart.MultipartFile;
@@ -4689,7 +4686,19 @@ public class BinderHelper {
 		Map formData = request.getParameterMap();
 		Map columns = new LinkedHashMap();
 		Map columnsText = new LinkedHashMap();
+		List<String> columnOrderList = null;
 		String columnOrder = PortletRequestUtils.getStringParameter(request, "columns__order", "");
+		//Convert the old style column sort order to a list
+		if (columnOrder != null && !columnOrder.equals("")) {
+			columnOrderList = new ArrayList<String>();
+			String[] sortOrder = columnOrder.split("\\|");
+			for (String columnName:  sortOrder) {
+				if (MiscUtil.hasString(columnName)) {
+					columnOrderList.add(columnName);
+				}
+			}
+		}
+
 		String[] columnNames;
 		if (showTrash) {
 			columnNames = TrashHelper.trashColumns;
@@ -4715,7 +4724,7 @@ public class BinderHelper {
 		boolean folderDefault = formData.containsKey("setFolderDefaultColumns");
 		
 		//Save the column settings
-		saveFolderColumnSettings(bs, binderId, columns, columnsText, columnOrder, folderDefault);
+		saveFolderColumnSettings(bs, binderId, columns, columnsText, columnOrderList, folderDefault);
 	}
 	
 	/**
@@ -4731,7 +4740,7 @@ public class BinderHelper {
 	 * @return
 	 */
 	public static void saveFolderColumnSettings(AllModulesInjected bs, Long binderId, 
-			Map columns, Map columnsText, String columnOrder, boolean folderDefault) {
+			Map columns, Map columnsText, List<String> columnOrder, boolean folderDefault) {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Binder binder = bs.getBinderModule().getBinder(binderId);
 		
@@ -4739,14 +4748,16 @@ public class BinderHelper {
 		if (folderDefault || binder instanceof TemplateBinder) {
 			if (bs.getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
 				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
-				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, columnOrder);
+				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER_LIST, columnOrder);
+				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, null);
 				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_TITLES, columnsText);
 			}
 		}
 		
 		Map values = new HashMap();
 		values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, columns);
-		values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, columnOrder);
+		values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER_LIST, columnOrder);
+		values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, null);
 		values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_TITLES, columnsText);
 		//Reset the column positions to the default
 	   	values.put(WebKeys.FOLDER_COLUMN_POSITIONS, "");

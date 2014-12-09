@@ -11330,10 +11330,9 @@ public class GwtServerHelper {
 				//Build a map of columns and column texts
 				Map columns = new HashMap();
 				Map columnsText = new HashMap();
-				String columnSortOrder = "";
+				List<String> columnSortOrderList = new ArrayList<String>();
 				for (FolderColumn fc : fcList) {
-					if (!columnSortOrder.equals("")) columnSortOrder += "|";
-					columnSortOrder += fc.getColumnName();
+					columnSortOrderList.add(fc.getColumnName());
 					if (fc.isColumnShown())
 					     columns.put(fc.getColumnName(), "on");
 					else columns.put(fc.getColumnName(), ""  );
@@ -11346,7 +11345,7 @@ public class GwtServerHelper {
 				}
 				//Save the column settings
 				BinderHelper.saveFolderColumnSettings(bs, Long.valueOf(binderId), columns, columnsText, 
-						columnSortOrder, isDefault);
+						columnSortOrderList, isDefault);
 			}
 			
 			return Boolean.FALSE;

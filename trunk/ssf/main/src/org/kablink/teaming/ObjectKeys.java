@@ -339,6 +339,7 @@ public interface ObjectKeys {
     
     public static final String BINDER_PROPERTY_FILTERS = "binderFilters";
     public static final String BINDER_PROPERTY_FOLDER_COLUMNS = "folderColumns";
+    public static final String BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER_LIST = "folderColumnSortOrderList";
     public static final String BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER = "folderColumnSortOrder";
     public static final String BINDER_PROPERTY_FOLDER_COLUMN_TITLES = "folderColumnTitles";
     @Deprecated
@@ -597,6 +598,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_BINDER_SHOW_USER_LIST = "userBinderShowUserList";
     public static final String USER_PROPERTY_DESKTOP_APP_ACCESS_FILR = "userDesktopApp_AccessFilr";
     public static final String USER_PROPERTY_DESKTOP_APP_CACHE_PWD = "userDesktopApp_CachePwd";
+    public static final String USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER_LIST = "userFolderColumnSortOrderList";
     public static final String USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER = "userFolderColumnSortOrder";
     public static final String USER_PROPERTY_FOLDER_COLUMN_TITLES = "userFolderColumnTitles";
     public static final String USER_PROPERTY_MOBILE_APPS_ACCESS_FILR = "userMobileApps_AccessFilr";
