@@ -1889,8 +1889,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             maxCount = -1;
         }
         Map resultMap;
-        if (binder instanceof Folder && (entries || files)) {
-            resultMap = searchForFolderContents(id, binders, offset, maxCount);
+        if (binder instanceof Folder) {
+            resultMap = searchForFolderContents(id, binders, entries || files, offset, maxCount);
         } else {
             Criteria crit = new Criteria();
             if (filter!=null) {
@@ -1934,9 +1934,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return results;
     }
 
-    private Map searchForFolderContents(long folderId, boolean includeSubFolders, int offset, int maxCount) {
+    private Map searchForFolderContents(long folderId, boolean includeSubFolders, boolean includeEntries, int offset, int maxCount) {
         Map options = new HashMap();
         options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, includeSubFolders);
+        options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES, includeEntries);
         options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
         options.put(ObjectKeys.SEARCH_SORT_DESCEND,           Boolean.FALSE);
         options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      Constants.SORT_TITLE_FIELD);
