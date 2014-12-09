@@ -4190,6 +4190,7 @@ public class GwtViewHelper {
 			
 			Map    columnNames;
 			Map    columnTitles      = null;
+			List<String> columnOrderList = null;
 			String columnOrderString = null;
 			List columnsAll = new ArrayList();
 
@@ -4330,6 +4331,8 @@ public class GwtViewHelper {
 						// Read and names and sort order from there as
 						// well.
 						columnTitles      = ((Map)    folder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_TITLES    ));
+						
+						columnOrderList   = ((List<String>) folder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER_LIST));
 						columnOrderString = ((String) folder.getProperty(ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER));
 					}
 				}
@@ -4339,6 +4342,7 @@ public class GwtViewHelper {
 					// folder!  Read and names and sort order from
 					// there as well.
 					columnTitles      = ((Map)    userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_TITLES    ));
+					columnOrderList   = ((List<String>) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER_LIST));
 					columnOrderString = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER));
 				}
 			}
@@ -4349,29 +4353,24 @@ public class GwtViewHelper {
 				columnTitles = new HashMap();
 			}
 			
+			if (columnOrderList == null && MiscUtil.hasString(columnOrderString)) {
+				//Convert the old format to the new format
+				columnOrderList = new ArrayList<String>();
+				String[] sortOrder = columnOrderString.split("\\|");
+				for (String columnName:  sortOrder) {
+					if (MiscUtil.hasString(columnName)) {
+						columnOrderList.add(columnName);
+					}
+				}
+			}
+			
 			// If we don't have any column sort order...
-			if (!(MiscUtil.hasString(columnOrderString))) {
+			if (columnOrderList == null) {
+				columnOrderList = new ArrayList<String>();
 				// ...define one based on the column names.
 				Set<String> keySet = columnNames.keySet();
-				boolean firstCol = true;
-				StringBuffer sb = new StringBuffer("");
 				for (Iterator<String> ksIT = keySet.iterator(); ksIT.hasNext(); ) {
-					if (!firstCol) {
-						sb.append("|");
-					}
-					sb.append(ksIT.next());
-					firstCol = false;
-				}
-				columnOrderString = sb.toString();
-			}
-
-			// Finally, generate a List<String> from the raw column
-			// order string...
-			List<String> columnSortOrder = new ArrayList<String>();
-			String[] sortOrder = columnOrderString.split("\\|");
-			for (String columnName:  sortOrder) {
-				if (MiscUtil.hasString(columnName)) {
-					columnSortOrder.add(columnName);
+					columnOrderList.add(ksIT.next());
 				}
 			}
 			
@@ -4379,8 +4378,8 @@ public class GwtViewHelper {
 			Set<String> keySet = columnNames.keySet();
 			for (Iterator<String> ksIT = keySet.iterator(); ksIT.hasNext(); ) {
 				String columnName = ksIT.next();
-				if (!(columnSortOrder.contains(columnName))) {
-					columnSortOrder.add(columnName);
+				if (!(columnOrderList.contains(columnName))) {
+					columnOrderList.add(columnName);
 				}
 			}
 
@@ -4389,7 +4388,7 @@ public class GwtViewHelper {
 			// list that we can fill from that data.
 			List<FolderColumn> fcList = new ArrayList<FolderColumn>();
 			List<FolderColumn> fcListAll = new ArrayList<FolderColumn>();
-			for (String colName:  columnSortOrder) {
+			for (String colName:  columnOrderList) {
 				if (!columnsAll.contains(colName)) {
 					FolderColumn fc = new FolderColumn(colName);
 					if (colName.contains(",")) {
