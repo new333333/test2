@@ -3050,6 +3050,7 @@ public class GwtViewHelper {
 		if (isFileFolder || (isCollection && (ct.isMyFiles() || ct.isNetFolders())))
 		     dateCSK = Constants.FILE_TIME_FIELD; 
 		else dateCSK = Constants.MODIFICATION_DATE_FIELD;
+		@SuppressWarnings("unused")
 		String adminRightsCSK;
 		if (isManageAdmins)
 		     adminRightsCSK = FolderColumn.COLUMN_ADMIN_RIGHTS;
@@ -3057,7 +3058,7 @@ public class GwtViewHelper {
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
 			if      (colName.equals("administrator"))        {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMINISTRATOR);                                                                            }
-			else if (colName.equals("adminRights"))          {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMIN_RIGHTS);          fc.setColumnSortKey(adminRightsCSK);                               }
+			else if (colName.equals("adminRights"))          {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMIN_RIGHTS);          fc.setColumnSortable(false);                                       }
 			else if (colName.equals("author"))               {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);           }
 			else if (colName.equals("comments"))             {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                                              }
 			else if (colName.equals("date"))                 {fc.setColumnSearchKey(dateCSK);                                                                                                      }
@@ -3068,7 +3069,7 @@ public class GwtViewHelper {
 			else if (colName.equals("deviceUser"))           {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_USER);           fc.setColumnSortKey(ObjectKeys.FIELD_MOBILE_DEVICE_USER_TITLE);    }
 			else if (colName.equals("deviceWipeDate"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_WIPE_DATE);      fc.setColumnSortKey(ObjectKeys.FIELD_MOBILE_DEVICE_WIPE_DATE);     }
 			else if (colName.equals("deviceWipeScheduled"))  {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_WIPE_SCHEDULED); fc.setColumnSortKey(ObjectKeys.FIELD_MOBILE_DEVICE_WIPE_SCHEDULED);}
-			else if (colName.equals("mobileDevices"))        {fc.setColumnSearchKey(FolderColumn.COLUMN_MOBILE_DEVICES);        fc.setColumnSortable(false);                                       }
+			else if (colName.equals("docNum"))               {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);                 fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);                   }
 			else if (colName.equals("download"))             {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                                     }
 			else if (colName.equals("dueDate"))              {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                                     }
 			else if (colName.equals("emailAddress"))         {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                                        }
@@ -3078,8 +3079,9 @@ public class GwtViewHelper {
 			else if (colName.equals("html"))                 {fc.setColumnSearchKey(Constants.FILE_ID_FIELD);                                                                                      }
 			else if (colName.equals("location"))             {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                                  }
 			else if (colName.equals("loginId"))              {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                                    }
+			else if (colName.equals("mobileDevices"))        {fc.setColumnSearchKey(FolderColumn.COLUMN_MOBILE_DEVICES);        fc.setColumnSortable(false);                                       }
 			else if (colName.equals("netfolder_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);      fc.setColumnSortable(false);                                       }
-			else if (colName.equals("docNum"))               {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);                 fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);                   }
+			else if (colName.equals("principalType"))        {fc.setColumnSearchKey(Constants.IDENTITY_INTERNAL_FIELD);         fc.setColumnSortKey(Constants.IDENTITY_INTERNAL_FIELD);            }
 			else if (colName.equals("rating"))               {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                                       }
 			else if (colName.equals("responsible"))          {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                                  }
 			else if (colName.equals("size"))                 {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                                    }
@@ -3094,7 +3096,6 @@ public class GwtViewHelper {
 			else if (colName.equals("tasks"))                {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                                        }
 			else if (colName.equals("teamMembers"))          {fc.setColumnSearchKey(FolderColumn.COLUMN_TEAM_MEMBERS);          fc.setColumnSortable(false);                                       }
 			else if (colName.equals("title"))                {fc.setColumnSearchKey(Constants.TITLE_FIELD);                     fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);                   }
-			else if (colName.equals("principalType"))             {fc.setColumnSearchKey(Constants.IDENTITY_INTERNAL_FIELD);         fc.setColumnSortKey(Constants.IDENTITY_INTERNAL_FIELD);            }
 			else {
 				// Does the column name contain multiple parts wrapped
 				// in a single value?
