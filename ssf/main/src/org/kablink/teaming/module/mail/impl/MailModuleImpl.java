@@ -864,6 +864,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	  		String fromAddress = "";
 			try                  {fromAddress = mailSender.getDefaultFrom();  }
 			catch (Exception e2) {fromAddress = NLT.get("mail.noFromAddress");}
+			if (fromAddress == null || fromAddress.equals("")) {
+				fromAddress = NLT.get("mail.noFromAddress");
+			}
 	  		EmailLogType logType = EmailLogType.binderNotification;
 	  		EmailLog emailLog = new EmailLog(logType, now, rcpts, fromAddress, EmailLogStatus.queued);
 	  		mHelper.setEmailLog(emailLog);
