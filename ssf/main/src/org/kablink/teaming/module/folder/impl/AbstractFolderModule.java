@@ -831,7 +831,13 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	public Map getEntries(Long folderId, Map searchOptions) {
         Folder folder = loadFolder(folderId);
         //search query does access checks
-        return loadProcessor(folder).getBinderEntries(folder, entryTypes, searchOptions);
+        String[] types = entryTypes;
+        if (searchOptions.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES) &&
+                !((Boolean)searchOptions.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES))) {
+            // Use a fake entry type that won't actually match anything
+            types = new String[] {"fakeEntry"};
+        }
+        return loadProcessor(folder).getBinderEntries(folder, types, searchOptions);
 
     }
     
