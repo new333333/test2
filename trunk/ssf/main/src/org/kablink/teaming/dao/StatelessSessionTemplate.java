@@ -32,68 +32,66 @@
  */
 package org.kablink.teaming.dao;
 
-import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.StatelessSession;
-import org.kablink.teaming.util.SpringContextUtil;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.hibernate3.HibernateAccessor;
 
 /**
- * Helper class that aids with implementing data access code using short-lived and plain 
- * Hibernate session or stateless session.
+ * Helper class that simplifies Hibernate data access code that uses Hibernate 
+ * stateless session. 
  * 
- * When executed in this manner, it does NOT use the pre-bound (thread-bound) Hibernate
- * session, and its ramification must be clearly understood prior to using this class. 
- * If unsure about the distinction, use existing Dao classes such as CoreDao.
+ * We provide this template ourselves because Spring's HibernateTemplate class
+ * does not support stateless session.
+ * 
+ * In addition, this template is designed to be used directly by the application
+ * code rather than used indirectly by a DAO implementation. This is based on
+ * the observation that only the application code performing bulk operations
+ * or extended operations should consider using this template and their data 
+ * access logic tends to require much greater control over the various aspects
+ * of the interactions with the database (such as transactions) than typical
+ * DAO interface/implementation can provide.
+ * 
+ * In most cases, application code must NOT use this template since careless
+ * use of this template can result in incorrect or unpredictable behavior 
+ * due to vulnerability to data aliasing effects.
  * 
  * @author Jong
  *
  */
-public class PlainHibernateTemplate {
+public class StatelessSessionTemplate extends HibernateAccessor {
 
-	private static Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
+	protected Log logger = LogFactory.getLog(getClass());
 
-	public static <T> T execute(SessionCallback<T> action) throws HibernateException, SQLException {
-		Session session = getSessionFactory().openSession();
-		try {
-			return action.doInHibernate(session);
-		}
-		finally {
-			closeSession(session);
-		}
+	public interface Callback<T> {
+		T doInHibernate(StatelessSession session) throws HibernateException, SQLException;
 	}
 	
-	public static <T> T execute(StatelessSessionCallback<T> action) throws HibernateException, SQLException {
+	public <T> T execute(Callback<T> action) throws DataAccessException {
 		StatelessSession session = getSessionFactory().openStatelessSession();
 		try {
 			return action.doInHibernate(session);
+		}
+		catch (HibernateException ex) {
+			throw convertHibernateAccessException(ex);
+		}
+		catch (SQLException ex) {
+			throw convertJdbcAccessException(ex);
+		}
+		catch (RuntimeException ex) {
+			// Callback code threw application exception...
+			throw ex;
 		}
 		finally {
 			closeSession(session);
 		}		
 	}
 	
-	private static void closeSession(Session session) {
-		if (session != null) {
-			logger.debug("Closing Hibernate session");
-			try {
-				session.close();
-			}
-			catch (HibernateException ex) {
-				logger.warn("Could not close Hibernate session", ex);
-			}
-			catch (Throwable ex) {
-				logger.warn("Unexpected exception on closing Hibernate session", ex);
-			}
-		}
-	}
-	
-	private static void closeSession(StatelessSession session) {
+	private void closeSession(StatelessSession session) {
 		if (session != null) {
 			logger.debug("Closing Hibernate stateless session");
 			try {
@@ -108,7 +106,4 @@ public class PlainHibernateTemplate {
 		}
 	}
 	
-	private static SessionFactory getSessionFactory() {
-		return (SessionFactory) SpringContextUtil.getBean("sessionFactory");
-	}
 }
