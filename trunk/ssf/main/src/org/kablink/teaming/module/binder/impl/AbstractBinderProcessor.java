@@ -95,6 +95,7 @@ import org.kablink.teaming.fi.connection.ResourceSession;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.jobs.BinderReindex;
 import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
@@ -195,7 +196,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		binderModule = (BinderModule)SpringContextUtil.getBean("binderModule");
 		return binderModule;
 	}
-	
+
+	protected AdminModule getAdminModule() {
+		return (AdminModule) SpringContextUtil.getBean("adminModule");
+	}
+
 	private WorkflowModule workflowModule;
 	public void setWorkflowModule(WorkflowModule workflowModule) {
 		this.workflowModule = workflowModule;
@@ -3127,7 +3132,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	@Override
 	public ChangeLog processChangeLog(Binder binder, String operation, boolean skipDbLog) {
 		ChangeLog changes = null;
-		
+
+		if (!getAdminModule().isChangeLogEnabled()) {
+			//Don't build the ChangeLog object if it isn't going to be logged
+			return null;
+		}
+
 		if(!skipDbLog) {
 			//any changes here should be considered to template export
 			changes = ChangeLogUtils.createAndBuild(binder, operation);
