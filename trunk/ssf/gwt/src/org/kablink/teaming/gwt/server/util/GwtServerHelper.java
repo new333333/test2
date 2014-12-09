@@ -364,6 +364,7 @@ import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.FavoritesLimitExceededException;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
+import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.PasswordPolicyHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
@@ -12694,13 +12695,14 @@ public class GwtServerHelper {
 					    	// ...setup the adminRightsChangeMap with
 					    	// ...the new admin rights display string
 					    	// ...for each item...
+					    	boolean addedGroupRights = false;
 					    	for (Long id:  validPIDs) {
 					    		for (Principal p:  pList) {
 					    			if (id.equals(p.getId())) {
 					    				boolean admin;
 					    				if (p instanceof GroupPrincipal)
-					    				     admin = AdminHelper.isSiteAdminMember(p.getId());
-					    				else admin = bs.getAdminModule().testUserAccess(((User) p), AdminOperation.manageFunction);
+					    				     {admin = AdminHelper.isSiteAdminMember(p.getId()); addedGroupRights = true;}
+					    				else {admin = bs.getAdminModule().testUserAccess(((User) p), AdminOperation.manageFunction);}
 					    				AdminRights ar = new AdminRights(GwtViewHelper.getPrincipalAdminRightsString(bs, p), admin);
 					    				adminRightsChangeMap.put(id, ar);
 					    				break;
@@ -12710,12 +12712,29 @@ public class GwtServerHelper {
 					    	
 					    	// ...and force the them to be re-indexed
 					    	// ...so that we correctly pickup the
-					    	// ...current siteAdminUser field in the index.
+					    	// ...current siteAdminUser field in the index...
+					    	List<Principal> validPs = ResolveIds.getPrincipals(validPIDs, false);
+					    	if (addedGroupRights) {
+					    		// ...including for group members.
+					    		List<Long> memberIds = new ArrayList<Long>();
+					    		for (Principal validP:  validPs) {
+					    			if (validP instanceof GroupPrincipal) {
+					    				Set<Long> membership = getGroupMemberIds((GroupPrincipal) validP);
+					    				if (null != membership) {
+					    					for (Long memberId: membership) {
+					    						ListUtil.addLongToListLongIfUnique(memberIds, memberId);
+					    					}
+					    				}
+					    			}
+					    		}
+						    	List<Principal> memberPs = ResolveIds.getPrincipals(memberIds, false);
+						    	if (MiscUtil.hasItems(memberPs)) {
+						    		validPs.addAll(memberPs);
+						    	}
+					    	}
 					    	bs.getProfileModule().indexEntries(
-					    		ResolveIds.getPrincipals(
-					    			validPIDs,
-					    			false),	// false -> Skip inactive entities.  We'll have weeded them out of the list above anyway.
-					    		true);		// true  -> Skip file content indexing.  All we really care about is getting the siteAdminUser indexing correct on User's.
+					    		validPs,	//
+					    		true);		// true  -> Skip file content indexing.  All we really care about is getting the siteAdminUser indexing correct on User's and Group's.
 						}
 					}
 				}
