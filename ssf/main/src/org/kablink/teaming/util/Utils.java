@@ -323,6 +323,10 @@ public class Utils {
 	  	return canUserOnlySeeCommonGroupMembers(user);
   	}
   	public static boolean canUserOnlySeeCommonGroupMembers(User user) {
+  		if (!Utils.checkIfVibe() && !Utils.checkIfFilrAndVibe()) {
+  			//Filr and iPrint don't support the "can only see..." feature. Only Vibe does.
+  			return false;
+  		}
 		if (user == null) return false;
 		Map onlySeeMap = (Map) RequestContextHolder.getRequestContext().getCacheEntry("onlySeeMap");
 		if (onlySeeMap == null) onlySeeMap = new HashMap();
