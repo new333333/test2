@@ -157,6 +157,8 @@ public class EmailLog extends ZonedObject {
 			if (fromAdrs != null && fromAdrs.length > 0) {
 				Address fromAdr = fromAdrs[0];
 				fromAddress = fromAdr.toString();
+			} else {
+				fromAddress = NLT.get("mail.noFromAddress");
 			}
 		} catch (MessagingException e2) {
 			fromAddress = NLT.get("mail.noFromAddress");
