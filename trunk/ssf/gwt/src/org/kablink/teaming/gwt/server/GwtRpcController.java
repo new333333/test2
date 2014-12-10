@@ -129,7 +129,7 @@ public class GwtRpcController extends RemoteServiceServlet
     		}
     		finally
     		{
-    			debugLogOperationTime( cmdName, "performASSChecks()", opBegin );
+    			debugLogOperationTime( cmdName, "performXSSChecks()", opBegin );
     		}
             
             // Is the first parameter to the method is an
