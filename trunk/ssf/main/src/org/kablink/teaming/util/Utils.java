@@ -332,21 +332,24 @@ public class Utils {
 		if (user == null) return false;
 		HashMapCache<Long, Boolean> onlySeeCache = null;
 		HttpSession session = ZoneContextHolder.getHttpSession();
-		if (session != null) {
-			onlySeeCache = (HashMapCache<Long, Boolean>)session.getAttribute(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE);
-			if (onlySeeCache == null) {
-				onlySeeCache = new HashMapCache<Long, Boolean>(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE_TIMEOUT);
-			}
-			session.setAttribute(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE, onlySeeCache);
-		} else {
-			//This must be a REST call. So use the request context to hold the cache
-			RequestContext context = RequestContextHolder.getRequestContext();
-			if (context != null) {
-				onlySeeCache = (HashMapCache<Long, Boolean>)context.getCacheEntry(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE);
+		int canOnlySeeTimeout = SPropsUtil.getInt("cache.SESSION_CAN_ONLY_SEE_CACHE_TIMEOUT", ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE_TIMEOUT);
+		if (canOnlySeeTimeout > 0) {
+			if (session != null) {
+				onlySeeCache = (HashMapCache<Long, Boolean>)session.getAttribute(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE);
 				if (onlySeeCache == null) {
-					onlySeeCache = new HashMapCache<Long, Boolean>(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE_TIMEOUT);
+					onlySeeCache = new HashMapCache<Long, Boolean>(canOnlySeeTimeout);
+					session.setAttribute(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE, onlySeeCache);
 				}
-				context.setCacheEntry(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE, onlySeeCache);
+			} else {
+				//This must be a REST call. So use the request context to hold the cache
+				RequestContext context = RequestContextHolder.getRequestContext();
+				if (context != null) {
+					onlySeeCache = (HashMapCache<Long, Boolean>)context.getCacheEntry(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE);
+					if (onlySeeCache == null) {
+						onlySeeCache = new HashMapCache<Long, Boolean>(canOnlySeeTimeout);
+						context.setCacheEntry(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE, onlySeeCache);
+					}
+				}
 			}
 		}
 		if (onlySeeCache != null) {
@@ -356,8 +359,8 @@ public class Utils {
 				return value;
 			}
 		} else {
-			//This shouldn't ever happen
-			onlySeeCache = new HashMapCache<Long, Boolean>(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE_TIMEOUT);
+			//This shouldn't ever happen, but to prevent an NPE, ...
+			onlySeeCache = new HashMapCache<Long, Boolean>(canOnlySeeTimeout);
 		}
 		
 		CoreDao coreDao = (CoreDao) SpringContextUtil.getBean("coreDao");

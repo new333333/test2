@@ -46,6 +46,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.cache.impl.HashMapCache;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -1077,7 +1078,7 @@ public class AccessUtils  {
 			return null; // cannot obtain session for the user
 		try {
 			//See if the answer has been cached
-			HttpSession httpSession = WebHelper.getCurrentHttpSession();
+			HttpSession httpSession = ZoneContextHolder.getHttpSession();
 			if (httpSession != null) {
 				//This must be coming from a web client. So, use the httpSession to store the cache
 				HashMapCache<Long, Long> dredgedAclCache = (HashMapCache<Long, Long>)httpSession.getAttribute(ObjectKeys.SESSION_DREDGED_ROLE_ID_CACHE);
