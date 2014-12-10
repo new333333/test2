@@ -35,9 +35,10 @@ package org.kablink.teaming.remoting.ws.interceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.module.report.ReportModule;
 
 
@@ -56,14 +57,15 @@ public class LoginInfoInterceptor implements MethodInterceptor {
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		String authenticator = AuthenticationContextHolder.getAuthenticator();
-		if(LoginInfo.AUTHENTICATOR_WS.equals(authenticator) ||
-				LoginInfo.AUTHENTICATOR_REMOTING_T.equals(authenticator)) {	
+		if(LoginAudit.AUTHENTICATOR_WS.equals(authenticator) ||
+				LoginAudit.AUTHENTICATOR_REMOTING_T.equals(authenticator)) {	
 			// Message-level authentication is in use, for example, WS with WS-Security
 			// authentication or any remoting with token-based authentication. 
 			// These protocols require authentication to take place for every message
 			// invocation. The fact that you're here means that the authentication has 
 			// already happended and it was successful. So we should report the fact.
-			LoginInfo loginInfo = new LoginInfo(authenticator,
+			LoginAudit loginInfo = new LoginAudit(authenticator,
+					ZoneContextHolder.getClientAddr(),
 					RequestContextHolder.getRequestContext().getUserId());
 			
 			if(rc.getAccessToken() != null)

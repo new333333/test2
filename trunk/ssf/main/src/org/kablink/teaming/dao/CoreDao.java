@@ -279,6 +279,7 @@ public interface CoreDao {
 	public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, final List<Long> entryIds,
             AuditTrail.AuditType [] types, final EntityIdentifier.EntityType[] entityTypes, int maxResults);
 	public int purgeAuditTrail(Long zoneId, Date purgeBeforeDate);
+	public int purgeLoginAudit(Long zoneId, Date purgeBeforeDate);
 	
 	public List getChangeLogEntries(final Long zoneId, final Date purgeBeforeDate);
 	public int purgeChangeLogs(Long zoneId, Date purgeBeforeDate);

@@ -643,7 +643,7 @@ update SS_PRINCIPALS set FOREIGNNAME=LOWER(FOREIGNNAME);
     <changeSet author="jong" context="schema" failOnError="true" id="74">
         <comment>Last time full sync completed</comment>
         <addColumn tableName="SS_BINDERSTATE">
-            <column name="LASTFULLSYNCCOMPLETIONTIME" type=TIMESTAMP(6)>
+            <column name="LASTFULLSYNCCOMPLETIONTIME" type="TIMESTAMP(6)">
                 <constraints nullable="true" />
             </column>
         </addColumn>

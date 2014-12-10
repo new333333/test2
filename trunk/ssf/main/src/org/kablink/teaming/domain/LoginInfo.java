@@ -41,6 +41,7 @@ import java.util.Date;
  * A user login may be stateful and long-lasting (eg. portal and WebDAV) 
  * or stateless and short-lived (eg. RSS, iCAL and WS). 
  *
+ * @deprecated As of Filr 1.1.1 and Vibe Hudson - Use {@link LoginAudit} instead.
  */
 public class LoginInfo extends AuditTrail {
 

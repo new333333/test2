@@ -49,7 +49,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.LicenseStats;
-import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.module.report.ReportModule;
@@ -71,7 +71,7 @@ public class NullReportModule implements ReportModule {
 
 	}
 
-	public void addLoginInfo(LoginInfo loginInfo) {
+	public void addLoginInfo(LoginAudit loginInfo) {
 		// TODO Auto-generated method stub
 
 	}

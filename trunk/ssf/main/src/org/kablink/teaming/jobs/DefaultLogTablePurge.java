@@ -63,6 +63,8 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
   			Date purgeBeforeDate = getCoreDao().getAuditTrailPurgeDate(zoneId);
 	  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
 	  		logger.info("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
+	  		int loginAuditPurgeCount = getCoreDao().purgeLoginAudit(zoneId, purgeBeforeDate);
+	  		logger.info("Purged " + loginAuditPurgeCount + " records from the SS_LoginAudit table");
   		}
   		
   		if (zoneConfig.getChangeLogsKeepDays() > 0) {

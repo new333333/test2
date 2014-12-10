@@ -53,7 +53,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LdapConnectionConfig;
-import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
@@ -690,13 +690,13 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	}
 	
 	private Authentication successfulAuthentication(Authentication result) {
-		if(LoginInfo.AUTHENTICATOR_WEB.equals(getAuthenticator()))
+		if(LoginAudit.AUTHENTICATOR_WEB.equals(getAuthenticator()))
 			GangliaMonitoring.addLoggedInUser(getLoginName(result)); // This metric is applicable only with web client (browser)
 		return result;
 	}
 	
 	private Authentication unsuccessfulAuthentication(Authentication result) {
-		if(LoginInfo.AUTHENTICATOR_WEB.equals(getAuthenticator()))
+		if(LoginAudit.AUTHENTICATOR_WEB.equals(getAuthenticator()))
 		{
 			GangliaMonitoring.incrementFailedLogins(); // This metric is applicable only with web client (browser)
 		}
@@ -709,7 +709,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	private String getAuthenticator() {
 		String authenticator = AuthenticationContextHolder.getAuthenticator();
 		if(authenticator == null)
-			authenticator = LoginInfo.AUTHENTICATOR_UNKNOWN;
+			authenticator = LoginAudit.AUTHENTICATOR_UNKNOWN;
 		return authenticator;
 	}
 	
@@ -941,7 +941,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	@Override
 	public boolean doesAuthenticationRequireCaptcha( String authenticatorName )
 	{
-		if ( authenticatorName != null && authenticatorName.equalsIgnoreCase( LoginInfo.AUTHENTICATOR_WEB ) )
+		if ( authenticatorName != null && authenticatorName.equalsIgnoreCase( LoginAudit.AUTHENTICATOR_WEB ) )
 		{
 			return isBruteForceAttackInProgress();
 		}

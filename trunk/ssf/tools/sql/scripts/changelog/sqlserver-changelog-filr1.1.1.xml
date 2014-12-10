@@ -114,4 +114,43 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="10">
+        <comment>Audit information about login</comment>
+        <createTable schemaName="dbo" tableName="SS_LoginAudit">
+            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_LoginAudit"/>
+            </column>
+        	<column name="zoneId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="loginTime" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="userId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="authenticator" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="clientAddr" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="applicationId" type="NUMERIC(19,0)">
+                <constraints nullable="true"/>
+            </column>
+         </createTable>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="11">
+        <createIndex indexName="loginTime_loginAudit" schemaName="dbo" tableName="SS_LoginAudit" unique="false">
+            <column name="loginTime"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <createIndex indexName="userId_loginAudit" schemaName="dbo" tableName="SS_LoginAudit" unique="false">
+            <column name="userId"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

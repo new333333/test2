@@ -48,7 +48,7 @@ import javax.security.auth.spi.LoginModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
-import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.jaas.KablinkPrincipal;
@@ -88,7 +88,7 @@ public class BasicLoginModule implements LoginModule {
 		this.callbackHandler = callbackHandler;
 		authenticator = (String) options.get("authenticator");
 		if(Validator.isNull(authenticator))
-			authenticator = LoginInfo.AUTHENTICATOR_UNKNOWN;
+			authenticator = LoginAudit.AUTHENTICATOR_UNKNOWN;
 		roleName = (String) options.get("role");
 		if(Validator.isNull(roleName))
 			roleName = "users";
