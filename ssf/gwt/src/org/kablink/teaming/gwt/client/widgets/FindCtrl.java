@@ -400,7 +400,7 @@ public class FindCtrl extends Composite
 			value1 = (searchCriteria.getPageNumber() * searchCriteria.getMaxResults()) + 1;
 			if ( m_searchCountTotal == 0 )
 				value1 = 0;
-			nOfn = GwtTeaming.getMessages().nOfn( value1, position, m_searchCountTotal );
+			nOfn = GwtTeaming.getMessages().nOfn_Exact( value1, position, m_searchCountTotal );
 			m_nOfnLabel.setText( nOfn );
 
 			// Hide the previous and next images

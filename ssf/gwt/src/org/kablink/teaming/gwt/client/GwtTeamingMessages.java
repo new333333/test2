@@ -49,7 +49,8 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the "find" name-completion control
 	String findCtrl_NoItemsFound();
-	String nOfn( int value1, int value2, int value3 );
+	String nOfn_Approximate( int value1, int value2, int value3 );
+	String nOfn_Exact(       int value1, int value2, int value3 );
 	String searching();
 	String searchEntireSiteLabel();
 	String searchCurrentFolderWorkspaceLabel();

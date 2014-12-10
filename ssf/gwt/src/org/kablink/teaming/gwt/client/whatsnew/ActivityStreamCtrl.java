@@ -429,7 +429,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 		if ( searchCountTotal == 0 )
 			value1 = 0;
 		
-		nOfn = GwtTeaming.getMessages().nOfn( value1, position, searchCountTotal );
+		if ( m_pagingData.isTotalApproximate() )
+		     nOfn = GwtTeaming.getMessages().nOfn_Approximate( value1, position, searchCountTotal );
+		else nOfn = GwtTeaming.getMessages().nOfn_Exact(       value1, position, searchCountTotal );
 		m_nOfnLabel.setText( nOfn );
 
 		// Hide the previous and next images

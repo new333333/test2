@@ -684,26 +684,29 @@ public class GwtActivityStreamHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static class ASSearchResults {
+		private boolean		m_totalApproximate;	//
 		private int			m_totalRecords;		//
 		private List<Map>	m_searchEntries;	//
 		
 		/*
 		 * Constructor method.
 		 */
-		private ASSearchResults(List<Map> searchEntries, int totalRecords) {
+		private ASSearchResults(List<Map> searchEntries, int totalRecords, boolean totalApproximate) {
 			// Initialize the super class...
 			super();
 			
 			// ...and initialize everything else.
-			m_searchEntries = searchEntries;
-			m_totalRecords  = totalRecords;
+			m_searchEntries    = searchEntries;
+			m_totalRecords     = totalRecords;
+			m_totalApproximate = totalApproximate;
 		}
 
 		/*
 		 * Get'er methods.
 		 */
-		private int       getTotalRecords()  {return m_totalRecords; }
-		private List<Map> getSearchEntries() {return m_searchEntries;}
+		private boolean   isTotalApproximate() {return m_totalApproximate;}
+		private int       getTotalRecords()    {return m_totalRecords;    }
+		private List<Map> getSearchEntries()   {return m_searchEntries;   }
 	}
 	
 	/*
@@ -2101,7 +2104,7 @@ public class GwtActivityStreamHelper {
 			
 			PagingData pd = asd.getPagingData();
 			pd.initializePaging(asp);
-			pd.setTotalRecords(searchResults.getTotalRecords());
+			pd.setTotalRecords(searchResults.getTotalRecords(), searchResults.m_totalApproximate);
 
 			// ...read the current user's seen map...
     		SeenMap sm = bs.getProfileModule().getUserSeenMap(null);
@@ -2462,7 +2465,7 @@ public class GwtActivityStreamHelper {
 		// ...and return an appropriate ASSearchResults.
 		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-		return new ASSearchResults(searchEntries, totalRecords);
+		return new ASSearchResults(searchEntries, totalRecords, searchResultsTotalApproximate(searchResults));
 	}
 	
 	/*
@@ -2494,7 +2497,7 @@ public class GwtActivityStreamHelper {
 		// ...and return an appropriate ASSearchResults.
 		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-		return new ASSearchResults(searchEntries, totalRecords);
+		return new ASSearchResults(searchEntries, totalRecords, searchResultsTotalApproximate(searchResults));
 	}
 	
 	/*
@@ -2515,7 +2518,7 @@ public class GwtActivityStreamHelper {
 		// ...and return an appropriate ASSearchResults.
 		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-		return new ASSearchResults(searchEntries, totalRecords);
+		return new ASSearchResults(searchEntries, totalRecords, searchResultsTotalApproximate(searchResults));
 	}
 	
 	/*
@@ -2551,9 +2554,10 @@ public class GwtActivityStreamHelper {
 		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
 		
 		// ...and scan the entries we read.
-		List<Map> targetEntries = new ArrayList<Map>();
-		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
-		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		List<Map> targetEntries    = new ArrayList<Map>();
+		List<Map> searchEntries    = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+		int       totalRecords     = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		boolean   totalApproximate = searchResultsTotalApproximate(searchResults);
 		boolean   readSatisfied = false;
 		for (Map searchEntry: searchEntries) {
 			// If the user has seen this entry and we're looking for
@@ -2576,7 +2580,8 @@ public class GwtActivityStreamHelper {
 				// or unread while we're looking for read!  In either
 				// case, we don't want to include it in the total
 				// record count.
-				totalRecords -= 1;
+				totalRecords    -= 1;
+				totalApproximate = true;
 			}
 		}
 
@@ -2590,7 +2595,7 @@ public class GwtActivityStreamHelper {
 		}
 				
 		// ...and return an appropriate ASSearchResults.
-		return new ASSearchResults(targetEntries, totalRecords);
+		return new ASSearchResults(targetEntries, totalRecords, totalApproximate);
 	}
 	
 	/*
@@ -2628,10 +2633,11 @@ public class GwtActivityStreamHelper {
 		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
 		
 		// ...and scan the entries we read.
-		List<Map> targetEntries = new ArrayList<Map>();
-		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
-		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-		boolean   readSatisfied = false;
+		List<Map> targetEntries    = new ArrayList<Map>();
+		List<Map> searchEntries    = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+		int       totalRecords     = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		boolean   totalApproximate = searchResultsTotalApproximate(searchResults);
+		boolean   readSatisfied    = false;
 		for (Map searchEntry: searchEntries) {
 			// If the user has seen this entry and we're looking for
 			// read entries or the user has not seen it and we're
@@ -2653,7 +2659,8 @@ public class GwtActivityStreamHelper {
 				// or unread while we're looking for read!  In either
 				// case, we don't want to include it in the total
 				// record count.
-				totalRecords -= 1;
+				totalRecords    -= 1;
+				totalApproximate = true;
 			}
 		}
 
@@ -2667,7 +2674,7 @@ public class GwtActivityStreamHelper {
 		}
 				
 		// ...and return an appropriate ASSearchResults.
-		return new ASSearchResults(targetEntries, totalRecords);
+		return new ASSearchResults(targetEntries, totalRecords, totalApproximate);
 	}
 	
 	/*
@@ -2836,7 +2843,7 @@ public class GwtActivityStreamHelper {
 			    
 			if (0 == tracks) {
 				// No!  Generate an empty ASSearchResults.
-				searchResults = new ASSearchResults(new ArrayList<Map>(), 0);
+				searchResults = new ASSearchResults(new ArrayList<Map>(), 0, false);
 			}
 			
 			else {
@@ -2854,7 +2861,7 @@ public class GwtActivityStreamHelper {
 		// Update the paging data in the activity stream data.
 		List<Map>	searchEntries = searchResults.getSearchEntries();
 		int			totalRecords  = searchResults.getTotalRecords();
-    	pd.setTotalRecords(totalRecords);
+    	pd.setTotalRecords(totalRecords, searchResults.isTotalApproximate());
     	asd.setPagingData(pd);
 
     	// Are there any entries in the search results?
@@ -2907,6 +2914,16 @@ public class GwtActivityStreamHelper {
    					entryData,
    					forcePlainTextDescriptions));
     	}
+	}
+
+	/*
+	 * Returns true if the total count in a search results is an
+	 * approximate value and false otherwise.
+	 */
+	@SuppressWarnings("unchecked")
+	private static boolean searchResultsTotalApproximate(Map searchResults) {
+		Boolean totalApproximate = ((Boolean) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL_APPROXIMATE));
+		return ((null == totalApproximate) ? false : totalApproximate.booleanValue());
 	}
 	
 	/**
