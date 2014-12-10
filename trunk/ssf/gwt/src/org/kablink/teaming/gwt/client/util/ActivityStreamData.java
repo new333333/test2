@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -53,12 +53,13 @@ public class ActivityStreamData implements IsSerializable {
 	 * stream.
 	 */
 	public static class PagingData implements IsSerializable{
-		private int m_entriesPerPage;	//
-		private int m_pageIndex;		//
-		private int m_totalPages;		//
-		private int m_totalRecords;		//
+		private boolean	m_totalApproximate;	//
+		private int		m_entriesPerPage;	//
+		private int		m_pageIndex;		//
+		private int		m_totalPages;		//
+		private int		m_totalRecords;		//
 
-		/*
+		/**
 		 * Class constructor.
 		 * 
 		 * No parameters as per GWT serialization requirements.
@@ -70,10 +71,11 @@ public class ActivityStreamData implements IsSerializable {
 		/*
 		 * Get'er methods.
 		 */
-		public int getEntriesPerPage() {return m_entriesPerPage;}
-		public int getPageIndex()      {return m_pageIndex;     }
-		public int getTotalPages()     {return m_totalPages;    }
-		public int getTotalRecords()   {return m_totalRecords;  }
+		public boolean isTotalApproximate() {return m_totalApproximate;}
+		public int     getEntriesPerPage()  {return m_entriesPerPage;  }
+		public int     getPageIndex()       {return m_pageIndex;       }
+		public int     getTotalPages()      {return m_totalPages;      }
+		public int     getTotalRecords()    {return m_totalRecords;    }
 
 		/**
 		 * Returns a copy of this PagingData object.
@@ -82,11 +84,12 @@ public class ActivityStreamData implements IsSerializable {
 		 */
 		public PagingData copyBasePD() {
 			PagingData reply = new PagingData();
-			
-			reply.m_entriesPerPage = m_entriesPerPage;
-			reply.m_pageIndex      = m_pageIndex;
-			reply.m_totalPages     = m_totalPages;
-			reply.m_totalRecords   = m_totalRecords;
+
+			reply.m_totalApproximate = m_totalApproximate;
+			reply.m_entriesPerPage   = m_entriesPerPage;
+			reply.m_pageIndex        = m_pageIndex;
+			reply.m_totalPages       = m_totalPages;
+			reply.m_totalRecords     = m_totalRecords;
 			
 			return reply;
 		}
@@ -99,7 +102,7 @@ public class ActivityStreamData implements IsSerializable {
 		 */
 		public void initializePaging(ActivityStreamParams asp) {
 			m_entriesPerPage = asp.getEntriesPerPage();
-			setTotalRecords(-1);
+			setTotalRecords((-1), false);
 		}
 		
 		/**
@@ -127,17 +130,27 @@ public class ActivityStreamData implements IsSerializable {
 		}
 
 		/**
+		 * Stores a flag indicating whether the 
+		 * @param totalApproximate
+		 */
+		public void setTotalApproximate(boolean totalApproximate) {
+			m_totalApproximate = totalApproximate;
+		}
+		
+		/**
 		 * Stores the total number of records and updates the paging
 		 * information based on it.
 		 * 
 		 * @param totalRecords
+		 * @param totalApproximate
 		 */
-		public void setTotalRecords(int totalRecords) {
+		public void setTotalRecords(int totalRecords, boolean totalApproximate) {
 			m_totalRecords = totalRecords;
 			m_totalPages   = (m_totalRecords / m_entriesPerPage);
 			if (0 < (m_totalRecords % m_entriesPerPage)) {
 				m_totalPages += 1;
 			}
+			setTotalApproximate(totalApproximate);
 		}
 	}
 	
