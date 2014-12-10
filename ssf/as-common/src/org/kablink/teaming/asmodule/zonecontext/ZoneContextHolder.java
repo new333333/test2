@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 public class ZoneContextHolder {
 	
@@ -121,6 +122,13 @@ public class ZoneContextHolder {
     
     public static void setHttpServletRequest(HttpServletRequest httpServletRequest) {
     	HTTP_SERVLET_REQUEST.set(httpServletRequest);
+    }
+    
+    public static HttpSession getHttpSession() {
+    	HttpServletRequest request = getHttpServletRequest();
+    	if(request != null)
+    		return request.getSession(false);
+    	return null;
     }
     
     public static void clear() {
