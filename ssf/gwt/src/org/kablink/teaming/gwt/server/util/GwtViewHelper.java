@@ -3052,13 +3052,9 @@ public class GwtViewHelper {
 		else dateCSK = Constants.MODIFICATION_DATE_FIELD;
 		@SuppressWarnings("unused")
 		String adminRightsCSK;
-		if (isManageAdmins)
-		     adminRightsCSK = FolderColumn.COLUMN_ADMIN_RIGHTS;
-		else adminRightsCSK = Constants.SITE_ADMIN_FIELD;
 		for (FolderColumn fc:  fcList) {
 			String colName = fc.getColumnName();
 			if      (colName.equals("administrator"))        {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMINISTRATOR);                                                                            }
-			else if (colName.equals("adminRights"))          {fc.setColumnSearchKey(FolderColumn.COLUMN_ADMIN_RIGHTS);          fc.setColumnSortable(false);                                       }
 			else if (colName.equals("author"))               {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);           }
 			else if (colName.equals("comments"))             {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                                              }
 			else if (colName.equals("date"))                 {fc.setColumnSearchKey(dateCSK);                                                                                                      }
@@ -3096,6 +3092,12 @@ public class GwtViewHelper {
 			else if (colName.equals("tasks"))                {fc.setColumnSearchKey(Constants.TASKS_FIELD);                                                                                        }
 			else if (colName.equals("teamMembers"))          {fc.setColumnSearchKey(FolderColumn.COLUMN_TEAM_MEMBERS);          fc.setColumnSortable(false);                                       }
 			else if (colName.equals("title"))                {fc.setColumnSearchKey(Constants.TITLE_FIELD);                     fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);                   }
+			else if (colName.equals("adminRights"))          {
+				fc.setColumnSearchKey(FolderColumn.COLUMN_ADMIN_RIGHTS);
+				if (isManageAdmins)
+				     fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);
+				else fc.setColumnSortable(false);
+			}
 			else {
 				// Does the column name contain multiple parts wrapped
 				// in a single value?
