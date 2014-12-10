@@ -71,6 +71,7 @@
 	    <mapping resource="org/kablink/teaming/domain/LdapConnectionConfig.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/LibraryEntry.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/LicenseStats.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/LoginAudit.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/MobileDevice.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Membership.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/NotifyStatus.hbm.xml"/>

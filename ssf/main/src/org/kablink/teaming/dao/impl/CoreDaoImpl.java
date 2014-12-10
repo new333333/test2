@@ -104,7 +104,7 @@ import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.KeyShieldConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
-import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.MobileDevice;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
@@ -2985,13 +2985,13 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
 	
-				List auditTrail = session.createCriteria(LoginInfo.class)
+				List auditTrail = session.createCriteria(LoginAudit.class)
 					.setProjection(Projections.projectionList()
-									.add(Projections.groupProperty("startBy"))
-									.add(Projections.max("startDate"))
+									.add(Projections.groupProperty("userId"))
+									.add(Projections.max("loginTime"))
 									.add(Projections.rowCount()))
 						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-						.add(Restrictions.ge("startDate", startDate))
+						.add(Restrictions.ge("loginTime", startDate))
 					.list();
 				return auditTrail;
 			}});
@@ -3006,12 +3006,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
 				@Override
 				public Object doInHibernate(Session session) throws HibernateException {
-					Criteria crit = session.createCriteria(LoginInfo.class)
+					Criteria crit = session.createCriteria(LoginAudit.class)
 						.setProjection(Projections.property("id"))
 							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-							.add(Restrictions.eq("startBy", userId))
-							.add(Restrictions.eq("description", authenticatorName))
-							.add(Restrictions.ge("startDate", startDate))
+							.add(Restrictions.eq("userId", userId))
+							.add(Restrictions.eq("authenticator", LoginAudit.toAuthenticatorDbValue(authenticatorName)))
+							.add(Restrictions.ge("loginTime", startDate))
 							.setCacheable(false);
 					if(maxResult != null)
 						crit.setMaxResults(maxResult);
@@ -3467,6 +3467,29 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		}
 	}
 	
+    @Override
+	public int purgeLoginAudit(final Long zoneId, final Date purgeBeforeDate) {
+		long begin = System.nanoTime();
+		try {
+			Integer c = (Integer) getHibernateTemplate().execute(
+		    	new HibernateCallback() {
+		    		@Override
+					public Object doInHibernate(Session session) throws HibernateException {
+		     	   		int count = session.createQuery("Delete org.kablink.teaming.domain.LoginAudit where zoneId=:zoneId and loginTime<:purgeBeforeDate")
+			   				.setLong("zoneId", zoneId)
+			   				.setDate("purgeBeforeDate", purgeBeforeDate)
+		     	   			.executeUpdate();
+		     	   		return Integer.valueOf(count);
+		    		}
+		    	}
+		   	);
+			return c.intValue();
+		}
+		finally {
+    		end(begin, "purgeLoginAudit()");
+		}
+	}
+	
 	@Override
 	public List getChangeLogEntries(final Long zoneId, final Date purgeBeforeDate) {
 		long begin = System.nanoTime();
@@ -3812,15 +3835,18 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	}
 	
 	@Override
-	public void nullifyUserPassword(Long userId) {
-		Session session = getSessionFactory().openSession();
-		try {
-			User user = (User) session.get(User.class, userId);
-			user.setPassword(null);
-		}
-		finally {
-			session.flush();
-			session.close();
-		}
+	public void nullifyUserPassword(final Long userId) {
+		// Work with a new short-lived session so that it won't interfere with the pre-bound (thread-bound) session.
+		getHibernateTemplate().executeWithNewSession(
+				new HibernateCallback() {
+					@Override
+					public Object doInHibernate(Session session) throws HibernateException {
+						User user = (User) session.get(User.class, userId);
+						user.setPassword(null);
+						session.flush();
+						return null;
+					}
+				}
+		);    		             		 
 	}
 }

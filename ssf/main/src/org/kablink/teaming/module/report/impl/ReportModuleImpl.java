@@ -75,7 +75,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.LicenseStats;
-import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
@@ -214,15 +214,15 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
  				}
  			}
  		}
- 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_ICAL);
- 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_PORTAL);
- 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_REMOTING_B);
- 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_REMOTING_T);
- 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_RSS);
- 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_UNKNOWN);
- 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_WEB);
- 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_WEBDAV);
- 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_WS);
+ 		initAuthenticatorFrequency(LoginAudit.AUTHENTICATOR_ICAL);
+ 		initAuthenticatorFrequency(LoginAudit.AUTHENTICATOR_PORTAL);
+ 		initAuthenticatorFrequency(LoginAudit.AUTHENTICATOR_REMOTING_B);
+ 		initAuthenticatorFrequency(LoginAudit.AUTHENTICATOR_REMOTING_T);
+ 		initAuthenticatorFrequency(LoginAudit.AUTHENTICATOR_RSS);
+ 		initAuthenticatorFrequency(LoginAudit.AUTHENTICATOR_UNKNOWN);
+ 		initAuthenticatorFrequency(LoginAudit.AUTHENTICATOR_WEB);
+ 		initAuthenticatorFrequency(LoginAudit.AUTHENTICATOR_WEBDAV);
+ 		initAuthenticatorFrequency(LoginAudit.AUTHENTICATOR_WS);
  	}
 
 	private void initAuthenticatorFrequency(String authenticator) {
@@ -243,42 +243,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		//only log if enabled
 		if (getAdminModule().isAuditTrailEnabled()) {
 			if (allEnabled || enabledTypes.contains(auditTrail.getAuditType())) {
-				if(auditTrail instanceof LoginInfo) {
-					LoginInfo li = (LoginInfo) auditTrail;
-					String authenticatorFrequency = getAuthenticatorFrequency(li.getAuthenticatorName());
-					if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_ALL)) {
-						// each event causes a new record
-						getCoreDao().save(auditTrail);
-					}
-					else if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_DAILY_STRICT)) {
-						// only once record a day for this type
-						List<String> loginInfoIds = getCoreDao().getLoginInfoIds(RequestContextHolder.getRequestContext().getZoneId(), 
-								// NEVER get the user ID from request context. Since this method is being executed with AsAdmin context
-								// during authentication, the value from the request context will always be admin.
-								li.getStartBy(),
-								li.getAuthenticatorName(), 
-								getBeginningOfToday(), 
-								1);
-						if(loginInfoIds.size() == 0)
-							getCoreDao().save(auditTrail);
-					}
-					else if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_DAILY_SOFT)) {
-						Integer loginInfoLastDay = getLoginInfoLastDay(RequestContextHolder.getRequestContext().getZoneId(),
-								li.getStartBy(),
-								li.getAuthenticatorName());
-						int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
-						if(loginInfoLastDay == null || (loginInfoLastDay.intValue() != dayOfYear)) {
-							getCoreDao().save(auditTrail);
-							setLoginInfoLastDay(RequestContextHolder.getRequestContext().getZoneId(),
-								li.getStartBy(),
-								li.getAuthenticatorName(), 
-								dayOfYear);
-						}
-					}
-				}
-				else {
-					getCoreDao().save(auditTrail);
-				}
+				getCoreDao().save(auditTrail);
 			}
 		}
 	}
@@ -324,8 +289,42 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		addAuditTrail(auditTrail);
 	}
 	@Override
-	public void addLoginInfo(LoginInfo loginInfo) {
-		addAuditTrail(loginInfo);		
+	public void addLoginInfo(LoginAudit loginInfo) {
+		//only log if enabled
+		if (getAdminModule().isAuditTrailEnabled()) {
+			if (allEnabled || enabledTypes.contains(AuditType.login)) {
+				String authenticatorFrequency = getAuthenticatorFrequency(loginInfo.getAuthenticatorName());
+				if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_ALL)) {
+					// each event causes a new record
+					getCoreDao().save(loginInfo);
+				}
+				else if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_DAILY_STRICT)) {
+					// only once record a day for this type
+					List<String> loginInfoIds = getCoreDao().getLoginInfoIds(RequestContextHolder.getRequestContext().getZoneId(), 
+							// NEVER get the user ID from request context. Since this method is being executed with AsAdmin context
+							// during authentication, the value from the request context will always be admin.
+							loginInfo.getUserId(),
+							loginInfo.getAuthenticatorName(), 
+							getBeginningOfToday(), 
+							1);
+					if(loginInfoIds.size() == 0)
+						getCoreDao().save(loginInfo);
+				}
+				else if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_DAILY_SOFT)) {
+					Integer loginInfoLastDay = getLoginInfoLastDay(RequestContextHolder.getRequestContext().getZoneId(),
+							loginInfo.getUserId(),
+							loginInfo.getAuthenticatorName());
+					int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+					if(loginInfoLastDay == null || (loginInfoLastDay.intValue() != dayOfYear)) {
+						getCoreDao().save(loginInfo);
+						setLoginInfoLastDay(RequestContextHolder.getRequestContext().getZoneId(),
+								loginInfo.getUserId(),
+								loginInfo.getAuthenticatorName(), 
+							dayOfYear);
+					}
+				}
+			}
+		}	
 	}
 
 	@Override
@@ -1279,15 +1278,15 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					@Override
 					public Object doInHibernate(Session session) throws HibernateException {
 			
-						List auditTrail = session.createCriteria(LoginInfo.class)
+						List auditTrail = session.createCriteria(LoginAudit.class)
 							.setProjection(Projections.projectionList()
-											.add(Projections.groupProperty("startBy"))
-											.add(Projections.max("startDate"))
+											.add(Projections.groupProperty("userId"))
+											.add(Projections.max("loginTime"))
 											.add(Projections.rowCount()))
-								.add(Expression.in("startBy",tempIds.toArray()))											
+								.add(Expression.in("userId",tempIds.toArray()))											
 								.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-								.add(Restrictions.ge("startDate", startDate))
-								.add(Restrictions.lt("startDate", endDate))
+								.add(Restrictions.ge("loginTime", startDate))
+								.add(Restrictions.lt("loginTime", endDate))
 							.list();
 						return auditTrail;
 					}});				
@@ -1297,14 +1296,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					@Override
 					public Object doInHibernate(Session session) throws HibernateException {
 			
-						List auditTrail = session.createCriteria(LoginInfo.class)
+						List auditTrail = session.createCriteria(LoginAudit.class)
 							.setProjection(Projections.projectionList()
-											.add(Projections.groupProperty("startBy"))
-											.add(Projections.max("startDate"))
+											.add(Projections.groupProperty("userId"))
+											.add(Projections.max("loginTime"))
 											.add(Projections.rowCount()))
 								.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-								.add(Restrictions.ge("startDate", startDate))
-								.add(Restrictions.lt("startDate", endDate))
+								.add(Restrictions.ge("loginTime", startDate))
+								.add(Restrictions.lt("loginTime", endDate))
 							.list();
 						return auditTrail;
 					}});
@@ -1339,15 +1338,15 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					@Override
 					public Object doInHibernate(Session session) throws HibernateException {
 			
-						List auditTrail = session.createCriteria(LoginInfo.class)
+						List auditTrail = session.createCriteria(LoginAudit.class)
 							.setProjection(Projections.projectionList()
-											.add(Projections.property("startBy"))
-											.add(Projections.property("startDate")))
-								.add(Expression.in("startBy",tempIds.toArray()))
+											.add(Projections.property("userId"))
+											.add(Projections.property("loginTime")))
+								.add(Expression.in("userId",tempIds.toArray()))
 								.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-								.add(Restrictions.ge("startDate", startDate))
-								.add(Restrictions.lt("startDate", endDate))
-								.addOrder(Order.asc("startDate"))
+								.add(Restrictions.ge("loginTime", startDate))
+								.add(Restrictions.lt("loginTime", endDate))
+								.addOrder(Order.asc("loginTime"))
 							.list();
 						return auditTrail;
 				}});				
@@ -1357,14 +1356,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						@Override
 						public Object doInHibernate(Session session) throws HibernateException {
 				
-							List auditTrail = session.createCriteria(LoginInfo.class)
+							List auditTrail = session.createCriteria(LoginAudit.class)
 								.setProjection(Projections.projectionList()
-												.add(Projections.property("startBy"))
-												.add(Projections.property("startDate")))
+												.add(Projections.property("userId"))
+												.add(Projections.property("loginTime")))
 									.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-									.add(Restrictions.ge("startDate", startDate))
-									.add(Restrictions.lt("startDate", endDate))
-									.addOrder(Order.asc("startDate"))
+									.add(Restrictions.ge("loginTime", startDate))
+									.add(Restrictions.lt("loginTime", endDate))
+									.addOrder(Order.asc("loginTime"))
 								.list();
 							return auditTrail;
 					}});

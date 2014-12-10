@@ -114,4 +114,43 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="10">
+        <comment>Audit information about login</comment>
+        <createTable tableName="SS_LOGINAUDIT">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_LOGINAUDIT"/>
+            </column>
+        	<column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="LOGINTIME" type="TIMESTAMP(6)">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="USERID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="AUTHENTICATOR" type="NUMBER(2,0)">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="CLIENTADDR" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="APPLICATIONID" type="NUMBER(19,0)">
+                <constraints nullable="true"/>
+            </column>
+         </createTable>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="11">
+        <createIndex indexName="LOGINTIME_LOGINAUDIT" tableName="SS_LOGINAUDIT" unique="false">
+            <column name="LOGINTIME"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <createIndex indexName="USERID_LOGINAUDIT" tableName="SS_LOGINAUDIT" unique="false">
+            <column name="USERID"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

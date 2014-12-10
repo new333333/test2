@@ -46,7 +46,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
-import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
@@ -76,7 +76,7 @@ public class DigestBasedHardAuthenticationFilter implements Filter {
 		try {
 			RequestContextHolder.clear();
 			
-			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, binderId, privateDigest, LoginInfo.AUTHENTICATOR_ICAL);
+			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, binderId, privateDigest, LoginAudit.AUTHENTICATOR_ICAL);
 
 			RequestContextUtil.setThreadContext(user);
 			

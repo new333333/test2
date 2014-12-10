@@ -37,7 +37,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
@@ -73,7 +73,7 @@ public class AccessTokenValidationInterceptor implements MethodInterceptor {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		String authenticator = AuthenticationContextHolder.getAuthenticator();
 		if(rc != null &&
-				LoginInfo.AUTHENTICATOR_REMOTING_T.equals(authenticator)) {
+				LoginAudit.AUTHENTICATOR_REMOTING_T.equals(authenticator)) {
 			// token-based remoting
 			if(args == null || args.length < 1) {
 				throw new IllegalArgumentException("No argument in the call");

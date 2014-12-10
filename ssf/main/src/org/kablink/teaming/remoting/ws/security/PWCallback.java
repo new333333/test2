@@ -49,7 +49,7 @@ import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.authentication.util.AuthenticationAdapter;
@@ -96,7 +96,7 @@ public class PWCallback implements CallbackHandler {
         			if(pwType.equals(WSConstants.PASSWORD_TEXT)) { // wsse:PasswordText
         				String clearPassword = pc.getPassword();
         				
-            			AuthenticationContextHolder.setAuthenticationContext(LoginInfo.AUTHENTICATOR_WS, null);
+            			AuthenticationContextHolder.setAuthenticationContext(LoginAudit.AUTHENTICATOR_WS, null);
             			
         				try {
 	        				AuthenticationAdapter.authenticate(userName, clearPassword);

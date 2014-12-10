@@ -43,13 +43,14 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LdapConnectionConfig;
-import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
@@ -403,7 +404,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				getProfileModule().addUserWorkspace(user, null);
 			
 			if(authenticatorName != null)
-				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
+				getReportModule().addLoginInfo(new LoginAudit(authenticatorName, ZoneContextHolder.getClientAddr(), user.getId()));
 		} 
 		catch (UserDoesNotExistException nu) {
 			// Matching user account doesn't exist in the database yet
@@ -440,7 +441,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  					throw nu;
  				
  				if(authenticatorName != null)
- 					getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
+ 					getReportModule().addLoginInfo(new LoginAudit(authenticatorName, ZoneContextHolder.getClientAddr(), user.getId()));
  			}
  			else {
  				throw nu;
@@ -723,7 +724,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			}
 			
 			if(authenticatorName != null)
-				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
+				getReportModule().addLoginInfo(new LoginAudit(authenticatorName, ZoneContextHolder.getClientAddr(), user.getId()));
 
 		}
 		catch(NoUserByTheIdException e) {

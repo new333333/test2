@@ -94,7 +94,7 @@ import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Reservable;
@@ -3177,7 +3177,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		FileLock lock = fa.getFileLock();
 		if(lock != null) {
 			if(lock.getOwner().equals(user)) {
-				if(LoginInfo.AUTHENTICATOR_WEBDAV.equals(ZoneContextHolder.getProperty("authenticator"))) { // WebDAV client
+				if(LoginAudit.AUTHENTICATOR_WEBDAV.equals(ZoneContextHolder.getProperty("authenticator"))) { // WebDAV client
 					// Most WebDAV clients (at least those important to us) use locking mechanism, and do not attempt to
 					// "put" file content unless the lock they pass in during "put" request matches the lock they 
 					// previously issued. Unfortunately, this lock information is not passed to application layer by

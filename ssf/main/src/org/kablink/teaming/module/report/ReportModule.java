@@ -47,7 +47,7 @@ import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.LicenseStats;
-import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 
@@ -172,7 +172,7 @@ public interface ReportModule {
 	public void addAuditTrail(AuditTrail.AuditType type, DefinableEntity entity, Date startDate);
 	public void addAuditTrail(AuditTrail.AuditType type, DefinableEntity entity, Date startDate, String description);
 	public void addAuditTrail(AuditTrail.AuditType type, DefinableEntity entity, String description);
-	public void addLoginInfo(LoginInfo loginInfo);
+	public void addLoginInfo(LoginAudit loginInfo);
 	public void addStatusInfo(User user);
 	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment);
 	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment, User asUser);
