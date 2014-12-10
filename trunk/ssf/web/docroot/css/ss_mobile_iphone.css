@@ -20,7 +20,7 @@ textarea {
 	border: 1px solid #b8b8b8;
 	}
 select { 
-	font-size: 2em;
+	font-size: 1.4em;
 	}
 input[type=button], input[type=submit], input[type=reset] { 
 	font-size: 1em;
@@ -327,7 +327,7 @@ span.pad-left20 select {
 .entry {
 	position: relative;
 	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
-	background:#fff url(images/mobile/putty_blend4.png) repeat-x bottom;
+	background-color:#fff;
 	padding-top: 5px;
 	padding-bottom: 5px;
 	min-height: 30px;
@@ -590,8 +590,8 @@ h6 {
 	width: 250px;
 	}	
 .ss_entryContent textarea#description {
-	width: 250px;
-	height: 70px;
+	width: 90%;
+	height: 200px;
 	}	
 .ss_mobile_form_element input[type="text"] {
 	width: 80px;
@@ -759,7 +759,7 @@ div.ss_mobile_calendar_no_entries_content span {
 	font-size: 1em;
 	font-weight: bold;
 	vertical-align: middle;
-	padding: 15px 5px 5px 10px;
+	padding: 25px 5px 0px 10px;
 	letter-spacing: 1px;
 	background-color: #eceeec;
 	}
