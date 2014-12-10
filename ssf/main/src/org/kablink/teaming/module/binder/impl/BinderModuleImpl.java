@@ -69,6 +69,7 @@ import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UserExistsException;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContext;
@@ -485,7 +486,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						//This check failed, so try to see if there is a sub-folder down the line the you can access
 						SimpleProfiler.start("BinderModule.CheckAccess.LookForSubFolders");
 						//First, see if we have cached this result from a previous call
-						HttpSession session = WebHelper.getCurrentHttpSession();
+						HttpSession session = ZoneContextHolder.getHttpSession();
 						if (session != null) {
 							Long cacheUserId = (Long)session.getAttribute(ObjectKeys.SESSION_ACL_CACHE_USER_ID);
 							Map aclCache = (Map)session.getAttribute(ObjectKeys.SESSION_ACL_CACHE);

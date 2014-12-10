@@ -45,6 +45,7 @@ import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.logging.Log;
@@ -53,6 +54,9 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
+import org.kablink.teaming.cache.impl.HashMapCache;
+import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
@@ -75,10 +79,12 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
 
@@ -323,14 +329,36 @@ public class Utils {
 	  	return canUserOnlySeeCommonGroupMembers(user);
   	}
   	public static boolean canUserOnlySeeCommonGroupMembers(User user) {
-  		if (!Utils.checkIfVibe() && !Utils.checkIfFilrAndVibe()) {
-  			//Filr and iPrint don't support the "can only see..." feature. Only Vibe does.
-  			return false;
-  		}
 		if (user == null) return false;
-		Map onlySeeMap = (Map) RequestContextHolder.getRequestContext().getCacheEntry("onlySeeMap");
-		if (onlySeeMap == null) onlySeeMap = new HashMap();
-		if (onlySeeMap.containsKey(user.getId())) return (Boolean)onlySeeMap.get(user.getId());
+		HashMapCache<Long, Boolean> onlySeeCache = null;
+		HttpSession session = ZoneContextHolder.getHttpSession();
+		if (session != null) {
+			onlySeeCache = (HashMapCache<Long, Boolean>)session.getAttribute(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE);
+			if (onlySeeCache == null) {
+				onlySeeCache = new HashMapCache<Long, Boolean>(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE_TIMEOUT);
+			}
+			session.setAttribute(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE, onlySeeCache);
+		} else {
+			//This must be a REST call. So use the request context to hold the cache
+			RequestContext context = RequestContextHolder.getRequestContext();
+			if (context != null) {
+				onlySeeCache = (HashMapCache<Long, Boolean>)context.getCacheEntry(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE);
+				if (onlySeeCache == null) {
+					onlySeeCache = new HashMapCache<Long, Boolean>(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE_TIMEOUT);
+				}
+				context.setCacheEntry(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE, onlySeeCache);
+			}
+		}
+		if (onlySeeCache != null) {
+			Boolean value = onlySeeCache.get(user.getId());
+			if (value != null) {
+				//The value existed in the cache, so return it
+				return value;
+			}
+		} else {
+			//This shouldn't ever happen
+			onlySeeCache = new HashMapCache<Long, Boolean>(ObjectKeys.SESSION_CAN_ONLY_SEE_CACHE_TIMEOUT);
+		}
 		
 		CoreDao coreDao = (CoreDao) SpringContextUtil.getBean("coreDao");
 		AccessControlManager accessControlManager = (AccessControlManager)SpringContextUtil.getBean("accessControlManager");
@@ -339,16 +367,15 @@ public class Utils {
 			boolean canOnlySeeGroupMembers = accessControlManager.testOperation(user, zone, WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS);
 			boolean overrideCanOnlySeeGroupMembers = accessControlManager.testOperation(user, zone, WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS);
 			if (canOnlySeeGroupMembers && !overrideCanOnlySeeGroupMembers) {
-				onlySeeMap.put(user.getId(), Boolean.TRUE);
+				onlySeeCache.put(user.getId(), Boolean.TRUE);
 			} else {
-				onlySeeMap.put(user.getId(), Boolean.FALSE);
+				onlySeeCache.put(user.getId(), Boolean.FALSE);
 			}
-			RequestContextHolder.getRequestContext().setCacheEntry("onlySeeMap", onlySeeMap);
 		} catch(Exception e) {
 			//If any error occurs, assume limited
 			return true;
 		}
-		return (Boolean)onlySeeMap.get(user.getId());
+		return (Boolean)onlySeeCache.get(user.getId());
 	}
 
 	public static boolean isWorkareaInProfilesTree(WorkArea workArea) {
