@@ -104,13 +104,10 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.UserPropertiesPK;
 import org.kablink.teaming.domain.Visits;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.security.AccessControlManager;
-import org.kablink.teaming.security.function.WorkArea;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.util.Validator;
 
 import org.springframework.dao.DataAccessException;
@@ -2705,17 +2702,24 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 					user = RequestContextHolder.getRequestContext().getUser();
 			} catch(Exception e) {}
 			if (user == null) return principals;
-			
+	
+			// DRF (20141211):  Reworked this to use the Utils method
+			// to take advantage of the caching, not the brute force way
+			// commented out right below.
+			if (!Utils.canUserOnlySeeCommonGroupMembers(user)) {
+				return principals;
+			}
+/*
 	      	WorkArea zone = getCoreDao().loadZoneConfig(user.getZoneId());
 			AccessControlManager accessControlManager = (AccessControlManager)SpringContextUtil.getBean("accessControlManager");
 			try {
 				boolean canOnlySeeGroupMembers = accessControlManager.testOperation(user, zone, WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS);
-				boolean overrideCanOnlySeeGroupMembers = accessControlManager.testOperation(user, zone, WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS);
-				if (!canOnlySeeGroupMembers || overrideCanOnlySeeGroupMembers) return principals;
+				if (!canOnlySeeGroupMembers || accessControlManager.testOperation(user, zone, WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS)) return principals;
 			} catch(Exception e) {
 				//If any error occurs, just deny access to them all
 				return principals;
 			}
+*/
 			
 			//This user does not have the right to see all users, so filter out those not allowed
 			Set groupIds = getApplicationLevelGroupMembership(user.getId(), RequestContextHolder.getRequestContext().getZoneId());
