@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,7 +46,7 @@
 <!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
 <c:if test="${ieBrowser == 'true'}">
 <object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "100%" HEIGHT = "600"  
-  codebase="https://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
+  codebase="http://java.sun.com/update/1.7.0/jinstall-7u72-windows-i586.cab">
 </c:if>
 <c:if test="${ieBrowser == 'false'}">
 <applet CODE = "org.kablink.teaming.applets.workflowviewer.WorkflowViewer" 
@@ -57,7 +57,7 @@
     <PARAM NAME = CODE value = "org.kablink.teaming.applets.workflowviewer.WorkflowViewer" >
     <PARAM NAME = CODEBASE value = "<html:appletPath/>applets" >
     <PARAM NAME = ARCHIVE value = "workflow-viewer/kablink-teaming-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections.jar,lib/jung.jar,lib/dom4j.jar,lib/jaxen.jar" >
-    <param name="type" value="application/x-java-applet;version=1.5">
+    <param name="type" value="application/x-java-applet;version=1.7">
     <param name="scriptable" value="false">
 	<param name="xmlGetUrl" value="<ssf:url 
     		webPath="viewDefinitionXml" >
