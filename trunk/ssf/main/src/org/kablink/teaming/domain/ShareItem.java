@@ -359,7 +359,11 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
         return false;
     }
 
-    public Date getExpiredDate() {
+	public boolean deletedSince(Date date) {
+		return deletedDate!=null && date.before(deletedDate);
+	}
+
+	public Date getExpiredDate() {
         if (endDate!=null && endDate.before(new Date())) {
             if (deletedDate==null) {
                 return endDate;

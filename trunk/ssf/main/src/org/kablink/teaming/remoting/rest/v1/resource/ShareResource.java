@@ -1055,19 +1055,23 @@ public class ShareResource extends AbstractResource {
         for (Pair<DefinableEntity, List<ShareItem>> pair : pairs) {
             boolean isNew = pair.getB().size()>0;
             boolean isDeleted = isNew;
+            boolean foundValidShare = false;
             Date createDate = null;
             Date expireDate = null;
             for (ShareItem item : pair.getB()) {
-                createDate = ResourceUtil.min(createDate, item.getStartDate());
-                expireDate = ResourceUtil.min(expireDate, item.getExpiredDate());
-                if (!item.createdSince(since)) {
-                    isNew = false;
-                }
-                if (!item.expiredSince(since)) {
-                    isDeleted = false;
+                if (!ignoreShareItemInLibraryChanges(item, since)) {
+                    foundValidShare = true;
+                    createDate = ResourceUtil.min(createDate, item.getStartDate());
+                    expireDate = ResourceUtil.min(expireDate, item.getExpiredDate());
+                    if (!item.createdSince(since)) {
+                        isNew = false;
+                    }
+                    if (!item.expiredSince(since) && !item.deletedSince(since)) {
+                        isDeleted = false;
+                    }
                 }
             }
-            if ((isNew && !isDeleted) || (!isNew && isDeleted)) {
+            if (foundValidShare && ((isNew && !isDeleted) || (!isNew && isDeleted))) {
                 DefinableEntity entity = pair.getA();
                 BaseBinderChange change = ResourceUtil.buildBinderChange(entity.getEntityIdentifier(),
                         isNew ? org.kablink.teaming.domain.BinderChange.Action.add : org.kablink.teaming.domain.BinderChange.Action.delete,
@@ -1090,6 +1094,21 @@ public class ShareResource extends AbstractResource {
         }
 
         return changes;
+    }
+
+    private boolean ignoreShareItemInLibraryChanges(ShareItem item, Date since) {
+        if (item.isExpired() && !item.expiredSince(since)) {
+            return true;
+        }
+        if (item.isDeleted() && !item.deletedSince(since)) {
+            return true;
+        }
+
+        if (item.createdSince(since) && (item.isExpired() || item.isDeleted())) {
+            return true;
+        }
+
+        return false;
     }
 
     private DefinableEntity getSharedEntity(ShareItem shareItem, boolean accessCheck) {

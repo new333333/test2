@@ -203,6 +203,7 @@ public enum ApiErrorCode {
 
     ACL_CHANGED, // No device found with this id
     CHANGES_PURGED, // No device found with this id
+    CHANGES_WINDOW_PASSED, // The date is outside of the supported binder changes windows
     ADHOC_SETTING_CHANGED, // No device found with this id
 
     NOT_FOUND, // Object/item not found (generic)

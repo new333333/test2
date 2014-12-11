@@ -623,7 +623,6 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 		allowShareWithLdapGroups = Boolean.valueOf( allow );
 	}
 	
-
 	public int getAuditTrailKeepDays() {
 		if (auditTrailKeepDays == null) {
 			if (Utils.checkIfFilr() || Utils.checkIfIPrint()) {
