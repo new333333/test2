@@ -53,7 +53,7 @@
  </c:if>
  <div class="ss_clear"></div>
  </ssf:editable>
- <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+<%-- <c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
    <div align="right">
      <a href='<ssf:url adapter="true" portletName="ss_mobile" 
 					folderId="${ssBinder.id}" 
@@ -65,5 +65,6 @@
 	</a>
    </div>
  </c:if>
+--%>
 </div>
 </c:if>
