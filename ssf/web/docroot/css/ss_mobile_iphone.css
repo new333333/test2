@@ -520,8 +520,8 @@ h6 {
 	}
 
 .workflow { 
-	background: #e5e5e5; 
-	padding:4px;
+	background: #ededed; 
+	padding:5px;
 	font-size: 0.83em !important;
 	}
 
@@ -554,6 +554,8 @@ h6 {
 	}
 .ss_mobile_workflow_state {
 	padding-left: 10px;
+	font-weight: bold;
+	font-size: 14px;
 	}
 .ss_mobile_masthead {
 	border: solid 1px black;

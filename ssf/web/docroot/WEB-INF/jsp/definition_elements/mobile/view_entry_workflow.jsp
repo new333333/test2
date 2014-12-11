@@ -36,20 +36,20 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${!empty ssDefinitionEntry.workflowStates}">
-<div class="pagebody">
-  <div id="workflow">
-    <span><ssf:nlt tag="workflow"/></span>
+<div class="entry-content">
+  <div id="workflow" class="entry-caption">
+    <ssf:nlt tag="workflow"/>
     <c:set var="lastWorkflowTitle" value=""/>
   </div>
  
-  <div class="workflow">
+  <div class="workflow entry-element">
 	<c:forEach var="workflow" items="${ssDefinitionEntry.workflowStates}">
 	  <c:if test="${!empty workflow.definition}">
 	      <c:if test="${workflowTitle != lastWorkflowTitle}">
-	        <span><ssf:nlt tag="${workflow.definition.title}" checkIfTag="true"/></span>
+	        <span style="padding-right: 5px;"><ssf:nlt tag="${workflow.definition.title}" checkIfTag="true"/></span>
 	      </c:if>
 	      <c:if test="${empty workflow.threadName}">
-		    <br/><span class="ss_mobile_workflow_state">${ssWorkflowCaptions[workflow.id]}</span>
+		    <span class="ss_mobile_workflow_state">${ssWorkflowCaptions[workflow.id]}</span>
 	      </c:if>
 	
 	    <c:set var="workflowTitle" value="${workflow.definition.title}"/>
@@ -62,8 +62,7 @@
 	    	  </c:if>
 	
 		      <c:if test="${!empty ssWorkflowTransitions[workflow2.id]}">
-			      <b><ssf:nlt tag="workflow.transitionTo" /></b>
-			      <br/>
+			      <div class="margintop2"><ssf:nlt tag="workflow.transitionTo" /></div>
 				  <form class="ss_style ss_form" method="post" 
 				    action="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${ssBinder.id}" 

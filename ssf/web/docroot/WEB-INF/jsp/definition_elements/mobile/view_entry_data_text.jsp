@@ -34,9 +34,10 @@
 %>
 <% //Text view %>
 <div class="entry-content">
-  <div class="entry-caption"><c:out value="${property_caption}" /></div>
-  <div class="entry-element">
-    <c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
-    <div class="ss_clear"></div>
-  </div>
+	<div class="entry-caption"><c:out value="${property_caption}" />
+		<span class="entry-element">
+			<c:out value="${ssDefinitionEntry.customAttributes[property_name].value}" escapeXml="false"/>
+		</span>
+		<div class="ss_clear"></div>
+	</div>
 </div>

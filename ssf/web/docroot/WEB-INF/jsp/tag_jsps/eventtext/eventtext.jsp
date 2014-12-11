@@ -37,7 +37,7 @@
 <div>
 	<c:choose>
 		<c:when test="${(allDayEvent && startString == endString) || !hasDuration}">
-			<ssf:nlt tag="calendar.when" /> ${startString}<br />
+			<div><ssf:nlt tag="calendar.allDay" />&nbsp;${startString}</div>
 		</c:when>
 		<c:when test="${(allDayEvent && startString != endString)}">
 		    <div><ssf:nlt tag="calendar.start" text="Start"/> ${startString}&nbsp;&nbsp;
