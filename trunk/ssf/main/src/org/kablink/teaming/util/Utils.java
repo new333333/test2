@@ -37,7 +37,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +49,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
@@ -79,12 +80,10 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
 
@@ -367,9 +366,12 @@ public class Utils {
 		AccessControlManager accessControlManager = (AccessControlManager)SpringContextUtil.getBean("accessControlManager");
 		WorkArea zone = coreDao.loadZoneConfig(user.getZoneId());
 		try {
+			// DRF (20141211):  Reworked this check to only test
+			// OVERRIDE_ONLY_SEE_GROUP_MEMBERS if it has to (i.e.,
+			// if canOnlySeeGroupMembers is true) and not check it
+			// all the time.
 			boolean canOnlySeeGroupMembers = accessControlManager.testOperation(user, zone, WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS);
-			boolean overrideCanOnlySeeGroupMembers = accessControlManager.testOperation(user, zone, WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS);
-			if (canOnlySeeGroupMembers && !overrideCanOnlySeeGroupMembers) {
+			if (canOnlySeeGroupMembers && !accessControlManager.testOperation(user, zone, WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS)) {
 				onlySeeCache.put(user.getId(), Boolean.TRUE);
 			} else {
 				onlySeeCache.put(user.getId(), Boolean.FALSE);
