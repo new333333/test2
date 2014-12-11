@@ -38,6 +38,7 @@ import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.BinderChildren;
 import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
 import org.kablink.teaming.rest.v1.model.RootRestObject;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
@@ -66,6 +67,7 @@ public interface Api {
     // Reserved id used by the REST API for the "Public" virtual binder
     public static final Long PUBLIC_SHARES_ID = Long.valueOf(-104);
 
+    Date getCurrentServerTime();
     Binder getMyFiles();
     Binder getNetFolders();
     ReleaseInfo getReleaseInfo();
@@ -84,6 +86,12 @@ public interface Api {
     SearchResultList<SearchableObject> listChildren(Binder binder, Integer first, Integer count);
     SearchResultList<SearchableObject> listChildren(Binder binder, Integer first, Integer count, Date ifModifiedSince);
     BinderChanges listChanges(Binder binder, Date since, Integer count);
+    Folder createLibraryFolder(Binder parentBinder, String name);
+    Folder createLibraryFolderIfNecessary(Binder parentBinder, String name);
     FileProperties uploadFile(Binder parent, String fileName, boolean overwriteExisting, InputStream content);
+    Share shareFolder(Folder folder, Share share);
     Share shareFile(FileProperties file, Share share);
+
+    void delete(FileProperties file, boolean purge);
+    void delete(Binder folder, boolean purge);
 }

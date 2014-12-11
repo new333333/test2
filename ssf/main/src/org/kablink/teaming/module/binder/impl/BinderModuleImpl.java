@@ -62,13 +62,10 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.NonUniqueObjectException;
 import org.kablink.teaming.ConfigurationException;
-import org.kablink.teaming.GroupExistsException;
-import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.UserExistsException;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.comparator.PrincipalComparator;
@@ -157,6 +154,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ConcurrentStatusTicket;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.MergedOrderedListIterator;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SessionUtil;
@@ -173,7 +171,6 @@ import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
-import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -4590,17 +4587,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     }
 
     private BinderChanges searchForChanges(Long[] binderIds, Long[] entryIds, Date sinceDate, boolean recursive, int maxResults) {
+		verifyInSupportedBinderChangesWindow(sinceDate);
         List<Binder> binders = getBinders(binderIds);
         if (binders.size()==0 && (entryIds==null || entryIds.length==0)) {
-            throw new AclChangeException();
+            return new BinderChanges();
         }
         List<HKey> binderKeys = getHKeys(binders);
-        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        Date purgeDate = getCoreDao().getAuditTrailPurgeDate(zoneId);
-        if (purgeDate!=null && purgeDate.after(sinceDate)) {
-            throw new AuditTrailPurgedException();
-        }
-
         if (binderKeys.size()>0) {
             if (recursive && haveAclsChangedSinceDate(binderKeys, sinceDate)) {
                 throw new AclChangeException();
@@ -4624,67 +4616,70 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         }
 
         Map map = searchForChangedEntities(binderIds, entryIds, sinceDate, recursive, true, true, true, false, maxResults);
-        List entryList = entryIds==null ? null : Arrays.asList(entryIds);
-        List deleteEntries = getDeleteAuditTrailEntries(binderKeys, recursive, entryList, sinceDate, maxResults);
+		List deletedEntries1 = null;
+		List deletedEntries2 = null;
+		if (binderKeys!=null && binderKeys.size()>0) {
+			deletedEntries1 = getDeletedAuditTrailEntriesByBinder(binderKeys, recursive, sinceDate, maxResults);
+		}
+		if (entryIds!=null && entryIds.length>0) {
+			List entryList = Arrays.asList(entryIds);
+			deletedEntries2 = getDeletedAuditTrailEntriesByEntity(entryList, sinceDate, maxResults);
+		}
 
         Integer searchCount = (Integer)map.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
         Integer searchTotal = (Integer)map.get(ObjectKeys.TOTAL_SEARCH_COUNT);
         List<Map> searchEntries = (List<Map>)map.get(ObjectKeys.SEARCH_ENTRIES);
 
-        Iterator deleteIterator = deleteEntries.iterator();
-        Iterator<Map> addModIterator = searchEntries.iterator();
-
-        AuditTrail nextDelete = deleteIterator.hasNext() ? (AuditTrail) deleteIterator.next() : null;
-        Map nextAddMod = addModIterator.hasNext() ? addModIterator.next() : null;
+		MergedOrderedListIterator resultIterator = new MergedOrderedListIterator(new BinderChangesComparator(), searchEntries, deletedEntries1, deletedEntries2);
 
         List<BinderChange> mergedResults = new ArrayList<BinderChange>(maxResults);
         boolean done = false;
         while (!done) {
-            if (mergedResults.size()>=maxResults || (nextDelete==null && nextAddMod==null)) {
+            if (mergedResults.size()>=maxResults || !resultIterator.hasNext()) {
                 done = true;
             } else {
-                boolean useDelete;
-                if (nextDelete==null) {
-                    useDelete = false;
-                } else if (nextAddMod==null) {
-                    useDelete = true;
-                } else {
-                    useDelete = nextDelete.getStartDate().before(getResultModDate(nextAddMod));
-                }
+				Object next = resultIterator.next();
 
-                if (useDelete) {
-                    EntityIdentifier entityId = nextDelete.toEntityIdentifier();
+                if (next instanceof AuditTrail) {
+					AuditTrail at = (AuditTrail) next;
+                    EntityIdentifier entityId = at.toEntityIdentifier();
                     if (entityId!=null) {
                         BinderChange change = new BinderChange();
                         change.setEntityId(entityId);
-                        change.setPrimaryFileId(nextDelete.getFileId());
+                        change.setPrimaryFileId(at.getFileId());
                         change.setAction(BinderChange.Action.delete);
-                        change.setDate(nextDelete.getStartDate());
+                        change.setDate(at.getStartDate());
                         mergedResults.add(change);
                     }
-                    nextDelete = deleteIterator.hasNext() ? (AuditTrail) deleteIterator.next() : null;
-                } else {
-                    EntityIdentifier entityId = buildIdentifier(nextAddMod);
+                } else if (next instanceof Map) {
+					Map nextMap = (Map) next;
+                    EntityIdentifier entityId = buildIdentifier(nextMap);
                     if (entityId!=null) {
                         BinderChange change = new BinderChange();
                         change.setEntityId(entityId);
-                        if (getResultCreateDate(nextAddMod).after(sinceDate)) {
+                        if (getResultCreateDate(nextMap).after(sinceDate)) {
                             change.setAction(BinderChange.Action.add);
                         } else {
                             change.setAction(BinderChange.Action.modify);
                         }
-                        change.setDate(getResultModDate(nextAddMod));
-                        change.setSearchMap(nextAddMod);
+                        change.setDate(getResultModDate(nextMap));
+                        change.setSearchMap(nextMap);
                         mergedResults.add(change);
                     }
-                    nextAddMod = addModIterator.hasNext() ? addModIterator.next() : null;
                 }
             }
         }
         BinderChanges changes = new BinderChanges();
         changes.setChanges(mergedResults);
         changes.setCount(mergedResults.size());
-        changes.setTotal(searchTotal + deleteEntries.size());
+		int total = searchTotal;
+		if (deletedEntries1!=null) {
+			total += deletedEntries1.size();
+		}
+		if (deletedEntries2!=null) {
+			total += deletedEntries2.size();
+		}
+        changes.setTotal(total);
         return changes;
     }
 
@@ -4708,14 +4703,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
     private boolean haveAclsChangedSinceDate(List<HKey> binderKeys, Date sinceDate) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, true, null,
+        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, true,
                 new AuditTrail.AuditType[]{AuditTrail.AuditType.acl}, null, 1);
         return aclChanges.size()>0;
     }
 
     private boolean haveFolderRightsChangedSinceDate(Set<Long> folderIds, Date sinceDate) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, null, false, new ArrayList<Long>(folderIds),
+        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, new ArrayList<Long>(folderIds),
                 new AuditTrail.AuditType[]{AuditTrail.AuditType.acl}, null, 1);
         return aclChanges.size()>0;
     }
@@ -4743,11 +4738,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         return binders;
     }
 
-    private List getDeleteAuditTrailEntries(List<HKey>  binderKeys, boolean recursive, List<Long> entryIds, Date sinceDate, int maxResults) {
+    private List getDeletedAuditTrailEntriesByBinder(List<HKey>  binderKeys, boolean recursive, Date sinceDate, int maxResults) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, recursive, entryIds,
-                new AuditTrail.AuditType[]{AuditTrail.AuditType.delete, AuditTrail.AuditType.preDelete},
-                new EntityType[] {EntityType.folderEntry,EntityType.folder,EntityType.workspace}, maxResults);
+		return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, recursive,
+				new AuditTrail.AuditType[]{AuditTrail.AuditType.delete, AuditTrail.AuditType.preDelete},
+				new EntityType[] {EntityType.folderEntry,EntityType.folder,EntityType.workspace}, maxResults);
+    }
+
+    private List getDeletedAuditTrailEntriesByEntity(List<Long> entryIds, Date sinceDate, int maxResults) {
+        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, entryIds,
+				new AuditTrail.AuditType[]{AuditTrail.AuditType.delete, AuditTrail.AuditType.preDelete},
+				new EntityType[] {EntityType.folderEntry,EntityType.folder,EntityType.workspace}, maxResults);
     }
 
     private Map searchForChangedEntities(Long [] binderIds, Long [] entryIds, Date sinceDate, boolean recursive, boolean libraryOnly, boolean binders, boolean entries, boolean attachments, int maxResults){
@@ -4964,6 +4966,39 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		@Override
 		public String toString() {
 			return "(size=" + this.size() + ",putCount=" + this.getPutCount() + ",takenCount=" + this.getTakenCount() + ",processedCount=" + this.getProcessedCount() + ",totalExpectedCount=" + this.getTotalExpectedCount() + ")";
+		}
+	}
+
+	private class BinderChangesComparator implements Comparator {
+
+		private Date getDate(Object o) {
+			if (o instanceof AuditTrail) {
+				return ((AuditTrail) o).getStartDate();
+			} else if (o instanceof Map) {
+				return getResultModDate((Map) o);
+			}
+			return null;
+		}
+
+		@Override
+		public int compare(Object o1, Object o2) {
+			Date d1 = getDate(o1);
+			Date d2 = getDate(o2);
+
+			return d1.compareTo(d2);
+		}
+	}
+
+	private void verifyInSupportedBinderChangesWindow(Date sinceDate) {
+		int binderChangeSupportedDays = SPropsUtil.getInt("binder.changes.allowed.days", 7);
+		Date supportedDate= new Date(System.currentTimeMillis() - ((long)binderChangeSupportedDays)*1000L*60L*60L*24L);
+		if (sinceDate.before(supportedDate)) {
+			throw new OutsideOfBinderChangesWindowException();
+		}
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		Date purgeDate = getCoreDao().getAuditTrailPurgeDate(zoneId);
+		if (purgeDate!=null && purgeDate.after(sinceDate)) {
+			throw new AuditTrailPurgedException();
 		}
 	}
 }

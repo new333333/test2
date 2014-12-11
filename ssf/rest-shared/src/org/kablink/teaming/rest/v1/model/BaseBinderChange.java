@@ -15,6 +15,8 @@
 
 package org.kablink.teaming.rest.v1.model;
 
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+
 import java.util.Date;
 
 /**
@@ -22,6 +24,7 @@ import java.util.Date;
  * Date: 7/25/12
  * Time: 11:38 AM
  */
+@JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type", defaultImpl = BinderChange.class)
 abstract public class BaseBinderChange {
     public static enum Type {
         binder,

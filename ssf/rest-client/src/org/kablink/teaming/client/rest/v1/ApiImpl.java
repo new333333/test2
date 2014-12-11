@@ -48,7 +48,10 @@ import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.BinderChildren;
+import org.kablink.teaming.rest.v1.model.EntityId;
+import org.kablink.teaming.rest.v1.model.ErrorInfo;
 import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
 import org.kablink.teaming.rest.v1.model.RootRestObject;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
@@ -68,6 +71,12 @@ public class ApiImpl extends BaseApiImpl implements Api {
 	public ApiImpl(ApiClient conn) {
 		super(conn);
 	}
+
+    @Override
+    public Date getCurrentServerTime() {
+        ClientResponse response = getJSONResourceBuilder("").get(ClientResponse.class);
+        return response.getResponseDate();
+    }
 
     public RootRestObject getRoot() {
         if (root==null) {
@@ -117,17 +126,54 @@ public class ApiImpl extends BaseApiImpl implements Api {
         return get(getJSONResourceBuilder(getRootHref("zone_config")), ZoneConfig.class);
     }
 
+    @Override
+    public Folder createLibraryFolder(Binder parentBinder, String name) {
+        BinderBrief folder = new BinderBrief();
+        folder.setTitle(name);
+        try {
+            return post(getJSONResourceBuilder(parentBinder.findRelatedLink("child_library_folders")),
+                    Folder.class, folder);
+        } catch (ConflictException e) {
+            ErrorInfo err = e.getError();
+            if (err != null && err.data!=null) {
+                ObjectMapper mapper = this.conn.getObjectMapper();
+                populateType((Map) err.data);
+                err.data = mapper.convertValue(err.data, Folder.class);
+            }
+            throw e;
+        }
+    }
+
+    @Override
+    public Folder createLibraryFolderIfNecessary(Binder parentBinder, String name) {
+        try {
+            return createLibraryFolder(parentBinder, name);
+        } catch (ConflictException e) {
+            if (e.getError()!=null && e.getError().data instanceof Folder) {
+                return (Folder) e.getError().data;
+            }
+            throw e;
+        }
+    }
+
     public FileProperties uploadFile(Binder parent, String fileName, boolean overwriteExisting, InputStream content) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("file_name", fileName);
         params.put("overwrite_existing", overwriteExisting);
-        return getJSONResourceBuilder(parent.findRelatedLink("child_library_files"), params).type("application/octet-stream")
-                .post(FileProperties.class, content);
+        return post(getJSONResourceBuilder(parent.findRelatedLink("child_library_files"), params).type("application/octet-stream"),
+                FileProperties.class, content);
+    }
+
+    @Override
+    public Share shareFolder(Folder folder, Share share) {
+        share.setSharedEntity(new EntityId(folder.getId(), folder.getEntityType(), null));
+        return post(getJSONResourceBuilder(folder.findRelatedLink("shares")), Share.class, share);
     }
 
     @Override
     public Share shareFile(FileProperties file, Share share) {
-        return getJSONResourceBuilder(file.findRelatedLink("shares")).post(Share.class, share);
+        share.setSharedEntity(file.getOwningEntity());
+        return post(getJSONResourceBuilder(file.findRelatedLink("shares")), Share.class, share);
     }
 
     @Override
@@ -215,6 +261,22 @@ public class ApiImpl extends BaseApiImpl implements Api {
         params.put("since", since);
         WebResource.Builder builder = getJSONResourceBuilder(binder.findRelatedLink("library_changes"), params);
         return get(builder, BinderChanges.class);
+    }
+
+    @Override
+    public void delete(FileProperties file, boolean purge) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("purge", purge);
+        WebResource.Builder builder = getJSONResourceBuilder(file.getOwningEntity().getLink(), params);
+        delete(builder);
+    }
+
+    @Override
+    public void delete(Binder folder, boolean purge) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("purge", purge);
+        WebResource.Builder builder = getJSONResourceBuilder(folder.getLink(), params);
+        delete(builder);
     }
 
     private String getRootHref(String name) {

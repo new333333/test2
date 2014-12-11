@@ -68,12 +68,12 @@ public class MyFilesLastModTimeTest extends TestCase {
         Date date = binding.givenMyFilesLibraryChildrenLastModifiedTime();
         Thread.sleep(2000);
         binding.whenPersonalStorageChanges();
-        binding.thenMyFilesLibraryLibraryChangesFails(date);
+        binding.thenMyFilesLibraryChangesFails(date);
     }
 
     public void testWhenNothingThenMyFilesLibraryLibraryChangesReturnsNothing() {
         Date date = binding.givenMyFilesLibraryChildrenLastModifiedTime();
-        binding.thenMyFilesLibraryLibraryChangesReturnsNothing(date);
+        binding.thenMyFilesLibraryChangesReturnsNothing(date);
     }
 
 }

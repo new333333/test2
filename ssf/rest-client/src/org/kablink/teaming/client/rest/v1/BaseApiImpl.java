@@ -223,6 +223,21 @@ public class BaseApiImpl {
         return response.getEntity(clss);
     }
 
+    protected <T> T post(UniformInterface uniformInterface, Class<T> clss, Object requestEntity) {
+        ClientResponse response = uniformInterface.post(ClientResponse.class, requestEntity);
+        if (response.getStatus()!=200) {
+            handleError(response);
+        }
+        return response.getEntity(clss);
+    }
+
+    protected void delete(UniformInterface uniformInterface) {
+        ClientResponse response = uniformInterface.delete(ClientResponse.class);
+        if (response.getStatus()!=200 && response.getStatus()!=204) {
+            handleError(response);
+        }
+    }
+
     protected void handleError(ClientResponse response) {
         HttpException exception = null;
         ErrorInfo err = null;

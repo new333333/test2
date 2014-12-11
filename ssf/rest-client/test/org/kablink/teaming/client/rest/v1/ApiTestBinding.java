@@ -6,7 +6,9 @@ import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
+import org.kablink.teaming.rest.v1.model.EntityId;
 import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.Share;
@@ -16,7 +18,9 @@ import org.kablink.teaming.rest.v1.model.admin.PersonalStorage;
 import org.kablink.teaming.rest.v1.model.admin.WebAppConfig;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * User: David
@@ -30,13 +34,42 @@ public class ApiTestBinding {
     public Api clientApiAsLdapUser;
 
     public ApiTestBinding() {
-        ApiClient homelessClient = ApiClient.create("https://kamas.wal.novell.com:8443", "nohome", "novell");
-        ApiClient ldapClient = ApiClient.create("https://kamas.wal.novell.com:8443", "dlewis2", "novell");
-        ApiClient adminClient = ApiClient.create("https://kamas.wal.novell.com:8443", "admin", "novell");
+        ApiClient homelessClient = ApiClient.create("https://amethyst.cam.novell.com:8443", "nohome", "novell");
+        ApiClient ldapClient = ApiClient.create("https://amethyst.cam.novell.com:8443", "dlewis2", "novell");
+        ApiClient adminClient = ApiClient.create("https://amethyst.cam.novell.com:8443", "admin", "novell");
         clientApiAsHomelessUser = new ApiImpl(homelessClient);
         clientApiAsLdapUser = new ApiImpl(ldapClient);
         clientApiAsAdmin = new ApiImpl(adminClient);
         adminApi = new AdminApiImpl(adminClient);
+    }
+
+    public Date givenCurrentServerTime() {
+        return clientApiAsAdmin.getCurrentServerTime();
+    }
+
+    public List givenFileAndFolderWithSubFilesSharedWithUser(User user) {
+        List children = new ArrayList();
+        whenNoSharesWithUser(user);
+        whenSharedWithUser(whenFileExistsInAdminMyFiles(1), user);
+        Folder folder = whenFolderExistsInAdminMyFiles(1);
+        whenSharedWithUser(folder, user);
+        for (int i=0; i<4; i++) {
+            children.add(whenFileExistsInFolder(i, clientApiAsAdmin, folder));
+        }
+        children.add(clientApiAsAdmin.createLibraryFolderIfNecessary(folder, "subfolder"));
+        return children;
+    }
+
+    public void whenFolderDeleted(Binder folder) {
+        clientApiAsAdmin.delete(folder, true);
+    }
+
+    public void whenFileDeleted(FileProperties file) {
+        clientApiAsAdmin.delete(file, true);
+    }
+
+    public void whenFileDeleted(FileProperties file, boolean purge) {
+        clientApiAsAdmin.delete(file, purge);
     }
 
     public Date givenMyFilesLibraryChildrenLastModifiedTime() {
@@ -45,7 +78,25 @@ public class ApiTestBinding {
         return searchableObjectSearchResultList.getLastModified();
     }
 
-    public void thenMyFilesLibraryLibraryChangesFails(Date since) {
+    public Date givenSharedWithMeLibraryChildrenLastModifiedTime() {
+        Binder swm = clientApiAsLdapUser.getSharedWithMe();
+        SearchResultList<SearchableObject> searchableObjectSearchResultList = clientApiAsLdapUser.listChildren(swm);
+        return searchableObjectSearchResultList.getLastModified();
+    }
+
+    public void thenSharedWithMeLibraryChangesReturnsNothing(Date since) {
+        Binder swm = clientApiAsLdapUser.getSharedWithMe();
+        BinderChanges changes = clientApiAsLdapUser.listChanges(swm, since, 10);
+        Assert.assertEquals(0, (long)changes.getCount());
+    }
+
+    public void thenSharedWithMeLibraryChangesReturnsCount(Date since, int count) {
+        Binder swm = clientApiAsLdapUser.getSharedWithMe();
+        BinderChanges changes = clientApiAsLdapUser.listChanges(swm, since, 10);
+        Assert.assertEquals(count, (long)changes.getCount());
+    }
+
+    public void thenMyFilesLibraryChangesFails(Date since) {
         Binder myFiles = clientApiAsLdapUser.getMyFiles();
         try {
             BinderChanges changes = clientApiAsLdapUser.listChanges(myFiles, since, 10);
@@ -55,7 +106,7 @@ public class ApiTestBinding {
         }
     }
 
-    public void thenMyFilesLibraryLibraryChangesReturnsNothing(Date since) {
+    public void thenMyFilesLibraryChangesReturnsNothing(Date since) {
         Binder myFiles = clientApiAsLdapUser.getMyFiles();
         BinderChanges changes = clientApiAsLdapUser.listChanges(myFiles, since, 10);
         Assert.assertEquals(0, (long)changes.getCount());
@@ -140,9 +191,19 @@ public class ApiTestBinding {
     }
 
     public FileProperties whenFileExistsInAdminMyFiles(int counter) {
+        Api clientApi = clientApiAsAdmin;
+        Binder myFiles = clientApi.getMyFiles();
+        return whenFileExistsInFolder(counter, clientApi, myFiles);
+    }
+
+    private FileProperties whenFileExistsInFolder(int counter, Api clientApi, Binder myFiles) {
+        return clientApi.uploadFile(myFiles, "test" + counter + ".txt", true, new ByteArrayInputStream(("Test contents " + counter).getBytes()));
+    }
+
+    public Folder whenFolderExistsInAdminMyFiles(int counter) {
         Api clientApi = new ApiImpl(((AdminApiImpl)adminApi).conn);
         Binder myFiles = clientApi.getMyFiles();
-        return clientApi.uploadFile(myFiles, "test" + counter + ".txt", true, new ByteArrayInputStream(("Test contents " + counter).getBytes()));
+        return clientApi.createLibraryFolderIfNecessary(myFiles, "folder " + counter);
     }
 
     public void whenPublicShare() {
@@ -172,8 +233,20 @@ public class ApiTestBinding {
         Access access = new Access();
         access.setRole("VIEWER");
         share.setAccess(access);
-        share.setSharedEntity(file.getOwningEntity());
         clientApi.shareFile(file, share);
+    }
+
+    public void whenSharedWithUser(Folder folder, User user) {
+        Api clientApi = new ApiImpl(((AdminApiImpl)adminApi).conn);
+        Share share = new Share();
+        ShareRecipient recipient = new ShareRecipient();
+        recipient.setType("user");
+        recipient.setId(user.getId());
+        share.setRecipient(recipient);
+        Access access = new Access();
+        access.setRole("VIEWER");
+        share.setAccess(access);
+        clientApi.shareFolder(folder, share);
     }
 
     public void whenNoPublicShares() {
