@@ -158,6 +158,7 @@ span.tab2s { text-decoration: underline }
 .breadcrumb   { color: #848582; font-size: 0.65em; line-height: 1em;  margin-bottom: 1em }
 .breadcrumb a {text-decoration: none;}
 .smalltext { color: black; font-size: 0.75em; line-height: 1em }
+.smalltext-a { font-size: 12px;}
 .smalltext2a { color: #663; font-size: 0.75em; line-height: 1em }
 .smalltext2b { color: black; font-weight: bold; font-size: 0.75em; line-height: 1em }
 .smalltext2c  { color: #355263; font-size: 0.75em; line-height: 1.1em; width: 480px }
