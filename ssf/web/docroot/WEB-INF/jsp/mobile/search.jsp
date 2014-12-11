@@ -57,6 +57,11 @@ function ss_setMobileSearchActionUrl(formObj) {
 }
 </script>
 <div id="search-dialog" class="action-dialog" style="display: none;z-index:2">
+	<div class="close-menu">
+        <input id="search-cancel" type="image" src="<html:rootPath/>images/icons/close_menu.png" 
+          name="cancelBtn" onClick="ss_hideMenu('search-dialog');return false;"/>
+	</div>
+
     <div class="dialog-head">
       <span><ssf:nlt tag="navigation.search" /></span>
     </div>
@@ -86,25 +91,23 @@ function ss_setMobileSearchActionUrl(formObj) {
 		    </select>
 		  </div>
 		  <div>
-		    <input type="radio" name="scope" value="site" checked="checked"/> <ssf:nlt tag="mobile.searchTheSite"/>
-		    <br/>
+		    <div class="margintop2"><input type="radio" name="scope" value="site" checked="checked"/> <ssf:nlt tag="mobile.searchTheSite"/></div>
+		    
 		    <c:if test="${ssBinder.entityType == 'folder'}">
-		      <input type="radio" name="scope" value="local" /> <ssf:nlt tag="mobile.searchThisFolder"/>
+		      <div class="margintop2"><input type="radio" name="scope" value="local" /> <ssf:nlt tag="mobile.searchThisFolder"/></div>
 		    </c:if>
 		    <c:if test="${ssBinder.entityType != 'folder'}">
-		      <input type="radio" name="scope" value="local" /> <ssf:nlt tag="mobile.searchThisWorkspace"/>
+		      <div class="margintop2"><input type="radio" name="scope" value="local" /> <ssf:nlt tag="mobile.searchThisWorkspace"/></div>
 		    </c:if>
 		  </div>
 	  </div>
 	  <div>
-		<input class="mediumtext" type="text" size="33" name="searchText"/>
+		<input class="mediumtext" style="width: 90%;" type="text" size="33" name="searchText"/>
 	  </div>			
       <div id="search-buttons" class="margintop2">
-        <input id="search-ok" type="submit" value="<ssf:nlt tag="button.ok"/>" 
+        <input id="search-ok" type="submit" value="<ssf:nlt tag="button.search"/>" 
           name="quickSearch" onClick="ss_hideMenu('search-dialog');return true;" />
-        <input id="search-cancel" type="button" value="<ssf:nlt tag="button.cancel"/>" 
-          name="cancelBtn" onClick="ss_hideMenu('search-dialog');return false;" />
-      </div>
+       </div>
     </form>
     
 	<%@ include file="/WEB-INF/jsp/mobile/saved_searches.jsp" %>

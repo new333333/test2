@@ -35,7 +35,7 @@
 
 <div id="new-actions-menu" class="action-dialog" style="display:none; z-index:2;">
 	<div id="new-actions-button" class="close-menu">
-	  <input id="new-actions-menu-close" type="image" src="<html:rootPath/>css/images/mobile/new_25.png" 
+	  <input id="new-actions-menu-close" type="image" src="<html:rootPath/>images/icons/close_menu.png" 
 	    name="newactionsmenuclose" onClick="ss_hideMenu('new-actions-menu');return false;" />
 	</div>
     <div class="dialog-head">
