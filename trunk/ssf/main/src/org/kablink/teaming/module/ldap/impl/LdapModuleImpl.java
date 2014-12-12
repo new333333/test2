@@ -71,15 +71,12 @@ import javax.naming.ldap.PagedResultsResponseControl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
-
 import org.hibernate.CacheMode;
 import org.hibernate.SessionFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -111,6 +108,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.ldap.ADLdapObject;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
@@ -140,7 +138,6 @@ import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -3017,6 +3014,152 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		throw new NoUserByTheNameException( teamingUserName );
 	}// end syncUser()
+	
+	/**
+	 * Get the parent container's dn.  Can return null
+	 */
+	private String getADContainerDN( String dn )
+	{
+		int index;
+		
+		if ( dn == null )
+			return null;
+		
+		// Find the first ','
+		index = dn.indexOf( ',' );
+		if ( index > 0 && (index+1) < dn.length() )
+		{
+			String parentDn;
+			
+			parentDn = dn.substring( index+1 );
+			
+			// Does the parent dn start with "ou=" or "o=" or "l=" or "c=" or "dc=" or "st=" or "cn"?
+			if ( parentDn.startsWith( "ou=" ) || parentDn.startsWith( "o=" ) ||
+				 parentDn.startsWith( "l=" ) || parentDn.startsWith( "c=" ) ||
+				 parentDn.startsWith( "dc=" ) || parentDn.startsWith( "st=" ) ||
+				 parentDn.startsWith( "cn=" ) )
+			{
+				// Yes
+				return parentDn;
+			}
+		}
+		
+		return null;
+	}
+	
+
+	/**
+	 * 
+	 */
+	@Override
+	public ADLdapObject getLdapObjectFromAD( String fqdn )
+		throws NamingException
+	{
+		Workspace zone;
+		LdapSchedule schedule;
+		String samAccountName = null;
+		String baseDN;
+
+		zone = RequestContextHolder.getRequestContext().getZone();
+		schedule = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
+		
+		// Get the dn of the container the object is in.
+		baseDN = getADContainerDN( fqdn );
+		
+		if ( baseDN == null || baseDN.length() == 0 )
+			return null;
+		
+		for( LdapConnectionConfig config : this.getConfigsReadOnlyCache(zone.getZoneId()) )
+		{
+			LdapContext ctx;
+			String domainName;
+			LdapDirType dirType;
+
+			ctx = getUserContext( zone.getId(), config );
+
+			dirType = getLdapDirType( config.getLdapGuidAttribute() );
+			if ( dirType != LdapDirType.AD )
+				continue;
+			
+			domainName = getDomainName( config );
+			
+			try
+			{
+				String[] attributesToRead;
+				Attributes lAttrs;
+				int scope;
+				SearchControls sch;
+				String search;
+				String filter;
+				NamingEnumeration ctxSearch;
+				Binding bd;
+				Attribute att;
+
+				attributesToRead = new String[2];
+				attributesToRead[0] = SAM_ACCOUNT_NAME_ATTRIBUTE;
+				attributesToRead[1] = "distinguishedName";
+				
+				scope = SearchControls.SUBTREE_SCOPE;
+				sch = new SearchControls( scope, 1, 0, attributesToRead, false, false );
+	
+				search = "(distinguishedName=" + fqdn + ")";
+				
+				ctxSearch = ctx.search( baseDN, search, sch );
+				if ( !hasMore( ctxSearch ) )
+				{
+					continue;
+				}
+				
+				bd = (Binding)ctxSearch.next();
+
+				lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
+
+				att = lAttrs.get( SAM_ACCOUNT_NAME_ATTRIBUTE );
+				if ( att != null && att.size() == 1 )
+				{
+					Object val;
+
+					val = att.get();
+					if ( val != null && val instanceof String )
+					{
+						samAccountName = ((String)val).trim();
+					}
+				}
+			}
+			finally
+			{
+				// Nothing to do.
+			}
+
+			if ( ctx != null )
+			{
+				try
+				{
+					ctx.close();
+					ctx = null;
+				}
+				catch ( NamingException ex )
+				{
+					// Nothing to do
+				}
+			}
+
+			if ( samAccountName != null && domainName != null )
+			{
+				ADLdapObject ldapObj;
+				
+				ldapObj = new ADLdapObject();
+				ldapObj.setFQDN( fqdn );
+				ldapObj.setDomainName( domainName );
+				ldapObj.setSamAccountName( samAccountName );
+
+				return ldapObj;
+			}
+		}
+		
+		// If we get here we could not find the user with the given fqdn
+		return null;
+	}
 	
 	/**
 	 * Update a ssf user with an ldap person.  

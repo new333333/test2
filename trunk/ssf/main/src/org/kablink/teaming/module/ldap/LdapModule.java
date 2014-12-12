@@ -43,8 +43,6 @@ import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
 
 
@@ -106,4 +104,6 @@ public interface LdapModule {
 	public void setConfigsReadOnlyCache(Long zoneId, List<LdapConnectionConfig> configs);
 	
 	public LdapConnectionConfig getConfigReadOnlyCache(Long zoneId, String configId);
+	
+	public ADLdapObject getLdapObjectFromAD( String fqdn ) throws NamingException;
 }
