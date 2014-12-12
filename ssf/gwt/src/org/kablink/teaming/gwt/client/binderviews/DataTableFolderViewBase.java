@@ -616,10 +616,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					reply = null;
 				}
 				else {
-					reply = new EntryPinInfo(
-						fr.isPinned(),
-						getFolderId(),
-						fr.getEntityId().getEntityId());
+					reply = ((EntryPinInfo) fr.getClientEntryPinInfo());
+					if (null == reply) {
+						reply = new EntryPinInfo(
+							fr.isPinned(),
+							getFolderId(),
+							fr.getEntityId().getEntityId());
+						fr.setClientEntryPinInfo(reply);
+					}
 				}
 				return reply;
 			}

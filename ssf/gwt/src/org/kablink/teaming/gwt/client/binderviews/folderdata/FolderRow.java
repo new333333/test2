@@ -96,7 +96,8 @@ public class FolderRow implements IsSerializable {
 	private Map<String, PrincipalAdminType>			m_rowPrincipalAdminTypes;	// A map of column names to PrincipalAdminType values             possibly stored for a column.
 	private String									m_rowFamily;				// Family type of this row's entity.
 	
-	private transient Object						m_serverMobileDevice;		// Used on the server side to refer a MobileDevice object when that's what the row represents.
+	private transient Object						m_clientEntryPinInfo;		// Used on the client side to refer to an EntryPinInfo object created for the row.
+	private transient Object						m_serverMobileDevice;		// Used on the server side to refer to a  MobileDevice object when that's what the row represents.
 
 	/**
 	 * Inner class used to wrap a long for use as a specific object
@@ -198,6 +199,7 @@ public class FolderRow implements IsSerializable {
 	public Map<String, ViewFileInfo>			getRowViewFilesMap()                   {validateMapViews();               return m_rowViewFiles;          } 
 	public Map<String, String>					getRowStringsMap()                     {validateMapStrings();             return m_rowStrings;            }
 	public Map<String, PrincipalAdminType>		getRowPrincipalAdminTypesMap()         {validateMapPrincipalAdminTypes(); return m_rowPrincipalAdminTypes;}
+	public Object								getClientEntryPinInfo()                {                                  return m_clientEntryPinInfo;    }
 	public Object								getServerMobileDevice()                {                                  return m_serverMobileDevice;    }
 	public String								getBinderIcon(BinderIconSize iconSize) {return m_binderIcons.getBinderIcon(iconSize);                     }
 	public String								getRowFamily()                         {return m_rowFamily;                                               }
@@ -212,6 +214,7 @@ public class FolderRow implements IsSerializable {
 	public void setHomeDir(           boolean            homeDir)                             {m_homeDir            = homeDir;                   }
 	public void setMyFilesDir(        boolean            myFilesDir)                          {m_myFilesDir         = myFilesDir;                }
 	public void setPinned(            boolean            pinned)                              {m_pinned             = pinned;                    }
+	public void setClientEntryPinInfo(Object             clientEntryPinInfo)                  {m_clientEntryPinInfo = clientEntryPinInfo;        }
 	public void setServerMobileDevice(Object             serverMobileDevice)                  {m_serverMobileDevice = serverMobileDevice;        }
 	public void setBinderIcon(        String             binderIcon, BinderIconSize iconSize) {m_binderIcons.setBinderIcon(binderIcon, iconSize);}
 	public void setRowFamily(         String             rowFamily)                           {m_rowFamily          = rowFamily;                 }
