@@ -35,20 +35,18 @@ package org.kablink.teaming.gwt.server.util;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig.HomeDirConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig.HomeDirCreationOption;
 import org.kablink.teaming.domain.LdapConnectionConfig.SearchInfo;
-import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.gwt.client.GwtADLdapObject;
 import org.kablink.teaming.gwt.client.GwtHomeDirConfig;
 import org.kablink.teaming.gwt.client.GwtHomeDirConfig.GwtHomeDirCreationOption;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
@@ -64,6 +62,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveLdapConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StartLdapSyncRpcResponseData;
 import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.GwtLdapSyncMode;
 import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.module.ldap.ADLdapObject;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapModule.LdapSyncMode;
 import org.kablink.teaming.module.ldap.LdapSchedule;
@@ -72,7 +71,6 @@ import org.kablink.teaming.module.ldap.LdapSyncResults.PartialLdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
 import org.kablink.teaming.module.ldap.LdapSyncThread;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
 
 
@@ -377,6 +375,54 @@ public class GwtLdapHelper
 		ldapConfig.setLocale( defaultLocaleId );
 
 		return ldapConfig;
+	}
+	
+	/**
+	 * Return a GwtADLdapObject for the given fqdn
+	 */
+	public static GwtADLdapObject getLdapObjectFromAD(
+		AllModulesInjected ami,
+		String fqdn )
+	{
+		GwtADLdapObject gwtLdapObj = null;
+		
+		if ( fqdn == null || fqdn.length() == 0 )
+			return null;
+		
+		try
+		{
+			ADLdapObject ldapObj; 
+
+			ldapObj = ami.getLdapModule().getLdapObjectFromAD( fqdn );
+			if ( ldapObj != null )
+			{
+				gwtLdapObj = getGwtADLdapObjectFromADLdapObject( ldapObj );
+			}
+		}
+		catch ( Exception ex )
+		{
+			m_logger.error( "in getLdapObjectFromAD()", ex );
+		}
+		
+		return gwtLdapObj;
+	}
+	
+	/**
+	 * 
+	 */
+	private static GwtADLdapObject getGwtADLdapObjectFromADLdapObject( ADLdapObject ldapObj )
+	{
+		GwtADLdapObject gwtLdapObj;
+		
+		if ( ldapObj == null )
+			return null;
+		
+		gwtLdapObj = new GwtADLdapObject();
+		gwtLdapObj.setDomainName( ldapObj.getDomainName() );
+		gwtLdapObj.setFQDN( ldapObj.getFQDN() );
+		gwtLdapObj.setSamAccountName( ldapObj.getSamAccountName() );
+
+		return gwtLdapObj;
 	}
 	
 	/**

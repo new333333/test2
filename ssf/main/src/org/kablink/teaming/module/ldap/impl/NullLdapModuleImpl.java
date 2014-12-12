@@ -42,9 +42,8 @@ import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.ldap.ADLdapObject;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
@@ -170,6 +169,12 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 	@Override
 	public LdapConnectionConfig getConfigReadOnlyCache(Long zoneId,
 			String configId) {
+		return null;
+	}
+	
+	@Override
+	public ADLdapObject getLdapObjectFromAD( String fqdn ) throws NamingException
+	{
 		return null;
 	}
 }

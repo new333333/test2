@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtADLdapObject;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtMainPage;
@@ -53,6 +54,7 @@ import org.kablink.teaming.gwt.client.event.NetFolderRootModifiedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateNetFolderRootCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetLdapObjectFromADCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyNetFolderRootCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFolderServerCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionCmd;
@@ -1432,19 +1434,21 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					// be a leaf node.  Ignore non-leaf selections.
 					if ( selection.isLeaf() )
 					{
-						NetFolderRootType selectedServerType;
-						String proxyName;
+						Scheduler.ScheduledCommand cmd;
+						final String fqdn;
 						
-						selectedServerType = getSelectedRootType();
-						if ( selectedServerType == NetFolderRootType.SHARE_POINT_2013 ||
-							 selectedServerType == NetFolderRootType.SHARE_POINT_2010 )
+						fqdn = selection.getDn();
+						
+						cmd = new ScheduledCommand()
 						{
-							proxyName = getSharePointProxyName( selection.getDn() );
-						}
-						else
-							proxyName = selection.getDn();
+							@Override
+							public void execute()
+							{
+								setProxyNameFromFQDN( fqdn );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
 
-						m_proxyNameTxtBox.setValue( proxyName );
 						m_ldapBrowserDlg.hide();
 					}
 				}
@@ -1452,87 +1456,87 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_ldapServerList,		// List of LDAP servers that can be browsed.
 			m_browseProxyDnBtn );	// The dialog is positioned relative to this.
 	}
+
+	/**
+	 * If the selected server type is SharePoint or Windows, get the proxy name in the format
+	 * domain\samAccountName and store that in the proxy name text box.
+	 */
+	private void setProxyNameFromFQDN( String fqdn )
+	{
+		NetFolderRootType selectedServerType;
+		
+		selectedServerType = getSelectedRootType();
+
+		if ( selectedServerType == NetFolderRootType.SHARE_POINT_2013 ||
+			 selectedServerType == NetFolderRootType.SHARE_POINT_2010 ||
+			 selectedServerType == NetFolderRootType.WINDOWS )
+		{
+			setProxyNameUsingWindowsFormat( fqdn );
+		}
+		else
+		{
+			setProxyName( fqdn );
+		}
+	}
 	
 	/**
-	 * For the given dn, return the proxy name in the format SharePoint expects
-	 * Given a dn, cn=foo,cn=bar,dc=123,dc=com, we would return 123.com/foo
+	 * 
 	 */
-	private String getSharePointProxyName( String dn )
+	private void setProxyName( String name )
 	{
-		String domainName = null;
-		String userName = null;
+		m_proxyNameTxtBox.setValue( name );
+	}
+	
+	/**
+	 * For the given fqdn, get the proxy name in the Windows format of domain-name\samAccountName
+	 * and stick that proxy name in the text box.
+	 */
+	private void setProxyNameUsingWindowsFormat( final String fqdn )
+	{
+		GetLdapObjectFromADCmd cmd;
+		AsyncCallback<VibeRpcResponse> rpcCallback;
 		
-		if ( dn == null || dn.length() == 0 )
-			return dn;
-		
-		// Get the domain name
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
-			StringBuffer strBuff;
-			String[] parts;
-			
-			strBuff = new StringBuffer();
-			
-			parts = dn.split( "dc=" );
-			if ( parts != null && parts.length > 1 )
+			@Override
+			public void onFailure( Throwable caught )
 			{
-				int i;
-				
-				for ( i = 1; i < parts.length; ++i )
-				{
-					String part;
-					int index;
-					
-					// Does this part have a ',' in it?
-					part = parts[i];
-					index = part.indexOf( ',' );
-					if ( index >= 0 )
-					{
-						// Yes
-						strBuff.append( part.substring( 0, index ) );
-						strBuff.append( '.' );
-					}
-					else
-						strBuff.append( part );
-				}
-				
-				domainName = strBuff.toString();
+				setProxyName( fqdn );
 			}
-		}
-		
-		// Get the user name
-		{
-			String[] parts;
-			
-			parts = dn.split( "cn=" );
-			if ( parts != null && parts.length > 0 )
-			{
-				int index;
-				int i;
-				
-				for (i = 0; i < parts.length && userName == null; ++i)
-				{
-					String part;
-					
-					part = parts[i];
-					if ( part != null && part.length() > 0 )
-					{
-						// Grab the first cn=
-						index = part.indexOf( ',' );
-						if ( index >= 0 )
-							userName = part.substring( 0, index );
-						else
-							userName = part;
-					}
-				}
-			}
-		}
-		
-		if ( domainName != null && userName != null )
-			return domainName + "\\" + userName;
 
-		// If we get here we could not construct a domain-name/user-name string.
-		// Just return the dn
-		return dn;
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				String proxyName;
+				
+				proxyName = fqdn;
+				
+				if ( result.getResponseData() != null )
+				{
+					GwtADLdapObject ldapObject;
+					String domainName;
+					String samAccountName;
+				
+					ldapObject = (GwtADLdapObject) result.getResponseData();
+					domainName = ldapObject.getDomainName();
+					samAccountName = ldapObject.getSamAccountName();
+					if ( domainName != null && domainName.length() > 0 &&
+						 samAccountName != null && samAccountName.length() > 0 )
+					{
+						proxyName = domainName + "\\" + samAccountName;
+					}
+				}
+				
+				setProxyName( proxyName );
+			}						
+		};
+		
+		// Issue an rpc request to get an ldap object from AD.  We will get the
+		// domain-name and samAccountName from the ldap object.
+		{
+			cmd = new GetLdapObjectFromADCmd( fqdn );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
 	}
 	
 	/**

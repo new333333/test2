@@ -50,7 +50,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -75,6 +74,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.gwt.client.GwtADLdapObject;
 import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
 import org.kablink.teaming.gwt.client.BlogPages;
@@ -2015,6 +2015,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			ldapConfig = GwtLdapHelper.getLdapConfig( this );
 			response = new VibeRpcResponse( ldapConfig );
+			return response;
+		}
+		
+		case GET_LDAP_OBJECT_FROM_AD:
+		{
+			GetLdapObjectFromADCmd gloCmd;
+			GwtADLdapObject ldapObject;
+			
+			gloCmd = (GetLdapObjectFromADCmd) cmd;
+			ldapObject = GwtLdapHelper.getLdapObjectFromAD(
+														this,
+														gloCmd.getFQDN() );
+			response = new VibeRpcResponse( ldapObject );
+			
 			return response;
 		}
 		
