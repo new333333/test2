@@ -70,12 +70,13 @@ import static org.kablink.util.search.Restrictions.in;
 public class NetFoldersResource extends AbstractResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<NetFolderBrief> getNetFolders(@QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+    public SearchResultList<NetFolderBrief> getNetFolders(@QueryParam("name") String name,
+                                                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                           @QueryParam("first") @DefaultValue("0") Integer offset,
                                                           @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
-        return _getNetFolders(toDomainFormat(descriptionFormatStr), offset, maxCount, "/net_folders", nextParams);
+        return _getNetFolders(name, toDomainFormat(descriptionFormatStr), offset, maxCount, "/net_folders", nextParams);
     }
 
     @GET
@@ -92,7 +93,7 @@ public class NetFoldersResource extends AbstractResource {
                                                                  @QueryParam("first") @DefaultValue("0") Integer offset,
                                                                  @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         SearchResultList<SearchableObject> results;
-        SearchResultList<NetFolderBrief> netFolders = getNetFolders(descriptionFormatStr, 0, -1);
+        SearchResultList<NetFolderBrief> netFolders = getNetFolders(null, descriptionFormatStr, 0, -1);
         if (netFolders.getCount()>0) {
             Junction searchContext = Restrictions.disjunction();
             for (BinderBrief binder : netFolders.getResults()) {
@@ -125,7 +126,7 @@ public class NetFoldersResource extends AbstractResource {
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         nextParams.put("description_format", descriptionFormatStr);
 
-        SearchResultList<NetFolderBrief> folders = getNetFolders(descriptionFormatStr, 0, -1);
+        SearchResultList<NetFolderBrief> folders = getNetFolders(null, descriptionFormatStr, 0, -1);
         if (folders.getCount()==0) {
             return new SearchResultList<RecentActivityEntry>();
         }

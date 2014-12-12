@@ -421,6 +421,15 @@ public interface FolderModule {
 	 */
     public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title, String zoneUUID)
     	throws AccessControlException;
+	/**
+	 * Return a set of folderEntrys, doing the lookup by title.
+	 * @param folderId
+	 * @param title
+	 * @return
+	 * @throws AccessControlException
+	 */
+    public Set<FolderEntry> getFolderEntryByTitle(Long folderId, String title)
+    	throws AccessControlException;
  	/**
 	 * Search for entries in a folder and additionally return the folderEntry and its tags.
 	 * @param folderId

@@ -49,7 +49,6 @@ import org.kablink.teaming.InvalidEmailAddressException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
@@ -63,6 +62,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
@@ -1929,61 +1929,106 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return folder;
     }
 
-    protected SearchResultList<SearchableObject> getChildren(long id, Criterion filter, boolean binders, boolean entries, boolean files,
+    protected SearchResultList<SearchableObject> getChildren(long id, Criterion filter, String name, boolean binders, boolean entries, boolean files,
                                                              boolean allowJits, Integer offset, Integer maxCount,
                                                           String nextUrl, Map<String, Object> nextParams, int descriptionFormat,
                                                           Date modifiedSince) {
         Binder binder = _getBinder(id);
-        if (offset==null) {
-            offset = 0;
-        }
-        if (maxCount==null) {
-            maxCount = -1;
-        }
-        Map resultMap;
-        if (binder instanceof Folder) {
-            resultMap = searchForFolderContents(id, binders, entries || files, offset, maxCount);
-        } else {
-            Criteria crit = new Criteria();
-            if (filter!=null) {
-                crit.add(filter);
-            }
-            Junction or = Restrictions.disjunction();
-            if (binders) {
-                or.add(SearchUtils.buildBindersCriterion());
-            }
-            if (entries || files) {
-                or.add(SearchUtils.buildEntriesCriterion());
-            }
-        //        if (files) {
-        //            or.add(SearchUtils.buildAttachmentsCriterion());
-        //        }
-            crit.add(or);
-            crit.add(SearchUtils.buildParentBinderCriterion(id));
-            crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
-            crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
-
-            resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_PREAPPROVED_PARENTS, offset, maxCount, binder, allowJits);
-        }
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset, binder.getModificationDate());
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat, files), resultMap, nextUrl, nextParams, offset);
-        if (modifiedSince!=null && results.getLastModified()!=null && !modifiedSince.before(results.getLastModified())) {
-            throw new NotModifiedException();
+
+        if (name!=null) {
+            if (binder instanceof Folder) {
+                if (allowJits) {
+                    getFolderModule().jitSynchronize((Folder) binder);
+                }
+                if (entries || files) {
+                    addChildFolderEntriesByName(results, id, name, files);
+                }
+            }
+            if (binders) {
+                Long binderId = binder.getId();
+                addChildFolderByName(results, binderId, name);
+            }
+        } else {
+            if (offset == null) {
+                offset = 0;
+            }
+            if (maxCount == null) {
+                maxCount = -1;
+            }
+            Map resultMap;
+            if (binder instanceof Folder) {
+                resultMap = searchForFolderContents(id, binders, entries || files, offset, maxCount);
+            } else {
+                Criteria crit = new Criteria();
+                if (filter != null) {
+                    crit.add(filter);
+                }
+                Junction or = Restrictions.disjunction();
+                if (binders) {
+                    or.add(SearchUtils.buildBindersCriterion());
+                }
+                if (entries || files) {
+                    or.add(SearchUtils.buildEntriesCriterion());
+                }
+                //        if (files) {
+                //            or.add(SearchUtils.buildAttachmentsCriterion());
+                //        }
+                crit.add(or);
+                crit.add(SearchUtils.buildParentBinderCriterion(id));
+                crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
+                crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
+
+                resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_PREAPPROVED_PARENTS, offset, maxCount, binder, allowJits);
+            }
+            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat, files), resultMap, nextUrl, nextParams, offset);
+            if (modifiedSince != null && results.getLastModified() != null && !modifiedSince.before(results.getLastModified())) {
+                throw new NotModifiedException();
+            }
+
+            if (results.getCount() == 0 && SPropsUtil.getBoolean("rest.api.log.zero.size.search.results", false)) {
+                StringBuilder sb = new StringBuilder("REST response: (")
+                        .append(RequestContextHolder.getRequestContext().getClientIdentity())
+                        .append(") ")
+                        .append("Empty result from getChildren under binder ")
+                        .append(id)
+                        .append(" using node '")
+                        .append(RequestContextHolder.getRequestContext().getLastSearchNodeName())
+                        .append("'");
+                logger.warn(sb.toString());
+            }
         }
-        
-        if(results.getCount() == 0 && SPropsUtil.getBoolean("rest.api.log.zero.size.search.results", false)) {
-        	StringBuilder sb = new StringBuilder("REST response: (")
-        			.append(RequestContextHolder.getRequestContext().getClientIdentity())
-        			.append(") ")
-        			.append("Empty result from getChildren under binder ")
-        			.append(id)
-        			.append(" using node '")
-        			.append(RequestContextHolder.getRequestContext().getLastSearchNodeName())
-        			.append("'");
-        	logger.warn(sb.toString());
-        }
-        
         return results;
+    }
+
+    private void addChildFolderByName(SearchResultList<SearchableObject> results, Long parentBinderId, String name) {
+        Binder child = getBinderModule().getBinderByParentAndTitle(parentBinderId, name);
+        if (child != null) {
+            results.append(ResourceUtil.buildBinderBrief(child));
+        }
+    }
+
+    private void addChildFolderEntriesByName(SearchResultList<SearchableObject> results, Long parentFolderId, String name, boolean addAsFile) {
+        FolderModule folderModule = getFolderModule();
+        Folder parentFolder = folderModule.getFolder(parentFolderId);
+        Set<FolderEntry> folderEntryByTitle = folderModule.getFolderEntryByTitle(parentFolder.getId(), name);
+        Set<Long> ids = new HashSet<>();
+        for (FolderEntry entry : folderEntryByTitle) {
+            if (addAsFile) {
+                results.append(ResourceUtil.buildFileProperties(entry.getPrimaryFileAttachment()));
+            } else {
+                results.append(ResourceUtil.buildFolderEntryBrief(entry));
+            }
+            ids.add(entry.getId());
+        }
+        FolderEntry entry = folderModule.getLibraryFolderEntryByFileName(parentFolder, name);
+        if (entry!=null && !ids.contains(entry.getId())) {
+            if (addAsFile) {
+                results.append(ResourceUtil.buildFileProperties(entry.getPrimaryFileAttachment()));
+            } else {
+                results.append(ResourceUtil.buildFolderEntryBrief(entry));
+            }
+        }
     }
 
     private Map searchForFolderContents(long folderId, boolean includeSubFolders, boolean includeEntries, int offset, int maxCount) {
@@ -2014,7 +2059,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         throw new NotFoundException(ApiErrorCode.BINDER_NOT_FOUND, "NOT FOUND");
     }
 
-    protected SearchResultList<SearchableObject> _getMyFilesLibraryChildren(Date ifModifiedSince, boolean folders, boolean entries, boolean files, boolean allowJits,
+    protected SearchResultList<SearchableObject> _getMyFilesLibraryChildren(String name, Date ifModifiedSince, boolean folders, boolean entries, boolean files, boolean allowJits,
                                                                           int descriptionFormat, Integer offset, Integer maxCount, String nextUrl) {
         User user = getLoggedInUser();
         if (!SearchUtils.userCanAccessMyFiles(this, user)) {
@@ -2036,15 +2081,28 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             Long homeId = SearchUtils.getHomeFolderId(this, user);
             if (homeId!=null) {
                 // If we are listing the home folder, use this API because it could trigger JITS.
-                results = getChildren(homeId, SearchUtils.buildLibraryCriterion(true), folders, entries, files, allowJits,
+                results = getChildren(homeId, SearchUtils.buildLibraryCriterion(true), name, folders, entries, files, allowJits,
                                       offset, maxCount, nextUrl, nextParams, descriptionFormat, ifModifiedSince);
                 results.setLastModified(lastModified);
             }
         }
         if (results==null) {
-            // In all other cases, this code will search across the various My Files locations.  JITS is irrelevant.
-            Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, user.getWorkspaceId(), folders, entries, false, files);
-            results = lookUpChildren(crit, descriptionFormat, offset, maxCount, nextUrl, nextParams, lastModified);
+            if (name!=null) {
+                results = new SearchResultList<>();
+                if (entries||files) {
+                    Long myFilesFolderId = SearchUtils.getMyFilesFolderId(this, user, false);
+                    if (myFilesFolderId!=null) {
+                        addChildFolderEntriesByName(results, myFilesFolderId, name, files);
+                    }
+                }
+                if (folders) {
+                    addChildFolderByName(results, user.getWorkspaceId(), name);
+                }
+            } else {
+                // In all other cases, this code will search across the various My Files locations.  JITS is irrelevant.
+                Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, user.getWorkspaceId(), folders, entries, false, files);
+                results = lookUpChildren(crit, descriptionFormat, offset, maxCount, nextUrl, nextParams, lastModified);
+            }
         }
         setMyFilesParents(results);
         results.updateLastModified(AdminHelper.getEffectiveAdhocFolderSettingDate(this, user));
@@ -2104,37 +2162,38 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
     }
 
-    protected List<SearchableObject> getSharedByChildren(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, boolean onlyLibrary,
+    protected List<SearchableObject> getSharedByChildren(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, String name, boolean onlyLibrary,
                                                          boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedEntities(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", onlyLibrary, showHidden,
+            return _getSharedEntities(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", name, onlyLibrary, showHidden,
                     showUnhidden, true, false, true);
         }
-        return _getSharedEntities(shareItems, null, null, onlyLibrary, showHidden, showUnhidden, true, false, true);
+        return _getSharedEntities(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden, true, false, true);
     }
 
-    protected List<SearchableObject> getSharedWithChildren(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
+    protected List<SearchableObject> getSharedWithChildren(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, String name, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedEntities(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", onlyLibrary, showHidden,
+            return _getSharedEntities(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", name, onlyLibrary, showHidden,
                     showUnhidden, true, false, true);
         }
-        return _getSharedEntities(shareItems, null, null, onlyLibrary, showHidden, showUnhidden, true, false, true);
+        return _getSharedEntities(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden, true, false, true);
     }
 
-    protected List<SearchableObject> getPublicChildren(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent,
+    protected List<SearchableObject> getPublicChildren(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, String name, boolean onlyLibrary, boolean replaceParent,
                                                        boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedEntities(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", onlyLibrary, showHidden, showUnhidden, true, false, true);
+            return _getSharedEntities(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", name, onlyLibrary, showHidden, showUnhidden, true, false, true);
         }
-        return _getSharedEntities(shareItems, null, null, onlyLibrary, showHidden, showUnhidden, true, false, true);
+        return _getSharedEntities(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden, true, false, true);
     }
 
-    protected List<SearchableObject> _getSharedEntities(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, Long topId, String topHref, boolean onlyLibrary,
-                                                      boolean showHidden, boolean showUnhidden,
-                                                      boolean folders, boolean entries, boolean files)  {
+    protected List<SearchableObject> _getSharedEntities(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems,
+                                                        Long topId, String topHref, String name, boolean onlyLibrary,
+                                                        boolean showHidden, boolean showUnhidden,
+                                                        boolean folders, boolean entries, boolean files)  {
         boolean guestEnabled = isGuestAccessEnabled();
 
-        List<Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> resultList = _getSharedItems(shareItems, topId, onlyLibrary,
+        List<Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> resultList = _getSharedItems(shareItems, topId, name, onlyLibrary,
                 showHidden, showUnhidden, topId==ObjectKeys.SHARED_BY_ME_ID, false, folders, entries || files);
 
         List<SearchableObject> results = new ArrayList<SearchableObject>();
@@ -2205,9 +2264,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return results;
     }
 
-    protected List<Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> _getSharedItems(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, Long topId, boolean onlyLibrary,
-                                                      boolean showHidden, boolean showUnhidden, boolean showExpired, boolean showDeleted,
-                                                      boolean folders, boolean entries)  {
+    protected List<Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> _getSharedItems(
+            List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, Long topId, String name,
+            boolean onlyLibrary, boolean showHidden, boolean showUnhidden, boolean showExpired, boolean showDeleted,
+            boolean folders, boolean entries)  {
         Map<Object, Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> resultMap =
                 new LinkedHashMap<Object, Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>>();
 
@@ -2227,7 +2287,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                         } else {
                             entry = (FolderEntry) getDefinableEntity(pair, !showExpired && !showDeleted);
                         }
-                        if (showToUser(entry, topId, showHidden, showUnhidden, showDeleted)) {
+                        if (showEntryToUser(entry, topId, name, showHidden, showUnhidden, showDeleted)) {
                             if (sharesByEntity==null) {
                                 sharesByEntity = new Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>(entry, new ArrayList<ShareItem>());
                                 resultMap.put(entry.getId(), sharesByEntity);
@@ -2241,7 +2301,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                         } else {
                             binder = (Binder) getDefinableEntity(pair, !showExpired && !showDeleted);
                         }
-                        if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden, showDeleted)) {
+                        if (showBinderToUser(binder, name, onlyLibrary, topId, showHidden, showUnhidden, showDeleted)) {
                             if (sharesByEntity==null) {
                                 sharesByEntity = new Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>(binder, new ArrayList<ShareItem>());
                                 resultMap.put(binder.getId(), sharesByEntity);
@@ -2259,8 +2319,11 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return results;
     }
 
-    protected boolean showBinderToUser(Binder binder, boolean onlyLibrary, Long collectionId, boolean showHidden, boolean showUnhidden, boolean showDeleted) {
+    protected boolean showBinderToUser(Binder binder, String name, boolean onlyLibrary, Long collectionId, boolean showHidden, boolean showUnhidden, boolean showDeleted) {
         if (binder==null) {
+            return false;
+        }
+        if (name!=null && !binder.getTitle().equals(name)) {
             return false;
         }
         if ((!showDeleted && isBinderPreDeleted(binder)) || (onlyLibrary && binder.getEntityType() != EntityIdentifier.EntityType.workspace && !binder.isLibrary())) {
@@ -2282,9 +2345,23 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return showUnhidden;
     }
 
-    protected boolean showToUser(FolderEntry entry, Long collectionId, boolean showHidden, boolean showUnhidden, boolean showDeleted) {
+    protected boolean showEntryToUser(FolderEntry entry, Long collectionId, String name, boolean showHidden, boolean showUnhidden, boolean showDeleted) {
         if (entry==null) {
             return false;
+        }
+        if (name!=null) {
+            boolean nameMatches = false;
+            if (entry.getTitle().equals(name)) {
+                nameMatches = true;
+            } else {
+                FileAttachment att = entry.getPrimaryFileAttachment();
+                if (att!=null && att.getFileItem().getName().equals(name)) {
+                    nameMatches = true;
+                }
+            }
+            if (!nameMatches) {
+                return false;
+            }
         }
         if (!showDeleted && _isPreDeleted(entry)) {
             return false;
@@ -2305,10 +2382,23 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return showUnhidden;
     }
 
-    protected SearchResultList<NetFolderBrief> _getNetFolders(int descriptionFormat, int offset, int maxCount, String nextUrl, Map<String, Object> nextParams) {
+    protected SearchResultList<NetFolderBrief> _getNetFolders(String name, int descriptionFormat, int offset, int maxCount, String nextUrl, Map<String, Object> nextParams) {
         Map map = SearchUtils.searchForNetFolders(this, null, new HashMap());
         SearchResultList<NetFolderBrief> results = new SearchResultList<NetFolderBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new NetFolderBriefBuilder(descriptionFormat), map, nextUrl, nextParams, offset);
+        NetFolderBriefBuilder builder = new NetFolderBriefBuilder(descriptionFormat);
+        if (name!=null) {
+            List<Map> entries = (List<Map>)map.get(ObjectKeys.SEARCH_ENTRIES);
+            if (entries!=null) {
+                for (Map entry : entries) {
+                    String title = (String) entry.get(Constants.TITLE_FIELD);
+                    if (name.equals(title)) {
+                        results.append(builder.build(entry));
+                    }
+                }
+            }
+        } else {
+            SearchResultBuilderUtil.buildSearchResults(results, builder, map, nextUrl, nextParams, offset);
+        }
         for (NetFolderBrief binder : results.getResults()) {
             binder.setParentBinder(new ParentBinder(ObjectKeys.NET_FOLDERS_ID, "/self/net_folders"));
         }

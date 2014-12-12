@@ -1781,8 +1781,28 @@ public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String tit
     	
     	return titles;    	
     }
-    
-    @Override
+
+	@Override
+	public Set<FolderEntry> getFolderEntryByTitle(Long folderId, String title) throws AccessControlException {
+		Set<FolderEntry> entries = new HashSet<>();
+		Folder folder = null;
+		try {
+			folder = getFolder(folderId);
+		} catch(NoFolderByTheIdException e) {
+			return entries;
+		}
+		if (folder == null) return entries;
+		List<FolderEntry> results = getFolderDao().loadEntries(folder, new FilterControls(ObjectKeys.FIELD_ENTITY_TITLE, title));
+		for (FolderEntry entry: results) {
+			try {
+				AccessUtils.readCheck(entry);
+				entries.add(entry);
+			} catch (AccessControlException ac) {}
+		}
+		return entries;
+	}
+
+	@Override
 	public SortedSet<Folder> getSubfolders(Folder folder) {
     	//already have access to folder
         User user = RequestContextHolder.getRequestContext().getUser();

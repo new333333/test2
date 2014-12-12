@@ -208,27 +208,27 @@ public class BinderResource extends AbstractResource {
         SearchResultList<SearchableObject> children = null;
         try {
             if (id.equals(ObjectKeys.MY_FILES_ID)) {
-                children = _getMyFilesLibraryChildren(null, true, false, true, false, domainFormat, offset, maxCount, null);
+                children = _getMyFilesLibraryChildren(null, null, true, false, true, false, domainFormat, offset, maxCount, null);
             } else if (id.equals(ObjectKeys.NET_FOLDERS_ID)) {
-                SearchResultList<NetFolderBrief> childrenList = _getNetFolders(domainFormat, 0, -1, null, null);
+                SearchResultList<NetFolderBrief> childrenList = _getNetFolders(null, domainFormat, 0, -1, null, null);
                 children = new SearchResultList<SearchableObject>();
                 for (NetFolderBrief nf : childrenList.getResults()) {
                     children.append(nf);
                 }
             } else if (id.equals(ObjectKeys.SHARED_WITH_ME_ID)) {
-                List<SearchableObject> childrenList = getSharedWithChildren(getSharedWithShareItems(getLoggedInUserId(), false), true, true, false, true);
+                List<SearchableObject> childrenList = getSharedWithChildren(getSharedWithShareItems(getLoggedInUserId(), false), null, true, true, false, true);
                 children = new SearchResultList<SearchableObject>();
                 children.appendAll(childrenList);
             } else if (id.equals(ObjectKeys.SHARED_BY_ME_ID)) {
-                List<SearchableObject> childrenList = getSharedByChildren(getSharedByShareItems(getLoggedInUserId(), false), true, true, false, true);
+                List<SearchableObject> childrenList = getSharedByChildren(getSharedByShareItems(getLoggedInUserId(), false), null, true, true, false, true);
                 children = new SearchResultList<SearchableObject>();
                 children.appendAll(childrenList);
             } else if (id.equals(ObjectKeys.PUBLIC_SHARES_ID)) {
-                List<SearchableObject> childrenList = getPublicChildren(getPublicShareItems(false), true, true, false, true);
+                List<SearchableObject> childrenList = getPublicChildren(getPublicShareItems(false), null, true, true, false, true);
                 children = new SearchResultList<SearchableObject>();
                 children.appendAll(childrenList);
             } else {
-                children = getChildren(id, SearchUtils.buildLibraryCriterion(true), true, false, true,
+                children = getChildren(id, SearchUtils.buildLibraryCriterion(true), null, true, false, true,
                         false, offset, maxCount, null, null, domainFormat, null);
             }
         } catch (RestExceptionWrapper e) {

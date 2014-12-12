@@ -233,6 +233,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
    	@Path("{id}/library_children")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public Response getLibraryChildren(@PathParam("id") long id,
+                                       @QueryParam("name") String name,
                                        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                        @QueryParam("allow_jits") @DefaultValue("true") Boolean allowJits,
                                        @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -245,7 +246,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<SearchableObject> children = getChildren(id, SearchUtils.buildLibraryCriterion(true), true, false, true,
+        SearchResultList<SearchableObject> children = getChildren(id, SearchUtils.buildLibraryCriterion(true), name, true, false, true,
                 allowJits, offset, maxCount, getBasePath() + id + "/library_children", nextParams,
                 toDomainFormat(descriptionFormatStr), null);
         return Response.ok(children).lastModified(lastModified).build();
@@ -266,7 +267,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<BinderBrief> subBinders = getSubBinders(id, SearchUtils.libraryFolders(), true, offset, maxCount,
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, SearchUtils.libraryFolders(), null, true, offset, maxCount,
                 getBasePath() + id + "/library_folders", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
    	}
@@ -607,10 +608,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return results;
     }
 
-    protected SearchResultList<BinderBrief> getSubBinders(long id, Criterion filter, boolean allowJits, Integer offset, Integer maxCount,
+    protected SearchResultList<BinderBrief> getSubBinders(long id, Criterion filter, String name, boolean allowJits, Integer offset, Integer maxCount,
                                                           String nextUrl, Map<String, Object> nextParams, int descriptionFormat,
                                                           Date modifiedSince) {
-        SearchResultList<SearchableObject> results = getChildren(id, filter, true, false, false, allowJits, offset,
+        SearchResultList<SearchableObject> results = getChildren(id, filter, name, true, false, false, allowJits, offset,
                 maxCount, nextUrl, nextParams, descriptionFormat, modifiedSince);
         SearchResultList<BinderBrief> binderResults = new SearchResultList<BinderBrief>(offset, results.getLastModified());
         binderResults.setFirst(results.getFirst());
