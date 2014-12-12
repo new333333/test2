@@ -199,9 +199,10 @@ if (self != self.parent) {
 		}
 	} catch(e) {}
 }
-if (self == self.top && typeof ss_GWT_main_page == "undefined") {
+if (self == self.top && typeof ss_GWT_main_page == "undefined" && typeof ss_landing_page_editor == "undefined") {
 	if (self.location.href.indexOf("standalone=true") == -1 && 
 			self.location.href.indexOf("standalone/true") == -1) {
+		
 		<c:if test="${!empty ssPermalink}">
 			self.location.href = "${ssPermalink}";
 		</c:if>

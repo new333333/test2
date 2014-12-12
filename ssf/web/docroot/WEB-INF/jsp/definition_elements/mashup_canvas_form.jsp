@@ -52,6 +52,11 @@
     jQuery.noConflict();
 </script>
 
+<script type="text/javascript">
+//Set a variable that indicates we are in the landing page editor
+var ss_landing_page_editor = true;
+</script>
+
 <c:set var="ss_mashupItemId" value="0" scope="request"/>
 <%  
 	Long ss_mashupTableDepth = Long.valueOf(0);

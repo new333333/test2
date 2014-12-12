@@ -145,6 +145,9 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 		
 		if ( configData == null )
 			return;
+		
+		if ( configData.isPreviewMode() )
+			m_mainPanel.addStyleName( "landingPageViewPreviewHeight" );
 
 		configData.parse();
 		
