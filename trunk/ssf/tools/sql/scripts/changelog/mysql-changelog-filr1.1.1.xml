@@ -132,9 +132,6 @@
         	<column name="authenticator" type="SMALLINT">
                 <constraints nullable="false"/>
             </column>
-        	<column name="applicationId" type="BIGINT">
-                <constraints nullable="true"/>
-            </column>
          </createTable>
 	</changeSet>
 

@@ -135,9 +135,6 @@
         	<column name="clientAddr" type="VARCHAR(16)">
                 <constraints nullable="false"/>
             </column>
-        	<column name="applicationId" type="NUMERIC(19,0)">
-                <constraints nullable="true"/>
-            </column>
          </createTable>
 	</changeSet>
 

@@ -13,6 +13,5 @@
     <property name="userId" access="field" index="userId_loginAudit"/>
  	<property name="authenticator" access="field" type="short"/>
     <property name="clientAddr" access="field" length="16"/>
-    <property name="applicationId" access="field"/>
   </class>
 </hibernate-mapping>
