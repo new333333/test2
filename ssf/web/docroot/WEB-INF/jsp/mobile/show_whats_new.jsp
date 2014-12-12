@@ -132,10 +132,10 @@
     </div>
 
 	<c:if test="${empty ss_whatsNewBinder && ss_pageNumber > '0'}">
-		  <div style="padding:10px; color: #fff;" class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></div>
+		  <div style="padding: 20px; color: #c4c4c4;" class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></div>
 		</c:if>
 		<c:if test="${empty ss_whatsNewBinder && (empty ss_pageNumber || ss_pageNumber <= '0')}">
-		  <div style="padding:10px; color: #fff;" class="ss_italic"><ssf:nlt tag="whatsnew.noEntriesFound"/></div>
+		  <div style="padding: 20px; color: #c4c4c4;" class="ss_italic"><ssf:nlt tag="whatsnew.noEntriesFound"/></div>
 		</c:if>
 		
         <c:forEach var="entryWn" items="${ss_whatsNewBinder}">

@@ -139,7 +139,7 @@
 				  <div class="ss_italic" style="padding:5px; color: #fff;"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></div>
 				</c:if>
 				<c:if test="${empty ss_whatsNewBinder && (empty ss_pageNumber || ss_pageNumber <= '0')}">
-				  <div class="ss_italic" style="padding:10px; color: #fff;"><ssf:nlt tag="whatsnew.noEntriesFound"/></div>
+				  <div class="ss_italic" style="padding: 20px; color: #c4c4c4;"><ssf:nlt tag="whatsnew.noEntriesFound"/></div>
 				</c:if>
 				<c:forEach var="entryWn" items="${ss_whatsNewBinder}">
 				  <c:if test="${binderCounter2 >= (binderCounter/2) && column2Seen == '0'}">

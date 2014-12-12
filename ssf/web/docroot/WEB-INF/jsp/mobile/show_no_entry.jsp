@@ -47,7 +47,7 @@
   <div class="folders">
     <div class="folder-content">
 
-	  <div style="padding: 10px; color: #fff;"><ssf:nlt tag="nav.noEntries"/></div>
+	  <div style="padding: 20px; color: #c4c4c4;"><ssf:nlt tag="nav.noEntries"/></div>
 
 	  <c:if test="${!empty ssEntryId}">
 		<div style="padding:20px;">
