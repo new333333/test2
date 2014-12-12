@@ -272,7 +272,7 @@ span.pad-left20 select {
 	position: relative;
 	}
 .folder-content {
-	background-color: #ccc;
+	background-color: #f6f6f6;
 	}
 	
 .folder-head {
@@ -717,6 +717,11 @@ div.ss_mobile_calendar_no_entries_content span {
 .ss_eventdateinput2 td {
 	padding: 2px 0 5px;
 	border-bottom: 1px solid #bbbbb6;
+	}
+
+.ss_fieldset {
+	border: 0;
+	
 	}
 
  /*  Helpers */

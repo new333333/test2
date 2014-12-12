@@ -42,7 +42,7 @@
 <tr>
   <td class="ss_table_spacer_right" valign="top" align="right">
 </c:if>
-<div class="ss_entryContent" style="padding-top:3px;">
+<div class="ss_entryContent" style="padding-top:10px;">
 <fieldset class="ss_fieldset">
 <c:if test="${!empty property_legend}">
 <legend class="ss_legend"><ssf:nlt tag="${property_legend}" checkIfTag="true"/></legend>

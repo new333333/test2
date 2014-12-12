@@ -47,9 +47,7 @@
   <div class="folders">
     <div class="folder-content">
 
-	  <div style="padding:10px; color: #fff;">
-  		<span><ssf:nlt tag="entry.noEntryByThisTitle"/></span>
-	  </div>
+	  <div style="padding: 20px; color: #c4c4c4;"><ssf:nlt tag="entry.noEntryByThisTitle"/></div>
 
   	  <div style="padding:20px 0px 20px 10px;">
   	    <a href="javascript:;" class="ss_linkButton"

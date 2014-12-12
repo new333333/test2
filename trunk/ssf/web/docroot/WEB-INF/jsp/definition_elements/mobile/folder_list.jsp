@@ -120,7 +120,7 @@
 	    </div>
 	  </c:if>
 	  <c:if test="${empty ssFolderEntries}">
-		<div style="padding:10px; color: #fff;"><ssf:nlt tag="folder.NoResults"/></div>
+		<div style="padding: 20px; color: #c4c4c4;"><ssf:nlt tag="folder.NoResults"/></div>
 	  </c:if>
 
   </div>
