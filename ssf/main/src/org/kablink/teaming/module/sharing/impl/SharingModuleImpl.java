@@ -38,7 +38,6 @@ import org.kablink.teaming.InvalidEmailAddressException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -82,7 +81,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
- * This module gives us the transaction semantics to deal with the "Shared with Me" features.  
+ * This module gives us the transaction semantics to deal with the
+ * "Shared with Me" features.  
  *
  * @author Peter Hurley
  */
@@ -920,6 +920,14 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     //NO transaction
 	@Override
 	public void deleteShareItem(Long shareItemId) {
+		// Always use the implementation form of the method.
+		deleteShareItemImpl(shareItemId, true);
+	}
+	
+    /*
+     * Implements the deleteShareItem() method.
+     */
+	private void deleteShareItemImpl(Long shareItemId, boolean doCheckAccess) {
 		final ShareItem shareItem;
 		try {
 			shareItem = getProfileDao().loadShareItem(shareItemId);
@@ -929,8 +937,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			return;
 		}
 
-		//Access check (throws error if not allowed)
-		checkAccess(shareItem, SharingOperation.deleteShareItem);
+		if (doCheckAccess) {
+			// Access check (throws error if not allowed)
+			checkAccess(shareItem, SharingOperation.deleteShareItem);
+		}
 		
 		//Now delete the shareItem
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
@@ -938,7 +948,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			public Object doInTransaction(TransactionStatus status) {
                 shareItem.setDeletedDate(new Date());
 				getCoreDao().update(shareItem);
-
+				
 				//Log this share action in the change log
 				addShareItemChangeLogEntry(shareItem, ChangeLog.SHARE_DELETE);
 				
@@ -948,7 +958,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 
 		//Index the entity that is being shared
 		indexSharedEntity(shareItem);
-	
+		
 		//See if there are any cached HTML files to be deleted
 		if (shareItem.getRecipientType().equals(ShareItem.RecipientType.publicLink)) {
 			DefinableEntity entity = getSharedEntity(shareItem);
@@ -1563,38 +1573,39 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			SimpleProfiler.start("SharingModuleImpl.validateShareItemsImpl(Validate shares)");
 	    	try {
 		    	// Scan the shares again.
-		    	CoreDao cd = getCoreDao();
 		    	User user = RequestContextHolder.getRequestContext().getUser();
 		    	for (int i = (c - 1); i >= 0; i -= 1) {
-		    		// Were we able to find this share's DefinableEntity?
+		    		// Were we able to find this share's
+		    		// DefinableEntity?
 		    		ShareItem        share = shares.get(i);
 		    		EntityIdentifier eid   = share.getSharedEntityIdentifier();
-		    		EntityType       eit   = eid.getEntityType();
 		    		Long             id    = eid.getEntityId();
 		    		DefinableEntity  de;
-		    		if (eit.equals(EntityType.folderEntry))
+		    		boolean          isEntry = eid.getEntityType().equals(EntityType.folderEntry);
+		    		if (isEntry)
 		    		     de = findEntryById( entrySet,  id);
 		    		else de = findBinderById(binderSet, id);
 		    		if (null == de) {
-		    			// No!  Then we consider it invalid.  Remove it from
-		    			// the share list and database.
-						logger.error("SharingModuleImpl.validateShareItemsImpl():  The " + eit.name() + " (id:" + id + ") referenced by ShareItem (id:" + share.getId() + ") is missing.  The ShareItem is being deleted.");
+		    			// No!  Then we consider it invalid.  Remove it
+		    			// from the share list and database.
+		    			Long shareId = share.getId();
+						logger.error("SharingModuleImpl.validateShareItemsImpl():  The " + (isEntry ? "Entry" : "Binder") + " (id=" + id + ") referenced by ShareItem (id:" + shareId + ") is missing.  The ShareItem is being marked as deleted.");
 		    			shares.remove(i);
-		    			cd.purgeShares(share);
+		    		    deleteShareItemImpl(shareId, false);
 		    		}
-		
+
 		    		else if (null != sharedEntities) {
-		        		// Yes, it's valid and the caller wants it returned!
-		    			// Are we tracking it yet?
+		        		// Yes, it's valid and the caller wants it
+		    			// returned!  Are we tracking it yet?
 		            	if (null == findSharedEntityInList(sharedEntities, eid)) {
-		        			// No!  Access check it if requested and add it to
-		        			// the shared entity list.
+		        			// No!  Access check it if requested and
+		        			// add it to the shared entity list.
 			                try {
 			                	if (doCheckAccess) {
 			                		AccessUtils.readCheck(user, de);
 			                	}
 			               		sharedEntities.add(de);
-			                } catch (Exception ignoreMe) {/* Ignored. */};
+			                } catch (Exception ignoreMe) {};
 		            	}
 		    		}
 		    	}
