@@ -3345,7 +3345,13 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		(applicationId, userId, RequestContextHolder.getRequestContext().getUserId())
 		.toStringRepresentation();
 		
+		/* As of Vibe Hudson, we are not going to create audit log for this action.
+		 * Since this creates one log per SOAP message, it can literally flood the
+		 * log table with large number of (and more importantly with very little
+		 * value) identical records consuming disk space and memory.
+		 * If customer complains about this (which I doubt), we will revisit then.
 		getReportModule().addTokenInfo(rc.getUser(), user, applicationId);
+		*/
 		
 		return result;
 	}

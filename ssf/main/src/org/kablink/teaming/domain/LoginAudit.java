@@ -101,7 +101,6 @@ public class LoginAudit extends ZonedObject {
 	protected Long userId; // Required - User who logged in
 	protected Short authenticator; // Required - Type of authenticator
 	protected String clientAddr;
-	protected Long applicationId; // Optional
 	
 	protected LoginAudit() {
 	}
@@ -139,10 +138,6 @@ public class LoginAudit extends ZonedObject {
 
 	public String getClientAddr() {
 		return this.clientAddr;
-	}
-	
-	public void setApplicationId(Long applicationId) {
-		this.applicationId = applicationId;
 	}
 	
 	public String getAuthenticatorName() {

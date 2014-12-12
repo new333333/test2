@@ -64,6 +64,12 @@ public class LoginInfoInterceptor implements MethodInterceptor {
 			// These protocols require authentication to take place for every message
 			// invocation. The fact that you're here means that the authentication has 
 			// already happended and it was successful. So we should report the fact.
+			
+			/* As of Vibe Hudson, we are not going to create audit log for this action.
+			 * Since this creates one log per SOAP message, it can literally flood the
+			 * log table with large number of (and more importantly with very little
+			 * value) identical records consuming disk space and memory.
+			 * If customer complains about this (which I doubt), we will revisit then.
 			LoginAudit loginInfo = new LoginAudit(authenticator,
 					ZoneContextHolder.getClientAddr(),
 					RequestContextHolder.getRequestContext().getUserId());
@@ -72,6 +78,7 @@ public class LoginInfoInterceptor implements MethodInterceptor {
 				loginInfo.setApplicationId(rc.getAccessToken().getApplicationId());
 			
 			getReportModule().addLoginInfo(loginInfo);		
+			*/
 		}
 		return invocation.proceed();
 	}
