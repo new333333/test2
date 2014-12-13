@@ -2088,7 +2088,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
         if (results==null) {
             if (name!=null) {
-                results = new SearchResultList<>();
+                results = new SearchResultList<SearchableObject>();
                 if (entries||files) {
                     Long myFilesFolderId = SearchUtils.getMyFilesFolderId(this, user, false);
                     if (myFilesFolderId!=null) {
