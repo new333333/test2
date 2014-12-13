@@ -2012,7 +2012,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         FolderModule folderModule = getFolderModule();
         Folder parentFolder = folderModule.getFolder(parentFolderId);
         Set<FolderEntry> folderEntryByTitle = folderModule.getFolderEntryByTitle(parentFolder.getId(), name);
-        Set<Long> ids = new HashSet<>();
+        Set<Long> ids = new HashSet<Long>();
         for (FolderEntry entry : folderEntryByTitle) {
             if (addAsFile) {
                 results.append(ResourceUtil.buildFileProperties(entry.getPrimaryFileAttachment()));
@@ -2111,7 +2111,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected void setMyFilesParents(SearchResultList results) {
         List<Long> hiddenFolderIds = getEffectiveMyFilesFolderIds();
-        Set<Long> allParentIds = new HashSet(hiddenFolderIds);
+        Set<Long> allParentIds = new HashSet<Long>(hiddenFolderIds);
         allParentIds.add(getLoggedInUser().getWorkspaceId());
         ParentBinder parent = new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files");
         for (Object obj : results.getResults()) {
