@@ -71,7 +71,8 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.domain.Application;
-import org.kablink.teaming.domain.AuditTrail;
+import org.kablink.teaming.domain.AuditType;
+import org.kablink.teaming.domain.BasicAudit;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
@@ -1650,7 +1651,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				else if (!finalHasMembers) getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(finalWAFM);
 				else                       getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(finalWAFM);
                 if (modified && finalWa instanceof Folder && ((Folder)finalWa).isMirrored() && ((Folder)finalWa).isTop()) {
-                    getReportModule().addAuditTrail(AuditTrail.AuditType.acl, (Folder)finalWa);
+                    getReportModule().addAuditTrail(AuditType.acl, (Folder)finalWa);
                 }
 				return null;
 			}
@@ -3683,7 +3684,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   		if (zoneConfig.getAuditTrailKeepDays() > 0) {
   			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getAuditTrailKeepDays()*1000*60*60*24);
   			if (SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.auditTrail", false)) {
-	  			List<AuditTrail> entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);
+	  			List<BasicAudit> entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);
 	  			if (writeAuditTrailLogFile(entriesToBeDeleted)) {
 	  				//The entries to be purged were safely logged to disk, so we can delete them from the database
 			  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
@@ -3831,7 +3832,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 
     //Routine to append AuditTrail entries to a log file before they get deleted
     @Override
-	public boolean writeAuditTrailLogFile(List<AuditTrail> entriesToBeDeleted) {
+	public boolean writeAuditTrailLogFile(List<BasicAudit> entriesToBeDeleted) {
     	if (!SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.auditTrail", false)) {
     		//We are not saving the deleted records
     		return true;
@@ -3857,28 +3858,23 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 			Element root = doc.addElement(ObjectKeys.AUDIT_TRAIL_HEADER);
 			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
 	        		DateFormat.SHORT, user.getLocale());
-			for (AuditTrail auditTrail : entriesToBeDeleted) {
+			for (BasicAudit auditTrail : entriesToBeDeleted) {
 				Element entry = root.addElement(ObjectKeys.AUDIT_TRAIL_ENTRY);
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ZONE_ID, String.valueOf(zoneId));
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ID, auditTrail.getId());
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ID, auditTrail.getId().toString());
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_TRANSACTION_TYPE, auditTrail.getAuditType().name());
-				if (auditTrail.getStartDate() != null) {
-					entry.addAttribute(ObjectKeys.AUDIT_TRAIL_START_DATE, df.format(auditTrail.getStartDate()));
+				if (auditTrail.getDate() != null) {
+					entry.addAttribute(ObjectKeys.AUDIT_TRAIL_START_DATE, df.format(auditTrail.getDate()));
 				}
-				if (auditTrail.getEndDate() != null) {
-					entry.addAttribute(ObjectKeys.AUDIT_TRAIL_END_DATE, df.format(auditTrail.getEndDate()));
-				}
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_START_BY, String.valueOf(auditTrail.getStartBy()));
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_END_BY, String.valueOf(auditTrail.getEndBy()));
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_START_BY, String.valueOf(auditTrail.getUserId()));
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ENTITY_ID, String.valueOf(auditTrail.getEntityId()));
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ENTITY_TYPE, auditTrail.getEntityType());
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ENTITY_TYPE, auditTrail.getEntityType().name());
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_OWNING_BINDER_ID, String.valueOf(auditTrail.getOwningBinderId()));
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_FILE_ID, auditTrail.getFileId());
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_DELETED_FOLDER_ENTRY_FAMILY, auditTrail.getDeletedFolderEntryFamily());
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_APPLICATION_ID, String.valueOf(auditTrail.getApplicationId()));
-				if (auditTrail.getDescription() != null) {
+				if (auditTrail.getAuxiliaryData() != null) {
 					Element description = entry.addElement(ObjectKeys.AUDIT_TRAIL_DESCRIPTION);
-					description.setText(auditTrail.getDescription());
+					description.setText(auditTrail.getAuxiliaryData());
 				}
 				fw.write(entry.asXML() + "\n");
 				root.remove(entry);

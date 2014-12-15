@@ -74,7 +74,7 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.jobs.UserTitleChange;
 import org.kablink.teaming.module.binder.impl.AbstractEntryProcessor;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;

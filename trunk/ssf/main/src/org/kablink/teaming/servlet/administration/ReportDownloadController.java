@@ -53,7 +53,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.AuditTrail;
+import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Definition;
@@ -100,12 +100,12 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.USER_ID, "report.columns.user");
 		columnNames.put(ReportModule.USER_TITLE, "report.columns.user");
 		columnNames.put(ReportModule.USER_TYPE, "report.columns.userType");
-		columnNames.put(AuditTrail.AuditType.add.name(), "report.columns.add");
-		columnNames.put(AuditTrail.AuditType.view.name(), "report.columns.view");
-		columnNames.put(AuditTrail.AuditType.modify.name(), "report.columns.modify");
-		columnNames.put(AuditTrail.AuditType.delete.name(), "report.columns.delete");
-		columnNames.put(AuditTrail.AuditType.preDelete.name(), "report.columns.preDelete");
-		columnNames.put(AuditTrail.AuditType.restore.name(), "report.columns.restore");
+		columnNames.put(AuditType.add.name(), "report.columns.add");
+		columnNames.put(AuditType.view.name(), "report.columns.view");
+		columnNames.put(AuditType.modify.name(), "report.columns.modify");
+		columnNames.put(AuditType.delete.name(), "report.columns.delete");
+		columnNames.put(AuditType.preDelete.name(), "report.columns.preDelete");
+		columnNames.put(AuditType.restore.name(), "report.columns.restore");
 		columnNames.put(ReportModule.LOGIN_COUNT, "report.columns.login_count");
 		columnNames.put(ReportModule.LAST_LOGIN, "report.columns.last_login");
 		columnNames.put(ReportModule.LOGIN_DATE, "report.columns.login_date");
@@ -200,12 +200,12 @@ public class ReportDownloadController extends  SAbstractController {
 										ReportModule.BINDER_PARENT,
 										ReportModule.BINDER_TITLE,
 										ReportModule.USER_ID,
-										AuditTrail.AuditType.view.name(),
-										AuditTrail.AuditType.add.name(),
-										AuditTrail.AuditType.modify.name(),
-										AuditTrail.AuditType.delete.name(),
-										AuditTrail.AuditType.preDelete.name(),
-										AuditTrail.AuditType.restore.name()};
+										AuditType.view.name(),
+										AuditType.add.name(),
+										AuditType.modify.name(),
+										AuditType.delete.name(),
+										AuditType.preDelete.name(),
+										AuditType.restore.name()};
 			} else if ("login".equals(reportType)) {
 				report = getReportModule().generateLoginReport(startDate, endDate, optionType, 
 						sortType, sortType2, memberIds);
@@ -235,8 +235,8 @@ public class ReportDownloadController extends  SAbstractController {
 				Long binderId = ServletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				Long entryId = ServletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 				report = getReportModule().generateActivityReport(binderId, entryId);
-				columns = new String[] {ReportModule.USER_ID, AuditTrail.AuditType.view.name(), AuditTrail.AuditType.add.name(),
-						AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
+				columns = new String[] {ReportModule.USER_ID, AuditType.view.name(), AuditType.add.name(),
+						AuditType.modify.name(), AuditType.delete.name()};
 			} else if ("quota".equals(reportType)) {
 				String quotaOption = ServletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_QUOTA_OPTION);
 				Long threshold = null;
@@ -290,12 +290,12 @@ public class ReportDownloadController extends  SAbstractController {
 				report = getReportModule().generateActivityReportByUser(memberIds, userIdsToSkip, startDate, endDate, type);
 				if (type.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
 					columns = new String[] {ReportModule.USER_ID, 
-							AuditTrail.AuditType.view.name(), 
-							AuditTrail.AuditType.add.name(),
-							AuditTrail.AuditType.modify.name(), 
-							AuditTrail.AuditType.delete.name(),
-							AuditTrail.AuditType.preDelete.name(),
-							AuditTrail.AuditType.restore.name()};
+							AuditType.view.name(), 
+							AuditType.add.name(),
+							AuditType.modify.name(), 
+							AuditType.delete.name(),
+							AuditType.preDelete.name(),
+							AuditType.restore.name()};
 				} else {
 					columns = new String[] {ReportModule.USER_ID, 
 							ReportModule.ACTIVITY_TYPE, 

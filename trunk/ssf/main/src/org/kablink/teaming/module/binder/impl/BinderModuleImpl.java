@@ -75,7 +75,8 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.Attachment;
-import org.kablink.teaming.domain.AuditTrail;
+import org.kablink.teaming.domain.AuditType;
+import org.kablink.teaming.domain.BasicAudit;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderChange;
 import org.kablink.teaming.domain.BinderChanges;
@@ -4640,15 +4641,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
             } else {
 				Object next = resultIterator.next();
 
-                if (next instanceof AuditTrail) {
-					AuditTrail at = (AuditTrail) next;
-                    EntityIdentifier entityId = at.toEntityIdentifier();
+                if (next instanceof BasicAudit) {
+                	BasicAudit at = (BasicAudit) next;
+                    EntityIdentifier entityId = at.getEntityIdentifier();
                     if (entityId!=null) {
                         BinderChange change = new BinderChange();
                         change.setEntityId(entityId);
                         change.setPrimaryFileId(at.getFileId());
                         change.setAction(BinderChange.Action.delete);
-                        change.setDate(at.getStartDate());
+                        change.setDate(at.getDate());
                         mergedResults.add(change);
                     }
                 } else if (next instanceof Map) {
@@ -4704,14 +4705,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     private boolean haveAclsChangedSinceDate(List<HKey> binderKeys, Date sinceDate) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, true,
-                new AuditTrail.AuditType[]{AuditTrail.AuditType.acl}, null, 1);
+                new AuditType[]{AuditType.acl}, null, 1);
         return aclChanges.size()>0;
     }
 
     private boolean haveFolderRightsChangedSinceDate(Set<Long> folderIds, Date sinceDate) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, new ArrayList<Long>(folderIds),
-                new AuditTrail.AuditType[]{AuditTrail.AuditType.acl}, null, 1);
+                new AuditType[]{AuditType.acl}, null, 1);
         return aclChanges.size()>0;
     }
 
@@ -4741,14 +4742,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     private List getDeletedAuditTrailEntriesByBinder(List<HKey>  binderKeys, boolean recursive, Date sinceDate, int maxResults) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, recursive,
-				new AuditTrail.AuditType[]{AuditTrail.AuditType.delete, AuditTrail.AuditType.preDelete},
+				new AuditType[]{AuditType.delete, AuditType.preDelete},
 				new EntityType[] {EntityType.folderEntry,EntityType.folder,EntityType.workspace}, maxResults);
     }
 
     private List getDeletedAuditTrailEntriesByEntity(List<Long> entryIds, Date sinceDate, int maxResults) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, entryIds,
-				new AuditTrail.AuditType[]{AuditTrail.AuditType.delete, AuditTrail.AuditType.preDelete},
+				new AuditType[]{AuditType.delete, AuditType.preDelete},
 				new EntityType[] {EntityType.folderEntry,EntityType.folder,EntityType.workspace}, maxResults);
     }
 
@@ -4972,8 +4973,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	private class BinderChangesComparator implements Comparator {
 
 		private Date getDate(Object o) {
-			if (o instanceof AuditTrail) {
-				return ((AuditTrail) o).getStartDate();
+			if (o instanceof BasicAudit) {
+				return ((BasicAudit) o).getDate();
 			} else if (o instanceof Map) {
 				return getResultModDate((Map) o);
 			}

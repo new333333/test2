@@ -80,7 +80,8 @@ import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AnyOwner;
 import org.kablink.teaming.domain.Attachment;
-import org.kablink.teaming.domain.AuditTrail;
+import org.kablink.teaming.domain.AuditType;
+import org.kablink.teaming.domain.BasicAudit;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.BinderState;
@@ -3242,12 +3243,12 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		    	new HibernateCallback() {
 		    		@Override
 					public Object doInHibernate(Session session) throws HibernateException {
-                        return session.createCriteria(AuditTrail.class)
+                        return session.createCriteria(BasicAudit.class)
 							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-							.add(Restrictions.isNotNull("startDate"))
-							.add(Restrictions.lt("startDate", purgeBeforeDate))
+							.add(Restrictions.isNotNull("date"))
+							.add(Restrictions.lt("date", purgeBeforeDate))
 							.setCacheable(false)
-	                    	.addOrder(Order.asc("startDate"))
+	                    	.addOrder(Order.asc("date"))
 	                    	.list();
 		    		}
 		    	}
@@ -3262,7 +3263,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     @Override
     public List getAuditTrailEntries(final Long zoneId, final Date sinceDate,
                                      final List<HKey> parentBinderKeys, final boolean recursive,
-                                     final AuditTrail.AuditType[] types,
+                                     final AuditType[] types,
                                      final EntityType [] entityTypes, final int maxResults) {
         long begin = System.nanoTime();
         try {
@@ -3272,18 +3273,18 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 						public Object doInHibernate(Session session) throws HibernateException {
                             Conjunction typeExpr = Restrictions.conjunction();
                             if (types.length==1) {
-                                typeExpr.add(Restrictions.eq("transactionType", types[0].name()));
+                                typeExpr.add(Restrictions.eq("eventType", types[0].getValue()));
                             } else {
-                                List<String> vals = new ArrayList<String>();
-                                for (AuditTrail.AuditType type : types) {
-                                    vals.add(type.name());
+                                List<Short> vals = new ArrayList<Short>();
+                                for (AuditType type : types) {
+                                    vals.add(type.getValue());
                                 }
-                                typeExpr.add(Restrictions.in("transactionType", vals));
+                                typeExpr.add(Restrictions.in("eventType", vals));
                             }
                             if (entityTypes!=null) {
-                                List<String> vals = new ArrayList<String>();
+                                List<Short> vals = new ArrayList<Short>();
                                 for (EntityType type : entityTypes) {
-                                    vals.add(type.name());
+                                    vals.add((short)type.getValue());
                                 }
                                 typeExpr.add(Restrictions.in("entityType", vals));
                             }
@@ -3299,15 +3300,15 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                                 }
                             }
                             parentKeysExpr = or;
-                            return session.createCriteria(AuditTrail.class)
+                            return session.createCriteria(BasicAudit.class)
                                     .add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-                                    .add(Restrictions.isNotNull("startDate"))
-                                    .add(Restrictions.ge("startDate", sinceDate))
+                                    .add(Restrictions.isNotNull("date"))
+                                    .add(Restrictions.ge("date", sinceDate))
                                     .add(parentKeysExpr)
                                     .add(typeExpr)
                                     .setCacheable(false)
                                     .setMaxResults(maxResults)
-                                    .addOrder(Order.asc("startDate"))
+                                    .addOrder(Order.asc("date"))
                                     .list();
                         }
                     }
@@ -3322,7 +3323,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     @Override
     public List getAuditTrailEntries(final Long zoneId, final Date sinceDate,
                                      final List<Long> entityIds,
-                                     final AuditTrail.AuditType[] types,
+                                     final AuditType[] types,
                                      final EntityType [] entityTypes, final int maxResults) {
         long begin = System.nanoTime();
         try {
@@ -3332,18 +3333,18 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 						public Object doInHibernate(Session session) throws HibernateException {
                             Conjunction typeExpr = Restrictions.conjunction();
                             if (types.length==1) {
-                                typeExpr.add(Restrictions.eq("transactionType", types[0].name()));
+                                typeExpr.add(Restrictions.eq("eventType", types[0].getValue()));
                             } else {
-                                List<String> vals = new ArrayList<String>();
-                                for (AuditTrail.AuditType type : types) {
-                                    vals.add(type.name());
+                                List<Short> vals = new ArrayList<Short>();
+                                for (AuditType type : types) {
+                                    vals.add(type.getValue());
                                 }
-                                typeExpr.add(Restrictions.in("transactionType", vals));
+                                typeExpr.add(Restrictions.in("eventType", vals));
                             }
                             if (entityTypes!=null) {
-                                List<String> vals = new ArrayList<String>();
+                                List<Short> vals = new ArrayList<Short>();
                                 for (EntityType type : entityTypes) {
-                                    vals.add(type.name());
+                                    vals.add((short) type.getValue());
                                 }
                                 typeExpr.add(Restrictions.in("entityType", vals));
                             }
@@ -3355,16 +3356,16 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                                 	entityExpr = Restrictions.in("entityId", entityIds);
                                 }
                             }
-                            Criteria crit = session.createCriteria(AuditTrail.class)
+                            Criteria crit = session.createCriteria(BasicAudit.class)
                                     .add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-                                    .add(Restrictions.isNotNull("startDate"))
-                                    .add(Restrictions.ge("startDate", sinceDate))
+                                    .add(Restrictions.isNotNull("date"))
+                                    .add(Restrictions.ge("date", sinceDate))
                                     .add(typeExpr);
                             if(entityExpr != null)
                             	crit.add(entityExpr);
                             return crit.setCacheable(false)
                                     .setMaxResults(maxResults)
-                                    .addOrder(Order.asc("startDate"))
+                                    .addOrder(Order.asc("date"))
                                     .list();
                         }
                     }

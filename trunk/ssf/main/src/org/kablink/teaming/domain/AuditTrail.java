@@ -43,6 +43,7 @@ import org.kablink.util.search.Constants;
  * @hibernate.class table="SS_AuditTrail"
  * @hibernate.discriminator type="char" discriminator-value="A" column="type"
  *
+ * @deprecated As of Filr 1.1.1 and Vibe Hudson - Use {@link BasicAudit} and {@link LoginAudit} instead.
  */
 public class AuditTrail extends ZonedObject {
 	public enum AuditType {

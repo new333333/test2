@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.Collection;
 import java.util.Set;
 
-import org.kablink.teaming.domain.AuditTrail;
+import org.kablink.teaming.domain.BasicAudit;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -49,7 +49,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.LicenseStats;
 import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.domain.AuditType;
 
 /**
  * ?
@@ -166,16 +166,16 @@ public interface ReportModule {
 	public enum QuotaOption { UsersOnly, WorkspacesOnly, UsersAndWorkspaces };
 	public enum UserQuotaOption {FileLength, Age};
 	
-	public void addAuditTrail(AuditTrail auditTrail);
-	public void addAuditTrail(AuditTrail.AuditType type, User user, DefinableEntity entity);
-	public void addAuditTrail(AuditTrail.AuditType type, DefinableEntity entity);
-	public void addAuditTrail(AuditTrail.AuditType type, DefinableEntity entity, Date startDate);
-	public void addAuditTrail(AuditTrail.AuditType type, DefinableEntity entity, Date startDate, String description);
-	public void addAuditTrail(AuditTrail.AuditType type, DefinableEntity entity, String description);
+	public void addAuditTrail(BasicAudit auditTrail);
+	public void addAuditTrail(AuditType type, User user, DefinableEntity entity);
+	public void addAuditTrail(AuditType type, DefinableEntity entity);
+	public void addAuditTrail(AuditType type, DefinableEntity entity, Date startDate);
+	public void addAuditTrail(AuditType type, DefinableEntity entity, Date startDate, String description);
+	public void addAuditTrail(AuditType type, DefinableEntity entity, String description);
 	public void addLoginInfo(LoginAudit loginInfo);
 	public void addStatusInfo(User user);
-	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment);
-	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment, User asUser);
+	public void addFileInfo(AuditType type, FileAttachment attachment);
+	public void addFileInfo(AuditType type, FileAttachment attachment, User asUser);
 	public void addEmailLog(EmailLog emailLog);
 
 	public void addLicenseStats(LicenseStats stats);
@@ -197,11 +197,11 @@ public interface ReportModule {
 	public List<Map<String, Object>> generateXssReport(final List binderIds, final Date startDate, final Date endDate, final String reportType);
 	
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
-	public List<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);
+	public List<User> getUsersActivity(DefinableEntity entity, AuditType type, Date startDate, Date endDate);
 	public List<Map<String,Object>> getEntriesViewed(Long ownerId, Date startDate, Date endDate, Integer returnCount);
 	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Binder binder);
-	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount);
-	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount, Binder binder);
+	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Short[] entityTypes, Integer returnCount);
+	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Short[] entityTypes, Integer returnCount, Binder binder);
 	public List<Map<String,Object>> getUsersStatuses(Long[] userIds, Date startDate, Date endDate, Integer returnCount);
 	public List<Long> getDeletedFolderEntryIds(String family, Date startDate, Date endDate);
 	public List<Long> getDeletedFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate);

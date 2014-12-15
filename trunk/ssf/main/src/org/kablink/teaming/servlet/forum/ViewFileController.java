@@ -51,7 +51,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.GangliaMonitoring;
