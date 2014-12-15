@@ -832,8 +832,9 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         Folder folder = loadFolder(folderId);
         //search query does access checks
         String[] types = entryTypes;
-        if (searchOptions.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES) &&
-                !((Boolean)searchOptions.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES))) {
+        if ((null != searchOptions) &&
+        		searchOptions.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES) &&
+                (!((Boolean)searchOptions.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES)))) {
             // Use a fake entry type that won't actually match anything
             types = new String[] {"fakeEntry"};
         }
