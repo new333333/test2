@@ -78,7 +78,7 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;

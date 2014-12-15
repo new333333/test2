@@ -46,7 +46,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.SPropsUtil;

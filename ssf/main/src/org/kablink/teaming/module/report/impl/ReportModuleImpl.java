@@ -64,7 +64,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.AuditTrail;
+import org.kablink.teaming.domain.BasicAudit;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -81,7 +81,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowState;
-import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.domain.EmailLog.EmailLogStatus;
 import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -239,7 +239,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	
 	@Override
-	public void addAuditTrail(AuditTrail auditTrail) {
+	public void addAuditTrail(BasicAudit auditTrail) {
 		//only log if enabled
 		if (getAdminModule().isAuditTrailEnabled()) {
 			if (allEnabled || enabledTypes.contains(auditTrail.getAuditType())) {
@@ -266,26 +266,26 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	@Override
 	public void addAuditTrail(AuditType type, DefinableEntity entity) {
-		addAuditTrail(new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity));
+		addAuditTrail(new BasicAudit(type, RequestContextHolder.getRequestContext().getUser(), entity));
 	}
 	@Override
 	public void addAuditTrail(AuditType type, User user, DefinableEntity entity) {
-		addAuditTrail(new AuditTrail(type, user, entity));
+		addAuditTrail(new BasicAudit(type, user, entity));
 	}
 	@Override
 	public void addAuditTrail(AuditType type, DefinableEntity entity, Date startDate) {
-		addAuditTrail(new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity, startDate));	
+		addAuditTrail(new BasicAudit(type, RequestContextHolder.getRequestContext().getUser(), entity, startDate));	
 	}
 	@Override
 	public void addAuditTrail(AuditType type, DefinableEntity entity, Date startDate, String description) {
-		AuditTrail auditTrail = new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity, startDate);
-		auditTrail.setDescription(description);
+		BasicAudit auditTrail = new BasicAudit(type, RequestContextHolder.getRequestContext().getUser(), entity, startDate);
+		auditTrail.setAuxiliaryData(description);
 		addAuditTrail(auditTrail);	
 	}
 	@Override
 	public void addAuditTrail(AuditType type, DefinableEntity entity, String description) {
-		AuditTrail auditTrail = new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity);
-		auditTrail.setDescription(description);
+		BasicAudit auditTrail = new BasicAudit(type, RequestContextHolder.getRequestContext().getUser(), entity);
+		auditTrail.setAuxiliaryData(description);
 		addAuditTrail(auditTrail);
 	}
 	@Override
@@ -330,22 +330,22 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	@Override
 	public void addStatusInfo(User user) {
 		if (user.getStatus() != null && !user.getStatus().equals("")) {
-			AuditTrail auditTrail = new AuditTrail(AuditType.userStatus, user, user);
-			auditTrail.setDescription(user.getStatus());
+			BasicAudit auditTrail = new BasicAudit(AuditType.userStatus, user, user);
+			auditTrail.setAuxiliaryData(user.getStatus());
 			addAuditTrail(auditTrail);
 		}
 	}
 
 	@Override
-	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment) {
+	public void addFileInfo(AuditType type, FileAttachment attachment) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		addFileInfo(type, attachment, user);
 	}
 
 	@Override
-	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment, User asUser) {
-		AuditTrail audit = new AuditTrail(type, asUser, attachment.getOwner().getEntity());
-		audit.setDescription(attachment.getFileItem().getName());
+	public void addFileInfo(AuditType type, FileAttachment attachment, User asUser) {
+		BasicAudit audit = new BasicAudit(type, asUser, attachment.getOwner().getEntity());
+		audit.setAuxiliaryData(attachment.getFileItem().getName());
 		audit.setFileId(attachment.getId());
 		addAuditTrail(audit);
 		
@@ -370,15 +370,15 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(AuditTrail.class)
+				Criteria crit = session.createCriteria(BasicAudit.class)
 					.setProjection(Projections.distinct(Projections.projectionList() 
-                                                          .add(Projections.property("startBy"))))
+                                                          .add(Projections.property("userId"))))
 				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, entity.getZoneId()))
 				.add(Restrictions.eq("entityId", entity.getEntityIdentifier().getEntityId()))
-				.add(Restrictions.eq("entityType", entity.getEntityIdentifier().getEntityType().name()))
-				.add(Restrictions.eq("transactionType", type.name()))
-				.add(Restrictions.ge("startDate", startDate))
-				.add(Restrictions.lt("startDate", endDate));
+				.add(Restrictions.eq("entityType", entity.getEntityIdentifier().getEntityType().getValue()))
+				.add(Restrictions.eq("eventType", type.getValue()))
+				.add(Restrictions.ge("date", startDate))
+				.add(Restrictions.lt("date", endDate));
 				return crit.list();
 				
 			}});
@@ -393,21 +393,21 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(AuditTrail.class)
+				Criteria crit = session.createCriteria(BasicAudit.class)
 					.setProjection(Projections.distinct(Projections.projectionList() 
 							.add(Projections.property("owningBinderId"))
 							.add(Projections.property("entityId"))
-							.add(Projections.property("startDate"))
+							.add(Projections.property("date"))
 							.add(Projections.property("fileId"))
-							.add(Projections.property("transactionType"))
-							.add(Projections.property("description"))))
+							.add(Projections.property("eventType"))
+							.add(Projections.property("auxiliaryData"))))
 					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-					.add(Restrictions.eq("entityType", EntityType.folderEntry.name()))
-				    .add(Restrictions.in("transactionType", new Object[] {AuditType.view.name()}))
-					.add(Restrictions.eq("startBy", ownerId))
-					.add(Restrictions.ge("startDate", startDate))
-					.add(Restrictions.lt("startDate", endDate));
-				crit.addOrder(Order.desc("startDate"));
+					.add(Restrictions.eq("entityType", EntityType.folderEntry.getValue()))
+				    .add(Restrictions.in("eventType", new Object[] {AuditType.view.getValue()}))
+					.add(Restrictions.eq("userId", ownerId))
+					.add(Restrictions.ge("date", startDate))
+					.add(Restrictions.lt("date", endDate));
+				crit.addOrder(Order.desc("date"));
 				return crit.list();
 				
 			}});
@@ -516,39 +516,40 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	@Override
 	public Collection<ActivityInfo> getActivity(final AuditType limitType, 
 			final Date startDate, final Date endDate, final Binder binder) {
-		Object[] entityTypes = new Object[] {EntityType.folder.name(), EntityType.workspace.name(),
-				 EntityType.folderEntry.name()};
+		Short[] entityTypes = new Short[] {(short) EntityType.folder.getValue(), 
+				(short) EntityType.workspace.getValue(),
+				 (short) EntityType.folderEntry.getValue()};
 		return getActivity(limitType, startDate, endDate, entityTypes,
 				Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBoxMax")), binder);
 		
 	}
 	@Override
 	public Collection<ActivityInfo> getActivity(final AuditType limitType, 
-			final Date startDate, final Date endDate, final Object[] entityTypes, final Integer returnCount) {
+			final Date startDate, final Date endDate, final Short[] entityTypes, final Integer returnCount) {
 		return getActivity(limitType, startDate, endDate, entityTypes, returnCount, null);
 	}
 	
 	@Override
 	public Collection<ActivityInfo> getActivity(final AuditType limitType, 
-			final Date startDate, final Date endDate, final Object[] entityTypes, final Integer returnCount, final Binder binder) {
+			final Date startDate, final Date endDate, final Short[] entityTypes, final Integer returnCount, final Binder binder) {
 		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(AuditTrail.class)
+				Criteria crit = session.createCriteria(BasicAudit.class)
 					.setProjection(Projections.projectionList() 
 												.add(Projections.groupProperty("owningBinderId"))
 												.add(Projections.groupProperty("entityId"))
 												.add(Projections.groupProperty("entityType"))
 												.add(Projections.alias(Projections.rowCount(), "hits"))
-												.add(Projections.max("startDate")))
+												.add(Projections.max("date")))
 					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				    .add(Restrictions.ge("startDate", startDate))
-				    .add(Restrictions.lt("startDate", endDate))
+				    .add(Restrictions.ge("date", startDate))
+				    .add(Restrictions.lt("date", endDate))
 				    .add(Restrictions.in("entityType", entityTypes));
 				if(limitType != null) {
-					crit.add(Restrictions.eq("transactionType", limitType.name()));
+					crit.add(Restrictions.eq("eventType", limitType.getValue()));
 				} else {
-					crit.add(Restrictions.in("transactionType", new Object[] {AuditType.view.name(), AuditType.modify.name(), AuditType.download.name()}));
+					crit.add(Restrictions.in("eventType", new Object[] {AuditType.view.getValue(), AuditType.modify.getValue(), AuditType.download.getValue()}));
 				}
 				if(binder != null) {
 					crit.add(Restrictions.like("owningBinderKey", binder.getBinderKey().getSortKey() + "%"));
@@ -562,10 +563,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		List<ActivityInfo> list = new LinkedList<ActivityInfo>();
 		for(Object o : data) {
 			Object[] col = (Object []) o;
-			String entityType = (String) col[2];
+			Short entityType = (Short) col[2];
 			DefinableEntity entity = null;
 			try {
-				if (entityType.equals(EntityType.folder.name()) || entityType.equals(EntityType.workspace.name())) {
+				if (entityType.equals(EntityType.folder.getValue()) || entityType.equals(EntityType.workspace.getValue())) {
 					try {
 						entity = getBinderModule().getBinder((Long) col[1]);
 					} catch(Exception skipThis) {
@@ -704,12 +705,18 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	return report;
 	}
 
-	private static final String[] activityTypes = new String[]
-	             {AuditTrail.AuditType.add.name(), AuditTrail.AuditType.view.name(), AuditTrail.AuditType.download.name(),
-				  AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name(),
-				  AuditTrail.AuditType.preDelete.name(), AuditTrail.AuditType.restore.name(),
-				  AuditTrail.AuditType.acl.name()};
-	
+	private static final String[] activityTypeNames = new String[]
+            {AuditType.add.name(), AuditType.view.name(), AuditType.download.name(),
+			  AuditType.modify.name(), AuditType.delete.name(),
+			  AuditType.preDelete.name(), AuditType.restore.name(),
+			  AuditType.acl.name()};
+
+	private static final Short[] activityTypeValues = new Short[]
+            {AuditType.add.getValue(), AuditType.view.getValue(), AuditType.download.getValue(),
+			  AuditType.modify.getValue(), AuditType.delete.getValue(),
+			  AuditType.preDelete.getValue(), AuditType.restore.getValue(),
+			  AuditType.acl.getValue()};
+
 	protected HashMap<String,Object> addBlankRow(List<Map<String, Object>> report, Long binderId, String title, Long parentId) {
 		HashMap<String,Object> row = new HashMap<String,Object>();
 		row.put(ReportModule.BINDER_ID, binderId);
@@ -731,7 +738,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		if(byUser && userId != null) {
 			row.put(ReportModule.USER_ID, userId);
 		}
-		for(String t : activityTypes) {
+		for(String t : activityTypeNames) {
 			row.put(t, new Integer(0));
 		}
 		return row;
@@ -759,23 +766,23 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				List auditTrail = null;
 				try {
 					ProjectionList proj = Projections.projectionList()
-									.add(Projections.groupProperty("transactionType"))
+									.add(Projections.groupProperty("eventType"))
 									.add(Projections.rowCount());
 					if (byTeamMembers || byAllUsers) {
-						proj.add(Projections.groupProperty("startBy"));
+						proj.add(Projections.groupProperty("userId"));
 					}
-					Criteria crit = session.createCriteria(AuditTrail.class)
+					Criteria crit = session.createCriteria(BasicAudit.class)
 						.setProjection(proj)
 						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, binder.getZoneId()))
 						.add(Restrictions.like("owningBinderKey", binder.getBinderKey().getSortKey() + "%"))
-						.add(Restrictions.ge("startDate", startDate))
-						.add(Restrictions.lt("startDate", endDate))
-						.add(Restrictions.in("transactionType", activityTypes));
+						.add(Restrictions.ge("date", startDate))
+						.add(Restrictions.lt("date", endDate))
+						.add(Restrictions.in("eventType", activityTypeValues));
 					if (byTeamMembers) {
-						crit.add(Restrictions.in("startBy", userIds));
+						crit.add(Restrictions.in("userId", userIds));
 					}
 					if (byTeamMembers || byAllUsers) {
-						crit.addOrder(Order.asc("startBy"));
+						crit.addOrder(Order.asc("userId"));
 					}
 					auditTrail = crit.list();
 				} catch(Exception e) {
@@ -799,7 +806,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					if (userIds != null && userIds.contains(userId)) userIds.remove(userId);
 				}
 			}
-			row.put((String) col[0], col[1]);
+			row.put(AuditType.valueOf((Short)col[0]).name(), col[1]);
 		}
 		if (byTeamMembers || byAllUsers) {
 			for(Long id : userIds) {
@@ -826,17 +833,17 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					List auditTrail = null;
 					try {
 						ProjectionList proj = Projections.projectionList()
-										.add(Projections.groupProperty("transactionType"))
+										.add(Projections.groupProperty("eventType"))
 										.add(Projections.rowCount())
-										.add(Projections.groupProperty("startBy"));
-						Criteria crit = session.createCriteria(AuditTrail.class)
+										.add(Projections.groupProperty("userId"));
+						Criteria crit = session.createCriteria(BasicAudit.class)
 							.setProjection(proj)
 							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, entry.getZoneId()))
 							.add(Restrictions.eq("owningBinderId", binderId))
-							.add(Restrictions.eq("entityType", entry.getEntityType().name()))
+							.add(Restrictions.eq("entityType", entry.getEntityType().getValue()))
 							.add(Restrictions.eq("entityId", entryId))
-							.add(Restrictions.in("transactionType", activityTypes))
-							.addOrder(Order.asc("startBy"));
+							.add(Restrictions.in("eventType", activityTypeValues))
+							.addOrder(Order.asc("userId"));
 						auditTrail = crit.list();
 					} catch(Exception e) {
 					}
@@ -852,12 +859,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					row = new HashMap<String,Object>();
 					report.add(row);
 					row.put(ReportModule.USER_ID, userId);
-					for(String t : activityTypes) {
+					for(String t : activityTypeNames) {
 						row.put(t, new Integer(0));
 					}
 					lastUserId = userId;
 				}
-				row.put((String) col[0], col[1]);
+				row.put(AuditType.valueOf((Short) col[0]).name(), col[1]);
 			}
 		}
     	return report;
@@ -875,9 +882,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				List auditTrail = null;
 				try {
 					ProjectionList proj = Projections.projectionList()
-									.add(Projections.groupProperty("startBy"))
-									.add(Projections.groupProperty("startDate"))
-									.add(Projections.groupProperty("transactionType"));
+									.add(Projections.groupProperty("userId"))
+									.add(Projections.groupProperty("date"))
+									.add(Projections.groupProperty("eventType"));
 					if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
 						proj.add(Projections.rowCount());
 					} else {
@@ -885,19 +892,19 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 									.add(Projections.groupProperty("owningBinderId"))
 									.add(Projections.groupProperty("entityId"))
 									.add(Projections.groupProperty("entityType"))
-									.add(Projections.groupProperty("description"));
+									.add(Projections.groupProperty("auxiliaryData"));
 					}
-					Criteria crit = session.createCriteria(AuditTrail.class)
+					Criteria crit = session.createCriteria(BasicAudit.class)
 						.setProjection(proj)
 						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, user.getZoneId()))
-						.add(Restrictions.in("transactionType", activityTypes))
-						.add(Restrictions.ge("startDate", startDate))
-						.add(Restrictions.lt("startDate", endDate));
+						.add(Restrictions.in("eventType", activityTypeValues))
+						.add(Restrictions.ge("date", startDate))
+						.add(Restrictions.lt("date", endDate));
 					if (!userIdsToSkip.isEmpty()) {
-						crit.add(Restrictions.not(Restrictions.in("startBy", userIdsToSkip)));
+						crit.add(Restrictions.not(Restrictions.in("userId", userIdsToSkip)));
 					}
-					if (!userIdsToReport.isEmpty()) crit.add(Restrictions.in("startBy", userIdsToReport));
-					crit.addOrder(Order.asc("startDate"));
+					if (!userIdsToReport.isEmpty()) crit.add(Restrictions.in("userId", userIdsToReport));
+					crit.addOrder(Order.asc("date"));
 					auditTrail = crit.list();
 				} catch(Exception e) {
 				}
@@ -1479,12 +1486,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					row = new HashMap<String,Object>();
 					report.add(row);
 					row.put(ReportModule.USER_ID, userId);
-					for(String t : activityTypes) {
+					for(String t : activityTypeNames) {
 						row.put(t, new Integer(0));
 					}
 					lastUserId = userId;
 				}
-				row.put((String) col[ReportModule.ACTIVITY_TYPE_INDEX], col[ReportModule.ACTIVITY_COUNT_INDEX]);
+				row.put(AuditType.valueOf((Short) col[ReportModule.ACTIVITY_TYPE_INDEX]).name(), col[ReportModule.ACTIVITY_COUNT_INDEX]);
 			}
 		} else {
 			for(Object o : activities) {
@@ -1496,10 +1503,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				Timestamp temp = ((Timestamp) cols[ReportModule.ACTIVITY_DATE_INDEX]);
 				
 				row.put(ReportModule.ACTIVITY_DATE, sdFormat.format(temp.getTime()));
-				row.put(ReportModule.ACTIVITY_TYPE, cols[ReportModule.ACTIVITY_TYPE_INDEX]);
+				row.put(ReportModule.ACTIVITY_TYPE, AuditType.valueOf((Short) cols[ReportModule.ACTIVITY_TYPE_INDEX]).name());
 				row.put(ReportModule.BINDER_ID, cols[ReportModule.ACTIVITY_BINDER_ID_INDEX]);
 				row.put(ReportModule.ENTRY_ID, cols[ReportModule.ACTIVITY_ENTRY_ID_INDEX]);
-				row.put(ReportModule.ENTITY, cols[ReportModule.ACTIVITY_ENTITY_TYPE_INDEX]);
+				row.put(ReportModule.ENTITY, EntityIdentifier.EntityType.valueOf((Integer) cols[ReportModule.ACTIVITY_ENTITY_TYPE_INDEX]).name());
 				row.put(ReportModule.DESCRIPTION, cols[ReportModule.ACTIVITY_ENTITY_DESCRIPTION_INDEX]);
 				
 				// Add the count of how many times this activity happened.
@@ -2033,7 +2040,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	
 	@Override
 	public List<Long> getDeletedFolderEntryIds(final String family, final Date startDate, final Date endDate) {
-		List data = getAuditTrails(new String[]{AuditType.delete.name(), AuditType.preDelete.name(), AuditType.restore.name()}, null, family, startDate, endDate);
+		List data = getAuditTrails(new Short[]{AuditType.delete.getValue(), AuditType.preDelete.getValue(), AuditType.restore.getValue()}, null, family, startDate, endDate);
 		
 		TreeSet<Long>[] sets = effectiveAuditTrailAfterNormalizingBetweenDeletePredeleteRestore(data);
 		
@@ -2047,7 +2054,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 	@Override
 	public List<Long> getDeletedFolderEntryIds(final long[] folderIds, final String family, final Date startDate, final Date endDate) {
-		List data = getAuditTrails(new String[]{AuditType.delete.name(), AuditType.preDelete.name(), AuditType.restore.name()}, folderIds, family, startDate, endDate);
+		List data = getAuditTrails(new Short[]{AuditType.delete.getValue(), AuditType.preDelete.getValue(), AuditType.restore.getValue()}, folderIds, family, startDate, endDate);
 
 		TreeSet<Long>[] sets = effectiveAuditTrailAfterNormalizingBetweenDeletePredeleteRestore(data);
 		
@@ -2061,7 +2068,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 	@Override
 	public List<Long> getRestoredFolderEntryIds(final long[] folderIds, final String family, final Date startDate, final Date endDate) {
-		List data = getAuditTrails(new String[]{AuditType.delete.name(), AuditType.preDelete.name(), AuditType.restore.name()}, folderIds, family, startDate, endDate);
+		List data = getAuditTrails(new Short[]{AuditType.delete.getValue(), AuditType.preDelete.getValue(), AuditType.restore.getValue()}, folderIds, family, startDate, endDate);
 
 		TreeSet<Long>[] sets = effectiveAuditTrailAfterNormalizingBetweenDeletePredeleteRestore(data);
 		
@@ -2070,19 +2077,20 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return new ArrayList<Long>(restores);
 	}
 	
-	private List<Object> getAuditTrails(final String[] auditTypes, final long[] folderIds, final String family, final Date startDate, final Date endDate) {
-		return (List)getHibernateTemplate().execute(new HibernateCallback() {
+	private List<Object> getAuditTrails(final Short[] auditTypes, final long[] folderIds, final String family, final Date startDate, final Date endDate) {
+		
+		List<Object> result = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(AuditTrail.class)
+				Criteria crit = session.createCriteria(BasicAudit.class)
 				.setProjection(Projections.projectionList() 
 						.add(Projections.property("entityId"))
-						.add(Projections.property("transactionType")))
+						.add(Projections.property("eventType")))
 				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.name()))
-				.add(Restrictions.lt("startDate", endDate));
+				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.getValue()))
+				.add(Restrictions.lt("date", endDate));
 				if(auditTypes != null && auditTypes.length > 0)
-					crit.add(Restrictions.in("transactionType", auditTypes));
+					crit.add(Restrictions.in("eventType", auditTypes));
 				if(folderIds != null && folderIds.length > 0) {
 					Long[] fIds = new Long[folderIds.length];
 					for(int i = 0; i < fIds.length; i++)
@@ -2092,10 +2100,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				if(Validator.isNotNull(family))
 					crit.add(Restrictions.eq("deletedFolderEntryFamily", family));
 				if(startDate != null)
-					crit.add(Restrictions.ge("startDate", startDate));
-				crit.addOrder(Order.asc("startDate"));
+					crit.add(Restrictions.ge("date", startDate));
+				crit.addOrder(Order.asc("date"));
 				return crit.list();
 			}});
+		
+		return result;
 	}
 	
 	private TreeSet<Long>[] effectiveAuditTrailAfterNormalizingBetweenDeletePredeleteRestore(List<Object> data) {
@@ -2108,8 +2118,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		for(Object o : data) {
 			Object[] cols = (Object[]) o;
 			Long entityId = (Long) cols[0];
-			String auditTypeStr = (String) cols[1];
-			if(auditTypeStr.equals(AuditType.delete.name())) {
+			Short auditTypeValue = (Short) cols[1];
+			if(auditTypeValue.equals(AuditType.delete.getValue())) {
 				if(restores.contains(entityId)) {
 					restores.remove(entityId);
 				}
@@ -2119,7 +2129,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					deletes.add(entityId);
 				}
 			}
-			else if(auditTypeStr.equals(AuditType.preDelete.name())) {
+			else if(auditTypeValue.equals(AuditType.preDelete.getValue())) {
 				if(restores.contains(entityId))
 					restores.remove(entityId);
 				else

@@ -62,7 +62,7 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.ShareItem.RecipientType;

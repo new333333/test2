@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.AuditTrail;
+import org.kablink.teaming.domain.BasicAudit;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -51,12 +51,12 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.LicenseStats;
 import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.module.report.ReportModule;
 
 public class NullReportModule implements ReportModule {
 
-	public void addAuditTrail(AuditTrail auditTrail) {
+	public void addAuditTrail(BasicAudit auditTrail) {
 		// TODO Auto-generated method stub
 
 	}
@@ -76,7 +76,7 @@ public class NullReportModule implements ReportModule {
 
 	}
 
-	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment) {
+	public void addFileInfo(AuditType type, FileAttachment attachment) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -156,7 +156,7 @@ public class NullReportModule implements ReportModule {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	public List<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate) {
+	public List<User> getUsersActivity(DefinableEntity entity, AuditType type, Date startDate, Date endDate) {
 		return null;
 	}
 
@@ -196,12 +196,12 @@ public class NullReportModule implements ReportModule {
 		return null;
 	}
 
-	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount) {
+	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Short[] entityTypes, Integer returnCount) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount, Binder binder) {
+	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Short[] entityTypes, Integer returnCount, Binder binder) {
 		// TODO Auto-generated method stub
 		return null;
 	}

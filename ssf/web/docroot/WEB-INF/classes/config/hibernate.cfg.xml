@@ -58,6 +58,7 @@
 	    <mapping resource="org/kablink/teaming/security/function/WorkAreaFunctionMembership.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Attachment.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/AuditTrail.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/BasicAudit.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Binder.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/ChangeLog.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/CustomAttribute.hbm.xml"/>

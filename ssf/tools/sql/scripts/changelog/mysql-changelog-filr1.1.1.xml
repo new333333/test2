@@ -152,4 +152,86 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="14">
+        <createTable tableName="SS_BasicAudit">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="userId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityType" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="eventType" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owningBinderId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="auxiliaryData" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="15">
+    	<comment>Use Latin1 for efficiency since this column doesn't need UTF8</comment>
+    	<sql>ALTER TABLE SS_BasicAudit ADD owningBinderKey VARCHAR(255) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL;</sql>
+	</changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="16">
+    	<comment>Use Latin1 for efficiency since this column doesn't need UTF8</comment>
+    	<sql>ALTER TABLE SS_BasicAudit ADD fileId VARCHAR(32) CHARACTER SET latin1 COLLATE latin1_bin NULL;</sql>
+	</changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="17">
+    	<comment>Use Latin1 for efficiency since this column doesn't need UTF8</comment>
+    	<sql>ALTER TABLE SS_BasicAudit ADD deletedFolderEntryFamily VARCHAR(12) CHARACTER SET latin1 COLLATE latin1_bin NULL;</sql>
+	</changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
+        <createIndex indexName="date_basicAudit" tableName="SS_BasicAudit" unique="false">
+            <column name="date"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="19">
+        <createIndex indexName="userId_basicAudit" tableName="SS_BasicAudit" unique="false">
+            <column name="userId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="20">
+        <createIndex indexName="entity_basicAudit" tableName="SS_BasicAudit" unique="false">
+            <column name="entityType"/>
+            <column name="entityId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <createIndex indexName="etype_obkey_basicAudit" tableName="SS_BasicAudit" unique="false">
+            <column name="eventType"/>
+            <column name="owningBinderKey"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <createIndex indexName="owningBinderId_basicAudit" tableName="SS_BasicAudit" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    
 </databaseChangeLog>

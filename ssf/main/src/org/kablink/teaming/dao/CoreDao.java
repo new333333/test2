@@ -42,7 +42,7 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.MobileDeviceSelectSpec;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
-import org.kablink.teaming.domain.AuditTrail;
+import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.Dashboard;
@@ -273,9 +273,9 @@ public interface CoreDao {
     public Date getAuditTrailPurgeDate(final Long zoneId);
 	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate);
 	public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, List<HKey> parentBinderKey, boolean recursive,
-            AuditTrail.AuditType [] types, final EntityIdentifier.EntityType[] entityTypes, int maxResults);
+            AuditType [] types, final EntityIdentifier.EntityType[] entityTypes, int maxResults);
 	public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, final List<Long> entryIds,
-            AuditTrail.AuditType [] types, final EntityIdentifier.EntityType[] entityTypes, int maxResults);
+            AuditType [] types, final EntityIdentifier.EntityType[] entityTypes, int maxResults);
 	public int purgeAuditTrail(Long zoneId, Date purgeBeforeDate);
 	public int purgeLoginAudit(Long zoneId, Date purgeBeforeDate);
 	
