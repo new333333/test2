@@ -799,8 +799,9 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         Folder folder = loadFolder(folderId);
         //search query does access checks
         String[] types = entryTypes;
-        if (searchOptions.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES) &&
-                !((Boolean)searchOptions.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES))) {
+        if ((null != searchOptions) &&
+        		searchOptions.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES) &&
+                (!((Boolean)searchOptions.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES)))) {
             // Use a fake entry type that won't actually match anything
             types = new String[] {"fakeEntry"};
         }
@@ -2014,6 +2015,7 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 		return arCount.get();
 	}
 
+    @Override
     public FolderEntry refreshFromRepository(FolderEntry fileEntry) {
         if (!fileEntry.getParentFolder().isMirrored()) {
             for (Attachment attachment : fileEntry.getAttachments()) {
