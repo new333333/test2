@@ -1690,7 +1690,9 @@ public class ModifyNetFolderDlg extends DlgBox
 		// See bug, https://bugzilla.novell.com/show_bug.cgi?id=785315
 		relPath = getRelativePath();
 		nfRootType = nfRoot.getRootType();
-		if ( nfRootType == NetFolderRootType.OES && relPath.indexOf( '/' ) != -1 )
+		if ( nfRootType != NetFolderRootType.SHARE_POINT_2013 &&
+			 nfRootType != NetFolderRootType.SHARE_POINT_2010 &&
+			 relPath.indexOf( '/' ) != -1 )
 		{
 			Scheduler.ScheduledCommand cmd;
 			
