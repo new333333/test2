@@ -414,11 +414,12 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		   				.setParameter("accessType", SharedEntity.ACCESS_TYPE_PRINCIPAL)
 		   				.executeUpdate();
 			   			
-			   			//delete share items where recipients are these principals
+			   			//mark share items as deleted where recipients are these principals
 			   			List<Short> accessTypes = new ArrayList<Short>();
 			   			accessTypes.add(ShareItem.RecipientType.user.getValue());
 			   			accessTypes.add(ShareItem.RecipientType.group.getValue());		   			
-			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where recipientId in (:pList) and recipientType in (:aList)")
+			   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and recipientId in (:pList) and recipientType in (:aList)")
+			   			.setDate("deletedDate", new Date())
 	   					.setParameterList("pList", ids)
 	   					.setParameterList("aList", accessTypes)
 	   					.executeUpdate();

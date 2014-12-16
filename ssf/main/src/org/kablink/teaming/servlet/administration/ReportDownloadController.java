@@ -141,8 +141,18 @@ public class ReportDownloadController extends  SAbstractController {
 	
 	@Override
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {	
+		try {
+			return _handleRequestAfterValidation(request, response);
+		}
+		catch(Exception e) {
+			logger.warn("Error generating report", e);
+			throw e;
+		}
+	}
+	
+	private ModelAndView _handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
-
 		Map formData = request.getParameterMap();
 		MapInputData inputData = new MapInputData(formData);
 		

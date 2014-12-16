@@ -65,6 +65,10 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
 	  		logger.info("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
 	  		int loginAuditPurgeCount = getCoreDao().purgeLoginAudit(zoneId, purgeBeforeDate);
 	  		logger.info("Purged " + loginAuditPurgeCount + " records from the SS_LoginAudit table");
+	  		// For share items, we use the same information stored in the runtime table for audit/report purpose.
+	  		// So piggyback on the same background job and its schedule for regular purging of old share items.
+	  		int shareItemsPurgeCount = getCoreDao().purgeShareItems(zoneId, purgeBeforeDate);
+	  		logger.info("Purged " + shareItemsPurgeCount + " records from the SS_ShareItem table");
   		}
   		
   		if (zoneConfig.getChangeLogsKeepDays() > 0) {

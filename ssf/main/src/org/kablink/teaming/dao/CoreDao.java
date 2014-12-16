@@ -304,13 +304,6 @@ public interface CoreDao {
 	 */
 	public Map findMobileDevices(final MobileDeviceSelectSpec selectSpec, final Long zoneId);
 	
-	/**
-	 * Purges a ShareItem from the database.
-	 * 
-	 * @param shareItem
-	 */
-	public void purgeShares(ShareItem shareItem);
-	
 	public List<Long> getSubBinderIds(Binder binder);
 	
 	public void executeHeartbeatQuery(String heartbeatQuery);
@@ -318,4 +311,6 @@ public interface CoreDao {
 	public KeyShieldConfig loadKeyShieldConfig( Long zoneId );
 	
 	public void nullifyUserPassword(Long userId);
+	
+	public int purgeShareItems(Long zoneId, Date purgeBeforeDate);
 }

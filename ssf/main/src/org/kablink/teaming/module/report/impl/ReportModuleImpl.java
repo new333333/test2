@@ -1506,7 +1506,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				row.put(ReportModule.ACTIVITY_TYPE, AuditType.valueOf((Short) cols[ReportModule.ACTIVITY_TYPE_INDEX]).name());
 				row.put(ReportModule.BINDER_ID, cols[ReportModule.ACTIVITY_BINDER_ID_INDEX]);
 				row.put(ReportModule.ENTRY_ID, cols[ReportModule.ACTIVITY_ENTRY_ID_INDEX]);
-				row.put(ReportModule.ENTITY, EntityIdentifier.EntityType.valueOf((Integer) cols[ReportModule.ACTIVITY_ENTITY_TYPE_INDEX]).name());
+				row.put(ReportModule.ENTITY, EntityIdentifier.EntityType.valueOf((Short) cols[ReportModule.ACTIVITY_ENTITY_TYPE_INDEX]).name());
 				row.put(ReportModule.DESCRIPTION, cols[ReportModule.ACTIVITY_ENTITY_DESCRIPTION_INDEX]);
 				
 				// Add the count of how many times this activity happened.
