@@ -3126,21 +3126,25 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 				}
 			}
+			catch ( Exception ex )
+			{
+				// Nothing to do
+				logger.info( "in getLdapObjectFromAD()", ex );
+			}
 			finally
 			{
 				// Nothing to do.
-			}
-
-			if ( ctx != null )
-			{
-				try
+				if ( ctx != null )
 				{
-					ctx.close();
-					ctx = null;
-				}
-				catch ( NamingException ex )
-				{
-					// Nothing to do
+					try
+					{
+						ctx.close();
+						ctx = null;
+					}
+					catch ( NamingException ex )
+					{
+						// Nothing to do
+					}
 				}
 			}
 

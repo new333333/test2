@@ -1563,6 +1563,7 @@ public class NetFolderHelper
    			AclResourceDriver aclDriver;
    			
    			aclDriver = (AclResourceDriver) resourceDriver;
+   			subPath = aclDriver.normalizedResourcePath( subPath );
    			status = aclDriver.testConnection(
 		   								proxyName,
 		   								proxyPwd,
