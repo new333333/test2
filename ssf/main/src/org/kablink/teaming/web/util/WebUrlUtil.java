@@ -756,8 +756,8 @@ public class WebUrlUtil {
 		ZoneContextHolder.setUseRuntimeContext(Boolean.FALSE);
 		AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		url.setCrawler(false);
-		ZoneContextHolder.setUseRuntimeContext(oldUseRTContext);
 		String baseUrl = url.toString();
+		ZoneContextHolder.setUseRuntimeContext(oldUseRTContext);
 		int pos = baseUrl.indexOf("a/do?");
 		baseUrl = (baseUrl.substring(0, pos) + "s/");
 
