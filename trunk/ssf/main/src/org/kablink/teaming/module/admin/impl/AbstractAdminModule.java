@@ -57,11 +57,13 @@ import javax.mail.SendFailedException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.velocity.VelocityContext;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -171,6 +173,7 @@ import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailAuthenticationException;
@@ -3340,6 +3343,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		Application application = getProfileDao().loadApplication(applicationId, rc.getZoneId());
 		
 		// check user exists
+		@SuppressWarnings("unused")
 		User user = getProfileDao().loadUser(userId, rc.getZoneId());
 
 		String result = getAccessTokenManager().getApplicationScopedToken
@@ -3609,9 +3613,13 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	@Override
 	public void setFileArchivingEnabled(boolean fileArchivingEnabled) {
 		checkAccess(AdminOperation.manageLogTablePurge);
+		
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		zoneConfig.setFileArchivingEnabled(fileArchivingEnabled);
+  		if (zoneConfig.isFileArchivingEnabled() != fileArchivingEnabled) {
+  			zoneConfig.setFileArchivingEnabled(fileArchivingEnabled);
+  		}
 	}
+	
   	@Override
 	public boolean isFileArchivingEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
@@ -3621,41 +3629,58 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	@Override
 	public void setAuditTrailEnabled(boolean auditTrailEnabled) {
 		checkAccess(AdminOperation.manageLogTablePurge);
+		
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		zoneConfig.setAuditTrailEnabled(auditTrailEnabled);
+  		if (zoneConfig.isAuditTrailEnabled() != auditTrailEnabled) {
+  			zoneConfig.setAuditTrailEnabled(auditTrailEnabled);
+  		}
 	}
+	
   	@Override
 	public int getAuditTrailKeepDays() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.getAuditTrailKeepDays(); 		
   	}
+  	
   	@Override
 	public boolean isAuditTrailEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.isAuditTrailEnabled(); 		
   	}
+  	
 	@Override
 	public void setChangeLogEnabled(boolean changeLogEnabled) {
 		checkAccess(AdminOperation.manageLogTablePurge);
+		
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		zoneConfig.setChangeLogEnabled(changeLogEnabled);
+  		if (zoneConfig.isChangeLogEnabled() != changeLogEnabled) {
+  			zoneConfig.setChangeLogEnabled(changeLogEnabled);
+  		}
 	}
+	
   	@Override
 	public int getChangeLogsKeepDays() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.getChangeLogsKeepDays(); 		
   	}
+  	
   	@Override
 	public boolean isChangeLogEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.isChangeLogEnabled(); 		
   	}
+  	
   	@Override
 	public void setLogTableKeepDays(int auditTrailKeepDays, int changeLogsKeepDays) {
   	   	checkAccess(AdminOperation.manageLogTablePurge);
+  	   	
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		zoneConfig.setAuditTrailKeepDays(auditTrailKeepDays);
-  		zoneConfig.setChangeLogsKeepDays(changeLogsKeepDays);
+  		if (zoneConfig.getAuditTrailKeepDays() != auditTrailKeepDays) {
+  			zoneConfig.setAuditTrailKeepDays(auditTrailKeepDays);
+  		}
+  		if (zoneConfig.getChangeLogsKeepDays() != changeLogsKeepDays) {
+  			zoneConfig.setChangeLogsKeepDays(changeLogsKeepDays);
+  		}
   	}
 
     @Override

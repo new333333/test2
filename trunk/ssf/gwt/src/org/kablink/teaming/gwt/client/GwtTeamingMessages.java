@@ -1808,9 +1808,11 @@ public interface GwtTeamingMessages extends Messages
 	String fileSyncAppUseUserSettings();
 	
 	// Strings used in the Manage Database Logs dialog
-	String databasePruneDlgHeader();
+	String databasePruneDlgHeader_Filr();
+	String databasePruneDlgHeader_Vibe();
 	String databasePruneDlgHeader1();
-	String databasePruneDlgHeader2();
+	String databasePruneDlgHeader2_Filr();
+	String databasePruneDlgHeader2_Vibe();
 	String databasePruneDlgHeader3();
 	String databasePruneDlgRemoveAuditTrailEntries();
 	String databasePruneDlgRemoveChangeLogEntries();
@@ -1822,7 +1824,11 @@ public interface GwtTeamingMessages extends Messages
 	String databasePruneDlgCautionChangeLog();
 	String databasePruneDlgCautionIrrevocable();
 	String databasePruneDlg_OnSaveUnknownException( String desc );
-	String databasePruneDlgCautionFileArchiving();
+	String databasePruneDlgCautionFileArchiving_Both();
+	String databasePruneDlgCautionFileArchiving_Filr();
+	String databasePruneDlgCautionFileArchiving_Vibe();
+	String databasePruneDlg_Error_AuditLogTooSmall(  int pruneAge );
+	String databasePruneDlg_Error_ChangeLogTooSmall( int pruneAge );
 	
 	// Strings used in the Configure User File Sync App dialog
 	String configureUserFileSyncAppDlgErrorHeader();

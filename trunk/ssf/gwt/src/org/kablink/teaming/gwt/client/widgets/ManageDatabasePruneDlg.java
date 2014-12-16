@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,8 +35,6 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveDatabasePruneConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -55,35 +53,37 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 
-
 /**
- * 
+ * ?
+ *  
  * @author phurley
- *
  */
 public class ManageDatabasePruneDlg extends DlgBox
 	implements KeyPressHandler, EditSuccessfulHandler
 {
-	private CheckBox m_enableFileSyncAccessCB;
-	private CheckBox m_enableDeployCB;
-	private CheckBox m_allowPwdCacheCB;
-	private CheckBox m_fileArchivingEnabledCB;
-	private CheckBox m_auditTrailEnabledCB;
-	private CheckBox m_changeLogEnabledCB;
-	private TextBox m_auditTrailPruneAgeTextBox;
-	private TextBox m_changeLogPruneAgeTextBox;
-	private TextBox m_autoUpdateUrlTextBox;
-	private TextBox m_maxFileSizeTextBox;
+	private boolean				m_isFilr;						//
+	private boolean				m_isVibe;						//
+	private CheckBox			m_changeLogEnabledCB;			//
+	private CheckBox			m_fileArchivingEnabledCB;		//
+	private GwtTeamingMessages	m_messages;						//
+	private TextBox				m_auditTrailPruneAgeTextBox;	//
+	private TextBox				m_changeLogPruneAgeTextBox;		//
+	
+	// The following controls the minimum number of a days that may be
+	// specified for pruning the SS_AuditTrail table.
+	private static int	MINIMUM_AUDIT_TRAIL_PRUNE_AGE	= 30;	// 0 -> No minimum.
+	
+	// The following controls the minimum number of a days that may be
+	// specified for pruning the SS_ChangeLogs table.
+	private static int	MINIMUM_CHANGE_LOG_PRUNE_AGE	= 0;	// 0 -> No minimum.
 	
 	/**
 	 * Callback interface to interact with the "Prune DataBase Tables" dialog
@@ -91,11 +91,9 @@ public class ManageDatabasePruneDlg extends DlgBox
 	 */
 	public interface ManageDatabasePruneDlgClient
 	{
-		void onSuccess( ManageDatabasePruneDlg cfsaDlg );
+		void onSuccess( ManageDatabasePruneDlg mdbpDlg );
 		void onUnavailable();
 	}
-
-	
 
 	/**
 	 * 
@@ -108,10 +106,20 @@ public class ManageDatabasePruneDlg extends DlgBox
 		int width,
 		int height )
 	{
+		// Initialize the super class...
 		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
 
-		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().databasePruneDlgHeader(), this, null, null ); 
+		// ...initialize the data members that require it....
+		m_isFilr   = (GwtClientHelper.isLicenseFilr() || GwtClientHelper.isLicenseFilrAndVibe());
+		m_isVibe   = (GwtClientHelper.isLicenseVibe() || GwtClientHelper.isLicenseFilrAndVibe());
+		m_messages = GwtTeaming.getMessages();
+		
+		// ...and create the header, content and footer of this dialog.
+		String header;
+		if (m_isVibe)
+		     header = m_messages.databasePruneDlgHeader_Vibe();
+		else header = m_messages.databasePruneDlgHeader_Filr();
+		createAllDlgContent( header, this, null, null ); 
 	}
 	
 
@@ -121,58 +129,29 @@ public class ManageDatabasePruneDlg extends DlgBox
 	@Override
 	public Panel createContent( Object props )
 	{
-		GwtTeamingMessages messages;
-		FlowPanel mainPanel = null;
-		FlowPanel captionFlowPanel;
-		FlowPanel tmpPanel;
-		FlowPanel ckboxPanel;
-		CaptionPanel captionPanel;
-		ClickHandler clickHandler;
-		Label label;
-
-		messages = GwtTeaming.getMessages();
-		
-		mainPanel = new FlowPanel();
+		FlowPanel mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		
-		captionPanel = new CaptionPanel( messages.databasePruneDlgHeader1() );
-		captionFlowPanel = new FlowPanel();
+		CaptionPanel captionPanel = new CaptionPanel( m_messages.databasePruneDlgHeader1() );
+		FlowPanel captionFlowPanel = new FlowPanel();
 		captionPanel.add(captionFlowPanel);
 		mainPanel.add(captionPanel);
 
-		label = new Label( messages.databasePruneDlgHeader2() );
+		String h2;
+		if (m_isVibe)
+		     h2 = m_messages.databasePruneDlgHeader2_Vibe();
+		else h2 = m_messages.databasePruneDlgHeader2_Filr();
+		Label label = new Label( h2 );
+		label.addStyleName("marginbottom3");
 		captionFlowPanel.add( label );
 
 		// Create the controls for AuditTrail prune age
 		{
-			ckboxPanel = new FlowPanel();
-			ckboxPanel.addStyleName( "margintop3" );
-
-			clickHandler = new ClickHandler()
-			{
-				@Override
-				public void onClick( ClickEvent event )
-				{
-				}
-			};
-
-			// Create the "Enable Audit Trail" check box
-			m_auditTrailEnabledCB = new CheckBox( messages.databasePruneDlgEnableAuditTrail() );
-			m_auditTrailEnabledCB.addClickHandler( clickHandler );
-			tmpPanel = new FlowPanel();
-			tmpPanel.add( m_auditTrailEnabledCB );
-			ckboxPanel.add( tmpPanel );
-			captionFlowPanel.add( ckboxPanel );
-
-			HorizontalPanel hPanel;
-			Label intervalLabel;
-			
-			hPanel = new HorizontalPanel();
+			HorizontalPanel hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 6 );
-			hPanel.addStyleName("marginleft2");
 			
-			intervalLabel = new Label( messages.databasePruneDlgRemoveAuditTrailEntries() );
+			Label intervalLabel = new Label( m_messages.databasePruneDlgRemoveAuditTrailEntries() );
 			hPanel.add( intervalLabel );
 			
 			m_auditTrailPruneAgeTextBox = new TextBox();
@@ -180,7 +159,7 @@ public class ManageDatabasePruneDlg extends DlgBox
 			m_auditTrailPruneAgeTextBox.setVisibleLength( 3 );
 			hPanel.add( m_auditTrailPruneAgeTextBox );
 			
-			intervalLabel = new Label( messages.databasePruneDlgAgeUnits() );
+			intervalLabel = new Label( m_messages.databasePruneDlgAgeUnits() );
 			hPanel.add( intervalLabel );
 
 			captionFlowPanel.add( hPanel );
@@ -188,10 +167,10 @@ public class ManageDatabasePruneDlg extends DlgBox
 		
 		// Create the controls for ChangeLog prune age
 		{
-			ckboxPanel = new FlowPanel();
+			FlowPanel ckboxPanel = new FlowPanel();
 			ckboxPanel.addStyleName( "margintop2" );
 
-			clickHandler = new ClickHandler()
+			ClickHandler clickHandler = new ClickHandler()
 			{
 				@Override
 				public void onClick( ClickEvent event )
@@ -200,22 +179,22 @@ public class ManageDatabasePruneDlg extends DlgBox
 			};
 
 			// Create the "Enable Change Log" checkbox
-			m_changeLogEnabledCB = new CheckBox( messages.databasePruneDlgEnableChangeLog() );
+			m_changeLogEnabledCB = new CheckBox( m_messages.databasePruneDlgEnableChangeLog() );
 			m_changeLogEnabledCB.addClickHandler( clickHandler );
-			tmpPanel = new FlowPanel();
+			FlowPanel tmpPanel = new FlowPanel();
 			tmpPanel.add( m_changeLogEnabledCB );
 			ckboxPanel.add( tmpPanel );
 			captionFlowPanel.add( ckboxPanel );
+			if (!m_isVibe) {
+				ckboxPanel.setVisible(false);
+			}
 
-			HorizontalPanel hPanel;
-			Label intervalLabel;
-			
-			hPanel = new HorizontalPanel();
+			HorizontalPanel hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 6 );
 			hPanel.addStyleName("marginleft2");
 			
-			intervalLabel = new Label( messages.databasePruneDlgRemoveChangeLogEntries() );
+			Label intervalLabel = new Label( m_messages.databasePruneDlgRemoveChangeLogEntries() );
 			hPanel.add( intervalLabel );
 			
 			m_changeLogPruneAgeTextBox = new TextBox();
@@ -223,52 +202,54 @@ public class ManageDatabasePruneDlg extends DlgBox
 			m_changeLogPruneAgeTextBox.setVisibleLength( 3 );
 			hPanel.add( m_changeLogPruneAgeTextBox );
 			
-			intervalLabel = new Label( messages.databasePruneDlgAgeUnits() );
+			intervalLabel = new Label( m_messages.databasePruneDlgAgeUnits() );
 			hPanel.add( intervalLabel );
 
 			captionFlowPanel.add( hPanel );
+			if (!m_isVibe) {
+				hPanel.setVisible(false);
+			}
 		}
 		
 		// Create the warning messages
 		{
-			HorizontalPanel hPanel;
-			Label warningLabel;
-			
-			hPanel = new HorizontalPanel();
+			HorizontalPanel hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 6 );
 			hPanel.addStyleName("margintop3");
-			warningLabel = new Label( messages.databasePruneDlgCautionIrrevocable() );
+			Label warningLabel = new Label( m_messages.databasePruneDlgCautionIrrevocable() );
 			hPanel.add( warningLabel );
 			captionFlowPanel.add( hPanel );
 			
 			hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 6 );
-			warningLabel = new Label( messages.databasePruneDlgCautionAuditTrail() );
+			warningLabel = new Label( m_messages.databasePruneDlgCautionAuditTrail() );
 			hPanel.add( warningLabel );
 			captionFlowPanel.add( hPanel );
 			
-			hPanel = new HorizontalPanel();
-			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
-			hPanel.setSpacing( 6 );
-			hPanel.addStyleName("marginbottom3");
-			warningLabel = new Label( messages.databasePruneDlgCautionChangeLog() );
-			hPanel.add( warningLabel );
-			captionFlowPanel.add( hPanel );
+			if (m_isVibe) {
+				hPanel = new HorizontalPanel();
+				hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+				hPanel.setSpacing( 6 );
+				hPanel.addStyleName("marginbottom3");
+				warningLabel = new Label( m_messages.databasePruneDlgCautionChangeLog() );
+				hPanel.add( warningLabel );
+				captionFlowPanel.add( hPanel );
+			}
 		}
 
 		// Create the controls for enabling file archiving
 		{
-			captionPanel = new CaptionPanel( messages.databasePruneDlgHeader3() );
+			captionPanel = new CaptionPanel( m_messages.databasePruneDlgHeader3() );
 			captionFlowPanel = new FlowPanel();
 			captionPanel.add(captionFlowPanel);
 			mainPanel.add(captionPanel);
 			
-			ckboxPanel = new FlowPanel();
+			FlowPanel ckboxPanel = new FlowPanel();
 			ckboxPanel.addStyleName( "margintop3" );
 
-			clickHandler = new ClickHandler()
+			ClickHandler clickHandler = new ClickHandler()
 			{
 				@Override
 				public void onClick( ClickEvent event )
@@ -277,24 +258,29 @@ public class ManageDatabasePruneDlg extends DlgBox
 			};
 
 			// Create the "Enable File Archiving" check box
-			m_fileArchivingEnabledCB = new CheckBox( messages.databasePruneDlgEnableFileArchiving() );
+			m_fileArchivingEnabledCB = new CheckBox( m_messages.databasePruneDlgEnableFileArchiving() );
 			m_fileArchivingEnabledCB.addClickHandler( clickHandler );
-			tmpPanel = new FlowPanel();
+			FlowPanel tmpPanel = new FlowPanel();
 			tmpPanel.add( m_fileArchivingEnabledCB );
 			ckboxPanel.add( tmpPanel );
 			captionFlowPanel.add( ckboxPanel );
 
 			// Create the warning messages
-			HorizontalPanel hPanel;
-			Label warningLabel;
-			
-			hPanel = new HorizontalPanel();
+			HorizontalPanel hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 6 );
 			hPanel.addStyleName("margintop1");
-			warningLabel = new Label( messages.databasePruneDlgCautionFileArchiving() );
+			String warning;
+			if      (m_isFilr && m_isVibe) warning = m_messages.databasePruneDlgCautionFileArchiving_Both();
+			else if (m_isFilr)             warning = m_messages.databasePruneDlgCautionFileArchiving_Filr();
+			else                           warning = m_messages.databasePruneDlgCautionFileArchiving_Vibe();
+			Label warningLabel = new Label( warning );
 			hPanel.add( warningLabel );
 			captionFlowPanel.add( hPanel );
+			
+			if (!m_isVibe) {
+				captionPanel.setVisible(false);
+			}
 		}
 		
 		return mainPanel;
@@ -306,6 +292,32 @@ public class ManageDatabasePruneDlg extends DlgBox
 	@Override
 	public boolean editSuccessful( Object obj )
 	{
+		String pruneAgeS = m_auditTrailPruneAgeTextBox.getValue();
+		boolean validateMinimum = (0 != MINIMUM_AUDIT_TRAIL_PRUNE_AGE);
+		if ( validateMinimum && GwtClientHelper.hasString( pruneAgeS ) )
+		{
+			int pruneAge = Integer.parseInt( pruneAgeS );
+			if ( ( 0 < pruneAge ) && ( MINIMUM_AUDIT_TRAIL_PRUNE_AGE > pruneAge ))
+			{
+				GwtClientHelper.deferredAlert( m_messages.databasePruneDlg_Error_AuditLogTooSmall( MINIMUM_AUDIT_TRAIL_PRUNE_AGE ) );
+				return false;
+			}
+		}
+		
+		if (m_isVibe) {
+			pruneAgeS = m_changeLogPruneAgeTextBox.getValue();
+			validateMinimum = (0 != MINIMUM_CHANGE_LOG_PRUNE_AGE);
+			if ( validateMinimum && GwtClientHelper.hasString( pruneAgeS ) )
+			{
+				int pruneAge = Integer.parseInt( pruneAgeS );
+				if ( ( 0 < pruneAge ) && ( MINIMUM_CHANGE_LOG_PRUNE_AGE > pruneAge ))
+				{
+					GwtClientHelper.deferredAlert( m_messages.databasePruneDlg_Error_AuditLogTooSmall( MINIMUM_CHANGE_LOG_PRUNE_AGE ) );
+					return false;
+				}
+			}
+		}
+		
 		AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
 		GwtDatabasePruneConfiguration databasePruneConfig;
 		SaveDatabasePruneConfigurationCmd cmd;
@@ -321,32 +333,17 @@ public class ManageDatabasePruneDlg extends DlgBox
 			@Override
 			public void onFailure( Throwable caught )
 			{
-				FlowPanel errorPanel;
-				Label label;
-				String errMsg = null;
-				
 				// Get the panel that holds the errors.
-				errorPanel = getErrorPanel();
+				FlowPanel errorPanel = getErrorPanel();
 				errorPanel.clear();
 				
-				if ( caught instanceof GwtTeamingException )
-				{
-					GwtTeamingException ex;
-					
-					ex = (GwtTeamingException) caught;
-				}
-				
-				if ( errMsg == null )
-				{
-					errMsg = GwtTeaming.getMessages().databasePruneDlg_OnSaveUnknownException( caught.toString() );
-				}
-				
-				label = new Label( errMsg );
+				String errMsg = m_messages.databasePruneDlg_OnSaveUnknownException( caught.toString() );
+				Label label = new Label( errMsg );
 				label.addStyleName( "dlgErrorLabel" );
 				errorPanel.add( label );
 				
 				showErrorPanel();
-				m_autoUpdateUrlTextBox.setFocus( true );
+				m_auditTrailPruneAgeTextBox.setFocus( true );
 			}
 	
 			/**
@@ -377,16 +374,14 @@ public class ManageDatabasePruneDlg extends DlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-		GwtDatabasePruneConfiguration databasePruneConfig;
-		
-		databasePruneConfig = new GwtDatabasePruneConfiguration();
+		GwtDatabasePruneConfiguration databasePruneConfig = new GwtDatabasePruneConfiguration();
 
 		// Get the auditTrail prune age from the dialog.
-		databasePruneConfig.setAuditTrailPruneAge( getAuditTrailPruneAge() );
+		databasePruneConfig.setAuditTrailPruneAgeDays( getAuditTrailPruneAge() );
 		databasePruneConfig.setAuditTrailEnabled(getAuditTrailEnabled());
 		
 		// Get the changeLog prune age from the dialog.
-		databasePruneConfig.setChangeLogPruneAge( getChangeLogPruneAge() );
+		databasePruneConfig.setChangeLogPruneAgeDays( getChangeLogPruneAge() );
 		databasePruneConfig.setChangeLogEnabled(getChangeLogEnabled());
 		
 		// Get the file archiving setting
@@ -411,11 +406,9 @@ public class ManageDatabasePruneDlg extends DlgBox
 	@Override
 	public HelpData getHelpData()
 	{
-		HelpData helpData;
-		
-		helpData = new HelpData();
+		HelpData helpData = new HelpData();
 		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "databasePrune" );
+		helpData.setPageId( "databaseprune" );
 		
 		return helpData;
 	}
@@ -425,7 +418,7 @@ public class ManageDatabasePruneDlg extends DlgBox
 	 */
 	private boolean getFileArchivingEnabled()
 	{
-		if ( m_fileArchivingEnabledCB.getValue() == Boolean.TRUE )
+		if ( m_isVibe && ( m_fileArchivingEnabledCB.getValue() == Boolean.TRUE ) )
 			return true;
 
 		return false;
@@ -436,10 +429,7 @@ public class ManageDatabasePruneDlg extends DlgBox
 	 */
 	private boolean getAuditTrailEnabled()
 	{
-		if ( m_auditTrailEnabledCB.getValue() == Boolean.TRUE )
-			return true;
-
-		return false;
+		return true;
 	}
 	
 	/**
@@ -447,10 +437,9 @@ public class ManageDatabasePruneDlg extends DlgBox
 	 */
 	private int getAuditTrailPruneAge()
 	{
-		String pruneAgeStr;
-		int interval = 0;
 		
-		pruneAgeStr = m_auditTrailPruneAgeTextBox.getText();
+		String pruneAgeStr = m_auditTrailPruneAgeTextBox.getText();
+		int interval = 0;
 		if ( pruneAgeStr != null && pruneAgeStr.length() > 0 )
 			interval = Integer.parseInt( pruneAgeStr );
 		
@@ -462,7 +451,7 @@ public class ManageDatabasePruneDlg extends DlgBox
 	 */
 	private boolean getChangeLogEnabled()
 	{
-		if ( m_changeLogEnabledCB.getValue() == Boolean.TRUE )
+		if ( m_isVibe && ( m_changeLogEnabledCB.getValue() == Boolean.TRUE ) )
 			return true;
 
 		return false;
@@ -473,12 +462,12 @@ public class ManageDatabasePruneDlg extends DlgBox
 	 */
 	private int getChangeLogPruneAge()
 	{
-		String pruneAgeStr;
 		int interval = 0;
-		
-		pruneAgeStr = m_changeLogPruneAgeTextBox.getText();
-		if ( pruneAgeStr != null && pruneAgeStr.length() > 0 )
-			interval = Integer.parseInt( pruneAgeStr );
+		if (m_isVibe) {
+			String pruneAgeStr = m_changeLogPruneAgeTextBox.getText();
+			if ( pruneAgeStr != null && pruneAgeStr.length() > 0 )
+				interval = Integer.parseInt( pruneAgeStr );
+		}
 		
 		return interval;
 	}
@@ -488,43 +477,35 @@ public class ManageDatabasePruneDlg extends DlgBox
 	 */
 	public void init( GwtDatabasePruneConfiguration databasePruneConfiguration )
 	{
-		int interval;
-		int size;
-		String value;
-		
-		// Initialize the audit trail prune age text box and enabled check box
-		m_auditTrailEnabledCB.setValue(databasePruneConfiguration.getAuditTrailEnabled());
-		value = "";
-		interval = databasePruneConfiguration.getAuditTrailPruneAge();
+		// Initialize the audit trail prune age text box
+		String value = "";
+		int interval = databasePruneConfiguration.getAuditTrailPruneAgeDays();
 		if (interval > 0) value = String.valueOf( interval );
 		m_auditTrailPruneAgeTextBox.setText( value );
 		
 		// Initialize the change log prune age text box and enabled check box
-		m_changeLogEnabledCB.setValue(databasePruneConfiguration.getChangeLogEnabled());
+		m_changeLogEnabledCB.setValue(databasePruneConfiguration.isChangeLogEnabled());
 		value = "";
-		interval = databasePruneConfiguration.getChangeLogPruneAge();
+		interval = databasePruneConfiguration.getChangeLogPruneAgeDays();
 		if (interval > 0) value = String.valueOf( interval );
 		m_changeLogPruneAgeTextBox.setText( value );
 
 		// Initialize the file archiving enabled check box
-		m_fileArchivingEnabledCB.setValue(databasePruneConfiguration.getFileArchivingEnabled());
+		m_fileArchivingEnabledCB.setValue(databasePruneConfiguration.isFileArchivingEnabled());
 
 		hideErrorPanel();
 	}
 	
 	
 	/**
-	 * This method gets called when the user types in the "number of entries to show" text box.
+	 * This method gets called when the user types in one of the entry field text boxes.
 	 * We only allow the user to enter numbers.
 	 */
 	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
-        int keyCode;
-
         // Get the key the user pressed
-        keyCode = event.getNativeEvent().getKeyCode();
-        
+        int keyCode = event.getNativeEvent().getKeyCode();
         if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
             && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
             && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
@@ -573,16 +554,14 @@ public class ManageDatabasePruneDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				ManageDatabasePruneDlg cfsaDlg;
-				
-				cfsaDlg = new ManageDatabasePruneDlg(
+				ManageDatabasePruneDlg mdbpDlg = new ManageDatabasePruneDlg(
 												autoHide,
 												modal,
 												left,
 												top,
 												width,
 												height );
-				cfsaDlgClient.onSuccess( cfsaDlg );
+				cfsaDlgClient.onSuccess( mdbpDlg );
 			}
 		});
 	}
