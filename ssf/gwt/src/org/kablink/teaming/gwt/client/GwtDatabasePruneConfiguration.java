@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,98 +32,52 @@
  */
 package org.kablink.teaming.gwt.client;
 
-
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
- * This class is used to hold the Database Prune Age Configuration data.
+ * This class is used to hold the Database Prune Age Configuration
+ * data.
+ * 
  * @author phurley
- *
  */
-public class GwtDatabasePruneConfiguration
-	implements IsSerializable, VibeRpcResponseData
-{
-	private boolean m_fileArchivingEnabled = true;
-	private boolean m_auditTrailEnabled = true;
-	private boolean m_changeLogEnabled = true;
-	private int m_auditTrailPruneAgeDays = 0;
-	private int m_changeLogPruneAgeDays = 0;
+public class GwtDatabasePruneConfiguration implements IsSerializable, VibeRpcResponseData {
+	private boolean	m_auditTrailEnabled      = true;	//
+	private boolean	m_fileArchivingEnabled   = true;	//
+	private boolean	m_changeLogEnabled       = true;	//
+	private int		m_auditTrailPruneAgeDays = 0;		//
+	private int		m_changeLogPruneAgeDays  = 0;		//
 	
 	/**
+	 * Constructor method.
 	 * 
+	 * Zero parameter constructor required for GWT serialization.
 	 */
-	public GwtDatabasePruneConfiguration()
-	{
+	public GwtDatabasePruneConfiguration() {
+		// Initialize the super class.
+		super();
 	}
 
-	public boolean getFileArchivingEnabled() {
-		return m_fileArchivingEnabled;
-	}
-	public void setFileArchivingEnabled(boolean fileArchivingEnabled) {
-		m_fileArchivingEnabled = fileArchivingEnabled;
-	}
-	
-
 	/**
-	 * The auditTrail prune age is in months.
-	 */
-	public int getAuditTrailPruneAge()
-	{
-		return m_auditTrailPruneAgeDays / 30;
-	}
-	public int getAuditTrailPruneAgeDays()
-	{
-		return m_auditTrailPruneAgeDays;
-	}
-	public boolean getAuditTrailEnabled() {
-		return m_auditTrailEnabled;
-	}
-	
-	/**
-	 * The changeLog prune age is in minutes.
-	 */
-	public int getChangeLogPruneAge()
-	{
-		return m_changeLogPruneAgeDays / 30;
-	}
-	public int getChangeLogPruneAgeDays()
-	{
-		return m_changeLogPruneAgeDays;
-	}
-	public boolean getChangeLogEnabled() {
-		return m_changeLogEnabled;
-	}
-	
-	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public void setAuditTrailPruneAge( int intervalInMonths )
-	{
-		m_auditTrailPruneAgeDays = intervalInMonths * 30;
-	}
-	public void setAuditTrailPruneAgeDays( int intervalInDays )
-	{
-		m_auditTrailPruneAgeDays = intervalInDays;
-	}
-	public void setAuditTrailEnabled(boolean auditTrailEnabled) {
-		m_auditTrailEnabled = auditTrailEnabled;
-	}
+	public boolean isAuditTrailEnabled()       {return m_auditTrailEnabled;     }
+	public boolean isChangeLogEnabled()        {return m_changeLogEnabled;      }
+	public boolean isFileArchivingEnabled()    {return m_fileArchivingEnabled;  }
+	public int     getAuditTrailPruneAgeDays() {return m_auditTrailPruneAgeDays;}
+	public int     getChangeLogPruneAgeDays()  {return m_changeLogPruneAgeDays; }
 	
 	/**
+	 * Set'er methods.
 	 * 
+	 * @param
 	 */
-	public void setChangeLogPruneAge( int intervalInMonths )
-	{
-		m_changeLogPruneAgeDays = intervalInMonths * 30;
-	}
-	public void setChangeLogPruneAgeDays( int intervalInDays )
-	{
-		m_changeLogPruneAgeDays = intervalInDays;
-	}
-	public void setChangeLogEnabled(boolean changeLogEnabled) {
-		m_changeLogEnabled = changeLogEnabled;
-	}
+	public void setAuditTrailEnabled(     boolean auditTrailEnabled)    {m_auditTrailEnabled      = auditTrailEnabled;   }
+	public void setChangeLogEnabled(      boolean changeLogEnabled)     {m_changeLogEnabled       = changeLogEnabled;    }
+	public void setFileArchivingEnabled(  boolean fileArchivingEnabled) {m_fileArchivingEnabled   = fileArchivingEnabled;}
+	public void setAuditTrailPruneAgeDays(int     intervalInDays)       {m_auditTrailPruneAgeDays = intervalInDays;      }
+	public void setChangeLogPruneAgeDays( int     intervalInDays)       {m_changeLogPruneAgeDays  = intervalInDays;      }
 }

@@ -654,17 +654,12 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	}
 	
 	public boolean isAuditTrailEnabled() {
-		if(auditTrailEnabled == null) {
-			//This has never bee set by the admin. So the default is different depending on the product
-			if (Utils.checkIfVibe() || Utils.checkIfFilrAndVibe()) {
-				//Vibe installations do audit trailing by default
-				return true;
-			} else {
-				//Filr and iPrint systems will do audit trails by default but they get pruned to 183 days.
-				return true;
-			}
+		if (null == auditTrailEnabled) {
+			return true;
 		}
-		//Once this value has been set by the administrator, use that value from then on
+		
+		// Once this value has been set by the administrator, use that
+		// value from then on.
 		return auditTrailEnabled;
 	}
 	public void setAuditTrailEnabled(boolean auditTrailEnabled) {

@@ -3049,21 +3049,25 @@ public class GwtServerHelper {
 					// Add this action to the "management" category
 					managementCategory.addAdminOption( adminAction );
 				}
-
-				// Does the user have rights to "manage database pruning"? 
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
-				{
-					// Yes
-					title = NLT.get( "administration.configure_database_prune" );
-
-					adminAction = new GwtAdminAction();
-					adminAction.init( title, "", AdminAction.MANAGE_DATABASE_PRUNE );
-					
-					// Add this action to the "management" category
-					managementCategory.addAdminOption( adminAction );
-				}
 			}
 
+			// Does the user have rights to "manage database pruning"? 
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				String key;
+				if (Utils.checkIfVibe() || Utils.checkIfFilrAndVibe())
+				     key = "administration.configure_database_prune.vibe";
+				else key = "administration.configure_database_prune.filr";
+				title = NLT.get( key );
+
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, "", AdminAction.MANAGE_DATABASE_PRUNE );
+				
+				// Add this action to the "management" category
+				managementCategory.addAdminOption( adminAction );
+			}
+			
 			// Does the user have rights to "Manage the search index"?
 			if ( top != null )
 			{
@@ -6580,27 +6584,24 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Return a GwtDatabasePruneConfig object that holds the pruning config data.
+	 * Return a GwtDatabasePruneConfig object that holds the pruning
+	 * config data.
+	 * 
+	 * @param bs
 	 * 
 	 * @return
 	 */
-	public static GwtDatabasePruneConfiguration getDatabasePruneConfiguration( AllModulesInjected allModules )
-	{
-		GwtDatabasePruneConfiguration gwtDatabasePruneConfig;
-		ZoneConfig zoneConfig;
-		ZoneModule zoneModule;
+	public static GwtDatabasePruneConfiguration getDatabasePruneConfiguration(AllModulesInjected bs) {
+		ZoneConfig zoneConfig = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
 		
-		zoneModule = allModules.getZoneModule();
-		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+		GwtDatabasePruneConfiguration reply = new GwtDatabasePruneConfiguration();
+		reply.setAuditTrailEnabled(     zoneConfig.isAuditTrailEnabled()   );
+		reply.setAuditTrailPruneAgeDays(zoneConfig.getAuditTrailKeepDays() );
+		reply.setChangeLogEnabled(      zoneConfig.isChangeLogEnabled()    );
+		reply.setChangeLogPruneAgeDays( zoneConfig.getChangeLogsKeepDays() );
+		reply.setFileArchivingEnabled(  zoneConfig.isFileArchivingEnabled());
 		
-		gwtDatabasePruneConfig = new GwtDatabasePruneConfiguration();
-		gwtDatabasePruneConfig.setAuditTrailPruneAgeDays(zoneConfig.getAuditTrailKeepDays());
-		gwtDatabasePruneConfig.setChangeLogPruneAgeDays(zoneConfig.getChangeLogsKeepDays());
-		gwtDatabasePruneConfig.setAuditTrailEnabled(zoneConfig.isAuditTrailEnabled());
-		gwtDatabasePruneConfig.setChangeLogEnabled(zoneConfig.isChangeLogEnabled());
-		gwtDatabasePruneConfig.setFileArchivingEnabled(zoneConfig.isFileArchivingEnabled());
-		
-		return gwtDatabasePruneConfig;
+		return reply;
 	}
 
 	/*
@@ -11549,17 +11550,23 @@ public class GwtServerHelper {
 	
 	/**
 	 * Execute the database prune command
+	 * 
+	 * @param bs
+	 * @param dbPruneConfig
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	public static Boolean executeDatabasePruneCommand(
-		AllModulesInjected allModules,
-		GwtDatabasePruneConfiguration gwtDatabasePruneConfig ) throws GwtTeamingException
-	{
-		allModules.getAdminModule().setFileArchivingEnabled(gwtDatabasePruneConfig.getFileArchivingEnabled());
-		allModules.getAdminModule().setAuditTrailEnabled(gwtDatabasePruneConfig.getAuditTrailEnabled());
-		allModules.getAdminModule().setChangeLogEnabled(gwtDatabasePruneConfig.getChangeLogEnabled());
-		allModules.getAdminModule().setLogTableKeepDays(gwtDatabasePruneConfig.getAuditTrailPruneAgeDays(),
-				gwtDatabasePruneConfig.getChangeLogPruneAgeDays());
-		allModules.getAdminModule().purgeLogTablesImmediate();
+	public static Boolean executeDatabasePruneCommand(AllModulesInjected bs, GwtDatabasePruneConfiguration dbPruneConfig) throws GwtTeamingException {
+		AdminModule am = bs.getAdminModule();
+		
+		am.setFileArchivingEnabled(dbPruneConfig.isFileArchivingEnabled()                                             );
+		am.setAuditTrailEnabled(   dbPruneConfig.isAuditTrailEnabled()                                                );
+		am.setChangeLogEnabled(    dbPruneConfig.isChangeLogEnabled()                                                 );
+		am.setLogTableKeepDays(    dbPruneConfig.getAuditTrailPruneAgeDays(), dbPruneConfig.getChangeLogPruneAgeDays());
+		am.purgeLogTablesImmediate();
+		
 		return Boolean.TRUE;
 	}	
 	
