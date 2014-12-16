@@ -136,7 +136,7 @@ public class PreAuthenticatedSpringSecurityLdapTemplate extends SpringSecurityLd
     
     private DomainMatcher getDomainMatcher() {
     	if(domainMatcher == null) {
-    		String className = SPropsUtil.getString("ldap.domain.matcher.class", "org.kablink.teaming.spring.security.ldap.DefaultDomainMatcher");
+    		String className = SPropsUtil.getString("ldap.domain.matcher.class", "org.kablink.teaming.spring.security.ldap.NullDomainMatcher");
     		domainMatcher = (DomainMatcher) ReflectHelper.getInstance(className);
     	}
     	return domainMatcher;
