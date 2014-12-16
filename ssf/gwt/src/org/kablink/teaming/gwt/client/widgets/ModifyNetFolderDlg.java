@@ -65,6 +65,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.ModifyNetFolderRootDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRootType;
 import org.kablink.teaming.gwt.client.widgets.NetFolderSelectPrincipalsWidget.NetFolderSelectPrincipalsWidgetClient;
 
 import com.google.gwt.core.client.GWT;
@@ -1659,9 +1660,12 @@ public class ModifyNetFolderDlg extends DlgBox
 	private boolean isConfigurationValid()
 	{
 		String relPath;
+		NetFolderRoot nfRoot;
+		NetFolderRootType nfRootType;
 		
 		// Is a net folder server selected?
-		if ( getNetFolderRoot() == null )
+		nfRoot = getNetFolderRoot(); 
+		if ( nfRoot == null )
 		{
 			Scheduler.ScheduledCommand cmd;
 			
@@ -1685,7 +1689,8 @@ public class ModifyNetFolderDlg extends DlgBox
 		// A '/' in the relative path causes problems with OES-NCP when we do a test connection
 		// See bug, https://bugzilla.novell.com/show_bug.cgi?id=785315
 		relPath = getRelativePath();
-		if ( relPath.indexOf( '/' ) != -1 )
+		nfRootType = nfRoot.getRootType();
+		if ( nfRootType == NetFolderRootType.OES && relPath.indexOf( '/' ) != -1 )
 		{
 			Scheduler.ScheduledCommand cmd;
 			
