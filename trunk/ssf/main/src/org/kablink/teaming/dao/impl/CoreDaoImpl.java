@@ -466,7 +466,8 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	     	   			} finally {
 	       	   				try {if (s != null) s.close();} catch (Exception ex) {};
 	       	   			}
-	    	   		//delete user dashboards on this binder
+		    			Date now = new Date();
+		    			//delete user dashboards on this binder
 		     	   		session.createQuery("Delete org.kablink.teaming.domain.Dashboard where binderId=:binderId")
 			   				.setLong("binderId", binder.getId())
 		     	   			.executeUpdate();
@@ -510,13 +511,15 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		   				.setLong("accessId", binder.getId())
 		   				.setParameter("accessType", SharedEntity.ACCESS_TYPE_TEAM)
 		   				.executeUpdate();
-			   			//delete share items where shared entity is this binder
-			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
+			   			//Mark share items as deleted where shared entity is this binder
+			   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
+			   			.setDate("deletedDate", now)
                     	.setInteger("sharedEntityType", binder.getEntityType().getValue())
                     	.setLong("sharedEntityId", binder.getId())
 		   				.executeUpdate();
-			   			//delete share items where recipient is this team
-			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where recipient_type=:recipientType AND recipient_id=:recipientId")
+			   			//Mark share items as deleted where recipient is this team
+			   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and recipient_type=:recipientType AND recipient_id=:recipientId")
+			   			.setDate("deletedDate", now)
                     	.setShort("recipientType", ShareItem.RecipientType.team.getValue())
                     	.setLong("recipientId", binder.getId())
 		   				.executeUpdate();
@@ -3479,14 +3482,17 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		    	new HibernateCallback() {
 		    		@Override
 					public Object doInHibernate(Session session) throws HibernateException {
+		    			Date now = new Date();
 			   			//delete share items where shared entity is this binder
-			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
+			   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
+			   			.setDate("deletedDate", now)
                     	.setInteger("sharedEntityType", binder.getEntityType().getValue())
                     	.setLong("sharedEntityId", binder.getId())
 		   				.executeUpdate();
 			   			
 			   			//delete share items where recipient is this team
-			   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where recipient_type=:recipientType AND recipient_id=:recipientId")
+			   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and recipient_type=:recipientType AND recipient_id=:recipientId")
+			   			.setDate("deletedDate", now)
                     	.setShort("recipientType", ShareItem.RecipientType.team.getValue())
                     	.setLong("recipientId", binder.getId())
 		   				.executeUpdate();
@@ -3503,7 +3509,8 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	    	   				List<Long> idList;
 	    	   				for(int i = 0; i < folderEntryIds.size(); i += inClauseLimit) {
 	    	   					idList = folderEntryIds.subList(i, Math.min(folderEntryIds.size(), i + inClauseLimit));
-			 		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id in (:idList)")
+			 		   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and sharedEntity_type=:sharedEntityType and sharedEntity_id in (:idList)")
+			 		   			.setDate("deletedDate", now)
 			 		   			.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.getValue())
 			 		   			.setParameterList("idList", idList)
 			 		   			.executeUpdate();
@@ -3674,34 +3681,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
       	return result;   	
 	}
 	
-	/**
-	 * Purges a ShareItem from the database.
-	 * 
-	 * @param shareItem
-	 */
-	@Override
-	public void purgeShares(final ShareItem shareItem) {
-	   	getHibernateTemplate().execute(
-    	   	new HibernateCallback() {
-    	   		@Override
-				public Object doInHibernate(Session session) throws HibernateException {
-	   				// Delete ShareItem's whose shared entities are
-    	   			// this ShareItem's entity.
-    	   			EntityIdentifier sharedEID = shareItem.getSharedEntityIdentifier();
-    	   			List<Long>       sharedIds = new ArrayList<Long>();
-    	   			sharedIds.add(sharedEID.getEntityId());
-    	   			
-   		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in (:pList) and sharedEntity_type=:sharedEntityType")
-   		   				.setParameterList("pList", sharedIds)
-   		   				.setParameter("sharedEntityType", sharedEID.getEntityType().getValue())
-   		   				.executeUpdate();
-   		   			
-					return null;
-				}
-			}
-		);
-	}
-	
 	@Override
 	public List<Long> getSubBinderIds(final Binder binder) {
 		// Return a list of IDs of binders whose parents are the specified binder
@@ -3781,5 +3760,67 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 					}
 				}
 		);    		             		 
+	}
+	
+	@Override
+	public int purgeShareItems(final Long zoneId, final Date purgeBeforeDate) {
+		// There are four different use cases that can lead to share item becoming 
+		// candidate for purge (= permanent delete from the table).
+		// 
+		// case 1) User deletes a share item - System immediately marks the share
+		//         item as "deleted" by setting "deletedDate" field.
+		// => In this case, the purge function will purge the record if its "deletedDate"
+		//    is before the "purgeBeforeDate".
+		//
+		// case 2) User deletes the entity associated with a share item - System
+		//         marks the share item as "deleted" by setting "deletedDate" field.
+		// => In this case, the purge function will purge the record if its "deletedDate"
+		//    is before the "purgeBeforeDate" (same as first case).
+		//
+		// case 3) A share item expires - System (via a background job running every
+		//         5 minutes) re-indexes the share item and marks the share item as 
+		//         "expiration handled" 
+		// => In this case, the purge function should NOT purge the record regardless
+		//    of how long it has been expired. This is because some users may choose
+		//    to hold on to them for record keeping or archive purpose.
+		// 
+		// case 4) All three cases above deal only with those share items that are
+		//         flagged as "latest". This use case deals with those that are not
+		//         the latest. 
+		// => The purge function will locate and purge those share items whose "latest"
+		//    field is false and their "startDate" is before the "purgeBeforeDate"
+		//    (i.e., this object represents a historical state of the sharing at a 
+		//    particular time rather than the current state and the action represented
+		//    by this object took place prior to the "purgeBeforeDate").   
+		//    Although not exactly precise, this should be good enough policy for
+		//    managing stale data.
+		
+		long begin = System.nanoTime();
+		try {
+		   	return getHibernateTemplate().execute(
+		    	new HibernateCallback<Integer>() {
+		    		@Override
+					public Integer doInHibernate(Session session) throws HibernateException {
+		    			// Deal with case 1 and 2.
+		     	   		int count = session.createQuery("Delete org.kablink.teaming.domain.ShareItem where zoneId=:zoneId and deletedDate<:purgeBeforeDate")
+			   				.setLong("zoneId", zoneId)
+			   				.setDate("purgeBeforeDate", purgeBeforeDate)
+		     	   			.executeUpdate();
+		     	   		
+		     	   		// Deal with case 4.
+		     	   		int count2 = session.createQuery("Delete org.kablink.teaming.domain.ShareItem where zoneId=:zoneId and latest=:latest and startDate<:purgeBeforeDate")
+			   				.setLong("zoneId", zoneId)
+			   				.setBoolean("latest", Boolean.FALSE)
+			   				.setDate("purgeBeforeDate", purgeBeforeDate)
+		     	   			.executeUpdate();
+
+			   			return count + count2;
+	    	   		}
+	    	   	}
+	    	 );    	
+    	}
+    	finally {
+    		end(begin, "purgeShareItems");
+    	}	          
 	}
 }

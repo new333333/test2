@@ -471,7 +471,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	
 
 	/**
-	 * Delete the folder object and its assocations.
+	 * Delete the folder object and its associations.
 	 * Folder entries and child binders should already have been deleted
 	 */
    @Override
@@ -511,10 +511,11 @@ public void delete(final Folder folder) {
 			   			  	.setEntity("folder", folder)
 			   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
 			   				.executeUpdate();
-	 		   			//delete share items whose shared entities are entries in this folder
-	 		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in " + 
+	 		   			//mark share items as deleted whose shared entities are entries in this folder
+	 		   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and sharedEntity_id in " + 
 	 			   				"(select p.id from org.kablink.teaming.domain.FolderEntry p where " +
 			   			  			" p.parentBinder=:folder) and sharedEntity_type=:sharedEntityType")
+			   			  	.setDate("deletedDate", new Date())
 			   			  	.setEntity("folder", folder)
 			   			  	.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.getValue())
 			   				.executeUpdate(); 		   			
@@ -610,8 +611,9 @@ public void delete(final Folder folder) {
 	         	   				.setParameterList("pList", ids)
 	    		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.name())
 	    		   				.executeUpdate();
-	       		   			//delete share items whose shared entities are these entries
-	     		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in (:pList) and sharedEntity_type=:sharedEntityType")
+	       		   			//mark share items as deleted whose shared entities are these entries
+	     		   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and sharedEntity_id in (:pList) and sharedEntity_type=:sharedEntityType")
+	     		   				.setDate("deletedDate", new Date())
 	         	   				.setParameterList("pList", ids)
 	    		   			  	.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.getValue())
 	    		   				.executeUpdate();
