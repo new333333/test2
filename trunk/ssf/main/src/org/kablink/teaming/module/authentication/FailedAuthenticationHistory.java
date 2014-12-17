@@ -61,7 +61,7 @@ public class FailedAuthenticationHistory
 	 */
 	private FailedAuthenticationHistory()
 	{
-		m_inLastNumSeconds = SPropsUtil.getInt( "brute.force.attack.in.last.num.seconds", 10 );
+		m_inLastNumSeconds = SPropsUtil.getInt( "brute.force.attack.in.last.num.seconds", 1800 );
 		m_numFailedLogins = SPropsUtil.getInt( "brute.force.attack.num.failed.logins", 3 );
 		m_listOfFailures = new Hashtable<String,FailedUserAuthenticationHistory>();
 	}
