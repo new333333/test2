@@ -136,7 +136,7 @@ public class ForgottenPwdDlg extends DlgBox
 			hint = new Label( messages.forgottenPwdDlg_HintNote() );
 			panel.add( hint );
 			
-			hint = new Label( messages.forgottenPwdDlg_Hint( GwtClientHelper.getProductName() ) );
+			hint = new Label( messages.forgottenPwdDlg_Hint2( GwtClientHelper.getProductName() ) );
 			panel.add( hint );
 			
 			mainPanel.add( panel );
