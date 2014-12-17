@@ -42,12 +42,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -441,8 +443,9 @@ public class GwtDeleteHelper {
 					// ...tracking any that we couldn't delete.
 					String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 					String messageKey;
-					if (e instanceof AccessControlException) messageKey = "deleteEntryError.AccssControlException";
-					else                                     messageKey = "deleteEntryError.OtherException";
+					if      (e instanceof AccessControlException)         messageKey = "deleteEntryError.AccssControlException";
+					else if (e instanceof ReservedByAnotherUserException) messageKey = "deleteEntryError.ReservedByAnotherUserException";
+					else                                                  messageKey = "deleteEntryError.OtherException";
 					reply.addError(NLT.get(messageKey, new String[]{entryTitle}));
 					
 					GwtLogHelper.error(m_logger, "GwtDeleteHelper.doDeleteSelections( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);
@@ -589,10 +592,11 @@ public class GwtDeleteHelper {
 					// purge.
 					String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 					String msgKey;
-					if      (e instanceof AccessControlException) msgKey = "purgeEntryError.AccssControlException";
-					else if (e instanceof UncheckedIOException)   msgKey = "purgeEntryError.UncheckedIOException";
-					else if (e instanceof WriteFilesException)    msgKey = "purgeEntryError.WriteFilesException";
-					else                                          msgKey = "purgeEntryError.OtherException";
+					if      (e instanceof AccessControlException)         msgKey = "purgeEntryError.AccssControlException";
+					else if (e instanceof ReservedByAnotherUserException) msgKey = "purgeEntryError.ReservedByAnotherUserException";
+					else if (e instanceof UncheckedIOException)           msgKey = "purgeEntryError.UncheckedIOException";
+					else if (e instanceof WriteFilesException)            msgKey = "purgeEntryError.WriteFilesException";
+					else                                                  msgKey = "purgeEntryError.OtherException";
 					reply.addError(NLT.get(msgKey, new String[]{entryTitle}));
 					
 					GwtLogHelper.error(m_logger, "GwtDeleteHelper.doPurgeSelections( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);

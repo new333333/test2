@@ -9599,13 +9599,14 @@ public class GwtViewHelper {
 								}
 							}
 						}
-						else if (e instanceof AccessControlException)  messageKey = "moveEntryError.AccssControlException";
-						else if (e instanceof BinderQuotaException)    messageKey = "moveEntryError.BinderQuotaException";
-						else if (e instanceof IllegalStateException)   messageKey = "moveEntryError.IllegalStateException";
-						else if (e instanceof NotSupportedException)  {messageKey = "moveEntryError.NotSupportedException"; nse = ((NotSupportedException) e);}
-						else if (e instanceof TitleException)          messageKey = "moveEntryError.TitleException";
-						else if (e instanceof UncheckedIOException)    messageKey = "moveEntryError.UncheckedIOException";
-						else                                           messageKey = "moveEntryError.OtherException";
+						else if (e instanceof AccessControlException)         messageKey = "moveEntryError.AccssControlException";
+						else if (e instanceof BinderQuotaException)           messageKey = "moveEntryError.BinderQuotaException";
+						else if (e instanceof IllegalStateException)          messageKey = "moveEntryError.IllegalStateException";
+						else if (e instanceof NotSupportedException)         {messageKey = "moveEntryError.NotSupportedException"; nse = ((NotSupportedException) e);}
+						else if (e instanceof ReservedByAnotherUserException) messageKey = "moveEntryError.ReservedByAnotherUserException";
+						else if (e instanceof TitleException)                 messageKey = "moveEntryError.TitleException";
+						else if (e instanceof UncheckedIOException)           messageKey = "moveEntryError.UncheckedIOException";
+						else                                                  messageKey = "moveEntryError.OtherException";
 						String[] messageArgs;
 						if (null == nse) {
 							messageArgs = new String[]{entryTitle};
