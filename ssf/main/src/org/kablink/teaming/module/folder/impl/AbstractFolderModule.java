@@ -1157,6 +1157,15 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) {
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);
+
+        // If somebody besides the requesting user has the entry
+        // reserved...
+        HistoryStamp reservation = entry.getReservation();
+        if ((null != reservation) && (!(reservation.getPrincipal().getId().equals(userId)))) {
+        	// ...we don't allow it to be trashed.
+        	throw new ReservedByAnotherUserException(entry);
+        }
+        
         Folder folder = loadFolder(folderId);
         if ((null != entry) && (null != folder) && (!(folder.isMirrored()))) {
         	try {
@@ -1231,6 +1240,15 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.deleteEntry);
+        
+        // If somebody besides the requesting user has the entry
+        // reserved...
+        HistoryStamp reservation = entry.getReservation();
+        if ((null != reservation) && (!(reservation.getPrincipal().getId().equals(RequestContextHolder.getRequestContext().getUserId())))) {
+        	// ...we don't allow it to be deleted.
+        	throw new ReservedByAnotherUserException(entry);
+        }
+        
         Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
         try {
@@ -1248,6 +1266,15 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	public FolderEntry moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) throws WriteFilesException {
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.moveEntry);
+        
+        // If somebody besides the requesting user has the entry
+        // reserved...
+        HistoryStamp reservation = entry.getReservation();
+        if ((null != reservation) && (!(reservation.getPrincipal().getId().equals(RequestContextHolder.getRequestContext().getUserId())))) {
+        	// ...we don't allow it to be moved.
+        	throw new ReservedByAnotherUserException(entry);
+        }
+        
         Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
                 
