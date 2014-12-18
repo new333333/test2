@@ -1080,7 +1080,7 @@ public class EditShareWidget extends Composite
 		m_canResharePublicCkbox.setValue( shareRights.getCanShareWithPublic() );
 		
 		// Show/hide the "share public link" checkbox depending on whether the user has "share public link" rights.
-		if ( canShareForward && highestRightsPossible.getCanSharePublicLink() && entityIsBinder == false && entityIsFileEntry == true )
+		if ( canShareForward && highestRightsPossible.getCanSharePublicLink() && (entityIsBinder == true || entityIsFileEntry == true) )
 			m_canResharePublicLinkCkbox.setVisible( true );
 		else
 			m_canResharePublicLinkCkbox.setVisible( false );
