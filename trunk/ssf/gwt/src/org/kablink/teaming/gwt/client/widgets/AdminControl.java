@@ -33,7 +33,9 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg;
 import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg.ManageMobileDevicesDlgClient;
@@ -137,8 +139,10 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -229,6 +233,89 @@ public class AdminControl extends TeamingPopupPanel
 	private EditKeyShieldConfigDlg m_editKeyShieldConfigDlg = null;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private List<HandlerRegistration> m_registeredEventHandlers;
+
+	// Mapping of AdminAction's to whether they should display in a
+	// modal dialog.
+	private final static Map<AdminAction, Boolean> MODAL_ACTION_MAP = new HashMap<AdminAction, Boolean>();
+	static {
+		for ( AdminAction aa:  AdminAction.values() )
+		{
+			switch ( aa )
+			{
+			// Non modal actions.
+			case ADD_USER:
+			case CONFIGURE_ROLE_DEFINITIONS:
+			case CONFIGURE_SEARCH_INDEX:
+			case FORM_VIEW_DESIGNER:
+			case MANAGE_ADMINISTRATORS:
+			case MANAGE_APPLICATIONS:
+			case MANAGE_APPLICATION_GROUPS:
+			case MANAGE_EXTENSIONS:
+			case MANAGE_GROUPS:
+			case MANAGE_LICENSE:
+			case MANAGE_MOBILE_DEVICES:
+			case MANAGE_NET_FOLDERS:
+			case MANAGE_RESOURCE_DRIVERS:
+			case MANAGE_TEAMS:
+			case MANAGE_WORKSPACE_AND_FOLDER_TEMPLATES:
+			case MANAGE_ZONES:
+			case RUN_A_REPORT:
+				MODAL_ACTION_MAP.put( aa, Boolean.FALSE );
+				break;
+
+			default:
+				GwtClientHelper.debugAlert( "AdminControl.MODAL_ACTION_MAP():  Mapping missing for " + aa.name() );
+				
+				// * * * * * * * * * * * * * * * * * * * * * * * //
+				// Fall through and treat it as a modal action.  //
+				// * * * * * * * * * * * * * * * * * * * * * * * //
+				
+			// Modal actions.
+			case ACCESS_CONTROL_FOR_ZONE_ADMIN_FUNCTIONS:
+			case CONFIGURE_ADHOC_FOLDERS:
+			case CONFIGURE_EMAIL:
+			case CONFIGURE_FILE_SYNC_APP:
+			case CONFIGURE_FILE_VERSION_AGING:
+			case CONFIGURE_FOLDER_INDEX:
+			case CONFIGURE_FOLDER_SEARCH_NODES:
+			case CONFIGURE_FOLDER_UPDATE_LOGS:
+			case CONFIGURE_HOME_PAGE:
+			case CONFIGURE_MOBILE_ACCESS:
+			case CONFIGURE_MOBILE_APPS:
+			case CONFIGURE_NAME_COMPLETION:
+			case CONFIGURE_PASSWORD_POLICY:
+			case CONFIGURE_SCHEDULE:
+			case CONFIGURE_SHARE_SETTINGS:
+			case CONFIGURE_USER_ACCESS:
+			case IMPORT_PROFILES:
+			case KEYSHIELD_CONFIG:
+			case LDAP_CONFIG:
+			case NET_FOLDER_GLOBAL_SETTINGS:
+			case MANAGE_DATABASE_PRUNE:
+			case MANAGE_QUOTAS:
+			case MANAGE_FILE_UPLOAD_LIMITS:
+			case MANAGE_SHARE_ITEMS:
+			case MANAGE_USER_ACCOUNTS:
+			case REPORT_ACTIVITY_BY_USER:
+			case REPORT_CREDITS:
+			case REPORT_DATA_QUOTA_EXCEEDED:
+			case REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED:
+			case REPORT_DISK_USAGE:
+			case REPORT_EMAIL:
+			case REPORT_LICENSE:
+			case REPORT_LOGIN:
+			case REPORT_USER_ACCESS:
+			case REPORT_XSS:
+			case REPORT_VIEW_CHANGELOG:
+			case REPORT_VIEW_CREDITS:
+			case REPORT_VIEW_SYSTEM_ERROR_LOG:
+			case SITE_BRANDING:
+			case UNDEFINED:
+				MODAL_ACTION_MAP.put( aa, Boolean.TRUE );
+				break;
+			}
+		}
+	};
 	
 	// The following are used to coordinate firing a 'on layout' event
 	// AFTER all the layout requests in a sequence of them have
@@ -285,9 +372,42 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private class AdminControlGlassPanel extends PopupPanel
 	{
+		private boolean m_glassModal;	//
+		
 		AdminControlGlassPanel()
 		{
 			super( false, false );
+		}
+		
+		/*
+		 * Intercepts mouse down events.  For non-modal JSP dialogs, it
+		 * closes them.
+		 * 
+		 * Overrides PopupPanel.onPreviewNativeEvent().
+		 */
+		@Override
+		protected void onPreviewNativeEvent(NativePreviewEvent nativeEvent) {
+			// Is this a mouse down event?
+		    Event event = Event.as(nativeEvent.getNativeEvent());
+		    int type = event.getTypeInt();
+		    if (0 != (type & Event.ONMOUSEDOWN)) {
+				// Yes!  Is this a non-modal dialog?
+				if ( ! m_glassModal )
+				{
+					// Yes!  Show the home page...
+					showHomePageAsync();
+
+					// ...and consume the event.
+					nativeEvent.consume();
+					nativeEvent.cancel();
+					
+					return;
+				}
+		    }
+			
+			// If we get here, we need to pass the event on through the
+			// PopupPanel's handler.
+			super.onPreviewNativeEvent(nativeEvent);
 		}
 		
 		/**
@@ -297,6 +417,20 @@ public class AdminControl extends TeamingPopupPanel
 		public Element getGlassElement()
 		{
 			return super.getGlassElement();
+		}
+
+		/**
+		 * Sets whether the glass panel is currently used for a modal
+		 * dialog or not.
+		 * 
+		 * @param glassModal
+		 */
+		public void setGlassModal( boolean glassModal )
+		{
+			m_glassModal = glassModal;
+			if ( glassModal )
+			     setGlassStyleName( "teamingDlgBox_Glass"      );
+			else setGlassStyleName( "teamingDlgBox_GlassClear" );
 		}
 	}
 	
@@ -845,7 +979,7 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * This method gets called when the user selects one of the administration actions.
 	 */
-	private void adminActionSelected( GwtAdminAction adminAction )
+	private void adminActionSelected( final GwtAdminAction adminAction )
 	{
 		// Are we dealing with the "Site Branding" action?
 		if ( adminAction.getActionType() == AdminAction.SITE_BRANDING )
@@ -997,7 +1131,7 @@ public class AdminControl extends TeamingPopupPanel
 					public void execute()
 					{
 						// Show an position the content control.
-						showContentPanel();
+						showContentPanel( isActionModal( adminAction.getActionType() ) );
 						relayoutPage();
 					}
 				} );
@@ -1704,34 +1838,30 @@ public class AdminControl extends TeamingPopupPanel
 	}// end relayoutPageNow()
 
 	
-	/**
-	 * 
+	/*
 	 */
-	private void showContentPanel()
+	private void showContentPanel( boolean modalContent )
 	{
 		if ( !m_contentControl.isVisible() )
 		{
 			m_contentControl.setVisible( true );
 			
 			// Show the glass panel
-			if ( m_glassPanel != null )
+			if ( null != m_glassPanel )
 			{
-				Element glassElement;
-
 				m_glassPanel.setGlassEnabled( true );
-				
-				glassElement = m_glassPanel.getGlassElement();
-				if ( glassElement != null )
+				Element glassElement = m_glassPanel.getGlassElement();
+				if ( null != glassElement )
+				{
 					glassElement.getStyle().setZIndex( GLASS_PANEL_Z_INDEX );
-				
+				}
 				m_glassPanel.show();
+				m_glassPanel.setGlassModal( modalContent );
 			}
 		}
 	}// end showContentPanel()
 	
-	
-	/**
-	 * 
+	/*
 	 */
 	private void showControl( final UIObject target, final VibeEventBase<?> fireOnShow )
 	{
@@ -1790,8 +1920,25 @@ public class AdminControl extends TeamingPopupPanel
 		showControl( target, null );	// null -> No event needs to be fired when shown.
 	}
 	
-	/**
-	 * Show the page that gives the user some information about the administration console.
+	/*
+	 * Asynchronously show the page that gives the user some
+	 * information about the administration console.
+	 */
+	private void showHomePageAsync() {
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					showHomePage();
+				}
+			} );
+	}
+	
+	/*
+	 * Synchronously show the page that gives the user some information
+	 * about the administration console.
 	 */
 	private void showHomePage()
 	{
@@ -2647,8 +2794,8 @@ public class AdminControl extends TeamingPopupPanel
 					} );
 				}
 			},
-			false,	// false -> !auto hide.
-			true,	// true -> modal.
+			isActionAutoHide( AdminAction.MANAGE_ADMINISTRATORS ),
+			isActionModal(    AdminAction.MANAGE_ADMINISTRATORS ),
 			x, 
 			y,
 			m_dlgWidth,
@@ -2795,8 +2942,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ManageNetFoldersDlg.createAsync(
-											false,
-											true, 
+											isActionAutoHide( AdminAction.MANAGE_NET_FOLDERS ),
+											isActionModal(    AdminAction.MANAGE_NET_FOLDERS ),
 											x, 
 											y,
 											width,
@@ -2862,8 +3009,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ManageNetFolderRootsDlg.createAsync(
-											false,
-											true, 
+											isActionAutoHide( AdminAction.MANAGE_RESOURCE_DRIVERS ),
+											isActionModal(    AdminAction.MANAGE_RESOURCE_DRIVERS ),
 											x, 
 											y,
 											width,
@@ -2929,8 +3076,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ManageGroupsDlg.createAsync(
-									false,
-									true, 
+									isActionAutoHide( AdminAction.MANAGE_GROUPS ),
+									isActionModal(    AdminAction.MANAGE_GROUPS ),
 									x, 
 									y,
 									width,
@@ -2980,8 +3127,10 @@ public class AdminControl extends TeamingPopupPanel
 	public void onInvokeManageMobileDevicesDlg( InvokeManageMobileDevicesDlgEvent event )
 	{
 		// Get the position of the content control.
-		final int x = m_contentControlX;
-		final int y = m_contentControlY;
+		final boolean autoHide = isActionAutoHide( AdminAction.MANAGE_MOBILE_DEVICES );
+		final boolean modal    = isActionModal(    AdminAction.MANAGE_MOBILE_DEVICES );
+		final int     x        = m_contentControlX;
+		final int     y        = m_contentControlY;
 		
 		// Have we already created a "Manage Mobile Devices" dialog?
 		if ( m_manageMobileDevicesDlg == null )
@@ -3004,13 +3153,13 @@ public class AdminControl extends TeamingPopupPanel
 						public void execute() 
 						{
 							m_manageMobileDevicesDlg = mmdDlg;
-							ManageMobileDevicesDlg.initAndShow( m_manageMobileDevicesDlg, new MobileDevicesInfo(), x, y, m_dlgWidth, m_dlgHeight );
+							ManageMobileDevicesDlg.initAndShow( m_manageMobileDevicesDlg, new MobileDevicesInfo(), autoHide, modal, x, y, m_dlgWidth, m_dlgHeight );
 						}
 					} );
 				}
 			},
-			false,
-			true,
+			autoHide,
+			modal,
 			x, 
 			y,
 			m_dlgWidth,
@@ -3022,7 +3171,7 @@ public class AdminControl extends TeamingPopupPanel
 			// Yes, we've already created a "Manage Mobile Devices" dialog!
 			// Simply initialize and show it.
 			m_manageMobileDevicesDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			ManageMobileDevicesDlg.initAndShow( m_manageMobileDevicesDlg, new MobileDevicesInfo(), x, y, m_dlgWidth, m_dlgHeight );
+			ManageMobileDevicesDlg.initAndShow( m_manageMobileDevicesDlg, new MobileDevicesInfo(), autoHide, modal, x, y, m_dlgWidth, m_dlgHeight );
 		}
 	}
 	
@@ -3066,8 +3215,8 @@ public class AdminControl extends TeamingPopupPanel
 					} );
 				}
 			},
-			false,	// false -> !auto hide.
-			true,	// true -> modal.
+			isActionAutoHide( AdminAction.MANAGE_TEAMS ),
+			isActionModal(    AdminAction.MANAGE_TEAMS ),
 			x, 
 			y,
 			m_dlgWidth,
@@ -3123,8 +3272,8 @@ public class AdminControl extends TeamingPopupPanel
 					} );
 				}
 			},
-			false,	// false -> !auto hide.
-			true,	// true -> modal.
+			isActionAutoHide( AdminAction.ADD_USER ),
+			isActionModal(    AdminAction.ADD_USER ),
 			x, 
 			y,
 			m_dlgWidth,
@@ -3214,8 +3363,8 @@ public class AdminControl extends TeamingPopupPanel
 					} );
 				}
 			},
-			false,	// false -> !auto hide.
-			true,	// true -> modal.
+			isActionAutoHide( AdminAction.RUN_A_REPORT ),
+			isActionModal(    AdminAction.RUN_A_REPORT ),
 			x, 
 			y,
 			m_dlgWidth,
@@ -3765,5 +3914,24 @@ public class AdminControl extends TeamingPopupPanel
 				getUpgradeInfoFromServer( rpcGetUpgradeInfoCallback );
 			}
 		} );
+	}
+
+	/*
+	 * Returns true if the AdminAction should be in an auto hide dialog
+	 * and false otherwise.
+	 */
+	private boolean isActionAutoHide( AdminAction aa )
+	{
+		return ( ! ( isActionModal( aa ) ) );
+	}
+	
+	/*
+	 * Returns true if the AdminAction should be in a modal dialog and
+	 * false otherwise.
+	 */
+	private boolean isActionModal( AdminAction aa )
+	{
+		Boolean modal = MODAL_ACTION_MAP.get( aa );
+		return ( ( null == modal ) || modal );
 	}
 }// end AdminControl

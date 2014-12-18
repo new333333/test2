@@ -685,7 +685,7 @@ public class ManageMobileDevicesDlg extends DlgBox
 			addStyleName(   "vibe-manageMobileDevicesDlg-system");
 			removeStyleName("vibe-manageMobileDevicesDlg-user"  );
 			
-			setAutoHideAndModality( autoHide, modal );					// true -> Auto hide.  false -> Not modal.
+			setAutoHideAndModality(autoHide, modal);				// true -> Auto hide.  false -> Not modal.
 			hcl.setStyleName("teamingDlgBoxHeader-captionLabel");	// Default style as originally set in DlgBox.createCaption().
 			
 			setCaption(m_messages.manageMobileDevicesDlgCaptionSystem());
@@ -696,7 +696,7 @@ public class ManageMobileDevicesDlg extends DlgBox
 			removeStyleName("vibe-manageMobileDevicesDlg-system");
 			addStyleName(   "vibe-manageMobileDevicesDlg-user"  );
 			
-			setAutoHideAndModality( autoHide, modal );								// false -> Not auto hide.  true -> Modal.
+			setAutoHideAndModality(autoHide, modal);							// false -> Not auto hide.  true -> Modal.
 			hcl.setStyleName("vibe-manageMobileDevicesDlg-headerCaption-user");	// Style that accounts for the device count on the right of the caption.
 			
 			setCaption(             mdInfo.getClientItemTitle()   );
@@ -834,7 +834,7 @@ public class ManageMobileDevicesDlg extends DlgBox
 			final Integer						cy,
 			
 			// initAndShow() parameters.
-			final ManageMobileDevicesDlg			mmdDlg,
+			final ManageMobileDevicesDlg		mmdDlg,
 			final MobileDevicesInfo				mdInfo,
 			final UIObject						showRelativeTo,
 			final MobileDeviceRemovedCallback	removedCallback) {
@@ -895,6 +895,10 @@ public class ManageMobileDevicesDlg extends DlgBox
 		doAsyncOperation(null, false, true, 0, 0, null, null, mmdDlg, mdInfo, showRelativeTo, removedCallback);
 	}
 	
+	public static void initAndShow(ManageMobileDevicesDlg mmdDlg, MobileDevicesInfo mdInfo, boolean autoHide, boolean modal, int x, int y, Integer cx, Integer cy,  MobileDeviceRemovedCallback removedCallback) {
+		doAsyncOperation(null, autoHide, modal, x, y, cx, cy, mmdDlg, mdInfo, null, removedCallback);
+	}
+	
 	public static void initAndShow(ManageMobileDevicesDlg mmdDlg, MobileDevicesInfo mdInfo, int x, int y, Integer cx, Integer cy,  MobileDeviceRemovedCallback removedCallback) {
 		doAsyncOperation(null, false, true, x, y, cx, cy, mmdDlg, mdInfo, null, removedCallback);
 	}
@@ -906,6 +910,11 @@ public class ManageMobileDevicesDlg extends DlgBox
 	public static void initAndShow(ManageMobileDevicesDlg mmdDlg, MobileDevicesInfo mdInfo, UIObject showRelativeTo) {
 		// Always use previous form of the method.
 		initAndShow(mmdDlg, mdInfo, showRelativeTo, null);
+	}
+	
+	public static void initAndShow(ManageMobileDevicesDlg mmdDlg, MobileDevicesInfo mdInfo, boolean autoHide, boolean modal, int x, int y, Integer cx, Integer cy) {
+		// Always use previous form of the method.
+		initAndShow(mmdDlg, mdInfo, autoHide, modal, x, y, cx, cy, null);
 	}
 	
 	public static void initAndShow(ManageMobileDevicesDlg mmdDlg, MobileDevicesInfo mdInfo, int x, int y, Integer cx, Integer cy) {

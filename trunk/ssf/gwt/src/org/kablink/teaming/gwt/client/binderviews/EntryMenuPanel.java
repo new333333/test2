@@ -152,7 +152,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class EntryMenuPanel extends ToolPanelBase
 	implements
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
 		ResetEntryMenuEvent.Handler
 {
 	private BinderFiltersRpcResponseData	m_binderFilters;			//
@@ -1379,6 +1379,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		case INVOKE_DROPBOX:                  m_addFilesMenu             = reply; break;
 		case DELETE_SELECTED_ENTITIES:        m_deleteMenu               = reply; break;
 		case DELETE_SELECTED_MOBILE_DEVICES:  m_deleteMenu               = reply; break;
+		case DELETE_SELECTED_USERS:           m_deleteMenu               = reply; break;
 		case TRASH_PURGE_ALL:                 m_trashPurgeAllMenu        = reply; break;
 		case TRASH_PURGE_SELECTED_ENTITIES:   m_trashPurgeSelectedMenu   = reply; break;
 		case TRASH_RESTORE_ALL:               m_trashRestoreAllMenu      = reply; break;
