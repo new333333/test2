@@ -469,6 +469,9 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	@Override
 	public String getPartialDescStyleName()
 	{
+		if ( "vibe".equalsIgnoreCase( GwtClientHelper.getProductName() ) )
+			return "activityStreamTopEntryPartialDesc-vibe";
+		
 		return "activityStreamTopEntryPartialDesc";
 	}
 
