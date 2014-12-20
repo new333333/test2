@@ -1149,8 +1149,8 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Create the dialog.
 			EditKeyShieldConfigDlg.createDlg(
-									false,
-									true,
+									isActionAutoHide( AdminAction.KEYSHIELD_CONFIG ),
+									isActionModal(    AdminAction.KEYSHIELD_CONFIG ),
 									m_contentControlX,
 									m_contentControlY,
 									m_dlgWidth,
@@ -1202,8 +1202,8 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Create the dialog.
 			EditLdapConfigDlg.createDlg(
-									false,
-									true,
+									isActionAutoHide( AdminAction.LDAP_CONFIG ),
+									isActionModal(    AdminAction.LDAP_CONFIG ),
 									m_contentControlX,
 									m_contentControlY,
 									m_dlgWidth,
@@ -1443,8 +1443,8 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// No, create it.
 			EditBrandingDlg.createDlg(
-									false,
-									true,
+									isActionAutoHide( AdminAction.SITE_BRANDING ),
+									isActionModal(    AdminAction.SITE_BRANDING ),
 									x,
 									y,
 									m_dlgWidth,
@@ -1535,8 +1535,8 @@ public class AdminControl extends TeamingPopupPanel
 			};
 
 			ShareThisDlg2.createDlg(
-								false,
-								true,
+								isActionAutoHide( AdminAction.MANAGE_SHARE_ITEMS ),
+								isActionModal(    AdminAction.MANAGE_SHARE_ITEMS ),
 								m_contentControlX,
 								m_contentControlY,
 								new Integer( m_dlgWidth ),
@@ -1591,8 +1591,8 @@ public class AdminControl extends TeamingPopupPanel
 
 			// Run an async cmd to create the dialog.
 			NameCompletionSettingsDlg.createDlg(
-											false,
-											true,
+											isActionAutoHide( AdminAction.CONFIGURE_NAME_COMPLETION ),
+											isActionModal(    AdminAction.CONFIGURE_NAME_COMPLETION ),
 											new Integer( x ),
 											new Integer( y ),
 											width,
@@ -2037,8 +2037,8 @@ public class AdminControl extends TeamingPopupPanel
 			
 			// No, create one.
 			ConfigureAdhocFoldersDlg.createDlg(
-											new Boolean( false ),
-											new Boolean( true ),
+											isActionAutoHide( AdminAction.CONFIGURE_ADHOC_FOLDERS ),
+											isActionModal(    AdminAction.CONFIGURE_ADHOC_FOLDERS ),
 											new Integer( x ),
 											new Integer( y ),
 											new Integer( width ),
@@ -2151,8 +2151,8 @@ public class AdminControl extends TeamingPopupPanel
 
 							// Run an async cmd to create the dialog.
 							ConfigureFileSyncAppDlg.createDlg(
-															new Boolean( false ),
-															new Boolean( true ),
+															isActionAutoHide( AdminAction.CONFIGURE_FILE_SYNC_APP ),
+															isActionModal(    AdminAction.CONFIGURE_FILE_SYNC_APP ),
 															new Integer( x ),
 															new Integer( y ),
 															new Integer( width ),
@@ -2377,8 +2377,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			EditZoneShareSettingsDlg.createDlg(
-											false,
-											true, 
+											isActionAutoHide( AdminAction.CONFIGURE_SHARE_SETTINGS ),
+											isActionModal(    AdminAction.CONFIGURE_SHARE_SETTINGS ),
 											x, 
 											y,
 											width,
