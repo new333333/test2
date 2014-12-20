@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -74,6 +75,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.gwt.client.AdminConsoleInfo.AdminConsoleDialogMode;
 import org.kablink.teaming.gwt.client.GwtADLdapObject;
 import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.BlogArchiveInfo;
@@ -225,6 +227,7 @@ import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -993,14 +996,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_ADMIN_ACTIONS:
 		{
-			ArrayList<GwtAdminCategory> adminActions;
-			String binderId;
-			AdminConsoleInfo adminConsoleInfo;
+			AdminConsoleDialogMode acDlgMode;
+			String mode = SPropsUtil.getString( "admin.console.dialog.mode", "modal" );
+			if ( null == mode ) mode = "";
+			if      ( mode.equalsIgnoreCase( AdminConsoleDialogMode.MIXED.name() ) )    acDlgMode = AdminConsoleDialogMode.MIXED; 
+			else if ( mode.equalsIgnoreCase( AdminConsoleDialogMode.MODELESS.name() ) ) acDlgMode = AdminConsoleDialogMode.MODELESS;
+			else                                                                        acDlgMode = AdminConsoleDialogMode.MODAL;
 			
-			adminConsoleInfo = new AdminConsoleInfo();
-			
-			binderId = ((GetAdminActionsCmd)cmd).getBinderId();
-			adminActions = getAdminActions( ri, binderId );
+			AdminConsoleInfo adminConsoleInfo = new AdminConsoleInfo( acDlgMode );
+			String binderId = ((GetAdminActionsCmd)cmd).getBinderId();
+			ArrayList<GwtAdminCategory> adminActions = getAdminActions( ri, binderId );
 			adminConsoleInfo.setCategories( adminActions );
 			
 			// Get the url for the administration console "home page"

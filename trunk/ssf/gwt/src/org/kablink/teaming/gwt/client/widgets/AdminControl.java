@@ -72,6 +72,7 @@ import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.AdminConsoleInfo;
+import org.kablink.teaming.gwt.client.AdminConsoleInfo.AdminConsoleDialogMode;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtConstants;
@@ -233,89 +234,8 @@ public class AdminControl extends TeamingPopupPanel
 	private EditKeyShieldConfigDlg m_editKeyShieldConfigDlg = null;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private List<HandlerRegistration> m_registeredEventHandlers;
-
-	// Mapping of AdminAction's to whether they should display in a
-	// modal dialog.
-	private final static Map<AdminAction, Boolean> MODAL_ACTION_MAP = new HashMap<AdminAction, Boolean>();
-	static {
-		for ( AdminAction aa:  AdminAction.values() )
-		{
-			switch ( aa )
-			{
-			// Non modal actions.
-			case ADD_USER:
-			case CONFIGURE_ROLE_DEFINITIONS:
-			case CONFIGURE_SEARCH_INDEX:
-			case FORM_VIEW_DESIGNER:
-			case MANAGE_ADMINISTRATORS:
-			case MANAGE_APPLICATIONS:
-			case MANAGE_APPLICATION_GROUPS:
-			case MANAGE_EXTENSIONS:
-			case MANAGE_GROUPS:
-			case MANAGE_LICENSE:
-			case MANAGE_MOBILE_DEVICES:
-			case MANAGE_NET_FOLDERS:
-			case MANAGE_RESOURCE_DRIVERS:
-			case MANAGE_TEAMS:
-			case MANAGE_WORKSPACE_AND_FOLDER_TEMPLATES:
-			case MANAGE_ZONES:
-			case RUN_A_REPORT:
-				MODAL_ACTION_MAP.put( aa, Boolean.FALSE );
-				break;
-
-			default:
-				GwtClientHelper.debugAlert( "AdminControl.MODAL_ACTION_MAP():  Mapping missing for " + aa.name() );
-				
-				// * * * * * * * * * * * * * * * * * * * * * * * //
-				// Fall through and treat it as a modal action.  //
-				// * * * * * * * * * * * * * * * * * * * * * * * //
-				
-			// Modal actions.
-			case ACCESS_CONTROL_FOR_ZONE_ADMIN_FUNCTIONS:
-			case CONFIGURE_ADHOC_FOLDERS:
-			case CONFIGURE_EMAIL:
-			case CONFIGURE_FILE_SYNC_APP:
-			case CONFIGURE_FILE_VERSION_AGING:
-			case CONFIGURE_FOLDER_INDEX:
-			case CONFIGURE_FOLDER_SEARCH_NODES:
-			case CONFIGURE_FOLDER_UPDATE_LOGS:
-			case CONFIGURE_HOME_PAGE:
-			case CONFIGURE_MOBILE_ACCESS:
-			case CONFIGURE_MOBILE_APPS:
-			case CONFIGURE_NAME_COMPLETION:
-			case CONFIGURE_PASSWORD_POLICY:
-			case CONFIGURE_SCHEDULE:
-			case CONFIGURE_SHARE_SETTINGS:
-			case CONFIGURE_USER_ACCESS:
-			case IMPORT_PROFILES:
-			case KEYSHIELD_CONFIG:
-			case LDAP_CONFIG:
-			case NET_FOLDER_GLOBAL_SETTINGS:
-			case MANAGE_DATABASE_PRUNE:
-			case MANAGE_QUOTAS:
-			case MANAGE_FILE_UPLOAD_LIMITS:
-			case MANAGE_SHARE_ITEMS:
-			case MANAGE_USER_ACCOUNTS:
-			case REPORT_ACTIVITY_BY_USER:
-			case REPORT_CREDITS:
-			case REPORT_DATA_QUOTA_EXCEEDED:
-			case REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED:
-			case REPORT_DISK_USAGE:
-			case REPORT_EMAIL:
-			case REPORT_LICENSE:
-			case REPORT_LOGIN:
-			case REPORT_USER_ACCESS:
-			case REPORT_XSS:
-			case REPORT_VIEW_CHANGELOG:
-			case REPORT_VIEW_CREDITS:
-			case REPORT_VIEW_SYSTEM_ERROR_LOG:
-			case SITE_BRANDING:
-			case UNDEFINED:
-				MODAL_ACTION_MAP.put( aa, Boolean.TRUE );
-				break;
-			}
-		}
-	};
+	private AdminConsoleDialogMode m_acDlgMode = AdminConsoleDialogMode.MODAL; 
+	private Map<AdminAction, Boolean> m_modalActionMap = null;	// Maps AdminAction's to whether they should display in a modal dialog.
 	
 	// The following are used to coordinate firing a 'on layout' event
 	// AFTER all the layout requests in a sequence of them have
@@ -777,6 +697,7 @@ public class AdminControl extends TeamingPopupPanel
 					AdminConsoleInfo adminConsoleInfo;
 					
 					adminConsoleInfo = (AdminConsoleInfo) response.getResponseData();
+					m_acDlgMode = adminConsoleInfo.getAdminConsoleDialogMode();
 					adminCategories = adminConsoleInfo.getCategories();
 					for ( GwtAdminCategory category : adminCategories )
 					{
@@ -2324,8 +2245,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ConfigureMobileAppsDlg.createAsync(
-											false,
-											true, 
+											isActionAutoHide( AdminAction.CONFIGURE_MOBILE_APPS ),
+											isActionModal(    AdminAction.CONFIGURE_MOBILE_APPS ),
 											x, 
 											y,
 											width,
@@ -2389,8 +2310,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ConfigurePasswordPolicyDlg.createAsync(
-											false,
-											true, 
+											isActionAutoHide( AdminAction.CONFIGURE_PASSWORD_POLICY ),
+											isActionModal(    AdminAction.CONFIGURE_PASSWORD_POLICY ),
 											x, 
 											y,
 											width,
@@ -2520,8 +2441,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ConfigureUpdateLogsDlg.createAsync(
-											false,
-											true, 
+											isActionAutoHide( AdminAction.CONFIGURE_FOLDER_UPDATE_LOGS ),
+											isActionModal(    AdminAction.CONFIGURE_FOLDER_UPDATE_LOGS ),
 											x, 
 											y,
 											width,
@@ -2587,8 +2508,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			ConfigureUserAccessDlg.createAsync(
-											false,
-											true, 
+											isActionAutoHide( AdminAction.CONFIGURE_USER_ACCESS ),
+											isActionModal(    AdminAction.CONFIGURE_USER_ACCESS ),
 											x, 
 											y,
 											width,
@@ -2714,8 +2635,8 @@ public class AdminControl extends TeamingPopupPanel
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			NetFolderGlobalSettingsDlg.createAsync(
-										false,
-										true, 
+										isActionAutoHide( AdminAction.NET_FOLDER_GLOBAL_SETTINGS ),
+										isActionModal(    AdminAction.NET_FOLDER_GLOBAL_SETTINGS ),
 										x, 
 										y,
 										width,
@@ -2864,8 +2785,8 @@ public class AdminControl extends TeamingPopupPanel
 					height = m_dlgHeight;
 					width = m_dlgWidth;
 					ManageDatabasePruneDlg.createAsync(
-							false,
-							true, 
+							isActionAutoHide( AdminAction.MANAGE_DATABASE_PRUNE ),
+							isActionModal(    AdminAction.MANAGE_DATABASE_PRUNE ),
 							x, 
 							y,
 							width,
@@ -3158,8 +3079,8 @@ public class AdminControl extends TeamingPopupPanel
 					} );
 				}
 			},
-			autoHide,
-			modal,
+			isActionAutoHide( AdminAction.MANAGE_MOBILE_DEVICES ),
+			isActionModal(    AdminAction.MANAGE_MOBILE_DEVICES ),
 			x, 
 			y,
 			m_dlgWidth,
@@ -3931,7 +3852,102 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private boolean isActionModal( AdminAction aa )
 	{
-		Boolean modal = MODAL_ACTION_MAP.get( aa );
+		populateModalActionsMap();
+		Boolean modal = m_modalActionMap.get( aa );
 		return ( ( null == modal ) || modal );
+	}
+	
+	/*
+	 * Populates the modal actions map.
+	 */
+	private void populateModalActionsMap()
+	{
+		// If we haven't populated the modal actions map yet...
+		if ( null == m_modalActionMap )
+		{
+			// ...populate it now.
+			m_modalActionMap = new HashMap<AdminAction, Boolean>();
+			for ( AdminAction aa:  AdminAction.values() )
+			{
+				switch ( aa )
+				{
+				// Non modal (i.e., simple Close button) actions.
+				case ADD_USER:
+				case CONFIGURE_ROLE_DEFINITIONS:
+				case CONFIGURE_SEARCH_INDEX:
+				case FORM_VIEW_DESIGNER:
+				case MANAGE_ADMINISTRATORS:
+				case MANAGE_APPLICATIONS:
+				case MANAGE_APPLICATION_GROUPS:
+				case MANAGE_EXTENSIONS:
+				case MANAGE_GROUPS:
+				case MANAGE_LICENSE:
+				case MANAGE_MOBILE_DEVICES:
+				case MANAGE_NET_FOLDERS:
+				case MANAGE_RESOURCE_DRIVERS:
+				case MANAGE_TEAMS:
+				case MANAGE_WORKSPACE_AND_FOLDER_TEMPLATES:
+				case MANAGE_ZONES:
+				case RUN_A_REPORT:
+					// These are modeless unless all dialogs are being
+					// forced to be modal.
+					m_modalActionMap.put( aa, new Boolean( m_acDlgMode.isModal() ) );
+					break;
+	
+				default:
+					GwtClientHelper.debugAlert( "AdminControl.m_modalActionMap():  Mapping missing for " + aa.name() );
+					
+					// * * * * * * * * * * * * * * * * * * * * * * * //
+					// Fall through and treat it as a modal action.  //
+					// * * * * * * * * * * * * * * * * * * * * * * * //
+					
+				// Modal (i.e., Apply/OK/Cancel button) actions.
+				case ACCESS_CONTROL_FOR_ZONE_ADMIN_FUNCTIONS:
+				case CONFIGURE_ADHOC_FOLDERS:
+				case CONFIGURE_EMAIL:
+				case CONFIGURE_FILE_SYNC_APP:
+				case CONFIGURE_FILE_VERSION_AGING:
+				case CONFIGURE_FOLDER_INDEX:
+				case CONFIGURE_FOLDER_SEARCH_NODES:
+				case CONFIGURE_FOLDER_UPDATE_LOGS:
+				case CONFIGURE_HOME_PAGE:
+				case CONFIGURE_MOBILE_ACCESS:
+				case CONFIGURE_MOBILE_APPS:
+				case CONFIGURE_NAME_COMPLETION:
+				case CONFIGURE_PASSWORD_POLICY:
+				case CONFIGURE_SCHEDULE:
+				case CONFIGURE_SHARE_SETTINGS:
+				case CONFIGURE_USER_ACCESS:
+				case IMPORT_PROFILES:
+				case KEYSHIELD_CONFIG:
+				case LDAP_CONFIG:
+				case NET_FOLDER_GLOBAL_SETTINGS:
+				case MANAGE_DATABASE_PRUNE:
+				case MANAGE_QUOTAS:
+				case MANAGE_FILE_UPLOAD_LIMITS:
+				case MANAGE_SHARE_ITEMS:
+				case MANAGE_USER_ACCOUNTS:
+				case REPORT_ACTIVITY_BY_USER:
+				case REPORT_CREDITS:
+				case REPORT_DATA_QUOTA_EXCEEDED:
+				case REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED:
+				case REPORT_DISK_USAGE:
+				case REPORT_EMAIL:
+				case REPORT_LICENSE:
+				case REPORT_LOGIN:
+				case REPORT_USER_ACCESS:
+				case REPORT_XSS:
+				case REPORT_VIEW_CHANGELOG:
+				case REPORT_VIEW_CREDITS:
+				case REPORT_VIEW_SYSTEM_ERROR_LOG:
+				case SITE_BRANDING:
+				case UNDEFINED:
+					// These are modal unless all dialogs are being
+					// forced to be modeless.
+					m_modalActionMap.put( aa, ( ! ( m_acDlgMode.isModeless() )) );
+					break;
+				}
+			}
+		}
 	}
 }// end AdminControl
