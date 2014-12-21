@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -58,21 +59,29 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
   		Date now = new Date();
   		
-  		//See if the audit trail and change log tables need to be pruned
+  		Date purgeBeforeDate;
+  		
+  		// 1) Purge share item table
+  		// Note: To be exact, share item table is not log table. But it has similar requirement that the
+  		//       old information in the table needs to be pruned on a nightly basis. So we piggyback the
+  		//       same job.
+  		int shareItemKeepDays = SPropsUtil.getInt("binder.changes.allowed.days", 7) + 1;
+        purgeBeforeDate = new Date(System.currentTimeMillis() - shareItemKeepDays*1000L*60L*60L*24L);
+  		int shareItemsPurgeCount = getCoreDao().purgeShareItems(zoneId, purgeBeforeDate);
+  		logger.info("Purged " + shareItemsPurgeCount + " records from the SS_ShareItem table");
+  		
+  		// 2) See if the audit trail tables need to be pruned
   		if (zoneConfig.getAuditTrailKeepDays() > 0) {
-  			Date purgeBeforeDate = getCoreDao().getAuditTrailPurgeDate(zoneId);
+  			purgeBeforeDate = getCoreDao().getAuditTrailPurgeDate(zoneId);
 	  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
 	  		logger.info("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
 	  		int loginAuditPurgeCount = getCoreDao().purgeLoginAudit(zoneId, purgeBeforeDate);
 	  		logger.info("Purged " + loginAuditPurgeCount + " records from the SS_LoginAudit table");
-	  		// For share items, we use the same information stored in the runtime table for audit/report purpose.
-	  		// So piggyback on the same background job and its schedule for regular purging of old share items.
-	  		int shareItemsPurgeCount = getCoreDao().purgeShareItems(zoneId, purgeBeforeDate);
-	  		logger.info("Purged " + shareItemsPurgeCount + " records from the SS_ShareItem table");
   		}
   		
+  		// 2) See if the change log tables need to be pruned
   		if (zoneConfig.getChangeLogsKeepDays() > 0) {
-  			Date purgeBeforeDate = new Date(now.getTime() - ((long)zoneConfig.getChangeLogsKeepDays())*1000L*60L*60L*24L);
+  			purgeBeforeDate = new Date(now.getTime() - ((long)zoneConfig.getChangeLogsKeepDays())*1000L*60L*60L*24L);
 			int changeLogsPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
 			logger.info("Purged " + changeLogsPurgeCount + " records from the SS_ChangeLogs table");
   		}

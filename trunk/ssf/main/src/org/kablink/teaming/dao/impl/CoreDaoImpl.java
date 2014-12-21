@@ -92,6 +92,7 @@ import org.kablink.teaming.domain.Dashboard;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.DefinitionInvalidOperation;
+import org.kablink.teaming.domain.DeletedBinder;
 import org.kablink.teaming.domain.EntityDashboard;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
@@ -627,6 +628,20 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		   				.setLong("binder", binder.getId())
 		   				.executeUpdate();
 	    	   			
+	    	   			//create a log for the binder being deleted.
+	    	   			/* This is instead being done in AbstractBinderProcessor.deleteBinder_preDelete() method.
+	    	   			 * From logical stand point of view, it makes more sense to do this in the first phase
+	    	   			 * rather than in the second GC phase.
+	    	   			try {
+		    	   			DeletedBinder deletedBinder = new DeletedBinder(binder);
+		    	   			session.save(deletedBinder);
+	    	   			}
+	    	   			catch(Exception e) {
+	    	   				logger.error("Error creating DeletedBinder for binder " + binder.getId(), e);
+	    	   			}
+	    	   			*/
+	    	   			
+	    	   			//delete binder itself
 	    	   			try {
 				   			//do ourselves or hibernate will flsuh
 				   			session.createQuery("Delete org.kablink.teaming.domain.Binder where id=:id")
@@ -3475,7 +3490,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	}
 
 	@Override
-	public void purgeShares(final Binder binder, final boolean includeEntryShares) {
+	public void deleteShares(final Binder binder, final boolean includeEntryShares) {
 		long begin = System.nanoTime();
 		try {
 		   	getHibernateTemplate().execute(

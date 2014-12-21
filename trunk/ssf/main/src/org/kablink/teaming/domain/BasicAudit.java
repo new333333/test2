@@ -45,7 +45,62 @@ import org.kablink.util.search.Constants;
  */
 public class BasicAudit extends ZonedObject {
 
-	private static final int AUXILIARY_DATA_MAX_SIZE_DEFAULT = 255;
+	private static final int AUXILIARY_DATA_MAX_SIZE_DEFAULT = 128;
+	
+	public enum EntityFamily {
+		custom((short)-1),
+		blob((short)1),
+		calendar((short)2),
+		discussion((short)3),
+		user((short)4),
+		guestbook((short)5),
+		file((short)6),
+		fileComment((short)7),
+		milestone((short)8),
+		miniblog((short)9),
+		photo((short)10),
+		survey((short)11),
+		task((short)12),
+		team((short)13),
+		userProfile((short)14),
+		landingpage((short)15),
+		wiki((short)16),
+		workspace((short)17);
+		
+		short value;
+		
+		EntityFamily(short value) {
+			this.value = value;
+		}
+		
+		public short getValue() {
+			return value;
+		}
+		
+		public static EntityFamily valueOf(short value) {
+			switch(value) {
+			case -1: return EntityFamily.custom;
+			case 1: return EntityFamily.blob;
+			case 2: return EntityFamily.calendar;
+			case 3: return EntityFamily.discussion;
+			case 4: return EntityFamily.user;
+			case 5: return EntityFamily.guestbook;
+			case 6: return EntityFamily.file;
+			case 7: return EntityFamily.fileComment;
+			case 8: return EntityFamily.milestone;
+			case 9: return EntityFamily.miniblog;
+			case 10: return EntityFamily.photo;
+			case 11: return EntityFamily.survey;
+			case 12: return EntityFamily.task;
+			case 13: return EntityFamily.team;
+			case 14: return EntityFamily.userProfile;
+			case 15: return EntityFamily.landingpage;
+			case 16: return EntityFamily.wiki;
+			case 17: return EntityFamily.workspace;
+			default: throw new IllegalArgumentException("Invalid db value " + value + " for enum BasicAudit.EntityFamily");
+			}
+		}
+	}
 	
 	private Long id;
 	
@@ -56,13 +111,15 @@ public class BasicAudit extends ZonedObject {
 	private Long entityId; // ID of the entity to which event applied
     protected Short eventType; // Type of the event
 	protected String owningBinderKey; // Sort key of the owning binder
-	protected Long owningBinderId; // ID of the owning binder
+	// ID of the owning binder - If entity type is entry, this is the ID of the
+	// parent binder. If entity type is binder, this is equal to the entity ID.
+	protected Long owningBinderId;
 	
 	/// Optional fields
     protected String auxiliaryData; // Auxiliary data about the event in textual form 
     protected String fileId; // ID of the file associated with the event
-    // This field is applicable only if eventType='delete' and entityType='folderEntry'.
-    protected String deletedFolderEntryFamily; // Family info about the deleted folder entry
+    // This field is applicable only if eventType='delete', 'preDelete', or 'restore' and entityType='folderEntry'.
+    protected Short entityFamily; // Family info about the deleted folder entry
 
     public BasicAudit(AuditType what, User user, DefinableEntity entity) {
     	this(what, user, entity, new Date());
@@ -78,7 +135,7 @@ public class BasicAudit extends ZonedObject {
         	org.dom4j.Document def = entity.getCreatedWithDefinitionDoc();
         	String family = DefinitionUtils.getFamily(def);
         	if (Validator.isNotNull(family)) {
-        		setDeletedFolderEntryFamily(family);
+        		setEntityFamily(family);
                 if (family.equals(Constants.FAMILY_FIELD_FILE)) {
                     setFileId(entity.getPrimaryFileAttachmentId());
                 }
@@ -166,12 +223,18 @@ public class BasicAudit extends ZonedObject {
 		this.fileId = fileId;
 	}
 
-	public String getDeletedFolderEntryFamily() {
-		return deletedFolderEntryFamily;
+	public String getEntityFamily() {
+		if(entityFamily != null)
+			return EntityFamily.valueOf(entityFamily).name();
+		else
+			return null;
 	}
 
-	public void setDeletedFolderEntryFamily(String deletedFolderEntryFamily) {
-		this.deletedFolderEntryFamily = deletedFolderEntryFamily;
+	protected void setEntityFamily(String entityFamilyStr) {
+		if(entityFamilyStr != null)
+			this.entityFamily = EntityFamily.valueOf(entityFamilyStr).getValue();
+		else
+			this.entityFamily = null;
 	}
 
 }

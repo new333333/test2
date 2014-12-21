@@ -16,9 +16,8 @@
  	<property name="eventType" access="field" type="short" index="etype_obkey_basicAudit"/>
     <property name="owningBinderKey" access="field" length="255" index="etype_obkey_basicAudit"/>
     <property name="owningBinderId" access="field" index="owningBinderId_basicAudit"/>
-    <property name="auxiliaryData" access="field" length="255"/>
+    <property name="auxiliaryData" access="field" length="128"/>
     <property name="fileId" access="field" length="32"/>
-    <property name="deletedFolderEntryFamily" access="field" length="12"/>
-    
+    <property name="entityFamily" access="field" type="short"/>  
   </class>
 </hibernate-mapping>

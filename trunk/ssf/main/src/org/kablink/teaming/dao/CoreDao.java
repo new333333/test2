@@ -284,7 +284,7 @@ public interface CoreDao {
 
 	public boolean contains(Object obj);
 	
-	public void purgeShares(Binder binder, boolean includeEntryShares);
+	public void deleteShares(Binder binder, boolean includeEntryShares);
 	
 	public Long peekFullSyncTask();
 	
