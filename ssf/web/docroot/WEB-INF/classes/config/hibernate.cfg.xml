@@ -64,6 +64,7 @@
 	    <mapping resource="org/kablink/teaming/domain/CustomAttribute.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Dashboard.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Definition.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/DeletedBinder.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/EmailAddress.hbm.xml"/> 
 	    <mapping resource="org/kablink/teaming/domain/Event.hbm.xml"/> 
 	    <mapping resource="org/kablink/teaming/domain/FolderEntry.hbm.xml"/>
@@ -83,6 +84,7 @@
 	    <mapping resource="org/kablink/teaming/domain/SeenMap.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SharedEntity.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/ShareItem.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/SharingAudit.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SimpleName.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Subscription.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Tag.hbm.xml"/>

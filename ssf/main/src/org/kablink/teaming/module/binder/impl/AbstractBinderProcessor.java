@@ -74,6 +74,7 @@ import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.DeletedBinder;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityDashboard;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -1251,11 +1252,22 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         User user = RequestContextHolder.getRequestContext().getUser();
         binder.setModification(new HistoryStamp(user));
         binder.incrLogVersion();
+        
+		//create a log for the binder being deleted.
+		try {
+			DeletedBinder deletedBinder = new DeletedBinder(binder);
+			getCoreDao().save(deletedBinder);
+		}
+		catch(Exception e) {
+			logger.error("Error creating DeletedBinder for binder " + binder.getId(), e);
+		}		
+
     	processChangeLog(binder, ChangeLog.DELETEBINDER, skipDbLog);
         if(!skipDbLog) {
         	// Make sure that the audit trail's timestamp is identical to the modification time of the binder. 
-        	//We use the description field to hold the path/title of the deleted binder so it is available when reports are made
-        	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate(), binder.getPathName());
+        	// 12/19/2014 JK - The path of the deleted binder is no longer stored with the audit trail.
+        	// Instead, the path information for deleted binders are available from another table.
+         	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate());
         }
     	if ((binder.getDefinitionType() != null) &&
     			(binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW ||
@@ -1270,7 +1282,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			RequestContextHolder.getRequestContext().getZoneId(), binder);
 	    
     	//remove share items associated with this binder or with any entries within this binder
-    	getCoreDao().purgeShares(binder, true);
+    	getCoreDao().deleteShares(binder, true);
     	
     	// Unlike regular group, team group's life cycle is bound by the binder that owns it.
     	// Remove team group, if exists, owned by this binder.

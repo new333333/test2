@@ -172,14 +172,17 @@
             <column name="entityId" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+            <column name="auxiliaryData" type="VARCHAR(128)">
+                <constraints nullable="true"/>
+            </column>
             <column name="eventType" type="SMALLINT">
                 <constraints nullable="false"/>
             </column>
             <column name="owningBinderId" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="auxiliaryData" type="VARCHAR(255)">
-                <constraints nullable="true"/>
+            <column name="entityFamily" type="SMALLINT">
+            	<constraints nullable="true"/>
             </column>
         </createTable>
         <modifySql dbms="mysql">
@@ -198,40 +201,106 @@
 	</changeSet>
     
     <changeSet author="jong" context="schema" failOnError="true" id="17">
-    	<comment>Use Latin1 for efficiency since this column doesn't need UTF8</comment>
-    	<sql>ALTER TABLE SS_BasicAudit ADD deletedFolderEntryFamily VARCHAR(12) CHARACTER SET latin1 COLLATE latin1_bin NULL;</sql>
-	</changeSet>
-    
-    <changeSet author="jong" context="schema" failOnError="true" id="18">
         <createIndex indexName="date_basicAudit" tableName="SS_BasicAudit" unique="false">
             <column name="date"/>
         </createIndex>
     </changeSet>
     
-    <changeSet author="jong" context="schema" failOnError="true" id="19">
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
         <createIndex indexName="userId_basicAudit" tableName="SS_BasicAudit" unique="false">
             <column name="userId"/>
         </createIndex>
     </changeSet>
     
-    <changeSet author="jong" context="schema" failOnError="true" id="20">
+    <changeSet author="jong" context="schema" failOnError="true" id="19">
         <createIndex indexName="entity_basicAudit" tableName="SS_BasicAudit" unique="false">
             <column name="entityType"/>
             <column name="entityId"/>
         </createIndex>
     </changeSet>
     
-    <changeSet author="jong" context="schema" failOnError="true" id="21">
+    <changeSet author="jong" context="schema" failOnError="true" id="20">
         <createIndex indexName="etype_obkey_basicAudit" tableName="SS_BasicAudit" unique="false">
             <column name="eventType"/>
             <column name="owningBinderKey"/>
         </createIndex>
     </changeSet>
 
-    <changeSet author="jong" context="schema" failOnError="true" id="22">
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
         <createIndex indexName="owningBinderId_basicAudit" tableName="SS_BasicAudit" unique="false">
             <column name="owningBinderId"/>
         </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <createTable tableName="SS_SharingAudit">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sharerId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityType" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entryTitle" type="VARCHAR(128)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="owningBinderId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="recipientType" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="recipientId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="actionType" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="actionDate" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roleNameValue" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <createTable tableName="SS_DeletedBinder">
+            <column name="binderId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="binderType" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="binderPath" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deletedDate" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <addPrimaryKey columnNames="binderId" tableName="SS_DeletedBinder"/>
     </changeSet>
     
 </databaseChangeLog>

@@ -51,7 +51,6 @@ import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
-import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
@@ -728,7 +727,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				getCoreDao().save(shareItem);
 				
 				//Log this share action in the change log
-				addShareItemChangeLogEntry(shareItem, ChangeLog.SHARE_ADD);
+				addShareItemLogEntry(shareItem, SharingAudit.ActionType.add);
 
 				return null;
 			}
@@ -819,7 +818,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					getCoreDao().save(latestShareItem);
 
 					//Log this share action in the change log
-					addShareItemChangeLogEntry(latestShareItem, ChangeLog.SHARE_MODIFY);
+					addShareItemLogEntry(latestShareItem, SharingAudit.ActionType.modify);
 				}
 				else
 				{
@@ -839,7 +838,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 						getCoreDao().update( previousShareItem );
 
 						// Log this share action in the change log
-						addShareItemChangeLogEntry( previousShareItem, ChangeLog.SHARE_MODIFY );
+						addShareItemLogEntry(previousShareItem, SharingAudit.ActionType.modify);
                         return previousShareItem;
 					}
 					catch( NoShareItemByTheIdException e )
@@ -947,10 +946,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
                 shareItem.setDeletedDate(new Date());
+                
 				getCoreDao().update(shareItem);
 				
 				//Log this share action in the change log
-				addShareItemChangeLogEntry(shareItem, ChangeLog.SHARE_DELETE);
+				addShareItemLogEntry(shareItem, SharingAudit.ActionType.delete);
 				
 				return null;
 			}
@@ -1321,18 +1321,17 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		return (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 	}
 	
-	private void addShareItemChangeLogEntry(ShareItem shareItem, String action) {
+	private void addShareItemLogEntry(ShareItem shareItem, SharingAudit.ActionType actionType) {	
 		EntityIdentifier entityIdentifier = shareItem.getSharedEntityIdentifier();
 		if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
 			FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
-			FolderCoreProcessor processor = (FolderCoreProcessor)getProcessorManager().getProcessor(
-					fe.getParentFolder(), fe.getParentFolder().getProcessorKey(FolderCoreProcessor.PROCESSOR_KEY));
-			processor.processChangeLog(fe, action);
+			SharingAudit sharingAudit = new SharingAudit(shareItem, fe.getParentBinder().getId(), actionType);
+			sharingAudit.setEntryTitle(fe.getTitle());
+			getCoreDao().save(sharingAudit);
 		} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
 				entityIdentifier.getEntityType().equals(EntityType.workspace)) {
-			Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
-			BinderProcessor processor = loadBinderProcessor(binder);
-			processor.processChangeLog(binder, action);
+			SharingAudit sharingAudit = new SharingAudit(shareItem, entityIdentifier.getEntityId(), actionType);
+			getCoreDao().save(sharingAudit);
 		}
 	}
 

@@ -2098,7 +2098,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					crit.add(Restrictions.in("owningBinderId", fIds));
 				}
 				if(Validator.isNotNull(family))
-					crit.add(Restrictions.eq("deletedFolderEntryFamily", family));
+					crit.add(Restrictions.eq("entityFamily", family));
 				if(startDate != null)
 					crit.add(Restrictions.ge("date", startDate));
 				crit.addOrder(Order.asc("date"));

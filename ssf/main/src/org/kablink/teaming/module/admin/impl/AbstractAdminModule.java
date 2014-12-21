@@ -3896,7 +3896,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ENTITY_TYPE, auditTrail.getEntityType().name());
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_OWNING_BINDER_ID, String.valueOf(auditTrail.getOwningBinderId()));
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_FILE_ID, auditTrail.getFileId());
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_DELETED_FOLDER_ENTRY_FAMILY, auditTrail.getDeletedFolderEntryFamily());
+				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_DELETED_FOLDER_ENTRY_FAMILY, auditTrail.getEntityFamily());
 				if (auditTrail.getAuxiliaryData() != null) {
 					Element description = entry.addElement(ObjectKeys.AUDIT_TRAIL_DESCRIPTION);
 					description.setText(auditTrail.getAuxiliaryData());

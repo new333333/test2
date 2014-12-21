@@ -174,7 +174,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 	
 	/**
-	 * Delete the binder object and its assocations.
+	 * Delete the binder object and its associations.
 	 * Child binders should already have been deleted
 	 * This code assumes all users/groups are stored
 	 */	

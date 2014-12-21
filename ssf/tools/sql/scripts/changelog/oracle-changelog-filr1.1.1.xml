@@ -116,38 +116,188 @@
     
     <changeSet author="jong" context="schema" failOnError="true" id="10">
         <comment>Audit information about login</comment>
-        <createTable tableName="SS_LOGINAUDIT">
-            <column name="ID" type="NUMBER(19,0)">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_LOGINAUDIT"/>
+        <createTable tableName="SS_LoginAudit">
+            <column name="id" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_LoginAudit"/>
             </column>
-        	<column name="ZONEID" type="NUMBER(19,0)">
+        	<column name="zoneId" type="NUMBER(19,0)">
                 <constraints nullable="false"/>
             </column>
-        	<column name="LOGINTIME" type="TIMESTAMP(6)">
+        	<column name="loginTime" type="TIMESTAMP(6)">
                 <constraints nullable="false"/>
             </column>
-        	<column name="USERID" type="NUMBER(19,0)">
+        	<column name="userId" type="NUMBER(19,0)">
                 <constraints nullable="false"/>
             </column>
-        	<column name="AUTHENTICATOR" type="NUMBER(2,0)">
+        	<column name="authenticator" type="NUMBER(2,0)">
                 <constraints nullable="false"/>
             </column>
-        	<column name="CLIENTADDR" type="VARCHAR(16)">
+        	<column name="clientAddr" type="VARCHAR2(16 CHAR)">
                 <constraints nullable="false"/>
             </column>
          </createTable>
 	</changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="11">
-        <createIndex indexName="LOGINTIME_LOGINAUDIT" tableName="SS_LOGINAUDIT" unique="false">
-            <column name="LOGINTIME"/>
-        </createIndex>
+        <createSequence sequenceName="ss_loginaudit_id_sequence"/>
     </changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="12">
-        <createIndex indexName="USERID_LOGINAUDIT" tableName="SS_LOGINAUDIT" unique="false">
-            <column name="USERID"/>
+        <createIndex indexName="loginTime_loginAudit" tableName="SS_LoginAudit" unique="false">
+            <column name="loginTime"/>
         </createIndex>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
+        <createIndex indexName="userId_loginAudit" tableName="SS_LoginAudit" unique="false">
+            <column name="userId"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="14">
+        <createTable tableName="SS_BasicAudit">
+            <column name="id" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_BasicAudit"/>
+            </column>
+            <column name="zoneId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="TIMESTAMP(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="userId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityType" type="NUMBER(2,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="auxiliaryData" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="eventType" type="NUMBER(2,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owningBinderId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owningBinderKey" type="VARCHAR2(255 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fileId" type="VARCHAR2(32 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityFamily" type="NUMBER(2,0)">
+            	<constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="15">
+        <createSequence sequenceName="ss_basicaudit_id_sequence"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="16">
+        <createIndex indexName="date_basicAudit" tableName="SS_BasicAudit" unique="false">
+            <column name="date"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="17">
+        <createIndex indexName="userId_basicAudit" tableName="SS_BasicAudit" unique="false">
+            <column name="userId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
+        <createIndex indexName="entity_basicAudit" tableName="SS_BasicAudit" unique="false">
+            <column name="entityType"/>
+            <column name="entityId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="19">
+        <createIndex indexName="etype_obkey_basicAudit" tableName="SS_BasicAudit" unique="false">
+            <column name="eventType"/>
+            <column name="owningBinderKey"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="20">
+        <createIndex indexName="owningBinderId_basicAudit" tableName="SS_BasicAudit" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <createTable tableName="SS_SharingAudit">
+            <column name="id" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_SharingAudit"/>
+            </column>
+            <column name="zoneId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sharerId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityType" type="NUMBER(2,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entryTitle" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="owningBinderId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="recipientType" type="NUMBER(2,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="recipientId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="actionType" type="NUMBER(2,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="actionDate" type="TIMESTAMP(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roleNameValue" type="NUMBER(2,0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <createSequence sequenceName="ss_sharingaudit_id_sequence"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <createTable tableName="SS_DeletedBinder">
+            <column name="binderId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="binderType" type="NUMBER(2,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="binderPath" type="VARCHAR2(512 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deletedDate" type="TIMESTAMP(6)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <addPrimaryKey columnNames="binderId" tableName="SS_DeletedBinder"/>
+    </changeSet>
+    
 </databaseChangeLog>
