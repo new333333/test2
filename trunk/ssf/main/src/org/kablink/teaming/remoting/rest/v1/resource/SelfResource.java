@@ -362,7 +362,7 @@ public class SelfResource extends AbstractFileResource {
     @Path("/my_files/library_children")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Response getMyFileLibraryChildren(
-            @QueryParam("name") String name,
+            @QueryParam("title") String name,
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("allow_jits") @DefaultValue("true") Boolean allowJits,
             @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -382,11 +382,12 @@ public class SelfResource extends AbstractFileResource {
     @Path("/my_files/library_folders")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Response getMyFileLibraryFolders(
+            @QueryParam("title") String name,
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("100") Integer maxCount,
             @Context HttpServletRequest request) {
-        SearchResultList<SearchableObject> results = _getMyFilesLibraryChildren(null, getIfModifiedSinceDate(request), true, false, false,
+        SearchResultList<SearchableObject> results = _getMyFilesLibraryChildren(name, getIfModifiedSinceDate(request), true, false, false,
                 true, toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
         Date lastModified = results.getLastModified();
         if (lastModified!=null) {

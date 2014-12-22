@@ -134,6 +134,7 @@ public class WorkspaceResource extends AbstractBinderResource {
     @Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getSubBinders(@PathParam("id") long id,
+                                  @QueryParam("title") String name,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                   @QueryParam("count") @DefaultValue("100") Integer maxCount,
@@ -145,7 +146,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, null, true, offset, maxCount,
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, name, true, offset, maxCount,
                 "/workspaces/" + id + "/binders", nextParams, toDomainFormat(descriptionFormatStr),
                 ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
@@ -156,7 +157,7 @@ public class WorkspaceResource extends AbstractBinderResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getChildren(@PathParam("id") long id,
                                 @QueryParam("allow_jits") @DefaultValue("true") Boolean allowJits,
-                                @QueryParam("name") String name,
+                                @QueryParam("title") String name,
                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                 @QueryParam("first") @DefaultValue("0") Integer offset,
                                 @QueryParam("count") @DefaultValue("100") Integer maxCount,
