@@ -487,10 +487,8 @@ public class ReadFileController extends AbstractReadFileController {
 						cacheControl += ", proxy-revalidate, s-maxage=0";
 					}
 					response.setHeader("Cache-Control", cacheControl);
-					String attachment = "";
-					if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
 					response.setHeader("Content-Disposition",
-							attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
+						("attachment; filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\""));
 				} else {
 					// Bad format of url; just return null.
 					response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFolder"));
