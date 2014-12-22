@@ -98,7 +98,6 @@ public class SharingAudit extends ZonedObject {
 	 * that have ever come to play in the history of the system regardless of their semantics.
 	 */
 	public enum RoleName {
-		UNKNOWN((short)0),
 		VIEWER((short)1),
 		EDITOR((short)2),
 		CONTRIBUTOR((short)3);
@@ -111,7 +110,6 @@ public class SharingAudit extends ZonedObject {
 	    }
 	    public static RoleName valueOf(short value) {
 	    	switch(value) {
-	    	case 0: return RoleName.UNKNOWN;
 	    	case 1: return RoleName.VIEWER;
 	    	case 2: return RoleName.EDITOR;
 	    	case 3: return RoleName.CONTRIBUTOR;
