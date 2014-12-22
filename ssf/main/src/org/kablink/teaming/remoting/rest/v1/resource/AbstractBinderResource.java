@@ -197,7 +197,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 	@Path("{id}/binders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public Binder createSubBinder(@PathParam("id") long id, Binder binder, @QueryParam("template") Long templateId,
+	public Binder createSubBinder(@PathParam("id") long id, Binder binder,
+                                  @QueryParam("template") Long templateId,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
             throws WriteFilesException, WriteEntryDataException {
         return createBinder(id, binder, templateId, toDomainFormat(descriptionFormatStr));
@@ -233,7 +234,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
    	@Path("{id}/library_children")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public Response getLibraryChildren(@PathParam("id") long id,
-                                       @QueryParam("name") String name,
+                                       @QueryParam("title") String name,
                                        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                        @QueryParam("allow_jits") @DefaultValue("true") Boolean allowJits,
                                        @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -256,6 +257,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
    	@Path("{id}/library_folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
    	public Response getLibraryFolders(@PathParam("id") long id,
+                                         @QueryParam("title") String name,
                                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                          @QueryParam("first") @DefaultValue("0") Integer offset,
                                          @QueryParam("count") @DefaultValue("100") Integer maxCount,
@@ -267,7 +269,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<BinderBrief> subBinders = getSubBinders(id, SearchUtils.libraryFolders(), null, true, offset, maxCount,
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, SearchUtils.libraryFolders(), name, true, offset, maxCount,
                 getBasePath() + id + "/library_folders", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
    	}

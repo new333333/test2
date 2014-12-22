@@ -70,7 +70,7 @@ import static org.kablink.util.search.Restrictions.in;
 public class NetFoldersResource extends AbstractResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public SearchResultList<NetFolderBrief> getNetFolders(@QueryParam("name") String name,
+    public SearchResultList<NetFolderBrief> getNetFolders(@QueryParam("title") String name,
                                                           @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                           @QueryParam("first") @DefaultValue("0") Integer offset,
                                                           @QueryParam("count") @DefaultValue("100") Integer maxCount) {
