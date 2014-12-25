@@ -59,11 +59,11 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.BasicAudit;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
@@ -77,6 +77,8 @@ import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.LicenseStats;
 import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.SharingAudit;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowHistory;
@@ -105,7 +107,6 @@ import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -709,13 +710,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
             {AuditType.add.name(), AuditType.view.name(), AuditType.download.name(),
 			  AuditType.modify.name(), AuditType.delete.name(),
 			  AuditType.preDelete.name(), AuditType.restore.name(),
-			  AuditType.acl.name()};
+			  AuditType.acl.name(), 
+			  AuditType.shareAdd.name(), AuditType.shareModify.name(), AuditType.shareDelete.name()};
 
 	private static final Short[] activityTypeValues = new Short[]
             {AuditType.add.getValue(), AuditType.view.getValue(), AuditType.download.getValue(),
 			  AuditType.modify.getValue(), AuditType.delete.getValue(),
 			  AuditType.preDelete.getValue(), AuditType.restore.getValue(),
-			  AuditType.acl.getValue()};
+			  AuditType.acl.getValue(), AuditType.shareAdd.getValue(), AuditType.shareModify.getValue(), AuditType.shareDelete.getValue()};
 
 	protected HashMap<String,Object> addBlankRow(List<Map<String, Object>> report, Long binderId, String title, Long parentId) {
 		HashMap<String,Object> row = new HashMap<String,Object>();
@@ -881,13 +883,16 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			public Object doInHibernate(Session session) throws HibernateException {
 				List auditTrail = null;
 				try {
-					ProjectionList proj = Projections.projectionList()
-									.add(Projections.groupProperty("userId"))
-									.add(Projections.groupProperty("date"))
-									.add(Projections.groupProperty("eventType"));
+					ProjectionList proj = Projections.projectionList();
 					if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
+						proj.add(Projections.groupProperty("userId"));
+						proj.add(Projections.groupProperty("eventType"));
+						proj.add(Projections.max("date"));
 						proj.add(Projections.rowCount());
 					} else {
+						proj.add(Projections.groupProperty("userId"));
+						proj.add(Projections.groupProperty("eventType"));
+						proj.add(Projections.groupProperty("date"));
 						proj.add(Projections.alias(Projections.rowCount(), "hits"))
 									.add(Projections.groupProperty("owningBinderId"))
 									.add(Projections.groupProperty("entityId"))
@@ -899,19 +904,63 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, user.getZoneId()))
 						.add(Restrictions.in("eventType", activityTypeValues))
 						.add(Restrictions.ge("date", startDate))
-						.add(Restrictions.lt("date", endDate));
+						.add(Restrictions.le("date", endDate));
 					if (!userIdsToSkip.isEmpty()) {
 						crit.add(Restrictions.not(Restrictions.in("userId", userIdsToSkip)));
 					}
 					if (!userIdsToReport.isEmpty()) crit.add(Restrictions.in("userId", userIdsToReport));
-					crit.addOrder(Order.asc("date"));
+					if (!reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
+						crit.addOrder(Order.asc("date"));
+					}
 					auditTrail = crit.list();
 				} catch(Exception e) {
 				}
 				return auditTrail;
 			}});
 		
-		return generateShortActivityByUserReportList(result, reportType);
+		List shareResult = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException {
+				List shareItems = null;
+				try {
+					ProjectionList proj = Projections.projectionList();
+					if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
+						proj.add(Projections.groupProperty("sharerId"));
+						proj.add(Projections.groupProperty("actionType"));  
+						proj.add(Projections.max("actionDate"));
+						proj.add(Projections.rowCount());
+					} else {
+						proj.add(Projections.groupProperty("sharerId"))
+							.add(Projections.groupProperty("actionType"))
+							.add(Projections.groupProperty("actionDate"));
+						proj.add(Projections.alias(Projections.rowCount(), "hits"))
+									.add(Projections.groupProperty("recipientId"))
+									.add(Projections.groupProperty("recipientType"))
+									.add(Projections.groupProperty("entityId"))
+									.add(Projections.groupProperty("entityType"))
+									.add(Projections.groupProperty("roleNameValue"))
+									.add(Projections.groupProperty("entryTitle"));
+					}
+					Criteria crit = session.createCriteria(SharingAudit.class)
+						.setProjection(proj)
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, user.getZoneId()))
+						.add(Restrictions.ge("actionDate", startDate))
+						.add(Restrictions.le("actionDate", endDate));
+					if (!userIdsToSkip.isEmpty()) {
+						crit.add(Restrictions.not(Restrictions.in("sharerId", userIdsToSkip)));
+					}
+					if (!userIdsToReport.isEmpty()) crit.add(Restrictions.in("sharerId", userIdsToReport));
+					if (!reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
+						crit.addOrder(Order.asc("actionDate"));
+					}
+					shareItems = crit.list();
+				} catch(Exception e) {
+					e.getMessage();
+				}
+				return shareItems;
+			}});
+		
+		return generateShortActivityByUserReportList(result, shareResult, reportType);
 	}
 
 	@Override
@@ -1341,7 +1390,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						List auditTrail = session.createCriteria(LoginAudit.class)
 							.setProjection(Projections.projectionList()
 											.add(Projections.property("userId"))
-											.add(Projections.property("loginTime")))
+											.add(Projections.property("loginTime"))
+											.add(Projections.property("clientAddr")))
 								.add(Expression.in("userId",tempIds.toArray()))
 								.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 								.add(Restrictions.ge("loginTime", startDate))
@@ -1359,7 +1409,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							List auditTrail = session.createCriteria(LoginAudit.class)
 								.setProjection(Projections.projectionList()
 												.add(Projections.property("userId"))
-												.add(Projections.property("loginTime")))
+												.add(Projections.property("loginTime"))
+												.add(Projections.property("clientAddr")))
 									.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 									.add(Restrictions.ge("loginTime", startDate))
 									.add(Restrictions.lt("loginTime", endDate))
@@ -1461,25 +1512,114 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			row.put(ReportModule.USER_TYPE, cols[0]);
 			
 			Timestamp temp = ((Timestamp) cols[1]);
-			
 			row.put(ReportModule.LOGIN_DATE, sdFormat.format(temp.getTime()));
+			
+			row.put(ReportModule.LOGIN_CLIENT_ADDR, cols[2]);
 		}
 		return report;
 	}
 	
-	private LinkedList<Map<String,Object>> generateShortActivityByUserReportList(List activities, String reportType) {
+	private LinkedList<Map<String,Object>> generateShortActivityByUserReportList(List activities, List shareActivities, String reportType) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		SimpleDateFormat sdFormat = new SimpleDateFormat(LOGIN_REPORT_DATE_FORMAT);
 		sdFormat.setTimeZone(user.getTimeZone());
+		if (activities == null) activities = new ArrayList();
+		if (shareActivities == null) shareActivities = new ArrayList();
+		
+		//Merge the two lists
+		List mergedActivities = new ArrayList();
+		if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
+			//For the summary, we want one row per userId, sorted by userId
+			Map<Long, List<Object[]>> shareColsById = new HashMap<Long, List<Object[]>>();
+			Iterator shareActivityIter = shareActivities.iterator();
+			//Build a set of lists of columns per userId
+			while (shareActivityIter.hasNext()) {
+				Object so = shareActivityIter.next();
+				Object[] sCols = (Object[]) so;
+				sCols[ReportModule.SHARE_ACTIVITY_TYPE_INDEX] = convertShareActionTypeToAuditType((Short)sCols[ReportModule.SHARE_ACTIVITY_TYPE_INDEX]);
+				Long userId = (Long) sCols[ReportModule.USER_ID_INDEX];
+				if (!shareColsById.containsKey(userId)) {
+					shareColsById.put(userId, new ArrayList<Object[]>());
+				}
+				List<Object[]> shareCols = shareColsById.get(userId);
+				shareCols.add(sCols);
+			}
+			//Now merge the columns
+			for(Object o : activities) {
+				Object[] cols = (Object[]) o;
+				Long userId = (Long) cols[ReportModule.USER_ID_INDEX];
+				if (shareColsById.containsKey(userId)) {
+					List<Object[]> shareCols = shareColsById.get(userId);
+					for (Object[] so : shareCols) {
+						mergedActivities.add(so);
+					}
+					shareColsById.remove(userId);
+				}
+				mergedActivities.add(o);
+			}			
+			
+		} else {
+			//For the full report we want merged rows sorted by date
+			Iterator shareActivityIter = shareActivities.iterator();
+			Object so = null;
+			Object[] sCols = null;
+			if (shareActivityIter.hasNext()) {
+				so = shareActivityIter.next();
+				sCols = (Object[]) so;
+				sCols[ReportModule.SHARE_ACTIVITY_TYPE_INDEX] = convertShareActionTypeToAuditType((Short)sCols[ReportModule.SHARE_ACTIVITY_TYPE_INDEX]);
+			}
+			for(Object o : activities) {
+				Object[] cols = (Object[]) o;
+				if (so != null) {
+					Timestamp temp = ((Timestamp) cols[ReportModule.ACTIVITY_DATE_INDEX]);
+					Timestamp sTemp = ((Timestamp) sCols[ReportModule.SHARE_ACTIVITY_DATE_INDEX]);
+					if (temp.before(sTemp)) {
+						mergedActivities.add(o);
+					} else {
+						mergedActivities.add(so);
+						so = null;
+						while (shareActivityIter.hasNext()) {
+							so = shareActivityIter.next();
+							sCols = (Object[]) so;
+							sCols[ReportModule.SHARE_ACTIVITY_TYPE_INDEX] = convertShareActionTypeToAuditType((Short)sCols[ReportModule.SHARE_ACTIVITY_TYPE_INDEX]);
+							Timestamp sTemp1 = ((Timestamp) sCols[ReportModule.SHARE_ACTIVITY_DATE_INDEX]);
+							if ((temp.before(sTemp1))) {
+								mergedActivities.add(o);
+								o = null;
+								break;
+							} else {
+								mergedActivities.add(so);
+								so = null;
+							}
+						}
+						if (o != null) {
+							mergedActivities.add(o);
+						}
+					}
+				} else {
+					mergedActivities.add(o);
+				}
+			}
+			if (so != null) {
+				mergedActivities.add(so);
+			}
+			while (shareActivityIter.hasNext()) {
+				so = shareActivityIter.next();
+				sCols = (Object[]) so;
+				sCols[ReportModule.SHARE_ACTIVITY_TYPE_INDEX] = convertShareActionTypeToAuditType((Short)sCols[ReportModule.SHARE_ACTIVITY_TYPE_INDEX]);
+				mergedActivities.add(so);
+			}
+		}
+
 		
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
-		if (activities == null) return report;
+		if (mergedActivities == null) return report;
 		
 		if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
 			Long lastUserId = new Long(-1);
 			Long userId = null;
 			HashMap<String,Object> row = null;
-			for(Object o : activities) {
+			for(Object o : mergedActivities) {
 				Object[] col = (Object []) o;
 				userId = (Long) col[ReportModule.USER_ID_INDEX];
 				if (row == null || !lastUserId.equals(userId)) {
@@ -1494,26 +1634,50 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				row.put(AuditType.valueOf((Short) col[ReportModule.ACTIVITY_TYPE_INDEX]).name(), col[ReportModule.ACTIVITY_COUNT_INDEX]);
 			}
 		} else {
-			for(Object o : activities) {
+			Date now = new Date();
+			for(Object o : mergedActivities) {
 				Object[] cols = (Object[]) o;
 				Map<String, Object> row = new HashMap<String, Object>();
 				report.add(row);
 				row.put(ReportModule.USER_ID, cols[ReportModule.USER_ID_INDEX]);
-				
 				Timestamp temp = ((Timestamp) cols[ReportModule.ACTIVITY_DATE_INDEX]);
-				
 				row.put(ReportModule.ACTIVITY_DATE, sdFormat.format(temp.getTime()));
-				row.put(ReportModule.ACTIVITY_TYPE, AuditType.valueOf((Short) cols[ReportModule.ACTIVITY_TYPE_INDEX]).name());
-				row.put(ReportModule.BINDER_ID, cols[ReportModule.ACTIVITY_BINDER_ID_INDEX]);
-				row.put(ReportModule.ENTRY_ID, cols[ReportModule.ACTIVITY_ENTRY_ID_INDEX]);
-				row.put(ReportModule.ENTITY, EntityIdentifier.EntityType.valueOf((Short) cols[ReportModule.ACTIVITY_ENTITY_TYPE_INDEX]).name());
-				row.put(ReportModule.DESCRIPTION, cols[ReportModule.ACTIVITY_ENTITY_DESCRIPTION_INDEX]);
+				AuditType auditType = AuditType.valueOf((Short) cols[ReportModule.ACTIVITY_TYPE_INDEX]);
+				row.put(ReportModule.ACTIVITY_TYPE, auditType.name());
+				
+				if (auditType.equals(AuditType.shareAdd) || auditType.equals(AuditType.shareModify) || auditType.equals(AuditType.shareDelete)) {
+					row.put(ReportModule.ACTIVITY_TYPE, ((String) row.get(ReportModule.ACTIVITY_TYPE)));
+					row.put(ReportModule.ENTRY_ID, cols[ReportModule.SHARE_ACTIVITY_ENTITY_ID_INDEX]);
+					row.put(ReportModule.ENTITY, EntityIdentifier.EntityType.valueOf(Integer.valueOf((Short) cols[ReportModule.SHARE_ACTIVITY_ENTITY_TYPE_INDEX])).name());
+					row.put(ReportModule.SHARE_RECIPIENT_ID, cols[ReportModule.SHARE_ACTIVITY_RECIPIENT_ID_INDEX]);
+					row.put(ReportModule.SHARE_RECIPIENT_TYPE, ShareItem.RecipientType.valueOf((Short) cols[ReportModule.SHARE_ACTIVITY_RECIPIENT_TYPE_INDEX]).name());
+					row.put(ReportModule.SHARE_ROLE, SharingAudit.RoleName.valueOf((Short) cols[ReportModule.SHARE_ACTIVITY_ROLE_NAME_INDEX]));
+					row.put(ReportModule.SHARE_ENTRY_TITLE,  cols[ReportModule.SHARE_ACTIVITY_ENTRY_TITLE_INDEX]);
+					
+				} else {
+					row.put(ReportModule.BINDER_ID, cols[ReportModule.ACTIVITY_BINDER_ID_INDEX]);
+					row.put(ReportModule.ENTRY_ID, cols[ReportModule.ACTIVITY_ENTRY_ID_INDEX]);
+					row.put(ReportModule.ENTITY, EntityIdentifier.EntityType.valueOf((Short) cols[ReportModule.ACTIVITY_ENTITY_TYPE_INDEX]).name());
+					row.put(ReportModule.DESCRIPTION, cols[ReportModule.ACTIVITY_ENTITY_DESCRIPTION_INDEX]);
+				}
 				
 				// Add the count of how many times this activity happened.
 				row.put( ReportModule.COUNT, cols[ReportModule.ACTIVITY_COUNT_INDEX] );
 			}
 		}
 		return report;
+	}
+	
+	private Short convertShareActionTypeToAuditType(Short shareActionType) {
+		AuditType auditType = AuditType.unknown;
+		if (shareActionType.equals(SharingAudit.ActionType.add.getValue())) {
+			auditType = AuditType.shareAdd;
+		} else if (shareActionType.equals(SharingAudit.ActionType.modify.getValue())) {
+			auditType = AuditType.shareModify;
+		} else if (shareActionType.equals(SharingAudit.ActionType.delete.getValue())) {
+			auditType = AuditType.shareDelete;
+		}
+		return auditType.getValue();
 	}
 	
 	@Override

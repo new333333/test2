@@ -59,7 +59,10 @@ public class AuditTrail extends ZonedObject {
 		download, // user, client, or user agent download
 		userStatus, // ?
 		token, // application-scoped token generation
-		acl // ACL change on a data item
+		acl, // ACL change on a data item
+		shareAdd, // share add - this is a place holder value for when the activity report is run
+		shareModify, // share modify - this is a place holder value for when the activity report is run
+		shareDelete // share delete - this is a place holder value for when the activity report is run
 	};
 
 	
