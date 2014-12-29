@@ -54,10 +54,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.dom4j.Document;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTimeZone;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.dao.ProfileDao;
@@ -112,7 +108,6 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -135,7 +130,6 @@ import com.sitescape.team.domain.Statistics;
  *
  * @author drfoster@novell.com
  */
-@SuppressWarnings("deprecation")
 public class GwtTaskHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtTaskHelper.class);
 
@@ -1053,9 +1047,6 @@ public class GwtTaskHelper {
 		ProfileDao profileDao;
 		Iterator itG;
 		Iterator teamMembershipsIt;
-		DateTime today;
-		DateTime future;
-		DateTime fromDate;
 		Criteria crit; 
 		Map results;
 
@@ -1104,16 +1095,9 @@ public class GwtTaskHelper {
 			teams.add( ((Map)teamMembershipsIt.next()).get( Constants.DOCID_FIELD ) );
 		}
 		
-		today = (new DateMidnight( DateTimeZone.forTimeZone( user.getTimeZone() ) )).toDateTime();
-		//future = today.plusWeeks(SPropsUtil.getInt("relevance.tasks2WeeksAhead")).plusDays(1);
-		future = today.plusMonths( SPropsUtil.getInt( "relevance.tasksAllMonthsAhead" ) ).plusDays( 1 );
-		fromDate = today.minusMonths(SPropsUtil.getInt("relevance.tasksFromMonthsAgo"));
-		
 		crit = SearchUtils.tasksForUser( user.getId(), 
 										 (String[])groupsS.toArray(new String[groupsS.size()]), 
-										 (String[])teams.toArray(new String[teams.size()]),
-										 fromDate.toDate(),
-										 future.toDate() );
+										 (String[])teams.toArray(new String[teams.size()]) );
 		results = ami.getBinderModule().executeSearchQuery( crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null );
 
 		// Create a TaskInfo object for every task we found
