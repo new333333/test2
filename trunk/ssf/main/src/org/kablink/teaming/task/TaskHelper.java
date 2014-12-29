@@ -618,12 +618,32 @@ public class TaskHelper {
 	}
 	
 	/**
-	 * Returns a task priority from a form input Map.
+	 * Returns a task priority from an entry.
 	 *  
 	 * @param formData
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
+	public static String getTaskPriorityValue(Entry entry) {		
+		CustomAttribute customAttribute = entry.getCustomAttribute(PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME);
+		if (null == customAttribute) {
+			return null;
+		}
+		
+		Set value = ((Set) customAttribute.getValueSet());		
+		if (null == value) {
+			return null;
+		}
+		
+		Iterator it = value.iterator();
+		if (it.hasNext()) {
+			return ((String) it.next());
+		}
+		
+		return null;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static String getTaskPriorityValue(Map formData) {
 		return getTaskSingleValue(formData, PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME);

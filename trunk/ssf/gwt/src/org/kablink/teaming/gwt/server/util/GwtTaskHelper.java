@@ -2033,17 +2033,19 @@ public class GwtTaskHelper {
 				boolean     taskSeen = seenMap.checkIfSeen(fe);
 				
 				// Construct the appropriate form data for the change...
-				Map formData = new HashMap();
-				formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {completed});
+				String status;
 				if (nowCompleted) {
-					formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {TaskInfo.STATUS_COMPLETED});
+					status = TaskInfo.STATUS_COMPLETED;
 				}				
 				else {				
-					String currentStatus = TaskHelper.getTaskStatusValue(   fe);
-					if (TaskInfo.STATUS_COMPLETED.equals(currentStatus)) {
-						formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {TaskInfo.STATUS_IN_PROCESS});
+					status = TaskHelper.getTaskStatusValue(fe);
+					if (TaskInfo.STATUS_COMPLETED.equals(status)) {
+						status = TaskInfo.STATUS_IN_PROCESS;
 					}
 				}
+				String priority = TaskHelper.getTaskPriorityValue(fe);
+				Map formData = new HashMap();
+				TaskHelper.adjustTaskAttributesDependencies(fe, formData, priority, status, completed);
 
 				// ...and modify the entry.
 				fm.modifyEntry(
@@ -2282,7 +2284,10 @@ public class GwtTaskHelper {
 			boolean       taskSeen = pm.getUserSeenMap(null).checkIfSeen(fe);
 			
 			Map formData = new HashMap();
-			formData.put(TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {priority});
+			String completed = TaskHelper.getTaskCompletedValue(fe);
+			String status    = TaskHelper.getTaskStatusValue(   fe);
+			TaskHelper.adjustTaskAttributesDependencies(fe, formData, priority, status, completed);
+			
 			fm.modifyEntry(
 				binderId,
 				entryId, 
@@ -2334,10 +2339,9 @@ public class GwtTaskHelper {
 				boolean       taskSeen = seenMap.checkIfSeen(fe);
 				
 				// Construct the appropriate form data for the change...
-				Map formData = new HashMap();
-				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {status});
+				String completed;
 				if (nowCompleted) {
-					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {TaskInfo.COMPLETED_100});
+					completed = TaskInfo.COMPLETED_100;
 				}				
 				else {
 					// What state is the task changing to?
@@ -2350,17 +2354,19 @@ public class GwtTaskHelper {
 					boolean wasComplete      = (TaskInfo.COMPLETED_100.equals(   currentCompleted) || (0 == currentCompleted.length()));
 					boolean wasInactive      = (TaskInfo.STATUS_COMPLETED.equals(currentStatus   ) || TaskInfo.STATUS_CANCELED.equals(currentStatus));
 
-					// If we need to force a status change in what's
-					// being stored...
-					String forcedStatus;
-					if      (nowActive   && wasInactive && wasComplete) forcedStatus = TaskInfo.COMPLETED_90;
-					else if (nowCanceled &&                wasComplete) forcedStatus = TaskInfo.COMPLETED_90;
-					else                                                forcedStatus = null;
-					if (null != forcedStatus) {
-						// ...add the change to the form data.
-						formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {forcedStatus});
-					}
+					// Do we need to force a status change in what's
+					// being stored?
+					String forcedCompleted;
+					if      (nowActive   && wasInactive && wasComplete) forcedCompleted = TaskInfo.COMPLETED_90;
+					else if (nowCanceled &&                wasComplete) forcedCompleted = TaskInfo.COMPLETED_90;
+					else                                                forcedCompleted = null;
+					if (null != forcedCompleted)
+					     completed = forcedCompleted;
+					else completed = currentCompleted;
 				}
+				String priority = TaskHelper.getTaskPriorityValue(fe);
+				Map formData = new HashMap();
+				TaskHelper.adjustTaskAttributesDependencies(fe, formData, priority, status, completed);
 
 				// ...and modify the entry.
 				fm.modifyEntry(
