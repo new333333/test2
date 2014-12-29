@@ -2546,7 +2546,7 @@ public class TaskTable extends Composite
 		}
 
 		// Collect the TaskId's of the affected tasks.
-		TaskInfo            ti              = task.getTask();
+		TaskInfo             ti              = task.getTask();
 		final EntityId       taskId          = ti.getTaskId();
 		final List<EntityId> affectedTaskIds = new ArrayList<EntityId>();
 		for (TaskListItem affectedTask:  affectedTasks) {
