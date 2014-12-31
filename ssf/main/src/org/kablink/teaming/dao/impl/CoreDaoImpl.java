@@ -3396,14 +3396,14 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     }
 
     @Override
-	public int purgeAuditTrail(final Long zoneId, final Date purgeBeforeDate) {
+	public int purgeBasicAudit(final Long zoneId, final Date purgeBeforeDate) {
 		long begin = System.nanoTime();
 		try {
 			Integer c = (Integer) getHibernateTemplate().execute(
 		    	new HibernateCallback() {
 		    		@Override
 					public Object doInHibernate(Session session) throws HibernateException {
-		     	   		int count = session.createQuery("Delete org.kablink.teaming.domain.AuditTrail where zoneId=:zoneId and startDate<:purgeBeforeDate")
+		     	   		int count = session.createQuery("Delete org.kablink.teaming.domain.BasicAudit where zoneId=:zoneId and date<:purgeBeforeDate")
 			   				.setLong("zoneId", zoneId)
 			   				.setDate("purgeBeforeDate", purgeBeforeDate)
 		     	   			.executeUpdate();
@@ -3414,7 +3414,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 			return c.intValue();
 		}
 		finally {
-    		end(begin, "purgeAuditTrail()");
+    		end(begin, "purgeBasicAudit()");
 		}
 	}
 	
@@ -3438,6 +3438,52 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		}
 		finally {
     		end(begin, "purgeLoginAudit()");
+		}
+	}
+	
+    @Override
+	public int purgeSharingAudit(final Long zoneId, final Date purgeBeforeDate) {
+		long begin = System.nanoTime();
+		try {
+			Integer c = (Integer) getHibernateTemplate().execute(
+		    	new HibernateCallback() {
+		    		@Override
+					public Object doInHibernate(Session session) throws HibernateException {
+		     	   		int count = session.createQuery("Delete org.kablink.teaming.domain.SharingAudit where zoneId=:zoneId and actionDate<:purgeBeforeDate")
+			   				.setLong("zoneId", zoneId)
+			   				.setDate("purgeBeforeDate", purgeBeforeDate)
+		     	   			.executeUpdate();
+		     	   		return Integer.valueOf(count);
+		    		}
+		    	}
+		   	);
+			return c.intValue();
+		}
+		finally {
+    		end(begin, "purgeSharingAudit()");
+		}
+	}
+	
+    @Override
+	public int purgeDeletedBinder(final Long zoneId, final Date purgeBeforeDate) {
+		long begin = System.nanoTime();
+		try {
+			Integer c = (Integer) getHibernateTemplate().execute(
+		    	new HibernateCallback() {
+		    		@Override
+					public Object doInHibernate(Session session) throws HibernateException {
+		     	   		int count = session.createQuery("Delete org.kablink.teaming.domain.DeletedBinder where zoneId=:zoneId and deletedDate<:purgeBeforeDate")
+			   				.setLong("zoneId", zoneId)
+			   				.setDate("purgeBeforeDate", purgeBeforeDate)
+		     	   			.executeUpdate();
+		     	   		return Integer.valueOf(count);
+		    		}
+		    	}
+		   	);
+			return c.intValue();
+		}
+		finally {
+    		end(begin, "purgeDeletedBinder()");
 		}
 	}
 	

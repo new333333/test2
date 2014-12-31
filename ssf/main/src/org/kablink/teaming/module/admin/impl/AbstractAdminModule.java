@@ -3712,13 +3712,13 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	  			List<BasicAudit> entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);
 	  			if (writeAuditTrailLogFile(entriesToBeDeleted)) {
 	  				//The entries to be purged were safely logged to disk, so we can delete them from the database
-			  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
-			  		logger.debug("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
+			  		int auditTrailPurgeCount = getCoreDao().purgeBasicAudit(zoneId, purgeBeforeDate);
+			  		logger.debug("Purged " + auditTrailPurgeCount + " records from the SS_BasicAudit table");
 	  			}
   			} else {
   				//Entries are not being captured to disk first, so just delete the older entries
-		  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
-		  		logger.debug("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
+		  		int auditTrailPurgeCount = getCoreDao().purgeBasicAudit(zoneId, purgeBeforeDate);
+		  		logger.debug("Purged " + auditTrailPurgeCount + " records from the SS_BasicAudit table");
   			}
   		}
   		
