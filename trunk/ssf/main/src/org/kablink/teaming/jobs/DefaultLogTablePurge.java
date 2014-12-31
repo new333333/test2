@@ -67,31 +67,61 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
   		//       same job.
   		int shareItemKeepDays = SPropsUtil.getInt("binder.changes.allowed.days", 7) + 1;
         purgeBeforeDate = new Date(System.currentTimeMillis() - shareItemKeepDays*1000L*60L*60L*24L);
-  		int shareItemsPurgeCount = getCoreDao().purgeShareItems(zoneId, purgeBeforeDate);
-  		logger.info("Purged " + shareItemsPurgeCount + " records from the SS_ShareItem table");
+        try {
+	  		int shareItemsPurgeCount = getCoreDao().purgeShareItems(zoneId, purgeBeforeDate);
+	  		logger.info("Purged " + shareItemsPurgeCount + " records from the SS_ShareItem table");
+        }
+        catch(Exception e) {
+        	logger.error("Error purging SS_ShareItem table", e);
+        }
   		
   		// 2) See if various audit tables need to be pruned
   		if (zoneConfig.getAuditTrailKeepDays() > 0) {
   			purgeBeforeDate = getCoreDao().getAuditTrailPurgeDate(zoneId);
   			// a) Prune basic audit table
-	  		int basicAuditPurgeCount = getCoreDao().purgeBasicAudit(zoneId, purgeBeforeDate);
-	  		logger.info("Purged " + basicAuditPurgeCount + " records from the SS_BasicAudit table");
+  			try {
+		  		int basicAuditPurgeCount = getCoreDao().purgeBasicAudit(zoneId, purgeBeforeDate);
+		  		logger.info("Purged " + basicAuditPurgeCount + " records from the SS_BasicAudit table");
+  			}
+  			catch(Exception e) {
+  				logger.error("Error purging SS_BasicAudit table");
+  			}
 	  		// b) Prune login audit table
-	  		int loginAuditPurgeCount = getCoreDao().purgeLoginAudit(zoneId, purgeBeforeDate);
-	  		logger.info("Purged " + loginAuditPurgeCount + " records from the SS_LoginAudit table");
+  			try {
+		  		int loginAuditPurgeCount = getCoreDao().purgeLoginAudit(zoneId, purgeBeforeDate);
+		  		logger.info("Purged " + loginAuditPurgeCount + " records from the SS_LoginAudit table");
+  			}
+  			catch(Exception e) {
+  				logger.error("Error purging SS_LoginAudit table");
+  			}
 	  		// c) Prune sharing audit table
-	  		int sharingAuditPurgeCount = getCoreDao().purgeSharingAudit(zoneId, purgeBeforeDate);
-	  		logger.info("Purged " + sharingAuditPurgeCount + " records from the SS_SharingAudit table");
+  			try {
+		  		int sharingAuditPurgeCount = getCoreDao().purgeSharingAudit(zoneId, purgeBeforeDate);
+		  		logger.info("Purged " + sharingAuditPurgeCount + " records from the SS_SharingAudit table");
+  			}
+  			catch(Exception e) {
+  				logger.error("Error purging SS_SHaringAudit table");
+  			}
 	  		// d) Prune deleted binder table - This table provides complementary information to auditing.
-	  		int deletedBinderPurgeCount = getCoreDao().purgeDeletedBinder(zoneId, purgeBeforeDate);
-	  		logger.info("Purged " + deletedBinderPurgeCount + " records from the SS_DeletedBinder table");
+  			try {
+		  		int deletedBinderPurgeCount = getCoreDao().purgeDeletedBinder(zoneId, purgeBeforeDate);
+		  		logger.info("Purged " + deletedBinderPurgeCount + " records from the SS_DeletedBinder table");
+  			}
+  			catch(Exception e) {
+  				logger.error("Error purging SS_DeletedBinder table");
+  			}
   		}
   		
   		// 3) See if the change log tables need to be pruned
   		if (zoneConfig.getChangeLogsKeepDays() > 0) {
   			purgeBeforeDate = new Date(now.getTime() - ((long)zoneConfig.getChangeLogsKeepDays())*1000L*60L*60L*24L);
-			int changeLogsPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
-			logger.info("Purged " + changeLogsPurgeCount + " records from the SS_ChangeLogs table");
+  			try {
+				int changeLogsPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
+				logger.info("Purged " + changeLogsPurgeCount + " records from the SS_ChangeLogs table");
+  			}
+  			catch(Exception e) {
+  				logger.error("Error purging SS_ChangeLogs table");
+  			}
   		}
 	}
 
