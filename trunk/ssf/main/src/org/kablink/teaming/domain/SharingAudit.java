@@ -215,6 +215,10 @@ public class SharingAudit extends ZonedObject {
 		return entityId;
 	}
 	
+	public Long getOwningBinderId() {
+		return owningBinderId;
+	}
+
 	public ShareItem.RecipientType getRecipientType() {
 		return ShareItem.RecipientType.valueOf(recipientType);
 	}
