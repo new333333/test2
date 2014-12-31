@@ -288,4 +288,16 @@
         <addPrimaryKey columnNames="binderId" constraintName="PK__SS_DeletedBinder" schemaName="dbo" tableName="SS_DeletedBinder"/>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <createIndex indexName="actionDate_sharingAudit" schemaName="dbo" tableName="SS_SharingAudit" unique="false">
+            <column name="actionDate"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <createIndex indexName="sharerId_sharingAudit" schemaName="dbo" tableName="SS_SharingAudit" unique="false">
+            <column name="sharerId"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

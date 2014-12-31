@@ -303,4 +303,16 @@
         <addPrimaryKey columnNames="binderId" tableName="SS_DeletedBinder"/>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="25">
+        <createIndex indexName="actionDate_sharingAudit" tableName="SS_SharingAudit" unique="false">
+            <column name="actionDate"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="26">
+        <createIndex indexName="sharerId_sharingAudit" tableName="SS_SharingAudit" unique="false">
+            <column name="sharerId"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>
