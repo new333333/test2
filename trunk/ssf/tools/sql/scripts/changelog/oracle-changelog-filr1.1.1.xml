@@ -187,7 +187,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="fileId" type="VARCHAR2(32 CHAR)">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="entityFamily" type="NUMBER(2,0)">
             	<constraints nullable="true"/>
