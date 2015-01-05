@@ -400,8 +400,11 @@ public class ReportDownloadController extends  SAbstractController {
 			if(row.containsKey(ReportModule.DEFINITION_ID)) {
 				definitionIds.add((String) row.get(ReportModule.DEFINITION_ID));
 			}
-			if(row.containsKey(ReportModule.BINDER_ID)) {
+			if (row.containsKey(ReportModule.BINDER_ID)) {
 				binderIds.add((Long)row.get(ReportModule.BINDER_ID));
+			}
+			if (row.containsKey(ReportModule.SHARE_BINDER_ID)) {
+				binderIds.add((Long)row.get(ReportModule.SHARE_BINDER_ID));
 			}
 			if(row.containsKey(ReportModule.ENTRY_ID) && row.containsKey(ReportModule.ENTITY)) {
 				if (row.get(ReportModule.ENTITY).equals("folderEntry")) {
@@ -551,8 +554,12 @@ public class ReportDownloadController extends  SAbstractController {
 				}
 			}
 			Binder binder;
-			if (row.containsKey(ReportModule.BINDER_ID)) {
-				binder = binderMap.get(row.get(ReportModule.BINDER_ID));
+			if (row.containsKey(ReportModule.BINDER_ID) || row.containsKey(ReportModule.SHARE_BINDER_ID)) {
+				if (row.containsKey(ReportModule.BINDER_ID)) {
+					binder = binderMap.get(row.get(ReportModule.BINDER_ID));
+				} else {
+					binder = binderMap.get(row.get(ReportModule.SHARE_BINDER_ID));
+				}
 				try {
 					if (binder != null) {
 						row.put(ReportModule.FOLDER, binder.getPathName());
@@ -588,23 +595,30 @@ public class ReportDownloadController extends  SAbstractController {
 					}
 				}
 				if (!isUserColumn(name) && !isUserTypeColumn(name) && !isRecipientColumn(name)) {
-					if(row.containsKey(name)) {
+					if (row.containsKey(name)) {
 						String colValue;
 						
 						// Get the value for this column.
-						if( row.get(name) instanceof Date )
-						{
+						if ( row.get(name) instanceof Date ) {
 							colValue = dateFormat.format( (Date) row.get(name) );
-						}
-						else
-						{
+						} else {
 							colValue = row.get(name).toString();
+						}
+						
+						//Translate the "type"
+						if (name.equals(ReportModule.ACTIVITY_TYPE)) {
+							colValue = NLT.get("report.type."+colValue, colValue);
+						} else if (name.equals(ReportModule.ENTITY)) {
+							colValue = NLT.get("report.entity."+colValue, colValue);
+						} else if (name.equals(ReportModule.SHARE_RECIPIENT_TYPE)) {
+							colValue = NLT.get("report.type."+colValue, colValue);
+						} else if (name.equals(ReportModule.SHARE_ROLE)) {
+							colValue = NLT.get("report.rolename."+colValue, colValue);
 						}
 
 						// Does the value for this column have a ',' in it?
 						indexOfComma = colValue.indexOf( ',' ); 
-						if ( indexOfComma >= 0 )
-						{
+						if ( indexOfComma >= 0 ) {
 							// Yes, enclose the value in quotes.
 							out.write( doubleQuote );
 						}
@@ -612,8 +626,7 @@ public class ReportDownloadController extends  SAbstractController {
 						out.write( colValue.getBytes() );
 
 						// Does the value for this column have a ',' in it?
-						if ( indexOfComma >= 0 )
-						{
+						if ( indexOfComma >= 0 ) {
 							// Yes, enclose the user's name in quotes.
 							out.write( doubleQuote );
 						}
@@ -648,6 +661,7 @@ public class ReportDownloadController extends  SAbstractController {
 				} else if (isRecipientColumn(name) && hasUsers && row.containsKey(name)) {
 					Long userId = (Long) row.get(ReportModule.SHARE_RECIPIENT_ID);
 					String recipientType = (String) row.get(ReportModule.SHARE_RECIPIENT_TYPE);
+					String recipientTypeNLT = NLT.get("report.type."+recipientType, recipientType);
 					if (isRecipientTypeUser(recipientType)) {
 						Principal user = null;
 						if (userId != null) user = userMap.get(userId);
@@ -676,7 +690,7 @@ public class ReportDownloadController extends  SAbstractController {
 						}
 					} else {
 						//Recipient type is not a user
-						out.write(recipientType.getBytes());
+						out.write(recipientTypeNLT.getBytes());
 					}
 				} else if (isUserTypeColumn(name) && hasUsers && row.containsKey(name)) {
 					Long userId = (Long) row.get(name);
