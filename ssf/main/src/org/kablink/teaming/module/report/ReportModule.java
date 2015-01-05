@@ -43,6 +43,7 @@ import org.kablink.teaming.domain.BasicAudit;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.DeletedBinder;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -226,6 +227,7 @@ public interface ReportModule {
 	public List<Long> getDeletedFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate);
 	public List<Long> getRestoredFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate);
 	public List<Long> getMovedFolderEntryIds(Date startDate, Date endDate);
+	public List<DeletedBinder> getDeletedBinderInfo(Set<Long> binderIds);
 	public List<ChangeLog> getDeletedBinderLogs(Set<Long> binderIds);
 	public List<ChangeLog> getDeletedEntryLogs(Set<Long> entryIds);
 }

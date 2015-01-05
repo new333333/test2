@@ -58,6 +58,7 @@ import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.DeletedBinder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
@@ -483,22 +484,20 @@ public class ReportDownloadController extends  SAbstractController {
 						if (i >= 1000) break;
 					}
 					deletedBinderIds.removeAll(nextDeletedBinderIds);
-					List<ChangeLog> cLogs = getReportModule().getDeletedBinderLogs(nextDeletedBinderIds);
-					for (ChangeLog cLog : cLogs) {
+					List<DeletedBinder> deletedBinderInfo = getReportModule().getDeletedBinderInfo(nextDeletedBinderIds);
+					for (DeletedBinder binderInfo : deletedBinderInfo) {
 						try {
-							Long entityId = cLog.getEntityId();
-							Element root = cLog.getEntityRoot();
-							Element titleEle = (Element)root.selectSingleNode("//attribute[@name='title']");
+							Long binderId = binderInfo.getBinderId();
+							String path = binderInfo.getBinderPath();
 							String title = "";
-							if (titleEle != null) title = titleEle.getText();
-							if (!deletedBinderTitles.containsKey(entityId) || !title.equals("")) {
-								deletedBinderTitles.put(entityId, title);
+							if (path != null && path.contains("/")) {
+								title = path.substring(path.lastIndexOf("/")+1, path.length());
 							}
-							Element pathEle = (Element)root.selectSingleNode("//property[@name='binderPath']"); 
-							String path = "";
-							if (pathEle != null) path = pathEle.getText();
-							if (!deletedBinderPaths.containsKey(entityId) || !path.equals("")) {
-								deletedBinderPaths.put(entityId, path);
+							if (!deletedBinderTitles.containsKey(binderId) || !title.equals("")) {
+								deletedBinderTitles.put(binderId, title);
+							}
+							if (!deletedBinderPaths.containsKey(binderId) || !path.equals("")) {
+								deletedBinderPaths.put(binderId, path);
 							}
 						} catch(Exception e) {
 							e.getMessage();
