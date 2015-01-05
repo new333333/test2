@@ -934,6 +934,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							.add(Projections.groupProperty("actionType"))
 							.add(Projections.groupProperty("actionDate"));
 						proj.add(Projections.alias(Projections.rowCount(), "hits"))
+									.add(Projections.groupProperty("owningBinderId"))
 									.add(Projections.groupProperty("recipientId"))
 									.add(Projections.groupProperty("recipientType"))
 									.add(Projections.groupProperty("entityId"))
@@ -1649,6 +1650,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					row.put(ReportModule.ACTIVITY_TYPE, ((String) row.get(ReportModule.ACTIVITY_TYPE)));
 					row.put(ReportModule.ENTRY_ID, cols[ReportModule.SHARE_ACTIVITY_ENTITY_ID_INDEX]);
 					row.put(ReportModule.ENTITY, EntityIdentifier.EntityType.valueOf(Integer.valueOf((Short) cols[ReportModule.SHARE_ACTIVITY_ENTITY_TYPE_INDEX])).name());
+					row.put(ReportModule.SHARE_BINDER_ID, cols[ReportModule.SHARE_ACTIVITY_BINDER_ID_INDEX]);
 					row.put(ReportModule.SHARE_RECIPIENT_ID, cols[ReportModule.SHARE_ACTIVITY_RECIPIENT_ID_INDEX]);
 					row.put(ReportModule.SHARE_RECIPIENT_TYPE, ShareItem.RecipientType.valueOf((Short) cols[ReportModule.SHARE_ACTIVITY_RECIPIENT_TYPE_INDEX]).name());
 					row.put(ReportModule.SHARE_ROLE, SharingAudit.RoleName.valueOf((Short) cols[ReportModule.SHARE_ACTIVITY_ROLE_NAME_INDEX]));

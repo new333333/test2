@@ -77,6 +77,7 @@ public interface ReportModule {
 	public static final String HAS_ENTRY_ACL = "hasEntryAcl";
 	public static final String CHECK_FOLDER_ACL = "checkFolderAcl";
 	public static final String SHARE_RECIPIENT = "share_recipient";
+	public static final String SHARE_BINDER_ID = "share_binder_id";
 	public static final String SHARE_RECIPIENT_ID = "share_recipient_id";
 	public static final String SHARE_RECIPIENT_TYPE = "share_recipient_type";
 	public static final String SHARE_ROLE = "share_role";
@@ -123,12 +124,13 @@ public interface ReportModule {
 	public static final Integer SHARE_ACTIVITY_TYPE_INDEX = 1;			//This must match ACTIVITY_TYPE_INDEX
 	public static final Integer SHARE_ACTIVITY_DATE_INDEX = 2;			//This must match ACTIVITY_DATE_INDEX
 	public static final Integer SHARE_ACTIVITY_COUNT_INDEX = 3;			//This must match ACTIVITY_COUNT_INDEX
-	public static final Integer SHARE_ACTIVITY_RECIPIENT_ID_INDEX = 4;
-	public static final Integer SHARE_ACTIVITY_RECIPIENT_TYPE_INDEX = 5;
-	public static final Integer SHARE_ACTIVITY_ENTITY_ID_INDEX = 6;
-	public static final Integer SHARE_ACTIVITY_ENTITY_TYPE_INDEX = 7;
-	public static final Integer SHARE_ACTIVITY_ROLE_NAME_INDEX = 8;
-	public static final Integer SHARE_ACTIVITY_ENTRY_TITLE_INDEX = 9;
+	public static final Integer SHARE_ACTIVITY_BINDER_ID_INDEX = 4;
+	public static final Integer SHARE_ACTIVITY_RECIPIENT_ID_INDEX = 5;
+	public static final Integer SHARE_ACTIVITY_RECIPIENT_TYPE_INDEX = 6;
+	public static final Integer SHARE_ACTIVITY_ENTITY_ID_INDEX = 7;
+	public static final Integer SHARE_ACTIVITY_ENTITY_TYPE_INDEX = 8;
+	public static final Integer SHARE_ACTIVITY_ROLE_NAME_INDEX = 9;
+	public static final Integer SHARE_ACTIVITY_ENTRY_TITLE_INDEX = 10;
 	
 	public static final String REPORT_TYPE_SUMMARY = "summary";
 
