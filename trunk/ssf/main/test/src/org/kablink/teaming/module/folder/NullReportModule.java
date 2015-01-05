@@ -44,6 +44,7 @@ import org.kablink.teaming.domain.BasicAudit;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.DeletedBinder;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -308,5 +309,14 @@ public class NullReportModule implements ReportModule {
 	public void addFileInfo(AuditType type, FileAttachment attachment,
 			User asUser) {
 		// TODO Auto-generated method stub		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.report.ReportModule#getDeletedBinderInfo(java.util.Set)
+	 */
+	@Override
+	public List<DeletedBinder> getDeletedBinderInfo(Set<Long> binderIds) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
