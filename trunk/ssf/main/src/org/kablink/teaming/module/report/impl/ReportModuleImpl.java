@@ -68,6 +68,7 @@ import org.kablink.teaming.domain.BasicAudit;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.DeletedBinder;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
@@ -586,6 +587,29 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			if (list.size() >= returnCount.intValue()) break;
 		}
 		return list;
+	}
+
+	@Override
+	public List<DeletedBinder> getDeletedBinderInfo(Set<Long> binderIds) {
+		if (binderIds == null || binderIds.isEmpty()) return new ArrayList<DeletedBinder>();
+		
+		final Long[] eIds = new Long[binderIds.size()];
+		Iterator iEntryIds = binderIds.iterator();
+		int i = 0;
+		while (iEntryIds.hasNext()) {
+			eIds[i++] = new Long((Long)iEntryIds.next());
+		}
+
+		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(DeletedBinder.class)
+				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()));
+				crit.add(Restrictions.in("binderId", eIds));
+				crit.addOrder(Order.asc("deletedDate"));
+				return crit.list();
+			}});
+		return ids;
 	}
 
 	@Override
