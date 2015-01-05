@@ -4004,15 +4004,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		private boolean m_referenced;
 		private String m_dn;
 		private Long m_id;
+		private String m_typelessDN;
 		
 		/**
 		 * 
 		 */
-		public ContainerInfo( Long id, String dn )
+		public ContainerInfo( Long id, String dn, String typelessDN )
 		{
 			m_referenced = false;
 			m_id = id;
 			m_dn = dn;
+			m_typelessDN = typelessDN;
 		}
 		
 		/**
@@ -4029,6 +4031,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		public Long getId()
 		{
 			return m_id;
+		}
+		
+		/**
+		 * 
+		 */
+		public String getTypelessDN()
+		{
+			return m_typelessDN;
 		}
 		
 		/**
@@ -4117,13 +4127,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		
 		/**
-		 * Add the given dn to our list of existing containers. 
+		 * Add the dn of the given group to our list of existing containers. 
 		 */
-		private void addExistingContainer( Long id, String dn )
+		private void addExistingContainer( Group container )
 		{
+			Long id;
+			String dn;
+			String typelessDN;
 			ContainerInfo containerInfo;
 			
-			containerInfo = new ContainerInfo( id, dn );
+			id = container.getId();
+			dn = container.getForeignName();
+			typelessDN = container.getTypelessDN();
+			containerInfo = new ContainerInfo( id, dn, typelessDN );
 			m_existingContainers.put( dn, containerInfo );
 		}
 		
@@ -4322,7 +4338,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				for ( Group nextContainer : listOfContainers )
 				{
-					addExistingContainer( nextContainer.getId(), nextContainer.getForeignName() );
+					addExistingContainer( nextContainer );
 				}
 			}
 		}
@@ -4414,24 +4430,31 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					containerInfo = mapEntry.getValue();
 					if ( containerInfo != null && containerInfo.isReferenced() )
 					{
-						Map updates;
 						String typelessDN;
 						
-						logger.info( "\tAbout to update container: " + containerInfo.getDn() );
-						
-						typelessDN = getTypelessDN( containerInfo.getDn() );
-						
-						updates = new HashMap();
-						updates.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
-
-						try
+						// Does this container have a typeless dn?
+						typelessDN = containerInfo.getTypelessDN();
+						if ( typelessDN == null || typelessDN.length() == 0 )
 						{
-							getProfileModule().modifyEntry( containerInfo.getId(), new MapInputData( updates ) );
+							Map updates;
+
+							// No
+							logger.info( "\tAbout to update container: " + containerInfo.getDn() );
+							
+							typelessDN = getTypelessDN( containerInfo.getDn() );
+							
+							updates = new HashMap();
+							updates.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
+	
+							try
+							{
+								getProfileModule().modifyEntry( containerInfo.getId(), new MapInputData( updates ) );
+							}
+				   			catch ( Exception ex )
+				   			{
+				   				logger.error( "\tError updating typelessDN for container: " + containerInfo.getDn() );
+				   			}
 						}
-			   			catch ( Exception ex )
-			   			{
-			   				logger.error( "\tError updating typelessDN for container: " + containerInfo.getDn() );
-			   			}
 					}
 				}
 			}
