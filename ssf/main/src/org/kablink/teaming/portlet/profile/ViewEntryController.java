@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -57,16 +57,25 @@ import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.Toolbar;
+
 import org.springframework.web.portlet.ModelAndView;
 
-
+/**
+ * ?
+ *  
+ * @author ?
+ */
+@SuppressWarnings({"unchecked", "unused"})
 public class ViewEntryController extends SAbstractController {
+	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
+	
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
@@ -142,7 +151,6 @@ public class ViewEntryController extends SAbstractController {
 			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url, qualifiers);
 		}
 	
-    
 		//	The "Disable/Enable" menu
 		if (getProfileModule().testAccess(entry, ProfileOperation.deleteEntry)) {
 			Map qualifiers = new HashMap();
@@ -172,7 +180,10 @@ public class ViewEntryController extends SAbstractController {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-			toolbar.addToolbarMenu("4_delete", NLT.get("toolbar.delete"), url, qualifiers);
+			// DRF (20150105):  With the GWT rewrite of the profile and
+			//    user management pages, we no longer allow user profiles
+			//    to be deleted from this page.
+			//toolbar.addToolbarMenu("4_delete", NLT.get("toolbar.delete"), url, qualifiers);
 		}
     
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
@@ -180,7 +191,4 @@ public class ViewEntryController extends SAbstractController {
 //			return new ModelAndView("presence/view_entry", model);
 		return new ModelAndView(viewPath, model);
 	}	
-
-
-	
 } 
