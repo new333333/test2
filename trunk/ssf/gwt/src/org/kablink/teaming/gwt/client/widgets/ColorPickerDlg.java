@@ -440,13 +440,13 @@ public class ColorPickerDlg extends DlgBox
 		if ( m_selectedColorRow != -1 )
 		{
 			// Yes, remove the highlight
-			cellFormatter.removeStyleName( m_selectedColorRow, 0, "subhead-control-bg1" );
-			cellFormatter.removeStyleName( m_selectedColorRow, 1, "subhead-control-bg1" );
+			cellFormatter.removeStyleName( m_selectedColorRow, 0, "color-control-bg" );
+			cellFormatter.removeStyleName( m_selectedColorRow, 1, "color-control-bg" );
 		}
 		
 		// Highlight the newly selected color.
 		m_selectedColorRow = row;
-		cellFormatter.addStyleName( row, 0, "subhead-control-bg1" );
-		cellFormatter.addStyleName( row, 1, "subhead-control-bg1" );
+		cellFormatter.addStyleName( row, 0, "color-control-bg" );
+		cellFormatter.addStyleName( row, 1, "color-control-bg" );
 	}// end selectColor()
 }// end ColorPickerDlg

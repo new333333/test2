@@ -3445,6 +3445,10 @@ body, table td, select
 	text-align:center;
 	position: relative;
 }
+.color-control-bg
+{
+	background-color: #cce9ee;
+}
 .subhead-control-bg1
 {
 /*	background: url(images/trans10_black_blend.png) repeat;
