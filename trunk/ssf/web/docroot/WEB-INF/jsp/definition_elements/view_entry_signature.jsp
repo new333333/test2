@@ -49,13 +49,13 @@
   <c:if test="${!ss_hideEntrySignature}">
 	<table cellspacing="0" cellpadding="0" class="margintop1" width="100%">
 		<tr>
-			<td valign="top">
+			<td>
 				<span class="ss_entryContent ss_entrySignature ss_wrap"><ssf:nlt tag="entry.createdBy"/></span>
 	  		</td>
-			<td class="ss_non_clipped_signature" valign="top">
+			<td class="ss_non_clipped_signature">
 				<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
 			</td>
-			<td valign="top">
+			<td>
 			  <c:set var="property_caption" value=""/>
 				<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
 			</td>
@@ -64,13 +64,13 @@
     <c:if test="${!empty ssDefinitionEntry.modification.principal && 
       ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 	   <tr>
-	    <td valign="top">
+	    <td>
 		  <div class="ss_entryContent ss_entrySignature ss_wrap" ><ssf:nlt tag="entry.modifiedBy"/></div>
 	    </td>
-	    <td class="ss_non_clipped_signature" valign="top">
+	    <td class="ss_non_clipped_signature">
 		  <div class="ss_entryContent ss_entrySignatureUser ss_wrap"><ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/></div>
 	    </td>
-	    <td valign="top">
+	    <td>
 		  <div class="ss_entryContent ss_entrySignature ss_wrap">
 		  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		     value="${ssDefinitionEntry.modification.date}" type="both" 
@@ -82,21 +82,21 @@
 
     <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
 	   <tr>
-	    <td valign="top">
+	    <td>
 		  <div class="ss_entryContent ss_entrySignature ss_wrap margintop3">
 		    <span style="padding-right:5px;">
 		  	  <img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" 
 		  	    src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/></span>
 		  </div>
 	    </td>
-	    <td class="ss_non_clipped_signature" valign="top">
+	    <td class="ss_non_clipped_signature">
 		  <div class="ss_entryContent margintop3">
 		    <div class="ss_entrySignatureUser ss_wrap">
 		      <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
 		    </div>
 		  </div>
 	    </td>
-	    <td valign="top">
+	    <td>
 	    </td>
 	   </tr>
     </c:if>

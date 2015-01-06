@@ -168,7 +168,7 @@ img { -ms-interpolation-mode: bicubic; }
 .ss_style a:hover {
   	color: ${ss_style_link_hover_color} !important;
 	background-color: #cce9ee;
-	color: #135c8f;
+	color: #036f9f;
 	border-radius: 2px;
 	-moz-border-radius: 2px;
 	-webkit-border-radius: 2px;
@@ -471,7 +471,7 @@ div.ss_editorHints {
 	}
 	
 div.ss_entryContent a {
-  	color:#135c8f !important;
+  	color:#036f9f !important;
 	}
 div.ss_entryContent a:hover {
 	}
@@ -701,7 +701,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 	</c:if>
 	}
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
-	color: #135c8f !important;
+	color: #036f9f !important;
     text-align: center !important;
     font-size: 12px !important;
     font-family: Arial, sans-serif !important;
@@ -743,7 +743,7 @@ input[type="button"].n-button {
 	</c:if>
 	}
 input[type="button"].n-button:hover {
-	color: #135c8f !important;
+	color: #036f9f !important;
 	border: 1px solid #81b2bd;
   	padding: 2px 10px !important;
 	background-color: #cce9ee;
@@ -900,7 +900,6 @@ div.ss_send_friend {
   width: 300px;
   border-radius: 5px;
   -moz-border-radius: 5px;
-  border-radius: 5px;
   -webkit-border-radius: 5px;
 }
 
@@ -1243,7 +1242,7 @@ img.ss_sliding_table_column_image {
   background-color: #ebf5f5 !important;
 }
 td.ss_highlightEntry a span {
-  color: #135c8f !important;
+  color: #036f9f !important;
 }
 .ss_sliding_table_info_popup * {
   color: ${ss_sliding_table_text_color};
@@ -1362,7 +1361,7 @@ table.ss_mouseOverInfo {
 	color: #666666 !important;
 	}
 .ss_title_menu:hover {
-	color: #135c8f;
+	color: #036f9f;
 	}	
 .ss_title_menu_sorted {
 	color: #000;
@@ -2291,7 +2290,7 @@ div.ss_entryContent .ss_comment_breadcrumb a {
 	color: #505354 !important;
 }
 div.ss_entryContent .ss_comment_breadcrumb a:hover {
-	color: #135c8f !important;
+	color: #036f9f !important;
 }
 .ss_breadcrumb {
 	margin:0px;
@@ -2762,11 +2761,11 @@ div.ss_end_thumbnail_gallery {
 }
 
 /* Presence styles */
-a.ss_presence_dude {
-    padding-right:2px;
+.ss_presence_dude img {
+    padding-right: 3px;
 	text-decoration:none;
   <c:if test="<%= isIE %>">
-	padding-top:2px;
+	padding-top: 2px;
   </c:if>
 }
 .ss_presence_green_dude {
@@ -3693,7 +3692,7 @@ div.ss_calendarNaviBar {
 }
 
 .ss_calendarNaviBar .ss_hoursSelectorTitle:hover {
-	color: #135c8f !important;
+	color: #036f9f !important;
 	border: 1px solid #81b2bd;
 	background-color: #cce9ee;
 	border-radius: 5px;
@@ -4139,20 +4138,20 @@ a.ss_searchButton2:hover img {
 }
 
 a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:active {
-	color: #135C8F;
+	color: #036f9f;
 	margin:0px 0px 0px 6px;
 }
 a.ss_parentPointer:hover, a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:active {
 	margin:0px 0px 0px 0px;
 	}
 a.ss_parentPointer:hover {
-	color: #135C8F;
+	color: #036f9f;
 }
 a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	color: #d47f0a;
 }	
 a.ss_parentPointer:visited, a.ss_parentPointer:hover {
-	color: #135C8F;
+	color: #036f9f;
 }
 
 .ss_searchResult {
@@ -4254,7 +4253,7 @@ div.ss_entry_folderListView {
 .ss_entryTitleSearchResults a:hover,
 .ss_entryTitleSearchResults a:link,
 .ss_entryTitleSearchResults a:active {
-	color:#135C8F !important;
+	color:#036f9f !important;
 }
 
 .ss_entryTitleSearchResults a:visited {
@@ -4330,7 +4329,7 @@ a.ss_button, a.ss_button:visited {
 	</c:if>
 	}
 a.ss_button:hover {
-	color: #135c8f !important;
+	color: #036f9f !important;
     text-align: center !important;
     font-size: 11px !important;
     font-family: Arial, sans-serif !important;
@@ -4465,7 +4464,7 @@ div.ss_questionContainer a.ss_tinyButton {
 div.ss_questionContainer a.ss_tinyButton:focus,
 div.ss_questionContainer a.ss_tinyButton:hover {
   	font-size: 11px;
-	color: #135c8f !important;
+	color: #036f9f !important;
 	border: 1px solid #81b2bd;
 	background-color: #cce9ee;
 	white-space: nowrap;
@@ -4507,7 +4506,7 @@ ul.ss_survey_users_list {
 }
 
 table.ss_milestones_list td.ss_completed, table.ss_milestones_list td.ss_completed a {
-	color: #135c8f;
+	color: #036f9f;
 }
 
 table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a {
@@ -5170,14 +5169,17 @@ span.ss_infoDivValue {
    It should not be used to style user names. Specifically, do not "bold" this. It will break folder listings.
 */
 .ss_muster_users { 
+}
+.ss_muster_users:hover {
+}
+.ss_presence_title_style {
 	font-size: 11px !important;
 	font-weight: normal; 
 	color: #353838;
+	white-space: nowrap;
 }
-.ss_muster_users:hover {
-	color: #135c8f;
-	font-size: 11px !important;
-	font-weight: normal; 
+.ss_presence_title_style:hover {
+	color: #036f9f;
 }
 .ss_tasks_list .ss_muster_users {
 	font-size: 10px !important;

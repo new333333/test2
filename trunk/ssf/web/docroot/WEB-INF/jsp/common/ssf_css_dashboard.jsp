@@ -705,12 +705,12 @@ div.item-sub a {
     /* End IE5-Mac hack */
 
 #ss_tabsC a:hover {
-	color: #fff;
-	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	color: #036f9f;
+	background: #cce9ee;
       }
 #ss_tabsC a:hover span {
-	color: #fff;
-	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	color: #036f9f;
+	background: #cce9ee;
       }  
 #ss_tabsC .ss_tabsC_other {
 	}

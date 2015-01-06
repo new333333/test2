@@ -1947,7 +1947,7 @@ body, table td, select
 .workspaceTreeControlRow:hover            a {color: #036f9f;}
 .workspaceTreeControlRow_collection:hover a {} 
 
-.workspaceTreeControlRowHover            {color: #5691a6; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
+.workspaceTreeControlRowHover            {color: #036f9f; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 .workspaceTreeControlRowHover_collection {border-radius: 3px; }
 
 .workspaceTreeControlRowSelected            {-moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; background: #ededed; font-weight: bold;}
@@ -6054,7 +6054,7 @@ td.datePickerMonth {
 	}
 	
 	.vibe-copyFiltersDlg_BrowseButton:hover {
-		color: #135c8f !important;
+		color: #036f9f !important;
 		border: 1px solid #81b2bd;
 		padding: 2px 5px  !important;
 		background: #cce9ee;
