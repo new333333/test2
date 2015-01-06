@@ -231,12 +231,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
   font-weight:normal !important;
   letter-spacing: 0em !important;
   padding-left: 10px;
-  color:#135c8f !important;
+  color:#036f9f !important;
   text-decoration:none;
 }
 
 a span.ss_profile {
-	color: #135c8f !important;
+	color: #036f9f !important;
 	}
 
 /**********************************/	
@@ -403,7 +403,7 @@ a.ss_new_thread:hover img {
 /*    background-position:  left -12px; */
 	}
 a.ss_new_thread {
-	color: #135c8f;
+	color: #036f9f;
 	}
 .ss_nowrapFixed {
 	white-space:normal!important;
@@ -623,7 +623,7 @@ a.ss_new_thread {
 	}
 .ss_attribute {
 	background-color: #DBEDFF!important;
-	border: 0.4px solid #135c8f!important;
+	border: 0.4px solid #036f9f!important;
 	margin-bottom: 5px;
 	margin-right: 3px;
 	}	
@@ -670,6 +670,7 @@ td.ss_replies_indent_picture div {
     }
 td.ss_non_clipped_signature {
 	max-width: 70px;
+	width: 20%;
 	}
 .wg-comment td.ss_clipped_signature div.ss_entrySignatureUser {
 	max-width: 70px;

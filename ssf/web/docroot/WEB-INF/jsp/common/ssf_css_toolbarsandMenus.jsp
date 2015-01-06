@@ -458,7 +458,7 @@ div.ss_utils_bar ul.ss_utils_bar li {
     list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 	}
 div.ss_utils_bar ul.ss_utils_bar li a, div.ss_utils_bar ul.ss_utils_bar li a:visited {
-	color:#135c8f;
+	color:#036f9f;
 	display:block;
 	margin:0px;
 	border:0px;	
@@ -761,7 +761,7 @@ div.ss_appConfigMenu {
 div.ss_appConfigMenu a {
   font-family: ${ss_style_font_family};
   font-size: ${ss_style_font_size};
-  color: #135c8f; 
+  color: #036f9f; 
 }
 
 div.ss_appConfigMenu ul {
@@ -836,7 +836,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 .wg-comment .ss_entryTitle {
 	margin-left: 0px;
 	font-size: 14px;
-	color: #135c8f !important;
+	color: #036f9f !important;
 	}
 
 /* Teaming - Tabs */
@@ -870,8 +870,8 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	color: #1f1f1f !important;
 	}
 .wg-tab:hover, .selected-menu {
-	color: #fff;
-	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	color: #036f9f;
+	background: #cce9ee;
 	}	
 .wg-tab.on, .wg-tab-b.on {
 	color: #1f1f1f;
@@ -1078,7 +1078,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
     margin-left: 5px;
     }   
 a.action-anchor:hover { 
-    color: #135c8f;
+    color: #036f9f;
     background: #81b2bd url(<html:imagesPath/>pics/blends/teal_slice.png) repeat;
     background-position:center;
     -moz-border-radius: 3px;

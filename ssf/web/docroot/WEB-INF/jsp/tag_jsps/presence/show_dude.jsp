@@ -58,7 +58,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 <table cellspacing="0" cellpadding="0">
 <tr>
 <c:if test="${empty ss_presence_user}">
-  <td valign="top">
+  <td>
 	<a href="javascript: ;"
 		onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '', '');return false;"><img
 		border="0" align="absmiddle"
@@ -124,7 +124,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 	<c:if test="${ssUser.zonName == ss_presence_user.zonName}">
 		<c:set var="current" value="current" />
 	</c:if>
-	<td valign="top">
+	<td>
 	<a href="javascript: ;" title="<c:out value="${presenceAltText}"/>"
 		class="ss_presence_dude"
 		onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><img
@@ -135,10 +135,10 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 	</td>
 	<c:if test="${ss_presence_show_title}">
 		<ssf:ifadapter>
-		  <td valign="top">
+		  <td>
 			<c:if test="${ss_presence_workspace_predeleted}">
 				<span id="${ss_presence_user.id}"
-					class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
+					class="ss_presence_title_style ss_muster_users"><ssf:userTitle
 					user="${ss_presence_user}" /></span>
 			</c:if>
 			<c:if test="${!ss_presence_workspace_predeleted}">
@@ -148,7 +148,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 						href="<ssf:permalink entity="${ss_presence_user}"/>"
 						onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><span
 						id="${ss_presence_user.id}"
-						class="${ss_presence_title_style} ss_muster_users"
+						class="ss_presence_title_style ss_muster_users"
 						title="<c:out value="${presenceAltText}"/>"
 				    ><ssf:userTitle user="${ss_presence_user}" /></span></a>
 				</c:if>
@@ -164,12 +164,12 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 					  	    title="<c:out value="${presenceAltText}"/>"
 					  	>
 						<span id="${ss_presence_user.id}"
-							class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
+							class="ss_presence_title_style ss_muster_users"><ssf:userTitle
 							user="${ss_presence_user}" /></span> </a>
 					</c:if>
 					<c:if test="${empty ss_presence_user.parentBinder.id || !ss_canAccessProfilesBinder}">
 						<span id="${ss_presence_user.id}"
-							class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
+							class="ss_presence_title_style ss_muster_users"><ssf:userTitle
 							user="${ss_presence_user}" /></span>
 					</c:if>
 				</c:if>
@@ -177,7 +177,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 		  </td>
 		</ssf:ifadapter>
 		<ssf:ifnotadapter>
-		  <td valign="top">
+		  <td>
 			<c:if test="${!empty ss_presence_user.workspaceId}">
 				<a
 					href="<ssf:url windowState="maximized"><ssf:param 
@@ -185,13 +185,13 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 					  	name="binderId" value="${ss_presence_user.workspaceId}"/></ssf:url>"
 					onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><span
 					id="${ss_presence_user.id}"
-					class="${ss_presence_title_style} ss_muster_users"
+					class="ss_presence_title_style ss_muster_users"
 					title="<c:out value="${presenceAltText}"/>"
 				><ssf:userTitle user="${ss_presence_user}" /></span></a>
 			</c:if>
 			<c:if test="${empty ss_presence_user.workspaceId}">
 				<span id="${ss_presence_user.id}"
-					class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
+					class="ss_presence_title_style ss_muster_users"><ssf:userTitle
 					user="${ss_presence_user}" /></span>
 			</c:if>
 		  </td>
