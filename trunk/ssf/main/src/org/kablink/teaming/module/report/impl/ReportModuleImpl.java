@@ -732,14 +732,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 	private static final String[] activityTypeNames = new String[]
             {AuditType.add.name(), AuditType.view.name(), AuditType.download.name(),
-			  AuditType.modify.name(), AuditType.delete.name(),
+			  AuditType.modify.name(), AuditType.rename.name(), AuditType.delete.name(),
 			  AuditType.preDelete.name(), AuditType.restore.name(),
 			  AuditType.acl.name(), 
 			  AuditType.shareAdd.name(), AuditType.shareModify.name(), AuditType.shareDelete.name()};
 
 	private static final Short[] activityTypeValues = new Short[]
             {AuditType.add.getValue(), AuditType.view.getValue(), AuditType.download.getValue(),
-			  AuditType.modify.getValue(), AuditType.delete.getValue(),
+			  AuditType.modify.getValue(), AuditType.rename.getValue(), AuditType.delete.getValue(),
 			  AuditType.preDelete.getValue(), AuditType.restore.getValue(),
 			  AuditType.acl.getValue(), AuditType.shareAdd.getValue(), AuditType.shareModify.getValue(), AuditType.shareDelete.getValue()};
 
@@ -933,7 +933,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						crit.add(Restrictions.not(Restrictions.in("userId", userIdsToSkip)));
 					}
 					if (!userIdsToReport.isEmpty()) crit.add(Restrictions.in("userId", userIdsToReport));
-					if (!reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
+					if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
+						crit.addOrder(Order.asc("userId"));
+					} else {
 						crit.addOrder(Order.asc("date"));
 					}
 					auditTrail = crit.list();
@@ -975,7 +977,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						crit.add(Restrictions.not(Restrictions.in("sharerId", userIdsToSkip)));
 					}
 					if (!userIdsToReport.isEmpty()) crit.add(Restrictions.in("sharerId", userIdsToReport));
-					if (!reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
+					if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
+						crit.addOrder(Order.asc("sharerId"));
+					} else {
 						crit.addOrder(Order.asc("actionDate"));
 					}
 					shareItems = crit.list();

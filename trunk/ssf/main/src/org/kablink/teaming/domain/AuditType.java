@@ -53,7 +53,8 @@ public enum AuditType {
 	acl((short)12), // ACL change on a data item
 	shareAdd((short)13), // added a share item - dummy type only used in activity report
 	shareModify((short)14), // modified a share item - dummy type only used in activity report
-	shareDelete((short)15); // deleted a share item - dummy type only used in activity report
+	shareDelete((short)15), // deleted a share item - dummy type only used in activity report
+	rename((short)16); // renamed (and possibly also modified) a data item
 
 	short value;
 	
@@ -83,6 +84,7 @@ public enum AuditType {
 		case 13: return AuditType.shareAdd;
 		case 14: return AuditType.shareModify;
 		case 15: return AuditType.shareDelete;
+		case 16: return AuditType.rename;
 		default: throw new IllegalArgumentException("Invalid db value " + value + " for enum AuditType");
 		}
 	}
