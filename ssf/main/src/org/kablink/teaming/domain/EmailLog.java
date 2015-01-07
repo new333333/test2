@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,9 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.mail.Address;
 import javax.mail.MessagingException;
@@ -47,16 +45,17 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.module.mail.MimeMessagePreparator;
+
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
 
 /**
  * This class represents an email log entry.
- *
+ * 
+ * @author ?
  */
 public class EmailLog extends ZonedObject {
-
 	private static final Log logger = LogFactory.getLog(EmailLog.class);
 	
 	private int maxFromAddressLength = 255;
@@ -66,7 +65,7 @@ public class EmailLog extends ZonedObject {
 	
 	protected Date sendDate;									//Date mail was sent
 	protected String from;										//Email address of sender
-	protected String subj;										//Subj line from mail message
+	protected String subj;										//Subject line from mail message
 	protected String comments;									//Error message (if any)
 	protected EmailLogType type = EmailLogType.unknown;			//Type of mail
 	protected EmailLogStatus status = EmailLogStatus.unknown;	//sent, queued, error
@@ -149,31 +148,75 @@ public class EmailLog extends ZonedObject {
 	// This constructor is reserved for use by Hibernate only.
 	protected EmailLog() {}
 	
-	//Fill fields from mime message
+	/**
+	 * Fill fields from mime message
+	 * 
+	 * @param mailMsg
+	 */
 	public void fillFromMimeMessage(MimeMessage mailMsg) {
-  		String fromAddress = "";
-		try {
-			Address[] fromAdrs = mailMsg.getFrom();
-			if (fromAdrs != null && fromAdrs.length > 0) {
-				Address fromAdr = fromAdrs[0];
-				fromAddress = fromAdr.toString();
-			} else {
-				fromAddress = NLT.get("mail.noFromAddress");
+		// Does the email log contain an from address?
+  		String fromAddress = this.getFrom();
+  		if (!(MiscUtil.hasString(fromAddress))) {
+  			// No!  Extract it from the mime and store it in the log.
+			try {
+				Address[] fromAdrs = mailMsg.getFrom();
+				if ((null != fromAdrs) && (0 < fromAdrs.length)) {
+					fromAddress = fromAdrs[0].toString();
+				}
 			}
-		} catch (MessagingException e2) {
-			fromAddress = NLT.get("mail.noFromAddress");
-		}
-		if ((this.getFrom() == null || this.getFrom().isEmpty()) && !fromAddress.equals("")) {
+			catch (MessagingException e2) {}
+	  		if (!(MiscUtil.hasString(fromAddress))) {
+				fromAddress = NLT.get("mail.noFromAddress");
+	  		}
 			this.setFrom(fromAddress);
-		}
-  		try {
-			this.setSubj(mailMsg.getSubject());
-		} catch (MessagingException e1) {
-			this.setSubj(NLT.get("mail.noSubject"));
-		}
-		try {
-			mailMsg.getFileName();
-		} catch (MessagingException e) {}
+  		}
+  		
+		// Does the email log contain any recipients?
+  		if (!(MiscUtil.hasString(this.getToEmailAddressesStr()))) {
+  			// No!  Extract them from the mime and store them in the
+  			// log.
+			List<String> toAddressList = new ArrayList<String>();
+			try {
+				Address[] toAdrs = mailMsg.getAllRecipients();
+				if (toAdrs != null && toAdrs.length > 0) {
+					for (Address toAdr:  toAdrs) {
+						toAddressList.add(toAdr.toString());
+					}
+				}
+			}
+			catch (MessagingException e2) {}
+			if (toAddressList.isEmpty()) {
+				toAddressList.add(NLT.get("mail.noToAddress"));
+			}
+			this.setToEmailAddresses(toAddressList);
+  		}
+
+		// Does the email log contain a subject?
+  		String subj = this.getSubj();
+  		if (!(MiscUtil.hasString(subj))) {
+  			// No!  Extract it from the mime and store it in the log.
+	  		try {
+				subj = mailMsg.getSubject();
+			}
+	  		catch (MessagingException e1) {}
+	  		if (!(MiscUtil.hasString(subj))) {
+	  			subj = NLT.get("mail.noSubject");
+	  		}
+			this.setSubj(subj);
+  		}
+
+		// Does the email log contain any file attachment names?
+  		String fileAttachmentNames = this.getFileAttachmentsStr();
+  		if (!(MiscUtil.hasString(fileAttachmentNames))) {
+  			// No!  Extract any from the mime and store them in the
+  			// log.
+			try {
+				fileAttachmentNames = mailMsg.getFileName();
+			} catch (MessagingException e) {}
+	  		if (MiscUtil.hasString(fileAttachmentNames)) {
+	  			this.setFileAttachmentsStr(fileAttachmentNames);
+	  		}
+  		}
 	}
 
     public String getId() {
@@ -323,6 +366,5 @@ public class EmailLog extends ZonedObject {
 		else
 			fileAttachments = StringUtil.split(fileAttachmentsStr);
 	}
-	
 	/// End Persistence
 }
