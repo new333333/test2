@@ -175,12 +175,9 @@ public class DefinitionHelper {
 	}
 	public static SortedMap<String, Definition> getAvailableReplyDefinitions(Long binderId) {
 		List<Definition> defs = getInstance().getDefinitionModule().getDefinitions(binderId, Boolean.TRUE, Definition.FOLDER_ENTRY);
-		List<String> commentTypes = new ArrayList<String>();
-		commentTypes.add(Definition.FAMILY_COMMENT);
-		commentTypes.add(Definition.FAMILY_FILE_COMMENT);
 		Binder binder = null;
 		if (binderId != null) binder = getInstance().getBinderModule().getBinder(binderId);
-		defs = Utils.validateDefinitions(defs, binder, commentTypes);
+		defs = Utils.validateDefinitions(defs, binder, Definition.FOLDER_ENTRY);
 		return orderDefinitions(defs, true);
 	}
 	public static TreeMap orderDefinitions(Collection<Definition> defs, Boolean includeDefinitionName) {

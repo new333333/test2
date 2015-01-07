@@ -903,7 +903,7 @@ public class Utils {
 	}
 		
    	//Validate which definitions by family type are allowed to be used
-	public static List<Definition> validateDefinitions(List<Definition> defs, Binder binder, List<String> familyTypes) {
+	public static List<Definition> validateDefinitions(List<Definition> defs, Binder binder, Integer definitionType) {
 		List<Definition> binderDefs = new ArrayList<Definition>();
 		if (binder != null) binderDefs = binder.getDefinitions();
 		
@@ -915,15 +915,9 @@ public class Utils {
 				filteredList.add(def);
 			} else {
 				Document doc = def.getDefinition();
-				@SuppressWarnings("unused")
-				int defType = def.getType();
-				Element familyProperty = (Element) doc.getRootElement().selectSingleNode("//properties/property[@name='family']");
-				if (familyProperty != null) {
-					String family = familyProperty.attributeValue("value", "");
-					if (familyTypes.contains(family) && checkIfValidDefinition(def)) {
-						//This template is allowed
-						filteredList.add(def);
-					}
+				if (def.getType() == definitionType && checkIfValidDefinition(def)) {
+					//This template is allowed
+					filteredList.add(def);
 				}
 			}
 		}
