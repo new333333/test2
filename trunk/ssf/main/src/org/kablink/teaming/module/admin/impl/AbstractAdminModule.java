@@ -1194,7 +1194,21 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     @Override
 	public List<Function> getFunctions() {
 		//let anyone read them			
-    	return functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
+    	List<Function> functions = functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
+    	List<Function> functionsPruned = new ArrayList<Function>();
+    	for (Function f : functions) {
+			if (Utils.checkIfVibe() && !Utils.checkIfFilrAndVibe()) {
+				//Remove the Filr specific functions
+				if (!f.getName().equals(ObjectKeys.ROLE_CREATE_FILESPACES) &&
+						!f.getName().equals(ObjectKeys.ROLE_MANAGE_RESOURCE_DRIVERS) &&
+						!f.getName().equals(ObjectKeys.ROLE_ALLOW_ACCESS_NET_FOLDER)) {
+					functionsPruned.add(f);
+				}
+			} else {
+				functionsPruned.add(f);
+			}
+    	}
+    	return functionsPruned;
     }
     @Override
 	public List<Function> getFunctions(String scope) {
