@@ -982,7 +982,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		getReportModule().addAuditTrail(AuditType.modify, entry);
     	} else {
     		//The original title of this entry has changed. So, store that old title in the description field
-    		getReportModule().addAuditTrail(AuditType.modify, entry, description);
+    		getReportModule().addAuditTrail(AuditType.rename, entry, description);
     	}
 
     	if(fileRenamesTo != null)

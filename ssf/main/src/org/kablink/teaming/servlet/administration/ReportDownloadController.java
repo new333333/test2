@@ -110,6 +110,7 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(AuditType.add.name(), "report.columns.add");
 		columnNames.put(AuditType.view.name(), "report.columns.view");
 		columnNames.put(AuditType.modify.name(), "report.columns.modify");
+		columnNames.put(AuditType.rename.name(), "report.columns.rename");
 		columnNames.put(AuditType.delete.name(), "report.columns.delete");
 		columnNames.put(AuditType.preDelete.name(), "report.columns.preDelete");
 		columnNames.put(AuditType.restore.name(), "report.columns.restore");
@@ -324,6 +325,7 @@ public class ReportDownloadController extends  SAbstractController {
 							AuditType.view.name(), 
 							AuditType.add.name(),
 							AuditType.modify.name(), 
+							AuditType.rename.name(), 
 							AuditType.delete.name(),
 							AuditType.preDelete.name(),
 							AuditType.restore.name(),
@@ -545,6 +547,7 @@ public class ReportDownloadController extends  SAbstractController {
 
 		Definition definition;
 		for(Map<String, Object> row : report) {
+			String eventType = (String) row.get(ReportModule.ACTIVITY_TYPE);
 			if (row.containsKey(ReportModule.DEFINITION_ID)) {
 				definition = definitionMap.get(row.get(ReportModule.DEFINITION_ID));
 				row.put(ReportModule.DEFINITION_ID, definition.getTitle());
@@ -562,7 +565,15 @@ public class ReportDownloadController extends  SAbstractController {
 				try {
 					if (binder != null) {
 						row.put(ReportModule.FOLDER, binder.getPathName());
-						row.put(ReportModule.ENTRY_TITLE, binder.getTitle());
+						String description = (String)row.get(ReportModule.DESCRIPTION);
+						if (AuditType.rename.name().equals(eventType) && description != null && !description.equals("")) {
+							String[] titles = new String[2];
+							titles[0] = binder.getTitle();
+							titles[1] = description;
+							row.put(ReportModule.ENTRY_TITLE,  NLT.get("report.renamedEntity", titles));
+						} else {
+							row.put(ReportModule.ENTRY_TITLE, binder.getTitle());
+						}
 					} else {
 						if (deletedBinderPaths.containsKey(row.get(ReportModule.BINDER_ID))) {
 							row.put(ReportModule.FOLDER, deletedBinderPaths.get(row.get(ReportModule.BINDER_ID)));
@@ -580,7 +591,16 @@ public class ReportDownloadController extends  SAbstractController {
 				entry = entryMap.get(row.get(ReportModule.ENTRY_ID));
 				try {
 					if (entry != null) {
-						row.put(ReportModule.ENTRY_TITLE, entry.getTitle());
+						String description = (String)row.get(ReportModule.DESCRIPTION);
+						if (AuditType.rename.name().equals(eventType) && description != null && !description.equals("")) {
+							String[] titles = new String[2];
+							titles[0] = entry.getTitle();
+							titles[1] = description;
+							row.put(ReportModule.ENTRY_TITLE,  NLT.get("report.renamedEntity", titles));
+						} else {
+							row.put(ReportModule.ENTRY_TITLE, entry.getTitle());
+						}
+						
 					} else if (deletedEntryTitles.containsKey(row.get(ReportModule.ENTRY_ID))) {
 						row.put(ReportModule.ENTRY_TITLE, deletedEntryTitles.get(row.get(ReportModule.ENTRY_ID)));
 					}

@@ -1049,7 +1049,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		getReportModule().addAuditTrail(AuditType.modify, binder);
     	} else {
     		//We use the description field to hold the original title in case this is needed at report time
-    		getReportModule().addAuditTrail(AuditType.modify, binder, description);
+    		getReportModule().addAuditTrail(AuditType.rename, binder, description);
     	}
    }
     
