@@ -9888,10 +9888,21 @@ function ss_ensureAnchorsTargetTopFrame() {
 				// ...skip it.
 				//
 				// DRF (20150108):  This is a special case to address
-				//    Bug#912155.  Without this fix, in the photo album
+				//    bug#912155.  Without this fix, in the photo album
 				//    (which is still JSP), the build filter dialog
 				//    would come up in the top frame instead of in the
 				//    iframe containing the photo album view.
+				continue;
+			}
+
+			// If it's a survey navigation URL...
+			if (0 < href.indexOf("feature=survey")) {
+				// ...skip it.
+				//
+				// DRF (20150108):  This is a special case to address
+				//    bug#910705.  Without this fix, viewing survey
+				//    results or returning from viewing them did not
+				//    work.
 				continue;
 			}
 			

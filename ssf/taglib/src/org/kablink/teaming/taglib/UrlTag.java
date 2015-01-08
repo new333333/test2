@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
@@ -44,11 +45,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-
-import javax.portlet.PortletURL;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -57,17 +56,18 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
 
-
-
 /**
+ * ?
+ * 
  * @author Peter Hurley
- *
  */
+@SuppressWarnings({"unchecked", "unused"})
 public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 	private static Log logger = LogFactory.getLog(UrlTag.class);
 
 	private String url;
 	private String action;
+	private String feature;
     private String binderId;
     private String entryId;
     private String entityType;
@@ -79,27 +79,28 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
     private boolean crawlable=false;
     private String portletName = "ss_forum";
     private boolean actionUrl = true;
-    private boolean stayInFrame = false;
+	private boolean stayInFrame = false;
 	private Map<String, String[]> _params;
 	
 	public UrlTag() {
 		setup();
 	}
+	
 	/** 
 	 * Initalize params at end of call and creation
-	 * 
-	 *
 	 */
 	protected void setup() {
 		if (_params != null) {
 			_params.clear();
 		}
-		//need to reinitialize - class must be cached
+		
+		// Need to reinitialize - class must be cached.
 		binderId=null;
 		entryId=null;
 		entityType=null;
 		url = null;
 		action = null;
+		feature = null;
 		operation=null;
 		rootPath = null;
 		webPath = null;
@@ -109,6 +110,8 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 		stayInFrame=false;
 		portletName = "ss_forum";
 	}
+	
+	@Override
 	public int doEndTag() throws JspException {
 		try {
 			HttpServletRequest req =
@@ -155,6 +158,9 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				if (!Validator.isNull(action)) {
 					params.put("action", new String[] {this.action});
 				}
+				if (!Validator.isNull(feature)) {
+					params.put("feature", new String[] {this.feature});
+				}
 				
 				String webUrl = getWebUrl(req);
 				if (!params.entrySet().isEmpty() || (_params != null && !_params.entrySet().isEmpty())) {
@@ -183,6 +189,9 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			} else if (this.adapter) {
 				if (!Validator.isNull(action)) {
 					params.put("action", new String[] {this.action});
+				}
+				if (!Validator.isNull(feature)) {
+					params.put("feature", new String[] {this.feature});
 				}
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, this.portletName, this.actionUrl, crawlable);
 				Iterator it = params.entrySet().iterator();
@@ -229,6 +238,9 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				if (!Validator.isNull(action)) {
 					portletURL.setParameter("action", new String[] {this.action});
 				}
+				if (!Validator.isNull(feature)) {
+					portletURL.setParameter("feature", new String[] {this.feature});
+				}
 
 				String portletURLToString = portletURL.toString();
 
@@ -262,6 +274,10 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setAction(String action) {
 	    this.action = action;
+	}
+
+	public void setFeature(String feature) {
+	    this.feature = feature;
 	}
 
 	public void setFolderId(String binderId) {
@@ -316,6 +332,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 	    this.operation = operation;
 	}
 
+	@Override
 	public void addParam(String name, String value) {
 		if (_params == null) {
 			_params = new LinkedHashMap();
@@ -342,7 +359,4 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 	protected String getWebUrl(HttpServletRequest req) {
 		return WebUrlUtil.getServletRootURL(req) + webPath;
 	}
-
 }
-
-
