@@ -72,7 +72,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 %>
 <c:set var="ss_boxTitle" value="<%= title %>"/>
 <c:set var="ss_boxTitleId" value="<%= boxTitleId %>"/>
-<c:set var="colWidth" value="99"/>
+<c:set var="colWidth" value="95"/>
 <c:if test="<%= showMoveIcon %>">
     <c:set var="colWidth" value="${colWidth - 88}"/>
 </c:if>
@@ -85,9 +85,9 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
   style="width: <%= width %>; <%= boxStyle %>">
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
 	<table cellspacing="0" cellpadding="0" width="100%">
-	  <col width="8"/>
+	  <col width="2%"/>
 	  <c:if test="<%= showResizeIcon %>">
-	    <col width="32"/>
+	    <col width="8%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
 	  <c:if test="<%= showMoveIcon %>">
@@ -106,7 +106,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	    <col width="6%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
-	  <col width="8"/>
+	  <col width="2%"/>
 	  <tr>
 	  <td class="ss_title_bar"></td>
 	  <c:if test="<%= showResizeIcon %>">
