@@ -153,6 +153,16 @@ public class SharingAudit extends ZonedObject {
 	// For application
 	public SharingAudit(Long sharerId, EntityIdentifier.EntityType entityType, Long entityId, Long owningBinderId, ShareItem.RecipientType recipientType, Long recipientId,
 			ActionType actionType, Date actionDate, ShareItem.Role role) {
+		if(sharerId == null) throw new IllegalArgumentException("Sharer ID must be specifed");
+		if(entityType == null) throw new IllegalArgumentException("Entity type must be specifed");
+		if(entityId == null) throw new IllegalArgumentException("Entity ID must be specifed");
+		if(owningBinderId == null) throw new IllegalArgumentException("Owning binder ID must be specifed");
+		if(recipientType == null) throw new IllegalArgumentException("Recipient type must be specifed");
+		if(recipientId == null) throw new IllegalArgumentException("Recipient ID must be specifed");
+		if(actionType == null) throw new IllegalArgumentException("Action type must be specifed");
+		if(actionDate == null) throw new IllegalArgumentException("Action date must be specifed");
+		if(role == null) throw new IllegalArgumentException("Role must be specifed");
+
 		this.sharerId = sharerId;
 		this.entityType = (short) entityType.getValue();
 		this.entityId = entityId;
@@ -172,7 +182,7 @@ public class SharingAudit extends ZonedObject {
 				shareItem.getSharedEntityIdentifier().getEntityId(),
 				owningBinderId,
 				shareItem.getRecipientType(),
-				shareItem.getRecipientId(),
+				((shareItem.getRecipientId() != null)? shareItem.getRecipientId() : 0), // Use value of zero as an indication that the original value is null 
 				actionType,
 				computeActionDate(shareItem, actionType),
 				shareItem.getRole());
