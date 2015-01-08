@@ -1584,10 +1584,18 @@ public class GwtUIHelper {
 		// Simplified Chinese the language code will be "zh".
 		model.put("tinyMCELang", getTinyMCELanguage());
 
-		// Put out the name of the product (Novell or Kablink Vibe)
+		// Put out the name of the product (Novell or Kablink Vibe or Novell Filr)
 		// that's running.
-		String productName = ReleaseInfo.getName();
-		model.put("productName", productName);
+		{
+			String productName;
+			
+			if ( isLicenseFilr )
+				productName = NLT.get( "productName.filr" );
+			else
+				productName = ReleaseInfo.getName();
+			
+			model.put( "productName", productName );
+		}
 			
 		// Put out the main help URL for Vibe.
 		model.put(WebKeys.URL_HELPURL, getHelpUrl());

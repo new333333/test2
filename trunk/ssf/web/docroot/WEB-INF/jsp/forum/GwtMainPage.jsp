@@ -65,6 +65,19 @@
     <%@ include file="/WEB-INF/jsp/common/tinymce_translations.jsp" %>
 	
 	<script type="text/javascript" language="javascript">
+		// Are we being loaded in an iFrame?
+		if ( self != window.top )
+		{
+			// GroupWise may run Vibe in an iframe.  That is ok.
+			// Are we running inside GroupWise?
+			if ( ${vibeProduct} != 1 && ${sessionCaptive} == false )
+			{
+				// No
+				alert( '<ssf:nlt tag="error.webappCannotBeInIFrame"><ssf:param name="value" value="${productName}" /></ssf:nlt>' );
+				window.top.location = self.location;
+			}
+		}
+
 		// Initialize tinyMCE.  This must be done here so that tinyMCE can bring in the other
 		// necessary js files. 
 		tinyMCE.init(
