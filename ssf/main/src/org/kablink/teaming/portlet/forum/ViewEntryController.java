@@ -587,7 +587,7 @@ public class ViewEntryController extends  SAbstractController {
 		if (!isPreDeleted) {
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI) && 
 					(!(folder.isMirrored() && folder.getResourceDriverName() == null)) && 
-					!folder.isMirroredAndReadOnly()) {
+					!folder.isMirroredAndReadOnly() && getFolderModule().testAccess(entry, FolderOperation.addEntry)) {
 				List defaultEntryDefinitions = folder.getEntryDefinitions();
 				int defaultEntryDefs = ((null == defaultEntryDefinitions) ? 0 : defaultEntryDefinitions.size());
 				model.put(WebKeys.URL_BINDER_ENTRY_DEFS, String.valueOf( defaultEntryDefs ));
