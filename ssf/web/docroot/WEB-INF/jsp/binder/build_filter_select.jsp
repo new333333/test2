@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -68,9 +68,18 @@ function checkFilterForm(obj) {
 		}
 	}
 	
+	// Is this a 'close' and we have JSP history to draw from?
 	if ((ss_buttonSelected == 'close') && window.top.ss_getUrlFromContentHistory) {
-		var url = window.top.ss_getUrlFromContentHistory(-1);
+		// Yes!  Is the top URL in the history a view permalink?
+		var url = window.top.ss_getUrlFromContentHistory(0);
+		if (url && (0 > url.indexOf("view_permalink"))) {
+			// No!  Then we'll use the next one.
+			url = window.top.ss_getUrlFromContentHistory(-1);
+		}
+		
+		// If we have a URL to navigate to...
 		if (url && (0 < url.length)) {
+			// ...go there.
 			window.top.ss_gotoContentUrl(url);
 			return false;
 		}
