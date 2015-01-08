@@ -102,6 +102,7 @@ public class LoginAudit extends ZonedObject {
 	protected Short authenticator; // Required - Type of authenticator
 	protected String clientAddr;
 	
+	// For Hibernate
 	protected LoginAudit() {
 	}
 

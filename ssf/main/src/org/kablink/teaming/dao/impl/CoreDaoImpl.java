@@ -3391,7 +3391,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
             return results;
         }
         finally {
-            end(begin, "getAuditTrailEntries2()");
+            end(begin, "getAuditTrailEntries3()");
         }
     }
 

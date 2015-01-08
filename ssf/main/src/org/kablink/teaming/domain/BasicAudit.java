@@ -121,6 +121,10 @@ public class BasicAudit extends ZonedObject {
     // This field is applicable only if eventType='delete', 'preDelete', or 'restore' and entityType='folderEntry'.
     protected Short entityFamily; // Family info about the deleted folder entry
 
+    // For Hibernate
+    protected BasicAudit() {	
+    }
+    
     public BasicAudit(AuditType what, User user, DefinableEntity entity) {
     	this(what, user, entity, new Date());
     }

@@ -147,7 +147,7 @@ public class SharingAudit extends ZonedObject {
 	private String entryTitle; // Title of the entity being shared only if the entity is an entry (not a binder)
 
 	// For Hibernate
-	private SharingAudit() {
+	protected SharingAudit() {
 	}
 	
 	// For application
