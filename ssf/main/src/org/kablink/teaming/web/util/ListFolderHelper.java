@@ -570,7 +570,7 @@ public class ListFolderHelper {
 		int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
 		
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-		String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, null);
+		String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, String.valueOf(binderId));
 		String calendarModeType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_MODE_TYPE, "");
 		
 		Date currentDate = EventsViewHelper.getCalendarCurrentDate(portletSession);
