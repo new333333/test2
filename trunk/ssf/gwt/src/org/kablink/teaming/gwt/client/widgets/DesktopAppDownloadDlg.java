@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -102,10 +102,10 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	private final static int IOS_ROW		= 5;
 
 	// The URLs to the quick start help for the desktop applications.
-	private final static String	MAC_QUICKSTART_URL_FILR		= "http://www.novell.com/documentation/novell-filr-1-1/filr-1-1_qs_desktopmac/data/filr-1-1_qs_desktopmac.html";
-	private final static String	MAC_QUICKSTART_URL_VIBE		= "http://www.novell.com/documentation/novell-vibe-1-1/vibe-1-1_qs_desktopmac/data/vibe-1-1_qs_desktopmac.html";
-	private final static String	WINDOWS_QUICKSTART_URL_FILR	= "http://www.novell.com/documentation/novell-filr-1-1/filr-1-1_qs_desktop/data/filr-1-1_qs_desktop.html";
-	private final static String	WINDOWS_QUICKSTART_URL_VIBE	= "http://www.novell.com/documentation/novell-vibe-1-1/vibe-1-1_qs_desktop/data/vibe-1-1_qs_desktop.html";
+	private final static String	MAC_QUICKSTART_URL_FILR		= "http://www.novell.com/documentation/novell-filr-1-2/filr-1-2_qs_desktopmac/data/filr-1-2_qs_desktopmac.html";
+	private final static String	MAC_QUICKSTART_URL_VIBE		= "http://www.novell.com/documentation/novell-vibe-1-2/vibe-1-2_qs_desktopmac/data/vibe-1-2_qs_desktopmac.html";
+	private final static String	WINDOWS_QUICKSTART_URL_FILR	= "http://www.novell.com/documentation/novell-filr-1-2/filr-1-2_qs_desktop/data/filr-1-2_qs_desktop.html";
+	private final static String	WINDOWS_QUICKSTART_URL_VIBE	= "http://www.novell.com/documentation/novell-vibe-1-2/vibe-1-2_qs_desktop/data/vibe-1-2_qs_desktop.html";
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
