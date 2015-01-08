@@ -5625,6 +5625,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					{
 						filrAdminTasks.addSelectNetFolderServerTypeTask( driver.getId() );
 					}
+					else
+					{
+						String name;
+						String pwd;
+
+						name = driver.getAccountName();
+						pwd = driver.getPassword();
+						if ( name == null || name.length() == 0 || pwd == null || pwd.length() == 0 )
+						{
+							filrAdminTasks.addEnterNetFolderServerProxyCredentialsTask( driver.getId() );
+						}
+					}
 				}
 			}
 			
@@ -5636,22 +5648,38 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				{
 					GwtEnterProxyCredentialsTask gwtTask;
 					ResourceDriverConfig rdConfig;
+					boolean removeTask;
+					
+					removeTask = false;
 					
 					// Get the net folder server object with the given id
 					rdConfig = NetFolderHelper.findNetFolderRootById( drivers, nextTask.getNetFolderServerId() ); 
 					if ( rdConfig != null )
 					{
-						String serverName;
+						String name;
+						String pwd;
 
-						serverName = rdConfig.getName();
-					
-						gwtTask = new GwtEnterProxyCredentialsTask();
-						gwtTask.setServerId( nextTask.getNetFolderServerId() );
-						gwtTask.setServerName( serverName );
+						name = rdConfig.getAccountName();
+						pwd = rdConfig.getPassword();
+						if ( name == null || name.length() == 0 || pwd == null || pwd.length() == 0 )
+						{
+							String serverName;
+
+							serverName = rdConfig.getName();
 						
-						upgradeInfo.addFilrAdminTask( gwtTask );
+							gwtTask = new GwtEnterProxyCredentialsTask();
+							gwtTask.setServerId( nextTask.getNetFolderServerId() );
+							gwtTask.setServerName( serverName );
+							
+							upgradeInfo.addFilrAdminTask( gwtTask );
+						}
+						else
+							removeTask = true;
 					}
 					else
+						removeTask = true;
+					
+					if ( removeTask == true )
 					{
 						Long netFolderServerId;
 						
@@ -5672,22 +5700,36 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				{
 					GwtSelectNetFolderServerTypeTask gwtTask;
 					ResourceDriverConfig rdConfig;
+					boolean removeTask;
+					
+					removeTask = false;
 					
 					// Get the net folder server object with the given id
 					rdConfig = NetFolderHelper.findNetFolderRootById( drivers, nextTask.getNetFolderServerId() ); 
 					if ( rdConfig != null )
 					{
-						String serverName;
-
-						serverName = rdConfig.getName();
-					
-						gwtTask = new GwtSelectNetFolderServerTypeTask();
-						gwtTask.setServerId( nextTask.getNetFolderServerId() );
-						gwtTask.setServerName( serverName );
+						DriverType driverType;
 						
-						upgradeInfo.addFilrAdminTask( gwtTask );
+						driverType = rdConfig.getDriverType();
+						if ( driverType == null || driverType == DriverType.famt )
+						{
+							String serverName;
+	
+							serverName = rdConfig.getName();
+						
+							gwtTask = new GwtSelectNetFolderServerTypeTask();
+							gwtTask.setServerId( nextTask.getNetFolderServerId() );
+							gwtTask.setServerName( serverName );
+							
+							upgradeInfo.addFilrAdminTask( gwtTask );
+						}
+						else
+							removeTask = true;
 					}
 					else
+						removeTask = true;
+					
+					if ( removeTask == true )
 					{
 						Long netFolderServerId;
 						
