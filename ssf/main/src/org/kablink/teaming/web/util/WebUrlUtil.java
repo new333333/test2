@@ -1415,8 +1415,7 @@ public class WebUrlUtil {
 		baseUrlForEmail = baseUrlForEmail.substring(0, pos);
     	logger.debug("WebUrlUtil.getCompleteURLFromRequestForEmail( baseUrlForEmail ):  " + baseUrlForEmail);
     	
-//!    	if (0 != baseUrl.indexOf(baseUrlForEmail)) {
-    	if (true) {
+    	if (0 != baseUrl.indexOf(baseUrlForEmail)) {
     		baseUrl = (baseUrlForEmail + baseUrl.substring(baseUrl.indexOf("a/do?")));
         	logger.debug("WebUrlUtil.getCompleteURLFromRequestForEmail( patchedUrl ):  " + baseUrl);
     	}
