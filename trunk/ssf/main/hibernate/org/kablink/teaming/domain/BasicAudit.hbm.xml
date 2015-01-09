@@ -9,7 +9,7 @@
       </generator>
     </id>
     <property name="zoneId" access="field"/>
-    <property name="date" access="field" index="date_basicAudit"/>
+    <property name="eventDate" access="field" index="eventDate_basicAudit"/>
     <property name="userId" access="field" index="userId_basicAudit"/>
     <property name="entityType" access="field" type="short" index="entity_basicAudit"/>
     <property name="entityId" access="field" index="entity_basicAudit"/>

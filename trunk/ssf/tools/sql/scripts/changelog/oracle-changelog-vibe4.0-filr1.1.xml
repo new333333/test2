@@ -385,10 +385,10 @@
             <column name="MOBILECUTCOPYENABLED" type="NUMBER(1,0)">
                 <constraints nullable="true" />
             </column>
-            <column name="MOBILEANDROIDSCREENCAPTUREENABLED" type="NUMBER(1,0)">
+            <column name="MOBILEANDROIDSCENABLED" type="NUMBER(1,0)">
                 <constraints nullable="true" />
             </column>
-            <column name="MOBILEDISABLEONROOTEDORJAILBROKENDEVICES" type="NUMBER(1,0)">
+            <column name="mobileDisableOnCompromised" type="NUMBER(1,0)">
                 <constraints nullable="true" />
             </column>
             <column name="MOBILEOPENINWHITELISTS" type="CLOB">
@@ -553,21 +553,21 @@
     </changeSet>
 
     <changeSet author="jay" context="schema" failOnError="true" id="47">
-        <comment>Add allowDesktopAppToTriggerInitialHomeFolderSync field to SS_Forums table</comment>
+        <comment>Add allowDAToTriggerInitialHFSync field to SS_Forums table</comment>
         <addColumn tableName="SS_FORUMS">
-            <column name="ALLOWDESKTOPAPPTOTRIGGERINITIALHOMEFOLDERSYNC" type="NUMBER(1,0)">
+            <column name="ALLOWDATOTRIGGERINITIALHFSYNC" type="NUMBER(1,0)">
                 <constraints nullable="true" />
             </column>
         </addColumn>
-        <comment>Add useInheritedDesktopAppTriggerSetting field to SS_Forums table</comment>
+        <comment>Add useInheritedDATriggerSetting field to SS_Forums table</comment>
         <addColumn tableName="SS_FORUMS">
-            <column name="USEINHERITEDDESKTOPAPPTRIGGERSETTING" type="NUMBER(1,0)">
+            <column name="USEINHERITEDDATRIGGERSETTING" type="NUMBER(1,0)">
                 <constraints nullable="true" />
             </column>
         </addColumn>
-        <comment>Add allowDesktopAppToTriggerInitialHomeFolderSync field to SS_ResourceDriver table</comment>
+        <comment>Add allowDAToTriggerInitialHFSync field to SS_ResourceDriver table</comment>
         <addColumn tableName="SS_RESOURCEDRIVER">
-            <column name="ALLOWDESKTOPAPPTOTRIGGERINITIALHOMEFOLDERSYNC" type="NUMBER(1,0)">
+            <column name="ALLOWDATOTRIGGERINITIALHFSYNC" type="NUMBER(1,0)">
                 <constraints nullable="true" />
             </column>
         </addColumn>

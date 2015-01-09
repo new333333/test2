@@ -105,7 +105,7 @@ public class BasicAudit extends ZonedObject {
 	private Long id;
 	
 	/// Required fields
-	private Date date; // Date of event
+	private Date eventDate; // Date of event
 	private Long userId; // ID of the user who triggered the event
 	private Short entityType; // Type of the entity to which event applied
 	private Long entityId; // ID of the entity to which event applied
@@ -147,9 +147,9 @@ public class BasicAudit extends ZonedObject {
 		}		
 	}
 
-	public BasicAudit(AuditType auditType, Date date, Long userId, EntityIdentifier.EntityType entityType, Long entityId, String owningBinderKey, Long owningBinderId) {
+	public BasicAudit(AuditType auditType, Date eventDate, Long userId, EntityIdentifier.EntityType entityType, Long entityId, String owningBinderKey, Long owningBinderId) {
 		this.eventType = auditType.getValue();
-		this.date = date;
+		this.eventDate = eventDate;
 		this.userId = userId;
 		this.entityType = (short) entityType.getValue();
 		this.entityId = entityId;
@@ -165,8 +165,8 @@ public class BasicAudit extends ZonedObject {
 		this.id = id;
 	}
 	
-	public Date getDate() {
-		return date;
+	public Date getEventDate() {
+		return eventDate;
 	}
 
 	public Long getUserId() {

@@ -3263,10 +3263,10 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 					public Object doInHibernate(Session session) throws HibernateException {
                         return session.createCriteria(BasicAudit.class)
 							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-							.add(Restrictions.isNotNull("date"))
-							.add(Restrictions.lt("date", purgeBeforeDate))
+							.add(Restrictions.isNotNull("eventDate"))
+							.add(Restrictions.lt("eventDate", purgeBeforeDate))
 							.setCacheable(false)
-	                    	.addOrder(Order.asc("date"))
+	                    	.addOrder(Order.asc("eventDate"))
 	                    	.list();
 		    		}
 		    	}
@@ -3320,13 +3320,13 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                             parentKeysExpr = or;
                             return session.createCriteria(BasicAudit.class)
                                     .add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-                                    .add(Restrictions.isNotNull("date"))
-                                    .add(Restrictions.ge("date", sinceDate))
+                                    .add(Restrictions.isNotNull("eventDate"))
+                                    .add(Restrictions.ge("eventDate", sinceDate))
                                     .add(parentKeysExpr)
                                     .add(typeExpr)
                                     .setCacheable(false)
                                     .setMaxResults(maxResults)
-                                    .addOrder(Order.asc("date"))
+                                    .addOrder(Order.asc("eventDate"))
                                     .list();
                         }
                     }
@@ -3376,14 +3376,14 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                             }
                             Criteria crit = session.createCriteria(BasicAudit.class)
                                     .add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-                                    .add(Restrictions.isNotNull("date"))
-                                    .add(Restrictions.ge("date", sinceDate))
+                                    .add(Restrictions.isNotNull("eventDate"))
+                                    .add(Restrictions.ge("eventDate", sinceDate))
                                     .add(typeExpr);
                             if(entityExpr != null)
                             	crit.add(entityExpr);
                             return crit.setCacheable(false)
                                     .setMaxResults(maxResults)
-                                    .addOrder(Order.asc("date"))
+                                    .addOrder(Order.asc("eventDate"))
                                     .list();
                         }
                     }

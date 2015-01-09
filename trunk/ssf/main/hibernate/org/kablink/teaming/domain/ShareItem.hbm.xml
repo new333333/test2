@@ -18,7 +18,7 @@
       <property name="type" column="sharedEntity_type" type="int" index="sharedEntity_shareitem"/>
       <property name="entityId" column="sharedEntity_id" index="sharedEntity_shareitem"/>
     </component>
-    <property name="comment" length="255"/>
+    <property name="comment" column="comments" length="255"/>
     <property name="daysToExpire" type="int"/>
     <property name="startDate" index="startDate_shareitem"/>
     <property name="endDate" index="endDate_shareitem"/>

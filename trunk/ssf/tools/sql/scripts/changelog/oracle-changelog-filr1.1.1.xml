@@ -162,7 +162,7 @@
             <column name="zoneId" type="NUMBER(19,0)">
                 <constraints nullable="false"/>
             </column>
-            <column name="date" type="TIMESTAMP(6)">
+            <column name="eventDate" type="TIMESTAMP(6)">
                 <constraints nullable="false"/>
             </column>
             <column name="userId" type="NUMBER(19,0)">
@@ -200,8 +200,8 @@
     </changeSet>
     
     <changeSet author="jong" context="schema" failOnError="true" id="16">
-        <createIndex indexName="date_basicAudit" tableName="SS_BasicAudit" unique="false">
-            <column name="date"/>
+        <createIndex indexName="eventDate_basicAudit" tableName="SS_BasicAudit" unique="false">
+            <column name="eventDate"/>
         </createIndex>
     </changeSet>
     
