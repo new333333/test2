@@ -174,6 +174,7 @@ public class BlogFolderView extends FolderViewBase
 		FlexCellFormatter cellFormatter;
 		ActionsPopupMenu actionsMenu;
 		ActionMenuItem[] menuItems = {  ActionMenuItem.REPLY,
+										ActionMenuItem.SHARE,
 										ActionMenuItem.SEND_TO_FRIEND,
 										ActionMenuItem.SUBSCRIBE,
 										ActionMenuItem.TAG,
