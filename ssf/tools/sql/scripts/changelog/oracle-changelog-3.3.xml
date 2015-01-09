@@ -1755,8 +1755,8 @@
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-118">
-        <createIndex indexName="VIRTUALHOST" tableName="SS_ZONEINFO" unique="true">
-            <column name="VIRTUALHOST_ZONEINFO"/>
+        <createIndex indexName="VIRTUALHOST_ZONEINFO" tableName="SS_ZONEINFO" unique="true">
+            <column name="VIRTUALHOST"/>
         </createIndex>
     </changeSet>
     <changeSet author="jong (generated)" context="schema" id="1325859848848-119">

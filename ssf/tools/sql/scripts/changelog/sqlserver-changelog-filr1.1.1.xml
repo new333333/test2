@@ -300,4 +300,46 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <renameColumn schemaName="dbo" tableName="SS_ShareItem" columnDataType="NVARCHAR(255)" newColumnName="comments" oldColumnName="comment"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="25">
+        <renameColumn schemaName="dbo" tableName="SS_ZoneConfig" columnDataType="TINYINT" newColumnName="mobileAppsAllowPlayWithOthers" oldColumnName="mobileAppsAllowPlayWithOtherApps"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="26">
+        <renameColumn schemaName="dbo" tableName="SS_ZoneConfig" columnDataType="TINYINT" newColumnName="mobileAndroidSCEnabled" oldColumnName="mobileAndroidScreenCaptureEnabled"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="27">
+        <renameColumn schemaName="dbo" tableName="SS_ZoneConfig" columnDataType="TINYINT" newColumnName="mobileDisableOnCompromised" oldColumnName="mobileDisableOnRootedOrJailBrokenDevices"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <renameColumn schemaName="dbo" tableName="SS_Forums" columnDataType="TINYINT" newColumnName="allowDAToTriggerInitialHFSync" oldColumnName="allowDesktopAppToTriggerInitialHomeFolderSync"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="29">
+        <renameColumn schemaName="dbo" tableName="SS_Forums" columnDataType="TINYINT" newColumnName="useInheritedDATriggerSetting" oldColumnName="useInheritedDesktopAppTriggerSetting"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="30">
+        <renameColumn schemaName="dbo" tableName="SS_ResourceDriver" columnDataType="TINYINT" newColumnName="allowDAToTriggerInitialHFSync" oldColumnName="allowDesktopAppToTriggerInitialHomeFolderSync"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="31">
+        <dropIndex indexName="date_basicAudit" tableName="SS_BasicAudit"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="32">
+        <renameColumn schemaName="dbo" tableName="SS_BasicAudit" columnDataType="DATETIME" newColumnName="eventDate" oldColumnName="date"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="33">
+        <createIndex indexName="eventDate_basicAudit" schemaName="dbo" tableName="SS_BasicAudit" unique="false">
+            <column name="eventDate"/>
+        </createIndex>
+    </changeSet>
+    
 </databaseChangeLog>

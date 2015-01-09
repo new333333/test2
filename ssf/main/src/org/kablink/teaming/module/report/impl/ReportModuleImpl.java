@@ -379,8 +379,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				.add(Restrictions.eq("entityId", entity.getEntityIdentifier().getEntityId()))
 				.add(Restrictions.eq("entityType", entity.getEntityIdentifier().getEntityType().getValue()))
 				.add(Restrictions.eq("eventType", type.getValue()))
-				.add(Restrictions.ge("date", startDate))
-				.add(Restrictions.lt("date", endDate));
+				.add(Restrictions.ge("eventDate", startDate))
+				.add(Restrictions.lt("eventDate", endDate));
 				return crit.list();
 				
 			}});
@@ -399,7 +399,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					.setProjection(Projections.distinct(Projections.projectionList() 
 							.add(Projections.property("owningBinderId"))
 							.add(Projections.property("entityId"))
-							.add(Projections.property("date"))
+							.add(Projections.property("eventDate"))
 							.add(Projections.property("fileId"))
 							.add(Projections.property("eventType"))
 							.add(Projections.property("auxiliaryData"))))
@@ -407,9 +407,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					.add(Restrictions.eq("entityType", EntityType.folderEntry.getValue()))
 				    .add(Restrictions.in("eventType", new Object[] {AuditType.view.getValue()}))
 					.add(Restrictions.eq("userId", ownerId))
-					.add(Restrictions.ge("date", startDate))
-					.add(Restrictions.lt("date", endDate));
-				crit.addOrder(Order.desc("date"));
+					.add(Restrictions.ge("eventDate", startDate))
+					.add(Restrictions.lt("eventDate", endDate));
+				crit.addOrder(Order.desc("eventDate"));
 				return crit.list();
 				
 			}});
@@ -543,10 +543,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 												.add(Projections.groupProperty("entityId"))
 												.add(Projections.groupProperty("entityType"))
 												.add(Projections.alias(Projections.rowCount(), "hits"))
-												.add(Projections.max("date")))
+												.add(Projections.max("eventDate")))
 					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				    .add(Restrictions.ge("date", startDate))
-				    .add(Restrictions.lt("date", endDate))
+				    .add(Restrictions.ge("eventDate", startDate))
+				    .add(Restrictions.lt("eventDate", endDate))
 				    .add(Restrictions.in("entityType", entityTypes));
 				if(limitType != null) {
 					crit.add(Restrictions.eq("eventType", limitType.getValue()));
@@ -801,8 +801,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						.setProjection(proj)
 						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, binder.getZoneId()))
 						.add(Restrictions.like("owningBinderKey", binder.getBinderKey().getSortKey() + "%"))
-						.add(Restrictions.ge("date", startDate))
-						.add(Restrictions.lt("date", endDate))
+						.add(Restrictions.ge("eventDate", startDate))
+						.add(Restrictions.lt("eventDate", endDate))
 						.add(Restrictions.in("eventType", activityTypeValues));
 					if (byTeamMembers) {
 						crit.add(Restrictions.in("userId", userIds));
@@ -911,12 +911,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
 						proj.add(Projections.groupProperty("userId"));
 						proj.add(Projections.groupProperty("eventType"));
-						proj.add(Projections.max("date"));
+						proj.add(Projections.max("eventDate"));
 						proj.add(Projections.rowCount());
 					} else {
 						proj.add(Projections.groupProperty("userId"));
 						proj.add(Projections.groupProperty("eventType"));
-						proj.add(Projections.groupProperty("date"));
+						proj.add(Projections.groupProperty("eventDate"));
 						proj.add(Projections.alias(Projections.rowCount(), "hits"))
 									.add(Projections.groupProperty("owningBinderId"))
 									.add(Projections.groupProperty("entityId"))
@@ -927,8 +927,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						.setProjection(proj)
 						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, user.getZoneId()))
 						.add(Restrictions.in("eventType", activityTypeValues))
-						.add(Restrictions.ge("date", startDate))
-						.add(Restrictions.le("date", endDate));
+						.add(Restrictions.ge("eventDate", startDate))
+						.add(Restrictions.le("eventDate", endDate));
 					if (!userIdsToSkip.isEmpty()) {
 						crit.add(Restrictions.not(Restrictions.in("userId", userIdsToSkip)));
 					}
@@ -936,7 +936,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					if (reportType.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
 						crit.addOrder(Order.asc("userId"));
 					} else {
-						crit.addOrder(Order.asc("date"));
+						crit.addOrder(Order.asc("eventDate"));
 					}
 					auditTrail = crit.list();
 				} catch(Exception e) {
@@ -2282,7 +2282,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						.add(Projections.property("eventType")))
 				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.getValue()))
-				.add(Restrictions.lt("date", endDate));
+				.add(Restrictions.lt("eventDate", endDate));
 				if(auditTypes != null && auditTypes.length > 0)
 					crit.add(Restrictions.in("eventType", auditTypes));
 				if(folderIds != null && folderIds.length > 0) {
@@ -2294,8 +2294,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				if(Validator.isNotNull(family))
 					crit.add(Restrictions.eq("entityFamily", family));
 				if(startDate != null)
-					crit.add(Restrictions.ge("date", startDate));
-				crit.addOrder(Order.asc("date"));
+					crit.add(Restrictions.ge("eventDate", startDate));
+				crit.addOrder(Order.asc("eventDate"));
 				return crit.list();
 			}});
 		

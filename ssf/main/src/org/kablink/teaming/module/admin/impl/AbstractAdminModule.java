@@ -3902,8 +3902,8 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ZONE_ID, String.valueOf(zoneId));
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ID, auditTrail.getId().toString());
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_TRANSACTION_TYPE, auditTrail.getAuditType().name());
-				if (auditTrail.getDate() != null) {
-					entry.addAttribute(ObjectKeys.AUDIT_TRAIL_START_DATE, df.format(auditTrail.getDate()));
+				if (auditTrail.getEventDate() != null) {
+					entry.addAttribute(ObjectKeys.AUDIT_TRAIL_START_DATE, df.format(auditTrail.getEventDate()));
 				}
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_START_BY, String.valueOf(auditTrail.getUserId()));
 				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ENTITY_ID, String.valueOf(auditTrail.getEntityId()));

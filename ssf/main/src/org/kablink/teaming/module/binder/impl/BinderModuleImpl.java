@@ -4649,7 +4649,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
                         change.setEntityId(entityId);
                         change.setPrimaryFileId(at.getFileId());
                         change.setAction(BinderChange.Action.delete);
-                        change.setDate(at.getDate());
+                        change.setDate(at.getEventDate());
                         mergedResults.add(change);
                     }
                 } else if (next instanceof Map) {
@@ -4974,7 +4974,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		private Date getDate(Object o) {
 			if (o instanceof BasicAudit) {
-				return ((BasicAudit) o).getDate();
+				return ((BasicAudit) o).getEventDate();
 			} else if (o instanceof Map) {
 				return getResultModDate((Map) o);
 			}

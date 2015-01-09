@@ -73,15 +73,15 @@
 		<property name="mobileAppsEnabled"/>
 		<property name="mobileAppsAllowCachePwd"/>
    		<property name="mobileAppsAllowCacheContent"/>
-   		<property name="mobileAppsAllowPlayWithOtherApps"/>
+   		<property name="mobileAppsAllowPlayWithOtherApps" column="mobileAppsAllowPlayWithOthers"/>
    		<property name="mobileAppsSyncInterval"/>
    		
 		<!-- The following are the fields for the Mobile -->
 		<!-- Application Management (MAM) settings.      -->
    		<property name="mobileOpenIn"/>
    		<property name="mobileCutCopyEnabled"/>
-   		<property name="mobileAndroidScreenCaptureEnabled"/>
-   		<property name="mobileDisableOnRootedOrJailBrokenDevices"/>
+   		<property name="mobileAndroidScreenCaptureEnabled" column="mobileAndroidSCEnabled"/>
+   		<property name="mobileDisableOnRootedOrJailBrokenDevices" column="mobileDisableOnCompromised"/>
    		<component name="mobileOpenInWhiteLists" class="org.kablink.teaming.domain.MobileOpenInWhiteLists">
    			<property name="mobileOpenInWhiteLists" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
    		</component>

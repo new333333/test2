@@ -315,4 +315,46 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="27">
+        <renameColumn tableName="SS_ShareItem" columnDataType="VARCHAR(255)" newColumnName="comments" oldColumnName="comment"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <renameColumn tableName="SS_ZoneConfig" columnDataType="BIT" newColumnName="mobileAppsAllowPlayWithOthers" oldColumnName="mobileAppsAllowPlayWithOtherApps"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="29">
+        <renameColumn tableName="SS_ZoneConfig" columnDataType="BIT" newColumnName="mobileAndroidSCEnabled" oldColumnName="mobileAndroidScreenCaptureEnabled"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="30">
+        <renameColumn tableName="SS_ZoneConfig" columnDataType="BIT" newColumnName="mobileDisableOnCompromised" oldColumnName="mobileDisableOnRootedOrJailBrokenDevices"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="31">
+        <renameColumn tableName="SS_Forums" columnDataType="BIT" newColumnName="allowDAToTriggerInitialHFSync" oldColumnName="allowDesktopAppToTriggerInitialHomeFolderSync"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="32">
+        <renameColumn tableName="SS_Forums" columnDataType="BIT" newColumnName="useInheritedDATriggerSetting" oldColumnName="useInheritedDesktopAppTriggerSetting"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="33">
+        <renameColumn tableName="SS_ResourceDriver" columnDataType="BIT" newColumnName="allowDAToTriggerInitialHFSync" oldColumnName="allowDesktopAppToTriggerInitialHomeFolderSync"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="34">
+        <dropIndex indexName="date_basicAudit" tableName="SS_BasicAudit"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="35">
+        <renameColumn tableName="SS_BasicAudit" columnDataType="DATETIME" newColumnName="eventDate" oldColumnName="date"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="36">
+        <createIndex indexName="eventDate_basicAudit" tableName="SS_BasicAudit" unique="false">
+            <column name="eventDate"/>
+        </createIndex>
+    </changeSet>
+    
 </databaseChangeLog>

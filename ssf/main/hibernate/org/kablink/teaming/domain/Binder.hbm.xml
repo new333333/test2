@@ -33,8 +33,8 @@
     <property name="jitsAclMaxAge" access="field"/>
     <property name="fullSyncDirOnly" access="field"/>
     <property name="syncScheduleOption" access="field" type="short" />
-    <property name="allowDesktopAppToTriggerInitialHomeFolderSync" access="field"/>
-    <property name="useInheritedDesktopAppTriggerSetting" access="field"/>
+    <property name="allowDesktopAppToTriggerInitialHomeFolderSync" column="allowDAToTriggerInitialHFSync" access="field"/>
+    <property name="useInheritedDesktopAppTriggerSetting" column="useInheritedDATriggerSetting" access="field"/>
     <property name="resourceHandle" length="128" />
     <property name="teamGroupId" />
     <many-to-one name="parentBinder">
