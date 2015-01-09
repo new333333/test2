@@ -21,4 +21,4 @@ The schema changes for Filr 1.1 release (Note the discrepancy in the file name)
 
 5. *-changelog-filr1.1.1.xml - 
 
-The schema changes for Filr 1.1.1 release
+The schema changes for Filr 1.2 and Vibe Hudson releases (Note the discrepancy in the file name)
