@@ -760,7 +760,14 @@ public class EnterExitEvent extends AbstractActionHandler {
 			String email = (MiscUtil.isFromOverrideForAll() ? MiscUtil.getFromOverride() : null);
 			boolean usingOverride = MiscUtil.hasString(email);
 			if (!usingOverride) {
-				email = getProfileDao().loadUser(wEntry.getOwnerId(), entry.getZoneId()).getEmailAddress();
+				if ("workflow_default".equals(notify.getSendFrom()) || "entryowner".equals(notify.getSendFrom())) {
+					email = getProfileDao().loadUser(wEntry.getOwnerId(), entry.getZoneId()).getEmailAddress();
+				} else if ("binderowner".equals(notify.getSendFrom()) && wEntry instanceof FolderEntry) {
+					email = getProfileDao().loadUser(((FolderEntry)wEntry).getParentBinder().getOwnerId(), entry.getZoneId()).getEmailAddress();
+				} else if ("currentuser".equals(notify.getSendFrom())) {
+					User user = RequestContextHolder.getRequestContext().getUser();
+					email = user.getEmailAddress();
+				}
 			}
 			InternetAddress ia = new InternetAddress(email);
 			if (!usingOverride) {

@@ -4575,6 +4575,12 @@
 			<property name="includeFullEntry" caption="__notification_include_full_entry" type="boolean" default="false" />
 			<property name="bodyText" caption="__notification_body_text" type="textarea" />
 			<property name="appendBody" caption="__notification_append_body" type="checkbox" />
+			<property name="sendFrom" caption="__workflow_notification_default_sendFrom" type="selectbox" default="workflow_default">
+				<option name="workflow_default" caption="__workflow_notification_sendFrom_workflowDefault"/>
+				<option name="entryowner" caption="__workflow_notification_sendFrom_entryowner"/>
+				<option name="binderowner" caption="__workflow_notification_sendFrom_binderowner"/>
+				<option name="currentuser" caption="__workflow_notification_sendFrom_currentUser"/>
+			</property>
 		</properties>
 		<options>
 			<option name="ccNotifications" caption="__notification_cclist" />
