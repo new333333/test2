@@ -138,7 +138,7 @@ function ss_checkForWorkflowStateSelection(obj) {
 		    </form>
 		    </td>
 		    <td valign="top" style="padding-left:10px;">
-		     <c:if test="${question.value.workflow_questionEveryoneMustRespond}">
+		     <c:if test="${!empty question.value.workflow_questionResponses}">
 		      <c:set var="hasResponded" value="false"/>
 		      <c:set var="responderCount" value="0"/>
 		      <c:forEach var="responderId" items="${question.value.workflow_questionResponders}">
@@ -166,7 +166,7 @@ function ss_checkForWorkflowStateSelection(obj) {
 			    </div>
 			  </c:if>
 			  <div>
-			    <a href="javascript: ;" onClick="ss_showHide('ss_workflowResponsesDiv');return false;">
+			    <a href="javascript: ;" onClick="ss_showHide('ss_workflowResponsesDiv${ssDefinitionEntry.id}');return false;">
 			      <span class="ss_smallprint"><ssf:nlt tag="workflow.viewResponses"/></span>
 			    </a>
 			  </div>
@@ -250,7 +250,7 @@ function ss_checkForWorkflowStateSelection(obj) {
 				    </form>
 				    </td>
 				    <td valign="top" style="padding-left:10px;">
-				     <c:if test="${question.value.workflow_questionEveryoneMustRespond}">
+				     <c:if test="${!empty question.value.workflow_questionResponses}">
 				      <c:set var="hasResponded" value="false"/>
 				      <c:set var="responderCount" value="0"/>
 				      <c:forEach var="responderId" items="${question.value.workflow_questionResponders}">
@@ -278,7 +278,7 @@ function ss_checkForWorkflowStateSelection(obj) {
 					    </div>
 					  </c:if>
 					  <div>
-					    <a href="javascript: ;" onClick="ss_showHide('ss_workflowResponsesDiv');return false;">
+					    <a href="javascript: ;" onClick="ss_showHide('ss_workflowResponsesDiv${ssDefinitionEntry.id}');return false;">
 					      <span class="ss_smallprint"><ssf:nlt tag="workflow.viewResponses"/></span>
 					    </a>
 					  </div>
@@ -310,7 +310,7 @@ function ss_checkForWorkflowStateSelection(obj) {
 </c:forEach>
 </table>
 </div>
-<div id="ss_workflowResponsesDiv" class="ss_workflow" style="display:none;">
+<div id="ss_workflowResponsesDiv${ssDefinitionEntry.id}" class="ss_workflow" style="display:none;">
   <c:forEach var="workflow3" items="${ssDefinitionEntry.workflowStates}">
   <c:forEach var="question" items="${ssWorkflowQuestions[workflow3.id]}">
     <% java.util.Map haveResponded = new java.util.HashMap(); %>
@@ -350,7 +350,7 @@ function ss_checkForWorkflowStateSelection(obj) {
   </c:forEach>
   <br/>
   <br/>
-  <a class="ss_linkButton" href="javascript: ;" onClick="ss_showHide('ss_workflowResponsesDiv');return false;" 
+  <a class="ss_linkButton" href="javascript: ;" onClick="ss_showHide('ss_workflowResponsesDiv${ssDefinitionEntry.id}');return false;" 
   ><ssf:nlt tag="button.close"/></a>
 </div>
 
