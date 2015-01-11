@@ -169,6 +169,8 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    			String addr = addrs[i].trim();
 		    			if (!n.toEmailAddrs.contains(addr)) n.toEmailAddrs.add(addr);
 		    		}
+		    	} else if ("sendFrom".equals(name)) {
+		    		n.sendFrom = GetterUtil.getString(value, "workflow_default");
 		    	} 
 	    	}
 	 	}
@@ -1408,6 +1410,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 		private Collection<User> toUsers;
 		private Collection<User> ccUsers;
 		private Collection<User> bccUsers;
+		private String sendFrom;
 		
 		public String getSubject() {
 			return subject;
@@ -1444,6 +1447,9 @@ public static void resumeTimers(WorkflowSupport entry) {
 		}
 		public List<String> getBccEmailAddrs() {
 			return bccEmailAddrs;
+		}
+		public String getSendFrom() {
+			return sendFrom;
 		}
 
 	}
