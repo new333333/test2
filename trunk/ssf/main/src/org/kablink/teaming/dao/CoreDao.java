@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Date;
 
+import org.hibernate.ReplicationMode;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.MobileDeviceSelectSpec;
@@ -174,6 +175,7 @@ public interface CoreDao {
     public void registerFileName(Binder binder, DefinableEntity entity, String name);
     public void registerTitle(Binder binder, DefinableEntity entity);
 	public void replicate(Object obj);
+	public void replicate(Object obj, ReplicationMode replicationMode);
 	public void save(Object obj);
 	public Object saveNewSession(Object obj);
 	public Object saveNewSessionWithoutUpdate(Object obj);
