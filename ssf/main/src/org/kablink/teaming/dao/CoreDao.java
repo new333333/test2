@@ -273,10 +273,10 @@ public interface CoreDao {
 	public List<OpenIDProvider> findOpenIDProviders(Long zoneId);
 
     public Date getAuditTrailPurgeDate(final Long zoneId);
-	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate);
-	public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, List<HKey> parentBinderKey, boolean recursive,
+	public List getBasicAuditEntries(final Long zoneId, final Date purgeBeforeDate);
+	public List getBasicAuditEntries(final Long zoneId, final Date sinceDate, List<HKey> parentBinderKey, boolean recursive,
             AuditType [] types, final EntityIdentifier.EntityType[] entityTypes, int maxResults);
-	public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, final List<Long> entryIds,
+	public List getBasicAuditEntries(final Long zoneId, final Date sinceDate, final List<Long> entryIds,
             AuditType [] types, final EntityIdentifier.EntityType[] entityTypes, int maxResults);
 	public int purgeBasicAudit(Long zoneId, Date purgeBeforeDate);
 	public int purgeLoginAudit(Long zoneId, Date purgeBeforeDate);

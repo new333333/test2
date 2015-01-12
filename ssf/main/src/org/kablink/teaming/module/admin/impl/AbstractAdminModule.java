@@ -3723,7 +3723,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   		if (zoneConfig.getAuditTrailKeepDays() > 0) {
   			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getAuditTrailKeepDays()*1000*60*60*24);
   			if (SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.auditTrail", false)) {
-	  			List<BasicAudit> entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);
+	  			List<BasicAudit> entriesToBeDeleted = getCoreDao().getBasicAuditEntries(zoneId, purgeBeforeDate);
 	  			if (writeAuditTrailLogFile(entriesToBeDeleted)) {
 	  				//The entries to be purged were safely logged to disk, so we can delete them from the database
 			  		int auditTrailPurgeCount = getCoreDao().purgeBasicAudit(zoneId, purgeBeforeDate);

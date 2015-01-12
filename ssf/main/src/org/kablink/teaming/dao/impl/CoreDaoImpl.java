@@ -3272,7 +3272,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     }
 
 	@Override
-	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate) {
+	public List getBasicAuditEntries(final Long zoneId, final Date purgeBeforeDate) {
 		long begin = System.nanoTime();
 		try {
 			List results = (List) getHibernateTemplate().execute(
@@ -3297,7 +3297,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	}
 
     @Override
-    public List getAuditTrailEntries(final Long zoneId, final Date sinceDate,
+    public List getBasicAuditEntries(final Long zoneId, final Date sinceDate,
                                      final List<HKey> parentBinderKeys, final boolean recursive,
                                      final AuditType[] types,
                                      final EntityType [] entityTypes, final int maxResults) {
@@ -3357,7 +3357,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     }
 
     @Override
-    public List getAuditTrailEntries(final Long zoneId, final Date sinceDate,
+    public List getBasicAuditEntries(final Long zoneId, final Date sinceDate,
                                      final List<Long> entityIds,
                                      final AuditType[] types,
                                      final EntityType [] entityTypes, final int maxResults) {
