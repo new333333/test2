@@ -570,7 +570,7 @@ public class ListFolderHelper {
 		int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
 		
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-		String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, String.valueOf(binderId));
+		String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, String.valueOf(binderId) + "_");
 		String calendarModeType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_MODE_TYPE, "");
 		
 		Date currentDate = EventsViewHelper.getCalendarCurrentDate(portletSession);
@@ -583,7 +583,7 @@ public class ListFolderHelper {
 		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 		TimeZone timeZone = user.getTimeZone();
 		
-		Grid oldGrid = EventsViewHelper.getCalendarGrid(portletSession, userProperties, binderId.toString());
+		Grid oldGrid = EventsViewHelper.getCalendarGrid(portletSession, userProperties, binderId.toString() + "_");
 		String gridType = "";
 		Integer gridSize = -1;
 		if (oldGrid != null) {
@@ -619,7 +619,7 @@ public class ListFolderHelper {
 
    		String strSessGridType = gridType;
    		Integer sessGridSize = gridSize;
-   		EventsViewHelper.Grid grid = EventsViewHelper.getCalendarGrid(portletSession, userProperties, binderId.toString());
+   		EventsViewHelper.Grid grid = EventsViewHelper.getCalendarGrid(portletSession, userProperties, binderId.toString() + "_");
    		if (grid != null) {
    			strSessGridType = grid.type;
    			sessGridSize = grid.size;

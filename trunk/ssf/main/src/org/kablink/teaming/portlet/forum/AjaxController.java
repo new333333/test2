@@ -2017,7 +2017,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, String.valueOf(binderId));
+		String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, String.valueOf(binderId) + "_");
 		
 		String eventType = PortletRequestUtils.getStringParameter(request, "eventType", "");
 		if (!"".equals(eventType)) {
@@ -2608,7 +2608,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			List binderIds = Arrays.asList(PortletRequestUtils.getStringParameters(request, WebKeys.URL_BINDER_IDS));
 			model.put(WebKeys.URL_DASHBOARD_REQUEST, PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_DASHBOARD_REQUEST, false));
 			Binder binder = getBinderModule().getBinder(binderId);
-			String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, String.valueOf(binderId));
+			String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, String.valueOf(binderId) + "_");
 			String calendarModeType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_MODE_TYPE, "");
 						
 			Map options = new HashMap();
