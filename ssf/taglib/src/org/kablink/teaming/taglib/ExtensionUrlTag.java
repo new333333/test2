@@ -45,6 +45,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 
 /**
@@ -79,7 +80,9 @@ public class ExtensionUrlTag extends BodyTagSupport   {
 			String extensionName = ((Document) pageContext.getRequest()
 							.getAttribute(WebKeys.CONFIG_DEFINITION)).getRootElement()
 							.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_EXTENSION, "");
-			String fullUrl = ((HttpServletRequest)pageContext.getRequest()).getContextPath() +  "/ext/" + RequestContextHolder.getRequestContext().getZoneName() +
+			
+			String zoneName = Utils.getZoneKey(); 
+			String fullUrl = ((HttpServletRequest)pageContext.getRequest()).getContextPath() +  "/ext/" + zoneName + 
 							"/" + extensionName + "/" + url;
 
 			pageContext.getOut().print(fullUrl);
