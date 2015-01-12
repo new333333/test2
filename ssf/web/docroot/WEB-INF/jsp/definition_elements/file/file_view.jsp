@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,6 +40,8 @@
 <%
 	Map<String,Boolean> ss_entryAttributesSeen = new java.util.HashMap<String,Boolean>();
 	String thisEntryId = ssDefinitionEntry.getId().toString();
+	
+	boolean entryInTrash = (ssDefinitionEntry instanceof FolderEntry && ((FolderEntry)ssDefinitionEntry).isPreDeleted());
 %>
 <c:set var="ss_entryAttributesSeen" value="<%= ss_entryAttributesSeen %>" scope="request" />
 <c:set var="thisEntryId" value="<%= thisEntryId %>" />
@@ -101,31 +103,44 @@
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
           </div>
         </td>
-	    <td  style="white-space: nowrap;">
-		  <div class="ss_entryTitleFileVersion"><ssf:nlt tag="file.versionNumber"><ssf:param
-			name="value" value="${selection.fileVersion}"/></ssf:nlt></div>
-		</td>
-		<td style="white-space: nowrap;">
-          <div class="ss_entryTitleFileVersion">
-            <c:set var="ss_attachedFile" value="${selection}" scope="request" />
-            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_status.jsp" />
-          </div>
-		</td>
-		<td style="white-space: nowrap;">
-          <div class="ss_entryTitleFileVersion">
-            <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
-            <c:set var="ss_attachedFile" value="${selection}" scope="request" />
-            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
-          </div>
-		</td>
-		<td style="white-space: nowrap;">
-          <div class="ss_entryTitleFileVersion">
-            <c:set var="ss_attachedFileShowEditButton" value="true" scope="request"/>
-            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions_edit_button.jsp" />
-            <c:set var="ss_attachedFileShowEditButton" value="false" scope="request"/>
-          </div>
-		</td>
-		<td <% if (!BrowserSniffer.is_ie(request)) { %>width="100%" <% } %> >&nbsp;</td>
+        
+        <% if (entryInTrash) { %>
+        	<td style = "shite-space: nowrap;">
+				<div style="display: inline; margin:0px 30px;"><span class="wiki-noentries-panel"><ssf:nlt tag="entry.inTheTrash"/></span></div>
+			</td>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		<% } %>
+        
+        <% if (!entryInTrash) { %>
+		    <td  style="white-space: nowrap;">
+			  <div class="ss_entryTitleFileVersion"><ssf:nlt tag="file.versionNumber"><ssf:param
+				name="value" value="${selection.fileVersion}"/></ssf:nlt></div>
+			</td>
+			<td style="white-space: nowrap;">
+	          <div class="ss_entryTitleFileVersion">
+	            <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+	            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_status.jsp" />
+	          </div>
+			</td>
+			<td style="white-space: nowrap;">
+	          <div class="ss_entryTitleFileVersion">
+	            <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
+	            <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+	            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
+	          </div>
+			</td>
+			<td style="white-space: nowrap;">
+	          <div class="ss_entryTitleFileVersion">
+	            <c:set var="ss_attachedFileShowEditButton" value="true" scope="request"/>
+	            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions_edit_button.jsp" />
+	            <c:set var="ss_attachedFileShowEditButton" value="false" scope="request"/>
+	          </div>
+			</td>
+			<td <% if (!BrowserSniffer.is_ie(request)) { %>width="100%" <% } %> >&nbsp;</td>
+	  <% } %>
       </tr>
       <c:if test="${!empty selection.fileItem.description.text}">
       <tr>
@@ -235,4 +250,3 @@ ss_createOnLoadObj("ss_focusOnEntry", ss_focusOnEntry);
 <c:if test="${ss_parentFolderViewStyle != 'wiki'}">
   <%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
 </c:if>
-

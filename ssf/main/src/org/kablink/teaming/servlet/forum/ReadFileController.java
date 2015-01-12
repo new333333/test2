@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -536,45 +536,52 @@ public class ReadFileController extends AbstractReadFileController {
 											}
 											if (fa != null && operation.equals(WebKeys.URL_SHARE_PUBLIC_LINK)) {
 												DefinableEntity entity = fa.getOwner().getEntity();
-												String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-												String contentType = FileUtils.getMimeContentType(getFileTypeMap(), shortFileName);
-												WebUrlUtil.getSharedPublicFileUrl(request, shareItem.getId(), shareItem.getPassKey(), WebKeys.URL_SHARE_PUBLIC_LINK, shortFileName);
-												//Protect against XSS attacks if this is an HTML file
-												contentType = FileUtils.validateDownloadContentType(contentType);
-				
-												if (!(contentType.toLowerCase().contains("charset"))) {
-													String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
-													if (MiscUtil.hasString(encoding)) {
-														contentType += ("; charset=" + encoding);
+												if ((entity instanceof FolderEntry) && ((FolderEntry) entity).isPreDeleted()) {
+													logger.error("Error:  Cannot download a file that's in the trash.");
+													response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.inTrash"));
+												}
+												
+												else {
+													String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
+													String contentType = FileUtils.getMimeContentType(getFileTypeMap(), shortFileName);
+													WebUrlUtil.getSharedPublicFileUrl(request, shareItem.getId(), shareItem.getPassKey(), WebKeys.URL_SHARE_PUBLIC_LINK, shortFileName);
+													//Protect against XSS attacks if this is an HTML file
+													contentType = FileUtils.validateDownloadContentType(contentType);
+					
+													if (!(contentType.toLowerCase().contains("charset"))) {
+														String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+														if (MiscUtil.hasString(encoding)) {
+															contentType += ("; charset=" + encoding);
+														}
 													}
-												}
-												response.setContentType(contentType);
-												boolean isHttps = request.getScheme().equalsIgnoreCase("https");
-												String cacheControl = "private, max-age=86400";
-												if (isHttps) {
-													response.setHeader("Pragma", "public");
-													cacheControl += ", proxy-revalidate, s-maxage=0";
-												}
-												response.setHeader("Cache-Control", cacheControl);
-												String attachment = "";
-												if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
-												response.setHeader("Content-Disposition",
-														attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
-												response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
-												try {
-													Binder parent = getBinder(entity);
-													if (!fa.isEncrypted()) {
-														//The file length cannot be guaranteed if the file is encrypted. It is better to leave this field off in that case.
-														response.setHeader("Content-Length", 
-															String.valueOf(FileHelper.getLength(parent, entity, fa)));
+													response.setContentType(contentType);
+													boolean isHttps = request.getScheme().equalsIgnoreCase("https");
+													String cacheControl = "private, max-age=86400";
+													if (isHttps) {
+														response.setHeader("Pragma", "public");
+														cacheControl += ", proxy-revalidate, s-maxage=0";
 													}
-													getFileModule().readFile(parent, entity, fa, response.getOutputStream());
-													//Report the file download in the audit trail
-													getReportModule().addFileInfo(AuditType.view, fa, recipient);
-												}
-												catch(Exception e) {
-													logger.error("Error reading file", e);
-													response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getMessage());
+													response.setHeader("Cache-Control", cacheControl);
+													String attachment = "";
+													if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
+													response.setHeader("Content-Disposition",
+															attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
+													response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
+													try {
+														Binder parent = getBinder(entity);
+														if (!fa.isEncrypted()) {
+															//The file length cannot be guaranteed if the file is encrypted. It is better to leave this field off in that case.
+															response.setHeader("Content-Length", 
+																String.valueOf(FileHelper.getLength(parent, entity, fa)));
+														}
+														getFileModule().readFile(parent, entity, fa, response.getOutputStream());
+														//Report the file download in the audit trail
+														getReportModule().addFileInfo(AuditType.view, fa, recipient);
+													}
+													catch(Exception e) {
+														logger.error("Error reading file", e);
+														response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getMessage());
+													}
 												}
 												
 											} else if (fa != null && operation.equals(WebKeys.URL_SHARE_PUBLIC_LINK_HTML)) {
@@ -695,7 +702,11 @@ public class ReadFileController extends AbstractReadFileController {
 					getProfileModule().setSeen(null, ((Entry) entity));
 				}
 	
-				if (fa != null) {
+				if ((entity instanceof FolderEntry) && (((FolderEntry) entity).isPreDeleted())) {
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.inTrash"));
+				}
+				
+				else if (fa != null) {
 					// Can the user download files?
 					boolean canDownload = AdminHelper.getEffectiveDownloadSetting(this, RequestContextHolder.getRequestContext().getUser());
 					if (canDownload) {
