@@ -4704,14 +4704,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
     private boolean haveAclsChangedSinceDate(List<HKey> binderKeys, Date sinceDate) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, true,
+        List aclChanges = getCoreDao().getBasicAuditEntries(zoneId, sinceDate, binderKeys, true,
                 new AuditType[]{AuditType.acl}, null, 1);
         return aclChanges.size()>0;
     }
 
     private boolean haveFolderRightsChangedSinceDate(Set<Long> folderIds, Date sinceDate) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, new ArrayList<Long>(folderIds),
+        List aclChanges = getCoreDao().getBasicAuditEntries(zoneId, sinceDate, new ArrayList<Long>(folderIds),
                 new AuditType[]{AuditType.acl}, null, 1);
         return aclChanges.size()>0;
     }
@@ -4741,14 +4741,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
     private List getDeletedAuditTrailEntriesByBinder(List<HKey>  binderKeys, boolean recursive, Date sinceDate, int maxResults) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, recursive,
+		return getCoreDao().getBasicAuditEntries(zoneId, sinceDate, binderKeys, recursive,
 				new AuditType[]{AuditType.delete, AuditType.preDelete},
 				new EntityType[] {EntityType.folderEntry,EntityType.folder,EntityType.workspace}, maxResults);
     }
 
     private List getDeletedAuditTrailEntriesByEntity(List<Long> entryIds, Date sinceDate, int maxResults) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, entryIds,
+		return getCoreDao().getBasicAuditEntries(zoneId, sinceDate, entryIds,
 				new AuditType[]{AuditType.delete, AuditType.preDelete},
 				new EntityType[] {EntityType.folderEntry,EntityType.folder,EntityType.workspace}, maxResults);
     }
