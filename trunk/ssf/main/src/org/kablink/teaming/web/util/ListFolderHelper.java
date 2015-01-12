@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -664,15 +664,24 @@ public class ListFolderHelper {
 		intervals.add(intervalView.getVisibleIntervalRaw());
        	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervals);
        	
-		AbstractIntervalView calendarViewRangeDates = new OneMonthView(currentDate, weekFirstDay);
+		AbstractIntervalView calendarViewRangeDates = intervalView; //! new OneMonthView(currentDate, weekFirstDay);
        	String start = DateTools.dateToString(calendarViewRangeDates.getVisibleStart(), DateTools.Resolution.SECOND);
        	String end =  DateTools.dateToString(calendarViewRangeDates.getVisibleEnd(), DateTools.Resolution.SECOND);
        	
-       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, start);
-       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, end);
-
-       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, start);
-       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, end);
+		String eventsType = EventsViewHelper.getCalendarDisplayEventType(bs, user.getId(), binderId);
+		boolean eventDate    = ((null != eventsType) && "event".equals(eventsType));
+		boolean activityDate = ((null != eventsType) && "activity".equals(eventsType));
+		boolean creationDate = ((null != eventsType) && "creation".equals(eventsType));
+		boolean virtual      = ((null != eventsType) && "virtual".equals(eventsType));
+		
+		if (activityDate) {
+			options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, start);
+			options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, end);
+		}
+		else if (creationDate) {
+	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, start);
+	       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, end);
+		}
 
        	if (!calendarModeType.equals(ObjectKeys.CALENDAR_MODE_TYPE_MY_EVENTS)) {
 			//See if there is a filter turned on for this folder. But don't do it for the MyEvents display
@@ -692,9 +701,6 @@ public class ListFolderHelper {
 		if (binder instanceof Folder || binder instanceof Workspace) {
 			// Yes!  Are we searching for physical events using
 			// a filter?
-			boolean virtual;
-			String eventsType = EventsViewHelper.getCalendarDisplayEventType(bs, user.getId(), binderId);
-			virtual = ((null != eventsType) && "virtual".equals(eventsType));
 			if ((!virtual) && filtered) {
 				// Yes!  Simply perform the search using that
 				// filter.
