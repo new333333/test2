@@ -25,6 +25,7 @@
 		.vibe-feView-headerContentTitleFileSize       {color: #666666; padding-left: 15px; font-size: 13px; vertical-align: top;}
 		.vibe-feView-headerContentTitleMarkRead       {cursor: pointer; padding-right: 3px;}
 		.vibe-feView-headerContentTitlePanel          {display: inline-block;}
+		.vibe-feView-headerContentTitleTrashed        {margin-left: 25px; display: inline-block !important;}
 		.vibe-feView-headerDescription                {display: block; position: relative; margin-top: 10px;}
 		.vibe-feView-headerDescriptionAnchor          {cursor: pointer;}
 		.vibe-feView-headerDescriptionAnchor:hover    {color: #135c8f !important; cursor: pointer; background-color: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
