@@ -35,6 +35,7 @@ package org.kablink.teaming.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.util.SPropsUtil;
 
 /**
@@ -57,19 +58,20 @@ public class DeletedBinder extends ZonedObject implements Serializable {
 	}
 	
 	// For application
-	public DeletedBinder(EntityIdentifier.EntityType binderType, Long binderId) {
+	public DeletedBinder(EntityIdentifier.EntityType binderType, Long binderId, Long zoneId) {
 		if(binderType == null)
 			throw new IllegalArgumentException("Binder type must be specified");
 		if(binderId == null)
 			throw new IllegalArgumentException("Binder ID must be specified");
 		this.binderType = (short) binderType.getValue();
 		this.binderId = binderId;
+		this.zoneId = zoneId;
 	}
 	
 	// For application
 	public DeletedBinder(EntityIdentifier.EntityType binderType, Long binderId,
-			Date deletedDate, String binderPath) {
-		this(binderType, binderId);
+			Date deletedDate, String binderPath, Long zoneId) {
+		this(binderType, binderId, zoneId);
 		this.deletedDate = deletedDate;
 		setBinderPath(binderPath);
 	}
@@ -77,7 +79,8 @@ public class DeletedBinder extends ZonedObject implements Serializable {
 	public DeletedBinder(Binder binder) {
 		this(binder.getEntityType(), binder.getId(),
 				computeDeletedDate(binder),
-				binder.getPathName());
+				binder.getPathName(),
+				binder.getZoneId());
 	}
 	
 	private static Date computeDeletedDate(Binder binder) {

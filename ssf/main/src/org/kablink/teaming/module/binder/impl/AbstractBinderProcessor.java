@@ -57,6 +57,7 @@ import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Element;
+import org.hibernate.ReplicationMode;
 import org.hibernate.exception.LockAcquisitionException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.IllegalCharacterInNameException;
@@ -1256,7 +1257,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		//create a log for the binder being deleted.
 		try {
 			DeletedBinder deletedBinder = new DeletedBinder(binder);
-			getCoreDao().save(deletedBinder);
+			getCoreDao().replicate(deletedBinder, ReplicationMode.OVERWRITE);
 		}
 		catch(Exception e) {
 			logger.error("Error creating DeletedBinder for binder " + binder.getId(), e);

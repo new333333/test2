@@ -340,6 +340,24 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	@Override
+	public void replicate(final Object obj, final ReplicationMode replicationMode) {
+		long begin = System.nanoTime();
+		try {
+	      getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException {
+                    	 session.replicate(obj, replicationMode);
+                    	 return null;
+                    }
+                }
+            );
+    	}
+    	finally {
+    		end(begin, "replicate(Object, ReplicationMode)");
+    	}	        
+	}
+	@Override
 	public SFQuery queryObjects(final ObjectControls objs, FilterControls filter, final Long zoneId) { 
 		long begin = System.nanoTime();
 		try {
@@ -634,7 +652,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	    	   			 * rather than in the second GC phase.
 	    	   			try {
 		    	   			DeletedBinder deletedBinder = new DeletedBinder(binder);
-		    	   			session.save(deletedBinder);
+							getCoreDao().replicate(deletedBinder, ReplicationMode.OVERWRITE);
 	    	   			}
 	    	   			catch(Exception e) {
 	    	   				logger.error("Error creating DeletedBinder for binder " + binder.getId(), e);
