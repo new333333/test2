@@ -37,7 +37,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.webdav.util.WebdavUtils;
@@ -147,7 +149,7 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 		*/
 		if(WebdavUtils.userCanAccessMyFiles(this))
 			list.add(new MyFilesResource(factory));
-		if(WebdavUtils.userCanAccessNetFolders())
+		if(LicenseChecker.isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_FILR, true) && WebdavUtils.userCanAccessNetFolders())
 			list.add(new NetFoldersResource(factory));
 		list.add(new SharedWithMeResource(factory));
 		return list;
