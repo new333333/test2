@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,7 +37,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,6 +54,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -67,9 +67,9 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.util.ZipEntryStream;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -87,12 +87,18 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
+
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"unchecked", "unused"})
 public class ConfigureConfigurationController extends  SAbstractController {
-	
+	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
@@ -304,7 +310,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 	protected Long loadTemplates(Binder parentBinder, String fileName, InputStream fIn, boolean replace, List errors)
 	{
 		try {
-			SAXReader xIn = new SAXReader();
+			SAXReader xIn = XmlUtil.getSAXReader();
 			Document doc = xIn.read(fIn);  
 			return getTemplateModule().addTemplate(parentBinder, doc, replace).getId();
 		} catch (Exception fe) {
@@ -312,6 +318,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		}
 		return null;
 	}
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -680,6 +687,4 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		model.put(WebKeys.FORUM_TOOLBAR,  toolbar.getToolbar());
 		model.put(WebKeys.DASHBOARD_TOOLBAR,  dashboardToolbar.getToolbar());
 	}
-	
-
 }

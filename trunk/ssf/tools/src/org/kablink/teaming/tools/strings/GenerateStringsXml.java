@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,9 +44,18 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.FileSystemResourceLoader;
 
+import org.xml.sax.SAXException;
+
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
 public class GenerateStringsXml {
 	public static void main(String[] args) {
 		if ((args.length == 0) || (args.length > 1)) {
@@ -60,13 +69,13 @@ public class GenerateStringsXml {
 			e.printStackTrace();
 		}
 	}
+	
 	private static void doMain(String pathname) throws Exception {
-		
 		String inFile = pathname + File.separator + "xslt" + File.separator + "strings.xml.tmpl";
 		String outFile = pathname + File.separator + "xslt" + File.separator + "strings.xml";
 		
 		Document document = null;
-        SAXReader reader = new SAXReader();
+        SAXReader reader = fixSAXReaderSecurity(new SAXReader());
         InputStreamReader fIn=null;
         try {
         	fIn = new InputStreamReader(new FileInputStream(inFile), "UTF-8");
@@ -129,5 +138,21 @@ public class GenerateStringsXml {
 				temp.addText(text);
 			}
 		}
+	}
+	
+	/*
+	 * Implements a fix for bug#901787 on a newly constructed
+	 * SAXReader.
+	 */
+	private static SAXReader fixSAXReaderSecurity(SAXReader saxReader) {
+		try {
+			saxReader.setFeature("http://xml.org/sax/features/external-general-entities",   false);
+			saxReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+		}
+		catch (SAXException e) {
+//			m_logger.error("fixSAXReaderSecurity( SAXException ):  ", e);
+			saxReader = null;
+		}
+		return saxReader;
 	}
 }

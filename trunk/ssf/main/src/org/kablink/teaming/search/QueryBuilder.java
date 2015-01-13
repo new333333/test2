@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.search;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,29 +50,25 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
-import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.lucene.util.LanguageTaster;
-import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.dao.SecurityDao;
 import org.kablink.teaming.security.function.Condition;
-import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -82,13 +76,15 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlUtil;
 import org.kablink.util.search.Constants;
 
-
-
-
 import static org.kablink.util.search.Constants.*;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"unchecked", "unused"})
 public class QueryBuilder {
-
 	private static final String DEFAULT = LanguageTaster.DEFAULT;
 	
 	private static final String TEAM_PREFIX=Constants.TEAM_ACL_FIELD + ":";
@@ -946,7 +942,7 @@ public class QueryBuilder {
 	}
 	public void test() {
 		Document document = null;
-		SAXReader reader = new SAXReader();
+		SAXReader reader = XmlUtil.getSAXReader();
 		try {
 			URL url = new URL("file:///c|/v8/query.txt");
 			document = reader.read(url);

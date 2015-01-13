@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,12 +35,31 @@ package org.kablink.teaming.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-public class XmlUtil {
+import org.xml.sax.SAXException;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
+public class XmlUtil {
+	protected static Log m_logger = LogFactory.getLog(XmlUtil.class);
+	
+	/**
+	 * ?
+	 * 
+	 * @param doc
+	 * 
+	 * @return
+	 */
 	public static String asPrettyString(Document doc) {
 		try {
 			OutputFormat format = OutputFormat.createPrettyPrint();
@@ -55,4 +74,39 @@ public class XmlUtil {
 		}
 	}
 	
+	/**
+	 * Constructs and returns a 'safe' SAXReader.
+	 * 
+	 * @return
+	 */
+	public static SAXReader getSAXReader() {
+		return fixSAXReaderSecurity(new SAXReader());
+	}
+	
+	/**
+	 * Constructs and returns a 'safe' SAXReader.
+	 *
+	 * @param validating
+	 * 
+	 * @return
+	 */
+	public static SAXReader getSAXReader(boolean validating) {
+		return fixSAXReaderSecurity(new SAXReader(validating));
+	}
+	
+	/*
+	 * Implements a fix for bug#901787 on a newly constructed
+	 * SAXReader.
+	 */
+	private static SAXReader fixSAXReaderSecurity(SAXReader saxReader) {
+		try {
+			saxReader.setFeature("http://xml.org/sax/features/external-general-entities",   false);
+			saxReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+		}
+		catch (SAXException e) {
+			m_logger.error("fixSAXReaderSecurity( SAXException ):  ", e);
+			saxReader = null;
+		}
+		return saxReader;
+	}
 }

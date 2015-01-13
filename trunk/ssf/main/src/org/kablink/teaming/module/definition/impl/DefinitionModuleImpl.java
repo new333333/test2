@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -64,6 +64,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.DefinitionExistsException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -123,6 +124,7 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.LocaleUtils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
@@ -131,8 +133,10 @@ import org.kablink.util.GetterUtil;
 import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
+
 import org.w3c.tidy.Tidy;
 import org.w3c.tidy.TidyMessage;
 
@@ -241,7 +245,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		throws AccessControlException,DocumentException {
 	/*The current xsd is really for the configuration file.  The export defintions don't follow all the rules,
 	  xsd:sequence in particular.  Until we either fix this or build a new xsd, this validating code is disabled.
-		SAXReader xIn = new SAXReader(true);
+		SAXReader xIn = XmlUtil.getSAXReader(true);
         // The following code turns on XML schema-based validation
         // features specific to Apache Xerces2 parser. Therefore it
         // will not work when a different parser is used.
@@ -251,7 +255,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                 "http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",
                 DirPath.getDTDDirPath() + File.separator + "definition_builder_config.xsd");
 	 */
-		SAXReader xIn = new SAXReader(false);
+		SAXReader xIn = XmlUtil.getSAXReader(false);
 		Document doc = xIn.read(indoc);
 		String type = doc.getRootElement().attributeValue("type");
 	   	checkAccess(binder, Integer.valueOf(type), DefinitionOperation.manageDefinition);
@@ -945,7 +949,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		try {
 	        Resource resource =  new ClassPathResource("config"  + File.separator +  key);
 			InputStream fIn = resource.getInputStream();
-	        SAXReader xIn = new SAXReader();
+	        SAXReader xIn = XmlUtil.getSAXReader();
 			Document doc = xIn.read(fIn);
 			fIn.close();
 			String id = addDefinition(doc);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -51,12 +51,14 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.AbstractAttribute;
+
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -89,20 +91,20 @@ import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.util.ZipEntryStream;
 import org.kablink.util.LockFile;
 import org.kablink.util.Validator;
+
 import org.springframework.util.FileCopyUtils;
 
-
 /**
- * @author Nathan Jensen
- * 
  * Listens for and deploys extensions.
  * 
+ * @author Nathan Jensen
  */
+@SuppressWarnings({"unchecked", "unused"})
 public class ExtensionDeployerImpl extends CommonDependencyInjection implements ExtensionDeployer {
-
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private String infPrefix = "WEB-INF";
@@ -169,6 +171,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	 * Called on a timer.  Need to handle all zones
 	 *
 	 */
+	@Override
 	public void check() {
 		//call each zone
 		final List companies = getCoreDao().findCompanies();
@@ -298,11 +301,12 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		}
 	}
 	
+	@Override
 	public void deploy(File extension, boolean full, String deployedDate) throws IOException {
 		getAdminModule().checkAccess(AdminOperation.manageExtensions);
 		String zoneKey = Utils.getZoneKey();
 		logger.info("Deploying new extension from " + extension.getPath());
-		SAXReader reader = new SAXReader(false);
+		SAXReader reader = XmlUtil.getSAXReader(false);
 		reader.setIncludeExternalDTDDeclarations(false);
 		
 		//Get the extension name
@@ -364,16 +368,18 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 								definition.getPath());
 						
 					try {
-						SAXReader xIn = new SAXReader(false);
+						SAXReader xIn = XmlUtil.getSAXReader(false);
 						final Document document = xIn.read(definition);
 						
 							// record the "owning" extension
 						document.getRootElement().add(new AbstractAttribute() {
 								private static final long serialVersionUID = -7880537136055718310L;
+								@Override
 								public QName getQName() {
 									return new QName(ObjectKeys.XTAG_ATTRIBUTE_EXTENSION, document
 											.getRootElement().getNamespace());
 								}
+								@Override
 								public String getValue() {
 									return extensionPrefix;
 								}
@@ -400,7 +406,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 						logger.debug("Registering template from " + template.getPath());
 						
 					try {
-						SAXReader xIn = new SAXReader(false);
+						SAXReader xIn = XmlUtil.getSAXReader(false);
 						final Document document = xIn.read(template);
 						// attempt to add
 						getTemplateModule().addTemplate(null, document, true);
@@ -437,17 +443,20 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		this.infPrefix = infPrefix;
 	}
 	protected class XMLFilter implements FilenameFilter {
-	    public boolean accept(File dir, String name) {
+	    @Override
+		public boolean accept(File dir, String name) {
 	        return (name.toLowerCase().endsWith(".xml"));
 	    }
 	}
 	protected class LibFilter implements FilenameFilter {
-	    public boolean accept(File dir, String name) {
+	    @Override
+		public boolean accept(File dir, String name) {
 	        return (name.toLowerCase().endsWith(".jar"));
 	    }
 	}
 	protected class FileOnlyFilter implements FileFilter {
-	    public boolean accept(File file) {
+	    @Override
+		public boolean accept(File file) {
 	        if (file.isDirectory()) return false;
 	        return !file.getName().equals(LOCKFILE) && !file.getName().equals(TSFILE);
 	    }
@@ -476,6 +485,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	//2. Cannot Remove from ClassLoader - may require a restart
 	//3. Done - Remove Dirs
 	//3. Done - Remove keys from TS properties 
+	@Override
 	public boolean remove(File extension) {
 		boolean removeFiles = false;
 		logger.info("Begin remove extension " + extension.getPath());
@@ -541,7 +551,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 							definition.getPath());
 					
 				try {
-					SAXReader xIn = new SAXReader(false);
+					SAXReader xIn = XmlUtil.getSAXReader(false);
 					
 					final Document document = xIn.read(definition);
 					
@@ -551,10 +561,12 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 						// record the "owning" extension
 					document.getRootElement().add(new AbstractAttribute() {
 							private static final long serialVersionUID = -7880537136055718310L;
+							@Override
 							public QName getQName() {
 								return new QName(ObjectKeys.XTAG_ATTRIBUTE_EXTENSION, document
 										.getRootElement().getNamespace());
 							}
+							@Override
 							public String getValue() {
 								return extensionPrefix;
 							}
@@ -613,7 +625,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 					logger.debug("Registering template from " + template.getPath());
 					
 				try {
-					SAXReader xIn = new SAXReader(false);
+					SAXReader xIn = XmlUtil.getSAXReader(false);
 					final Document document = xIn.read(template);
 					
 					 Element config = document.getRootElement();
@@ -659,6 +671,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	}
 	
 	//1. Move Extension to removal dir
+	@Override
 	public boolean removeExtension(ExtensionInfo ext) {
 		getAdminModule().checkAccess(AdminOperation.manageExtensions);
 		
@@ -780,6 +793,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		return true;
 	}
 	
+	@Override
 	public boolean checkDefinitionsInUse(ExtensionInfo ext){
 
 		ZoneInfo zone = getZoneModule().getZoneInfo(ext.getZoneId());
@@ -842,16 +856,18 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 							definition.getPath());
 					
 				try {
-					SAXReader xIn = new SAXReader(false);
+					SAXReader xIn = XmlUtil.getSAXReader(false);
 					
 					final Document document = xIn.read(definition);
 					// record the "owning" extension
 					document.getRootElement().add(new AbstractAttribute() {
 							private static final long serialVersionUID = -7880537136055718310L;
+							@Override
 							public QName getQName() {
 								return new QName(ObjectKeys.XTAG_ATTRIBUTE_EXTENSION, document
 										.getRootElement().getNamespace());
 							}
+							@Override
 							public String getValue() {
 								return extensionPrefix;
 							}
@@ -891,6 +907,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	}
 	
 	
+	@Override
 	public void addExtension(ExtensionInfo extension) {
 		getAdminModule().addExtension(extension);
 	}
@@ -899,6 +916,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	 * Remove the extensionInfo object from the database.
 	 * 
 	 */
+	@Override
 	public boolean deleteExtension(ExtensionInfo extension) {
 		
 		boolean retValue = true;
@@ -907,6 +925,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		return retValue;
 	}
 
+	@Override
 	public List findExtensions() {
 //		OrderBy order = new OrderBy();
 //		order.addColumn("name");
@@ -918,6 +937,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		return findExtensions(zoneId);
 	}
 	
+	@Override
 	public List findExtensions(Long zoneId) {
 		OrderBy order = new OrderBy();
 		order.addColumn("name");
@@ -926,6 +946,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		return getCoreDao().loadObjects(ExtensionInfo.class, filter, zoneId);
 	}
 
+	@Override
 	public ExtensionInfo getExtension(String id)
 			throws NoObjectByTheIdException {
 		ExtensionInfo extension = null;
@@ -938,6 +959,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		return extension;
 	}
 
+	@Override
 	public void updateExtension(ExtensionInfo newInfo, ExtensionInfo existingInfo) {
 		
 		existingInfo.setAuthor(newInfo.getAuthor());
@@ -951,6 +973,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		
 		getAdminModule().modifyExtension(existingInfo);
 	}
+	@Override
 	public List findExtensions(String name, Long zoneId) {
 		return getCoreDao().loadObjects(new ObjectControls(ExtensionInfo.class), new FilterControls("name", name), zoneId);
 	}
@@ -972,7 +995,7 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 		}
 		
 		try {
-			SAXReader xInstall = new SAXReader(false);
+			SAXReader xInstall = XmlUtil.getSAXReader(false);
 			final Document installDoc = xInstall.read(installFile);
 			if( installDoc != null && installDoc.getRootElement() != null) {
 				
