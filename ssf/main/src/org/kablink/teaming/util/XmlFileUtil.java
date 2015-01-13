@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,12 +43,20 @@ import java.io.StringWriter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
+import org.kablink.teaming.util.XmlUtil;
+
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public class XmlFileUtil {
 	public static String FILE_ENCODING="UTF-8";
 	protected static Log logger = LogFactory.getLog(XmlFileUtil.class);
@@ -66,7 +74,7 @@ public class XmlFileUtil {
 	public static Document readFile(String path) 
 	throws Exception {
 	Document document = null;
-    SAXReader reader = new SAXReader();
+    SAXReader reader = XmlUtil.getSAXReader();
     InputStreamReader fIn=null;
     try {
     	if (FILE_ENCODING.equals(""))
@@ -90,7 +98,7 @@ public class XmlFileUtil {
 	public static Document readStream(InputStream fIn) 
 	throws Exception {
 	Document document = null;
-    SAXReader reader = new SAXReader();
+    SAXReader reader = XmlUtil.getSAXReader();
     try {
     	document = reader.read(fIn);
     } catch (Exception ex) {
@@ -158,7 +166,7 @@ public class XmlFileUtil {
 		
 		ByteArrayInputStream byteArrayInputStream = null; 
 		
-		SAXReader saxReader = new SAXReader();
+		SAXReader saxReader = XmlUtil.getSAXReader();
 		
 		try {
 			//the fileContent must contain a valid tag at the start of the text

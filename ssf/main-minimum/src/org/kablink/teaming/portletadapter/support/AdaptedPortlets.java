@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,21 +43,29 @@ import javax.servlet.ServletException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.portletadapter.portlet.PortletConfigImpl;
 import org.kablink.teaming.portletadapter.portlet.PortletContextImpl;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
+import org.xml.sax.SAXException;
 
-public class AdaptedPortlets implements ServletContextAware, InitializingBean,
-	DisposableBean {
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
+public class AdaptedPortlets implements ServletContextAware, InitializingBean, DisposableBean {
 	protected static final Log logger = LogFactory.getLog(AdaptedPortlets.class);
 
 	private static AdaptedPortlets instance; // singleton instance
@@ -80,6 +88,7 @@ public class AdaptedPortlets implements ServletContextAware, InitializingBean,
 		return instance;
 	}
 	
+	@Override
 	public void setServletContext(ServletContext servletContext) {
 		this.servletContext = servletContext;		
 	}
@@ -103,12 +112,13 @@ public class AdaptedPortlets implements ServletContextAware, InitializingBean,
 		return false;
 	}
 	
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		portletContext = new PortletContextImpl(getServletContext());
 
 		// Since portlet.xml is processed by the portlet container, it will be
     	// validated any way. So we will not bother with validation here. 
-        SAXReader reader = new SAXReader(false);  
+        SAXReader reader = fixSAXReaderSecurity(new SAXReader(false));
         Document doc = null;
         try {
 			doc = reader.read(getServletContext().getResourceAsStream("/WEB-INF/portlet.xml"));
@@ -157,10 +167,27 @@ public class AdaptedPortlets implements ServletContextAware, InitializingBean,
 		return getInstance().portletContext;
 	}
 
+	@Override
 	public void destroy() throws Exception {
 		for(Iterator i = portlets.values().iterator(); i.hasNext();) {
 			PortletInfo portletInfo = (PortletInfo) i.next();
 			portletInfo.getPortlet().destroy();
 		}
+	}
+	
+	/*
+	 * Implements a fix for bug#901787 on a newly constructed
+	 * SAXReader.
+	 */
+	private static SAXReader fixSAXReaderSecurity(SAXReader saxReader) {
+		try {
+			saxReader.setFeature("http://xml.org/sax/features/external-general-entities",   false);
+			saxReader.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+		}
+		catch (SAXException e) {
+			logger.error("fixSAXReaderSecurity( SAXException ):  ", e);
+			saxReader = null;
+		}
+		return saxReader;
 	}
 }
