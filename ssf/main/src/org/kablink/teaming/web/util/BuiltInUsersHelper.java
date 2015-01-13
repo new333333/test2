@@ -40,12 +40,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.module.shared.AccessUtils;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SpringContextUtil;
 
 /**
  * This class contains a collection of methods for dealing with
@@ -166,12 +169,19 @@ public final class BuiltInUsersHelper {
 	public static String getJobProcessingAgentName(  Long zoneId) {return getSystemUserName(ObjectKeys.JOB_PROCESSOR_INTERNALID,          "_jobProcessingAgent",               zoneId);}
 	public static String getSynchronizationAgentName(Long zoneId) {return getSystemUserName(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID,  "_synchronizationAgent",             zoneId);}
 
-	public static String getAdminName()                {return getAdminName(               RequestContextHolder.getRequestContext().getZoneId());}
-	public static String getEmailPostingAgentName()    {return getEmailPostingAgentName(   RequestContextHolder.getRequestContext().getZoneId());}
+	public static String getAdminName()                {return getAdminName(               getZoneId());}
+	public static String getEmailPostingAgentName()    {return getEmailPostingAgentName(   getZoneId());}
 	public static String getFileSyncAgentName()        {return getFileSyncAgentName(       RequestContextHolder.getRequestContext().getZoneId());}
-	public static String getGuestUserName()            {return getGuestUserName(           RequestContextHolder.getRequestContext().getZoneId());}
-	public static String getJobProcessingAgentName()   {return getJobProcessingAgentName(  RequestContextHolder.getRequestContext().getZoneId());}
-	public static String getSynchronizationAgentName() {return getSynchronizationAgentName(RequestContextHolder.getRequestContext().getZoneId());}
+	public static String getGuestUserName()            {return getGuestUserName(           getZoneId());}
+	public static String getJobProcessingAgentName()   {return getJobProcessingAgentName(  getZoneId());}
+	public static String getSynchronizationAgentName() {return getSynchronizationAgentName(getZoneId());}
+	
+	public static Long getZoneId() {
+		if(RequestContextHolder.getRequestContext() != null)
+			return RequestContextHolder.getRequestContext().getZoneId();
+		else
+			return getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+	}
 
 	/**
 	 * This method will return true if the given name is the name of a
@@ -254,5 +264,9 @@ public final class BuiltInUsersHelper {
 				}
 			}
 		}
+	}
+	
+	private static ZoneModule getZoneModule() {
+		return (ZoneModule)SpringContextUtil.getBean("zoneModule");
 	}
 }
