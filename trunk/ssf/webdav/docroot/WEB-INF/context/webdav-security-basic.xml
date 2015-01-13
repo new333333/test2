@@ -31,6 +31,8 @@
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY,ROLE_ANONYMOUS" />
         <security:anonymous enabled="false" />
         <security:http-basic/>
+        <!-- KeyShield SSO Authentication Filter -->
+        <security:custom-filter position="PRE_AUTH_FILTER" ref="kshieldAuthenticationFilter"/>
     </security:http>
 	
 </beans>
