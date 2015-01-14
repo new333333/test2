@@ -109,6 +109,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.fi.FileNotFoundException;
 import org.kablink.teaming.fi.auth.AuthException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
@@ -9802,8 +9803,19 @@ public class GwtViewHelper {
 				//        org.kablink.teaming.webdav.FileResource.renameFile()
 				// 
 				// Access the entry and attachment we're renaming.
-				FolderModule   fm      = bs.getFolderModule();
-				FolderEntry    fe      = fm.getEntry(eid.getBinderId(), eid.getEntityId());
+				FolderModule fm = bs.getFolderModule();
+				FolderEntry  fe;
+				try {
+					fe = fm.getEntry(eid.getBinderId(), eid.getEntityId());
+				}
+				catch (Exception e) {
+					String messageKey;
+					if (e instanceof FileNotFoundException) messageKey = "renameEntityError.DoesNotExist.file";
+					else                                    messageKey = "renameEntityError.OtherException.file";
+					reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
+					return reply;
+				}
+				
 				FileAttachment fa      = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true);
 				String         faName  = ((null == fa) ? "" : fa.getFileItem().getName());
 				String         feTitle = fe.getTitle();
