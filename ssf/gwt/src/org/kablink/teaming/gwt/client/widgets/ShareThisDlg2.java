@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.FindControlBrowseEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditShareRightsDlgEvent;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -117,6 +118,7 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -150,6 +152,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 public class ShareThisDlg2 extends DlgBox
 	implements EditSuccessfulHandler, EditCanceledHandler,
 	// Event handlers implemented by this class.
+		FindControlBrowseEvent.Handler,
 		InvokeEditShareRightsDlgEvent.Handler,
 		SearchFindResultsEvent.Handler
 {
@@ -182,6 +185,7 @@ public class ShareThisDlg2 extends DlgBox
 	private FlowPanel m_manageShareItemsPanel;
 	private FlowPanel m_editSharePanel;
 	private ListBox m_findByListbox;
+	private Button m_browseButton;
 	private List<EntityId> m_entityIds;
 	private GwtSharingInfo m_sharingInfo;		// Holds all of the sharing info for the entities we are working with.
 	private List<HandlerRegistration> m_registeredEventHandlers;
@@ -206,6 +210,7 @@ public class ShareThisDlg2 extends DlgBox
 	private static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[]
     {
 		// Search events.
+		TeamingEvents.FIND_CONTROL_BROWSE,
 		TeamingEvents.INVOKE_EDIT_SHARE_RIGHTS_DLG,
 		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
@@ -1302,6 +1307,37 @@ public class ShareThisDlg2 extends DlgBox
 						m_manageSharesFindCtrlLabel.addStyleName( "marginleft2" );
 						table2.setWidget( 0, 0, m_manageSharesFindCtrlLabel );
 						table2.setWidget( 0, 1, m_manageSharesFindCtrl );
+			
+						// Add a browse button.  This will be used when we are searching for a folder.
+						// ...add a browse button next to the search widget...
+						{
+							Image buttonImg;
+
+							buttonImg = GwtClientHelper.buildImage(
+															GwtTeaming.getImageBundle().browseHierarchy(),
+															messages.cmeDlg_Alt_Browse());
+							
+							m_browseButton = new Button(
+													GwtClientHelper.getWidgetHTML( buttonImg ),
+													new ClickHandler()
+							{
+								@Override
+								public void onClick( ClickEvent event )
+								{
+									FindControlBrowseEvent fcbEvent;
+									
+									fcbEvent = new FindControlBrowseEvent(
+																		m_manageSharesFindCtrl,
+																		null );
+
+									GwtTeaming.fireEventAsync( fcbEvent );
+								}
+							});
+							m_browseButton.addStyleName( "vibe-cmeDlg_BrowseButton" );
+							m_browseButton.setVisible( false );
+							
+							table2.setWidget( 0, 2, m_browseButton );
+						}
 						
 						m_manageSharesFindCtrl.setContainerWidget( m_manageShareItemsPanel );
 						m_manageSharesFindCtrl.setVisible( false );
@@ -2304,20 +2340,24 @@ public class ShareThisDlg2 extends DlgBox
 			m_manageSharesFindCtrl.setSearchForInternalPrincipals( true );
 			m_manageSharesFindCtrl.setSearchType( SearchType.USER );
 			m_manageSharesFindCtrlLabel.setText( GwtTeaming.getMessages().shareDlg_findByUserLabel() );
+			m_browseButton.setVisible( false );
 		}
 		else if ( findBy.equalsIgnoreCase( FIND_SHARES_BY_FILE ) )
 		{
 			m_manageSharesFindCtrl.setSearchType( SearchType.ENTRIES );
 			m_manageSharesFindCtrlLabel.setText( GwtTeaming.getMessages().shareDlg_findByFileLabel() );
+			m_browseButton.setVisible( false );
 		}
 		else if ( findBy.equalsIgnoreCase( FIND_SHARES_BY_FOLDER ) )
 		{
 			m_manageSharesFindCtrl.setSearchType( SearchType.FOLDERS );
 			m_manageSharesFindCtrlLabel.setText( GwtTeaming.getMessages().shareDlg_findByFolderLabel() );
+			m_browseButton.setVisible( true );
 		}
 		else if ( findBy.equalsIgnoreCase( FIND_ALL_SHARES ) )
 		{
 			visible = false;
+			m_browseButton.setVisible( false );
 			findAllShares();
 		}
 
@@ -3234,6 +3274,21 @@ public class ShareThisDlg2 extends DlgBox
 		// handlers.
 		super.onDetach();
 		unregisterEvents();
+	}
+	
+	/**
+	 * Handles FindControlBrowseEvent's received by this class.
+	 * 
+	 * Implements the FindControlBrowseEvent.Handler.onFindControlBrowse()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onFindControlBrowse( FindControlBrowseEvent event )
+	{
+		// Simply invoke the find browser using the parameters from the event.
+		FindControlBrowserPopup.doBrowse( event.getFindControl(), event.getFindStart() );
 	}
 	
 	/**
