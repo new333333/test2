@@ -94,13 +94,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -1458,6 +1456,31 @@ public class GwtServerHelper {
 		return Boolean.FALSE;
 	}
 	
+	/**
+	 * See if the given entry can have a comment on it.
+	 */
+	@SuppressWarnings("rawtypes")
+	public static boolean canEntryHaveAComment( FolderEntry entry )
+	{
+		Document entryDefDoc;
+		boolean canHaveComment = false;
+
+		// Get the entry's definition document.
+		entryDefDoc = entry.getEntryDefDoc();
+		
+		if ( entryDefDoc != null )
+		{
+			List replyStyles;
+
+			// Do we have any reply styles?
+			replyStyles = DefinitionUtils.getPropertyValueList( entryDefDoc.getRootElement(), "replyStyle" );
+			
+			if ( MiscUtil.hasItems( replyStyles ) )
+				canHaveComment = true;
+		}
+		
+		return canHaveComment;
+	}
 	/**
 	 * See if the user has rights to manage personal tags on the given binder.
 	 */
@@ -13321,6 +13344,9 @@ public class GwtServerHelper {
 							break;
 						
 						case INVOKE_REPLY:
+							if ( canEntryHaveAComment( folderEntry ) == false )
+								continue;
+							
 							folderModule.checkAccess( folderEntry, FolderOperation.addReply );
 							break;
 						
