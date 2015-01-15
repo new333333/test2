@@ -99,8 +99,8 @@ public class DynamicDialect extends Dialect {
 				_dialect = DialectFactory.buildDialect(new Properties(), con);
 		}
 		catch (Exception e) {
-			if (dbName != null && dbName.equalsIgnoreCase("Oracle") && dbMajorVersion == 11) {
-				// No dialect support for Oracle 11g in Hibernate yet. Default it to 10g for now.
+			if (dbName != null && dbName.equalsIgnoreCase("Oracle") && (dbMajorVersion == 11 || dbMajorVersion == 12)) {
+				// No dialect support for Oracle 11g or 12c in Hibernate yet. Default it to 10g for now.
 				_dialect = new Oracle10gDialect();
 			}
 			else {
