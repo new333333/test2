@@ -32,10 +32,14 @@
  */
 package org.kablink.teaming.util;
 
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.StatelessSession;
 import org.hibernate.Transaction;
@@ -52,10 +56,78 @@ import org.kablink.teaming.domain.ZoneConfig;
  */
 public class AuditTrailMigrationUtil {
 
+	private static Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
+
+	private static void migrateSince(StatelessSession session, Long zoneId, long beginTime, Long endTime) {
+		
+		Criteria crit = session.createCriteria(AuditTrail.class)
+				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+				.add(Restrictions.ge("startDate", beginTime))
+				.setCacheable(false);
+		if(endTime != null)
+			crit.add(Restrictions.le("startDate", endTime));
+		final List<AuditTrail> oldRecords = crit.list();
+
+		if(oldRecords.size() > 0) {
+			// Use Hibernate transaction and manage it directly. 
+			// The Spring TransactionTemplate is of no use here, because it only works with regular Session and not StatelessSession.
+			Transaction trans = session.beginTransaction();
+			try {
+				List<Object> newRecords;
+				for(AuditTrail oldRecord:oldRecords) {
+					newRecords = oldRecord.toNewAuditObjects();
+					if(newRecords.size() > 0) {
+						// The old record maps to one or more new records. Migrate it into new tables.
+						for(Object newRecord:newRecords) {
+							session.insert(newRecord);
+						}
+						// Purge the old record.$$$$$$$$$$$$$
+						//session.delete(oldRecord);
+					}
+					else {
+						// The old record doesn't map to new scheme. Leave the record in the old table.
+					}
+				}
+				trans.commit();
+			}
+			catch(Exception e) {
+				trans.rollback();
+			}
+		}
+	}
+	
+	private static StatelessSessionTemplate getStatelessSessionTemplate() {
+		return (StatelessSessionTemplate)SpringContextUtil.getBean("statelessSessionTemplate");
+	}
+	
 	public static void migrateMinimum(final ZoneConfig zoneConfig) {
+		// $$$$$$$$$$ TODO TBC
 		int i = 0;
 		if(i == 0) return;
 		
+		getStatelessSessionTemplate().execute(new StatelessSessionTemplate.Callback<Void>() {
+			@Override
+			public Void doInHibernate(final StatelessSession session)
+					throws HibernateException, SQLException {
+				int numberOfDays = SPropsUtil.getInt("binder.changes.allowed.days", 7) + 1;
+				long dayInMilliseconds = 1000L*60L*60L*24L;
+				Long endTime = null;
+				Long beginTime = System.currentTimeMillis() - dayInMilliseconds;
+				// We're going to migrate only enough data to cover the specified number of days in descending time order
+				// and do it in one day increment at a time. Each day's worth of data is migrated in a single transaction.
+				for(int i = 0; i < numberOfDays; i++) {
+					// Migrate data between the specified times
+					migrateSince(session, zoneConfig.getZoneId(), beginTime, endTime);
+					// Rewind the times backward by a day
+					endTime = beginTime;
+					beginTime -= dayInMilliseconds;
+				}
+				return null;
+			}
+		});
+	}
+	
+	public static void migrateAll() {
 		StatelessSessionTemplate sst = (StatelessSessionTemplate)SpringContextUtil.getBean("statelessSessionTemplate");
 		
 		sst.execute(new StatelessSessionTemplate.Callback<Void>() {
@@ -63,7 +135,7 @@ public class AuditTrailMigrationUtil {
 			public Void doInHibernate(final StatelessSession session)
 					throws HibernateException, SQLException {
 				final List<AuditTrail> oldRecords = session.createCriteria(AuditTrail.class)
-						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneConfig.getZoneId()))
+						//.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneConfig.getZoneId()))
 						.add(Restrictions.isNotNull("startDate"))
 						.add(Restrictions.lt("startDate", new Date()))
 						.setCacheable(false)
@@ -98,11 +170,6 @@ public class AuditTrailMigrationUtil {
 				
 				return null;
 			}
-		});
-
-	}
-	
-	public static void migrateAll() {
-		
+		});		
 	}
 }
