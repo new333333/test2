@@ -49,7 +49,7 @@ public enum AuditType {
 	login((short)8), // user, client, or user agent login
 	download((short)9), // user, client, or user agent download
 	userStatus((short)10), // ?
-	token((short)11), // application-scoped token generation
+	//token((short)11), // application-scoped token generation
 	acl((short)12), // ACL change on a data item
 	shareAdd((short)13), // added a share item - dummy type only used in activity report
 	shareModify((short)14), // modified a share item - dummy type only used in activity report
@@ -79,7 +79,7 @@ public enum AuditType {
 		case 8: return AuditType.login;
 		case 9: return AuditType.download;
 		case 10: return AuditType.userStatus;
-		case 11: return AuditType.token;
+		//case 11: return AuditType.token;
 		case 12: return AuditType.acl;
 		case 13: return AuditType.shareAdd;
 		case 14: return AuditType.shareModify;

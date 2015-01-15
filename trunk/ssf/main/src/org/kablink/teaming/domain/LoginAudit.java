@@ -106,17 +106,22 @@ public class LoginAudit extends ZonedObject {
 	protected LoginAudit() {
 	}
 
-	public LoginAudit(String authenticatorName, String clientAddr, Long userId, Date loginTime) {
-		setAuthenticatorName(authenticatorName);
-		this.clientAddr = clientAddr;
-		this.userId = userId;
-		this.loginTime = loginTime;
+	public LoginAudit(Long zoneId, String authenticatorName, String clientAddr, Long userId, Date loginTime) {
+		this(authenticatorName, clientAddr, userId, loginTime);
+		this.zoneId = zoneId;
 	}
 	
 	public LoginAudit(String authenticatorName, String clientAddr, Long userId) {
 		this(authenticatorName, clientAddr, userId, new Date());
 	}
 	
+	protected LoginAudit(String authenticatorName, String clientAddr, Long userId, Date loginTime) {
+		setAuthenticatorName(authenticatorName);
+		this.clientAddr = clientAddr;
+		this.userId = userId;
+		this.loginTime = loginTime;
+	}
+
 	public void setZoneId(Long zoneId) {
 		this.zoneId = zoneId;
 	}

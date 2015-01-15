@@ -1151,6 +1151,10 @@ text/calendar											  ics
 		<property name="dataSource"><ref bean="dataSource"/></property>
 	</bean>
 	
+	<bean id="statelessSessionTemplate" class="org.kablink.teaming.dao.StatelessSessionTemplate">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+	
 	<!-- ======================== File & Repository Services ====================== -->
 	
 	<bean id="simpleFileRepository" class="org.kablink.teaming.repository.file.FileRepositorySessionFactory" 

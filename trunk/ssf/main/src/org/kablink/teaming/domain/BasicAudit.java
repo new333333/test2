@@ -147,7 +147,14 @@ public class BasicAudit extends ZonedObject {
 		}		
 	}
 
-	public BasicAudit(AuditType auditType, Date eventDate, Long userId, EntityIdentifier.EntityType entityType, Long entityId, String owningBinderKey, Long owningBinderId) {
+	public BasicAudit(Long zoneId, AuditType auditType, Date eventDate, Long userId, EntityIdentifier.EntityType entityType, Long entityId, String owningBinderKey, Long owningBinderId, String auxiliaryData, String fileId, String entityFamilyStr) {
+		this(auditType, eventDate, userId, entityType, entityId, owningBinderKey, owningBinderId);
+		this.zoneId = zoneId;
+		setEntityFamily(entityFamilyStr);
+		setFileId(fileId);
+	}
+	
+	private BasicAudit(AuditType auditType, Date eventDate, Long userId, EntityIdentifier.EntityType entityType, Long entityId, String owningBinderKey, Long owningBinderId) {
 		this.eventType = auditType.getValue();
 		this.eventDate = eventDate;
 		this.userId = userId;

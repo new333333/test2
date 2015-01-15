@@ -32,8 +32,11 @@
  */
 package org.kablink.teaming.domain;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -59,10 +62,7 @@ public class AuditTrail extends ZonedObject {
 		download, // user, client, or user agent download
 		userStatus, // ?
 		token, // application-scoped token generation
-		acl, // ACL change on a data item
-		shareAdd, // share add - this is a place holder value for when the activity report is run
-		shareModify, // share modify - this is a place holder value for when the activity report is run
-		shareDelete // share delete - this is a place holder value for when the activity report is run
+		acl // ACL change on a data item
 	};
 
 	
@@ -166,6 +166,12 @@ public class AuditTrail extends ZonedObject {
     }
     protected void setEntityType(String entityType) {
     	this.entityType = entityType;
+    }
+    public EntityType getEntityTypeEnum() {
+    	if(entityType != null)
+    		return EntityType.valueOf(entityType);
+    	else
+    		return null;
     }
     /**
      * Return the id of the binder owning the entity.
@@ -323,4 +329,89 @@ public class AuditTrail extends ZonedObject {
         return null;
     }
 
+    public List<Object> toNewAuditObjects() {
+    	List<Object> result = new ArrayList<Object>();
+    	BasicAudit basicAudit;
+    	DeletedBinder deletedBinder;
+    	LoginAudit loginAudit;
+    	
+    	// NOTE: Those records that are not migrated to the new tables (if any) will remain in the old table.
+    	//       Only those records that are successfully migrated will be deleted from the old table.
+    	
+    	switch(getAuditType()) {
+    	case unknown: // We don't expect to see this.
+    		break;
+    	case view:
+    		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.view);
+    		result.add(basicAudit);
+    		break;
+    	case add:
+    		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.add);
+    		result.add(basicAudit);
+    		break;
+    	case modify:
+    		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.modify);
+    		result.add(basicAudit);
+    		break;
+    	case delete:
+    		EntityIdentifier.EntityType eType = getEntityTypeEnum();
+    		if(EntityType.folder == eType ||
+    				EntityType.workspace == eType ||
+    				EntityType.profiles == eType) { // Binder entity
+    			// Do not move the description value from the old record to the new basic audit record. The description is a full path
+    			// for deleted binder, which will be moved to a separate table.
+        		basicAudit = new BasicAudit(getZoneId(), org.kablink.teaming.domain.AuditType.delete, getStartDate(), getStartBy(), 
+        				EntityType.valueOf(getEntityType()), getEntityId(), 
+        				getOwningBinderKey(), getOwningBinderId(), null, getFileId(), getDeletedFolderEntryFamily());
+        		result.add(basicAudit);
+        		// Create a new deleted binder record from the value stored in the description column of the old record. This represents
+        		// path information about the deleted binder which can be pulled from and used by multiple types of reports. 
+    			deletedBinder = new DeletedBinder(EntityType.valueOf(getEntityType()), getEntityId(), getStartDate(), getDescription(), getZoneId());
+    			result.add(deletedBinder);
+    		}
+    		else { // Non-binder (entry) entity such as folder entry and user/group.
+        		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.delete);
+        		result.add(basicAudit);
+    		}
+    		break;
+    	case preDelete:    		
+    		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.preDelete);
+    		result.add(basicAudit);
+    		break;
+    	case restore:
+    		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.restore);
+    		result.add(basicAudit);
+    		break;
+    	case workflow: // Deprecated as of ancient ICEcore 1.1. Workflow history is stored in a separate table - We don't expect to see this.
+    		break;
+    	case login:
+    		// Use empty string instead of null to indicate missing value for client IP address.
+    		loginAudit = new LoginAudit(/*getZoneId(),*/ getDescription(), "", getStartBy(), getStartDate());
+    		result.add(loginAudit);
+    		break;
+    	case download:
+    		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.download);
+    		result.add(basicAudit);
+    		break;
+    	case userStatus:
+    		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.userStatus);
+    		result.add(basicAudit);
+    		break;
+    	case token: // As of Filr 1.2 and Vibe Hudson, the support for this audit type is dropped. The record in the old table is NOT migrated to new table.
+    		break;
+    	case acl:
+    		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.acl);
+    		result.add(basicAudit);
+    		break;
+    	}
+    	
+    	return result;
+    }
+    
+    private BasicAudit toBasicAudit(org.kablink.teaming.domain.AuditType auditType) {
+		return new BasicAudit(getZoneId(), auditType, getStartDate(), getStartBy(), 
+				EntityType.valueOf(getEntityType()), getEntityId(), 
+				getOwningBinderKey(), getOwningBinderId(), getDescription(), getFileId(), getDeletedFolderEntryFamily());
+    }
+    
 }

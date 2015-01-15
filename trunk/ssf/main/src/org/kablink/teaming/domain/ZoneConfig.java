@@ -100,6 +100,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     private NameCompletionSettings nameCompletionSettings;
 	private Boolean useDirectoryRights;
 	private Integer cachedRightsRefreshInterval;
+	private Short auditTrailMigrationStatus;
 
 	public ZoneConfig()
 	{
@@ -752,4 +753,16 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	public void setShareLists(ShareLists shareLists) {
 		setShareListsBlob(shareLists.getShareListsBlob());
 	}
+	
+	// Phase1 must be done synchronously BEFORE users begin using the system. Otherwise, Desktop can erroneously fire up full sync.
+	public static final short AUDIT_TRAIL_MIGRATION_STATUS_MINIMUM_DONE = 1;
+	// Phase2 can be done asynchronously while users are using the system.
+	public static final short AUDIT_TRAIL_MIGRATION_STATUS_ALL_DONE = 2;
+	public Short getAuditTrailMigrationStatus() {
+		return auditTrailMigrationStatus;
+	}
+	public void setAuditTrailMigrationStatus(Short auditTrailMigrationStatus) {
+		this.auditTrailMigrationStatus = auditTrailMigrationStatus;
+	}
+
 }

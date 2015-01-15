@@ -3294,7 +3294,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 			return results;
 		}
 		finally {
-    		end(begin, "getAuditTrailEntries()");
+    		end(begin, "getBasicAuditEntries()");
 		}
 	}
 
@@ -3354,7 +3354,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
             return results;
         }
         finally {
-            end(begin, "getAuditTrailEntries2()");
+            end(begin, "getBasicAuditEntries2()");
         }
     }
 
@@ -3411,7 +3411,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
             return results;
         }
         finally {
-            end(begin, "getAuditTrailEntries3()");
+            end(begin, "getBasicAuditEntries3()");
         }
     }
 
