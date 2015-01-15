@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-213 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-213 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-213 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,6 +41,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class CommentsInfo implements IsSerializable {
+	private boolean		m_commentsDisabled;	// true -> Entry entity cannot have comments added to it.  false -> It can.
 	private EntityId	m_entityId;			//
 	private int			m_commentsCount;	//
 	private String		m_entityTitle;		//
@@ -81,18 +82,20 @@ public class CommentsInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public EntityId getEntityId()        {return m_entityId;       }
-	public int      getCommentsCount()   {return m_commentsCount;  }
-	public String   getEntityTitle()     {return m_entityTitle;    }
-	public Object   getClientItemImage() {return m_clientItemImage;}
+	public boolean  isCommentsDisabled() {return m_commentsDisabled;}
+	public EntityId getEntityId()        {return m_entityId;        }
+	public int      getCommentsCount()   {return m_commentsCount;   }
+	public String   getEntityTitle()     {return m_entityTitle;     }
+	public Object   getClientItemImage() {return m_clientItemImage; }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEntityId(       EntityId entityId)        {m_entityId        = entityId;       }
-	public void setCommentsCount(  int      commentsCount)   {m_commentsCount   = commentsCount;  }
-	public void setEntityTitle(    String   entityTitle)     {m_entityTitle     = entityTitle;    }
-	public void setClientItemImage(Object   clientItemImage) {m_clientItemImage = clientItemImage;}
+	public void setCommentsDisabled(boolean  commentsDisabled) {m_commentsDisabled = commentsDisabled;}
+	public void setEntityId(        EntityId entityId)         {m_entityId         = entityId;        }
+	public void setCommentsCount(   int      commentsCount)    {m_commentsCount    = commentsCount;   }
+	public void setEntityTitle(     String   entityTitle)      {m_entityTitle      = entityTitle;     }
+	public void setClientItemImage( Object   clientItemImage)  {m_clientItemImage  = clientItemImage; }
 }

@@ -94,11 +94,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -1459,7 +1461,6 @@ public class GwtServerHelper {
 	/**
 	 * See if the given entry can have a comment on it.
 	 */
-	@SuppressWarnings("rawtypes")
 	public static boolean canEntryHaveAComment( FolderEntry entry )
 	{
 		Document entryDefDoc;

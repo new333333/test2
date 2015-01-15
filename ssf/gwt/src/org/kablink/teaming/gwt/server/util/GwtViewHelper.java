@@ -1253,6 +1253,69 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * When initially built, the CommentsInfo's contained false for
+	 * whether comments are disabled on FolderEntry's.  We need to
+	 * complete these values correctly.
+	 */
+	private static void completeCIs(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> folderRows) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completeCIs()");
+		try {
+			// If we don't have any FolderRows's to complete...
+			if (!(MiscUtil.hasItems(folderRows))) {
+				// ..bail.
+				return;
+			}
+	
+			// Allocate a map to track the comments that need to be
+			// completed.
+			Map<Long, Map<String, CommentsInfo>> ciMap = new HashMap<Long, Map<String, CommentsInfo>>();
+	
+			// Scan the List<FolderRow>'s.
+			for (FolderRow fr:  folderRows) {
+				// Does this row correspond to a FolderEntry?
+				EntityId frId = fr.getEntityId(); 
+				if (frId.isFolderEntry()) {
+					// Yes!  Does it have a comments map?
+					Map<String, CommentsInfo> ciMapFromRow = fr.getRowCommentsMap();
+					if (MiscUtil.hasItems(ciMapFromRow)) {
+						// Yes!  Track it.
+						ciMap.put(frId.getEntityId(), ciMapFromRow);
+					}
+				}
+			}
+
+			// Are we tracking any comments to that need to be
+			// completed?
+			if (!(ciMap.isEmpty())) {
+				// Yes!  Can we access any of the corresponding
+				// FolderEntry's?
+				SortedSet<FolderEntry> entries = bs.getFolderModule().getEntries(ciMap.keySet());
+				if (!(entries.isEmpty())) {
+					// Yes!  Scan them...
+					for (FolderEntry fe:  entries) {
+						// ...setting their CommentInfo's
+						// ...appropriately.
+						Map<String, CommentsInfo> ciMapFromRow = ciMap.get(fe.getId());
+						if (MiscUtil.hasItems(ciMapFromRow)) {
+							boolean commentsDisabled = (!(GwtServerHelper.canEntryHaveAComment(fe)));
+							for (String colKey:  ciMapFromRow.keySet()) {
+								CommentsInfo ci = ciMapFromRow.get(colKey);
+								if (null != ci) {
+									ci.setCommentsDisabled(commentsDisabled);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+
+	/*
 	 * When initially built, the EntryTitleInfo's in the rows don't
 	 * contain the user's rights to add to any nested folders.  We need
 	 * to add that information to support drag and drop into nested
@@ -4852,6 +4915,7 @@ public class GwtViewHelper {
 				(isTop                      ?
 					fe.getTotalReplyCount() :	// For top level entries, we show all the replies.
 					fe.getReplyCount()));		// For replies themselves, we only show their direct replies.
+			ci.setCommentsDisabled(!(GwtServerHelper.canEntryHaveAComment(fe)));
 			reply.setComments(ci);
 
 			// ...if this is a comment...
@@ -5554,6 +5618,7 @@ public class GwtViewHelper {
 
 			// Scan the entries we read.
 			boolean         completeAIsRequired      = false;
+			boolean         completeCIsRequired      = false;
 			boolean         completeNFRightsRequired = false;
 			List<FolderRow> folderRows               = new ArrayList<FolderRow>();
 			List<Long>      contributorIds           = new ArrayList<Long>();
@@ -5984,6 +6049,7 @@ public class GwtViewHelper {
 											if (!(MiscUtil.hasString(entityTitle))) {
 												entityTitle = ("--" + NLT.get("entry.noTitle") + "--");
 											}
+											completeCIsRequired = true;
 											fr.setColumnValue(
 												fc,
 												new CommentsInfo(
@@ -6085,6 +6151,19 @@ public class GwtViewHelper {
 				// IDs.  We need to complete them with each assignee's
 				// title, ...
 				completeAIs(bs, request, folderRows);
+			}
+
+			// Did we add any rows with comment information that
+			// needs to be completed?
+			if (completeCIsRequired) {
+				// Yes!  We need to complete the definition of the
+				// CommentsInfo objects.
+				//
+				// When initially built, the CommentsInfo's contained
+				// false for whether comments are disabled on folder
+				// entries.  We need to complete these values
+				// correctly.
+				completeCIs(bs, request, folderRows);
 			}
 
 			// Did we add any rows that were nested folders whose
