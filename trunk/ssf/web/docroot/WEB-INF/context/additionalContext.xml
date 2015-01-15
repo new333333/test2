@@ -25,7 +25,7 @@
 	<!--  Initialize the zone and checks dependencies -->
 	<bean id="zoneModule" parent="moduleTransactionProxy">
 		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.zone.impl.BaseZoneModule" depends-on="nlt, zoneConfig, binderAccessUtils" >
+			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.zone.impl.BaseZoneModule" depends-on="nlt, zoneConfig, binderAccessUtils, sPropsUtil" >
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 				<property name="templateModule"><ref bean="templateModule"/></property>
 				<property name="adminModule"><ref bean="adminModule"/></property>
