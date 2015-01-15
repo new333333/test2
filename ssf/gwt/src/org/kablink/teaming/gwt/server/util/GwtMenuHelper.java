@@ -704,7 +704,8 @@ public class GwtMenuHelper {
 						// Is the the template for this folder?
 						if (tb.getEntryDefId().equals(fedId)) {
 							// Yes!  Save its ID.
-							if (tb.getInternalId().equals(ObjectKeys.DEFAULT_FOLDER_FILR_ROOT_CONFIG)) {
+							String tbInternalId = tb.getInternalId();
+							if ((null != tbInternalId) && tbInternalId.equals(ObjectKeys.DEFAULT_FOLDER_FILR_ROOT_CONFIG)) {
 								tb = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_FILR_NETFOLDER_FILE);
 								folderTemplateId = ((null == tb) ? null : tb.getId());
 							}
