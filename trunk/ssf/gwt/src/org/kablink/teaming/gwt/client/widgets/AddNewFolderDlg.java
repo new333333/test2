@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
@@ -48,7 +49,6 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -104,13 +104,12 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Asynchronously runs the new folder creation process.
 	 */
 	private void createNewFolderAsync() {
-		ScheduledCommand doCreate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				createNewFolderNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doCreate);
+		});
 	}
 	
 	/*
@@ -120,9 +119,18 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 		// Did the user supply the name of a folder to create?
 		String fn = m_folderNameInput.getValue();
 		final String folderName = ((null == fn) ? "" : fn.trim());
-		if (0 == folderName.length()) {
+		int fnLength = folderName.length();
+		if (0 == fnLength) {
 			// No!  Tell them about the error and bail.
 			GwtClientHelper.deferredAlert(m_messages.addNewFolderDlgError_NoName());
+			setButtonsEnabled(true);
+			return;
+		}
+
+		// Is the name the user supplied for the folder too long?
+		if (GwtConstants.MAX_BINDER_NAME_LENGTH < fnLength) {
+			// Yes!  Tell them about the error and bail.
+			GwtClientHelper.deferredAlert(m_messages.addNewFolderDlgError_NameTooLong(GwtConstants.MAX_BINDER_NAME_LENGTH));
 			setButtonsEnabled(true);
 			return;
 		}
@@ -275,13 +283,12 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -366,13 +373,12 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Asynchronously runs the given instance of the add new folder dialog.
 	 */
 	private static void runDlgAsync(final AddNewFolderDlg anfDlg, final Long binderId, final Long folderTemplateId, final boolean allowCloudFolder) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				anfDlg.runDlgNow(binderId, folderTemplateId, allowCloudFolder);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*
@@ -395,12 +401,12 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 		setOkEnabled(    enabled);
 		setCancelEnabled(enabled);
 	}
+	
 
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the add new folder dialog and perform some operation on it.   */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-	
 	
 	/**
 	 * Callback interface to interact with the add new folder dialog
@@ -416,7 +422,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 	 * operation against the code.
 	 */
 	private static void doAsyncOperation(
-			// Required creation parameters.
+			// createAsync parameters.
 			final AddNewFolderDlgClient anfDlgClient,
 			
 			// initAndShow parameters,

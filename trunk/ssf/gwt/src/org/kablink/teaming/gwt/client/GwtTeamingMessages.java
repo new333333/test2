@@ -1101,6 +1101,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the 'Add New Folder' dialog.
 	String addNewFolderDlgError_AddFailed();
+	String addNewFolderDlgError_NameTooLong(int max);
 	String addNewFolderDlgError_NoName();
 	String addNewFolderDlgHeader();
 	String addNewFolderDlgName();
@@ -3182,6 +3183,10 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the 'Rename an Entity' dialog.
 	String renameEntityDlgError_BogusEntity(String entityType);
+	String renameEntityDlgError_NameTooLong_File(      int max );
+	String renameEntityDlgError_NameTooLong_Folder(    int max );
+	String renameEntityDlgError_NameTooLong_Unknown(   int max );
+	String renameEntityDlgError_NameTooLong_Workspace( int max );
 	String renameEntityDlgError_NoName_File();
 	String renameEntityDlgError_NoName_Folder();
 	String renameEntityDlgError_NoName_Unknown();
