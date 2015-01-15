@@ -263,7 +263,7 @@
     <changeSet author="dennis" context="schema" failOnError="true" id="18">
         <comment>Sharing - Whitelist/Blacklist.</comment>
         <addColumn tableName="SS_ZONECONFIG">
-			<column name="SHARLISTSBLOB" type="BLOB"/>
+			<column name="SHARELISTSBLOB" type="BLOB"/>
         </addColumn>
     </changeSet>
     
