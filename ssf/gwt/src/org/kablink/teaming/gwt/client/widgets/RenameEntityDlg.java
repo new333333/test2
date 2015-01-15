@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
@@ -306,7 +307,8 @@ public class RenameEntityDlg extends DlgBox implements EditSuccessfulHandler {
 		// Did the user supply the new name for the entity?
 		String fn = m_entityNameInput.getValue();
 		final String entityName = ((null == fn) ? "" : fn.trim());
-		if (0 == entityName.length()) {
+		int enLength = entityName.length();
+		if (0 == enLength) {
 			// No!  Tell them about the error and bail.
 			String errorMsg;
 			switch (m_renameEntity) {
@@ -314,6 +316,25 @@ public class RenameEntityDlg extends DlgBox implements EditSuccessfulHandler {
 			case FILE:       errorMsg = m_messages.renameEntityDlgError_NoName_File();      break;
 			case FOLDER:     errorMsg = m_messages.renameEntityDlgError_NoName_Folder();    break;
 			case WORKSPACE:  errorMsg = m_messages.renameEntityDlgError_NoName_Workspace(); break;
+			}
+			GwtClientHelper.deferredAlert(errorMsg);
+			setButtonsEnabled(true);
+			return;
+		}
+
+		// Is the name the supplied too long for the entity?
+		int maxNameLength;
+		if (RenameEntity.FILE.equals(m_renameEntity))
+		     maxNameLength = GwtConstants.MAX_FILE_NAME_LENGTH;
+		else maxNameLength = GwtConstants.MAX_BINDER_NAME_LENGTH;
+		if (maxNameLength < enLength) {
+			// Yes!  Tell them about the error and bail.
+			String errorMsg;
+			switch (m_renameEntity) {
+			default:         errorMsg = m_messages.renameEntityDlgError_NameTooLong_Unknown(  maxNameLength); break;
+			case FILE:       errorMsg = m_messages.renameEntityDlgError_NameTooLong_File(     maxNameLength); break;
+			case FOLDER:     errorMsg = m_messages.renameEntityDlgError_NameTooLong_Folder(   maxNameLength); break;
+			case WORKSPACE:  errorMsg = m_messages.renameEntityDlgError_NameTooLong_Workspace(maxNameLength); break;
 			}
 			GwtClientHelper.deferredAlert(errorMsg);
 			setButtonsEnabled(true);
@@ -397,12 +418,12 @@ public class RenameEntityDlg extends DlgBox implements EditSuccessfulHandler {
 		setOkEnabled(    enabled);
 		setCancelEnabled(enabled);
 	}
+	
 
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the rename entity dialog and perform some operation on it.    */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-	
 	
 	/**
 	 * Callback interface to interact with the rename entity dialog
