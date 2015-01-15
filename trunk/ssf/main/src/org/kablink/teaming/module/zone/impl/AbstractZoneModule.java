@@ -239,10 +239,18 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
         			}
         			
         			try {
-        				migrateAuditTrailAsNecessary(zone);
+        				ensureMinimumAuditTrailHasMigrated(zone);
         			}
         			catch(Exception e) {
-        				logger.warn("Failed to migrate minimum audit trail for zone " + zone.getZoneId(), e);
+        				logger.error("Failed to migrate minimum required audit trail for zone " + zone.getZoneId(), e);
+        				// If there's an error preventing successful migration of minimum required data, the entire processing 
+        				// is aborted which will in turn affect the caller. Since this method is executed as part of the server
+        				// startup process, it implies the server startup will fail and users won't be able to use the system.
+        				// This is a deliberate design choice since we want administrator to correct the situation and make sure
+        				// enough data has been migrated to new tables BEFORE users begin using the system again after system
+        				// upgrade. Otherwise, Filr Desktop clients can all end up misbehaving due to missing information about
+        				// what has actually happened since the last time it synced.
+        				throw e; // Rethrow it so that server startup would abort.
         			}
         		}
 				//make sure zone is setup correctly
@@ -2335,7 +2343,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 
 	abstract protected void setupInitialOpenIDProviderList();
 	
-	private void migrateAuditTrailAsNecessary(Workspace top) {
+	private void ensureMinimumAuditTrailHasMigrated(Workspace top) {
 		ZoneConfig zoneConfig = getZoneConfig(top.getId());
 		if(zoneConfig.getAuditTrailMigrationStatus() == null) {
 			AuditTrailMigrationUtil.migrateMinimum(zoneConfig);
