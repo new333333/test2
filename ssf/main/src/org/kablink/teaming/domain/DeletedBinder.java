@@ -58,17 +58,6 @@ public class DeletedBinder extends ZonedObject implements Serializable {
 	}
 	
 	// For application
-	public DeletedBinder(EntityIdentifier.EntityType binderType, Long binderId, Long zoneId) {
-		if(binderType == null)
-			throw new IllegalArgumentException("Binder type must be specified");
-		if(binderId == null)
-			throw new IllegalArgumentException("Binder ID must be specified");
-		this.binderType = (short) binderType.getValue();
-		this.binderId = binderId;
-		this.zoneId = zoneId;
-	}
-	
-	// For application
 	public DeletedBinder(EntityIdentifier.EntityType binderType, Long binderId,
 			Date deletedDate, String binderPath, Long zoneId) {
 		this(binderType, binderId, zoneId);
@@ -81,6 +70,16 @@ public class DeletedBinder extends ZonedObject implements Serializable {
 				computeDeletedDate(binder),
 				binder.getPathName(),
 				binder.getZoneId());
+	}
+	
+	private DeletedBinder(EntityIdentifier.EntityType binderType, Long binderId, Long zoneId) {
+		if(binderType == null)
+			throw new IllegalArgumentException("Binder type must be specified");
+		if(binderId == null)
+			throw new IllegalArgumentException("Binder ID must be specified");
+		this.binderType = (short) binderType.getValue();
+		this.binderId = binderId;
+		this.zoneId = zoneId;
 	}
 	
 	private static Date computeDeletedDate(Binder binder) {

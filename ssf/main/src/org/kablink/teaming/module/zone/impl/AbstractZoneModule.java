@@ -34,7 +34,9 @@ package org.kablink.teaming.module.zone.impl;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,18 +46,27 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.hibernate.HibernateException;
+import org.hibernate.ReplicationMode;
+import org.hibernate.StatelessSession;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
+import org.kablink.teaming.dao.StatelessSessionTemplate;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.ApplicationGroup;
+import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.DeletedBinder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
@@ -94,6 +105,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.security.impl.AccessControlManagerImpl;
+import org.kablink.teaming.util.AuditTrailMigrationUtil;
 import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
@@ -101,6 +113,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.LocaleUtils;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.util.Validator;
@@ -223,6 +236,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
         			}
         			catch(Exception e) {
         				logger.warn("Failed to upgrade zone " + zone.getZoneId(), e);
+        			}
+        			
+        			try {
+        				migrateAuditTrailAsNecessary(zone);
+        			}
+        			catch(Exception e) {
+        				logger.warn("Failed to migrate minimum audit trail for zone " + zone.getZoneId(), e);
         			}
         		}
 				//make sure zone is setup correctly
@@ -732,7 +752,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				getProfileModule().setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true" );
 			}
 		}
-		
  	}
  	
  	private void correctFilrRoles(ZoneConfig zoneConfig) {
@@ -2315,4 +2334,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
 
 	abstract protected void setupInitialOpenIDProviderList();
+	
+	private void migrateAuditTrailAsNecessary(Workspace top) {
+		ZoneConfig zoneConfig = getZoneConfig(top.getId());
+		if(zoneConfig.getAuditTrailMigrationStatus() == null) {
+			AuditTrailMigrationUtil.migrateMinimum(zoneConfig);
+		}
+	}
 }
