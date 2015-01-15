@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -1354,5 +1354,41 @@ public class WebUrlUtil {
         StringBuffer url =  getHostAndPort(null, (HttpServletRequest) null, null, WEB_PROTOCOL_CONTEXT_HTTPS, UrlType.unspecified, false);
         url.append("/desktopapp");
         return url.toString();
+    }
+
+    /**
+     * Returns the URL from the request reformatted as appropriate for
+     * embedding in an email.
+     * 
+     * DRF (20150109):  This method was originally written to fix
+     *     bug#912103 where in a clustered environment, emails using
+     *     URLs from the request contain the 'domain:port' from the
+     *     specific server the code is running on instead of the root
+     *     of the cluster.
+     * 
+     * @param req
+     * 
+     * @return
+     */
+    public static String getCompleteURLFromRequestForEmail(HttpServletRequest req) {
+    	String baseUrl = Http.getCompleteURL(req);
+    	logger.debug("WebUrlUtil.getCompleteURLFromRequestForEmail( baseUrl ):  " + baseUrl);
+    	
+		Boolean oldUseRTContext = ZoneContextHolder.getUseRuntimeContext();
+		ZoneContextHolder.setUseRuntimeContext(Boolean.FALSE);
+		AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		url.setCrawler(false);
+		String baseUrlForEmail = url.toString();
+		ZoneContextHolder.setUseRuntimeContext(oldUseRTContext);
+		int pos = baseUrlForEmail.indexOf("a/do?");
+		baseUrlForEmail = baseUrlForEmail.substring(0, pos);
+    	logger.debug("WebUrlUtil.getCompleteURLFromRequestForEmail( baseUrlForEmail ):  " + baseUrlForEmail);
+    	
+    	if (0 != baseUrl.indexOf(baseUrlForEmail)) {
+    		baseUrl = (baseUrlForEmail + baseUrl.substring(baseUrl.indexOf("a/do?")));
+        	logger.debug("WebUrlUtil.getCompleteURLFromRequestForEmail( patchedUrl ):  " + baseUrl);
+    	}
+    	
+    	return baseUrl;
     }
 }
