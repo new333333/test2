@@ -317,7 +317,7 @@ public class PostFiles extends Thread {
             conn.setRequestProperty("Accept", "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2");
             conn.setRequestProperty("Accept-Charset", "utf-8;q=0.9");
             conn.setRequestProperty("Connection", "keep-alive");
-            if ("yes".equals(topFrame.getParameter("ss_isAppletChunkedStreamingModeSupported"))) {
+            if ("yes".equals(topFrame.getParameter("isAppletChunkedStreamingModeSupported"))) {
             	conn.setChunkedStreamingMode(CHUNK_SIZE);
             }
             try {
