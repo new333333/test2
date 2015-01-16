@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 /**
@@ -45,6 +46,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
  */
 public class SaveFolderFiltersCmd extends VibeRpcCmd {
 	private BinderInfo 			m_folderInfo;		//
+	private GwtFolder			m_sourceFolder;		//
 	private List<FolderFilter>	m_globalFilters;	//
 	private List<FolderFilter>	m_personalFilters;	//
 	
@@ -67,12 +69,13 @@ public class SaveFolderFiltersCmd extends VibeRpcCmd {
 	 * 
 	 * @param folderInfo
 	 */
-	public SaveFolderFiltersCmd(BinderInfo folderInfo) {
+	public SaveFolderFiltersCmd(BinderInfo folderInfo, GwtFolder sourceFolder) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameter.
-		setFolderInfo(folderInfo);
+		setFolderInfo(  folderInfo  );
+		setSourceFolder(sourceFolder);
 	}
 	
 	/**
@@ -81,6 +84,7 @@ public class SaveFolderFiltersCmd extends VibeRpcCmd {
 	 * @return
 	 */
 	public BinderInfo         getFolderInfo()      {return m_folderInfo;     }
+	public GwtFolder          getSourceFolder()    {return m_sourceFolder;   }
 	public List<FolderFilter> getGlobalFilters()   {return m_globalFilters;  }
 	public List<FolderFilter> getPersonalFilters() {return m_personalFilters;}
 
@@ -89,7 +93,8 @@ public class SaveFolderFiltersCmd extends VibeRpcCmd {
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(    BinderInfo   folderInfo)     {m_folderInfo = folderInfo;               }
+	public void setFolderInfo(    BinderInfo   folderInfo)     {m_folderInfo   = folderInfo;             }
+	public void setSourceFolder(  GwtFolder    sourceFolder)   {m_sourceFolder = sourceFolder;           }
 	public void addGlobalFilter(  FolderFilter globalFilter)   {getGlobalFilters().add(  globalFilter  );}
 	public void addPersonalFilter(FolderFilter personalFilter) {getPersonalFilters().add(personalFilter);}
 	
