@@ -1415,11 +1415,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 								guid = getLdapGuid( lAttrs, ldapGuidAttribute );
 
 								// Does this user exist in Vibe.
-								user = profileModule.findUserByLdapGuid( guid );
-								if ( user != null )
+								try
 								{
-									// Yes, add them to the membership list.
-									listOfMembers.add( user.getId() );
+									user = profileModule.findUserByLdapGuid( guid );
+									if ( user != null )
+									{
+										// Yes, add them to the membership list.
+										listOfMembers.add( user.getId() );
+									}
+								}
+								catch ( NoUserByTheNameException nuEx )
+								{
+									// Nothing to do.
 								}
 							}
 							
