@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -29,22 +29,9 @@
  * 
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
+ *
  */
 package org.kablink.teaming.applets.droptarget;
-
-/**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2002
- * Company:
- * @author
- * @version 1.0
- */
-
-
-/**
- * Class PostFiles sends the files to the server.
- */
 
 import java.net.*;
 import java.io.*;
@@ -56,6 +43,9 @@ import javax.swing.*;
 
 import netscape.javascript.JSObject;
 
+/**
+ * Class PostFiles sends the files to the server.
+ */
 public class PostFiles extends Thread {
   String CR = System.getProperty("line.separator");
   AppletContext appletContext;
@@ -317,7 +307,7 @@ public class PostFiles extends Thread {
             conn.setRequestProperty("Accept", "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2");
             conn.setRequestProperty("Accept-Charset", "utf-8;q=0.9");
             conn.setRequestProperty("Connection", "keep-alive");
-            if ("yes".equals(topFrame.getParameter("ss_isAppletChunkedStreamingModeSupported"))) {
+            if ("yes".equals(topFrame.getParameter("isAppletChunkedStreamingModeSupported"))) {
             	conn.setChunkedStreamingMode(CHUNK_SIZE);
             }
             try {
