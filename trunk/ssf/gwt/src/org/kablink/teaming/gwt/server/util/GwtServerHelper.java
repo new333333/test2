@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -96,10 +98,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
 
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
@@ -350,6 +354,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlFileUtil;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -2574,6 +2579,74 @@ public class GwtServerHelper {
 		return reply;
 	}
 
+	/*
+	 * Fixes the folder referenced by a filter.  References to the
+	 * source folder are changed to references to the target folder.
+	 * 
+	 * Sample XML of a filter:
+	 *		<?xml version="1.0" encoding="UTF-8"?>
+	 *		<searchFilter>
+	 *			<filterName>Filter for Foo</filterName>
+	 * 			<filterTerms filterTermsAnd="true">
+	 * 				<filterTerm filterType="text">Foo</filterTerm>
+	 * 				<filterTerm filterType="foldersList">
+	 * 					<filterFolderId>26411</filterFolderId>		<- This is what needs to be fixed!
+	 * 				</filterTerm>
+	 * 			</filterTerms>
+	 * 		</searchFilter>
+	 */
+	private static void fixupFilterFolderId(FolderFilter filter, Long targetFolderId, Long sourceFolderId) {
+		// Load the filter XML into a ByteArrayInputStream...
+		SAXReader reader = XmlUtil.getSAXReader(false);
+		byte[] filterXmlBytes;
+		try {
+			filterXmlBytes = filter.getFilterData().getBytes("UTF8");
+		}
+		catch (UnsupportedEncodingException x) {
+			m_logger.error("fixupFilterFolderId( UnsupportEncodingException ):  Can't parse filter XML.");
+			filterXmlBytes = null;
+		}
+		if ((null == filterXmlBytes) || (0 == filterXmlBytes.length)) {
+			return;
+		}
+		ByteArrayInputStream bais = new ByteArrayInputStream(filterXmlBytes);
+
+		// ...and parse it into an XML document.
+		Document filterXml;
+		try {
+			filterXml = reader.read(bais);
+		}
+		catch (DocumentException e) {
+			m_logger.error("fixupFilterFolderId( DocumentException ):  Can't parse filter XML.");
+			filterXml = null;
+		}
+		if (null == filterXml) {
+			return;
+		}
+
+		// Are there any <filterFolderId> Node's that may need fixing?
+		boolean modified = false;
+		List<Node> filterFolderIdNodes = filterXml.selectNodes("//searchFilter//filterTerms//filterTerm[@filterType='foldersList']//filterFolderId");
+		if (MiscUtil.hasItems(filterFolderIdNodes)) {
+			// Yes!  Scan them.
+			for (Node filterFolderIdNode:  filterFolderIdNodes) {
+				// Does this Node reference the source folder?
+				String id = filterFolderIdNode.getText();
+				if (MiscUtil.hasString(id) && (sourceFolderId == Long.parseLong(id))) {
+					// Yes!  Change it to the target folder.
+					modified = true;
+					filterFolderIdNode.setText(String.valueOf(targetFolderId));
+				}
+			}
+		}
+		
+		// If we modified the filter's XML...
+		if (modified) {
+			// ...store it back in the filter.
+			filter.setFilterData(filterXml.asXML());
+		}
+	}
+	
 	/**
 	 * Return the URL needed to invoke the start/schedule meeting dialog.
 	 *
@@ -10083,7 +10156,7 @@ public class GwtServerHelper {
 	 * Returns true if any FolderFilter's are added to the
 	 * currentFilters and false otherwise.
 	 */
-	private static boolean mergeFolderFilters(FolderFiltersRpcResponseData currentFilters, List<FolderFilter> filterList, boolean addToGlobal, ErrorListRpcResponseData errors) {
+	private static boolean mergeFolderFilters(FolderFiltersRpcResponseData currentFilters, List<FolderFilter> filterList, boolean addToGlobal, Long targetFolderId, Long sourceFolderId, ErrorListRpcResponseData errors) {
 		// Do we have any filters to process?
 		boolean reply = MiscUtil.hasItems(filterList);
 		if (reply) {
@@ -10115,7 +10188,11 @@ public class GwtServerHelper {
 					filter.setFilterName(filterName);
 				}
 		
-				// Finally, add the filter to the appropriate list.
+				// Finally, fix the folder so that it references the
+				// target folder instead of the source...
+				fixupFilterFolderId(filter, targetFolderId, sourceFolderId);
+				
+				// ...and add the filter to the appropriate list.
 				if (addToGlobal)
 				     currentFilters.addGlobalFilter(  filter);
 				else currentFilters.addPersonalFilter(filter);
@@ -11393,12 +11470,13 @@ public class GwtServerHelper {
 	 * @param folderInfo
 	 * @param globalFilters
 	 * @param personalFilters
+	 * @param sourceFolder
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static ErrorListRpcResponseData saveFolderFilters(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderFilter> globalFilters, List<FolderFilter> personalFilters) throws GwtTeamingException {
+	public static ErrorListRpcResponseData saveFolderFilters(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderFilter> globalFilters, List<FolderFilter> personalFilters, GwtFolder sourceFolder) throws GwtTeamingException {
 		try {
 			// Access the destination folder that we're saving the
 			// filters to.
@@ -11415,8 +11493,9 @@ public class GwtServerHelper {
 			// Merge the filters to be saved into the currentFilters
 			// while validating that the names we've got to save will
 			// be unique with those we got from the folder.
-			boolean changedGlobalFilters   = mergeFolderFilters(currentFilters, globalFilters,   true,  reply);
-			boolean changedPersonalFilters = mergeFolderFilters(currentFilters, personalFilters, false, reply);
+			Long sourceFolderId = Long.parseLong(sourceFolder.getFolderId());
+			boolean changedGlobalFilters   = mergeFolderFilters(currentFilters, globalFilters,   true,  folderId, sourceFolderId, reply);
+			boolean changedPersonalFilters = mergeFolderFilters(currentFilters, personalFilters, false, folderId, sourceFolderId, reply);
 			
 			// Do we need to save the global filters?
 			if (changedGlobalFilters) {
