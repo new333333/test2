@@ -58,15 +58,13 @@ public class AuditTrailMigrationUtil {
 
 	private static Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
 
-	private static void migrateSince(StatelessSession session, Long zoneId, long beginTime, Long endTime) {
+	private static void migrateSince(StatelessSession session, Long zoneId, Date sinceDate) {
 		
-		Criteria crit = session.createCriteria(AuditTrail.class)
+		final List<AuditTrail> oldRecords = session.createCriteria(AuditTrail.class)
 				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-				.add(Restrictions.ge("startDate", beginTime))
-				.setCacheable(false);
-		if(endTime != null)
-			crit.add(Restrictions.le("startDate", endTime));
-		final List<AuditTrail> oldRecords = crit.list();
+				.add(Restrictions.ge("startDate", sinceDate))
+				.setCacheable(false)
+				.list();
 
 		if(oldRecords.size() > 0) {
 			// Use Hibernate transaction and manage it directly. 
@@ -110,18 +108,8 @@ public class AuditTrailMigrationUtil {
 			public Void doInHibernate(final StatelessSession session)
 					throws HibernateException, SQLException {
 				int numberOfDays = SPropsUtil.getInt("binder.changes.allowed.days", 7) + 1;
-				long dayInMilliseconds = 1000L*60L*60L*24L;
-				Long endTime = null;
-				Long beginTime = System.currentTimeMillis() - dayInMilliseconds;
-				// We're going to migrate only enough data to cover the specified number of days in descending time order
-				// and do it in one day increment at a time. Each day's worth of data is migrated in a single transaction.
-				for(int i = 0; i < numberOfDays; i++) {
-					// Migrate data between the specified times
-					migrateSince(session, zoneConfig.getZoneId(), beginTime, endTime);
-					// Rewind the times backward by a day
-					endTime = beginTime;
-					beginTime -= dayInMilliseconds;
-				}
+				Date sinceDate = new Date(System.currentTimeMillis() - numberOfDays*1000L*60L*60L*24L);
+				migrateSince(session, zoneConfig.getZoneId(), sinceDate);
 				return null;
 			}
 		});
