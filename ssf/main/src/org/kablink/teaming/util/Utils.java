@@ -976,6 +976,9 @@ public class Utils {
 	 * @return
 	 */
 	public static String getIconNameTranslated(String iconName) {
+		if(iconName == null)
+			return null;
+			
 		// Does the icon name have an extension?
 		int i = iconName.lastIndexOf(".");
 		if (i >= 0) {
