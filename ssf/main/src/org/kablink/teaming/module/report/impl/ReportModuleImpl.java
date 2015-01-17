@@ -377,7 +377,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
                                                           .add(Projections.property("userId"))))
 				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, entity.getZoneId()))
 				.add(Restrictions.eq("entityId", entity.getEntityIdentifier().getEntityId()))
-				.add(Restrictions.eq("entityType", entity.getEntityIdentifier().getEntityType().getValue()))
+				.add(Restrictions.eq("entityType", new Short((short)entity.getEntityIdentifier().getEntityType().getValue())))
 				.add(Restrictions.eq("eventType", type.getValue()))
 				.add(Restrictions.ge("eventDate", startDate))
 				.add(Restrictions.lt("eventDate", endDate));
@@ -404,7 +404,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							.add(Projections.property("eventType"))
 							.add(Projections.property("auxiliaryData"))))
 					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-					.add(Restrictions.eq("entityType", EntityType.folderEntry.getValue()))
+					.add(Restrictions.eq("entityType", new Short((short)EntityType.folderEntry.getValue())))
 				    .add(Restrictions.in("eventType", new Object[] {AuditType.view.getValue()}))
 					.add(Restrictions.eq("userId", ownerId))
 					.add(Restrictions.ge("eventDate", startDate))
@@ -866,7 +866,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							.setProjection(proj)
 							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, entry.getZoneId()))
 							.add(Restrictions.eq("owningBinderId", binderId))
-							.add(Restrictions.eq("entityType", entry.getEntityType().getValue()))
+							.add(Restrictions.eq("entityType", new Short((short)entry.getEntityType().getValue())))
 							.add(Restrictions.eq("entityId", entryId))
 							.add(Restrictions.in("eventType", activityTypeValues))
 							.addOrder(Order.asc("userId"));
@@ -2281,7 +2281,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						.add(Projections.property("entityId"))
 						.add(Projections.property("eventType")))
 				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.getValue()))
+				.add(Restrictions.eq("entityType", new Short((short)EntityIdentifier.EntityType.folderEntry.getValue())))
 				.add(Restrictions.lt("eventDate", endDate));
 				if(auditTypes != null && auditTypes.length > 0)
 					crit.add(Restrictions.in("eventType", auditTypes));
