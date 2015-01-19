@@ -133,7 +133,8 @@
                 <constraints nullable="false"/>
             </column>
         	<column name="clientAddr" type="VARCHAR2(16 CHAR)">
-                <constraints nullable="false"/>
+        		<!-- NOTE: This column is defined nullable only with Oracle because migrated login data misses this value and Oracle treats empty string the same as null. -->
+                <constraints nullable="true"/>
             </column>
          </createTable>
 	</changeSet>
@@ -312,4 +313,12 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="27">
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="AUDITTRAILMIGRATIONSTATUS" type="NUMBER(2,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>
