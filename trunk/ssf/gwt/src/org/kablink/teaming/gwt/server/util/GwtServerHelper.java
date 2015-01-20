@@ -9742,10 +9742,13 @@ public class GwtServerHelper {
 			// Yes!  Is it a reserved workspace?
 			reply = WorkspaceType.OTHER;
 			Workspace ws = ((Workspace) binder);
+			String  view    = BinderHelper.getBinderDefaultViewName(binder);
+			boolean hasView = MiscUtil.hasString(view);
 			if (ws.isReserved()) {
 				// Yes!  Then we can determine its type based on its
 				// internal ID.
-				if      (ws.getInternalId().equals(ObjectKeys.TOP_WORKSPACE_INTERNALID))    reply = WorkspaceType.TOP;
+				if      (hasView && view.equals(VIEW_WORKSPACE_WELCOME))                    reply = WorkspaceType.LANDING_PAGE;
+				else if (ws.getInternalId().equals(ObjectKeys.TOP_WORKSPACE_INTERNALID))    reply = WorkspaceType.TOP;
 				else if (ws.getInternalId().equals(ObjectKeys.TEAM_ROOT_INTERNALID))        reply = WorkspaceType.TEAM_ROOT;
 				else if (ws.getInternalId().equals(ObjectKeys.GLOBAL_ROOT_INTERNALID))      reply = WorkspaceType.GLOBAL_ROOT;
 				else if (ws.getInternalId().equals(ObjectKeys.PROFILE_ROOT_INTERNALID))     reply = WorkspaceType.PROFILE_ROOT;
@@ -9761,8 +9764,7 @@ public class GwtServerHelper {
 				else {
 					// No, it isn't a user workspace either!  Can we
 					// determine the name of its default view?
-					String view = BinderHelper.getBinderDefaultViewName(binder);
-					if (MiscUtil.hasString(view)) {
+					if (hasView) {
 						// Yes!  Check for those that we know.
 						GwtLogHelper.debug(m_logger, "GwtServerHelper.getWorkspaceType( " + binder.getTitle() + "'s:  'Workspace View' ):  " + view);
 						if      (view.equals(VIEW_WORKSPACE_DISCUSSIONS)) reply = WorkspaceType.DISCUSSIONS;
