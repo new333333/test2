@@ -313,6 +313,7 @@
         </createIndex>
     </changeSet>
 
+    <!--
     <changeSet author="jong" context="schema" failOnError="true" id="27">
         <addColumn tableName="SS_ZONECONFIG">
             <column name="AUDITTRAILMINIMUMMIGRATED" type="NUMBER(1,0)">
@@ -320,5 +321,6 @@
             </column>
         </addColumn>
     </changeSet>
+    -->
     
 </databaseChangeLog>
