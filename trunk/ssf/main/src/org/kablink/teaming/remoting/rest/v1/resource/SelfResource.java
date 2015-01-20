@@ -492,7 +492,7 @@ public class SelfResource extends AbstractFileResource {
         }
         try {
             Date sinceDate = dateFormat.parse(since);
-            Date adhocSettingDate = AdminHelper.getEffectiveAdhocFolderSettingDate(this, getLoggedInUser()));
+            Date adhocSettingDate = AdminHelper.getEffectiveAdhocFolderSettingDate(this, getLoggedInUser());
             if (adhocSettingDate!=null && sinceDate.before(adhocSettingDate)) {
                 throw new AdhocSettingChangedException();
             }
