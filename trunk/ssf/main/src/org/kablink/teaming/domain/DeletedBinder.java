@@ -35,7 +35,6 @@ package org.kablink.teaming.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.util.SPropsUtil;
 
 /**
@@ -133,4 +132,21 @@ public class DeletedBinder extends ZonedObject implements Serializable {
 		// Binder ID is the primary key
 		return Long.valueOf(binderId).hashCode();
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{")
+		.append("binderId=")
+		.append(binderId)
+		.append(", binderType=")
+		.append(binderType)
+		.append(", binderPath=")
+		.append(binderPath)
+		.append(", deletedDate=")
+		.append(deletedDate)
+		.append("}");
+		return sb.toString();
+	}
+	
 }

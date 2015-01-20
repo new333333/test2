@@ -339,7 +339,7 @@ public class AuditTrail extends ZonedObject {
     	//       Only those records that are successfully migrated will be deleted from the old table.
     	
     	switch(getAuditType()) {
-    	case unknown: // We don't expect to see this.
+    	case unknown: // We don't expect to see this. If we see it, throw that away.
     		break;
     	case view:
     		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.view);
@@ -382,11 +382,14 @@ public class AuditTrail extends ZonedObject {
     		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.restore);
     		result.add(basicAudit);
     		break;
-    	case workflow: // Deprecated as of ancient ICEcore 1.1. Workflow history is stored in a separate table - We don't expect to see this.
+    	case workflow: // Deprecated as of ancient ICEcore 1.1. Workflow history is stored in a separate table - We don't expect to see this. If we see it, throw that away.
     		break;
     	case login:
     		// Use empty string instead of null to indicate missing value for client IP address.
-    		loginAudit = new LoginAudit(/*getZoneId(),*/ getDescription(), "", getStartBy(), getStartDate());
+    		// NOTE: This will cause empty string value to be stored for this column with MySQL and MSSQL databases.
+    		//       For Oracle which treats empty string as null, null value will be stored in the column. 
+    		//       For that reason, only the Oracle database defines this column as 'nullable' while other databases define it as "not nullable".
+    		loginAudit = new LoginAudit(getZoneId(), getDescription(), "", getStartBy(), getStartDate());
     		result.add(loginAudit);
     		break;
     	case download:
@@ -397,7 +400,7 @@ public class AuditTrail extends ZonedObject {
     		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.userStatus);
     		result.add(basicAudit);
     		break;
-    	case token: // As of Filr 1.2 and Vibe Hudson, the support for this audit type is dropped. The record in the old table is NOT migrated to new table.
+    	case token: // As of Filr 1.2 and Vibe Hudson, the support for this audit type is dropped. The record in the old table is NOT migrated to new table. Just throw that away.
     		break;
     	case acl:
     		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.acl);

@@ -86,6 +86,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.extension.ZoneClassManager;
+import org.kablink.teaming.jobs.AuditTrailMigration;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -223,6 +224,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			if (companies.size() == 0) {
 				addZone(zoneName, null);
  			} else {
+ 				Long now = System.currentTimeMillis();
+ 				boolean auditTrailTableIsEmpty = AuditTrailMigrationUtil.isAuditTrailTableEmpty();
         		for (int i=0; i<companies.size(); ++i) {
         			final Workspace zone = (Workspace)companies.get(i);
         			try {
@@ -238,19 +241,21 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
         				logger.warn("Failed to upgrade zone " + zone.getZoneId(), e);
         			}
         			
-        			try {
-        				ensureMinimumAuditTrailHasMigrated(zone);
-        			}
-        			catch(Exception e) {
-        				logger.error("Failed to migrate minimum required audit trail for zone " + zone.getZoneId(), e);
-        				// If there's an error preventing successful migration of minimum required data, the entire processing 
-        				// is aborted which will in turn affect the caller. Since this method is executed as part of the server
-        				// startup process, it implies the server startup will fail and users won't be able to use the system.
-        				// This is a deliberate design choice since we want administrator to correct the situation and make sure
-        				// enough data has been migrated to new tables BEFORE users begin using the system again after system
-        				// upgrade. Otherwise, Filr Desktop clients can all end up misbehaving due to missing information about
-        				// what has actually happened since the last time it synced.
-        				throw e; // Rethrow it so that server startup would abort.
+        			if(!auditTrailTableIsEmpty) {
+	        			try {
+	        				ensureMinimumAuditTrailHasMigratedForThisZone(zone, now); // This is zone specific and synchronous
+	        			}
+	        			catch(Exception e) {
+	        				logger.error("Failed to migrate minimum required audit trail records for zone " + zone.getZoneId(), e);
+	        				// If there's an error preventing successful migration of minimum required data, the entire processing 
+	        				// is aborted which will in turn affect the caller. Since this method is executed as part of the server
+	        				// startup process, it implies the server startup will fail and users won't be able to use the system.
+	        				// This is a deliberate design choice since we want administrator to correct the situation and make sure
+	        				// enough data has been migrated to new tables BEFORE users begin using the system again after system
+	        				// upgrade. Otherwise, Filr Desktop clients can all end up misbehaving due to missing information about
+	        				// what has actually happened since the last time it synced.
+	        				throw e; // Rethrow it so that server startup would abort.
+	        			}
         			}
         		}
 				//make sure zone is setup correctly
@@ -281,7 +286,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	        			}
 	        		}
     			}
- 			
+    			if(!auditTrailTableIsEmpty) {
+    				startAuditTrailMigrationJob(); // This is across all zones and asynchronous
+    			}
 			}
 		} finally {
 			if (closeSession) SessionUtil.sessionStop();
@@ -2343,10 +2350,39 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 
 	abstract protected void setupInitialOpenIDProviderList();
 	
-	private void ensureMinimumAuditTrailHasMigrated(Workspace top) {
-		ZoneConfig zoneConfig = getZoneConfig(top.getId());
-		if(zoneConfig.getAuditTrailMigrationStatus() == null) {
-			AuditTrailMigrationUtil.migrateMinimum(zoneConfig);
+	private void ensureMinimumAuditTrailHasMigratedForThisZone(Workspace top, Long now) {
+		final ZoneConfig zoneConfig = getZoneConfig(top.getId());
+		if(!Boolean.TRUE.equals(zoneConfig.getAuditTrailMinimumMigrated())) {
+			// Minimum required audit trail hasn't been migrated yet. Do it now.
+			if(logger.isDebugEnabled())
+				logger.debug("For zone '" + zoneConfig.getZoneId() + "', perform migration of minimum required audit trail records.");
+			AuditTrailMigrationUtil.migrateMinimumForZone(zoneConfig.getZoneId(), now);
+			// If still here, it means that the minimum migration has been successful for the zone. Mark it accordingly.
+			getTransactionTemplate().execute(new TransactionCallback() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					zoneConfig.setAuditTrailMinimumMigrated(true);
+					getCoreDao().update(zoneConfig);
+					return null;
+				}
+			});
+			if(logger.isDebugEnabled())
+				logger.debug("For zone '" + zoneConfig.getZoneId() + "', set the auditTrailMinimumMigrated field to true");
 		}
+		else {
+			if(logger.isDebugEnabled())
+				logger.debug("For zone '" + zoneConfig.getZoneId() + "', migration of minimum required audit trail records was already complete");
+		}
+	}
+	
+	private void startAuditTrailMigrationJob() {
+		int i = 0;
+		if (i == 0) return; // $$$$$$$$$$$$$$$$ TODO TBC
+		
+		String className = SPropsUtil.getString("job.audittrail.migration.class", "org.kablink.teaming.jobs.DefaultAuditTrailMigration");
+		AuditTrailMigration auditTrailMigration = (AuditTrailMigration) ReflectHelper.getInstance(className);
+		int repeatIntervalInSeconds = SPropsUtil.getInt("job.audittrail.migration.repeat.interval.seconds", 60*60);
+		logger.info("Submitting a background job for asynchronous migration of all remaining audit trail records across all zones");
+		auditTrailMigration.schedule(repeatIntervalInSeconds);
 	}
 }
