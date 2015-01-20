@@ -315,7 +315,7 @@
 
     <changeSet author="jong" context="schema" failOnError="true" id="27">
         <addColumn tableName="SS_ZONECONFIG">
-            <column name="AUDITTRAILMIGRATIONSTATUS" type="NUMBER(2,0)">
+            <column name="AUDITTRAILMINIMUMMIGRATED" type="NUMBER(1,0)">
                 <constraints nullable="true" />
             </column>
         </addColumn>

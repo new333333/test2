@@ -121,9 +121,11 @@ public class DefaultBinderReindex extends SimpleTriggerJob implements BinderRein
 			this.startDate = startDate;
 			this.data = data;
 		}
+		@Override
 		protected Date getStartDate() {
 			return startDate;
 		}
+		@Override
 		protected JobDataMap getData() {
 			return data;
 		}

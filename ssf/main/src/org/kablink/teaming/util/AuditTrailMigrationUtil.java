@@ -44,11 +44,13 @@ import org.hibernate.HibernateException;
 import org.hibernate.StatelessSession;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.exception.ConstraintViolationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.StatelessSessionTemplate;
 import org.kablink.teaming.domain.AuditTrail;
-import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.domain.DeletedBinder;
 
 /**
  * @author Jong
@@ -59,46 +61,109 @@ public class AuditTrailMigrationUtil {
 	private static Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
 
 	private static void migrateSince(StatelessSession session, Long zoneId, Date sinceDate) {
-		
-		final List<AuditTrail> oldRecords = session.createCriteria(AuditTrail.class)
-				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-				.add(Restrictions.ge("startDate", sinceDate))
-				.setCacheable(false)
-				.list();
+		if(zoneId != null) {
+			if(sinceDate == null)
+				throw new IllegalArgumentException("Date must also be specified when using zone as a criteria");
+		}
 
-		if(oldRecords.size() > 0) {
-			// Use Hibernate transaction and manage it directly. 
-			// The Spring TransactionTemplate is of no use here, because it only works with regular Session and not StatelessSession.
-			Transaction trans = session.beginTransaction();
-			try {
-				List<Object> newRecords;
-				for(AuditTrail oldRecord:oldRecords) {
-					newRecords = oldRecord.toNewAuditObjects();
-					if(newRecords.size() > 0) {
-						// The old record maps to one or more new records. Migrate it into new tables.
+		Criteria critTotalSize = session
+				.createCriteria(AuditTrail.class)
+				.setProjection(Projections.rowCount());
+		if(zoneId != null) {
+			critTotalSize
+			.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+			.add(Restrictions.ge("startDate", sinceDate));
+		}
+		long totalSizeToMigrate = (Long) critTotalSize.uniqueResult();
+		
+		if(totalSizeToMigrate == 0) {
+			if(zoneId != null)
+				logger.info("Migrating minimum required audit trail records for zone + '" + zoneId + "' created on " + sinceDate + " or later - No record to process.");
+			else
+				logger.info("Migrating all remaining audit trail records across all zones - No record to process.");
+			return;
+		}
+
+		int batchMaxSize = SPropsUtil.getInt("audittrail.migration.batch.max.size", 1000);
+		
+		if(zoneId != null)
+			logger.info("Migrating minimum required audit trail records for zone + '" + zoneId + "' created on " + sinceDate + " or later - This may take a few moments. Do NOT stop the server or power off the system.");
+		else
+			logger.info("Migrating all remaining audit trail records across all zones - This may take significant time depending on the size of the data to migrate.");
+		logger.info("There are total of " + totalSizeToMigrate + " audit trail records to process that meet this selection criteria...");
+		
+		long totalProcessed = 0;
+		
+		while(true) {	
+			Criteria critBatch = session.createCriteria(AuditTrail.class)
+					.setMaxResults(batchMaxSize)
+					.setCacheable(false);
+			if(zoneId != null) {
+				critBatch
+				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+				.add(Restrictions.ge("startDate", sinceDate));
+			}
+			
+			final List<AuditTrail> auditTrailRecords = critBatch.list();
+					
+			if(auditTrailRecords.size() > 0) {
+				// Use Hibernate transaction and manage it directly. 
+				// The Spring TransactionTemplate is of no use here, because it only works with regular Session and not StatelessSession.
+				Transaction trans = session.beginTransaction();
+				try {
+					List<Object> newRecords;
+					for(AuditTrail auditTrailRecord:auditTrailRecords) {
+						newRecords = auditTrailRecord.toNewAuditObjects();
+						// Migrate the old record by inserting new records that it maps to.
 						for(Object newRecord:newRecords) {
-							session.insert(newRecord);
+							try {
+								session.insert(newRecord);
+							}
+							catch(ConstraintViolationException e) {
+								if(newRecord instanceof DeletedBinder) {
+									// In some rare cases, it is possible to see duplicate records in the SS_AuditTrail table describing
+									// deletion of the same binder object. Since the new SS_DeletedBinder uses binderId as primary key,
+									// duplicate entries are not allowed with the new table. When that ever happens, we should simply
+									// keep a single record for the binder. For the sake of simplicity, we will keep the previous one
+									// and toss out the later one (probably it doesn't matter which one we keep).
+									logger.warn("Failed to insert DeletedBinder " + newRecord.toString() + " due to duplicate entry - Discarding");
+								}
+								else {
+									// In all other cases, this isn't expected, so rethrow.
+									throw e;
+								}
+							}
 						}
 						// Purge the old record.$$$$$$$$$$$$$
 						//session.delete(oldRecord);
 					}
-					else {
-						// The old record doesn't map to new scheme. Leave the record in the old table.
-					}
+					trans.commit();
+					totalProcessed += auditTrailRecords.size();
+					logger.info("So far " + totalProcessed + " records have been successfully processed out of expected " + totalSizeToMigrate + "...");
 				}
-				trans.commit();
+				catch(Exception e) {
+					trans.rollback();
+					logger.error("Transaction rolled back due to error", e);
+					throw e; // Rethrow so that migration would fail fast
+				}
 			}
-			catch(Exception e) {
-				trans.rollback();
+			else {
+				// No more record to process
+				break;
 			}
 		}
+		
+		if(zoneId != null)
+			logger.info("Migration of minimum required audit trail records for zone + '" + zoneId + "' has been completed.");
+		else
+			logger.info("Migration of all remaining audit trail records across all zones has been completed.");
 	}
 	
 	private static StatelessSessionTemplate getStatelessSessionTemplate() {
 		return (StatelessSessionTemplate)SpringContextUtil.getBean("statelessSessionTemplate");
 	}
 	
-	public static void migrateMinimum(final ZoneConfig zoneConfig) {
+	public static void migrateMinimumForZone(final Long zoneId, final Long now) {
 		// $$$$$$$$$$ TODO TBC
 		int i = 0;
 		if(i == 0) return;
@@ -108,56 +173,40 @@ public class AuditTrailMigrationUtil {
 			public Void doInHibernate(final StatelessSession session)
 					throws HibernateException, SQLException {
 				int numberOfDays = SPropsUtil.getInt("binder.changes.allowed.days", 7) + 1;
-				Date sinceDate = new Date(System.currentTimeMillis() - numberOfDays*1000L*60L*60L*24L);
-				migrateSince(session, zoneConfig.getZoneId(), sinceDate);
+				Date sinceDate = new Date(now - numberOfDays*1000L*60L*60L*24L);
+				migrateSince(session, zoneId, sinceDate);
 				return null;
 			}
 		});
 	}
 	
 	public static void migrateAll() {
-		StatelessSessionTemplate sst = (StatelessSessionTemplate)SpringContextUtil.getBean("statelessSessionTemplate");
-		
-		sst.execute(new StatelessSessionTemplate.Callback<Void>() {
+		getStatelessSessionTemplate().execute(new StatelessSessionTemplate.Callback<Void>() {
 			@Override
 			public Void doInHibernate(final StatelessSession session)
 					throws HibernateException, SQLException {
-				final List<AuditTrail> oldRecords = session.createCriteria(AuditTrail.class)
-						//.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneConfig.getZoneId()))
-						.add(Restrictions.isNotNull("startDate"))
-						.add(Restrictions.lt("startDate", new Date()))
-						.setCacheable(false)
-                    	.addOrder(Order.asc("startDate"))
-                    	.list();
-				if(oldRecords.size() > 0) {
-					// Use Hibernate transaction and manage it directly. 
-					// The Spring TransactionTemplate is of no use here, because it only works with regular Session and not StatelessSession.
-					Transaction trans = session.beginTransaction();
-					try {
-						List<Object> newRecords;
-						for(AuditTrail oldRecord:oldRecords) {
-							newRecords = oldRecord.toNewAuditObjects();
-							if(newRecords.size() > 0) {
-								// The old record maps to one or more new records. Migrate it into new tables.
-								for(Object newRecord:newRecords) {
-									session.insert(newRecord);
-								}
-								// Purge the old record.
-								//session.delete(oldRecord);
-							}
-							else {
-								// The old record doesn't map to new scheme. Leave the record in the old table.
-							}
-						}
-						trans.commit();
-					}
-					catch(Exception e) {
-						trans.rollback();
-					}
-				}
-				
+				migrateSince(session, null, null);
 				return null;
 			}
-		});		
+		});
+	}
+	
+	public static boolean isAuditTrailTableEmpty() {
+		int i = 0;
+		if(i == 0) return true; // $$$$$$$$$$$$ TODO 
+		
+		// If SS_AuditTrail table is empty, migration is considered complete (although, technically speaking, 
+		// it may be because the table was empty and there was nothing to migrate in the first place).
+		AuditTrail auditTrail = getStatelessSessionTemplate().execute(new StatelessSessionTemplate.Callback<AuditTrail>() {
+			@Override
+			public AuditTrail doInHibernate(final StatelessSession session)
+					throws HibernateException, SQLException {
+				return (AuditTrail) session.createCriteria(AuditTrail.class)
+						.setMaxResults(1)
+						.setCacheable(false)
+						.uniqueResult();
+			}
+		});
+		return auditTrail == null;
 	}
 }
