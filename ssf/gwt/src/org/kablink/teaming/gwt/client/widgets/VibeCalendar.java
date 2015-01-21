@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,13 +34,32 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import com.bradrydzewski.gwt.calendar.client.Calendar;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 
 /**
  * Widget that provides a Vibe specific Calendar implementation.
  * 
  * @author drfoster@novell
  */
+@SuppressWarnings("deprecation")
 public class VibeCalendar extends Calendar {
-	// There are currently no Vibe specific extensions to the default
-	// Calendar widget as supplied by gwt-cal.
+	/**
+	 * Overrides the CalendarWidget.onMouseDown() method.
+	 *
+	 * We do this to stop it from treating a right button mouse click
+	 * as a request to create a new appointment.  We instead allow it
+	 * to be treated as any other right click (i.e., a context menu
+	 * request to the browser.)
+	 * 
+	 * @param element
+	 * @param event
+	 */
+	@Override
+	public void onMouseDown(Element element, Event event) {
+		if (event.getButton() == NativeEvent.BUTTON_RIGHT)
+		     event.stopPropagation();
+		else super.onMouseDown(element, event);
+   }
 }
