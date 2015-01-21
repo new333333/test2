@@ -32,8 +32,15 @@
  */
 package org.kablink.teaming.util;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -43,11 +50,11 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.StatelessSession;
 import org.hibernate.Transaction;
-import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.exception.ConstraintViolationException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.dao.StatelessSessionTemplate;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.DeletedBinder;
@@ -58,8 +65,104 @@ import org.kablink.teaming.domain.DeletedBinder;
  */
 public class AuditTrailMigrationUtil {
 
+	public enum MigrationStatus {
+		/*
+		 * Minimum required migration has been completed
+		 */
+		minimumRequiredCompleted,
+		/*
+		 * All migration has been completed
+		 */
+		allCompleted,
+		/*
+		 * Neither of above
+		 */
+		none
+	}
+	
 	private static Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
 
+	public static void migrateMinimumForZone(final Long zoneId, final Long now) {
+		getStatelessSessionTemplate().execute(new StatelessSessionTemplate.Callback<Void>() {
+			@Override
+			public Void doInHibernate(final StatelessSession session)
+					throws HibernateException, SQLException {
+				int numberOfDays = SPropsUtil.getInt("binder.changes.allowed.days", 7) + 1;
+				Date sinceDate = new Date(now - numberOfDays*1000L*60L*60L*24L);
+				migrateSince(session, zoneId, sinceDate);
+				return null;
+			}
+		});
+	}
+	
+	public static void migrateAll() {
+		getStatelessSessionTemplate().execute(new StatelessSessionTemplate.Callback<Void>() {
+			@Override
+			public Void doInHibernate(final StatelessSession session)
+					throws HibernateException, SQLException {
+				migrateSince(session, null, null);
+				return null;
+			}
+		});
+	}
+	
+	public static boolean isAuditTrailTableEmpty() {
+		int i = 0;
+		if(i == 0) return true; // $$$$$$$$$$$$ TODO 
+		
+		// If SS_AuditTrail table is empty, migration is considered complete (although, technically speaking, 
+		// it may be because the table was empty and there was nothing to migrate in the first place).
+		AuditTrail auditTrail = getStatelessSessionTemplate().execute(new StatelessSessionTemplate.Callback<AuditTrail>() {
+			@Override
+			public AuditTrail doInHibernate(final StatelessSession session)
+					throws HibernateException, SQLException {
+				return (AuditTrail) session.createCriteria(AuditTrail.class)
+						.setMaxResults(1)
+						.setCacheable(false)
+						.uniqueResult();
+			}
+		});
+		return auditTrail == null;
+	}
+	
+	public static MigrationStatus getMigrationStatus() {
+		int i = 0;
+		if (i == 0) return MigrationStatus.allCompleted; // $$$$$$$$$$$$$$$$ TODO TBC
+
+		try {
+			MigrationStatus result = MigrationStatus.none;
+			
+			String filePath = SPropsUtil.getDirPath("data.root.dir") + "conf" + File.separator + "atms.txt"; // atms = Audit Trail Migration Status
+			Path file = Paths.get(filePath);
+			if(Files.exists(file)) {
+				List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
+				if(lines.size() > 0) {
+					if(lines.get(0).equals(MigrationStatus.minimumRequiredCompleted.name()))
+						return MigrationStatus.minimumRequiredCompleted;
+					else if(lines.get(0).equals(MigrationStatus.allCompleted.name()))
+						return MigrationStatus.allCompleted;
+				}
+			}
+			return result;
+		}
+		catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+	
+	public static void setMigrationStatus(MigrationStatus newStatus) {
+		try {
+			String filePath = SPropsUtil.getDirPath("data.root.dir") + "conf" + File.separator + "atms.txt"; // atms = Audit Trail Migration Status
+			Path file = Paths.get(filePath);
+			List<String> lines = new ArrayList<String>();
+			lines.add(newStatus.name());
+			Files.write(file, lines, StandardCharsets.UTF_8);
+		}
+		catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+		
 	private static void migrateSince(StatelessSession session, Long zoneId, Date sinceDate) {
 		if(zoneId != null) {
 			if(sinceDate == null)
@@ -78,7 +181,7 @@ public class AuditTrailMigrationUtil {
 		
 		if(totalSizeToMigrate == 0) {
 			if(zoneId != null)
-				logger.info("Migrating minimum required audit trail records for zone + '" + zoneId + "' created on " + sinceDate + " or later - No record to process.");
+				logger.info("Migrating minimum required audit trail records created on " + sinceDate + " or later for zone + '" + zoneId + "' - No record to process.");
 			else
 				logger.info("Migrating all remaining audit trail records across all zones - No record to process.");
 			return;
@@ -87,7 +190,7 @@ public class AuditTrailMigrationUtil {
 		int batchMaxSize = SPropsUtil.getInt("audittrail.migration.batch.max.size", 1000);
 		
 		if(zoneId != null)
-			logger.info("Migrating minimum required audit trail records for zone + '" + zoneId + "' created on " + sinceDate + " or later - This may take a few moments. Do NOT stop the server or power off the system.");
+			logger.info("Migrating minimum required audit trail records created on " + sinceDate + " or later for zone + '" + zoneId + "' - This may take a few moments. Do NOT stop the server or power off the system.");
 		else
 			logger.info("Migrating all remaining audit trail records across all zones - This may take significant time depending on the size of the data to migrate.");
 		logger.info("There are total of " + totalSizeToMigrate + " audit trail records to process that meet this selection criteria...");
@@ -154,7 +257,7 @@ public class AuditTrailMigrationUtil {
 		}
 		
 		if(zoneId != null)
-			logger.info("Migration of minimum required audit trail records for zone + '" + zoneId + "' has been completed.");
+			logger.info("Migration of minimum required audit trail records has been completed for zone + '" + zoneId + "'.");
 		else
 			logger.info("Migration of all remaining audit trail records across all zones has been completed.");
 	}
@@ -163,50 +266,4 @@ public class AuditTrailMigrationUtil {
 		return (StatelessSessionTemplate)SpringContextUtil.getBean("statelessSessionTemplate");
 	}
 	
-	public static void migrateMinimumForZone(final Long zoneId, final Long now) {
-		// $$$$$$$$$$ TODO TBC
-		int i = 0;
-		if(i == 0) return;
-		
-		getStatelessSessionTemplate().execute(new StatelessSessionTemplate.Callback<Void>() {
-			@Override
-			public Void doInHibernate(final StatelessSession session)
-					throws HibernateException, SQLException {
-				int numberOfDays = SPropsUtil.getInt("binder.changes.allowed.days", 7) + 1;
-				Date sinceDate = new Date(now - numberOfDays*1000L*60L*60L*24L);
-				migrateSince(session, zoneId, sinceDate);
-				return null;
-			}
-		});
-	}
-	
-	public static void migrateAll() {
-		getStatelessSessionTemplate().execute(new StatelessSessionTemplate.Callback<Void>() {
-			@Override
-			public Void doInHibernate(final StatelessSession session)
-					throws HibernateException, SQLException {
-				migrateSince(session, null, null);
-				return null;
-			}
-		});
-	}
-	
-	public static boolean isAuditTrailTableEmpty() {
-		int i = 0;
-		if(i == 0) return true; // $$$$$$$$$$$$ TODO 
-		
-		// If SS_AuditTrail table is empty, migration is considered complete (although, technically speaking, 
-		// it may be because the table was empty and there was nothing to migrate in the first place).
-		AuditTrail auditTrail = getStatelessSessionTemplate().execute(new StatelessSessionTemplate.Callback<AuditTrail>() {
-			@Override
-			public AuditTrail doInHibernate(final StatelessSession session)
-					throws HibernateException, SQLException {
-				return (AuditTrail) session.createCriteria(AuditTrail.class)
-						.setMaxResults(1)
-						.setCacheable(false)
-						.uniqueResult();
-			}
-		});
-		return auditTrail == null;
-	}
 }

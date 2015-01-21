@@ -100,7 +100,6 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     private NameCompletionSettings nameCompletionSettings;
 	private Boolean useDirectoryRights;
 	private Integer cachedRightsRefreshInterval;
-	private Boolean auditTrailMinimumMigrated;
 
 	public ZoneConfig()
 	{
@@ -752,13 +751,6 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	}
 	public void setShareLists(ShareLists shareLists) {
 		setShareListsBlob(shareLists.getShareListsBlob());
-	}
-	
-	public Boolean getAuditTrailMinimumMigrated() {
-		return auditTrailMinimumMigrated;
-	}
-	public void setAuditTrailMinimumMigrated(Boolean auditTrailMinimumMigrated) {
-		this.auditTrailMinimumMigrated = auditTrailMinimumMigrated;
 	}
 
 }
