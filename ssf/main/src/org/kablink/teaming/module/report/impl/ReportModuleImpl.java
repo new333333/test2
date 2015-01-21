@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -418,8 +418,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		for(Object o : data) {
 			Object[] cols = (Object[]) o;
 			DefinableEntity entity = null;
-			if (cols[4].equals(AuditType.view.name()) && entriesSeen.contains(cols[1])) continue;
-			if (cols[4].equals(AuditType.download.name()) && filesSeen.contains(cols[3])) continue;
+			if (cols[4].equals(AuditType.view.getValue()) && entriesSeen.contains(cols[1])) continue;
+			if (cols[4].equals(AuditType.download.getValue()) && filesSeen.contains(cols[3])) continue;
 			Map<String, Object> row = new HashMap<String, Object>();
 			try {
 				entity = getFolderModule().getEntry((Long) cols[0], (Long) cols[1]);
@@ -434,8 +434,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			row.put(ReportModule.TYPE, cols[4]);
 			row.put(ReportModule.DESCRIPTION, cols[5]);
 			report.add(row);
-			if (cols[4].equals(AuditType.view.name())) entriesSeen.add(cols[1]);
-			if (cols[4].equals(AuditType.download.name())) filesSeen.add(cols[3]);
+			if (cols[4].equals(AuditType.view.getValue())) entriesSeen.add(cols[1]);
+			if (cols[4].equals(AuditType.download.getValue())) filesSeen.add(cols[3]);
 			if (report.size() >= returnCount) break;
 		}
 		return report;

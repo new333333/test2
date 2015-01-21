@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -74,7 +74,7 @@
 		<c:set var="count" value="0"/>
 		<c:forEach var="entryMap" items="${ssEntriesViewed}">
 
-		<c:if test="${entryMap.type == 'view'}">
+		<c:if test="${entryMap.type == 1}">
 			<c:set var="entry" value="${entryMap.entity}"/>
 			<jsp:useBean id="entry" type="org.kablink.teaming.domain.Entry" />
     
@@ -125,7 +125,7 @@
 	</div><!-- end of viewed entries -->
 	
 
-    <c:if test="${entryMap.type == 'download'}">
+    <c:if test="${entryMap.type == 9}">
     <c:set var="entry2" value="${entryMap.entity}"/>
     <jsp:useBean id="entry2" type="org.kablink.teaming.domain.Entry" />
 
