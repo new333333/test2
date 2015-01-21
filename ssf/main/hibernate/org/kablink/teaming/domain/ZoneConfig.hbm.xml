@@ -91,6 +91,5 @@
     </component>
     <property name="useDirectoryRights" access="field" />
     <property name="cachedRightsRefreshInterval" access="field" />
-    <!--  <property name="auditTrailMinimumMigrated" access="field" />-->
    </class>
 </hibernate-mapping>
