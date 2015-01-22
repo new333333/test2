@@ -2337,9 +2337,17 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	private void startAuditTrailMigrationJob() {		
 		String className = SPropsUtil.getString("job.audittrail.migration.class", "org.kablink.teaming.jobs.DefaultAuditTrailMigration");
 		AuditTrailMigration auditTrailMigration = (AuditTrailMigration) ReflectHelper.getInstance(className);
-		int repeatIntervalInSeconds = SPropsUtil.getInt("job.audittrail.migration.repeat.interval.seconds", 60*60); // 1 hour
+		// Normally, migration should complete in a single run of the job as long as the system is not interrupted 
+		// and there isn't error while migration is in progress. However, in the unlikely event where the job
+		// isn't given enough time to complete it in a single run (e.g. user shutting down the server, etc.), 
+		// this setting controls how soon the job should run again. By default, it is set to one hour.
+		int repeatIntervalInSeconds = SPropsUtil.getInt("job.audittrail.migration.repeat.interval.seconds", 60*60);
+		// This setting defines the delay in second until the job should start executing after it is submitted. 
+		// This is to give the server enough time to start up before the execution. By default, it is set to one
+		// minute.
+		int delayInSeconds = SPropsUtil.getInt("job.audittrail.migration.delay.seconds", 60);
 		logger.info("Making sure that a background job exists for asynchronous migration of all remaining audit trail records across all zones");
-		auditTrailMigration.schedule(repeatIntervalInSeconds);
+		auditTrailMigration.schedule(repeatIntervalInSeconds, delayInSeconds);
 	}
 	
 	private void checkAndDoAuditTrailMigration(List<Workspace> companies) {
@@ -2350,6 +2358,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			if(!auditTrailTableIsEmpty) {
 				// The deprecated audit trail table isn't empty, meaning we have data to migrate.
  				Long now = System.currentTimeMillis();
+ 				logger.info("Migrating minimum required audit trail records synchronously - This may take a few moments. Do not stop or power off the system. The system won't be accessible to users until this process is complete.");
         		for (int i=0; i<companies.size(); ++i) {
         			final Workspace zone = (Workspace)companies.get(i);
         			try {
@@ -2387,7 +2396,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			boolean auditTrailTableIsEmpty = AuditTrailMigrationUtil.isAuditTrailTableEmpty();
 			if(!auditTrailTableIsEmpty) {
 				// The deprecated audit trail table isn't empty, meaning we have data to migrate.
-				startAuditTrailMigrationJob(); // This operates across all zones and runs asynchronously	
+				startAuditTrailMigrationJob(); // This job operates across all zones and runs asynchronously	
 			}
 			else {
 				// The deprecated audit trail table is empty. There is no data to migrate.
@@ -2396,6 +2405,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
         		migrationStatus = MigrationStatus.allCompleted;
         		AuditTrailMigrationUtil.setMigrationStatus(migrationStatus);				
 			}
+		}
+		
+		if(migrationStatus == MigrationStatus.allCompleted) {
+			if(logger.isDebugEnabled())
+				logger.debug("Audit trail records migration is done or unneeded");
 		}
 	}
 }
