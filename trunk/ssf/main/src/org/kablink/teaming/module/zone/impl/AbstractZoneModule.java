@@ -2358,7 +2358,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			if(!auditTrailTableIsEmpty) {
 				// The deprecated audit trail table isn't empty, meaning we have data to migrate.
  				Long now = System.currentTimeMillis();
- 				logger.info("Migrating minimum required audit trail records synchronously - This may take a few moments. Do not stop or power off the system. The system won't be accessible to users until this process is complete.");
+ 				logger.info("Migrating minimum required audit trail records synchronously - This may take a few moments. Do not stop or power off the server. The server won't be accessible to users until this process is complete.");
         		for (int i=0; i<companies.size(); ++i) {
         			final Workspace zone = (Workspace)companies.get(i);
         			try {
