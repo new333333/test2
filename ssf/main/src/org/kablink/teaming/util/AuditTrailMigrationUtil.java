@@ -131,9 +131,10 @@ public class AuditTrailMigrationUtil {
 			if(Files.exists(file)) {
 				List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
 				if(lines.size() > 0) {
-					if(lines.get(0).equals(MigrationStatus.minimumRequiredCompleted.name()))
+					String value = lines.get(0).trim();
+					if(value.equals(MigrationStatus.minimumRequiredCompleted.name()))
 						return MigrationStatus.minimumRequiredCompleted;
-					else if(lines.get(0).equals(MigrationStatus.allCompleted.name()))
+					else if(value.equals(MigrationStatus.allCompleted.name()))
 						return MigrationStatus.allCompleted;
 				}
 			}
