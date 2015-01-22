@@ -107,9 +107,6 @@ public class AuditTrailMigrationUtil {
 	}
 	
 	public static boolean isAuditTrailTableEmpty() {
-		int i = 0;
-		if(i == 0) return true; // $$$$$$$$$$$$ TODO 
-		
 		// If SS_AuditTrail table is empty, migration is considered complete (although, technically speaking, 
 		// it may be because the table was empty and there was nothing to migrate in the first place).
 		AuditTrail auditTrail = getStatelessSessionTemplate().execute(new StatelessSessionTemplate.Callback<AuditTrail>() {
@@ -126,9 +123,6 @@ public class AuditTrailMigrationUtil {
 	}
 	
 	public static MigrationStatus getMigrationStatus() {
-		int i = 0;
-		if (i == 0) return MigrationStatus.allCompleted; // $$$$$$$$$$$$$$$$ TODO TBC
-
 		try {
 			MigrationStatus result = MigrationStatus.none;
 			
@@ -181,7 +175,7 @@ public class AuditTrailMigrationUtil {
 		
 		if(totalSizeToMigrate == 0) {
 			if(zoneId != null)
-				logger.info("Migrating minimum required audit trail records created on " + sinceDate + " or later for zone + '" + zoneId + "' - No record to process.");
+				logger.info("Migrating minimum required audit trail records created on '" + sinceDate + "' or later for zone '" + zoneId + "' - No record to process.");
 			else
 				logger.info("Migrating all remaining audit trail records across all zones - No record to process.");
 			return;
@@ -189,11 +183,14 @@ public class AuditTrailMigrationUtil {
 
 		int batchMaxSize = SPropsUtil.getInt("audittrail.migration.batch.max.size", 1000);
 		
-		if(zoneId != null)
-			logger.info("Migrating minimum required audit trail records created on " + sinceDate + " or later for zone + '" + zoneId + "' - This may take a few moments. Do NOT stop the server or power off the system.");
-		else
-			logger.info("Migrating all remaining audit trail records across all zones - This may take significant time depending on the size of the data to migrate.");
-		logger.info("There are total of " + totalSizeToMigrate + " audit trail records to process that meet this selection criteria...");
+		if(zoneId != null) {
+			logger.info("Migrating minimum required audit trail records created on '" + sinceDate + "' or later for zone '" + zoneId + "'");
+			logger.info("There are " + totalSizeToMigrate + " audit trail records to process for this zone...");
+		}
+		else {
+			logger.info("Migrating all remaining audit trail records asynchronously across all zones - This may take significant time depending on the amount of data to migrate.");
+			logger.info("There are total of " + totalSizeToMigrate + " audit trail records to process across all zones...");
+		}
 		
 		long totalProcessed = 0;
 		
@@ -216,6 +213,10 @@ public class AuditTrailMigrationUtil {
 				try {
 					List<Object> newRecords;
 					for(AuditTrail auditTrailRecord:auditTrailRecords) {
+						if(logger.isDebugEnabled())
+							logger.debug("Processing audit trail record with id=" + auditTrailRecord.getId() + 
+									", startDate=" + auditTrailRecord.getStartDate() + 
+									", transactionType=" + ((auditTrailRecord.getAuditType() != null)? auditTrailRecord.getAuditType().name() : "null"));
 						newRecords = auditTrailRecord.toNewAuditObjects();
 						// Migrate the old record by inserting new records that it maps to.
 						for(Object newRecord:newRecords) {
@@ -237,8 +238,8 @@ public class AuditTrailMigrationUtil {
 								}
 							}
 						}
-						// Purge the old record.$$$$$$$$$$$$$
-						//session.delete(oldRecord);
+						// Purge the old record.
+						session.delete(auditTrailRecord);
 					}
 					trans.commit();
 					totalProcessed += auditTrailRecords.size();
@@ -257,7 +258,7 @@ public class AuditTrailMigrationUtil {
 		}
 		
 		if(zoneId != null)
-			logger.info("Migration of minimum required audit trail records has been completed for zone + '" + zoneId + "'.");
+			logger.info("Migration of minimum required audit trail records has been completed for zone '" + zoneId + "'.");
 		else
 			logger.info("Migration of all remaining audit trail records across all zones has been completed.");
 	}

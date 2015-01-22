@@ -40,5 +40,5 @@ public interface AuditTrailMigration {
 	public static final String AUDIT_TRAIL_MIGRATIION_GROUP="audit-trail-migration";
 	public static final String AUDIT_TRAIL_MIGRATIION_DESCRIPTION="Migrate audit trail";
 	
-	public void schedule(int repeatIntervalInSeconds);
+	public void schedule(int repeatIntervalInSeconds, int delayInSeconds);
 }

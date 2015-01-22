@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobDataMap;
@@ -96,6 +97,15 @@ public abstract class SSStatefulJob implements StatefulJob {
            		deleteJobOnError(context, new SchedulerException(context.getJobDetail().getFullName() + " : zoneId missing from jobData"));
            	}
            	zoneId = jobDataMap.getLong(ZONEID);
+           	if(zoneId != null && zoneId.longValue() == 0L) {
+           		// This is a "global scoped" job that cuts across all zones.
+           		// Because the runtime system can't execute anything when not tied to a specific zone, we will run this job
+           		// under the context of default zone to begin with. However the job itself is free to do internally whatever
+           		// it needs to do to any zones in the system.
+           		String defaultZoneName = SZoneConfig.getDefaultZoneName();
+           		Workspace defaultZoneTop = coreDao.findTopWorkspace(defaultZoneName);
+           		zoneId = defaultZoneTop.getId();
+           	}
            	//Validate user and zone are compatible
            	try {
            		if (jobDataMap.containsKey(USERID)) {

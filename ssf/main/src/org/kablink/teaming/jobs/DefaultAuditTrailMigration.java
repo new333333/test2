@@ -39,6 +39,7 @@ import java.util.GregorianCalendar;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.util.AuditTrailMigrationUtil;
+import org.kablink.teaming.util.AuditTrailMigrationUtil.MigrationStatus;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -61,6 +62,8 @@ public class DefaultAuditTrailMigration extends SimpleTriggerJob implements Audi
 		try {
 			AuditTrailMigrationUtil.migrateAll();
 			// If still here, it means that the above operation completed successfully without error.
+			// Mark migration as completed.
+			AuditTrailMigrationUtil.setMigrationStatus(MigrationStatus.allCompleted);
 			// We can now self-destroy (i.e., delete) this job.
 			logger.info("Self-destroying audit trail migration job as it is no longer needed");
 			context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
@@ -76,7 +79,7 @@ public class DefaultAuditTrailMigration extends SimpleTriggerJob implements Audi
 	 * @see org.kablink.teaming.jobs.AuditTrailMigration#schedule(int)
 	 */
 	@Override
-	public void schedule(int repeatIntervalInSeconds) {
+	public void schedule(int repeatIntervalInSeconds, int delayInSeconds) {
 		// Since this job is submitted during server start, give it 30 seconds delay so that the job won't kick in
 		// until the server is fully up and running (not because early kick-in will break anything, but because it
 		// can further slow down server startup).
@@ -84,7 +87,7 @@ public class DefaultAuditTrailMigration extends SimpleTriggerJob implements Audi
 		// another one needs to be rescheduled. If a job execution runs to completion, it self-destroys and never
 		// repeats itself.
 		GregorianCalendar start = new GregorianCalendar();
-		start.add(Calendar.SECOND, 30);
+		start.add(Calendar.SECOND, delayInSeconds);
 		schedule(new JobDescription(start.getTime(), repeatIntervalInSeconds));
 	}
 
