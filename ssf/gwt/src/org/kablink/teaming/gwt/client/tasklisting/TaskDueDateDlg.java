@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,8 +32,10 @@
  */
 package org.kablink.teaming.gwt.client.tasklisting;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
@@ -72,6 +74,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Implements a dialog for editing a task's due date.
@@ -88,16 +91,17 @@ public class TaskDueDateDlg extends DlgBox
 		// Event handlers implemented by this class.
 		TaskPickDateEvent.Handler
 {
-	private CheckBox				m_allDayCB;				// The all day checkbox.
-	private DlgLabel				m_bannerLabel;			// The banner at the top of the dialog containing the task's title.
-	private FlexTable				m_taskDueDateTable;		// Once displayed, the table of task due date dialog's widgets.
-	private int						m_durationDaysRow;		// The index of the row in the table that contains the duration days spinner.
-	private Map<String, TZDateBox>	m_dateBoxMap;			// Map of the TZDateBox  widgets, indexed by their base ID.
-	private Map<String, TimePicker>	m_timePickerMap;		// Map of the TimePicker widgets, indexed by their base ID.
-	private TaskEvent				m_selectedTaskEvent;	// The task whose due date is being edited.
-	private TaskInfo				m_selectedTask;			// The task whose due date is being edited.
-	private TaskTable				m_taskTable;			// Access to the TaskTable we're prompting for.
-	private ValueSpinner			m_durationDays;			// The duration days ValueSpinner.
+	private CheckBox					m_allDayCB;					// The all day checkbox.
+	private DlgLabel					m_bannerLabel;				// The banner at the top of the dialog containing the task's title.
+	private FlexTable					m_taskDueDateTable;			// Once displayed, the table of task due date dialog's widgets.
+	private int							m_durationDaysRow;			// The index of the row in the table that contains the duration days spinner.
+	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private Map<String, TZDateBox>		m_dateBoxMap;				// Map of the TZDateBox  widgets, indexed by their base ID.
+	private Map<String, TimePicker>		m_timePickerMap;			// Map of the TimePicker widgets, indexed by their base ID.
+	private TaskEvent					m_selectedTaskEvent;		// The task whose due date is being edited.
+	private TaskInfo					m_selectedTask;				// The task whose due date is being edited.
+	private TaskTable					m_taskTable;				// Access to the TaskTable we're prompting for.
+	private ValueSpinner				m_durationDays;				// The duration days ValueSpinner.
 
 	private final GwtTeamingMessages				m_messages  = GwtTeaming.getMessages();					//
 	private final GwtTeamingTaskListingImageBundle	m_images	= GwtTeaming.getTaskListingImageBundle();	//
@@ -111,7 +115,7 @@ public class TaskDueDateDlg extends DlgBox
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
 		TeamingEvents.TASK_PICK_DATE,
 	};
 	
@@ -175,12 +179,6 @@ public class TaskDueDateDlg extends DlgBox
 			true,	// true --> Dialog is modal.
 			0, 0);	// The position of the dialog will be set dynamically based on the position of the widget it's being shown relative to.
 
-		// ..register the events to be handled by this class...
-		EventHelper.registerEventHandlers(
-			GwtTeaming.getEventBus(),
-			m_registeredEvents,
-			this);
-		
 		// ...initialize everything else...
 		m_dateBoxMap        = new HashMap<String, TZDateBox>();
 		m_timePickerMap     = new HashMap<String, TimePicker>();
@@ -579,6 +577,31 @@ public class TaskDueDateDlg extends DlgBox
     }
     
 	/**
+	 * Called when the dialog is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the dialog is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/**
 	 * Handles TaskPickDateEvent's received by this class.
 	 * 
 	 * Implements the TaskPickDateEvent.Handler.onTaskPickDate() method.
@@ -590,6 +613,28 @@ public class TaskDueDateDlg extends DlgBox
 		String datePickerId = event.getDatePickerId();
 		TZDateBox db = m_dateBoxMap.get(datePickerId);
 		db.getDateBox().showDatePicker();
+	}
+
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				REGISTERED_EVENTS,
+				this,
+				m_registeredEventHandlers);
+		}
 	}
 
 	/*
@@ -794,5 +839,17 @@ public class TaskDueDateDlg extends DlgBox
 		// ...and hide/show the widget based on whether this task is
 		// ...an all day event.
 		m_taskDueDateTable.getRowFormatter().setVisible(m_durationDaysRow, (!(isAllDayEvent())));
+	}
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
 	}
 }
