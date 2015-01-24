@@ -513,7 +513,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  			binder.setLibrary(true);
     }
 
-    protected void checkConstraintMirrored(Binder parent, Binder binder, boolean library, InputDataAccessor inputData) {
+    protected void checkConstraintMirrored(Binder parent, Binder binder, String oldTitle, boolean library, InputDataAccessor inputData) {
  		// A little more validation is necessary with respect to mirrored binder.
  		if(binder.isMirrored()) {
  			if(!library)
@@ -523,7 +523,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  					binder.setResourceDriverName(parent.getResourceDriverName());
  				}
  				else {
- 					throw new ConfigurationException("errorcode.mirrored.folder.requires.resource.driver." + (binder.isAclExternallyControlled() ? "net" : "mirrored"), new Object[]{});
+ 					if(!binder.isAclExternallyControlled() && binder.getTitle() != null && !binder.getTitle().equals(oldTitle)) {
+ 						// This is a old legacy mirrored folder (or its sub-folder) and the user is changing the title of the folder.
+ 						// In this case, don't throw an exception so that we can work around the issue reported in bug #914335.
+ 					}
+ 					else {
+ 						throw new ConfigurationException("errorcode.mirrored.folder.requires.resource.driver." + (binder.isAclExternallyControlled() ? "net" : "mirrored"), new Object[]{});
+ 					}
  				}
  			}
  			else {
@@ -916,7 +922,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				public Object doInTransaction(TransactionStatus status) {
 	        		String oldTitle = binder.getTitle();
 	        		String oldNormalTitle = binder.getNormalTitle();
-	        		modifyBinder_fillIn(binder, inputData, entryData, ctx);
+	        		modifyBinder_fillIn(binder, oldTitle, inputData, entryData, ctx);
 	        		modifyBinder_postFillIn(binder, inputData, entryData, ctx);
 	        		//if title changed, must update path info for all child folders
 	        		String newTitle = binder.getTitle();
@@ -1009,7 +1015,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
     }
    //inside write transaction    
-    protected void modifyBinder_fillIn(Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {  
+    protected void modifyBinder_fillIn(Binder binder, String oldTitle, InputDataAccessor inputData, Map entryData, Map ctx) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         binder.setModification(new HistoryStamp(user));
         binder.incrLogVersion();
@@ -1032,7 +1038,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  	   	else 
  	   		library = binder.isLibrary();
 
- 		checkConstraintMirrored(binder.getParentBinder(), binder, library, inputData);
+ 		checkConstraintMirrored(binder.getParentBinder(), binder, oldTitle, library, inputData);
     }
     //no transaction    
     protected void modifyBinder_removeAttachments(Binder binder, Collection deleteAttachments,
