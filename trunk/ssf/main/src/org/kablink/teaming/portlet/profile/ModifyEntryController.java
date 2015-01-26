@@ -127,6 +127,27 @@ public class ModifyEntryController extends SAbstractController {
 				}
 				MapInputData inputData = getProfileModule().validateUserAttributes(entryId, formData);
 				
+				//Is the userName being changed?
+				if (inputData.exists( WebKeys.USER_PROFILE_NAME )) {
+					try {
+						String newUserName = inputData.getSingleValue(WebKeys.USER_PROFILE_NAME);
+						Principal p1 = getProfileModule().getEntry(entryId);
+						if (p1 != null && !p1.getName().equals(newUserName)) {
+							Principal p2 = getProfileModule().findUserByName(newUserName);
+							if (p2 != null) {
+				        		setupReloadPreviousPage(response, NLT.get("errorcode.user.alreadyExists"));
+				        		return;
+							}
+						}
+					} catch(AccessControlException ae) {
+		        		setupReloadPreviousPage(response, NLT.get("errorcode.access.denied"));
+		        		return;
+					} catch(Exception e) {
+		        		setupReloadPreviousPage(response, NLT.get("errorcode.user.exists"));
+		        		return;
+					}
+				}
+				
 				// Is there a password field on the page?
 	        	String  password = null;
 				boolean passwordChanged = inputData.exists( WebKeys.USER_PROFILE_PASSWORD );
