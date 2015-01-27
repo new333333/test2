@@ -605,10 +605,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		final InputDataAccessor inputData, Map fileItems, 
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Map options)  
     		throws WriteFilesException, WriteEntryDataException {
-    	if(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_VALIDATION_ONLY))) {
-    		modifyEntryValidationOnly(binder, entry, inputData, fileItems, deleteAttachments, fileRenamesTo, options);
+    	if (options == null) {
+    		options = new HashMap();
     	}
-    	else {
+    	if (!options.containsKey(ObjectKeys.INPUT_OPTION_NO_DEFAULTS)) {
+    		//Unless the caller explicitly wants to add the defaults, never set defaults during the modify operation
+    		options.put(ObjectKeys.INPUT_OPTION_NO_DEFAULTS, Boolean.TRUE);
+    	}
+    	if (Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_VALIDATION_ONLY))) {
+    		modifyEntryValidationOnly(binder, entry, inputData, fileItems, deleteAttachments, fileRenamesTo, options);
+    	} else {
     		modifyEntryNormal(binder, entry, inputData, fileItems, deleteAttachments, fileRenamesTo, options);
     	}
     }
