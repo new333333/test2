@@ -1033,20 +1033,20 @@ public class EmailHelper {
      */
     private static User.ExtProvState getExternalUserAccountState(AllModulesInjected bs, Long userId) {
         try {
-            ArrayList<Long> ids = new ArrayList<Long>();
-            ids.add( userId );
-            SortedSet<Principal> principals = bs.getProfileModule().getPrincipals( ids );
-            if ((null != principals) && (1 == principals.size())) {
-                Principal principal = principals.first();
-                if (principal instanceof User) {
-                    User user = ((User) principal);
-                    if (!(user.getIdentityInfo().isInternal())) {
-                        return user.getExtProvState();
-                    }
+    		Principal principal;
+    		
+    		principal = bs.getProfileModule().getEntry( userId );
+    		if ( principal != null && principal instanceof User )
+    		{
+    			User user;
+    			
+    			user = (User) principal;
+                if ( !(user.getIdentityInfo().isInternal()) )
+                {
+                    return user.getExtProvState();
                 }
-            }
+    		}
         }
-        
         catch (AccessControlException acEx) {
             // Nothing to do.
         }
