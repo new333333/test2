@@ -51,6 +51,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.GroupPrincipal;
+import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
@@ -133,7 +134,10 @@ public class ModifyEntryController extends SAbstractController {
 						String newUserName = inputData.getSingleValue(WebKeys.USER_PROFILE_NAME);
 						Principal p1 = getProfileModule().getEntry(entryId);
 						if (p1 != null && !p1.getName().equals(newUserName)) {
-							Principal p2 = getProfileModule().findUserByName(newUserName);
+							Principal p2 = null;
+							try {
+								getProfileModule().findUserByName(newUserName);
+							} catch(NoUserByTheNameException nue) {}
 							if (p2 != null) {
 				        		setupReloadPreviousPage(response, NLT.get("errorcode.user.alreadyExists"));
 				        		return;
