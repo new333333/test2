@@ -82,12 +82,18 @@ public class ExternalUserUtil {
 	private static final String DELIM = ".";
 	
 	public static String encodeUserToken(User user) {
+		// The user object passed in to this method may or may not be a persistent object.
+		// In some cases, it may be a fake redacted object rather than a real one, and this
+		// method should be able to handle that.
 		// Re-seed only if it hasn't been seeded before. This allows a token to be generated without affecting the state of the user account.
-		if(user.getExtProvSeed() == null) {
-			user.reseedExtProvSeed();
-			updateUser(user);			
+		User dbUser = getProfileDao().loadUser(user.getId(), user.getZoneId());
+		if(dbUser.getExtProvSeed() == null) {
+			dbUser.reseedExtProvSeed();
+			updateUser(dbUser);
+			// Copy the new seed value to the user object passed in to this method for consistency.
+			user.setExtProvSeed(dbUser.getExtProvSeed()); 
 		}
-		return Long.toHexString(user.getId().longValue()) + DELIM + user.computeExtProvHash();
+		return Long.toHexString(dbUser.getId().longValue()) + DELIM + dbUser.computeExtProvHash();
 	}
 	
 	public static String encodeUserTokenWithNewSeed(User user) {
