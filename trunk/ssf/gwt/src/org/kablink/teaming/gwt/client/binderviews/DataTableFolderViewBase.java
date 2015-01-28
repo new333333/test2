@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -731,7 +731,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	public void applyColumnWidths(List<FolderColumn> folderColumns, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth) {
 		// If all the columns being applied use pixel widths, force the
 		// last one to 100%.
-		fixupPixelColumns(columnWidths, defaultColumnWidth);
+//		fixupPixelColumns(columnWidths, defaultColumnWidth);	// DRF (20150128):  Commented out as part of addressing bug#914979.
 		
 		double pctTotal = ColumnWidth.sumPCTWidths(folderColumns, columnWidths, defaultColumnWidth);
 		for (FolderColumn fc:  folderColumns) {
@@ -1007,6 +1007,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * If all the column widths use pixels, forces the last one to
 	 * 100%.
 	 */
+	@SuppressWarnings("unused")
 	private void fixupPixelColumns(Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth) {
 		// If all the columns being displayed use pixel widths...
 		if (GwtClientHelper.hasItems(m_folderColumnsList) && (0 == ColumnWidth.pctColumns(m_folderColumnsList, columnWidths, defaultColumnWidth))) {
@@ -1485,7 +1486,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 		// If all the columns being displayed use pixel widths, force
 		// the last one to 100%.
-		fixupPixelColumns(m_columnWidths, m_defaultColumnWidth);
+//		fixupPixelColumns(m_columnWidths, m_defaultColumnWidth);	// DRF (20150128):  Commented out as part of addressing bug#914979.
 		
 		// If this folder supports entry selections...
 		double pctTotal = ColumnWidth.sumPCTWidths(m_folderColumnsList, m_columnWidths, m_defaultColumnWidth);
@@ -1872,13 +1873,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 
 			// Complete the initialization of the column.
-			fc.setDisplayIndex(colIndex                                    );
-			column.setSortable(fc.isColumnSortable()                       );
+			fc.setDisplayIndex(colIndex                                 );
+			column.setSortable(fc.isColumnSortable()                    );
 			if (null == columnHeaderHtml)
-			     m_dataTable.addColumn(column, fc.getColumnTitle()         );
-			else m_dataTable.addColumn(column, columnHeaderHtml            );
-		    setColumnStyles(   column, cName, colIndex++, columnHeaderStyle);
-		    setColumnWidth(            cName, column, pctTotal             );
+			     m_dataTable.addColumn(column, fc.getColumnTitle()      );
+			else m_dataTable.addColumn(column, columnHeaderHtml         );
+		    setColumnStyles(column, cName, colIndex++, columnHeaderStyle);
+		    setColumnWidth( fc.getColumnName(), column, pctTotal        );
 
 		    // Do we have a support column for the column we just
 		    // added?
