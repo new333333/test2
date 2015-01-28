@@ -86,7 +86,7 @@ public class ExternalUserUtil {
 		// In some cases, it may be a fake redacted object rather than a real one, and this
 		// method should be able to handle that.
 		// Re-seed only if it hasn't been seeded before. This allows a token to be generated without affecting the state of the user account.
-		User dbUser = getProfileDao().loadUser(user.getId(), user.getZoneId());
+		User dbUser = (User) getCoreDao().load(User.class, user.getId());
 		if(dbUser.getExtProvSeed() == null) {
 			dbUser.reseedExtProvSeed();
 			updateUser(dbUser);
