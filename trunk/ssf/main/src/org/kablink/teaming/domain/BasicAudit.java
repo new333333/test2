@@ -49,7 +49,7 @@ public class BasicAudit extends ZonedObject {
 	
 	public enum EntityFamily {
 		custom((short)-1),
-		blob((short)1),
+		blog((short)1),
 		calendar((short)2),
 		discussion((short)3),
 		user((short)4),
@@ -80,7 +80,7 @@ public class BasicAudit extends ZonedObject {
 		public static EntityFamily valueOf(short value) {
 			switch(value) {
 			case -1: return EntityFamily.custom;
-			case 1: return EntityFamily.blob;
+			case 1: return EntityFamily.blog;
 			case 2: return EntityFamily.calendar;
 			case 3: return EntityFamily.discussion;
 			case 4: return EntityFamily.user;
