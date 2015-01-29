@@ -266,4 +266,7 @@ public class PortletSessionImpl implements PortletSession {
 		throw new UnsupportedOperationException();
 	}
 
+	public HttpSession getHttpSession() {
+		return ses;
+	}
 }
