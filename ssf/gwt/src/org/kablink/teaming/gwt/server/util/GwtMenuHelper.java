@@ -664,117 +664,26 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Constructs a ToolbarItem for adding entries to a folder.
+	 * Constructs a ToolbarItem for adding entries and nested folders
+	 * to a folder.
 	 * 
 	 * At the point this gets called, we know that the user has rights
 	 * to add entries to the folder.
 	 */
-	@SuppressWarnings("unchecked")
 	private static void constructEntryAddItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
-		// Read the folder's entry definitions.
-		List defaultEntryDefinitions = folder.getEntryDefinitions();
-		int defaultEntryDefs = ((null == defaultEntryDefinitions) ? 0 : defaultEntryDefinitions.size());
-		
 		// Define the toolbar item for the add items.
 		ToolbarItem addTBI = new ToolbarItem("1_add");
 		markTBITitle(addTBI, "toolbar.new");
 		
 		// Is the folder other than a mirrored folder or is it a
 		// mirrored folder that can be written to?
-		boolean hasVT = MiscUtil.hasString(viewType);
-		AdaptedPortletURL url;
 		BinderModule   bm = bs.getBinderModule();
 		TemplateModule tm = bs.getTemplateModule();
 		if ((!(folder.isMirrored())) || isFolderWritableMirrored(folder)) {
-			// Yes!  Can we create a nested folder in this folder?
-			if ((!(isViewBlog(viewType))) &&							// If not a blog folder and...
-					(!(BinderHelper.isBinderMyFilesStorage(folder))) &&	// ...not a 'My Files Storage' folder and...
-					bm.testAccess(folder, BinderOperation.addFolder)) {	// ...the user has rights.
-				// Yes!  Can we access any folder templates?
-				List<TemplateBinder> folderTemplates = tm.getTemplates(Definition.FOLDER_VIEW);
-				folderTemplates.addAll(tm.getTemplates(Definition.FOLDER_VIEW, folder, true));
-				if (folderTemplates.isEmpty()) {
-					folderTemplates.add(tm.addDefaultTemplate(Definition.FOLDER_VIEW));
-				}
-				if ((null != folderTemplates) && (0 < folderTemplates.size())) {
-					// Yes!  Scan them.
-					String fedId = folder.getEntryDefId();
-					Long folderTemplateId = null;
-					for (TemplateBinder tb:  folderTemplates) {
-						// Is the the template for this folder?
-						if (tb.getEntryDefId().equals(fedId)) {
-							// Yes!  Save its ID.
-							String tbInternalId = tb.getInternalId();
-							if ((null != tbInternalId) && tbInternalId.equals(ObjectKeys.DEFAULT_FOLDER_FILR_ROOT_CONFIG)) {
-								tb = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_FILR_NETFOLDER_FILE);
-								folderTemplateId = ((null == tb) ? null : tb.getId());
-							}
-							else {
-								folderTemplateId = tb.getId();
-							}
-							break;
-						}
-					}
-
-					// Did we find the template ID for the folder?
-					if (null == folderTemplateId) {
-						// No!  Default to the first one in the list.
-						folderTemplateId = folderTemplates.get(0).getId();
-					}
-				
-					// Finally, use the information we've got to add a
-					// ToolbarItem to add a new folder.
-					ToolbarItem addFolderTBI = new ToolbarItem(ADD_FOLDER);
-					markTBITitle(           addFolderTBI, "toolbar.menu.addFolder"           );
-					markTBIEvent(           addFolderTBI, TeamingEvents.INVOKE_ADD_NEW_FOLDER);
-					markTBIFolderTemplateId(addFolderTBI, folderTemplateId                   );
-					addTBI.addNestedItem(addFolderTBI);
-				}
-			}
-			
-			// Do we need to include new entry options?
-			boolean isFileFolder      = GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder));
-			boolean includeNewEntries = ((!(Utils.checkIfFilr())) || (!(SsfsUtil.supportApplets(request))) || (1 < defaultEntryDefs) || (!isFileFolder));
-			if (includeNewEntries) {
-				// Yes!  Does this folder have more than one entry
-				// definition or is for other than a guest book
-				// folder?
-				if ((1 < defaultEntryDefs) || (!hasVT) || (!(isViewGuestBook(viewType)))) {
-					// Yes!  Added items for each entry type.  (Note that
-					// we skip this on guest books because they get their
-					// own 'Sign the Guest Book' top level menu item.)
-					int count = 1;
-					int	defaultEntryDefIndex = ListFolderHelper.getDefaultFolderEntryDefinitionIndex(
-						RequestContextHolder.getRequestContext().getUser().getId(),
-						bs.getProfileModule(),
-						folder,
-						defaultEntryDefinitions);
-					Map<String, Boolean> usedTitles = new HashMap<String, Boolean>();
-					for (int i = 0; i < defaultEntryDefinitions.size(); i += 1) {
-						Definition def = ((Definition) defaultEntryDefinitions.get(i));
-						url = createActionUrl(request);
-						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
-						url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
-						url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-						String title = NLT.getDef(def.getTitle());
-						if (null != usedTitles.get("title")) {
-							title = (title + " (" + String.valueOf(count++) + ")");
-						}
-						
-						ToolbarItem entriesTBI = new ToolbarItem("entries");
-						markTBITitleRes(entriesTBI, title);
-						// markTBIPopup(entriesTBI       );
-						markTBIUrl(     entriesTBI, url  );
-						if (i == defaultEntryDefIndex) {
-							markTBIDefault(entriesTBI);
-						}
-						if ((0 == i) && addTBI.hasNestedToolbarItems()) {
-							addTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-						}
-						addTBI.addNestedItem(entriesTBI);
-					}
-				}
-			}
+			// Yes!  Create the various 'New' menu items for this
+			// folder.
+			constructEntryAddItems_Entry( bs, request, addTBI, folder, viewType);
+			constructEntryAddItems_Folder(bm, tm,      addTBI, folder, viewType);
 		}
 
 		// If we added anything to the add toolbar item...
@@ -784,9 +693,10 @@ public class GwtMenuHelper {
 		}
 
 		// Do we have a view type?
-		if (hasVT) {
+		if (MiscUtil.hasString(viewType)) {
 			// Yes!  Handle the special add cases for view types that
 			// need it.
+			AdaptedPortletURL url;
 			if (isViewPhotoAlbum(viewType)) {
 				if (bm.testAccess(folder, BinderOperation.addFolder)) {
 					TemplateBinder photoTemplate = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_PHOTO);
@@ -821,6 +731,120 @@ public class GwtMenuHelper {
 						entryToolbar.addNestedItem(addTBI);
 					}
 				}
+			}
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for adding entries to a folder.
+	 * 
+	 * At the point this gets called, we know that the user has rights
+	 * to add entries to the folder.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void constructEntryAddItems_Entry(AllModulesInjected bs, HttpServletRequest request, ToolbarItem addTBI, Folder folder, String viewType) {
+		// Read the folder's entry definitions.
+		List defaultEntryDefinitions = folder.getEntryDefinitions();
+		int defaultEntryDefs = ((null == defaultEntryDefinitions) ? 0 : defaultEntryDefinitions.size());
+		
+		// Do we need to include new entry options?
+		boolean isFileFolder      = GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder));
+		boolean includeNewEntries = ((!(Utils.checkIfFilr())) || (!(SsfsUtil.supportApplets(request))) || (1 < defaultEntryDefs) || (!isFileFolder));
+		if (includeNewEntries) {
+			// Yes!  Does this folder have more than one entry
+			// definition or is for other than a guest book
+			// folder?
+			if ((1 < defaultEntryDefs) || (!(MiscUtil.hasString(viewType))) || (!(isViewGuestBook(viewType)))) {
+				// Yes!  Added items for each entry type.  (Note that
+				// we skip this on guest books because they get their
+				// own 'Sign the Guest Book' top level menu item.)
+				int count = 1;
+				int	defaultEntryDefIndex = ListFolderHelper.getDefaultFolderEntryDefinitionIndex(
+					RequestContextHolder.getRequestContext().getUser().getId(),
+					bs.getProfileModule(),
+					folder,
+					defaultEntryDefinitions);
+				Map<String, Boolean> usedTitles = new HashMap<String, Boolean>();
+				for (int i = 0; i < defaultEntryDefinitions.size(); i += 1) {
+					Definition def = ((Definition) defaultEntryDefinitions.get(i));
+					AdaptedPortletURL url = createActionUrl(request);
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+					url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+					url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+					String title = NLT.getDef(def.getTitle());
+					if (null != usedTitles.get("title")) {
+						title = (title + " (" + String.valueOf(count++) + ")");
+					}
+					
+					ToolbarItem entriesTBI = new ToolbarItem("entries");
+					markTBITitleRes(entriesTBI, title);
+					// markTBIPopup(entriesTBI       );
+					markTBIUrl(     entriesTBI, url  );
+					if (i == defaultEntryDefIndex) {
+						markTBIDefault(entriesTBI);
+					}
+					addTBI.addNestedItem(entriesTBI);
+				}
+			}
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem for adding nested folders to a folder.
+	 * 
+	 * At the point this gets called, we know that the user has rights
+	 * to add entries to the folder.
+	 */
+	private static void constructEntryAddItems_Folder(BinderModule bm, TemplateModule tm, ToolbarItem addTBI, Folder folder, String viewType) {
+		if ((!(isViewBlog(viewType))) &&							// If not a blog folder and...
+				(!(BinderHelper.isBinderMyFilesStorage(folder))) &&	// ...not a 'My Files Storage' folder and...
+				bm.testAccess(folder, BinderOperation.addFolder)) {	// ...the user has rights.
+			// Yes!  Can we access any folder templates?
+			List<TemplateBinder> folderTemplates = tm.getTemplates(Definition.FOLDER_VIEW);
+			folderTemplates.addAll(tm.getTemplates(Definition.FOLDER_VIEW, folder, true));
+			if (folderTemplates.isEmpty()) {
+				folderTemplates.add(tm.addDefaultTemplate(Definition.FOLDER_VIEW));
+			}
+			if ((null != folderTemplates) && (0 < folderTemplates.size())) {
+				// Yes!  Scan them.
+				String fedId = folder.getEntryDefId();
+				Long folderTemplateId = null;
+				for (TemplateBinder tb:  folderTemplates) {
+					// Is the the template for this folder?
+					if (tb.getEntryDefId().equals(fedId)) {
+						// Yes!  Save its ID.
+						String tbInternalId = tb.getInternalId();
+						if ((null != tbInternalId) && tbInternalId.equals(ObjectKeys.DEFAULT_FOLDER_FILR_ROOT_CONFIG)) {
+							tb = tm.getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_FILR_NETFOLDER_FILE);
+							folderTemplateId = ((null == tb) ? null : tb.getId());
+						}
+						else {
+							folderTemplateId = tb.getId();
+						}
+						break;
+					}
+				}
+
+				// Did we find the template ID for the folder?
+				if (null == folderTemplateId) {
+					// No!  Default to the first one in the list.
+					folderTemplateId = folderTemplates.get(0).getId();
+				}
+
+				// If there are 'New' entry items in the menu...
+				if (addTBI.hasNestedToolbarItems()) {
+					// ...we need a separator between them and the
+					// ...'New' folder item.
+					addTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+				}
+				
+				// Finally, use the information we've got to add a
+				// ToolbarItem to add a new folder.
+				ToolbarItem addFolderTBI = new ToolbarItem(ADD_FOLDER);
+				markTBITitle(           addFolderTBI, "toolbar.menu.addFolder"           );
+				markTBIEvent(           addFolderTBI, TeamingEvents.INVOKE_ADD_NEW_FOLDER);
+				markTBIFolderTemplateId(addFolderTBI, folderTemplateId                   );
+				addTBI.addNestedItem(addFolderTBI);
 			}
 		}
 	}
