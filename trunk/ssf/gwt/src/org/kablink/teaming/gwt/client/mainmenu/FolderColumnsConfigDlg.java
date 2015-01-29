@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -108,17 +108,23 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	private RowFormatter					m_folderColumnsGridRF;		//
 	private ScrollPanel						m_sp;						//
 	private VerticalPanel					m_vp;						//
+	private VibeMenuItem					m_moveBottom;				//
 	private VibeMenuItem					m_moveDown;					//
+	private VibeMenuItem					m_moveTop;					//
 	private VibeMenuItem					m_moveUp;					//
 	
-	private final static String IDBASE				= "folderColumn_";				// Base ID for rows in the folder columns Grid.
-	private final static String IDTAIL_CHECKBOX		= "_cb";						// Used for constructing the ID of a row's checkbox.
-	private final static String IDTAIL_MOVE_DOWN	= "down";						// Used for constructing the ID of the move down menu item.
-	private final static String IDTAIL_MOVE_UP		= "up";							// Used for constructing the ID of the move up   menu item.
-	private final static String IDTAIL_RADIO		= "_rb";						// Used for constructing the ID of a row's radio button.
-	private final static String IDTAIL_TEXTBOX		= "_tb";						// Used for constructing the ID of a row's text box.
-	private final static String ID_MOVE_DOWN		= (IDBASE + IDTAIL_MOVE_DOWN);	//
-	private final static String ID_MOVE_UP			= (IDBASE + IDTAIL_MOVE_UP);	//
+	private final static String IDBASE				= "folderColumn_";					// Base ID for rows in the folder columns Grid.
+	private final static String IDTAIL_CHECKBOX		= "_cb";							// Used for constructing the ID of a row's checkbox.
+	private final static String IDTAIL_MOVE_BOTTOM	= "bottom";							// Used for constructing the ID of the move to bottom menu item.
+	private final static String IDTAIL_MOVE_DOWN	= "down";							// Used for constructing the ID of the move down      menu item.
+	private final static String IDTAIL_MOVE_TOP		= "top";							// Used for constructing the ID of the move to top    menu item.
+	private final static String IDTAIL_MOVE_UP		= "up";								// Used for constructing the ID of the move up        menu item.
+	private final static String IDTAIL_RADIO		= "_rb";							// Used for constructing the ID of a row's radio button.
+	private final static String IDTAIL_TEXTBOX		= "_tb";							// Used for constructing the ID of a row's text box.
+	private final static String ID_MOVE_BOTTOM		= (IDBASE + IDTAIL_MOVE_BOTTOM);	//
+	private final static String ID_MOVE_DOWN		= (IDBASE + IDTAIL_MOVE_DOWN);		//
+	private final static String ID_MOVE_TOP			= (IDBASE + IDTAIL_MOVE_TOP);		//
+	private final static String ID_MOVE_UP			= (IDBASE + IDTAIL_MOVE_UP);		//
 	
 	// The following define the column indexes into the FlexTable used
 	// to edit the columns.
@@ -165,6 +171,64 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	}
 
 	/*
+	 * Inner class that implements the move to bottom command.
+	 */
+	private class DoMoveBottom implements Command {
+		@Override
+		public void execute() {
+			// If the table is empty...
+			if (0 == m_folderColumnsListCount) {
+				// ...there's nothing to do.
+				return;
+			}
+			
+			// Do we have some rows in the table without the bottom one
+			// being checked?
+			int rows = m_folderColumnsGrid.getRowCount();
+			if ((2 < rows) && (!(isRowChecked(rows - 1)))) {
+				// Yes!  Scan the rows.
+				getDataFromDlg();	//Make sure all of the changed settings are captured first
+				int checkedRow = (-1);
+				for (int rowIndex = 0; rowIndex < rows; rowIndex += 1) {
+					// Is this row checked?
+					if (isRowChecked(rowIndex)) {
+						// Yes!  Track it and break out of the loop.
+						checkedRow = rowIndex;
+						break;
+					}
+				}
+				
+				// Do we have the index of a checked row?
+				if ((-1) == checkedRow) {
+					// No!  Bail, we can't move to bottom if nothing
+					// is checked.
+					return;
+				}
+					
+				// Scan the rows from the checked on down...
+				for (int rowIndex = checkedRow; rowIndex < (rows - 1); rowIndex += 1) {
+					// ...moving them down...
+					int colIndex = (rowIndex - 1);
+					renderRow( rowIndex,      m_folderColumnsListAll.get(colIndex + 1));
+					renderRow((rowIndex + 1), m_folderColumnsListAll.get(colIndex    ));
+					
+					FolderColumn fc1 = m_folderColumnsListAll.get(colIndex    );
+					FolderColumn fc2 = m_folderColumnsListAll.get(colIndex + 1);
+					m_folderColumnsListAll.set( colIndex,      fc2);
+					m_folderColumnsListAll.set((colIndex + 1), fc1);
+				}
+
+				// ...and then update the view.
+				checkedRow = (rows - 1);
+				setRowChecked(checkedRow);
+				resetRowStyles();
+				validateMoves(checkedRow);
+				m_sp.ensureVisible(m_folderColumnsGrid.getWidget(checkedRow, 0));
+			}
+		}
+	}
+	
+	/*
 	 * Inner class that implements the move down command.
 	 */
 	private class DoMoveDown implements Command {
@@ -182,11 +246,17 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			if ((2 < rows) && (!(isRowChecked(rows - 1)))) {
 				// Yes!  Scan the rows.
 				getDataFromDlg();	//Make sure all of the changed settings are captured first.
-				int newCheckIndex = (-1);
+				int newCheckIndex       = (-1);
+				int scrollIntoViewIndex = (-1);
 				for (int rowIndex = (rows - 1); rowIndex > 0; rowIndex -= 1) {
 					// If this row checked...
 					if (isRowChecked(rowIndex)) {
-						// ...move it down.
+						// ...track it...
+						if ((-1) == scrollIntoViewIndex) {
+							scrollIntoViewIndex = rowIndex;
+						}
+						
+						// ...and move it down.
 						int colIndex = (rowIndex - 1);
 						renderRow( rowIndex,      m_folderColumnsListAll.get(colIndex + 1));
 						renderRow((rowIndex + 1), m_folderColumnsListAll.get(colIndex    ));
@@ -207,6 +277,68 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 				if ((-1) != newCheckIndex) {
 					validateMoves(newCheckIndex);
 				}
+				
+				if ((-1) != scrollIntoViewIndex) {
+					m_sp.ensureVisible(m_folderColumnsGrid.getWidget(scrollIntoViewIndex, 0));
+				}
+			}
+		}
+	}
+	
+	/*
+	 * Inner class that implements the move to top command.
+	 */
+	private class DoMoveTop implements Command {
+		@Override
+		public void execute() {
+			// If the table is empty...
+			if (0 == m_folderColumnsListCount) {
+				// ...there's nothing to do.
+				return;
+			}
+			
+			// Do we have some rows in the table without the top one
+			// being checked?
+			int rows = m_folderColumnsGrid.getRowCount();
+			if ((2 < rows) && (!(isRowChecked(1)))) {
+				// Yes!  Scan the rows.
+				getDataFromDlg();	//Make sure all of the changed settings are captured first
+				
+				int checkedRow = (-1);
+				for (int rowIndex = 0; rowIndex < rows; rowIndex += 1) {
+					// Is this row checked?
+					if (isRowChecked(rowIndex)) {
+						// Yes!  Track it and break out of the loop.
+						checkedRow = rowIndex;
+						break;
+					}
+				}
+				
+				// Do we have the index of a checked row?
+				if ((-1) == checkedRow) {
+					// No!  Bail, we can't move to bottom if nothing
+					// is checked.
+					return;
+				}
+
+				// Scan the rows from the checked one up...
+				for (int rowIndex = checkedRow; rowIndex > 1; rowIndex -= 1) {
+					// ...moving them up....
+					int colIndex = (rowIndex - 1);
+					renderRow((rowIndex - 1), m_folderColumnsListAll.get(colIndex    ));
+					renderRow( rowIndex,      m_folderColumnsListAll.get(colIndex - 1));
+					
+					FolderColumn fc1 = m_folderColumnsListAll.get(colIndex    );
+					FolderColumn fc2 = m_folderColumnsListAll.get(colIndex - 1);
+					m_folderColumnsListAll.set( colIndex,      fc2);
+					m_folderColumnsListAll.set((colIndex - 1), fc1);
+				}
+				
+				// ...and then update the view.
+				setRowChecked(1);
+				resetRowStyles();
+				validateMoves(1);
+				m_sp.ensureVisible(m_folderColumnsGrid.getWidget(1, 0));
 			}
 		}
 	}
@@ -229,11 +361,17 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			if ((2 < rows) && (!(isRowChecked(1)))) {
 				// Yes!  Scan the rows.
 				getDataFromDlg();	//Make sure all of the changed settings are captured first
-				int newCheckIndex = (-1);
+				int newCheckIndex       = (-1);
+				int scrollIntoViewIndex = (-1);
 				for (int rowIndex = 2; rowIndex < rows; rowIndex += 1) {
 					// If this row checked...
 					if (isRowChecked(rowIndex)) {
-						// ...move it up.
+						// ...track it...
+						if ((-1) == scrollIntoViewIndex) {
+							scrollIntoViewIndex = rowIndex;
+						}
+						
+						// ...and move it up.
 						int colIndex = (rowIndex - 1);
 						renderRow((rowIndex - 1), m_folderColumnsListAll.get(colIndex    ));
 						renderRow( rowIndex,      m_folderColumnsListAll.get(colIndex - 1));
@@ -253,6 +391,10 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 				resetRowStyles();
 				if ((-1) != newCheckIndex) {
 					validateMoves(newCheckIndex);
+				}
+				
+				if ((-1) != scrollIntoViewIndex) {
+					m_sp.ensureVisible(m_folderColumnsGrid.getWidget(scrollIntoViewIndex, 0));
 				}
 			}
 		}
@@ -281,15 +423,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 			null);						// null -> Data passed via global data members.
 	}
 	
-	/**
-	 * Callback interface to interact with the dialog asynchronously
-	 * after it loads. 
-	 */
-	public interface FolderColumnsConfigDlgClient {
-		void onSuccess(FolderColumnsConfigDlg dlg);
-		void onUnavailable();
-	}
-
 	/*
 	 * Adds a section header row to the folder options grid.
 	 */
@@ -346,6 +479,28 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		fp.add(i);
 		m_moveDown = new VibeMenuItem(fp.getElement().getInnerHTML(), true, new DoMoveDown(), "folderColumnsDlg_MenuItem");
 		mb.addItem(m_moveDown);
+		
+		fp = new FlowPanel();
+		i = GwtClientHelper.buildImage(m_images.arrowTopDisabled().getSafeUri().asString());
+		i.addStyleName("folderColumnsDlg_MenuImg padding10L");
+		i.setTitle(m_messages.folderColumnsDlgMoveTop());
+		iE = i.getElement();
+		iE.setAttribute("align", "absmiddle");
+		iE.setId(ID_MOVE_TOP);
+		fp.add(i);
+		m_moveTop= new VibeMenuItem(fp.getElement().getInnerHTML(), true, new DoMoveTop(), "folderColumnsDlg_MenuItem");
+		mb.addItem(m_moveTop);
+		
+		fp = new FlowPanel();
+		i = GwtClientHelper.buildImage(m_images.arrowBottomDisabled().getSafeUri().asString());
+		i.addStyleName("folderColumnsDlg_MenuImg");
+		i.setTitle(m_messages.folderColumnsDlgMoveTop());
+		iE = i.getElement();
+		iE.setAttribute("align", "absmiddle");
+		iE.setId(ID_MOVE_BOTTOM);
+		fp.add(i);
+		m_moveBottom= new VibeMenuItem(fp.getElement().getInnerHTML(), true, new DoMoveBottom(), "folderColumnsDlg_MenuItem");
+		mb.addItem(m_moveBottom);
 		
 		m_vp.add(mb);
 	}
@@ -902,11 +1057,15 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	 * Called to validate the move buttons.
 	 */
 	private void validateMoves(int rowSelected) {
-		boolean canMoveUp   = (1 < rowSelected);
-		boolean canMoveDown = (rowSelected < m_folderColumnsListCount);
+		boolean canMoveBottom = (rowSelected < m_folderColumnsListCount);
+		boolean canMoveTop    = (1 < rowSelected);
+		boolean canMoveDown   = (rowSelected < m_folderColumnsListCount);
+		boolean canMoveUp     = (1 < rowSelected);
 		
-		setMoveEnabled(m_moveUp,   ID_MOVE_UP,   canMoveUp,   m_images.arrowUp(),   m_images.arrowUpDisabled()  );
-		setMoveEnabled(m_moveDown, ID_MOVE_DOWN, canMoveDown, m_images.arrowDown(), m_images.arrowDownDisabled());
+		setMoveEnabled(m_moveBottom, ID_MOVE_BOTTOM, canMoveBottom, m_images.arrowBottom(), m_images.arrowBottomDisabled());
+		setMoveEnabled(m_moveDown,   ID_MOVE_DOWN,   canMoveDown,   m_images.arrowDown(),   m_images.arrowDownDisabled()  );
+		setMoveEnabled(m_moveTop,    ID_MOVE_TOP,    canMoveTop,    m_images.arrowTop(),    m_images.arrowTopDisabled()   );
+		setMoveEnabled(m_moveUp,     ID_MOVE_UP,     canMoveUp,     m_images.arrowUp(),     m_images.arrowUpDisabled()    );
 	}
 
 
@@ -915,6 +1074,15 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 	/* the dialog and perform some operation on it.                  */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
+	/**
+	 * Callback interface to interact with the dialog asynchronously
+	 * after it loads. 
+	 */
+	public interface FolderColumnsConfigDlgClient {
+		void onSuccess(FolderColumnsConfigDlg fccDlg);
+		void onUnavailable();
+	}
+
 	/*
 	 * Asynchronously loads the split point and performs some operation
 	 * against the code.

@@ -1919,7 +1919,9 @@ public interface GwtTeamingMessages extends Messages
 	String folderColumnsDlgColumn();
 	String folderColumnsDlgCustomLabel();
 	String folderColumnsDlgHeader();
+	String folderColumnsDlgMoveBottom();
 	String folderColumnsDlgMoveDown();
+	String folderColumnsDlgMoveTop();
 	String folderColumnsDlgMoveUp();
 	String folderColumnsDlgNoOptions();
 	String folderColumnsDlgOrder();
