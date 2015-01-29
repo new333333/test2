@@ -35,16 +35,6 @@
 <% // View entry data dispatcher %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<c:choose>
-  <c:when test="${ss_parentFolderViewStyle == 'wiki'}">
-      <jsp:include page="/WEB-INF/jsp/definition_elements/wiki/wiki_entry_data.jsp" />
-  </c:when>
-  <c:when test="${ss_parentFolderViewStyle == 'photo'}">
-      <jsp:include page="/WEB-INF/jsp/definition_elements/photo/photo_entry_data.jsp" />
-  </c:when>
-  
-  <c:otherwise>
-
 <jsp:useBean id="property_name" type="String" scope="request" />
 <jsp:useBean id="property_caption" type="String" scope="request" />
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
@@ -68,7 +58,7 @@
 		<c:set var="thisEntryId" value="<%= thisEntryId %>" />
 		<c:set var="thisTitle" value="title${thisEntryId}"/>
 		<c:if test="${empty ss_entryAttributesSeen[thisTitle]}">
-		  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_title.jsp" />
+		  <jsp:include page="/WEB-INF/jsp/definition_elements/photo/photo_entry_data_title.jsp" />
 		</c:if>
 		<%
 
@@ -147,7 +137,4 @@
         <%
 	}
 %>
-
-  </c:otherwise>
-</c:choose>
 
