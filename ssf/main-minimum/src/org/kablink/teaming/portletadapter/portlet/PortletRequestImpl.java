@@ -115,6 +115,28 @@ public class PortletRequestImpl implements PortletRequest, MultipartFileSupport,
 						portletInfo.getName(), portletContext);
 				httpSes.setAttribute(KeyNames.SESSION, pses);
 			}
+			else if(pses instanceof PortletSessionImpl) {
+				HttpSession existingHttpSes = ((PortletSessionImpl)pses).getHttpSession();
+				if(httpSes != existingHttpSes) {
+					// The HTTP session that the portlet session is pointing to is NOT the same as the
+					// HTTP session associated with the current HTTP request wrapped in this portlet
+					// request. This means that the current HTTP request generated a brand new session
+					// (e.g. through preemptive Basic Auth) and the portlet session we have is no longer
+					// valid.
+					if(create) {
+						// Create a new portlet session.
+						pses = new PortletSessionImpl(httpSes,
+								portletInfo.getName(), portletContext);
+						httpSes.setAttribute(KeyNames.SESSION, pses);
+					}
+					else {
+						// We can't return existing portlet session since it's no longer valid and
+						// we can't create a new one either since "create" flag is false. 
+						// We should simply return null. It will cause the caller to do the right thing.
+						pses = null;
+					}
+				}
+			}
 		}
 		
 		return pses;
