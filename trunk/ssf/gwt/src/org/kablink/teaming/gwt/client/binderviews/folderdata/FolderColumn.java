@@ -101,8 +101,9 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public final static String COLUMN_TITLE					= "title";
 	
 	// The following are the various internal names used for columns.
-	public final static String COLUMN_SELECT				= "--select--";
+	public final static String COLUMN_PAD					= "--pad--";
 	public final static String COLUMN_PIN					= "--pin--";
+	public final static String COLUMN_SELECT				= "--select--";
 	
 	/**
 	 * Constructor method.

@@ -322,6 +322,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	// The following controls whether the display data read from the
 	// server is dumped as part of the content of the view.
 	private final static boolean DUMP_DISPLAY_DATA	= false;
+
+	// The following is used to control how the data table is filled
+	// when all the default column sizes are in pixels.  If true, a
+	// separate padding column at 100% width is added.  If false, the
+	// last column in the data table is adjusted to be 100% in width.
+	private final static boolean ADD_PAD_COLUMN_FOR_ALL_PIXEL_WIDTHS	= false;	//
 	
 	// The following is used as the ID on the <IMG> containing the
 	// pin header.
@@ -730,8 +736,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	@Override
 	public void applyColumnWidths(List<FolderColumn> folderColumns, Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth) {
 		// If all the columns being applied use pixel widths, force the
-		// last one to 100%.
-//		fixupPixelColumns(columnWidths, defaultColumnWidth);	// DRF (20150128):  Commented out as part of addressing bug#914979.
+		// last one to a width of 100% when necessary.
+		fixupPixelColumns(columnWidths, defaultColumnWidth);
 		
 		double pctTotal = ColumnWidth.sumPCTWidths(folderColumns, columnWidths, defaultColumnWidth);
 		for (FolderColumn fc:  folderColumns) {
@@ -1004,18 +1010,30 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/*
-	 * If all the column widths use pixels, forces the last one to
-	 * 100%.
+	 * If all the column use pixel widths, forces the last one to a
+	 * width of 100% when necessary.
 	 */
-	@SuppressWarnings("unused")
 	private void fixupPixelColumns(Map<String, ColumnWidth> columnWidths, ColumnWidth defaultColumnWidth) {
-		// If all the columns being displayed use pixel widths...
-		if (GwtClientHelper.hasItems(m_folderColumnsList) && (0 == ColumnWidth.pctColumns(m_folderColumnsList, columnWidths, defaultColumnWidth))) {
-			// ...force the last one to 100%.
-			FolderColumn lastCol = m_folderColumnsList.get(m_folderColumnsList.size() - 1);
-			columnWidths.put(lastCol.getColumnName(), m_100PctColumnWidth);
+		// Are we adding a pad column if all the column widths are in
+		// pixels?
+		boolean addPadColumn = ADD_PAD_COLUMN_FOR_ALL_PIXEL_WIDTHS;
+		if (!addPadColumn) {
+			// No!  If all the columns being displayed are using pixel
+			// widths...
+			List<FolderColumn> sizingColumns = getColumnsForSizing();
+			if (GwtClientHelper.hasItems(sizingColumns) && (0 == ColumnWidth.pctColumns(sizingColumns, columnWidths, defaultColumnWidth))) {
+				// ...and the total pixel width is less than the width
+				// ...of the view...
+				int totalPXWidth = ColumnWidth.sumPXWidths(sizingColumns, columnWidths, defaultColumnWidth);
+				int viewWidth    = getOffsetWidth();
+//				GwtClientHelper.debugAlert("fixupPixelColumns( totalPXWidth=" + totalPXWidth + ", viewWidth=" + viewWidth + " )");	// Debug assist!
+				if (totalPXWidth < viewWidth) {
+					// ...force the last column to 100%.
+					FolderColumn lastCol = sizingColumns.get(sizingColumns.size() - 1);
+					columnWidths.put(lastCol.getColumnName(), m_100PctColumnWidth);
+				}
+			}
 		}
-		
 	}
 	
 	/*
@@ -1484,10 +1502,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ColumnSortList csl = m_dataTable.getColumnSortList();
 		csl.clear();
 
-		// If all the columns being displayed use pixel widths, force
-		// the last one to 100%.
-//		fixupPixelColumns(m_columnWidths, m_defaultColumnWidth);	// DRF (20150128):  Commented out as part of addressing bug#914979.
-		
 		// If this folder supports entry selections...
 		double pctTotal = ColumnWidth.sumPCTWidths(m_folderColumnsList, m_columnWidths, m_defaultColumnWidth);
 		int colIndex = 0;
@@ -1502,6 +1516,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			addPinColumn(selectionModel, colIndex++, pctTotal);
 		}
 
+		// If all the columns being displayed use pixel widths, force
+		// the last one to a width of 100% when necessary.
+		fixupPixelColumns(m_columnWidths, m_defaultColumnWidth);
+		
 	    // Scan the columns defined in this folder.
 		for (final FolderColumn fc:  m_folderColumnsList) {
 			// For some columns (e.g., entry titles), we define a 2nd,
@@ -1905,6 +1923,31 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						column,
 						(!(getFolderSortDescend()))));
 		    }
+		}
+
+		// Are all the columns being displayed using pixel widths?
+		boolean addPadColumn = ADD_PAD_COLUMN_FOR_ALL_PIXEL_WIDTHS;
+		if (addPadColumn) {
+			List<FolderColumn> sizingColumns = getColumnsForSizing();
+			if (GwtClientHelper.hasItems(sizingColumns) && (0 == ColumnWidth.pctColumns(sizingColumns, m_columnWidths, m_defaultColumnWidth))) {
+				// Yes!  Then we need to add a padding column of 100% to
+				// ensure the table gets filled to the end of the row and
+				// doesn't unexpectedly stretch any of the pixel width
+				// based columns.
+				FolderColumn padFC = new FolderColumn();
+				padFC.setColumnName(FolderColumn.COLUMN_PAD);
+				padFC.setColumnTitle("");
+				VibeColumn<FolderRow, ?> padColumn = new StringColumn<FolderRow>(padFC) {
+					@Override
+					public String getValue(FolderRow fr) {
+						return "";
+					}
+				};
+				padColumn.setSortable(false);
+				m_dataTable.addColumn(padColumn, SafeHtmlUtils.fromTrustedString("&nbsp;"));
+			    setColumnStyles(padColumn, FolderColumn.COLUMN_PAD, colIndex++);
+				m_dataTable.setColumnWidth(padColumn, ColumnWidth.getWidthStyle(m_100PctColumnWidth));
+			}
 		}
 	}
 
