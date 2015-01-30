@@ -366,8 +366,17 @@ public class AuditTrail extends ZonedObject {
         		result.add(basicAudit);
         		// Create a new deleted binder record from the value stored in the description column of the old record. This represents
         		// path information about the deleted binder which can be pulled from and used by multiple types of reports. 
-    			deletedBinder = new DeletedBinder(EntityType.valueOf(getEntityType()), getEntityId(), getStartDate(), getDescription(), getZoneId());
-    			result.add(deletedBinder);
+        		String binderPath = getDescription();
+        		if(binderPath != null && !binderPath.equals("")) {
+        			// It turns out we didn't start storing binder path information in the description column for deleted
+        			// binders until after Vibe 3.4 release. So, while those pieces of data are available when upgrading
+        			// from any version of Filr, they are NOT present when upgrading from Vibe 3.3 or 3.4. Therefore,
+        			// we need to check the presence of the data, and if it isn't present, then do NOT create a deleted
+        			// biner record in the new table. Otherwise, it will encounter a constraint violation error due to
+        			// missing value in the non-null column.
+	    			deletedBinder = new DeletedBinder(EntityType.valueOf(getEntityType()), getEntityId(), getStartDate(), binderPath, getZoneId());
+	    			result.add(deletedBinder);
+        		}
     		}
     		else { // Non-binder (entry) entity such as folder entry and user/group.
         		basicAudit = toBasicAudit(org.kablink.teaming.domain.AuditType.delete);
