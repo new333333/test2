@@ -41,6 +41,7 @@ package org.kablink.teaming.module.authentication;
  */
 public interface FailedAuthenticationMonitor
 {
-	public boolean doesAuthenticationRequireCaptcha( String authenticatorName );
-	public boolean isBruteForceAttackInProgress();
+	public void clearFailedAuthenticationHistory( String userId );
+	public boolean doesAuthenticationRequireCaptcha( String authenticatorName, String userId );
+	public boolean isBruteForceAttackInProgress( String userId );
 }

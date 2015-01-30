@@ -443,7 +443,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 					// Does authentication require captcha?
 					// If we have detected a brute-force attack we will require captcha for
 					// web-based authentication.
-					if ( doesAuthenticationRequireCaptcha( getAuthenticator() ) )
+					if ( doesAuthenticationRequireCaptcha( getAuthenticator(), authentication.getName() ) )
 					{
 						// Yes
 						if ( isCaptchaValid( authentication ) == false )
@@ -456,6 +456,17 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 					SimpleProfiler.start( "1-AuthenticationModuleImpl.doAuthenticate()");
 					Authentication retVal = doAuthenticate(authentication);
 					SimpleProfiler.stop( "1-AuthenticationModuleImpl.doAuthenticate()");
+					
+					// If we get here the user successfull authenticated.
+					{
+						String authenticatorName;
+						
+						authenticatorName = getAuthenticator();
+						if ( authenticatorName != null && authenticatorName.equalsIgnoreCase( LoginAudit.AUTHENTICATOR_WEB ) )
+						{
+							clearFailedAuthenticationHistory( authentication.getName() );
+						}
+					}
 					
 					return retVal;
 				}
@@ -927,10 +938,10 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	 * 
 	 */
 	@Override
-	public boolean isBruteForceAttackInProgress()
+	public boolean isBruteForceAttackInProgress( String userId )
 	{
 		if ( m_failedAuthenticationHistory != null )
-			return m_failedAuthenticationHistory.isBruteForceAttackInProgress();
+			return m_failedAuthenticationHistory.isBruteForceAttackInProgress( userId );
 		
 		return false;
 	}
@@ -939,11 +950,21 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	 * 
 	 */
 	@Override
-	public boolean doesAuthenticationRequireCaptcha( String authenticatorName )
+	public void clearFailedAuthenticationHistory( String userId )
+	{
+		if ( m_failedAuthenticationHistory != null )
+			m_failedAuthenticationHistory.clearHistory( userId );
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public boolean doesAuthenticationRequireCaptcha( String authenticatorName, String userId )
 	{
 		if ( authenticatorName != null && authenticatorName.equalsIgnoreCase( LoginAudit.AUTHENTICATOR_WEB ) )
 		{
-			return isBruteForceAttackInProgress();
+			return isBruteForceAttackInProgress( userId );
 		}
 			
 		return false;
