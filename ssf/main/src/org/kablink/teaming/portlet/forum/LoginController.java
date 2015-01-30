@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
@@ -335,6 +336,7 @@ public class LoginController  extends SAbstractControllerRetry {
     		else if ( sessionObj instanceof AuthenticationException )
     		{
         		AuthenticationException ex;
+        		String loginUserId = "";
 
         		// Authentication failed.
         		String exStatus;
@@ -345,7 +347,7 @@ public class LoginController  extends SAbstractControllerRetry {
         		if      ( hasApiErrorCode && ( ApiErrorCode.USERACCOUNT_WEBACCESS_BLOCKED.equals( exApiErrorCode ) ) ) exStatus = LOGIN_STATUS_WEBACCESS_RESTRICTED;
         		else if ( hasApiErrorCode && ( ApiErrorCode.PASSWORD_EXPIRED.equals(              exApiErrorCode ) ) ) exStatus = LOGIN_STATUS_PASSWORD_EXPIRED;
         		else                                                                                                   exStatus = LOGIN_STATUS_AUTHENTICATION_FAILED;
-        		String loginUserId;
+        		
         		if ( null != unaEx )
         		{
         			Long userId = unaEx.getUserId();
@@ -354,7 +356,15 @@ public class LoginController  extends SAbstractControllerRetry {
         		else
         		{
         			loginUserId = "";
+
+        			if ( ex instanceof TextVerificationException )
+            		{
+    					// Either the user entered an invalid captcha response or we have detected
+        				// a brute-force authentication attack.  Either way require captcha on the login dialog.
+    					model.put( "ssDoTextVerification", "true" );
+            		}
         		}
+
         		model.put( WebKeys.LOGIN_STATUS,  exStatus        );
         		model.put( WebKeys.LOGIN_ERROR,   ex.getMessage() );
         		model.put( WebKeys.LOGIN_USER_ID, loginUserId     );
@@ -405,24 +415,6 @@ public class LoginController  extends SAbstractControllerRetry {
 		{
 			model.put(WebKeys.URL, refererUrl);
 			model.put( "loginRefererUrl", refererUrl );
-		}
-		
-		{
-			AuthenticationModule authModule;
-			
-			authModule = getAuthenticationModule();
-			if ( authModule instanceof FailedAuthenticationMonitor )
-			{
-				FailedAuthenticationMonitor faMonitor;
-				
-				// Does authentication require captcha?
-				faMonitor = (FailedAuthenticationMonitor) authModule;
-				if ( faMonitor.doesAuthenticationRequireCaptcha( LoginAudit.AUTHENTICATOR_WEB ) )
-				{
-					// Yes, require captcha on the login dialog.
-					model.put( "ssDoTextVerification", "true" );
-				}
-			}
 		}
 		
 		boolean durangoUI = GwtUIHelper.isGwtUIActive(request);

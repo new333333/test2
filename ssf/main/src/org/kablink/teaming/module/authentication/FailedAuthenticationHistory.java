@@ -94,15 +94,43 @@ public class FailedAuthenticationHistory
 	}
 	
 	/**
-	 * 
+	 * Clear the failed authentication history for the given user. 
 	 */
-	public void clearHistory()
+	public void clearHistory( String userId )
 	{
-		m_listOfFailures.clear();
+		FailedUserAuthenticationHistory userHistory;
+		
+		if ( m_listOfFailures == null || m_listOfFailures.size() == 0 )
+			return;
+
+		// Are we already tracking this user?
+		userHistory = m_listOfFailures.get( userId );
+		if ( userHistory != null )
+			userHistory.clearHistory();
 	}
 	
 	/**
-	 * 
+	 * For the given user see if the user is under brute-force attack.
+	 */
+	public boolean isBruteForceAttackInProgress( String userId )
+	{
+		FailedUserAuthenticationHistory userHistory;
+		
+		if ( m_listOfFailures == null || m_listOfFailures.size() == 0 )
+			return false;
+
+		// Are we already tracking this user?
+		userHistory = m_listOfFailures.get( userId );
+		if ( userHistory != null )
+			return userHistory.isBruteForceAttackInProgress( m_inLastNumSeconds, m_numFailedLogins );
+		
+		// If we get here we don't have any record of failed authentications for this user.
+		return false;
+	}
+	
+	/**
+	 * Check all users that have a failed authentication history and see if a brute-force attack
+	 * is happening for any of them.
 	 */
 	public boolean isBruteForceAttackInProgress()
 	{
