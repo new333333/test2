@@ -57,8 +57,8 @@ import javax.servlet.http.HttpSession;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -108,7 +108,6 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
-
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.portlet.ModelAndView;
@@ -562,6 +561,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
     	if(ex != null) {
     		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
     		session.removeAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+
+			if ( ex instanceof TextVerificationException )
+    		{
+				// Either the user entered an invalid captcha response or we have detected
+				// a brute-force authentication attack.  Either way require captcha on the login dialog.
+				model.put( "ssDoTextVerification", "true" );
+    		}
     	}
 		String refererUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_REFERER_URL);
 		if (Validator.isNotNull(refererUrl)) {
