@@ -81,6 +81,7 @@ import org.dom4j.Element;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -711,6 +712,13 @@ public class BinderHelper {
 	    	if(ex != null) {
 	    		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
 	    		session.removeAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+
+				if ( ex instanceof TextVerificationException )
+	    		{
+					// Either the user entered an invalid captcha response or we have detected
+					// a brute-force authentication attack.  Either way require captcha on the login dialog.
+					model.put( "ssDoTextVerification", "true" );
+	    		}
 	    	}
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);

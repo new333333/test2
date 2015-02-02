@@ -95,6 +95,13 @@
 						</td>
 					</tr>
 	</c:if>
+	
+		<tr>
+			<td>
+				<!-- If needed, show the Text Verification controls. -->
+				<%@ include file="/WEB-INF/jsp/definition_elements/textVerification.jsp" %>
+			</td>
+		</tr>
 </c:if>
 
           <tr>
