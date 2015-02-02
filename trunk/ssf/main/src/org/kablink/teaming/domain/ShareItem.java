@@ -403,7 +403,6 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 				WorkAreaOperation.BINDER_ADMINISTRATION, 
 				WorkAreaOperation.ADD_COMMUNITY_TAGS, 
 				WorkAreaOperation.GENERATE_REPORTS, 
-				WorkAreaOperation.CHANGE_ACCESS_CONTROL
 				}),
 		NONE("share.role.title.none",
 				new WorkAreaOperation[] {}),

@@ -665,10 +665,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//No longer used
 		}
 		
-		if(version.intValue() <= 11) {
-			correctFilrRoles(zoneConfig);
-		}
-		
 		if (version.intValue() <= 14) {
 			Function function;
 			List<Function> functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
@@ -751,7 +747,27 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				getProfileModule().setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true" );
 			}
 		}
- 	}
+
+		if(version.intValue() <= 21) {
+			correctFilrRoles(zoneConfig);
+
+			//This change should not require a re-index or reseting the templates and definitions
+			UserProperties adminUserProperties = getProfileModule().getUserProperties( superU.getId() );
+			if (null == adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX )) {
+				//The index flag got set to null at the beginning of the upgradeZoneTx routine
+				//So, unless the search index flag was explititly set to 'false' later, then we don't need to re-index
+				getProfileModule().setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true" );
+			}
+			if (null == adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS )) {
+				getProfileModule().setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true" );
+			}
+			if (null == adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES )) {
+				getProfileModule().setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true" );
+			}
+
+		}
+		
+}
  	
  	private void correctFilrRoles(ZoneConfig zoneConfig) {
 		Function function;
@@ -1818,9 +1834,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.CREATE_FOLDERS);		
 		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
 		function.addOperation(WorkAreaOperation.BINDER_ADMINISTRATION);
-		function.addOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
 		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);		
+		function.removeOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
 	}
 	
 	private User getSynchronizationAgent(Long zoneId) {
