@@ -321,7 +321,8 @@ public class ExportHelper {
 			}
 			//Make sure the definitions used by this binder are exported
 			exportDefinitionList(zipOut, binder.getDefinitions(), defListAlreadyAdded);
-			statusTicket.setStatus(NLT.get("administration.export_import.exporting", new String[] {binder.getPathName()}));
+			if ( statusTicket != null )
+				statusTicket.setStatus(NLT.get("administration.export_import.exporting", new String[] {binder.getPathName()}));
 			String pathName = "";
 			if (EntityType.workspace.equals(binder.getEntityType()) || EntityType.profiles.equals(binder.getEntityType())) {
 				Binder parentBinder = binder;
@@ -1225,14 +1226,16 @@ public class ExportHelper {
 	private static Pattern folderPattern = Pattern.compile("." + binderPrefix
 			+ "f[0-9]{8}");
 
-	public static void importZip(Long binderId, InputStream fIn, StatusTicket statusTicket,
+	public static Long importZip(Long binderId, InputStream fIn, StatusTicket statusTicket,
 			Map reportMap) throws IOException, ExportException {
 		Binder binder = binderModule.getBinder(binderId);
 		binderModule.checkAccess(binder, BinderOperation.export);
 		
 		getNumberFormat();
 		
-		statusTicket.setStatus(NLT.get("loading.files") + "...");
+		if ( statusTicket != null )
+			statusTicket.setStatus(NLT.get("loading.files") + "...");
+		
 		Map<String, Principal> nameCache = new HashMap();
 		ZipInputStream zIn = new ZipInputStream(fIn);
 
@@ -1278,6 +1281,19 @@ public class ExportHelper {
 		for (String defId : newDefIds) {
 			definitionModule.updateDefinitionReferences(defId);
 		}
+		
+		if ( binderIdMap.size() > 0 )
+		{
+			Set<Long> keySet;
+			Iterator<Long> iter;
+			
+			keySet = binderIdMap.keySet();
+			iter = keySet.iterator();
+			if ( iter.hasNext() )
+				return iter.next();
+		}
+		
+		return null;
 	}
 
 	private static void importDir(File currentDir, String tempDir, Long topBinderId,
@@ -1734,7 +1750,8 @@ public class ExportHelper {
 			importSettingsList(doc, binder, fDefIdMap, rMap, topBinder, fNameCache);
 
 			// workflows
-			statusTicket.setStatus(NLT.get("administration.export_import.importing", new String[] {binder.getPathName()}));
+			if ( statusTicket != null )
+				statusTicket.setStatus(NLT.get("administration.export_import.importing", new String[] {binder.getPathName()}));
 
 			if(logger.isDebugEnabled())
 				logger.debug("Importing workflows for the binder " + newBinderId);
@@ -1829,7 +1846,8 @@ public class ExportHelper {
 				final Map rMap = reportMap;
 				final Map fNameCache = nameCache;
 				final FolderEntry fEntry = entry;
-				statusTicket.setStatus(NLT.get("administration.export_import.importingEntry", 
+				if ( statusTicket != null )
+					statusTicket.setStatus(NLT.get("administration.export_import.importingEntry", 
 						new String[] {"[" + String.valueOf(reportMap.get("entries")) + "] " + entry.getTitle()}));
 				transactionTemplate.execute(new TransactionCallback() {
 					public Object doInTransaction(TransactionStatus status) {

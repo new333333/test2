@@ -32,7 +32,10 @@
  */
 package org.kablink.teaming.module.zone.impl;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -70,6 +73,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.DeletedBinder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
@@ -99,6 +103,7 @@ import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.template.TemplateModule;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneException;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.search.IndexSynchronizationManager;
@@ -119,6 +124,8 @@ import org.kablink.teaming.util.LocaleUtils;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
+import org.kablink.teaming.web.util.ExportException;
+import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
@@ -767,7 +774,108 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 
 		}
 		
-}
+		if ( SPropsUtil.getBoolean( "import.workspaces", false ) )
+			importWorkspaces();
+ 	}
+ 	
+ 	/**
+ 	 * 
+ 	 */
+ 	private void importWorkspaces()
+ 	{
+ 		File zipFile;
+ 		String fileName;
+ 		
+ 		fileName = SPropsUtil.getString( "import.workspace.name" );
+ 		if ( fileName == null || fileName.length() == 0 )
+ 		{
+ 			logger.info( "In importWorkspace(), file name is empty" );
+ 			return;
+ 		}
+ 		
+ 		logger.info( "In importWorkspace(), about to import file: " + fileName );
+ 		zipFile = new File( fileName );
+ 		if ( zipFile.exists() )
+ 		{
+ 	 		FileInputStream fIn;
+ 	 		BufferedInputStream b_fIn;
+ 	 		Map reportMap;
+ 			
+ 	 		try
+ 	 		{
+ 	 			fIn = new FileInputStream( fileName );
+ 	 		}
+ 	 		catch ( FileNotFoundException fnfEx )
+ 	 		{
+ 	 			logger.info( "could not find zip file!!!" );
+ 	 			return;
+ 	 		}
+ 	 		
+ 	 		b_fIn = new BufferedInputStream( fIn );
+ 	 		reportMap = new HashMap();
+
+ 	 		reportMap.put( ExportHelper.workspaces, new Integer(0));
+ 	 		reportMap.put( ExportHelper.folders, new Integer(0));
+ 	 		reportMap.put( ExportHelper.entries, new Integer(0));
+ 	 		reportMap.put( ExportHelper.files, new Integer(0));
+ 	 		reportMap.put( ExportHelper.errors, new Integer(0));
+ 	 		reportMap.put( ExportHelper.errorList, new ArrayList());
+ 	 		try
+ 	 		{
+ 	 			Binder topBinder;
+ 	 			List childBinders;
+ 	 			WorkspaceModule wsModule;
+ 	 			
+ 				wsModule = (WorkspaceModule) SpringContextUtil.getBean( "workspaceModule" );
+ 	 			topBinder = wsModule.getTopWorkspace();
+ 	 			childBinders = topBinder.getBinders();
+ 	 			if ( childBinders != null )
+ 	 			{
+ 	 				Iterator iter;
+ 	 				
+ 	 				iter = childBinders.iterator();
+ 	 				while ( iter.hasNext() )
+ 	 				{
+ 	 					Binder nextBinder;
+ 	 					String internalId;
+ 	 					
+ 	 					nextBinder = (Binder) iter.next();
+ 	 					internalId = nextBinder.getInternalId();
+ 	 					if ( internalId.equalsIgnoreCase( ObjectKeys.GLOBAL_ROOT_INTERNALID ) )
+ 	 					{
+ 	 						Long binderId;
+ 	 						
+ 	 						logger.info( "about to call ExportHelper.importZip()" );
+ 	 		 	 			binderId = ExportHelper.importZip( nextBinder.getId(), fIn, null, reportMap );
+ 	 		 	 			
+ 	 		 	 			// Set the new workspace as the default landing page
+ 	 		 	 			if ( binderId != null && SPropsUtil.getBoolean( "import.set.homepage", false ) )
+ 	 		 	 			{
+	 	 		 	 			HomePageConfig homePageConfig;
+	 	 		 				AdminModule adminModule;
+
+	 	 		 				adminModule = getAdminModule();
+	 	 		 				
+	 	 		 				homePageConfig = new HomePageConfig();
+	 	 		 				homePageConfig.setDefaultHomePageId( binderId );
+	 	 		 				homePageConfig.setDefaultGuestHomePageId( null );
+	 	 		 				adminModule.setHomePageConfig( homePageConfig );
+ 	 		 	 			}
+ 	 		 	 			break;
+ 	 					}
+ 	 				}
+ 	 			}
+ 	 		}
+ 	 		catch( IOException ioEx )
+ 			{
+ 				logger.info( "ExportHelper.importZip() threw an io exception.", ioEx );
+ 			}
+ 			catch( ExportException ex )
+ 			{
+ 				logger.info( "ExportHelper.importZip() threw an export exception.", ex );
+ 			}
+ 		}
+ 	}
  	
  	private void correctFilrRoles(ZoneConfig zoneConfig) {
 		Function function;
