@@ -2429,7 +2429,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	private List<String> findUserListAttributes(Document definitionConfig) {
 		List<String> result = new ArrayList<String>();
 		
-    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and (@name='user_list' or @name='group_list' or @name='team_list')]/properties/property[@name='name']/@value");
+    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm' or @name='customJsp']//item[@type='data' and (@name='user_list' or @name='group_list' or @name='team_list')]/properties/property[@name='name']/@value");
     	if (nodes == null) {
     		return result;
     	}
