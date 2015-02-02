@@ -705,6 +705,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		long begin = System.nanoTime();
 		Binder binder = null;
 		Binder parentBinder = loadBinder(parentBinderId);
+		if (parentBinder.isMyFilesDir()) {
+			throw new NotSupportedException("errorcode.notsupported.addbinder");
+		}
 		Definition def = null;
 		if (Validator.isNotNull(definitionId)) {
 			def = getCoreDao().loadDefinition(definitionId,
