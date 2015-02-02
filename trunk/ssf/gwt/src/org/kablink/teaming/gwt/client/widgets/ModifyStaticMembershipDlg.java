@@ -192,7 +192,7 @@ public class ModifyStaticMembershipDlg extends DlgBox
 	}
 
 	private TabPanel m_tabPanel;
-	private CheckBox m_externalAllowedCb;	// This may be null if we are not running Filr
+	private CheckBox m_externalAllowedCb;
 	private CellTable<GwtUser> m_userTable;
 	private CellTable<GwtGroup> m_groupTable;
 	private ListDataProvider<GwtUser> m_userDataProvider;
@@ -297,8 +297,7 @@ public class ModifyStaticMembershipDlg extends DlgBox
 		m_tabPanel = new TabPanel();
 		m_tabPanel.addStyleName( "vibe-tabPanel" );
 
-		// If we are running Filr, add an "Allow external users and groups" checkbox
-		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+		// Add an "Allow external users and groups" checkbox
 		{
 			ClickHandler clickHandler;
 			FlowPanel tmpPanel;
@@ -349,8 +348,6 @@ public class ModifyStaticMembershipDlg extends DlgBox
 			tmpPanel.add( m_externalAllowedCb );
 			mainPanel.add( tmpPanel );
 		}
-		else
-			m_externalAllowedCb = null;
 
 		// Add the "User" tab
 		{
