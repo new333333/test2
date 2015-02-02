@@ -240,6 +240,7 @@ public class FileIconsHelper {
 		m_transformMap = new HashMap<String, String>();
 		m_transformMap.put("aif",  "wav" );
 		m_transformMap.put("docx", "doc" );
+		m_transformMap.put("docm", "doc" );
 		m_transformMap.put("htm",  "html");
 		m_transformMap.put("jpe",  "jpg" );
 		m_transformMap.put("jpeg", "jpg" );
@@ -251,6 +252,7 @@ public class FileIconsHelper {
 		m_transformMap.put("m4a",  "wav" );
 		m_transformMap.put("png",  "gif" );
 		m_transformMap.put("pptx", "ppt" );
+		m_transformMap.put("pptm", "ppt" );
 		m_transformMap.put("ra",   "wav" );
 		m_transformMap.put("sxc",  "ods" );
 		m_transformMap.put("sxi",  "odp" );
@@ -258,5 +260,6 @@ public class FileIconsHelper {
 		m_transformMap.put("tar",  "zip" );
 		m_transformMap.put("wma",  "wav" );
 		m_transformMap.put("xlsx", "xls" );
+		m_transformMap.put("xlsm", "xls" );
 	}
 }
