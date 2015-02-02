@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -271,6 +272,7 @@ public class EntryCsvHelper {
 	
 	private static void outputEntryAsCsv(OutputStream out, FolderEntry entry, List<Map<String,Object>> columnTemplate) {
 		Document defDoc = entry.getEntryDefDoc();
+		String family = DefinitionUtils.getFamily(defDoc);
 		//Output the attributes according to the column template		
 		boolean firstColSeen = false;
 		for (Map<String,Object> cm : columnTemplate) {
@@ -287,7 +289,7 @@ public class EntryCsvHelper {
 					} else if (attrName.equals(ObjectKeys.CSV_ATTR_DOC_NUM)) {
 						out.write(entry.getDocNumber().getBytes("UTF-8"));
 					} else if (attrName.equals(ObjectKeys.CSV_ATTR_TITLE)) {
-						out.write(entry.getTitle().getBytes("UTF-8"));
+						out.write(CsvHelper.checkText(entry.getTitle()).getBytes("UTF-8"));
 					} else if (attrName.equals(ObjectKeys.CSV_ATTR_AUTHOR)) {
 						Principal owner = entry.getOwner();
 						out.write(CsvHelper.checkText(owner.getName()).getBytes("UTF-8"));
@@ -295,9 +297,23 @@ public class EntryCsvHelper {
 						Principal owner = entry.getOwner();
 						out.write(CsvHelper.checkText(owner.getTitle()).getBytes("UTF-8"));
 					} else if (attrName.equals(ObjectKeys.CSV_ATTR_CREATION_DATE)) {
-						out.write(CsvHelper.checkText(dateFormatter.format(entry.getCreation().getDate())).getBytes("UTF-8"));
+						Date date = entry.getCreation().getDate();
+						if (ObjectKeys.FAMILY_FILE.equals(family)) {
+							FileAttachment fa = entry.getPrimaryFileAttachment();
+							if (fa != null) {
+								date = fa.getCreation().getDate();
+							}
+						}
+						out.write(CsvHelper.checkText(dateFormatter.format(date)).getBytes("UTF-8"));
 					} else if (attrName.equals(ObjectKeys.CSV_ATTR_MODIFICATION_DATE)) {
-						if (entry.getModificationDate() != null) {
+						Date date = entry.getModificationDate();
+						if (ObjectKeys.FAMILY_FILE.equals(family)) {
+							FileAttachment fa = entry.getPrimaryFileAttachment();
+							if (fa != null) {
+								date = fa.getModification().getDate();
+							}
+						}
+						if (date != null) {
 							out.write(CsvHelper.checkText(dateFormatter.format(entry.getModificationDate())).getBytes("UTF-8"));
 						}
 					} else if (attrName.equals(ObjectKeys.CSV_ATTR_DESCRITION)) {

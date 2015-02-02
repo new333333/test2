@@ -693,6 +693,7 @@ public interface ObjectKeys {
     public static final String INPUT_OPTION_MODIFICATION_DATE="org.kablink.teaming.options.entity.modification.timestamp";
     public static final String INPUT_OPTION_FORCE_WORKFLOW_STATE="org.kablink.teaming.options.entity.workflow.state";
     public static final String INPUT_OPTION_NO_MODIFICATION_DATE="org.kablink.teaming.options.no_modificationdate_processing";
+    public static final String INPUT_OPTION_NO_REORDER_FILES="org.kablink.teaming.options.no_reorder_files";
     public static final String INPUT_OPTION_VALIDATION_ONLY="org.kablink.teaming.options.validation_only";
     public static final String INPUT_OPTION_REQUIRED_TITLE="org.kablink.teaming.options.required.title";
     public static final String INPUT_OPTION_OWNER_ID="org.kablink.teaming.options.entity.owner.id";
@@ -813,6 +814,7 @@ public interface ObjectKeys {
     public static final String FAMILY_TASK = "task";
     public static final String FAMILY_CALENDAR = "calendar";
     public static final String FAMILY_MILESTONE = "milestone";
+    public static final String FAMILY_FILE = "file";
     
     //xml tags - some used in GenerateLdapList (as strings) - keep in sync
     public static final String XTAG_ATTRIBUTE_DATABASEID="databaseId";
