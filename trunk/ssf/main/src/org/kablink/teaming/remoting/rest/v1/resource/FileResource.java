@@ -113,7 +113,7 @@ public class FileResource extends AbstractFileResource {
             nextParams.put("id", ids);
         }
         if (onlyLibraryFiles) {
-            criterion.add(SearchUtils.buildLibraryCriterion(onlyLibraryFiles));
+            criterion.add(SearchUtils.buildLibraryCriterion(onlyLibraryFiles, Boolean.FALSE));
         }
         if (fileName!=null) {
             nextParams.put("file_name", fileName);
