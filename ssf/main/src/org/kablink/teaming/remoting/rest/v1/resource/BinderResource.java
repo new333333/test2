@@ -228,7 +228,7 @@ public class BinderResource extends AbstractResource {
                 children = new SearchResultList<SearchableObject>();
                 children.appendAll(childrenList);
             } else {
-                children = getChildren(id, SearchUtils.buildLibraryCriterion(true), null, true, false, true,
+                children = getChildren(id, SearchUtils.buildLibraryCriterion(true, Boolean.TRUE), null, true, false, true,
                         false, offset, maxCount, null, null, domainFormat, null);
             }
         } catch (RestExceptionWrapper e) {

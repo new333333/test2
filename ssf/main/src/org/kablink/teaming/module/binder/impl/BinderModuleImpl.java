@@ -4788,7 +4788,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         crit.add(or);
         crit.add(org.kablink.teaming.search.SearchUtils.buildDocTypeCriterion(binders, entries || attachments, false, false));
         if (libraryOnly) {
-            crit.add(org.kablink.teaming.search.SearchUtils.buildLibraryCriterion(true));
+            crit.add(org.kablink.teaming.search.SearchUtils.buildLibraryCriterion(true, true));
         }
         crit.add(Restrictions.between(Constants.MODIFICATION_DATE_FIELD, DateTools.dateToString(sinceDate, DateTools.Resolution.SECOND),
                 DateTools.dateToString(new Date(), DateTools.Resolution.SECOND)));

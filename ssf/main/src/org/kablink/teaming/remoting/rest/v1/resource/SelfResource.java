@@ -904,7 +904,7 @@ public class SelfResource extends AbstractFileResource {
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         Criteria crit = new Criteria();
         crit.add(SearchUtils.buildEntriesCriterion());
-        crit.add(SearchUtils.buildLibraryCriterion(true));
+        crit.add(SearchUtils.buildLibraryCriterion(true, Boolean.FALSE));
         Junction searchContexts = null;
         if (recursive) {
             SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(Description.FORMAT_NONE, 0, -1, null);

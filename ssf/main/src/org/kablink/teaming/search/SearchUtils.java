@@ -786,8 +786,12 @@ public class SearchUtils {
         }
     }
 
-    public static Criterion buildLibraryCriterion(Boolean onlyLibrary) {
-        return Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibrary).toString());
+    public static Criterion buildLibraryCriterion(Boolean onlyLibrary, Boolean includeWorkspaces) {
+		Criterion crit = Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibrary).toString());
+		if (includeWorkspaces) {
+			crit = Restrictions.disjunction().add(buildWorkspacesCriterion()).add(crit);
+		}
+        return crit;
     }
 
     public static Criterion buildFileNameCriterion(String fileName) {

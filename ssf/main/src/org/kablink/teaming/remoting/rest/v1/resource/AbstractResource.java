@@ -311,7 +311,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         keyword = SearchUtils.validateSearchText(keyword);
         Criteria crit = new Criteria();
         crit.add(SearchUtils.buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
-        crit.add(SearchUtils.buildLibraryCriterion(true));
+        crit.add(SearchUtils.buildLibraryCriterion(true, Boolean.FALSE));
         crit.add(searchContext);
 
         Map<String, Object> nextParams = new HashMap<String, Object>();
@@ -1405,7 +1405,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
         Junction and = Restrictions.conjunction();
         or.add(and);
-        and.add(SearchUtils.buildLibraryCriterion(Boolean.TRUE));
+        and.add(SearchUtils.buildLibraryCriterion(Boolean.TRUE, Boolean.FALSE));
         or = Restrictions.disjunction();
         or.add(SearchUtils.buildFoldersCriterion());
         or.add(SearchUtils.buildEntriesCriterion());
@@ -2081,7 +2081,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             Long homeId = SearchUtils.getHomeFolderId(this, user);
             if (homeId!=null) {
                 // If we are listing the home folder, use this API because it could trigger JITS.
-                results = getChildren(homeId, SearchUtils.buildLibraryCriterion(true), name, folders, entries, files, allowJits,
+                results = getChildren(homeId, SearchUtils.buildLibraryCriterion(true, Boolean.FALSE), name, folders, entries, files, allowJits,
                                       offset, maxCount, nextUrl, nextParams, descriptionFormat, ifModifiedSince);
                 results.setLastModified(lastModified);
             }

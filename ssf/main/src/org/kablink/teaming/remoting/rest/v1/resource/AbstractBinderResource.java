@@ -247,7 +247,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<SearchableObject> children = getChildren(id, SearchUtils.buildLibraryCriterion(true), name, true, false, true,
+        SearchResultList<SearchableObject> children = getChildren(id, SearchUtils.buildLibraryCriterion(true, true), name, true, false, true,
                 allowJits, offset, maxCount, getBasePath() + id + "/library_children", nextParams,
                 toDomainFormat(descriptionFormatStr), null);
         return Response.ok(children).lastModified(lastModified).build();
@@ -584,7 +584,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         criterion.add(SearchUtils.buildEntriesCriterion());
         criterion.add(SearchUtils.buildSearchBinderCriterion(id, recursive));
         if (onlyLibraryFiles) {
-            criterion.add(SearchUtils.buildLibraryCriterion(onlyLibraryFiles));
+            criterion.add(SearchUtils.buildLibraryCriterion(onlyLibraryFiles, Boolean.FALSE));
         }
         if (fileName!=null) {
             criterion.add(SearchUtils.buildFileNameCriterion(fileName));
