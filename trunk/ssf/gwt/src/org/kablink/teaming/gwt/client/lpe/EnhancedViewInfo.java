@@ -81,6 +81,7 @@ public class EnhancedViewInfo
 			m_desc = messages.enhancedViewDisplayRecentEntriesListDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
+			m_titleOptional = true;
 			m_viewType = EnhancedViewType.DISPLAY_LIST_OF_RECENT_ENTRIES;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_folder_list_sorted.jsp" ) )
