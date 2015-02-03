@@ -107,7 +107,7 @@ public class EnhancedViewProperties
 		m_showTitle = false;
 		m_folderId = null;
 		m_folderName = null;
-		m_numEntriesToBeShown = 0;
+		m_numEntriesToBeShown = 5;
 		m_entryId = null;
 		m_entryName = null;
 		m_parentBinderName = null;

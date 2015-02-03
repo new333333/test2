@@ -951,7 +951,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		String txt;
 		int numEntries;
 		
-		numEntries = 0;
+		numEntries = 5;
 		txt = m_numEntriesToShowTxtBox.getText();
 		if ( txt != null && txt.length() > 0 )
 		{
@@ -1073,7 +1073,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		m_folderId = null;
 		m_entryId = null;
 		if ( m_numEntriesToShowTxtBox != null )
-			m_numEntriesToShowTxtBox.setText( "" );
+			m_numEntriesToShowTxtBox.setText( "5" );
 		m_showFolderTitleCkBox.setValue( false );
 		m_showEntryTitleCkBox.setValue( false );
 		m_descLabel.setText( "" );
