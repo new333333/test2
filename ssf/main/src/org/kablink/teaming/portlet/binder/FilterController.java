@@ -53,6 +53,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.search.filter.SearchFilterToMapConverter;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -214,9 +215,11 @@ public class FilterController extends AbstractBinderController {
 		model.put(WebKeys.FILTER_SEARCH_SHOW_GLOBAL_FILTER_CHECKBOX, 
 				getBinderModule().testAccess(binder, BinderOperation.modifyBinder));
 		
-		Workspace ws = getWorkspaceModule().getTopWorkspace();
-		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
-		model.put(WebKeys.DOM_TREE, tree);
+		try {
+			Workspace ws = getWorkspaceModule().getTopWorkspace();
+			Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+			model.put(WebKeys.DOM_TREE, tree);
+		} catch(AccessControlException e) {}
 
 		if (formData.containsKey("addBtn")) {
 			return new ModelAndView(WebKeys.VIEW_BUILD_FILTER, model);
