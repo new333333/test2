@@ -131,7 +131,7 @@ public class EnhancedViewWidget extends VibeWidget
 			folderProperties = new FolderProperties();
 			folderProperties.setZoneUUID( properties.getZoneUUID() );
 			folderProperties.setFolderId( properties.getFolderId() );
-			folderProperties.setShowTitle( true );
+			folderProperties.setShowTitle( properties.getShowTitleValue() );
 			folderProperties.setShowDescValue( true );
 			folderProperties.setShowEntriesOpenedValue( false );
 			folderProperties.setShowEntryAuthor( true );
