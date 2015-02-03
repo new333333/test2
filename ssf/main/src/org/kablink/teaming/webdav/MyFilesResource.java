@@ -176,7 +176,7 @@ public class MyFilesResource extends ContainerResource
 		return makeResourceFromFile(entry.getFileAttachment(newName));
 	}
 
-    private Binder getMyFilesFolderParent() throws ConflictException {
+    public Binder getMyFilesFolderParent() throws ConflictException {
     	User user = RequestContextHolder.getRequestContext().getUser();
         if (SearchUtils.useHomeAsMyFiles(this, user)) {
             return getFolder(SearchUtils.getHomeFolderId(this, user.getWorkspaceId())); // user home folder
@@ -185,7 +185,7 @@ public class MyFilesResource extends ContainerResource
         }
     }
 
-    private Folder getMyFilesFileParent() throws ConflictException {
+    public Folder getMyFilesFileParent() throws ConflictException {
     	User user = RequestContextHolder.getRequestContext().getUser();
         if (SearchUtils.useHomeAsMyFiles(this, user)) {
             return getFolder(SearchUtils.getHomeFolderId(this, user.getWorkspaceId())); // user home folder

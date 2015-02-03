@@ -50,11 +50,13 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderIndexData;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.TrashHelper;
@@ -254,12 +256,38 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 					newBinder = getBinderModule().copyBinder(id, toCollectionEntityIdentifier.getEntityId(), true, options);
 				}
 			}
+			else if(toCollection instanceof MyFilesResource) { // Copy a folder into MyFiles container
+				newBinder = getBinderModule().copyBinder(id, 
+						((MyFilesResource) toCollection).getMyFilesFolderParent().getEntityIdentifier().getEntityId(), true, options);				
+			}
 			else {
 				throw new ConflictException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a binder resource.");
 			}
 		}
 		catch(AccessControlException e) {
 			throw new NotAuthorizedException(this);
+		}
+	}
+	
+	private void doMoveTo(EntityIdentifier destBinderIdentifier, String name) 
+			throws ConflictException, NotAuthorizedException, BadRequestException,
+			AccessControlException, WriteFilesException, WriteEntryDataException {
+		Folder folder = resolveFolder();
+		if(folder.getParentBinder() != null && folder.getParentBinder().getId().equals(destBinderIdentifier.getEntityId())) {
+			// This is mere renaming of this folder.
+			renameBinder(folder, name);
+		}
+		else { // This is a move
+			HashMap options = new HashMap();
+			options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
+			EntityType destBinderType = destBinderIdentifier.getEntityType();
+			if(destBinderType == EntityType.folder ||
+					destBinderType == EntityType.workspace) {
+				getBinderModule().moveBinder(id, destBinderIdentifier.getEntityId(), options);
+			}
+			else {
+				throw new ConflictException(this, "Can not move a folder into a binder of type '" + destBinderType.name() + "'");
+			}					
 		}
 	}
 
@@ -271,28 +299,14 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 			throws ConflictException, NotAuthorizedException,
 			BadRequestException {
 		try {
+			EntityIdentifier destBinderIdentifier;
 			if(rDest instanceof BinderResource) {
-				Folder folder = resolveFolder();
-				EntityIdentifier destBinderIdentifier = ((BinderResource) rDest).getEntityIdentifier();
-				if(folder.getParentBinder() != null && folder.getParentBinder().getId().equals(destBinderIdentifier.getEntityId())) {
-					// This is mere renaming of this folder.
-					renameBinder(folder, name);
-				}
-				else { // This is a move
-					HashMap options = new HashMap();
-					options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
-					if(rDest instanceof FolderResource) { // Move a folder into another folder
-						getBinderModule().moveBinder(id, destBinderIdentifier.getEntityId(), options);
-					}
-					else { // Move a folder into a workspace
-						if(EntityType.profiles == destBinderIdentifier.getEntityType()) {
-							throw new ConflictException(this, "Can not copy a folder into the profiles binder");
-						}
-						else {
-							getBinderModule().moveBinder(id, destBinderIdentifier.getEntityId(), options);
-						}
-					}
-				}
+				destBinderIdentifier = ((BinderResource) rDest).getEntityIdentifier();
+				doMoveTo(destBinderIdentifier, name);
+			}
+			else if(rDest instanceof MyFilesResource) {
+				destBinderIdentifier = ((MyFilesResource)rDest).getMyFilesFolderParent().getEntityIdentifier();
+				doMoveTo(destBinderIdentifier, name);
 			}
 			else {
 				throw new ConflictException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a binder resource.");				
