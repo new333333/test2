@@ -1100,6 +1100,12 @@ public class ExportHelper {
 			}
 		}
 		
+		// binder properties
+		String wikiHomePageId = (String)binder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
+		if (wikiHomePageId != null && !wikiHomePageId.equals("")) {
+			Element wikiHomePageEle = settingsEle.addElement("wikiHomePageId");
+			wikiHomePageEle.setText(wikiHomePageId);
+		}
 	}
 
 	private static void addAccessControls(WorkArea workArea, Element settingsElement) {
@@ -1247,6 +1253,10 @@ public class ExportHelper {
 		// during import
 		HashMap<Long, Long> binderIdMap = new HashMap<Long, Long>();
 
+		// binder properties to be set
+		// after imports
+		Map<Long, Map<String, Object>> binderPropertyMap = new HashMap<Long, Map<String, Object>>();
+
 		// key-value pairs:  new exported binder id - associated
 		// ServerTaskLinkage.
 		HashMap<Long, ServerTaskLinkage> taskLinkageMap = new HashMap<Long, ServerTaskLinkage>();
@@ -1264,7 +1274,7 @@ public class ExportHelper {
 
 		try {
 			File tempDirFile = new File(tempDir);
-			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, taskLinkageMap, definitionIdMap, newDefIds,
+			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, binderPropertyMap, taskLinkageMap, definitionIdMap, newDefIds,
 					statusTicket, reportMap, nameCache);
 		} catch(Exception e) {
 				if (e instanceof ExportException)
@@ -1276,7 +1286,7 @@ public class ExportHelper {
 		}
 		
 		//After importing binders and entries, perform a final fix-up of mappings (landing pages and markup)
-		fixUpLinks(binderIdMap, taskLinkageMap, entryIdMap);
+		fixUpLinks(binderIdMap, binderPropertyMap, taskLinkageMap, entryIdMap);
 		//Make sure the principal mappings and internal defIds are handled
 		for (String defId : newDefIds) {
 			definitionModule.updateDefinitionReferences(defId);
@@ -1297,7 +1307,8 @@ public class ExportHelper {
 	}
 
 	private static void importDir(File currentDir, String tempDir, Long topBinderId,
-			Map entryIdMap, Map binderIdMap, Map<Long, ServerTaskLinkage> taskLinkageMap, Map<String, Definition> definitionIdMap, List<String> newDefIds, 
+			Map entryIdMap, Map binderIdMap, Map<Long, Map<String, Object>> binderPropertyMap, Map<Long, ServerTaskLinkage> taskLinkageMap, 
+			Map<String, Definition> definitionIdMap, List<String> newDefIds, 
 			StatusTicket statusTicket, Map reportMap, Map<String, Principal> nameCache) throws IOException {
 
 		Binder topBinder = loadBinder(topBinderId);
@@ -1316,7 +1327,7 @@ public class ExportHelper {
 			File child = (File) sortMap.get(keyIter.next());
 
 			if (child.isDirectory())
-				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, taskLinkageMap, definitionIdMap, newDefIds,
+				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, binderPropertyMap, taskLinkageMap, definitionIdMap, newDefIds,
 						statusTicket, reportMap, nameCache);
 			else {
 				String fileExt = EntityIndexUtils.getFileExtension(child
@@ -1521,7 +1532,7 @@ public class ExportHelper {
 						if (entType.equals("workspace")) {
 							try {
 								binder_addBinderWithXML(null, newParentId, def,
-										xmlStr, binderId, topBinderId, binderIdMap, taskLinkageMap, definitionIdMap, tempDir, reportMap,
+										xmlStr, binderId, topBinderId, binderIdMap, binderPropertyMap, taskLinkageMap, definitionIdMap, tempDir, reportMap,
 										statusTicket, nameCache);
 								Integer count = (Integer)reportMap.get(workspaces);
 								reportMap.put(workspaces, ++count);
@@ -1579,7 +1590,7 @@ public class ExportHelper {
 						if (entType.equals("folder")) {
 							try {
 								binder_addBinderWithXML(null, newParentId, def,
-										tempDoc.asXML(), binderId, topBinderId, binderIdMap, taskLinkageMap, definitionIdMap, tempDir, reportMap, 
+										tempDoc.asXML(), binderId, topBinderId, binderIdMap, binderPropertyMap, taskLinkageMap, definitionIdMap, tempDir, reportMap, 
 										statusTicket, nameCache);
 								Integer count = (Integer)reportMap.get(folders);
 								reportMap.put(folders, ++count);
@@ -1596,7 +1607,9 @@ public class ExportHelper {
 		}
 	}
 	
-	private static void fixUpLinks(Map<Long, Long> binderIdMap, Map<Long, ServerTaskLinkage> taskLinkageMap, Map<Long, Long> entryIdMap) {
+	private static void fixUpLinks(Map<Long, Long> binderIdMap, Map<Long, Map<String, Object>> binderPropertyMap, 
+			Map<Long, ServerTaskLinkage> taskLinkageMap, Map<Long, Long> entryIdMap) {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Iterator itBinders = binderIdMap.entrySet().iterator();
 		while (itBinders.hasNext()) {
 			Map.Entry me = (Map.Entry) itBinders.next();
@@ -1606,6 +1619,14 @@ public class ExportHelper {
 			} catch(Exception e) {
 				//Something couldn't be fixed up, log an error and leave the link as is
 				logger.error(e);
+			}
+			Map<String, Object> binderProperties = binderPropertyMap.get(binder.getId());
+			String wikiHomePageId = (String) binderProperties.get(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
+			if (wikiHomePageId != null && !wikiHomePageId.equals("")) {
+				Long newWikiHomePageId = entryIdMap.get(Long.valueOf(wikiHomePageId));
+				if (newWikiHomePageId != null) {
+					binder.setProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE, String.valueOf(newWikiHomePageId));
+				}
 			}
 		}
 		Iterator itEntries = entryIdMap.entrySet().iterator();
@@ -1689,7 +1710,8 @@ public class ExportHelper {
 	}
 
 	private static long binder_addBinderWithXML(String accessToken, long parentId, Definition def,
-			String inputDataAsXML, long binderId, Long topBinderId, Map binderIdMap, Map<Long, ServerTaskLinkage> taskLinkageMap, 
+			String inputDataAsXML, long binderId, Long topBinderId, Map binderIdMap, Map<Long, Map<String, Object>> binderPropertyMap, 
+			Map<Long, ServerTaskLinkage> taskLinkageMap, 
 			Map<String, Definition> definitionIdMap, String tempDir, Map reportMap, 
 			StatusTicket statusTicket, Map<String, Principal> nameCache) {
 
@@ -1747,7 +1769,7 @@ public class ExportHelper {
 			final Map fNameCache = nameCache;
 			
 			// binder settings
-			importSettingsList(doc, binder, fDefIdMap, rMap, topBinder, fNameCache);
+			importSettingsList(doc, binder, fDefIdMap, rMap, topBinder, fNameCache, binderPropertyMap);
 
 			// workflows
 			if ( statusTicket != null )
@@ -2752,7 +2774,7 @@ public class ExportHelper {
 
 	private static void importSettingsList(Document entityDoc, Binder binder, 
 			Map<String, Definition>definitionIdMap, Map reportMap, Binder topBinder, 
-			Map<String, Principal> nameCache) {
+			Map<String, Principal> nameCache, Map<Long, Map<String, Object>> binderPropertyMap) {
 		String zoneUUID = entityDoc.getRootElement().attributeValue("zoneUUID", "");
 		FilesErrors filesErrors = new FilesErrors();
 
@@ -2860,6 +2882,21 @@ public class ExportHelper {
 				}
 			}
 			binderModule.setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFiltersG);
+		}
+		
+		// binder properties
+		xPath = "//settings//wikiHomePageId";
+		Element wikiHomePageEle = (Element)entityDoc.selectSingleNode(xPath);
+		if (wikiHomePageEle != null) {
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			String wikiHomePageId = wikiHomePageEle.getText();
+			if (wikiHomePageId != null && !wikiHomePageId.equals("")) {
+				if (!binderPropertyMap.containsKey(binder.getId())) {
+					binderPropertyMap.put(binder.getId(), new HashMap<String, Object>());
+				}
+				Map<String, Object> binderProperties = binderPropertyMap.get(binder.getId());
+				binderProperties.put(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE, wikiHomePageId);
+			}
 		}
 
 	}
