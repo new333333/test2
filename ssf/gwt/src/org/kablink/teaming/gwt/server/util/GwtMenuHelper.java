@@ -213,7 +213,8 @@ public class GwtMenuHelper {
 	// Controls whether WebDAV information shows up in footers.
 	// DRF (20130225):  Bug 805858:  Disabled these as a per a
 	// recommendation from Jong.
-	private final static boolean INCLUDE_FOOTER_WEBDAV_URLS	= false;
+	private final static boolean INCLUDE_FOOTER_WEBDAV_URLS_FILR	= false;
+	private final static boolean INCLUDE_FOOTER_WEBDAV_URLS_VIBE	= true;
 
 	/*
 	 * Inhibits this class from being instantiated. 
@@ -2741,7 +2742,8 @@ public class GwtMenuHelper {
 				String	key;
 				String	webDavUrl;
 				boolean	hasWebDavUrl;
-				if (INCLUDE_FOOTER_WEBDAV_URLS) {
+				boolean includeFooterWebDavUrls = (Utils.checkIfFilr() ? INCLUDE_FOOTER_WEBDAV_URLS_FILR : INCLUDE_FOOTER_WEBDAV_URLS_VIBE); 
+				if (includeFooterWebDavUrls) {
 					SimpleProfiler.start("GwtMenuHelper.constructFooterFolderEntryItems( INCLUDE_FOOTER_WEBDAV_URLS )");
 					try {
 						webDavUrl    = ((null == fa) ? null : SsfsUtil.getInternalAttachmentUrl(request, feBinder, fe, fa));
@@ -2824,12 +2826,12 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs the ToolbarItem's for the footer on a folder.
 	 */
-	@SuppressWarnings("unused")
 	private static void constructFooterFolderItems(ToolbarItem footerToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
 		// Construct the permalink item...
 		String key;
 		boolean isFilr = Utils.checkIfFilr();
-		if (INCLUDE_FOOTER_WEBDAV_URLS) {
+		boolean includeFooterWebDavUrls = (isFilr ? INCLUDE_FOOTER_WEBDAV_URLS_FILR : INCLUDE_FOOTER_WEBDAV_URLS_VIBE); 
+		if (includeFooterWebDavUrls) {
 			if (isFilr)
 			     key = "toolbar.menu.folderPermalink.filr";
 			else key = "toolbar.menu.folderPermalink";
@@ -2846,7 +2848,7 @@ public class GwtMenuHelper {
 		footerToolbar.addNestedItem(permalinkTBI            );
 
 		// ...for file folders...
-		if (INCLUDE_FOOTER_WEBDAV_URLS && folder.isLibrary()) {
+		if (includeFooterWebDavUrls && folder.isLibrary()) {
 			// ...construct any WebDAV items...
 			String webdavUrl = SsfsUtil.getLibraryBinderUrl(request, folder);
 			if (MiscUtil.hasString(webdavUrl)) {
