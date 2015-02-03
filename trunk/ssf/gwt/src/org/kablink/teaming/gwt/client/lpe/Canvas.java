@@ -78,7 +78,7 @@ public class Canvas extends Composite
 			actionsPanel.addStyleName( "lpeCanvasActionsControl" );
 
 			// Add an image the user can click on to preview the landing page.
-			imageResource = GwtTeaming.getImageBundle().preview10();
+			imageResource = GwtTeaming.getImageBundle().preview20();
 			previewImg = new Image( imageResource );
 			previewImg.addStyleName( "lpePreviewImg" );
 			previewImg.setTitle( GwtTeaming.getMessages().lpeAltPreviewLandingPage() );
@@ -96,7 +96,7 @@ public class Canvas extends Composite
 			previewImg.addClickHandler( clickHandler );
 			
 			// Add an edit properties image
-			imageResource = GwtTeaming.getImageBundle().edit10();
+			imageResource = GwtTeaming.getImageBundle().cog20();
 			editImg = new Image( imageResource );
 			editImg.addStyleName( "lpeEditImg" );
 			editImg.setTitle( GwtTeaming.getMessages().lpeAltEditLPProperties() );
@@ -115,7 +115,7 @@ public class Canvas extends Composite
 			
 			// Create a "delete" image.
 			{
-				imageResource = GwtTeaming.getImageBundle().delete10();
+				imageResource = GwtTeaming.getImageBundle().close20();
 				delImg = new Image(imageResource);
 				delImg.setTitle( GwtTeaming.getMessages().lpeAltDeleteAll() );
 				delImg.addStyleName( "lpeDeleteImg" );

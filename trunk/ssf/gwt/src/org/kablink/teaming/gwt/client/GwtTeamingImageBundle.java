@@ -177,6 +177,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource closeBorder();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/close_20b.png")
+	public ImageResource close20();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/close_x.png")
 	public ImageResource closeX();
 
@@ -231,6 +235,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/edit_16.gif")
 	public ImageResource edit16();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/cog_20.png")
+	public ImageResource cog20();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/expand_16.png")
@@ -493,8 +501,8 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource presenceUnknown16();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/preview10.jpg")
-	public ImageResource preview10();
+	@Source("org/kablink/teaming/gwt/public/images/preview20.png")
+	public ImageResource preview20();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/arrow_left.png")

@@ -172,7 +172,7 @@ function addLandingPageEditorDataToFormOnSubmit()
 	<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 <% //------------------------------------------------------------------------------ %>
 
-  <table style="padding: 20px 0px 20px 0px;">
+  <table style="padding: 0px;">
   	<tr>
 		<td style="vertical-align:top; padding-right: 40px;">
 		<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
