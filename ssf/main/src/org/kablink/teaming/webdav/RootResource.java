@@ -42,6 +42,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.webdav.util.WebdavUtils;
 
 import com.bradmcevoy.http.Auth;
@@ -125,10 +126,10 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 	 */
 	@Override
 	public Resource child(String childName) {
-		/* disable navigation built on physical path
-		if(DavResource.ID.equals(childName))
+		// Allow navigation built on physical path only if the product is a pure Vibe
+		if(DavResource.ID.equals(childName) && Utils.checkIfVibe())
 			return new DavResource(factory);
-		else*/ if(this.factory.getMyFilesPrefix().equals(childName) && WebdavUtils.userCanAccessMyFiles(this))
+		else if(this.factory.getMyFilesPrefix().equals(childName) && WebdavUtils.userCanAccessMyFiles(this))
 			return new MyFilesResource(factory);
 		else if(this.factory.getNetFoldersPrefix().equals(childName) && WebdavUtils.userCanAccessNetFolders())
 			return new NetFoldersResource(factory);
@@ -144,9 +145,9 @@ public class RootResource extends WebdavCollectionResource implements PropFindab
 	@Override
 	public List<? extends Resource> getChildren() {
 		List<Resource> list = new ArrayList<Resource>();
-		/* disable navigation built on physical path
-		list.add(new DavResource(factory));
-		*/
+		// Enable navigation built on physical path only if the product is a pure Vibe
+		if(Utils.checkIfVibe())
+			list.add(new DavResource(factory));
 		if(WebdavUtils.userCanAccessMyFiles(this))
 			list.add(new MyFilesResource(factory));
 		if(LicenseChecker.isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_FILR, true) && WebdavUtils.userCanAccessNetFolders())
