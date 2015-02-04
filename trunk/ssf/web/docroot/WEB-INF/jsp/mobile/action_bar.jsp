@@ -54,20 +54,20 @@
 			<c:when test="${!empty ssAddReplyTitle}">
 				<c:forEach var="action" items="${ss_new_actions}">
 				<a class="actions-a" href="${action.url}" 
-				  title="${action.title}"><img src="<html:rootPath/>css/images/mobile/reply_25.png" border="0" align="absmiddle"/></a>
+				  title="${action.title}"><img class="actionbar-img" src="<html:rootPath/>css/images/mobile/reply_50.png" border="0" align="absmiddle"/></a>
 				</c:forEach>
 			</c:when>
 			<c:otherwise>
 				<c:forEach var="action" items="${ss_new_actions}">
 				<a class="actions-a" href="${action.url}" 
-				  title="${action.title}"><img src="<html:rootPath/>css/images/mobile/new_25.png" border="0" align="absmiddle"/></a>
+				  title="${action.title}"><img class="actionbar-img" src="<html:rootPath/>css/images/mobile/new_50.png" border="0" align="absmiddle"/></a>
 				</c:forEach>
 			</c:otherwise>
 		</c:choose>	
     </c:if>
     <c:if test="${fn:length(ss_new_actions) > 1}">
       <a class="actions-a" href="javascript: ;" 
-        onClick="ss_toggleDivVisibility('new-actions-menu');return false;"><img src="<html:rootPath/>css/images/mobile/new_25.png" border="0" align="absmiddle"/></a>
+        onClick="ss_toggleDivVisibility('new-actions-menu');return false;"><img class="actionbar-img" src="<html:rootPath/>css/images/mobile/new_50.png" border="0" align="absmiddle"/></a>
     </c:if>
   </c:if>  
 
@@ -75,7 +75,7 @@
      <c:if test="${fn:length(ss_modify_actions) == 1}">
       <c:forEach var="action" items="${ss_modify_actions}">	  
 		  <a class="action-a actionimg" href="${action.url}" title="${action.title}">
-			<img src="<html:rootPath/>css/images/mobile/edit_25.png" border="0" align="absmiddle"/>
+			<img class="actionbar-img" src="<html:rootPath/>css/images/mobile/edit_50.png" border="0" align="absmiddle"/>
 		  </a>
       </c:forEach>
     </c:if>
@@ -85,19 +85,19 @@
      <c:if test="${fn:length(ss_delete_actions) == 1}">
       <c:forEach var="action" items="${ss_delete_actions}">
 		  <a class="action-a actionimg" href="${action.url}" title="${action.title}">
-			<img src="<html:rootPath/>css/images/mobile/delete_25.png" border="0" align="absmiddle"/>
+			<img class="actionbar-img" src="<html:rootPath/>css/images/mobile/delete_50.png" border="0" align="absmiddle"/>
 		  </a>
       </c:forEach>
     </c:if>
   </c:if>  
 
   <a class="hierarchy-a actionimg" href="javascript: ;" onClick="ss_toggleDivVisibility('hierarchy-dialog');return false;">
-    <img src="<html:rootPath/>css/images/mobile/hierarchy_25.png" border="0" align="absmiddle"/>
+    <img class="actionbar-img" src="<html:rootPath/>css/images/mobile/hierarchy_50.png" border="0" align="absmiddle"/>
   </a>
 
   <c:if test="${!empty ss_actions}">
     <a class="actions-a actionimg" href="javascript: ;" 
-      onClick="ss_toggleDivVisibility('actions-menu');return false;"><img src="<html:rootPath/>css/images/mobile/more_menu_25.png" border="0" align="absmiddle"/></a>
+      onClick="ss_toggleDivVisibility('actions-menu');return false;"><img class="actionbar-img" src="<html:rootPath/>css/images/mobile/more_menu_50.png" border="0" align="absmiddle"/></a>
   </c:if>  
  </td>
  <td align="right">

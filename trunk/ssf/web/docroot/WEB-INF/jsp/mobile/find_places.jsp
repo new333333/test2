@@ -48,18 +48,17 @@
 
   <div class="folders">
     <div class="folder-content">
-      <div class="folder-head"><ssf:nlt tag="mobile.searchResultsPlaces"/></div>
 	
-	<div style="text-align: left;" class="entry-actions">
+	<div class="entry-actions" style="text-align: left;">
 	  <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
 					action="__ajax_mobile" actionUrl="true" 
 					binderId="${ssBinder.id}"
 					operation="mobile_find_places" />">
-	  <label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.findPlace"/></span></label>
+	  <label for="searchText"><div class="ss_bold" style="padding-left: 5px;"><ssf:nlt tag="navigation.findPlace"/></div></label>
 	  <input type="hidden" name="scope" value="${ss_searchScope}" />
-	  <input type="text" size="15" name="searchText" id="searchText" autocomplete="off"
+	  <input type="text" size="25" name="searchText" id="searchText" autocomplete="off"
 	    value="<ssf:escapeQuotes>${ss_searchText}</ssf:escapeQuotes>"/><input 
-	    type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+	    type="submit" name="okBtn" value="<ssf:nlt tag="button.search"/>"/>
 	  </form>
 	</div>
 

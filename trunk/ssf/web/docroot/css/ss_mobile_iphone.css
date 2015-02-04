@@ -194,7 +194,7 @@ span.pad-left20 select {
 	}
 .entry-actions {
 	text-align: right; 
-	background-color: #eceeec;
+	background-color: #f6f6f6;
 	padding: 5px;
 	padding-left: 10px;
     }
@@ -309,7 +309,6 @@ span.pad-left20 select {
 	}
 .folder-item-profile {
 	background-color: #f6f6f6;
-	border-bottom: 1px solid #cccccc;
 	}
 .folder-item-subtext {
 	font-size: 10px;

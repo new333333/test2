@@ -34,10 +34,10 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("mobile.searchResultsPeople") %>' scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("mobile.searchPeople") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
-<c:set var="ss_pageTitle" value='<%= NLT.get("mobile.searchResultsPeople") %>' scope="request"/>
+<c:set var="ss_pageTitle" value='<%= NLT.get("mobile.searchPeople") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
 
 <div class="content">
@@ -48,18 +48,16 @@
 
   <div class="folders">
     <div class="folder-content">
-      <div class="folder-head"><ssf:nlt tag="mobile.searchResultsPeople"/></div>
-
-		<div>
+      <div class="entry-actions" style="text-align: left;">
 		  <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
 					action="__ajax_mobile" actionUrl="true" 
 					operation="mobile_find_people" />">
-		  <label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.findUser"/></span></label>
-		  <input type="text" size="15" name="searchText" id="searchText" autocomplete="off"
+		  <label for="searchText"><div class="ss_bold" style="padding-left: 5px;"><ssf:nlt tag="navigation.findUser"/></div></label>
+		  <input type="text" size="25" name="searchText" id="searchText" autocomplete="off"
 		    value="<ssf:escapeQuotes>${ss_searchText}</ssf:escapeQuotes>"/><input 
-		    type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+		    type="submit" name="okBtn" value="<ssf:nlt tag="button.search"/>"/>
 		  </form>
-		</div>
+      </div>
 	
 	  <c:forEach var="user" items="${ssUsers}" >
 	    <div class="folder-item">
