@@ -834,7 +834,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         String[] types = entryTypes;
         if ((null != searchOptions) &&
         		searchOptions.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES) &&
-                (!((Boolean)searchOptions.containsKey(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES)))) {
+                (!((Boolean)searchOptions.get(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES)))) {
             // Use a fake entry type that won't actually match anything
             types = new String[] {"fakeEntry"};
         }
