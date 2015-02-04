@@ -41,6 +41,7 @@ import java.util.Map;
 
 import org.apache.lucene.search.Query;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
@@ -199,6 +200,37 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 		} catch (ReservedByAnotherUserException e) {
 			throw new ConflictException(this, e.getLocalizedMessage());
 		} catch (WriteFilesException e) {
+			if(entry != null &&
+					e.getErrors() != null && 
+					e.getErrors().getProblems() != null && 
+					e.getErrors().getProblems().size() > 0 && 
+					e.getErrors().getProblems().get(0).getException() instanceof DataQuotaException) {
+				// We were doing entry modification and it failed due to data quota violation.
+				FileAttachment fAtt = entry.getFileAttachment(newName);
+	    		if((fAtt.getFileVersions() == null || fAtt.getFileVersions().size() == 0) &&
+	    				(fAtt.getFileItem() == null || fAtt.getFileItem().getLength() == 0)) {
+	    			// (Bug #914631) 
+	    			// We're in a scenario where stupid Windows Explorer is creating a new file by first creating
+	    			// an empty file (i.e., zero length file) and then subsequently modifying the file with the
+	    			// real content. This code is executing the second phase, that is, the modification phase.
+	    			// When we return an error to the client under this scenario, Windows 7 correctly issues a
+	    			// delete command to clean up the broken temporary entry with zero length file attached to
+	    			// it. However, Windows 8 doesn't do that. There simply is no assistance from the client. 
+	    			// To work around this limitation, we're physically removing the empty and broken entry
+	    			// BEFORE returning the error to the client.
+					if(logger.isDebugEnabled())
+						logger.debug("Deleting the broken and empty temporary file entry with id = '" + entry.getId() + "' and name = '" + newName + "'");
+					try {
+						// Delete the entry. When in this scenario, the initial empty file entry creation doesn't
+						// actually involve creation of a zero-length file on disk, which applies to both net folder
+						// and personal storage. Therefore, there is no need to waste cycle trying to purge it
+						// from the back-end file server.
+						getFolderModule().deleteEntry(entry.getParentBinder().getId(), entry.getId(), false, null);
+					} catch (AccessControlException | WriteFilesException e1) {
+						logger.warn("Error deleting the broken and empty temporary file entry with id = '" + entry.getId() + "' and name = '" + newName + "'");
+					}    			
+	    		}
+			}
 			throw new WebdavException(e.getLocalizedMessage());
 		} catch (WriteEntryDataException e) {
 			throw new WebdavException(e.getLocalizedMessage());
