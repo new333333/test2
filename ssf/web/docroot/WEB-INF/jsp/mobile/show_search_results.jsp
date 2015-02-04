@@ -60,7 +60,7 @@
 					binderId="${ssBinder.id}"
 					operation="mobile_show_search_results" />">
 	    <label for="searchText">
-	      <span class="ss_bold">
+	      <div class="ss_bold"  style="padding-left: 5px;">
 	        <c:if test="${ss_searchScope != 'local'}">
 	          <ssf:nlt tag="mobile.searchTheSite"/>
 	        </c:if>
@@ -70,12 +70,11 @@
 		    <c:if test="${ss_searchScope == 'local' && ssBinder.entityType != 'folder'}">
 		      <ssf:nlt tag="mobile.searchThisWorkspace"/>
 		    </c:if>
-          </span>
+          </div>
         </label>
-	    <br/>
-	    <input type="text" size="20" name="searchText" id="searchText" 
+	    <input type="text" size="25" name="searchText" id="searchText" 
 	      value="<ssf:escapeQuotes>${ss_searchText}</ssf:escapeQuotes>"/><input 
-	      type="submit" name="searchBtn" value="<ssf:nlt tag="button.ok"/>"/>
+	      type="submit" name="searchBtn" value="<ssf:nlt tag="button.search"/>"/>
 	    <input type="hidden" name="scope" value="${ss_searchScope}"/>
 	  </form>
 	</div>

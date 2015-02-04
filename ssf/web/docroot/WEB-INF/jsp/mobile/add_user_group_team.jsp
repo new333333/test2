@@ -76,7 +76,7 @@ function ss_submitSelectForm${ssElementName}(url) {
 		    <c:if test="${ss_type == 'group'}"><span class="label-gray"><ssf:nlt tag="navigation.findGroup"/></span></c:if>
 		    <c:if test="${ss_type == 'team'}"><span class="label-gray"><ssf:nlt tag="navigation.findTeam"/></span></c:if>
 		  </label>
-		  <input type="text" size="15" name="searchText" id="searchText" autocomplete="off"
+		  <input type="text" size="25" name="searchText" id="searchText" autocomplete="off"
 		    value="<ssf:escapeQuotes>${ss_searchText}</ssf:escapeQuotes>"/>
 		  <input 
 		    type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
