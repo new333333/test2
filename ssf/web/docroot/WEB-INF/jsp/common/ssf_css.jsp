@@ -3993,7 +3993,9 @@ tr.ss_tab_table_row td {
 
 /* Ajax loading... */
 #ss_loading, .ss_loading {
+	color: #949494;
 	text-align: center;
+	margin: 30px 10px;
 }
 
 

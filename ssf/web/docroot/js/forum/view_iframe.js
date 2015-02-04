@@ -197,7 +197,7 @@ function ss_showForumEntryInIframe(url) {
     wObj1.style.visibility = "visible";
     //wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
 
-	var blankhtml = "<div style=\"text-align: center;\">" + ss_loadingMessage + "</div>";
+	var blankhtml = "<div class=\"ss_loading\">" + ss_loadingMessage + "</div>";
 	try {
 		window.frames['ss_showentryframe'].document.body.innerHTML = blankhtml;
 	} catch(e) {}
