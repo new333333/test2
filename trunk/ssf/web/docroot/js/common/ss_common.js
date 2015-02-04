@@ -3073,7 +3073,7 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
 	var popupIframe = self.document.getElementById("ss_showpopupframe");
 	if (url != "" && popupDiv != null && popupIframe != null) {
-		var blankhtml = "<div style=\"text-align: center;\">" + ss_loadingMessage + "</div>";
+		var blankhtml = "<div class=\"ss_loading\">" + ss_loadingMessage + "</div>";
 		try {
 			window.frames['ss_showpopupframe'].document.body.innerHTML = blankhtml;
 		} catch(e) {}
