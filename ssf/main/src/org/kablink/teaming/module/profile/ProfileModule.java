@@ -968,4 +968,10 @@ public interface ProfileModule {
 	 * Vibe Hudson external users are functionally equivalent to Filr 1.1 external users.
 	 */
 	public void upgradeVibeGraniteExternalUsers();
+	
+	/**
+	 * Find all groups and teams that have an external user or the guest user as a member and
+	 * mark the group/team as external.
+	 */
+	public void upgradeExternalGroupsAndTeams();
 }

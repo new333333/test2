@@ -53,7 +53,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.ApplicationExistsException;
 import org.kablink.teaming.ApplicationGroupExistsException;
 import org.kablink.teaming.GroupExistsException;
@@ -152,7 +151,6 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -3326,4 +3324,123 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 		
 		logger.info("Total of " + count + " Vibe Granite external user accounts successfully upgraded.");
 	}
+    
+    /**
+     * Find all groups and teams that have an external user or the guest user as a member and
+     * mark the group/team as external. 
+     */
+    @Override
+    public void upgradeExternalGroupsAndTeams()
+    {
+    	User guestUser;
+    	Collection<User> listOfExternalUsers;
+    	HashMap<Long,Group> listOfCompletedWork;
+    	
+    	listOfCompletedWork = new HashMap<Long,Group>();
+    	
+    	// Find all external users, including the guest user
+    	listOfExternalUsers = getAllExternalUsers();
+    	if ( listOfExternalUsers != null )
+    	{
+    		for ( User nextUser : listOfExternalUsers )
+    		{
+    			// Mark all groups/teams this external user is a member of as external
+    	    	markGroupsAsExternalAsNeeded( nextUser, listOfCompletedWork );
+    		}
+    	}
+    	
+    	// Mark all groups/teams the guest user is a member of as external
+    	guestUser = getGuestUser();
+    	markGroupsAsExternalAsNeeded( guestUser, listOfCompletedWork );
+    }
+    
+    /**
+     * Find all groups and teams the given principal is a member of and mark the group/team as external.
+     * Because team membership is stored in a group, teams are handled through groups.
+     */
+    private void markGroupsAsExternalAsNeeded(
+    	Principal principal,
+    	HashMap<Long,Group> listOfCompletedWork )
+    {
+    	List listOfGroups;
+    	Iterator iter;
+    	
+    	if ( principal == null )
+    		return;
+    	
+    	logger.debug( "---------------------> Looking for groups that " + principal.getName() + " is a member of." );
+    	
+    	// Are we dealing with a group?
+    	if ( principal instanceof Group )
+    	{
+    		// Yes
+    		// Have we already processed this group?
+    		if ( listOfCompletedWork.containsKey( principal.getId() ) )
+    		{
+    			// Yes
+    			logger.debug( "^^^^^^^^^^^^^^^^^^^> Already marked group: " + principal.getName() + " as an external group." );
+    			return;
+    		}
+    	}
+    	
+    	// Get a list of the groups this principal is a member of
+    	listOfGroups = principal.getMemberOf();
+    	if ( listOfGroups == null || listOfGroups.size() == 0 )
+    	{
+    		return;
+    	}
+    	
+    	iter = listOfGroups.iterator();
+    	while ( iter.hasNext() )
+    	{
+    		Principal nextPrincipal;
+    		
+    		nextPrincipal = (Principal) iter.next();
+    		if ( nextPrincipal instanceof Group )
+    		{
+    			Group nextGroup;
+    			
+    			nextGroup = (Group) nextPrincipal;
+    			
+        		// Have we already processed this group?
+        		if ( listOfCompletedWork.containsKey( nextGroup.getId() ) )
+        		{
+        			// Yes
+        			logger.debug( "^^^^^^^^^^^^^^^^^^^> Already marked group: " + nextGroup.getName() + " as an external group." );
+        			continue;
+        		}
+
+        		// Is this group already marked as external?
+    			if ( nextGroup.getIdentityInfo().isInternal() )
+    			{
+					HashMap<String, Object> inputMap = new HashMap<String, Object>();
+    				MapInputData inputData;
+    				IdentityInfo identityInfo;
+
+    				// No mark it as external
+    				identityInfo = nextGroup.getIdentityInfo();
+    				identityInfo.setInternal( false );
+    				inputMap.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
+			
+    				inputData = new MapInputData( inputMap );
+
+					try
+					{
+						modifyEntry( nextGroup.getId(), inputData );
+						logger.info( "Marked group: " + nextGroup.getName() + " as a group containing external users." );
+					}
+		   			catch ( Exception ex )
+		   			{
+		   				logger.error( "Error marking group as external: group name: " + nextGroup.getName(), ex );;
+		   			}
+    			}
+
+				// Mark all groups that this group is a member of as external
+				markGroupsAsExternalAsNeeded( nextGroup, listOfCompletedWork );
+				
+				// Add this group to the list of completed work so we don't do it again.
+				listOfCompletedWork.put( nextGroup.getId(), nextGroup );
+    		}
+    	}
+    }
 }
