@@ -1808,6 +1808,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "getReservedGroup(String,Long)");
     	}	        
     }
+    
     @Override
 	public Long getReservedGroupId(String internalId, Long zoneId) {
 		long begin = System.nanoTime();
@@ -1864,6 +1865,18 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	finally {
     		end(begin, "getReservedUser(String,Long)");
     	}	        
+    }
+    
+    protected Long getReservedUserId(String internalId, Long zoneId) {
+    	Long id = getReservedId(internalId, zoneId);
+    	if (id == null) {
+    		List<User>objs = getCoreDao().loadObjects(User.class, new FilterControls(ObjectKeys.FIELD_INTERNALID, internalId), zoneId);
+    		if ((objs == null) || objs.isEmpty()) throw new NoUserByTheNameException(internalId);
+    		User u = objs.get(0);
+    		setReservedId(internalId, zoneId, u.getId());
+    		return u.getId();
+    	}
+    	return id;
     }
     
     @Override
@@ -2023,7 +2036,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                }
 	            }
 	        );
-			Long allId = getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zoneId);
+			Long allId = getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zoneId);
 			if (allowAllUsersGroup && (ids.contains(allId) || users.contains(allId))) {
 				//need to remove some users from the all users group.  Original list may add them back in.
 				//so need to do this step last
@@ -2031,25 +2044,25 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 				List<Object[]> result = getCoreDao().loadObjects(
 						new ObjectControls(User.class, new String[]{ObjectKeys.FIELD_ID}), filter, zoneId);
 				//remove users not to be included
-				result.remove(getReservedId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
-				result.remove(getReservedId(ObjectKeys.GUEST_USER_INTERNALID, zoneId));
-				result.remove(getReservedId(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId));
-				result.remove(getReservedId(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zoneId));
-				result.remove(getReservedId(ObjectKeys.FILE_SYNC_AGENT_INTERNALID, zoneId));
+				result.remove(getReservedUserId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
+				result.remove(getReservedUserId(ObjectKeys.GUEST_USER_INTERNALID, zoneId));
+				result.remove(getReservedUserId(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId));
+				result.remove(getReservedUserId(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zoneId));
+				result.remove(getReservedUserId(ObjectKeys.FILE_SYNC_AGENT_INTERNALID, zoneId));
 				users.addAll(result);
 			} 
 			users.remove(allId);
-			Long allExtId = getReservedId(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, zoneId);
+			Long allExtId = getReservedGroupId(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, zoneId);
 			if (allowAllUsersGroup && (ids.contains(allExtId) || users.contains(allExtId))) {
 				FilterControls filter = new FilterControls("identityInfo.internal", Boolean.FALSE);
 				List<Object[]> result = getCoreDao().loadObjects(
 						new ObjectControls(User.class, new String[]{ObjectKeys.FIELD_ID}), filter, zoneId);
 				//remove users not to be included
-				result.remove(getReservedId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
-				result.remove(getReservedId(ObjectKeys.GUEST_USER_INTERNALID, zoneId));
-				result.remove(getReservedId(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId));
-				result.remove(getReservedId(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zoneId));
-				result.remove(getReservedId(ObjectKeys.FILE_SYNC_AGENT_INTERNALID, zoneId));
+				result.remove(getReservedUserId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
+				result.remove(getReservedUserId(ObjectKeys.GUEST_USER_INTERNALID, zoneId));
+				result.remove(getReservedUserId(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId));
+				result.remove(getReservedUserId(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zoneId));
+				result.remove(getReservedUserId(ObjectKeys.FILE_SYNC_AGENT_INTERNALID, zoneId));
 				users.addAll(result);
 			} 
 			users.remove(allExtId);
