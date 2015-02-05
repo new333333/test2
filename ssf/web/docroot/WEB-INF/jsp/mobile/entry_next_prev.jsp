@@ -40,8 +40,8 @@
 					action="__ajax_mobile" 
 					operation="mobile_show_prev_entry" 
 					actionUrl="false" />">
-		<img <ssf:alt tag="nav.prevEntry"/> title="<ssf:nlt tag="nav.prevEntry"/>" 
-		  border="0" src="<html:imagesPath/>mobile/nl_left_20.png" />
+		<img class="actionbar-img" <ssf:alt tag="nav.prevEntry"/> title="<ssf:nlt tag="nav.prevEntry"/>" 
+		  border="0" src="<html:imagesPath/>mobile/left_50.png" />
 	</a>
 	<a href="<ssf:url adapter="true" portletName="ss_forum" 
 					folderId="${ssBinder.id}" 
@@ -49,7 +49,7 @@
 					action="__ajax_mobile" 
 					operation="mobile_show_next_entry" 
 					actionUrl="false" />">
-		<img <ssf:alt tag="nav.nextEntry"/> title="<ssf:nlt tag="nav.nextEntry"/>" 
-		  border="0" src="<html:imagesPath/>mobile/nl_right_20.png" />
+		<img class="actionbar-img" <ssf:alt tag="nav.nextEntry"/> title="<ssf:nlt tag="nav.nextEntry"/>" 
+		  border="0" src="<html:imagesPath/>mobile/right_50.png" />
 	</a>
 

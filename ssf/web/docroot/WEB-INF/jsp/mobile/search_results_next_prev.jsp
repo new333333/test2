@@ -48,11 +48,11 @@
 		name="tabId" value="${ss_tab_id}"/><ssf:param 
 		name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
 		name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-	  ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_left_20.png"/></a>
+	  ><img class="entry-action-buttons actionbar-img" border="0" src="<html:rootPath/>images/mobile/left_50.png"/></a>
 	</c:if>
 	<c:if test="${empty ss_prevPage}">
 	  <a href="javascript: ;" onClick="return false;" 
-	  ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"/></a>
+	  ><img class="entry-action-buttons actionbar-img" border="0" src="<html:rootPath/>images/mobile/left_dis_50.png"/></a>
 	</c:if>
 
 	<c:if test="${!empty ss_nextPage}">
@@ -67,9 +67,9 @@
 		name="tabId" value="${ss_tab_id}"/><ssf:param 
 		name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
 		name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-	  ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_right_20.png"/></a>
+	  ><img class="entry-action-buttons actionbar-img" border="0" src="<html:rootPath/>images/mobile/right_50.png"/></a>
 	</c:if>
 	<c:if test="${empty ss_nextPage}">
 	  <a href="javascript: ;" onClick="return false;" 
-	  ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"/></a>
+	  ><img class="entry-action-buttons actionbar-img" border="0" src="<html:rootPath/>images/mobile/right_dis_50.png"/></a>
 	</c:if>

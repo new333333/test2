@@ -42,13 +42,13 @@
 		  name="ss_type" value="${ss_type}"/><ssf:param
 		  name="pageNumber" value="${ss_pageNumber - 1}"/><ssf:param
 		  name="namespace" value="${ss_namespace}"/></ssf:url>" 
-		><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_left_20.png" 
+		><img class="entry-action-buttons actionbar-img" border="0" src="<html:rootPath/>images/mobile/left_50.png" 
 		    title="<ssf:nlt tag="general.previousPage"/>"
 		    <ssf:alt tag=""/> /></a>
 	</c:if>
 	<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
 	  <a href="javascript: ;" onClick="return false;" 
-	  ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"
+	  ><img class="entry-action-buttons actionbar-img" border="0" src="<html:rootPath/>images/mobile/left_dis_50.png"
 	  	<ssf:alt tag=""/> /></a>
 	</c:if>
 	<c:if test="${!empty ss_whatsNewBinder}">
@@ -59,13 +59,13 @@
 		name="ss_type" value="${ss_type}"/><ssf:param
 		name="pageNumber" value="${ss_pageNumber + 1}"/><ssf:param
 		name="namespace" value="${ss_namespace}"/></ssf:url>" 
-	  ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_right_20.png" 
+	  ><img class="entry-action-buttons actionbar-img" border="0" src="<html:rootPath/>images/mobile/right_50.png" 
 		  title="<ssf:nlt tag="general.nextPage"/>"
 		  <ssf:alt tag=""/> /></a>
 	</c:if>
 	<c:if test="${empty ss_whatsNewBinder}">
 		<a href="javascript: ;" onClick="return false;" 
-	    ><img class="entry-action-buttons" border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"
+	    ><img class="entry-action-buttons actionbar-img" border="0" src="<html:rootPath/>images/mobile/right_dis_50.png"
 		<ssf:alt tag=""/> /></a>
 	</c:if>
   

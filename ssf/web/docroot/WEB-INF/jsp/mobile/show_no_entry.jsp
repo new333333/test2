@@ -56,7 +56,7 @@
 					entryId="${ssEntryId}"
 					action="__ajax_mobile" 
 					operation="mobile_show_entry" 
-					actionUrl="false" />"><img src="<html:rootPath/>images/mobile/nl_left_20.png" border="0" align="absmiddle"/></a>
+					actionUrl="false" />"><img class="actionbar-img" src="<html:rootPath/>images/mobile/left_50.png" border="0" align="absmiddle"/></a>
 		</div>
 	  </c:if>
 	</div>

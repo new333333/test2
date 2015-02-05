@@ -43,10 +43,10 @@
 			actionUrl="false" ><ssf:param 
 			name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
 			name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
-		><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png"/></a>
+		><img class="actionbar-img" border="0" src="<html:rootPath/>images/mobile/left_50.png"/></a>
 	</c:if>
 	<c:if test="${empty ss_prevPage}">
-	  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_20.png"
+	  <img class="actionbar-img" border="0" src="<html:rootPath/>images/mobile/left_dis_50.png"
 	  	<ssf:alt tag=""/> />
 	</c:if>
 
@@ -57,9 +57,9 @@
 			actionUrl="false" ><ssf:param 
 			name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
 			name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
-		><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png"/></a>
+		><img class="actionbar-img" border="0" src="<html:rootPath/>images/mobile/right_50.png"/></a>
 	</c:if>
 	<c:if test="${empty ss_nextPage}">
-	  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_20.png"
+	  <img class="actionbar-img" border="0" src="<html:rootPath/>images/mobile/right_dis_50.png"
 	 	<ssf:alt tag=""/> />
 	</c:if>
