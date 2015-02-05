@@ -586,7 +586,7 @@ public class ResourceUtil {
         mobileAppConfig.setAllowPlayWithOtherApps(mac.getAllowPlayWithOtherApps());
         mobileAppConfig.setEnabled(mac.getMobileAppsEnabled());
         mobileAppConfig.setAllowCutCopy(mac.getMobileCutCopyEnabled());
-        mobileAppConfig.setAllowRootedDevices(mac.getMobileDisableOnRootedOrJailBrokenDevices());
+        mobileAppConfig.setAllowRootedDevices(Boolean.FALSE.equals(mac.getMobileDisableOnRootedOrJailBrokenDevices()));
         mobileAppConfig.setAllowScreenCapture(mac.getMobileAndroidScreenCaptureEnabled());
         MobileAppConfig.OpenInApps openIn = toModelEnum(mac.getMobileOpenIn());
         mobileAppConfig.setAllowedOpenInApps(openIn.name());
