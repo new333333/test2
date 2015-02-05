@@ -1413,6 +1413,9 @@ public class WebUrlUtil {
 		ZoneContextHolder.setUseRuntimeContext(oldUseRTContext);
 		int pos = baseUrlForEmail.indexOf("a/do?");
 		baseUrlForEmail = baseUrlForEmail.substring(0, pos);
+		if (PermaLinkUtil.forceSecureLinksInEmail()) {
+			baseUrlForEmail = PermaLinkUtil.forceHTTPSInUrl(baseUrlForEmail);
+		}
     	logger.debug("WebUrlUtil.getCompleteURLFromRequestForEmail( baseUrlForEmail ):  " + baseUrlForEmail);
     	
     	if (0 != baseUrl.indexOf(baseUrlForEmail)) {
