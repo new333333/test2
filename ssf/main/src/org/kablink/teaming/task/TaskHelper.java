@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -188,7 +188,8 @@ public class TaskHelper {
 			formData.put(PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newPriority});
 		}
 		
-		if (!(newStatus.equals(""))) {
+		boolean hasNewStatus = (!(newStatus.equals("")));
+		if (hasNewStatus) {
 			formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newStatus});
 			if (newStatus.equals(STATUS_COMPLETED)) {
 				formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {COMPLETED_100});
@@ -208,27 +209,27 @@ public class TaskHelper {
 		
 		if (!(newCompleted.equals(""))) {
 			formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newCompleted});			
-			
-			if (newCompleted.equals(COMPLETED_0)) {
-				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {STATUS_NEEDS_ACTION});
+			if (!hasNewStatus) {
+				if (newCompleted.equals(COMPLETED_0)) {
+					formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {STATUS_NEEDS_ACTION});
+				}
+				
+				else if (newCompleted.equals(COMPLETED_10) ||
+					     newCompleted.equals(COMPLETED_20) ||
+					     newCompleted.equals(COMPLETED_30) ||
+					     newCompleted.equals(COMPLETED_40) ||
+					     newCompleted.equals(COMPLETED_50) ||
+					     newCompleted.equals(COMPLETED_60) ||
+					     newCompleted.equals(COMPLETED_70) ||
+					     newCompleted.equals(COMPLETED_80) ||
+					     newCompleted.equals(COMPLETED_90)) {
+					formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {STATUS_IN_PROCESS});
+				}
+				
+				else if (newCompleted.equals(COMPLETED_100)) {
+					formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {STATUS_COMPLETED});
+				}		
 			}
-			
-			else if (newCompleted.equals(COMPLETED_10) ||
-				     newCompleted.equals(COMPLETED_20) ||
-				     newCompleted.equals(COMPLETED_30) ||
-				     newCompleted.equals(COMPLETED_40) ||
-				     newCompleted.equals(COMPLETED_50) ||
-				     newCompleted.equals(COMPLETED_60) ||
-				     newCompleted.equals(COMPLETED_70) ||
-				     newCompleted.equals(COMPLETED_80) ||
-				     newCompleted.equals(COMPLETED_90)) {
-				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {STATUS_IN_PROCESS});
-			}
-			
-			else if (newCompleted.equals(COMPLETED_100)) {
-				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {STATUS_COMPLETED});
-			}		
-
 		}
 	}
 
