@@ -48,10 +48,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
@@ -259,18 +257,99 @@ import org.kablink.util.search.Constants;
 public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	implements GwtRpcService
 {
-	protected static Log m_logger = LogFactory.getLog(GwtRpcServiceImpl.class);
+	/*
+	 * Inner class used to encapsulate a GwtTeamingException and a
+	 * VibeRpcResponse through a RunasCallback interface.
+	 */
+	private static class AdminVibeRpcResponseWrapper
+	{
+		private GwtTeamingException m_teamingException;	//
+		private VibeRpcResponse		m_rpcResponse;		//
 
+		/**
+		 * Constructor method.
+		 */
+		public AdminVibeRpcResponseWrapper()
+		{
+			// Initialize the super class.
+			super();
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public GwtTeamingException getTeamingException() { return m_teamingException; }
+		public VibeRpcResponse     getRpcResponse()      { return m_rpcResponse;      }
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param teamingException
+		 */
+		public void setTeamingException( GwtTeamingException teamingException ) { m_teamingException = teamingException; }
+		public void setRpcResponse(      VibeRpcResponse     rpcResponse )      { m_rpcResponse      = rpcResponse;      }
+		
+	}
+	
 	/**
 	 * Execute the given command.
+	 * 
+	 * @param ri
+	 * @param cmd
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
 	@Override
-	public VibeRpcResponse executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd ) throws GwtTeamingException
+	public VibeRpcResponse executeCommand( final HttpRequestInfo ri, final VibeRpcCmd cmd ) throws GwtTeamingException
+	{
+		User user = GwtServerHelper.getCurrentUser();
+		if ( cmd.isRunAsAdmin()          &&										// Is this command supposed to be run as Admin               and
+				( ! ( user.isAdmin() ) ) &&										//    is it being requested by other than the built in Admin and
+				getAdminModule().testAccess( AdminOperation.manageFunction ) )	//    does that user have zoneAdministration rights?
+		{
+			// Yes!  Run the command as the built-in Admin.
+			VibeRpcCmdType cmdEnum = VibeRpcCmdType.getEnum( cmd.getCmdType() );
+			logger.info( "Administration Console:  User '" + user.getTitle() + "' executed the GWT RPC command " + cmdEnum.name() + " as the built-in admin user." );
+			RequestContext rc = RequestContextHolder.getRequestContext();
+			AdminVibeRpcResponseWrapper reply = ((AdminVibeRpcResponseWrapper) RunasTemplate.runasAdmin(
+				new RunasCallback()
+				{
+					@Override
+					public Object doAs()
+					{
+						AdminVibeRpcResponseWrapper reply = new AdminVibeRpcResponseWrapper();
+						try                            { reply.setRpcResponse( executeCommandImpl( ri, cmd ) ); }
+						catch (GwtTeamingException ex) { reply.setTeamingException( ex );                       }
+						return reply;
+					}
+				},
+				rc.getZoneName(),
+				rc.getSessionContext() ) );
+			
+			GwtTeamingException ex = reply.getTeamingException();
+			if ( null != ex )
+			{
+				throw ex;
+			}
+			return reply.getRpcResponse();
+		}
+
+		// No, the conditions aren't met to run it as the built-in
+		// Admin!  Run it as the requesting user.
+		return executeCommandImpl( ri, cmd );
+	}
+	
+	/*
+	 * Execute the given command.
+	 */
+	private VibeRpcResponse executeCommandImpl( HttpRequestInfo ri, VibeRpcCmd cmd ) throws GwtTeamingException
 	{
 		VibeRpcResponse response = null;
-		HttpServletRequest req;
-		
-		req = getRequest( ri );
+		HttpServletRequest req = getRequest( ri );
 
 		VibeRpcCmdType cmdEnum = VibeRpcCmdType.getEnum( cmd.getCmdType() );
 		switch ( cmdEnum )
@@ -278,7 +357,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case ABORT_FILE_UPLOAD:
 		{
 			AbortFileUploadCmd afuCmd = ((AbortFileUploadCmd) cmd);
-			BooleanRpcResponseData result = GwtHtml5Helper.abortFileUpload( this, getRequest( ri ), afuCmd.getFolderInfo(), afuCmd.getFileBlob() );
+			BooleanRpcResponseData result = GwtHtml5Helper.abortFileUpload( this, req, afuCmd.getFolderInfo(), afuCmd.getFileBlob() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -290,7 +369,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Boolean result;
 			
 			afCmd = (AddFavoriteCmd) cmd;
-			result = GwtServerHelper.addFavorite( this, getRequest( ri ), Long.parseLong( afCmd.getBinderId() ) );
+			result = GwtServerHelper.addFavorite( this, req, Long.parseLong( afCmd.getBinderId() ) );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -301,7 +380,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			AddNewFolderCmd afCmd = ((AddNewFolderCmd) cmd);
 			CreateFolderRpcResponseData responseData = GwtViewHelper.addNewFolder(
 				this,
-				getRequest( ri ),
+				req,
 				afCmd.getBinderId(),
 				afCmd.getFolderTemplateId(),
 				afCmd.getFolderName(),
@@ -339,7 +418,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case CHANGE_ENTRY_TYPES:
 		{
 			ChangeEntryTypesCmd cetCmd = ((ChangeEntryTypesCmd) cmd);
-			ErrorListRpcResponseData result = GwtViewHelper.changeEntryTypes( this, getRequest( ri ), cetCmd.getDefId(), cetCmd.getEntryIds() );
+			ErrorListRpcResponseData result = GwtViewHelper.changeEntryTypes( this, req, cetCmd.getDefId(), cetCmd.getEntryIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -347,7 +426,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case CHANGE_FAVORITE_STATE:
 		{
 			ChangeFavoriteStateCmd cfsCmd = ((ChangeFavoriteStateCmd) cmd);
-			BooleanRpcResponseData result = GwtServerHelper.changeFavoriteState( this, getRequest( ri ), cfsCmd.getBinderId(), cfsCmd.getMakeFavorite() );
+			BooleanRpcResponseData result = GwtServerHelper.changeFavoriteState( this, req, cfsCmd.getBinderId(), cfsCmd.getMakeFavorite() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -358,7 +437,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ErrorListRpcResponseData result;
 			
 			cpCmd = (ChangePasswordCmd) cmd;
-			result = GwtServerHelper.changePassword( this, getRequest( ri ), cpCmd.getOldPassword(), cpCmd.getNewPassword(), cpCmd.getUserId() );
+			result = GwtServerHelper.changePassword( this, req, cpCmd.getOldPassword(), cpCmd.getNewPassword(), cpCmd.getUserId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -393,7 +472,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case CLEAR_HISTORY:
 		{
-			BooleanRpcResponseData responseData = GwtHistoryHelper.clearHistory( getRequest( ri ) );
+			BooleanRpcResponseData responseData = GwtHistoryHelper.clearHistory( req );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -426,7 +505,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case COPY_ENTRIES:
 		{
 			CopyEntriesCmd ceCmd = ((CopyEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.copyEntries( this, getRequest( ri ), ceCmd.getTargetFolderId(), ceCmd.getEntityIds() );
+			ErrorListRpcResponseData responseData = GwtViewHelper.copyEntries( this, req, ceCmd.getTargetFolderId(), ceCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -436,7 +515,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			CreateChangeLogReportCmd cclrCmd = ((CreateChangeLogReportCmd) cmd);
 			ChangeLogReportRpcResponseData responseData = GwtReportsHelper.createChangeLogReport(
 				this,
-				getRequest( ri ),
+				req,
 				cclrCmd.getBinderId(),
 				cclrCmd.getEntityId(),
 				cclrCmd.getEntityType(),
@@ -448,7 +527,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case CREATE_DUMMY_MOBILE_DEVICES:
 		{
 			CreateDummyMobileDevicesCmd cdmdCmd = ((CreateDummyMobileDevicesCmd) cmd);
-			BooleanRpcResponseData responseData = GwtMobileDeviceHelper.createDummyMobileDevices( this, getRequest( ri ), cdmdCmd.getUserId(), cdmdCmd.getCount() );
+			BooleanRpcResponseData responseData = GwtMobileDeviceHelper.createDummyMobileDevices( this, req, cdmdCmd.getUserId(), cdmdCmd.getCount() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -456,7 +535,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case CREATE_EMAIL_REPORT:
 		{
 			CreateEmailReportCmd cerCmd = ((CreateEmailReportCmd) cmd);
-			EmailReportRpcResponseData responseData = GwtReportsHelper.createEmailReport( this, getRequest( ri ), cerCmd.getBegin(), cerCmd.getEnd(), cerCmd.getEmailType() );
+			EmailReportRpcResponseData responseData = GwtReportsHelper.createEmailReport( this, req, cerCmd.getBegin(), cerCmd.getEnd(), cerCmd.getEmailType() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -502,7 +581,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case CREATE_LICENSE_REPORT:
 		{
 			CreateLicenseReportCmd clrCmd = ((CreateLicenseReportCmd) cmd);
-			LicenseReportRpcResponseData responseData = GwtReportsHelper.createLicenseReport( this, getRequest( ri ), clrCmd.getBegin(), clrCmd.getEnd() );
+			LicenseReportRpcResponseData responseData = GwtReportsHelper.createLicenseReport( this, req, clrCmd.getBegin(), clrCmd.getEnd() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -510,7 +589,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case CREATE_LOGIN_REPORT:
 		{
 			CreateLoginReportCmd clrCmd = ((CreateLoginReportCmd) cmd);
-			StringRpcResponseData responseData = GwtReportsHelper.createLoginReport( this, getRequest( ri ), clrCmd.getBegin(), clrCmd.getEnd(), clrCmd.getUserIds(), clrCmd.getReportType(), clrCmd.getLongSortBy(), clrCmd.getShortSortBy() );
+			StringRpcResponseData responseData = GwtReportsHelper.createLoginReport( this, req, clrCmd.getBegin(), clrCmd.getEnd(), clrCmd.getUserIds(), clrCmd.getReportType(), clrCmd.getLongSortBy(), clrCmd.getShortSortBy() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -544,7 +623,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case CREATE_USER_ACCESS_REPORT:
 		{
 			CreateUserAccessReportCmd cuarCmd = ((CreateUserAccessReportCmd) cmd);
-			UserAccessReportRpcResponseData responseData = GwtReportsHelper.createUserAccessReport( this, getRequest( ri ), cuarCmd.getUserId() );
+			UserAccessReportRpcResponseData responseData = GwtReportsHelper.createUserAccessReport( this, req, cuarCmd.getUserId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -552,7 +631,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case CREATE_USER_ACTIVITY_REPORT:
 		{
 			CreateUserActivityReportCmd cuarCmd = ((CreateUserActivityReportCmd) cmd);
-			StringRpcResponseData responseData = GwtReportsHelper.createUserActivityReport( this, getRequest( ri ), cuarCmd.getBegin(), cuarCmd.getEnd(), cuarCmd.getUserIds(), cuarCmd.getReportType() );
+			StringRpcResponseData responseData = GwtReportsHelper.createUserActivityReport( this, req, cuarCmd.getBegin(), cuarCmd.getEnd(), cuarCmd.getUserIds(), cuarCmd.getReportType() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -593,7 +672,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DELETE_MOBILE_DEVICES:
 		{
 			DeleteMobileDevicesCmd dmdCmd = ((DeleteMobileDevicesCmd) cmd);
-			DeleteMobileDevicesRpcResponseData responseData = GwtMobileDeviceHelper.deleteMobileDevices( this, getRequest( ri ), dmdCmd.getEntityIds() );
+			DeleteMobileDevicesRpcResponseData responseData = GwtMobileDeviceHelper.deleteMobileDevices( this, req, dmdCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -601,7 +680,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DELETE_SELECTED_USERS:
 		{
 			DeleteSelectedUsersCmd dsuCmd = ((DeleteSelectedUsersCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtDeleteHelper.deleteSelectedUsers( this, getRequest( ri ), dsuCmd.getUserIds(), dsuCmd.getDeleteSelectedUsersMode(), dsuCmd.getPurgeUsersWithWorkspace() );
+			ErrorListRpcResponseData responseData = GwtDeleteHelper.deleteSelectedUsers( this, req, dsuCmd.getUserIds(), dsuCmd.getDeleteSelectedUsersMode(), dsuCmd.getPurgeUsersWithWorkspace() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -609,7 +688,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DELETE_SELECTIONS:
 		{
 			DeleteSelectionsCmd dsCmd = ((DeleteSelectionsCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtDeleteHelper.deleteSelections( this, getRequest( ri ), dsCmd.getEntityIds(), dsCmd.getDeleteSelectionsMode() );
+			ErrorListRpcResponseData responseData = GwtDeleteHelper.deleteSelections( this, req, dsCmd.getEntityIds(), dsCmd.getDeleteSelectionsMode() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -617,7 +696,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DELETE_SHARES:
 		{
 			DeleteSharesCmd dslCmd = ((DeleteSharesCmd) cmd);
-			ErrorListRpcResponseData result = GwtShareHelper.deleteShares( this, getRequest( ri ), dslCmd.getShareIds() );
+			ErrorListRpcResponseData result = GwtShareHelper.deleteShares( this, req, dslCmd.getShareIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -633,7 +712,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DISABLE_USERS:
 		{
 			DisableUsersCmd duCmd = ((DisableUsersCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.disableUsers( this, getRequest( ri ), duCmd.getUserIds() );
+			ErrorListRpcResponseData responseData = GwtViewHelper.disableUsers( this, req, duCmd.getUserIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -641,7 +720,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case DUMP_HISTORY_INFO:
 		{
 			DumpHistoryInfoCmd dhiCmd = ((DumpHistoryInfoCmd) cmd);
-			GwtHistoryHelper.dumpHistoryInfo( getRequest( ri ), dhiCmd.getMethod(), dhiCmd.getHistoryToken(), dhiCmd.getHistoryInfo() );
+			GwtHistoryHelper.dumpHistoryInfo( req, dhiCmd.getMethod(), dhiCmd.getHistoryToken(), dhiCmd.getHistoryInfo() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( true ) );
 			return response;
 		}
@@ -652,7 +731,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtEmailPublicLinkResults results;
 
 			eplCmd = (EmailPublicLinkCmd) cmd;
-			results = GwtShareHelper.emailPublicLink( this, getRequest( ri ), eplCmd.getEmailPublicLinkData() );
+			results = GwtShareHelper.emailPublicLink( this, req, eplCmd.getEmailPublicLinkData() );
 			response = new VibeRpcResponse( results );
 			return response;
 		}
@@ -660,7 +739,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case ENABLE_USERS:
 		{
 			EnableUsersCmd euCmd = ((EnableUsersCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.enableUsers( this, getRequest( ri ), euCmd.getUserIds() );
+			ErrorListRpcResponseData responseData = GwtViewHelper.enableUsers( this, req, euCmd.getUserIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -910,7 +989,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case FORCE_FILES_UNLOCK:
 		{
 			ForceFilesUnlockCmd ffuCmd = ((ForceFilesUnlockCmd) cmd);
-			BooleanRpcResponseData result = GwtViewHelper.forceFilesUnlock( this, getRequest( ri ), ffuCmd.getEntityIds() );
+			BooleanRpcResponseData result = GwtViewHelper.forceFilesUnlock( this, req, ffuCmd.getEntityIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -918,7 +997,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case FORCE_USERS_TO_CHANGE_PASSWORD:
 		{
 			ForceUsersToChangePasswordCmd fcpCmd = ((ForceUsersToChangePasswordCmd) cmd);
-			List<String> errList = PasswordPolicyHelper.forceUsersToChangePassword( this, getRequest( ri ), fcpCmd.getUserIds() );
+			List<String> errList = PasswordPolicyHelper.forceUsersToChangePassword( this, req, fcpCmd.getUserIds() );
 			ErrorListRpcResponseData result = new ErrorListRpcResponseData();
 			result.addErrors(errList);
 			response = new VibeRpcResponse( result );
@@ -930,7 +1009,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetAccessoryStatusCmd gasCmd = ((GetAccessoryStatusCmd) cmd);
 			Boolean responseData = GwtViewHelper.getAccessoryStatus(
 				this,
-				getRequest( ri ),
+				req,
 				gasCmd.getBinderId() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( responseData ) );
 			return response;
@@ -966,7 +1045,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			StringRpcResponseData responseData;
 			
 			gamuCmd = (GetAddMeetingUrlCmd) cmd;
-			result = GwtServerHelper.getAddMeetingUrl( this, getRequest( ri ), gamuCmd.getBinderId() );
+			result = GwtServerHelper.getAddMeetingUrl( this, req, gamuCmd.getBinderId() );
 			responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -1012,7 +1091,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			{
 				AdaptedPortletURL adaptedUrl;
 				
-				adaptedUrl = new AdaptedPortletURL( getRequest( ri ), "ss_forum", false );
+				adaptedUrl = new AdaptedPortletURL( req, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_ADMIN_CONSOLE_HOME_PAGE );
 				adminConsoleInfo.setHomePageUrl( adaptedUrl.toString() );
 			}
@@ -1105,7 +1184,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetBinderDescriptionCmd gbdCmd = ((GetBinderDescriptionCmd) cmd);
 			BinderDescriptionRpcResponseData responseData = GwtViewHelper.getBinderDescription(
 				this,
-				getRequest( ri ),
+				req,
 				gbdCmd.getBinderId() );
 			return new VibeRpcResponse( responseData );
 		}
@@ -1115,7 +1194,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetBinderFiltersCmd gbfCmd = ((GetBinderFiltersCmd) cmd);
 			BinderFiltersRpcResponseData responseData = GwtViewHelper.getBinderFilters(
 				this,
-				getRequest( ri ),
+				req,
 				gbfCmd.getBinderId() );
 			return new VibeRpcResponse( responseData );
 		}
@@ -1136,7 +1215,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetBinderRegionStateCmd gbrsCmd = ((GetBinderRegionStateCmd) cmd);
 			StringRpcResponseData responseData = GwtViewHelper.getBinderRegionState(
 				this,
-				getRequest( ri ),
+				req,
 				gbrsCmd.getBinderId(),
 				gbrsCmd.getRegionId() );
 			return new VibeRpcResponse( responseData );
@@ -1163,7 +1242,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_BINDER_OWNER_AVATAR_INFO:
 		{
 			GetBinderOwnerAvatarInfoCmd gboaiCmd = ((GetBinderOwnerAvatarInfoCmd) cmd);
-			AvatarInfoRpcResponseData responseData = GwtViewHelper.getBinderOwnerAvatarInfo( this, getRequest( ri ), gboaiCmd.getBinderId() );
+			AvatarInfoRpcResponseData responseData = GwtViewHelper.getBinderOwnerAvatarInfo( this, req, gboaiCmd.getBinderId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1184,7 +1263,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_BINDER_SHARING_RIGHTS_INFO:
 		{
 			GetBinderSharingRightsInfoCmd gbsrCmd = ((GetBinderSharingRightsInfoCmd) cmd);
-			BinderSharingRightsInfoRpcResponseData result = GwtServerHelper.getBinderSharingRightsInfo( this, getRequest( ri ), gbsrCmd.getBinderIds() );
+			BinderSharingRightsInfoRpcResponseData result = GwtServerHelper.getBinderSharingRightsInfo( this, req, gbsrCmd.getBinderIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1207,7 +1286,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetCalendarAppointmentsCmd gcaCmd = ((GetCalendarAppointmentsCmd) cmd);
 			CalendarAppointmentsRpcResponseData responseData = GwtCalendarHelper.getCalendarAppointments(
 				this,
-				getRequest( ri ),
+				req,
 				gcaCmd.getBrowserTZOffset(),
 				gcaCmd.getFolderId(),
 				gcaCmd.getCalendarDisplayData(),
@@ -1220,7 +1299,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetCalendarDisplayDataCmd gcddCmd = ((GetCalendarDisplayDataCmd) cmd);
 			CalendarDisplayDataRpcResponseData responseData = GwtCalendarHelper.getCalendarDisplayData(
 				this,
-				getRequest( ri ),
+				req,
 				gcddCmd.getBrowserTZOffset(),
 				gcddCmd.getFolderInfo() );
 			return new VibeRpcResponse( responseData );
@@ -1231,7 +1310,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetCalendarDisplayDateCmd gcddCmd = ((GetCalendarDisplayDateCmd) cmd);
 			CalendarDisplayDataRpcResponseData responseData = GwtCalendarHelper.getCalendarDisplayDate(
 				this,
-				getRequest( ri ),
+				req,
 				gcddCmd.getBrowserTZOffset(),
 				gcddCmd.getFolderId(),
 				gcddCmd.getCalendarDisplayData() );
@@ -1243,7 +1322,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetCalendarNextPreviousPeriodCmd gcnppCmd = ((GetCalendarNextPreviousPeriodCmd) cmd);
 			CalendarDisplayDataRpcResponseData responseData = GwtCalendarHelper.getCalendarNextPreviousPeriod(
 				this,
-				getRequest( ri ),
+				req,
 				gcnppCmd.getBrowserTZOffset(),
 				gcnppCmd.getFolderId(),
 				gcnppCmd.getCalendarDisplayData(),
@@ -1254,21 +1333,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_CAN_ADD_ENTITIES:
 		{
 			GetCanAddEntitiesCmd gcaeCmd = ((GetCanAddEntitiesCmd) cmd);
-			CanAddEntitiesRpcResponseData responseData = GwtViewHelper.getCanAddEntities( this, getRequest( ri ), gcaeCmd.getBinderInfo() );
+			CanAddEntitiesRpcResponseData responseData = GwtViewHelper.getCanAddEntities( this, req, gcaeCmd.getBinderInfo() );
 			return new VibeRpcResponse( responseData );
 		}
 		
 		case GET_CAN_ADD_ENTITIES_TO_BINDERS:
 		{
 			GetCanAddEntitiesToBindersCmd gcaetbCmd = ((GetCanAddEntitiesToBindersCmd) cmd);
-			CanAddEntitiesToBindersRpcResponseData responseData = GwtViewHelper.getCanAddEntitiesToBinders( this, getRequest( ri ), gcaetbCmd.getBinderIds() );
+			CanAddEntitiesToBindersRpcResponseData responseData = GwtViewHelper.getCanAddEntitiesToBinders( this, req, gcaetbCmd.getBinderIds() );
 			return new VibeRpcResponse( responseData );
 		}
 		
 		case GET_CLICK_ON_TITLE_ACTION:
 		{
 			GetClickOnTitleActionCmd gcotaCmd = ((GetClickOnTitleActionCmd) cmd);
-			ClickOnTitleActionRpcResponseData result = GwtViewHelper.getClickOnTitleAction( this, getRequest( ri ), gcotaCmd.getEntityId() );
+			ClickOnTitleActionRpcResponseData result = GwtViewHelper.getClickOnTitleAction( this, req, gcotaCmd.getEntityId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1276,7 +1355,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_CLIPBOARD_TEAM_USERS:
 		{
 			GetClipboardTeamUsersCmd gctuCmd = ((GetClipboardTeamUsersCmd) cmd);
-			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardTeamUsers( this, getRequest( ri ), gctuCmd.getBinderId() );
+			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardTeamUsers( this, req, gctuCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1285,7 +1364,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			@SuppressWarnings("unused")
 			GetClipboardUsersCmd gcuCmd = ((GetClipboardUsersCmd) cmd);
-			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsers( this, getRequest( ri ) );
+			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsers( this, req );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1293,7 +1372,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_CLIPBOARD_USERS_FROM_LIST:
 		{
 			GetClipboardUsersFromListCmd gcuflCmd = ((GetClipboardUsersFromListCmd) cmd);
-			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsersFromList( this, getRequest( ri ), gcuflCmd.getBinderId(), gcuflCmd.getUserIds() );
+			ClipboardUsersRpcResponseData result = GwtServerHelper.getClipboardUsersFromList( this, req, gcuflCmd.getBinderId(), gcuflCmd.getUserIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1304,7 +1383,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			collectionPointData= GwtServerHelper.getCollectionPointData(
 																	this,
-																	getRequest( ri ) );
+																	req );
 			response = new VibeRpcResponse( collectionPointData );
 			return response;
 		}
@@ -1314,7 +1393,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetColumnWidthsCmd gcwCmd = ((GetColumnWidthsCmd) cmd);
 			ColumnWidthsRpcResponseData result = GwtViewHelper.getColumnWidths(
 				this,
-				getRequest( ri ),
+				req,
 				gcwCmd.getFolderInfo() );
 			response = new VibeRpcResponse( result );
 			return response;
@@ -1381,7 +1460,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		{
 			GetDefaultActivityStreamCmd gdasCmd = ((GetDefaultActivityStreamCmd) cmd);
-			ActivityStreamInfo asi = GwtActivityStreamHelper.getDefaultActivityStream( getRequest( ri ), this, gdasCmd.getBinderId(), gdasCmd.getOverrideActivityStream(), gdasCmd.getOverrideActivityStreamId() );
+			ActivityStreamInfo asi = GwtActivityStreamHelper.getDefaultActivityStream( req, this, gdasCmd.getBinderId(), gdasCmd.getOverrideActivityStream(), gdasCmd.getOverrideActivityStreamId() );
 			response = new VibeRpcResponse( asi );
 			return response;
 		}
@@ -1409,7 +1488,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_DESKTOP_APP_DOWNLOAD_INFO:
 		{
-			DesktopAppDownloadInfoRpcResponseData result = GwtServerHelper.getDesktopAppDownloadInformation( this, getRequest( ri ) );
+			DesktopAppDownloadInfoRpcResponseData result = GwtServerHelper.getDesktopAppDownloadInformation( this, req );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1439,7 +1518,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_DOWNLOAD_FILE_URL:
 		{
 			GetDownloadFileUrlCmd gdfuCmd = ((GetDownloadFileUrlCmd) cmd);
-			String result = GwtServerHelper.getDownloadFileUrl( getRequest( ri ), this, gdfuCmd.getBinderId(), gdfuCmd.getEntryId() );
+			String result = GwtServerHelper.getDownloadFileUrl( req, this, gdfuCmd.getBinderId(), gdfuCmd.getEntryId() );
 			StringRpcResponseData responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -1448,7 +1527,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_DOWNLOAD_FOLDER_AS_CSV_FILE_URL:
 		{
 			GetDownloadFolderAsCSVFileUrlCmd gdfacfuCmd = ((GetDownloadFolderAsCSVFileUrlCmd) cmd);
-			DownloadFolderAsCSVFileUrlRpcResponseData result = GwtViewHelper.getDownloadFolderAsCSVFileUrl( this, getRequest( ri ), gdfacfuCmd.getFolderId() );
+			DownloadFolderAsCSVFileUrlRpcResponseData result = GwtViewHelper.getDownloadFolderAsCSVFileUrl( this, req, gdfacfuCmd.getFolderId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1483,7 +1562,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_EMAIL_NOTIFICATION_INFORMATION:
 		{
 			GetEmailNotificationInfoCmd geniCmd = ((GetEmailNotificationInfoCmd) cmd);
-			EmailNotificationInfoRpcResponseData result = GwtEmailHelper.getEmailNotificationInfo( this, getRequest( ri ), geniCmd.getEntityId() );
+			EmailNotificationInfoRpcResponseData result = GwtEmailHelper.getEmailNotificationInfo( this, req, geniCmd.getEntityId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1491,7 +1570,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_ENTITY_ACTION_TOOLBAR_ITEMS:
 		{
 			GetEntityActionToolbarItemsCmd geatbiCmd = ((GetEntityActionToolbarItemsCmd) cmd);
-			GetToolbarItemsRpcResponseData responseData = GwtMenuHelper.getEntityActionToolbarItems( this, getRequest( ri ), geatbiCmd.getBinderInfo(), geatbiCmd.getEntityId() );
+			GetToolbarItemsRpcResponseData responseData = GwtMenuHelper.getEntityActionToolbarItems( this, req, geatbiCmd.getBinderInfo(), geatbiCmd.getEntityId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1499,7 +1578,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_ENTITY_ID:
 		{
 			GetEntityIdCmd geidCmd = ((GetEntityIdCmd) cmd);
-			EntityIdRpcResponseData responseData = GwtServerHelper.getEntityId( this, getRequest( ri ), geidCmd.getBinderId(), geidCmd.getEntityId(), geidCmd.getEntityIdType(), geidCmd.getMobileDeviceId() );
+			EntityIdRpcResponseData responseData = GwtServerHelper.getEntityId( this, req, geidCmd.getBinderId(), geidCmd.getEntityId(), geidCmd.getEntityIdType(), geidCmd.getMobileDeviceId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1507,7 +1586,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_ENTITY_ID_LIST:
 		{
 			GetEntityIdListCmd geidlCmd = ((GetEntityIdListCmd) cmd);
-			EntityIdListRpcResponseData responseData = GwtServerHelper.getEntityIdList( this, getRequest( ri ), geidlCmd.getEntityIdCmdList() );
+			EntityIdListRpcResponseData responseData = GwtServerHelper.getEntityIdList( this, req, geidlCmd.getEntityIdCmdList() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1519,7 +1598,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			StringRpcResponseData responseData;
 			
 			gepCmd = (GetEntityPermalinkCmd) cmd;
-			permalink = GwtServerHelper.getEntityPermalink( this, getRequest( ri ), gepCmd.getEntityId() );
+			permalink = GwtServerHelper.getEntityPermalink( this, req, gepCmd.getEntityId() );
 			responseData = new StringRpcResponseData( permalink );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -1528,7 +1607,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_ENTITY_RIGHTS:
 		{
 			GetEntityRightsCmd gerCmd = ((GetEntityRightsCmd) cmd);
-			EntityRightsRpcResponseData responseData = GwtViewHelper.getEntityRights( this, getRequest( ri ), gerCmd.getEntityIds() );
+			EntityRightsRpcResponseData responseData = GwtViewHelper.getEntityRights( this, req, gerCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1573,7 +1652,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_ENTRY_TYPES:
 		{
 			GetEntryTypesCmd getCmd = ((GetEntryTypesCmd) cmd);
-			EntryTypesRpcResponseData result = GwtViewHelper.getEntryTypes( this, getRequest( ri ), getCmd.getEntityId(), getCmd.getBinderIds() );
+			EntryTypesRpcResponseData result = GwtViewHelper.getEntryTypes( this, req, getCmd.getEntityId(), getCmd.getBinderIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1585,7 +1664,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			String result;
 			
 			gejuCmd = (GetExecuteJspUrlCmd) cmd;
-			result = GwtServerHelper.getExecuteJspUrl( getRequest( ri ), gejuCmd.getBinderId(), gejuCmd.getJspName() );
+			result = GwtServerHelper.getExecuteJspUrl( req, gejuCmd.getBinderId(), gejuCmd.getJspName() );
 			responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			
@@ -1642,7 +1721,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_FILE_CONFLICTS_INFO:
 		{
 			GetFileConflictsInfoCmd gfciCmd = ((GetFileConflictsInfoCmd) cmd);
-			FileConflictsInfoRpcResponseData responseData = GwtViewHelper.getFileConflictsInfo( this, getRequest( ri ), gfciCmd.getFolderInfo(), gfciCmd.getFileConflicts() );
+			FileConflictsInfoRpcResponseData responseData = GwtViewHelper.getFileConflictsInfo( this, req, gfciCmd.getFolderInfo(), gfciCmd.getFileConflicts() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1672,7 +1751,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			String url;
 			
 			gfuCmd = (GetFileUrlCmd) cmd;
-			url = GwtServerHelper.getFileUrl( this, getRequest( ri ), gfuCmd.getBinderId(), gfuCmd.getFileName() );
+			url = GwtServerHelper.getFileUrl( this, req, gfuCmd.getBinderId(), gfuCmd.getFileName() );
 			response = new VibeRpcResponse( new StringRpcResponseData( url ) );
 			return response;
 		}
@@ -1693,7 +1772,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetFolderColumnsCmd gfcCmd = ((GetFolderColumnsCmd) cmd);
 			FolderColumnsRpcResponseData responseData = GwtViewHelper.getFolderColumns(
 				this,
-				getRequest( ri ),
+				req,
 				gfcCmd.getFolderInfo(),
 				gfcCmd.isIncludeConfigurationInfo() );
 			return new VibeRpcResponse( responseData );
@@ -1704,7 +1783,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetFolderDisplayDataCmd gfddCmd = ((GetFolderDisplayDataCmd) cmd);
 			FolderDisplayDataRpcResponseData responseData = GwtViewHelper.getFolderDisplayData(
 				this,
-				getRequest( ri ),
+				req,
 				gfddCmd.getFolderInfo() );
 			return new VibeRpcResponse( responseData );
 		}
@@ -1725,7 +1804,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_FOLDER_ENTRY_DETAILS:
 		{
 			GetFolderEntryDetailsCmd			gfeCmd       = ((GetFolderEntryDetailsCmd) cmd);
-			FolderEntryDetails					fed          = GwtViewHelper.getFolderEntryDetails( this, getRequest( ri ), gfeCmd.getEntityId(), gfeCmd.isMarkRead() );
+			FolderEntryDetails					fed          = GwtViewHelper.getFolderEntryDetails( this, req, gfeCmd.getEntityId(), gfeCmd.isMarkRead() );
 			FolderEntryDetailsRpcResponseData	responseData = new FolderEntryDetailsRpcResponseData( fed );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -1750,7 +1829,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GetFolderFiltersCmd gffCmd = ((GetFolderFiltersCmd) cmd);
 			GwtFolder gwtFolder = gffCmd.getFolder();
-			FolderFiltersRpcResponseData result = GwtServerHelper.getFolderFilters( this, getRequest( ri ), Long.parseLong( gwtFolder.getFolderId() ) );
+			FolderFiltersRpcResponseData result = GwtServerHelper.getFolderFilters( this, req, Long.parseLong( gwtFolder.getFolderId() ) );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1758,7 +1837,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_FOLDER_HAS_USER_LIST:
 		{
 			GetFolderHasUserListCmd gfhulCmd = ((GetFolderHasUserListCmd) cmd);
-			boolean result = GwtViewHelper.getFolderHasUserList( this, getRequest( ri ) , gfhulCmd.getFolderInfo() );
+			boolean result = GwtViewHelper.getFolderHasUserList( this, req , gfhulCmd.getFolderInfo() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -1768,7 +1847,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetFolderRowsCmd gfrCmd = ((GetFolderRowsCmd) cmd);
 			FolderRowsRpcResponseData responseData = GwtViewHelper.getFolderRows(
 				this,
-				getRequest( ri ),
+				req,
 				gfrCmd.getFolderInfo(),
 				gfrCmd.getFolderDisplayData(),
 				gfrCmd.getFolderColumns(),
@@ -1796,7 +1875,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_FOLDER_TOOLBAR_ITEMS:
 		{
 			GetFolderToolbarItemsCmd gftiCmd = ((GetFolderToolbarItemsCmd) cmd);
-			GetFolderToolbarItemsRpcResponseData responseData = GwtMenuHelper.getFolderToolbarItems( this, getRequest( ri ), gftiCmd.getFolderInfo() );
+			GetFolderToolbarItemsRpcResponseData responseData = GwtMenuHelper.getFolderToolbarItems( this, req, gftiCmd.getFolderInfo() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1808,7 +1887,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetToolbarItemsRpcResponseData responseData;
 			
 			gftiCmd = ((GetFooterToolbarItemsCmd) cmd);
-		    result = GwtMenuHelper.getFooterToolbarItems( this, getRequest( ri ), gftiCmd.getEntityId() );
+		    result = GwtMenuHelper.getFooterToolbarItems( this, req, gftiCmd.getEntityId() );
 			responseData = new GetToolbarItemsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -1817,7 +1896,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_GROUP_ACTION_TOOLBAR_ITEMS:
 		{
 			GetGroupActionToolbarItemsCmd ggatbiCmd = ((GetGroupActionToolbarItemsCmd) cmd);
-			GetToolbarItemsRpcResponseData responseData = GwtMenuHelper.getGroupActionToolbarItems( this, getRequest( ri ), ggatbiCmd.getGroupId() );
+			GetToolbarItemsRpcResponseData responseData = GwtMenuHelper.getGroupActionToolbarItems( this, req, ggatbiCmd.getGroupId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1910,7 +1989,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_HISTORY_INFO:
 		{
 			GetHistoryInfoCmd ghiCmd = ((GetHistoryInfoCmd) cmd);
-			HistoryInfo responseData = GwtHistoryHelper.getHistoryInfo( getRequest( ri ), ghiCmd.getHistoryToken() );
+			HistoryInfo responseData = GwtHistoryHelper.getHistoryInfo( req, ghiCmd.getHistoryToken() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1919,7 +1998,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			@SuppressWarnings( "unused" )
 			GetHtml5SpecsCmd gcwCmd = ((GetHtml5SpecsCmd) cmd);
-			Html5SpecsRpcResponseData result = GwtHtml5Helper.getHtml5UploadSpecs( this, getRequest( ri ) );
+			Html5SpecsRpcResponseData result = GwtHtml5Helper.getHtml5UploadSpecs( this, req );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1943,7 +2022,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtLandingPageProperties lpProperties;
 			
 			gilppCmd = (GetInheritedLandingPagePropertiesCmd) cmd;
-			lpProperties = GwtServerHelper.getInheritedLandingPageProperties( this, gilppCmd.getBinderId(), getRequest( ri ) );
+			lpProperties = GwtServerHelper.getInheritedLandingPageProperties( this, gilppCmd.getBinderId(), req );
 			response = new VibeRpcResponse( lpProperties );
 			return response;
 		}
@@ -1951,7 +2030,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_IS_USER_EXTERNAL:
 		{
 			GetIsUserExternalCmd giueCmd = ((GetIsUserExternalCmd) cmd);
-			boolean result = GwtViewHelper.isUserExternal( this, getRequest( ri ), giueCmd.getUserId() );
+			boolean result = GwtViewHelper.isUserExternal( this, req, giueCmd.getUserId() );
 			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2040,7 +2119,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_LDAP_SERVER_DATA:
 		{
 			GetLdapServerDataCmd gcwCmd = ((GetLdapServerDataCmd) cmd);
-			LdapServerDataRpcResponseData result = LdapBrowserHelper.getLdapServerData( this, getRequest( ri ), gcwCmd.getDirectoryServer(), gcwCmd.getSearchInfo() );
+			LdapServerDataRpcResponseData result = LdapBrowserHelper.getLdapServerData( this, req, gcwCmd.getDirectoryServer(), gcwCmd.getSearchInfo() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2051,7 +2130,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtLdapSyncResults ldapSyncResults;
 			
 			glsrCmd = (GetLdapSyncResultsCmd) cmd;
-			ldapSyncResults = GwtLdapHelper.getLdapSyncResults( getRequest( ri ), glsrCmd.getSyncId() );
+			ldapSyncResults = GwtLdapHelper.getLdapSyncResults( req, glsrCmd.getSyncId() );
 			response = new VibeRpcResponse( ldapSyncResults );
 			return response;
 		}
@@ -2103,7 +2182,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_MANAGE_ADMINISTRATORS_INFO:
 		{
-			ManageAdministratorsInfoRpcResponseData result = GwtServerHelper.getManageAdministratorsInfo( this, getRequest( ri ) );
+			ManageAdministratorsInfoRpcResponseData result = GwtServerHelper.getManageAdministratorsInfo( this, req );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2111,28 +2190,28 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_MANAGE_MOBILE_DEVICES_INFO:
 		{
 			GetManageMobileDevicesInfoCmd gmmdiCmd = ((GetManageMobileDevicesInfoCmd) cmd); 
-			ManageMobileDevicesInfoRpcResponseData result = GwtMobileDeviceHelper.getManageMobileDevicesInfo( this, getRequest( ri ), gmmdiCmd.getUserId() );
+			ManageMobileDevicesInfoRpcResponseData result = GwtMobileDeviceHelper.getManageMobileDevicesInfo( this, req, gmmdiCmd.getUserId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
 		case GET_MANAGE_TEAMS_INFO:
 		{
-			ManageTeamsInfoRpcResponseData result = GwtServerHelper.getManageTeamsInfo( this, getRequest( ri ) );
+			ManageTeamsInfoRpcResponseData result = GwtServerHelper.getManageTeamsInfo( this, req );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
 		case GET_MANAGE_USERS_INFO:
 		{
-			ManageUsersInfoRpcResponseData result = GwtServerHelper.getManageUsersInfo( this, getRequest( ri ) );
+			ManageUsersInfoRpcResponseData result = GwtServerHelper.getManageUsersInfo( this, req );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
 		case GET_MANAGE_USERS_STATE:
 		{
-			ManageUsersStateRpcResponseData result = GwtServerHelper.getManageUsersState( this, getRequest( ri ) );
+			ManageUsersStateRpcResponseData result = GwtServerHelper.getManageUsersState( this, req );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2140,7 +2219,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_MAILTO_PUBLIC_LINKS:
 		{
 			GetMailToPublicLinksCmd gmtplCmd = ((GetMailToPublicLinksCmd) cmd);
-			MailToPublicLinksRpcResponseData result = GwtShareHelper.getMailToPublicLinks( this, getRequest( ri ), gmtplCmd.getEntityId() );
+			MailToPublicLinksRpcResponseData result = GwtShareHelper.getMailToPublicLinks( this, req, gmtplCmd.getEntityId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2148,7 +2227,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_MAIN_PAGE_INFO:
 		{
 			GetMainPageInfoCmd gcwCmd = ((GetMainPageInfoCmd) cmd);
-			MainPageInfoRpcResponseData result = GwtServerHelper.getMainPageInfo( this, getRequest( ri ), gcwCmd.getBinderId() );
+			MainPageInfoRpcResponseData result = GwtServerHelper.getMainPageInfo( this, req, gcwCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
 			
 			// The GetMainPageInfoCmd should only be called once when we start up.  Set the user's
@@ -2197,7 +2276,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_MY_FILES_CONTAINER_INFO:
 		{
-			BinderInfo binderInfo = GwtServerHelper.getMyFilesContainerInfo( this, getRequest( ri ) );
+			BinderInfo binderInfo = GwtServerHelper.getMyFilesContainerInfo( this, req );
 			response = new VibeRpcResponse( binderInfo );
 			return response;
 		}
@@ -2258,7 +2337,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_NEXT_PREVIOUS_FOLDER_ENTRY_INFO:
 		{
 			GetNextPreviousFolderEntryInfoCmd gnpfeiCmd = ((GetNextPreviousFolderEntryInfoCmd) cmd);
-			ViewFolderEntryInfoRpcResponseData result = GwtViewHelper.getNextPreviousFolderInfo( this, getRequest( ri ), gnpfeiCmd.getEntityId(), gnpfeiCmd.isPrevious() );
+			ViewFolderEntryInfoRpcResponseData result = GwtViewHelper.getNextPreviousFolderInfo( this, req, gnpfeiCmd.getEntityId(), gnpfeiCmd.isPrevious() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2310,7 +2389,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GwtPersonalPreferences prefs;
 			
-			prefs = GwtServerHelper.getPersonalPreferences( this, getRequest( ri ) );
+			prefs = GwtServerHelper.getPersonalPreferences( this, req );
 			response = new VibeRpcResponse( prefs );
 			return response;
 		}
@@ -2380,7 +2459,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					}
 					catch ( Exception ex )
 					{
-						m_logger.info( "Servicing GetProfileAvatarsCmd, ex: " + ex.toString() );
+						logger.error( "Servicing GetProfileAvatarsCmd, ex: " + ex.toString() );
 					}
 				}
 			}
@@ -2399,7 +2478,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetProfileEntryInfoCmd gcwCmd = ((GetProfileEntryInfoCmd) cmd);
 			ProfileEntryInfoRpcResponseData result = GwtViewHelper.getProfileEntryInfo(
 				this,
-				getRequest( ri ),
+				req,
 				gcwCmd.getUserId() );
 			response = new VibeRpcResponse( result );
 			return response;
@@ -2441,7 +2520,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_PUBLIC_LINKS:
 		{
 			GetPublicLinksCmd gplCmd = ((GetPublicLinksCmd) cmd);
-			PublicLinksRpcResponseData result = GwtShareHelper.getPublicLinks( this, getRequest( ri ), gplCmd.getEntityIds() );
+			PublicLinksRpcResponseData result = GwtShareHelper.getPublicLinks( this, req, gplCmd.getEntityIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2459,7 +2538,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 		case GET_RECENT_PLACES:
 		{
-			List<RecentPlaceInfo> result = GwtMenuHelper.getRecentPlaces( this, getRequest( ri ), ((GetRecentPlacesCmd) cmd).getBinderId() );
+			List<RecentPlaceInfo> result = GwtMenuHelper.getRecentPlaces( this, req, ((GetRecentPlacesCmd) cmd).getBinderId() );
 			GetRecentPlacesRpcResponseData responseData = new GetRecentPlacesRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2467,7 +2546,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_REPORTS_INFO:
 		{
-			ReportsInfoRpcResponseData result = GwtReportsHelper.getReportsInfo( this, getRequest( ri ) );
+			ReportsInfoRpcResponseData result = GwtReportsHelper.getReportsInfo( this, req );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2495,7 +2574,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_SELECTED_USERS_DETAILS:
 		{
 			GetSelectedUsersDetailsCmd gsudCmd = ((GetSelectedUsersDetailsCmd) cmd);
-			SelectedUsersDetails result = GwtViewHelper.getSelectedUsersDetails( this, getRequest( ri ), gsudCmd.getUserIds() );
+			SelectedUsersDetails result = GwtViewHelper.getSelectedUsersDetails( this, req, gsudCmd.getUserIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2503,7 +2582,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_SELECTION_DETAILS:
 		{
 			GetSelectionDetailsCmd gsdCmd = ((GetSelectionDetailsCmd) cmd);
-			SelectionDetails result = GwtViewHelper.getSelectionDetails( this, getRequest( ri ), gsdCmd.getEntityIds() );
+			SelectionDetails result = GwtViewHelper.getSelectionDetails( this, req, gsdCmd.getEntityIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2531,7 +2610,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_ZIP_DOWNLOAD_FILES_URL:
 		{
 			GetZipDownloadFilesUrlCmd gzdfuCmd = ((GetZipDownloadFilesUrlCmd) cmd);
-			ZipDownloadUrlRpcResponseData result = GwtViewHelper.getZipDownloadUrl( this, getRequest( ri ), gzdfuCmd.getEntityIds(), gzdfuCmd.isRecursive() );
+			ZipDownloadUrlRpcResponseData result = GwtViewHelper.getZipDownloadUrl( this, req, gzdfuCmd.getEntityIds(), gzdfuCmd.isRecursive() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2539,7 +2618,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_ZIP_DOWNLOAD_FOLDER_URL:
 		{
 			GetZipDownloadFolderUrlCmd gzdfuCmd = ((GetZipDownloadFolderUrlCmd) cmd);
-			ZipDownloadUrlRpcResponseData result = GwtViewHelper.getZipDownloadUrl( this, getRequest( ri ), gzdfuCmd.getFolderId(), gzdfuCmd.isRecursive() );
+			ZipDownloadUrlRpcResponseData result = GwtViewHelper.getZipDownloadUrl( this, req, gzdfuCmd.getFolderId(), gzdfuCmd.isRecursive() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2557,7 +2636,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			@SuppressWarnings( "unused" )
 			GetShareListsCmd gslCmd = ((GetShareListsCmd) cmd);
-			GwtShareLists shareLists = GwtShareHelper.getShareLists( this, getRequest( ri ));
+			GwtShareLists shareLists = GwtShareHelper.getShareLists( this, req);
 			ShareListsRpcResponseData result = new ShareListsRpcResponseData( shareLists );
 			response = new VibeRpcResponse( result );
 			return response;
@@ -2566,7 +2645,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_SHARED_VIEW_STATE:
 		{
 			GetSharedViewStateCmd gsvsCmd = ((GetSharedViewStateCmd) cmd);
-			SharedViewStateRpcResponseData result = GwtViewHelper.getSharedViewState( this, getRequest( ri ), gsvsCmd.getCollectionType() );
+			SharedViewStateRpcResponseData result = GwtViewHelper.getSharedViewState( this, req, gsvsCmd.getCollectionType() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2590,7 +2669,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetSignGuestbookUrlCmd gsgbUrlCmd = ((GetSignGuestbookUrlCmd) cmd);
 			StringRpcResponseData responseData = GwtMenuHelper.getSignGuestbookUrl(
 				this,
-				getRequest( ri ),
+				req,
 				gsgbUrlCmd.getFolderId() );
 			return new VibeRpcResponse( responseData );
 		}
@@ -2633,7 +2712,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			gsbpCmd = (GetSystemBinderPermalinkCmd) cmd;
 			permalink = GwtServerHelper.getSystemBinderPermalink(
-														getRequest( ri ),
+														req,
 														gsbpCmd.getSystemBinderType() );
 			responseData = new StringRpcResponseData( permalink );
 			response = new VibeRpcResponse( responseData );
@@ -2642,7 +2721,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_SYSTEM_ERROR_LOG_URL:
 		{
-			String systemErrorLogUrl = GwtReportsHelper.getSystemErrorLogUrl( this, getRequest( ri ) );
+			String systemErrorLogUrl = GwtReportsHelper.getSystemErrorLogUrl( this, req );
 			return new VibeRpcResponse( new StringRpcResponseData( systemErrorLogUrl ));
 		}
 		
@@ -2693,7 +2772,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_TASK_DISPLAY_DATA:
 		{
 			GetTaskDisplayDataCmd gtddCmd = ((GetTaskDisplayDataCmd) cmd);
-			TaskDisplayDataRpcResponseData responseData = GwtTaskHelper.getTaskDisplayData( getRequest( ri ), this, gtddCmd.getBinderId() );
+			TaskDisplayDataRpcResponseData responseData = GwtTaskHelper.getTaskDisplayData( req, this, gtddCmd.getBinderId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -2731,7 +2810,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			TeamManagementInfo result;
 			
 			gtmiCmd = (GetTeamManagementInfoCmd) cmd;
-			result = GwtMenuHelper.getTeamManagementInfo( this, getRequest( ri ), gtmiCmd.getBinderId() );
+			result = GwtMenuHelper.getTeamManagementInfo( this, req, gtmiCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2753,7 +2832,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GwtTimeZones responseData;
 			
-			responseData = GwtServerHelper.getTimeZones( getRequest( ri ) );
+			responseData = GwtServerHelper.getTimeZones( req );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -2761,7 +2840,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_TOOLBAR_ITEMS:
 		{
 			GetToolbarItemsCmd gtiCmd = ((GetToolbarItemsCmd) cmd);
-			List<ToolbarItem> result = GwtMenuHelper.getToolbarItems( this, getRequest( ri ), gtiCmd.getBinderId() );
+			List<ToolbarItem> result = GwtMenuHelper.getToolbarItems( this, req, gtiCmd.getBinderId() );
 			GetToolbarItemsRpcResponseData responseData = new GetToolbarItemsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2769,7 +2848,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_TOP_RANKED:
 		{
-			List<TopRankedInfo> result = GwtServerHelper.getTopRankedFromCache( this, getRequest( ri ));
+			List<TopRankedInfo> result = GwtServerHelper.getTopRankedFromCache( this, req);
 			GetTopRankedRpcResponseData responseData = new GetTopRankedRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2778,7 +2857,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_TRASH_URL:
 		{
 			GetTrashUrlCmd gtuCmd = ((GetTrashUrlCmd) cmd);
-			StringRpcResponseData responseData = GwtDeleteHelper.getTrashUrl( this, getRequest( ri ), gtuCmd.getBinderInfo() );
+			StringRpcResponseData responseData = GwtDeleteHelper.getTrashUrl( this, req, gtuCmd.getBinderInfo() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -2823,7 +2902,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				}
 				catch ( Exception ex )
 				{
-					m_logger.info( "Servicing GetUserAvatarCmd, ex: " + ex.toString() );
+					logger.error( "Servicing GetUserAvatarCmd, ex: " + ex.toString() );
 				}
 			}
 
@@ -2835,7 +2914,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_USER_LIST_INFO:
 		{
 			GetUserListInfoCmd guliCmd = ((GetUserListInfoCmd) cmd);
-			UserListInfoRpcResponseData result = GwtViewHelper.getFolderUserListInfo( this, getRequest( ri ) , guliCmd.getFolderInfo() );
+			UserListInfoRpcResponseData result = GwtViewHelper.getFolderUserListInfo( this, req , guliCmd.getFolderInfo() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2856,7 +2935,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_USER_PROPERTIES:
 		{
 			GetUserPropertiesCmd gmuiCmd = ((GetUserPropertiesCmd) cmd);
-			UserPropertiesRpcResponseData result = GwtViewHelper.getUserProperties( this, getRequest( ri ), gmuiCmd.getUserId(), gmuiCmd.getIncludeLastLogin() );
+			UserPropertiesRpcResponseData result = GwtViewHelper.getUserProperties( this, req, gmuiCmd.getUserId(), gmuiCmd.getIncludeLastLogin() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2864,7 +2943,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_USER_SHARING_RIGHTS_INFO:
 		{
 			GetUserSharingRightsInfoCmd gusrCmd = ((GetUserSharingRightsInfoCmd) cmd);
-			UserSharingRightsInfoRpcResponseData result = GwtServerHelper.getUserSharingRightsInfo( this, getRequest( ri ), gusrCmd.getUserIds() );
+			UserSharingRightsInfoRpcResponseData result = GwtServerHelper.getUserSharingRightsInfo( this, req, gusrCmd.getUserIds() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2941,7 +3020,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			binderId = ((GetViewFolderEntryUrlCmd) cmd).getBinderId();
 			entryId = ((GetViewFolderEntryUrlCmd) cmd).getEntryId();
-			result = GwtServerHelper.getViewFolderEntryUrl( this, getRequest( ri ), binderId, entryId );
+			result = GwtServerHelper.getViewFolderEntryUrl( this, req, binderId, entryId );
 			responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -2966,7 +3045,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_WHO_HAS_ACCESS:
 		{
 			GetWhoHasAccessCmd gwhaCmd = ((GetWhoHasAccessCmd) cmd);
-			WhoHasAccessInfoRpcResponseData result = GwtViewHelper.getWhoHasAccess( this, getRequest( ri ), gwhaCmd.getEntityId() );
+			WhoHasAccessInfoRpcResponseData result = GwtViewHelper.getWhoHasAccess( this, req, gwhaCmd.getEntityId() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -2999,7 +3078,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case HIDE_SHARES:
 		{
 			HideSharesCmd hsCmd = ((HideSharesCmd) cmd);
-			Boolean result = GwtViewHelper.hideShares( this, getRequest( ri ), hsCmd.getCollectionType(), hsCmd.getEntityIds() );
+			Boolean result = GwtViewHelper.hideShares( this, req, hsCmd.getCollectionType(), hsCmd.getEntityIds() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -3007,7 +3086,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case IMPORT_ICAL_BY_URL:
 		{
 			ImportIcalByUrlCmd iiUrlCmd = ((ImportIcalByUrlCmd) cmd);
-			ImportIcalByUrlRpcResponseData result = GwtServerHelper.importIcalByUrl( this, getRequest( ri ), iiUrlCmd.getFolderId(), iiUrlCmd.getUrl() );
+			ImportIcalByUrlRpcResponseData result = GwtServerHelper.importIcalByUrl( this, req, iiUrlCmd.getFolderId(), iiUrlCmd.getUrl() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3044,14 +3123,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case LDAP_AUTHENTICATE_USER:
 		{
 			LdapAuthenticateUserCmd gcwCmd = ((LdapAuthenticateUserCmd) cmd);
-			StringRpcResponseData responseData = LdapBrowserHelper.authenticateUser( this, getRequest( ri ), gcwCmd.getDirectoryServer() );
+			StringRpcResponseData responseData = LdapBrowserHelper.authenticateUser( this, req, gcwCmd.getDirectoryServer() );
 			response = new VibeRpcResponse( responseData );
 		}
 		
 		case LOCK_ENTRIES:
 		{
 			LockEntriesCmd leCmd = ((LockEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.lockEntries( this, getRequest( ri ), leCmd.getEntityIds() );
+			ErrorListRpcResponseData responseData = GwtViewHelper.lockEntries( this, req, leCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -3059,7 +3138,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case MARK_FOLDER_CONTENTS_READ:
 		{
 			MarkFolderContentsReadCmd mfcrCmd = ((MarkFolderContentsReadCmd) cmd);
-			BooleanRpcResponseData responseData = GwtViewHelper.markFolderContentsRead( this, getRequest( ri ), mfcrCmd.getFolderId() );
+			BooleanRpcResponseData responseData = GwtViewHelper.markFolderContentsRead( this, req, mfcrCmd.getFolderId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -3067,7 +3146,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case MARK_FOLDER_CONTENTS_UNREAD:
 		{
 			MarkFolderContentsUnreadCmd mfcurCmd = ((MarkFolderContentsUnreadCmd) cmd);
-			BooleanRpcResponseData responseData = GwtViewHelper.markFolderContentsUnread( this, getRequest( ri ), mfcurCmd.getFolderId() );
+			BooleanRpcResponseData responseData = GwtViewHelper.markFolderContentsUnread( this, req, mfcurCmd.getFolderId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -3143,7 +3222,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case MOVE_ENTRIES:
 		{
 			MoveEntriesCmd meCmd = ((MoveEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.moveEntries( this, getRequest( ri ), meCmd.getTargetFolderId(), meCmd.getEntityIds() );
+			ErrorListRpcResponseData responseData = GwtViewHelper.moveEntries( this, req, meCmd.getTargetFolderId(), meCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -3190,7 +3269,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case PIN_ENTRY:
 		{
 			PinEntryCmd peCmd = ((PinEntryCmd) cmd);
-			Boolean result = GwtServerHelper.pinEntry( this, getRequest( ri ), peCmd.getFolderId(), peCmd.getEntryId() );
+			Boolean result = GwtServerHelper.pinEntry( this, req, peCmd.getFolderId(), peCmd.getEntryId() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -3206,7 +3285,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case PUSH_HISTORY_INFO:
 		{
 			PushHistoryInfoCmd phiCmd = ((PushHistoryInfoCmd) cmd);
-			StringRpcResponseData responseData = GwtHistoryHelper.pushHistoryInfo( getRequest( ri ), phiCmd.getHistoryInfo() );
+			StringRpcResponseData responseData = GwtHistoryHelper.pushHistoryInfo( req, phiCmd.getHistoryInfo() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -3242,7 +3321,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Boolean result;
 			
 			rfCmd = (RemoveFavoriteCmd) cmd;
-			result = GwtServerHelper.removeFavorite( this, getRequest( ri ), rfCmd.getFavoriteId() );
+			result = GwtServerHelper.removeFavorite( this, req, rfCmd.getFavoriteId() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -3272,7 +3351,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case RENAME_ENTITY:
 		{
 			RenameEntityCmd reCmd = ((RenameEntityCmd) cmd);
-			StringRpcResponseData responseData = GwtViewHelper.renameEntity( this, getRequest( ri ), reCmd.getEntityId(), reCmd.getEntityName() );
+			StringRpcResponseData responseData = GwtViewHelper.renameEntity( this, req, reCmd.getEntityId(), reCmd.getEntityName() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -3293,7 +3372,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			RequestResetPwdRpcResponseData result;
 			
 			rpCmd = (RequestResetPwdCmd) cmd;
-			result = GwtServerHelper.requestResetPwd( this, getRequest( ri ), rpCmd.getExtUserId(), rpCmd.getPwd() );
+			result = GwtServerHelper.requestResetPwd( this, req, rpCmd.getExtUserId(), rpCmd.getPwd() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3303,7 +3382,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveAccessoryStatusCmd sasCmd = ((SaveAccessoryStatusCmd) cmd);
 			Boolean responseData = GwtViewHelper.saveAccessoryStatus(
 				this,
-				getRequest( ri ),
+				req,
 				sasCmd.getBinderId(),
 				sasCmd.getShowAccessoryPanel() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( responseData ) );
@@ -3328,7 +3407,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveBinderRegionStateCmd sbrsCmd = ((SaveBinderRegionStateCmd) cmd);
 			BooleanRpcResponseData responseData = GwtViewHelper.saveBinderRegionState(
 				this,
-				getRequest( ri ),
+				req,
 				sbrsCmd.getBinderId(),
 				sbrsCmd.getRegionId(),
 				sbrsCmd.getRegionState() );
@@ -3353,7 +3432,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveCalendarDayViewCmd scdvCmd = ((SaveCalendarDayViewCmd) cmd);
 			CalendarDisplayDataRpcResponseData result = GwtCalendarHelper.saveCalendarDayView(
 				this,
-				getRequest( ri ),
+				req,
 				scdvCmd.getBrowserTZOffset(),
 				scdvCmd.getFolderInfo(),
 				scdvCmd.getDayView(),
@@ -3367,7 +3446,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveCalendarHoursCmd schCmd = ((SaveCalendarHoursCmd) cmd);
 			CalendarDisplayDataRpcResponseData result = GwtCalendarHelper.saveCalendarHours(
 				this,
-				getRequest( ri ),
+				req,
 				schCmd.getBrowserTZOffset(),
 				schCmd.getFolderInfo(), schCmd.getHours() );
 			response = new VibeRpcResponse( result );
@@ -3377,7 +3456,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_CALENDAR_SETTINGS:
 		{
 			SaveCalendarSettingsCmd scsCmd = ((SaveCalendarSettingsCmd) cmd);
-			Boolean result = GwtCalendarHelper.saveCalendarSettings( this, getRequest( ri ), scsCmd.getFolderId(), scsCmd.getWeekStart(), scsCmd.getWorkDayStart() );
+			Boolean result = GwtCalendarHelper.saveCalendarSettings( this, req, scsCmd.getFolderId(), scsCmd.getWeekStart(), scsCmd.getWorkDayStart() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -3387,7 +3466,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveCalendarShowCmd scsCmd = ((SaveCalendarShowCmd) cmd);
 			CalendarDisplayDataRpcResponseData result = GwtCalendarHelper.saveCalendarShow(
 				this,
-				getRequest( ri ),
+				req,
 				scsCmd.getBrowserTZOffset(),
 				scsCmd.getFolderInfo(),
 				scsCmd.getShow() );
@@ -3398,7 +3477,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_CLIPBOARD_USERS:
 		{
 			SaveClipboardUsersCmd scuCmd = ((SaveClipboardUsersCmd) cmd);
-			BooleanRpcResponseData result = GwtServerHelper.saveClipboardUsers( this, getRequest( ri ), scuCmd.getClipboardUserList() );
+			BooleanRpcResponseData result = GwtServerHelper.saveClipboardUsers( this, req, scuCmd.getClipboardUserList() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3408,7 +3487,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveColumnWidthsCmd scwCmd = ((SaveColumnWidthsCmd) cmd);
 			BooleanRpcResponseData result = GwtViewHelper.saveColumnWidths(
 				this,
-				getRequest( ri ),
+				req,
 				scwCmd.getFolderInfo(),
 				scwCmd.getColumnWidths() );
 			response = new VibeRpcResponse( result );
@@ -3429,7 +3508,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveEmailNotificationInfoCmd seniCmd = ((SaveEmailNotificationInfoCmd) cmd);
 			BooleanRpcResponseData result = GwtEmailHelper.saveEmailNotificationInfo(
 				this,
-				getRequest( ri ),
+				req,
 				seniCmd.getBinderId(),	// null -> Entry subscription mode.
 				seniCmd.getEntityIds(),	// null -> Binder email notification mode.
 				seniCmd.getOverridePresets(),
@@ -3463,7 +3542,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_FOLDER_ENTRY_DLG_POSITION:
 		{
 			SaveFolderEntryDlgPositionCmd sfedpCmd = ((SaveFolderEntryDlgPositionCmd) cmd);
-			GwtViewHelper.saveFolderEntryDlgPosition( this, getRequest( ri ), sfedpCmd.getX(), sfedpCmd.getY(), sfedpCmd.getCX(), sfedpCmd.getCY() );
+			GwtViewHelper.saveFolderEntryDlgPosition( this, req, sfedpCmd.getX(), sfedpCmd.getY(), sfedpCmd.getCX(), sfedpCmd.getCY() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( true ));
 			return response;
 		}
@@ -3471,7 +3550,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_FOLDER_FILTERS:
 		{
 			SaveFolderFiltersCmd sffCmd = ((SaveFolderFiltersCmd) cmd);
-			ErrorListRpcResponseData result = GwtServerHelper.saveFolderFilters( this, getRequest( ri ), sffCmd.getFolderInfo(), sffCmd.getGlobalFilters(), sffCmd.getPersonalFilters(), sffCmd.getSourceFolder() );
+			ErrorListRpcResponseData result = GwtServerHelper.saveFolderFilters( this, req, sffCmd.getFolderInfo(), sffCmd.getGlobalFilters(), sffCmd.getPersonalFilters(), sffCmd.getSourceFolder() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3479,7 +3558,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_FOLDER_PINNING_STATE:
 		{
 			SaveFolderPinningStateCmd sfpsCmd = ((SaveFolderPinningStateCmd) cmd);
-			GwtViewHelper.saveUserViewPinnedEntries( getRequest( ri ), sfpsCmd.getFolderId(), sfpsCmd.getViewPinnedEntries() );
+			GwtViewHelper.saveUserViewPinnedEntries( req, sfpsCmd.getFolderId(), sfpsCmd.getViewPinnedEntries() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( true ));
 			return response;
 		}
@@ -3539,7 +3618,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_MANAGE_USERS_STATE:
 		{
 			SaveManageUsersStateCmd smusCmd = ((SaveManageUsersStateCmd) cmd);
-			Boolean result = GwtServerHelper.saveManageUsersState( this, getRequest( ri ), smusCmd.getManageUsersState() );
+			Boolean result = GwtServerHelper.saveManageUsersState( this, req, smusCmd.getManageUsersState() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -3602,7 +3681,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_SHARE_EXPIRATION_VALUE:
 		{
 			SaveShareExpirationValueCmd ssevCmd = ((SaveShareExpirationValueCmd) cmd);
-			BooleanRpcResponseData result = GwtShareHelper.saveShareExpirationValue( this, getRequest( ri ), ssevCmd.getShareId(), ssevCmd.getExpirationValue() );
+			BooleanRpcResponseData result = GwtShareHelper.saveShareExpirationValue( this, req, ssevCmd.getShareId(), ssevCmd.getExpirationValue() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3610,7 +3689,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_SHARE_LISTS:
 		{
 			SaveShareListsCmd sslCmd = ((SaveShareListsCmd) cmd);
-			BooleanRpcResponseData result = GwtShareHelper.saveShareLists( this, getRequest( ri ), sslCmd.getShareLists() );
+			BooleanRpcResponseData result = GwtShareHelper.saveShareLists( this, req, sslCmd.getShareLists() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3618,7 +3697,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_SHARED_FILES_STATE:
 		{
 			SaveSharedFilesStateCmd ssfsCmd = ((SaveSharedFilesStateCmd) cmd);
-			GwtViewHelper.saveUserViewSharedFiles( getRequest( ri ), ssfsCmd.getCollectionType(), ssfsCmd.getViewSharedFiles() );
+			GwtViewHelper.saveUserViewSharedFiles( req, ssfsCmd.getCollectionType(), ssfsCmd.getViewSharedFiles() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( true ));
 			return response;
 		}
@@ -3626,7 +3705,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_SHARED_VIEW_STATE:
 		{
 			SaveSharedViewStateCmd ssvsCmd = ((SaveSharedViewStateCmd) cmd);
-			Boolean result = GwtViewHelper.saveSharedViewState( this, getRequest( ri ), ssvsCmd.getCollectionType(), ssvsCmd.getSharedViewState() );
+			Boolean result = GwtViewHelper.saveSharedViewState( this, req, ssvsCmd.getCollectionType(), ssvsCmd.getSharedViewState() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -3658,7 +3737,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_TASK_GRAPH_STATE:
 		{
 			SaveTaskGraphStateCmd stgsCmd = ((SaveTaskGraphStateCmd) cmd);
-			BooleanRpcResponseData responseData = GwtTaskHelper.saveTaskGraphState( getRequest( ri ), this, stgsCmd.getFolderId(), stgsCmd.getExpandGraphs() );
+			BooleanRpcResponseData responseData = GwtTaskHelper.saveTaskGraphState( req, this, stgsCmd.getFolderId(), stgsCmd.getExpandGraphs() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -3739,7 +3818,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_SEARCH:
 		{
 			SaveSearchCmd ssCmd = ((SaveSearchCmd) cmd);
-			SavedSearchInfo result = GwtServerHelper.saveSearch( this, getRequest( ri ), ssCmd.getSearchTabId(), ssCmd.getSavedSearchInfo() );
+			SavedSearchInfo result = GwtServerHelper.saveSearch( this, req, ssCmd.getSearchTabId(), ssCmd.getSavedSearchInfo() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3784,7 +3863,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveUserListStatusCmd sulsCmd = ((SaveUserListStatusCmd) cmd);
 			Boolean responseData = GwtViewHelper.saveUserListStatus(
 				this,
-				getRequest( ri ),
+				req,
 				sulsCmd.getBinderId(),
 				sulsCmd.getShowUserListPanel() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( responseData ) );
@@ -3841,7 +3920,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			sfpeCmd = (SendForgottenPwdEmailCmd) cmd;
 			result = GwtServerHelper.sendForgottenPwdEmail(
 														this,
-														getRequest( ri ),
+														req,
 														sfpeCmd.getGwtUser(),
 														sfpeCmd.getEmailAddress() );
 			
@@ -3866,7 +3945,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SetBinderSharingRightsInfoCmd sbsrCmd = ((SetBinderSharingRightsInfoCmd) cmd);
 			ErrorListRpcResponseData result = GwtServerHelper.setBinderSharingRightsInfo(
 				this,
-				getRequest( ri ),
+				req,
 				sbsrCmd.getBinderIds(),
 				sbsrCmd.isSetAllUsersRights(),
 				sbsrCmd.isSetTeamMemberRights(),
@@ -3878,7 +3957,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SET_DESKTOP_APP_DOWNLOAD_VISIBILITY:
 		{
 			SetDesktopAppDownloadVisibilityCmd sdadvCmd = ((SetDesktopAppDownloadVisibilityCmd) cmd);
-			Boolean result = GwtServerHelper.setDesktopAppDownloadVisibility( this, getRequest( ri ), sdadvCmd.isVisible() );
+			Boolean result = GwtServerHelper.setDesktopAppDownloadVisibility( this, req, sdadvCmd.isVisible() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -3886,7 +3965,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SET_ENTRIES_PIN_STATE:
 		{
 			SetEntriesPinStateCmd sepsCmd = ((SetEntriesPinStateCmd) cmd);
-			Boolean result = GwtServerHelper.setEntriesPinState( this, getRequest( ri ), sepsCmd.getEntryIds(), sepsCmd.getPinned() );
+			Boolean result = GwtServerHelper.setEntriesPinState( this, req, sepsCmd.getEntryIds(), sepsCmd.getPinned() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -3905,7 +3984,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SET_MOBILE_DEVICES_WIPE_SCHEDULED_STATE:
 		{
 			SetMobileDevicesWipeScheduledStateCmd smdwssCmd = ((SetMobileDevicesWipeScheduledStateCmd) cmd);
-			BooleanRpcResponseData result = GwtMobileDeviceHelper.saveMobileDevicesWipeScheduledState( this, getRequest( ri ), smdwssCmd.getEntityIds(), smdwssCmd.isWipeScheduled() );
+			BooleanRpcResponseData result = GwtMobileDeviceHelper.saveMobileDevicesWipeScheduledState( this, req, smdwssCmd.getEntityIds(), smdwssCmd.isWipeScheduled() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3913,7 +3992,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SET_PRINCIPALS_ADMIN_RIGHTS:
 		{
 			SetPrincipalsAdminRightsCmd sparCmd = ((SetPrincipalsAdminRightsCmd) cmd);
-			SetPrincipalsAdminRightsRpcResponseData result = GwtServerHelper.setPrincipalsAdminRights( this, getRequest( ri ), sparCmd.getPrincipalIds(), sparCmd.isSetRights() );
+			SetPrincipalsAdminRightsRpcResponseData result = GwtServerHelper.setPrincipalsAdminRights( this, req, sparCmd.getPrincipalIds(), sparCmd.isSetRights() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3937,7 +4016,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SET_USER_SHARING_RIGHTS_INFO:
 		{
 			SetUserSharingRightsInfoCmd susrCmd = ((SetUserSharingRightsInfoCmd) cmd);
-			ErrorListRpcResponseData result = GwtServerHelper.setUserSharingRightsInfo( this, getRequest( ri ), susrCmd.getUserIds(), susrCmd.getSharingRights() );
+			ErrorListRpcResponseData result = GwtServerHelper.setUserSharingRightsInfo( this, req, susrCmd.getUserIds(), susrCmd.getSharingRights() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3957,7 +4036,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SHOW_SHARES:
 		{
 			ShowSharesCmd ssCmd = ((ShowSharesCmd) cmd);
-			Boolean result = GwtViewHelper.showShares( this, getRequest( ri ), ssCmd.getCollectionType(), ssCmd.getEntityIds() );
+			Boolean result = GwtViewHelper.showShares( this, req, ssCmd.getCollectionType(), ssCmd.getEntityIds() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -3970,7 +4049,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			slsCmd = (StartLdapSyncCmd) cmd;
 			responseData = GwtLdapHelper.startLdapSync(
 													this,
-													getRequest( ri ),
+													req,
 													slsCmd.getSyncId(),
 													slsCmd.getSyncAll(),
 													slsCmd.getListOfLdapConfigsToSyncGuid(),
@@ -4075,7 +4154,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			TrashPurgeAllCmd tpaCmd = ((TrashPurgeAllCmd) cmd);
 			StringRpcResponseData responseData = GwtDeleteHelper.trashPurgeAll( 
 				this,
-				getRequest( ri ),
+				req,
 				tpaCmd.getBinderId(),
 				tpaCmd.getPurgeMirroredSources() );
 			response = new VibeRpcResponse( responseData );
@@ -4087,7 +4166,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			TrashPurgeSelectedEntitiesCmd tpseCmd = ((TrashPurgeSelectedEntitiesCmd) cmd);
 			StringRpcResponseData responseData = GwtDeleteHelper.trashPurgeSelectedEntities(
 				this,
-				getRequest( ri ),
+				req,
 				tpseCmd.getBinderId(),
 				tpseCmd.getPurgeMirroredSources(),
 				tpseCmd.getTrashSelectionData() );
@@ -4100,7 +4179,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			TrashRestoreAllCmd traCmd = ((TrashRestoreAllCmd) cmd);
 			StringRpcResponseData responseData = GwtDeleteHelper.trashRestoreAll(
 				this,
-				getRequest( ri ),
+				req,
 				traCmd.getBinderId() );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -4111,7 +4190,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			TrashRestoreSelectedEntitiesCmd trseCmd = ((TrashRestoreSelectedEntitiesCmd) cmd);
 			StringRpcResponseData responseData = GwtDeleteHelper.trashRestoreSelectedEntities(
 				this,
-				getRequest( ri ),
+				req,
 				trseCmd.getBinderId(),
 				trseCmd.getTrashSelectionData() );
 			response = new VibeRpcResponse( responseData );
@@ -4121,7 +4200,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case UNLOCK_ENTRIES:
 		{
 			UnlockEntriesCmd uleCmd = ((UnlockEntriesCmd) cmd);
-			ErrorListRpcResponseData responseData = GwtViewHelper.unlockEntries( this, getRequest( ri ), uleCmd.getEntityIds() );
+			ErrorListRpcResponseData responseData = GwtViewHelper.unlockEntries( this, req, uleCmd.getEntityIds() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -4138,7 +4217,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case UPDATE_CALENDAR_EVENT:
 		{
 			UpdateCalendarEventCmd uceCmd = ((UpdateCalendarEventCmd) cmd);
-			Boolean result = GwtCalendarHelper.updateCalendarEvent( this, getRequest( ri ), uceCmd.getBrowserTZOffset(), uceCmd.getFolderId(), uceCmd.getEvent() );
+			Boolean result = GwtCalendarHelper.updateCalendarEvent( this, req, uceCmd.getBrowserTZOffset(), uceCmd.getFolderId(), uceCmd.getEvent() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
 			return response;
 		}
@@ -4185,7 +4264,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case UPLOAD_FILE_BLOB:
 		{
 			UploadFileBlobCmd ufbCmd = ((UploadFileBlobCmd) cmd);
-			StringRpcResponseData result = GwtHtml5Helper.uploadFileBlob( this, getRequest( ri ), ufbCmd.getFolderInfo(), ufbCmd.getFileBlob(), ufbCmd.isLastBlob() );
+			StringRpcResponseData result = GwtHtml5Helper.uploadFileBlob( this, req, ufbCmd.getFolderInfo(), ufbCmd.getFileBlob(), ufbCmd.isLastBlob() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -4193,7 +4272,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case UNPIN_ENTRY:
 		{
 			UnpinEntryCmd upeCmd = ((UnpinEntryCmd) cmd);
-			Boolean result = GwtServerHelper.unpinEntry( this, getRequest( ri ), upeCmd.getFolderId(), upeCmd.getEntryId() );
+			Boolean result = GwtServerHelper.unpinEntry( this, req, upeCmd.getFolderId(), upeCmd.getEntryId() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
@@ -4223,7 +4302,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Boolean result;
 			
 			vcCmd = (ValidateCaptchaCmd) cmd;
-			result = GwtServerHelper.validateCaptcha( this, getRequest( ri ), vcCmd.getText() );
+			result = GwtServerHelper.validateCaptcha( this, req, vcCmd.getText() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -4254,7 +4333,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case VALIDATE_SHARE_LISTS:
 		{
 			ValidateShareListsCmd vslCmd = ((ValidateShareListsCmd) cmd);
-			ValidateShareListsRpcResponseData result = GwtShareHelper.validateShareLists( this, getRequest( ri ), vslCmd.getShareLists() );
+			ValidateShareListsRpcResponseData result = GwtShareHelper.validateShareLists( this, req, vslCmd.getShareLists() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -4262,7 +4341,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case VALIDATE_UPLOADS:
 		{
 			ValidateUploadsCmd veaCmd  = ((ValidateUploadsCmd) cmd);
-			ValidateUploadsRpcResponseData responseData = GwtHtml5Helper.validateUploads( this, getRequest( ri ), veaCmd.getFolderInfo(), veaCmd.getUploads() );
+			ValidateUploadsRpcResponseData responseData = GwtHtml5Helper.validateUploads( this, req, veaCmd.getFolderInfo(), veaCmd.getUploads() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -4270,7 +4349,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		
 		String details = ("Unknown command: " + cmdEnum.name() + " (" +cmd.getClass().getName() + ")");
-		GwtLogHelper.warn( m_logger, "In GwtRpcServiceImpl.executeCommand():  " + details );
+		GwtLogHelper.warn( logger, "In GwtRpcServiceImpl.executeCommandImpl():  " + details );
 		throw new GwtTeamingException(ExceptionType.NO_RPC_HANDLER, details);
 	}
 	
@@ -6395,7 +6474,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			else
 			{
-				GwtLogHelper.warn( m_logger, "In GwtRpcServiceImpl.getAdminActions(), binderIdL is null" );
+				GwtLogHelper.warn( logger, "In GwtRpcServiceImpl.getAdminActions(), binderIdL is null" );
 				adminActions = new ArrayList<GwtAdminCategory>();
 			}
 			
@@ -7064,14 +7143,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			else
 			{
-				GwtLogHelper.warn( m_logger, "GwtRpcServiceImpl.getPersonalPreferences(), user is guest." );
+				GwtLogHelper.warn( logger, "GwtRpcServiceImpl.getPersonalPreferences(), user is guest." );
 			}
 		}
 		catch (Exception e)
 		{
 			if (e instanceof AccessControlException)
-				 GwtLogHelper.warn( m_logger, "GwtRpcServiceImpl.savePersonalPreferences() AccessControlException" );
-			else GwtLogHelper.warn( m_logger, "GwtRpcServiceImpl.savePersonalPreferences() unknown exception" );
+				 GwtLogHelper.warn( logger, "GwtRpcServiceImpl.savePersonalPreferences() AccessControlException" );
+			else GwtLogHelper.warn( logger, "GwtRpcServiceImpl.savePersonalPreferences() unknown exception" );
 			throw GwtLogHelper.getGwtClientException( e );
 		}
 		
@@ -7337,8 +7416,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				throw GwtLogHelper.getGwtClientException( e );
 			}
 			
-			//Log other errors
-			logger.error("Error getting stats for user with binderId "+userId, e);
+			// Log other errors
+			logger.error( "Error getting stats for user with binderId " + userId, e );
 		}
 		
 		return null;

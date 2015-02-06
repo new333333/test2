@@ -598,9 +598,14 @@ public class GwtClientHelper {
 	}
 
 	/**
-	 * Execute the given command via GWT's rpc mechanism
+	 * Execute the given command via GWT's RPC mechanism.
+	 * 
+	 * @param cmd
+	 * @param callback
 	 */
 	public static void executeCommand(VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback) {
+		GwtMainPage mp = GwtTeaming.getMainPage();
+		cmd.setRunAsAdmin( ( null != mp ) && mp.isAdminActive() );	// If from the admin console, run it as admin.
 		executeCommand( cmd, HttpRequestInfo.createHttpRequestInfo(), callback );
 	}	
 

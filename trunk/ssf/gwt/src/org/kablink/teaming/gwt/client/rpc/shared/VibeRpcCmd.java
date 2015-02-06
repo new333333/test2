@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -40,18 +39,37 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * mechanism.
  * 
  * @author jwootton
- *
  */
 public abstract class VibeRpcCmd implements IsSerializable
 {
+	private boolean	m_runAsAdmin;	// true  -> If the user has zoneAdministration rights and is not the built-in admin, the command is run as the built-in admin.
+									// false -> The command is run as the requesting user.
 	/**
-	 * Class constructor. 
+	 * Class constructor.
+	 * 
+	 * Zero parameter constructor method required for GWT
+	 * serialization.
 	 */
 	public VibeRpcCmd()
 	{
-		// Nothing to do.
-	}// end VibeRpcCmd()
+		// Initialize the super class.
+		super();
+	}
 
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public final boolean isRunAsAdmin() { return m_runAsAdmin; }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param runAsAdmin
+	 */
+	public final void setRunAsAdmin( boolean runAsAdmin ) { m_runAsAdmin = runAsAdmin; }
+	
 	/**
 	 * Returns the ordinal of the VibeRpcCmdType enumeration value for
 	 * a given command.
@@ -63,4 +81,4 @@ public abstract class VibeRpcCmd implements IsSerializable
 	 * @return
 	 */
 	public abstract int getCmdType();
-}// end VibeRpcCmd()
+}
