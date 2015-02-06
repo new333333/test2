@@ -2718,6 +2718,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     			}
     			catch ( Exception ex )
     			{
+    				logger.error( "In getTeamGroup() unable to get the group for the binder: " + binder.getTitle(), ex );
     				ex.printStackTrace();
     			}
     		}
@@ -3020,7 +3021,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     		binder.removeProperty( ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS );
     	else
     		binder.setProperty( ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS, LongIdUtil.getIdsAsString( memberIds ) );
-     }
+    }
 	
 	/**
 	 * 
@@ -3035,13 +3036,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// Do we have any group members?
 		if ( memberIds != null && memberIds.size() > 0 )
 		{
+			final boolean workingWithExistingGroup;
+			
 			// Yes
 			// Do we have a team group?
 			if ( teamGroup == null )
 			{
 				// No, create one.
 				teamGroup = createTeamGroup( binder );
+				
+				workingWithExistingGroup = false;
 			}
+			else
+				workingWithExistingGroup = true;
 			
 			finalTeamGroup = teamGroup;
 
@@ -3062,8 +3069,62 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						principals = getProfileModule().getPrincipals( memberIds );
 
 						updates = new HashMap();
-						updates.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
 						
+						if ( principals != null && principals.size() > 0 )
+						{
+							// Are we working with an existing group?
+							if ( workingWithExistingGroup )
+							{
+								IdentityInfo identityInfo;
+								
+								// Yes
+								// Does the group allow external users/groups as members?
+								identityInfo = finalTeamGroup.getIdentityInfo();
+								if ( identityInfo.isInternal() )
+								{
+									Iterator<Principal> iterator;
+									
+									// No
+									// Remove any external users/groups from the membership
+									iterator = principals.iterator();
+									while ( iterator.hasNext() )
+									{
+										Principal nextPrincipal;
+										
+										nextPrincipal = iterator.next();
+										
+										identityInfo = nextPrincipal.getIdentityInfo();
+										if ( identityInfo.isInternal() == false )
+										{
+											iterator.remove();
+										}
+									}
+								}
+							}
+							else
+							{
+								// No, we are working with a new group we just created.
+								// Are there any external members?
+								for ( Principal nextPrincipal : principals )
+								{
+									IdentityInfo identityInfo;
+									
+									identityInfo = nextPrincipal.getIdentityInfo();
+									if ( identityInfo.isInternal() == false )
+									{
+										// Mark the team group as external.
+										identityInfo = finalTeamGroup.getIdentityInfo();
+										identityInfo.setInternal( false );
+										updates.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
+										
+										break;
+									}
+								}
+							}
+						}
+						
+						updates.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
+
 						try
 						{
 							getProfileModule().modifyEntry( finalTeamGroup.getId(), new MapInputData( updates ) );
@@ -3072,7 +3133,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						}
 			   			catch ( Exception ex )
 			   			{
-			   				ex.printStackTrace();
+			   				logger.error( "Error saving team membership for group: " + finalTeamGroup.getName(), ex );
 			   				retValue = Boolean.FALSE;
 			   			}
 						

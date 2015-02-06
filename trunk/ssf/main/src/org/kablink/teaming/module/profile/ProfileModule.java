@@ -974,4 +974,10 @@ public interface ProfileModule {
 	 * mark the group/team as external.
 	 */
 	public void upgradeExternalGroupsAndTeams();
+	
+	/**
+	 * Mark the given group as external, meaning it can contain external users/groups
+	 */
+	public void markGroupAsExternal( Long groupId ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+	public void markGroupAsExternal( Group group ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
 }

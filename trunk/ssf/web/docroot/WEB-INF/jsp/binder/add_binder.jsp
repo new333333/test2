@@ -328,6 +328,12 @@ function ss_checkForm(obj) {
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="team.members" /></legend>
 <table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
+	<tr style="margin-bottom: 10px;">
+		<td valign="top" colspan="2">
+			<input type="checkbox" name="allowExternalUsers" id="allowExternalUsersId" value="true" style="margin-bottom: 30px;"/>
+			<span class="ss_normalprint"><ssf:nlt tag="allowExternalUsers"/></span>
+		</td>
+	</tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">

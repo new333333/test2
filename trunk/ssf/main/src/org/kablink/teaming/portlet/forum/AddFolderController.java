@@ -47,12 +47,12 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Element;
-
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
@@ -73,7 +73,6 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
-
 import org.springframework.web.portlet.ModelAndView;
 
 /**
@@ -112,12 +111,18 @@ public class AddFolderController extends SAbstractController {
 			if (newBinder != null) {
 				//See if there are any team members specified
 				final boolean inheritTeamMembership;
+				boolean allowExternalUsers = false;
 				if (PortletRequestUtils.getStringParameter(request, "inheritFromParent", "").equals("no")) {
 					//Save the inheritance state
 					inheritTeamMembership = false;
-				} else {
+					
+					if ( PortletRequestUtils.getBooleanParameter( request, "allowExternalUsers", false ) )
+						allowExternalUsers = true;
+				}
+				else {
 					inheritTeamMembership = true;
 				}
+				
 				// If we are still here, it means that the user had enough right to create a new binder.
 				// The following method for initializing team membership inheritance for the newly
 				// created binder normally requires "binder administration" right. Failing the user on
@@ -138,6 +143,7 @@ public class AddFolderController extends SAbstractController {
 					final Set memberIds = new HashSet();
 					if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
 					if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
+					
 					//Save the team members 
 					RunWithTemplate.runWith(new RunWithCallback() {
 						@Override
@@ -146,6 +152,28 @@ public class AddFolderController extends SAbstractController {
 							return null;
 						}
 					}, new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION, WorkAreaOperation.CHANGE_ACCESS_CONTROL}, null);
+
+					// Can the team contain external users/groups?
+					if ( allowExternalUsers )
+					{
+						Long groupId;
+						
+						// Yes
+						// Get the id of the team group associated with the binder
+						groupId = newBinder.getTeamGroupId();
+						
+						if ( groupId != null )
+						{
+							try
+							{
+								getProfileModule().markGroupAsExternal( groupId );
+							}
+							catch ( Exception ex )
+							{
+								logger.error( "Error marking team group as external: " + newBinder.getTitle(), ex );
+							}
+						}
+					}
 				}
 				
 				//See if there are any folders to be created
