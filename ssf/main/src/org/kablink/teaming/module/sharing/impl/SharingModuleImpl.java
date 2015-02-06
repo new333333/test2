@@ -45,7 +45,6 @@ import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.jobs.ExpiredShareHandler;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.admin.AdminModule;
-import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
@@ -1473,12 +1472,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      */
     @Override
 	public void setShareLists(ShareLists shareLists) {
-    	// If the user doesn't have zone admin rights...
-   		if (!(getAdminModule().testAccess(AdminOperation.manageFunction))) {
-   			// ...do they have management rights on the home workspace?
-   	   		Binder top = RequestContextHolder.getRequestContext().getZone();
-   			getBinderModule().checkAccess(top, BinderOperation.manageConfiguration);
-   		}
+   		Binder top = RequestContextHolder.getRequestContext().getZone();
+   		getBinderModule().checkAccess(top, BinderOperation.manageConfiguration);
 		
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setShareLists(shareLists);
