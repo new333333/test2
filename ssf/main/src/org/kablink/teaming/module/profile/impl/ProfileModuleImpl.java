@@ -3413,20 +3413,11 @@ public String[] getUsernameAndDecryptedPassword(String username) {
         		// Is this group already marked as external?
     			if ( nextGroup.getIdentityInfo().isInternal() )
     			{
-					HashMap<String, Object> inputMap = new HashMap<String, Object>();
-    				MapInputData inputData;
-    				IdentityInfo identityInfo;
-
+    				
     				// No mark it as external
-    				identityInfo = nextGroup.getIdentityInfo();
-    				identityInfo.setInternal( false );
-    				inputMap.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
-			
-    				inputData = new MapInputData( inputMap );
-
 					try
 					{
-						modifyEntry( nextGroup.getId(), inputData );
+	    				markGroupAsExternal( nextGroup );
 						logger.info( "Marked group: " + nextGroup.getName() + " as a group containing external users." );
 					}
 		   			catch ( Exception ex )
@@ -3442,5 +3433,44 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 				listOfCompletedWork.put( nextGroup.getId(), nextGroup );
     		}
     	}
+    }
+    
+    /**
+     * Mark the given group as being an external group meaning it can contain external users/groups
+     */
+    @Override
+    public void markGroupAsExternal( Long groupId ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+    {
+    	Principal principal;
+    	
+    	if ( groupId == null )
+    		return;
+    	
+    	principal = getEntry( groupId );
+    	if ( principal != null && principal instanceof Group )
+    		markGroupAsExternal( (Group) principal );
+    }
+    
+    /**
+     * Mark the given group as being an external group, meaning it can contain external users/groups
+     */
+    @Override
+    public void markGroupAsExternal( Group group ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+    {
+		HashMap<String, Object> inputMap = new HashMap<String, Object>();
+		MapInputData inputData;
+		IdentityInfo identityInfo;
+
+		if ( group == null )
+			return;
+		
+		// Mark it as external
+		identityInfo = group.getIdentityInfo();
+		identityInfo.setInternal( false );
+		inputMap.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
+
+		inputData = new MapInputData( inputMap );
+
+		modifyEntry( group.getId(), inputData );
     }
 }
