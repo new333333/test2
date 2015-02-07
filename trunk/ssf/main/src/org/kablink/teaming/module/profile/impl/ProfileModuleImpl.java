@@ -128,6 +128,7 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
+import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.survey.Survey;
@@ -3339,7 +3340,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     	listOfCompletedWork = new HashMap<Long,Group>();
     	
     	// Find all external users, including the guest user
-    	listOfExternalUsers = getAllExternalUsers();
+    	listOfExternalUsers = getListOfAllExternalUsers();
     	if ( listOfExternalUsers != null )
     	{
     		for ( User nextUser : listOfExternalUsers )
@@ -3348,10 +3349,80 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     	    	markGroupsAsExternalAsNeeded( nextUser, listOfCompletedWork );
     		}
     	}
+    }
+    
+    /**
+     * Find all of the external users in the system.  getAllExternalUsers() won't work because
+     * this method gets called in the upgrade process and a Vibe 3.4 system won't have the
+     * "all external users" group that is used by getAllExternalUsers()
+     */
+    private Collection<User> getListOfAllExternalUsers()
+    {
+    	Map options;
+    	SearchFilter searchTermFilter;
+    	ArrayList<User> listOfExternalUsers;
     	
-    	// Mark all groups/teams the guest user is a member of as external
-    	guestUser = getGuestUser();
-    	markGroupsAsExternalAsNeeded( guestUser, listOfCompletedWork );
+    	listOfExternalUsers = new ArrayList<User>();
+    	
+		searchTermFilter = new SearchFilter();
+		searchTermFilter.addAndPersonFlagFilter( true );
+		searchTermFilter.addAndInternalFilter( false );
+
+		options = new HashMap();
+		options.put( ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_LIMIT );
+		options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
+		
+		// Perform the search
+		{
+			Map retMap;
+			List userEntries;
+
+			retMap = getUsers( options );
+			userEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
+			if ( userEntries != null )
+			{
+				Iterator it;
+
+				it = userEntries.iterator();
+				while ( it.hasNext() )
+				{
+					Map<String,String> entry;
+					String userId;
+	
+					// Get the next user in the search results.
+					entry = (Map) it.next();
+	
+					// Pull information about this user from the search results.
+					userId = entry.get( "_docId" );
+					
+					try
+					{
+						if ( userId != null )
+						{
+							User nextUser;
+							IdentityInfo idInfo;
+							Long id;
+							
+							id = new Long( userId );
+							nextUser = getUserDeadOrAlive( id );
+							if ( nextUser != null && nextUser.isDeleted() == false )
+							{
+								idInfo = nextUser.getIdentityInfo();
+								if ( idInfo.isInternal() == false )
+									listOfExternalUsers.add( nextUser );
+							}
+						}
+					}
+					catch ( Exception ex )
+					{
+						// Nothing to do
+						logger.info( "---------> Could not find user with id: " + userId, ex );
+					}
+				}
+			}
+		}
+		
+		return listOfExternalUsers;
     }
     
     /**
