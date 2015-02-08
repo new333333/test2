@@ -32,6 +32,10 @@
  */
 package org.kablink.teaming.util.encrypt;
 
+import java.lang.invoke.MethodHandles;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
@@ -48,6 +52,8 @@ import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
  *
  */
 public class HibernateEncryptor implements PBEStringEncryptor {
+	
+	private static Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
 
 	// We use "ENC2(" to signal new algorithm (second generation).
 	// The values encrypted with the old first generation algorithm do NOT contain any prefix/suffix, 
@@ -89,7 +95,9 @@ public class HibernateEncryptor implements PBEStringEncryptor {
 				return encryptor.decrypt(getBaseEncryptedValue_second_gen(encryptedMessage));
 			}
 			else {
-				throw new ConfigurationException("Cannot decode second generation encoded value using first generation encryptor. System supports encryptor upgrade but not downgrade.");
+				String errMsg = "Cannot decode second generation encoded value using first generation encryptor. System supports encryptor upgrade but not downgrade.";
+				logger.error(errMsg);
+				throw new ConfigurationException(errMsg);
 			}
 		}
 		else {
