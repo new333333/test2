@@ -1621,11 +1621,13 @@ public class ExportHelper {
 				logger.error(e);
 			}
 			Map<String, Object> binderProperties = binderPropertyMap.get(binder.getId());
-			String wikiHomePageId = (String) binderProperties.get(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
-			if (wikiHomePageId != null && !wikiHomePageId.equals("")) {
-				Long newWikiHomePageId = entryIdMap.get(Long.valueOf(wikiHomePageId));
-				if (newWikiHomePageId != null) {
-					binder.setProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE, String.valueOf(newWikiHomePageId));
+			if (binderProperties != null) {
+				String wikiHomePageId = (String) binderProperties.get(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
+				if (wikiHomePageId != null && !wikiHomePageId.equals("")) {
+					Long newWikiHomePageId = entryIdMap.get(Long.valueOf(wikiHomePageId));
+					if (newWikiHomePageId != null) {
+						binder.setProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE, String.valueOf(newWikiHomePageId));
+					}
 				}
 			}
 		}
