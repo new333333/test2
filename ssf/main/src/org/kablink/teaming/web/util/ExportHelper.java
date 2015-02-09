@@ -1469,6 +1469,7 @@ public class ExportHelper {
 										def, tempDoc.asXML(), tempDir, entryIdMap, binderIdMap, 
 										definitionIdMap, entryId, statusTicket, reportMap, nameCache);
 							
+									coreDao.flush();
 									Integer count = (Integer)reportMap.get(entries);
 									reportMap.put(entries, ++count);
 								} catch(Exception e) {
@@ -1483,6 +1484,7 @@ public class ExportHelper {
 									folder_addReplyWithXML(null, newBinderId, topBinderId,
 											newParentId, def, tempDoc.asXML(), tempDir, entryIdMap, binderIdMap, 
 											definitionIdMap, entryId, reportMap, nameCache);
+									coreDao.flush();
 								} catch(Exception e) {
 									Integer c = (Integer)reportMap.get(errors);
 									reportMap.put(errors, ++c);
@@ -1534,6 +1536,7 @@ public class ExportHelper {
 								binder_addBinderWithXML(null, newParentId, def,
 										xmlStr, binderId, topBinderId, binderIdMap, binderPropertyMap, taskLinkageMap, definitionIdMap, tempDir, reportMap,
 										statusTicket, nameCache);
+								coreDao.flush();
 								Integer count = (Integer)reportMap.get(workspaces);
 								reportMap.put(workspaces, ++count);
 							} catch(Exception e) {
@@ -1592,6 +1595,7 @@ public class ExportHelper {
 								binder_addBinderWithXML(null, newParentId, def,
 										tempDoc.asXML(), binderId, topBinderId, binderIdMap, binderPropertyMap, taskLinkageMap, definitionIdMap, tempDir, reportMap, 
 										statusTicket, nameCache);
+								coreDao.flush();
 								Integer count = (Integer)reportMap.get(folders);
 								reportMap.put(folders, ++count);
 							} catch(Exception e) {
@@ -1790,6 +1794,8 @@ public class ExportHelper {
 			
 			// task linkage
 			importTaskLinkage(doc, newBinderId, taskLinkageMap);
+			
+			binderModule.indexBinder(newBinderId);
 
 			// Don't evict the binder, since we need to reference it repeatedly while processing entries contained in the binder.
 			return newBinderId;
@@ -1987,7 +1993,6 @@ public class ExportHelper {
 				reportMap.put(errors, ++c);
 				((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 			}
-
 			// Index the reply only once (and it's top entry)
 			if(logger.isDebugEnabled())
 				logger.debug("Indexing reply " + newEntryId);
