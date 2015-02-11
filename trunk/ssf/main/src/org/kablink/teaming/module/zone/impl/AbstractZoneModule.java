@@ -846,23 +846,34 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  	 					internalId = nextBinder.getInternalId();
  	 					if ( internalId.equalsIgnoreCase( ObjectKeys.GLOBAL_ROOT_INTERNALID ) )
  	 					{
- 	 						Long binderId;
+ 	 						Long binderId = null;
  	 						
  	 						logger.info( "about to call ExportHelper.importZip()" );
  	 		 	 			binderId = ExportHelper.importZip( nextBinder.getId(), fIn, null, reportMap );
  	 		 	 			
  	 		 	 			// Set the new workspace as the default landing page
- 	 		 	 			if ( binderId != null && SPropsUtil.getBoolean( "import.set.homepage", false ) )
+ 	 		 	 			if ( binderId != null )
  	 		 	 			{
-	 	 		 	 			HomePageConfig homePageConfig;
-	 	 		 				AdminModule adminModule;
-
-	 	 		 				adminModule = getAdminModule();
-	 	 		 				
-	 	 		 				homePageConfig = new HomePageConfig();
-	 	 		 				homePageConfig.setDefaultHomePageId( binderId );
-	 	 		 				homePageConfig.setDefaultGuestHomePageId( null );
-	 	 		 				adminModule.setHomePageConfig( homePageConfig );
+ 	 		 	 				//At least one binder was created. Find the top binder created and index it
+ 	 		 	 				Binder newBinder = binderModule.getBinder(binderId);
+ 	 		 	 				while (newBinder.getParentBinder() != null && nextBinder.getId() != newBinder.getParentBinder().getId()) {
+ 	 		 	 					newBinder = newBinder.getParentBinder();
+ 	 		 	 				}
+ 	 		 	 				if (newBinder.getParentBinder() != null && nextBinder.getId() == newBinder.getParentBinder().getId()) {
+ 	 		 	 					 binderModule.indexBinder(newBinder.getId(), true);
+ 	 		 	 				}
+	 	 		 	 			if ( SPropsUtil.getBoolean( "import.set.homepage", false ) )
+	 	 		 	 			{
+		 	 		 	 			HomePageConfig homePageConfig;
+		 	 		 				AdminModule adminModule;
+	
+		 	 		 				adminModule = getAdminModule();
+		 	 		 				
+		 	 		 				homePageConfig = new HomePageConfig();
+		 	 		 				homePageConfig.setDefaultHomePageId( binderId );
+		 	 		 				homePageConfig.setDefaultGuestHomePageId( null );
+		 	 		 				adminModule.setHomePageConfig( homePageConfig );
+	 	 		 	 			}
  	 		 	 			}
  	 		 	 			break;
  	 					}
@@ -876,6 +887,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  			catch( ExportException ex )
  			{
  				logger.info( "ExportHelper.importZip() threw an export exception.", ex );
+ 			}
+ 			catch( Exception e )
+ 			{
+ 				logger.info( "ExportHelper.importZip() threw an exception.", e );
  			}
  		}
  	}

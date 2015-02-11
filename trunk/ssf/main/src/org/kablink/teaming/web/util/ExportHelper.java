@@ -1292,15 +1292,21 @@ public class ExportHelper {
 			definitionModule.updateDefinitionReferences(defId);
 		}
 		
+		//Try to return the first binder created
 		if ( binderIdMap.size() > 0 )
 		{
-			Set<Long> keySet;
 			Iterator<Long> iter;
+			Long firstId = null;
 			
-			keySet = binderIdMap.keySet();
-			iter = keySet.iterator();
-			if ( iter.hasNext() )
-				return iter.next();
+			Collection<Long> valueSet = binderIdMap.values();
+			iter = valueSet.iterator();
+			while ( iter.hasNext() ) {
+				Long nextId = iter.next();
+				if (firstId == null || firstId > nextId) {
+					firstId = nextId;
+				}
+			}
+			return firstId;
 		}
 		
 		return null;
