@@ -5563,7 +5563,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			releaseStr = ReleaseInfo.getLocalizedReleaseInfo( GwtServerHelper.getCurrentUser().getLocale() );
 			upgradeInfo.setReleaseInfo( releaseStr );
-			upgradeInfo.setBuild( ReleaseInfo.getBuildAsStr() );
+			upgradeInfo.setBuild( ReleaseInfo.getBuildAsStr( GwtServerHelper.getCurrentUser().getLocale() ) );
 			upgradeInfo.setNameAndVersion( ReleaseInfo.getNameAndVersion() );
 			
 			if ( Utils.checkIfFilr() )
