@@ -32,13 +32,8 @@
  */
 package org.kablink.teaming.util;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -102,9 +97,9 @@ public class ReleaseInfo {
 	/**
 	 * 
 	 */
-	public static final String getBuildAsStr()
+	public static final String getBuildAsStr( Locale locale )
 	{
-		return buildNumber + " / " + buildDate;
+		return buildNumber + " / " + getBuildDate( locale );
 	}
 	
 	/**
@@ -152,6 +147,27 @@ public class ReleaseInfo {
 	}
 	
 	/**
+	 * 
+	 */
+	public static String getBuildDate( Locale locale )
+	{
+		Date date;
+		DateFormat df;
+
+		date = getBuildDate();
+		if ( date == null )
+		{
+			//If there isn't a build date, set it to 1/1/70 so it doesn't throw an error
+			date = new Date();
+			date.setTime(0);
+		}
+		
+		df = DateFormat.getDateInstance( DateFormat.LONG, locale );
+		return df.format( date );
+	
+	}
+	
+	/**
 	 * Returns build date if official release or<code>null</code> if unofficial. 
 	 * @return
 	 */
@@ -177,14 +193,7 @@ public class ReleaseInfo {
 	}
 	
 	public static final String getLocalizedReleaseInfo(Locale locale) {
-		Date date = getBuildDate();
-		if (date == null) {
-			//If there isn't a build date, set it to 1/1/70 so it doesn't throw an error
-			date = new Date();
-			date.setTime(0);
-		}
-		DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, locale);
-		return buildReleaseInfoString(df.format(date));
+		return buildReleaseInfoString( getBuildDate( locale ) );
 	}
 
     public static String getFilrApplianceReleaseInfo()
