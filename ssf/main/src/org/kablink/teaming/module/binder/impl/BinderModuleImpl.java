@@ -2884,7 +2884,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         setTeamMembershipInherited(binderId, inherit, true);
     }
 	@Override
-	public void setTeamMembershipInherited(Long binderId, final boolean inherit, boolean doAccessCheck) {
+	public void setTeamMembershipInherited(Long binderId, final boolean inherit, final boolean doAccessCheck) {
 		final Binder binder = loadBinder(binderId);
         if (doAccessCheck) {
 		    checkAccess(binder, BinderOperation.manageTeamMembers);
@@ -2895,7 +2895,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					public Object doInTransaction(TransactionStatus status) {
 						Set oldMbrs = getTeamMemberIds( binder );
 						if (inherit) {
-							setTeamMembers( binder.getId(), null );
+							setTeamMembers( binder.getId(), null, doAccessCheck);
 						} else if (binder.isTeamMembershipInherited()) {
 							// going from was inheriting to not inheriting =>
 							// copy
@@ -2939,9 +2939,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	@Override
 	public void setTeamMembers(Long binderId, final Collection<Long> memberIds)
 			throws AccessControlException {
+		setTeamMembers(binderId, memberIds, true);
+	}
+
+	private void setTeamMembers(Long binderId, final Collection<Long> memberIds, boolean doAccessCheck)
+			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
-		
-		checkAccess(binder, BinderOperation.manageTeamMembers);
+
+		if (doAccessCheck) {
+			checkAccess(binder, BinderOperation.manageTeamMembers);
+		}
 
 		// If membership didn't change then bail.
 		if ( getTeamMemberIds( binder ).equals(memberIds) )
@@ -2949,7 +2956,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		//See if the guest user is included in the list
 		User guest = getProfileModule().getGuestUser();
-		if ( memberIds != null && memberIds.contains(guest.getId())) {
+		if ( doAccessCheck && memberIds != null && memberIds.contains(guest.getId())) {
 			//If adding guest to a team, the user must be allowed to do it from the zone
 			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
@@ -3037,19 +3044,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if ( memberIds != null && memberIds.size() > 0 )
 		{
 			final boolean workingWithExistingGroup;
-			
+
 			// Yes
 			// Do we have a team group?
 			if ( teamGroup == null )
 			{
 				// No, create one.
 				teamGroup = createTeamGroup( binder );
-				
+
 				workingWithExistingGroup = false;
 			}
 			else
 				workingWithExistingGroup = true;
-			
+
 			finalTeamGroup = teamGroup;
 
 			if ( finalTeamGroup != null )
@@ -3069,30 +3076,30 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						principals = getProfileModule().getPrincipals( memberIds );
 
 						updates = new HashMap();
-						
+
 						if ( principals != null && principals.size() > 0 )
 						{
 							// Are we working with an existing group?
 							if ( workingWithExistingGroup )
 							{
 								IdentityInfo identityInfo;
-								
+
 								// Yes
 								// Does the group allow external users/groups as members?
 								identityInfo = finalTeamGroup.getIdentityInfo();
 								if ( identityInfo.isInternal() )
 								{
 									Iterator<Principal> iterator;
-									
+
 									// No
 									// Remove any external users/groups from the membership
 									iterator = principals.iterator();
 									while ( iterator.hasNext() )
 									{
 										Principal nextPrincipal;
-										
+
 										nextPrincipal = iterator.next();
-										
+
 										identityInfo = nextPrincipal.getIdentityInfo();
 										if ( identityInfo.isInternal() == false )
 										{
@@ -3108,7 +3115,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 								for ( Principal nextPrincipal : principals )
 								{
 									IdentityInfo identityInfo;
-									
+
 									identityInfo = nextPrincipal.getIdentityInfo();
 									if ( identityInfo.isInternal() == false )
 									{
@@ -3116,13 +3123,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 										identityInfo = finalTeamGroup.getIdentityInfo();
 										identityInfo.setInternal( false );
 										updates.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
-										
+
 										break;
 									}
 								}
 							}
 						}
-						
+
 						updates.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
 
 						try
