@@ -79,11 +79,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .wiki-topics {
     font-size: 13px;
 	line-height: 20px;
-    background-color: #EBF5F5;
-    padding: 10px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
+    background-color: #fff;
+    padding: 5px;
     }
 .wiki-topic-content {
 	border-bottom: 1px solid #c4c4c4;
@@ -94,9 +91,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
     }
 .wiki-topic-selected {
     color: #fff !important;
-    background-color: #81b2bd;
+    background-color: #036f9f;
     font-weight: bold;
-    padding: 3px 5px;
+    padding: 2px 8px;
     -moz-border-radius: 3px;
     border-radius: 3px;
     -webkit-border-radius: 3px;
@@ -142,8 +139,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .wiki-tabs {
     text-align: center;
     margin-bottom: 6px;
-	padding: 5px 6px 0px 10px;
-	background-color: #d1d1d1;
+	padding: 3px 6px 0px 10px;
+	background-color: #fff;
+    border-bottom: 1px solid #ccc;
     -moz-border-radius-topright: 5px;
     -moz-border-radius-topleft: 5px;
     border-top-right-radius: 5px;
@@ -157,15 +155,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .wiki-tab {
     font-size: 12px;
     font-weight: normal;
-    padding: 3px 6px;
+    padding: 3px 8px;
     margin: 2px 0px 4px;
     background: #fff;
+   	border-top: 1px solid #949494;
+	border-left: 1px solid #949494;
+	border-right: 1px solid #949494;
     display:inline-block;
     cursor: pointer;
     color: #fff;
     background: #949494;
-    -moz-border-radius: 3px;
     border-radius: 3px;
+    -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
     }   
 .wiki-tab.on {
@@ -176,19 +177,25 @@ boolean isIE = BrowserSniffer.is_ie(request);
     display: inline-block;
     padding: 4px 8px 7px;
     margin: 2px 0px 0px 0px;
-    -moz-border-radius-bottomright: 0px;
-    -moz-border-radius-bottomleft: 0px;
+	border-top: 1px solid #ccc;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
     border-bottom-right-radius: 0px;
     border-bottom-left-radius: 0px;
+    -moz-border-radius-bottomright: 0px;
+    -moz-border-radius-bottomleft: 0px;
     -webkit-border-bottom-right-radius: 0px;
     -webkit-border-bottom-left-radius: 0px;
     }
 .wiki-tab:hover, .wiki-tab.on:hover {
-    color: #fff !important;
-    background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+    color: #036f9f !important;
+    background: #cce9ee;
+	border-top: 1px solid #81b2bd;
+	border-left: 1px solid #81b2bd;
+	border-right: 1px solid #81b2bd;
     }   
 .wiki-tab a:hover, .wiki-tab.on a:hover {
-    color: #fff !important;
+    color: #036f9f !important;
 	}
 
 .wiki-tabs2 {
@@ -200,44 +207,31 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 .wiki-menu a {
 	color: #1f1f1f !important;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
+	background-color: #fafafa;
 	border: 1px solid #B8B8B8 !important;
 	font-weight: normal !important;
 	font-size: 11px;
-	padding: 2px 10px  !important;
+	padding: 2px 8px  !important;
 	text-decoration:none;	
   	white-space: nowrap;
   	cursor: pointer !important;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
     }
 .wiki-menu a:hover {
-	color: #135c8f !important;
+	color: #036f9f !important;
     text-align: center !important;
     font-size: 11px !important;
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-  	padding: 2px 10px !important;
-	border: 0px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+  	padding: 2px 8px !important;
+	border: 1px solid #81b2bd !important;
+	background: #cce9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
   	<c:if test="<%= isIE %>">
   		padding: 0px;
   		padding-top: -2px;
@@ -326,7 +320,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}	
 
 
-.nv-footer-wiki     { border-top: 1px solid #c4c4c4; padding-bottom:10px; padding-top: 5px;}
+.nv-footer-wiki     { border-top: 1px solid #e0e0e0; padding-bottom:10px; padding-top: 5px;}
 .nv-footer-wiki .ss_muster_users { font-size: 11px;}
 .nv-footer          { position: relative; background-color: #e6e6e4; height: 25px; vertical-align:middle; text-align: center; margin-top: .5em; padding: 0.5em; border-top: 1px solid #babdb6; }
 .nv-footer-r        { position: relative; background-color: #e6e6e4; height: 25px; vertical-align:middle; text-align: right; margin-top: .5em; padding: 0.5em; border-top: 1px solid #babdb6; }

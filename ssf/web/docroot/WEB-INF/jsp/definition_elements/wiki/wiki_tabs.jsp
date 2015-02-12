@@ -50,7 +50,7 @@
 			          actionUrl="true"><ssf:param
 			          name="entryViewStyle" value="popup"/><ssf:param
 			          name="namespace" value="${renderResponse.namespace}"/></ssf:url>"
-			      ><ssf:nlt tag="wiki.page"/></a>
+			      ><ssf:nlt tag="wiki.homePage"/></a>
 			    </span>
 			  </c:if>
 			</td>

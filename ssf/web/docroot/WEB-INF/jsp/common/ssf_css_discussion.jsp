@@ -440,10 +440,10 @@ a.ss_new_thread {
 .ss_navbar_current {
 	color: #fff !important;
 	font-weight: bold !important;
-	background-color: #81B2BD;
+	background-color: #036f9f;
 	padding: 2px 5px;
-	-moz-border-radius: 3px;
 	border-radius: 3px;
+	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}	
 .ss_navbar_not_current {

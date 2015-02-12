@@ -330,7 +330,7 @@ div.ss_entryDescription.ss_entryContent table {
   	background-color: ${ss_style_background_color};
   	}
 .ss_content_rule {
-	border-bottom: 1px solid #CCC;
+	border-bottom: 1px solid #e0e0e0;
 	padding-bottom: 3px;
 	}
 .ss_style_color {	
@@ -347,7 +347,7 @@ div.ss_entryDescription.ss_entryContent table {
   color: ${ss_form_element_text_color};
   }
 div.ss_style select.ss_compactSelectBox, .ss_compactSelectBox {
-  border: 1px solid #cccccc;
+  border: 1px solid #e0e0e0;
   font-size: 11px;
 	}
 div.ss_style input[type="text"],
@@ -359,14 +359,16 @@ div.ss_global_toolbar_quick input {
   	color: ${ss_form_element_text_color};
   	font-size: ${ss_style_font_size};
   	font-family: ${ss_style_folder_view_font_family};
+    border: 1px solid #e0e0e0;
 	}
 div.ss_style textarea {
-  	padding: 0px 0px 0px 2px;
+  	padding: 5px;
+    border: 1px solid #e0e0e0;
 	}
 div.ss_style input[type="text"],
 div.ss_style input[type="password"],
  div.ss_style select {
-	border: 1px solid #CCC;
+	border: 1px solid #e0e0e0;
 	padding: 3px;
 	border-radius: 2px; 
 	} 
@@ -461,7 +463,7 @@ div.ss_editorHints {
 	}
 .descriptionRegionBut {
 	position: relative;
-	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid #e0e0e0;
 	margin-bottom: 8px;
 	}
 .descriptionRegionBut img {
@@ -546,7 +548,7 @@ div.ss_editableSectionEditBtn {
 }
 
 table.ss_editableSectionTOC {
-  border: 1px solid #ccc;
+  border: 1px solid #e0e0e0;
   background: transparent;
   padding: 4px;
   margin-bottom: 16px;
@@ -571,7 +573,7 @@ ul.ss_editableSectionTOC li {
 }
 
 td.ss_editableSectionHeader1 {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #e0e0e0;
 }
 td.ss_editableSectionHeader2, td.ss_editableSectionHeader3, td.ss_editableSectionHeader4 {
 }
@@ -1228,13 +1230,15 @@ img.ss_sliding_table_column_image {
 }
 .ss_sliding_table_row0 {
   height:26px !important;
-  background-color: ${ss_sliding_table_row0_background_color}; 
+  background-color: #fff; 
+  border-bottom: 1px solid #ededed; 
   line-height:18px !important;
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_sliding_table_row1 {
   height:26px !important;
-  background-color: ${ss_sliding_table_row1_background_color}; 
+  background-color: #fff;
+  border-bottom: 1px solid #ededed; 
   line-height:18px !important;
   font-family: ${ss_style_folder_view_font_family} !important;
 }
@@ -1278,10 +1282,15 @@ table.ss_mouseOverInfo {
 }
 .ss_mouseOverInfo span {
   position:relative;
-  color: #5691A6;
+  color: #036f9f;
   top:0px;
   padding-right:10px;
 }
+
+.ss_mouseOverInfo span img {
+	padding-left: 5px;
+}
+
 .ss_mouseOverInfo td a.ss_title_menu span {
   position:relative;
   top:0px;
@@ -1349,8 +1358,7 @@ table.ss_mouseOverInfo {
 	border-top: 1px solid #72AEB6;
 	}	
 .ss_tableheader_style, th.ss_sliding_table_row0 {
-	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
-	background-position:bottom;
+	background: #f6f6f6;
 	text-decoration: none;
 	}
 .ss_tableheader_style td {
@@ -3570,7 +3578,7 @@ table.ss_minicard_interior {
 
 div.ss_calendarNaviBarAccessible {	
 	font-family: Arial;
-	border: 1px solid #CCCCCC;
+	border: 1px solid #e0e0e0;
 	background-color: #AFC8E3;
 	height: 30px;
 	vertical-align: middle;
@@ -3814,7 +3822,7 @@ div.ss_calendarNaviBar {
 }
 
 .ss_event_editor .ss_requrency_row_active {
-	border: 1px solid #CCCCCC;
+	border: 1px solid #e0e0e0;
 }
 
 .ss_event_editor .ss_requrency_row_unactive {
