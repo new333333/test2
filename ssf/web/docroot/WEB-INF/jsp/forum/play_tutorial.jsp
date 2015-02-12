@@ -100,7 +100,7 @@ try
 				display:block;
 				height:1px;
 				overflow:hidden;
-				background:#EBECA5;
+				background:#f4f5bd;
 			}
 			
 			.sharedMessagebox1
@@ -145,7 +145,7 @@ try
 			.sharedMessagebox_content
 			{
 				padding:0 5px;
-				background:#ebeca5;
+				background:#f4f5bd;
 			} 
 			
 			.sharedMessagebox_content img

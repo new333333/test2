@@ -895,10 +895,10 @@ div.ss_send_friend {
 .ss_hover_over {
   font-family: ${ss_style_title_font_family};
   position:absolute;
-  border:1px solid #d6dede;
+  border:1px solid #e0e0e0;
   margin:2px;
   padding: 10px;
-  background-color: #EBECA5;
+  background-color: #f4f5bd;
   width: 300px;
   border-radius: 5px;
   -moz-border-radius: 5px;
@@ -2586,10 +2586,7 @@ div.ss_bottomlinks {
 
 /* Photo gallery */
 div.ss_thumbnail_gallery {
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 2px;
-    padding-top: 0px;
+    padding: 5px;
 	}
 div.ss_thumbnail_standalone {
 	padding: 0px;
@@ -2700,21 +2697,19 @@ div.ss_thumbnail_medium img {
 	}
 div.ss_thumbnail_gallery div {
     float: left;
-    margin-top:    20px;
+    margin-top:    10px;
     margin-bottom: 10px;
     text-align: center;
-    font-size: 8pt;
+    font-size: 10px;
     font-family: ${ss_style_font_family};
     overflow: hidden;
-    background-color: ${ss_gallery_background_color};
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
-	-moz-border-radius-bottomleft: 5px;
-	-moz-border-radius-bottomright: 5px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
-	-webkit-border-bottom-left-radius: 5px;
-	-webkit-border-bottom-right-radius: 5px;
+    background-color: #f6f6f6;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
 	}  
 .noImg {
 	color: ${ss_style_metadata_color};   
