@@ -82,6 +82,7 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -106,6 +107,8 @@ import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneException;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
@@ -126,6 +129,7 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.util.ExportException;
 import org.kablink.teaming.web.util.ExportHelper;
+import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
@@ -293,6 +297,60 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		
  		DefinitionCache.clear();
  	}
+ 	
+	public void initZonesPostProcessing() {
+		boolean closeSession = false;
+		if (!SessionUtil.sessionActive()) {
+			SessionUtil.sessionStartup();	
+			closeSession = true;
+		}
+		try {
+			final List<Workspace> companies = getTopWorkspacesFromEachZone();
+			final String zoneName = SZoneConfig.getDefaultZoneName();
+
+			if (companies.size() > 0) {
+ 				// take care of upgrade need if any
+        		for (int i=0; i<companies.size(); ++i) {
+        			final Workspace zone = (Workspace)companies.get(i);
+        			try {
+	    				getTransactionTemplate().execute(new TransactionCallback() {
+	    					@Override
+							public Object doInTransaction(TransactionStatus status) {
+	    						
+	    						//See if there are any workspaces to be imported
+	    						if ( SPropsUtil.getBoolean( "import.workspaces", false ) ) {
+	    			                RunasTemplate.runasAdmin(
+	    			                		new RunasCallback() {
+	    			                            @Override
+	    			                            public Object doAs() {
+					    							importWorkspaces();
+
+					    							// At this point we must flush out any indexing changes that might have occurred
+					    							// before clearing the context.
+					    							IndexSynchronizationManager.applyChanges();
+					    							
+					    					 		RequestContextHolder.clear();
+					    					 		
+					    					 		DefinitionCache.clear();
+					    							return null;
+	    			                            }
+	    			                        },
+	    			                        zone.getName()
+	    			                );
+
+	    						}
+	    						return null;
+	    					}
+	    				});
+        			} catch(Exception e) {
+        				logger.warn("Failed to do zone upgrade post processing " + zone.getZoneId(), e);
+        			}       			
+        		}        		
+ 			}
+		} finally {
+			if (closeSession) SessionUtil.sessionStop();
+		}
+	}
  	
 	@Override
 	public ZoneConfig getZoneConfig(Long zoneId) throws ZoneException {
@@ -777,8 +835,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 
 		}
 		
-		if ( SPropsUtil.getBoolean( "import.workspaces", false ) )
-			importWorkspaces();
  	}
  	
  	/**

@@ -161,4 +161,11 @@ public interface ZoneModule {
    	 * Performs necessary initialization. Should be invoked every time system is restarted.
    	 */
    	public void initZones();
+   	
+   	/**
+   	 * WARNING: Used only by system. Not to be used by application.
+   	 * 
+   	 * Performs necessary post initialization work. Should be invoked every time system is restarted.
+   	 */
+   	public void initZonesPostProcessing();
 }
