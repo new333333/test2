@@ -1160,7 +1160,7 @@ public class ShareResource extends AbstractResource {
 
             Map resultsMap = getBinderModule().executeSearchQuery(new Criteria().add(criterion), Constants.SEARCH_MODE_NORMAL, 0, -1, null);
             SearchResultList<FileProperties> searchresults = new SearchResultList<FileProperties>();
-            SearchResultBuilderUtil.buildSearchResults(searchresults, new FilePropertiesBuilder(), resultsMap);
+            SearchResultBuilderUtil.buildSearchResults(searchresults, new FilePropertiesBuilder(this), resultsMap);
             results = searchresults.getResults();
         } else {
             results = new ArrayList<FileProperties>();

@@ -32,16 +32,18 @@ abstract public class BaseFolderEntryBriefBuilder extends DefinableEntityBriefBu
         FileBrief fileModel = new FileBrief();
         fileModel.setId((String) entry.get(Constants.PRIMARY_FILE_ID_FIELD));
         if (fileModel.getId()!=null) {
-            fileModel.setLength(SearchResultBuilderUtil.getLong(entry, Constants.FILE_SIZE_IN_BYTES_FIELD));
-            fileModel.setMd5((String) entry.get(Constants.FILE_MD5_FIELD));
-            Long millis = SearchResultBuilderUtil.getLong(entry, Constants.FILE_TIME_FIELD);
-            if (millis!=null) {
-                Calendar cal = new GregorianCalendar();
-                cal.setTimeInMillis(millis);
-                fileModel.setModifiedDate(cal);
+            if (SearchResultBuilderUtil.getNumValues(entry, Constants.FILE_ID_FIELD)==1) {
+                fileModel.setLength(SearchResultBuilderUtil.getLong(entry, Constants.FILE_SIZE_IN_BYTES_FIELD));
+                fileModel.setMd5((String) entry.get(Constants.FILE_MD5_FIELD));
+                Long millis = SearchResultBuilderUtil.getLong(entry, Constants.FILE_TIME_FIELD);
+                if (millis != null) {
+                    Calendar cal = new GregorianCalendar();
+                    cal.setTimeInMillis(millis);
+                    fileModel.setModifiedDate(cal);
+                }
+                fileModel.setName((String) entry.get(Constants.FILENAME_FIELD));
+                fileModel.setVersion(SearchResultBuilderUtil.getLong(entry, Constants.FILE_VERSION_FIELD));
             }
-            fileModel.setName((String) entry.get(Constants.FILENAME_FIELD));
-            fileModel.setVersion(SearchResultBuilderUtil.getLong(entry, Constants.FILE_VERSION_FIELD));
             fileModel.setLink(LinkUriUtil.getFilePropertiesLinkUri(fileModel.getId()));
             model.setPrimaryFile(fileModel);
         }
