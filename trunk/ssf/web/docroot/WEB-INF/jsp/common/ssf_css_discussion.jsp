@@ -469,16 +469,14 @@ a.ss_new_thread {
 /******* PAGINATION STYLES *************/
 .ss_pagination {
 	font-size: ${ss_style_font_fineprint} !important;
-	background-color: #ededed !important;
+	background-color: #fff !important;
 /*	height:38px !important;		*/
 	margin-bottom: 0px;
 	width: 100%;
-	-moz-border-radius-topleft: 3px;
-	-moz-border-radius-topright: 3px;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
-	-webkit-border-top-left-radius: 3px;
-	-webkit-border-top-right-radius: 3px;
+    border: 1px solid #e0e0e0;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
 	}
 /***********This is the style sub-group for the "Go boxes" ***********/
 .ss_goBox {
@@ -603,15 +601,7 @@ a.ss_new_thread {
 	line-height: 10px;
 	font-size: ${ss_style_font_finestprint} !important;
 	width: 32px;
-	border-right-width: 0.4px;
-	border-bottom-width: 0.4px;
-	border-left-width: 0.4px !important;
-	border-top-style: solid !important;
-	border-right-style: none;
-	border-bottom-style: none;
-	border-left-style: solid !important;
-	border-right-color: #698F8E;
-	border-bottom-color: #698F8E;
+	border: 1px solid #e0e0e0;
 	padding-top: 1px;
 	margin-top: 2px;
 	margin-left: 5px;

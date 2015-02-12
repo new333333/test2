@@ -4040,11 +4040,10 @@ div.ss_searchContainer ul.ss_nobullet {
 	}
 
 div.ss_searchContainer div.ssPageNavi {
-	border-bottom: 1px solid #d2d5d1;
-	border-radius: 0px;
-	-moz-border-radius: 0px;
-	border-radius: 0px;
-	-webkit-border-radius: 0px;
+	border: 1px solid #e0e0e0;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
 	}
 div.ss_surveyContainer {
 	padding:5px 0px 0px 0px;
@@ -4929,11 +4928,10 @@ div.ssPageNavi {
 	padding-left: 10px;
 	padding-top: 3px;
 	padding-bottom: 4px;
-	background-color: #ebf5f5; /* teal 5*/
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+    border: 1px solid #e0e0e0;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
 	}
 div.ssPageNavi table td {
 /*removed no wrap - robbin filter for discussions*/
