@@ -80,19 +80,16 @@ div.ss_photo_content {
 	padding-bottom: 30px;
 }
 div.ss_photo_sidebar {
-    background-color: #ebf5f5; 
-    padding: 10px 5px 10px 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px; 
-	-webkit-border-radius: 5px; 
+    background-color: #fff; 
+    padding: 0px 5px 10px 5px;
+    border-left: 1px solid #e0e0e0;
 }
 .ss_photo_sidebar_subhead {
 	font-size: ${ss_style_font_largeprint} !important;
-	padding-top: 5px;
-	padding-bottom: 5px;
+	padding-bottom: 3px;
 }
 .ss_photo_sidebar_box {
-	margin-bottom: 10px;
+	margin-bottom: 8px;
 	margin-top: 2px;
 	padding: 2px 5px;
 }
