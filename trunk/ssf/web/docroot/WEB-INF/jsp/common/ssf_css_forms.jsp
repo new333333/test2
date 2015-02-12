@@ -122,8 +122,7 @@ td.ss_cellvalign {
 .objlist div.actions a:hover { color: white; background-color: #5e919e;}
 
 .objlist tr.columnhead td, .objlist2 tr.columnhead td	/* Apply to the column headings row following the menu */ {
-	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
-	background-position:bottom;
+	background: #ededed;
 	border-bottom: 1px solid #D2D5D1;
 	border-right: 1px solid #D2D5D1;
 	font-size: 11px !important;

@@ -843,7 +843,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 
 .wg-tabs {
 	text-align: center;
-	border-bottom: 1px solid #e6e6e4;
+	border-bottom: 1px solid #ededed;
 	}
 .wg-tab, .wg-tab-b {
 	background:none repeat scroll 0 0 #FFFFFF;
@@ -877,14 +877,14 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	color: #1f1f1f;
 	font-size: 12px;
 	font-weight: bold;
-	background:none repeat scroll 0 0 #E6E6E4;
+	background:none repeat scroll 0 0 #ededed;
 	cursor: pointer;
 	display: inline;
 	padding-bottom: 15px;
 	margin-right: 5px;
 	}
 .wg-tab-content {
-	background:none repeat scroll 0 0 #E6E6E4;
+	background:none repeat scroll 0 0 #ededed;
 	border: 0px;
 	display: block;
 	margin: 0px 0px 10px 0px;
@@ -894,7 +894,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	-webkit-border-radius: 5px;
 	}	
 .wg-tab-content-clipped {
-	background:none repeat scroll 0 0 #E6E6E4;
+	background:none repeat scroll 0 0 #ededed;
 	border: 0px;
 	border-bottom: 1px solid #bbbbb9;
 	height: 300px;
@@ -1037,7 +1037,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	}
 .diag_modal2 {
 	position: relative;
-	background-color: #eaebe8;
+	background-color: #f6f6f6;
 	margin: -10px 50px 20px;
 	padding: 15px 10px 10px ;
 	min-width: 700px;
