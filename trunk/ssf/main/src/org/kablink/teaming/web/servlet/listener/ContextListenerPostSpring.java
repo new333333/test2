@@ -59,6 +59,9 @@ public class ContextListenerPostSpring implements ServletContextListener {
 		try {
 			// This should be the first thing in this method. Don't place anything before this.
 			initZones();
+			
+			// Do any post processing tasks after the zones have been properly initialized
+			initZonesPostProcessing();
 	
 			initAccessTokens();
 			
@@ -125,6 +128,10 @@ public class ContextListenerPostSpring implements ServletContextListener {
 	
 	private void initZones() {
 		getZoneModule().initZones();
+	}
+	
+	private void initZonesPostProcessing() {
+		getZoneModule().initZonesPostProcessing();
 	}
 	
 	private ZoneModule getZoneModule() {
