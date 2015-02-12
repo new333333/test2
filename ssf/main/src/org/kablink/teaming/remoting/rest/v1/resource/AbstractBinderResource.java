@@ -597,7 +597,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
         Map resultsMap = getBinderModule().executeSearchQuery(new Criteria().add(criterion), Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>(0, binder.getModificationDate());
-        SearchResultBuilderUtil.buildSearchResults(results, new FilePropertiesBuilder(), resultsMap, nextUrl, nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new FilePropertiesBuilder(this), resultsMap, nextUrl, nextParams, offset);
 
         if (modifiedSince!=null && results.getLastModified()!=null && !modifiedSince.before(results.getLastModified())) {
             throw new NotModifiedException();

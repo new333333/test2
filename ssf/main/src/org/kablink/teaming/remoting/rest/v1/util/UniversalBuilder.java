@@ -36,8 +36,10 @@ import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.util.search.Constants;
 
+import java.lang.reflect.Constructor;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +68,7 @@ public class UniversalBuilder implements SearchResultBuilder<SearchableObject> {
             buildersByEntryType.put(Constants.ENTRY_TYPE_APPLICATION_GROUP, ApplicationGroupBriefBuilder.class);
         }
 
-        public SearchResultBuilder<SearchableObject> factoryBuilder(Map objectMap, boolean preferFileOverEntry) {
+        public SearchResultBuilder<SearchableObject> factoryBuilder(AllModulesInjected ami, Map objectMap, boolean preferFileOverEntry) {
             Class<? extends SearchResultBuilder> clss = null;
             String docType = (String) objectMap.get(Constants.DOC_TYPE_FIELD);
             if(Constants.DOC_TYPE_ENTRY.equals(docType)) {
@@ -79,7 +81,12 @@ public class UniversalBuilder implements SearchResultBuilder<SearchableObject> {
             }
             if (clss!=null) {
                 try {
-                    return clss.newInstance();
+                    if (clss==FilePropertiesBuilder.class) {
+                        Constructor<? extends SearchResultBuilder> constructor = clss.getConstructor(AllModulesInjected.class);
+                        return constructor.newInstance(ami);
+                    } else {
+                        return clss.newInstance();
+                    }
                 } catch (Exception e) {
                 }
             }
@@ -89,10 +96,12 @@ public class UniversalBuilder implements SearchResultBuilder<SearchableObject> {
 
     private static BuilderFactory builderFactory = new BuilderFactory();
 
+    private AllModulesInjected ami;
     private int descriptionFormat;
     private boolean preferFileOverEntry;
 
-    public UniversalBuilder(int descriptionFormat, boolean preferFileOverEntry) {
+    public UniversalBuilder(AllModulesInjected ami, int descriptionFormat, boolean preferFileOverEntry) {
+        this.ami = ami;
         this.descriptionFormat = descriptionFormat;
         this.preferFileOverEntry = preferFileOverEntry;
     }
@@ -102,7 +111,7 @@ public class UniversalBuilder implements SearchResultBuilder<SearchableObject> {
     }
 
     public SearchableObject build(Map objectMap) {
-        SearchResultBuilder<SearchableObject> builder = builderFactory.factoryBuilder(objectMap, preferFileOverEntry);
+        SearchResultBuilder<SearchableObject> builder = builderFactory.factoryBuilder(ami, objectMap, preferFileOverEntry);
         if (builder!=null) {
             builder.setDescriptionFormat(descriptionFormat);
             return builder.build(objectMap);

@@ -33,8 +33,11 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.apache.lucene.document.DateTools;
-import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.rest.v1.model.*;
+import org.kablink.teaming.rest.v1.model.HistoryStamp;
+import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.search.Constants;
 
@@ -48,49 +51,65 @@ import java.util.Map;
  * Time: 3:16 PM
  */
 public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties> {
+    private AllModulesInjected ami;
+
+    public FilePropertiesBuilder(AllModulesInjected ami) {
+        this.ami = ami;
+    }
+
     public void setDescriptionFormat(int descriptionFormat) {
     }
 
     public FileProperties build(Map doc) {
-        FileProperties fp = new FileProperties();
-        fp.setName((String) doc.get(Constants.FILENAME_FIELD));
-        fp.setId((String) doc.get(Constants.FILE_ID_FIELD));
-        Long binderId = Long.valueOf((String) doc.get(Constants.BINDER_ID_FIELD));
-        fp.setBinder(new ParentBinder(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
-        String owningEntityTypeStr = (String) doc.get(Constants.ENTITY_FIELD);
-        EntityIdentifier.EntityType owningEntityType = EntityIdentifier.EntityType.valueOf(owningEntityTypeStr);
-        Long owningEntityId = Long.valueOf((String) doc.get(Constants.DOCID_FIELD));
+        FileProperties fp = null;
+        if (SearchResultBuilderUtil.getNumValues(doc, Constants.FILE_ID_FIELD)==1) {
+            fp = new FileProperties();
+            fp.setName((String) doc.get(Constants.FILENAME_FIELD));
+            fp.setId((String) doc.get(Constants.FILE_ID_FIELD));
+            Long binderId = Long.valueOf((String) doc.get(Constants.BINDER_ID_FIELD));
+            fp.setBinder(new ParentBinder(binderId, LinkUriUtil.getBinderLinkUri(binderId)));
+            String owningEntityTypeStr = (String) doc.get(Constants.ENTITY_FIELD);
+            EntityIdentifier.EntityType owningEntityType = EntityIdentifier.EntityType.valueOf(owningEntityTypeStr);
+            Long owningEntityId = Long.valueOf((String) doc.get(Constants.DOCID_FIELD));
 
-        fp.setOwningEntity(ResourceUtil.buildEntityId(owningEntityType, owningEntityId));
-        fp.setPermaLink(PermaLinkUtil.getPermalink(owningEntityId, owningEntityType, null));
+            fp.setOwningEntity(ResourceUtil.buildEntityId(owningEntityType, owningEntityId));
+            fp.setPermaLink(PermaLinkUtil.getPermalink(owningEntityId, owningEntityType, null));
 
-        Long creatorId = Long.valueOf((String) doc.get(Constants.CREATORID_FIELD));
-        Date createdDate = (Date) doc.get(Constants.CREATION_DATE_FIELD);
-        fp.setCreation(new HistoryStamp(new LongIdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)),
-                createdDate));
+            Long creatorId = Long.valueOf((String) doc.get(Constants.CREATORID_FIELD));
+            Date createdDate = (Date) doc.get(Constants.CREATION_DATE_FIELD);
+            fp.setCreation(new HistoryStamp(new LongIdLinkPair(creatorId, LinkUriUtil.getUserLinkUri(creatorId)),
+                    createdDate));
 
-        Long modifierId = Long.valueOf((String) doc.get(Constants.MODIFICATIONID_FIELD));
-        Long modTime = this.getLong(doc, Constants.FILE_TIME_FIELD);
-        Date modifiedDate;
-        if (modTime!=null) {
-            modifiedDate = new Date(modTime);
+            Long modifierId = Long.valueOf((String) doc.get(Constants.MODIFICATIONID_FIELD));
+            Long modTime = this.getLong(doc, Constants.FILE_TIME_FIELD);
+            Date modifiedDate;
+            if (modTime != null) {
+                modifiedDate = new Date(modTime);
+            } else {
+                modifiedDate = (Date) doc.get(Constants.MODIFICATION_DATE_FIELD);
+            }
+            fp.setModification(new HistoryStamp(new LongIdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)),
+                    modifiedDate));
+            String sizeStr = (String) doc.get(Constants.FILE_SIZE_IN_BYTES_FIELD);
+            Long size;
+            if (sizeStr != null)
+                size = Long.valueOf(sizeStr);
+            else
+                size = null;
+            fp.setLength(size);
+            fp.setMd5((String) doc.get(Constants.FILE_MD5_FIELD));
+            fp.setVersionNumber(getInteger(doc, Constants.FILE_VERSION_FIELD));
+            fp.setMajorVersion(getInteger(doc, Constants.FILE_MAJOR_VERSION_FIELD));
+            fp.setMinorVersion(getInteger(doc, Constants.FILE_MINOR_VERSION_FIELD));
+            LinkUriUtil.populateFileLinks(fp, owningEntityId, owningEntityType);
         } else {
-            modifiedDate = (Date) doc.get(Constants.MODIFICATION_DATE_FIELD);
+            String primaryId = (String) doc.get(Constants.PRIMARY_FILE_ID_FIELD);
+            if (primaryId!=null) {
+                Long entryId = SearchResultBuilderUtil.getLong(doc, Constants.DOCID_FIELD);
+                org.kablink.teaming.domain.FolderEntry entry = ami.getFolderModule().getEntry(null, entryId);
+                fp = ResourceUtil.buildFileProperties(MiscUtil.getPrimaryFileAttachment(entry));
+            }
         }
-        fp.setModification(new HistoryStamp(new LongIdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)),
-                modifiedDate));
-        String sizeStr = (String) doc.get(Constants.FILE_SIZE_IN_BYTES_FIELD);
-        Long size;
-        if(sizeStr != null)
-            size = Long.valueOf(sizeStr);
-        else
-            size = null;
-        fp.setLength(size);
-        fp.setMd5((String) doc.get(Constants.FILE_MD5_FIELD));
-        fp.setVersionNumber(getInteger(doc, Constants.FILE_VERSION_FIELD));
-        fp.setMajorVersion(getInteger(doc, Constants.FILE_MAJOR_VERSION_FIELD));
-        fp.setMinorVersion(getInteger(doc, Constants.FILE_MINOR_VERSION_FIELD));
-        LinkUriUtil.populateFileLinks(fp, owningEntityId, owningEntityType);
         return fp;
     }
 

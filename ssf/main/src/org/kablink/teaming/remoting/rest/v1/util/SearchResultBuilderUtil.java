@@ -259,6 +259,16 @@ public class SearchResultBuilderUtil {
         return parentBinderId;
     }
 
+    public static int getNumValues(Map entry, String fieldName) {
+        Object field = entry.get(fieldName);
+        if (field instanceof SearchFieldResult) {
+            return ((SearchFieldResult)field).getValueSet().size();
+        } else if (field instanceof String) {
+            return 1;
+        }
+        return 0;
+    }
+
     public static Long getLong(Map entry, String fieldName) {
         Long parentBinderId = null;
         String parentBinderIdStr = (String) entry.get(fieldName);

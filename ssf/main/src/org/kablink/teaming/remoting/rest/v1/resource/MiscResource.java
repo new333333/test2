@@ -162,7 +162,7 @@ public class MiscResource extends AbstractResource {
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(toDomainFormat(descriptionFormatStr), false),
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(this, toDomainFormat(descriptionFormatStr), false),
                 resultsMap, "/legacy_query", nextParams, offset);
         return results;
     }

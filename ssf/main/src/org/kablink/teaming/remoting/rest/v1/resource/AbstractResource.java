@@ -352,7 +352,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
         Map resultsMap = getBinderModule().executeSearchQuery(searchFilter.getFilter(), Constants.SEARCH_MODE_NORMAL, options);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat, false), resultsMap,
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(this, descriptionFormat, false), resultsMap,
                 nextUrl, nextParams, offset);
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -996,7 +996,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         results.setLastModified(lastModified);
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat, false), resultMap, nextUrl, nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(this, descriptionFormat, false), resultMap, nextUrl, nextParams, offset);
         
         if(results.getCount() == 0 && SPropsUtil.getBoolean("rest.api.log.zero.size.search.results", false)) {
         	StringBuilder sb = new StringBuilder("REST response: (")
@@ -1051,7 +1051,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>(offset);
         results.setLastModified(lastModified);
-        SearchResultBuilderUtil.buildSearchResults(results, new FilePropertiesBuilder(), resultMap, nextUrl, nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new FilePropertiesBuilder(this), resultMap, nextUrl, nextParams, offset);
         return results;
     }
 
@@ -1305,7 +1305,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
         Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1, null);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(Description.FORMAT_NONE, false), resultsMap, null, null, 0);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(this, Description.FORMAT_NONE, false), resultsMap, null, null, 0);
         return results.getLastModified();
     }
 
@@ -1981,7 +1981,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
                 resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_PREAPPROVED_PARENTS, offset, maxCount, binder, allowJits);
             }
-            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat, files), resultMap, nextUrl, nextParams, offset);
+            SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(this, descriptionFormat, files), resultMap, nextUrl, nextParams, offset);
             if (modifiedSince != null && results.getLastModified() != null && !modifiedSince.before(results.getLastModified())) {
                 throw new NotModifiedException();
             }
