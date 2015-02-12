@@ -112,8 +112,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .wiki-noentries-panel, .wiki-nohomepage-panel {
 	color: #000;
  	font-size: 14px;
-	background-color: #EBECA5;
-	border: 1px solid #BABDB6;
+	background-color: #f4f5bd;
+	border: 1px solid #e0e0e0;
 	padding: 2px 10px;
 	line-height: 28px;
 	z-index: 100;
