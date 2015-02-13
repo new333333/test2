@@ -1309,9 +1309,9 @@ table.ss_mouseOverInfo {
 	}
 #ss_folder_table_parent{
 	width:100%;
-	border-top: 1px solid #D2D5D1;
+/*	border-top: 1px solid #D2D5D1;
 	border-left: 1px solid #D2D5D1;
-	border-right: 1px solid #D2D5D1;
+	border-right: 1px solid #D2D5D1;  */
 	}	
 #ss_fixed_table{
 	border-bottom: 1px solid #BBBBB9;
