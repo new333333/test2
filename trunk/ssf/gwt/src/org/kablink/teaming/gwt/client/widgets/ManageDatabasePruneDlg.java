@@ -504,12 +504,12 @@ public class ManageDatabasePruneDlg extends DlgBox
 	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
+        int keyCode;
+
         // Get the key the user pressed
-        int keyCode = event.getNativeEvent().getKeyCode();
-        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
-            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
-            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
-            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
+        keyCode = event.getNativeEvent().getKeyCode();
+        
+        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
         {
         	TextBox txtBox;
         	Object source;
