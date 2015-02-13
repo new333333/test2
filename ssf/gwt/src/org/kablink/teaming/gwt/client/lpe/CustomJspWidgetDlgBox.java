@@ -150,6 +150,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
+	@Override
 	public Panel createContent( Object props )
 	{
 		CustomJspProperties properties;
@@ -259,6 +260,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -268,6 +270,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
+						@Override
 						public void execute()
 						{
 							// Make the find control visible.
@@ -306,12 +309,14 @@ public class CustomJspWidgetDlgBox extends DlgBox
 				// Add a click handler to the "close" image.
 				clickHandler = new ClickHandler()
 				{
+					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
 								// Close the panel that holds find controls.
@@ -409,6 +414,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -418,6 +424,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 						/**
 						 * 
 						 */
+						@Override
 						public void execute()
 						{
 							// Make the find control visible.
@@ -456,12 +463,14 @@ public class CustomJspWidgetDlgBox extends DlgBox
 				// Add a click handler to the "close" image.
 				clickHandler = new ClickHandler()
 				{
+					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
 								// Close the panel that holds find controls.
@@ -544,6 +553,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in the properties obj.
 	 */
+	@Override
 	public PropertiesObj getDataFromDlg()
 	{
 		CustomJspProperties	properties;
@@ -640,6 +650,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -652,6 +663,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolderEntry gwtFolderEntry;
@@ -676,6 +688,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
+	@Override
 	public FocusWidget getFocusWidget()
 	{
 		return m_jspNameTxtBox;
@@ -696,6 +709,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -708,6 +722,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolder gwtFolder;
@@ -955,6 +970,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	/*
 	 * This method gets called when the user clicks on the ok or cancel button.
 	 */
+	@Override
 	public void onClick( ClickEvent event )
 	{
 		Object	source;
@@ -997,6 +1013,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	 * This method gets called when the user types in the "number of entries to show" text box.
 	 * We only allow the user to enter numbers.
 	 */
+	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
         int keyCode;
@@ -1004,10 +1021,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
         // Get the key the user pressed
         keyCode = event.getNativeEvent().getKeyCode();
         
-        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
-            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
-            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
-            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
+        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
         {
         	TextBox txtBox;
         	Object source;
