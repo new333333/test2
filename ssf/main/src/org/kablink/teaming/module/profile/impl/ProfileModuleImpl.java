@@ -3297,12 +3297,25 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 			}
 
 			if(vibeGraniteExternal) { // This is Vibe Granite-style external user.	
+				Map updates;
+				IdentityInfo identityInfo;
+				
 				logger.info("User '" + user.getName() + "' (id=" + user.getId() + ") is Vibe Granite external user - Upgrading to full Vibe Hudson external user.");
-				user.getIdentityInfo().setInternal(false); // Mark the user as "external" in Vibe Hudson style
-				//getCoreDao().save( user );
-				userProperties.setProperty(vibeGraniteExternalUserPropertyName, null); // Remove the Vibe Granite-specific property
-				usersToReindex.add(user);
-				count++;
+				identityInfo = user.getIdentityInfo();
+				identityInfo.setInternal(false); // Mark the user as "external" in Vibe Hudson style
+				updates = new HashMap();
+				updates.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
+				try
+				{
+					modifyEntry( user.getId(), new MapInputData( updates ) );
+					userProperties.setProperty(vibeGraniteExternalUserPropertyName, null); // Remove the Vibe Granite-specific property
+					usersToReindex.add(user);
+					count++;
+				}
+				catch ( Exception ex )
+				{
+					logger.error( "Error updating user: " + user.getName() + " internal flag.", ex );
+				}
 			}
 			else { // This is not a Vibe Granite-style external user.	
 				if(logger.isDebugEnabled())
