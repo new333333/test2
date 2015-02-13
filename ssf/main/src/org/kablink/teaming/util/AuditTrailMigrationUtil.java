@@ -183,6 +183,7 @@ public class AuditTrailMigrationUtil {
 		}
 
 		int batchMaxSize = SPropsUtil.getInt("audittrail.migration.batch.max.size", 1000);
+		boolean discardUnprocessableRecord = SPropsUtil.getBoolean("audittrail.migration.discard.unprocessable.record", false);
 		
 		if(zoneId != null) {
 			logger.info("Migrating minimum required audit trail records created on '" + sinceDate + "' or later for zone '" + zoneId + "'");
@@ -194,6 +195,7 @@ public class AuditTrailMigrationUtil {
 		}
 		
 		long totalProcessed = 0;
+		String auditTrailRecordLastId = null;
 		
 		while(true) {	
 			Criteria critBatch = session.createCriteria(AuditTrail.class)
@@ -214,6 +216,7 @@ public class AuditTrailMigrationUtil {
 				try {
 					List<Object> newRecords;
 					for(AuditTrail auditTrailRecord:auditTrailRecords) {
+						auditTrailRecordLastId = auditTrailRecord.getId();
 						if(logger.isDebugEnabled())
 							logger.debug("Processing audit trail record with id=" + auditTrailRecord.getId() + 
 									", startDate=" + auditTrailRecord.getStartDate() + 
@@ -224,18 +227,27 @@ public class AuditTrailMigrationUtil {
 							try {
 								session.insert(newRecord);
 							}
-							catch(ConstraintViolationException e) {
-								if(newRecord instanceof DeletedBinder) {
+							catch(Exception e) {
+								if((e instanceof ConstraintViolationException) && (newRecord instanceof DeletedBinder)) {
 									// In some rare cases, it is possible to see duplicate records in the SS_AuditTrail table describing
 									// deletion of the same binder object. Since the new SS_DeletedBinder uses binderId as primary key,
 									// duplicate entries are not allowed with the new table. When that ever happens, we should simply
 									// keep a single record for the binder. For the sake of simplicity, we will keep the previous one
 									// and toss out the later one (probably it doesn't matter which one we keep).
-									logger.warn("Failed to insert DeletedBinder " + newRecord.toString() + " due to duplicate entry - Discarding");
+									logger.warn("Failed to insert DeletedBinder " + newRecord.toString() + " for audit trail record [" + auditTrailRecordLastId + "] due to duplicate entry - Discarding it and continuing");
+									if(logger.isDebugEnabled())
+										logger.debug("The details of the exception", e);
 								}
 								else {
-									// In all other cases, this isn't expected, so rethrow.
-									throw e;
+									// This record is not processable.
+									if(discardUnprocessableRecord) {
+										// Discard the record and continue.
+										logger.warn("Unable to process the audit trail record [" + auditTrailRecordLastId + "]. Discarding it and continuing", e);
+									}
+									else {
+										// Rethrow the exception so as to abort the transaction and stop the migration process.
+										throw e;
+									}
 								}
 							}
 						}
@@ -247,8 +259,9 @@ public class AuditTrailMigrationUtil {
 					logger.info("So far " + totalProcessed + " records have been successfully processed out of expected " + totalSizeToMigrate + "...");
 				}
 				catch(Exception e) {
+					logger.error("Failed to process the audit trail record [" + auditTrailRecordLastId + "]", e);
 					trans.rollback();
-					logger.error("Transaction rolled back due to error", e);
+					logger.error("Transaction rolled back");
 					throw e; // Rethrow so that migration would fail fast
 				}
 			}
