@@ -102,6 +102,7 @@ import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.User.ExtProvState;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.UserPropertiesPK;
@@ -3297,17 +3298,25 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 			}
 
 			if(vibeGraniteExternal) { // This is Vibe Granite-style external user.	
-				Map updates;
-				IdentityInfo identityInfo;
+				final User tmpUser;
 				
+				tmpUser = user;
 				logger.info("User '" + user.getName() + "' (id=" + user.getId() + ") is Vibe Granite external user - Upgrading to full Vibe Hudson external user.");
-				identityInfo = user.getIdentityInfo();
-				identityInfo.setInternal(false); // Mark the user as "external" in Vibe Hudson style
-				updates = new HashMap();
-				updates.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
+				tmpUser.getIdentityInfo().setInternal(false); // Mark the user as "external" in Vibe Hudson style
+				tmpUser.setExtProvState( ExtProvState.verified );
+				
 				try
 				{
-					modifyEntry( user.getId(), new MapInputData( updates ) );
+					getTransactionTemplate().execute(new TransactionCallback<Object>()
+					{
+						@Override
+						public Object doInTransaction( TransactionStatus status )
+						{
+							getCoreDao().update( tmpUser );
+							return null;
+						}
+					});
+					
 					userProperties.setProperty(vibeGraniteExternalUserPropertyName, null); // Remove the Vibe Granite-specific property
 					usersToReindex.add(user);
 					count++;
