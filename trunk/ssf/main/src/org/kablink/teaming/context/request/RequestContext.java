@@ -93,11 +93,15 @@ public class RequestContext {
     
     private String lastSearchNodeName;
     
+    // The name of the thread that created and owned this request context object
+    private String owningThreadName; 
+    
     // IMPORTANT: This object is designed to contain only those properties that
     //            are needed to fetch corresponding user, application, or zone object. 
     //            Do NOT cache user, application or zone object directly in this class.
     
     public RequestContext(String zoneName, Long zoneId, String userName, Long userId, SessionContext sessionCtx) {
+    	setOwningThreadName();
     	this.zoneName = zoneName;
     	this.zoneId = zoneId;
     	this.userName = userName;
@@ -107,6 +111,7 @@ public class RequestContext {
     }
     
     public RequestContext(String zoneName, String userName, SessionContext sessionCtx) {
+    	setOwningThreadName();
     	this.zoneName = zoneName;
     	this.userName = userName;
     	this.sessionCtx = sessionCtx;
@@ -114,6 +119,7 @@ public class RequestContext {
     }
     
     public RequestContext(Long zoneId, Long userId, SessionContext sessionCtx) {
+    	setOwningThreadName();
     	this.zoneId = zoneId;
     	this.userId = userId;
     	this.sessionCtx = sessionCtx;
@@ -121,6 +127,7 @@ public class RequestContext {
     }
     
     public RequestContext(String zoneName, Long userId, SessionContext sessionCtx) {
+    	setOwningThreadName();
     	this.zoneName = zoneName;
     	this.userId = userId;
     	this.sessionCtx = sessionCtx;
@@ -128,6 +135,7 @@ public class RequestContext {
     }
     
     public RequestContext(Long zoneId, String userName, SessionContext sessionCtx) {
+    	setOwningThreadName();
     	this.zoneId = zoneId;
     	this.userName = userName;
     	this.sessionCtx = sessionCtx;
@@ -135,11 +143,20 @@ public class RequestContext {
     }
     
     public RequestContext(User user, SessionContext sessionCtx) {
+    	setOwningThreadName();
     	setFromUser(user);
     	this.sessionCtx = sessionCtx;
     	this.requestCache = new HashMap<String,Object>();
     }
 
+    private void setOwningThreadName() {
+    	this.owningThreadName = Thread.currentThread().getName();
+    }
+
+    public String getOwningThreadName() {
+    	return owningThreadName;
+    }
+    
     public String getZoneName() {
     	return zoneName;
     }
