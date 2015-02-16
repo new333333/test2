@@ -97,6 +97,7 @@
 <div class="ss_mashup_element">
     <div class="ss_mashup_round_top"><div></div></div>
 	<div class="ss_mashup_folder_header_view">
+	  <c:if test="${ssConfigJspStyle != 'mobile'}">
 		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
 		  action="view_permalink" 
 		  binderId="${mashupBinder.id}">
@@ -109,6 +110,25 @@
 			<div class="ss_clear"></div>
 		  </div>
 		</c:if>
+	  </c:if>
+
+	  <c:if test="${ssConfigJspStyle == 'mobile'}">
+		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+							folderId="${mashupBinder.id}" 
+							action="__ajax_mobile" 
+							operation="mobile_show_folder" 
+							actionUrl="false" />"
+		  ><span><c:if test="${empty mashupBinder.title}" >
+		  (<ssf:nlt tag="entry.noTitle" />)</c:if>
+		  <c:out value="${mashupBinder.title}" escapeXml="true" /></span></a>
+
+		<c:if test="${!empty mashupBinder.description.text}">
+		  <div class="ss_mashup_folder_description">
+			<ssf:markup entity="${mashupBinder}" mobile="true">${mashupBinder.description.text}</ssf:markup>
+			<div class="ss_clear"></div>
+		  </div>
+		</c:if>
+	  </c:if>
 	
 	</div>
 

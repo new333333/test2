@@ -46,7 +46,7 @@
 <head>
 <meta http-equiv="Content-Script-Type" content="text/javascript"/>
 <meta http-equiv="Content-Style-Type" content="text/css"/>
-<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0"/>
+<meta name="viewport" content="initial-scale:1.0; maximum-scale:1.0; user-scalable:0"/>
 <jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_mobile_head.jsp" />
 <c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
 <script type="text/javascript" 
