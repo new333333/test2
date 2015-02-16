@@ -92,6 +92,7 @@
     <div class="ss_mashup_round_top"><div></div></div>
       <c:if test="${!empty mashup_attributes['showTitle']}">
 	<div class="ss_mashup_folder_header_view">
+	  <c:if test="${ssConfigJspStyle != 'mobile'}">
 		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
 		  action="view_permalink" 
 		  binderId="${mashupBinder.id}">
@@ -104,6 +105,25 @@
 			<div class="ss_clear"></div>
 		  </div>
 		</c:if>
+	  </c:if>
+
+	  <c:if test="${ssConfigJspStyle == 'mobile'}">
+		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+							folderId="${mashupBinder.id}" 
+							action="__ajax_mobile" 
+							operation="mobile_show_folder" 
+							actionUrl="false" />"
+		  ><span><c:if test="${empty mashupBinder.title}" >
+		  (<ssf:nlt tag="entry.noTitle" />)</c:if>
+		  <c:out value="${mashupBinder.title}" escapeXml="true" /></span></a>
+
+		<c:if test="${!empty mashupBinder.description.text}">
+		  <div class="ss_mashup_folder_description">
+			<ssf:markup entity="${mashupBinder}" mobile="true">${mashupBinder.description.text}</ssf:markup>
+			<div class="ss_clear"></div>
+		  </div>
+		</c:if>
+	  </c:if>
 	
 	</div>
       </c:if>
@@ -112,7 +132,12 @@
 <c:if test="${!empty mashupBinder}">
   <c:set var="ssBinderOriginal" value="${ssBinder}" scope="request"/>
   <c:set var="ssBinder" value="${mashupBinder}" scope="request"/>
-  <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content.jsp" %>
+  <c:if test="${ssConfigJspStyle != 'mobile'}">
+  	<%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content.jsp" %>
+  </c:if>
+  <c:if test="${ssConfigJspStyle == 'mobile'}">
+  	<%@ include file="/WEB-INF/jsp/mobile/calendar_landing_page.jsp" %>
+  </c:if>
   <c:set var="ssBinder" value="${ssBinderOriginal}" scope="request"/>
 </c:if>
 	</div>
