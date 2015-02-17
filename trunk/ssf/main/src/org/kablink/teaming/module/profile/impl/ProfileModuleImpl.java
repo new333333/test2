@@ -3285,7 +3285,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 			UserProperties userProperties = null;
 			try
 			{
-				userProperties = getUserProperties(user.getId(), false);
+				userProperties = getProperties(user);
 				if ( userProperties != null ) {
 					String value = (String) userProperties.getProperty(vibeGraniteExternalUserPropertyName);
 					if ( value != null && value.equalsIgnoreCase( "true" ) )
