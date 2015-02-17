@@ -298,8 +298,10 @@ public class HTMLInputFilter
    * @param input text (i.e. submitted by a user) than may contain html
    * @return "clean" version of input, with only valid, whitelisted html elements allowed
    */
-  public String filter( String input )
-  {
+  public String filter( String input ) {
+	  return filter(input, false);
+  }
+  public String filter( String input, boolean checkForDecodedEntities ) {
     Stack<String> vTagStack = new Stack<String>();
     String decodedInput = decodeEntities(input);
     String s = decodedInput;
@@ -324,7 +326,7 @@ public class HTMLInputFilter
     debug( "    validateEntites: " + s );
     
     debug( "************************************************\n\n" );
-    if (!s.equals(decodedInput)) {
+    if (!s.equals(decodedInput) || (checkForDecodedEntities && !s.equals(input))) {
     	return s;
     } else {
     	return input;
