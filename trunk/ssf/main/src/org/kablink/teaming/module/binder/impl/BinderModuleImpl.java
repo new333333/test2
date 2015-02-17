@@ -447,6 +447,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.GENERATE_REPORTS);
 				break;
+			case downloadFolderAsCsv:
+				getAccessControlManager().checkOperation(user, binder,
+						WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);
+				break;
 			case export:
 				Boolean exportAllowedByBinderOwner = SPropsUtil.getBoolean("export.availableToBinderOwners", false);
 				if (exportAllowedByBinderOwner) {

@@ -312,5 +312,11 @@
             <column name="sharerId"/>
         </createIndex>
     </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="27">
+        <addColumn tableName="SS_SHAREITEM">
+			<column name="right_downloadFolderAsCsv" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
     
 </databaseChangeLog>

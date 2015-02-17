@@ -816,7 +816,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 		}
 
-		if(version.intValue() <= 21) {
+		if (version.intValue() <= 22) {
 			correctFilrRoles(zoneConfig);
 
 			//This change should not require a re-index or reseting the templates and definitions
@@ -832,7 +832,20 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			if (null == adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES )) {
 				getProfileModule().setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true" );
 			}
-
+			
+			//Add the new "downloadFolderAsCsv" related right to the standard roles
+			List<Function>fns = getFunctionManager().findFunctions(top.getId());
+			for (Function fn:fns) {
+				if (ObjectKeys.ROLE_TITLE_PARTICIPANT.equals(fn.getName())) {
+					fn.addOperation(WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);
+				}
+				if (ObjectKeys.ROLE_TITLE_TEAM_MEMBER.equals(fn.getName())) {
+					fn.addOperation(WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);
+				}
+				if (ObjectKeys.ROLE_TITLE_BINDER_ADMIN.equals(fn.getName())) {
+					fn.addOperation(WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);
+				}
+			}
 		}
 		
  	}
@@ -988,7 +1001,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			
 		}
  	}
- 	
+
  	/**
  	 * Fix up duplicate definitions.  1.0 allowed definitions with the same name
  	 * we need to find any definitions with the same name and rename those that are duplicates.
@@ -1804,6 +1817,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		//function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
 		//function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
 		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
+		function.addOperation(WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);
 		function.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
 
 		//generate functionId
@@ -2018,6 +2032,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.BINDER_ADMINISTRATION);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
 		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);		
+		function.addOperation(WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);		
 		function.removeOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
 	}
 	

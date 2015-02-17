@@ -37,6 +37,7 @@
     	<property name="readEntries" column="right_readEntries" access="field"/>
     	<property name="addReplies" column="right_addReplies" access="field"/>
     	<property name="generateReports" column="right_generateReports" access="field"/>
+    	<property name="downloadFolderAsCsv" column="right_downloadFolderAsCsv" access="field"/>
     	<property name="binderAdministration" column="right_binderAdministration" access="field"/>
     	<property name="createEntryAcls" column="right_createEntryAcls" access="field"/>
     	<property name="changeAccessControl" column="right_changeAccessControl" access="field"/>

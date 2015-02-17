@@ -347,4 +347,10 @@
         <modifyDataType schemaName="dbo" tableName="SS_EmailLog" columnName="comments" newDataType="ntext"/>
     </changeSet>
 
+    <changeSet author="peter" context="schema" failOnError="true" id="35">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_downloadFolderAsCsv" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>
