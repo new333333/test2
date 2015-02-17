@@ -71,6 +71,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.runas.RunasCallback;
@@ -469,29 +470,34 @@ public class ReadFileController extends AbstractReadFileController {
 				// What folder are we outputting as CSV?
 				Long folderId = Long.parseLong(String.valueOf(args[WebUrlUtil.FILE_URL_CSVFOLDER_FOLDER_ID]));
 				Folder folder = getFolderModule().getFolder(folderId);
-				if (folder != null) {
-					String shortFileName = folder.getNormalTitle() + ".csv";
-					String contentType = FileUtils.getMimeContentType(getFileTypeMap(), shortFileName);
-					contentType = FileUtils.validateDownloadContentType(contentType);
-					if (!(contentType.toLowerCase().contains("charset"))) {
-						String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
-						if (MiscUtil.hasString(encoding)) {
-							contentType += ("; charset=" + encoding);
+				if (getFolderModule().testAccess(folder, FolderOperation.downloadFolderAsCsv)) {
+					if (folder != null && getFolderModule().testAccess(folder, FolderOperation.downloadFolderAsCsv)) {
+						String shortFileName = folder.getNormalTitle() + ".csv";
+						String contentType = FileUtils.getMimeContentType(getFileTypeMap(), shortFileName);
+						contentType = FileUtils.validateDownloadContentType(contentType);
+						if (!(contentType.toLowerCase().contains("charset"))) {
+							String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+							if (MiscUtil.hasString(encoding)) {
+								contentType += ("; charset=" + encoding);
+							}
 						}
+						response.setContentType(contentType);
+						boolean isHttps = request.getScheme().equalsIgnoreCase("https");
+						String cacheControl = "private, max-age=86400";
+						if (isHttps) {
+							response.setHeader("Pragma", "public");
+							cacheControl += ", proxy-revalidate, s-maxage=0";
+						}
+						response.setHeader("Cache-Control", cacheControl);
+						response.setHeader("Content-Disposition",
+							("attachment; filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\""));
+					} else {
+						// Bad format of url; just return null.
+						response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFolder"));
 					}
-					response.setContentType(contentType);
-					boolean isHttps = request.getScheme().equalsIgnoreCase("https");
-					String cacheControl = "private, max-age=86400";
-					if (isHttps) {
-						response.setHeader("Pragma", "public");
-						cacheControl += ", proxy-revalidate, s-maxage=0";
-					}
-					response.setHeader("Cache-Control", cacheControl);
-					response.setHeader("Content-Disposition",
-						("attachment; filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\""));
 				} else {
-					// Bad format of url; just return null.
-					response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFolder"));
+					// No rights to do this operation
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("error.noRightToDownloadAsCsv"));
 				}
 
 				OutputStream out = response.getOutputStream();

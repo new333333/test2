@@ -92,6 +92,7 @@ public interface BinderModule {
 		readEntries,
 		viewBinderTitle,
 		report,
+		downloadFolderAsCsv,
 		setProperty,	
 		changeEntryTimestamps,
 		manageSimpleName,

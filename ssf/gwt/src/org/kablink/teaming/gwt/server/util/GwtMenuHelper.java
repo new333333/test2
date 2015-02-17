@@ -1001,7 +1001,7 @@ public class GwtMenuHelper {
 	 */
 	private static void constructEntryDownloadAsCSVFile(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
 		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
-		if (canDownload && bs.getBinderModule().testAccess(folder, BinderOperation.readEntries)) {
+		if (canDownload && bs.getBinderModule().testAccess(folder, BinderOperation.downloadFolderAsCsv)) {
 			ToolbarItem downloadAsCSVFileTBI = new ToolbarItem("1_downloadAsCSVFile");
 			markTBITitle(   downloadAsCSVFileTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
 			markTBIEvent(   downloadAsCSVFileTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);

@@ -356,5 +356,11 @@
             <column name="eventDate"/>
         </createIndex>
     </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="37">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_downloadFolderAsCsv" type="BIT"/>
+        </addColumn>
+    </changeSet>
     
 </databaseChangeLog>

@@ -123,6 +123,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             add(WorkAreaOperation.BINDER_ADMINISTRATION);
             add(WorkAreaOperation.ADD_COMMUNITY_TAGS);
             add(WorkAreaOperation.GENERATE_REPORTS);
+            add(WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);
             add(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
         }
     };

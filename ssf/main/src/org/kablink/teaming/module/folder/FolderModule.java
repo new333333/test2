@@ -101,6 +101,7 @@ public interface FolderModule {
 	   renameEntry(false, true),
 	   moveEntry(false, true),
 	   report(true, true),
+	   downloadFolderAsCsv(true, true),
 	   reserveEntry(false, true),
 	   overrideReserveEntry(false, true),
 	   fullSynchronize(true, false),

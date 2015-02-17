@@ -363,6 +363,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 				getAccessControlManager().checkOperation(folder,
 						WorkAreaOperation.GENERATE_REPORTS);
 				break;
+			case downloadFolderAsCsv:
+				getAccessControlManager().checkOperation(folder,
+						WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);
+				break;
 			case addFile:
 				// true iff (the user has "addEntry" right to the folder) AND (the folder is a regular folder OR the folder is a mirrored folder with read/write driver)
 				this.checkAccess(folder, FolderOperation.addEntry);
@@ -471,6 +475,9 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 				break;
 			case report:
 				AccessUtils.operationCheck(entry, WorkAreaOperation.GENERATE_REPORTS);
+				break;
+			case downloadFolderAsCsv:
+				AccessUtils.operationCheck(entry, WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);
 				break;
 			case updateModificationStamp:
 				// Initially, the timestamp on an entry can be updated

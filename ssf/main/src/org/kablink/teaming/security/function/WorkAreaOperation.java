@@ -74,6 +74,7 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation READ_ENTRIES = new WorkAreaOperation("readEntries");
     public final static WorkAreaOperation ADD_REPLIES = new WorkAreaOperation("addReplies");
     public final static WorkAreaOperation GENERATE_REPORTS = new WorkAreaOperation("generateReports");
+    public final static WorkAreaOperation DOWNLOAD_FOLDER_AS_CSV = new WorkAreaOperation("downloadFolderAsCsv");
     public final static WorkAreaOperation BINDER_ADMINISTRATION = new WorkAreaOperation("binderAdministration");
     public final static WorkAreaOperation CREATE_ENTRY_ACLS = new WorkAreaOperation("createEntryAcls");
     public final static WorkAreaOperation CHANGE_ACCESS_CONTROL = new WorkAreaOperation("changeAccessControl");
@@ -228,6 +229,7 @@ public class WorkAreaOperation {
 		protected Boolean readEntries = Boolean.FALSE;
 		protected Boolean addReplies = Boolean.FALSE;
 		protected Boolean generateReports = Boolean.FALSE;
+		protected Boolean downloadFolderAsCsv = Boolean.FALSE;
 		protected Boolean binderAdministration = Boolean.FALSE;
 		protected Boolean createEntryAcls = Boolean.FALSE;
 		protected Boolean changeAccessControl = Boolean.FALSE;
@@ -258,6 +260,7 @@ public class WorkAreaOperation {
             andSet.readEntries = andRights(set1.readEntries, set2.readEntries);
             andSet.addReplies = andRights(set1.addReplies, set2.addReplies);
             andSet.generateReports = andRights(set1.generateReports, set2.generateReports);
+            andSet.downloadFolderAsCsv = andRights(set1.downloadFolderAsCsv, set2.downloadFolderAsCsv);
             andSet.binderAdministration = andRights(set1.binderAdministration, set2.binderAdministration);
             andSet.createEntryAcls = andRights(set1.createEntryAcls, set2.createEntryAcls);
             andSet.changeAccessControl = andRights(set1.changeAccessControl, set2.changeAccessControl);
@@ -308,6 +311,7 @@ public class WorkAreaOperation {
 			result = 29 * result + (Boolean.TRUE.equals(readEntries) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(addReplies) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(generateReports) ? 1231 : 1237);
+			result = 29 * result + (Boolean.TRUE.equals(downloadFolderAsCsv) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(binderAdministration) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(createEntryAcls) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(changeAccessControl) ? 1231 : 1237);
@@ -343,6 +347,7 @@ public class WorkAreaOperation {
 			if(!equalRights(this.readEntries, that.readEntries)) return false;
 			if(!equalRights(this.addReplies, that.addReplies)) return false;
 			if(!equalRights(this.generateReports, that.generateReports)) return false;
+			if(!equalRights(this.downloadFolderAsCsv, that.downloadFolderAsCsv)) return false;
 			if(!equalRights(this.binderAdministration, that.binderAdministration)) return false;
 			if(!equalRights(this.createEntryAcls, that.createEntryAcls)) return false;
 			if(!equalRights(this.changeAccessControl, that.changeAccessControl)) return false;
@@ -377,6 +382,7 @@ public class WorkAreaOperation {
 			if(!greaterOrEqualRights(this.readEntries, that.readEntries)) return false;
 			if(!greaterOrEqualRights(this.addReplies, that.addReplies)) return false;
 			if(!greaterOrEqualRights(this.generateReports, that.generateReports)) return false;
+			if(!greaterOrEqualRights(this.downloadFolderAsCsv, that.downloadFolderAsCsv)) return false;
 			if(!greaterOrEqualRights(this.binderAdministration, that.binderAdministration)) return false;
 			if(!greaterOrEqualRights(this.createEntryAcls, that.createEntryAcls)) return false;
 			if(!greaterOrEqualRights(this.changeAccessControl, that.changeAccessControl)) return false;
@@ -409,6 +415,7 @@ public class WorkAreaOperation {
 			if(this.readEntries) rights.add(WorkAreaOperation.READ_ENTRIES);
 			if(this.addReplies) rights.add(WorkAreaOperation.ADD_REPLIES);
 			if(this.generateReports) rights.add(WorkAreaOperation.GENERATE_REPORTS);
+			if(this.downloadFolderAsCsv) rights.add(WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);
 			if(this.binderAdministration) rights.add(WorkAreaOperation.BINDER_ADMINISTRATION);
 			if(this.createEntryAcls) rights.add(WorkAreaOperation.CREATE_ENTRY_ACLS);
 			if(this.changeAccessControl) rights.add(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
@@ -443,6 +450,7 @@ public class WorkAreaOperation {
 			if(this.readEntries) rights.add(FolderOperation.readEntry);
 			if(this.addReplies) rights.add(FolderOperation.addReply);
 			if(this.generateReports) rights.add(FolderOperation.report);
+			if(this.downloadFolderAsCsv) rights.add(FolderOperation.downloadFolderAsCsv);
 			if(this.binderAdministration) rights.add(FolderOperation.changeACL);
 			if(this.createEntryAcls) rights.add(FolderOperation.changeACL);
 			if(this.changeAccessControl) rights.add(FolderOperation.changeACL);
@@ -477,6 +485,7 @@ public class WorkAreaOperation {
 			if(this.readEntries) rights.add(BinderOperation.readEntries);
 			if(this.addReplies) rights.add(WorkAreaOperation.ADD_REPLIES);
 			if(this.generateReports) rights.add(BinderOperation.report);
+			if(this.downloadFolderAsCsv) rights.add(BinderOperation.downloadFolderAsCsv);
 			if(this.binderAdministration) rights.add(WorkAreaOperation.BINDER_ADMINISTRATION);
 			if(this.createEntryAcls) rights.add(BinderOperation.changeACL);
 			if(this.changeAccessControl) rights.add(BinderOperation.changeACL);
@@ -598,6 +607,15 @@ public class WorkAreaOperation {
 
 		public void setGenerateReports(boolean generateReports) {
 			this.generateReports = generateReports;
+		}
+
+		public boolean isDownloadFolderAsCsv() {
+			if(downloadFolderAsCsv == null) return false;
+			return downloadFolderAsCsv;
+		}
+
+		public void setDownloadFolderAsCsv(boolean downloadFolderAsCsv) {
+			this.downloadFolderAsCsv = downloadFolderAsCsv;
 		}
 
 		public boolean isBinderAdministration() {
