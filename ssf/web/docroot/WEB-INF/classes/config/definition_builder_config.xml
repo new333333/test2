@@ -291,23 +291,6 @@
 		</jsps>
 	</item>
 <!-- folder entry form data items -->
-	<item name="entryIcon" caption="__icon" type="data" dataType="icon" multipleAllowed="false" 
-	  category="entryData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__icon"/>
-			<property name="name" caption="__data_name" type="text" value="iconName" 
-			  readonly="true" unique="//item[@type='data']">
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/icon_form_entry.jsp" />
-		</jsps>
-		<help>ihelp.designers.icon</help>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderIcon" />
-		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderIcon" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderIcon" />
-	</item>
-	
 	<item name="event" caption="__event" type="data" dataType="event" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
@@ -646,7 +629,6 @@
 		<options optionCaption="__standard_entry_options">
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
-			<option name="folderIcon" initial="true" />
 			<option name="folderRemoteApp" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
@@ -663,22 +645,6 @@
 	</item>
 	
 <!-- Folder form items	-->
-	<item name="folderIcon" caption="__icon" type="data" dataType="icon" multipleAllowed="false" 
-	  category="folderData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__icon"/>
-			<property name="name" caption="__data_name" type="text" value="iconName" 
-			  readonly="true" unique="//item[@type='data']">
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/icon_form_folder.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderIcon" />
-		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderIcon" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderIcon" />
-	</item>
-
 	<item name="folderRemoteApp" caption="__remoteApp" type="data" dataType="remoteApp" multipleAllowed="true" 
 			category="folderData" display="form">
 		<properties>
@@ -821,7 +787,6 @@
 			<exclude name="title" />
 			<exclude name="description" />
 			<exclude name="attachFiles"/>
-			<exclude name="folderIcon" />
 		</option_entry_data>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_data.jsp" />
@@ -861,7 +826,6 @@
 		<options optionCaption="__standard_entry_options">
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
-			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
 			<option name="file" />
@@ -905,7 +869,6 @@
 			<exclude name="title"/>
 			<exclude name="description"/>
 			<exclude name="attachFiles"/>
-			<exclude name="workspaceIcon" />
 		</option_entry_data>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
@@ -2412,7 +2375,6 @@
 			<option name="title" initial="true" definitionType="8"/>
 			<option name="description" initial="true" />
 			<option name="workspaceRemoteApp" />
-			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
 			<option name="file" />
@@ -2435,20 +2397,6 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/remote_application_form.jsp" />
 		</jsps>
-	</item>
-	
-	<item name="workspaceIcon" caption="__icon" type="data" dataType="icon" multipleAllowed="false" category="workspaceData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__icon"/>
-			<property name="name" caption="__data_name" type="text" value="iconName" 
-			  readonly="true" unique="//item[@type='data']"/>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/icon_form_workspace.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderIcon" />
-		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderIcon" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderGraphic" />
 	</item>
 	
 <!--
@@ -2532,7 +2480,6 @@
 	    <option_entry_data select_type="data" path="//item[@name='workspaceForm' or @name='userWorkspaceForm']/.//item" 
 				optionCaption="__workspace_form_data_items">
 					<exclude name="title" />
-					<exclude name="workspaceIcon" />
 					<exclude name="description" />
 					<exclude name="attachFiles"/>
 		</option_entry_data>
@@ -2589,7 +2536,6 @@
 		<options optionCaption="__standard_entry_options">
 		<!-- no title modifications on user workspaces -->
 			<option name="description" initial="true" />
-			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
 			<option name="file" />
