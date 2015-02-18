@@ -2766,6 +2766,7 @@ public interface GwtTeamingMessages extends Messages
 	String downloadAppDlgDownloadMobile(String company, String product);
 	String downloadAppDlgDownloadWindows2(String company, String product);
 	String downloadAppDlgDownloadWindows3(String product, String filename32, String filename64, String filenameXP, String quickStart);
+	String downloadAppDlgDownloadWindows4(String product, String filename32, String filename64, String quickStart);
 	String downloadAppDlgError_NoMacUrl();
 	String downloadAppDlgError_NoUrls();
 	String downloadAppDlgError_NoWin32Url();
