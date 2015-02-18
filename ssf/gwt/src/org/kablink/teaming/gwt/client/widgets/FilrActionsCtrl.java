@@ -244,7 +244,14 @@ public class FilrActionsCtrl extends Composite
 				{
 					FilrActionsCtrl.closeAdminConsole();
 	
-					GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.MY_FILES ) );
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.MY_FILES ) );
+						}
+					} );
 				}
 			};
 			m_myFilesAction = new FilrAction(
@@ -263,7 +270,14 @@ public class FilrActionsCtrl extends Composite
 				{
 					FilrActionsCtrl.closeAdminConsole();
 	
-					GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_WITH_ME ) );
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_WITH_ME ) );
+						}
+					} );
 				}
 			};
 			m_sharedWithMeAction = new FilrAction(
@@ -282,7 +296,14 @@ public class FilrActionsCtrl extends Composite
 				{
 					FilrActionsCtrl.closeAdminConsole();
 	
-					GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_BY_ME ) );
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_BY_ME ) );
+						}
+					} );
 				}
 			};
 			m_sharedByMeAction = new FilrAction(
@@ -301,7 +322,14 @@ public class FilrActionsCtrl extends Composite
 				{
 					FilrActionsCtrl.closeAdminConsole();
 	
-					GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.NET_FOLDERS ) );
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.NET_FOLDERS ) );
+						}
+					} );
 				}
 			};
 			m_netFoldersAction = new FilrAction(
@@ -322,7 +350,14 @@ public class FilrActionsCtrl extends Composite
 				{
 					FilrActionsCtrl.closeAdminConsole();
 	
-					GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_PUBLIC ) );
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							GwtTeaming.fireEvent( new ShowCollectionEvent( CollectionType.SHARED_PUBLIC ) );
+						}
+					} );
 				}
 			};
 			m_sharedPublicAction = new FilrAction(
