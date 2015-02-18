@@ -2712,8 +2712,15 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void onAdministrationExitNow( boolean skipNavigation )
 	{
+		// As part of the fix for bug 917397 I replaced the call to AdminControl.hideControl( m_adminControl )
+		// with a call to m_adminControl.hide().  In GwtClientHelper.executeCommand() if the admin console
+		// is visible we execute the command as admin.  AdminControl.hideControl() hides the control in an
+		// async manner.  We need it hidden immediately so commands don't get executed as admin.
 		// Hide the administration console and its menu.
-		AdminControl.hideControl( m_adminControl );
+		//AdminControl.hideControl( m_adminControl );
+		if ( m_adminControl != null && m_adminControl.isShowing() )
+			m_adminControl.hide();
+
 		m_mainMenuCtrl.hideAdministrationMenubar();
 		
 		m_splitLayoutPanel.setVisible( true );
