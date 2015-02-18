@@ -69,6 +69,9 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EmailLog.EmailLogStatus;
 import org.kablink.teaming.domain.EmailLog.EmailLogType;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors;
+import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.AttendedEntries;
 import org.kablink.teaming.module.ical.IcalModule;
@@ -79,6 +82,7 @@ import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TextToHtml;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
@@ -86,7 +90,6 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
-
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -917,7 +920,30 @@ public class DefaultEmailPoster extends CommonDependencyInjection implements Ema
 	protected void processHTML(Folder folder, Object content, Map inputData, DescInfo descInfo) {
 		if (descInfo.saveDesc(DescInfo.Type.HTML)) {
 			String[] val = new String[1];
-			val[0] = (String)content;
+			if (!((String)content).equals("")) {
+				//Check that this text is legal HTML
+				DefinitionModule definitionModule = ((DefinitionModule) SpringContextUtil.getBean("definitionModule"));
+				Description desc = new Description((String)content, Description.FORMAT_HTML);
+				EntryDataErrors entryDataErrors = new EntryDataErrors();
+				definitionModule.tidyCheckText(desc, entryDataErrors);
+				if (!entryDataErrors.getProblems().isEmpty()) {
+					//The HTML was invalid, so try adding it as text
+					//This is done by converting the HTML to text and the converting that text back to HTML
+					//Get the body text and convert it to text and then turn it back into html. This should get rid of the bad HTML
+					TextToHtml textToHtml = new TextToHtml();
+					textToHtml.setBreakOnLines(true);
+					textToHtml.setStripHtml(false);
+					desc.setText((String)content);
+					String text = desc.getStrippedText(true);
+					text += "\n\n" + NLT.get("email.badHTML");
+					textToHtml.parseText(text);
+					val[0] = textToHtml.toString();
+				} else {
+					val[0] = (String)content;
+				}
+			} else {
+				val[0] = (String)content;
+			}
 			inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, val);			
 			inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_HTML));
 			descInfo.descSaved(DescInfo.Type.HTML);
