@@ -50,7 +50,7 @@
 	<table cellspacing="0" cellpadding="0" class="margintop1" width="100%">
 		<tr>
 			<td>
-				<span class="ss_entryContent ss_entrySignature ss_wrap"><ssf:nlt tag="entry.createdBy"/></span>
+				<span class="ss_entryContent ss_entrySignature"><ssf:nlt tag="entry.createdBy"/></span>
 	  		</td>
 			<td class="ss_non_clipped_signature">
 				<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
@@ -65,7 +65,7 @@
       ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 	   <tr>
 	    <td>
-		  <div class="ss_entryContent ss_entrySignature ss_wrap" ><ssf:nlt tag="entry.modifiedBy"/></div>
+		  <div class="ss_entryContent ss_entrySignature" ><ssf:nlt tag="entry.modifiedBy"/></div>
 	    </td>
 	    <td class="ss_non_clipped_signature">
 		  <div class="ss_entryContent ss_entrySignatureUser ss_wrap"><ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/></div>
@@ -200,7 +200,7 @@
 		<table cellspacing="0" cellpadding="0">
 			<tr>
 			  <td valign="top">
-				<div class="ss_entrySignature ss_wrap">
+				<div class="ss_entrySignature">
 				  <span><c:out value="${property_caption}" /></span>
 				</div>
 				<c:set var="property_caption" value=""/>
@@ -216,7 +216,7 @@
 				ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 			   <tr>
 				<td valign="top">
-				  <div class="ss_entrySignature ss_wrap">
+				  <div class="ss_entrySignature">
 					<span><ssf:nlt tag="entry.modifiedBy"/></span>
 				  </div>
 				</td>
