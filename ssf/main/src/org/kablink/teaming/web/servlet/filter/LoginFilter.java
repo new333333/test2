@@ -164,9 +164,11 @@ public class LoginFilter  implements Filter {
 					// This might be a response from external user to
 					// reset their password or verify that they reset
 					// their password.
+					String completeUrl = Http.getCompleteURL( req );
+					completeUrl = StringCheckUtil.checkForQuotes(completeUrl, false);		//Prevent XSS attacks
 					ExternalUserUtil.handleResponseToPwdReset(
 															WebHelper.getRequiredSession( req ),
-															Http.getCompleteURL( req ) );
+															completeUrl );
 				}
 
 				if(WebHelper.isGuestLoggedIn(req)) {
