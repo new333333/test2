@@ -46,7 +46,9 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.DefinitionInvalidException;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.security.AccessControlException;
 
@@ -172,4 +174,13 @@ public interface DefinitionModule {
   	 * @return
   	 */
     public Set<String> filterInputDataKeysByDataType(Document definitionTree, InputDataAccessor inputData, List<String> dataTypes);
+    
+  	/**
+  	 * Check for legal HTML 
+  	 * 
+  	 * @param description
+  	 * @param entryDataErrors
+   	 * @return
+  	 */
+    public void tidyCheckText(Description description, EntryDataErrors entryDataErrors);
 }
