@@ -73,6 +73,7 @@ public class Eventeditor extends TagSupport {
 	private Boolean isTimeZoneSensitiveActive = false;
 	private Boolean isFreeBusyActive = false;
 	private Boolean required = false;
+	private Boolean leaveDateEmpty = false;
 	private Boolean mobile = false;
 
 	public int doStartTag() throws JspException {
@@ -120,7 +121,7 @@ public class Eventeditor extends TagSupport {
 					}
 					endDate = endCal.getTime();
 				}
-			} else if (required) {
+			} else if (required && !leaveDateEmpty) {
 				initEvent = new Event();
 				initEvent.setTimeZone(RequestContextHolder.getRequestContext()
 						.getUser().getTimeZone());
@@ -142,6 +143,7 @@ public class Eventeditor extends TagSupport {
 			// any attributes we might want to pass into the jsp go here
 			req.setAttribute("initEvent", initEvent);
 			req.setAttribute("required",required);
+			req.setAttribute("leaveDateEmpty",leaveDateEmpty);
 			// these need to be beans because the jsp page will pass them on to
 			// other tags
 			req.setAttribute("evid", id);
@@ -218,6 +220,10 @@ public class Eventeditor extends TagSupport {
 
 	public void setFormName(String formName) {
 		this.formName = formName;
+	}
+
+	public void setLeaveDateEmpty(Boolean leaveDateEmpty) {
+		this.leaveDateEmpty = leaveDateEmpty;
 	}
 
 	public void setHasDuration(Boolean hasDuration) {

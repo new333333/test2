@@ -451,6 +451,12 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<name>leaveDateEmpty</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
 			<name>hasDuration</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
