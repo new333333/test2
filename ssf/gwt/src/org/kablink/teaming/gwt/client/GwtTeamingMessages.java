@@ -3595,4 +3595,17 @@ public interface GwtTeamingMessages extends Messages
 	String editKeyShieldConfigDlg_ServerUrlLabel();
 	String editKeyShieldConfigDlg_StackTraceLabel();
 	String editKeyShieldConfigDlg_TestConnectionLabel();
+	
+	// Strings used by the Access Rights Info dialog
+	String AccessRightsInfoDlg_Contributor();
+	String AccessRightsInfoDlg_ContributorDesc_Filr();
+	String AccessRightsInfoDlg_ContributorDesc_Vibe();
+	String AccessRightsInfoDlg_Editor();
+	String AccessRightsInfoDlg_EditorDesc_Filr();
+	String AccessRightsInfoDlg_EditorDesc_Vibe();
+	String AccessRightsInfoDlg_Header();
+	String AccessRightsInfoDlg_Viewer();
+	String AccessRightsInfoDlg_ViewerDesc_Filr();
+	String AccessRightsInfoDlg_ViewerDesc_Vibe();
+	
 }// end GwtTeamingMessages
