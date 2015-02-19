@@ -319,4 +319,13 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <comment>IPv4 address of the node adding the log</comment>
+        <addColumn tableName="SS_IndexingJournal">
+            <column name="ipv4Address" type="VARCHAR2(16 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
