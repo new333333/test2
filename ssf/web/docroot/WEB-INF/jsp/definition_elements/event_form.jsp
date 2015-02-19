@@ -62,7 +62,7 @@
 		<c:when test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
 			<c:set var="ev" value="${ssDefinitionEntry.customAttributes[property_name].value}" />	
 		</c:when>
-		<c:when test="${!empty ssInitialEvent}">
+		<c:when test="${!empty ssInitialEvent && !property_leaveDateEmpty}">
 			<c:set var="ev" value="${ssInitialEvent}" />	
 		</c:when>	
 	</c:choose>
@@ -70,6 +70,7 @@
 	  <ssf:eventeditor id="${property_name}" 
 	         formName="${formName}" 
 	         initEvent="${ev}"
+	         leaveDateEmpty="${property_leaveDateEmpty}"
 	         required="${property_required}"
 	         hasDuration="${property_hasDuration}"
 	         hasDurationDays="${property_hasDurationDays}"
