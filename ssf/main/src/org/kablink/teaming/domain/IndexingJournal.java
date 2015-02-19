@@ -38,15 +38,17 @@ public class IndexingJournal extends ZonedObject {
 	private String indexName;
 	private String operationName;
 	private Object[] operationArgs;
+	private String ipv4Address;
 	
 	protected IndexingJournal() {
 	}
 	
-	public IndexingJournal(String nodeName, String indexName, String operationName, Object[] operationArgs) {
+	public IndexingJournal(String nodeName, String indexName, String operationName, Object[] operationArgs, String ipv4Address) {
 		this.nodeName = nodeName;
 		this.indexName = indexName;
 		this.operationName = operationName;
 		this.operationArgs = operationArgs;
+		this.ipv4Address = ipv4Address;
 	}
 
     public Long getId() {
@@ -89,4 +91,7 @@ public class IndexingJournal extends ZonedObject {
 		this.operationName = operationName;
 	}
 	
+	public String getIpv4Address() {
+		return ipv4Address;
+	}
 }
