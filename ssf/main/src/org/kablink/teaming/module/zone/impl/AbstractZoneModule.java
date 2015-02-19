@@ -816,7 +816,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 		}
 
-		if (version.intValue() <= 22) {
+		if (version.intValue() <= 23) {
 			correctFilrRoles(zoneConfig);
 
 			//This change should not require a re-index or reseting the templates and definitions
@@ -2032,8 +2032,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.BINDER_ADMINISTRATION);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
 		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);		
-		function.addOperation(WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);		
 		function.removeOperation(WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+		function.removeOperation(WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);
 	}
 	
 	private User getSynchronizationAgent(Long zoneId) {
