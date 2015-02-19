@@ -51,13 +51,16 @@ import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
+import org.kablink.teaming.gwt.client.widgets.AccessRightsInfoDlg.AccessRightsInfoDlgClient;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -66,6 +69,8 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
@@ -119,7 +124,7 @@ public class EditShareWidget extends Composite
 	private TextAreaWithMax m_noteTextArea;
 	
 	private Label m_descLabel;
-
+	private AccessRightsInfoDlg m_accessRightsInfoDlg;
 	
 	private static String VIEWER = "viewer";
 	private static String EDITOR = "editor";
@@ -290,17 +295,62 @@ public class EditShareWidget extends Composite
 		
 		panel = new FlowPanel();
 		
-		hPanel = new HorizontalPanel();
-		hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
-		hPanel.setSpacing( 4 );
-		
-		label = new Label( messages.editShareDlg_accessRightsLabel() );
-		label.addStyleName( "gwt-label" );
-		hPanel.add( label );
-		m_accessRightsListbox = new ListBox( false );
-		m_accessRightsListbox.setVisibleItemCount( 1 );
-		hPanel.add( m_accessRightsListbox );
-		panel.add( hPanel );
+		{
+			hPanel = new HorizontalPanel();
+			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+			hPanel.setSpacing( 4 );
+			
+			// Create a panel for the "Access Rights:" label and the info image to live in.
+			{
+				FlowPanel tmpPanel;
+				InlineLabel inlineLabel;
+				
+				tmpPanel = new FlowPanel();
+				hPanel.add( tmpPanel );
+
+				inlineLabel = new InlineLabel( messages.editShareDlg_accessRightsLabel() );
+				inlineLabel.addStyleName( "gwt-label" );
+				tmpPanel.add( inlineLabel );
+
+				// Add an info image for the user to click on to get a description of what
+				// Viewer, Editor and Contributor means.
+				{
+					ImageResource imageResource;
+					final Image img;
+					
+					imageResource = GwtTeaming.getImageBundle().info2();
+					img = new Image( imageResource );
+					img.addStyleName( "editShareRightsDlg_AccessRightsInfoImg" );
+					img.getElement().setAttribute( "title", "" );
+					
+					img.addClickHandler( new ClickHandler()
+					{
+						@Override
+						public void onClick( ClickEvent event )
+						{
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									invokeAccessRightsInfoDlg( img.getAbsoluteLeft(), img.getAbsoluteTop() );
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					} );
+					
+					tmpPanel.add( img );
+				}
+			}
+
+			m_accessRightsListbox = new ListBox( false );
+			m_accessRightsListbox.setVisibleItemCount( 1 );
+			hPanel.add( m_accessRightsListbox );
+			panel.add( hPanel );
+		}
 		
 		// Add the controls needed to define re-share rights
 		{
@@ -429,16 +479,49 @@ public class EditShareWidget extends Composite
 		FlowPanel mainPanel;
 		FlowPanel rbPanel;
 		FlowPanel tmpPanel;
-		Label label;
+		InlineLabel inlineLabel;
 		
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		
 		// Add an "Access Rights" heading
-		label = new Label( messages.editShareDlg_accessRightsLabel() );
-		label.addStyleName("editShareRightsDlg_accessLabel");
-		mainPanel.add( label );
+		inlineLabel = new InlineLabel( messages.editShareDlg_accessRightsLabel() );
+		inlineLabel.addStyleName("editShareRightsDlg_accessLabel");
+		mainPanel.add( inlineLabel );
+		
+		// Add an info image for the user to click on to get a description of what
+		// Viewer, Editor and Contributor means.
+		{
+			ImageResource imageResource;
+			final Image img;
+			
+			imageResource = GwtTeaming.getImageBundle().info2();
+			img = new Image( imageResource );
+			img.addStyleName( "editShareRightsDlg_AccessRightsInfoImg" );
+			img.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							invokeAccessRightsInfoDlg( img.getAbsoluteLeft(), img.getAbsoluteTop() );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
+			
+			img.getElement().setAttribute( "title", "" );
+			
+			mainPanel.add( img );
+		}
 		
 		// Create a panel for the radio buttons to live in.
 		rbPanel = new FlowPanel();
@@ -1112,6 +1195,58 @@ public class EditShareWidget extends Composite
 		m_noteTextArea.setValue( note );
 	}
 	
+	/**
+	 * 
+	 */
+	private void invokeAccessRightsInfoDlg( final int x, final int y )
+	{
+		if ( m_accessRightsInfoDlg == null )
+		{
+			// Run an async cmd to create the dialog.
+			AccessRightsInfoDlg.createDlg(
+										false,
+										true,
+										new Integer( x ),
+										new Integer( y ),
+										null,
+										new AccessRightsInfoDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final AccessRightsInfoDlg dlg )
+				{
+					m_accessRightsInfoDlg = dlg;
+					
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							invokeAccessRightsInfoDlg( x, y );
+						}
+					} );
+				}
+			} );
+		}
+		else
+		{
+			AccessRightsInfoDlgClient client = null;
+			
+			// Run an async cmd to show the dialog.
+			AccessRightsInfoDlg.initAndShow(
+											m_accessRightsInfoDlg,
+											new Integer( x ),
+											new Integer( y ),
+											client );
+		}
+		
+	}
+
 	/**
 	 * Update the GwtShareItem with the expiration value from the dialog
 	 */

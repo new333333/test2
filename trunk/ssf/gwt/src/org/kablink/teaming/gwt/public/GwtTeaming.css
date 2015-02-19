@@ -5333,6 +5333,12 @@ td.datePickerMonth {
 	margin-top: 5px;
 }
 
+.editShareRightsDlg_AccessRightsInfoImg
+{
+	cursor: pointer;
+	margin-left: 4px;
+	vertical-align: bottom;
+}
 
 /**
  * Styles used in the "User Actions" popup in the mast head
@@ -6430,5 +6436,22 @@ td.datePickerMonth {
 }
 
 /* End: Edit KeyShield SSO Configuration dialog */
+
+
+
+/* Start: Access Rights Info dialog */
+
+.accessRightsInfoDlg_Section
+{
+	margin-bottom: 10px;
+}
+
+.accessRightsInfoDlg_Label
+{
+	font-weight: bold;
+	margin-right: .5em;
+}
+
+/* End: Access Rights Info dialog */
 
 /* End Of File */

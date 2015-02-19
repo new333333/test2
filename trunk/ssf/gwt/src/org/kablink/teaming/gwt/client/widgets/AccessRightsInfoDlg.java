@@ -37,26 +37,24 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * ?
  * 
  * @author jwootton
  */
-public class PromptForExternalUsersEmailAddressDlg extends DlgBox
+public class AccessRightsInfoDlg extends DlgBox
 {
-	private TextBox m_emailAddressesTB;
-	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
@@ -66,12 +64,12 @@ public class PromptForExternalUsersEmailAddressDlg extends DlgBox
 	
 
 	/**
-	 * Callback interface to interact with the "Prompt for external users email address" dialog
+	 * Callback interface to interact with the "Access Rights Information" dialog
 	 * asynchronously after it loads. 
 	 */
-	public interface PromptForExternalUsersEmailAddressDlgClient
+	public interface AccessRightsInfoDlgClient
 	{
-		void onSuccess( PromptForExternalUsersEmailAddressDlg dlg );
+		void onSuccess( AccessRightsInfoDlg dlg );
 		void onUnavailable();
 	}
 
@@ -79,14 +77,14 @@ public class PromptForExternalUsersEmailAddressDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private PromptForExternalUsersEmailAddressDlg(
+	private AccessRightsInfoDlg(
 		boolean autoHide,
 		boolean modal,
 		int xPos,
 		int yPos,
 		EditSuccessfulHandler editSuccessfulHandler )
 	{
-		super( autoHide, modal, xPos, yPos, DlgButtonMode.OkCancel );
+		super( autoHide, modal, xPos, yPos, DlgButtonMode.Close );
 		
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
@@ -96,7 +94,7 @@ public class PromptForExternalUsersEmailAddressDlg extends DlgBox
 		
 		// Create the header, content and footer of this dialog box.
 		createAllDlgContent(
-						GwtTeaming.getMessages().PromptForExternalUsersEmailAddressDlg_Header(),
+						GwtTeaming.getMessages().AccessRightsInfoDlg_Header(),
 						editSuccessfulHandler,
 						null,
 						null );
@@ -116,19 +114,72 @@ public class PromptForExternalUsersEmailAddressDlg extends DlgBox
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		// Add a hint
+		// Add the info about what Viewer means
 		{
-			Label label;
+			FlowPanel panel;
+			InlineLabel label;
+			String txt;
 			
-			label = new Label( messages.PromptForExternalUsersEmailAddressDlg_Hint() );
-			label.addStyleName( "promptForExternalUsersEmailAddressDlg_Hint" );
-			mainPanel.add( label );
+			panel = new FlowPanel();
+			panel.addStyleName( "accessRightsInfoDlg_Section" );
+			mainPanel.add( panel );
+			
+			label = new InlineLabel( messages.AccessRightsInfoDlg_Viewer() );
+			label.addStyleName( "accessRightsInfoDlg_Label" );
+			panel.add( label );
+			
+			if ( GwtClientHelper.isLicenseFilr() )
+				txt = messages.AccessRightsInfoDlg_ViewerDesc_Filr();
+			else
+				txt = messages.AccessRightsInfoDlg_ViewerDesc_Vibe();
+			label = new InlineLabel( txt );
+			panel.add( label );
 		}
 		
-		m_emailAddressesTB = new TextBox();
-		m_emailAddressesTB.setVisibleLength( 50 );
-		mainPanel.add( m_emailAddressesTB );
-
+		// Add the info about what Editor means
+		{
+			FlowPanel panel;
+			InlineLabel label;
+			String txt;
+			
+			panel = new FlowPanel();
+			panel.addStyleName( "accessRightsInfoDlg_Section" );
+			mainPanel.add( panel );
+			
+			label = new InlineLabel( messages.AccessRightsInfoDlg_Editor() );
+			label.addStyleName( "accessRightsInfoDlg_Label" );
+			panel.add( label );
+			
+			if ( GwtClientHelper.isLicenseFilr() )
+				txt = messages.AccessRightsInfoDlg_EditorDesc_Filr();
+			else
+				txt = messages.AccessRightsInfoDlg_EditorDesc_Vibe();
+			label = new InlineLabel( txt );
+			panel.add( label );
+		}
+		
+		// Add the info about what Contributor means
+		{
+			FlowPanel panel;
+			InlineLabel label;
+			String txt;
+			
+			panel = new FlowPanel();
+			panel.addStyleName( "accessRightsInfoDlg_Section" );
+			mainPanel.add( panel );
+			
+			label = new InlineLabel( messages.AccessRightsInfoDlg_Contributor() );
+			label.addStyleName( "accessRightsInfoDlg_Label" );
+			panel.add( label );
+			
+			if ( GwtClientHelper.isLicenseFilr() )
+				txt = messages.AccessRightsInfoDlg_ContributorDesc_Filr();
+			else
+				txt = messages.AccessRightsInfoDlg_ContributorDesc_Vibe();
+			label = new InlineLabel( txt );
+			panel.add( label );
+		}
+		
 		return mainPanel;
 	}
 	
@@ -138,17 +189,7 @@ public class PromptForExternalUsersEmailAddressDlg extends DlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-		String emailAddresses = null;
-		
-		emailAddresses = m_emailAddressesTB.getValue();
-		if ( emailAddresses == null || emailAddresses.length() == 0 )
-		{
-			Window.alert( GwtTeaming.getMessages().PromptForExternalUsersEmailAddressDlg_NoEmailAddressesEntered() );
-			m_emailAddressesTB.setFocus( true );
-			return null;
-		}
-		
-		return emailAddresses;
+		return null;
 	}
 	
 	
@@ -158,7 +199,7 @@ public class PromptForExternalUsersEmailAddressDlg extends DlgBox
 	@Override
 	public FocusWidget getFocusWidget()
 	{
-		return m_emailAddressesTB;
+		return null;
 	}
 	
 	/**
@@ -166,9 +207,6 @@ public class PromptForExternalUsersEmailAddressDlg extends DlgBox
 	 */
 	public void init()
 	{
-		hideStatusMsg();
-		setOkEnabled( true );
-		m_emailAddressesTB.setValue( "" );
 	}
 	
 	/**
@@ -181,9 +219,9 @@ public class PromptForExternalUsersEmailAddressDlg extends DlgBox
 		final Integer left,
 		final Integer top,
 		final EditSuccessfulHandler editSuccessfulHandler,
-		final PromptForExternalUsersEmailAddressDlgClient dlgClient )
+		final AccessRightsInfoDlgClient dlgClient )
 	{
-		GWT.runAsync( PromptForExternalUsersEmailAddressDlg.class, new RunAsyncCallback()
+		GWT.runAsync( AccessRightsInfoDlg.class, new RunAsyncCallback()
 		{
 			@Override
 			public void onFailure( Throwable reason )
@@ -197,14 +235,14 @@ public class PromptForExternalUsersEmailAddressDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				PromptForExternalUsersEmailAddressDlg dlg;
+				AccessRightsInfoDlg dlg;
 				
-				dlg = new PromptForExternalUsersEmailAddressDlg(
-													autoHide,
-													modal,
-													left,
-													top,
-													editSuccessfulHandler );
+				dlg = new AccessRightsInfoDlg(
+											autoHide,
+											modal,
+											left,
+											top,
+											editSuccessfulHandler );
 				
 				if ( dlgClient != null )
 					dlgClient.onSuccess( dlg );
@@ -217,12 +255,12 @@ public class PromptForExternalUsersEmailAddressDlg extends DlgBox
 	 * executing code is in this split point.
 	 */
 	public static void initAndShow(
-		final PromptForExternalUsersEmailAddressDlg dlg,
+		final AccessRightsInfoDlg dlg,
 		final Integer left,
 		final Integer top,
-		final PromptForExternalUsersEmailAddressDlgClient dlgClient )
+		final AccessRightsInfoDlgClient dlgClient )
 	{
-		GWT.runAsync( PromptForExternalUsersEmailAddressDlg.class, new RunAsyncCallback()
+		GWT.runAsync( AccessRightsInfoDlg.class, new RunAsyncCallback()
 		{
 			@Override
 			public void onFailure( Throwable reason )
