@@ -1001,7 +1001,7 @@ public class GwtMenuHelper {
 	 */
 	private static void constructEntryDownloadAsCSVFile(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
 		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
-		if (canDownload && bs.getBinderModule().testAccess(folder, BinderOperation.downloadFolderAsCsv)) {
+		if (canDownload && bs.getFolderModule().testAccess( folder, FolderOperation.downloadFolderAsCsv )) {
 			ToolbarItem downloadAsCSVFileTBI = new ToolbarItem("1_downloadAsCSVFile");
 			markTBITitle(   downloadAsCSVFileTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
 			markTBIEvent(   downloadAsCSVFileTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
@@ -2346,14 +2346,23 @@ public class GwtMenuHelper {
 				}
 				
 				// For folders...
-				if (isFolder) {
-					// ...add a ToolbarItem for for downloading it as a
-					// ...CSV file.
-					actionTBI = new ToolbarItem(DOWNLOAD_AS_CSV_FILE);
-					markTBITitle(   actionTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
-					markTBIEvent(   actionTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
-					markTBIEntityId(actionTBI, binder                                   );
-					configTBI.addNestedItem(actionTBI);
+				if (isFolder ) {
+					Folder folder;
+					
+					folder = bs.getFolderModule().getFolder( binder.getId() );
+					
+					// Does the user have rights to download the folder as a csv file?
+					if ( bs.getFolderModule().testAccess( folder, FolderOperation.downloadFolderAsCsv ) )
+					{
+						// Yes
+						// ...add a ToolbarItem for for downloading it as a
+						// ...CSV file.
+						actionTBI = new ToolbarItem(DOWNLOAD_AS_CSV_FILE);
+						markTBITitle(   actionTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
+						markTBIEvent(   actionTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
+						markTBIEntityId(actionTBI, binder                                   );
+						configTBI.addNestedItem(actionTBI);
+					}
 				}
 			}
 
