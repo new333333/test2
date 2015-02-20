@@ -90,8 +90,13 @@ public class IndexingJournal extends ZonedObject {
 	public void setOperationName(String operationName) {
 		this.operationName = operationName;
 	}
-	
+
 	public String getIpv4Address() {
 		return ipv4Address;
 	}
+
+	public void setIpv4Address(String ipv4Address) {
+		this.ipv4Address = ipv4Address;
+	}
+	
 }
