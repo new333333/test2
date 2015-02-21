@@ -49,4 +49,8 @@ public class OutsideOfBinderChangesWindowException extends VibeRuntimeException 
 		return ApiErrorCode.CHANGES_WINDOW_PASSED;
 	}
 
+	@Override
+	public boolean logException() {
+		return false;
+	}
 }

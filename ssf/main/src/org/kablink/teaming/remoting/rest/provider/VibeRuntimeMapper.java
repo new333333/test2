@@ -50,10 +50,14 @@ public class VibeRuntimeMapper implements ExceptionMapper<VibeRuntimeException> 
 	
 	public Response toResponse(VibeRuntimeException ex) {
 		int httpStatusCode = ex.getHttpStatusCode();
-		if(httpStatusCode == Response.Status.NOT_FOUND.getStatusCode())
-			logger.warn("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + ")", ex);
-		else
-			logger.error("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + ")", ex);
+		if (ex.logException()) {
+			if (httpStatusCode == Response.Status.NOT_FOUND.getStatusCode())
+				logger.warn("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + ")", ex);
+			else
+				logger.error("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + ")", ex);
+		} else {
+			logger.warn("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + "): " + ex.getApiErrorCode().name() + "/" + ex.getLocalizedMessage());
+		}
 		return Response.status(httpStatusCode).entity(new ErrorInfo(ex.getApiErrorCode().name(), ex.getLocalizedMessage())).build();
 	}
 
