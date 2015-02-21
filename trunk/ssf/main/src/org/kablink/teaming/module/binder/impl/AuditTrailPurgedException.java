@@ -49,4 +49,8 @@ public class AuditTrailPurgedException extends VibeRuntimeException {
 		return ApiErrorCode.CHANGES_PURGED;
 	}
 
+	@Override
+	public boolean logException() {
+		return false;
+	}
 }

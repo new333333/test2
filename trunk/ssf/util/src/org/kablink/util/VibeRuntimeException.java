@@ -56,6 +56,10 @@ public abstract class VibeRuntimeException extends RuntimeException implements H
 	public VibeRuntimeException(Throwable cause) {
 		super(cause);
 	}
-    
+
+	public boolean logException() {
+		return true;
+	}
+
 	
 }

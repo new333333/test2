@@ -50,4 +50,8 @@ public class AclChangeException extends VibeRuntimeException {
 		return ApiErrorCode.ACL_CHANGED;
 	}
 
+	@Override
+	public boolean logException() {
+		return false;
+	}
 }
