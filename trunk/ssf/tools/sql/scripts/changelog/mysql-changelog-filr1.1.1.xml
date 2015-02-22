@@ -364,12 +364,20 @@
     </changeSet>
     
     <changeSet author="jong" context="schema" failOnError="true" id="38">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<columnExists tableName="SS_IndexingJournal" columnName="ipv4Address"/>
+            </not>
+        </preConditions>
         <comment>IPv4 address of the node adding the log</comment>
         <addColumn tableName="SS_IndexingJournal">
             <column name="ipv4Address" type="VARCHAR(16)">
                 <constraints nullable="true" />
             </column>
         </addColumn>
+        <modifySql dbms="mysql">
+            <append value=" character set latin1 collate latin1_bin"/>
+        </modifySql>
     </changeSet>
     
 </databaseChangeLog>
