@@ -320,6 +320,11 @@
     </changeSet>
     
     <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<columnExists tableName="SS_IndexingJournal" columnName="ipv4Address"/>
+            </not>
+        </preConditions>
         <comment>IPv4 address of the node adding the log</comment>
         <addColumn tableName="SS_IndexingJournal">
             <column name="ipv4Address" type="VARCHAR2(16 CHAR)">
