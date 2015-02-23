@@ -1353,7 +1353,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                     modDate = ResourceUtil.max(modDate, (Date) entry.get(Constants.MODIFICATION_DATE_FIELD));
                 } else if (Constants.DOC_TYPE_ENTRY.equals(docType)) {
                     files++;
-                    String sizeStr = (String) entry.get(Constants.FILE_SIZE_IN_BYTES_FIELD);
+                    String sizeStr = SearchResultBuilderUtil.getString(entry, Constants.FILE_SIZE_IN_BYTES_FIELD);
                     if(sizeStr != null)
                         try {
                             diskSpace += Long.valueOf(sizeStr);
