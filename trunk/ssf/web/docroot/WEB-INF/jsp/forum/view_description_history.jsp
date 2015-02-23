@@ -45,6 +45,15 @@
 <% boolean entryInTrash = MiscUtil.isEntryPreDeleted(entryId); %>
 
 <c:set var="ss_useExplicitFileVersionNumbers" value="true" scope="request" />
+<c:set var="moreCount" value="20" scope="request" />
+<c:set var="oper2" value='<%= request.getParameter("ssOperation2") %>' scope="request"/>
+<c:if test="${!empty oper2}">
+  <c:set var="ssOperation2" value="${oper2}" scope="request" />
+</c:if>
+<c:if test="${empty oper2}">
+  <c:set var="ssOperation2" value="${moreCount}" scope="request" />
+</c:if>
+
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
@@ -243,6 +252,25 @@ function diff( o, n ) {
 
 
 <script type="text/javascript">
+function getMoreEntries() {
+	var url = self.location.href;
+	var op2 = "&ssOperation2=" + "${moreCount*2}";
+	if (url.indexOf("&ssOperation2=") > 0) {
+		var i = url.indexOf("&ssOperation2=") + 14;
+		var count = url.substring(i, url.length);
+		count = count.substring(0, count.indexOf("&"));
+		var newCount = parseInt(count) + ${moreCount};
+		op2 = "&ssOperation2=" + newCount;
+		var url1 = url.substring(0, url.indexOf("&ssOperation2="));
+		var url2 = url.substring(url.indexOf("&ssOperation2=") + 14 + count.length, url.length);
+		url = url1 + url2;
+	}
+	var url1 = url.substring(0, url.indexOf("&operation="));
+	var url2 = url.substring(url.indexOf("&operation="), url.length);
+	url = url1 + op2 + url2;
+	self.location.href = url;
+}
+
 function clearAllCheckboxes() {
 	//Look through all of the checkboxes and clear them
 	var inputElements = document.getElementsByTagName("input");
@@ -313,7 +341,7 @@ function ss_resizeIframeArea() {
 	<div class="marginbottom3">
 		<span class="ss_style"><ssf:nlt tag="entry.version.instructions"/></span>
 	</div>
-	<form class="ss_style ss_form" method="post" action="<ssf:url     
+	<form name="viewEntryHistoryForm" class="ss_style ss_form" method="post" action="<ssf:url     
 		adapter="true" 
 		portletName="ss_forum" 
 		action="view_editable_history" 
@@ -339,7 +367,7 @@ function ss_resizeIframeArea() {
 			<th colspan="2">&nbsp;</th>
 		</tr>
 	
-		<c:forEach var="change" items="${ss_changeLogList}" varStatus="status">
+		<c:forEach var="change" items="${ss_changeLogList}" varStatus="status" end="${ssOperation2 - 1}">
 		  <c:set var="changeLog" value="${change.changeLog}"/>
 		  <jsp:useBean id="changeLog" type="org.kablink.teaming.domain.ChangeLog" />
 		  <tr class="ss_tab_table_row">
@@ -464,7 +492,12 @@ function ss_resizeIframeArea() {
 	</table>
 	
 	<div class="margintop2 marginbottom3">
-	  <input class="ss_tinyButton" style="border: 0px; font-size: 11px;" type="button" name="clearAllBtn" value="<ssf:nlt tag="button.deselectAll"/>" onclick="clearAllCheckboxes();"/>
+	  <c:if test="${fn:length(ss_changeLogList) > ssOperation2}">
+		  <input class="ss_tinyButton" style="border: 0px; font-size: 11px;" type="button" name="moreBtn" value="<ssf:nlt tag="general.more"/>" 
+		    onclick="getMoreEntries();"/>
+	  </c:if>
+	  <input class="ss_tinyButton" style="border: 0px; font-size: 11px;" type="button" name="clearAllBtn" value="<ssf:nlt tag="button.deselectAll"/>" 
+	    onclick="clearAllCheckboxes();"/>
 	</div>
 	</form>
 
