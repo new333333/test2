@@ -39,7 +39,6 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
@@ -93,7 +92,7 @@ import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.teaming.web.util.PasswordPolicyHelper;
 import org.kablink.teaming.web.util.PasswordPolicyHelper.PasswordStatus;
 import org.kablink.util.api.ApiErrorCode;
-
+import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.liferay.util.Validator;
@@ -503,11 +502,26 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			if ( ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
 			{
 				// Yes
-				// Don't set the first login date.  We will set it after the admin has
-				// changed the default password.
-				setFirstLoginDate = false;
+				// Are we running Vibe?
+				if ( Utils.checkIfVibe() )
+				{
+					// Yes
+					// Are we upgrading from Vibe 3.x?
+					if( ExtendedPBEStringEncryptor.SYMMETRIC_ENCRYPTION_ALGORITHM_SECOND_GEN.equals( user.getPwdenc() ) )
+					{
+						// No
+						setFirstLoginDate = false;
+					}
+				}
+				else
+				{
+					// No, running Filr
+					setFirstLoginDate = false;
+				}
 			}
 			
+			// If setFirstLoginDate is false, don't set the first login date.  We will set it after the admin has
+			// changed the default password.  This enables us to prompt the admin to change their password.
 			if ( setFirstLoginDate )
 				getProfileModule().setFirstLoginDate(user.getId());
 		}
