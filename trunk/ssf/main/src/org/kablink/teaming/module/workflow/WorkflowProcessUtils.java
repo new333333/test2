@@ -193,6 +193,10 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
  		if ((props != null) && !props.isEmpty()) {
  	    	Set<Long>ids = new HashSet();
 	    	DefinableEntity entity = (DefinableEntity)wfEntry;
+			DefinableEntity topEntry = null;
+			if (entity instanceof FolderEntry && !((FolderEntry)entity).isTop()) {
+				topEntry = ((FolderEntry)entity).getTopEntry();
+			}
 	    	for (Element prop:props) {
 	    		String name = prop.attributeValue("name","");
 	    		String value = prop.attributeValue("value","");
@@ -206,6 +210,11 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    		if (entity.getEntryDefId() != null) {
 		    			List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
 		    					entity.getEntryDefId() + "']");
+						if ((userLists == null || userLists.isEmpty()) && topEntry != null && topEntry.getEntryDefId() != null) {
+							//There are no user lists here, try looking in the top entry
+							userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
+									topEntry.getEntryDefId() + "']");
+						}
 		    			if (userLists != null && !userLists.isEmpty()) {
 		    				for (Element element:userLists) {
 		    					String userListName = element.attributeValue("elementName"); //custom attribute name
@@ -217,6 +226,10 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    						userListName = userListName.substring(userListName.indexOf(":")+1);
 		    					}
 		    					CustomAttribute attr = entity.getCustomAttribute(userListName); 
+								if (attr == null && topEntry != null) {
+									//The current entry is a reply. So also check if the custom attribute is from the top entry
+									attr = topEntry.getCustomAttribute(userListName); 
+								}
 		    					if (attr != null) {
 		    						//comma separated value
 		    						if (listType.equals("user_list") || listType.equals("group_list") ||
