@@ -1489,7 +1489,11 @@ public class EditLdapServerConfigDlg extends DlgBox
 		if ( guidValue == null || guidValue.length() == 0 )
 			dirType = DIR_TYPE_EDIR;
 		else
+		{
 			dirType = guidValue;
+			if ( dirType.equalsIgnoreCase( DIR_TYPE_AD ) == false && dirType.equalsIgnoreCase( DIR_TYPE_EDIR ) == false )
+				dirType = DIR_TYPE_OTHER;
+		}
 		
 		return dirType;
 	}
@@ -1909,25 +1913,6 @@ public class EditLdapServerConfigDlg extends DlgBox
 
 		dirType = getDirTypeFromConfig( config );
 
-		if ( dirType.equalsIgnoreCase( DIR_TYPE_EDIR ) == false && dirType.equalsIgnoreCase( DIR_TYPE_AD ) == false )
-		{
-			String proxyDn;
-			
-			// The admin must have selected another attribute besides "GUID" and "objectGUID"
-			// Look at the proxy user dn to see if it contains "dc=".  If it does then we
-			// are probably dealing with AD
-			proxyDn = config.getProxyDn();
-			if ( proxyDn != null && proxyDn.indexOf( "dc=" ) >= 0 )
-			{
-				dirType = DIR_TYPE_AD;
-			}
-			else
-			{
-				// Default to eDir
-				dirType = DIR_TYPE_EDIR;
-			}
-		}
-
 		GwtClientHelper.selectListboxItemByValue( m_dirTypeLB, dirType );
 	}
 	
@@ -1939,6 +1924,16 @@ public class EditLdapServerConfigDlg extends DlgBox
 		if ( guidValue == null || guidValue.length() == 0 )
 			guidValue = EDIR_GUID_NAME;
 
+		// Does the given attribute exist in our listbox?
+		if ( GwtClientHelper.doesListboxContainValue( m_guidLB, guidValue ) == -1 )
+		{
+			int index;
+			
+			// No, add it to the list box before other.
+			index = GwtClientHelper.doesListboxContainValue( m_guidLB, OTHER_ATTRIB );
+			m_guidLB.insertItem( guidValue, guidValue, index );
+		}
+		
 		GwtClientHelper.selectListboxItemByValue( m_guidLB, guidValue );
 	}
 	
