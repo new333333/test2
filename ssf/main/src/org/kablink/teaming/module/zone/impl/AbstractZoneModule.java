@@ -1761,6 +1761,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
 //		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
+		function.addOperation(WorkAreaOperation.DOWNLOAD_FOLDER_AS_CSV);
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
