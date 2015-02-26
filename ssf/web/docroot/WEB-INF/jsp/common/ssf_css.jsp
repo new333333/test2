@@ -1232,14 +1232,14 @@ img.ss_sliding_table_column_image {
   height:26px !important;
   background-color: #fff; 
   border-bottom: 1px solid #ededed; 
-  line-height:18px !important;
+  line-height: 0px !important;
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_sliding_table_row1 {
   height:26px !important;
   background-color: #fff;
   border-bottom: 1px solid #ededed; 
-  line-height:18px !important;
+  line-height: 0px !important;
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_highlightEntry {
