@@ -8,6 +8,10 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
+    <!-- ============================== Base beans =================================== -->
+	
+    <import resource="security-auth-common.xml"/>
+
     <!-- ============================== Basic authentication ============================ -->
     
     <!-- Note: This option is reserved only for use in conjunction with iChain/NAM or similar 
