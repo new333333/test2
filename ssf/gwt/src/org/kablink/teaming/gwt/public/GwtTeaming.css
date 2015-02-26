@@ -3906,7 +3906,7 @@ top:100px;
 {
 	display: inline;
 	font-size: 1.25em;
-	font-weight: bold;
+	font-weight: normal;
 	padding-left: 2px !important;
 }
 .gwtTaskList_assigneeEnabled
@@ -3922,9 +3922,9 @@ top:100px;
 	color: #036f9f;
 	cursor: pointer;
 	background: #cce9ee;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 .gwtTaskList_calculatedDate
 {
@@ -4186,6 +4186,7 @@ a.sort-column:hover
 {
 	color: red;
 	font-weight: bold;
+	font-size: 12px;
 }
 	
 .gwtTaskList_task-icon, .gwtTaskList_icon-spacer
@@ -4204,8 +4205,8 @@ a.gwtTaskList_task-icon:hover
 .gwtTaskList_task-locationAnchor:hover
 {
 	background: #cce9ee;
-	-moz-border-radius: 3px;
 	border-radius: 3px;
+	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 .gwtTaskList_task-nameAnchor, .gwtTaskList_task-nameAnchor:visited
