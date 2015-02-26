@@ -7,7 +7,11 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
-	    
+	
+    <!-- ============================== Base beans =================================== -->
+	
+    <import resource="security-auth-common.xml"/>
+
     <!-- ============================== Preemptive authentication using HTTP BASIC authorization header  ============================ -->
 
 	<bean id="basicProcessingFilter" class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
@@ -16,8 +20,6 @@
 	</bean>
 
     <!-- ============================== Form-based authentication ============================ -->
-    
-    <bean id="authenticationDetailsSource" class="org.springframework.security.web.authentication.WebAuthenticationDetailsSource"/>
     
     <import resource="security-auth-form-common.xml"/>
         
