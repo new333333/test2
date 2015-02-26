@@ -823,17 +823,18 @@ public class AccessUtils  {
  			} catch (AccessControlException ex) {
  				if (entry.isWorkAreaAccess(accessType)) { 		
  					//The workflow ACL did not allow this operation but the acl specifies "forum default", 
- 					//  so now see if the entry affords this operation
- 					operationCheck(user, binder, (Entry)entry, operation);
+ 					//  so now see if the binder affords this operation
+ 					getInstance().accessControlManager.checkOperation(user, binder, operation);
  				} else throw ex;
  			}
  			
  		} else {
  			//"Widening" is not allowed, so we must also have READ access to binder
  			if (entry.isWorkAreaAccess(accessType)) {
- 				//The workflow specifies "forum default" for this access. So, just do the regular check. If that fails check the workflow acl.
+ 				//The workflow specifies "forum default" for this access. 
+ 				// So, just do the regular binder level check. If that fails check the workflow acl.
  				try {
- 					operationCheck(user, binder, (Entry)entry, operation);
+ 					getInstance().accessControlManager.checkOperation(user, binder, operation);
 					return;
  				} catch (AccessControlException ex) {} //move on to next checks
  			}
