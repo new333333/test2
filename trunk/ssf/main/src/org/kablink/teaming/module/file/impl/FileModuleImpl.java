@@ -730,6 +730,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
                     } catch (IOException e1) {
                         logger.error("Failed to delete bad file " + fui.getOriginalFilename(), e1);
                     }
+					logger.error("Error verifying the file " + fui.getOriginalFilename() + " check sum for user " +
+							RequestContextHolder.getRequestContext().toString() + ".  Expected: " + fui.getExpectedMd5()
+							+ "; Actual: " + fui.getMd5());
                     if(errors != null) {
                         // Since we are not throwing an exception immediately in
                         // this case, log the error right here.
