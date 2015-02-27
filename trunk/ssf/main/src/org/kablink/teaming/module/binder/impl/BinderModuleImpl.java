@@ -2167,6 +2167,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				binder.getEntityIdentifier());
 	}
 
+	@Deprecated
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults) {
+		return this.executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null);
+	}
+
 	@Override
 	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames) {
 		return executeSearchQuery(crit, searchMode, offset, maxResults, fieldNames, false);
