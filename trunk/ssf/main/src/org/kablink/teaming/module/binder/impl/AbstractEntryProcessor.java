@@ -277,9 +277,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	//See if there was an entry created. If so, delete it.
         	if (ex.getEntityId() != null && newEntry != null && ex.getEntityId().equals(newEntry.getId())) {
         		try {
+                    logger.warn("An error occurred during the creation of the folder entry: " + ex.getLocalizedMessage() + ".   Will clean up partially created entry.");
         			deleteEntry(binder, newEntry, false, new HashMap());
         		} catch(Exception e) {
         			//Any further errors while trying to delete the entry are ignored
+                    logger.warn("Failed to clean up folder entry.", e);
         		}
         		ex.setEntityId(null);
         	}
@@ -287,9 +289,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         } catch (DataIntegrityViolationException e) {
             if (newEntry != null && newEntry.getId()!=null) {
             	try {
+                    logger.warn("An error occurred during the creation of the folder entry: " + e.getLocalizedMessage() + ".   Will clean up partially created entry.");
             		deleteEntry(binder, newEntry, false, new HashMap());
             	} catch(Exception e2) {
             		//Any further errors while trying to delete the entry are ignored
+                    logger.warn("Failed to clean up folder entry.", e);
             	}
            	}
             throw new DataIntegrityViolationException(e.getLocalizedMessage(), e);
@@ -297,9 +301,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
         	if (newEntry != null && newEntry.getId()!=null) {
         		try {
+                    logger.warn("An error occurred during the creation of the folder entry: " + ex.getLocalizedMessage() + ".   Will clean up partially created entry.");
         			deleteEntry(binder, newEntry, false, new HashMap());
         		} catch(Exception e2) {
         			//Any further errors while trying to delete the entry are ignored
+                    logger.warn("Failed to clean up folder entry.", ex);
         		}
         	}
         	throw new WriteEntryDataException(entryDataErrors);
