@@ -320,6 +320,9 @@ public interface BinderModule {
      * @param preDeleted
      * @return
      */
+	@Deprecated
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults);
+	
     public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames);
     public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted);
     public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted, boolean ignoreAcls);
