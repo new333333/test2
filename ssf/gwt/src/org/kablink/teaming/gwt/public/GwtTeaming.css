@@ -4934,7 +4934,7 @@ td.datePickerMonth {
 	padding-bottom: 12px;
 }
 
-.vibe-hoverHint      {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #fafad5; width: auto; -moz-border-radius: 6px; border-radius: 6px; -webkit-border-radius: 6px;}
+.vibe-hoverHint      {font-family: Arial, Helvetica, sans-serif; position:absolute; max-width: 600px; border:1px solid #d2d5d1; margin:2px; padding: 2px 10px; background-color: #fafad5; width: auto; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 .vibe-hoverHintLabel {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
 
 /* End */
