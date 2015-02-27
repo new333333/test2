@@ -48,7 +48,19 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.WindowTitleSetEvent;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
+import org.kablink.teaming.gwt.client.rpc.shared.ChangePasswordCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DumpHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDiskUsageInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetPasswordExpirationCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalActivityStreamsTreeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalTreeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -604,8 +616,34 @@ public class GwtClientHelper {
 	 * @param callback
 	 */
 	public static void executeCommand(VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback) {
+		boolean runAsAdmin = false;
+		
 		GwtMainPage mp = GwtTeaming.getMainPage();
-		cmd.setRunAsAdmin( ( null != mp ) && mp.isAdminActive() );	// If from the admin console, run it as admin.
+
+		// Are we in the admin console?
+		if ( ( null != mp ) && mp.isAdminActive() )
+		{
+			// Yes, since we are in the admin console, run the command as admin.
+			// However, never run the following commands as admin 
+			if ( (cmd instanceof GetUpgradeInfoCmd) == false &&
+				 (cmd instanceof GetPasswordExpirationCmd) == false &&
+				 (cmd instanceof GetDiskUsageInfoCmd) == false &&
+				 (cmd instanceof GetPersonalPrefsCmd) == false &&
+				 (cmd instanceof GetSiteAdminUrlCmd) == false &&
+				 (cmd instanceof DumpHistoryInfoCmd) == false &&
+				 (cmd instanceof GetHorizontalTreeCmd) == false &&
+				 (cmd instanceof GetVerticalActivityStreamsTreeCmd) == false &&
+				 (cmd instanceof GetVerticalTreeCmd) == false &&
+				 (cmd instanceof GetViewInfoCmd) == false &&
+				 (cmd instanceof ChangePasswordCmd) == false &&
+				 (cmd instanceof GetSystemBinderPermalinkCmd) == false )
+			{
+				runAsAdmin = true;
+			}
+		}
+		
+		cmd.setRunAsAdmin( runAsAdmin );
+		
 		executeCommand( cmd, HttpRequestInfo.createHttpRequestInfo(), callback );
 	}	
 
