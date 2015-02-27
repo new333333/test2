@@ -70,6 +70,7 @@
     <stylesheet src='GwtFolderEntryView.css'        />		
     <stylesheet src='GwtDesktopAppDownloadPage.css' />		
     <stylesheet src='GwtReports.css'                />		
+    <stylesheet src='GwtCalendar.css'               />
     <stylesheet src='VibeCellTable.css'             />		
     <stylesheet src='VibeDataGrid.css'              />
     <stylesheet src='VibeWidgets.css'               />
