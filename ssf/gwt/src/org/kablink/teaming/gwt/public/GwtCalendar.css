@@ -97,7 +97,7 @@
 
 /* Calendar header */
 .gwt-cal .gwt-calendar-header {
-	background: #ccc;
+	background: #c4c4c4;
 	width: 100%;
 	border-bottom: 1px solid #b8b8b8;
 	width: 100%;
@@ -114,14 +114,14 @@
 	font-size: 12px;
 	text-align: center;
 	font-weight: normal;
-	background:#ccc;
+	background:#c4c4c4;
 }
 
 .gwt-cal .gwt-calendar-header .day-cell-container {
 	height: 20px;
 	position: relative;
 	overflow: hidden;
-	background:#ccc ;
+	background: #c4c4c4;
 }
 
 .gwt-cal .gwt-calendar-header .day-cell-weekend,
@@ -135,7 +135,7 @@
 	font-size: 12px;
 	padding-top: 2px;
 	font-weight: normal;
-	background:#ccc;
+	background:#c4c4c4;
 }
 
 .gwt-cal .gwt-calendar-header .day-cell-today {
@@ -170,7 +170,7 @@
 	height: 1px;
 	_height: 1px;
 	border-top: 0px solid #e0e0e0;
-	background: #ccc;
+	background: #c4c4c4;
 	border-bottom: 0px solid #e0e0e0;
 }
 
@@ -178,7 +178,7 @@
 	height: 20px;
 	position: relative;
 	overflow: hidden;
-	background:#ccc ;
+	background:#c4c4c4 ;
 }
 
 .gwt-cal .gwt-calendar-header .week-cell {
@@ -332,16 +332,16 @@
 	height: 5px;
 	_height: 5px;
 	border-top: 0px solid #e0e0e0;
-	background: #ccc;
+	background: #c4c4c4;
 	border-bottom: 0px solid #e0e0e0;
 }
 
 .gwt-cal .leftEmptyCell {
-    background: #ccc;
+    background: #c4c4c4;
     width:50px;
 }
 .gwt-cal .rightEmptyCell {
-    background: #ccc;
+    background: #c4c4c4;
 }
 
 
@@ -390,10 +390,10 @@
 
 .gwt-cal-MonthView .dayCell,
 .gwt-cal-MonthView .dayCell-today { border-left: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0;  }
-.gwt-cal-MonthView .dayCell .weekNumberLabel { height:20px; text-align:center;background-color: #ccc;font-size:13px;color:rgb(17, 42, 187);}
+.gwt-cal-MonthView .dayCell .weekNumberLabel { height:20px; text-align:center;background-color: #c4c4c4;font-size:13px;color:rgb(17, 42, 187);}
 
 .gwt-cal-MonthView .weekDayLabel, 
-.gwt-cal-MonthView .weekDayLabel-today { height:20px; text-align: center; background-color: #ccc; font-size:12px; color:#fff;
+.gwt-cal-MonthView .weekDayLabel-today { height:20px; text-align: center; background-color: #c4c4c4; font-size:12px; color:#fff;
 	text-transform:uppercase; vertical-align: middle !important;}
 .gwt-Cal-MonthView .dayCellLabel,
 .gwt-Cal-MonthView .dayCellLabel-today { background-color: rgb(232, 238, 247); display:block;height:15px;font-family:arial;font-size:11px;text-align:right;padding-right:5px; }
