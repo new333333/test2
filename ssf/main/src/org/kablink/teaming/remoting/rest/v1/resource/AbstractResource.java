@@ -1959,7 +1959,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             }
             Map resultMap;
             if (binder instanceof Folder) {
-                resultMap = searchForFolderContents(id, binders, entries || files, offset, maxCount);
+                resultMap = searchForFolderContents(id, binders, entries || files, allowJits, offset, maxCount);
             } else {
                 Criteria crit = new Criteria();
                 if (filter != null) {
@@ -2032,7 +2032,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
     }
 
-    private Map searchForFolderContents(long folderId, boolean includeSubFolders, boolean includeEntries, int offset, int maxCount) {
+    private Map searchForFolderContents(long folderId, boolean includeSubFolders, boolean includeEntries, boolean allowJits, int offset, int maxCount) {
         Map options = new HashMap();
         options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, includeSubFolders);
         options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_ENTRIES, includeEntries);
@@ -2042,6 +2042,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, Boolean.FALSE);
         options.put(ObjectKeys.SEARCH_OFFSET, offset);
         options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
+        options.put(ObjectKeys.SEARCH_ALLOW_JITS, allowJits);
 
         return getFolderModule().getEntries(folderId, options);
     }

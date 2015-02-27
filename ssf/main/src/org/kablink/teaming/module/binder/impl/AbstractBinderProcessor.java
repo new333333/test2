@@ -1888,8 +1888,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	//Set the sort order
     	SortField[] fields = SearchUtils.getSortFields(searchOptions); 
     	so.setSortBy(fields);
-    	
-    	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
+
+		Boolean allowJits = ((searchOptions != null) ? ((Boolean) searchOptions.get(ObjectKeys.SEARCH_ALLOW_JITS)) : null);
+		if (allowJits==null) {
+			allowJits = Boolean.TRUE;
+		}
+
+		LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
     	Hits hits = null;
         try {

@@ -1707,14 +1707,19 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     			searchMode = Constants.SEARCH_MODE_NORMAL;
     		}
     	}
-    	
+
+		Boolean allowJits = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_ALLOW_JITS)) : null);
+		if (allowJits==null) {
+			allowJits = Boolean.TRUE;
+		}
+
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
         try {
 	        //Make sure to get inaccessible sub-folders that have visible folders further down the tree
         	hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
 	        		so, searchMode.intValue(), searchOffset, 
-	        		maxResults, binder, true);
+	        		maxResults, binder, allowJits);
         }
         finally {
             luceneSession.close();
