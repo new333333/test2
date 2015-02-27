@@ -41,7 +41,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Group;
@@ -50,6 +49,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.runas.RunasCallback;
@@ -824,6 +824,18 @@ public class AdminHelper {
 								}
 							}
 						}
+					}
+				}
+
+				// Did we find a setting for the user?
+				if ( reply == null )
+				{
+					// No
+					// Is this user a secondary admin?
+					if ( am.testUserAccess( user, AdminOperation.manageFunction ) )
+					{
+						// Yes, secondary admins can log in.
+						reply = Boolean.TRUE;
 					}
 				}
 			}
