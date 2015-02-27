@@ -34,11 +34,14 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.rest.v1.model.Reply;
@@ -73,8 +76,18 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
 	// Delete folder entry
 	@DELETE
     @Path("{id}")
-	public void deleteFolderEntry(@PathParam("id") long id, @QueryParam("purge") @DefaultValue("false") boolean purge) throws WriteFilesException {
+	public void deleteFolderEntry(@PathParam("id") long id,
+                                  @QueryParam("purge") @DefaultValue("false") boolean purge,
+                                  @QueryParam("version") Integer lastVersionNumber
+                                  ) throws WriteFilesException {
         org.kablink.teaming.domain.FolderEntry folderEntry = _getFolderEntry(id);
+        if (lastVersionNumber!=null) {
+            FileAttachment fa = folderEntry.getPrimaryFileAttachment();
+            if (fa!=null && !FileUtils.matchesTopMostVersion(fa, lastVersionNumber, null, null)) {
+                throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file",
+                        ResourceUtil.buildFileProperties(fa));
+            }
+        }
         if (purge || folderEntry.getParentBinder().isMirrored()) {
             Map options = new HashMap();
             options.put(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS, true);

@@ -227,8 +227,14 @@ public class FileResource extends AbstractFileResource {
 
     @DELETE
     @Path("{id}")
-    public void deleteFileContent(@PathParam("id") String fileId, @QueryParam("purge") @DefaultValue("false") boolean purge) throws WriteFilesException, WriteEntryDataException {
+    public void deleteFileContent(@PathParam("id") String fileId,
+                                  @QueryParam("purge") @DefaultValue("false") boolean purge,
+                                  @QueryParam("version") Integer lastVersionNumber) throws WriteFilesException, WriteEntryDataException {
         FileAttachment fa = findFileAttachment(fileId);
+        if (lastVersionNumber!=null && !FileUtils.matchesTopMostVersion(fa, lastVersionNumber, null, null)) {
+            throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file",
+                    ResourceUtil.buildFileProperties(fa));
+        }
         DefinableEntity entity = fa.getOwner().getEntity();
         if (entity instanceof FolderEntry) {
             FolderUtils.deleteFileInFolderEntry((FolderEntry)entity, fa, !purge);
