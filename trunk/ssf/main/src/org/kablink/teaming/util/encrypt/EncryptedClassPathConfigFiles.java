@@ -37,9 +37,11 @@ import java.util.Properties;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.lang.invoke.MethodHandles;
 
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 import org.springframework.beans.factory.InitializingBean;
@@ -52,6 +54,8 @@ import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.util.PropertiesClassPathConfigFiles;
 import org.kablink.teaming.util.PropertiesSource;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class delegates to PropertiesClassPathConfigFiles rather than subclasses it
@@ -63,6 +67,8 @@ import org.apache.commons.codec.binary.Base64;
  */
 public class EncryptedClassPathConfigFiles
 	implements PropertiesSource, InitializingBean {
+	
+	private static Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
 	
 	// delegatee
 	PropertiesClassPathConfigFiles propertiesClassPathConfigFiles; 
@@ -90,7 +96,25 @@ public class EncryptedClassPathConfigFiles
     public void afterPropertiesSet() throws Exception {
     	props = propertiesClassPathConfigFiles.getProperties();
     	String key = props.getProperty("kablink.encryption.key"); //this will get the last definition of the key 
-    	if (Validator.isNull(key)) throw new ConfigurationException("Missing encryption key");
+    	if (Validator.isNull(key)) 
+    		throw new ConfigurationException("Missing encryption key");
+    	String initialKey = props.getProperty("kablink.encryption.key.initial");
+    	if(Validator.isNotNull(initialKey)) { // Initial key marked
+    		// Make sure initial key is the same as the current key, that is, the key hasn't changed
+    		if(!initialKey.equals(key)) {
+    			logger.error("*** ENCRYPTION KEY MUST NEVER CHANGE. IT WILL MAKE SYSTEM UNUSABLE!! - initial=[" + initialKey + "], current=[" + key + "]");
+    			throw new ConfigurationException("Detecting encryption key change - This will make system unusable!");
+    		}
+    	}
+    	else { // Initial key not marked yet
+    		// Mark current key as the initial (and the only) key
+    		try(FileWriter fw = new FileWriter(eResource.getFile(), true); BufferedWriter bw = new BufferedWriter(fw)) {
+    			bw.newLine();
+    			String line = "kablink.encryption.key.initial=" + key;
+    			bw.append(line);
+    			bw.flush();
+    		}
+    	}
     	key = new String(Base64.decodeBase64(key.getBytes()), "UTF-8");
     	//set key for encryption
     	encryptor.setPassword(key);
