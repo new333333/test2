@@ -131,7 +131,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		try {
 			FolderEntry entry = getFolderModule().getEntry(null, entryId);
 			FileAttachment att = entry.getFileAttachment(fileName);
-			FolderUtils.deleteFileInFolderEntry(entry, att);
+			FolderUtils.deleteFileInFolderEntry(this, entry, att);
 		}	catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}	catch(WriteEntryDataException e) {
@@ -840,7 +840,7 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		if(att == null || !(att instanceof FileAttachment))
 			return;		
 		try {
-			FolderUtils.deleteFileInFolderEntry(entry, (FileAttachment)att);
+			FolderUtils.deleteFileInFolderEntry(this, entry, (FileAttachment)att);
 		}	catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}	catch(WriteEntryDataException e) {
