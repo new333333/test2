@@ -279,7 +279,7 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 			if(owningEntity.getEntityType() == EntityType.folderEntry) {
 				if(logger.isDebugEnabled())
 					logger.debug("delete: deleting file " + toString() + " + owned by " + owningEntity.getEntityIdentifier().toString());
-				FolderUtils.deleteFileInFolderEntry((FolderEntry) owningEntity, fa);
+				FolderUtils.deleteFileInFolderEntry(this, (FolderEntry) owningEntity, fa);
 			}
 			else if(owningEntity.getEntityType() == EntityType.folder) {
 				List deletes = new ArrayList();

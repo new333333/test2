@@ -344,7 +344,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             throw new NoFileByTheNameException(filename);
         }
         if (entity instanceof FolderEntry) {
-            FolderUtils.deleteFileInFolderEntry((FolderEntry) entity, fa);
+            FolderUtils.deleteFileInFolderEntry(this, (FolderEntry) entity, fa);
         } else if (entity instanceof Principal) {
             List deletes = new ArrayList();
             deletes.add(fa.getId());
