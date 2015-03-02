@@ -343,6 +343,9 @@
     </changeSet>
         
     <changeSet author="jong" context="schema" failOnError="true" id="34">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="nvarchar">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_EmailLog' and COLUMN_NAME = 'comments'</sqlCheck>
+        </preConditions>
         <comment>Correct column data type</comment>
         <modifyDataType schemaName="dbo" tableName="SS_EmailLog" columnName="comments" newDataType="ntext"/>
     </changeSet>
