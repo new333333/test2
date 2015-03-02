@@ -50,6 +50,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.widgets.Spinner.SpinnerResources;
 
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.resources.client.ClientBundle;
@@ -116,8 +117,28 @@ public class ValueSpinner extends HorizontalPanel {
 						+ event.getCharCode()
 						+ previousText.substring(index, previousText.length());
 			}
-			valueBox.cancelKey();
-			try {
+
+	        int keyCode;
+
+	        // Get the key the user pressed
+	        keyCode = event.getNativeEvent().getKeyCode();
+	        
+	        // Only cancel the key pressed if the key is not a navigation key or delete key.
+	        if ( keyCode != KeyCodes.KEY_TAB &&
+	           	 keyCode != KeyCodes.KEY_BACKSPACE &&
+	           	 keyCode != KeyCodes.KEY_DELETE &&
+	           	 keyCode != KeyCodes.KEY_ENTER &&
+	           	 keyCode != KeyCodes.KEY_HOME &&
+	           	 keyCode != KeyCodes.KEY_END &&
+	           	 keyCode != KeyCodes.KEY_LEFT &&
+	           	 keyCode != KeyCodes.KEY_UP &&
+	           	 keyCode != KeyCodes.KEY_RIGHT &&
+	           	 keyCode != KeyCodes.KEY_DOWN )
+	        {
+				valueBox.cancelKey();
+	        }
+
+	        try {
 				double newValue = parseValue(newText);
 				if (spinner.isConstrained()
 						&& (newValue > spinner.getMax() || newValue < spinner
