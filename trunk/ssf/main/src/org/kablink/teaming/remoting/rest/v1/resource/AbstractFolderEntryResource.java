@@ -49,6 +49,7 @@ import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchResultTree;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.Tag;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.api.ApiErrorCode;
 
 import javax.ws.rs.Consumes;
@@ -79,7 +80,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
 	public void deleteFolderEntry(@PathParam("id") long id,
                                   @QueryParam("purge") @DefaultValue("false") boolean purge,
                                   @QueryParam("version") Integer lastVersionNumber
-                                  ) throws WriteFilesException {
+                                  ) throws Exception {
         org.kablink.teaming.domain.FolderEntry folderEntry = _getFolderEntry(id);
         if (lastVersionNumber!=null) {
             FileAttachment fa = folderEntry.getPrimaryFileAttachment();
@@ -100,7 +101,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
                 logger.info("Successfully deleted entry " + id + " from the DB.");
             }
         } else {
-            getFolderModule().preDeleteEntry(folderEntry.getParentBinder().getId(), id, getLoggedInUserId());
+            TrashHelper.preDeleteEntry(this, folderEntry.getParentBinder().getId(), id);
         }
 	}
 
