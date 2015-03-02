@@ -2687,6 +2687,7 @@ public class GwtServerHelper {
 	/**
 	 * Return a list of administration actions the user has rights to perform. 
 	 */
+	@SuppressWarnings("unused")
 	public static ArrayList<GwtAdminCategory> getAdminActions( HttpServletRequest request, Binder binder, AbstractAllModulesInjected allModules )
 	{
 		ArrayList<GwtAdminCategory> adminCategories;
@@ -2809,6 +2810,12 @@ public class GwtServerHelper {
 			// Are we exposing Vibe features?
 			if ( LicenseChecker.showVibeFeatures() )
 			{
+				//! DRF (20150302)
+				//!    Commented out until we have a full Team
+				//!    management solution.  What's there simply
+				//!    manages the contents of the root Team Workspaces
+				//!    binder.
+/*
 				// Yes!  Does the user have rights to "Manage teams"?
 				try
 				{
@@ -2829,6 +2836,8 @@ public class GwtServerHelper {
 					}
 				}
 				catch( AccessControlException e ) {}
+*/
+				//! DRF (20150302)
 			}
 			
 			// Is this the built-in administrator?

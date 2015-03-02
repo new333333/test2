@@ -3074,7 +3074,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// or team workspace workspace in management mode.  Is it
 		// supported?
 		WorkspaceType wt = getFolderInfo().getWorkspaceType();
-		if (wt.isGlobalRoot() || wt.isTeamRootManagement()) {
+		if (wt.isGlobalRoot() || wt.isTeamRoot()) {
 			// Yes!  Is the event targeted to this folder?
 			Long eventFolderId = event.getFolderId();
 			if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
@@ -3722,7 +3722,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// or team workspace workspace in management mode.  Is it
 		// supported?
 		WorkspaceType wt = getFolderInfo().getWorkspaceType();
-		if (wt.isGlobalRoot() || wt.isTeamRootManagement()) {
+		if (wt.isGlobalRoot() || wt.isTeamRoot()) {
 			// Yes!  Is the event targeted to this folder?
 			Long eventFolderId = event.getFolderId();
 			if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {

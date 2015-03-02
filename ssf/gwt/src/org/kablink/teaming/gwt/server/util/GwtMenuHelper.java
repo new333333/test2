@@ -1954,8 +1954,8 @@ public class GwtMenuHelper {
 		if (canSetSharingRights) {
 			// ...and we support sharing from this root workspace...
 			canSetSharingRights =
-				(wt.isTeamRootManagement() ||
-				(wt.isGlobalRoot() && bs.getAdminModule().testAccess(AdminOperation.manageFunction)));
+				((wt.isTeamRoot() || wt.isGlobalRoot()) && 
+				bs.getAdminModule().testAccess(AdminOperation.manageFunction));
 		}
 		if (canSetSharingRights) {
 			// ...add the set selected share rights.
