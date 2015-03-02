@@ -117,7 +117,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @DELETE
     @Path("{id}")
     public void deleteBinder(@PathParam("id") long id,
-                             @QueryParam("purge") @DefaultValue("false") boolean purge) {
+                             @QueryParam("purge") @DefaultValue("false") boolean purge) throws Exception {
         _deleteBinder(id, purge);
     }
 
