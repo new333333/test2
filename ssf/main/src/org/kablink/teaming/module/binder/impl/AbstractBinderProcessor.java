@@ -1802,7 +1802,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         //search engine will only return binder you have access to
          //validate entry count
     	//do actual search index query 
-        Hits hits = getBinders_doSearch(binderIds, searchOptions);
+        Hits hits = getBinders_doSearch(binder, binderIds, searchOptions);
         return buildResultsMap(hits);
     }
 
