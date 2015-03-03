@@ -140,7 +140,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 			//Definition builder - Entry form designer
 			List defs = getDefinitionModule().getDefinitions(binderId, Boolean.FALSE);
 			//Definition builder - Profile listing designer
-			if (getDefinitionModule().testAccess(binder, Definition.PROFILE_VIEW, DefinitionOperation.manageDefinition)) {
+			if (binder == null && getDefinitionModule().testAccess(binder, Definition.PROFILE_VIEW, DefinitionOperation.manageDefinition)) {
 				if (hasDefinitionType(defs, Definition.PROFILE_VIEW)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 					fillTypeElement(element, "__profile_views", String.valueOf(Definition.PROFILE_VIEW));
@@ -158,7 +158,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 			}
 			
 			//Definition builder - Profile designer
-			if (getDefinitionModule().testAccess(binder, Definition.PROFILE_ENTRY_VIEW, DefinitionOperation.manageDefinition)) {
+			if (binder == null && getDefinitionModule().testAccess(binder, Definition.PROFILE_ENTRY_VIEW, DefinitionOperation.manageDefinition)) {
 				if (hasDefinitionType(defs, Definition.PROFILE_ENTRY_VIEW)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 					fillTypeElement(element, "__profile_entry_view", String.valueOf(Definition.PROFILE_ENTRY_VIEW));
@@ -170,7 +170,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 			
 			
 			//Definition builder - User workspace designer
-			if (getDefinitionModule().testAccess(binder, Definition.USER_WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
+			if (binder == null && getDefinitionModule().testAccess(binder, Definition.USER_WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
 				if (hasDefinitionType(defs, Definition.USER_WORKSPACE_VIEW)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 					fillTypeElement(element, "__user_workspace_view", String.valueOf(Definition.USER_WORKSPACE_VIEW));
@@ -186,7 +186,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 					url.setParameter( WebKeys.URL_BINDER_ID, binder.getId().toString() );
 				toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
 			}
-			if (getDefinitionModule().testAccess(binder, Definition.EXTERNAL_USER_WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
+			if (binder == null && getDefinitionModule().testAccess(binder, Definition.EXTERNAL_USER_WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
 				if (hasDefinitionType(defs, Definition.EXTERNAL_USER_WORKSPACE_VIEW)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 					fillTypeElement(element, "__external_user_workspace_view", String.valueOf(Definition.EXTERNAL_USER_WORKSPACE_VIEW));
