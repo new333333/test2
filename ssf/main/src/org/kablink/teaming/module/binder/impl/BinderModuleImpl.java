@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -57,10 +57,13 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.hibernate.NonUniqueObjectException;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
@@ -200,7 +203,6 @@ import org.springframework.web.multipart.MultipartFile;
 @SuppressWarnings({"unchecked", "unused"})
 public class BinderModuleImpl extends CommonDependencyInjection implements
 		BinderModule {
-
 	private TransactionTemplate transactionTemplate;
 	private RunAsyncManager runAsyncManager;
 
@@ -293,7 +295,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	@Override
 	public void checkAccess(User user, Binder binder, BinderOperation operation)
 			throws AccessControlException {
-		checkAccess(null, binder, operation, Boolean.FALSE);
+		checkAccess(user, binder, operation, Boolean.FALSE);
 	}
 	@Override
 	public void checkAccess(User user, Binder binder, BinderOperation operation, boolean thisLevelOnly)
@@ -2167,6 +2169,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				binder.getEntityIdentifier());
 	}
 
+	@Override
 	@Deprecated
     public Map executeSearchQuery(Criteria crit, int offset, int maxResults) {
 		return this.executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null);
