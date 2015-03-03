@@ -294,6 +294,15 @@ public class EventHelper {
 			HandlerRegistration registrationHandler = null;
 			TeamingEvents te = eventsToBeRegistered[i];
 			switch (te) {
+			case ACCESS_TO_ITEM_DENIED:
+				// An AccessToItemDeniedEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof AccessToItemDeniedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = AccessToItemDeniedEvent.registerEvent( eventBus, ((AccessToItemDeniedEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case ACTIVITY_STREAM:
 				// An ActivityStreamEvent!  Can the event handler we
 				// were given handle that?
@@ -2856,6 +2865,7 @@ public class EventHelper {
 			boolean needsHandler = isTEInA(te, eventsToCheck);
 			boolean hasHandler   = false;
 			switch (te) {
+			case ACCESS_TO_ITEM_DENIED:				       	   hasHandler = (eventHandler instanceof AccessToItemDeniedEvent.Handler);		           	   break;
 			case ACTIVITY_STREAM:                   	       hasHandler = (eventHandler instanceof ActivityStreamEvent.Handler);                         break;
 			case ACTIVITY_STREAM_ENTER:             	       hasHandler = (eventHandler instanceof ActivityStreamEnterEvent.Handler);                    break;
 			case ACTIVITY_STREAM_EXIT:              	       hasHandler = (eventHandler instanceof ActivityStreamExitEvent.Handler);                     break;
