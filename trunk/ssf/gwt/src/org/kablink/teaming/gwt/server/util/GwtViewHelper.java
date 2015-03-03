@@ -8759,21 +8759,42 @@ public class GwtViewHelper {
 				/// ...and if there are any users with read access....
 				Map userReads = ((Map) readMap.get(WebKeys.USERS));
 				if (MiscUtil.hasItems(userReads)) {
-					// ...scan the users...
+					// ...scan the users.
+					BinderModule bm = bs.getBinderModule();
+					FolderModule fm = bs.getFolderModule();
 					for (Object uO:  users) {
-						// ...and if this user has read access...
+						// Does this user have read access?
 						User user = ((User) uO);
 						if (null != userReads.get(user.getId())) {
-							// ...add an AccessInfo for it to the reply.
-							reply.addUser(
-								new AccessInfo(
-									user.getId(),
-									user.getTitle(),
-									"",
-									GwtServerHelper.getUserAvatarUrl(
-										bs,
-										request,
-										user)));
+							// Yes!  Is it in a Filr Net Folder?
+							boolean addUser = true;
+							if (workArea.isAclExternallyControlled()) {
+								// Yes!  Does the user have access to
+								// the Net folder?  (Note that they may
+								// have ACL access to the entity but
+								// NOT access to the Net Folder.)
+								try {
+									if      (workArea instanceof FolderEntry) fm.checkAccess(user, ((FolderEntry) workArea), FolderOperation.allowAccessNetFolder);
+									else if (workArea instanceof Binder)      bm.checkAccess(user, ((Binder)      workArea), BinderOperation.allowAccessNetFolder);
+								}
+								catch (AccessControlException ace) {
+									addUser = false;
+								}
+							}
+							
+							// If the user has access to the entity...
+							if (addUser) {
+								// ...add an AccessInfo for it to the reply.
+								reply.addUser(
+									new AccessInfo(
+										user.getId(),
+										user.getTitle(),
+										"",
+										GwtServerHelper.getUserAvatarUrl(
+											bs,
+											request,
+											user)));
+							}
 						}
 					}
 				}
