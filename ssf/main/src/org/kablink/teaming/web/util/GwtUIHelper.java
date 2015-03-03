@@ -1776,16 +1776,17 @@ public class GwtUIHelper {
 		
 		// Add a flag that indicates whether SharePoint can be used as a server type in a net folder server
 		{
-			Boolean allowSharePoint;
+			boolean allowSharePoint;
 			
-			allowSharePoint = SPropsUtil.getBoolean( "allow.sharepoint.as.server.type", true );
+			allowSharePoint = LicenseChecker.isAuthorizedByLicense( ObjectKeys.LICENSE_OPTION_SHAREPOINT );
+
 			model.put( "allowSharePointAsAServerType", allowSharePoint );
 
-			allowSharePoint = SPropsUtil.getBoolean( "allow.sharepoint.2013", true );
+			// allowSharePoint = SPropsUtil.getBoolean( "allow.sharepoint.2013", true );
 			model.put( "allowSharePoint2013AsAServerType", allowSharePoint );
 
-			allowSharePoint = SPropsUtil.getBoolean( "allow.sharepoint.2010", false );
-			model.put( "allowSharePoint2010AsAServerType", allowSharePoint );
+			//allowSharePoint = SPropsUtil.getBoolean( "allow.sharepoint.2010", false );
+			model.put( "allowSharePoint2010AsAServerType", false );
 		}
 	}
 	
