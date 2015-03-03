@@ -307,8 +307,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	public VibeRpcResponse executeCommand( final HttpRequestInfo ri, final VibeRpcCmd cmd ) throws GwtTeamingException
 	{
 		User user = GwtServerHelper.getCurrentUser();
-		if ( cmd.isRunAsAdmin()          &&										// Is this command supposed to be run as Admin               and
-				( ! ( user.isAdmin() ) ) &&										//    is it being requested by other than the built in Admin and
+		Boolean runAsAdmin = cmd.isRunAsAdmin();
+		if ( ( ( null != runAsAdmin ) && runAsAdmin ) &&						// Is this command supposed to be run as Admin               and
+				( ! ( user.isAdmin() ) )              &&						//    is it being requested by other than the built-in Admin and
 				getAdminModule().testAccess( AdminOperation.manageFunction ) )	//    does that user have zoneAdministration rights?
 		{
 			// Yes!  Run the command as the built-in Admin.

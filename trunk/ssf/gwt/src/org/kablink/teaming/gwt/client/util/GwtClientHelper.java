@@ -48,21 +48,10 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.WindowTitleSetEvent;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
-import org.kablink.teaming.gwt.client.rpc.shared.ChangePasswordCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.DumpHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.GetDiskUsageInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetHorizontalTreeCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetPasswordExpirationCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalActivityStreamsTreeCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalTreeCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmdType;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.widgets.AlertDlg;
@@ -616,35 +605,41 @@ public class GwtClientHelper {
 	 * @param callback
 	 */
 	public static void executeCommand(VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback) {
-		boolean runAsAdmin = false;
-		
-		GwtMainPage mp = GwtTeaming.getMainPage();
-
-		// Are we in the admin console?
-		if ( ( null != mp ) && mp.isAdminActive() )
-		{
-			// Yes, since we are in the admin console, run the command as admin.
-			// However, never run the following commands as admin 
-			if ( (cmd instanceof GetUpgradeInfoCmd) == false &&
-				 (cmd instanceof GetPasswordExpirationCmd) == false &&
-				 (cmd instanceof GetDiskUsageInfoCmd) == false &&
-				 (cmd instanceof GetPersonalPrefsCmd) == false &&
-				 (cmd instanceof GetSiteAdminUrlCmd) == false &&
-				 (cmd instanceof DumpHistoryInfoCmd) == false &&
-				 (cmd instanceof GetHorizontalTreeCmd) == false &&
-				 (cmd instanceof GetVerticalActivityStreamsTreeCmd) == false &&
-				 (cmd instanceof GetVerticalTreeCmd) == false &&
-				 (cmd instanceof GetViewInfoCmd) == false &&
-				 (cmd instanceof ChangePasswordCmd) == false &&
-				 (cmd instanceof GetSystemBinderPermalinkCmd) == false )
-			{
-				runAsAdmin = true;
-			}
+		// Does this command have a 'run as admin' setting?
+		Boolean runAsAdmin = cmd.isRunAsAdmin();
+		if (null == runAsAdmin) {
+			// No!  Are we in the admin console?
+			GwtMainPage mp = GwtTeaming.getMainPage();
+			if ((null != mp) && mp.isAdminActive()) {
+				// Yes!  Since we are in the admin console, run the
+				// command as admin.  However, we never run the
+				// following commands as admin.
+				switch (VibeRpcCmdType.getEnum(cmd.getCmdType())) {
+				case CHANGE_PASSWORD:
+				case DUMP_HISTORY_INFO:
+				case GET_DISK_USAGE_INFO:
+				case GET_HORIZONTAL_TREE:
+				case GET_PERSONAL_PREFERENCES:
+				case GET_PASSWORD_EXPIRATION:
+				case GET_SITE_ADMIN_URL:
+				case GET_SYSTEM_BINDER_PERMALINK:
+				case GET_UPGRADE_INFO:
+				case GET_VERTICAL_ACTIVITY_STREAMS_TREE:
+				case GET_VERTICAL_TREE:
+				case GET_VIEW_INFO:
+					runAsAdmin = Boolean.FALSE;
+					break;
+					
+				default:
+					runAsAdmin = Boolean.TRUE;
+					break;
+				}
+				cmd.setRunAsAdmin(runAsAdmin);
+			}		
 		}
-		
-		cmd.setRunAsAdmin( runAsAdmin );
-		
-		executeCommand( cmd, HttpRequestInfo.createHttpRequestInfo(), callback );
+
+		// Finally, execute the command.
+		executeCommand(cmd, HttpRequestInfo.createHttpRequestInfo(), callback);
 	}	
 
 	/**
