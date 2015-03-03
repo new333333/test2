@@ -370,4 +370,17 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="37">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="text">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_EmailLog' and COLUMN_NAME = 'comments'</sqlCheck>
+        </preConditions>
+        <comment>Correct column data type</comment>
+        <addColumn tableName="SS_EmailLog">
+            <column name="ncomments" type="ntext"/>
+        </addColumn>
+        <sql>UPDATE SS_EmailLog SET ncomments = comments</sql>
+        <dropColumn schemaName="dbo" tableName="SS_EmailLog" columnName="comments"/>
+        <renameColumn schemaName="dbo" tableName="SS_EmailLog" columnDataType="ntext" newColumnName="comments" oldColumnName="ncomments"/>
+    </changeSet>
+
 </databaseChangeLog>
