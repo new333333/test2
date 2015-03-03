@@ -45,6 +45,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.web.WebKeys;
 
@@ -186,7 +187,9 @@ public class LicenseReportController extends AbstractReportController {
 
 							for(int i = 0; i < options.size(); i++) {
 								Element ele = (Element) options.get(i);
-								optionsList.append(ele.attribute("title").getValue() + ",");
+								if (LicenseChecker.isAuthorizedByLicense(ele.attributeValue("id"))) {
+									optionsList.append(ele.attribute("title").getValue() + ",");
+								}
 							}
 							model.put(WebKeys.LICENSE_OPTIONS_LIST, optionsList.toString());
 						}
@@ -196,7 +199,9 @@ public class LicenseReportController extends AbstractReportController {
 						singleOption = (Element) obj;
 
 						if(singleOption != null) {
-							model.put(WebKeys.LICENSE_OPTIONS_LIST, singleOption.attribute("title").getValue());
+							if (LicenseChecker.isAuthorizedByLicense(singleOption.attributeValue("id"))) {
+								model.put(WebKeys.LICENSE_OPTIONS_LIST, singleOption.attribute("title").getValue());
+							}
 						}
 					}
 				}
