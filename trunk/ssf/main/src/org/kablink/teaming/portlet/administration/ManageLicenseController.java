@@ -63,6 +63,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.license.LicenseException;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -235,7 +236,9 @@ public class ManageLicenseController extends SAbstractController {
 
 						for(int i = 0; i < options.size(); i++) {
 							Element ele = (Element) options.get(i);
-							optionsList.append(ele.attribute("title").getValue() + ",");
+							if (LicenseChecker.isAuthorizedByLicense(ele.attributeValue("id"))) {
+								optionsList.append(ele.attribute("title").getValue() + ",");
+							}
 						}
 						model.put(WebKeys.LICENSE_OPTIONS_LIST, optionsList.toString());
 					}
@@ -245,7 +248,9 @@ public class ManageLicenseController extends SAbstractController {
 					singleOption = (Element) obj;
 
 					if(singleOption != null) {
-						model.put(WebKeys.LICENSE_OPTIONS_LIST, singleOption.attribute("title").getValue());
+						if (LicenseChecker.isAuthorizedByLicense(singleOption.attributeValue("id"))) {
+							model.put(WebKeys.LICENSE_OPTIONS_LIST, singleOption.attribute("title").getValue());
+						}
 					}
 				}
 			}

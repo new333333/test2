@@ -1014,6 +1014,7 @@ public interface ObjectKeys {
     public static final String LICENSE_OPTION_IPRINT_MOBILE = "com.novell.teaming.iPrintMobile";
     public static final String LICENSE_OPTION_IPRINT_PRINTER = "com.novell.teaming.iPrintPrinter";
     public static final String LICENSE_OPTION_EXT_USERS = "com.novell.teaming.ExtUsers";
+    public static final String LICENSE_OPTION_SHAREPOINT = "com.novell.teaming.SharePoint";
     
     //License Activity
     public static final int LOGIN_ACTIVITY_YEARS = 1;
