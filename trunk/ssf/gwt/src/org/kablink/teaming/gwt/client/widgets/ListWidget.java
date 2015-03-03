@@ -33,12 +33,19 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.AccessToItemDeniedEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.lpe.ConfigItem;
 import org.kablink.teaming.gwt.client.lpe.ListConfig;
 import org.kablink.teaming.gwt.client.lpe.ListProperties;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -47,6 +54,8 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 
@@ -56,12 +65,20 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  *
  */
 public class ListWidget extends VibeWidget
+	implements 
+		// Event handlers implemented by this class.
+		AccessToItemDeniedEvent.Handler
 {
+	private List<HandlerRegistration> m_registeredEventHandlers;
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] { TeamingEvents.ACCESS_TO_ITEM_DENIED };
+
 	/**
 	 * 
 	 */
 	private class ListItem extends VibeWidget
 	{
+		Widget m_childWidget;
+		
 		/**
 		 * 
 		 */
@@ -71,6 +88,8 @@ public class ListWidget extends VibeWidget
 			Image img;
 			ImageResource imageResource;
 			FlexTable table;
+			
+			m_childWidget = child;
 			
 			table = new FlexTable();
 			table.setCellSpacing( 0 );
@@ -90,6 +109,14 @@ public class ListWidget extends VibeWidget
 			flowPanel.add( table );
 			
 			initWidget( flowPanel );
+		}
+
+		/**
+		 * 
+		 */
+		public Widget getChildWidget()
+		{
+			return m_childWidget;
 		}
 	}
 	
@@ -238,6 +265,112 @@ public class ListWidget extends VibeWidget
 
 			// Set the overflow value
 			GwtClientHelper.setOverflow( m_properties.getOverflow(), m_contentPanel );
+		}
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public void onAccessToItemDenied( final AccessToItemDeniedEvent event )
+	{
+		Scheduler.ScheduledCommand cmd1;
+		
+		cmd1 = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				int numWidgets;
+				int i;
+				
+				// Find the widget the user doesn't have rights to see and remove it.
+				numWidgets = m_contentPanel.getWidgetCount();
+				for ( i = 0; i < numWidgets; ++i )
+				{
+					final Widget nextWidget;
+					
+					nextWidget = m_contentPanel.getWidget( i );
+					if ( nextWidget instanceof ListItem )
+					{
+						ListItem listItem;
+						
+						listItem = (ListItem) nextWidget;
+						if ( listItem.getChildWidget() == event.getWidget() )
+						{
+							m_contentPanel.remove( nextWidget );
+							return;
+						}
+					}
+				}
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd1 );
+	}
+
+	/**
+	 * Called when the dialog is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach()
+	{
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the dialog is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach()
+	{
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents()
+	{
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if ( null == m_registeredEventHandlers )
+		{
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if ( m_registeredEventHandlers.isEmpty() )
+		{
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+										GwtTeaming.getEventBus(),
+										m_registeredEvents,
+										this,
+										m_registeredEventHandlers );
+		}
+	}
+
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents()
+	{
+		// If we have a non-empty list of registered events...
+		if ( ( null != m_registeredEventHandlers ) && ( ! ( m_registeredEventHandlers.isEmpty() ) ) )
+		{
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
 		}
 	}
 }

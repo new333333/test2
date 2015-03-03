@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.AccessToItemDeniedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.lpe.LinkToFolderConfig;
 import org.kablink.teaming.gwt.client.lpe.LinkToFolderProperties;
@@ -46,6 +47,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * ?
@@ -111,6 +113,7 @@ public class LinkToBinderWidget extends VibeWidget
 		VibeFlowPanel mainPanel;
 		String title;
 		ScheduledCommand cmd;
+		final Widget widget;
 		
 		m_properties = new LinkToFolderProperties();
 		properties = config.getProperties();
@@ -135,6 +138,8 @@ public class LinkToBinderWidget extends VibeWidget
 		mainPanel.add( m_link );
 		mainPanel.setVisible( false );
 		
+		widget = this;
+		
 		cmd = new Scheduler.ScheduledCommand()
 		{
 			@Override
@@ -151,6 +156,14 @@ public class LinkToBinderWidget extends VibeWidget
 						{
 							updateWidget();
 							getWidget().setVisible( true );
+						}
+						else
+						{
+							// We could not get information about the given binder probably
+							// because the user does not have access to the binder.
+							// Fire the AccessToItemDenied event to notify whoever created this widget.
+							// Fire the event to invoke the "Manage users" dialog.
+							GwtTeaming.fireEvent( new AccessToItemDeniedEvent( widget ) );
 						}
 					}
 				} );
