@@ -61,6 +61,7 @@ import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.util.search.Constants;
 
 import java.io.InputStream;
@@ -131,8 +132,10 @@ public class MiscResource extends AbstractResource {
         org.kablink.teaming.domain.ZoneConfig zoneConfig =
       			getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
         ZoneInfo info = getZoneModule().getZoneInfo(zoneConfig.getZoneId());
-        ZoneConfig result = ResourceUtil.buildZoneConfig(zoneConfig, info, getProfileModule().getPrincipalMobileAppsConfig(getLoggedInUserId()),
-                getProfileModule().getPrincipalDesktopAppsConfig(getLoggedInUserId()), this);
+        ZoneConfig result = ResourceUtil.buildZoneConfig(zoneConfig, info,
+                AdminHelper.getEffectiveMobileAppsConfigOverride(this, getLoggedInUser()),
+                AdminHelper.getEffectiveDesktopAppsConfigOverride(this, getLoggedInUser()),
+                this);
         result.setSharingRestrictions(_getExternalSharingRestrictions());
         return result;
 	}

@@ -176,8 +176,8 @@ public class SelfResource extends AbstractFileResource {
         ZoneConfig zoneConfig = ResourceUtil.buildZoneConfig(
                 getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId()),
                 null,
-                getProfileModule().getPrincipalMobileAppsConfig(getLoggedInUserId()),
-                getProfileModule().getPrincipalDesktopAppsConfig(getLoggedInUserId()),
+                AdminHelper.getEffectiveMobileAppsConfigOverride(this, getLoggedInUser()),
+                AdminHelper.getEffectiveDesktopAppsConfigOverride(this, getLoggedInUser()),
                 this);
 
         user.setDesktopAppConfig(zoneConfig.getDesktopAppConfig());
