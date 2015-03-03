@@ -42,8 +42,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public abstract class VibeRpcCmd implements IsSerializable
 {
-	private boolean	m_runAsAdmin;	// true  -> If the user has zoneAdministration rights and is not the built-in admin, the command is run as the built-in admin.
-									// false -> The command is run as the requesting user.
+	private Boolean	m_runAsAdmin;	// true            -> If the user has zoneAdministration rights and is not the built-in admin, the command is run as the built-in admin.
+									// false (or null) -> The command is run as the requesting user.
 	/**
 	 * Class constructor.
 	 * 
@@ -61,14 +61,14 @@ public abstract class VibeRpcCmd implements IsSerializable
 	 * 
 	 * @return
 	 */
-	public final boolean isRunAsAdmin() { return m_runAsAdmin; }
+	public final Boolean isRunAsAdmin() { return m_runAsAdmin; }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param runAsAdmin
 	 */
-	public final void setRunAsAdmin( boolean runAsAdmin ) { m_runAsAdmin = runAsAdmin; }
+	public final void setRunAsAdmin( Boolean runAsAdmin ) { m_runAsAdmin = runAsAdmin; }
 	
 	/**
 	 * Returns the ordinal of the VibeRpcCmdType enumeration value for
