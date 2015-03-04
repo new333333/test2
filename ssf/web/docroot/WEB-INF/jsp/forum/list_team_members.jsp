@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,15 +37,16 @@
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 <c:set var="hitCount" value="0"/>
 
+<script type="text/javascript">
+var noMemberProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
+</script>
+
 <ssf:ifnotadapter>
 <% //setup for templates and dashboard %>
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 </ssf:ifnotadapter>
 
-
-
 <div class="ss_buddies" style="padding-left: 5px;">
-
 	<div class="ss_buddiesListHeader">		
 		<img border="0" <ssf:alt/>
 		  src="<html:brandedImagesPath/>icons/team_16.png"/> 
@@ -101,8 +102,8 @@
 								folderId="${member.parentBinder.id}" entryId="${member.id}" />						
 						 </td>
 						<td class="ss_nowrap">
-						  <a href="<ssf:permalink entity="${member}"/>"
-							onClick="return ss_gotoPermalink('${member.parentBinder.id}','${member.id}', 'user', '${ss_namespace}', 'yes');"
+						  <a href="javascript: ;"
+							onClick="ss_launchSimpleProfile( this, '${member.workspaceId}','<ssf:escapeJavaScript><ssf:userTitle user="${member}"/></ssf:escapeJavaScript>', noMemberProfileErrorText);return false;"
 							><ssf:userTitle user="${member}"/></a>
 						</td>
 						<td><c:if test="${!empty member.organization}"><c:out value="${member.organization}" /></c:if></td>
@@ -163,4 +164,3 @@
 </div>
 </c:if>
 </div>
-
