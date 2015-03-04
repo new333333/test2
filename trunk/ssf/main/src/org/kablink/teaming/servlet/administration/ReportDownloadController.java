@@ -210,6 +210,11 @@ public class ReportDownloadController extends  SAbstractController {
 			response.setHeader(
 						"Content-Disposition",
 						"attachment; filename=\"report.csv\"");
+			//Write out the BOM so Excel knows how to handle double byte characters properly.
+			OutputStream outputStream = response.getOutputStream();
+			outputStream.write(0xEF);   // 1st byte of BOM
+			outputStream.write(0xBB);
+			outputStream.write(0xBF);   // last byte of BOM
 
 			String reportType = ServletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_REPORT_TYPE);
 			String[] columns = null;
