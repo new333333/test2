@@ -49,7 +49,7 @@
 	/* ...End:  Binder owner avatar panel styles. */
 	
 	/* ...Start:  Calendar navigation panel styles. */
-		.vibe-calNav-date           {color: #505354; font-weight: normal; font-size: 15px; font-family: Arial, Helvetica, sans-serif;}
+		.vibe-calNav-date           {color: #505354; font-weight: normal; font-size: 18px; font-family: Arial, Helvetica, sans-serif;}
 		.vibe-calNav-dateNavPanel   {padding: 0 10px;}
 		.vibe-calNav-datePanel      {padding: 0 10px;}
 		.vibe-calNav-datePicker     {}
@@ -213,12 +213,12 @@
 		.vibe-dataTableEntry-viewLabel            {}
 		.vibe-dataTableGuest-avatar               {border-width: 1px; border-style: solid; border-color: #ccc; width: 50px; height: 50px;}
 		.vibe-dataTableGuest-avatarHover          {cursor: pointer;}
-		.vibe-dataTableGuest-info                 {display: inline-block; font-size: 11px; color: #333; vertical-align: top; padding-left: 8px;}
+		.vibe-dataTableGuest-info                 {display: inline-block; font-size: 11px; color: #505354; vertical-align: top; padding-left: 8px; line-height: 15px;}
 		.vibe-dataTableGuest-infoEMA              {display: block;}
 		.vibe-dataTableGuest-infoMobileEMA        {display: block;}
 		.vibe-dataTableGuest-infoPhone            {display: block;}
 		.vibe-dataTableGuest-infoTextEMA          {display: block;}
-		.vibe-dataTableGuest-infoTitle            {display: block;}
+		.vibe-dataTableGuest-infoTitle            {display: block; font-weight: bold;}
 		.vibe-dataTableItem-Img                   {vertical-align: middle; margin-right: 2px;}
 		.vibe-dataTableLink-hover                 {color: #135c8f !important; cursor: pointer; background-color: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-dataTableLink-hoverNoLPad           {}

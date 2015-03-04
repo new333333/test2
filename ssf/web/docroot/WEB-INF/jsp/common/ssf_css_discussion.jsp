@@ -659,8 +659,6 @@ td.ss_replies_indent_picture div {
 	font-weight: bold;
     }
 td.ss_non_clipped_signature {
-	max-width: 70px;
-	width: 20%;
 	}
 .wg-comment td.ss_clipped_signature div.ss_entrySignatureUser {
 	max-width: 70px;

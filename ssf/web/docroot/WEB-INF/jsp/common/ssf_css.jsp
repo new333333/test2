@@ -492,6 +492,7 @@ div.ss_entryContent a:hover {
 .ss_entryDate {
 	color: #666666;
 	font-size: 10px;
+    padding-left: 5px;
 	}	
 .ss_entryDescription {
   	color: #333;
@@ -2717,9 +2718,7 @@ div.ss_thumbnail_gallery div {
 	font-weight: bold;
 	}	
 div.ss_thumbnail_gallery img, div.ss_thumbnail_standalone img {
-    border-width: 1px;
-    border-style: solid;
-    border-color: ${ss_gallery_image_background_color};
+    border-radius: 3px;
 	}
 div.ss_thumbnail_gallery a {
     padding: 0px;

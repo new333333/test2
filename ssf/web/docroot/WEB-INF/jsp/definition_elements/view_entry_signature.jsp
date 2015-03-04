@@ -55,7 +55,7 @@
 			<td class="ss_non_clipped_signature">
 				<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
 			</td>
-			<td>
+			<td width="100%">
 			  <c:set var="property_caption" value=""/>
 				<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
 			</td>
@@ -199,28 +199,28 @@
 	<td>
 		<table cellspacing="0" cellpadding="0">
 			<tr>
-			  <td valign="top">
+			  <td>
 				<div class="ss_entrySignature">
 				  <span><c:out value="${property_caption}" /></span>
 				</div>
 				<c:set var="property_caption" value=""/>
 			  </td>
-			  <td valign="top">
+			  <td>
 				  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
 			  </td>
-			  <td nowrap valign="top">
+			  <td nowrap>
 				  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
 			  </td>
 			 </tr>
 			  <c:if test="${!empty ssDefinitionEntry.modification.principal && 
 				ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 			   <tr>
-				<td valign="top">
+				<td>
 				  <div class="ss_entrySignature">
 					<span><ssf:nlt tag="entry.modifiedBy"/></span>
 				  </div>
 				</td>
-				<td valign="top">
+				<td>
 				  <div class="ss_entrySignatureUser ss_wrap">
 					<ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/>
 				  </div>
@@ -250,7 +250,7 @@
 			</c:if>
 		</table>
 	</td>
-	<td align="right" width="100%" valign="top">
+	<td align="right" width="100%">
 		  <div>
 			<%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
 		  </div>
