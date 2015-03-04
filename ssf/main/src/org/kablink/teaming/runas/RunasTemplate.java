@@ -121,6 +121,9 @@ public class RunasTemplate {
 	protected static Object doRunas(RunasCallback action, RequestContext runasRC) {
 		RequestContext origContext = RequestContextHolder.getRequestContext(); 
 		
+		if(origContext != null)
+			runasRC.setParentUser(origContext.getUser());
+		
        	RequestContextHolder.setRequestContext(runasRC.resolve());
        	
        	try {

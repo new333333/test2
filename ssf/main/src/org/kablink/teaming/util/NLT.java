@@ -110,7 +110,9 @@ public class NLT implements ApplicationContextAware {
 		if(rc != null) {
 			User user = null;
 			try {
-				user = rc.getUser();
+				user = rc.getParentUser();
+				if(user == null)				
+					user = rc.getUser();
 			}
 			catch(NoContextUserException doNotPropogate) {}
 			if(user != null)
