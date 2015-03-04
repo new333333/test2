@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressRpcRespon
 import org.kablink.teaming.gwt.client.rpc.shared.SendForgottenPwdEmailCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd.UsersToFind;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -326,8 +327,9 @@ public class ForgottenPwdDlg extends DlgBox
 			};
 
 			// Issue an ajax request to see if the email address that was entered is associated
-			// with an internal user.
+			// with an external user.
 			FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( listOfEmailAddresses );
+			cmd.setUsersToFind( UsersToFind.EXTERNAL_USERS_ONLY );
 			GwtClientHelper.executeCommand( cmd, findUserCallback );
 		}
 		
