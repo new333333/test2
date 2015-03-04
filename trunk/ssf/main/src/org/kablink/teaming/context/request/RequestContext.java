@@ -96,6 +96,9 @@ public class RequestContext {
     // The name of the thread that created and owned this request context object
     private String owningThreadName; 
     
+    // (Optional) parent user object. Only used in conjunction with RunasTemplate class.
+    private User parentUser;
+    
     // IMPORTANT: This object is designed to contain only those properties that
     //            are needed to fetch corresponding user, application, or zone object. 
     //            Do NOT cache user, application or zone object directly in this class.
@@ -364,5 +367,13 @@ public class RequestContext {
 	
 	public String getUserPrintString() {
 		return "'" + userName + "' (id=" + userId + ")";
+	}
+
+	public User getParentUser() {
+		return parentUser;
+	}
+
+	public void setParentUser(User parentUser) {
+		this.parentUser = parentUser;
 	}
 }
