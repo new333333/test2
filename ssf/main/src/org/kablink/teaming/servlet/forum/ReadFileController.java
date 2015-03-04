@@ -491,6 +491,11 @@ public class ReadFileController extends AbstractReadFileController {
 						response.setHeader("Cache-Control", cacheControl);
 						response.setHeader("Content-Disposition",
 							("attachment; filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\""));
+						//Write out the BOM so Excel knows how to handle double byte characters properly.
+						OutputStream outputStream = response.getOutputStream();
+						outputStream.write(0xEF);   // 1st byte of BOM
+						outputStream.write(0xBB);
+						outputStream.write(0xBF);   // last byte of BOM
 					} else {
 						// Bad format of url; just return null.
 						response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFolder"));
