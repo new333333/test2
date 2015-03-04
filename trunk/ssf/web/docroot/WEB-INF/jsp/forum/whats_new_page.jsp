@@ -170,7 +170,7 @@
 							<ssf:showUser user='<%=(org.kablink.teaming.domain.User)entryWn.get("_principal")%>'
 							titleStyle="ss_link_1" /> 
 					  
-							  <span class="ss_link_4">
+							  <span class="ss_entryDate">
 								<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 								value="${entryWn._modificationDate}" type="both" 
 								timeStyle="short" dateStyle="medium" />

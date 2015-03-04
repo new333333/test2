@@ -86,7 +86,7 @@
 			<span>
 				<ssf:showUser user="${entry.creation.principal}" titleStyle="ss_link_1"/>
 			</span>
-		  	<span class="ss_link_4">
+		  	<span class="ss_entryDate">
 				<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		  		value="${entry.modification.date}" type="both" 
 		  		timeStyle="medium" dateStyle="long" />
