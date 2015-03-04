@@ -2711,6 +2711,7 @@ public class GwtServerHelper {
 		LicenseModule licenseModule;
 		ZoneModule zoneModule;
 		boolean isFilr;
+		boolean	userHasAdminRights;
 		
 		definitionModule = allModules.getDefinitionModule();
 		ldapModule = allModules.getLdapModule();
@@ -2722,6 +2723,7 @@ public class GwtServerHelper {
 		zoneModule = allModules.getZoneModule();
 		
 		user = getCurrentUser();
+		userHasAdminRights = adminModule.testAccess( AdminOperation.manageFunction );
 		
 		isFilr = LicenseChecker.showFilrFeatures();
 		
@@ -2757,7 +2759,7 @@ public class GwtServerHelper {
 			//   This function covers: Add Account, Disable/Delete Accounts, Import Profiles.
 			try
 			{
-				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
+				if ( userHasAdminRights || profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
 				{
 					List defaultEntryDefinitions;
 
@@ -2789,7 +2791,7 @@ public class GwtServerHelper {
 			// Does the user have rights to "Manage groups"?
 			try
 			{
-				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
+				if ( userHasAdminRights || profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
 				{
 					// Yes
 					title = NLT.get( "administration.manage.groups" );
@@ -2864,7 +2866,7 @@ public class GwtServerHelper {
 			// Does the user have rights to "Manage shares"?
 			try
 			{
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				if ( userHasAdminRights )
 				{
 					// Yes
 					title = NLT.get( "administration.manage.shareItems" );
@@ -2896,7 +2898,7 @@ public class GwtServerHelper {
 			//    that purpose.
 /*
 			// Does the user have rights to "manage adhoc folder?"?
-			if ( isFilr && adminModule.testAccess( AdminOperation.manageFunction ) )
+			if ( isFilr && userIsAdmin )
 			{
 				// Yes
 				title = NLT.get( "administration.configure_adhocFolders" );
@@ -2912,7 +2914,7 @@ public class GwtServerHelper {
 			// Does the user have rights to "Manage quotas"?
 			try
 			{
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				if ( userHasAdminRights )
 				{
 					// Yes
 					title = NLT.get( "administration.manage.quotas" );
@@ -2933,7 +2935,7 @@ public class GwtServerHelper {
 			// Does the user have rights to "Manage file upload limits"?
 			try
 			{
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				if ( userHasAdminRights )
 				{
 					// Yes
 					title = NLT.get( "administration.manage.fileUploadLimits" );
@@ -2960,7 +2962,7 @@ public class GwtServerHelper {
 				// Does the user have rights to "Manage Mobile Devices"?
 				try
 				{
-					if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
+					if ( userHasAdminRights || profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
 					{
 						title = NLT.get( "administration.manage.mobileDevices" );
 						
@@ -2991,10 +2993,9 @@ public class GwtServerHelper {
 					{
 					}
 	
-					if ( adminModule.testAccess( AdminOperation.manageFunction ) &&
+					if ( userHasAdminRights &&
 						 LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
-						 netFoldersParentBinder != null &&
-						 binderModule.testAccess( netFoldersParentBinder, BinderOperation.modifyBinder ) )
+						 netFoldersParentBinder != null )
 					{
 						// Yes
 						title = NLT.get( "administration.manage.netFolders" );
@@ -3015,10 +3016,9 @@ public class GwtServerHelper {
 				// Does the user have rights to "Manage resource drivers"?
 				try
 				{
-					if ( adminModule.testAccess( AdminOperation.manageFunction ) &&
+					if ( userHasAdminRights &&
 						 LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
-						 adminModule.testAccess( AdminOperation.manageResourceDrivers ) &&
-						 binderModule.testAccess( top, BinderOperation.indexBinder ) )
+						 adminModule.testAccess( AdminOperation.manageResourceDrivers ) )
 					{
 						// Yes
 						title = NLT.get( "administration.manage.resourceDrivers" );
@@ -3037,7 +3037,7 @@ public class GwtServerHelper {
 				catch(AccessControlException e) {}
 
 				// Does the user have rights to "manage JITS configuration"?
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				if ( userHasAdminRights )
 				{
 					// Yes
 					title = NLT.get( "administration.configure_jits_zone_config" );
@@ -3158,7 +3158,7 @@ public class GwtServerHelper {
 			}
 
 			// Does the user have rights to "manage database pruning"? 
-			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			if ( userHasAdminRights )
 			{
 				// Yes
 				String key;
@@ -3181,7 +3181,7 @@ public class GwtServerHelper {
 					ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) && 
 					binderModule.testAccess( top, BinderOperation.indexBinder ) );
 				
-				if ( ( ! allowIndexing ) && ManageSearchIndexController.INDEX_AS_BUILT_IN_ADMIN && adminModule.testAccess( AdminOperation.manageFunction ) )
+				if ( ( ! allowIndexing ) && ManageSearchIndexController.INDEX_AS_BUILT_IN_ADMIN && userHasAdminRights )
 				{
 					User builtInAdmin = BuiltInUsersHelper.getZoneSuperUser();
 					allowIndexing = (
@@ -3310,7 +3310,7 @@ public class GwtServerHelper {
 			}
 
 			// Does the user have rights to "configure user access"?
-			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			if ( userHasAdminRights )
 			{
 				// Yes
 				title = NLT.get( "administration.configure_userAccess" );
@@ -3361,7 +3361,7 @@ public class GwtServerHelper {
 			}
 
 			// Does the user have rights to "manage password policies"?
-			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			if ( userHasAdminRights )
 			{
 				// Yes
 				title = NLT.get( "administration.configure_passwordPolicy" );
@@ -3410,7 +3410,7 @@ public class GwtServerHelper {
 				}
 				
 				// Does the user have rights to "configure mobile access"?
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				if ( userHasAdminRights )
 				{
 					// Yes
 					title = NLT.get( "administration.configure_mobileAccess" );
@@ -3427,7 +3427,7 @@ public class GwtServerHelper {
 				}
 
 				// Does the user have rights to "configure home page"?
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				if ( userHasAdminRights )
 				{
 					// Yes
 					title = NLT.get( "administration.configure_homePage" );
@@ -3444,7 +3444,7 @@ public class GwtServerHelper {
 				}
 
 				// Does the user have rights to "Configure Role Definitions"?
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				if ( userHasAdminRights )
 				{
 					// Yes
 					title = NLT.get( "administration.configure_roles" );
@@ -3461,7 +3461,7 @@ public class GwtServerHelper {
 				}
 				
 				// Does the user have rights to "Configure Weekends and Holidays"?
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				if ( userHasAdminRights )
 				{
 					// Yes
 					title = NLT.get( "administration.configure.schedule.action" );
@@ -3539,7 +3539,7 @@ public class GwtServerHelper {
 			{
 				// Yes
 				// Does the user have the rights to manage KeyShield SSO?
-				if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+				if ( userHasAdminRights )
 				{
 					title = NLT.get( "administration.configure_keyshield" );
 
@@ -3576,7 +3576,7 @@ public class GwtServerHelper {
 			}
 			
 			// Does the user have rights to "configure name completion settings"?
-			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			if ( userHasAdminRights )
 			{
 				// Yes
 				title = NLT.get( "administration.configure_nameCompletion" );
@@ -3783,7 +3783,7 @@ public class GwtServerHelper {
 		}
 
 		// Does the user have rights to run "Content Modification Log Report"?
-		if ( isFilr == false && adminModule.testAccess( AdminOperation.manageFunction ) )
+		if ( isFilr == false && userHasAdminRights )
 		{
 			// Yes
 			title = NLT.get( "administration.view_change_log" );
