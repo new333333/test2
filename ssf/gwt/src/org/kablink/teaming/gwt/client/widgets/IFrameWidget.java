@@ -177,6 +177,12 @@ public class IFrameWidget extends VibeWidget
 			}
 			
 			iframeElement.setSrc( m_properties.getUrl() );
+			
+			if ( properties.getShowBorder() == false )
+			{
+				// Turn the border off on the <iframe> element.
+				iframeElement.getStyle().setBorderWidth( 0, Unit.PX );
+			}
 		}
 		
 		return mainPanel;
