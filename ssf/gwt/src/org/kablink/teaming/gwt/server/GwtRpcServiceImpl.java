@@ -782,30 +782,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			// directory.  If the user entered "./../../logs/ssf.log" for the custom jsp
 			// name we don't want to allow them to do that.
 			{
-				File parentDir;
-				File customJspFile;
-				
 				// Construct the full path to the jsp
 				jspPath =  "/WEB-INF/jsp/custom_jsps/" + elpjCmd.getJspName();
 				
-				// Get the directory that holds the given jsp
-				customJspFile = new File( elpjCmd.getJspName() );
-				parentDir = customJspFile.getParentFile();
-				
-				// The parentDir of the custom jsp should be null.  If it is not then
-				// that means the name contains directory paths which is a no, no.
-				if ( parentDir == null )
+				// Is the path trying to go above the custom_jsps directory?
+				if ( jspPath.contains( "./" ) || jspPath.contains( ".\\" ) || jspPath.contains( "~" ) )
 				{
 					// Yes
-					result = GwtServerHelper.executeLandingPageJsp( this, req, resp, servletContext, elpjCmd.getBinderId(), jspPath, elpjCmd.getConfigStr() );
-					
-				}
-				else
-				{
 					String errMsg;
 					
 					errMsg = NLT.get( "mashup.customJspNotInCustomJspDir" );
 					result = NLT.get( "mashup.customJspError", new Object[]{errMsg} );
+				}
+				else
+				{
+					result = GwtServerHelper.executeLandingPageJsp( this, req, resp, servletContext, elpjCmd.getBinderId(), jspPath, elpjCmd.getConfigStr() );
 				}
 			}
 			
