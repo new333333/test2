@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.ArrayList;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * This class holds all of the information necessary to execute the
  * 'find user by email address' command.
@@ -42,6 +44,14 @@ import java.util.ArrayList;
  */
 public class FindUserByEmailAddressCmd extends VibeRpcCmd 
 {
+	public enum UsersToFind implements IsSerializable
+	{
+		ALL_USERS,
+		EXTERNAL_USERS_ONLY,
+		INTERNAL_USERS_ONLY
+	}
+	
+	private UsersToFind m_usersToFind;
 	private boolean m_validateExternalEMA;
 	private ArrayList<String> m_listOfEmailAddresses;
 	
@@ -52,7 +62,9 @@ public class FindUserByEmailAddressCmd extends VibeRpcCmd
 	 */
 	public FindUserByEmailAddressCmd() 
 	{
-		super();		
+		super();
+		
+		m_usersToFind = UsersToFind.ALL_USERS;
 	}
 
 	/**
@@ -85,6 +97,14 @@ public class FindUserByEmailAddressCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
+	public UsersToFind getUsersToFind()
+	{
+		return m_usersToFind;
+	}
+	
+	/**
+	 * 
+	 */
 	public boolean isValidateExternalEMA()
 	{
 		return m_validateExternalEMA;
@@ -96,6 +116,14 @@ public class FindUserByEmailAddressCmd extends VibeRpcCmd
 	public void setListOfEmailAddresses( ArrayList<String> listOfEmailAddresses )
 	{
 		m_listOfEmailAddresses = listOfEmailAddresses;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setUsersToFind( UsersToFind usersToFind )
+	{
+		m_usersToFind = usersToFind;
 	}
 	
 	/**

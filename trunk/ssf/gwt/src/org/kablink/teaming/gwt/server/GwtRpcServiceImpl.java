@@ -137,6 +137,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.*;
+import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd.UsersToFind;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd.AddressField;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailRpcResponseData.EmailAddressStatus;
@@ -923,24 +924,46 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 									if ( gwtUser.getPrincipalType().isExternal() )
 									{
 										// Yes
-										// Are we supposed to validate the email address?
-										if ( fuCmd.isValidateExternalEMA() )
+										// Are we looking for external users
+										if ( fuCmd.getUsersToFind() == UsersToFind.ALL_USERS ||
+											 fuCmd.getUsersToFind() == UsersToFind.EXTERNAL_USERS_ONLY )
 										{
-											EmailAddressStatus emaStatus = null;
-	
 											// Yes
-											// Is the email address valid?
-											emaStatus = GwtServerHelper.validateEmailAddressImpl(
-																							ami,
-																							ema,
-																							true,
-																							AddressField.MAIL_TO );
-											if ( emaStatus != null && emaStatus.isInvalid() )
+											// Are we supposed to validate the email address?
+											if ( fuCmd.isValidateExternalEMA() )
 											{
-												// No
-												gwtUser = null;
-												responseData.addEmailStatus( ema, emaStatus );
+												EmailAddressStatus emaStatus = null;
+		
+												// Yes
+												// Is the email address valid?
+												emaStatus = GwtServerHelper.validateEmailAddressImpl(
+																								ami,
+																								ema,
+																								true,
+																								AddressField.MAIL_TO );
+												if ( emaStatus != null && emaStatus.isInvalid() )
+												{
+													// No
+													gwtUser = null;
+													responseData.addEmailStatus( ema, emaStatus );
+												}
 											}
+										}
+										else
+										{
+											// No
+											gwtUser = null;
+										}
+									}
+									else
+									{
+										// We found an internal user.
+										// Are we looking for internal users?
+										if ( fuCmd.getUsersToFind() != UsersToFind.ALL_USERS &&
+											 fuCmd.getUsersToFind() != UsersToFind.INTERNAL_USERS_ONLY )
+										{
+											// No
+											gwtUser = null;
 										}
 									}
 								}
