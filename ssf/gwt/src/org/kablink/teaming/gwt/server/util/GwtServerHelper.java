@@ -2115,7 +2115,7 @@ public class GwtServerHelper {
 		}
 		
 		catch (Exception ex) {
-			GwtLogHelper.error(m_logger, "GwtServerHelper.doFilrGet( '" + filePath + "' )", ex);
+			GwtLogHelper.debug(m_logger, "GwtServerHelper.doFilrGet( '" + filePath + "' )", ex);
 			reply = null;
 		}
 		
