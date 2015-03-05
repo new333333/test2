@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,14 +37,16 @@ import java.io.*;
 import java.net.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-//import javax.net.*;
 import javax.swing.*;
 
 import netscape.javascript.JSObject;
 
-
+/**
+ * The edit-in-place applet.
+ *  
+ * @author ?
+ */
 public class FileOpen extends JApplet implements Runnable {
-
     static FileOpen fileOpen;  // the only instance of ourself
 
     static final int maxButtonHeight = 25;
@@ -112,7 +114,7 @@ public class FileOpen extends JApplet implements Runnable {
                             command[1] = "/C";
                             command[2] = "start " + editorAndUrl[0];
                             command[3] = editorAndUrl[1];
-                            //System.out.println("command: "+ command[0] + " " + command[1] + " " + command[2] + " " + command[3]);
+                            System.out.println("command: "+ command[0] + " " + command[1] + " " + command[2] + " " + command[3]);
                         } else if (strOperatingSystem.equalsIgnoreCase("linux") || strOperatingSystem.equalsIgnoreCase("mac")) {
                         	command =  new String[3];
                             command[0] = "bash";
@@ -223,6 +225,14 @@ public class FileOpen extends JApplet implements Runnable {
                 strEditor = vibeAddinEditor + " /" + app;
                 // Add the username to the URL if available
                 if(strUserName != null && strUserName.length() > 0){
+                	// Note that we preserve the original '/dave...'
+                	// portion of the URL to retain any escaping
+                	// it may have contained.
+                	int davePos = strUrl.indexOf("/dave");
+                	String davePart;
+                	if (0 < davePos)
+                	     davePart = strUrl.substring(davePos);
+                	else davePart = null;
                     try {
                         URI uri = new URI(strUrl);
                         uri = new URI(uri.getScheme(), strUserName,
@@ -231,6 +241,12 @@ public class FileOpen extends JApplet implements Runnable {
                         strUrl = uri.toString();
                     } catch (Exception ex){
                         ex.printStackTrace();
+                    }
+                    if (null != davePart) {
+                    	davePos = strUrl.indexOf("/dave");
+                    	if (0 < davePos) {
+                    		strUrl = (strUrl.substring(0, davePos) + davePart);
+                    	}
                     }
                 }
             }
@@ -465,4 +481,4 @@ public class FileOpen extends JApplet implements Runnable {
     	  Object foo = win.call(onLoadFunction,args);
     	} catch (Exception ignored) { }
     }
-} // end of class
+}
