@@ -1476,7 +1476,7 @@ public class GwtViewHelper {
 					if (GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
 						GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts     );
 						GwtEventHelper.setAssignmentInfoHover(  ai, principalTitles );
-						ai.setPresenceDude("pics/group_icon_small.png");
+						ai.setPresenceDude("pics/group_20.png");
 					}
 					break;
 					
@@ -2973,7 +2973,7 @@ public class GwtViewHelper {
 			// ...and setting each one's title and membership count.
 			if (GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
 				GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts     );
-				ai.setPresenceDude("pics/group_icon_small.png");
+				ai.setPresenceDude("pics/group_20.png");
 			}
 			else {
 				removeList.add(ai);

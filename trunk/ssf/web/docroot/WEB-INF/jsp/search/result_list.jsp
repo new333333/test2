@@ -620,7 +620,7 @@ if (isIECheck) strBrowserType = "ie";
 				
 				<c:when test="${entry._entityType == 'group'}">
 							<div class="ss_thumbnail ss_search_hit">
-								<img alt="<ssf:nlt tag="alt.group"/>" src="<html:imagesPath/>pics/group_24.png"/>
+								<img alt="<ssf:nlt tag="alt.group"/>" src="<html:imagesPath/>pics/group_20.png"/>
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader ss_search_hit">

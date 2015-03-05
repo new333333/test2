@@ -423,7 +423,7 @@ public class GwtTaskHelper {
 				// ...setting each one's title and membership count.
 				if (GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
 					GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts     );
-					ai.setPresenceDude("pics/group_icon_small.png");
+					ai.setPresenceDude("pics/group_20.png");
 				}
 				else {
 					removeList.add(ai);
@@ -576,7 +576,7 @@ public class GwtTaskHelper {
 				// Yes!  Set its title and membership count.
 				GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles);
 				GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts    );
-				ai.setPresenceDude("pics/group_icon_small.png");
+				ai.setPresenceDude("pics/group_20.png");
 			}
 			
 			else {

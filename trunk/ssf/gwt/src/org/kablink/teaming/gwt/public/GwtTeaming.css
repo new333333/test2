@@ -4876,12 +4876,8 @@ td.datePickerMonth {
 
 .blogFolderViewRightPanel
 {
-	background-color: #EBF5F5;
-	margin-top: 8px;
 	padding: 10px;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	border-left: 1px solid #e0e0e0;
 }
 
 /* End */

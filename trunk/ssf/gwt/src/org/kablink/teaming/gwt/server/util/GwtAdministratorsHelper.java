@@ -157,7 +157,7 @@ public class GwtAdministratorsHelper {
 					if (GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
 						GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts     );
 						GwtEventHelper.setAssignmentInfoHover(  ai, principalTitles );
-						ai.setPresenceDude("pics/group_icon_small2.png");
+						ai.setPresenceDude("pics/group_20.png");
 					}
 					break;
 				}

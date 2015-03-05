@@ -45,7 +45,7 @@
 	<a href="javascript: //"
 	onclick="ss_toggleShowDiv('ss_show_group_${ss_showGroupInstanceCount}'); return false;" 
 	class="ss_smallprint ss_nowrap">
-		<img style="margin: 1px 3px 0;" border="0" src="<html:imagesPath/>pics/group_icon_small.png" align="absmiddle" />
+		<img style="margin: 1px 3px 0;" border="0" src="<html:imagesPath/>pics/group_20.png" align="absmiddle" />
 		<span class="${ss_showGroupTitleStyle}"><c:out value="${ss_showGroupGroup.title}" /></span>
 		<ssf:nlt tag="showGroup.group.members"><ssf:param 
 			name="value" value="${fn:length(ss_showGroupGroupMembers)}"/></ssf:nlt></a>
