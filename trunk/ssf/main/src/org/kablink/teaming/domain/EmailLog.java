@@ -94,7 +94,11 @@ public class EmailLog extends ZonedObject {
 			InternetAddress from, EmailLogStatus status) {
 		this.type = type;
 		this.sendDate = sendDate;
-		this.from = from.getAddress();
+		if (from != null) {
+			this.from = from.getAddress();
+		} else {
+			this.from = "";
+		}
 		this.toEmailAddresses = new String[toEmailAddresses.size()];
 		int i = 0;
 		for (InternetAddress address : toEmailAddresses) {
