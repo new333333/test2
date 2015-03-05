@@ -171,6 +171,7 @@ public class EntryWidget extends VibeWidget
 			GwtClientHelper.setHeight( height, heightUnits, mainPanel );
 		
 		// Create a place for the title to live.
+		if ( m_properties.getShowTitleValue() )
 		{
 			InlineLabel label;
 			
@@ -360,6 +361,7 @@ public class EntryWidget extends VibeWidget
 	private void updateWidget()
 	{
 		// Update this widget with the entry's title.
+		if ( m_titleElement != null )
 		{
 			String title;
 		
