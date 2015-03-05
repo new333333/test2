@@ -8570,23 +8570,26 @@ public class GwtServerHelper {
 	 * Returns a String[] for the values out of the entry map from a
 	 * search results.
 	 * 
-	 * @param emValue
+	 * @param em
+	 * @param key
+	 * @param dateStyle
+	 * @param timeStyle
 	 * 
 	 * @return
 	 */
-	public static String[] getStringArrayFromEntryMapValue(Object emValue) {
-		ArrayList<String>	strings;
-		if (emValue instanceof SearchFieldResult) {
-			strings = ((SearchFieldResult) emValue).getValueArray();
-		}
-		else {
-			strings = new ArrayList<String>();
-			String string = getStringFromEntryMapValue(emValue, DateFormat.MEDIUM, DateFormat.SHORT);
-			if (MiscUtil.hasString(string)) {
-				strings.add(string);
-			}
-		}
-		return strings.toArray(new String[0]);
+	public static String[] getStringsFromEntryMap(Map em, String key, int dateStyle, int timeStyle) {
+		return
+			getStringsFromEntryMapValue(
+				getValueFromEntryMap(
+					em,
+					key),
+				dateStyle,
+				timeStyle);
+	}
+	
+	public static String[] getStringsFromEntryMap(Map em, String key) {
+		// Always use the initial form of the method.
+		return getStringsFromEntryMap(em, key, DateFormat.MEDIUM, DateFormat.LONG);		
 	}
 
 	/**
@@ -8636,6 +8639,55 @@ public class GwtServerHelper {
 		// appropriate string value for the key from the entry map.
 		// Return it.
 		return reply;
+	}
+	
+	/**
+	 * Returns a String[] for the values out of the entry map from a
+	 * search results.
+	 * 
+	 * @param emValue
+	 * @param dateStyle
+	 * @param timeStyle
+	 * 
+	 * @return
+	 */
+	public static String[] getStringsFromEntryMapValue(Object emValue, int dateStyle, int timeStyle) {
+		List<String> reply = new ArrayList<String>();
+		if (null != emValue) {
+			// Yes!  Is it a string?
+			if (emValue instanceof String) {
+				// Yes!  Return it directly.
+				reply.add((String) emValue);
+			}
+			
+			// No, it isn't a string!  Is it a date?
+			else if (emValue instanceof Date) {
+				// Yes!  Format it for the current user and return
+				// that.
+				reply.add(getDateTimeString(((Date) emValue), dateStyle, timeStyle));
+			}
+			
+			// No, it isn't a date either!  Is it a search field
+			// result?
+			else if (emValue instanceof SearchFieldResult) {
+				// Yes!  Take the first string value.
+				String[] emValues = ((SearchFieldResult) emValue).getValueArray().toArray(new String[0]);
+				int emCount = ((null == emValues) ? 0 : emValues.length);
+				for (int i = 0; i < emCount; i += 1) {
+					reply.add(emValues[i]);
+				}
+			}
+			else {
+				// No, it isn't a search field result either!  Let the
+				// object convert itself to a string and return that.
+				reply.add(emValue.toString());
+			}
+		}
+		
+		// If we get here, reply refers to an empty List<String> or the
+		// appropriate string values for the key from the entry map.
+		// Return it.
+		return reply.toArray(new String[0]);
 	}
 	
 	/**
