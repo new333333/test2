@@ -492,7 +492,7 @@ div.ss_entryContent a:hover {
 .ss_entryDate {
 	color: #666666;
 	font-size: 10px;
-    padding-left: 5px;
+    padding-left: 8px;
 	}	
 .ss_entryDescription {
   	color: #333;
@@ -2118,7 +2118,7 @@ div.ss_content_outer {		/* also see ss_pseudoPortal */
 }
 .ss_content_window_content {
 	padding:4px 10px;
-	border: 1px solid #b8b8b8;
+	border: 1px solid #e0e0e0;
 	background-color: #fff;
 	border-bottom-left-radius: 3px;
 	border-bottom-right-radius: 3px;
@@ -2344,10 +2344,7 @@ div.ss_sidebar_panel_featured {
 	font-size: ${ss_style_font_normalprint};
 	font-weight: bold;
 	font-family: ${ss_style_title_font_family};
-	padding-bottom: 3px;
-	padding-top: 5px;
-	padding-left: 5px;
-	padding-right: 5px;
+	padding: 5px;
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
 	-moz-border-radius-topleft: 3px;

@@ -362,18 +362,25 @@ div.ss_canvas {
 	/*MY DOCUMENTS*/
 	
 #ss_mydocs_para div.item, .ss_v_entries div.item, .ss_viewedItems div.item, .ss_v_attachments div.item, #ss_hot_para div.item, #ss_tasks_para div.item, .ss_shared_para div.item, .ss_newinbinder div.item {
-	background: #f6f6f6 url(<html:imagesPath/>pics/blends/fff-f6f6f6.png) repeat-x;
+	background: #fff;
 	background-position: top;
-	margin-top: 2px;
-	padding: 10px;
+	margin-top: 3px;
+	padding: 6px 10px 10px;
 	line-height:1.2em;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}
 div.item-sub a {
 	font-weight: normal !important;
-	}	
+	}
+div.item-sub {
+	position: relative;
+	}    
+div.item-sub span.ss_entryDate {
+	position: absolute;
+    top: 1px;
+	}    
 	/* ACTIVE LINK */
 #ss_mydocs_para a {					
 	text-decoration:underline;
@@ -552,7 +559,7 @@ div.item-sub a {
 #ss_para {
 	}
 .list-indent {
-	margin-left: 21px;
+	margin-left: 19px;
 	}	
 
 #ss_para ul{
@@ -668,9 +675,9 @@ div.item-sub a {
 /* - MENU TABS FOR RELEVANCE--------------------------- */
 
 .ss_tertiaryTabs, #ss_dashboard_content {
-	background-color: #eaebe8; /* Gray 8 */
-	-moz-border-radius: 5px;
+	background-color: #f6f6f6;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
 #ss_tabsC {
@@ -695,8 +702,8 @@ div.item-sub a {
     padding: 3px 8px;
 	font-size: 11px;
     white-space:nowrap !important;
-	-moz-border-radius: 3px;
 	border-radius: 3px;
+	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
       }
 
@@ -713,6 +720,7 @@ div.item-sub a {
 	background: #cce9ee;
       }  
 #ss_tabsC .ss_tabsC_other {
+	margin-bottom: 8px;
 	}
 #ss_tabsC .ss_tabsCCurrent a {
 	color: #000 !important;
@@ -720,8 +728,8 @@ div.item-sub a {
     font-size:100%;
 	}
 #ss_tabsC .ss_tabsCCurrent a span {
-	border-bottom: 10px solid #eaebe8;
-	background-color: #eaebe8;
+	border-bottom: 10px solid #f6f6f6;
+	background-color: #f6f6f6;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
 	-moz-border-radius-bottomleft: 0px;

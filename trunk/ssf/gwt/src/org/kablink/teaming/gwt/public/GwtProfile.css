@@ -300,12 +300,12 @@ width: 500px;
 .user_status_update {
 	color: #999;
 	border: 0px;
-	background-color: #ededed;
+	background-color: #f6f6f6;
 	padding: 2px 4px 4px 8px;
 	width: 500px;
 	margin-top: 10px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .user_status_textAmount {
