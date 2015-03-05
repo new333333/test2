@@ -822,7 +822,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                     {
                  	   //only returns active user
                   	   return session.getNamedQuery( "find-User-id-By-ObjectSid" )
-                             		.setString( ParameterNames.OBJECT_SID,  objectSid)
+                             		.setString( ParameterNames.OBJECT_SID,  objectSid.toLowerCase())
                              		.setLong( ParameterNames.ZONE_ID, zoneId )
                              		.setCacheable( isPrincipalQueryCacheable() )
                              		.uniqueResult();
