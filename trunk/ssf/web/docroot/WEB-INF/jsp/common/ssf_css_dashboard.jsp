@@ -365,6 +365,7 @@ div.ss_canvas {
 	background: #fff;
 	background-position: top;
 	margin-top: 3px;
+    min-with: 220px;
 	padding: 6px 10px 10px;
 	line-height:1.2em;
 	border-radius: 3px;
@@ -692,6 +693,7 @@ div.item-sub span.ss_entryDate {
       }
 #ss_tabsC div { 
 	margin-right: 4px;
+	margin-bottom: 4px;
 	}
 #ss_tabsC a {
 	color: #fff !important;
@@ -699,7 +701,7 @@ div.item-sub span.ss_entryDate {
 #ss_tabsC a span {
     display:block;
     background-color: #949494; /* gray */
-    padding: 3px 8px;
+    padding: 4px 8px;
 	font-size: 11px;
     white-space:nowrap !important;
 	border-radius: 3px;
@@ -720,12 +722,15 @@ div.item-sub span.ss_entryDate {
 	background: #cce9ee;
       }  
 #ss_tabsC .ss_tabsC_other {
-	margin-bottom: 8px;
+	margin-bottom: 4px;
 	}
 #ss_tabsC .ss_tabsCCurrent a {
 	color: #000 !important;
 	font-weight: bold;
     font-size:100%;
+	}
+#ss_tabsC .ss_tabsCCurrent {
+	margin-bottom: 2px;
 	}
 #ss_tabsC .ss_tabsCCurrent a span {
 	border-bottom: 10px solid #f6f6f6;

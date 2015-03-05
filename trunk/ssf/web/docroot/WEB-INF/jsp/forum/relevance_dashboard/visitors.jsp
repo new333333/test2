@@ -66,10 +66,10 @@
 
 	<c:forEach var="user" items="${ss_visitors}">
 	  <c:if test="${user.id != ssUser.id }">
-		<div id="ss_col3_para" >
-		  <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
+		<div id="ss_col3_para" style="position: relative;">
+		  <div><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
 		  <c:if test="${!empty user.status}">
-			<span class="ss_smallprint" style="padding-left: 5px; color: #666; white-space: nowrap"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			<span class="ss_entryDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 			value="${user.statusDate}" type="both" 
 			timeStyle="short" dateStyle="short" /></span>
 			<div id="ss_im_status">${user.status}</div>

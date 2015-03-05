@@ -122,7 +122,7 @@
 
 <c:if test="${entryType == 'entry'}">
 <c:set var="ss_popular_view_seen" value="false" scope="request"/>
-	<table id="wiki-footer" width="100%" border="0" cellpadding="0" cellspacing="0" 
+	<table id="wiki-footer" style="position: relative;" width="100%" border="0" cellpadding="0" cellspacing="0" 
 	  class="ws-nw margintop2 nv-footer-wiki" style="display: block; ">
 	  <tr>
 		<td>

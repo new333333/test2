@@ -304,11 +304,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .wiki-entry-author a:hover {
     color: #135c8f;
     }   
-.wiki-entry-date, .wiki-entry-locale {
+.wiki-entry-date {
     font-size: 10px;
     color: #666;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
+    white-space: nowrap;
+    }
+.wiki-entry-locale {
+    font-size: 10px;
+    color: #666;
+    padding-left: 8px;
+    padding-right: 8px;
     white-space: nowrap;
     }
 #descriptionRegion1 .ss_entryDescription {

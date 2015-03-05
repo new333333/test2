@@ -84,7 +84,7 @@ var ss_showingFolder = true;
 								</ssf:titleLink>
 							</span>
 			
-							<span class="ss_entrySignature"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+							<span class="ss_entryDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 							      value="${entry._modificationDate}" type="both" 
 								  timeStyle="short" dateStyle="short" /></span>
 							
