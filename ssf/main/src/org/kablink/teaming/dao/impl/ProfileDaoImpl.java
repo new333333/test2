@@ -851,7 +851,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                     {
                  	   //only returns active principals
                   	   return session.getNamedQuery( "find-Principal-id-By-ObjectSid" )
-                             		.setString( ParameterNames.OBJECT_SID,  objectSid)
+                             		.setString( ParameterNames.OBJECT_SID,  objectSid.toLowerCase())
                              		.setLong( ParameterNames.ZONE_ID, zoneId )
                              		.setCacheable( isPrincipalQueryCacheable() )
                              		.uniqueResult();
