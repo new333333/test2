@@ -5960,14 +5960,64 @@ public class GwtViewHelper {
 												}
 											}
 											if (isEntityFolderEntry && GwtServerHelper.isFamilyFile(entityFileFamily)) {
-												String fName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD);
+												// Extract the base file information from the map.
+												String fName = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILENAME_FIELD );
+												String fId   = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILE_ID_FIELD  );
+												String fTime = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILE_TIME_FIELD);
+
+												// Does this entry have multiple files associated
+												// with it?
+												String   primaryId        = GwtServerHelper.getStringFromEntryMap(entryMap, Constants.PRIMARY_FILE_ID_FIELD);
+												boolean  hasPrimaryId     = MiscUtil.hasString(primaryId);
+												String[] fileNameIds      = (hasPrimaryId ? GwtServerHelper.getStringsFromEntryMap(entryMap, Constants.FILENAME_AND_ID_FIELD ) : null);
+												String[] fileTimeIds      = (hasPrimaryId ? GwtServerHelper.getStringsFromEntryMap(entryMap, Constants.FILE_TIME_AND_ID_FIELD) : null);
+												int      fileNameIdsCount = ((null == fileNameIds) ? 0 : fileNameIds.length);
+												int      fileTimeIdsCount = ((null == fileTimeIds) ? 0 : fileTimeIds.length);
+												if ((fileNameIdsCount == fileTimeIdsCount) && (1 < fileNameIdsCount)) {
+													// Yes!  Use the primary ID as the file's ID.
+													// (Note that we should only ever hit this
+													// branch with Vibe.)
+													fId = primaryId;
+													int primaryIdLen       = primaryId.length();
+													int uniquePrefixLength = Constants.UNIQUE_PREFIX.length();
+													
+													// Scan the filename/IDs list.
+													for (int i = 0; i < fileNameIdsCount; i += 1) {
+														// Is this the primary file's name?
+														String fileNameId   = fileNameIds[i];
+														int    primaryIdPos = fileNameId.indexOf(primaryId);
+														if (uniquePrefixLength == primaryIdPos) {
+															// Yes!  Extract it from the
+															// filename/ID.
+															fName = fileNameId.substring(primaryIdPos + primaryIdLen);
+															break;
+														}
+													}
+													
+													// Scan the file time/IDs list.
+													for (int i = 0; i < fileTimeIdsCount; i += 1) {
+														// Is this the primary file's time?
+														String fileTimeId = fileTimeIds[i];
+														int primaryIdPos = fileTimeId.indexOf(primaryId);
+														if (uniquePrefixLength == primaryIdPos) {
+															// Yes!  Extract it from the file
+															// time/ID.
+															fTime = fileTimeId.substring(primaryIdPos + primaryIdLen);
+															break;
+														}
+													}
+												}
+												
+												// Do we have a filename?
 												if (MiscUtil.hasString(fName)) {
+													// Yes!  Setup the view information
+													// appropriately.
 													eti.setFile(true);
 										    		if (supportsViewAsHtml(fName)) {
 														ViewFileInfo vfi = new ViewFileInfo();
-														vfi.setFileId(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILE_ID_FIELD));
+														vfi.setFileId(fId);
 														vfi.setEntityId(entityId);
-														vfi.setFileTime(GwtServerHelper.getStringFromEntryMap(entryMap, Constants.FILE_TIME_FIELD));
+														vfi.setFileTime(fTime);
 														eti.setFileViewAsHtmlUrl(GwtServerHelper.getViewFileUrl(request, vfi));
 										    		}
 													eti.setFileDownloadUrl(GwtServerHelper.getDownloadFileUrl(request, entryMap));
