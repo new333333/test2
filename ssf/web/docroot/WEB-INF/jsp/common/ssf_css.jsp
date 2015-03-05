@@ -2624,25 +2624,25 @@ div.ss_thumbnail_small_no_text a:hover img {
 	</c:if>
 	}
 div.ss_thumbnail_profile div {
-    width: 75px;
+    width: 60px;
     margin-left:   5px;
-    margin-right:  5px;
+    margin-right:  8px;
 	}
 div.ss_thumbnail_profile img {
-    width: 75px;
+    width: 60px;
 	}    	
 div.ss_thumbnail_profile_high div {
-    height: 75px;
+    height: 60px;
     margin-left:   5px;
-    margin-right:  5px;
+    margin-right:  8px;
 	}
 div.ss_thumbnail_profile_high img {
-    height: 75px;
+    height: 60px;
     width: auto;
 	}    	
 div.ss_thumbnail_small img {
-    width: 75px;
-    height: 75px;
+    width: 60px;
+    height: 60px;
 	}
 div.ss_thumbnail_tiny img {
     width: 20px;

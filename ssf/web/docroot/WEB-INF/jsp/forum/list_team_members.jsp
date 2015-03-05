@@ -61,7 +61,7 @@ var noMemberProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 	    <div style="padding-left:10px;">
 	    <c:forEach var="teamGroup" items="${ssTeamMemberGroups}">
 	    	<div class="margintop2">
-				<img style="margin: 1px 3px 0;" border="0" src="<html:imagesPath/>pics/group_icon_small.png" align="absbottom" />
+				<img style="margin: 1px 3px 0;" border="0" src="<html:imagesPath/>pics/group_20.png" align="absbottom" />
 				<a href="<ssf:url
 						adapter="true" 
 						crawlable="true"
