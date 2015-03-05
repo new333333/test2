@@ -322,6 +322,8 @@ public abstract class Principal extends Entry implements IPrincipal {
 		return objectSid;
 	}
 	public void setObjectSid(String objectSid) {
+		if(objectSid != null)
+			objectSid = objectSid.toLowerCase();
 		this.objectSid = objectSid;
 	}
 	
