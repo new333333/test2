@@ -7041,6 +7041,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				// Yes
 				// Add the value of the "objectSid" attribute
 				objectSid = getObjectSid( attrs );
+				if(objectSid != null)
+					objectSid = objectSid.toLowerCase();
 				mods.put( ObjectKeys.FIELD_PRINCIPAL_OBJECTSID, objectSid );
 				
 				// Add the value of the "sAMAccountName" attribute.
