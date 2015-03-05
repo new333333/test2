@@ -37,10 +37,10 @@
 <div id="ss_para">
 	<div id="ss_today">
 		<c:forEach var="user" items="${ss_trackedPeople}">
-		    <div id="ss_col3_para" style="margin: 0px 5px 0px 10px;"> 
+		    <div id="ss_col3_para" style="margin: 0px 5px 0px 10px; position: relative;"> 
 			    <ssf:showUser user="${user}" titleStyle="ss_link_1" />
 			    <c:if test="${ss_show_tracked_item_delete_button == 'true'}">&nbsp;
-			    <img class="display-pointer" align="absmiddle"
+			    <img class="display-pointer" style="position: absolute; margin: 5px;" align="absmiddle"
 			      src="<html:rootPath/>images/pics/delete.png"
 			      onclick="ss_trackedPeopleDelete(this, '${user.id}');"
 			      <ssf:alt tag="alt.delete"/> title="<ssf:nlt tag="relevance.trackThisPersonNot"/>"/>
