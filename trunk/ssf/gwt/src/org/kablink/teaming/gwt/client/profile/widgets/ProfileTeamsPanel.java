@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.Iterator;
@@ -50,9 +49,12 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 
-
+/**
+ * ?
+ *  
+ * @author ?
+ */
 public class ProfileTeamsPanel extends ProfileSectionPanel  {
-
 	private final String IDBASE = "myTeams_";
 	protected List<TeamInfo> teamList;
 
@@ -73,6 +75,7 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 		
 		cmd = new GetTeamsCmd( profileRequestInfo.getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
@@ -80,6 +83,7 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 					profileRequestInfo.getBinderId());
 			}
 			
+			@Override
 			public void onSuccess( VibeRpcResponse response )  {
 				
 				List<TeamInfo> tList;
@@ -145,10 +149,11 @@ public class ProfileTeamsPanel extends ProfileSectionPanel  {
 		 * 
 		 * @param event
 		 */
+		@Override
 		public void onClick(ClickEvent event) {
 			String url = team.getPermalinkUrl();
 			if(GwtClientHelper.hasString(url)) {
-				GwtClientHelper.jsLoadUrlInCurrentWindow(url);
+				GwtClientHelper.jsLoadUrlInTopWindow(url);
 			} else {
 				//is this more than lets expand the 
 			   
