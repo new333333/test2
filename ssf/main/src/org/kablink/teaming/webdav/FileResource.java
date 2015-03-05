@@ -429,6 +429,82 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 			throw new ConflictException(this, "Destination is an unknown type '" + toCollection.getClass().getName() + "'. Must be a folder resource.");
 		}
 	}
+	
+	private void doMoveTo(String destResourceWebdavPath, Folder destFolder, String name) 
+			throws ConflictException, NotAuthorizedException, BadRequestException {
+		FileAttachment fa = getFileAttachment();
+		DefinableEntity owningEntity = fa.getOwner().getEntity();
+		if(EntityType.folderEntry == owningEntity.getEntityType()) {
+			FolderEntry entry = (FolderEntry) owningEntity;
+			Long destFolderId = destFolder.getId();
+			if(entry.getParentFolder().getId().equals(destFolderId)) {
+				// The file is being moved within the same parent folder. 
+				if(fa.getFileItem().getName().equals(name)) {
+					// The target name is the same as the source name. Well, this means renaming to the same name.
+					return; // nothing more to do  
+				}
+				else { // Rename it in the current folder.
+					// Make sure that the folder doesn't already contain a file with the new name.
+					if(getFolderModule().getLibraryFolderEntryByFileName(entry.getParentFolder(), name) == null) {
+						// Rename the file
+						renameFile(entry, fa, name);
+					}
+					else {
+						throw new ConflictException(this, "Can not rename file '" + id + "' because there is already a file with the same name in this folder");
+					}
+				}
+			}
+			else { // The file is being moved to another folder.
+				// Make sure that the destination is a library folder.
+				if(destFolder.isLibrary()) {
+					// Make sure that the destination folder doesn't already contain a file with the new name.
+					if(getFolderModule().getLibraryFolderEntryByFileName(destFolder, name) == null) {
+						if(entry.getFileAttachmentsCount() > 1) {
+							// This entry contains more than one file, therefore, moving the entire entry is no good
+							// since it would result in multiple files being moved to the user's surprise.
+							// On top of that, silently moving just one file out of this entry into another doesn't
+							// seem as reasonable as the case with copy, because unlike partial copy, partial move alters 
+							// the state of the source entry. The fact that multiple files were attached to the same entry
+							// (mostly likely through browser interface) implies that there are some logical relationship 
+							// between those files, which can not be shown/expressed through WebDAV interface.
+							// For that reason, we will not allow partial move through WebDAV interface. If that's 
+							// indeed the intention of the user, the user will have to do that through browser interface
+							// in the same way that WebDAV interface doesn't allow a way to attach multiple files to
+							// the same entry.
+							throw new ConflictException(this, "Can not move file '" + id + "' because the enclosing entry represents more than one file");
+						}
+						else {
+							// This is the only file contained in the entry, therefore, we can safely move the entire entry.
+							HashMap options = new HashMap();
+							options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
+							try {
+								getFolderModule().moveEntry(entry.getParentBinder().getId(), entry.getId(), destFolderId, new String[] {name}, options);
+							}
+							catch (WriteFilesException e) {
+								throw new ConflictException(this, "Can not move file '" + id + "' into the folder '" + destFolderId + "' because of a WriteFilesException");
+							}
+							// Finally, we need to adjust the state of this FileResource to properly reflect the post-operation state.
+							// Reload file attachment object just in case.
+							this.setWebdavPath(destResourceWebdavPath + "/" + name);
+							init(getFileModule().getFileAttachmentById(id));
+						}
+					}
+					else {
+						throw new ConflictException(this, "Can not move file '" + id + "' into the folder '" + destFolderId + "' because there is already a file with the same name in the destination folder");
+					}
+				}
+				else {
+					// The destination folder is not a library folder. 
+					throw new ConflictException(this, "Can not move file '" + id + "' because the destination folder '" + destFolder.getId() + "' is not a library folder");
+				}
+			}
+		}
+		else {
+			// We allow move operation only on those files attached to entries.
+			// Moving other files is ill-defined.
+			throw new ConflictException(this, "Can not move file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see com.bradmcevoy.http.MoveableResource#moveTo(com.bradmcevoy.http.CollectionResource, java.lang.String)
@@ -439,82 +515,15 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 			BadRequestException {
 		if(rDest instanceof FolderResource) {
 			FolderResource destFolderResource = (FolderResource) rDest;
-			FileAttachment fa = getFileAttachment();
-			DefinableEntity owningEntity = fa.getOwner().getEntity();
-			if(EntityType.folderEntry == owningEntity.getEntityType()) {
-				FolderEntry entry = (FolderEntry) owningEntity;
-				Long destFolderId = destFolderResource.getEntityIdentifier().getEntityId();
-				if(entry.getParentFolder().getId().equals(destFolderId)) {
-					// The file is being moved within the same parent folder. 
-					if(fa.getFileItem().getName().equals(name)) {
-						// The target name is the same as the source name. Well, this means renaming to the same name.
-						return; // nothing more to do  
-					}
-					else { // Rename it in the current folder.
-						// Make sure that the folder doesn't already contain a file with the new name.
-						if(getFolderModule().getLibraryFolderEntryByFileName(entry.getParentFolder(), name) == null) {
-							// Rename the file
-							renameFile(entry, fa, name);
-						}
-						else {
-							throw new ConflictException(this, "Can not rename file '" + id + "' because there is already a file with the same name in this folder");
-						}
-					}
-				}
-				else { // The file is being moved to another folder.
-					Folder destFolder = destFolderResource.getFolder();
-					// Make sure that the destination is a library folder.
-					if(destFolder.isLibrary()) {
-						// Make sure that the destination folder doesn't already contain a file with the new name.
-						if(getFolderModule().getLibraryFolderEntryByFileName(destFolder, name) == null) {
-							if(entry.getFileAttachmentsCount() > 1) {
-								// This entry contains more than one file, therefore, moving the entire entry is no good
-								// since it would result in multiple files being moved to the user's surprise.
-								// On top of that, silently moving just one file out of this entry into another doesn't
-								// seem as reasonable as the case with copy, because unlike partial copy, partial move alters 
-								// the state of the source entry. The fact that multiple files were attached to the same entry
-								// (mostly likely through browser interface) implies that there are some logical relationship 
-								// between those files, which can not be shown/expressed through WebDAV interface.
-								// For that reason, we will not allow partial move through WebDAV interface. If that's 
-								// indeed the intention of the user, the user will have to do that through browser interface
-								// in the same way that WebDAV interface doesn't allow a way to attach multiple files to
-								// the same entry.
-								throw new ConflictException(this, "Can not move file '" + id + "' because the enclosing entry represents more than one file");
-							}
-							else {
-								// This is the only file contained in the entry, therefore, we can safely move the entire entry.
-								HashMap options = new HashMap();
-								options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
-								try {
-									getFolderModule().moveEntry(entry.getParentBinder().getId(), entry.getId(), destFolderId, new String[] {name}, options);
-								}
-								catch (WriteFilesException e) {
-									throw new ConflictException(this, "Can not move file '" + id + "' into the folder '" + destFolderId + "' because of a WriteFilesException");
-								}
-								// Finally, we need to adjust the state of this FileResource to properly reflect the post-operation state.
-								// Reload file attachment object just in case.
-								this.setWebdavPath(destFolderResource.getWebdavPath() + "/" + name);
-								init(getFileModule().getFileAttachmentById(id));
-							}
-						}
-						else {
-							throw new ConflictException(this, "Can not move file '" + id + "' into the folder '" + destFolderId + "' because there is already a file with the same name in the destination folder");
-						}
-					}
-					else {
-						// The destination folder is not a library folder. 
-						throw new ConflictException(this, "Can not move file '" + id + "' because the destination folder '" + destFolder.getId() + "' is not a library folder");
-					}
-				}
-			}
-			else {
-				// We allow move operation only on those files attached to entries.
-				// Moving other files is ill-defined.
-				throw new ConflictException(this, "Can not move file '" + id + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
-			}
+			doMoveTo(destFolderResource.getWebdavPath(), destFolderResource.getFolder(), name);
 		}
 		else if(rDest instanceof WorkspaceResource) {
 			throw new ConflictException(this, "It is not allowed to move a file into a workspace.");
+		}
+		else if(rDest instanceof MyFilesResource) {
+			MyFilesResource destMyFilesResource = (MyFilesResource) rDest;
+			Folder destFolder = destMyFilesResource.getMyFilesFileParent();
+			doMoveTo(destMyFilesResource.getWebdavPath(), destFolder, name);
 		}
 		else {
 			throw new ConflictException(this, "Destination is an unknown type '" + rDest.getClass().getName() + "'. Must be a folder resource.");
