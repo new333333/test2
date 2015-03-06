@@ -4096,10 +4096,9 @@ top:100px;
 	padding-bottom: 0.2em;
 	padding-left: 0;
 	padding-right: 6px;
-	border-bottom: 1px solid #D2D5D1; 
+	border-bottom: 1px solid #e0e0e0; 
 	white-space: nowrap;
-	background:url(images/blends/gray_blend8_28.png) repeat-x;
-	background-position:bottom;
+	background-color: #e0e0e0;
 }	
 .gwtTaskList_objlist2 tr.columnhead .sortedcol { color: #000000; font-weight: bold;}
 a.sort-column
@@ -4118,7 +4117,7 @@ a.sort-column:hover
 	background-color: #fff;
 	font-size:.6em;
 	padding: 2px 6px 2px 0px;
-	border-bottom: 1px solid #d2d5d1;
+	border-bottom: 1px solid #e0e0e0;
 	white-space: nowrap;
 }	
 .gwtTaskList_objlist2 tr.disabled td, .gwtTaskList_objlist2 tr.disabled td a
@@ -4134,7 +4133,7 @@ a.sort-column:hover
 	background-color: transparent;
 	font-size:.75em;
 	padding: 3px;
-	border-bottom: 1px solid #d2d5d1;
+	border-bottom: 1px solid #e0e0e0;
 }	
 .gwtTaskList_objlist2 tr.regrow td.related	/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
 {
@@ -4146,7 +4145,7 @@ a.sort-column:hover
 	background-color: #ffe085;
 	font-size:.75em;
 	padding: 3px 8px;
-	border-bottom: 1px solid #d2d5d1;
+	border-bottom: 1px solid #e0e0e0;
 }
 .gwtTaskList_objlist2 tr.regrow td.wrapOK
 {
@@ -4156,7 +4155,7 @@ a.sort-column:hover
 { 
 	background-color: #fff;
 	font-size:.75em;
-	border-bottom: 1px solid #d2d5d1;
+	border-bottom: 1px solid #e0e0e0;
 	vertical-align: top;
 }
 .gwtTaskList_objlist2 tr.footrow td
