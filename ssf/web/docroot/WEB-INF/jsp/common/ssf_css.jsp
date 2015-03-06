@@ -3515,7 +3515,7 @@ div.ss_user_info {
 }
 div.ss_myStatusFrame{
 	background: transparent;
-	margin: 2px 0px 0px;
+	margin: 2px;
 }
 div.ss_myStatusHeight{
 	height:65px;
