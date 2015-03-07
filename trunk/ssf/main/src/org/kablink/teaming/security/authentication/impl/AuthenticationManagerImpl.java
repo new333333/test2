@@ -294,6 +294,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	{
 		validateZone(zoneName);
 		User user=null;
+		String userPasswordEncryptionAlgorithmAtTheBeginning = null;
 		boolean hadSession = SessionUtil.sessionActive();
 		boolean syncUser;
 		LdapModule ldapModule;
@@ -336,7 +337,9 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				}
 			}
 			else {
-				user = doAuthenticateUser(authenticationServiceProvider, zoneName, userName, password, passwordAutoSynch, ignorePassword);
+				Map result = doAuthenticateUser(authenticationServiceProvider, zoneName, userName, password, passwordAutoSynch, ignorePassword);
+				user = (User) result.get("user");
+				userPasswordEncryptionAlgorithmAtTheBeginning = (String) result.get("userPasswordEncryptionAlgorithmAtTheBeginning");
 			}
 			
 			// If still here, a matching user account has been found.
@@ -507,7 +510,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				{
 					// Yes
 					// Are we upgrading from Vibe 3.x?
-					if( ExtendedPBEStringEncryptor.SYMMETRIC_ENCRYPTION_ALGORITHM_SECOND_GEN.equals( user.getPwdenc() ) )
+					if( ExtendedPBEStringEncryptor.SYMMETRIC_ENCRYPTION_ALGORITHM_SECOND_GEN.equals(userPasswordEncryptionAlgorithmAtTheBeginning) )
 					{
 						// No
 						setFirstLoginDate = false;
@@ -541,7 +544,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	/*
 	 * Handle authentication for all requests that didn't use OpenID. 
 	 */
-	protected User doAuthenticateUser(AuthenticationServiceProvider authenticationServiceProvider, String zoneName, String username, String password,
+	protected Map doAuthenticateUser(AuthenticationServiceProvider authenticationServiceProvider, String zoneName, String username, String password,
 				boolean passwordAutoSynch, boolean ignorePassword)
 			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException {
 		User user = null;
@@ -642,6 +645,12 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 						+ zoneName + "," + username + "]", e);
     	}
 
+		Map result = new HashMap();
+		if(user != null) {
+			result.put("user", user);
+			result.put("userPasswordEncryptionAlgorithmAtTheBeginning", user.getPwdenc());
+		}
+		
     	if(password != null) {
     		if(!EncryptUtil.checkPassword(password, user)) {
 	   			// Password does not match.
@@ -680,7 +689,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
     	}
    		
 		SimpleProfiler.stop( "3x-AuthenticationManagerImpl.doAuthenticate()" );
-		return user;
+		
+		return result;
 	}
 
 	protected User fetchOpenidUser(String zoneName, String username) {
