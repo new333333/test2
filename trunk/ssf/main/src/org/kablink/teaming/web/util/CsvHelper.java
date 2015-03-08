@@ -38,6 +38,10 @@ public class CsvHelper {
 	
 	public static String checkText(String text) {
 		if (text == null) text = "";
+		
+		//Replace all newline characters with \n
+		text = text.replaceAll("\n|\r\n", "\\\\n");
+		
 		int indexOfComma = -1;
 
 		StringBuffer result = new StringBuffer();
