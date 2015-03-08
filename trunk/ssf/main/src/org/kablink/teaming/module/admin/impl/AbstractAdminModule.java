@@ -1988,7 +1988,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	           			((Entry)workArea).setCheckFolderAcl(checkFolderAcl);
 	           		}
 					return null;
-	        	}});
+	        	}
+	        });
+	        Entry entry = (Entry)workArea;
+			indexEntry(entry, false);
 		}
 	}
 
