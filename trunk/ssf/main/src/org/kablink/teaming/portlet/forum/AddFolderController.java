@@ -219,7 +219,7 @@ public class AddFolderController extends SAbstractController {
 				response.setRenderParameter(WebKeys.NAMESPACE, namespace);
 			}
 			else {
-				if (isShortForm || operation.equals("add_team_workspace")) {
+				if (isShortForm) {
 					setupReloadBinder(response, newId);
 				} else {
 					setupReloadOpener(response, newId);

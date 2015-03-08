@@ -42,11 +42,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.portlet.PortletURL;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -1925,17 +1925,33 @@ public class GwtMenuHelper {
 		BinderModule bm = bs.getBinderModule();
 		if (bm.testAccess(ws, BinderOperation.addWorkspace)) {
 			// ...add a 'New Workspace...' menu item.
-			AdaptedPortletURL url = createActionUrl(request);
-			url.setParameter(WebKeys.ACTION,        WebKeys.ACTION_ADD_BINDER);
-			url.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(ws.getId()));
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
-			url.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
-			
-			ToolbarItem addTBI = new ToolbarItem(ADD_WORKSPACE);
-			markTBIPopup(addTBI                             );
-			markTBITitle(addTBI, "toolbar.menu.addWorkspace");
-			markTBIUrl(  addTBI, url                        );
-			entryToolbar.addNestedItem(addTBI);
+			Long cfgType = null;
+			List result = bs.getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW);
+			if (result.isEmpty()) {
+				result.add(bs.getTemplateModule().addDefaultTemplate(Definition.WORKSPACE_VIEW));	
+			}
+			for (int i = 0; i < result.size(); i++) {
+				TemplateBinder tb = (TemplateBinder) result.get(i);
+				if (tb.getInternalId() != null && tb.getInternalId().toString().equals(ObjectKeys.DEFAULT_TEAM_WORKSPACE_CONFIG)) {
+					//We have found the team workspace template, get its config id
+					cfgType = tb.getId();
+					break;
+				}
+			}
+			if (cfgType != null) {
+				AdaptedPortletURL url = createActionUrl(request);
+				url.setParameter(WebKeys.ACTION,        WebKeys.ACTION_ADD_BINDER);
+				url.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(ws.getId()));
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_TEAM_WORKSPACE);
+				url.setParameter(WebKeys.URL_BINDER_CONFIG_ID, cfgType.toString());
+				url.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
+				
+				ToolbarItem addTBI = new ToolbarItem(ADD_WORKSPACE);
+				markTBIPopup(addTBI                             );
+				markTBITitle(addTBI, "team.addTeam"             );
+				markTBIUrl(  addTBI, url                        );
+				entryToolbar.addNestedItem(addTBI);
+			}
 		}
 
 		// If the user can delete items from the workspace...
