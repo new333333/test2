@@ -627,43 +627,43 @@ public class ContentControl extends Composite
 	
 	/**
 	 * Set the width and height of this control.
+	 * 
+	 * @param width
+	 * @param height
 	 */
 	private void setDimensions( int width, int height )
 	{
-		if ( isVisible() )
+		if ( !m_isAdminContent )
 		{
-			if ( !m_isAdminContent )
-			{
-				// Adjust the width and height for proper spacing.
-				width  += GwtConstants.CONTENT_WIDTH_ADJUST;
-				height += GwtConstants.CONTENT_HEIGHT_ADJUST;
-			}
-			if ( 0 > width  ) width  = 0;
-			if ( 0 > height ) height = 0;
-			
-			// Set the width and height of the frame.
-			setSize( (width + "px"), (height + "px") );
-			m_contentFrame.setPixelSize( width, height );
-	
-			// Does the content panel contain a task listing?
-			FrameElement fe = getContentFrame();
-			if ( null != fe ) 
-			{
-				Document doc;
+			// Adjust the width and height for proper spacing.
+			width  += GwtConstants.CONTENT_WIDTH_ADJUST;
+			height += GwtConstants.CONTENT_HEIGHT_ADJUST;
+		}
+		if ( 0 > width  ) width  = 0;
+		if ( 0 > height ) height = 0;
+		
+		// Set the width and height of the frame.
+		setSize( (width + "px"), (height + "px") );
+		m_contentFrame.setPixelSize( width, height );
 
-				try
+		// Does the content panel contain a task listing?
+		FrameElement fe = getContentFrame();
+		if ( null != fe ) 
+		{
+			Document doc;
+
+			try
+			{
+				doc = fe.getContentDocument();
+				if ( doc != null && null != doc.getElementById( "gwtTasks" ) )
 				{
-					doc = fe.getContentDocument();
-					if ( doc != null && null != doc.getElementById( "gwtTasks" ) )
-					{
-						// Yes!  Let it resize if it needs to.
-						jsResizeTaskListing();
-					}
+					// Yes!  Let it resize if it needs to.
+					jsResizeTaskListing();
 				}
-				catch (Exception ex)
-				{
-					// Nothing to do.
-				}
+			}
+			catch (Exception ex)
+			{
+				// Nothing to do.
 			}
 		}
 	}// end setDimensions()
