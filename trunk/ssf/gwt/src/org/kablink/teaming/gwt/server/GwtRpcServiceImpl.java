@@ -5654,7 +5654,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
  		 			// Do the definitions need to be reset?
 		 			property = (String) adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS );
-		 			if ( Utils.checkIfFilr() == false && (property == null || property.length() == 0) )
+		 			if ( Utils.checkIfFilr() == false &&
+		 				 (property == null || property.length() == 0 || "false".equalsIgnoreCase( property ) ) )
 		 			{
 		 				// Yes
 		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_DEFINITIONS );
@@ -5662,7 +5663,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 		 			// Do the templates need to be reset?
 		 			property = (String) adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES );
-		 			if ( Utils.checkIfFilr() == false && (property == null || property.length() == 0) )
+		 			if ( Utils.checkIfFilr() == false &&
+		 				 (property == null || property.length() == 0 || "false".equalsIgnoreCase( property ) ) )
 		 			{
 		 				// Yes
 		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_TEMPLATES );
@@ -5670,7 +5672,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 		 			// Does re-indexing need to be performed?
 		 			property = (String) adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX );
-		 			if ( property == null || property.length() == 0 )
+		 			if ( property == null || property.length() == 0 || "false".equalsIgnoreCase( property ) )
 		 			{
 		 				// Yes
 		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_SEARCH_INDEX );
@@ -5678,7 +5680,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 		 			// Does an ldap sync need to be run to import typeless dns?
 		 			property = (String) adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_IMPORT_TYPELESS_DN );
-		 			if ( property == null || property.length() == 0 )
+		 			if ( property == null || property.length() == 0 || "false".equalsIgnoreCase( property ) )
 		 			{
 		 				// Yes
 		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_IMPORT_TYPLESS_DN );
