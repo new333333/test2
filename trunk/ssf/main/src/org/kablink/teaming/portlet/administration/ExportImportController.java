@@ -113,7 +113,7 @@ public class ExportImportController  extends  SAbstractController {
 					reportMap.put(ExportHelper.entries, new Integer(0));
 					reportMap.put(ExportHelper.files, new Integer(0));
 					reportMap.put(ExportHelper.errors, new Integer(0));
-					reportMap.put(ExportHelper.errorList, new ArrayList());
+					reportMap.put(ExportHelper.errorList, new ArrayList<String>());
 			    	try {
 			    		ExportHelper.importZip(binderId, fIn, statusTicket, reportMap);	
 			    	} catch(ExportException e) {
@@ -121,6 +121,7 @@ public class ExportImportController  extends  SAbstractController {
 			    		List eList = (List)reportMap.get("errorList");
 			    		eList.add(e.getMessage());
 			    	}
+
 					String[] reportData = new String[] {
 							((Integer)reportMap.get(ExportHelper.workspaces)).toString(),
 							((Integer)reportMap.get(ExportHelper.folders)).toString(),
@@ -128,7 +129,8 @@ public class ExportImportController  extends  SAbstractController {
 							((Integer)reportMap.get(ExportHelper.files)).toString(),
 							((Integer)reportMap.get(ExportHelper.errors)).toString()
 						};
-					statusTicket.setStatus(NLT.get("administration.export_import.importReport", reportData));
+					statusTicket.setStatus(NLT.get("administration.export_import.importReport", reportData) + 
+							getFormattedErrorMessages((List<String>) reportMap.get(ExportHelper.errorList)));
 			    	statusTicket.done();
 			    	request.setAttribute("ss_reportData", reportMap);
 				} else {
@@ -163,10 +165,10 @@ public class ExportImportController  extends  SAbstractController {
 		}
 		StatusTicket statusTicket = WebStatusTicket.newStatusTicket(statusTicketId, request);
 
-		try{
+		try {
 			//Set up the standard beans
 			BinderHelper.setupStandardBeans(this, request, response, model, binderId);
-		}catch(NoBinderByTheIdException exc){
+		} catch(NoBinderByTheIdException exc) {
 			statusTicket.setStatus(exc.getLocalizedMessage());
 			res.setContentType(mimeTypes.getContentType(filename));
 			res.setHeader("Cache-Control", "private");
@@ -205,7 +207,7 @@ public class ExportImportController  extends  SAbstractController {
 		}
 		
 		//EXPORTING...
-		if (operation.equals(WebKeys.OPERATION_EXPORT)){
+		if (operation.equals(WebKeys.OPERATION_EXPORT)) {
 			res.setContentType(mimeTypes.getContentType(filename));
 			res.setHeader("Cache-Control", "private");
 			res.setHeader(
@@ -216,9 +218,9 @@ public class ExportImportController  extends  SAbstractController {
 			if (entryId != null) {
 				FolderEntry entry = null;
 				
-				try{
+				try {
 					entry = getFolderModule().getEntry(binderId, entryId);
-				}catch(NoFolderEntryByTheIdException exc){
+				} catch(NoFolderEntryByTheIdException exc) {
 			    	statusTicket.setStatus(exc.getLocalizedMessage());
 					ZipOutputStream zipOut = new ZipOutputStream(res.getOutputStream());		
 		
@@ -242,7 +244,7 @@ public class ExportImportController  extends  SAbstractController {
 			reportMap.put(ExportHelper.entries, new Integer(0));
 			reportMap.put(ExportHelper.files, new Integer(0));
 			reportMap.put(ExportHelper.errors, new Integer(0));
-			reportMap.put(ExportHelper.errorList, new ArrayList());
+			reportMap.put(ExportHelper.errorList, new ArrayList<String>());
 			try {
 				getBinderModule().export(binderId, entryId, res.getOutputStream(), options, binderIds, 
 						noSubBinders, statusTicket, reportMap);
@@ -251,6 +253,7 @@ public class ExportImportController  extends  SAbstractController {
 	    		List eList = (List)reportMap.get("errorList");
 	    		eList.add(e.getMessage());
 	    	}
+
 			String[] reportData = new String[] {
 					((Integer)reportMap.get(ExportHelper.workspaces)).toString(),
 					((Integer)reportMap.get(ExportHelper.folders)).toString(),
@@ -258,11 +261,23 @@ public class ExportImportController  extends  SAbstractController {
 					((Integer)reportMap.get(ExportHelper.files)).toString(),
 					((Integer)reportMap.get(ExportHelper.errors)).toString()
 				};
-			statusTicket.setStatus(NLT.get("administration.export_import.exportReport", reportData));
+			statusTicket.setStatus(NLT.get("administration.export_import.exportReport", reportData) + 
+					getFormattedErrorMessages((List<String>) reportMap.get(ExportHelper.errorList)));
 			statusTicket.done();
 			return null;
 		}
 		model.put("ss_reportData", request.getAttribute("ss_reportData"));
 		return new ModelAndView("administration/exportImport_summary", model);
+	}
+	
+	protected String getFormattedErrorMessages(List<String> errorMessages) {
+		StringBuffer result = new StringBuffer();
+		if (!errorMessages.isEmpty()) {
+			result.append("<br/><br/>");
+			for (String msg : errorMessages) {
+				result.append(msg).append("<br/>");
+			}
+		}
+		return result.toString();
 	}
 }
