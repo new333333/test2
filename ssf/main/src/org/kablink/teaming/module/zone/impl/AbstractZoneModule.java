@@ -783,6 +783,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				
 				// Mark groups and teams as external if they contain an external user or the guest user
 				getProfileModule().upgradeExternalGroupsAndTeams();
+
+				// Admin needs to re-index, set the flag to false. (Do not set it to null!!! There are checks later on for null.)
+				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "false" );
+
+				// Admin needs to reset definitions and templates.  (Do not set it to null!!! There are checks later on for null.)
+				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "false" );
+				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "false" );
 			}
 		}
 		
