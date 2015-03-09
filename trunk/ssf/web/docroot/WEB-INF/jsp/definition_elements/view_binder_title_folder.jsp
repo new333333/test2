@@ -40,11 +40,11 @@
 <div id="ss_profile_box_h1">
   <ul class="ss_horizontal ss_nobullet">
   <c:set var="parentBinder2" value="${ssDefinitionEntry}"/>
-  <c:set var="action" value="view_ws_listing"/>
+  <jsp:useBean id="parentBinder2" type="java.lang.Object" />
+  <c:set var="action" value="view_permalink"/>
   <c:if test="${ssConfigJspStyle == 'template'}">
     <c:set var="action" value="configure_configuration"/>
   </c:if>
-  <jsp:useBean id="parentBinder2" type="java.lang.Object" />
   <%
 	Stack parentTree2 = new Stack();
 	while (parentBinder2 != null) {
@@ -61,7 +61,25 @@
 	 <table cellpadding="0" cellspacing="0">
 	 <tr>
 	   <td valign="top">
- 		   </td>
+	    <div class="ss_treeWidget">
+	     <a 
+	     <c:if test="${ssConfigJspStyle != 'template'}">
+	       href="javascript: ;" 
+	         onclick="return ss_gotoPermalink('${nextBinder.id}', '${nextBinder.id}', '${nextBinder.entityType}', '_ss_forum_', 'yes');"
+	     </c:if>
+	     <c:if test="${ssConfigJspStyle == 'template'}">
+	       href='<ssf:url adapter="true" portletName="ss_forum" 
+			    action="${action}"
+           		folderId="${nextBinder.id}" />'
+          </c:if>
+          >
+	         <c:if test="${empty nextBinder.title}">
+               <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
+             </c:if>
+             <span>${nextBinder.title}</span>
+          </a> 
+         </div>
+        </td>
  		   <%  if (!parentTree2.empty()) {  %>
  		     <td><div class="ss_profile_box_h1 ss_treeWidget"><img src="<html:rootPath/>images/pics/breadspace.gif" border="0" align="absmiddle"></div>
  		     </td>
@@ -71,22 +89,27 @@
   </c:if>
   <c:if test="${nextBinder.entityType != 'folder' || empty ssNavigationLinkTree[nextBinder.id]}">
 	  <div class="ss_treeWidget">
-	  <a href="<ssf:url crawlable="true"
-           adapter="true" portletName="ss_forum"
-           folderId="${nextBinder.id}" 
-           action="${action}"/>">
-	    <c:if test="${empty nextBinder.title}">
-          <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
-        </c:if>
-         	<span>${nextBinder.title}</span>
-      </a><%  if (!parentTree2.empty()) {  %><img src="<html:rootPath/>images/pics/breadspace.gif" border="0" align="absmiddle"><%  }  %>
+	     <a
+	     <c:if test="${ssConfigJspStyle != 'template'}">
+	       href="javascript: ;" 
+	         onclick="return ss_gotoPermalink('${nextBinder.id}', '${nextBinder.id}', '${nextBinder.entityType}', '_ss_forum_', 'yes');"
+	     </c:if>
+	     <c:if test="${ssConfigJspStyle == 'template'}">
+		  href='<ssf:url crawlable="true"
+	           adapter="true" portletName="ss_forum"
+	           folderId="${nextBinder.id}" 
+	           action="${action}"/>'
+	     </c:if>
+	     >
+		    <c:if test="${empty nextBinder.title}">
+	          <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
+	        </c:if>
+	         	<span>${nextBinder.title}</span>
+      	 </a>
+      <%  if (!parentTree2.empty()) {  %><img src="<html:rootPath/>images/pics/breadspace.gif" border="0" align="absmiddle"><%  }  %>
       </div>
   </c:if>
   </li>
-  <c:set var="action" value="view_folder_listing"/>
-  <c:if test="${ssConfigJspStyle != 'template'}">
-    <c:set var="action" value="configure_configuration"/>
-  </c:if>
  	 <%
    }
  	 %>

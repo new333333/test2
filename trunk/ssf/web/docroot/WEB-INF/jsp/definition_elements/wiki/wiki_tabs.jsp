@@ -50,7 +50,15 @@
 			          actionUrl="true"><ssf:param
 			          name="entryViewStyle" value="popup"/><ssf:param
 			          name="namespace" value="${renderResponse.namespace}"/></ssf:url>"
-			      ><ssf:nlt tag="wiki.homePage"/></a>
+			          onclick="if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this, true);"
+			      >
+			      <c:if test="${ss_wikiHomepageEntryId == ss_wikiEntryBeingShown.id}">
+			        <ssf:nlt tag="wiki.homePage"/>
+			      </c:if>
+			      <c:if test="${ss_wikiHomepageEntryId != ss_wikiEntryBeingShown.id}">
+			        <ssf:nlt tag="wiki.page"/>
+			      </c:if>
+			      </a>
 			    </span>
 			  </c:if>
 			</td>

@@ -807,6 +807,7 @@ public class ViewEntryController extends  SAbstractController {
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 				if (getBinderModule().testAccess(entry.getParentBinder(), BinderOperation.setProperty)) {
 					String wikiHomePageId = (String)entry.getParentBinder().getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
+					model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, wikiHomePageId);
 					if (Validator.isNotNull(wikiHomePageId) && wikiHomePageId.equals(String.valueOf(entry.getId()))) {
 						Map qualifiers = new HashMap();
 						qualifiers.put("nosort", true);
