@@ -124,4 +124,16 @@
 			class="org.kablink.teaming.ehcache.DefinitionCacheEventListenerFactory" />
         <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />
 	</cache>
+	
+    <cache
+    	name="org.kablink.teaming.domain.Principal"
+        maxElementsInMemory="5000"
+        eternal="false"
+        timeToIdleSeconds="3600"
+        timeToLiveSeconds="86400"
+        overflowToDisk="false">
+        <cacheEventListenerFactory
+			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />
+	</cache>
 </ehcache>	
