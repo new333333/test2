@@ -1316,14 +1316,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @author jwootton
 	 */
 	@Override
-	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
+	public HashSet<User> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
 	{
-		HashSet<Long> listOfMembers;
+		HashSet<User> listOfMembers;
 		int pageSize = 1500;
 		
 		pageSize = SPropsUtil.getInt( "ldap.sync.dynamic.group.membership.page.size", 1500 );
 
-		listOfMembers = new HashSet<Long>();
+		listOfMembers = new HashSet<User>();
 		
 		// Does the membership criteria have a filter?
 		if ( filter != null && filter.length() > 0 )
@@ -1421,7 +1421,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 									if ( user != null )
 									{
 										// Yes, add them to the membership list.
-										listOfMembers.add( user.getId() );
+										listOfMembers.add( user );
 									}
 								}
 								catch ( NoUserByTheNameException nuEx )
@@ -3797,7 +3797,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Does the membership criteria have a filter?
 		if ( filter != null && filter.length() > 0 )
 		{
-			HashSet<Long> setOfMembers;
+			HashSet<User> setOfMembers;
 			
 			setOfMembers = getDynamicGroupMembers( baseDn, filter,  searchSubtree );
 			if ( setOfMembers != null )
@@ -3901,7 +3901,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			// Should we update the dynamic group membership of this group?
 			if ( updateMembership )
 			{
-				HashSet<Long> groupMemberIds;
+				HashSet<User> groupMemberUsers;
 				
 				// Yes
 				try
@@ -3914,7 +3914,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					logger.info( "\tEvaluating dynamic group membership for group: " + group.getName() );
 
 					// Get a list of the dynamic group members.
-					groupMemberIds = getDynamicGroupMembers( baseDn, ldapFilter, searchSubtree );
+					groupMemberUsers = getDynamicGroupMembers( baseDn, ldapFilter, searchSubtree );
 					
 					newMembers = new ArrayList<Membership>();
 					count = 0;
@@ -3922,10 +3922,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Get the maximum number of users that can be in a group.
 					maxCount = SPropsUtil.getInt( "dynamic.group.membership.limit", 50000 ); 					
 					
-					for (Long userId : groupMemberIds)
+					for (User user : groupMemberUsers)
 					{
-						logger.info( "\t\tAdding user: " + String.valueOf( userId ) );
-						newMembers.add( new Membership( groupId, userId ) );
+						logger.info( "\t\tAdding user: " + String.valueOf( user.getId() ) );
+						newMembers.add( new Membership( groupId, user.getId() ) );
 						++count;
 						
 						if ( count >= maxCount )

@@ -64,6 +64,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -10330,14 +10331,11 @@ public class GwtServerHelper {
 		if ( principal != null && principal instanceof Group )
 		{
 			List<Principal> currentMembers;
-			Set<Long> membershipIds;
 			SortedSet<Principal> principals;
 			String ldapQuery;
 			Group group;
 
 			group = (Group) principal;
-			
-			membershipIds = new HashSet<Long>();
 			
 			// Capture the current membership of the group before it gets modified
 			{
@@ -10360,6 +10358,8 @@ public class GwtServerHelper {
 			{
 				// Yes
 				
+				Set<User> membershipUsers = new HashSet<User>();
+
 				if ( membershipCriteria != null )
 				{
 					// Execute the ldap query and get the list of members from the results.
@@ -10367,10 +10367,10 @@ public class GwtServerHelper {
 					try
 					{
 						int maxCount;
-						HashSet<Long> potentialMemberIds;
+						HashSet<User> potentialMemberUsers;
 						
 						// Get a list of all the potential members.
-						potentialMemberIds = ami.getLdapModule().getDynamicGroupMembers(
+						potentialMemberUsers = ami.getLdapModule().getDynamicGroupMembers(
 																			membershipCriteria.getBaseDn(),
 																			membershipCriteria.getLdapFilterWithoutCRLF(),
 																			membershipCriteria.getSearchSubtree() );
@@ -10379,15 +10379,15 @@ public class GwtServerHelper {
 						maxCount = SPropsUtil.getInt( "dynamic.group.membership.limit", 50000 ); 					
 						
 						// Is the number of potential members greater than the max number of group members?
-						if ( potentialMemberIds.size() > maxCount )
+						if ( potentialMemberUsers.size() > maxCount )
 						{
 							int count;
 
 							// Yes, only take the max number of users.
 							count = 0;
-							for (Long userId : potentialMemberIds)
+							for (User user : potentialMemberUsers)
 							{
-								membershipIds.add( userId );
+								membershipUsers.add( user );
 								++count;
 								
 								if ( count >= maxCount )
@@ -10399,13 +10399,13 @@ public class GwtServerHelper {
 						else
 						{
 							// No
-							membershipIds = potentialMemberIds;
+							membershipUsers = potentialMemberUsers;
 						}
 					}
 					catch (Exception ex)
 					{
 						// !!! What to do.
-						membershipIds = new HashSet<Long>();
+						membershipUsers = new HashSet<User>();
 					}
 					finally
 					{
@@ -10413,13 +10413,20 @@ public class GwtServerHelper {
 					}
 				}
 				else
-					membershipIds = new HashSet<Long>();
+					membershipUsers = new HashSet<User>();
 				
 				ldapQuery = membershipCriteria.getAsXml();
+
+		 	    User user = RequestContextHolder.getRequestContext().getUser();
+		        Comparator c = new org.kablink.teaming.comparator.PrincipalComparator(user.getLocale());
+		       	principals = new TreeSet<Principal>(c);
+				principals.addAll(membershipUsers);
 			}
 			else
 			{
 				// No
+				Set<Long> membershipIds = new HashSet<Long>();
+
 				ldapQuery = null;
 				
 				// Get a list of all the new membership ids.
@@ -10436,13 +10443,13 @@ public class GwtServerHelper {
 					if ( id != null )
 						membershipIds.add( id );
 				}
+				
+				principals = ami.getProfileModule().getPrincipals( membershipIds );
 			}
 
 			// Modify the group's membership.
 			{
 				Map updates;
-
-				principals = ami.getProfileModule().getPrincipals( membershipIds );
 
 				GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroupMembership(), number of members in new group membership: " + String.valueOf( principals.size() ) );
 			
