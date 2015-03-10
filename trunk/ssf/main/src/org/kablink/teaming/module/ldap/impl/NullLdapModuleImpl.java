@@ -57,9 +57,9 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 	}
 
 	@Override
-	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
+	public HashSet<User> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
 	{
-		return new HashSet<Long>();
+		return new HashSet<User>();
 	}
 	
 	@Override

@@ -67,7 +67,7 @@ public interface LdapModule {
 	
 	public boolean testAccess(LdapOperation operation);
 
-	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException;
+	public HashSet<User> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException;
 	
 	public LdapSchedule getLdapSchedule();
 
