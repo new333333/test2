@@ -669,7 +669,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		addGlobalFunctions(zoneConfig);
 
 		if (version.intValue() <= 2 || zoneConfig.getUpgradeVersion() < ZoneConfig.ZONE_LATEST_VERSION) {
-			zoneConfig.setUpgradeVersion(ZoneConfig.ZONE_LATEST_VERSION);
 			// Whenever the zoneConfig version changes, there may be
 			// tasks the admin needs to perform, based on the version.
 			resetZoneUpgradeTasks(version.intValue(), superU.getId(), top.getId());
@@ -855,6 +854,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 		}
 		
+		// NOTE: This block of code should remain as the very last statement in this method.
+		if (zoneConfig.getUpgradeVersion() < ZoneConfig.ZONE_LATEST_VERSION) {
+			zoneConfig.setUpgradeVersion(ZoneConfig.ZONE_LATEST_VERSION);
+		}
  	}
  	
  	/**
