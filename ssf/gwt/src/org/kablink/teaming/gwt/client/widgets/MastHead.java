@@ -149,7 +149,7 @@ public class MastHead extends Composite
 	public MastHead( RequestInfo requestInfo )
 	{
 		Scheduler.ScheduledCommand cmd;
-		final boolean beta = true;
+		final boolean beta = false;
 		
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
