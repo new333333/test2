@@ -2000,7 +2000,7 @@ public class GwtServerHelper {
 		inputMap.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_NONE));  
-		inputMap.put(ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic);
+		inputMap.put(ObjectKeys.FIELD_GROUP_DYNAMIC, Boolean.valueOf( isMembershipDynamic ) );
 		inputMap.put(ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery);
 
 		// Add the identity information.
@@ -10295,7 +10295,7 @@ public class GwtServerHelper {
 			updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
 			updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
 			updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
-			updates.put( ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic );
+			updates.put( ObjectKeys.FIELD_GROUP_DYNAMIC, Boolean.valueOf( isMembershipDynamic ) );
 			updates.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery );
 			
 			gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - getProfileModule().modifyEntry()" );
