@@ -383,4 +383,12 @@
         <renameColumn schemaName="dbo" tableName="SS_EmailLog" columnDataType="ntext" newColumnName="comments" oldColumnName="ncomments"/>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="38">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="nvarchar">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_Principals' and COLUMN_NAME = 'ldapQuery'</sqlCheck>
+        </preConditions>
+        <comment>Correct column data type</comment>
+        <modifyDataType schemaName="dbo" tableName="SS_Principals" columnName="ldapQuery" newDataType="ntext"/>
+    </changeSet>
+
 </databaseChangeLog>
