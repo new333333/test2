@@ -792,17 +792,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 		}
 		
-		if ( version.intValue() <= 19 )
-		{ 
-			// Upgrade version 19 is the first version that belongs to the Vibe Hudson release
-			if ( !Utils.checkIfFilr() )
-			{
-				// This is Vibe
-				// Upgrade team membership.
-				getBinderModule().upgradeTeamMembership();
-			}
-		}
-
 		if (version.intValue() <= 20) {
 			if (Utils.checkIfFilr()) {
 				//In Filr, we must reset all of the definitions and templates and definitions automatically
