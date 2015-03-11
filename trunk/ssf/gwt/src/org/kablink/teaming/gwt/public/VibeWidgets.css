@@ -87,6 +87,11 @@
 	cursor: pointer;
 }
 
+.childBindersWidget_ListOfWorkspacesPanel_ChildBindersPanel
+{
+	margin-left: 30px;
+}
+
 
 .childBindersWidget_MainPanel
 {
