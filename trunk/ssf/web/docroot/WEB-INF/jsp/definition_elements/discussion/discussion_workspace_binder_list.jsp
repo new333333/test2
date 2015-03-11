@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -72,7 +72,7 @@
     			<div id="ss_topic_title" class="ss_disc_th1">
    
     			  <span class="ss_title_th1">
-    				<a 
+    				<a target="_top"
     				  <c:if test="${binder._entityType == 'workspace'}">
       				    href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
         			    action="view_ws_listing"
@@ -115,7 +115,7 @@
         				  <div style="padding-left:10px;">
         					<span class="ss_title_th1">
         					<img src="<html:rootPath/>images/icecore/icons/workspace_disc_sm.png" align="absmiddle" width="14" height="16" <ssf:alt tag="general.type.workspace"/>/> 
-        					<a 
+        					<a target="_top"
           						<c:if test="${subBinder._entityType == 'workspace'}">
             					  href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
             					  action="view_ws_listing" 
@@ -156,7 +156,7 @@
         				<div style="padding-left:10px;">
         				  <span style="padding-right:10px;">profiles</span>
          
-        				  <a href="<ssf:url action="view_profile_listing" binderId="${subBinder._docId}"/>">
+        				  <a target="_top" href="<ssf:url action="view_profile_listing" binderId="${subBinder._docId}"/>">
           					<span>${subBinder.title}</span>
         				  </a>
         				  <c:set var="ss_binderNumbers3" value="${ss_binderUnseenCounts[subBinder._docId].count}"/>
@@ -177,7 +177,7 @@
       				  <div id="ss_topic_thread">
         				<div style="padding-left:10px;">
        						<img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" alt="" /> 
-        					<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
+        					<a target="_top" href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
         					action="view_folder_listing" 
         					binderId="${subBinder._docId}"/>">
           					  <span>${subBinder.title}</span>
@@ -208,7 +208,7 @@
   		<c:if test="${binder._entityType == 'folder'}">
   			<div id="ss_topic_title" class="ss_disc_folder_th1">
     			<span class="ss_title_th1">
-    			  <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+    			  <a target="_top" href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
     			    action="view_folder_listing" 
     			    binderId="${binder._docId}"/>">
       				${binder.title}
