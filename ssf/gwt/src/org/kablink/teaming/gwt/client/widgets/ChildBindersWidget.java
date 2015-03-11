@@ -90,7 +90,7 @@ public class ChildBindersWidget extends ToolPanelBase
 		/**
 		 * 
 		 */
-		public BinderPanel( BinderInfo binderInfo, String binderUrl, Image img )
+		public BinderPanel( BinderInfo binderInfo, String binderUrl, Image img, boolean displayChildBinders )
 		{
 			super();
 			
@@ -98,7 +98,7 @@ public class ChildBindersWidget extends ToolPanelBase
 			m_binderUrl = binderUrl;
 			
 			if ( m_binderInfo != null )
-				buildPanel( img );
+				buildPanel( img, displayChildBinders );
 		}
 		
 		/**
@@ -128,9 +128,28 @@ public class ChildBindersWidget extends ToolPanelBase
 		}
 		
 		/**
+		 * Contruct the ui that will hold the list of child binders
+		 */
+		private void buildChildBindersUI( VibeFlowPanel childBindersPanel, ArrayList<TreeInfo> listOfChildBinders )
+		{
+			// Go through the list of binders and add a link for each one.
+			for (TreeInfo childBinder : listOfChildBinders)
+			{
+				BinderInfo binderInfo;
+				BinderPanel binderPanel;
+				
+				// Is this binder's type the type we are looking for?
+				binderInfo = childBinder.getBinderInfo();
+					
+				binderPanel = new BinderPanel( binderInfo, childBinder.getBinderPermalink(), null, false );
+				childBindersPanel.add( binderPanel );
+			}
+		}
+		
+		/**
 		 * 
 		 */
-		private void buildPanel( Image img )
+		private void buildPanel( Image img, boolean displayChildBinders )
 		{
 			VibeFlowPanel binderPanel;
 			VibeFlowPanel descPanel;
@@ -173,9 +192,67 @@ public class ChildBindersWidget extends ToolPanelBase
 				binderPanel.add( descPanel );
 			}
 			
+			if ( displayChildBinders )
+			{
+				VibeFlowPanel childBindersPanel;
+				
+				childBindersPanel = new VibeFlowPanel();
+				childBindersPanel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_ChildBindersPanel" );
+				binderPanel.add( childBindersPanel );
+				
+				// Get the list of child binders and display them.
+				getListOfChildBinders( childBindersPanel );
+			}
+			
 			initWidget( binderPanel );
 		}
 
+		/**
+		 * Issue an ajax call to get the list of binders that are children of the given binder.
+		 */
+		private void getListOfChildBinders( final VibeFlowPanel childBindersPanel )
+		{
+			GetListOfChildBindersCmd cmd;
+			
+			// Get a TreeInfo object for each of the child binders.
+			cmd = new GetListOfChildBindersCmd( m_binderInfo.getBinderId() );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+			{
+				@Override
+				public void onFailure(Throwable t)
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetListOfChildBinders(),
+						m_binderInfo.getBinderId() );
+				}
+				
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					Scheduler.ScheduledCommand cmd;
+					GetListOfChildBindersRpcResponseData responseData;
+					final ArrayList<TreeInfo> listOfChildBinders;
+					
+					responseData = (GetListOfChildBindersRpcResponseData) response.getResponseData();
+					listOfChildBinders = responseData.getListOfChildBinders();
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						@Override
+						public void execute()
+						{
+							// Build the ui based on the information we read.
+							buildChildBindersUI( childBindersPanel, listOfChildBinders );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			});
+		}
+		
 		/**
 		 * 
 		 */
@@ -414,7 +491,7 @@ public class ChildBindersWidget extends ToolPanelBase
 					BinderPanel binderPanel;
 					
 					// Yes
-					binderPanel = new BinderPanel( binderInfo, childBinder.getBinderPermalink(), null );
+					binderPanel = new BinderPanel( binderInfo, childBinder.getBinderPermalink(), null, false );
 					
 					// Does the current column already have enough?
 					if ( totalAddedToCol < numPerCol[col] )
@@ -544,7 +621,7 @@ public class ChildBindersWidget extends ToolPanelBase
 					
 					// Yes
 					wsImg = getWorkspaceImage( childBinder );
-					binderPanel = new BinderPanel( binderInfo, childBinder.getBinderPermalink(), wsImg );
+					binderPanel = new BinderPanel( binderInfo, childBinder.getBinderPermalink(), wsImg, true );
 					
 					// Does the current column already have enough?
 					if ( totalAddedToCol < numPerCol[col] )
