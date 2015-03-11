@@ -256,7 +256,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
   font-size:small; text-decoration:none;
   background-position:center left;
   background-image:url(<html:imagesPath/>pics/sym_s_arrows_eastwest.gif);
-  background-repeat:no-repeat;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></a></div>&nbsp;</td>
+  background-repeat:no-repeat; border-bottom: 0px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></a></div>&nbsp;</td>
 </tr>
 </table>
 <table cellspacing="0" cellpadding="2" width="100%">

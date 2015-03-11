@@ -365,7 +365,7 @@ div.ss_canvas {
 	background: #fff;
 	background-position: top;
 	margin-top: 3px;
-    min-with: 220px;
+    min-width: 220px;
 	padding: 6px 10px 10px;
 	line-height:1.2em;
 	border-radius: 3px;

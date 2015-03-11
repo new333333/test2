@@ -612,7 +612,7 @@ div.ss_editableTab a, div.ss_editableTab a:hover {
 div.ss_replies .ss_editableTab {
 	}
 div.ss_workflow { 
-  	border: 1px solid #D2D5D1;
+  	border: 1px solid #e0e0e0;
   	padding: 4px;
 	margin: 4px 0 4px 0;
 	border-radius: 5px;
@@ -734,7 +734,7 @@ input[type="button"].n-button {
     text-decoration: none !important;
   	padding: 2px 10px !important;
 	margin-right: 15px;
-	background-color: #81b2bd;
+	background-color: #949494;
 	border: 0px;
 	height: 20px;
 	border-radius: 5px;
@@ -1310,9 +1310,9 @@ table.ss_mouseOverInfo {
 	}
 #ss_folder_table_parent{
 	width:100%;
-/*	border-top: 1px solid #D2D5D1;
-	border-left: 1px solid #D2D5D1;
-	border-right: 1px solid #D2D5D1;  */
+/*	border-top: 1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
+	border-right: 1px solid #e0e0e0;  */
 	}	
 #ss_fixed_table{
 	border-bottom: 1px solid #BBBBB9;
@@ -1321,11 +1321,11 @@ table.ss_mouseOverInfo {
 	color: #333;
 	}
 .ss_fixed_TD_unread {
-	border-bottom: 1px solid #D2D5D1;
+	border-bottom: 1px solid #e0e0e0;
 	padding: 4px;
 	}
 .ss_fixed_TD{
-	border-bottom: 1px solid #D2D5D1;
+	border-bottom: 1px solid #e0e0e0;
 	font-size: 12px !important;
 	padding: 4px 10px 4px 4px;
 	}
@@ -1333,7 +1333,7 @@ table.ss_mouseOverInfo {
 	padding-left: 4px;
 	}
 .ss_fixed_TH{
-	border: 1px solid #D2D5D1;
+	border: 1px solid #e0e0e0;
 	padding:4px 2px 5px 5px;
 	}
 .ss_fixed_TH a:hover {
@@ -1539,10 +1539,10 @@ tr.ss_attachments_list_regular_file td {
     background-color: #f6f6f6;
 	}
 tr.ss_attachments_list_primary_file td.ss_att_description {
-	border-bottom: 1px solid #d2d5d1;
+	border-bottom: 1px solid #e0e0e0;
 	}
 tr.ss_attachments_list_regular_file td.ss_att_description {
-	border-bottom: 1px solid #d2d5d1;
+	border-bottom: 1px solid #e0e0e0;
 	}
 .ss_att_meta_wrap {
 	font-size: 11px !important;
@@ -2982,8 +2982,7 @@ div.ss_cal_todayMarker {
   position: relative;
   width: 100%;
   height: 20px;
-  background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
-  background-position:bottom;
+  background: #b8b8b8;
 	
 }
 
@@ -2993,7 +2992,7 @@ div.ss_cal_gridHeaderText {
   font-size: 10px;
   font-family: sans-serif;
   padding: 5px 0;
-  color: #666;
+  color: #f6f6f6;
 }
 
 div.ss_cal_gridHeaderTextToday {
@@ -3640,16 +3639,16 @@ span.ss_cal_eventTime {
 }
 
 div.ss_calendarNaviBar {	
-	background-color: #c4c4c4;
+	background-color: #e0e0e0;
 	margin: 0px;
 	padding: 10px;
 	overflow: auto;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
@@ -3677,17 +3676,15 @@ div.ss_calendarNaviBar {
 .ss_calendarNaviBar .ss_hoursSelectorTitle {
 	color: #1f1f1f !important;
 	margin-right: 5px;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
+	background-color: #fafafa;
 	border: 1px solid #B8B8B8;
 	font-weight: normal !important;
 	font-size: 11px !important;
 	padding: 3px 8px  !important;
 	text-decoration:none;	
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 .ss_calendarNaviBar .ss_hoursSelectorTitle:hover {
@@ -3729,9 +3726,8 @@ div.ss_calendarNaviBar {
 }
 
 .ss_calendarNaviBar .ss_calViewDatesDescriptions td {	
-	color: #FFFFFF;
-	font-weight: bold;
-	font-size: 14px;
+	color: #505354;
+	font-size: 15px;
 }
 
 .ss_calendarNaviBar .ss_calSelectDate {
@@ -3974,19 +3970,18 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 }
 
 tr.ss_tab_table_columnhead td, tr.ss_tab_table_columnhead th {
-	color: #505354;
+	color: #949494;
 	font-size: 11px;
 	font-weight: normal !important;
 	padding: 3px 5px 2px 2px; 
-	border-bottom: 1px solid #bbbbb9; 
+	border-bottom: 1px solid #e0e0e0; 
 	white-space: nowrap;
-	background:url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
-	background-position:bottom;
+	background-color: #f6f6f6;
 	}
 tr.ss_tab_table_row td {
 	background-color: #fff;
 	padding: 4px 10px 2px 3px;
-	border-bottom: 1px solid #d2d5d1;
+	border-bottom: 1px solid #e0e0e0;
 	white-space: nowrap;
 	}
 
@@ -4476,10 +4471,10 @@ div.ss_questionContainer a.ss_tinyButton:hover {
 table.ss_surveys_list, table.ss_milestones_list {
 	width:100%;
 	padding: 0px;
-	border: 1px solid #D2D5D1;
+	border: 1px solid #e0e0e0;
 }
 table.ss_surveys_list th-table.ss_milestones_list th {
-	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend5_28.png) repeat-x;
+	background: #ededed;
 	background-position:bottom;
 	text-decoration: none;
 	text-align: left;
@@ -4488,7 +4483,7 @@ table.ss_surveys_list th-table.ss_milestones_list th {
 
 /*  table.ss_surveys_list td, table.ss_milestones_list td {
 	padding: 6px 3px 6px 3px;
-	border-bottom: 1px solid #b8b8b8;
+	border-bottom: 1px solid #c4c4c4;
 }  */
 
 div.ss_questionContainer input.ss_survay_checkbox, div.ss_questionContainer input.ss_survay_radio {
@@ -4719,9 +4714,9 @@ div.ss_content_outer table.ss_tasks_list {
 table.ss_tasks_list {
 	margin:6px 0px 4px 8px;
 	padding: 0px;
-	border-top: 1px solid #D2D5D1;
-	border-left: 1px solid #D2D5D1;
-	border-right: 1px solid #D2D5D1;
+	border-top: 1px solid #e0e0e0;
+	border-left: 1px solid #e0e0e0;
+	border-right: 1px solid #e0e0e0;
 	border-spacing: 0px;
 	width: 99%;
 	empty-cells: show;
@@ -4729,21 +4724,21 @@ table.ss_tasks_list {
 }
 
 table.ss_tasks_list tr.columnhead td {
-	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
+	background: #ededed;
 	background-position:bottom;
-	border-bottom: 1px solid #D2D5D1;
-	border-right: 1px solid #D2D5D1;
+	border-bottom: 1px solid #e0e0e0;
+	border-right: 1px solid #e0e0e0;
 	font-size: 11px !important;
 	text-align: left;
 	padding: 3px 5px;
 	white-space: nowrap;
 	overflow: visible;
-	color: #505354 !important;
+	color: #949494 !important;
 }
 table.ss_tasks_list td {
 	padding: 3px 0px 3px 6px;
 	font-size: 11px !important;
-	border-bottom: 1px solid #D2D5D1;
+	border-bottom: 1px solid #e0e0e0;
 }
 
 table.ss_tasks_accessory td {
