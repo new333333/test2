@@ -373,21 +373,11 @@ public class ChildBindersWidget extends ToolPanelBase
 		panel = buildListOfWorkspacesPanel( listOfChildBinders );
 		if ( panel != null )
 			m_iconListPanel.add( panel );
-		
-		// Create a panel for each folder type
-		{
-			FolderType[] folderTypes;
-			
-			folderTypes = FolderType.values();
-			for (FolderType folderType : folderTypes)
-			{
-				// Create a panel that holds the given folder type
-				panel = buildListOfFoldersPanel( listOfChildBinders, folderType );
-				if ( panel != null )
-					m_iconListPanel.add( panel );
-			}
-		}
-		
+
+		panel = buildListOfFoldersPanel( listOfChildBinders );
+		if ( panel != null )
+			m_iconListPanel.add( panel );
+
 		return m_iconListPanel;
 	}
 	
@@ -396,7 +386,7 @@ public class ChildBindersWidget extends ToolPanelBase
 	 * type from the given list of child binders.
 	 * If there are no binders of the given type we will return null.
 	 */
-	private VibeFlowPanel buildListOfFoldersPanel( ArrayList<TreeInfo> listOfChildBinders, FolderType folderType )
+	private VibeFlowPanel buildListOfFoldersPanel( ArrayList<TreeInfo> listOfChildBinders )
 	{
 		VibeFlowPanel panel;
 		FlexTable table;
@@ -408,22 +398,13 @@ public class ChildBindersWidget extends ToolPanelBase
 		// Add a header to this panel.
 		{
 			VibeFlowPanel headerPanel;
-			Image img;
 			InlineLabel headerText;
-			String folderTypeName;
 
 			headerPanel = new VibeFlowPanel();
 			headerPanel.addStyleName( "childBindersWidget_ListOfFoldersPanel_HeaderPanel" );
 			panel.add( headerPanel );
 			
-			// Add an image for the given folder type.
-			img = getFolderImageForHeader( folderType );
-			img.getElement().setAttribute( "align", "absmiddle" ); 
-			headerPanel.add( img );
-			
-			// Add the name of this type of folder.
-			folderTypeName = getFolderTypeName( folderType );
-			headerText = new InlineLabel( folderTypeName );
+			headerText = new InlineLabel( GwtTeaming.getMessages().folders() );
 			headerText.addStyleName( "childBindersWidget_ListOfFoldersPanel_HeaderText" );
 			headerPanel.add( headerText );
 		}
@@ -436,7 +417,7 @@ public class ChildBindersWidget extends ToolPanelBase
 			
 			// Is this binder a folder?
 			binderInfo = childBinder.getBinderInfo();
-			if ( binderInfo.isBinderFolder() && binderInfo.getFolderType() == folderType )
+			if ( binderInfo.isBinderFolder() )
 			{
 				// Yes
 				++total;
@@ -486,12 +467,15 @@ public class ChildBindersWidget extends ToolPanelBase
 				
 				// Is this binder's type the type we are looking for?
 				binderInfo = childBinder.getBinderInfo();
-				if ( binderInfo.isBinderFolder() && binderInfo.getFolderType() == folderType )
+				if ( binderInfo.isBinderFolder() )
 				{
 					BinderPanel binderPanel;
+					Image img;
 					
 					// Yes
-					binderPanel = new BinderPanel( binderInfo, childBinder.getBinderPermalink(), null, false );
+					img = getFolderImageForHeader( binderInfo.getFolderType() );
+					img.getElement().setAttribute( "align", "absmiddle" ); 
+					binderPanel = new BinderPanel( binderInfo, childBinder.getBinderPermalink(), img, false );
 					
 					// Does the current column already have enough?
 					if ( totalAddedToCol < numPerCol[col] )
@@ -538,19 +522,11 @@ public class ChildBindersWidget extends ToolPanelBase
 		// Add a header to this panel.
 		{
 			VibeFlowPanel headerPanel;
-			ImageResource imageResource;
-			Image img;
 			InlineLabel headerText;
 
 			headerPanel = new VibeFlowPanel();
 			headerPanel.addStyleName( "childBindersWidget_ListOfWorkspacesPanel_HeaderPanel" );
 			panel.add( headerPanel );
-			
-			// Add a workspace image.
-			imageResource = GwtTeaming.getImageBundle().workspaceImgLarge();
-			img = new Image( imageResource );
-			img.getElement().setAttribute( "align", "absmiddle" ); 
-			headerPanel.add( img );
 			
 			// Add the text "Workspaces"
 			headerText = new InlineLabel( GwtTeaming.getMessages().workspacesHeader() );
