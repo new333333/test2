@@ -1037,9 +1037,14 @@ public class ContentControl extends Composite
 							
 						case TEAM:
 						{
+							// DRF (20150311):  Bug 912815:  For
+							//    Hudson, we're going going to render
+							//    Team Workspaces using the JSP code.
+/*
 							// Fire the event that will display the Team workspace.
 							GwtTeaming.fireEvent( new ShowTeamWSEvent( bi, viewReady ) );
 							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
+*/
 							break;
 						}
 							
