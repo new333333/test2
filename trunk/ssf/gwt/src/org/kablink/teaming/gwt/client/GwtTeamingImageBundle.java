@@ -253,7 +253,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource entry_blog();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/entry_file.gif")
+	@Source("org/kablink/teaming/gwt/public/images/entry_file.png")
 	public ImageResource entry_file();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -681,35 +681,35 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource workspaceImgLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_blog_large.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_blog.png")
 	public ImageResource blogFolderLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_calendar_large.png")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_calendar.png")
 	public ImageResource calendarFolderLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_discussion_large.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_discussion.png")
 	public ImageResource discussionFolderLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_file_large.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_file.png")
 	public ImageResource fileFolderLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_guestbook_large.gif")
+	@Source("org/kablink/teaming/gwt/public/images//WorkspaceTree/folder_guestbook.png")
 	public ImageResource guestbookFolderLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_milestone_large.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_milestone.png")
 	public ImageResource milestoneFolderLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_miniblog_large.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_miniblog.png")
 	public ImageResource miniblogFolderLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_mirrored_large.png")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_mirrored.png")
 	public ImageResource mirroredFileFolderLarge();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -737,15 +737,15 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource openIdAuthProvider_unknown();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_photo_large.png")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_photo.png")
 	public ImageResource photoAlbumFolderLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_survey_large.png")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_survey.png")
 	public ImageResource surveyFolderLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_task_large.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_task.png")
 	public ImageResource taskFolderLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -797,11 +797,11 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource masthead_WhatsNew();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_wiki_large.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_wiki.png")
 	public ImageResource wikiFolderLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/folder_generic_large.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_generic.png")
 	public ImageResource genericFolderLarge();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
