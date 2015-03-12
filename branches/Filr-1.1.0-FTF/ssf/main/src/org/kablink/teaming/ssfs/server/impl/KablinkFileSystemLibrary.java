@@ -997,7 +997,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		FileAttachment fa = getFileAttachment(objMap);
 
 		try {
-			FolderUtils.deleteFileInFolderEntry(entry, fa);
+			FolderUtils.deleteFileInFolderEntry(bs, entry, fa);
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
