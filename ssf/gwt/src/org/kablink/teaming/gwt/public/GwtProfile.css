@@ -250,19 +250,19 @@ padding-bottom: 10px;
 	text-decoration:none;
 	background: #949494;
 	padding: 2px 6px;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}
 
 .user_status a.clearStatus:hover {
-	color:#fff !important;
+	color:#135c8f !important;
 	text-decoration:none;
-	background: #85BCC3 url(images/header_blend_teal_bg.png) repeat-x scroll center bottom;
+	background: #eec9ee;
 	padding: 2px 6px;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}
 
 .shareButton {
