@@ -1456,7 +1456,7 @@ public class TrashHelper {
 	 * 
 	 * @throws Exception
 	 */
-	public static void preDeleteEntry(AllModulesInjected bs, Long folderId, Long entryId) throws Exception{
+	public static void preDeleteEntry(AllModulesInjected bs, Long folderId, Long entryId) {
 		// Check the ACLs...
 		TrashResponse tr = new TrashResponse(bs);
 		TrashCheckACLs tca = new TrashCheckACLs(BinderOperation.preDeleteBinder, FolderOperation.preDeleteEntry);
@@ -1489,7 +1489,12 @@ public class TrashHelper {
 		// For any error...
 		if (tr.isError()) {
 			// ...simply re-throw the exception.
-			throw tr.m_exception;
+			// If not already runtime exception, wrap it in a runtime exception, since we don't
+			// want to have to change the method signatures all the way up to REST/SOAP/WebDAV.
+			if(tr.m_exception instanceof RuntimeException)
+				throw (RuntimeException) tr.m_exception;
+			else
+				throw new RuntimeException(tr.m_exception);
 		}
 	}
 

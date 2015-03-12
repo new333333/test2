@@ -64,12 +64,14 @@ import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -696,14 +698,14 @@ public class FolderUtils {
 		return null;
 	}
 	
-	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa) 
+	public static void deleteFileInFolderEntry(AllModulesInjected bs, FolderEntry entry, FileAttachment fa) 
 			throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
         // By default, entry is simply moved into trash rather than permanently deleted.
         boolean predelete = SPropsUtil.getBoolean("folderutils.deleteentry.predelete", true);
-        deleteFileInFolderEntry(entry, fa, predelete);
+        deleteFileInFolderEntry(bs, entry, fa, predelete);
     }
 
-	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa, boolean predelete) 
+	public static void deleteFileInFolderEntry(AllModulesInjected bs, FolderEntry entry, FileAttachment fa, boolean predelete) 
 			throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
 		Binder parentBinder = entry.getParentBinder();
 		if(parentBinder.isMirrored() && fa.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
@@ -728,7 +730,7 @@ public class FolderUtils {
 				// Delete the entire entry, instead of leaving an empty/dangling entry with no file.
 				// This will honor the Bug #554284.
 				if(predelete) {
-					getFolderModule().preDeleteEntry(parentBinder.getId(), entry.getId(), RequestContextHolder.getRequestContext().getUserId());
+					TrashHelper.preDeleteEntry(bs, parentBinder.getId(), entry.getId());
 				} else {
 					getFolderModule().deleteEntry(parentBinder.getId(), entry.getId(), true, null);
 				}
