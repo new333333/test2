@@ -132,6 +132,7 @@ import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -223,6 +224,56 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		// Do nothing
  	}
 	
+ 	protected void upgradeZoneWithRetry(final Workspace zone, String defaultZoneName) throws RuntimeException {
+        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
+        int tryCount = 0;
+        while(true) {
+        	tryCount++;
+			try {
+				getTransactionTemplate().execute(new TransactionCallback() {
+					@Override
+					public Object doInTransaction(TransactionStatus status) {
+						upgradeZoneTx(zone);
+						return null;
+					}
+				});
+				break; // successful transaction
+			}
+			catch(HibernateOptimisticLockingFailureException e) {
+        		if(tryCount < tryMaxCount) {
+        			logger.warn("(" + tryCount + ") 'upgrade' failed for zone " + zone.getId() + " due to optimistic locking failure - Retrying in new transaction", e);
+        			getCoreDao().clear();      		
+        		}
+        		else {
+    				if(defaultZoneName.equals(zone.getName())) { // This is default zone
+    					// If default zone doesn't run properly, the whole system won't run properly.
+    					// So, it is better to abort the entire startup at this point.
+        				logger.error("(" + tryCount + ") 'upgrade' failed for default zone " + zone.getId() + " due to optimistic locking failure - Aborting the startup", e);
+    					throw e;
+    				}
+    				else { // This is non-default zone
+    					// Sometimes it is possible that the system has one or more broken non-default zones.
+    					// In such case, we still want the system to run with good zones (including the
+    					// default zone). So, let's allow the startup to forget about this zone (for now)
+    					// and continue to the next zone.
+        				logger.warn("(" + tryCount + ") 'upgrade' failed for non-default zone " + zone.getId() + " due to optimistic locking failure - Skipping this zone", e);
+    					break;
+    				}
+        		}
+			}
+			catch(Exception e) {
+				if(defaultZoneName.equals(zone.getName())) { // This is default zone			
+					logger.error("Failed to upgrade zone " + zone.getId() + " - Aborting the startup", e);
+					throw e; // Abort the entire startup
+				}
+				else { // This is non-default zone
+					logger.warn("Failed to upgrade zone " + zone.getId() + " - Skipping this zone", e);
+					break; // Give up on this zone only
+				}
+			}
+        }
+ 	}
+ 	
  	@Override
 	public void initZones() {
 		boolean closeSession = false;
@@ -232,26 +283,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 		try {
 			final List<Workspace> companies = getTopWorkspacesFromEachZone();
-			final String zoneName = SZoneConfig.getDefaultZoneName();
+			final String defaultZoneName = SZoneConfig.getDefaultZoneName();
 
 			if (companies.size() == 0) {
-				addZone(zoneName, null);
+				addZone(defaultZoneName, null);
  			} else {
  				// take care of upgrade need if any
         		for (int i=0; i<companies.size(); ++i) {
-        			final Workspace zone = (Workspace)companies.get(i);
-        			try {
-	    				getTransactionTemplate().execute(new TransactionCallback() {
-	    					@Override
-							public Object doInTransaction(TransactionStatus status) {
-	    						upgradeZoneTx(zone);
-	    						return null;
-	    					}
-	    				});
-        			}
-        			catch(Exception e) {
-        				logger.warn("Failed to upgrade zone " + zone.getZoneId(), e);
-        			}       			
+        			upgradeZoneWithRetry((Workspace)companies.get(i), defaultZoneName);
         		}        		
         		//make sure zone is setup correctly
 				getTransactionTemplate().execute(new TransactionCallback() {
@@ -722,7 +761,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 		
 		if(version.intValue() <= 8) {
-			setupInitialOpenIDProviderList();
+			// As of Filr 1.2 and Vibe Hudson, the product no longer supports OpenID (in the case of
+			// Vibe, it never supported OpenID before either).
+			// Therefore, there no longer exists a need to register OpenID providers.
+			//setupInitialOpenIDProviderList();
 		}
 		
 		if(version.intValue() <= 10) {
