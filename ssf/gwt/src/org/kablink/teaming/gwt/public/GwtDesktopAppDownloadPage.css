@@ -17,7 +17,7 @@
 		height: 750px;
 		width: 1408px;
 	}
-	.vibe-desktopAppPage-body a {color: #135c8f; font-size: 13px; white-space: nowrap;}
+	.vibe-desktopAppPage-body a {color: #036f9f; font-size: 13px; white-space: nowrap;}
 	.vibe-desktopAppPage-body td {
 		padding: 5px 15px 15px 0px;
 		vertical-align: top;
@@ -78,7 +78,7 @@
 	.vibe-desktopAppPage-linksWrap        {white-space: normal;}
 	.vibe-desktopAppPage-links div        {margin-top: 6px;}
 	.vibe-desktopAppPage-linkAnchor       {text-decoration: none;}
-	.vibe-desktopAppPage-linkAnchor:hover {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+	.vibe-desktopAppPage-linkAnchor:hover {color: #135c8f !important; cursor: pointer; background: #cce9ee; border: 3px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 	.vibe-desktopAppPage-linkError        {}
 	.vibe-desktopAppPage-linkMd5          {color: #353838; font-size: 11px; display: block;}
 	.vibe-desktopAppPage-link2nd          {margin-top: 5px;}
