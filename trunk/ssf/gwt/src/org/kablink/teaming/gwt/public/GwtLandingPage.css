@@ -108,11 +108,10 @@
 {
 	color: #135c8f;
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 .entryWidgetContentPanel, .entryWidgetContentPanel_dark
@@ -146,7 +145,7 @@
 
 .entryWidgetTitleLabel, .entryWidgetTitleLabel_dark
 {
-	color: #135c8f;
+	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
 }
@@ -154,11 +153,10 @@
 .entryWidgetTitleLabel:hover, .entryWidgetTitleLabel_dark:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 .entryWidgetTitlePanel, .entryWidgetTitlePanel_dark
@@ -185,7 +183,7 @@
 
 .fileFolderWidgetLinkToFile, .fileFolderWidgetLinkToFile_dark
 {
-	color: #135c8f;
+	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
 	padding-left: 4px;
@@ -202,7 +200,7 @@
 
 .fileFolderWidgetTitleLabel, .fileFolderWidgetTitleLabel_dark
 {
-	color: #135c8f;
+	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
 }
@@ -210,11 +208,10 @@
 .fileFolderWidgetTitleLabel:hover, .fileFolderWidgetTitleLabel_dark:hover, .fileFolderWidgetLinkToFile:hover, .fileFolderWidgetLinkToFile_dark:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 
@@ -250,7 +247,7 @@
 
 .folderWidgetLinkToEntry, .folderWidgetLinkToEntry_dark
 {
-	color: #135c8f;
+	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
 	padding-left: 4px;
@@ -269,7 +266,7 @@
 
 .folderWidgetTitleLabel, .folderWidgetTitleLabel_dark
 {
-	color: #135c8f;
+	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
 }
@@ -277,11 +274,10 @@
 .folderWidgetTitleLabel:hover, .folderWidgetTitleLabel_dark:hover, .folderWidgetLinkToEntry:hover, .folderWidgetLinkToEntry_dark:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 .folderWidgetTitlePanel, .folderWidgetTitlePanel_dark
@@ -340,7 +336,7 @@
 
 .iFrameWidgetTitleLabel, .iFrameWidgetTitleLabel_dark
 {
-	color: #135c8f;
+	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
 }
@@ -354,7 +350,7 @@
 
 .linkToBinderWidgetLink, .linkToBinderWidgetLink_dark
 {
-	color: #135C8F;
+	color: #036f9f;
 	font-size: 0.75em;
 	letter-spacing: 0.03em;
 	padding: 2px 8px;
@@ -367,11 +363,10 @@
 .linkToBinderWidgetLink:hover, .linkToBinderWidgetLink_dark:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: #eec9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 .linkToBinderWidgetMainPanel, .linkToBinderWidgetMainPanel_dark
@@ -385,7 +380,7 @@
 
 .linkToEntryWidgetLink, .linkToEntryWidgetLink_dark
 {
-	color: #135C8F;
+	color: #036f9f;
 	font-size: 0.75em;
 	letter-spacing: 0.03em;
 	padding: 2px 8px;
@@ -398,8 +393,7 @@
 .linkToEntryWidgetLink:hover, .linkToEntryWidgetLink_dark:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -431,7 +425,7 @@
 
 .listWidgetTitleLabel
 {
-	color: #135c8f;
+	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
 }
@@ -497,11 +491,10 @@
 {
 	color: #135c8f;
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 .taskFolderWidgetAssignedTeam, .taskFolderWidgetAssignedTeam_dark
@@ -530,7 +523,7 @@
 
 .taskFolderWidgetLinkToTask, .taskFolderWidgetLinkToTask_dark, .taskFolderWidgetLinkToLocation, .taskFolderWidgetLinkToLocation_dark
 {
-	color: #135c8f;
+	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
 	padding-left: 4px;
@@ -557,7 +550,7 @@
 
 .taskFolderWidgetTitleLabel, .taskFolderWidgetTitleLabel_dark, .myTasksWidgetTitleLabel, .myTasksWidgetTitleLabel_dark
 {
-	color: #135c8f;
+	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
 }
@@ -565,11 +558,10 @@
 .taskFolderWidgetTitleLabel:hover, .taskFolderWidgetTitleLabel_dark:hover, .taskFolderWidgetLinkToTask:hover, .taskFolderWidgetLinkToTask_dark:hover, .taskFolderWidgetLinkToLocation:hover, .taskFolderWidgetLinkToLocation_dark:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 .taskFolderWidgetTitlePanel, .taskFolderWidgetTitlePanel_dark
@@ -584,7 +576,7 @@
 
 .urlWidgetLink, .urlWidgetLink_dark
 {
-	color: #135C8F;
+	color: #036f9f;
 	font-size: 0.75em;
 	letter-spacing: 0.03em;
 	padding: 2px 8px;
@@ -596,11 +588,10 @@
 .urlWidgetLink:hover, .urlWidgetLink_dark:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 .urlWidgetMainPanel, .urlWidgetMainPanel_dark
@@ -614,7 +605,7 @@
 
 .utilityElementWidgetLink, .utilityElementWidgetLink_dark
 {
-	color: #135C8F;
+	color: #036f9f;
 	font-size: 0.75em;
 	letter-spacing: 0.03em;
 	padding: 2px 8px;
@@ -626,11 +617,10 @@
 .utilityElementWidgetLink:hover, .utilityElementWidgetLink_dark:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 .utilityElementWidgetMainPanel, .utilityElementWidgetMainPanel_dark

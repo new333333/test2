@@ -18,7 +18,7 @@
 
 .childBindersWidget_ListOfWorkspacesPanel_HeaderPanel, .childBindersWidget_ListOfFoldersPanel_HeaderPanel
 {
-	padding-bottom: 2px;
+	padding: 5px 5px 5px 0;
 }
 
 .childBindersWidget_ListOfWorkspacesPanel_HeaderText, .childBindersWidget_ListOfFoldersPanel_HeaderText
@@ -30,7 +30,7 @@
 
 .childBindersWidget_ListOfWorkspacesPanel_Table, .childBindersWidget_ListOfFoldersPanel_Table
 {
-	margin-left: 40px;
+	margin-left: 25px;
 }
 
 .childBindersWidget_ListOfWorkspacesPanel_workspaceLabel, .childBindersWidget_ListOfFoldersPanel_folderLabel
@@ -41,18 +41,24 @@
     padding-left: 4px;
 }
 
-.childBindersWidget_ListOfWorkspacesPanel_workspacePanel, .childBindersWidget_ListOfFoldersPanel_FolderPanel
+.childBindersWidget_ListOfWorkspacesPanel_workspacePanel
 {
-	margin-right: 80px;
+	margin-right: 40px;
+	margin-bottom: 10px;
+}
+.childBindersWidget_ListOfFoldersPanel_FolderPanel
+{
+	margin-right: 25px;
+	margin-bottom: 3px;
 }
 
 .childBindersWidget_ListOfWorkspacesPanel_workspaceLabel:hover, .childBindersWidget_ListOfFoldersPanel_folderLabel:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: #cce9ee;
+	border: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 .childBindersWidget_ListOfWorkspacesPanel_WorkspaceDescPanel, .childBindersWidget_ListOfWorkspacesPanel_FolderDescPanel
@@ -89,7 +95,8 @@
 
 .childBindersWidget_ListOfWorkspacesPanel_ChildBindersPanel
 {
-	margin-left: 30px;
+	margin-left: 25px;
+	margin-bottom: 10px;
 }
 
 
@@ -129,10 +136,10 @@
 {
 	color: #036f9f;
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: #cce9ee;
+	border: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 
@@ -152,10 +159,10 @@
 .projectStatsWidget_BinderLabel:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: #cce9ee;
+	border: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 .projectStatsWidget_BinderPanel
