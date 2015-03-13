@@ -134,6 +134,11 @@
 				<bean class="org.springframework.scheduling.timer.ScheduledTimerTask">	
 					<!-- period between invocations (ms) 5mins -->
 					<property name="period" value="300000" />
+					<!-- Do not execute this task until after this much time (1 min) passes after server start.
+					     This is to prevent the extension deployer and anything it deploys from interfering with 
+					     the server startup process carried out by the main thread, for example, zone upgrade 
+					     procedure, etc. -->
+					<property name="delay" value="60000" />
 					<property name="timerTask">
 						<bean class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
 							<property name="targetObject" ref="extDeployer" />
