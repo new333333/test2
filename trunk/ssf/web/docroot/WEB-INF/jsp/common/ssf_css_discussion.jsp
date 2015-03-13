@@ -231,6 +231,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   font-weight:normal !important;
   letter-spacing: 0em !important;
   padding-left: 10px;
+  padding-right: 10px;
   color:#036f9f !important;
   text-decoration:none;
 }
