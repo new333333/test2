@@ -338,6 +338,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				}
 			}
 		} else {
+			//The workspaceStart is either an acl controlled folder or it is not inheriting from its parent
 			Set<Long> applicationMembersToLookup = null;
 			if(application != null && !application.isTrusted()) {
 				applicationMembersToLookup = getProfileDao().getApplicationLevelPrincipalIds(application);
@@ -396,7 +397,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				}
 			}
 			//if current user is the workArea owner, add special Id to is membership
-			if (user.getId().equals(workArea.getOwnerId())) userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
+			if (user.getId().equals(workAreaStart.getOwnerId())) userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
 			Set<Long> teamMembers = null;
 			if (workAreaStart instanceof FolderEntry) {
 				teamMembers = getBinderModule().getTeamMemberIds( ((FolderEntry)workAreaStart).getParentBinder() );
