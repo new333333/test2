@@ -314,6 +314,13 @@ public class FileUploadItem {
 			return new SizeMd5Pair(mf.getSize(), md5);
 	}
 
+    public String getExpectedMd5() {
+        if (mf instanceof FileExtendedSupport) {
+            return ((FileExtendedSupport) mf).getExpectedMd5();
+        }
+        return null;
+    }
+
     public boolean verifyCheckSum() throws IOException {
         if (mf instanceof FileExtendedSupport) {
             String expectedMd5 = ((FileExtendedSupport)mf).getExpectedMd5();
