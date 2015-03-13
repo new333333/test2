@@ -46,6 +46,7 @@ import org.kablink.teaming.rest.v1.model.TeamMember;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Pair;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
@@ -116,7 +117,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @DELETE
     @Path("{id}")
     public void deleteBinder(@PathParam("id") long id,
-                             @QueryParam("purge") @DefaultValue("false") boolean purge) {
+                             @QueryParam("purge") @DefaultValue("false") boolean purge) throws Exception {
         _deleteBinder(id, purge);
     }
 
@@ -559,7 +560,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return ResourceUtil.buildBinder(binder, true, descriptionFormat);
     }
 
-    protected void _deleteBinder(long id, boolean purge) {
+    protected void _deleteBinder(long id, boolean purge) throws Exception {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
         if (binder.isMirrored() && (binder instanceof org.kablink.teaming.domain.Folder) &&
                 ((org.kablink.teaming.domain.Folder)binder).isTop()) {
@@ -568,7 +569,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         if (purge || binder.isMirrored()) {
             getBinderModule().deleteBinder(id);
         } else {
-            getBinderModule().preDeleteBinder(id, getLoggedInUserId());
+            TrashHelper.preDeleteBinder(this, id);
         }
     }
 

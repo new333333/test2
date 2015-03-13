@@ -715,6 +715,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
                 if (!fui.verifyCheckSum()) {
                     // Remove the failed file from the list first.
+                    SizeMd5Pair pair = fui.makeReentrant();
+                    logger.error("Error verifying the file " + fui.getOriginalFilename() + " check sum for user " +
+                            RequestContextHolder.getRequestContext().toString() + ". Expected: " + fui.getExpectedMd5() +
+                            "; actual: " + pair.getMd5() + "; size: " + pair.getSize());
                     fileUploadItems.remove(i);
                     try {
                         fui.delete();
@@ -724,7 +728,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
                     if(errors != null) {
                         // Since we are not throwing an exception immediately in
                         // this case, log the error right here.
-                        logger.error("Error verifying the file " + fui.getOriginalFilename() + " check sum for user " +  RequestContextHolder.getRequestContext().toString());
                         errors.addProblem(new FilesErrors.Problem
                             (fui.getRepositoryName(),  fui.getOriginalFilename(),
                                     FilesErrors.Problem.PROBLEM_CHECKSUM_MISMATCH));
