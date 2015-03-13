@@ -1887,7 +1887,7 @@ body, table td, select
 .workspaceTreeControl_blankContent {display: block; margin: 10px; color: #666666; font-size: 1.1em;}
 
 .workspaceTreeControlBody            {padding-top: 2px;}
-.workspaceTreeControlBody_collection {background-color: white !important; padding-top: 8px; padding-bottom: 5px; border-bottom: 1px solid #cccccc;}
+.workspaceTreeControlBody_collection {background-color: white !important; padding-top: 8px; padding-bottom: 5px; border-bottom: 1px solid #e0e0e0;}
 
 .workspaceTreeControlTreeHeader {color: #666; font-size: 10px; margin-top: 0; padding-top: 5px; padding-bottom: 3px; padding-right: 0px; padding-left: 20px; border-bottom: 0px; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; display: inline-block;}
 
@@ -2013,7 +2013,7 @@ body, table td, select
 .lpeCanvasActionsControl
 {
 	background-color: #EBECA5;
-	border: 1px solid #CCCCCC;
+	border: 1px solid #e0e0e0;
 	padding: 1px;
 	position: absolute;
 	right: 0px;
@@ -2159,10 +2159,11 @@ body, table td, select
 /* "Link to Folder", "Link to Url", "Utility Element" widgets. */
 .lpeCustomJspWidget, .lpeEntryWidget, .lpeFolderWidget, .lpeGoogleGadgetWidget, .lpeGraphicWidget, .lpeLinkToEntryWidget, .lpeLinkToFolderWidget, .lpeLinkToUrlWidget, .lpeEnhancedViewWidget, .lpeUtilityElementWidget
 {
-	background-color: #E5E5E5;
-	border: 1px solid #AEAEAE;
+	background-color: #ededed;
+	border: 1px solid #e0e0e0;
 	padding: 6px;
 	overflow: hidden;
+	border-radius: 5px;
 }
 
 /* Styles for the "Html" widget. */
@@ -2551,7 +2552,7 @@ body, table td, select
 }
 .searchOptionsDlg_AdvancedSearchPanel
 {
-	border-top: 1px solid #949494;
+	border-top: 1px solid #e0e0e0;
 	padding-top: 10px;
 }
 .searchOptionsDlg_CloseA
@@ -2592,18 +2593,20 @@ body, table td, select
 }
 .searchOptionsDlg_Header
 {
-	font-size: 1.2em;
-	font-weight: bold;
+	color: #949494;
+	font-size: 1.1em;
+	font-weight: normal;
 	margin-bottom: 1em;
 	margin-top: 0.3em;
 }
 .searchOptionsDlg_SavedSearchesLabel
 {
+	color: #949494;
 }
 .searchOptionsDlg_SavedSearchesLabelPanel
 {
 	font-size: 1em;
-	border-top: 1px solid #949494;
+	border-top: 1px solid #e0e0e0;
 	padding-top: 10px;
 }
 .searchOptionsDlg_SavedSearchesSelect
