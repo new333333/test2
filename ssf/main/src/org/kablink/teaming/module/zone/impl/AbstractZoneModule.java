@@ -2201,30 +2201,54 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_MANAGE_RESOURCE_DRIVERS);
-			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
-			function.setInternalId(ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID);
-			function.addOperation(WorkAreaOperation.MANAGE_RESOURCE_DRIVERS);
-			function.setZoneWide(true);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		if (Utils.checkIfFilr() || Utils.checkIfFilrAndVibe()) {
+			if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID)) {
+				function = new Function();
+				function.setZoneId(zoneConfig.getZoneId());
+				function.setName(ObjectKeys.ROLE_MANAGE_RESOURCE_DRIVERS);
+				function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
+				function.setInternalId(ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID);
+				function.addOperation(WorkAreaOperation.MANAGE_RESOURCE_DRIVERS);
+				function.setZoneWide(true);
+				//generate functionId
+				getFunctionManager().addFunction(function);
+				setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+			}
+		} else if (!Utils.checkIfFilr() && !Utils.checkIfFilrAndVibe() && 
+				functionInternalIds.containsKey(ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID)) {
+			if (!SPropsUtil.getBoolean("keepFilrRolesAndRightsInVibe", false)) {
+				Function f = (Function) functionInternalIds.get(ObjectKeys.FUNCTION_MANAGE_RESOURCE_DRIVERS_INTERNALID);
+				try {
+					getFunctionManager().deleteFunction(f, true);
+				} catch(Exception e) {
+					logger.warn("Could not delete Filr manageResourceDrivers role from Vibe installation");
+				}
+			}
 		}
 		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID)) {
-			function = new Function();
-			function.setZoneId(zoneConfig.getZoneId());
-			function.setName(ObjectKeys.ROLE_CREATE_FILESPACES);
-			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
-			function.setInternalId(ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID);
-			function.addOperation(WorkAreaOperation.CREATE_FILESPACE);
-			function.setZoneWide(true);
-			//generate functionId
-			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		if (Utils.checkIfFilr() || Utils.checkIfFilrAndVibe()) {
+			if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID)) {
+				function = new Function();
+				function.setZoneId(zoneConfig.getZoneId());
+				function.setName(ObjectKeys.ROLE_CREATE_FILESPACES);
+				function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
+				function.setInternalId(ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID);
+				function.addOperation(WorkAreaOperation.CREATE_FILESPACE);
+				function.setZoneWide(true);
+				//generate functionId
+				getFunctionManager().addFunction(function);
+				setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+			}
+		} else if (!Utils.checkIfFilr() && !Utils.checkIfFilrAndVibe() && 
+				functionInternalIds.containsKey(ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID)) {
+			if (!SPropsUtil.getBoolean("keepFilrRolesAndRightsInVibe", false)) {
+				Function f = (Function) functionInternalIds.get(ObjectKeys.FUNCTION_CREATE_FILESPACES_INTERNALID);
+				try {
+					getFunctionManager().deleteFunction(f, true);
+				} catch(Exception e) {
+					logger.warn("Could not delete Filr createFilespace role from Vibe installation");
+				}
+			}
 		}
 		
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_INTERNAL_SHARING_INTERNALID)) {
