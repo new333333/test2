@@ -134,7 +134,7 @@ public class OwningThreadAwareLog implements Log {
 					// Owning thread name differs from the name of the currently executing thread.
 					// Include the owning thread name as part of the log message. This is to aid
 					// with debugging or trouble shooting.
-					result = "[" + owningThreadName + "] - ";
+					result = "<" + owningThreadName + "> - ";
 				}
 			}
 		}
