@@ -3141,6 +3141,7 @@ public class GwtViewHelper {
 			else if (colName.equals("loginId"))              {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                                    }
 			else if (colName.equals("mobileDevices"))        {fc.setColumnSearchKey(FolderColumn.COLUMN_MOBILE_DEVICES);        fc.setColumnSortable(false);                                       }
 			else if (colName.equals("netfolder_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);      fc.setColumnSortable(false);                                       }
+			else if (colName.equals("number"))               {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);                 fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);                   }
 			else if (colName.equals("principalType"))        {fc.setColumnSearchKey(Constants.IDENTITY_INTERNAL_FIELD);         fc.setColumnSortKey(Constants.IDENTITY_INTERNAL_FIELD);            }
 			else if (colName.equals("rating"))               {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                                       }
 			else if (colName.equals("responsible"))          {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                                  }
