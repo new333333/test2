@@ -85,7 +85,7 @@ public class DefaultFileVersionAgingDelete extends SSCronTriggerJob
     			} catch(Exception e) {
     				logger.error("Could not delete old file versions from " + 
     						entity.getEntityType().name() + ": " + entity.getTitle() + " (" + 
-    						entity.getId().toString() + ")");
+    						entity.getId().toString() + ")", e);
     			}
     		}
     	}
