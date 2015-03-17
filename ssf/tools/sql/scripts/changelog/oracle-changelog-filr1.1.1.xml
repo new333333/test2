@@ -333,4 +333,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="29">
+        <comment>IPv4 address of the appserver node on which application of deferred update logs is currently executing for the index node</comment>
+        <addColumn tableName="SS_INDEXNODE">
+            <column name="SYNCINGIPV4ADDRESS" type="VARCHAR2(16 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

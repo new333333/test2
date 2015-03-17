@@ -56,6 +56,11 @@ public class IndexNode extends ZonedObject {
 	
 	private String id;
 	private Name name;
+	
+	// Indicates whether there currently exists deferred update logs for this node or not.
+	// Because this is a cache of a computed status, there is no guarantee that it is accurate
+	// at the time of checking. This does NOT tell whether sync operation is currently in progress
+	// or not. That is indicated by another field.
 	private boolean noDeferredUpdateLogRecords = true; // column="inSynch"
 	
 	private String userModeAccess = USER_MODE_ACCESS_WRITE_ONLY; // initialized to write-only
@@ -71,6 +76,10 @@ public class IndexNode extends ZonedObject {
 	
 	// Network address of the node on which reindexing started
 	private String reindexingIpv4Address;
+	
+	// Network address of the node on which application of deferred update logs is currently in progress.
+	// If this field is non-null, it is an indication that sync operation is currently in progress.
+	private String deferredUpdateLogApplyingIpv4Address; // column="syncingIpv4Address"
 	
 	// The following two fields are here for convenience only, and not persistent.
 	private String title;
@@ -214,6 +223,20 @@ public class IndexNode extends ZonedObject {
 		this.reindexingIpv4Address = reindexingIpv4Address;
 	}
 
+	public String getDeferredUpdateLogApplyingIpv4Address() {
+		return deferredUpdateLogApplyingIpv4Address;
+	}
+
+	public void setDeferredUpdateLogApplyingIpv4Address(
+			String deferredUpdateLogApplicationInProgressIpv4Address) {
+		this.deferredUpdateLogApplyingIpv4Address = deferredUpdateLogApplicationInProgressIpv4Address;
+	}
+
+	// Convenience method
+	public boolean isDeferredUpdateLogApplicationInProgress() {
+		return (deferredUpdateLogApplyingIpv4Address != null);
+	}
+	
 	public static class Name implements Serializable {
 		private String nodeName;
 		private String indexName;

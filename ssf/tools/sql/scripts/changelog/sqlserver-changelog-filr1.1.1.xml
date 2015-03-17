@@ -391,4 +391,13 @@
         <modifyDataType schemaName="dbo" tableName="SS_Principals" columnName="ldapQuery" newDataType="ntext"/>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="39">
+        <comment>IPv4 address of the appserver node on which application of deferred update logs is currently executing for the index node</comment>
+        <addColumn tableName="SS_IndexNode">
+            <column name="syncingIpv4Address" type="VARCHAR(16)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
