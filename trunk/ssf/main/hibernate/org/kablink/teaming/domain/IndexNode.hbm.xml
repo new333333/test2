@@ -18,5 +18,6 @@
     <property name="reindexingStartDate"/>
     <property name="reindexingEndDate"/>
     <property name="reindexingIpv4Address" length="16"/>  
+    <property name="deferredUpdateLogApplyingIpv4Address" column="syncingIpv4Address" length="16"/>  
 </class>
 </hibernate-mapping>
