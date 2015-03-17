@@ -118,7 +118,7 @@ public class ManageSearchNodesController extends  SAbstractController {
 				String[] synchronize = (String[])formData.get("synchronize" + node.getNodeName());
 				if(synchronize != null && synchronize.length > 0) {
 					if(synchronize[0].equals("apply")) {
-						logger.info("Admin initiating application of deferred update logs on the node " + node.getNodeName());
+						logger.info("Admin initiating application of deferred update logs on index node " + node.getNodeName());
 						getAdminModule().applyDeferredUpdateLogRecordsHA(node);
 					}
 					else if(synchronize[0].equals("discard")) {
