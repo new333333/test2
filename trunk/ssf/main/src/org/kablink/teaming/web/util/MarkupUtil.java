@@ -58,6 +58,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -1876,8 +1877,21 @@ public class MarkupUtil {
 
 							if ( ca.containsKey( attrName + DefinitionModule.MASHUP_PROPERTIES ) )
 							{
-								data.put( attrName + DefinitionModule.MASHUP_PROPERTIES, 
-										  entity.getCustomAttribute( attrName + DefinitionModule.MASHUP_PROPERTIES ).getValue().toString() );
+								Object value;
+								
+								value = entity.getCustomAttribute( attrName + DefinitionModule.MASHUP_PROPERTIES ).getValue();
+								if ( value != null && value instanceof Document )
+								{
+									Document doc;
+									
+									doc = (Document) value; 
+									if ( doc != null )
+									{
+										data.put( attrName + DefinitionModule.MASHUP_PROPERTIES, 
+												  doc.asXML() );
+									}
+								}
+
 							}
 						}
 					}
