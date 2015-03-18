@@ -52,6 +52,30 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class HtmlProperties
 	implements PropertiesObj
 {
+	public enum ContextType
+	{
+		FORM( "form" ),
+		VIEW( "view" );
+		
+		private final String m_strValue;
+		
+		/**
+		 * 
+		 */
+		private ContextType( String strValue )
+		{
+			m_strValue = strValue;
+		}
+		
+		/**
+		 * 
+		 */
+		public String getValue()
+		{
+			return m_strValue;
+		}
+	}
+	
 	private String m_html;
 	private String m_markedUpHtml;		// html that has markup still in it.
 	private GetterCallback<String> m_getterCallback;
@@ -122,8 +146,9 @@ public class HtmlProperties
 	 * Issue an ajax request to parse the html and replace any markup with the appropriate html.
 	 * For example, replace {{attachmentUrl: somename.png}} with a url that looks like:
 	 * http://somehost/ssf/s/readFile.../somename.png
+	 * The parameter contextType can be "view" or "form"
 	 */
-	public void replaceMarkup( String binderId, GetterCallback<String> callback )
+	public void replaceMarkup( String binderId, ContextType contextType, GetterCallback<String> callback )
 	{
 		m_getterCallback = callback;
 		
@@ -135,7 +160,7 @@ public class HtmlProperties
 			// Issue an ajax request to parse the html and replace any markup with the appropriate html.
 			// For example, replace {{attachmentUrl: somename.png}} with a url that looks like:
 			// http://somehost/ssf/s/readFile/.../somename.png.
-			MarkupStringReplacementCmd cmd = new MarkupStringReplacementCmd( binderId, m_markedUpHtml, "form" );
+			MarkupStringReplacementCmd cmd = new MarkupStringReplacementCmd( binderId, m_markedUpHtml, contextType.getValue() );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
 				@Override
