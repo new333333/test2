@@ -1405,7 +1405,7 @@ public class DefinitionHelper {
 						String color;
 						
 						// Get the text color
-						color = headerElement.attributeValue( "textColor" );
+						color = contentElement.attributeValue( "textColor" );
 						if ( color != null && color.length() > 0 )
 							lpProperties.setContentTextColor( color );
 					}

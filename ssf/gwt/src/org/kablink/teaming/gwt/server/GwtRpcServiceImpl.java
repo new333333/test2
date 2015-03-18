@@ -6327,6 +6327,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				// Parse the given html and replace any markup with the appropriate url.  For example,
 				// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
 				newHtml = MarkupUtil.markupStringReplacement( null, null, getRequest( ri ), null, entry, html, type );
+
+				// Perform fixups of wiki markup.
+				newHtml = MarkupUtil.markupSectionsReplacement( newHtml );
 			}
 			catch (Exception e)
 			{
