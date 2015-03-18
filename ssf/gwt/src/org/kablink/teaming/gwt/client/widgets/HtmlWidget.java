@@ -81,7 +81,7 @@ public class HtmlWidget extends VibeWidget
 			m_properties.copy( properties );
 		
 		// Replace any markup that may be in the html.
-		m_properties.replaceMarkup( binderId, new GetterCallback<String>()
+		m_properties.replaceMarkup( binderId, HtmlProperties.ContextType.VIEW, new GetterCallback<String>()
 		{
 			/**
 			 * 

@@ -222,7 +222,7 @@ public class HtmlDropWidget extends DropWidget
 		}
 
 		// Replace any markup that may be in the html.
-		m_properties.replaceMarkup( m_lpe.getBinderId(), new GetterCallback<String>()
+		m_properties.replaceMarkup( m_lpe.getBinderId(), HtmlProperties.ContextType.FORM, new GetterCallback<String>()
 		{
 			/**
 			 * 
