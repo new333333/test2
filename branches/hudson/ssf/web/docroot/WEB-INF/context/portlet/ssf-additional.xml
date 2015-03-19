@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+	<bean id="portletModeParameterHandlerMapping2" parent="portletModeParameterHandlerMappingTemplate">
+			<property name="portletModeParameterMap">
+			<map>
+				<entry key="view">
+					<map>
+					</map>
+				</entry>
+				<entry key="edit">
+					<map>
+					</map>
+				</entry>
+				<entry key="help">
+					<map>
+					</map>
+				</entry>
+			</map>
+		</property>
+	</bean>
+</beans>

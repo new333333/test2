@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="jong" context="schema" failOnError="true" id="1">
+        <comment>Size limit for any attachment in an email message</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="OUTGOINGATTACHMENTSIZELIMIT" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <comment>Size limit for the sum of all attachments in an email message</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="OUTGOINGATTACHMENTSUMLIMIT" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="3">
+        <comment>The binder owning this local template</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="TEMPLATEOWNINGBINDERID" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="4">
+        <createIndex indexName="TEMPLATEOWNINGBINDERID_BINDER" tableName="SS_FORUMS" unique="false">
+            <column name="TEMPLATEOWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="5">
+        <comment>XML document stored as compressed bytes</comment>
+        <addColumn tableName="SS_CHANGELOGS">
+            <column name="XMLBYTES" type="BLOB">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="6">
+        <comment>Identity source type for provisioned users</comment>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="IDENTITYSOURCE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="7">
+        <createTable tableName="SS_RESOURCEDRIVER">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_RESOURCEDRIVER"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="TYPE" type="NUMBER(10,0)"/>
+            <column name="READONLY" type="NUMBER(1,0)"/>
+            <column name="SYNCHTOPDELETE" type="NUMBER(1,0)"/>
+            <column name="PUTREQUIRESCONTENTLENGTH" type="NUMBER(1,0)"/>
+            <column name="ALLOWSELFSIGNEDCERTIFICATE" type="NUMBER(1,0)"/>
+            <column name="HOSTURL" type="VARCHAR2(255)"/>
+            <column name="ROOTPATH" type="VARCHAR2(1024)"/>
+            <column name="ACCOUNTNAME" type="VARCHAR2(255 CHAR)"/>
+            <column name="PASSWORD" type="VARCHAR2(255 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="8">
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="shareName" type="VARCHAR2(255 CHAR)">
+            	<constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="serverName" type="VARCHAR2(255 CHAR)">
+            	<constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="serverIP" type="VARCHAR2(255 CHAR)">
+            	<constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="volume" type="VARCHAR2(255 CHAR)">
+            	<constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="9">
+        <comment>Enable external users</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="EXTERNALUSERENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Enable OpenID authentication</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="OPENIDAUTHENTICATIONENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Enable OpenID self-provisioning</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="OPENIDSELFPROVISIONINGENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>The mode in which OpenID user's profile information is synchronized</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="OPENIDPROFILESYNCMODE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="10">
+        <createTable tableName="SS_OPENIDPROVIDERS">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_OPENIDPROVIDERS"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR2(64 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TITLE" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="URL" type="VARCHAR2(256 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REGEX" type="VARCHAR2(256 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="11">
+        <createIndex indexName="NAME_OPENIDPROVIDERS" tableName="SS_OPENIDPROVIDERS" unique="true">
+            <column name="ZONEID"/>
+            <column name="NAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <createTable tableName="SS_SHAREITEM">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_SHAREITEM"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="LATEST" type="NUMBER(1,0)"/>
+            <column name="SHARERID" type="NUMBER(19,0)"/>
+            <column name="SHAREDENTITY_TYPE" type="NUMBER(10,0)"/>
+            <column name="SHAREDENTITY_ID" type="NUMBER(19,0)"/>
+            <column name="COMMENTS" type="VARCHAR2(255 CHAR)"/>
+            <column name="DAYSTOEXPIRE" type="NUMBER(10,0)"/>
+            <column name="STARTDATE" type="TIMESTAMP(6)"/>
+            <column name="ENDDATE" type="TIMESTAMP(6)"/>
+            <column name="RECIPIENT_TYPE" type="NUMBER(2,0)"/>
+            <column name="RECIPIENT_ID" type="NUMBER(19,0)"/>
+            <column name="EXPIRATIONHANDLED" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATEENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_MODIFYENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_MODIFYENTRYFIELDS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_DELETEENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_READENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_ADDREPLIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_GENERATEREPORTS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_BINDERADMINISTRATION" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATEENTRYACLS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CHANGEACCESSCONTROL" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATEWORKSPACES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATEFOLDERS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_MANAGEENTRYDEFS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_MANAGEWORKFLOWDEFS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATORREADENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATORMODIFYENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_CREATORDELETEENTRIES" type="NUMBER(1,0)"/>
+            <column name="RIGHT_OWNERCREATEENTRYACLS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_ADDTAGS" type="NUMBER(1,0)"/>
+            <column name="RIGHT_VIEWBINDERTITLE" type="NUMBER(1,0)"/>
+            <column name="RIGHT_ALLOWSHARING" type="NUMBER(1,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
+        <createIndex indexName="SHARERID_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
+            <column name="SHARERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="14">
+        <createIndex indexName="STARTDATE_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
+            <column name="STARTDATE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="15">
+        <createIndex indexName="ENDDATE_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
+            <column name="ENDDATE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="16">
+        <createIndex indexName="SHAREDENTITY_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
+            <column name="SHAREDENTITY_TYPE"/>
+            <column name="SHAREDENTITY_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="17">
+        <createIndex indexName="RECIPIENT_SHAREITEM" tableName="SS_SHAREITEM" unique="false">
+            <column name="RECIPIENT_TYPE"/>
+            <column name="RECIPIENT_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
+        <createSequence sequenceName="SS_SHAREITEM_ID_SEQUENCE"/>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="19">
+        <comment>Count of OpenId user accounts</comment>
+        <addColumn tableName="SS_LICENSESTATS">
+            <column name="OPENIDUSERCOUNT" type="NUMERIC(19,0)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="20">
+        <addColumn tableName="SS_RESOURCEDRIVER">
+			<column name="modifiedOn" type="TIMESTAMP(6)">
+				<constraints nullable="true" />
+			</column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <addColumn tableName="SS_FORUMS">
+			<column name="EXTFUNCTIONMEMBERSHIPINHERITED" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <addColumn tableName="SS_FOLDERENTRIES">
+			<column name="HASENTRYEXTERNALACL" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="23">
+        <addColumn tableName="SS_FORUMS">
+			<column name="TEMPLATEHIDDEN" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <addColumn tableName="SS_PRINCIPALS">
+			<column name="OBJECTSID" type="VARCHAR2(128 CHAR)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="25">
+        <createIndex indexName="OBJECTSID_PRINCIPAL" tableName="SS_PRINCIPALS" unique="false">
+            <column name="OBJECTSID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="26">
+        <addColumn tableName="SS_PRINCIPALS">
+			<column name="SAMACCOUNTNAME" type="VARCHAR2(128 CHAR)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="27">
+        <addColumn tableName="SS_FORUMS">
+			<column name="HOMEDIR" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <addColumn tableName="SS_ZONECONFIG">
+			<column name="LOCALELANGUAGE" type="VARCHAR2(16 CHAR)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="29">
+        <addColumn tableName="SS_ZONECONFIG">
+			<column name="LOCALECOUNTRY" type="VARCHAR2(16 CHAR)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="david" context="schema" failOnError="true" id="30">
+        <addColumn tableName="SS_ATTACHMENTS">
+			<column name="FILEMD5" type="CHAR(32)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="31">
+        <addColumn tableName="SS_PRINCIPALS">
+			<column name="INTERNAL" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="32">
+        <addColumn tableName="SS_PRINCIPALS">
+			<column name="FROMLDAP" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="33">
+        <addColumn tableName="SS_PRINCIPALS">
+			<column name="FROMLOCAL" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="34">
+        <addColumn tableName="SS_PRINCIPALS">
+			<column name="FROMOPENID" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="35">
+        <comment>Enable adhoc file folders in users personal workspace</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="ADHOCFOLDERSENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="data" failOnError="true" id="36">
+        <comment>Populate 4 new columns with correct values in preparation for retiring identitySource column</comment>
+        <sql>
+update SS_PRINCIPALS set INTERNAL=0,FROMLDAP=0,FROMLOCAL=0,FROMOPENID=1 where IDENTITYSOURCE=11;
+update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=0,FROMLOCAL=1,FROMOPENID=0 where IDENTITYSOURCE=1;
+update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=1,FROMLOCAL=0,FROMOPENID=0 where IDENTITYSOURCE=2;
+update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=0,FROMLOCAL=1,FROMOPENID=0 where IDENTITYSOURCE is null and NAME = FOREIGNNAME;
+update SS_PRINCIPALS set INTERNAL=1,FROMLDAP=1,FROMLOCAL=0,FROMOPENID=0 where IDENTITYSOURCE is null and NAME != FOREIGNNAME;            
+        </sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="37">
+	    <addNotNullConstraint tableName="SS_PRINCIPALS" columnName="INTERNAL" columnDataType="NUMBER(1,0)"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="38">
+	    <addNotNullConstraint tableName="SS_PRINCIPALS" columnName="FROMLDAP" columnDataType="NUMBER(1,0)"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="39">
+	    <addNotNullConstraint tableName="SS_PRINCIPALS" columnName="FROMLOCAL" columnDataType="NUMBER(1,0)"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="40">
+	    <addNotNullConstraint tableName="SS_PRINCIPALS" columnName="FROMOPENID" columnDataType="NUMBER(1,0)"/>
+    </changeSet>    
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="41">
+        <comment>Is deployment of the Desktop application enabled</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="FSADEPLOYENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="42">
+        <comment>How many days worth of data to keep in SS_AuditTrail table</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="AUDITTRAILKEEPDAYS" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="43">
+        <comment>How many days worth of data to keep in SS_ChangeLogs table</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="CHANGELOGSKEEPDAYS" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="44">
+        <addColumn tableName="SS_SHAREITEM">
+			<column name="right_allowSharingExternal" type="NUMBER(1,0)"/>
+			<column name="right_allowSharingPublic" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="45">
+        <comment>Is the group a system group</comment>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="LDAPCONTAINER" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="peter" context="schema" failOnError="true" id="46">
+        <addColumn tableName="SS_SHAREITEM">
+			<column name="right_allowSharingForward" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="data" failOnError="true" id="47">
+        <comment>Store all login names in lower case</comment>
+        <sql>
+update SS_PRINCIPALS set NAME=LOWER(NAME);        
+        </sql>
+    </changeSet>
+    
+    <changeSet author="jong" context="data" failOnError="true" id="48">
+        <comment>Store all email addresses in lower case</comment>
+        <sql>
+update SS_EMAILADDRESSES set ADDRESS=LOWER(ADDRESS);        
+        </sql>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="49">
+        <comment>This column is no longer needed</comment>
+        <dropColumn tableName="SS_PRINCIPALS" columnName="IDENTITYSOURCE"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="50">
+        <comment>State of the external user self-provisioning upon invitation</comment>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="EXTPROVSTATE" type="NUMBER(2,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="51">
+        <comment>Is guest read only</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="ANONYMOUSREADONLY" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="data" failOnError="true" id="52">
+        <comment>Delete all OpenID providers other than google and yahoo</comment>
+        <sql>
+delete from SS_OPENIDPROVIDERS where NAME != 'google' and NAME != 'yahoo';
+        </sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="53">
+        <comment>Regex used to filter on email address</comment>
+        <addColumn tableName="SS_OPENIDPROVIDERS">
+            <column name="EMAILREGEX" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="data" failOnError="true" id="54">
+        <comment>Delete all OpenID providers other than google and yahoo</comment>
+        <sql>
+update SS_OPENIDPROVIDERS set EMAILREGEX='.*gmail.com' where NAME='google';
+update SS_OPENIDPROVIDERS set EMAILREGEX='.*yahoo.com' where NAME='yahoo';
+        </sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="55">
+        <comment>Seed used for external user self-provisioning</comment>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="EXTPROVSEED" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="56">
+        <addColumn tableName="SS_SHAREITEM">
+			<column name="right_allowAccessNetFolder" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="57">
+        <comment>Increase password column size from 64 to 128 characters</comment>
+        <modifyDataType tableName="SS_PRINCIPALS" columnName="PASSWORD" newDataType="VARCHAR2(128 CHAR)"/>
+    </changeSet>
+
+    <changeSet author="jong" context="data" failOnError="true" id="58">
+        <comment>Store all foreign names in lower case</comment>
+        <sql>
+update SS_PRINCIPALS set FOREIGNNAME=LOWER(FOREIGNNAME);        
+        </sql>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="59">
+        <comment>Add fsaAllowCachePwd and fsaMaxFileSize</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="FSAALLOWCACHEPWD" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="FSAMAXFILESIZE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="60">
+        <comment>Enable mobile apps to access Filr</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="MOBILEAPPSENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Allow mobile apps to cache users password</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="MOBILEAPPSALLOWCACHEPWD" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Allow mobile apps to cache content</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="MOBILEAPPSALLOWCACHECONTENT" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Allow mobile apps to interact with other applications</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="MOBILEAPPSALLOWPLAYWITHOTHERS" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Sync interval for mobile apps</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="MOBILEAPPSSYNCINTERVAL" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="61">
+        <comment>Add allowDesktopAppToSyncData field to SS_Forums table</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="ALLOWDESKTOPAPPTOSYNCDATA" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add allowMobileAppsToSyncData field to SS_Forums table</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="ALLOWMOBILEAPPSTOSYNCDATA" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	    
+    <changeSet author="jay" context="schema" failOnError="true" id="62">
+        <comment>Add indexContent field to SS_Forums table</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="INDEXCONTENT" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	    
+    <changeSet author="jay" context="schema" failOnError="true" id="63">
+        <comment>Add partOfPublicShare field to SS_ShareItem table</comment>
+        <addColumn tableName="SS_SHAREITEM">
+            <column name="PARTOFPUBLICSHARE" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="david" context="schema" failOnError="true" id="64">
+        <comment>Add deletedDate field to SS_ShareItem table</comment>
+        <addColumn tableName="SS_SHAREITEM">
+            <column name="DELETEDDATE" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="65">
+        <comment>Add jitsEnabled field to SS_Forums table</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="JITSENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	    
+    <changeSet author="jong" context="schema" failOnError="true" id="66">
+        <comment>Add jitsMaxAge field to SS_Forums table</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="JITSMAXAGE" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	    
+    <changeSet author="jong" context="schema" failOnError="true" id="67">
+        <comment>Add jitsEnabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="JITSENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	    
+    <changeSet author="jong" context="schema" failOnError="true" id="68">
+        <comment>Add jitsWaitTimeout field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="JITSWAITTIMEOUT" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	    
+    <changeSet author="jong" context="schema" failOnError="true" id="69">
+        <comment>Add jitsAclMaxAge field to SS_Forums table</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="JITSACLMAXAGE" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	    
+    <changeSet author="jong" context="schema" failOnError="true" id="70">
+        <createTable tableName="SS_BINDERSTATE">
+            <column name="BINDERID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_BINDERSTATE"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="LASTSYNCTIME" type="TIMESTAMP(6)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="71">
+        <addColumn tableName="SS_SHAREITEM">
+			<column name="right_renameEntries" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="72">
+        <comment>Count of other external user accounts</comment>
+        <addColumn tableName="SS_LICENSESTATS">
+            <column name="OTHEREXTUSERCOUNT" type="NUMERIC(19,0)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="peter" context="schema" failOnError="true" id="73">
+        <comment>is guest access enabled</comment>
+        <addColumn tableName="SS_LICENSESTATS">
+            <column name="GUESTACCESSENABLED" type="NUMBER(1,0)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="74">
+        <comment>Last time full sync completed</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="LASTFULLSYNCCOMPLETIONTIME" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="75">
+        <comment>Domain name if the user was provisioned from AD</comment>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="DOMAINNAME" type="VARCHAR2(255)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
