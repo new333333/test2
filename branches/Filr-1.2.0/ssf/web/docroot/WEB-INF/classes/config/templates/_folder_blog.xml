@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="5" internalId="402883b90d0de1f3010d0df5582b000c">
+  <attribute name="templateTitle" type="string"><![CDATA[__template_folder_blog]]></attribute>
+  <attribute name="templateDescription" type="description"><![CDATA[__template_folder_blog_description]]></attribute>
+  <attribute name="title" type="string"><![CDATA[__template_folder_blog]]></attribute>
+  <attribute name="description" type="description"><![CDATA[]]></attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_blog.png</attribute>
+  <attribute name="name" type="string">_folder_blog</attribute>
+  <property name="library">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="_blogFolder" databaseId="402883c6115753d8011157619e35000b"/>
+  <definition name="_discussionFolderList" internalId="402883b90cc53079010cc539bf260001" databaseId="402883b90cc53079010cc539bf260001"/>
+  <definition name="_discussionFolderTable" databaseId="4028839f11fb20390111fb43a3840001"/>
+  <definition name="_blogEntry" databaseId="402883c6115753d80111577981cf000c"/>
+</template>

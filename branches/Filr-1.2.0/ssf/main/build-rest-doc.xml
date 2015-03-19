@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<project name="main_enunciate" basedir=".">
+    <import file="../build-common.xml" />
+
+    <path id="enunciate.classpath">
+        <fileset dir="${enunciate.home}/lib">
+            <include name="*.jar"/>
+            <exclude name="enunciate-c-*.jar"/>
+            <!--<exclude name="enunciate-csharp-*.jar"/>-->
+            <!--<exclude name="enunciate-java-client-*.jar"/>-->
+            <!--<exclude name="enunciate-obj-c-*.jar"/>-->
+            <exclude name="enunciate-ruby-*.jar"/>
+          </fileset>
+        <fileset dir="${java.home}">
+            <include name="lib/tools.jar"/>
+        </fileset>
+        <path refid="project.classpath"/>
+    </path>
+
+    <taskdef name="enunciate" classname="org.codehaus.enunciate.main.EnunciateTask">
+        <classpath refid="enunciate.classpath"/>
+    </taskdef>
+
+    <enunciate basedir="src" buildDir="doc">
+        <include name="org/kablink/teaming/remoting/rest/**/*.java"/>
+        <include name="../../rest-shared/src/**/*.java"/>
+        <classpath refid="enunciate.classpath"/>
+        <export artifactId="war.file" destination="doc/kablink-rest-doc.zip" />
+    </enunciate>
+</project>

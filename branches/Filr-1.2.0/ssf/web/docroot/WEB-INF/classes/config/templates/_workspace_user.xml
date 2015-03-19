@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="12" internalId="402883b90d0de1f3010d0df5582b0004">
+  <attribute name="templateTitle" type="string">__template_user_workspace</attribute>
+  <attribute name="templateDescription" type="description">__template_user_workspace_description</attribute>
+  <attribute name="templateHidden" type="boolean">false</attribute>
+  <attribute name="title" type="string">__template_user_workspace</attribute>
+  <attribute name="description" type="description"></attribute>
+  <attribute name="iconName" type="string">/icons/workspace_user.png</attribute>
+  <attribute name="name" type="string">_workspace_user</attribute>
+  <property name="library">false</property>
+  <property name="mirrored">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">false</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.participant</property>
+    <property name="members">-1 -2</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.allowSharing</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.binderAdmin</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.allowAccessNetFolder</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.teamMember</property>
+    <property name="members">-1 -2</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.allowSharingPublic</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.allowSharingPublicLinks</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.visitor</property>
+    <property name="members">-1 -2</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.allowSharingExternal</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.allowSharingForward</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <definition name="_userWorkspace" internalId="402883b90cc53079010cc539bf26000b" databaseId="402883b90cc53079010cc539bf26000b"/>
+  <dashboard>
+    <property name="nextComponentId">10</property>
+    <property name="showComponents">true</property>
+    <property name="version">1</property>
+    <property name="title"/>
+    <property name="includeBinderTitle">false</property>
+    <layout name="wide_top">
+      <property name="id">binder_9</property>
+      <property name="scope">binder</property>
+      <property name="visible">true</property>
+    </layout>
+    <layout name="wide_top">
+      <property name="id">binder_8</property>
+      <property name="scope">binder</property>
+      <property name="visible">true</property>
+    </layout>
+    <layout name="wide_top">
+      <property name="id">binder_6</property>
+      <property name="scope">binder</property>
+      <property name="visible">true</property>
+    </layout>
+    <layout name="wide_top">
+      <property name="id">binder_3</property>
+      <property name="scope">binder</property>
+      <property name="visible">true</property>
+    </layout>
+    <component name="binder_3">
+      <property name="displayStyle">border</property>
+      <property name="title">__definition_default_folder_photo</property>
+      <property name="name">gallery</property>
+      <data>
+        <property name="resultsCount">5</property>
+        <property name="galleryImageSize">small</property>
+        <property name="chooseViewType">photo</property>
+      </data>
+    </component>
+    <component name="binder_9">
+      <property name="displayStyle">border</property>
+      <property name="title">__definition_default_folder_task</property>
+      <property name="roles"></property>
+      <property name="name">task</property>
+      <data>
+        <property name="resultsCount">5</property>
+      </data>
+    </component>
+    <component name="binder_8">
+      <property name="displayStyle">border</property>
+      <property name="title">__definition_default_folder_guestbook</property>
+      <property name="roles"></property>
+      <property name="name">guestbook</property>
+      <data>
+        <property name="summaryWordCount">20</property>
+        <property name="resultsCount">5</property>
+        <property name="chooseViewType">guestbook</property>
+      </data>
+    </component>
+    <component name="binder_6">
+      <property name="displayStyle">border</property>
+      <property name="title">__definition_default_folder_blog</property>
+      <property name="name">blog</property>
+      <data>
+        <property name="summaryWordCount">20</property>
+        <property name="resultsCount">5</property>
+        <property name="chooseViewType">blog</property>
+      </data>
+    </component>
+  </dashboard>
+  <template type="5">
+    <attribute name="templateTitle" type="string">__template_folder_blog</attribute>
+    <attribute name="templateDescription" type="description">__template_folder_blog_description</attribute>
+    <attribute name="templateHidden" type="boolean">false</attribute>
+    <attribute name="title" type="string">__template_folder_blog</attribute>
+    <attribute name="description" type="description"></attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_blog.png</attribute>
+    <property name="library">false</property>
+    <property name="mirrored">false</property>
+    <property name="uniqueTitle">false</property>
+    <property name="inheritFunctionMembership">true</property>
+    <property name="inheritDefinitions">false</property>
+    <property name="inheritTeamMembers">true</property>
+    <definition name="_blogFolder" internalId="402883c6115753d8011157619e35000b" databaseId="402883c6115753d8011157619e35000b"/>
+    <definition name="_discussionFolderTable" databaseId="4028839f11fb20390111fb43a3840001"/>
+    <definition name="_discussionFolderList" internalId="402883b90cc53079010cc539bf260001" databaseId="402883b90cc53079010cc539bf260001"/>
+    <definition name="_blogEntry" databaseId="402883c6115753d80111577981cf000c"/>
+  </template>
+  <template type="5">
+    <attribute name="templateTitle" type="string">__template_folder_calendar</attribute>
+    <attribute name="templateDescription" type="description">__template_folder_calendar_description</attribute>
+    <attribute name="templateHidden" type="boolean">false</attribute>
+    <attribute name="title" type="string">__template_folder_calendar</attribute>
+    <attribute name="description" type="description"></attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_calendar.png</attribute>
+    <property name="library">false</property>
+    <property name="mirrored">false</property>
+    <property name="uniqueTitle">false</property>
+    <property name="inheritFunctionMembership">true</property>
+    <property name="inheritDefinitions">false</property>
+    <property name="inheritTeamMembers">true</property>
+    <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>
+    <definition name="_calendarEntry" databaseId="402883c6115753d80111577dbe29000d"/>
+  </template>
+  <template type="5">
+    <attribute name="templateTitle" type="string">__template_folder_guestbook</attribute>
+    <attribute name="templateDescription" type="description">__template_folder_guestbook_description</attribute>
+    <attribute name="templateHidden" type="boolean">false</attribute>
+    <attribute name="title" type="string">__template_folder_guestbook</attribute>
+    <attribute name="description" type="description"></attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_guestbook.png</attribute>
+    <property name="library">false</property>
+    <property name="mirrored">false</property>
+    <property name="uniqueTitle">false</property>
+    <property name="inheritFunctionMembership">true</property>
+    <property name="inheritDefinitions">false</property>
+    <property name="inheritTeamMembers">true</property>
+    <definition name="_guestbookFolder" databaseId="402883c6115753d8011157619e35000a"/>
+    <definition name="_guestbookEntry" databaseId="402883c6115753d8011157811ae1000e"/>
+  </template>
+  <template type="5">
+    <attribute name="templateTitle" type="string">__template_folder_photo</attribute>
+    <attribute name="templateDescription" type="description">__template_folder_photo_description</attribute>
+    <attribute name="templateHidden" type="boolean">false</attribute>
+    <attribute name="title" type="string">__template_folder_photo</attribute>
+    <attribute name="description" type="description"></attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_photo.png</attribute>
+    <property name="library">true</property>
+    <property name="mirrored">false</property>
+    <property name="uniqueTitle">false</property>
+    <property name="inheritFunctionMembership">true</property>
+    <property name="inheritDefinitions">false</property>
+    <property name="inheritTeamMembers">true</property>
+    <definition name="_photoFolder" internalId="402883c6115753d8011157619e350008" databaseId="402883c6115753d8011157619e350008"/>
+    <definition name="_photoEntry" databaseId="402883c6115753d80111578720900010"/>
+  </template>
+  <template type="5">
+    <attribute name="templateTitle" type="string">__template_folder_task</attribute>
+    <attribute name="templateDescription" type="description">__template_folder_task_description</attribute>
+    <attribute name="templateHidden" type="boolean">false</attribute>
+    <attribute name="title" type="string">__template_folder_task</attribute>
+    <attribute name="description" type="description"></attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_task.png</attribute>
+    <property name="library">false</property>
+    <property name="mirrored">false</property>
+    <property name="uniqueTitle">false</property>
+    <property name="inheritFunctionMembership">true</property>
+    <property name="inheritDefinitions">false</property>
+    <property name="inheritTeamMembers">true</property>
+    <definition name="_taskFolder" databaseId="402883c1129b1f8101129b28bc620003"/>
+    <definition name="_taskEntry" databaseId="402883c1129b1f8101129b28bbe50002"/>
+    <definition name="_task_workflow" databaseId="24e350dd203897f40120389be0c80007"/>
+    <definition name="_task_workflow" databaseId="24e350dd203897f40120389be0c80007"/>
+    <definition name="_task_workflow" databaseId="24e350dd203897f40120389be0c80007"/>
+    <definition name="_task_workflow" databaseId="24e350dd203897f40120389be0c80007">
+      <definition name="_taskEntry" databaseId="402883c1129b1f8101129b28bbe50002"/>
+    </definition>
+  </template>
+</template>

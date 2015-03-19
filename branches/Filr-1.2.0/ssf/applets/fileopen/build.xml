@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<project name="fileopen" basedir="." default="compile">
+	<property name="project.dir" value="../.." />
+
+	<import file="${project.dir}/build-common.xml"/>
+	<import file="${project.dir}/deploy-support.xml" />
+
+	<property name="fileopensrc.dir" value="./src" />
+	<property name="jar.file" value="kablink-teaming-fileopen-applet.jar" />
+	<property name="signedjar.file" value="kablink-teaming-fileopen-applet-sign.jar" />
+
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+		<pathelement path="${classpath}" />
+		<fileset dir="../lib" includes="*.jar" />
+	</path>
+
+	<target name="deploy" depends="jar">
+		<antcall target="deploy-applet">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+			<param name="deploy-support.applet.deploy.dir" value="applets/fileopen" />
+		</antcall>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar basedir="${classes.dir}" jarfile="${jar.file}" />
+		
+		<antcall target="jar-manifest">
+			<param name="jar-manifest.jar.file" value="${jar.file}"/>
+		</antcall>
+
+		<signjar jar="${jar.file}" alias="selfsigned" 
+		keystore="../kablink.keystore" storepass="password"/>
+	</target>
+	
+	<target name="compile" depends="compile_1.4"/>
+
+</project>
