@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -2277,6 +2277,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_PHOTO_ALBUM_FOLDER:
+				// A ShowPhotoAlbumFolderEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ShowPhotoAlbumFolderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowPhotoAlbumFolderEvent.registerEvent(eventBus, ((ShowPhotoAlbumFolderEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SHOW_PROJECT_MANAGEMENT_WORKSPACE:
 				// A ShowProjectManagementWSEvent!  Can the event handler we were given handle that?
 				if ( eventHandler instanceof ShowProjectManagementWSEvent.Handler )
@@ -3051,6 +3060,7 @@ public class EventHelper {
 			case SHOW_MIRRORED_FILE_FOLDER:				       hasHandler = (eventHandler instanceof ShowMirroredFileFolderEvent.Handler);		           break;
 			case SHOW_NET_FOLDERS_WORKSPACE:			       hasHandler = (eventHandler instanceof ShowNetFoldersWSEvent.Handler);			           break;
 			case SHOW_PERSONAL_WORKSPACES:				       hasHandler = (eventHandler instanceof ShowPersonalWorkspacesEvent.Handler);		           break;
+			case SHOW_PHOTO_ALBUM_FOLDER:					   hasHandler = (eventHandler instanceof ShowPhotoAlbumFolderEvent.Handler);		           break;
 			case SHOW_PROJECT_MANAGEMENT_WORKSPACE:		       hasHandler = (eventHandler instanceof ShowProjectManagementWSEvent.Handler);	               break;
 			case SHOW_SURVEY_FOLDER:				           hasHandler = (eventHandler instanceof ShowSurveyFolderEvent.Handler);		               break;
 			case SHOW_TASK_FOLDER:						       hasHandler = (eventHandler instanceof ShowTaskFolderEvent.Handler);		                   break;

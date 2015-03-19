@@ -719,14 +719,20 @@ public class GwtViewHelper {
 	 * 
 	 * @return
 	 */
-	public static FolderRowsRpcResponseData buildEmptyFolderRows() {
-		return
+	public static FolderRowsRpcResponseData buildEmptyFolderRows(Binder binder) {
+		FolderRowsRpcResponseData reply = 
 			new FolderRowsRpcResponseData(
 				new ArrayList<FolderRow>(),	// FolderRows.
 				0,							// Start index.
 				0,							// Total count.
 				TotalCountType.EXACT,		// How the total row count should be interpreted.
 				new ArrayList<Long>());		// Contributor IDs.
+		
+		if (GwtLogHelper.isDebugEnabled(m_logger)) {
+			dumpFolderRowsRpcResponseData(binder, reply);
+		}
+		
+		return reply;
 	}
 
 	/*
@@ -2141,6 +2147,149 @@ public class GwtViewHelper {
 	}
 	
 	/*
+	 * Dumps the contents of a List<FolderColumn>.
+	 */
+	private static void dumpFolderColumns(String start1, String start2, List<FolderColumn> fcList) {
+		if ((null == fcList) || fcList.isEmpty()) {
+			GwtLogHelper.debug(m_logger, (start1 + "No Column Data"));
+		}
+		else {
+			GwtLogHelper.debug(m_logger, (start1 + "Column Data:"));
+			int colIndex = 0;
+			for (FolderColumn fc:  fcList) {
+				GwtLogHelper.debug(m_logger, start2 + "...Index:             " + colIndex                                           );
+				GwtLogHelper.debug(m_logger, start2 + "......Shown:          " + GwtLogHelper.dumpBoolean(fc.isColumnShown())       );
+				GwtLogHelper.debug(m_logger, start2 + "......Sortable:       " + fc.isColumnSortable()                              );
+				GwtLogHelper.debug(m_logger, start2 + "......Name:           " + GwtLogHelper.dumpString(fc.getColumnName())        );
+				GwtLogHelper.debug(m_logger, start2 + "......Title:          " + GwtLogHelper.dumpString(fc.getColumnTitle())       );
+				GwtLogHelper.debug(m_logger, start2 + "......Default title:  " + GwtLogHelper.dumpString(fc.getColumnDefaultTitle()));
+				GwtLogHelper.debug(m_logger, start2 + "......Custom title:   " + GwtLogHelper.dumpString(fc.getColumnCustomTitle()) );
+				GwtLogHelper.debug(m_logger, start2 + "......Search key:     " + GwtLogHelper.dumpString(fc.getColumnSearchKey())   );
+				GwtLogHelper.debug(m_logger, start2 + "......Sort key:       " + GwtLogHelper.dumpString(fc.getColumnSortKey())     );
+				GwtLogHelper.debug(m_logger, start2 + "......Def ID:         " + GwtLogHelper.dumpString(fc.getColumnDefId())       );
+				GwtLogHelper.debug(m_logger, start2 + "......Ele name:       " + GwtLogHelper.dumpString(fc.getColumnEleName())     );
+				GwtLogHelper.debug(m_logger, start2 + "......Type:           " + GwtLogHelper.dumpString(fc.getColumnType())        );
+				
+				colIndex += 1;
+			}
+		}
+	}
+	
+	/*
+	 * Dumps the contents of a FolderColumnsRpcResponseData object.
+	 */
+	private static void dumpFolderColumnsRpcResponseData(Binder binder, FolderColumnsRpcResponseData fcData) {
+		// If debug tracing isn't enabled...
+		if (!(GwtLogHelper.isDebugEnabled(m_logger))) {
+			// ...bail.
+			return;
+		}
+
+		// If we weren't given a FolderColumnsRpcResponseData to
+		// dump...
+		if (null == fcData) {
+			// ...trace that fact and bail.
+			GwtLogHelper.debug(m_logger, "...dumpFolderColumnsRpcResponseData( null ):  No FolderColumnsRpcResponseData to dump.");
+			return;
+		}
+
+		// Dump the FolderColumnsRpcResponseData.
+		GwtLogHelper.debug(m_logger, "...dumpFolderColumnsRpcResponseData():"        );
+		if (null != binder) {
+			GwtLogHelper.debug(m_logger, "......Binder is folder:  " + (binder instanceof Folder));
+			GwtLogHelper.debug(m_logger, "......Binder ID:         " +  binder.getId()           );
+			GwtLogHelper.debug(m_logger, "......Binder Title:      " +  binder.getTitle()        );
+		}
+		else {
+			GwtLogHelper.debug(m_logger, "......Binder is null.");
+		}
+		GwtLogHelper.debug(m_logger, "......"                                        );
+		GwtLogHelper.debug(m_logger, "......Folder admin:  " + fcData.isFolderAdmin());
+		dumpFolderColumns("......List:  ",     "......", fcData.getFolderColumns()   );
+		dumpFolderColumns("......List all:  ", "......", fcData.getFolderColumnsAll());
+	}
+	
+	/**
+	 * Dumps the contents of a FolderRowsRpcResponseData object.
+	 * 
+	 * @param binder
+	 * @param frData
+	 */
+	public static void dumpFolderRowsRpcResponseData(Log logger, Binder binder, FolderRowsRpcResponseData frData) {
+		// If debug tracing isn't enabled...
+		if (!(GwtLogHelper.isDebugEnabled(logger))) {
+			// ...bail.
+			return;
+		}
+
+		// If we weren't given a FolderRowsRpcResponseData to dump...
+		if (null == frData) {
+			// ...trace that fact and bail.
+			GwtLogHelper.debug(logger, "...dumpFolderRowsRpcResponseData( null ):  No FolderRowsRpcResponseData to dump.");
+			return;
+		}
+		
+		// Dump the contents of the FolderRowsRpcResponseData.
+		GwtLogHelper.debug(logger, "...dumpFolderRowsRpcResponseData():");
+		if (null != binder) {
+			GwtLogHelper.debug(logger, "......Binder is folder:  " + (binder instanceof Folder));
+			GwtLogHelper.debug(logger, "......Binder ID:         " +  binder.getId()           );
+			GwtLogHelper.debug(logger, "......Binder Title:      " +  binder.getTitle()        );
+		}
+		else {
+			GwtLogHelper.debug(logger, "......Binder is null.");
+		}
+		GwtLogHelper.debug(logger, "......");
+		GwtLogHelper.debug(logger, "......Start offset:      " + frData.getStartOffset()                                );
+		GwtLogHelper.debug(logger, "......Total rows:        " + frData.getTotalRows()                                  );
+		GwtLogHelper.debug(logger, "......Total count type:  " + frData.getTotalCountType().name()                      );
+		GwtLogHelper.debug(logger, "......Contributor IDs:   " + GwtLogHelper.dumpLLAsString(frData.getContributorIds()));
+		
+		List<FolderRow> frList = frData.getFolderRows();
+		if ((null == frList) || frList.isEmpty()) {
+			GwtLogHelper.debug(logger, "......No Row Data");
+		}
+		else {
+			GwtLogHelper.debug(logger, "......Row data:");
+			int rowIndex = 0;
+			for (FolderRow fr:  frList) {
+				GwtLogHelper.debug(logger, ".........Index:               " + rowIndex                                      );
+				GwtLogHelper.debug(logger, "............Entity ID:        " + GwtLogHelper.dumpEIDAsString(fr.getEntityId()));
+				GwtLogHelper.debug(logger, "............Family:           " + GwtLogHelper.dumpString(fr.getRowFamily())    );
+				GwtLogHelper.debug(logger, "............Is Home dir:      " + fr.isHomeDir()                                );
+				GwtLogHelper.debug(logger, "............Is My Files dir:  " + fr.isMyFilesDir()                             );
+				GwtLogHelper.debug(logger, "............Is pinned:        " + fr.isPinned()                                 );
+				
+				GwtLogHelper.dumpMapStringStringToDebug(            logger, "............String map:",               "...............", fr.getRowStringsMap()            );
+				GwtLogHelper.dumpMapStringCommentsInfoTooDebug(     logger, "............CommentsInfo map:",         "...............", fr.getRowCommentsMap()           );
+				GwtLogHelper.dumpMapStringDescriptionHtmlToDebug(   logger, "............DescriptionHtml map:",      "...............", fr.getRowDescriptionHtmlMap()    );
+				GwtLogHelper.dumpMapStringEmailAddressInfoToDebug(  logger, "............EmailAddressInfo map:",     "...............", fr.getRowEmailAddressMap()       );
+				GwtLogHelper.dumpMapStringEntryEventInfoToDebug(    logger, "............EntryEventInfo map:",       "...............", fr.getRowEntryEventMap()         );
+				GwtLogHelper.dumpMapStringEntryLinkInfoToDebug(     logger, "............EntryLinkInfo map:",        "...............", fr.getRowEntryLinkMap()          );
+				GwtLogHelper.dumpMapStringEntryTitleInfoToDebug(    logger, "............EntryTitleInfo map:",       "...............", fr.getRowEntryTitlesMap()        );
+				GwtLogHelper.dumpMapStringGuestInfoToDebug(         logger, "............GuestInfo map:",            "...............", fr.getRowGuestsMap()             );
+				GwtLogHelper.dumpMapStringListAssignmentInfoToDebug(logger, "............List<AssignmentInfo> map:", "...............", fr.getRowAssigneeInfoListsMap()  );
+				GwtLogHelper.dumpMapStringMobileDevicesInfoToDebug( logger, "............MobileDevicesInfo map:",    "...............", fr.getRowMobileDevicesMap()      );
+				GwtLogHelper.dumpMapStringPrincipalInfoToDebug(     logger, "............PrincipalInfo map:",        "...............", fr.getRowPrincipalsMap()         );
+				GwtLogHelper.dumpMapStringPrincipalInfoIdToDebug(   logger, "............PrincipalInfoId map:",      "...............", fr.getRowPrincipalIdsMap()       );
+				GwtLogHelper.dumpMapStringListTaskFolderInfoToDebug(logger, "............List<TaskFolderInfo> map:", "...............", fr.getRowTaskFolderInfoListsMap());
+				GwtLogHelper.dumpMapStringViewFileInfoToDebug(      logger, "............ViewFileInfo map:",         "...............", fr.getRowViewFilesMap()          );
+				GwtLogHelper.dumpMapStringPrincipalAdminTypeToDebug(logger, "............PrincipalAdminType map:",   "...............", fr.getRowPrincipalAdminTypesMap());
+				GwtLogHelper.dumpMobileDeviceToDebug(               logger, "............MobileDevice:",             "...............", fr.getServerMobileDevice()       );
+				GwtLogHelper.dumpMapStringBooleanToDebug(           logger, "............OverdueDates map:",         "...............", fr.getRowOverdueDates()          );
+				GwtLogHelper.dumpMapStringBooleanToDebug(           logger, "............WipesScheduled map:",       "...............", fr.getRowWipesScheduled()        );
+
+				rowIndex += 1;
+			}
+		}
+	}
+
+	private static void dumpFolderRowsRpcResponseData(Binder binder, FolderRowsRpcResponseData frData) {
+		// Always use the initial form of the method.
+		dumpFolderRowsRpcResponseData(m_logger, binder, frData);
+	}
+	
+	/*
 	 * Dumps the contents of a SelectedUsersDetails object.
 	 */
 	private static void dumpSelectedUsersDetails(SelectedUsersDetails sd) {
@@ -2214,7 +2363,7 @@ public class GwtViewHelper {
 		GwtLogHelper.debug(m_logger, "......Workspace Count:                          " + sd.getWorkspaceCount()                 );
 		GwtLogHelper.debug(m_logger, "......Total     Count:                          " + sd.getTotalCount()                     );
 	}
-	
+
 	/*
 	 * Dumps the contents of a ViewInfo object.
 	 */
@@ -4577,6 +4726,14 @@ public class GwtViewHelper {
 			// FolderColumnsRpcResponseData and return that. 
 			FolderColumnsRpcResponseData reply = new FolderColumnsRpcResponseData(fcList, fcListAll);
 			reply.setFolderAdmin(bs.getBinderModule().testAccess(binder, BinderOperation.manageConfiguration));
+			
+			// If we get here, reply refers to a
+			// FolderRowsRpcResponseData containing the rows from the
+			// requested binder.  Return it.
+			if (GwtLogHelper.isDebugEnabled(m_logger)) {
+				dumpFolderColumnsRpcResponseData(binder, reply);
+			}
+				
 			return reply;
 		}
 		
@@ -5373,7 +5530,7 @@ public class GwtViewHelper {
 			// Is this a binder the user can view?
 			if (!(GwtServerHelper.canUserViewBinder(bs, folderInfo))) {
 				// No!  Return an empty set of rows.
-				return buildEmptyFolderRows();
+				return buildEmptyFolderRows(null);
 			}
 			
 			// Access the binder/folder.
@@ -5389,7 +5546,7 @@ public class GwtViewHelper {
 				String rdn = binder.getResourceDriverName();
 				if (!(MiscUtil.hasString(rdn))) {
 					// ...we don't read anything.
-					return buildEmptyFolderRows();
+					return buildEmptyFolderRows(binder);
 				}
 			}
 			
@@ -5445,7 +5602,7 @@ public class GwtViewHelper {
 						((!enabled)    && (!disabled)) ||
 						((!siteAdmins) && (!nonSiteAdmins))) {
 						// ...simply return an empty list.
-						return buildEmptyFolderRows();
+						return buildEmptyFolderRows(binder);
 						
 					}
 					
@@ -5587,6 +5744,9 @@ public class GwtViewHelper {
 								ae.getUrl(),
 								ae.getUuid());
 							FolderRowsRpcResponseData reply = new FolderRowsRpcResponseData(cfAuth);
+							if (GwtLogHelper.isDebugEnabled(m_logger)) {
+								dumpFolderRowsRpcResponseData(binder, reply);
+							}
 							return reply;
 						}
 						
@@ -6261,13 +6421,22 @@ public class GwtViewHelper {
 			
 			// Finally, return the List<FolderRow> wrapped in a
 			// FolderRowsRpcResponseData.
-			return
+			FolderRowsRpcResponseData reply =
 				new FolderRowsRpcResponseData(
 					folderRows,
 					start,
 					totalRecords,
 					(totalIsApproximate ? TotalCountType.APPROXIMATE : TotalCountType.EXACT),
 					contributorIds);
+			
+			// If we get here, reply refers to a
+			// FolderRowsRpcResponseData containing the rows from the
+			// requested binder.  Return it.
+			if (GwtLogHelper.isDebugEnabled(m_logger)) {
+				dumpFolderRowsRpcResponseData(binder, reply);
+			}
+			
+			return reply;
 		}
 		
 		catch (Exception e) {

@@ -308,6 +308,10 @@
 		.vibe-personalWorkspacesFlowPanel {}
 	/* ...End:  Personal Workspaces view styles. */
 
+	/* ...Start:  Photo Album folder view styles. */
+		.vibe-photoAlbumFolderView {}
+	/* ...End:  Photo Album folder view styles. */
+	
 	/* ...Start:  Survey folder view styles. */
 		.vibe-surveyFolderDataTable {}
 		.vibe-surveyFolderFlowPanel {}

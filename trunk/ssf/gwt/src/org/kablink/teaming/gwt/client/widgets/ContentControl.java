@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.binderviews.MilestoneFolderView;
 import org.kablink.teaming.gwt.client.binderviews.MirroredFileFolderView;
 import org.kablink.teaming.gwt.client.binderviews.NetFoldersWSView;
 import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspacesView;
+import org.kablink.teaming.gwt.client.binderviews.PhotoAlbumFolderView;
 import org.kablink.teaming.gwt.client.binderviews.ProjectManagementWSView;
 import org.kablink.teaming.gwt.client.binderviews.SurveyFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
@@ -101,6 +102,7 @@ import org.kablink.teaming.gwt.client.event.ShowMilestoneFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowMirroredFileFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowNetFoldersWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowPersonalWorkspacesEvent;
+import org.kablink.teaming.gwt.client.event.ShowPhotoAlbumFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowProjectManagementWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowSurveyFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
@@ -179,6 +181,7 @@ public class ContentControl extends Composite
 		ShowMirroredFileFolderEvent.Handler,
 		ShowNetFoldersWSEvent.Handler,
 		ShowPersonalWorkspacesEvent.Handler,
+		ShowPhotoAlbumFolderEvent.Handler,
 		ShowProjectManagementWSEvent.Handler,
 		ShowSurveyFolderEvent.Handler,
 		ShowTaskFolderEvent.Handler,
@@ -234,6 +237,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_MIRRORED_FILE_FOLDER,
 		TeamingEvents.SHOW_NET_FOLDERS_WORKSPACE,
 		TeamingEvents.SHOW_PERSONAL_WORKSPACES,
+		TeamingEvents.SHOW_PHOTO_ALBUM_FOLDER,
 		TeamingEvents.SHOW_PROJECT_MANAGEMENT_WORKSPACE,
 		TeamingEvents.SHOW_SURVEY_FOLDER,
 		TeamingEvents.SHOW_TASK_FOLDER,
@@ -1002,6 +1006,14 @@ public class ContentControl extends Composite
 							
 	
 						case PHOTOALBUM:
+							boolean showGwtPA = PhotoAlbumFolderView.SHOW_GWT_PHOTO_ALBUM;	//! DRF (20150318)
+							if (showGwtPA) {
+								GwtTeaming.fireEvent( new ShowPhotoAlbumFolderEvent( bi, viewReady ) );
+								m_viewMode = ViewMode.GWT_CONTENT_VIEW;
+							}
+							break;
+	
+							
 						case WIKI:
 							// These aren't handled!  Let things take
 							// the default flow.
@@ -2273,6 +2285,38 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		} );
 	}// end onShowPersonalWorkspaces()
+	
+	/**
+	 * Handles ShowPhotoAlbumFolderEvent's received by this class.
+	 * 
+	 * Implements the ShowPhotoAlbumFolderEvent.Handler.onShowPhotoAlbumFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowPhotoAlbumFolder( final ShowPhotoAlbumFolderEvent event )
+	{
+		// Create a PhotoAlbumFolderView widget for the selected
+		// binder.
+		PhotoAlbumFolderView.createAsync(
+				event.getBinderInfo(),
+				event.getViewReady(),
+				new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( ViewBase tfView )
+			{
+				tfView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( tfView );
+			}// end onSuccess()
+		});
+	}// end onShowPhotoAlbumFolder()
 	
 	/**
 	 * Handles ShowProjectManagementWSEvent's received by this class.
