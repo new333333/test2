@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.server;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -197,6 +196,7 @@ import org.kablink.teaming.gwt.server.util.GwtLogHelper;
 import org.kablink.teaming.gwt.server.util.GwtMobileDeviceHelper;
 import org.kablink.teaming.gwt.server.util.GwtNetFolderHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
+import org.kablink.teaming.gwt.server.util.GwtPhotoAlbumHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtReportsHelper;
 import org.kablink.teaming.gwt.server.util.GwtSearchHelper;
@@ -2406,6 +2406,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			prefs = GwtServerHelper.getPersonalPreferences( this, req );
 			response = new VibeRpcResponse( prefs );
+			return response;
+		}
+		
+		case GET_PHOTO_ALBUM_DISPLAY_DATA:
+		{
+			GetPhotoAlbumDisplayDataCmd gpaddCmd = ((GetPhotoAlbumDisplayDataCmd) cmd);
+			PhotoAlbumDisplayDataRpcResponseData responseData = GwtPhotoAlbumHelper.getPhotoAlbumDisplayData( req, this, gpaddCmd.getBinderId() );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		

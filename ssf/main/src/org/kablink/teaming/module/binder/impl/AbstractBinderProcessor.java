@@ -1870,7 +1870,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        		searchFilter.addBinderParentIds(binderIds);
        	}
        	
-       	if (binder != null) {
+       	else if (binder != null) {
             getBinders_getSearchDocument(binder, searchFilter);
         }
        	
