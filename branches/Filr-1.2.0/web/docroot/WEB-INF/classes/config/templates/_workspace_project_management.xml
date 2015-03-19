@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="8" internalId="402883c1129b1f8101129b28bc620005">
+  <attribute name="templateTitle" type="string">__template_project_management_workspace</attribute>
+  <attribute name="templateDescription" type="description">__template_project_management_workspace_description</attribute>
+  <attribute name="title" type="string">__template_project_management_workspace</attribute>
+  <attribute name="description" type="description"></attribute>
+  <attribute name="iconName" type="string">/icons/workspace_project_manage.png</attribute>
+  <attribute name="name" type="string">_workspace_project_management</attribute>
+  <property name="library">false</property>
+  <property name="mirrored">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="_projectWorkspace" databaseId="402881831317fb620113180363870017"/>
+  <dashboard>
+    <property name="nextComponentId">1</property>
+    <property name="showComponents">true</property>
+    <property name="version">1</property>
+    <property name="title"/>
+    <property name="includeBinderTitle">false</property>
+    <layout name="wide_top">
+      <property name="scope">binder</property>
+      <property name="visible">true</property>
+      <property name="id">binder_0</property>
+    </layout>
+    <component name="binder_0">
+      <property name="displayStyle">border</property>
+      <property name="title">__tasks</property>
+      <data>
+        <property name="resultsCount">5</property>
+        <property name="chooseViewType">task</property>
+        <property name="__savedSearchQuery">&lt;?xml version="1.0" encoding="UTF-8"?&gt; &lt;searchFilter&gt;&lt;filterName&gt;&lt;/filterName&gt;&lt;filterTerms filterTermsAnd="true"&gt;&lt;filterTerms filterTermsAnd="false" listType="userGroupTeam"&gt;&lt;filterTerm filterType="entry" filterElementValueType="user_list" filterElementName="assignment"/&gt;&lt;filterTerm filterType="entry" filterElementValueType="group_list" filterElementName="assignment_groups"/&gt;&lt;filterTerm filterType="entry" filterElementValueType="team_list" filterElementName="assignment_teams"/&gt;&lt;/filterTerms&gt;&lt;/filterTerms&gt;&lt;/searchFilter&gt;</property>
+      </data>
+      <property name="roles"></property>
+      <property name="name">task</property>
+    </component>
+  </dashboard>
+  <template type="5">
+    <attribute name="templateTitle" type="string">__template_folder</attribute>
+    <attribute name="templateDescription" type="description">__template_folder_description</attribute>
+    <attribute name="title" type="string">__template_folder</attribute>
+    <attribute name="description" type="description"></attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_discussion.png</attribute>
+    <property name="library">false</property>
+    <property name="mirrored">false</property>
+    <property name="uniqueTitle">false</property>
+    <property name="inheritFunctionMembership">true</property>
+    <property name="inheritDefinitions">false</property>
+    <property name="inheritTeamMembers">true</property>
+    <definition name="_discussionFolderList" internalId="402883b90cc53079010cc539bf260001" databaseId="402883b90cc53079010cc539bf260001"/>
+    <definition name="_discussionFolderTable" databaseId="4028839f11fb20390111fb43a3840001"/>
+    <definition name="_blogFolder" internalId="402883c6115753d8011157619e35000b" databaseId="402883c6115753d8011157619e35000b"/>
+    <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>
+    <definition name="_wikiFolder" databaseId="402883c6115753d8011157619e350007"/>
+    <definition name="_discussionEntry" internalId="402883b90cc53079010cc539bf260002" databaseId="402883b90cc53079010cc539bf260002"/>
+  </template>
+  <template type="5">
+    <attribute name="templateTitle" type="string">__template_folder_task</attribute>
+    <attribute name="templateDescription" type="description">__template_folder_task_description</attribute>
+    <attribute name="title" type="string">__template_folder_task</attribute>
+    <attribute name="description" type="description"></attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_task.png</attribute>
+    <property name="library">false</property>
+    <property name="mirrored">false</property>
+    <property name="uniqueTitle">false</property>
+    <property name="inheritFunctionMembership">true</property>
+    <property name="inheritDefinitions">false</property>
+    <property name="inheritTeamMembers">true</property>
+    <definition name="_taskFolder" databaseId="402883c1129b1f8101129b28bc620003"/>
+    <definition name="_taskEntry" databaseId="402883c1129b1f8101129b28bbe50002"/>
+  </template>
+  <template type="5">
+    <attribute name="templateTitle" type="string">__template_folder_library</attribute>
+    <attribute name="templateDescription" type="description">__template_folder_library_description</attribute>
+    <attribute name="title" type="string">__template_folder_library</attribute>
+    <attribute name="description" type="description"></attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_file_library.png</attribute>
+    <property name="library">true</property>
+    <property name="mirrored">false</property>
+    <property name="uniqueTitle">false</property>
+    <property name="inheritFunctionMembership">true</property>
+    <property name="inheritDefinitions">false</property>
+    <property name="inheritTeamMembers">true</property>
+    <definition name="_libraryFolder" databaseId="402883c6115753d8011157619e350009"/>
+    <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>
+    <definition name="_libraryEntry" databaseId="402883c6115753d8011157829367000f"/>
+  </template>
+  <template type="5">
+    <attribute name="templateTitle" type="string">__template_folder_calendar</attribute>
+    <attribute name="templateDescription" type="description">__template_folder_calendar_description</attribute>
+    <attribute name="title" type="string">__template_folder_calendar</attribute>
+    <attribute name="description" type="description"></attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_calendar.png</attribute>
+    <property name="library">false</property>
+    <property name="mirrored">false</property>
+    <property name="uniqueTitle">false</property>
+    <property name="inheritFunctionMembership">true</property>
+    <property name="inheritDefinitions">false</property>
+    <property name="inheritTeamMembers">true</property>
+    <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>
+    <definition name="_blogFolder" internalId="402883c6115753d8011157619e35000b" databaseId="402883c6115753d8011157619e35000b"/>
+    <definition name="_discussionFolderList" internalId="402883b90cc53079010cc539bf260001" databaseId="402883b90cc53079010cc539bf260001"/>
+    <definition name="_discussionFolderTable" databaseId="4028839f11fb20390111fb43a3840001"/>
+    <definition name="_wikiFolder" databaseId="402883c6115753d8011157619e350007"/>
+    <definition name="_calendarEntry" databaseId="402883c6115753d80111577dbe29000d"/>
+  </template>
+  <template type="5">
+    <attribute name="templateTitle" type="string">__template_folder_milestone</attribute>
+    <attribute name="templateDescription" type="description">__template_folder_milestone_description</attribute>
+    <attribute name="title" type="string">__template_folder_milestone</attribute>
+    <attribute name="description" type="description"></attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_milestone.png</attribute>
+    <property name="library">false</property>
+    <property name="mirrored">false</property>
+    <property name="uniqueTitle">true</property>
+    <property name="inheritFunctionMembership">true</property>
+    <property name="inheritDefinitions">false</property>
+    <property name="inheritTeamMembers">true</property>
+    <definition name="_milestoneFolder" databaseId="40288182131a1e4501131a3ae70a0049"/>
+    <definition name="_milestoneEntry" databaseId="40288182131a1e4501131a2fe53a0048"/>
+  </template>
+</template>

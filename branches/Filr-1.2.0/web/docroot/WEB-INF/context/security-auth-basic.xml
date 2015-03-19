@@ -1,0 +1,41 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <!-- ============================== Base beans =================================== -->
+	
+    <import resource="security-auth-common.xml"/>
+
+    <!-- ============================== Basic authentication ============================ -->
+    
+    <!-- Note: This option is reserved only for use in conjunction with iChain/NAM or similar 
+         authentication proxy where the proxy handles all first-line authentication and 
+         subsequently sends login token in the form of Basic Auth header to the Teaming server. 
+         In all other situations, the default authentication option based on form-based login
+         must be used instead. -->
+         
+    <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
+		<constructor-arg value="/bitbucket"/>
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/s/portalLogout"/>
+    </bean>
+
+    <security:http realm="Novell" authentication-manager-ref="_authenticationManager">
+		<security:custom-filter position="LOGOUT_FILTER" ref="_logoutFilter"/>
+        <security:session-management session-fixation-protection="newSession" />
+        <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
+        <security:anonymous enabled="false" />        
+        <security:http-basic/>
+    </security:http>
+
+</beans>
