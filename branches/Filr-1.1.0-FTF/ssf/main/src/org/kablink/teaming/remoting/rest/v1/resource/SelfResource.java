@@ -80,6 +80,7 @@ import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.api.ApiErrorCode;
@@ -170,8 +171,8 @@ public class SelfResource extends AbstractFileResource {
         ZoneConfig zoneConfig = ResourceUtil.buildZoneConfig(
                 getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId()),
                 null,
-                getProfileModule().getPrincipalMobileAppsConfig(getLoggedInUserId()),
-                getProfileModule().getPrincipalDesktopAppsConfig(getLoggedInUserId()),
+                AdminHelper.getEffectiveMobileAppsConfigOverride(this, getLoggedInUser()),
+                AdminHelper.getEffectiveDesktopAppsConfigOverride(this, getLoggedInUser()),
                 this);
 
         user.setDesktopAppConfig(zoneConfig.getDesktopAppConfig());
