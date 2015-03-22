@@ -40,6 +40,23 @@ import org.kablink.teaming.util.NetworkUtil;
 import org.kablink.util.StringUtil;
 
 public class IndexNode extends ZonedObject {
+	
+	public enum DeferredUpdateLogApplyingState {
+		/*
+		 * When in this state, application threads can continue to add new deferred update
+		 * logs to the table while the system is applying existing deferred update logs
+		 * to the search index at the same time.
+		 */
+		shared,
+		/*
+		 * When in this state, application threads can not add new deferred update logs
+		 * to the table while the system is applying existing deferred update logs to 
+		 * the search index at the same time. Instead, application threads will have to
+		 * poll the system periodically until the state changes before they can proceed.
+		 * The end effect is that the application threads will "appear" to block.
+		 */
+		exclusive
+	}
 
 	/**
 	 * End users are allowed both read and write access to the node.
@@ -79,7 +96,12 @@ public class IndexNode extends ZonedObject {
 	
 	// Network address of the node on which application of deferred update logs is currently in progress.
 	// If this field is non-null, it is an indication that sync operation is currently in progress.
+	// Note: This field is "derived" from the persistent property "syncingIpv4Address".
 	private String deferredUpdateLogApplyingIpv4Address; // column="syncingIpv4Address"
+	// A single character denoting the state of the task executing application 
+	// of deferred update logs currently in progress.
+	// Note: This field is "derived" from the persistent property "syncingIpv4Address".
+	private DeferredUpdateLogApplyingState deferredUpdateLogApplyingState; // column="syncingIpv4Address"
 	
 	// The following two fields are here for convenience only, and not persistent.
 	private String title;
@@ -222,19 +244,45 @@ public class IndexNode extends ZonedObject {
 	public void setReindexingIpv4Address(String reindexingIpv4Address) {
 		this.reindexingIpv4Address = reindexingIpv4Address;
 	}
+	
+	// For use by Hibernate only
+	private void setSyncingIpv4Address(String syncingIpv4Address) {
+		if(syncingIpv4Address != null && !syncingIpv4Address.equals("")) {
+			String state = syncingIpv4Address.substring(0, 1);
+			if(state.equals("s"))
+				this.deferredUpdateLogApplyingState = DeferredUpdateLogApplyingState.shared;
+			else if(state.equals("e"))
+				this.deferredUpdateLogApplyingState = DeferredUpdateLogApplyingState.exclusive;
+			else
+				this.deferredUpdateLogApplyingState = null;
+			this.deferredUpdateLogApplyingIpv4Address = syncingIpv4Address.substring(1);
+		}
+	}
+
+	// For use by Hibernate only
+	private String getSyncingIpv4Address() {
+		if(deferredUpdateLogApplyingIpv4Address != null && deferredUpdateLogApplyingState != null)
+			return deferredUpdateLogApplyingState.name().substring(0, 1) + deferredUpdateLogApplyingIpv4Address;
+		else
+			return null;
+	}
 
 	public String getDeferredUpdateLogApplyingIpv4Address() {
 		return deferredUpdateLogApplyingIpv4Address;
 	}
 
 	public void setDeferredUpdateLogApplyingIpv4Address(
-			String deferredUpdateLogApplicationInProgressIpv4Address) {
-		this.deferredUpdateLogApplyingIpv4Address = deferredUpdateLogApplicationInProgressIpv4Address;
+			String deferredUpdateLogApplyingIpv4Address) {
+		this.deferredUpdateLogApplyingIpv4Address = deferredUpdateLogApplyingIpv4Address;
 	}
 
-	// Convenience method
-	public boolean isDeferredUpdateLogApplicationInProgress() {
-		return (deferredUpdateLogApplyingIpv4Address != null);
+	public DeferredUpdateLogApplyingState getDeferredUpdateLogApplyingState() {
+		return deferredUpdateLogApplyingState;
+	}
+
+	public void setDeferredUpdateLogApplyingState(
+			DeferredUpdateLogApplyingState deferredUpdateLogApplyingState) {
+		this.deferredUpdateLogApplyingState = deferredUpdateLogApplyingState;
 	}
 	
 	public static class Name implements Serializable {
