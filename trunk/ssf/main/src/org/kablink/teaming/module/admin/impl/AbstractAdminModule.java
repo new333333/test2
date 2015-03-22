@@ -289,6 +289,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		cleanupReindexingStatus();
+		cleanupDeferredUpdateLogApplyingStatus();
 	}
 	
 	private void cleanupReindexingStatus() {
@@ -299,10 +300,40 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		final List<IndexNode> nodes = getCoreDao().loadObjects(IndexNode.class, filter, null);
 		if(nodes.size() > 0) {
 			for(IndexNode node:nodes) {
-				logger.info("Clearing reindexing status on index node with id '" + node.getId() + "' from node '"  + node.getReindexingIpv4Address() + "' at startup");
+				logger.info("Clearing reindexing status for index node with id '" + node.getId() + "' from appserver node with address '"  + node.getReindexingIpv4Address() + "' at startup");
 				node.setReindexingStartDate(null);
 				node.setReindexingIpv4Address(null);
 				node.setReindexingEndDate(null);
+    			getCoreDao().updateNewSessionWithoutUpdate(node);
+			}
+		}
+	}
+	
+	private void cleanupDeferredUpdateLogApplyingStatus() {
+		FilterControls filter = new FilterControls();
+		String value = "s" + NetworkUtil.getLocalHostIPv4Address();
+		filter.add("syncingIpv4Address", value);
+		filter.setZoneCheck(false);
+		final List<IndexNode> nodes = getCoreDao().loadObjects(IndexNode.class, filter, null);
+		if(nodes.size() > 0) {
+			for(IndexNode node:nodes) {
+				logger.info("Clearing deferred update log applying status [" + value + "] for index node '" + node.getId() + "' at startup");
+				node.setDeferredUpdateLogApplyingIpv4Address(null);
+				node.setDeferredUpdateLogApplyingState(null);
+    			getCoreDao().updateNewSessionWithoutUpdate(node);
+			}
+		}
+		
+		FilterControls filter2 = new FilterControls();
+		String value2 = "e" + NetworkUtil.getLocalHostIPv4Address();
+		filter2.add("syncingIpv4Address", value2);
+		filter2.setZoneCheck(false);
+		final List<IndexNode> nodes2 = getCoreDao().loadObjects(IndexNode.class, filter2, null);
+		if(nodes2.size() > 0) {
+			for(IndexNode node:nodes2) {
+				logger.info("Clearing deferred update log applying status [" + value2 + "] for index node '" + node.getId() + "' at startup");
+				node.setDeferredUpdateLogApplyingIpv4Address(null);
+				node.setDeferredUpdateLogApplyingState(null);
     			getCoreDao().updateNewSessionWithoutUpdate(node);
 			}
 		}
