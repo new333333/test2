@@ -1,4 +1,9 @@
 <module rename-to="gwtteaming">
+	<!-- All our images live in our 'public' path.  We need to -->
+	<!-- specify that in our module to keep the GWT v2.7.0     -->
+	<!-- compiler happy.                                       -->
+	<resource path="public" />
+	
 	<!-- Inherit the core Web Toolkit stuff. -->
 	<inherits name='com.google.gwt.user.User'        />
 	<inherits name="com.google.gwt.i18n.I18N"        />
