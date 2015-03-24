@@ -239,6 +239,11 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
     }
 
     @Override
+    public ResourceDriverConfig getResourceDriverConfig(String name) {
+        return getResourceDriverManager().getDriverConfig(name);
+    }
+
+    @Override
 	public List<ResourceDriverConfig> getAllResourceDriverConfigs() {
 		return getResourceDriverManager().getAllResourceDriverConfigs();
 	}

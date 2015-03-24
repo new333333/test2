@@ -82,13 +82,23 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		famt (5),
 		cloud_folders (6),
 		share_point_2010 (7),
-		share_point_2013 (8);
+		share_point_2013 (8, true);
 		int dtValue;
+        boolean approximateFileSizes = false;
+		DriverType(int dtValue, boolean approximateFileSizes) {
+			this.dtValue = dtValue;
+            this.approximateFileSizes = approximateFileSizes;
+		}
 		DriverType(int dtValue) {
 			this.dtValue = dtValue;
 		}
 		public int getValue() {return dtValue;}
-		public static DriverType valueOf(int type) {
+
+        public boolean isApproximateFileSizes() {
+            return approximateFileSizes;
+        }
+
+        public static DriverType valueOf(int type) {
 			switch (type) {
 			case 0: return DriverType.filesystem;
 			case 1: return DriverType.webdav;
