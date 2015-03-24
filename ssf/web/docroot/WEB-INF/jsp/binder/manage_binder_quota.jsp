@@ -122,7 +122,7 @@ function ss_checkIfQuotaValid(s) {
         <span class="ss_normalprint ss_bold">
           <fmt:setLocale value="${ssUser.locale}"/>
 		  <fmt:formatNumber type="number" value="${(ss_binderQuota.diskSpaceUsed)/1048576}"
-		  maxFractionDigits="2"/><ssf:nlt tag="file.sizeMB"/>
+		  maxFractionDigits="2"/>&nbsp;<ssf:nlt tag="file.sizeMB"/>
 		</span>
       </div>
 
@@ -131,7 +131,7 @@ function ss_checkIfQuotaValid(s) {
         <span class="ss_normalprint ss_bold">
           <fmt:setLocale value="${ssUser.locale}"/>
 		  <fmt:formatNumber type="number" value="${(ss_binderQuota.diskSpaceUsedCumulative)/1048576}"
-		  maxFractionDigits="2"/><ssf:nlt tag="file.sizeMB"/>
+		  maxFractionDigits="2"/>&nbsp;<ssf:nlt tag="file.sizeMB"/>
 		</span>
       </div>
 
@@ -143,7 +143,7 @@ function ss_checkIfQuotaValid(s) {
           <c:if test="${!empty ss_binderMinQuotaParentBinder}">
           <fmt:setLocale value="${ssUser.locale}"/>
 		  <fmt:formatNumber value="${(ss_binderMinQuotaParentBinder + 524287)/1048576}"
-		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/></c:if>
+		  maxFractionDigits="0"/>&nbsp;<ssf:nlt tag="file.sizeMB"/></c:if>
         </span>
       </div>
 
@@ -158,7 +158,7 @@ function ss_checkIfQuotaValid(s) {
 				  maxFractionDigits="0"/></c:set>
 			  <fmt:setLocale value="${ssUser.locale}"/>
 		  	  <fmt:formatNumber value="${(ss_binderQuota.diskQuota + 524287)/1048576}"
-		  	    maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/>
+		  	    maxFractionDigits="0"/>&nbsp;<ssf:nlt tag="file.sizeMB"/>
 		  </c:if>
         </span>
       </div>
