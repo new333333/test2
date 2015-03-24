@@ -362,22 +362,26 @@ function <%= wsTreeName %>_showId(id, obj, action) {
   <span><ssf:nlt tag="administration.search.index.optimize2" /></span>
 </div>
 
-<table class="ss_style margintop3" border="0" cellspacing="0" cellpadding="3">
+<table class="ss_style margintop3" border="0" cellspacing="0" cellpadding="3" width="100%">
 	<tr>
 		<td>
 			<input type="checkbox" id="runnow" name="runnow"
-			<c:if test="${runnow}"> checked="checked" </c:if> /> <label
-			for="runnow"><span class="ss_labelRight ss_normal"><ssf:nlt
-			tag="index.optimization.schedule.run.now" /></span><br />
-
-		</label></td>
+			<c:if test="${runnow}"> checked="checked" </c:if> /> 
+		</td>
+		<td>
+		  <label for="runnow"><span class="ss_labelRight ss_normal"><ssf:nlt
+			tag="index.optimization.schedule.run.now" /></span><br /> </label>
+		</td>
 	</tr>
 	<tr>
-		<td><input type="checkbox" id="enabled" name="enabled"
-			<c:if test="${ssScheduleInfo.enabled}">checked</c:if> /> <label
-			for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt
-			tag="index.optimization.schedule.enable" /></span><br />
-		</label></td>
+		<td>
+		  <input type="checkbox" id="enabled" name="enabled"
+			<c:if test="${ssScheduleInfo.enabled}">checked</c:if> /> 
+		</td>
+		<td>
+		  <label for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt
+			tag="index.optimization.schedule.enable" /></span><br /></label>
+		</td>
 	</tr>
 </table>
 
