@@ -2403,6 +2403,13 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
         for (NetFolderBrief binder : results.getResults()) {
             binder.setParentBinder(new ParentBinder(ObjectKeys.NET_FOLDERS_ID, "/self/net_folders"));
+            if (binder.getNetFolderServer()!=null) {
+                ResourceDriverConfig config = getResourceDriverModule().getResourceDriverConfig(binder.getNetFolderServer());
+                if (config!=null) {
+                    ResourceDriverConfig.DriverType type = config.getDriverType();
+                    binder.setApproximateFileSizes(type.isApproximateFileSizes());
+                }
+            }
         }
         return results;
     }

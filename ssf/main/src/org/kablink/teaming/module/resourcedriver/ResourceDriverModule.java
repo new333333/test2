@@ -88,6 +88,7 @@ public interface ResourceDriverModule {
    	public List<ResourceDriverConfig> getAllCloudFolderResourceDriverConfigs();
 
     public ResourceDriverConfig getResourceDriverConfig(Long id);
+    public ResourceDriverConfig getResourceDriverConfig(String name);
     /**
      * Create a <code>ResourceDriver</code> 
      * 
