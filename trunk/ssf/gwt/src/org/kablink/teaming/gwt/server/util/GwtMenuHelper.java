@@ -42,11 +42,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.portlet.PortletURL;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -1920,6 +1920,7 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for the root team workspace view.
 	 */
+	@SuppressWarnings("unchecked")
 	private static void constructEntryRootWSItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, WorkspaceType wt) {
 		// If the user can add entries...
 		BinderModule bm = bs.getBinderModule();
@@ -2226,13 +2227,15 @@ public class GwtMenuHelper {
 
 		// Define some locals to work with.
 		AdaptedPortletURL url;
-		AdminModule  am = bs.getAdminModule();
-		BinderModule bm = bs.getBinderModule();
-		boolean isFolder            = (EntityType.folder    == binderType);
-		boolean isProfiles          = (EntityType.profiles  == binderType);
-		boolean isWorkspace         = (EntityType.workspace == binderType);
-		boolean isWorkspaceReserved = (isWorkspace && binder.isReserved());
-		boolean isWorkspaceRoot     = (isWorkspace && binder.isRoot());
+		AdminModule  am   = bs.getAdminModule();
+		BinderModule bm   = bs.getBinderModule();
+		User         user = GwtServerHelper.getCurrentUser();
+		boolean isFolder               = (EntityType.folder    == binderType);
+		boolean isProfiles             = (EntityType.profiles  == binderType);
+		boolean isWorkspace            = (EntityType.workspace == binderType);
+		boolean isWorkspaceReserved    = (isWorkspace && binder.isReserved());
+		boolean isWorkspaceRoot        = (isWorkspace && binder.isRoot());
+		boolean isVisibleWithoutShares = GwtShareHelper.visibleWithoutShares(bs, user, binder);
 		Long binderId = binder.getId();
 		String binderIdS = String.valueOf(binderId);
 		ToolbarItem actionTBI;
@@ -2296,7 +2299,6 @@ public class GwtMenuHelper {
 		
 		// Is the binder a folder or workspace other than a reserved
 		// workspace?
-		User user = GwtServerHelper.getCurrentUser();
 		if ((isFolder || isWorkspace) && (!isWorkspaceReserved)) {			
 			// Yes!  Can the user potentially copy or move this binder?
 			boolean isGuest       = GwtServerHelper.getCurrentUser().isShared();
@@ -2315,7 +2317,7 @@ public class GwtMenuHelper {
 			}
 			if (allowCopyMove) {
 				// Yes!  Do they have rights to move it?
-				if (bm.testAccess(binder, BinderOperation.moveBinder) && (!isMyFilesStorage)) {
+				if (bm.testAccess(binder, BinderOperation.moveBinder) && (!isMyFilesStorage) && isVisibleWithoutShares) {
 					// Yes!  Add a ToolbarItem for it.
 					adminMenuCreated  =
 					configMenuCreated = true;
@@ -4357,9 +4359,9 @@ public class GwtMenuHelper {
 
 			// Can the user share this entry?
 			SharingModule sm = bs.getSharingModule();
-			boolean canAddShare          = (isTop && sm.testAddShareEntity(fe));
-			boolean canPublicLinkShare   = (isTop && sm.testAddShareEntityPublicLinks(fe));
-			boolean visibleWithoutShares = GwtShareHelper.visibleWithoutShares(bs, user, fe);
+			boolean canAddShare            = (isTop && sm.testAddShareEntity(fe));
+			boolean canPublicLinkShare     = (isTop && sm.testAddShareEntityPublicLinks(fe));
+			boolean isVisibleWithoutShares = GwtShareHelper.visibleWithoutShares(bs, user, fe);
 			if ((!isGuest) && sm.isSharingEnabled() && sm.isSharingPublicLinksEnabled() && (canAddShare || canPublicLinkShare)) {
 				// Yes!  Is it a file entry?
 				if (GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, fe))) {
@@ -4487,7 +4489,7 @@ public class GwtMenuHelper {
 				}
 
 				// Can the user move this entry?
-				if (((!locked) || isLockedByLoggedInUser) && fe.isTop() && fm.testAccess(fe, FolderOperation.moveEntry) && visibleWithoutShares) {
+				if (((!locked) || isLockedByLoggedInUser) && fe.isTop() && fm.testAccess(fe, FolderOperation.moveEntry) && isVisibleWithoutShares) {
 					// Yes!  Add a move toolbar item for it.
 					actionTBI = new ToolbarItem(MOVE);
 					markTBITitle(   actionTBI, "toolbar.move"                      );
@@ -4609,7 +4611,7 @@ public class GwtMenuHelper {
 				
 				// ...and if the user has any email addresses
 				// ...defined...
-				if (GwtEmailHelper.userHasEmailAddress(user) && visibleWithoutShares) {
+				if (GwtEmailHelper.userHasEmailAddress(user) && isVisibleWithoutShares) {
 					// ...add a subscribe toolbar item.
 					actionTBI = new ToolbarItem(SUBSCRIBE);
 					markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected"  );
