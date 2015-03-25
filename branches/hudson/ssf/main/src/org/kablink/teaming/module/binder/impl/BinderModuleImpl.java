@@ -2484,7 +2484,33 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	
     	if ( binder != null )
     	{
-    		desc = NLT.get( "team.group.desc" ) + " " + binder.getTitle() + "\n(" + binder.getPathName() + ")";
+    		String binderTitle;
+    		String binderPath;
+    		int len;
+    		
+    		len = 100;
+    		desc = NLT.get( "team.group.desc" );
+			len -= desc.length();
+			
+			binderTitle = binder.getTitle();
+			if ( len > 0 && binderTitle != null )
+			{
+				if ( binderTitle.length() > len )
+					binderTitle = binderTitle.substring( 0, len ) + "...";
+				
+				desc += " " + binderTitle;
+
+				len -= binderTitle.length();
+			}
+
+			binderPath = binder.getPathName();
+			if ( len > 0 && binderPath != null )
+			{
+				if ( binderPath.length() > len )
+					binderPath = binderPath.substring( 0, len ) + "...";
+				
+				desc += "\n(" + binderPath + ")";
+			}
     	}
     	
     	return desc;
@@ -2499,7 +2525,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	
     	if ( binder != null )
     	{
-			name = "team - " + binder.getTitle() + " (" + binder.getId() + ")";
+    		String title;
+    		int len;
+    		
+    		len = 80;
+    		title = binder.getTitle();
+    		if ( title != null )
+    		{
+    			if ( title.length() > len )
+        			title = title.substring( 0, len ) + "... ";
+    		}
+    		else
+    			title = " ";
+    		
+			name = "team - " + title + " (" + binder.getId() + ")"; 
     	}
 
     	return name;
@@ -2514,7 +2553,33 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	
     	if ( binder != null )
     	{
-			title = NLT.get( "team.group" ) + " " + binder.getTitle() + " (" + binder.getPathName() + ")";
+    		String binderTitle;
+    		String binderPath;
+    		int len;
+    		
+    		len = 100;
+			title = NLT.get( "team.group" );
+			len -= title.length();
+			
+			binderTitle = binder.getTitle();
+			if ( len > 0 && binderTitle != null )
+			{
+				if ( binderTitle.length() > len )
+					binderTitle = binderTitle.substring( 0, len ) + "...";
+				
+				title += " " + binderTitle;
+
+				len -= binderTitle.length();
+			}
+
+			binderPath = binder.getPathName();
+			if ( len > 0 && binderPath != null )
+			{
+				if ( binderPath.length() > len )
+					binderPath = binderPath.substring( 0, len ) + "...";
+				
+				title += " (" + binderPath + ")";
+			}
     	}
     	
     	return title;
@@ -2575,7 +2640,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				}
 				catch( Exception ex )
 				{
-					ex.printStackTrace();
+					logger.error( "Unable to create team group: " + name, ex );
 				}
 				
 				return newGroup;
@@ -2619,7 +2684,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				}
 				catch ( Exception ex )
 				{
-					ex.printStackTrace();
+					logger.error( "Unable to delete team group: " + group.getName(), ex );
 					retValue = Boolean.FALSE;
 				} 
 				
@@ -2684,7 +2749,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						}
 			   			catch ( Exception ex )
 			   			{
-			   				ex.printStackTrace();
+			   				logger.error( "Unable to fixup group team name: " + name, ex );
 			   				retValue = Boolean.FALSE;
 			   			}
 						
@@ -2731,7 +2796,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     			catch ( Exception ex )
     			{
     				logger.error( "In getTeamGroup() unable to get the group for the binder: " + binder.getTitle(), ex );
-    				ex.printStackTrace();
     			}
     		}
     	}
@@ -3045,11 +3109,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	/**
 	 * 
 	 */
-	private void setTeamMembers( Binder binder, final Collection<Long> memberIds )
+	private boolean setTeamMembers( Binder binder, final Collection<Long> memberIds )
 	{
 		Group teamGroup;
 		final Group finalTeamGroup;
-
+		boolean result = true;
+		
 		teamGroup = getTeamGroup( binder );
 		
 		// Do we have any group members?
@@ -3164,6 +3229,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				retValue = RunasTemplate.runasAdmin(
 												callback,
 												RequestContextHolder.getRequestContext().getZoneName() );
+												
+				result = ((Boolean) retValue).booleanValue();
 			}
 		}
 		else
@@ -3176,7 +3243,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				deleteTeamGroup( binder, teamGroup );
 				teamGroup = null;
 			}
+			
+			result = true;
 		}
+		
+		return result;
 	}
 	
 	/**
@@ -3270,10 +3341,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		teamMemberIds = getTeamMemberIdsDeprecated( binder );
 		
 		if ( teamMemberIds != null && teamMemberIds.size() > 0 )
-			setTeamMembers( binder, teamMemberIds );
-		
-		// Remove the team membership from the property
-		binder.removeProperty( ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS );
+		{
+			if ( setTeamMembers( binder, teamMemberIds ) )
+			{
+				// Remove the team membership from the property
+				binder.removeProperty( ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS );
+			}
+		}
 	}
 	
 	/**
