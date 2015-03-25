@@ -54,7 +54,6 @@ public class NetFolderBriefBuilder extends BaseBinderBriefBuilder implements Sea
         populateBinderBrief(folder, entry);
         folder.setAllowDesktopSync(SearchResultBuilderUtil.getBoolean(entry, Constants.ALLOW_DESKTOP_SYNC_FIELD, Boolean.TRUE));
         folder.setAllowMobileSync(SearchResultBuilderUtil.getBoolean(entry, Constants.ALLOW_MOBILE_SYNC_FIELD, Boolean.TRUE));
-        folder.setNetFolderServer(SearchResultBuilderUtil.getString(entry, Constants.RESOURCE_DRIVER_NAME_FIELD));
         return folder;
     }
 

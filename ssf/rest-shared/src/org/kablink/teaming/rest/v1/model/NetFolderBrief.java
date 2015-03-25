@@ -40,8 +40,6 @@ import javax.xml.bind.annotation.XmlTransient;
 public class NetFolderBrief extends BinderBrief {
     private Boolean allowMobileSync;
     private Boolean allowDesktopSync;
-    private String netFolderServer;
-    private Boolean approximateFileSizes;
 
     public NetFolderBrief() {
         super();
@@ -67,24 +65,6 @@ public class NetFolderBrief extends BinderBrief {
 
     public void setAllowDesktopSync(Boolean allowDesktopSync) {
         this.allowDesktopSync = allowDesktopSync;
-    }
-
-    @XmlTransient
-    public String getNetFolderServer() {
-        return netFolderServer;
-    }
-
-    public void setNetFolderServer(String netFolderServer) {
-        this.netFolderServer = netFolderServer;
-    }
-
-    @XmlElement(name = "approximate_file_sizes")
-    public Boolean getApproximateFileSizes() {
-        return approximateFileSizes;
-    }
-
-    public void setApproximateFileSizes(Boolean approximateFileSizes) {
-        this.approximateFileSizes = approximateFileSizes;
     }
 
     @Override
