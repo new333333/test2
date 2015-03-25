@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,7 +38,6 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 
@@ -55,7 +54,6 @@ public abstract class MenuBarPopupBase {
 	private   ContextBinderProvider			m_binderProvider;	// Provides the current binder context, as required.
 	protected GwtTeamingMainMenuImageBundle	m_images;			// Vibe's image  resource.
 	protected GwtTeamingMessages			m_messages;			// Vibe's string resources.
-	protected GwtRpcServiceAsync			m_rpcService;		// Vibe's RPC service.
 	private   MenuBarBox					m_menuBox;			// The box wrapping the menu item that invokes this popup.
 	private   VibeMenuBar					m_menuBar;			// The menu bar containing this popup's menu items.
 	
@@ -72,9 +70,8 @@ public abstract class MenuBarPopupBase {
 		m_binderProvider = binderProvider;
 
 		// ...and initialize everything else.
-		m_images     = GwtTeaming.getMainMenuImageBundle();
-		m_messages   = GwtTeaming.getMessages();
-		m_rpcService = GwtTeaming.getRpcService();
+		m_images   = GwtTeaming.getMainMenuImageBundle();
+		m_messages = GwtTeaming.getMessages();
 		
 		// Create a menu bar to hold the popup menu items...
 		m_menuBar = new VibeMenuBar(true, "vibe-mainMenuPopup");

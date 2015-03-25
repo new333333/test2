@@ -48,8 +48,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Attachment;
@@ -249,6 +251,9 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.kablink.util.search.Constants;
 
+import com.google.gwt.user.client.rpc.XsrfToken;
+import com.google.gwt.user.client.rpc.XsrfTokenService;
+
 /**
  * Collection of methods used to implement the various GWT RPC
  * commands.
@@ -256,7 +261,7 @@ import org.kablink.util.search.Constants;
  * @author jwootton@novell.com
  */
 public class GwtRpcServiceImpl extends AbstractAllModulesInjected
-	implements GwtRpcService
+	implements GwtRpcService, XsrfTokenService
 {
 	/*
 	 * Inner class used to encapsulate a GwtTeamingException and a
@@ -292,6 +297,26 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		public void setTeamingException( GwtTeamingException teamingException ) { m_teamingException = teamingException; }
 		public void setRpcResponse(      VibeRpcResponse     rpcResponse )      { m_rpcResponse      = rpcResponse;      }
 		
+	}
+
+	/**
+	 * Returns the XsrfToken to use for GWT RPC commands.  As per GWT
+	 * documentation, we use the ID from the session as the token.
+	 * 
+	 * See:  http://www.gwtproject.org/doc/latest/DevGuideSecurityRpcXsrf.html
+	 * 
+	 * @return
+	 */
+	@Override
+	public XsrfToken getNewXsrfToken()
+	{
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		SessionContext sc = rc.getSessionContext();
+		String token;
+		if ( sc instanceof HttpSessionContext )
+		     token = ((HttpSessionContext) sc).getHttpSession().getId();
+		else token = null;
+		return new VibeXsrfToken( token );
 	}
 	
 	/**

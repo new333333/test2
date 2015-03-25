@@ -36,31 +36,28 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.rpc.XsrfToken;
 
 /**
- * A marker interface for a VibeRpcCmd response.
+ * Implements an XsrfToken that can be serialized.
  * 
- * @author jwootton
+ * @author drfoster@novell.com
  */
-public class VibeRpcResponse extends XsrfToken implements IsSerializable
-{
-	private VibeRpcResponseData m_responseData;
-	
+public class VibeXsrfToken extends XsrfToken implements IsSerializable {
 	/**
+	 * Constructor method.
+	 * 
+	 * Zero parameter constructor required for GWT serialization.
 	 */
-	public VibeRpcResponse()
-	{
+	public VibeXsrfToken() {
+		// Simply initialize the super class.
+		super();
 	}
-	
+
 	/**
+	 * Constructor method.
+	 * 
+	 * @param token
 	 */
-	public VibeRpcResponse( VibeRpcResponseData responseData )
-	{
-		m_responseData = responseData;
-	}
-	
-	/**
-	 */
-	public VibeRpcResponseData getResponseData()
-	{
-		return m_responseData;
+	public VibeXsrfToken(String token) {
+		// Simply initialize the super class with the token.
+		super(token);
 	}
 }

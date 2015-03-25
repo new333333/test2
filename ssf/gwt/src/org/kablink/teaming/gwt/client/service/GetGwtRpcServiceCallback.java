@@ -30,37 +30,16 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
-import com.google.gwt.user.client.rpc.XsrfToken;
+package org.kablink.teaming.gwt.client.service;
 
 /**
- * A marker interface for a VibeRpcCmd response.
- * 
- * @author jwootton
+ * Callback interface use to obtain a GwtRpcServiceAsync objects for
+ * issuing GWT RPC requests.
+ *  
+ * @author drfoster@novell.com
  */
-public class VibeRpcResponse extends XsrfToken implements IsSerializable
+public interface GetGwtRpcServiceCallback
 {
-	private VibeRpcResponseData m_responseData;
-	
-	/**
-	 */
-	public VibeRpcResponse()
-	{
-	}
-	
-	/**
-	 */
-	public VibeRpcResponse( VibeRpcResponseData responseData )
-	{
-		m_responseData = responseData;
-	}
-	
-	/**
-	 */
-	public VibeRpcResponseData getResponseData()
-	{
-		return m_responseData;
-	}
+	public void onFailure(Throwable          caught);
+	public void onSuccess(GwtRpcServiceAsync result);
 }
