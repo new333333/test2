@@ -81,7 +81,7 @@ public class FileUploadItem {
 	private int thumbnailMaxHeight = SPropsUtil.getInt("thumbnail.max.height", THUMBNAIL_MAX_HEIGHT_DEFAULT);
 	
 	private MultipartFile mf;
-	
+
 	private String repositoryName;
 	
 	private File file;
@@ -297,6 +297,10 @@ public class FileUploadItem {
             }
         }
         return md5;
+    }
+
+    public long getSize() throws IOException {
+        return makeReentrant().getSize();
     }
 	
 	public SizeMd5Pair makeReentrant() throws IOException {
