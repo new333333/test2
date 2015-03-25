@@ -2390,7 +2390,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		else
     			fsize = session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName);
 			fAtt.getFileItem().setLength(fsize);
-            fAtt.getFileItem().setMd5(fui.getMd5());
+            if (fui.getSize()==fsize) {
+                fAtt.getFileItem().setMd5(fui.getMd5());
+            } else {
+                // If for some reason the final size differs from the original file size, clear the MD5.  This can happen
+                // with MS Office files if the backend storage is SharePoint.
+                fAtt.getFileItem().setMd5(null);
+            }
 			fAtt.setEncrypted(fui.getIsEncrypted());
 			fAtt.setEncryptionKey(fui.getEncryptionKey());
             fAtt.setLastVersion(2);
@@ -2450,11 +2456,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		// lock later. So mark the lock as dirty.
 	    		lock.setDirty(Boolean.TRUE);
 	    	}
+            String md5 = fui.getMd5();
+            if (fileSize!=fui.getSize()) {
+                // If the backend is SharePoint and the file is an MS Office file, SharePoint might alter the file length.
+                // If this is the case, the uploaded md5 is no longer accurate.
+                md5 = null;
+            }
 	    	
 			//if we are adding a new version of an existing attachment to 
 			//a uniqueName item, set flag - (will already be set if originally added
 			//through a unique element.  In other works, once unique always unique
-			updateFileAttachment(fAtt, user, versionName, fileSize, fui.getMd5(), fui.getModDate(), fui.getModifierName(),
+			updateFileAttachment(fAtt, user, versionName, fileSize, md5, fui.getModDate(), fui.getModifierName(),
 					fui.getDescription());
 		}
 		
@@ -2640,9 +2652,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				fileSize = fui.getCallerSpecifiedContentLength().longValue();
 			else
 				fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
-					
+
+            long origSize = fui.getSize();
 			fAtt.getFileItem().setLength(fileSize);
-            fAtt.getFileItem().setMd5(fui.getMd5());
+            if (origSize==fileSize) {
+                fAtt.getFileItem().setMd5(fui.getMd5());
+            } else {
+                // If for some reason the final size differs from the original file size, clear the MD5.  This can happen
+                // with MS Office files if the backend storage is SharePoint.
+                fAtt.getFileItem().setMd5(null);
+            }
 	
 			createVersionAttachment(fAtt, versionName);	
 		}
