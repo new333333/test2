@@ -2488,7 +2488,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     		String binderPath;
     		int len;
     		
-    		len = 100;
+    		len = SPropsUtil.getInt( "team.group.desc.maxlen", 100 );
     		desc = NLT.get( "team.group.desc" );
 			len -= desc.length();
 			
@@ -2528,7 +2528,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     		String title;
     		int len;
     		
-    		len = 80;
+    		len = SPropsUtil.getInt( "team.group.name.maxlen", 80 );
     		title = binder.getTitle();
     		if ( title != null )
     		{
@@ -2557,7 +2557,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     		String binderPath;
     		int len;
     		
-    		len = 100;
+    		len = SPropsUtil.getInt( "team.group.title.maxlen", 100 );
 			title = NLT.get( "team.group" );
 			len -= title.length();
 			
