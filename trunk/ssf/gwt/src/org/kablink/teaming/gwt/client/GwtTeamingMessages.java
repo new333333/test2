@@ -258,6 +258,8 @@ public interface GwtTeamingMessages extends Messages
 	String close();
 	String yes();
 	String no();
+	String xsrfTokenFailure();
+	String xsrfUnknownError( String ex );
 	
 	// Strings used with the Utility Element widget in the landing page editor.
 	String utilityElementHint();

@@ -53,6 +53,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmdType;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.service.GetGwtRpcServiceCallback;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.widgets.AlertDlg;
 import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgClient;
@@ -643,14 +645,29 @@ public class GwtClientHelper {
 	}	
 
 	/**
-	 * Execute the given command via GWT's rpc mechanism
+	 * Execute the given command via GWT's RPC mechanism.
+	 * 
+	 * @param cmd
+	 * @param httpRequestInfo
+	 * @param callback
 	 */
-	public static void executeCommand(
-		VibeRpcCmd cmd,
-		HttpRequestInfo httpRequestInfo,
-		AsyncCallback<VibeRpcResponse> callback)
-	{
-		GwtTeaming.getRpcService().executeCommand( httpRequestInfo, cmd, callback );
+	public static void executeCommand(final VibeRpcCmd cmd, final HttpRequestInfo httpRequestInfo, final AsyncCallback<VibeRpcResponse> callback) {
+		// Can we get the GWT RPC service to execute the command?
+		GwtTeaming.getRpcService(new GetGwtRpcServiceCallback() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// No!  The user will have been told about the error.
+				// Simply tell the callback.
+				callback.onFailure(caught);
+			}
+
+			@Override
+			public void onSuccess(GwtRpcServiceAsync rpc) {
+				// Yes, we have the GWT RPC service to execute the
+				// command!  Execute it.
+				rpc.executeCommand( httpRequestInfo, cmd, callback );
+			}
+		});
 	}	
 
 	/**
