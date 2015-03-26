@@ -1639,13 +1639,11 @@ public class EntryMenuPanel extends ToolPanelBase
 			case MILESTONE:
 			case MINIBLOG:
 			case MIRROREDFILE:
+			case PHOTOALBUM:
 			case SURVEY:
 			case TASK:
+			case WIKI:
 				reply = true;
-				break;
-				
-			case PHOTOALBUM:
-				reply = PhotoAlbumFolderView.SHOW_GWT_PHOTO_ALBUM;	//! DRF (20150318)
 				break;
 			}
 			

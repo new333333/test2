@@ -206,6 +206,7 @@ import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.server.util.GwtShareHelper;
 import org.kablink.teaming.gwt.server.util.GwtTaskHelper;
 import org.kablink.teaming.gwt.server.util.GwtViewHelper;
+import org.kablink.teaming.gwt.server.util.GwtWikiHelper;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -2655,6 +2656,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			UpdateLogsConfig ulConfig = GwtServerHelper.getUpdateLogsConfig( this, req );
 			response = new VibeRpcResponse( ulConfig );
+			return response;
+		}
+		
+		case GET_WIKI_DISPLAY_DATA:
+		{
+			GetWikiDisplayDataCmd gwddCmd = ((GetWikiDisplayDataCmd) cmd);
+			WikiDisplayDataRpcResponseData responseData = GwtWikiHelper.getWikiDisplayData( req, this, gwddCmd.getBinderId() );
+			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		

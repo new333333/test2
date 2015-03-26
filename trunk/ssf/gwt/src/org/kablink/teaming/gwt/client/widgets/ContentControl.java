@@ -63,6 +63,7 @@ import org.kablink.teaming.gwt.client.binderviews.TeamWorkspacesView;
 import org.kablink.teaming.gwt.client.binderviews.TrashView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
+import org.kablink.teaming.gwt.client.binderviews.WikiFolderView;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
@@ -108,6 +109,7 @@ import org.kablink.teaming.gwt.client.event.ShowSurveyFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTeamRootWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowTrashEvent;
+import org.kablink.teaming.gwt.client.event.ShowWikiFolderEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.ShowTeamWSEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
@@ -188,6 +190,7 @@ public class ContentControl extends Composite
 		ShowTeamRootWSEvent.Handler,
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler,
+		ShowWikiFolderEvent.Handler,
 		ViewForumEntryEvent.Handler
 {
 	private boolean			m_isAdminContent;							//
@@ -244,6 +247,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_TEAM_ROOT_WORKSPACE,
 		TeamingEvents.SHOW_TEAM_WORKSPACE,
 		TeamingEvents.SHOW_TRASH,
+		TeamingEvents.SHOW_WIKI_FOLDER,
 		
 		// View events.
 		TeamingEvents.GET_CURRENT_VIEW_INFO,
@@ -1015,8 +1019,11 @@ public class ContentControl extends Composite
 	
 							
 						case WIKI:
-							// These aren't handled!  Let things take
-							// the default flow.
+							boolean showGwtWiki = WikiFolderView.SHOW_GWT_WIKI;	//! DRF (20150326)
+							if (showGwtWiki) {
+								GwtTeaming.fireEvent( new ShowWikiFolderEvent( bi, viewReady ) );
+								m_viewMode = ViewMode.GWT_CONTENT_VIEW;
+							}
 							break;
 							
 						default:
@@ -2505,6 +2512,37 @@ public class ContentControl extends Composite
 	}// end onShowTrash()
 	
 
+	/**
+	 * Handles ShowWikiFolderEvent's received by this class.
+	 * 
+	 * Implements the ShowWikiFolderEvent.Handler.onShowWikiFolder() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShowWikiFolder( final ShowWikiFolderEvent event )
+	{
+		// Create a WikiFolderView widget for the selected binder.
+		WikiFolderView.createAsync(
+				event.getBinderInfo(),
+				event.getViewReady(),
+				new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+
+			@Override
+			public void onSuccess( ViewBase tfView )
+			{
+				tfView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( tfView );
+			}// end onSuccess()
+		});
+	}// end onShowWikiFolder()
+	
 	/*
 	 * Asynchronously performs the reload necessary after an item has
 	 * been deleted.

@@ -356,6 +356,10 @@
 		.vibe-blogFolderVerticalPanel {}
 		.vibe-blogFolderView          {}
 	/* ...End:  Task folder view styles. */
+	
+	/* ...Start:  Wiki folder view styles. */
+		.vibe-wikiFolderView {}
+	/* ...End:  Wiki folder view styles. */
 /* End:  GWT folder view styles. */
 
 /* Start:  GWT workspace view styles. */
