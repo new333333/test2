@@ -300,7 +300,10 @@ public class FileUploadItem {
     }
 
     public long getSize() throws IOException {
-        return makeReentrant().getSize();
+        if(file != null)
+            return file.length();
+        else
+            return mf.getSize();
     }
 	
 	public SizeMd5Pair makeReentrant() throws IOException {
