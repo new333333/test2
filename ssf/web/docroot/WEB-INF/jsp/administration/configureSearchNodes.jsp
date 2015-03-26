@@ -94,7 +94,7 @@
 	<hr shade=noshade size=1/>
 	<c:if test="${!node.noDeferredUpdateLogRecords}">
 		<span class="ss_labelLeft ss_errorLabel"><ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.false" /></span>
-		<c:if test="$empty node.deferredUpdateLogApplyingIpv4Address}">
+		<c:if test="${empty node.deferredUpdateLogApplyingIpv4Address}">
 		   <br/><input type="radio" name="synchronize${node.nodeName}" value="apply"><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.deferredupdatelogrecords.apply"/></span>
 		</c:if>
 		<br/><input type="radio" name="synchronize${node.nodeName}" value="discard"><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.deferredupdatelogrecords.discard"/></span>
