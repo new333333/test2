@@ -421,7 +421,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		zoneConfigModel.setFsaEnabled(zoneConfig.getFsaEnabled());
 		zoneConfigModel.setFsaSynchInterval(zoneConfig.getFsaSynchInterval());
 		zoneConfigModel.setFsaAutoUpdateUrl(zoneConfig.getFsaAutoUpdateUrl());
-		zoneConfigModel.setFsaMaxFileSize(zoneConfig.getFsaMaxFileSize());
+		zoneConfigModel.setFsaMaxFileSize(zoneConfig.getFsaMaxFileSize() * 1024 * 1024);
 		zoneConfigModel.setMobileAccessEnabled(zoneConfig.isMobileAccessEnabled());
 		zoneConfigModel.setDiskQuotasEnabled(zoneConfig.isDiskQuotaEnabled());
 		zoneConfigModel.setDiskQuotaUserDefault(zoneConfig.getDiskQuotaUserDefault());
