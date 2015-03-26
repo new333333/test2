@@ -77,9 +77,9 @@
 	<tr><td valign="top">
 	<hr shade=noshade size=1/>
 	<span class="ss_labelLeft"><ssf:nlt tag="administration.search.node.usermodeaccess"/></span><br>
-		<input type="radio" name="userModeAccess${node.nodeName}" value="readwrite" <c:if test="${node.userModeAccess == 'readwrite'}">checked</c:if> ${disabled}><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.usermodeaccess.readwrite" /></span><br>
-		<input type="radio" name="userModeAccess${node.nodeName}" value="writeonly" <c:if test="${node.userModeAccess == 'writeonly'}">checked</c:if> ${disabled}><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.usermodeaccess.writeonly" /></span><br>
-		<input type="radio" name="userModeAccess${node.nodeName}" value="noaccess" <c:if test="${node.userModeAccess == 'noaccess'}">checked</c:if> ${disabled}><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.usermodeaccess.noaccess" /></span><br>
+		<input type="radio" name="userModeAccess${node.nodeName}" value="readwrite" <c:if test="${node.userModeAccess == 'readwrite'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.usermodeaccess.readwrite" /></span><br>
+		<input type="radio" name="userModeAccess${node.nodeName}" value="writeonly" <c:if test="${node.userModeAccess == 'writeonly'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.usermodeaccess.writeonly" /></span><br>
+		<input type="radio" name="userModeAccess${node.nodeName}" value="noaccess" <c:if test="${node.userModeAccess == 'noaccess'}">checked</c:if>><span class="ss_labelRight ss_normal"><ssf:nlt tag="administration.search.node.usermodeaccess.noaccess" /></span><br>
 	</td></tr>
 	</table>
 	<table class="ss_style" border="0" cellspacing="3" cellpadding="3" width="100%">
