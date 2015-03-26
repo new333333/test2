@@ -253,6 +253,8 @@ import org.kablink.util.search.Constants;
 
 import com.google.gwt.user.client.rpc.XsrfToken;
 import com.google.gwt.user.client.rpc.XsrfTokenService;
+import com.google.gwt.util.tools.shared.Md5Utils;
+import com.google.gwt.util.tools.shared.StringUtils;
 
 /**
  * Collection of methods used to implement the various GWT RPC
@@ -303,18 +305,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns the XsrfToken to use for GWT RPC commands.  As per GWT
 	 * documentation, we use the ID from the session as the token.
 	 * 
-	 * See:  http://www.gwtproject.org/doc/latest/DevGuideSecurityRpcXsrf.html
+	 * See:
+	 *    http://www.gwtproject.org/doc/latest/DevGuideSecurityRpcXsrf.html and
+	 *    XsrfProtectedServiceServlet.validateXsrfToken() (for actual validation.)
 	 * 
 	 * @return
 	 */
 	@Override
 	public XsrfToken getNewXsrfToken()
 	{
-		RequestContext rc = RequestContextHolder.getRequestContext();
-		SessionContext sc = rc.getSessionContext();
+		SessionContext sc = RequestContextHolder.getRequestContext().getSessionContext();
 		String token;
 		if ( sc instanceof HttpSessionContext )
-		     token = ((HttpSessionContext) sc).getHttpSession().getId();
+		     token = StringUtils.toHexString( Md5Utils.getMd5Digest( ((HttpSessionContext) sc).getHttpSession().getId().getBytes() ) );
 		else token = null;
 		return new VibeXsrfToken( token );
 	}

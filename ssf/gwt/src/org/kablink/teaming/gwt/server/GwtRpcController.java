@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.server;
 
+import java.lang.reflect.Method;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,11 +53,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
-import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.server.rpc.RPC;
 import com.google.gwt.user.server.rpc.RPCRequest;
-import com.google.gwt.user.server.rpc.XsrfProtectedServiceServlet;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 /**
  * ?
@@ -63,14 +65,14 @@ import com.google.gwt.user.server.rpc.XsrfProtectedServiceServlet;
  * @author jwootton
  */
 @SuppressWarnings({"serial", "unchecked"})
-public class GwtRpcController extends XsrfProtectedServiceServlet
+public class GwtRpcController extends VibeXsrfProtectedServiceServlet
 	implements
         Controller, ServletContextAware
 {
-	private Log 				m_logger = LogFactory.getLog(GwtRpcController.class);
-    private ServletContext		m_servletContext;
-    private RemoteService		m_remoteService;
-	private Class				m_remoteServiceClass;
+	private Log 					m_logger = LogFactory.getLog( GwtRpcController.class );
+    private ServletContext			m_servletContext;
+	private Class					m_xsrfProtectedServiceClass;
+    private XsrfProtectedService	m_xsrfProtectedService;
 
     /**
      * 
@@ -81,7 +83,6 @@ public class GwtRpcController extends XsrfProtectedServiceServlet
         HttpServletResponse response) throws Exception
     {
         super.doPost( request, response );
-        
         return null;
     }// end handleRequest()
     
@@ -94,12 +95,8 @@ public class GwtRpcController extends XsrfProtectedServiceServlet
     {
         try
         {
-            RPCRequest	rpcRequest;
-        	String results;
-
-            rpcRequest = RPC.decodeRequest( payload, m_remoteServiceClass );
-
-            Object[] parameters = rpcRequest.getParameters();
+            RPCRequest rpcRequest = RPC.decodeRequest( payload, m_xsrfProtectedServiceClass );
+            Object[]   parameters = rpcRequest.getParameters();
             
     		String cmdName = "Unknown";
             if ( m_logger.isDebugEnabled() )
@@ -179,11 +176,17 @@ public class GwtRpcController extends XsrfProtectedServiceServlet
             	}
             }
             
+        	String results;
     		opBegin = System.nanoTime();
     		try
     		{
-                // Delegate work to the spring injected service.
-    			results = RPC.invokeAndEncodeResponse( m_remoteService, rpcRequest.getMethod(), parameters );
+                // Validate the token from the RPC request and delegate
+    			// the work to the spring injected service.
+    			Method rpcMethod = rpcRequest.getMethod();
+    			if (!(rpcMethod.getName().equals("getNewXsrfToken"))) {
+    				validateXsrfToken(rpcRequest.getRpcToken(), rpcMethod);
+    			}
+    			results = RPC.invokeAndEncodeResponse( m_xsrfProtectedService, rpcMethod, parameters );
     		}
     		finally
     		{
@@ -192,11 +195,15 @@ public class GwtRpcController extends XsrfProtectedServiceServlet
             	
             return results;
         }
+        
+        catch (RpcTokenException ex) {
+            getServletContext().log( "An RpcTokenException was thrown while processing this call.", ex );
+            return RPC.encodeResponseForFailure( null, ex );
+        }
+        
         catch (IncompatibleRemoteServiceException ex)
         {
-            getServletContext().log(
-                            "An IncompatibleRemoteServiceException was thrown while processing this call.",
-                            ex );
+            getServletContext().log( "An IncompatibleRemoteServiceException was thrown while processing this call.", ex );
             return RPC.encodeResponseForFailure( null, ex );
         }
     }// end processCall()
@@ -223,23 +230,27 @@ public class GwtRpcController extends XsrfProtectedServiceServlet
 
     
     /**
-     * 
+     * ?
+     *  
      * @param remoteService
      */
-    public void setRemoteService( RemoteService remoteService )
+    public void setRemoteService( XsrfProtectedService remoteService )
     {
-        m_remoteService = remoteService;
-        m_remoteServiceClass = m_remoteService.getClass();
+        m_xsrfProtectedService      = remoteService;
+        m_xsrfProtectedServiceClass = m_xsrfProtectedService.getClass();
     }// end setRemoteService()
 
     /**
      * Traces any unexpected failures and bubbles up the exception.
+     * 
+     * @param t
      */
     @Override
-	protected void doUnexpectedFailure(Throwable t) {
-    	m_logger.debug("GwtRpcController.doUnexpectedFailure(EXCEPTION):  ", t);
+	protected void doUnexpectedFailure( Throwable t )
+    {
+    	m_logger.debug( "GwtRpcController.doUnexpectedFailure(EXCEPTION):  ", t );
     	super.doUnexpectedFailure(t);
-    }
+    }// end doUnexpectedFailure()
 
     /*
      * Runs the XSS checker on the parameters that require checking.

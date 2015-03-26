@@ -86,6 +86,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -947,7 +948,8 @@ public class GwtClientHelper {
 	 * @param patches
 	 */
 	public static void handleGwtRPCFailure(Throwable t, String errorMessage, String[] patches) {
-		boolean displayAlert = false;
+		boolean displayAlert   = false;
+		boolean ensureMsgPatch = false;
 		if (null != t) {
 			GwtTeamingMessages messages = GwtTeaming.getMessages();
 			String cause;
@@ -1005,10 +1007,21 @@ public class GwtClientHelper {
 				}
 			}
 			
+			else if (t instanceof RpcTokenException) {
+				// No matter what, we want to make sure this failure
+				// gets displayed to the user.
+				displayAlert   =
+				ensureMsgPatch = true;
+				cause          = messages.rpcFailure_XsrfTokenFailure();
+			}
+			
 			else {
 				cause = t.getLocalizedMessage();
 				if (!(hasString(cause))) {
-					cause = t.toString();
+					cause = t.getMessage();
+					if (!(hasString(cause))) {
+						cause = t.toString();
+					}
 				}
 			}
 			
@@ -1019,6 +1032,9 @@ public class GwtClientHelper {
 		}
 		
 		if (hasString(errorMessage) && (displayAlert || isDebugUI())) {
+			if (ensureMsgPatch && (0 > errorMessage.indexOf("[0]"))) {
+				errorMessage += "  '[0]'.";
+			}
 			errorMessage = patchMessage(errorMessage, patches);
 			deferredAlert(errorMessage);
 		}

@@ -56,7 +56,6 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.HasRpcToken;
-import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.rpc.XsrfToken;
 import com.google.gwt.user.client.rpc.XsrfTokenService;
@@ -89,18 +88,19 @@ public class GwtTeaming implements EntryPoint
 	public  static RequestInfo	m_requestInfo = jsGetRequestInfo();	// The current RequestInfo block loaded by the JSP.
 
 	// The following are used to interact with the server in obtaining
-	// an XsrfToken to use for GWT RPC requests and for executing GWT
-	// RPC commands.
+	// an XsrfToken to use for GWT RPC requests and for executing the
+	// GWT RPC commands themselves.
+	private static final String					GWT_RPC_ENTRY_POINT	= "gwtTeaming.rpc";
 	private static final GwtRpcServiceAsync		m_rpcService		= ((GwtRpcServiceAsync)    GWT.create( GwtRpcService.class    ));
 	private static final XsrfTokenServiceAsync	m_xsrfTokenService	= ((XsrfTokenServiceAsync) GWT.create( XsrfTokenService.class ));
 	static
 	{
-		((ServiceDefTarget) m_xsrfTokenService).setServiceEntryPoint( GWT.getModuleBaseURL() + "gwtTeaming.rpc" );
+		((ServiceDefTarget) m_xsrfTokenService).setServiceEntryPoint( GWT.getModuleBaseURL() + GWT_RPC_ENTRY_POINT );
 	}
 	private static XsrfToken m_xsrfToken;
 
 	/*
-	 * Returns the GWT RPC token to use for GWT RPC calls via the given
+	 * Returns the XSRF token to use for GWT RPC calls via the given
 	 * AsyncCallback.
 	 */
 	private static void getXsrfToken( final AsyncCallback<XsrfToken> callback )
@@ -114,38 +114,9 @@ public class GwtTeaming implements EntryPoint
 				@Override
 				public void onFailure( Throwable caught )
 				{
-					try
-					{
-						// The request failed...
-						throw caught;
-					}
-					
-					catch ( RpcTokenException e )
-					{
-						// ...because of an XSRF failure.  Tell the
-						// ...user about the problem and return it
-						// ...through the callback.
-						GwtClientHelper.debugAlert( GwtTeaming.getMessages().xsrfTokenFailure() );
-						callback.onFailure( caught );
-					}
-					
-					catch ( Throwable e )
-					{
-						// ...because of an unknown error.  Tell the
-						// ...user about the problem and return it
-						// ...through the callback.
-						String eDisplay = e.getLocalizedMessage();
-						if ( ! ( GwtClientHelper.hasString( eDisplay ) ) )
-						{
-							eDisplay = e.getMessage();
-							if ( ! ( GwtClientHelper.hasString( eDisplay ) ) )
-							{
-								eDisplay = e.toString();
-							}
-						}
-						GwtClientHelper.debugAlert( GwtTeaming.getMessages().xsrfUnknownError( eDisplay ) );
-						callback.onFailure( caught );
-					}
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						getMessages().rpcFailure_GetXsrfToken() );
 				}
 
 				@Override
