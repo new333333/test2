@@ -258,8 +258,6 @@ public interface GwtTeamingMessages extends Messages
 	String close();
 	String yes();
 	String no();
-	String xsrfTokenFailure();
-	String xsrfUnknownError( String ex );
 	
 	// Strings used with the Utility Element widget in the landing page editor.
 	String utilityElementHint();
@@ -543,6 +541,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetWhoHasAccess();
 	String rpcFailure_GetWorkspaceContributorIds();
 	String rpcFailure_GetXssHtml();
+	String rpcFailure_GetXsrfToken();
 	String rpcFailure_GetZipDownloadUrl();
 	String rpcFailure_GetZoneShareRights();
 	String rpcFailure_HideShares();
@@ -658,6 +657,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ValidateEmailAddress();
 	String rpcFailure_ValidateShareLists();
 	String rpcFailure_ValidateUploads();
+	String rpcFailure_XsrfTokenFailure();
 
 	// Strings used to describe various split point load failures.
 	String codeSplitFailure_AccessoriesPanel();
