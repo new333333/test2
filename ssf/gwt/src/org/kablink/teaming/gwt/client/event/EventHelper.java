@@ -2367,6 +2367,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_WIKI_FOLDER:
+				// A ShowWikiFolderEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowWikiFolderEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowWikiFolderEvent.registerEvent(eventBus, ((ShowWikiFolderEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case SIDEBAR_HIDE:
 				// A SidebarHideEvent!  Can the event handler we were
 				// given handle that?
@@ -3068,6 +3077,7 @@ public class EventHelper {
 			case SHOW_TEAM_WORKSPACE:					       hasHandler = (eventHandler instanceof ShowTeamWSEvent.Handler);			   		           break;
 			case SHOW_TRASH:						           hasHandler = (eventHandler instanceof ShowTrashEvent.Handler);		                       break;
 			case SHOW_VIEW_PERMALINKS:						   hasHandler = (eventHandler instanceof ShowViewPermalinksEvent.Handler);		               break;
+			case SHOW_WIKI_FOLDER:					           hasHandler = (eventHandler instanceof ShowWikiFolderEvent.Handler);		                   break;
 			
 			case HIDE_ACCESSORIES:						       hasHandler = (eventHandler instanceof HideAccessoriesEvent.Handler);		   	               break;
 			case HIDE_USER_LIST:						       hasHandler = (eventHandler instanceof HideUserListEvent.Handler);		   	               break;

@@ -539,6 +539,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetViewFolderEntryUrl();
 	String rpcFailure_GetViewInfo();
 	String rpcFailure_GetWhoHasAccess();
+	String rpcFailure_GetWikiDisplayData();
 	String rpcFailure_GetWorkspaceContributorIds();
 	String rpcFailure_GetXssHtml();
 	String rpcFailure_GetXsrfToken();
@@ -812,6 +813,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_UserStatusControl();
 	String codeSplitFailure_ViewsMenuPopup();
 	String codeSplitFailure_WhoHasAccessDlg();
+	String codeSplitFailure_WikiFolderView();
 	String codeSplitFailure_WorkspaceTreeControl();
 	String codeSplitFailure_ZoneShareRightsSelectPrincipalsWidget();
 	

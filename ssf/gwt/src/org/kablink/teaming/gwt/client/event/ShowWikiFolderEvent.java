@@ -41,12 +41,11 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The ShowPhotoAlbumFolderEvent is used to display a photo album
- * folder.
+ * The ShowWikiFolderEvent is used to display a wiki folder.
  * 
  * @author drfoster@novell.com
  */
-public class ShowPhotoAlbumFolderEvent extends VibeEventBase<ShowPhotoAlbumFolderEvent.Handler> {
+public class ShowWikiFolderEvent extends VibeEventBase<ShowWikiFolderEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private BinderInfo	m_binderInfo;	//
@@ -56,7 +55,7 @@ public class ShowPhotoAlbumFolderEvent extends VibeEventBase<ShowPhotoAlbumFolde
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onShowPhotoAlbumFolder(ShowPhotoAlbumFolderEvent event);
+		void onShowWikiFolder(ShowWikiFolderEvent event);
 	}
 	
 	/**
@@ -65,7 +64,7 @@ public class ShowPhotoAlbumFolderEvent extends VibeEventBase<ShowPhotoAlbumFolde
 	 * @param binderInfo
 	 * @param viewReady
 	 */
-	public ShowPhotoAlbumFolderEvent(BinderInfo binderInfo, ViewReady viewReady) {
+	public ShowWikiFolderEvent(BinderInfo binderInfo, ViewReady viewReady) {
 		super();
 		m_viewReady  = viewReady;
 		m_binderInfo = binderInfo;
@@ -88,7 +87,7 @@ public class ShowPhotoAlbumFolderEvent extends VibeEventBase<ShowPhotoAlbumFolde
 	 */
 	@Override
 	protected void doDispatch(Handler handler) {
-		handler.onShowPhotoAlbumFolder(this);
+		handler.onShowWikiFolder(this);
 	}
 	
 	/**
@@ -113,7 +112,7 @@ public class ShowPhotoAlbumFolderEvent extends VibeEventBase<ShowPhotoAlbumFolde
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.SHOW_PHOTO_ALBUM_FOLDER;
+		return TeamingEvents.SHOW_WIKI_FOLDER;
 	}
 		
 	/**
