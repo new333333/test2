@@ -110,7 +110,7 @@ Liferay portal-impl.jar 4.3.0
 Liferay portal-kernel.jar 4.3.0
 Liferay portal-service.jar 4.3.0
 Liferay util-java.jar 4.3.0 (needed by util-taglib)
-Liquibase 2.0.3 
+Liquibase 2.0.5
 Liquibase Hibernate integration 2.0.0
 Liquibase MS SQL Server Extensions 1.2.0
 Liquibase Oracle Extensions 1.2.0
