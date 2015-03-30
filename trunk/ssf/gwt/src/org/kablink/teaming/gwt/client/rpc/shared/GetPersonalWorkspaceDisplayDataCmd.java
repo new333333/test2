@@ -30,54 +30,67 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.server.util;
 
-import javax.servlet.http.HttpServletRequest;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.rpc.shared.PhotoAlbumDisplayDataRpcResponseData;
-import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 /**
- * Helper methods for GWT photo album folder views.
- *
+ * This class holds all of the information necessary to execute the
+ * 'get personal workspace display data' command.
+ * 
  * @author drfoster@novell.com
  */
-public class GwtPhotoAlbumHelper {
-	protected static Log m_logger = LogFactory.getLog(GwtPhotoAlbumHelper.class);
-
+public class GetPersonalWorkspaceDisplayDataCmd extends VibeRpcCmd {
+	private BinderInfo	m_binderInfo;	//
+	
 	/*
-	 * Class constructor that prevents this class from being
-	 * instantiated.
+	 * Class constructor.
+	 * 
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
 	 */
-	private GwtPhotoAlbumHelper() {
-		// Nothing to do.
+	private GetPersonalWorkspaceDisplayDataCmd() {
+		// Initialize the super class.
+		super();		
+	}
+
+	/**
+	 * Class constructor.
+	 * 
+	 * @param binderInfo
+	 */
+	public GetPersonalWorkspaceDisplayDataCmd(BinderInfo binderInfo) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameter.
+		setBinderInfo(binderInfo);
 	}
 	
 	/**
-	 * Returns a PhotoAlbumDisplayDataRpcResponseData for the given
-	 * photo album folder.
-	 * 
-	 * @param request
-	 * @param bs
-	 * @param folderId
+	 * Get'er methods.
 	 * 
 	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public static PhotoAlbumDisplayDataRpcResponseData getPhotoAlbumDisplayData(HttpServletRequest request, AllModulesInjected bs, Long folderId) throws GwtTeamingException {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtPhotoAlbumHelper.getPhotoAlbumDisplayData()");
-		try {
-//!			...this needs to be implemented...
-			return new PhotoAlbumDisplayDataRpcResponseData();
-		}
-		
-		finally {
-			gsp.stop();
-		}
+	public BinderInfo getBinderInfo() {return m_binderInfo;}	
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setBinderInfo(BinderInfo binderInfo) {m_binderInfo = binderInfo;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_PERSONAL_WORKSPACE_DISPLAY_DATA.ordinal();
 	}
 }

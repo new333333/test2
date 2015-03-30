@@ -198,6 +198,7 @@ import org.kablink.teaming.gwt.server.util.GwtLogHelper;
 import org.kablink.teaming.gwt.server.util.GwtMobileDeviceHelper;
 import org.kablink.teaming.gwt.server.util.GwtNetFolderHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
+import org.kablink.teaming.gwt.server.util.GwtPersonalWorkspaceHelper;
 import org.kablink.teaming.gwt.server.util.GwtPhotoAlbumHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtReportsHelper;
@@ -2442,6 +2443,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GetPhotoAlbumDisplayDataCmd gpaddCmd = ((GetPhotoAlbumDisplayDataCmd) cmd);
 			PhotoAlbumDisplayDataRpcResponseData responseData = GwtPhotoAlbumHelper.getPhotoAlbumDisplayData( req, this, gpaddCmd.getBinderId() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_PERSONAL_WORKSPACE_DISPLAY_DATA:
+		{
+			GetPersonalWorkspaceDisplayDataCmd gpwsddCmd = ((GetPersonalWorkspaceDisplayDataCmd) cmd);
+			PersonalWorkspaceDisplayDataRpcResponseData responseData = GwtPersonalWorkspaceHelper.getPersonalWorkspaceDisplayData( req, this, gpwsddCmd.getBinderInfo() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

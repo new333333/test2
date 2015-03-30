@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.binderviews.MicroBlogFolderView;
 import org.kablink.teaming.gwt.client.binderviews.MilestoneFolderView;
 import org.kablink.teaming.gwt.client.binderviews.MirroredFileFolderView;
 import org.kablink.teaming.gwt.client.binderviews.NetFoldersWSView;
+import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspaceView;
 import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspacesView;
 import org.kablink.teaming.gwt.client.binderviews.PhotoAlbumFolderView;
 import org.kablink.teaming.gwt.client.binderviews.ProjectManagementWSView;
@@ -102,6 +103,7 @@ import org.kablink.teaming.gwt.client.event.ShowMicroBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowMilestoneFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowMirroredFileFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowNetFoldersWSEvent;
+import org.kablink.teaming.gwt.client.event.ShowPersonalWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.ShowPersonalWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.ShowPhotoAlbumFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowProjectManagementWSEvent;
@@ -182,6 +184,7 @@ public class ContentControl extends Composite
 		ShowMilestoneFolderEvent.Handler,
 		ShowMirroredFileFolderEvent.Handler,
 		ShowNetFoldersWSEvent.Handler,
+		ShowPersonalWorkspaceEvent.Handler,
 		ShowPersonalWorkspacesEvent.Handler,
 		ShowPhotoAlbumFolderEvent.Handler,
 		ShowProjectManagementWSEvent.Handler,
@@ -239,6 +242,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_MILESTONE_FOLDER,
 		TeamingEvents.SHOW_MIRRORED_FILE_FOLDER,
 		TeamingEvents.SHOW_NET_FOLDERS_WORKSPACE,
+		TeamingEvents.SHOW_PERSONAL_WORKSPACE,
 		TeamingEvents.SHOW_PERSONAL_WORKSPACES,
 		TeamingEvents.SHOW_PHOTO_ALBUM_FOLDER,
 		TeamingEvents.SHOW_PROJECT_MANAGEMENT_WORKSPACE,
@@ -1127,8 +1131,13 @@ public class ContentControl extends Composite
 						}
 							
 						case USER:
-							// These aren't handled!  Let things take 
-							// the default flow.
+							boolean showGwtPWS = PersonalWorkspaceView.SHOW_GWT_PERSONAL_WORKSPACE;	//! DRF (20150318)
+							if (showGwtPWS) {
+								// Fire the event that will display the
+								// Personal Workspace view.
+								GwtTeaming.fireEvent( new ShowPersonalWorkspaceEvent( bi, viewReady ) );
+								m_viewMode = ViewMode.GWT_CONTENT_VIEW;
+							}
 							break;
 						
 						default:
@@ -2262,6 +2271,36 @@ public class ContentControl extends Composite
 		// Create a NetFoldersWSView widget for the selected binder.
 		NetFoldersWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
 	}
+	
+	/**
+	 * Handles ShowPersonalWorkspaceEvent's received by this class.
+	 * 
+	 * Implements the ShowPersonalWorkspaceEvent.Handler.onShowPersonalWorkspace() method.
+	 */
+	@Override
+	public void onShowPersonalWorkspace( ShowPersonalWorkspaceEvent event )
+	{
+		// Create a PersonalWorkspaceView widget for the selected
+		// binder.
+		PersonalWorkspaceView.createAsync(
+				event.getBinderInfo(),
+				event.getViewReady(), 
+				new ViewClient()
+		{
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in asynchronous provider.
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( ViewBase pwsView )
+			{
+				pwsView.setViewSize();
+				m_mainPage.getMainContentLayoutPanel().showWidget( pwsView );
+			}// end onSuccess()
+		} );
+	}// end onShowPersonalWorkspace()
 	
 	/**
 	 * Handles ShowPersonalWorkspacesEvent's received by this class.
