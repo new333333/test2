@@ -81,7 +81,7 @@ var ss_landing_page_editor = true;
 // m_landingPageConfig holds the string that defines the content of this landing page and is referenced by the GWT code.
 var m_landingPageConfig = null;
 
-m_landingPageConfig = { configData : '<ssf:escapeJavaScript value="${ssDefinitionEntry.customAttributes[property_name].value}" />', mashupPropertyName: '<ssf:escapeJavaScript value="${ss_mashupPropertyName}" />', binderId: '', language : '${ssUser.locale.language}', contentCss : '<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>', propertiesXML : '<ssf:escapeJavaScript value="${ss_mashupProperties}" />', tinyMCELang : '${tinyMCELang}' };
+m_landingPageConfig = { configData : '<ssf:escapeJavaScript value="${ssDefinitionEntry.customAttributes[property_name].value}" />', mashupPropertyName: '<ssf:escapeJavaScript value="${ss_mashupPropertyName}" />', binderId: '', language : '${ssUser.locale.language}', contentCss : '<html:rootPath/>css/view_css_tinymce_editor.css', propertiesXML : '<ssf:escapeJavaScript value="${ss_mashupProperties}" />', tinyMCELang : '${tinyMCELang}' };
 
 // Create an array of objects where each object holds the name and id of a file attachment.
 <c:if test="${!empty ssBinder}">
