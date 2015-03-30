@@ -57,13 +57,10 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.hibernate.NonUniqueObjectException;
-
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
@@ -3256,63 +3253,41 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	 */
 	private ArrayList<Binder> findAllBindersWithTeamMembershipDeprecated()
 	{
-		ArrayList<Binder> listOfBinders;
-		List<Map> mapOfBinders;
+		List<Binder> listOfAllBinders;
+		ArrayList<Binder> listOfBindersWithTeamMembership;
 		
-		listOfBinders = new ArrayList<Binder>();
+		listOfBindersWithTeamMembership = new ArrayList<Binder>();
+		listOfAllBinders = null;
 		
 		// Find all binders
 		{
-			List<String> fieldNames;
+	    	FilterControls filter;
 
-			// We use search engine to get the list of binders.
-			Criteria crit = new Criteria().add(
-											eq( Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER ) )
-											.addOrder( new Order( Constants.SORT_TITLE_FIELD, true ) );
-	
-			QueryBuilder qb = new QueryBuilder( true, false );
-			SearchObject so = qb.buildQuery( crit.toQuery() );
-	
-			fieldNames = SearchUtils.fieldNamesList(
-												Constants.DOCID_FIELD,
-												Constants.ENTITY_PATH,
-												Constants.TITLE_FIELD,
-												Constants.ENTITY_FIELD );
-	
-			Hits hits = executeLuceneQueryInternal(
-												so,
-												Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
-												0,
-												Integer.MAX_VALUE,
-												fieldNames );
-			if ( hits == null )
-				return listOfBinders;
+	    	filter = new FilterControls();
+	    	filter.add( "deleted", Boolean.FALSE );
+			listOfAllBinders = getCoreDao().loadObjects( Binder.class, filter, RequestContextHolder.getRequestContext().getZoneId() );
 			
-			mapOfBinders = SearchUtils.getSearchEntries( hits );
 		}
 		
 		// Look for binders that have team membership
+		if ( listOfAllBinders != null && listOfAllBinders.size() > 0 )
 		{
-			Iterator<Map> teamsIter;
+			Iterator<Binder> binderIter;
 			
-			teamsIter = mapOfBinders.iterator();
-			while ( teamsIter.hasNext() )
+			binderIter = listOfAllBinders.iterator();
+			while ( binderIter.hasNext() )
 			{
-				Map binderMap;
-				String binderId;
 				Binder binder;
 				Set<Long> membership;
 
-				binderMap = teamsIter.next();
-				binderId = (String) binderMap.get( Constants.DOCID_FIELD );
-				binder = getBinderWithoutAccessCheck( Long.valueOf( binderId ) );
+				binder = binderIter.next();
 				
 				// Does this binder have team membership defined?
 				membership = getTeamMemberIdsDeprecated( binder );
 				if ( membership != null && membership.size() > 0 )
 				{
 					// Yes
-					listOfBinders.add( binder );
+					listOfBindersWithTeamMembership.add( binder );
 				}
 				else {
 					// No - We won't be needing this binder. Kick it out of the session to keep memory usage from going out of control
@@ -3321,7 +3296,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 		}
 		
-		return listOfBinders;
+		return listOfBindersWithTeamMembership;
 	}
 	
 	/**
