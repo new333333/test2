@@ -91,7 +91,7 @@
 		    --%><c:when test="${ssUser.locale == 'zh_TW'}">language: 'tw',</c:when><%--
 		    --%><c:otherwise>language: '${ssUser.locale.language}',</c:otherwise><%--
 			--%></c:choose>
-			content_css : "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
+			content_css : "<html:rootPath/>css/view_css_tinymce_editor.css",
 			relative_urls : false, 
 			remove_script_host : false,
 			// document_base_url : "<ssf:fileUrl entity="${ssDefinitionEntry}" baseUrl="true"/>",

@@ -62,7 +62,7 @@ tinyMCE.init({
     --%><c:when test="${ssUser.locale.language == 'zh'}">language: 'zh',</c:when><%--
     --%><c:otherwise>language: 'en',</c:otherwise><%--
 --%></c:choose>
-  content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
+  content_css: "<html:rootPath/>css/view_css_tinymce_editor.css",
   relative_urls: false, 
   width: "100%",
   accessibility_focus: true,
