@@ -480,6 +480,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetPasswordPolicyConfig();
 	String rpcFailure_GetPasswordPolicyInfo();
 	String rpcFailure_GetPersonalPreferences();
+	String rpcFailure_GetPersonalWorkspaceDisplayData();
 	String rpcFailure_GetPhotoAlbumDisplayData();
 	String rpcFailure_GetPreviousFolderEntryInfo();
 	String rpcFailure_GetPreviousFolderEntryInfo_NoAccess();
@@ -779,6 +780,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_NetFoldersWSView();
 	String codeSplitFailure_NetFolderSyncStatisticsDlg();
 	String codeSplitFailure_PersonalWorkspacesView();
+	String codeSplitFailure_PersonalWorkspaceView();
 	String codeSplitFailure_PhotoAlbumFolderView();
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfileEntryDlg();

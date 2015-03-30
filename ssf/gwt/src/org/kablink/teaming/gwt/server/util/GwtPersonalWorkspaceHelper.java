@@ -38,42 +38,43 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.rpc.shared.PhotoAlbumDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.PersonalWorkspaceDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.util.AllModulesInjected;
 
 /**
- * Helper methods for GWT photo album folder views.
+ * Helper methods for GWT personal workspace binder views.
  *
  * @author drfoster@novell.com
  */
-public class GwtPhotoAlbumHelper {
-	protected static Log m_logger = LogFactory.getLog(GwtPhotoAlbumHelper.class);
+public class GwtPersonalWorkspaceHelper {
+	protected static Log m_logger = LogFactory.getLog(GwtPersonalWorkspaceHelper.class);
 
 	/*
 	 * Class constructor that prevents this class from being
 	 * instantiated.
 	 */
-	private GwtPhotoAlbumHelper() {
+	private GwtPersonalWorkspaceHelper() {
 		// Nothing to do.
 	}
 	
 	/**
-	 * Returns a PhotoAlbumDisplayDataRpcResponseData for the given
+	 * Returns a PersonalWorkspaceDisplayDataRpcResponseData for the given
 	 * photo album folder.
 	 * 
 	 * @param request
 	 * @param bs
-	 * @param folderId
+	 * @param binderInfo
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static PhotoAlbumDisplayDataRpcResponseData getPhotoAlbumDisplayData(HttpServletRequest request, AllModulesInjected bs, Long folderId) throws GwtTeamingException {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtPhotoAlbumHelper.getPhotoAlbumDisplayData()");
+	public static PersonalWorkspaceDisplayDataRpcResponseData getPersonalWorkspaceDisplayData(HttpServletRequest request, AllModulesInjected bs, BinderInfo binderInfo) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtPersonalWorkspaceHelper.getPersonalWorkspaceDisplayData()");
 		try {
 //!			...this needs to be implemented...
-			return new PhotoAlbumDisplayDataRpcResponseData();
+			return new PersonalWorkspaceDisplayDataRpcResponseData();
 		}
 		
 		finally {

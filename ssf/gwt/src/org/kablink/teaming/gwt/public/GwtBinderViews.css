@@ -401,6 +401,14 @@
 	.vibe-discussionWSView_TitlePanel, .vibe-teamWSView_TitlePanel
 	{
 	}
+	
+	/* ...Start:  Personal Workspace view styles. */
+		.vibe-personalWorkspaceView_AccessoriesPanel {}
+		.vibe-personalWorkspaceView_DashboardPanel   {}
+		.vibe-personalWorkspaceView_FooterPanel      {}
+		.vibe-personalWorkspaceView_HeaderPanel      {}
+		.vibe-personalWorkspaceView_MainPanel        {}
+	/* ...End:  Personal Workspace view styles. */
 /* End:  GWT workspace view styles. */
 
 /* Start:  Add files dialog styles. */

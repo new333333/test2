@@ -30,54 +30,38 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.server.util;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.rpc.shared.PhotoAlbumDisplayDataRpcResponseData;
-import org.kablink.teaming.util.AllModulesInjected;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Helper methods for GWT photo album folder views.
- *
+ * This class holds the response data for RPC commands that return
+ * personal workspace display data.
+ * 
  * @author drfoster@novell.com
  */
-public class GwtPhotoAlbumHelper {
-	protected static Log m_logger = LogFactory.getLog(GwtPhotoAlbumHelper.class);
-
-	/*
-	 * Class constructor that prevents this class from being
-	 * instantiated.
-	 */
-	private GwtPhotoAlbumHelper() {
-		// Nothing to do.
-	}
+public class PersonalWorkspaceDisplayDataRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	
 	/**
-	 * Returns a PhotoAlbumDisplayDataRpcResponseData for the given
-	 * photo album folder.
+	 * Class constructor.
 	 * 
-	 * @param request
-	 * @param bs
-	 * @param folderId
+	 * For GWT serialization, must have a zero parameter
+	 * constructor.
+	 */
+	public PersonalWorkspaceDisplayDataRpcResponseData() {
+		// Initialize the super class.
+		super();
+	}
+
+	/**
+	 * Get'er methods.
 	 * 
 	 * @return
-	 * 
-	 * @throws GwtTeamingException
 	 */
-	public static PhotoAlbumDisplayDataRpcResponseData getPhotoAlbumDisplayData(HttpServletRequest request, AllModulesInjected bs, Long folderId) throws GwtTeamingException {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtPhotoAlbumHelper.getPhotoAlbumDisplayData()");
-		try {
-//!			...this needs to be implemented...
-			return new PhotoAlbumDisplayDataRpcResponseData();
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
 }

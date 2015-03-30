@@ -42,7 +42,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.WikiDisplayDataRpcResponseData;
 import org.kablink.teaming.util.AllModulesInjected;
 
 /**
- * Helper methods for GWT collection points.
+ * Helper methods for GWT Wiki folder views.
  *
  * @author drfoster@novell.com
  */
