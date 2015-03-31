@@ -39,6 +39,7 @@
 <%@ page import="java.lang.reflect.Method" %>
 
 <c:set var="showElement" value="1"/>
+<c:set var="emailElement" value="0"/>
 <c:if test="${ss_profile_entry_form == 'true'}">
   <c:if test="${property_name == 'firstName' || 
                 property_name == 'middleName' || 
@@ -50,6 +51,13 @@
     <c:set var="showElement" value="0"/>
   </c:if>
 </c:if>
+<c:if test="${property_name == 'emailAddress' || 
+                property_name == 'mobileEmailAddress' || 
+                property_name == 'txtEmailAddress' ||
+                property_name == 'bccEmailAddress'}">
+    <c:set var="emailElement" value="1"/>
+</c:if>
+
 <c:if test="${showElement == '1'}">
 <%
 	//Get the item being displayed
@@ -79,7 +87,9 @@
 </c:if>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
 <input type="text" class="ss_text" name="<%= property_name %>" 
-	id="<%= property_name %>" value="<%= value %>">
+	id="<%= property_name %>" value="<%= value %>" 
+	<c:if test="${emailElement == '1'}"> 
+	onBlur="validateEmailAddress(this, '<ssf:escapeJavaScript><ssf:nlt tag="email.apparentInvalidEmailFormat" /></ssf:escapeJavaScript>');"</c:if> >
 </c:if>
 <c:if test="${!empty ssReadOnlyFields[property_name]}"><%= value %>&nbsp;</c:if>
 

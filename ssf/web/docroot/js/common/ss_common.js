@@ -9310,6 +9310,12 @@ function ss_showEmailLinks() {
 	}
 }
 
+function validateEmailAddress(obj, msg) {
+	if (obj.value != "" && obj.value.indexOf("@") < 0) {
+		alert(msg);
+	}
+}
+
 // Session timeout
 function ss_startSessionTimoutTimer(maxInactiveInterval) {
 	// If we're running in the GWT UI...
