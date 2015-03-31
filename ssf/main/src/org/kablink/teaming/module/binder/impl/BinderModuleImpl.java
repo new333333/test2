@@ -3263,10 +3263,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		{
 	    	FilterControls filter;
 
+	    	// Don't use the search index to look for binders!
 	    	filter = new FilterControls();
 	    	filter.add( "deleted", Boolean.FALSE );
+	    	filter.add( "teamMembershipInherited", Boolean.FALSE );
 			listOfAllBinders = getCoreDao().loadObjects( Binder.class, filter, RequestContextHolder.getRequestContext().getZoneId() );
-			
+			if ( listOfAllBinders != null )
+			{
+				logger.info( "------------> Found " + listOfAllBinders.size() + " binders that have might team membership that needs to be upgraded." );
+			}
 		}
 		
 		// Look for binders that have team membership
