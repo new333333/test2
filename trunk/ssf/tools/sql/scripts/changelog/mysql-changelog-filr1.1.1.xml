@@ -389,4 +389,16 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="40">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="workArea_wafms"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="workArea_wafms" tableName="SS_WorkAreaFunctionMemberships" unique="false">
+            <column name="workAreaId"/>
+            <column name="workAreaType"/>
+        </createIndex>
+    </changeSet>
+    
 </databaseChangeLog>
