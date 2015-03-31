@@ -197,7 +197,8 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 	</label>
 <c:if test="${empty ssReadOnlyFields['emailAddress']}">
 	<input type="text" class="ss_text" name="emailAddress" id="emailAddress"
-		value="${ssDefinitionEntry.emailAddress}">
+		value="${ssDefinitionEntry.emailAddress}" 
+		onBlur="validateEmailAddress(this, '<ssf:escapeJavaScript><ssf:nlt tag="email.apparentInvalidEmailFormat" /></ssf:escapeJavaScript>');">
 </c:if>
 <c:if test="${!empty ssReadOnlyFields['emailAddress']}">${ssDefinitionEntry.emailAddress}&nbsp;</c:if>
 	</div>
@@ -209,7 +210,8 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 	</label>
 <c:if test="${empty ssReadOnlyFields['mobileEmailAddress']}">
 	<input type="text" class="ss_text" name="mobileEmailAddress" id="mobileEmailAddress"
-		value="${ssDefinitionEntry.mobileEmailAddress}">
+		value="${ssDefinitionEntry.mobileEmailAddress}" 
+		onBlur="validateEmailAddress(this, '<ssf:escapeJavaScript><ssf:nlt tag="email.apparentInvalidEmailFormat" /></ssf:escapeJavaScript>');">
 </c:if>
 <c:if test="${!empty ssReadOnlyFields['mobileEmailAddress']}">${ssDefinitionEntry.mobileEmailAddress}&nbsp;</c:if>
 	</div>
@@ -221,7 +223,8 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 	</label>
 <c:if test="${empty ssReadOnlyFields['txtEmailAddress']}">
 	<input type="text" class="ss_text" name="txtEmailAddress" id="txtEmailAddress"
-		value="${ssDefinitionEntry.txtEmailAddress}">
+		value="${ssDefinitionEntry.txtEmailAddress}" 
+		onBlur="validateEmailAddress(this, '<ssf:escapeJavaScript><ssf:nlt tag="email.apparentInvalidEmailFormat" /></ssf:escapeJavaScript>');">
 </c:if>
 <c:if test="${!empty ssReadOnlyFields['txtEmailAddress']}">${ssDefinitionEntry.txtEmailAddress}&nbsp;</c:if>
 	</div>
