@@ -13,8 +13,8 @@
       <key column="workAreaFunctionMembershipId"/>
       <element not-null="true" type="long" column="memberId"/>
     </set>
-    <property name="workAreaId" column="workAreaId" not-null="true" type="long"/>
-    <property name="workAreaType" length="16" column="workAreaType" not-null="true"/>
+    <property name="workAreaId" column="workAreaId" not-null="true" type="long" index="workArea_wafms"/>
+    <property name="workAreaType" length="16" column="workAreaType" not-null="true" index="workArea_wafms"/>
     <property name="zoneId" not-null="true"/>
     <property name="functionId" column="functionId" not-null="true" type="long"/>
   </class>
