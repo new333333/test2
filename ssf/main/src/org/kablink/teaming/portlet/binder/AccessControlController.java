@@ -125,7 +125,7 @@ public class AccessControlController extends AbstractBinderController {
 		response.setRenderParameter(WebKeys.URL_WORKAREA_ID, workArea.getWorkAreaId().toString());
 		response.setRenderParameter(WebKeys.URL_WORKAREA_TYPE, workArea.getWorkAreaType());
 		//The form is only used in Vibe. But we allow it for informational purposes only in Filr (i.e., no changes allowed).
-		if (Utils.checkIfVibe() || SPropsUtil.getBoolean("keepFilrRolesAndRightsInVibe", false)) {
+		if (Utils.checkIfVibe() || Utils.checkIfKablink() || SPropsUtil.getBoolean("keepFilrRolesAndRightsInVibe", false)) {
 			//Note: setting "keepFilrRolesAndRightsInVibe" to true in ssf-ext.properties will also allow the Vibe access control form to be 
 			//  used to change access settings. But only if you know the access control page URL. Caution, this means that regular users 
 			//  could then set various sharing rights on their owned folders
