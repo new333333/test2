@@ -197,13 +197,13 @@ public class GwtRpcController extends VibeXsrfProtectedServiceServlet
         }
         
         catch (RpcTokenException ex) {
-            getServletContext().log( "An RpcTokenException was thrown while processing this call.", ex );
+            m_logger.error( "An RpcTokenException was thrown while processing this call.", ex );
             return RPC.encodeResponseForFailure( null, ex );
         }
         
         catch (IncompatibleRemoteServiceException ex)
         {
-            getServletContext().log( "An IncompatibleRemoteServiceException was thrown while processing this call.", ex );
+        	m_logger.error( "An IncompatibleRemoteServiceException was thrown while processing this call.", ex );
             return RPC.encodeResponseForFailure( null, ex );
         }
     }// end processCall()
