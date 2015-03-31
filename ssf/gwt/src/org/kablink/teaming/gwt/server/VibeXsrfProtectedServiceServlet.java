@@ -72,7 +72,16 @@ public class VibeXsrfProtectedServiceServlet extends XsrfProtectedServiceServlet
 	 */
 	@Override
 	public void validateXsrfToken(RpcToken token, Method method) throws RpcTokenException {
-		// Simply call the super class' version of this method.
-		super.validateXsrfToken(token, method);
+		try {
+			// Simply call the super class' version of this method.
+			super.validateXsrfToken(token, method);
+		}
+		
+		catch (IllegalArgumentException iae) {
+			// An IllegalArgumentException will be thrown if the
+			// validation detects a duplicate session cookie.  We want
+			// that displayed to the user as an RPC token exception.
+			throw new RpcTokenException(iae.getMessage());
+		}
 	}
 }
