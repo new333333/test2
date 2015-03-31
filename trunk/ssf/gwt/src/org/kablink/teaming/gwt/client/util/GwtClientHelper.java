@@ -803,6 +803,20 @@ public class GwtClientHelper {
 		else reply = DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT);
 		return reply;
 	}
+
+	/*
+	 * Returns the detailed information from a Throwable.
+	 */
+	private static String getThrowableDetails(Throwable t) {
+		String reply = t.getLocalizedMessage();
+		if (!(hasString(reply))) {
+			reply = t.getMessage();
+			if (!(hasString(reply))) {
+				reply = t.toString();
+			}
+		}
+		return reply;
+	}
 	
 	/**
      * Returns the client's timezone offset.
@@ -1012,17 +1026,11 @@ public class GwtClientHelper {
 				// gets displayed to the user.
 				displayAlert   =
 				ensureMsgPatch = true;
-				cause          = messages.rpcFailure_XsrfTokenFailure();
+				cause = patchMessage(messages.rpcFailure_XsrfTokenFailure(), getThrowableDetails(t));
 			}
 			
 			else {
-				cause = t.getLocalizedMessage();
-				if (!(hasString(cause))) {
-					cause = t.getMessage();
-					if (!(hasString(cause))) {
-						cause = t.toString();
-					}
-				}
+				cause = getThrowableDetails(t);
 			}
 			
 			if (!(hasString(cause))) {
