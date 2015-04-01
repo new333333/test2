@@ -698,7 +698,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			if(titles != null && titles.size() > 0) {
 				BooleanQuery titleQuery = new BooleanQuery();
 				for(String title:titles) {
-					titleQuery.add(new TermQuery(new Term(Constants.TITLE_FIELD, title.toLowerCase())), BooleanClause.Occur.SHOULD);
+					titleQuery.add(new TermQuery(new Term(Constants.SORT_TITLE_FIELD, title.toLowerCase())), BooleanClause.Occur.SHOULD);
 				}
 				QueryWrapperFilter titleFilter = new QueryWrapperFilter(titleQuery);
 				if(aclFilter == null) {
@@ -728,7 +728,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
 					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, null, null, null, false);
 
-			end(startTime, "searchFolderOneLevel", contextUserId, aclQueryStr, titles, query, sort, offset, size, tempHits.length());
+			end(startTime, "searchNetFolderOneLevel", contextUserId, aclQueryStr, titles, query, sort, offset, size, tempHits);
 			
 			return tempHits;
 		} catch (IOException e) {
@@ -1357,10 +1357,12 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 	}
 	
-	private void end(long begin, String methodName, Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size, int resultLength) {
+	private void end(long begin, String methodName, Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size, org.kablink.teaming.lucene.Hits hits) {
 		endStat(begin, methodName);
+		int resultLength = hits.length();
 		if(logger.isTraceEnabled()) {
-			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength + 
+			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", resultSize=" + resultLength + 
+					", result=" + hits.getDocuments() + 
 					", contextUserId=" + contextUserId + 
 					", aclQueryStr=[" + aclQueryStr + 
 					"], titles=" + titles +
