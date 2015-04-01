@@ -385,6 +385,7 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
+import org.kablink.util.StringUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.servlet.StringServletResponse;
@@ -919,11 +920,17 @@ public class GwtServerHelper {
 				return;
 			}
 			
-			// If the quick filter doesn't end with an '*'...
-			if (!(quickFilter.endsWith("*"))) {
-				// ...add one.
-				quickFilter += "*";
-			}
+			// If the quick filter doesn't contain a '*', add one.
+			String quickFilter_WC;
+			boolean hasWC = quickFilter.contains("*");
+			if (hasWC)
+			     quickFilter_WC =  quickFilter;
+			else quickFilter_WC = (quickFilter + "*");
+			
+			String quickFilter_NoWC;
+			if (hasWC)
+			     quickFilter_NoWC = StringUtil.replace(quickFilter, "*", "");
+			else quickFilter_NoWC = quickFilter;
 	
 			// Create a SearchFilter from whatever filter is already in
 			// affect...
@@ -934,23 +941,25 @@ public class GwtServerHelper {
 			}
 	
 			// ...add in the quick filter...
-			SearchFilter sfQF = new SearchFilter(true);
-	    	sfQF.newCurrentFilterTermsBlock(true);
+			SearchFilter sfQF = new SearchFilter(false);	// false -> These filter terms...
+	    	sfQF.newCurrentFilterTermsBlock(     false);	// ...should be or'ed together. 
 	    	if (filterUserList) {
 	    		SearchFilter sfUserQF = new SearchFilter(false);
 	    		if (quickFilter.startsWith("@")) {
-	        		sfUserQF.addEmailDomainFilter(quickFilter.substring(1), true);
+	        		sfUserQF.addEmailDomainFilter(quickFilter_WC.substring(  1), true );
+	        		sfUserQF.addEmailDomainFilter(quickFilter_NoWC.substring(1), false);
 	    		}
 	    		else {
-		    		sfUserQF.addTitleFilter(      quickFilter, true);
-		    		sfUserQF.addEmailFilter(      quickFilter, true);
-		    		sfUserQF.addEmailDomainFilter(quickFilter, true);
-		    		sfUserQF.addLoginNameFilter(  quickFilter, true);
+		    		sfUserQF.addTitleFilter(      quickFilter_WC, true); sfUserQF.addTitleFilter(      quickFilter_NoWC, false);
+		    		sfUserQF.addEmailFilter(      quickFilter_WC, true); sfUserQF.addEmailFilter(      quickFilter_NoWC, false);
+		    		sfUserQF.addEmailDomainFilter(quickFilter_WC, true); sfUserQF.addEmailDomainFilter(quickFilter_NoWC, false);
+		    		sfUserQF.addLoginNameFilter(  quickFilter_WC, true); sfUserQF.addLoginNameFilter(  quickFilter_NoWC, false);
 	    		}
 	    		sfQF.appendFilter(sfUserQF.getFilter());
 	    	}
 	    	else {
-	    		sfQF.addTitleFilter(quickFilter, true);
+	    		sfQF.addTitleFilter(quickFilter_WC,   true );
+	    		sfQF.addTitleFilter(quickFilter_NoWC, false);
 	    	}
 	    	sf.appendFilter(sfQF.getFilter());
 	
