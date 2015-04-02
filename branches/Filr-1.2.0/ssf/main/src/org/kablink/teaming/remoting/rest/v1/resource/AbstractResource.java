@@ -1288,7 +1288,11 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 } catch (NoFolderEntryByTheIdException e) {
                 }
             } else {
-                entity = getSharingModule().getSharedEntityWithoutAccessCheck(item);
+                try {
+                    entity = getSharingModule().getSharedEntityWithoutAccessCheck(item);
+                } catch (NoBinderByTheIdException e) {
+                } catch (NoFolderEntryByTheIdException e) {
+                }
             }
             pair.setB(entity);
         }
