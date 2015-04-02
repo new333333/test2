@@ -51,6 +51,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class ContextListenerPostSpring implements ServletContextListener {
 
 	private static volatile boolean shutdownInProgress = false;
+	private static volatile boolean startupInProgress = true;
 	
 	private static Log logger = LogFactory.getLog(ContextListenerPostSpring.class);
 
@@ -71,6 +72,8 @@ public class ContextListenerPostSpring implements ServletContextListener {
 				SimpleProfiler.enable();
 			else
 				SimpleProfiler.disable();
+			
+			startupInProgress = false;
 		}
 		catch(Throwable t) {
 			logger.error("Error during startup", t);
@@ -88,6 +91,10 @@ public class ContextListenerPostSpring implements ServletContextListener {
 
 	public static boolean isShutdownInProgress() {
 		return shutdownInProgress;
+	}
+	
+	public static boolean isStartupInProgress() {
+		return startupInProgress;
 	}
 	
 	private void initAccessTokens() {
