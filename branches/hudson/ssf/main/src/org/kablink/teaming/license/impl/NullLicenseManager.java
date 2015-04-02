@@ -76,12 +76,12 @@ public class NullLicenseManager implements LicenseManager {
 	
 	public boolean isAuthorizedByLicense(String featureName)
 	{
-			return false;
+			return ((null != featureName) && featureName.equalsIgnoreCase(ObjectKeys.LICENSE_TYPE_KABLINK));
 	}
 	
 	public boolean isAuthorizedByLicense(String featureName, boolean ignoreExpiration)
 	{
-			return false;
+			return ((null != featureName) && featureName.equalsIgnoreCase(ObjectKeys.LICENSE_TYPE_KABLINK));
 	}
 	
 	public String getLicenseType() 
