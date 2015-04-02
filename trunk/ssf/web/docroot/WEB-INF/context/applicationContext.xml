@@ -163,7 +163,7 @@
 	<bean id="moduleEventListenerManagerInterceptor" class="org.kablink.teaming.module.interceptor.EventListenerManagerInterceptor">
 	</bean>
 	
-	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	<bean id="scheduler" class="org.kablink.teaming.spring.scheduling.quartz.SchedulerFactoryBean">
 		<property name="dataSource"><ref bean="dataSource"/></property>
 		<property name="autoStartup"><value>${org.quartz.auto.startup}</value></property>
 		<!--Need enough time for modules to startup and possibly register jobs -->
