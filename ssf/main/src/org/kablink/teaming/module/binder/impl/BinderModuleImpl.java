@@ -57,10 +57,13 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.hibernate.NonUniqueObjectException;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
@@ -1952,6 +1955,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 		List<Binder> children = source.getBinders();
 		for (Binder child : children) {
+			// If the user doesn't have rights to copy this binder...
+			if (!(testAccess(child, BinderOperation.copyBinder))) {
+				// ...skip it.
+				continue;
+			}
+			
 			// If the binder is not in the trash...
 			if (!(TrashHelper.isBinderPredeleted(child))) {
 				// ...recursively copy that too.
