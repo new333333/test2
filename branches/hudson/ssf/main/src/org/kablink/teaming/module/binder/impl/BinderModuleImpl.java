@@ -1955,6 +1955,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 		List<Binder> children = source.getBinders();
 		for (Binder child : children) {
+			// If the user doesn't have rights to copy this binder...
+			if (!(testAccess(child, BinderOperation.copyBinder))) {
+				// ...skip it.
+				continue;
+			}
+			
 			// If the binder is not in the trash...
 			if (!(TrashHelper.isBinderPredeleted(child))) {
 				// ...recursively copy that too.
