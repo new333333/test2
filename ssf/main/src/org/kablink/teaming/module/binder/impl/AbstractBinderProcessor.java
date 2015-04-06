@@ -1720,6 +1720,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        Binder binder = null;
        try {
 			binder = addBinder(destination, sampleDef, sampleBinderClass, inputData, null, null);
+			if (!(destination.getOwnerId().equals(binder.getOwnerId()))) {
+				// Bugzilla:  926037 and 926033:
+				//    We want to make the owner of the copied binder
+				//    the same as the owner of the binder being copied
+				//    into.
+				binder.setOwner(destination.getOwner());
+			}
 			//Also copy the configured definitions from the sample
 			binder.setDefinitions(sampleDefs);
 			//If moving share items, do that now
