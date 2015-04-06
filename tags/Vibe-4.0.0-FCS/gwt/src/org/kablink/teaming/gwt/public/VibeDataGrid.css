@@ -1,0 +1,106 @@
+/* */
+
+/* ########################################################################################################### */
+
+
+/* Start:  DataGrid styles for Novell Vibe */
+.dataGridWidget {}
+
+.dataGridFooter {
+	border-top: 2px solid #6f7277;
+	padding: 3px 15px;
+	text-align: left;
+	color: #4b4a4a;
+	text-shadow: #ddf 1px 1px 0;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+@sprite .dataGridHeader {
+	gwt-image: 'headerBackground'; 
+	background-repeat: no-repeat;
+	/*background-position: bottom; */
+	/* border-right: 1px solid #d2d5d1; */
+	/* border-top: 1px solid #d2d5d1;  */
+	border-bottom: 1px solid #ccc;  
+	padding: 2px 8px;
+	text-align: left;
+	color: #666666;
+	background-color: #ededed;
+	font-size: 11px;
+	overflow: hidden;
+	white-space: nowrap;
+	font-weight: normal;
+	text-shadow: 0px 0px 0 transparent;
+	height: 22px;
+}
+
+.dataGridCell {
+	padding: 3px 8px;
+	border: 0px;
+}
+
+.dataGridFirstColumnFooter {}
+.dataGridFirstColumnHeader {}
+.dataGridLastColumnFooter {}
+.dataGridLastColumnHeader {}
+
+.dataGridSortableHeader {
+	cursor: pointer;
+	font-weight : normal;
+}
+
+.dataGridSortableHeader:hover {
+	color: #135c8f;
+	background-color: #e0e0e0;
+	border-radius: 2px;
+}
+
+.dataGridSortedHeaderAscending {	font-weight: bold; color: #000;}
+.dataGridSortedHeaderDescending {font-weight: bold;  color: #000;}
+
+.dataGridEvenRow {background: #ffffff;}
+.dataGridEvenRowCell {	
+	border-right: 0px;
+	border-bottom: 1px solid #d2d5d1;
+	font-size: 0.95em;
+}
+
+.dataGridOddRow {background: #ffffff;}
+.dataGridOddRowCell {
+	border-right: 0px;
+	border-bottom: 1px solid #d2d5d1;
+	font-size: 0.95em;
+}
+
+.dataGridHoveredRow {background: #f6f6f6;}
+.dataGridHoveredRowCell {
+	border: 0px;
+	border-bottom: 1px solid #d2d5d1;
+}
+
+.dataGridKeyboardSelectedRow {background: #f6f6f6;}
+.dataGridKeyboardSelectedRowCell {
+	border: 0px;
+	border-bottom: 1px solid #d2d5d1;
+}
+
+.dataGridSelectedRow {
+	background: #cce9ee;
+	height: auto;
+	overflow: auto;
+}
+.dataGridSelectedRowCell {
+	color: #000;
+	border: 0px;
+	border-bottom: 1px solid #c4c4c4;
+}
+
+.dataGridKeyboardSelectedCell {}
+
+.dataGridFirstColumn {}
+.dataGridLastColumn {}
+/*.dataGridFirstColumn {border-left: 1px solid #d2d5d1;}
+.dataGridLastColumn {border-right: 1px solid #d2d5d1;}  */
+
+/* End: */

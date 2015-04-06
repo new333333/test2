@@ -1,0 +1,33 @@
+<module rename-to="gwtteaming">
+	<!-- Inherit the core GwtTeaing stuff. -->
+	<inherits name='org.kablink.teaming.gwt.GwtTeaming' />
+	
+	<!-- Add gwt-log support with a default level of `OFF` -->       
+	<inherits name='com.allen_sauer.gwt.log.gwt-log-OFF' />
+	
+ 	<!-- Other 'production only' module inherits go here. -->
+ 	
+	<!-- Production:  Support for all languages. -->
+	<extend-property name="locale" values="da"    />			<!-- Danish.                             -->
+	<extend-property name="locale" values="de"    />			<!-- German.                             -->
+	<extend-property name="locale" values="en"    />			<!-- English.                            -->
+	<extend-property name="locale" values="es"    />			<!-- Spanish.                            -->
+	<extend-property name="locale" values="fi"    />			<!-- Finnish.                            -->
+	<extend-property name="locale" values="fr"    />			<!-- French.                             -->
+	<extend-property name="locale" values="hu_HU" />			<!-- Hungarian.                          -->
+	<extend-property name="locale" values="it"    />			<!-- Italian.                            -->
+	<extend-property name="locale" values="ja"    />			<!-- Japanese.                           -->
+	<extend-property name="locale" values="nl"    />			<!-- Dutch.                              -->
+	<extend-property name="locale" values="pl"    />			<!-- Polish.                             -->
+	<extend-property name="locale" values="pt_BR" />			<!-- Portuguese.                         -->
+	<extend-property name="locale" values="tr_TR" />			<!-- Turkish (not officially supported.) -->
+	<extend-property name="locale" values="ru_RU" />			<!-- Russian.                            -->
+	<extend-property name="locale" values="sv"    />			<!-- Swedish.                            -->
+	<extend-property name="locale" values="cs_CZ" />			<!-- Czech.                              -->
+	<extend-property name="locale" values="uk_UA" />			<!-- Ukrainian.                          -->
+	<extend-property name="locale" values="zh_CN" />			<!-- Chinese - Simplified.               -->
+	<extend-property name="locale" values="zh_TW" />			<!-- Chinese - Traditional.              -->
+	
+	<set-property          name="locale" value="da,de,en,es,fi,fr,hu_HU,it,ja,nl,pl,pt_BR,tr_TR,ru_RU,sv,cs_CZ,uk_UA,zh_CN,zh_TW"  />	<!-- All possibilities.  -->
+	<set-property-fallback name="locale" value="en" />																					<!-- Default is English. -->
+</module>

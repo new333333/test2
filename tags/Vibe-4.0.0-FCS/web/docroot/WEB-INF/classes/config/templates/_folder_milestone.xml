@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="5" internalId="402883b90cc53079010cc539bf260011">
+  <attribute name="templateTitle" type="string">__template_folder_milestone</attribute>
+  <attribute name="templateDescription" type="description">__template_folder_milestone_description</attribute>
+  <attribute name="title" type="string">__template_folder_milestone</attribute>
+  <attribute name="description" type="description"></attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_milestone.png</attribute>
+  <attribute name="name" type="string">_folder_milestone</attribute>
+  <property name="library">false</property>
+  <property name="mirrored">false</property>
+  <property name="uniqueTitle">true</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="_milestoneFolder" databaseId="40288182131a1e4501131a3ae70a0049"/>
+  <definition name="_milestoneEntry" databaseId="40288182131a1e4501131a2fe53a0048"/>
+</template>

@@ -1,0 +1,48 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+	<!-- Handler mapping implementation that maps from URLs to request handler beans.
+	     WARNING: Do not inherit from simpleUrlHandlerMappingTemplate defined in the parent context. -->
+	<bean id="defaultHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<!-- With RSS requests, authentication is handled by a servlet
+				     filter which also sets up RequestContext for the authenticated
+				     user. Therefore, there's no need to specify an interceptor
+				     for initializing request context here. Of course, the same
+				     functionality could have been implemented as easily with
+				     an interceptor. No real difference. -->
+				<!-- Enable Open-Session-In-View pattern for Hibernate ORM. -->
+				<!-- We reuse the same open-session-in-view interceptor used for regular 
+				     servlet requests (which execute within the context of normal portal
+				     user session), even if RSS requests are not run within such context.
+				     If the implementation diverges further, we may need to define a
+				     separate interceptor. -->
+				<ref bean="openSessionInViewInterceptor"/>
+				<!-- This must come after open-session-in-view -->
+				<ref bean="resolveRequestContextInterceptor"/>
+			</list>
+		</property>
+		<property name="urlMap">
+			<map>
+				<entry key="/basic.ics"><ref local="getController"/></entry>				
+			</map>
+		</property>
+	</bean>
+
+	<bean id="resolveRequestContextInterceptor" class="org.kablink.teaming.web.servlet.handler.ResolveRequestContextInterceptor"/>
+
+	<!-- Controllers -->
+	<bean id="getController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.servlet.ical.GetController">
+		<property name="icalModule"><ref bean="icalModule"/></property>
+		<property name="mailModule"><ref bean="mailModule"/></property>
+	</bean>
+
+</beans>
