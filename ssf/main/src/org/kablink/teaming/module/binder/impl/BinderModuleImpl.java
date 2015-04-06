@@ -4486,11 +4486,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						top.getZoneId());
 				if (child.isDeleted())
 					continue;
-				// Bug 926037:  If the user has rights to delete the
-				//    top level binder, their rights to the children
-				//    don't matter.  (Commented out following line.)
-				// checkAccess(child, BinderOperation.deleteBinder);
-				
+				checkAccess(child, BinderOperation.deleteBinder);
 				// determine if need to deleted mirrored for this binder, or if
 				// parent will take care of it
 				boolean deleteMirroredSourceForChildren = deleteMirroredSource;
