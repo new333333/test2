@@ -110,6 +110,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.fi.FileNotFoundException;
+import org.kablink.teaming.fi.PathTooLongException;
 import org.kablink.teaming.fi.auth.AuthException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
@@ -659,6 +660,7 @@ public class GwtViewHelper {
 				String messageKey;
 				if      (e instanceof AccessControlException)          messageKey =  "addNewFolderError.AccssControlException";
 				else if (e instanceof IllegalCharacterInNameException) messageKey =  "addNewFolderError.IllegalCharacterInNameException";
+				else if (e instanceof PathTooLongException)		       messageKey =  "addNewFolderError.PathTooLongException";
 				else if (e instanceof TitleException)		           messageKey = ("addNewFolderError.TitleException." + (Utils.checkIfFilr() ? "filr" : "vibe"));
 				else if (e instanceof WriteFilesException)             messageKey =  "addNewFolderError.WriteFilesException";
 				else                                                   messageKey =  "addNewFolderError.OtherException";
