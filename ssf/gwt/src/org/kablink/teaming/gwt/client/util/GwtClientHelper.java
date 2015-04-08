@@ -2148,7 +2148,7 @@ public class GwtClientHelper {
 	 */
 	public static void oneWayCornerPopup(TeamingPopupPanel popup) {
 		popup.setAnimationEnabled(true);
-		popup.setAnimationTypeToOneWayCorner();
+		popup.setAnimationType(PopupPanel.AnimationType.ONE_WAY_CORNER);
 	}
 	
 	/**
@@ -2185,7 +2185,7 @@ public class GwtClientHelper {
 	 */
 	public static void rollDownPopup(TeamingPopupPanel popup) {
 		popup.setAnimationEnabled(true);
-		popup.setAnimationTypeToRollDown();
+		popup.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
 	}
 	
 	/**
