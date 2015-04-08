@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,6 +42,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -82,14 +83,15 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.util.search.Constants;
+
 import org.springframework.beans.factory.InitializingBean;
 
 /**
  *
  * @author Jong Kim
  */
+@SuppressWarnings("unchecked")
 public class AccessControlManagerImpl implements AccessControlManager, InitializingBean {
-    
 	private Log logger = LogFactory.getLog(getClass());
 	
     private FunctionManager functionManager;
@@ -99,9 +101,10 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     private LicenseManager licenseManager;
     private AuthenticationModule authenticationModule;
     private Map synchAgentRights;
-    private Map synchAgentTokenBoostRights;
+	private Map synchAgentTokenBoostRights;
     private Map fileSyncAgentRights;
     
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		synchAgentRights = new HashMap();
 		String[] strs = SPropsUtil.getStringArray("synchronization.agent.rights", ",");
@@ -161,7 +164,8 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		authenticationModule = (AuthenticationModule) SpringContextUtil.getBean("authenticationModule");
 		return authenticationModule;
 	}
-    public Set getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
+    @Override
+	public Set getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
          if(workArea.isFunctionMembershipInherited()) {
             WorkArea parentWorkArea = workArea.getParentWorkArea();
             if(parentWorkArea == null)
@@ -181,17 +185,20 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
         }    	
     }
     
-    public boolean testOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) 
+    @Override
+	public boolean testOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) 
     	throws AccessControlException {
         return testOperation
         	(RequestContextHolder.getRequestContext().getUser(), 
         	        workArea, workAreaOperation);
     }
 	
+	@Override
 	public boolean testOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) {
 		return testOperation(user, workArea, workAreaOperation, true);
 	}
 	
+	@Override
 	public boolean testOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation, boolean checkSharing) {
 		long begin = System.nanoTime();
 		
@@ -396,8 +403,12 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					}
 				}
 			}
-			//if current user is the workArea owner, add special Id to is membership
-			if (user.getId().equals(workAreaStart.getOwnerId())) userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
+			// If current user is the workArea or workAreaStart owner,
+			// add special ID to is membership.
+			Long userId = user.getId();
+			if (userId.equals(workArea.getOwnerId()) || userId.equals(workAreaStart.getOwnerId())) {
+				userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
+			}
 			Set<Long> teamMembers = null;
 			if (workAreaStart instanceof FolderEntry) {
 				teamMembers = getBinderModule().getTeamMemberIds( ((FolderEntry)workAreaStart).getParentBinder() );
@@ -453,12 +464,14 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		}
 	}
 	
-    public void checkOperation(WorkArea workArea, 
+    @Override
+	public void checkOperation(WorkArea workArea, 
             WorkAreaOperation workAreaOperation) throws AccessControlException {
         checkOperation(RequestContextHolder.getRequestContext().getUser(),
                 workArea, workAreaOperation);
     }
 
+	@Override
 	public void checkOperation(User user, WorkArea workArea, 
 			WorkAreaOperation workAreaOperation) 
     	throws AccessControlException {
@@ -631,6 +644,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     		//Since the current user is not the same as the user being checked, we must do this in a "runas"
 			try {
 				boolean result = (boolean)RunasTemplate.runas(new RunasCallback() {
+					@Override
 					public Object doAs() {
 				    	Long roleId = AccessUtils.askExternalSystemForRoleId(workArea);
 				    	if (roleId != null) {
