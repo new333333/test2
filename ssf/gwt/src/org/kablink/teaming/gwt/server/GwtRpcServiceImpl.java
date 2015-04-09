@@ -64,6 +64,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -5732,12 +5733,25 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_SEARCH_INDEX );
 		 			}
 
-		 			// Does an ldap sync need to be run to import typeless dns?
+		 			// Does an ldap sync need to be run to import typeless DNs?
 		 			property = (String) adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_IMPORT_TYPELESS_DN );
 		 			if ( property == null || property.length() == 0 || "false".equalsIgnoreCase( property ) )
 		 			{
-		 				// Yes
-		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_IMPORT_TYPLESS_DN );
+		 				// Maybe!  There's no need to do so if there
+		 				// aren't any LDAP connections defined.  Are
+		 				// there any?
+			    		List<LdapConnectionConfig> ldapConnections = getAuthenticationModule().getLdapConnectionConfigs();
+			    		int ldapConnectionCount = ((null == ldapConnections) ? 0 : ldapConnections.size());
+						if (0 < ldapConnectionCount) {
+							// Yes!  Then the sync needs to be run.
+							upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_IMPORT_TYPELESS_DN );
+						}
+						else {
+							// No, there aren't any LDAP connections!
+							// Mark the user so we never check this
+							// again.
+							getProfileModule().setUserProperty( user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_IMPORT_TYPELESS_DN, String.valueOf( Boolean.TRUE ) );
+						}
 		 			}
 		 		}
 	 		}
