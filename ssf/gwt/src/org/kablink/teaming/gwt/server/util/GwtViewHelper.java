@@ -2016,15 +2016,28 @@ public class GwtViewHelper {
 						// No!  Add an error to the error list...
 						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
+						String messageText;
 						NotSupportedException nse = null;
-						if      (e instanceof AccessControlException)  messageKey = "copyEntryError.AccssControlException";
-						else if (e instanceof BinderQuotaException)    messageKey = "copyEntryError.BinderQuotaException";
-						else if (e instanceof IllegalStateException)   messageKey = "copyEntryError.IllegalStateException";
-						else if (e instanceof NotSupportedException)  {messageKey = "copyEntryError.NotSupportedException"; nse = ((NotSupportedException) e);}
-						else if (e instanceof TitleException)          messageKey = "copyEntryError.TitleException";
-						else if (e instanceof UncheckedIOException)    messageKey = "copyEntryError.UncheckedIOException";
-						else if (e instanceof WriteFilesException)     messageKey = "copyEntryError.WriteFilesException";
-						else                                           messageKey = "copyEntryError.OtherException";
+						if (e instanceof WriteFilesException) {
+							String details = ((WriteFilesException) e).getLocalizedMessage();
+							if (MiscUtil.hasString(details)) {
+								messageKey  = null;
+								messageText = details;
+							}
+							else {
+								messageKey  = "copyEntryError.WriteFilesException";
+								messageText = null;
+							}
+						}
+						
+						else if (e instanceof AccessControlException) {messageKey = "copyEntryError.AccssControlException"; messageText = null;                                   }
+						else if (e instanceof BinderQuotaException)   {messageKey = "copyEntryError.BinderQuotaException";  messageText = null;                                   }
+						else if (e instanceof IllegalStateException)  {messageKey = "copyEntryError.IllegalStateException"; messageText = null;                                   }
+						else if (e instanceof NotSupportedException)  {messageKey = "copyEntryError.NotSupportedException"; messageText = null; nse = ((NotSupportedException) e);}
+						else if (e instanceof TitleException)         {messageKey = "copyEntryError.TitleException";        messageText = null;                                   }
+						else if (e instanceof UncheckedIOException)   {messageKey = "copyEntryError.UncheckedIOException";  messageText = null;                                   }
+						else                                          {messageKey = "copyEntryError.OtherException";        messageText = null;                                   }
+						
 						String[] messageArgs;
 						if (null == nse) {
 							messageArgs = new String[]{entryTitle};
@@ -2037,7 +2050,10 @@ public class GwtViewHelper {
 							else                                                                                 messagePatch = nse.getLocalizedMessage(); 
 							messageArgs = new String[]{entryTitle, messagePatch};
 						}
-						reply.addError(NLT.get(messageKey, messageArgs));
+						if (null == messageText) {
+							messageText = NLT.get(messageKey, messageArgs);
+						}
+						reply.addError(messageText);
 						
 						// ...and log it.
 						GwtLogHelper.error(m_logger, "GwtViewHelper.copyEntries( Entry title:  '" + entryTitle + "', EXCEPTION ):  ", e);
