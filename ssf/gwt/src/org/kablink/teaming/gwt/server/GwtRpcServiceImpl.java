@@ -1573,7 +1573,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_DOWNLOAD_FOLDER_AS_CSV_FILE_URL:
 		{
 			GetDownloadFolderAsCSVFileUrlCmd gdfacfuCmd = ((GetDownloadFolderAsCSVFileUrlCmd) cmd);
-			DownloadFolderAsCSVFileUrlRpcResponseData result = GwtViewHelper.getDownloadFolderAsCSVFileUrl( this, req, gdfacfuCmd.getFolderId() );
+			DownloadFolderAsCSVFileUrlRpcResponseData result = GwtViewHelper.getDownloadFolderAsCSVFileUrl( this, req, gdfacfuCmd.getFolderId(), gdfacfuCmd.getCSVDelim() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

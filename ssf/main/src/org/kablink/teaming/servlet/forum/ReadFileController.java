@@ -53,6 +53,7 @@ import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
@@ -152,6 +153,7 @@ public class ReadFileController extends AbstractReadFileController {
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	protected ModelAndView handleRequestAfterValidation(final HttpServletRequest request,
             final HttpServletResponse response) throws Exception {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -464,9 +466,18 @@ public class ReadFileController extends AbstractReadFileController {
 		}
 
 		else if ((WebUrlUtil.FILE_URL_CSVFOLDER_ARG_LENGTH == args.length) && 
-				String.valueOf(args[WebUrlUtil.FILE_URL_CSVFOLDER_FOLDER_CSV       ]).equals(WebUrlUtil.FILE_URL_TYPE_FOLDER_CSV) &&
-				String.valueOf(args[WebUrlUtil.FILE_URL_CSVFOLDER_OPERATION        ]).equals(WebKeys.OPERATION_READ_FOLDER)) {
+				args[WebUrlUtil.FILE_URL_CSVFOLDER_FOLDER_CSV      ].equals(WebKeys.URL_FOLDER_CSV       ) &&
+				args[WebUrlUtil.FILE_URL_CSVFOLDER_FOLDER_CSV_DELIM].equals(WebKeys.URL_FOLDER_CSV_DELIM ) &&
+				args[WebUrlUtil.FILE_URL_CSVFOLDER_OPERATION       ].equals(WebKeys.OPERATION_READ_FOLDER)) {
 			try {
+				// Store the CSV delimiter to use in an options Map.
+				String csvDelim = args[WebUrlUtil.FILE_URL_CSVFOLDER_FOLDER_CSV_DELIM + 1];
+				if (!(MiscUtil.hasString(csvDelim))) {
+					csvDelim = EntryCsvHelper.DEFAULT_CSV_DELIMITER;
+				}
+				HashMap csvOptions = new HashMap();
+				csvOptions.put(ObjectKeys.CSV_DELIMITER, csvDelim);
+				
 				// What folder are we outputting as CSV?
 				Long folderId = Long.parseLong(String.valueOf(args[WebUrlUtil.FILE_URL_CSVFOLDER_FOLDER_ID]));
 				Folder folder = getFolderModule().getFolder(folderId);
@@ -506,7 +517,7 @@ public class ReadFileController extends AbstractReadFileController {
 				}
 
 				OutputStream out = response.getOutputStream();
-				EntryCsvHelper.folderToCsv(this, folder, null, out);
+				EntryCsvHelper.folderToCsv(this, folder, csvOptions, out);
 				response.getOutputStream().flush();
 			} catch(AccessControlException e) {
 				// No access to the folder.

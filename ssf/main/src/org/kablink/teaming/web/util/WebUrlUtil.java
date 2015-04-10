@@ -78,7 +78,6 @@ public class WebUrlUtil {
     // ReadFile operation types.
     public static final String FILE_URL_TYPE_ZIP="zip";
     public static final String FILE_URL_TYPE_SHARE="share";
-    public static final String FILE_URL_TYPE_FOLDER_CSV="folderCsv";
 
 	public static final int FILE_URL_ACTION = 1;
 	public static final int FILE_URL_ENTITY_TYPE = 2;
@@ -112,8 +111,9 @@ public class WebUrlUtil {
 	public static final int FILE_URL_ZIPFOLDER_RECURSIVE			= 8;
 	
 	// Used to parse the URL returned by getFolderAsCSVFileUrl().
-	public static final int FILE_URL_CSVFOLDER_ARG_LENGTH			= 7;
-	public static final int FILE_URL_CSVFOLDER_FOLDER_CSV			= 6;
+	public static final int FILE_URL_CSVFOLDER_ARG_LENGTH			= 9;
+	public static final int FILE_URL_CSVFOLDER_FOLDER_CSV			= 8;
+	public static final int FILE_URL_CSVFOLDER_FOLDER_CSV_DELIM		= 6;
 	public static final int FILE_URL_CSVFOLDER_FOLDER_ID			= 5;
 	public static final int FILE_URL_CSVFOLDER_OPERATION			= 3;
 	
@@ -464,8 +464,11 @@ public class WebUrlUtil {
 	public static String getFolderZipUrl(HttpServletRequest req, Long folderId, boolean recursive) {
 		return getFolderZipUrl(WebUrlUtil.getServletRootURL(req), folderId, recursive);
 	}
+	public static String getFolderAsCSVFileUrl(HttpServletRequest req, Long folderId, String csvDelim) {
+		return getFolderAsCSVFileUrl(WebUrlUtil.getServletRootURL(req), folderId, csvDelim);
+	}
 	public static String getFolderAsCSVFileUrl(HttpServletRequest req, Long folderId) {
-		return getFolderAsCSVFileUrl(WebUrlUtil.getServletRootURL(req), folderId);
+		return getFolderAsCSVFileUrl(req, folderId, ",");
 	}
 	public static String getFileHtmlUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileName) {
 		if (entity == null) return "";
@@ -753,7 +756,7 @@ public class WebUrlUtil {
 	 * 
 	 * @return
 	 */
-	public static String getFolderAsCSVFileUrl(String webPath, Long folderId) {
+	public static String getFolderAsCSVFileUrl(String webPath, Long folderId, String csvDelim) {
 		// Construct and return the URL.
 		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
@@ -761,8 +764,14 @@ public class WebUrlUtil {
 		webUrl.append(Constants.SLASH + WebKeys.OPERATION_READ_FOLDER);
 		webUrl.append(Constants.SLASH + WebKeys.URL_FOLDER_ID);
 		webUrl.append(Constants.SLASH + folderId);
-		webUrl.append(Constants.SLASH + "folderCsv");
+		webUrl.append(Constants.SLASH + WebKeys.URL_FOLDER_CSV_DELIM);
+		webUrl.append(Constants.SLASH + urlEncodeCSVDelim(csvDelim));
+		webUrl.append(Constants.SLASH + WebKeys.URL_FOLDER_CSV);
 		return webUrl.toString();
+	}
+	
+	public static String getFolderAsCSVFileUrl(String webPath, Long folderId) {
+		return getFolderAsCSVFileUrl(webPath, folderId, ",");
 	}
 
 	/*
@@ -1336,12 +1345,34 @@ public class WebUrlUtil {
 			// No, we don't have a filename or we're not supposed to
 			// encode it!  Return what was passed in.
 			encodedFileName = fileName;
-			logger.debug("WebUrlUtil.urlEncodeFilename( '" + ((null == fileName) ? "<null>" : fileName) + " was not encoded )");
+			logger.debug("WebUrlUtil.urlEncodeFilename( '" + ((null == fileName) ? "<null>" : fileName) + "' was not encoded )");
 		}
 		
-		// If we get here, fileName refers to the encoded version of
-		// the string received if encoding was configured.  Return it.
+		// If we get here, encodedFileName refers to the encoded
+		// version of the string received if encoding was configured.
+		// Return it.
 		return encodedFileName;
+	}
+	
+	/*
+	 * URL encodes a CSV delimiter for inclusion into a URL.
+	 */
+	private static String urlEncodeCSVDelim(String csvDelim) {
+		String encodedCSVDelim;
+		if (MiscUtil.hasString(csvDelim)) {
+			encodedCSVDelim = Http.encodeURL(csvDelim);
+			encodedCSVDelim = StringUtils.replace(encodedCSVDelim, "+", "%20");
+			logger.debug("WebUrlUtil.urlEncodeCSVDelim( '" + csvDelim + "' encoded as '" + encodedCSVDelim + "')");
+		}
+		
+		else {
+			encodedCSVDelim = csvDelim;
+			logger.debug("WebUrlUtil.urlEncodeCSVDelim( '" + ((null == csvDelim) ? "<null>" : csvDelim) + "' was not encoded )");
+		}
+		
+		// If we get here, encodedCSVDelim refers to the encoded
+		// version of the string received.  Return it.
+		return encodedCSVDelim;
 	}
 	
 	//Routine to see if this is a mobile device in Full UI mode
