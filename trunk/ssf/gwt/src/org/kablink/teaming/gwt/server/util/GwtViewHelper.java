@@ -3981,12 +3981,13 @@ public class GwtViewHelper {
 	 * @param bs
 	 * @param request
 	 * @param folderId
+	 * @param csvDelim
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static DownloadFolderAsCSVFileUrlRpcResponseData getDownloadFolderAsCSVFileUrl(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
+	public static DownloadFolderAsCSVFileUrlRpcResponseData getDownloadFolderAsCSVFileUrl(AllModulesInjected bs, HttpServletRequest request, Long folderId, String csvDelim) throws GwtTeamingException {
 		try {
 			// Allocate a DownloadFolderAsCSVFileUrlRpcResponseData to
 			// return the URL to request downloading the folder as a
@@ -3994,7 +3995,7 @@ public class GwtViewHelper {
 			DownloadFolderAsCSVFileUrlRpcResponseData reply = new DownloadFolderAsCSVFileUrlRpcResponseData();
 
 			// Generate a URL to download the folder as a CSV file.
-			String url = WebUrlUtil.getFolderAsCSVFileUrl(request, folderId);
+			String url = WebUrlUtil.getFolderAsCSVFileUrl(request, folderId, csvDelim);
 			
 			// Add whatever URL we built to the reply.
 			reply.setUrl(url);
