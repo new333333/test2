@@ -2246,23 +2246,45 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "loadSubscription(Long,EntityIdentifier)");
     	}	        
 	}
-	
+
+	/**
+	 * Returns a List<Subscription> of the Subscription's associated
+	 * with the users from a List<Long> of user IDs.  Optionally only
+	 * returns the Subscription's for a given entity.
+	 * 
+	 * @param userIds	User IDs of the users whose Subscription's are being queried.
+	 * @param entityId	Option ID of the entity whose Subscription's are being queried.
+	 * @param zoneId	The zone the Subscription's are being queried from. 
+	 * 
+	 * @return
+	 */
 	@Override
-	public List<Subscription> loadSubscriptions(final Long userId, final Long zoneId) {
+	public List<Subscription> loadSubscriptions(final Collection<Long> userIds, final Long entityId, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	        List result = (List)getHibernateTemplate().execute(
                	new HibernateCallback() {
                 		@Override
 						public Object doInHibernate(Session session) throws HibernateException {
-                			String queryStr = "from org.kablink.teaming.domain.Subscription where principalId=:userId";
+                			String queryStr = "from org.kablink.teaming.domain.Subscription where principalId in (:uList)";
+                			if (null != entityId) {
+                				queryStr += " and entityId=:entityId";
+                			}
     	                  	Query q = session.createQuery(queryStr);
-    	                  	q.setParameter("userId", userId);
+    	                  	q.setParameterList("uList", userIds);
+    	                  	if (null != entityId) {
+    	                  		q.setParameter("entityId", entityId);
+    	                  	}
     	                  	q.setCacheable(true);	                			
     	                  	List result = q.list();
-    	                  	for (int i=0; i<result.size();) { //check zone here, so index is used
-    	                  		if (!((Subscription)result.get(i)).getZoneId().equals(zoneId)) result.remove(i);
-    	                  		else ++i;
+    	                  	for (int i = 0; i < result.size(); ) {
+    	                  		// Check zone here, so index is used.
+    	                  		if (!((Subscription)result.get(i)).getZoneId().equals(zoneId)) {
+    	                  			result.remove(i);
+    	                  		}
+    	                  		else {
+    	                  			i += 1;
+    	                  		}
     	                  	}
     	                  	return result;
                 		}
@@ -2271,8 +2293,30 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	        return result;
     	}
     	finally {
-    		end(begin, "loadSubscriptions(Long)");
+    		end(begin, "loadSubscriptions(Collection<Long>, Long, Long)");
     	}	        
+	}
+	
+	@Override
+	public List<Subscription> loadSubscriptions(final Collection<Long> userIds, final Long zoneId) {
+		// Always use the initial form of the method.
+		return loadSubscriptions(userIds, null, zoneId);	// null -> All subscriptions for all the users.
+	}
+	
+	@Override
+	public List<Subscription> loadSubscriptions(final Long userId, final Long entityId, final Long zoneId) {
+		// Construct a List<Long> from the user ID...
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		
+		// ...and always use the initial form of the method.
+		return loadSubscriptions(userIds, entityId, zoneId);
+	}
+	
+	@Override
+	public List<Subscription> loadSubscriptions(final Long userId, final Long zoneId) {
+		// Always use the previous form of the method.
+		return loadSubscriptions(userId, null, zoneId);	// null -> All subscriptions for the user.
 	}
 	
 	//mark entries deleted - used when deleting entries in bulk and want

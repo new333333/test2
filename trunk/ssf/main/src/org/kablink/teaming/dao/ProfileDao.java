@@ -179,7 +179,10 @@ public interface ProfileDao {
     public SeenMap loadSeenMap(Long userId);
 	public List<SharedEntity> loadSharedEntities(Collection ids, Collection binderIds, Date after, Long zoneId); 	
    	public Subscription loadSubscription(Long userId, EntityIdentifier entityId);
-   	public List<Subscription> loadSubscriptions(Long userId, Long zoneId);
+   	public List<Subscription> loadSubscriptions(Collection<Long> userIds, Long entityId, Long zoneId);
+   	public List<Subscription> loadSubscriptions(Collection<Long> userIds,                Long zoneId);
+   	public List<Subscription> loadSubscriptions(           Long  userId,  Long entityId, Long zoneId);
+   	public List<Subscription> loadSubscriptions(           Long  userId,                 Long zoneId);
   /**
      * Load a user that is neither deleted or disabled. Check that user is in zone.
      * @param userId
