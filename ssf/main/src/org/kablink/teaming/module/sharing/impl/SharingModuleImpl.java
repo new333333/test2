@@ -1946,7 +1946,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		if (null != subs) {
 			List<Long> uids = new ArrayList<Long>();
 			for (Subscription sub:  subs) {
-				uids.add(sub.getId().getPrincipalId());
+				ListUtil.addLongToListLongIfUnique(uids, sub.getId().getPrincipalId());
 			}
 			reply = ResolveIds.getPrincipals(uids);
 		}
