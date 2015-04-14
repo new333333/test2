@@ -1717,7 +1717,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      *        or expired so its affect on a user's access to the item
      *        is no longer a factor.
      */
-	@SuppressWarnings("unchecked")
 	private void invalidateShareItemSubscriptions(ShareItem shareItem) {
 		SimpleProfiler.start("SharingModuleImpl.invalidateShareItemSubscriptions()");
     	try {
@@ -1730,11 +1729,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			
 			// There can only be subscriptions to folders and entries.  If
 			// this share doesn't encapsulate one of those...
-			// (Note the check is for binder which includes workspaces.)
 			EntityIdentifier eid  = shareItem.getSharedEntityIdentifier();
 			EntityType       eit  = eid.getEntityType();
 			boolean          isFE = EntityType.folderEntry.equals(eit);
-			if ((!isFE) && (!(eit.isBinder()))) {
+			if ((!isFE) && (!(eit.isBinder()))) {	// Check for Binder not Folder since it may be a Workspace that's shared.
 				// ...there's nothing we need to invalidate.  Bail.
 				return;
 			}
@@ -1745,7 +1743,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				de = getSharedEntityWithoutAccessCheck(shareItem);
 			}
 			catch (Exception ex) {
-				logger.error("invalidateShareItemSubscriptions():  The " + (isFE ? "Entry" : "Binder") + " (id=" + eid.getEntityId() + ") referenced by ShareItem (id:" + shareItem.getId() + ") cannot be accessed.");
+				logger.error("invalidateShareItemSubscriptions( EXCEPTION:1 ):  The " + (isFE ? "Entry" : "Binder") + " (id=" + eid.getEntityId() + ") referenced by ShareItem (id:" + shareItem.getId() + ") cannot be accessed.", ex);
 				de = null;
 			}
 			if (null == de) {
@@ -1753,13 +1751,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				return;
 			}
 			
-			// Access the specific domain object for the shared item...
-			@SuppressWarnings("unused")
-			Binder      b  = (isFE ? null               : ((Binder) de));
-			FolderEntry fe = (isFE ? ((FolderEntry) de) : null         );
-	
-			// ...and access the modules we'll need to invalidate any
-			// ...shares on it.
+			// Access the modules we'll need to invalidate any shares
+			// shares on the item.
 			BinderModule bm = getBinderModule();
 			FolderModule fm = getFolderModule();
 			ProfileDao   pd = getProfileDao();
@@ -1795,94 +1788,123 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				// There's nothing we need to invalidate.  Bail.
 				return;
 			}
-	
-			// Resolve the user IDs this item is shared with...
-			List<Principal> pList = ResolveIds.getPrincipals(userIds);
-			if (null != pList) {
-				// ...and scan them.
-				for (Principal p:  pList) {
-					// Is this shared item an entry?
-					User u = ((User) p);
-					if (isFE) {
-						// Yes!  Does this user have a subscription on the
-						// shared item?
-						Subscription sub = fm.getSubscription(u, fe);
-						if (null == sub) {
-							// No!  Nothing more needs to be done with
-							// them.  Continue with the next user.
-							continue;
-						}
-		
-						// Yes, this user has a subscription on the shared
-						// item!  Do they still have access to it?
-						if (!(fm.testReadAccess(u, ((WorkArea) de), true))) {
-							// No!  Delete this subscription.
-							fm.setSubscription(u, fe.getParentBinder().getId(), fe.getId(), null);	// null -> Delete this.
-							logger.info("invalidateShareItemSubscriptions():  '" + u.getTitle() + "'s subscription to '" + de.getTitle() + "' has been deleted because they no longer have access to the entry.");
-							continue;	// Continue with the next share recipient.
+
+			// Is this a shared entry?
+			List<Subscription> subs;
+			if (isFE) {
+				// Yes!  Do the recipients have any subscriptions to
+				// it?
+				try {
+					subs = pd.loadSubscriptions(userIds, de.getId(), zid);
+				}
+				catch (Exception e) {
+					logger.error("invalidateShareItemSubscriptions( EXCEPTION:2 ):  Could not get the subscriptions for the share recipients to '" + de.getTitle() + "'.", e);
+					subs = null;
+				}
+				if (MiscUtil.hasItems(subs)) {
+					// Yes!  Can we resolve the user IDs of the
+					// subscriptions?  Note that we resolve the user
+					// IDs from the subscriptions instead of from the
+					// share because the number of them will be at most
+					// equal to the number for the shares but more
+					// likely a lot fewer if the share was with a group
+					// or team.
+					List<Principal> pList = resolveSubscriptionPrincipals(subs);
+					if (null != pList) {
+						// Yes!  Scan the subscriptions.
+						for (Subscription sub:  subs) {
+							// If we can't find the User this
+							// subscription is for...
+							UserEntityPK subUE   = sub.getId();
+							Long         subUID  = subUE.getPrincipalId();
+							User         subUser = findUserInPListById(pList, subUID);
+							if (null == subUser) {
+								// ...there's nothing we can do for
+								// ...it.  Skip it.
+								continue;
+							}
+							
+							// Does this user still have access to the
+							// shared entry?
+							if (!(fm.testReadAccess(subUser, ((WorkArea) de), true))) {
+								// No!  Delete their subscription to
+								// it.
+								fm.setSubscription(subUser, de.getParentBinder().getId(), de.getId(), null);	// null -> Delete this.
+								logger.info("invalidateShareItemSubscriptions():  '" + subUser.getTitle() + "'s subscription to '" + de.getTitle() + "' has been deleted because they no longer have access to the entry.");
+								continue;	// Continue with the next share recipient.
+							}
 						}
 					}
-					
-					else {
-						// No, the shared item is not an entry!
-						//
-						// For shared folders, the check for access has to
-						// look at all the user's subscriptions and check
-						// whether they still have access to the entities
-						// subscribed to.  This is because they may have
-						// subscribed to not only the shared folder itself,
-						// but any entity (folder or entry) below it.
-						// Rather than scan all the entities, I decided to
-						// scan the user's subscriptions instead because
-						// there are most likely only a few of them.
-						// (Worst case:  It's shared with the All Internal
-						// Users group.)
-						//
-						// Does this user have any subscriptions?
-						List<Subscription> uSubs;
-						try {
-							uSubs = pd.loadSubscriptions(u.getId(), zid);
-						}
-						catch (Exception e) {
-							logger.error("invalidateShareItemSubscriptions( EXCEPTION ):  Could not get subscriptions for '" + u.getTitle() + "'.", e);
-							uSubs = null;
-						}
-						if (MiscUtil.hasItems(uSubs)) {
-							// Yes!  Scan them.
-							for (Subscription sub:  uSubs) {
-								// If we can't access the item subscribed
-								// to...
-								UserEntityPK     subUE  = sub.getId();
-								EntityType       subEIT = EntityType.valueOf(  subUE.getEntityType()      );
-								EntityIdentifier subEID = new EntityIdentifier(subUE.getEntityId(), subEIT);
-								boolean          isSubFE = EntityType.folderEntry.equals(subEIT);
-								DefinableEntity  subDE;
-								try {
-									subDE = getEntityWithoutAccessCheck(subEID);
-								}
-								catch (Exception ex) {
-									logger.error("invalidateShareItemSubscriptions():  The " + (isSubFE ? "Entry" : "Binder") + " (id=" + subEID.getEntityId() + ") referenced by a Subscription cannot be accessed.");
-									subDE = null;
-								}
-								if (null == subDE) {
-									// ...there's nothing we need to
-									// ...do for this subscription.  Skip
-									// ...it.
-									continue;
-								}
+				}
+			}
+			
+			else {
+				// No, the shared item is not an entry!
+				//
+				// For binders, the check for access has to look at all
+				// the recipient user's subscriptions and check whether
+				// they still have access to the entities subscribed
+				// to.  We need to check everything because they may
+				// have subscribed to not only the shared binder
+				// itself, but any entity (folder or entry) below it.
+				// Rather than scan all the entities, I decided to
+				// scan the subscriptions instead because there are
+				// most likely fewer of them.  (Worst case:  It's
+				// shared with the All Internal Users group.)
+				//
+				// Do the user recipients have any subscriptions?
+				try {
+					subs = pd.loadSubscriptions(userIds, zid);
+				}
+				catch (Exception e) {
+					logger.error("invalidateShareItemSubscriptions( EXCEPTION:3 ):  Could not get the subscriptions for the share recipients to '" + de.getTitle() + "'.", e);
+					subs = null;
+				}
+				if (MiscUtil.hasItems(subs)) {
+					// Yes!  Can we resolve Principal's from the
+					// subscriptions?
+					List<Principal> pList = resolveSubscriptionPrincipals(subs);
+					if (MiscUtil.hasItems(pList)) {
+						// Yes!  Scan the subscriptions.
+						for (Subscription sub:  subs) {
+							// If we can't find the user this
+							// subscription is for...
+							UserEntityPK subUE   = sub.getId();
+							Long         subUID  = subUE.getPrincipalId();
+							User         subUser = findUserInPListById(pList, subUID);
+							if (null == subUser) {
+								// ...there's nothing we can do for
+								// ...it.  Skip it.
+								continue;
+							}
+							
+							// If we can't access the item subscribed
+							// to...
+							EntityType       subEIT  = EntityType.valueOf(  subUE.getEntityType()      );
+							EntityIdentifier subEID  = new EntityIdentifier(subUE.getEntityId(), subEIT);
+							boolean          isSubFE = EntityType.folderEntry.equals(subEIT);
+							DefinableEntity  subDE;
+							try {
+								subDE = getEntityWithoutAccessCheck(subEID);
+							}
+							catch (Exception ex) {
+								logger.error("invalidateShareItemSubscriptions( EXCEPTION:4 ):  The " + (isSubFE ? "Entry" : "Binder") + " (id=" + subEID.getEntityId() + ") referenced by a Subscription cannot be accessed.", ex);
+								subDE = null;
+							}
+							if (null == subDE) {
+								// ...there's nothing we can do for
+								// ...it.  Skip it.
+								continue;
+							}
 	
-								// Does the user still have access to this
-								// subscribed item?
-								if (!(fm.testReadAccess(u, ((WorkArea) subDE), true))) {
-									// No!  Delete this subscription.
-									Binder      subB  = (isSubFE ? null                  : (Binder) subDE);
-									FolderEntry subFE = (isSubFE ? ((FolderEntry) subDE) : null          );
-									if (isSubFE)
-									     fm.setSubscription(u, subFE.getParentBinder().getId(), subFE.getId(), null);	// null -> Delete this.
-									else bm.setSubscription(u,                                  subB.getId(),  null);	// ...user's subscription.
-									logger.info("invalidateShareItemSubscriptions():  '" + u.getTitle() + "'s subscription to '" + subDE.getTitle() + "' has been deleted because they no longer have access to the entity.");
-									continue;	// Continue with the next subscription.
-								}
+							// Does the user still have access to the
+							// subscribed item?
+							if (!(fm.testReadAccess(subUser, ((WorkArea) subDE), true))) {
+								// No!  Delete their subscription.
+								if (isSubFE)
+								     fm.setSubscription(subUser, subDE.getParentBinder().getId(), subDE.getId(), null);	// null -> Delete this.
+								else bm.setSubscription(subUser,                                  subDE.getId(), null);	// ...user's subscription.
+								logger.info("invalidateShareItemSubscriptions():  '" + subUser.getTitle() + "'s subscription to '" + subDE.getTitle() + "' has been deleted because they no longer have access to the entity.");
 							}
 						}
 					}
@@ -1893,5 +1915,44 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     	finally {
     		SimpleProfiler.stop("SharingModuleImpl.invalidateShareItemSubscriptions()");
     	}
+	}
+
+	/*
+	 * Returns the User from a List<Principal> that corresponds to the
+	 * given user ID.
+	 * 
+	 * If one is not found, null is returned.
+	 */
+	private static User findUserInPListById(List<Principal> pList, Long uid) {
+		User reply = null;
+		if (null != pList) {
+			for (Principal p:  pList) {
+				if (p.getId().equals(uid)) {
+					reply = ((User) p);
+					break;
+				}
+			}
+		}
+		return reply;
+	}
+
+	/*
+	 * Returns a List<Principal> of the Principal's associated with the
+	 * Subscription's in a List<Subscription>. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static List<Principal> resolveSubscriptionPrincipals(List<Subscription> subs) {
+		List<Principal> reply;
+		if (null != subs) {
+			List<Long> uids = new ArrayList<Long>();
+			for (Subscription sub:  subs) {
+				uids.add(sub.getId().getPrincipalId());
+			}
+			reply = ResolveIds.getPrincipals(uids);
+		}
+		else {
+			reply = null;
+		}
+		return reply;
 	}
 }
