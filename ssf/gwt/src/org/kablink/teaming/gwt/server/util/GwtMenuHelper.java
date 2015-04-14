@@ -603,13 +603,10 @@ public class GwtMenuHelper {
 		// Allocate the base ToolbarItem to return.
 		ToolbarItem reply = new ToolbarItem(tbKey);
 
-		// If the current user is not guest, they have an email address
-		// and they're entitled to read the folder for reasons other
-		// than sharing...
+		// If the current user is not guest, they have an email
+		// address...
 		User user = GwtServerHelper.getCurrentUser();
-		if ((!(user.isShared())) &&
-				GwtEmailHelper.userHasEmailAddress(user) &&
-				GwtShareHelper.visibleWithoutShares(bs, user, folder)) {
+		if ((!(user.isShared())) && GwtEmailHelper.userHasEmailAddress(user)) {
 			// ...add a ToolbarItem for e-mail notification.
 			ToolbarItem emailTBI = new ToolbarItem(EMAIL);
 			markTBITitle(emailTBI, "toolbar.menu.subscribeToFolder"       );
@@ -2024,7 +2021,7 @@ public class GwtMenuHelper {
 	private static void constructEntrySubscribeItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, WorkArea wa, boolean separatorBefore) {
 		User user = GwtServerHelper.getCurrentUser();
 		boolean isGuest = user.isShared();
-		if ((!isGuest) && GwtEmailHelper.userHasEmailAddress(user) && GwtShareHelper.visibleWithoutShares(bs, user, wa)) {
+		if ((!isGuest) && GwtEmailHelper.userHasEmailAddress(user)) {
 			// ...add the subscribe item.
 			if (separatorBefore) {
 				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
@@ -4611,7 +4608,7 @@ public class GwtMenuHelper {
 				
 				// ...and if the user has any email addresses
 				// ...defined...
-				if (GwtEmailHelper.userHasEmailAddress(user) && isVisibleWithoutShares) {
+				if (GwtEmailHelper.userHasEmailAddress(user)) {
 					// ...add a subscribe toolbar item.
 					actionTBI = new ToolbarItem(SUBSCRIBE);
 					markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected"  );

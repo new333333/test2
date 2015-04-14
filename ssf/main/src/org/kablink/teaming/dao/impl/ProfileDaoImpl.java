@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -2246,6 +2246,35 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "loadSubscription(Long,EntityIdentifier)");
     	}	        
 	}
+	
+	@Override
+	public List<Subscription> loadSubscriptions(final Long userId, final Long zoneId) {
+		long begin = System.nanoTime();
+		try {
+	        List result = (List)getHibernateTemplate().execute(
+               	new HibernateCallback() {
+                		@Override
+						public Object doInHibernate(Session session) throws HibernateException {
+                			String queryStr = "from org.kablink.teaming.domain.Subscription where principalId=:userId";
+    	                  	Query q = session.createQuery(queryStr);
+    	                  	q.setParameter("userId", userId);
+    	                  	q.setCacheable(true);	                			
+    	                  	List result = q.list();
+    	                  	for (int i=0; i<result.size();) { //check zone here, so index is used
+    	                  		if (!((Subscription)result.get(i)).getZoneId().equals(zoneId)) result.remove(i);
+    	                  		else ++i;
+    	                  	}
+    	                  	return result;
+                		}
+               	}
+            );
+	        return result;
+    	}
+    	finally {
+    		end(begin, "loadSubscriptions(Long)");
+    	}	        
+	}
+	
 	//mark entries deleted - used when deleting entries in bulk and want
 	//to exclude some from future queries
 	//entries evicted from cache

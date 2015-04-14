@@ -2152,27 +2152,54 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	// inside write transaction
 	@Override
-	public void setSubscription(Long binderId, Map<Integer, String[]> styles) {
-		Binder binder = getBinder(binderId);
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Subscription s = getProfileDao().loadSubscription(user.getId(),
-				binder.getEntityIdentifier());
-		if (styles == null || styles.isEmpty()) {
-			if (s != null)
+	public void setSubscription(User user, Long binderId, Map<Integer, String[]> styles) {
+		Binder binder;
+		boolean deleteSub = ((null == styles) || styles.isEmpty());
+		if (deleteSub)
+		     binder = getBinderWithoutAccessCheck(binderId);	// We allow a subscription to be deleted without access to the item.
+		else binder = getBinder(                  binderId);	// getBinder() does read check.
+		
+		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
+		
+		if (deleteSub) {
+			if (s != null) {
 				getCoreDao().delete(s);
-		} else if (s == null) {
+			}
+		}
+		else if (s == null) {
 			s = new Subscription(user.getId(), binder.getEntityIdentifier());
 			s.setStyles(styles);
 			getCoreDao().save(s);
-		} else
+		}
+		else {
 			s.setStyles(styles);
+		}
 	}
 
+	// inside write transaction
+	@Override
+	public void setSubscription(Long binderId, Map<Integer, String[]> styles) {
+		// Always use the initial form of the method.
+		setSubscription(RequestContextHolder.getRequestContext().getUser(), binderId, styles);
+	}
+	
+	/**
+	 * Returns a user's subscriptions to a binder.
+	 * 
+	 * @param user
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	@Override
+	public Subscription getSubscription(User user, Binder binder) {
+		return getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
+	}
+	
 	@Override
 	public Subscription getSubscription(Binder binder) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		return getProfileDao().loadSubscription(user.getId(),
-				binder.getEntityIdentifier());
+		// Always use the initial form of the method.
+		return getSubscription(RequestContextHolder.getRequestContext().getUser(), binder);
 	}
 
 	@Override
