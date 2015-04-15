@@ -42,14 +42,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.module.zone.ZoneModule;
-import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.util.BuiltInUsersHelper;
@@ -59,9 +55,7 @@ import org.kablink.teaming.web.util.BuiltInUsersHelper;
  * 
  * @author jong
  */
-public class RequestContextAndSessionSetupFilter implements Filter {
-
-	private Log logger = LogFactory.getLog(getClass());
+public class RequestContextSetupFilter implements Filter {
 	
 	private static final String OPTIONS_METHOD = "OPTIONS";
 
@@ -79,7 +73,7 @@ public class RequestContextAndSessionSetupFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		
 		// Check if HTTP OPTIONS method
-		if(isHttpOptionsMethod(req)) {
+		if(isHttpOptionsMethod(req)) { // HTTP OPTIONS
 			if(req.getUserPrincipal() == null) {
 				// The client is not authenticated. This is allowed for OPTIONS method. 
 				// Execute the request in the context of admin user in this case. This
@@ -92,12 +86,14 @@ public class RequestContextAndSessionSetupFilter implements Filter {
 			}
 		}
 		else { // Something other than HTTP OPTIONS method. 
-			// The client must have been authenticated.
-			if(req.getUserPrincipal() == null)
+			if(req.getUserPrincipal() == null) {
+				// Client authentication is required.
 				throw new ServletException("Unauthorized access");
-	
-			// Execute the request in the context of the authenticated user.
-			doSetupAndExecute(request, response, chain, req.getUserPrincipal().getName());
+			}
+			else {
+				// Execute the request in the context of the authenticated user.
+				doSetupAndExecute(request, response, chain, req.getUserPrincipal().getName());
+			}
 		}
 	}
 
@@ -106,19 +102,10 @@ public class RequestContextAndSessionSetupFilter implements Filter {
 		setupRequestContext(contextUserName);
 		
 		try {
-			// Set up Hibernate session
-			setupHibernateSession((HttpServletRequest) request);
-			
-			try {
-				// Resolve request context
-				resolveRequestContext();
-		
-				chain.doFilter(request, response);
-			}
-			finally {
-				// Tear down Hibernate session
-				teardownHibernateSession();				
-			}
+			// Resolve request context
+			resolveRequestContext();
+	
+			chain.doFilter(request, response);
 		}
 		finally {
 			// Clear request context
@@ -141,26 +128,11 @@ public class RequestContextAndSessionSetupFilter implements Filter {
 	private void clearRequestContext() {
 		RequestContextHolder.clear();
 	}
-	
-	private void setupHibernateSession(HttpServletRequest request) {
-		// NOTE: This could be problematic if a single request from client ever results in a chained 
-		// invocation of more than one methods on resource(s). If such case is a possibility, we need
-		// to create session conditionally (i.e., only when SessionUtil.sessionActive() returns false) 
-		// so that the thread of execution can share a single Hibernate session. 
-		if(SessionUtil.sessionActive())
-			logger.warn("We've got an active Hibernate session for request " + request.getPathInfo());
-		else 
-			SessionUtil.sessionStartup();
-	}
-	
+		
 	private boolean isHttpOptionsMethod(HttpServletRequest request) {
         return request.getMethod().equalsIgnoreCase(OPTIONS_METHOD);
 	}
-	
-	private void teardownHibernateSession() {
-		SessionUtil.sessionStop();
-	}
-	
+
 	private ZoneModule getZoneModule() {
 		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
 	}
