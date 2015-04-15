@@ -491,6 +491,7 @@ public class FolderEntryHeader extends VibeFlowPanel {
 			new InvokeSimpleProfileEvent(
 				new SimpleProfileParams(
 					referenceWidget.getElement(),
+					String.valueOf(pi.getId()),
 					wsIdS,
 					pi.getTitle())));
 	}

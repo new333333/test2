@@ -1139,11 +1139,12 @@ public class GwtClientHelper {
 	 * Invokes the simple profile dialog off an HTML Element.
 	 * 
 	 * @param htmlElement
+	 * @param userId
 	 * @param binderId
 	 * @param userName
 	 */
-	public static native void invokeSimpleProfile(Element htmlElement, String binderId, String userName) /*-{
-		$wnd.top.ss_invokeSimpleProfile(htmlElement, binderId, userName);
+	public static native void invokeSimpleProfile(Element htmlElement, String userId, String binderId, String userName) /*-{
+		$wnd.top.ss_invokeSimpleProfile(htmlElement, userId, binderId, userName);
 	}-*/;
 
 	/**

@@ -1634,7 +1634,7 @@ public class TaskTable extends Composite
 		// Invoke the Simple Profile dialog.
 		Long wsId = ai.getPresenceUserWSId();
 		String wsIdS = ((null == wsId) ? null : String.valueOf(wsId));
-		GwtClientHelper.invokeSimpleProfile(element, wsIdS, ai.getTitle());
+		GwtClientHelper.invokeSimpleProfile(element, String.valueOf(ai.getId()), wsIdS, ai.getTitle());
 	}
 
 	/*

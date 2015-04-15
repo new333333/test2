@@ -1362,11 +1362,9 @@ public interface GwtTeamingMessages extends Messages {
 	String qViewMicroBlogTitle();
 	String qViewInstantMessage();
 	String qViewInstantMessageTitle();
-	String qViewErrorWorkspaceDoesNotExist();
 	String qViewErrorDeletedWorkspace();
 	String qViewErrorNoProfile();
 	String qViewErrorNoRights();
-	String qViewErrorNoUserForQuickView();
 	String qViewErrorCantTrack();
 	String qViewErrorCantUntrack();
 
