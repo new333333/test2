@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -1357,10 +1357,10 @@ public class GwtMainPage extends ResizeComposite
 	 * Invoke the Simple User Profile or Quick View
 	 */
 	private native void initSimpleUserProfileJS( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_invokeSimpleProfile = function( element, binderId, userName )
+		$wnd.ss_invokeSimpleProfile = function( element, userId, binderId, userName )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireInvokeSimpleProfile(Lcom/google/gwt/dom/client/Element;Ljava/lang/String;Ljava/lang/String;)( element, binderId, userName );
-		}//end ss_fireInvokeSimpleProfile
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireInvokeSimpleProfile(Lcom/google/gwt/dom/client/Element;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( element, userId, binderId, userName );
+		}//end ss_invokeSimpleProfile
 	}-*/;	
 
 	/*
@@ -3461,13 +3461,14 @@ public class GwtMainPage extends ResizeComposite
 	{
 		SimpleProfileParams params = event.getSimpleProfileParams();
 		
-		final Element element = params.getElement();
-		final String binderId = params.getBinderId();
-		final String userName = params.getUserName();
+		final Element element  = params.getElement();
+		final String  binderId = params.getBinderId();
+		final String  userIdS  = params.getUserId();
+		final String  userName = params.getUserName();
 		
 		if( ! GwtClientHelper.hasString( binderId ) )
 		{
-			Window.alert( GwtTeaming.getMessages().qViewErrorWorkspaceDoesNotExist() );
+			runProfileEntryDlgAsync( Long.parseLong( userIdS ) );
 			return;
 		}
 		
@@ -3493,10 +3494,12 @@ public class GwtMainPage extends ResizeComposite
 				}
 				
 				else {
-					Long userId = responseData.getUserId();
-					if ( null == userId )
-					     GwtClientHelper.deferredAlert( GwtTeaming.getMessages().qViewErrorNoUserForQuickView() );
-					else runProfileEntryDlgAsync( userId );
+					Long userIdL = responseData.getUserId();
+					if ( null == userIdL )
+					{
+						userIdL = Long.parseLong( userIdS );
+					}
+					runProfileEntryDlgAsync( userIdL );
 				}
 			}// end onSuccess()
 		});
@@ -4274,13 +4277,21 @@ public class GwtMainPage extends ResizeComposite
 			}
 			else
 			{
-				int width;
-				int height;
-
 				// No, we aren't in administration mode!  layout the
 				// non-admin content.
-				width  = m_contentLayoutPanel.getOffsetWidth();
-				height = m_contentLayoutPanel.getOffsetHeight();
+				int width;
+				int height;
+				if ( null == m_contentLayoutPanel )
+				{
+					width  = m_contentLayoutPanel.getOffsetWidth();
+					height = m_contentLayoutPanel.getOffsetHeight();
+				}
+				else
+				{
+					// May be called before everything gets created.
+					width  =
+					height = 0;
+				}
 				
 				// Yes
 				if ( m_contentCtrl != null )
@@ -4532,9 +4543,9 @@ public class GwtMainPage extends ResizeComposite
 	/*
 	 * Fires an InvokeSimpleProfileEvent from the JSP based UI.
 	 */
-	private void fireInvokeSimpleProfile( Element element, String binderId, String userName )
+	private void fireInvokeSimpleProfile( Element element, String userId, String binderId, String userName )
 	{
-		SimpleProfileParams params = new SimpleProfileParams( element, binderId, userName );
+		SimpleProfileParams params = new SimpleProfileParams( element, userId, binderId, userName );
 		GwtTeaming.fireEvent( new InvokeSimpleProfileEvent( params ) );
 	}// end fireInvokeSimpleProfile()
 

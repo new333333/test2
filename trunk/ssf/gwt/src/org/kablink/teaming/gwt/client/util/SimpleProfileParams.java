@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,43 +40,48 @@ import com.google.gwt.dom.client.Element;
  *
  * @author nbjensen@novell.com
  */
-public class SimpleProfileParams
-{
-	private Element m_element;
-	private String m_binderId;
-	private String m_userName;
+public class SimpleProfileParams {
+	private Element	m_element;	//
+	private String	m_binderId;	//
+	private String	m_userId;	//
+	private String	m_userName;	//
 	
 	/**
+	 * Constructor method.
 	 * 
+	 * @param element
+	 * @param userId
+	 * @param binderName
+	 * @param userName
 	 */
-	public SimpleProfileParams( Element element, String binderId, String userName )
-	{
-		m_element = element;
-		m_binderId = binderId;
-		m_userName = userName;
+	public SimpleProfileParams(Element element, String userId, String binderId, String userName) {
+		// Initialize the super class...
+		super();
+		
+		// ...and store the parameters.
+		setElement( element );
+		setBinderId(binderId);
+		setUserId(  userId  );
+		setUserName(userName);
 	}
 	
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public String getBinderId()
-	{
-		return m_binderId;
-	}
+	public Element getElement()  {return m_element; }
+	public String  getBinderId() {return m_binderId;}
+	public String  getUserId()   {return m_userId;  }
+	public String  getUserName() {return m_userName;}
 	
 	/**
+	 * Set'er methods.
 	 * 
+	 * @param
 	 */
-	public Element getElement()
-	{
-		return m_element;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getUserName()
-	{
-		return m_userName;
-	}
+	public void setElement( Element element)  {m_element  = element; }
+	public void setBinderId(String  binderId) {m_binderId = binderId;}
+	public void setUserId(  String  userId)   {m_userId   = userId;  }
+	public void setUserName(String  userName) {m_userName = userName;}
 }
