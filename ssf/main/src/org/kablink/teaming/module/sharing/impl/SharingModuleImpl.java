@@ -73,7 +73,6 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.GangliaMonitoring;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SimpleProfiler;
@@ -1718,6 +1717,13 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      *        is no longer a factor.
      */
 	private void invalidateShareItemSubscriptions(ShareItem shareItem) {
+		// If we're not supposed to validate subscriptions when a share
+		// is expired or deleted...
+		if (!(SPropsUtil.getBoolean("sharing.validate.subscriptions.on.delete", false))) {
+			// ...simply bail.
+			return;
+		}
+
 		SimpleProfiler.start("SharingModuleImpl.invalidateShareItemSubscriptions()");
     	try {
 			// If this is a public link share...
@@ -1809,7 +1815,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					// equal to the number for the shares but more
 					// likely a lot fewer if the share was with a group
 					// or team.
-					List<Principal> pList = resolveSubscriptionPrincipals(subs);
+					List<Principal> pList = MiscUtil.resolveSubscriptionPrincipals(subs);
 					if (null != pList) {
 						// Yes!  Scan the subscriptions.
 						for (Subscription sub:  subs) {
@@ -1817,7 +1823,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 							// subscription is for...
 							UserEntityPK subUE   = sub.getId();
 							Long         subUID  = subUE.getPrincipalId();
-							User         subUser = findUserInPListById(pList, subUID);
+							User         subUser = MiscUtil.findUserInPListById(pList, subUID);
 							if (null == subUser) {
 								// ...there's nothing we can do for
 								// ...it.  Skip it.
@@ -1829,7 +1835,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 							if (!(fm.testReadAccess(subUser, ((WorkArea) de), true))) {
 								// No!  Delete their subscription to
 								// it.
-								fm.setSubscription(subUser, de.getParentBinder().getId(), de.getId(), null);	// null -> Delete this.
+								fm.setSubscription(subUser, de.getParentBinder().getId(), de.getId(), null);	// null -> Delete this user's subscription.
 								logger.info("invalidateShareItemSubscriptions():  '" + subUser.getTitle() + "'s subscription to '" + de.getTitle() + "' has been deleted because they no longer have access to the entry.");
 								continue;	// Continue with the next share recipient.
 							}
@@ -1863,7 +1869,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				if (MiscUtil.hasItems(subs)) {
 					// Yes!  Can we resolve Principal's from the
 					// subscriptions?
-					List<Principal> pList = resolveSubscriptionPrincipals(subs);
+					List<Principal> pList = MiscUtil.resolveSubscriptionPrincipals(subs);
 					if (MiscUtil.hasItems(pList)) {
 						// Yes!  Scan the subscriptions.
 						for (Subscription sub:  subs) {
@@ -1871,7 +1877,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 							// subscription is for...
 							UserEntityPK subUE   = sub.getId();
 							Long         subUID  = subUE.getPrincipalId();
-							User         subUser = findUserInPListById(pList, subUID);
+							User         subUser = MiscUtil.findUserInPListById(pList, subUID);
 							if (null == subUser) {
 								// ...there's nothing we can do for
 								// ...it.  Skip it.
@@ -1902,7 +1908,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 							if (!(fm.testReadAccess(subUser, ((WorkArea) subDE), true))) {
 								// No!  Delete their subscription.
 								if (isSubFE)
-								     fm.setSubscription(subUser, subDE.getParentBinder().getId(), subDE.getId(), null);	// null -> Delete this.
+								     fm.setSubscription(subUser, subDE.getParentBinder().getId(), subDE.getId(), null);	// null -> Delete this
 								else bm.setSubscription(subUser,                                  subDE.getId(), null);	// ...user's subscription.
 								logger.info("invalidateShareItemSubscriptions():  '" + subUser.getTitle() + "'s subscription to '" + subDE.getTitle() + "' has been deleted because they no longer have access to the entity.");
 							}
@@ -1915,44 +1921,5 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     	finally {
     		SimpleProfiler.stop("SharingModuleImpl.invalidateShareItemSubscriptions()");
     	}
-	}
-
-	/*
-	 * Returns the User from a List<Principal> that corresponds to the
-	 * given user ID.
-	 * 
-	 * If one is not found, null is returned.
-	 */
-	private static User findUserInPListById(List<Principal> pList, Long uid) {
-		User reply = null;
-		if (null != pList) {
-			for (Principal p:  pList) {
-				if (p.getId().equals(uid)) {
-					reply = ((User) p);
-					break;
-				}
-			}
-		}
-		return reply;
-	}
-
-	/*
-	 * Returns a List<Principal> of the Principal's associated with the
-	 * Subscription's in a List<Subscription>. 
-	 */
-	@SuppressWarnings("unchecked")
-	private static List<Principal> resolveSubscriptionPrincipals(List<Subscription> subs) {
-		List<Principal> reply;
-		if (null != subs) {
-			List<Long> uids = new ArrayList<Long>();
-			for (Subscription sub:  subs) {
-				ListUtil.addLongToListLongIfUnique(uids, sub.getId().getPrincipalId());
-			}
-			reply = ResolveIds.getPrincipals(uids);
-		}
-		else {
-			reply = null;
-		}
-		return reply;
 	}
 }
