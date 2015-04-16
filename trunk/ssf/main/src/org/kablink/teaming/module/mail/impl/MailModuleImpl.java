@@ -68,7 +68,9 @@ import org.hibernate.StaleObjectStateException;
 
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
@@ -76,15 +78,19 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserEntityPK;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EmailLog.EmailLogStatus;
 import org.kablink.teaming.domain.EmailLog.EmailLogType;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.jobs.FillEmailSubscription;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.SendEmail;
 import org.kablink.teaming.jobs.ZoneSchedule;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
@@ -101,6 +107,7 @@ import org.kablink.teaming.module.mail.MimeMessagePreparator;
 import org.kablink.teaming.module.mail.MimeNotifyPreparator;
 import org.kablink.teaming.module.mail.VibeMimeMessage;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.NLT;
@@ -108,6 +115,7 @@ import org.kablink.teaming.util.PortabilityUtil;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -177,6 +185,15 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		this.reportModule = reportModule;
 	}
 	
+	private BinderModule binderModule;
+	public BinderModule getBinderModule() {
+		return binderModule;
+	}
+	
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+
 	private FolderModule folderModule;
 	public FolderModule getFolderModule() {
 		return folderModule;
@@ -721,7 +738,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								// Make sure entry subscription is
 								// first in list so overrides folder
 								// subscriptions for the same user.
-								subscriptions = getCoreDao().loadSubscriptionByEntity(parent.getEntityIdentifier());
+								subscriptions = loadSubscriptionsByEntityWithACLCheck(parent);
 								subscriptions.addAll(folderSubscriptions);
 							}
 							
@@ -837,21 +854,134 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		
 		return last;
 	}
-	
+
 	/*
 	 * Returns a List<Subscription> containing the Subscription's from
-	 * an Entry's Folder up the Folder hierarchy.
+	 * a Folder up through the Folder's hierarchy.
+	 * 
+	 * If a Subscription is found where the user no longer has access
+	 * to the subscribed to folder, the Subscription is deleted and
+	 * NOT returned in the reply list.
 	 */
 	private List<Subscription> getFolderSubscriptions(Folder folder) {
-		List<Subscription> reply = new ArrayList<Subscription>();
+		List<DefinableEntity> deList = new ArrayList<DefinableEntity>();
 		while (null != folder) {
-			reply.addAll(getCoreDao().loadSubscriptionByEntity(folder.getEntityIdentifier()));
+			deList.add(folder);
 			folder = folder.getParentFolder();
 		}
-		return reply;
+		return loadSubscriptionsByEntityWithACLCheck(deList);
 	}
 
 	/*
+	 * Returns a List<Subscription> of the Subscription objects
+	 * corresponding to a List<DefinableEntity>.
+	 * 
+	 * If a Subscription is found where the user no longer has access
+	 * to the subscribed to entity, the Subscription is deleted and
+	 * NOT returned in the reply list.
+	 */
+	private List<Subscription> loadSubscriptionsByEntityWithACLCheck(List<DefinableEntity> deList) {
+		SimpleProfiler.start("MailModuleImpl.loadSubscriptionsByEntityWithACLCheck()");
+    	try {
+			// If we don't have any DefinableEntity's...
+			int deCount = ((null == deList) ? 0 : deList.size());
+			if (0 == deCount) {
+				// ...bail.
+				return new ArrayList<Subscription>();
+			}
+	
+			// Load the Subscription's for the DefinableEntity's.
+			List<Subscription> reply;
+			SimpleProfiler.start("MailModuleImpl.loadSubscriptionsByEntityWithACLCheck( Loading Subscription's )");
+	    	try {
+				CoreDao cd = getCoreDao();
+				if (1 == deCount) {
+					reply = cd.loadSubscriptionByEntity(deList.get(0).getEntityIdentifier());
+					if (null == reply) {
+						return new ArrayList<Subscription>();
+					}
+				}
+				else {
+					reply = new ArrayList<Subscription>();
+					for (DefinableEntity de:  deList) {
+						List<Subscription> deSubList =  cd.loadSubscriptionByEntity(de.getEntityIdentifier());
+						if (MiscUtil.hasItems(deSubList)) {
+							reply.addAll(deSubList);
+						}
+					}
+				}
+	    	}
+	    	
+	    	finally {
+	    		SimpleProfiler.stop("MailModuleImpl.loadSubscriptionsByEntityWithACLCheck( Loading Subscription's )");
+	    	}
+	
+			// Did we find any Subscription's?
+			if (MiscUtil.hasItems(reply)) {
+				// Yes!  Can we find any User's that correspond to
+				// them?
+				List<Principal> pList = MiscUtil.resolveSubscriptionPrincipals(reply);
+				if (MiscUtil.hasItems(pList)) {
+					// Yes!  Scan the Subscription's.
+					SimpleProfiler.start("MailModuleImpl.loadSubscriptionsByEntityWithACLCheck( Validating User/Subscription/DefinableEntity Access )");
+			    	try {
+						BinderModule bm = getBinderModule();
+						FolderModule fm = getFolderModule();
+						int subCount = reply.size();
+						for (int i = (subCount - 1); i >= 0; i -= 1) {
+							// Can we find the User this Subscription
+							// is for?
+							Subscription sub     = reply.get(i);
+							UserEntityPK subUE   = sub.getId();
+							Long         subUID  = subUE.getPrincipalId();
+							User         subUser = MiscUtil.findUserInPListById(pList, subUID);
+							if (null != subUser) {
+								// Yes!  Do they still have access to
+								// the subscribed to entity?
+								DefinableEntity subDE = MiscUtil.findDEInDEListById(deList, subUE.getEntityId());
+								if (!(fm.testReadAccess(subUser, ((WorkArea) subDE), true))) {
+									// No!  Delete their subscription
+									// to it...
+									boolean isSubFE = EntityType.folderEntry.equals(subDE.getEntityType());
+									if (isSubFE)
+									     fm.setSubscription(subUser, subDE.getParentBinder().getId(), subDE.getId(), null);	// null -> Delete this
+									else bm.setSubscription(subUser,                                  subDE.getId(), null);	// ...user's subscription.
+									reply.remove(i);	// ...and remove it from the reply list.
+									logger.info("loadSubscriptionsByEntityWithACLCheck():  '" + subUser.getTitle() + "'s subscription to '" + subDE.getTitle() + "' has been deleted because they no longer have access to the " + (isSubFE ? "entry" : "folder") + ".");
+								}
+							}
+						}
+			    	}
+			    	
+			    	finally {
+			    		SimpleProfiler.stop("MailModuleImpl.loadSubscriptionsByEntityWithACLCheck( Validating User/Subscription/DefinableEntity Access )");
+			    	}
+				}
+			}
+	
+			// If we get here, reply refers to a List<Subscription> of
+			// the Subscription objects corresponding to a
+			// List<DefinableEntity> where the subscribing user still
+			// has access to the subscribed to entities.  Return it.
+			return reply;
+    	}
+    	
+    	finally {
+    		SimpleProfiler.stop("MailModuleImpl.loadSubscriptionsByEntityWithACLCheck()");
+    	}
+	}
+	
+	private List<Subscription> loadSubscriptionsByEntityWithACLCheck(DefinableEntity de) {
+		// Create a List<DefinableEntity> with the entity...
+		List<DefinableEntity> deList = new ArrayList<DefinableEntity>();
+		deList.add(de);
+		
+		// ...and always use the initial form of the method.
+		return loadSubscriptionsByEntityWithACLCheck(deList);
+	}
+
+	/*
+	 * ?
 	 */
 	private void doSubscription(Transport transport, Folder folder, JavaMailSender mailSender, MimeNotifyPreparator mHelper, Map<Locale, Collection> results) {
 		for (Iterator iter = results.entrySet().iterator(); iter.hasNext();) {			
