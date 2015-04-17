@@ -37,7 +37,6 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg.ProfileEntryDlgClient;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserListInfoCmd;
@@ -67,12 +66,11 @@ import com.google.gwt.user.client.ui.RequiresResize;
  * @author drfoster@novell.com
  */
 public class UserListPanel extends ToolPanelBase {
-	private BinderInfo						m_folderInfo;		// The folder this panel is running on. 
-	private GwtTeamingDataTableImageBundle	m_images;			// Access to Vibe's data table image bundle.
-	private GwtTeamingMessages				m_messages;			// Access to Vibe's localized message resources.
-	private ProfileEntryDlg					m_profileEntryDlg;	// An instance of a ProfileEntryDlg.
-	private UserListInfoRpcResponseData		m_userListInfo;		// The UserListInfoRpcResponseData for this folder's user lists, once they've been queried.
-	private VibeFlowPanel					m_fp;				// The panel holding the UserListPanel's contents.
+	private BinderInfo						m_folderInfo;	// The folder this panel is running on. 
+	private GwtTeamingDataTableImageBundle	m_images;		// Access to Vibe's data table image bundle.
+	private GwtTeamingMessages				m_messages;		// Access to Vibe's localized message resources.
+	private UserListInfoRpcResponseData		m_userListInfo;	// The UserListInfoRpcResponseData for this folder's user lists, once they've been queried.
+	private VibeFlowPanel					m_fp;			// The panel holding the UserListPanel's contents.
 
 	/*
 	 * Constructor method.
@@ -104,9 +102,7 @@ public class UserListPanel extends ToolPanelBase {
 	 */
 	private void clickOnPresenceControl(PrincipalInfo pi, PresenceControl presenceControl) {
 		Element piElement = presenceControl.getElement();
-		if (pi.isUserHasWS())
-		     invokeSimpleProfileDlg(   pi, piElement);
-		else invokeViewProfileEntryDlg(pi, piElement);
+		invokeSimpleProfileDlg(pi, piElement);
 	}
 	
 	/**
@@ -156,35 +152,6 @@ public class UserListPanel extends ToolPanelBase {
 		GwtClientHelper.invokeSimpleProfile(pElement, String.valueOf(pi.getId()), wsIdS, pi.getTitle());
 	}
 	
-	/*
-	 * Called to view the profile entry on the principal.
-	 */
-	private void invokeViewProfileEntryDlg(final PrincipalInfo pi, Element pElement) {
-		// Have we instantiated a profile entry dialog yet?
-		if (null == m_profileEntryDlg) {
-			// No!  Instantiate one now.
-			ProfileEntryDlg.createAsync(new ProfileEntryDlgClient() {			
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(final ProfileEntryDlg peDlg) {
-					// ...and show it.
-					m_profileEntryDlg = peDlg;
-					showProfileEntryDlgAsync(pi);
-				}
-			});
-		}
-		
-		else {
-			// Yes, we've instantiated a profile entry dialog already!
-			// Simply show it.
-			showProfileEntryDlgAsync(pi);
-		}
-	}
 	/*
 	 * Asynchronously construct's the contents of the user list panel.
 	 */
@@ -326,24 +293,5 @@ public class UserListPanel extends ToolPanelBase {
 			presenceLabel.setTitle(hover);
 		}
 		piPanel.add(presenceLabel);
-	}
-	
-	/*
-	 * Asynchronously shows the profile entry dialog.
-	 */
-	private void showProfileEntryDlgAsync(final PrincipalInfo pi) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				showProfileEntryDlgNow(pi);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously shows the profile entry dialog.
-	 */
-	private void showProfileEntryDlgNow(PrincipalInfo pi) {
-		ProfileEntryDlg.initAndShow(m_profileEntryDlg, pi.getId());
 	}
 }

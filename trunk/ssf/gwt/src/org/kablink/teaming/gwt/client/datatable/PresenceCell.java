@@ -34,8 +34,6 @@ package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
-import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg;
-import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg.ProfileEntryDlgClient;
 import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
@@ -45,8 +43,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -60,16 +56,14 @@ import com.google.gwt.user.client.ui.Label;
  * @author drfoster@novell.com
  */
 public class PresenceCell extends AbstractCell<PrincipalInfo> {
-	private GwtTeamingDataTableImageBundle	m_images;			//
-	private PresenceClickAction				m_clickAction;		//
-	private ProfileEntryDlg					m_profileEntryDlg;	//
+	private GwtTeamingDataTableImageBundle	m_images;		//
+	private PresenceClickAction				m_clickAction;	//
 
 	/**
 	 * Enumeration value that defines what happens when a presence
 	 * widget is clicked.
 	 */
 	public enum PresenceClickAction {
-		SHOW_PROFILE_ENTRY_WITH_NO_WS,
 		SHOW_SIMPLE_PROFILE,
 		SHOW_USER_PROPERTIES,
 	}
@@ -122,36 +116,6 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 	private void invokeUserPropertiesDlg(PrincipalInfo pi, Element pElement) {
 		// Simply fire the event to invoke the user properties dialog.
 		GwtTeaming.fireEventAsync(new InvokeUserPropertiesDlgEvent(pi.getId()));
-	}
-	
-	/*
-	 * Called to view the profile entry on the principal.
-	 */
-	private void invokeViewProfileEntryDlg(final PrincipalInfo pi, Element pElement) {
-		// Have we instantiated a profile entry dialog yet?
-		if (null == m_profileEntryDlg) {
-			// No!  Instantiate one now.
-			ProfileEntryDlg.createAsync(new ProfileEntryDlgClient() {			
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(final ProfileEntryDlg peDlg) {
-					// ...and show it.
-					m_profileEntryDlg = peDlg;
-					showProfileEntryDlgAsync(pi);
-				}
-			});
-		}
-		
-		else {
-			// Yes, we've instantiated a profile entry dialog already!
-			// Simply show it.
-			showProfileEntryDlgAsync(pi);
-		}
 	}
 	
 	/**
@@ -239,18 +203,6 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
     private void processClickAction(PrincipalInfo pi, Element eventTarget) {
     	// What action should we take when the profile is clicked on?
 		switch (m_clickAction) {
-		case SHOW_PROFILE_ENTRY_WITH_NO_WS:
-			// Does the presence user have a workspace?
-			if (!(pi.isUserHasWS())) {
-				// No!  Invoke the profile entry dialog.
-				invokeViewProfileEntryDlg( pi, eventTarget);
-				break;
-			}
-			
-			// * * * * * * * * * * * * * * * * * * * * * //
-			// Fall through and show the simple profile. //
-			// * * * * * * * * * * * * * * * * * * * * * //
-			
 		default:
 		case SHOW_SIMPLE_PROFILE:
 			// Invoke the simple profile dialog.
@@ -314,25 +266,5 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 		// ...and render that into the cell.
 		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(fp.getElement().getInnerHTML());
 		sb.append(rendered);
-	}
-
-	/*
-	 * Asynchronously shows the profile entry dialog.
-	 */
-	private void showProfileEntryDlgAsync(final PrincipalInfo pi) {
-		ScheduledCommand doShow = new ScheduledCommand() {
-			@Override
-			public void execute() {
-				showProfileEntryDlgNow(pi);
-			}
-		};
-		Scheduler.get().scheduleDeferred(doShow);
-	}
-	
-	/*
-	 * Synchronously shows the profile entry dialog.
-	 */
-	private void showProfileEntryDlgNow(PrincipalInfo pi) {
-		ProfileEntryDlg.initAndShow(m_profileEntryDlg, pi.getId());
 	}
 }
