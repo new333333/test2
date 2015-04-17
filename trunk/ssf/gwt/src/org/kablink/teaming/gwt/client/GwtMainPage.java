@@ -4281,7 +4281,7 @@ public class GwtMainPage extends ResizeComposite
 				// non-admin content.
 				int width;
 				int height;
-				if ( null == m_contentLayoutPanel )
+				if ( null != m_contentLayoutPanel )
 				{
 					width  = m_contentLayoutPanel.getOffsetWidth();
 					height = m_contentLayoutPanel.getOffsetHeight();
