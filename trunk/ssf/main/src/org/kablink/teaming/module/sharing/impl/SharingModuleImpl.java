@@ -1715,6 +1715,87 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      * Note:  This method must called AFTER this share has been deleted
      *        or expired so its affect on a user's access to the item
      *        is no longer a factor.
+     *        
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     *                         DRF (20150416)
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * 
+     * This has been disabled the initial SPropsUtil check.  It has
+     * been superseded by doing similar checks when filling
+     * subscription (see MailModuleImpl.loadSubscriptionsByEntityWithACLCheck()).
+     * 
+     * This change was made based on the following comments from Jong
+     * in an email:
+     * 
+     * The implementation is not likely to work when a folder is shared
+     * with a large group such as "all internal users" group. Consider
+     * this real world scenario for example - Suppose a Filr (mid to
+     * large) customer with 500,000 folders, 5 million files, and
+     * 10,000 users. Further assume that each user subscribes to at
+     * least one entity and the number of entities each user subscribes
+     * to is 5 in average and the subscriptions are evenly distributed
+     * over available entities in the system (just to keep the
+     * calculation simple).
+     * 
+     * When a folder (say, folder X) is shared with "all internal
+     * users" group, and then subsequently expires or is deleted, I see
+     * that a number of issues can arise with the implementation:
+     * 
+     * 1) The code will try to load all subscriptions made by the
+     *    10,000 users in a single SQL query. This exceeds the "in
+     *    clause" limit that we need to enforce on some databases,
+     *    and will cause SQL error to be thrown.
+     * 2) The code will perform ACL checking 50,000 times
+     *    (10,000 x 5). Typically an ACL checking against the database
+     *    takes about 10 ms on a production system, so this ACL
+     *    checking alone can take 500 seconds (= 8+ minutes). In
+     *    addition, if we assume that half of the subscriptions are on
+     *    files (rather than folders), then this also involves making
+     *    25,000 "separate" calls to FAMT to check ACLs on those files.
+     *    Needless to say, for some files, the checking will be done
+     *    multiple times.
+     * 3) With the current implementation, as the method runs its full
+     *    course, it will end up loading ALL users (10,000 of them) in
+     *    the system into the memory and ALL entities (millions of
+     *    them) in the system into the memory. The server will crash
+     *    well before it reaches the end.
+     *    
+     * As you see, there simply is NO way this implementation can work
+     * under such scenario.
+     * 
+     * If we need to make the current algorithm workable, we should do
+     * the following additional work (all of them) at the minimum:
+     * 
+     * a) Change the code so that it would not exceed the "in clause"
+     *    limit during SQL query.
+     * b) Keep the memory usage under control. Do NOT let the
+     *    concurrent memory usage to go up proportionally to the number
+     *    of users or number of entities being dealt with.
+     * c) Introduce a mechanism whereby the number of candidate
+     *    entities being examined can be restricted to just those that
+     *    physically live under the shared folder X. Suppose the folder
+     *    X actually contains only a handful of files (say, 3 files).
+     *    Then, it makes absolutely no sense to examine the millions of
+     *    files and folders in the system just to validate each
+     *    subscription. Instead, the code could have examined
+     *    subscriptions only on those 3 files that live inside folder
+     *    X.
+     * 
+     * Doing this with the subscription table won't be easy - It will
+     * require some schema redesign around the subscription table, some
+     * data migration, and other related coding changes.
+     * 
+     * An alternative (and probably better) approach would be to use
+     * the database or search engine to quickly get back the IDs of the
+     * entities that live under the folder X (the search/query should
+     * get back just IDs and types of the entities, and NOTHING MORE!),
+     * and then use this information to quickly filter out those
+     * entities for which subscription revalidation (via ACL checking)
+     * is NOT necessary. So, in some sense, this revised algorithm is a
+     * kind of hybrid between your original first and second
+     * algorithms.
+     * 
+     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
      */
 	private void invalidateShareItemSubscriptions(ShareItem shareItem) {
 		// If we're not supposed to validate subscriptions when a share
