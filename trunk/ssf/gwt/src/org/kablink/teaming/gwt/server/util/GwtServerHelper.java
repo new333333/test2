@@ -275,7 +275,6 @@ import org.kablink.teaming.gwt.client.util.GroupType;
 import org.kablink.teaming.gwt.client.util.GroupType.GroupClass;
 import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.GwtMobileOpenInSetting;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
 import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
@@ -13470,7 +13469,7 @@ public class GwtServerHelper {
 	/**
 	 * Validate the list of TeamingEvents to see if the user has rights to perform the events
 	 */
-	public static void validateEntryEvents( AllModulesInjected bs, HttpRequestInfo ri, List<EventValidation> eventValidations, String entryId )
+	public static void validateEntryEvents( AllModulesInjected bs, HttpServletRequest req, List<EventValidation> eventValidations, String entryId )
 	{
 		// Initialize all events as invalid.
 		for ( EventValidation nextValidation : eventValidations )

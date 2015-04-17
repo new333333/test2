@@ -239,7 +239,7 @@ public class PresenceCell extends AbstractCell<PrincipalInfo> {
 		// Generate the presence control...
 		VibeFlowPanel fp = new VibeFlowPanel();
 		GwtPresenceInfo presence = pi.getPresence();
-		PresenceControl presenceControl = new PresenceControl(String.valueOf(pi.getPresenceUserWSId()), false, false, false, presence);
+		PresenceControl presenceControl = new PresenceControl(String.valueOf(pi.getId()), String.valueOf(pi.getPresenceUserWSId()), false, false, false, presence);
 		presenceControl.setImageAlignment("top");
 		presenceControl.addStyleName("vibe-dataTablePresence-control displayInline verticalAlignTop");
 		presenceControl.setAnchorStyleName("cursorPointer");

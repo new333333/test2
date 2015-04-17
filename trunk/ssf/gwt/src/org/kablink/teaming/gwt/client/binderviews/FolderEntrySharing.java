@@ -232,7 +232,7 @@ public class FolderEntrySharing extends VibeFlowPanel
 		case INDIVIDUAL: {
 			// An individual user!  Generate their presence control...
 			GwtPresenceInfo presence = ai.getPresence();
-			final PresenceControl presenceControl = new PresenceControl(String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
+			final PresenceControl presenceControl = new PresenceControl(String.valueOf(ai.getId()), String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
 			presenceControl.setImageAlignment("top");
 			presenceControl.addStyleName("vibe-feView-shareItemAvatar cursorPointer");
 			presenceControl.setAnchorStyleName("cursorPointer");

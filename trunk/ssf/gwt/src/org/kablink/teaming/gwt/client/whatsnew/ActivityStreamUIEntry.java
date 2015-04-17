@@ -1246,7 +1246,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		{
 			// No
 			// Create a presence control for the author.
-			presenceCtrl = new PresenceControl( m_authorWSId, false, false, false, entryItem.getAuthorPresence() );
+			presenceCtrl = new PresenceControl( m_authorId, m_authorWSId, false, false, false, entryItem.getAuthorPresence() );
 			presenceCtrl.setImageAlignment( "top" );
 			presenceCtrl.addClickHandler( m_presenceClickHandler );
 			presenceCtrl.addStyleName( "displayInline" );
