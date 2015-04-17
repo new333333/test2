@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -83,89 +83,76 @@ import com.google.gwt.user.client.ui.Panel;
 /**
  * This is the QuickView Dialog
  * 
- * @author nbjensen
+ * @author nbjensen@novell.com
  */
 public class GwtQuickViewDlg extends DlgBox {
-
-	private String binderId;
-	private Grid grid;
-	
-	private ProfileActionWidget workspaceBtn;
-	private ProfileActionWidget profileBtn;
-	private QuickViewAction followBtn;
-	
-	private Label statusLabel;
-	
-	private String userName;
-	private Image avatar;
-	private Anchor miniBlogA;
-	private ProfileActionWidget instantMessageBtn;
-	@SuppressWarnings("unused")
-	private Element clientElement;
-	private FlowPanel pictureDiv;
+	private Anchor				m_miniBlogA;			//
+	private FlowPanel			m_pictureDiv;			//
+	private Grid				m_grid;					//
+	private Image				m_avatar;				//
+	private Label				m_statusLabel;			//
+	private ProfileActionWidget	m_instantMessageBtn;	//
+	private ProfileActionWidget	m_profileBtn;			//
+	private ProfileActionWidget	m_workspaceBtn;			//
+	private QuickViewAction		m_followBtn;			//
+	private String				m_binderId;				//
+	private String				m_userId;				//
+	private String				m_userName;				//
 
 	/*
 	 * Note that the class constructor is private to facilitate code
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private GwtQuickViewDlg(int pos, int pos2, String binderId, String userName, Element element) {
+	private GwtQuickViewDlg(int pos, int pos2, String userId, String binderId, String userName, Element element) {
 		super(true, false, pos, pos2);
 
-		this.binderId = binderId;
-		this.userName = userName;
-		this.clientElement = element;
+		m_userId   = userId;
+		m_binderId = binderId;
+		m_userName = userName;
 
 		createAllDlgContent("", null, null, null);
 	}
 
 	/**
 	 * Create the header, content and footer for the dialog box.
+	 * 
+	 * @param caption
+	 * @param editSuccessfulHandler
+	 * @param editCanceledHandler
+	 * @param properties
 	 */
 	@Override
-	public void createAllDlgContent(String caption,
-			EditSuccessfulHandler editSuccessfulHandler,// We will call this
-														// handler when the user
-														// presses the ok button
-			EditCanceledHandler editCanceledHandler, // This gets called when
-														// the user presses the
-														// Cancel button
-			Object properties) // Where properties used in the dialog are read
-								// from and saved to.
-	{
-		FlowPanel panel;
-		Panel content;
-		Panel header;
-		Panel footer;
-
-		panel = new FlowPanel();
+	public void createAllDlgContent(String caption, EditSuccessfulHandler editSuccessfulHandler, EditCanceledHandler editCanceledHandler, Object properties) {
+		FlowPanel panel = new FlowPanel();
 		panel.addStyleName("qViewDlg");
 
 		// Add the header.
-		header = createHeader(caption);
+		Panel header = createHeader(caption);
 		panel.add(header);
 
 		// Add the main content of the dialog box.
-		content = createContent(properties);
+		Panel content = createContent(properties);
 		panel.add(content);
 
 		// Create the footer.
-		footer = createFooter();
+		Panel footer = createFooter();
 		panel.add(footer);
 
 		init(properties);
 
-		// Initialize the handlers
+		// Initialize the handlers.
 		initHandlers(editSuccessfulHandler, editCanceledHandler);
 
 		setWidget(panel);
-	}// end createAllDlgContent()
+	}
 
 	/**
 	 * Clear all the content from the dialog and start fresh.
 	 */
 	public void clearContent() {
-	}// end clearContent()
+		// Nothing to do.
+	}
 
 	@Override
 	public Panel createContent(Object props) {
@@ -198,13 +185,13 @@ public class GwtQuickViewDlg extends DlgBox {
 	}
 
 	private Panel createPhotoPanel() {
-		pictureDiv = new FlowPanel();
-		pictureDiv.addStyleName("qViewPhoto");
+		m_pictureDiv = new FlowPanel();
+		m_pictureDiv.addStyleName("qViewPhoto");
 
-		avatar = new Image();
-		pictureDiv.add(avatar);
+		m_avatar = new Image();
+		m_pictureDiv.add(m_avatar);
 
-		return pictureDiv;
+		return m_pictureDiv;
 	}
 
 	private Panel createActionsPanel() {
@@ -213,23 +200,23 @@ public class GwtQuickViewDlg extends DlgBox {
 		FlowPanel panel = new FlowPanel();
 		panel.addStyleName("qViewActions");
 		
-		profileBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewProfile(),
+		m_profileBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewProfile(),
 										GwtTeaming.getMessages().qViewProfileTitle(), 
 										"qView-a", "qView-action");
-		profileBtn.addClickHandler(new WorkspaceEventHandler(true));
+		m_profileBtn.addClickHandler(new WorkspaceEventHandler(true));
 		
 		boolean isFilr = GwtClientHelper.isLicenseFilr();
 		if (!isFilr) {
-			workspaceBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewWorkspace(),
+			m_workspaceBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewWorkspace(),
 											 GwtTeaming.getMessages().qViewWorkspaceTitle(),
 											 "qView-a",	"qView-action");
-			workspaceBtn.addClickHandler(new WorkspaceEventHandler(false));
+			m_workspaceBtn.addClickHandler(new WorkspaceEventHandler(false));
 		}
 		
-		instantMessageBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewInstantMessage(),
+		m_instantMessageBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewInstantMessage(),
 				GwtTeaming.getMessages().qViewInstantMessageTitle(),
 				"qView-a", "qView-action");
-		instantMessageBtn.addClickHandler(new InstantMessageClickHandler(binderId) {
+		m_instantMessageBtn.addClickHandler(new InstantMessageClickHandler(m_binderId) {
 				// Override onClick so we can hide the dialog after launching
 				// the instant message.
 				@Override
@@ -238,10 +225,10 @@ public class GwtQuickViewDlg extends DlgBox {
 					hide();
 				}
 			});
-		instantMessageBtn.setVisible(false);
+		m_instantMessageBtn.setVisible(false);
 
 		if (!isFilr) {
-			followBtn = new QuickViewAction("", "", "qView-a",
+			m_followBtn = new QuickViewAction("", "", "qView-a",
 										    "qView-action-following");
 	
 			// Add a clickhandler to the "advanced" link. When the user clicks on
@@ -253,17 +240,17 @@ public class GwtQuickViewDlg extends DlgBox {
 				 */
 				@Override
 				public void onClick(ClickEvent event) {
-					if(followBtn.isChecked()) {
+					if(m_followBtn.isChecked()) {
 						unFollowAction();
 					} else {
 						followAction();
 					}
-				}// end onClick()
+				}
 	
 				private void followAction() {
 					TrackBinderCmd cmd;
 					
-					cmd = new TrackBinderCmd( binderId );
+					cmd = new TrackBinderCmd( m_binderId );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 					{
 						@Override
@@ -272,8 +259,8 @@ public class GwtQuickViewDlg extends DlgBox {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
-								binderId);
-						}//end onFailure()
+								m_binderId);
+						}
 						
 						@Override
 						public void onSuccess( VibeRpcResponse response )
@@ -282,14 +269,14 @@ public class GwtQuickViewDlg extends DlgBox {
 							if (success)
 							     updateFollowingButton(true);
 							else GwtClientHelper.deferredAlert(GwtTeaming.getMessages().qViewErrorCantTrack());
-						}// end onSuccess()
+						}
 					});
 				}
 	
 				private void unFollowAction() {
 					UntrackPersonCmd cmd;
 					
-					cmd = new UntrackPersonCmd( Long.parseLong( binderId ) );
+					cmd = new UntrackPersonCmd( Long.parseLong( m_binderId ) );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 					{
 						@Override
@@ -298,8 +285,8 @@ public class GwtQuickViewDlg extends DlgBox {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								GwtTeaming.getMessages().rpcFailure_UntrackingPerson(),
-								binderId);
-						}//end onFailure()
+								m_binderId);
+						}
 						
 						@Override
 						public void onSuccess( VibeRpcResponse response )
@@ -308,20 +295,20 @@ public class GwtQuickViewDlg extends DlgBox {
 							if (success)
 							     updateFollowingButton(false);
 							else GwtClientHelper.deferredAlert(GwtTeaming.getMessages().qViewErrorCantUntrack());
-						}// end onSuccess()
+						}
 					});
 				}
 			};
-			followBtn.addClickHandler(clickHandler);
+			m_followBtn.addClickHandler(clickHandler);
 		}
 		
-		panel.add(profileBtn);
+		panel.add(m_profileBtn);
 		if (!isFilr) {
-			panel.add(workspaceBtn);
+			panel.add(m_workspaceBtn);
 		}
-		panel.add(instantMessageBtn);
+		panel.add(m_instantMessageBtn);
 		if (!isFilr) {
-			panel.add(followBtn);
+			panel.add(m_followBtn);
 		}
 
 		return panel;
@@ -335,32 +322,32 @@ public class GwtQuickViewDlg extends DlgBox {
 		InlineLabel span = new InlineLabel();
 		status.add(span);
 		
-		statusLabel = new Label();
-		span.getElement().appendChild(statusLabel.getElement());
-		statusLabel.addStyleName("qViewStatusInline");
+		m_statusLabel = new Label();
+		span.getElement().appendChild(m_statusLabel.getElement());
+		m_statusLabel.addStyleName("qViewStatusInline");
 		
-		miniBlogA = new Anchor(GwtTeaming.getMessages().qViewMicroBlog());
-		miniBlogA.setTitle(GwtTeaming.getMessages().qViewMicroBlogTitle());
-		status.add(miniBlogA);
+		m_miniBlogA = new Anchor(GwtTeaming.getMessages().qViewMicroBlog());
+		m_miniBlogA.setTitle(GwtTeaming.getMessages().qViewMicroBlogTitle());
+		status.add(m_miniBlogA);
 		
-		miniBlogA.addStyleName("qViewStatus-anchor");
-		miniBlogA.addStyleName("qViewStatusInline");
+		m_miniBlogA.addStyleName("qViewStatus-anchor");
+		m_miniBlogA.addStyleName("qViewStatusInline");
 		
-		miniBlogA.addClickHandler(new MicroBlogClickHandler(binderId));
+		m_miniBlogA.addClickHandler(new MicroBlogClickHandler(m_binderId));
 
 		return status;
 	}
 
 	private Grid createInfoPanel() {
 
-		grid = new Grid();
-		grid.setWidth("100%");
-		grid.setCellSpacing(0);
-		grid.setCellPadding(0);
-		grid.resizeColumns(3);
-		grid.setStyleName("qViewInfoTable");
+		m_grid = new Grid();
+		m_grid.setWidth("100%");
+		m_grid.setCellSpacing(0);
+		m_grid.setCellPadding(0);
+		m_grid.resizeColumns(3);
+		m_grid.setStyleName("qViewInfoTable");
 
-		return grid;
+		return m_grid;
 	}
 
 
@@ -376,7 +363,7 @@ public class GwtQuickViewDlg extends DlgBox {
 		panel.addStyleName("qViewFooter");
 
 		return panel;
-	}// end createFooter()
+	}
 
 	/**
 	 * Override the createHeader() method because we need to make it nicer.
@@ -391,10 +378,10 @@ public class GwtQuickViewDlg extends DlgBox {
 		FlowPanel titlePanel = new FlowPanel();
 		titlePanel.addStyleName("qViewTitle");
 
-		InlineLabel userName = new InlineLabel(this.userName);
+		InlineLabel userName = new InlineLabel(m_userName);
 		userName.addStyleName("qViewTitleText");
 
-		PresenceControl presence = new PresenceControl(binderId, false, true, true);
+		PresenceControl presence = new PresenceControl(m_userId, m_binderId, false, true, true);
 		presence.addStyleName("qViewPresence");
 
 		titlePanel.add(presence);
@@ -420,7 +407,7 @@ public class GwtQuickViewDlg extends DlgBox {
 		});
 
 		return panel;
-	}// end createHeader()
+	}
 
 	@Override
 	public Object getDataFromDlg() {
@@ -429,8 +416,7 @@ public class GwtQuickViewDlg extends DlgBox {
 
 	@Override
 	public FocusWidget getFocusWidget() {
-
-		return ((null == workspaceBtn) ? profileBtn : workspaceBtn);
+		return ((null == m_workspaceBtn) ? m_profileBtn : m_workspaceBtn);
 	}
 
 	/**
@@ -439,7 +425,7 @@ public class GwtQuickViewDlg extends DlgBox {
 	 */
 	private void init(Object props) {
 		createProfileInfoSections();
-	}// end init()
+	}
 
 	
 	/**
@@ -448,68 +434,76 @@ public class GwtQuickViewDlg extends DlgBox {
 	 * 
 	 * @param profileRequestInfo
 	 */
-	private void createProfileInfoSections() {
-
-		GetQuickViewInfoCmd cmd;
-
-		// create an async callback to handle the result of the request to get
-		// the state:
-		AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				if ((t instanceof GwtTeamingException) && ExceptionType.ACCESS_CONTROL_EXCEPTION.equals(((GwtTeamingException) t).getExceptionType()))
-				     GwtClientHelper.deferredAlert(         GwtTeaming.getMessages().qViewErrorNoRights()            );
-				else GwtClientHelper.handleGwtRPCFailure(t, GwtTeaming.getMessages().rpcFailure_GetStatus(), binderId);
-				
-				hide();
-			}
-
-			@Override
-			public void onSuccess( VibeRpcResponse response ) {
-				ProfileInfo profile;
-				
-				profile = (ProfileInfo) response.getResponseData();
-				
-				boolean isPictureEnabled = profile.isPictureEnabled();
-				String url = profile.getPictureScaledUrl();
-				if(isPictureEnabled) {
-					if(url != null && !url.equals("")){
-						avatar.setUrl(url);
-					} else {
-						FlowPanel w = (FlowPanel)avatar.getParent();
-						w.addStyleName("qViewPhoto");
-//						w.addStyleName("qViewPhoto_No");
-						FlowPanel panel = new FlowPanel();
-						w.add(panel);
-						panel.addStyleName("qViewPhotoHeight_No");
-						panel.addStyleName("qViewPhoto_none");
-						avatar.removeFromParent();
-					}
-				} else {
-					pictureDiv.addStyleName("qViewPhotoDisabled");
+	private void createProfileInfoSections() { 
+		// Get the quick view information for this user.
+		GwtClientHelper.executeCommand(
+			new GetQuickViewInfoCmd(m_userId, m_binderId),
+			new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					if ((t instanceof GwtTeamingException) && ExceptionType.ACCESS_CONTROL_EXCEPTION.equals(((GwtTeamingException) t).getExceptionType()))
+					     GwtClientHelper.deferredAlert(         GwtTeaming.getMessages().qViewErrorNoRights()            );
+					else GwtClientHelper.handleGwtRPCFailure(t, GwtTeaming.getMessages().rpcFailure_GetStatus(), m_binderId);
+					
+					hide();
 				}
-				
-				int count = profile.getCategories().size();
-				int row = 0;
-				for (int i = 0; i < count; i++) {
 
-					ProfileCategory cat = profile.get(i);
-					if (cat.getName().equals("profileSidePanelView")) {
-						continue;
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					ProfileInfo profileInfo = ((ProfileInfo) response.getResponseData());
+					boolean isPictureEnabled = profileInfo.isPictureEnabled();
+					String url = profileInfo.getPictureScaledUrl();
+					if (isPictureEnabled) {
+						if(url != null && !url.equals("")) {
+							m_avatar.setUrl(url);
+						}
+						else {
+							FlowPanel w = ((FlowPanel) m_avatar.getParent());
+							w.addStyleName("qViewPhoto");
+							FlowPanel panel = new FlowPanel();
+							w.add(panel);
+							panel.addStyleName("qViewPhotoHeight_No");
+							panel.addStyleName("qViewPhoto_none");
+							m_avatar.removeFromParent();
+						}
 					}
+					else {
+						m_pictureDiv.addStyleName("qViewPhotoDisabled");
+					}
+					
+					int count = profileInfo.getCategories().size();
+					int row   = 0;
+					for (int i = 0; i < count; i += 1) {
+						ProfileCategory cat = profileInfo.get(i);
+						if (cat.getName().equals("profileSidePanelView")) {
+							continue;
+						}
+						row = ProfileClientUtil.createProfileInfoSection(cat, m_grid, row, false, false);
+					}
+		
+					getUserStatus();
+					updateFollowingStatus();
+					
+					m_instantMessageBtn.setVisible(profileInfo.isPresenceEnabled());
 
-					row = ProfileClientUtil.createProfileInfoSection(cat, grid,	row, false, false);
+					// If the viewing user doesn't have access to the
+					// target user's personal workspace...
+					if (!(profileInfo.canAccessUserWS())) {
+						// ...hide the widgets that would allow them
+						// ...to interact with it.
+						if (null != m_followBtn)    m_followBtn.setVisible(   false);
+						if (null != m_profileBtn)   m_profileBtn.setVisible(  false);
+						if (null != m_workspaceBtn) m_workspaceBtn.setVisible(false);
+					}
+					
+					// If target user doesn't have a personal
+					// workspace...
+					if (!(profileInfo.hasUserWS())) {
+						// ...hide the widgets that require one.
+						if (null != m_miniBlogA) m_miniBlogA.setVisible(false);
+					}
 				}
-	
-				getUserStatus();
-				updateFollowingStatus();
-				
-				instantMessageBtn.setVisible(profile.isPresenceEnabled());
-			}
-		};
-
-		cmd = new GetQuickViewInfoCmd( binderId );
-		GwtClientHelper.executeCommand( cmd, callback );
+			});
 	}
 
 	
@@ -523,14 +517,14 @@ public class GwtQuickViewDlg extends DlgBox {
 		boolean showProfile = false;
 
 		public WorkspaceEventHandler(boolean profile){
-			this.showProfile = profile;
+			showProfile = profile;
 		}
 		
 		@Override
 		public void onClick(ClickEvent event) {
 			GetBinderPermalinkCmd cmd;
 			
-			cmd = new GetBinderPermalinkCmd( binderId );
+			cmd = new GetBinderPermalinkCmd( m_binderId );
 			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
 				@Override
@@ -538,8 +532,8 @@ public class GwtQuickViewDlg extends DlgBox {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-						binderId);
-				}//end onFailure()
+						m_binderId);
+				}
 				
 				@Override
 				public void onSuccess( VibeRpcResponse response )
@@ -573,11 +567,11 @@ public class GwtQuickViewDlg extends DlgBox {
 					}
 					
 					//Fire event to notify that a selection has changed
-					EventHelper.fireChangeContextEventAsync( binderId, binderUrl, Instigator.PROFILE_QUICK_VIEW_SELECT );
+					EventHelper.fireChangeContextEventAsync( m_binderId, binderUrl, Instigator.PROFILE_QUICK_VIEW_SELECT );
 					
 					hide();
-				}// end onSuccess()
-			});// end AsyncCallback()
+				}
+			});
 		}
 	}
 
@@ -588,7 +582,7 @@ public class GwtQuickViewDlg extends DlgBox {
 	private void updateFollowingStatus() {
 		IsPersonTrackedCmd cmd;
 		
-		cmd = new IsPersonTrackedCmd( binderId );
+		cmd = new IsPersonTrackedCmd( m_binderId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 				{
 					@Override
@@ -597,8 +591,8 @@ public class GwtQuickViewDlg extends DlgBox {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							GwtTeaming.getMessages().rpcFailure_IsPersonTracked(),
-							binderId);
-					}//end onFailure()
+							m_binderId);
+					}
 					
 					@Override
 					public void onSuccess( VibeRpcResponse response )
@@ -610,7 +604,7 @@ public class GwtQuickViewDlg extends DlgBox {
 						success = responseData.getBooleanValue();
 						
 						updateFollowingButton(success.booleanValue());
-					}// end onSuccess()
+					}
 				});
 	}
 	
@@ -619,70 +613,65 @@ public class GwtQuickViewDlg extends DlgBox {
 	 * @param isFollowing
 	 */
 	private void updateFollowingButton(boolean isFollowing) {
-		if (null != followBtn) {
+		if (null != m_followBtn) {
 			if(isFollowing) {
-				followBtn.setText(GwtTeaming.getMessages().qViewFollowing());
-				followBtn.setTitle(GwtTeaming.getMessages().qViewFollowingTitle());
-				followBtn.setChecked(true);
+				m_followBtn.setText(GwtTeaming.getMessages().qViewFollowing());
+				m_followBtn.setTitle(GwtTeaming.getMessages().qViewFollowingTitle());
+				m_followBtn.setChecked(true);
 			} else {
-				followBtn.setText(GwtTeaming.getMessages().qViewFollow());
-				followBtn.setTitle(GwtTeaming.getMessages().qViewFollowTitle());
-				followBtn.setChecked(false);
+				m_followBtn.setText(GwtTeaming.getMessages().qViewFollow());
+				m_followBtn.setTitle(GwtTeaming.getMessages().qViewFollowTitle());
+				m_followBtn.setChecked(false);
 			}
 		}
 	}
 	
 	private void getUserStatus() {
-		
-		GetUserStatusCmd cmd;
-		AsyncCallback<VibeRpcResponse> rpcCallback = new AsyncCallback<VibeRpcResponse>(){
-
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetStatus(),
-					binderId );
-			}
-
-			@Override
-			public void onSuccess( VibeRpcResponse response ) {
-				UserStatus result = null;
-				
-				if ( response.getResponseData() != null )
-					result = (UserStatus) response.getResponseData();
-				
-				if(result != null) {
-					String description = result.getStatus();
-					if(description != null && !description.equals("")){
-						statusLabel.setText(description);
-					} 
-				}
-			}
-		};
-		
 		// Issue an ajax request to save the user status to the db.  rpcCallback will
 		// be called when we get the response back.
-		cmd = new GetUserStatusCmd( binderId );
-		GwtClientHelper.executeCommand( cmd, rpcCallback );
+		GwtClientHelper.executeCommand(
+			new GetUserStatusCmd(m_userId, m_binderId),
+			new AsyncCallback<VibeRpcResponse>(){
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetStatus(),
+						m_binderId );
+				}
+
+				@Override
+				public void onSuccess( VibeRpcResponse response ) {
+					UserStatus result = null;
+					
+					if ( response.getResponseData() != null )
+						result = (UserStatus) response.getResponseData();
+					
+					if(result != null) {
+						String description = result.getStatus();
+						if(description != null && !description.equals("")){
+							m_statusLabel.setText(description);
+						} 
+					}
+				}
+			});
 	}
-	
+
+	/*
+	 * ?
+	 */
 	private class MicroBlogClickHandler implements ClickHandler {
-		
-		String mbBinderId;
+		String	m_mbBinderId;	//
 		
 		public MicroBlogClickHandler(String binderId){
-			this.mbBinderId = binderId;
+			m_mbBinderId = binderId;
 		}
 		
 		@Override
 		public void onClick(ClickEvent event) {
-
-			GetMicroBlogUrlCmd cmd;
-			
 			// Issue an ajax request to save the user status to the db.  rpcCallback will
 			// be called when we get the response back.
-			cmd = new GetMicroBlogUrlCmd( mbBinderId );
+			GetMicroBlogUrlCmd cmd = new GetMicroBlogUrlCmd( m_mbBinderId );
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
 
@@ -693,7 +682,7 @@ public class GwtQuickViewDlg extends DlgBox {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_QViewMicroBlog(),
-					binderId );
+					m_binderId );
 				}
 
 				@Override
@@ -724,7 +713,7 @@ public class GwtQuickViewDlg extends DlgBox {
 			GetAddMeetingUrlCmd cmd;
 			
 			// Get the URL to the meeting start/schedule dialog and launch it in a new window
-			cmd = new GetAddMeetingUrlCmd( binderId );
+			cmd = new GetAddMeetingUrlCmd( m_binderId );
 			GwtClientHelper.executeCommand( cmd,
 					new AsyncCallback<VibeRpcResponse>() {
 						@Override
@@ -749,7 +738,7 @@ public class GwtQuickViewDlg extends DlgBox {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
 								GwtTeaming.getMessages().rpcFailure_GetAddMeetingUrl(),
-								binderId );
+								m_binderId );
 						}
 					});
 		}
@@ -869,14 +858,16 @@ public class GwtQuickViewDlg extends DlgBox {
 	 * 
 	 * @param pos
 	 * @param pos2
-	 * @param binderId
-	 * @param userName
+	 * @param m_userId
+	 * @param m_binderId
+	 * @param m_userName
 	 * @param element
 	 * @param qvdClient
 	 */
 	public static void createAsync(
 			final int pos,
 			final int pos2,
+			final String userId,
 			final String binderId,
 			final String userName,
 			final Element element,
@@ -884,7 +875,7 @@ public class GwtQuickViewDlg extends DlgBox {
 		GWT.runAsync(GwtQuickViewDlg.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				GwtQuickViewDlg qvd = new GwtQuickViewDlg(pos, pos2, binderId, userName, element);
+				GwtQuickViewDlg qvd = new GwtQuickViewDlg(pos, pos2, userId, binderId, userName, element);
 				qvdClient.onSuccess(qvd);
 			}
 			

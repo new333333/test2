@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,6 +52,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author ?
  */
 public class PresenceControl extends Composite {
+	private String m_userId;
 	private String m_binderId;
 	private boolean m_bShowStatusText;
 	private boolean m_bClickStartsIm;
@@ -63,10 +64,11 @@ public class PresenceControl extends Composite {
 	private ClickHandler m_presenceAClickHandler = null;
 	private FlowPanel panel;
 	
-	public PresenceControl(String binderId, boolean bShowStatusText, boolean bClickStartsIm, boolean bHideIfUnknown) {
-		this(binderId, bShowStatusText, bClickStartsIm, bHideIfUnknown, null);
+	public PresenceControl(String userId, String binderId, boolean bShowStatusText, boolean bClickStartsIm, boolean bHideIfUnknown) {
+		this(userId, binderId, bShowStatusText, bClickStartsIm, bHideIfUnknown, null);
 	}
-	public PresenceControl(String binderId, boolean bShowStatusText, boolean bClickStartsIm, boolean bHideIfUnknown, GwtPresenceInfo presenceInfo) {
+	public PresenceControl(String userId, String binderId, boolean bShowStatusText, boolean bClickStartsIm, boolean bHideIfUnknown, GwtPresenceInfo presenceInfo) {
+		m_userId = userId;
 		m_binderId = binderId;
 		m_bShowStatusText = bShowStatusText;
 		m_bClickStartsIm = bClickStartsIm;
@@ -100,35 +102,33 @@ public class PresenceControl extends Composite {
 		m_presenceA = new Anchor();
 
 		if (null == pi) {
-			GetPresenceInfoCmd cmd;
-			
-			AsyncCallback<VibeRpcResponse> callback = new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable t) {
-					// Just ignore any errors.  All we need to do is hide the presence control
-					// See bug 648358.
-					//GwtClientHelper.handleGwtRPCFailure(
-					//	t,
-					//	GwtTeaming.getMessages().rpcFailure_GetPresenceInfo(),
-					//	m_binderId);
-					
-					panel.setVisible(false);
-				}
-	
-				@Override
-				public void onSuccess( VibeRpcResponse response ) {
-					GwtPresenceInfo piFromRPC = null;
-					
-					if ( response.getResponseData() != null )
-						piFromRPC = (GwtPresenceInfo) response.getResponseData();
-					
-					getPresenceInfoData(piFromRPC);
-				}
-			};
-	
-			cmd = new GetPresenceInfoCmd( m_binderId );
-			GwtClientHelper.executeCommand( cmd, callback );
+			GwtClientHelper.executeCommand(
+				new GetPresenceInfoCmd(m_userId, m_binderId),
+				new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(Throwable t) {
+						// Just ignore any errors.  All we need to do
+						// is hide the presence control.
+						//
+						// See bug 648358.
+						// GwtClientHelper.handleGwtRPCFailure(
+						//	   t,
+						//	   GwtTeaming.getMessages().rpcFailure_GetPresenceInfo(),
+						//	   m_binderId);
+						panel.setVisible(false);
+					}
+		
+					@Override
+					public void onSuccess( VibeRpcResponse response ) {
+						GwtPresenceInfo piFromRPC = null;
+						if (response.getResponseData() != null) {
+							piFromRPC = (GwtPresenceInfo) response.getResponseData();
+						}
+						getPresenceInfoData(piFromRPC);
+					}
+				});
 		}
+		
 		else {
 			getPresenceInfoData(pi);
 		}

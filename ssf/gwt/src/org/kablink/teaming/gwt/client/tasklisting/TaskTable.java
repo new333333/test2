@@ -818,7 +818,7 @@ public class TaskTable extends Composite
 		case INDIVIDUAL:
 			// Individual assignee!  Generate a PresenceControl...
 			GwtPresenceInfo presence = ai.getPresence();
-			PresenceControl pc = new PresenceControl(String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
+			PresenceControl pc = new PresenceControl(String.valueOf(ai.getId()), String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
 			pc.setImageAlignment("top");
 			pc.addStyleName("displayInline");
 			pc.addStyleName("verticalAlignTop");

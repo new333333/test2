@@ -78,6 +78,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.SearchUtils;
@@ -122,16 +123,15 @@ public class GwtProfileHelper {
 	 * @return ProfileInfo  The main class that contains other helper classes
 	 */
 	public static ProfileInfo buildProfileInfo(HttpServletRequest request, AllModulesInjected bs, Long binderId) {
-
 		ProfileInfo profile = new ProfileInfo();
 
-		//get the binder
+		// Get the binder.
 		Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId), false);
 		Principal owner = binder.getCreation().getPrincipal(); //creator is user
 		owner = Utils.fixProxy(owner);
 		
 		if (owner != null) {
-			User u = (User)owner;
+			User u = ((User) owner);
 			profile.setUserId(String.valueOf(u.getId()));
 			
 			Document doc = u.getEntryDefDoc();
@@ -286,129 +286,142 @@ public class GwtProfileHelper {
 	}
 	
 	/**
-	 * This helper method is for the User Profile Quick View and reads the User definition and iterates through each of its elements.
-	 * Retrieves the user attributes and custom attributes that the user definition defines and then creates helper classes
-	 * that can be serialized and passed to the client.
+	 * This helper method is for the User Profile Quick View and reads
+	 * the User definition and iterates through each of its elements.
+	 * 
+	 * Retrieves the user attributes and custom attributes that the
+	 * user definition defines and then creates helper classes that can
+	 * be serialized and passed to the client.
 	 * 
 	 * @param bs
+	 * @param userId
 	 * @param binderId
-	 * @return ProfileInfo  The main class that contains other helper classes
+	 * 
+	 * @return ProfileInfo
 	 */
-	public static ProfileInfo buildQuickViewProfileInfo(HttpServletRequest request, AllModulesInjected bs, Long binderId) throws Exception {
+	public static ProfileInfo buildQuickViewProfileInfo(HttpServletRequest request, AllModulesInjected bs, Long userId, Long binderId) throws Exception {
+		// Allocate the ProfileInfo we'll return.
 		ProfileInfo profile = new ProfileInfo();
+		boolean hasUserWS = (null != binderId);
+		profile.setHasUserWS(hasUserWS);
 
-		//get the binder
-		Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(Long.valueOf(binderId));
-		Principal owner = binder.getCreation().getPrincipal(); //creator is user
-		owner = Utils.fixProxy(owner);
+		// Get the binder (i.e., the user's personal workspace.)
+		Binder userWS;
+		if (hasUserWS)
+		     userWS = bs.getBinderModule().getBinderWithoutAccessCheck(binderId);
+		else userWS = null;
+		User currentUser = GwtServerHelper.getCurrentUser();
+		boolean canAccessUserWS = ((null == userWS) ? false : bs.getBinderModule().testAccess(currentUser, userWS, BinderOperation.viewBinderTitle, false));
+		profile.setCanAccessUserWS(canAccessUserWS);
+		Principal owner;
+		if (null == userWS) {
+		     owner = GwtServerHelper.getUserFromId(bs, userId);
+		}
+		else {
+			owner = userWS.getCreation().getPrincipal();	// Creator is user.
+			owner = Utils.fixProxy(owner);
+		}
 		
 		if (owner != null) {
-			//User u = user;
-			User u;
-			//if (!user.getId().equals(owner.getId())) {
-				u = (User) bs.getProfileModule().getEntry(owner.getId());
-				u = (User)Utils.fixProxy(u);
+			User u = ((User) owner);
+			CustomAttribute ca = currentUser.getCustomAttribute("conferencingID");
+			if (ca != null && ((String)ca.getValue()).length() > 0) {
+				profile.setConferencingEnabled(bs.getConferencingModule().isEnabled());
+			}
+			
+			PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
+			if (presenceService != null) {
+				profile.setPresenceEnabled(presenceService.isEnabled());
+			}
 
-				CustomAttribute ca = GwtServerHelper.getCurrentUser().getCustomAttribute("conferencingID");
-				if (ca != null && ((String)ca.getValue()).length() > 0) {
-					profile.setConferencingEnabled(bs.getConferencingModule().isEnabled());
-				}
+			Document doc = u.getEntryDefDoc();
+			Element configElement = doc.getRootElement();
+			
+			Element item = (Element)configElement.selectSingleNode("//definition/item[@name='profileEntrySimpleView']");
+			if(item != null) {
+				List<Element> itemList = getProfileCategoriesFromDefinition(item);
 				
-				PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
-				if (presenceService != null) {
-					profile.setPresenceEnabled(presenceService.isEnabled());
-				}
+				//for each section header create a profile Info object to hold the information 
+				for(Element catItem: itemList){
+						ProfileCategory cat = new ProfileCategory();
+						String caption = catItem.attributeValue("caption", "");
+						String name = catItem.attributeValue("name", "");
+						String title = NLT.getDef(caption);
+						
+						cat.setTitle(title);
+						cat.setName(name);
+						profile.add(cat);
+						
+						List<Element> aElements = catItem.selectNodes("properties/property[@name='_elements']");
+						for(Element aElement: aElements) {
+							ProfileAttribute attr = new ProfileAttribute();
+							
+							//Get the Elements name - which is the attribute name
+							String attrName = aElement.attributeValue("value");
+							attr.setDataName(attrName);
+							
+							//Now get the title for this attribute
+							attr.setTitle(NLT.get("profile.abv.element."+attrName, attrName, false));
+							cat.add(attr);
+						}
+						
+						List<Element> attrElements = catItem.selectNodes("item[@name]");
+						for(Element attrElement: attrElements) {
+							ProfileAttribute attr = new ProfileAttribute();
+							
+							//Get the Elements name - which is the attribute name
+							String attrName = attrElement.attributeValue("name");
+							attr.setName(attrName);
+							
+							Element captionElement = (Element) attrElement.selectSingleNode("properties/property[@name='caption']");
+							if(captionElement != null) {
+								final String withHelpMarker = "WithHelp";
+								String attrTitle = captionElement.attributeValue("value");
+								String attrValue = null;
+								if (attrTitle.startsWith("__") && attrTitle.endsWith(withHelpMarker)) {
+									attrValue = NLT.get(attrTitle.substring(0, (attrTitle.length() - withHelpMarker.length())), "", true);
+									if ((null != attrValue) && (0 == attrValue.length())) {
+										attrValue = null;
+									}
+								}
+								if (null == attrValue) {
+									attrValue = NLT.getDef(attrTitle);
+								}
 
-				Document doc = u.getEntryDefDoc();
-				Element configElement = doc.getRootElement();
-				
-				Element item = (Element)configElement.selectSingleNode("//definition/item[@name='profileEntrySimpleView']");
-				if(item != null) {
-					List<Element> itemList = getProfileCategoriesFromDefinition(item);
-					
-					//for each section header create a profile Info object to hold the information 
-					for(Element catItem: itemList){
-							ProfileCategory cat = new ProfileCategory();
-							String caption = catItem.attributeValue("caption", "");
-							String name = catItem.attributeValue("name", "");
-							String title = NLT.getDef(caption);
-							
-							cat.setTitle(title);
-							cat.setName(name);
-							profile.add(cat);
-							
-							List<Element> aElements = catItem.selectNodes("properties/property[@name='_elements']");
-							for(Element aElement: aElements) {
-								ProfileAttribute attr = new ProfileAttribute();
-								
-								//Get the Elements name - which is the attribute name
-								String attrName = aElement.attributeValue("value");
-								attr.setDataName(attrName);
-								
 								//Now get the title for this attribute
-								attr.setTitle(NLT.get("profile.abv.element."+attrName, attrName, false));
-								cat.add(attr);
+								attr.setTitle(attrValue);
 							}
-							
-							List<Element> attrElements = catItem.selectNodes("item[@name]");
-							for(Element attrElement: attrElements) {
-								ProfileAttribute attr = new ProfileAttribute();
-								
-								//Get the Elements name - which is the attribute name
-								String attrName = attrElement.attributeValue("name");
-								attr.setName(attrName);
-								
-								Element captionElement = (Element) attrElement.selectSingleNode("properties/property[@name='caption']");
-								if(captionElement != null) {
-									final String withHelpMarker = "WithHelp";
-									String attrTitle = captionElement.attributeValue("value");
-									String attrValue = null;
-									if (attrTitle.startsWith("__") && attrTitle.endsWith(withHelpMarker)) {
-										attrValue = NLT.get(attrTitle.substring(0, (attrTitle.length() - withHelpMarker.length())), "", true);
-										if ((null != attrValue) && (0 == attrValue.length())) {
-											attrValue = null;
-										}
-									}
-									if (null == attrValue) {
-										attrValue = NLT.getDef(attrTitle);
-									}
 
-									//Now get the title for this attribute
-									attr.setTitle(attrValue);
-								}
-
-								Element nameElement = (Element) attrElement.selectSingleNode("properties/property[@name='name']");
-								if(nameElement != null) {
-									String dataName = nameElement.attributeValue("value");
-									attr.setDataName(dataName);
-									
-									//if the element exists then show the picture
-									if(dataName != null && dataName.equals("picture")){
-										profile.setPictureEnabled(true);
-									}
-									
-									if(attr.getTitle() == null){
-										attr.setTitle(NLT.get("profile.element."+dataName, dataName));
-									}
+							Element nameElement = (Element) attrElement.selectSingleNode("properties/property[@name='name']");
+							if(nameElement != null) {
+								String dataName = nameElement.attributeValue("value");
+								attr.setDataName(dataName);
+								
+								//if the element exists then show the picture
+								if(dataName != null && dataName.equals("picture")){
+									profile.setPictureEnabled(true);
 								}
 								
-								cat.add(attr);
+								if(attr.getTitle() == null){
+									attr.setTitle(NLT.get("profile.element."+dataName, dataName));
+								}
 							}
 							
-							//Get the value for this attribute
-							buildAttributeInfo(request, u, cat, profile);
-					}
+							cat.add(attr);
+						}
+						
+						//Get the value for this attribute
+						buildAttributeInfo(request, u, cat, profile);
 				}
+			}
 		}
 		
 		return profile;
 	}
 
-	/**
+	/*
 	 * This is a help method to look through the definition and return a list of the 
 	 * profile categories to display
-	 * 
-	 * @param item     Element 
 	 */
 	private static List<Element> getProfileCategoriesFromDefinition(Element item) {
 		List<Element> result = new ArrayList<Element>();
@@ -448,13 +461,9 @@ public class GwtProfileHelper {
 	}
 	
 
-	/**
+	/*
 	 * This is a help method to create the ProfileAttribute objects that are related to the User Attributes
 	 * and CustomAttributes defined on the user object.
-	 * 
-	 * @param u     User 
-	 * @param cat - ProfileCategory or section headings that are defined in the user definiton
-	 * @param profile
 	 */
 	private static void buildAttributeInfo(HttpServletRequest request, User u, ProfileCategory cat, ProfileInfo profile) {
 		
@@ -530,16 +539,8 @@ public class GwtProfileHelper {
 		}
 	}
 	
-	/**
+	/*
 	 * Convert the CustomAttribute and its domain object's to the ProfileAttribute class 
-	 *  
-	 * @param request
-	 * @param u
-	 * @param cAttr
-	 * @param pAttr
-	 * @param name
-	 * @param profile
-	 * @param firstValueOnly
 	 */
 	private static void convertCustomAttrToProfileAttr(HttpServletRequest request, User u, CustomAttribute cAttr, ProfileAttribute pAttr, String name, ProfileInfo profile, boolean firstValueOnly) {
 		SimpleProfiler.start("GwtProfileHelper.convertCustomAttrToProfileAttr()");
@@ -872,13 +873,9 @@ public class GwtProfileHelper {
 		return jobTitle;
 	}
 	
-	/**
+	/*
 	 * Given an avatar URL from a user's profile, patches it so
 	 * that it renders from a thumbnail instead of the full image.
-	 * 
-	 * @param url
-	 * 
-	 * @return
 	 */
 	private final static String[] FIXUP_AVATAR_URL_CHANGE_THESE = new String[] {
 		// The follow define URL parts used to 'fixup' an avatar URL so
@@ -983,19 +980,24 @@ public class GwtProfileHelper {
 	 * that the current logged in user is browsing.
 	 *  
 	 * @param bs
-	 * @param sbinderId
+	 * @param sUserId
+	 * @param sBinderId
+	 * 
 	 * @return
 	 */
-	public static UserStatus getUserStatus(AllModulesInjected bs, String sbinderId) throws OperationAccessControlExceptionNoName {
+	public static UserStatus getUserStatus(AllModulesInjected bs, String sUserId, String sBinderId) throws OperationAccessControlExceptionNoName {
 		//This is the object that is streamed back to the client
 		UserStatus userStatus = new UserStatus();
 		
-		Principal p = getPrincipalByBinderId(bs, sbinderId);
+		Principal p;
+		if (MiscUtil.hasString(sBinderId))
+		     p = getPrincipalByBinderId(       bs,               sBinderId);
+		else p = GwtServerHelper.getUserFromId(bs,  Long.valueOf(sUserId) );
 		
 		List <Long> userIds = new ArrayList<Long>();
 		userIds.add(p.getId());
 
-		//Get the User object for this principle
+		// Get the User object for this principle.
 		SortedSet<User> users = null;
 		try{
 			users = bs.getProfileModule().getUsers(userIds);
@@ -1222,37 +1224,4 @@ public class GwtProfileHelper {
 		// Always use the initial form of the method.
 		return getUserProfileUrl(request, user.getWorkspaceId());
 	}
-    
-//    public static int getEntriesByAudit(AllModulesInjected bs, String binderId) {
-//		int count = 0;
-//    
-//    	Long userId = null;
-//		Principal p = null;
-//		if(binderId != null) {
-//			p = getPrincipalByBinderId(bs, binderId);
-//		}
-//		if(p != null){
-//			userId = p.getId();
-//		}
-//		
-//		Set<Long> memberIds = new HashSet();
-//		memberIds.add(userId);
-//		
-//		Date endDate = Calendar.getInstance().getTime();
-//		Calendar c = Calendar.getInstance();
-//		c.set(1990, 0, 0);
-//		
-//		Date startDate = c.getTime();
-//		
-//		
-//		List<Map<String,Object>> report = getReportModule().generateActivityReportByUser(memberIds, startDate, endDate, ReportModule.REPORT_TYPE_SUMMARY);
-//		Map<String,Object> row = null;
-//		if(!report.isEmpty()) row = report.get(0);
-//		
-//		if(row!=null){
-//			Object obj = row.get(AuditTrail.AuditType.add.name());
-//			count = obj.toString()
-//		}
-//    	return count;
-//    }
 }

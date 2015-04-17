@@ -260,7 +260,7 @@ public class UserListPanel extends ToolPanelBase {
 	 */
 	private void renderPrincipalInfo(VibeFlowPanel piPanel, final PrincipalInfo pi) {
 		final GwtPresenceInfo presence = pi.getPresence();
-		final PresenceControl presenceControl = new PresenceControl(String.valueOf(pi.getPresenceUserWSId()), false, false, false, presence);
+		final PresenceControl presenceControl = new PresenceControl(String.valueOf(pi.getId()), String.valueOf(pi.getPresenceUserWSId()), false, false, false, presence);
 		presenceControl.setImageAlignment("top");
 		presenceControl.addStyleName("vibe-userListPerUserPresence-control displayInline verticalAlignTop");
 		presenceControl.setAnchorStyleName("cursorPointer");

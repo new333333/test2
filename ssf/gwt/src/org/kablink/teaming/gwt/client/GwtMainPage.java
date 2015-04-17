@@ -38,8 +38,6 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
-import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg;
-import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg.ProfileEntryDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
@@ -119,7 +117,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetCollectionPointDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMainPageInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetUserWorkspaceInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
@@ -129,7 +126,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TrackBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UntrackBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UntrackPersonCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.UserWorkspaceInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -494,7 +490,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetMainPageInfo() );
-			}//end onFailure()
+			}
 			
 			@Override
 			public void onSuccess( VibeRpcResponse response )
@@ -524,11 +520,11 @@ public class GwtMainPage extends ResizeComposite
 					public void execute()
 					{
 						loadMainMenuControl();
-					}// end execute()
+					}
 				} );
-			}// end onSuccess()
+			}
 		});
-	}// end loadInitialData()
+	}
 
 	/*
 	 * Various control loaders used to load the split points containing
@@ -546,7 +542,7 @@ public class GwtMainPage extends ResizeComposite
 			{
 				// Nothing to do.  Error handled in
 				// asynchronous provider.
-			}// end onUnavailable()
+			}
 			
 			@Override
 			public void onSuccess( MainMenuControl mainMenuCtrl )
@@ -557,11 +553,11 @@ public class GwtMainPage extends ResizeComposite
 					public void execute()
 					{
 						loadWorkspaceTreeControl();
-					}// end execute()
+					}
 				} );
-			}// end onSuccess()
+			}
 		} );
-	}// end loadMainMenuControl()
+	}
 
 	/*
 	 * Loads the split point for the WorkspaceTreeControl and
@@ -576,7 +572,7 @@ public class GwtMainPage extends ResizeComposite
 			{
 				// Nothing to do.  Error handled in
 				// asynchronous provider.
-			}// end onUnavailable()
+			}
 			
 			@Override
 			public void onSuccess( WorkspaceTreeControl wsTreeCtrl )
@@ -587,11 +583,11 @@ public class GwtMainPage extends ResizeComposite
 					public void execute()
 					{
 						loadContentControl();
-					}// end execute()
+					}
 				} );
-			}// end onSuccess()
+			}
 		} );
-	}// end loadWorkspaceTreeControl()
+	}
 
 	/*
 	 * Loads the split point for the ContentControl and instantiates an
@@ -606,7 +602,7 @@ public class GwtMainPage extends ResizeComposite
 			{
 				// Nothing to do.  Error handled in
 				// asynchronous provider.
-			}// end onUnavailable()
+			}
 			
 			@Override
 			public void onSuccess( ContentControl contentCtrl )
@@ -617,11 +613,11 @@ public class GwtMainPage extends ResizeComposite
 					public void execute()
 					{
 						loadActivityStreamCtrl();
-					}// end execute()
+					}
 				} );
-			}// end onSuccess()
+			}
 		} );
-	}// end loadContentControl()
+	}
 
 	/*
 	 * Loads the split point for the ActivityStreamCtrl and
@@ -651,7 +647,7 @@ public class GwtMainPage extends ResizeComposite
 			{
 				// Nothing to do.  Error handled in
 				// asynchronous provider.
-			}// end onUnavailable()
+			}
 			
 			@Override
 			public void onSuccess( ActivityStreamCtrl asCtrl )
@@ -665,11 +661,11 @@ public class GwtMainPage extends ResizeComposite
 						if ( m_mainPageInfo.isShowDesktopAppDownloader() )
 						     loadDesktopAppDownloadCtrl();
 						else constructMainPage_Finish();
-					}// end execute()
+					}
 				} );
-			}// end onSuccess()
+			}
 		} );
-	}// end ActivityStreamCtrl()
+	}
 
 	/*
 	 * Loads the split point for the ActivityStreamCtrl and
@@ -684,7 +680,7 @@ public class GwtMainPage extends ResizeComposite
 			{
 				// Nothing to do.  Error handled in
 				// asynchronous provider.
-			}// end onUnavailable()
+			}
 			
 			@Override
 			public void onSuccess( DesktopAppDownloadControl dadCtrl )
@@ -696,11 +692,11 @@ public class GwtMainPage extends ResizeComposite
 					public void execute()
 					{
 						constructMainPage_Finish();
-					}// end execute()
+					}
 				} );
-			}// end onSuccess()
+			}
 		} );
-	}// end loadDesktopAppDownloadCtrl()
+	}
 
 	/*
 	 * Adds a native preview handler that we can use to watch for
@@ -755,7 +751,7 @@ public class GwtMainPage extends ResizeComposite
 			}
 		}
 		loadInitialData( riBinderId );
-	}// end constructMainPage_Start();
+	}
 	
 	/*
 	 * Finishes the initialization of the main page.
@@ -971,7 +967,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtTeaming.fireEvent( new InvokeChangePasswordDlgEvent() );
 			}
 		}
-	}// end constructMainPage_Finish()
+	}
 
 	/**
 	 * 
@@ -1066,7 +1062,7 @@ public class GwtMainPage extends ResizeComposite
 	public MainMenuControl getMainMenu()
 	{
 		return m_mainMenuCtrl;
-	}//end getMainMenu()
+	}
 
 	/**
 	 * Returns the main page information object associated with this
@@ -1077,7 +1073,7 @@ public class GwtMainPage extends ResizeComposite
 	public MainPageInfoRpcResponseData getMainPageInfo()
 	{
 		return m_mainPageInfo;
-	}// end getMainPageInfo()
+	}
 
 	/**
 	 * Return the mast head object
@@ -1095,7 +1091,7 @@ public class GwtMainPage extends ResizeComposite
 	public String getSearchTabId()
 	{
 		return m_searchTabId;
-	}// end getSearchTabId()
+	}
 	
 	/**
 	 * Returns the workspace tree control.
@@ -1105,7 +1101,7 @@ public class GwtMainPage extends ResizeComposite
 	public WorkspaceTreeControl getWorkspaceTree()
 	{
 		return m_wsTreeCtrl;
-	}//end getWorkspaceTree()
+	}
 	
 	/*
 	 * Called to create a JavaScript method that will be invoked from
@@ -1115,7 +1111,7 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_jspLayoutChanged = function( binderId )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::jspLayoutChanged(Ljava/lang/String;)( binderId );
-		}//end ss_jspLayoutChanged()
+		}
 	}-*/;
 
 	/*
@@ -1126,7 +1122,7 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_closeAdministrationContentPanel = function( pageName )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::closeAdministrationContentPanel()();
-		}//end ss_closeAdministrationContentPanel()
+		}
 	}-*/;
 
 	/*
@@ -1137,12 +1133,12 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_contextLoaded = function( binderId, inSearch, searchTabId )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::contextLoaded(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( binderId, inSearch, searchTabId );
-		}//end ss_contextLoaded()
+		}
 		
 		$wnd.ss_gwtRelayoutPage = function()
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::relayoutPage()();
-		}//end ss_gwtRelayoutPage()
+		}
 		
 		$wnd.ss_gotoContentUrl = function( url )
 		{
@@ -1158,7 +1154,7 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_preContextSwitch = function()
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireContextChanging()();
-		}//end ss_preContextSwitch()
+		}
 	}-*/;
 
 	/*
@@ -1169,7 +1165,7 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_dialogClosed = function()
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireDialogClosed()();
-		}//end ss_dialogClosed()
+		}
 	}-*/;
 
 	/*
@@ -1180,7 +1176,7 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_filesDropped = function( binderId )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireFilesDropped(Ljava/lang/String;)( binderId );
-		}//end ss_filesDropped()
+		}
 	}-*/;
 
 	/*
@@ -1192,7 +1188,7 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_handleLandingPageOptions = function( binderId, hideMasthead, hideSidebar, showBranding, hideMenu )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::handleLandingPageOptions(Ljava/lang/String;ZZZZ)( binderId, hideMasthead, hideSidebar, showBranding, hideMenu );
-		}//end ss_handleLandingPageOptions()
+		}
 	}-*/;
 
 	/*
@@ -1205,7 +1201,7 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_handlePageWithGWT = function( pageName )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::handlePageWithGWT(Ljava/lang/String;)( pageName );
-		}//end ss_handlePageWithGWT()
+		}
 	}-*/;
 
 	/*
@@ -1239,7 +1235,7 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_fireVibeEventOnMainEventBus = function( eventEnum )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireSimpleVibeEvent(Lorg/kablink/teaming/gwt/client/event/TeamingEvents;)( eventEnum );
-		}//end ss_fireVibeEventOnMainEventBus
+		}
 	}-*/;
 
 	/*
@@ -1324,7 +1320,7 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_gotoContentUrl = function( url )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::gotoUrlAsync_FromJSP(Ljava/lang/String;)( url );
-		}//end ss_gotoContentUrl
+		}
 	}-*/;
 	
 	/*
@@ -1345,12 +1341,12 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_fullUIReload = function()
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fullUIReload_FromJSP()();
-		}//end ss_fullUIReload
+		}
 		
 		$wnd.ss_windowLocationReload = function()
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::windowLocationReload_FromJSP()();
-		}//end ss_windowLocationReload
+		}
 	}-*/;
 	
 	/*
@@ -1360,7 +1356,7 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_invokeSimpleProfile = function( element, userId, binderId, userName )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireInvokeSimpleProfile(Lcom/google/gwt/dom/client/Element;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( element, userId, binderId, userName );
-		}//end ss_invokeSimpleProfile
+		}
 	}-*/;	
 
 	/*
@@ -1411,7 +1407,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		JspLayoutChangedEvent are = new JspLayoutChangedEvent( Long.parseLong( binderId ));
 		GwtTeaming.fireEvent( are );
-	}// end jspLayoutChanged()
+	}
 	
 	/*
 	 * This method gets called by administration pages that are implemented in jsp when the user
@@ -1421,7 +1417,7 @@ public class GwtMainPage extends ResizeComposite
 	private void closeAdministrationContentPanel()
 	{
 		AdminControl.showHomePage( m_adminControl );
-	}// end closeAdministrationContentPanel()
+	}
 	
 	/*
 	 * Puts a context change from the JSP based UI into effect.
@@ -1467,7 +1463,7 @@ public class GwtMainPage extends ResizeComposite
 				{
 					// Nothing to do!  The user will already have been
 					// told about the problem.
-				}// end onFailure()
+				}
 
 				@Override
 				public void onSuccess( final BinderInfo binderInfo )
@@ -1478,9 +1474,9 @@ public class GwtMainPage extends ResizeComposite
 						public void execute()
 						{
 							contextLoaded( binderInfo, instigator, inSearch, searchTabId );
-						}// end execute()
+						}
 					} );
-				}// end onSuccess()
+				}
 			});
 		}
 		
@@ -1549,7 +1545,7 @@ public class GwtMainPage extends ResizeComposite
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
 					binderInfo.getBinderId() );
-			}//end onFailure()
+			}
 			
 			@Override
 			public void onSuccess( VibeRpcResponse response )
@@ -1568,9 +1564,9 @@ public class GwtMainPage extends ResizeComposite
 				{
 					GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
 				}
-			}// end onSuccess()
+			}
 		});
-	}// end contextLoaded()
+	}
 
 	/**
 	 * Issue an rpc request to get the branding from the given binder and then invoke the
@@ -1708,7 +1704,7 @@ public class GwtMainPage extends ResizeComposite
 									t,
 									GwtTeaming.getMessages().rpcFailure_GetBranding(),
 									binderId );
-							}// end onFailure()
+							}
 					
 							/**
 							 * 
@@ -1735,7 +1731,7 @@ public class GwtMainPage extends ResizeComposite
 					}
 
 					return true;
-				}// end editSuccessful()
+				}
 			};
 		}
 		
@@ -1751,7 +1747,7 @@ public class GwtMainPage extends ResizeComposite
 				public boolean editCanceled()
 				{
 					return true;
-				}// end editCanceled()
+				}
 			};
 		}
 		
@@ -1798,7 +1794,7 @@ public class GwtMainPage extends ResizeComposite
 			editBrandingImpl( brandingData, x, y );
 		}
 		
-	}// end editBranding()
+	}
 
 	
 	/**
@@ -2018,7 +2014,7 @@ public class GwtMainPage extends ResizeComposite
 			else
 				MenuShowEvent.fireOne();
 		}
-	}// end handleLandingPageOptions()
+	}
 	
 	
 	/**
@@ -2048,7 +2044,7 @@ public class GwtMainPage extends ResizeComposite
 				Window.alert( "In handlePageWithGWT(), unknown page: " + pageName );
 			}
 		}
-	}// end handlePageWithGWT()
+	}
 	
 	
 	/**
@@ -2167,7 +2163,7 @@ public class GwtMainPage extends ResizeComposite
 			invokeLoginDlgImpl( allowCancel );
 		}
 
-	}// end invokeLoginDlg()
+	}
 	
 	/**
 	 * 
@@ -2318,14 +2314,14 @@ public class GwtMainPage extends ResizeComposite
 				{
 					// Nothing to do.  Error handled in
 					// asynchronous provider.
-				}// end onUnavailable()
+				}
 				
 				@Override
 				public void onSuccess( TagThisDlg dlg )
 				{
 					m_tagThisDlg = dlg;
 					invokeTagDlgImpl( entryId, entryTitle, x, y );
-				}// end onSuccess()
+				}
 			} );
 		}
 		
@@ -2333,7 +2329,7 @@ public class GwtMainPage extends ResizeComposite
 		{
 			invokeTagDlgImpl( entryId, entryTitle, x, y );
 		}		
-	}// end invokeTagDlg()
+	}
 	
 	private void invokeTagDlgImpl( String entryId, String entryTitle, int x, int y )
 	{
@@ -2343,7 +2339,7 @@ public class GwtMainPage extends ResizeComposite
 			entryTitle,
 			x,
 			y );
-	}// end invokeTagDlgImpl()
+	}
 	
 	/**
 	 * This method gets called when the browser gets resized.
@@ -2356,7 +2352,7 @@ public class GwtMainPage extends ResizeComposite
 		// Adjust the height and width of the controls on this page.
 		super.onResize();
 		relayoutPage( false );
-	}// end onResize()
+	}
 
 	
 	/*
@@ -2395,7 +2391,7 @@ public class GwtMainPage extends ResizeComposite
 	private void fullUIReload_FromJSP()
 	{
 		FullUIReloadEvent.fireOneAsync();
-	}//end fullUIReload_FromJSP()
+	}
 
 	/*
 	 * Called from the JSP code to perform a window reload.
@@ -2408,9 +2404,9 @@ public class GwtMainPage extends ResizeComposite
 			public void execute()
 			{
 				Window.Location.reload();
-			}// end execute()
+			}
 		} );
-	}//end windowLocationReload_FromJSP()
+	}
 
 	/*
 	 * This method will be called asynchronously goto a URL,
@@ -2424,14 +2420,14 @@ public class GwtMainPage extends ResizeComposite
 			public void execute()
 			{
 				gotoUrlNow( url, historyAction );
-			}// end execute()
+			}
 		} );
-	}// end gotoUrlAsync()
+	}
 	
 	private void gotoUrlAsync( final String url )
 	{
 		gotoUrlAsync( url, false );
-	}// end gotoUrlAsync()
+	}
 	
 	private void gotoUrlAsync_FromJSP( final String url )
 	{
@@ -2504,7 +2500,7 @@ public class GwtMainPage extends ResizeComposite
 			ccEvent.setHistoryAction( historyAction );
 			GwtTeaming.fireEvent( ccEvent );
 		}
-	}//end gotoUrlNow()
+	}
 	
 	/**
 	 * Save the current ui state.
@@ -2549,7 +2545,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_PersistActivityStreamSelection() );
-			}// end onFailure()
+			}
 			
 			@Override
 			public void onSuccess( VibeRpcResponse response )
@@ -2557,9 +2553,9 @@ public class GwtMainPage extends ResizeComposite
 				// Note that we're not doing anything with the results
 				// good or bad.  If it fails, so what?  The activity
 				// stream will simply not persist for the user.
-			}// end onSuccess()
+			}
 		});
-	}//end activityStream()
+	}
 
 	/**
 	 * Handles ActivityStreamEnterEvent's received by this class.
@@ -2582,7 +2578,7 @@ public class GwtMainPage extends ResizeComposite
 		}
 		
 		handleOnActivityStreamEnter( event.getShowSetting() );
-	}//end onActivityStreamEnter()
+	}
 
 
 	/**
@@ -2597,7 +2593,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		m_contentLayoutPanel.showContentControl();
 		ContentControl.setDimensions( m_contentCtrl, m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
-	}//end onActivityStreamExit()
+	}
 
 	/**
 	 * Handles AdministrationActionEvent's received by this class.
@@ -2702,7 +2698,7 @@ public class GwtMainPage extends ResizeComposite
 			public void execute()
 			{
 				onAdministrationExitNow( skipNavigation );
-			}// end execute()
+			}
 		} );
 	}
 	
@@ -2761,7 +2757,7 @@ public class GwtMainPage extends ResizeComposite
 		// Show a list of upgrade tasks that still need to be
 		// performed.
 		AdminControl.showUpgradeTasks();
-	}// end onAdministrationUpgradeCheck()
+	}
 	
 	/**
 	 * Handles BrowseHierarchyEvent's received by this class.
@@ -2792,7 +2788,7 @@ public class GwtMainPage extends ResizeComposite
 			{
 				// Nothing to do.  Error handled in
 				// asynchronous provider.
-			}// end onUnavailable()
+			}
 			
 			@Override
 			public void onSuccess( WorkspaceTreeControl wsTreeCtrl )
@@ -2817,9 +2813,9 @@ public class GwtMainPage extends ResizeComposite
 				// ...and play the opening effect.
 				m_breadCrumbBrowser.show();
 				m_breadCrumbBrowser.addAutoHidePartner( bhi.getBrowseHierarchyElement() );
-			}// end onSuccess()
+			}
 		} );
-	}// end onBrowseHierarchy()
+	}
 	
 	/**
 	 * Handles ChangeFavoriteStateEvent's received by this class.
@@ -2840,7 +2836,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_ChangeFavoriteState() );
-			}//end onFailure()
+			}
 			
 			@Override
 			public void onSuccess( VibeRpcResponse response )
@@ -2848,9 +2844,9 @@ public class GwtMainPage extends ResizeComposite
 				// Force the UI to reload so that the menus, ...
 				// get updated to reflect the change.
 				GwtTeaming.fireEventAsync( new FullUIReloadEvent() );
-			}// end onSuccess()
+			}
 		});
-	}// end onChangeFavoriteState()
+	}
 	
 	/**
 	 * Handles ContentChangedEvent's received by this class.
@@ -2868,7 +2864,7 @@ public class GwtMainPage extends ResizeComposite
 			// ...simply force the entire UI to refresh.
 			FullUIReloadEvent.fireOneAsync();
 		}
-	}// end onContentChanged()
+	}
 	
 	/**
 	 * Handles ContextChangedEvent's received by this class.
@@ -2887,7 +2883,7 @@ public class GwtMainPage extends ResizeComposite
 			// ...put it into effect.
 			m_mainPageInfo.setBinderInfo(osbInfo.getBinderInfo());			
 		}
-	}// end onContextChanged()
+	}
 	
 	/**
 	 * Handles ContextChangingEvent's received by this class.
@@ -2901,7 +2897,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		// Restore any ui state that may be saved.
 		restoreUIState();
-	}// end onContextChanging()
+	}
 	
 	/**
 	 * Handles EditCurrentBinderBrandingEvent's received by this class.
@@ -2991,7 +2987,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.executeCommand( cmd, getSiteBrandingCallback );
 			}
 		} );
-	}// end onEditCurrentBinderBranding()
+	}
 	
 	/**
 	 * Handles EditPersonalPreferencesEvent's received by this class.
@@ -3017,7 +3013,7 @@ public class GwtMainPage extends ResizeComposite
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetPersonalPreferences() );
-			}// end onFailure()
+			}
 	
 			/**
 			 * We successfully retrieved the user's personal preferences.  Now invoke the "edit personal preferences" dialog.
@@ -3059,7 +3055,7 @@ public class GwtMainPage extends ResizeComposite
 										GwtClientHelper.handleGwtRPCFailure(
 											t,
 											GwtTeaming.getMessages().rpcFailure_SavePersonalPreferences() );
-									}// end onFailure()
+									}
 							
 									/**
 									 * 
@@ -3097,7 +3093,7 @@ public class GwtMainPage extends ResizeComposite
 												new PublicCollectionStateChangedEvent(
 													( ( null != hidePublicCollection ) && hidePublicCollection ) ) );
 										}
-									}// end onSuccess()
+									}
 								};
 							}
 					
@@ -3112,7 +3108,7 @@ public class GwtMainPage extends ResizeComposite
 							}
 							
 							return true;
-						}// end editSuccessful()
+						}
 					};
 				}
 				
@@ -3139,7 +3135,7 @@ public class GwtMainPage extends ResizeComposite
 					}
 				} );
 
-			}// end onSuccess()
+			}
 		};
 
 		// Issue an ajax request to get the personal preferences.  When we get the personal preferences
@@ -3151,7 +3147,7 @@ public class GwtMainPage extends ResizeComposite
 			cmd = new GetPersonalPrefsCmd();
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
-	}// end onEditPersonalPreferences()
+	}
 	
 	/**
 	 * Handles FullUIReloadEvent's received by this class.
@@ -3167,7 +3163,7 @@ public class GwtMainPage extends ResizeComposite
 		{
 			reloadContentPanel();
 		}
-	}// end onFullUIReload()
+	}
 	
 	/**
 	 * Handles GotoContentUrlEvent's received by this class.
@@ -3180,7 +3176,7 @@ public class GwtMainPage extends ResizeComposite
 	public void onGotoContentUrl( GotoContentUrlEvent event )
 	{
 		gotoUrlAsync( event.getContentUrl() );
-	}// end onGotoContentUrl()
+	}
 	
 	/**
 	 * Handles GotoMyWorkspaceEvent's received by this class.
@@ -3207,7 +3203,7 @@ public class GwtMainPage extends ResizeComposite
 			myWSUrl = GwtClientHelper.appendUrlParam( myWSUrl, "operation", "showProfile" );
 		}
 		gotoUrlAsync( myWSUrl );
-	}// end onGotoMyWorkspace()
+	}
 	
 	/**
 	 * Handles GotoPermalinkUrlEvent's received by this class.
@@ -3220,7 +3216,7 @@ public class GwtMainPage extends ResizeComposite
 	public void onGotoPermalinkUrl( GotoPermalinkUrlEvent event )
 	{
 		gotoUrlAsync( event.getPermalinkUrl() );
-	}// end onGotoPermalinkUrl()
+	}
 	
 	/**
 	 * Handles HideUserListEvent's received by this class.
@@ -3256,7 +3252,7 @@ public class GwtMainPage extends ResizeComposite
 				invokeLoginDlg( true, refererUrl );
 			}
 		} );
-	}// end onLogin()
+	}
 	
 	/**
 	 * Handles InvokeAddNewFolderEvent's received by this class.
@@ -3295,9 +3291,9 @@ public class GwtMainPage extends ResizeComposite
 								event.getBinderId(),
 								event.getFolderTemplateId(),
 								event.isAllowCloudFolder() );
-						}// end execute()
+						}
 					} );
-				}// end onSuccess()
+				}
 			});
 		}
 		
@@ -3310,7 +3306,7 @@ public class GwtMainPage extends ResizeComposite
 				event.getFolderTemplateId(),
 				event.isAllowCloudFolder() );
 		}
-	}// end onInvokeAddNewFolder()
+	}
 	
 	/**
 	 * Handle the InvokeChangePasswordDlgEvent received by this class
@@ -3342,7 +3338,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		// Simply run the desktop application download dialog.
 		runDesktopAppDownloadDlgAsync();
-	}// end onInvokeDownloadDesktopApp()
+	}
 	
 	/*
 	 * Asynchronously runs the desktop application download dialog
@@ -3355,7 +3351,7 @@ public class GwtMainPage extends ResizeComposite
 			public void execute()
 			{
 				runDesktopAppDownloadDlgNow();
-			}// end execute()
+			}
 		} );
 	}
 	
@@ -3373,7 +3369,7 @@ public class GwtMainPage extends ResizeComposite
 			{
 				// Nothing to do.  Error handled in
 				// asynchronous provider.
-			}// end onUnavailable()
+			}
 			
 			@Override
 			public void onSuccess( final DesktopAppDownloadDlg dadDlg )
@@ -3385,7 +3381,7 @@ public class GwtMainPage extends ResizeComposite
 					public void execute()
 					{
 						DesktopAppDownloadDlg.initAndShow( dadDlg );
-					}// end execute()
+					}
 				} );
 			}
 		});
@@ -3405,7 +3401,7 @@ public class GwtMainPage extends ResizeComposite
 			m_requestInfo.getHelpUrl(),
 			"teaming_help_window",
 			"resizeable,scrollbars" );
-	}// end onInvokeHelp()
+	}
 	
 	/**
 	 * Handles InvokeWorkspaceShareRightsEvent's received by this class.
@@ -3457,156 +3453,59 @@ public class GwtMainPage extends ResizeComposite
 	 * @param event
 	 */
 	@Override
-	public void onInvokeSimpleProfile( InvokeSimpleProfileEvent event )
-	{
+	public void onInvokeSimpleProfile(InvokeSimpleProfileEvent event) {
 		SimpleProfileParams params = event.getSimpleProfileParams();
-		
-		final Element element  = params.getElement();
-		final String  binderId = params.getBinderId();
-		final String  userIdS  = params.getUserId();
-		final String  userName = params.getUserName();
-		
-		if( ! GwtClientHelper.hasString( binderId ) )
-		{
-			runProfileEntryDlgAsync( Long.parseLong( userIdS ) );
-			return;
-		}
-		
-		GetUserWorkspaceInfoCmd cmd = new GetUserWorkspaceInfoCmd( Long.parseLong( binderId ) );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetUserWorkspaceInfo(),
-					binderId );
-			}//end onFailure()
-			
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				UserWorkspaceInfoRpcResponseData responseData = ((UserWorkspaceInfoRpcResponseData) response.getResponseData());
-				if (responseData.canAccessUserWorkspace())
-				{
-					runQuickViewDlgAsync( binderId, userName, element );
-				}
-				
-				else {
-					Long userIdL = responseData.getUserId();
-					if ( null == userIdL )
-					{
-						userIdL = Long.parseLong( userIdS );
-					}
-					runProfileEntryDlgAsync( userIdL );
-				}
-			}// end onSuccess()
-		});
-	}// end onInvokeSimpleProfile()
+		runQuickViewDlgAsync(
+			params.getUserId(),
+			params.getBinderId(),
+			params.getUserName(),
+			params.getElement() );
+	}
 
-	/*
-	 * Asynchronously runs the profile entry dialog using the supplied
-	 * information.
-	 */
-	private void runProfileEntryDlgAsync( final Long userId )
-	{
-		GwtClientHelper.deferCommand( new ScheduledCommand() {
-			@Override
-			public void execute()
-			{
-				runProfileEntryDlgNow( userId );
-			}// end execute()
-		} );
-	}
-	
-	/*
-	 * Synchronously runs the profile entry dialog using the supplied
-	 * information.
-	 */
-	private void runProfileEntryDlgNow( final Long userId )
-	{
-		// Instantiate a profile entry dialog...
-		ProfileEntryDlg.createAsync( new ProfileEntryDlgClient()
-		{			
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( final ProfileEntryDlg peDlg )
-			{
-				// ...and show it.
-				GwtClientHelper.deferCommand( new ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						ProfileEntryDlg.initAndShow( peDlg, userId );
-					}// end execute()
-				} );
-			}
-		});
-	}
-	
 	/*
 	 * Asynchronously runs the quick view dialog using the supplied
 	 * information.
 	 */
-	private void runQuickViewDlgAsync( final String binderId, final String userName, final Element element )
-	{
+	private void runQuickViewDlgAsync(final String userId, final String binderId, final String userName, final Element element) {
 		GwtClientHelper.deferCommand( new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
-				runQuickViewDlgNow( binderId, userName, element );
-			}// end execute()
-		} );
+			public void execute() {
+				runQuickViewDlgNow(userId, binderId, userName, element);
+			}
+		});
 	}
 	
 	/*
 	 * Synchronously runs the quick view dialog using the supplied
 	 * information.
 	 */
-	private void runQuickViewDlgNow( final String binderId, final String userName, final Element element )
-	{
+	private void runQuickViewDlgNow(final String userId, final String binderId, final String userName, final Element element) {
 		GwtQuickViewDlg.createAsync(
 				0, 0,
+				userId,
 				binderId,
 				userName,
 				element,
-				new GwtQuickViewDlgClient()
-		{			
+				new GwtQuickViewDlgClient() {			
 			@Override
-			public void onUnavailable()
-			{
+			public void onUnavailable() {
 				// Nothing to do.  Error handled in
 				// asynchronous provider.
-			}// end onUnavailable()
+			}
 			
 			@Override
-			public void onSuccess( final GwtQuickViewDlg qvd )
-			{
-				PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
-				{
+			public void onSuccess(final GwtQuickViewDlg qvd) {
+				PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback() {
 					@Override
-					public void setPosition(int offsetWidth, int offsetHeight)
-					{
-						int x;
-						int y;
-						
-						x = (Window.getClientWidth() - offsetWidth) / 2;
-						y = (Window.getClientHeight() - offsetHeight) / 3;
-						
-						qvd.setPopupPosition( x, y );
-					}// end setPosition()
+					public void setPosition(int offsetWidth, int offsetHeight) {
+						int x = ((Window.getClientWidth()  - offsetWidth ) / 2);
+						int y = ((Window.getClientHeight() - offsetHeight) / 3);
+						qvd.setPopupPosition(x, y);
+					}
 				};
-				qvd.setPopupPositionAndShow( posCallback );
-			}// end onSuccess()
-		} );		
+				qvd.setPopupPositionAndShow(posCallback);
+			}
+		});		
 	}
 	
 	/**
@@ -3621,7 +3520,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		HistoryHelper.clearHistory();
 		GwtClientHelper.jsLogout();
-	}// end onLogout()
+	}
 	
 	/**
 	 * Handles MastheadHideEvent's received by this class.
@@ -3640,7 +3539,7 @@ public class GwtMainPage extends ResizeComposite
 		// Note that we don't have to do anything special here to
 		// affect our resize processing.  That just happens because of
 		// the workings of the layout panels.
-	}// end onMastheadHide()
+	}
 	
 	/**
 	 * Handles MastheadShowEvent's received by this class.
@@ -3670,7 +3569,7 @@ public class GwtMainPage extends ResizeComposite
 		// Note that we don't have to do anything special here to
 		// affect our resize processing.  That just happens because of
 		// the workings of the layout panels.
-	}// end onMastheadShow()
+	}
 	
 	/**
 	 * Handles MenuHideEvent's received by this class.
@@ -3738,7 +3637,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		String searchUrl = ( m_requestInfo.getAdvancedSearchUrl() + "&binderId=" + m_mainPageInfo.getBinderInfo().getBinderId() );
 		gotoUrlAsync( searchUrl );
-	}// end onSearchAdvanced()
+	}
 	
 	/**
 	 * Handles SearchRecentPlaceEvent's received by this class.
@@ -3753,7 +3652,7 @@ public class GwtMainPage extends ResizeComposite
 		Integer searchFor = event.getSearchTabId();
 		String  searchUrl = ( m_requestInfo.getRecentPlaceSearchUrl() + "&tabId=" + String.valueOf( searchFor.intValue() ) );
 		gotoUrlAsync( searchUrl );
-	}// end onSearchRecentPlace()
+	}
 	
 	/**
 	 * Handles SearchSavedEvent's received by this class.
@@ -3769,7 +3668,7 @@ public class GwtMainPage extends ResizeComposite
 		searchFor = ( ( null == searchFor ) ? "" : GwtClientHelper.jsEncodeURIComponent( searchFor ) );
 		String searchUrl = ( m_requestInfo.getSavedSearchUrl() + "&ss_queryName=" + searchFor );
 		gotoUrlAsync( searchUrl );
-	}// end onSearchSaved()
+	}
 	
 	/**
 	 * Handles SearchSimpleEvent's received by this class.
@@ -3849,7 +3748,7 @@ public class GwtMainPage extends ResizeComposite
 			}
 		} );
 		GwtTeaming.fireEvent( gcvi );
-	}// end onSearchSimple()
+	}
 	
 	/**
 	 * Handles SearchTagEvent's received by this class.
@@ -3865,7 +3764,7 @@ public class GwtMainPage extends ResizeComposite
 		tagName = ( ( null == tagName ) ? "" : GwtClientHelper.jsEncodeURIComponent( tagName ) );
 		String searchUrl = GwtClientHelper.jsBuildTagSearchUrl( tagName );
 		gotoUrlAsync( searchUrl );
-	}// end onSearchTag()
+	}
 	
 	
 	/**
@@ -3896,7 +3795,7 @@ public class GwtMainPage extends ResizeComposite
 				onResize();
 			}
 		}
-	}// end onSetDesktopDownloadAppControlVisibility()
+	}
 	
 	
 	/**
@@ -3912,7 +3811,7 @@ public class GwtMainPage extends ResizeComposite
 			{
 				// Nothing to do!  The user will already have been
 				// told about the problem.
-			}// end onFailure()
+			}
 
 			@Override
 			public void onSuccess( final BinderInfo binderInfo )
@@ -3923,9 +3822,9 @@ public class GwtMainPage extends ResizeComposite
 					public void execute()
 					{
 						BinderViewsHelper.shareEntity( binderInfo.buildEntityId() );
-					}// end execute()
+					}
 				} );
-			}// end onSuccess()
+			}
 		} );
 	}
 	
@@ -3998,7 +3897,7 @@ public class GwtMainPage extends ResizeComposite
 		m_splitLayoutPanel.forceLayout();
 		
 		onResize();
-	}// end onSidebarHide()
+	}
 	
 	/**
 	 * Handles SidebarShowEvent's received by this class.
@@ -4014,7 +3913,7 @@ public class GwtMainPage extends ResizeComposite
 		m_splitLayoutPanel.forceLayout();
 		
 		onResize();
-	}// end onSidebarShow()
+	}
 	
 	/**
 	 * Handles TrackCurrentBinderEvent's received by this class.
@@ -4041,7 +3940,7 @@ public class GwtMainPage extends ResizeComposite
 					t,
 					GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
 					m_mainPageInfo.getBinderInfo().getBinderId() );
-			}//end onFailure()
+			}
 			
 			@Override
 			public void onSuccess( VibeRpcResponse response )
@@ -4052,9 +3951,9 @@ public class GwtMainPage extends ResizeComposite
 				// refreshed.
 				if ( forceUIReload )
 					FullUIReloadEvent.fireOne();
-			}// end onSuccess()
+			}
 		});
-	}// end onTrackCurrentBinder()
+	}
 	
 	/**
 	 * Handles SizeChangedEvent's received by this class.
@@ -4068,7 +3967,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		// Adjust the height and width of the controls on this page.
 		relayoutPage( false );
-	}// end onSizeChanged()
+	}
 	
 	/**
 	 * Handles UntrackCurrentBinderEvent's received by this class.
@@ -4092,7 +3991,7 @@ public class GwtMainPage extends ResizeComposite
 					t,
 					GwtTeaming.getMessages().rpcFailure_UntrackingBinder(),
 					m_mainPageInfo.getBinderInfo().getBinderId() );
-			}//end onFailure()
+			}
 			
 			@Override
 			public void onSuccess( VibeRpcResponse respnse )
@@ -4102,9 +4001,9 @@ public class GwtMainPage extends ResizeComposite
 				// the What's New tab and other information gets fully
 				// refreshed.
 				FullUIReloadEvent.fireOne();
-			}// end onSuccess()
+			}
 		});
-	}// end onUntrackCurrentBinder()
+	}
 	
 	/**
 	 * Handles ViewCurrentBinderTeamMembersEvent's received by this class.
@@ -4133,7 +4032,7 @@ public class GwtMainPage extends ResizeComposite
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
 					m_mainPageInfo.getBinderInfo().getBinderId() );
-			}//end onFailure()
+			}
 			
 			@Override
 			public void onSuccess( VibeRpcResponse response )
@@ -4148,9 +4047,9 @@ public class GwtMainPage extends ResizeComposite
 				{
 					GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
 				}
-			}// end onSuccess()
-		});// end AsyncCallback()
-	}// end onViewCurrentBinderTeamMembers()
+			}
+		});
+	}
 	
 	/**
 	 * Handles ViewResourceLibraryEvent's received by this class.
@@ -4163,7 +4062,7 @@ public class GwtMainPage extends ResizeComposite
 	public void onViewResourceLibrary( ViewResourceLibraryEvent event )
 	{
 		Window.open( "http://www.novell.com/products/vibe-onprem/resource-library/", "teaming_resource_library_window", "resizeable,scrollbars" );
-	}// end onViewResourceLibrary()
+	}
 	
 	/**
 	 * Handles ViewTeamingFeedEvent's received by this class.
@@ -4179,7 +4078,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		teamingFeedUrl = m_requestInfo.getTeamingFeedUrl();
 		Window.open( teamingFeedUrl, "_teaming_feed", "width=500,height=700,resizable,scrollbars" );
-	}// end onViewTeamingFeed()
+	}
 	
 	/**
 	 * Handles UntrackCurrentPersonEvent's received by this class.
@@ -4203,7 +4102,7 @@ public class GwtMainPage extends ResizeComposite
 					t,
 					GwtTeaming.getMessages().rpcFailure_TrackingPerson(),
 					m_mainPageInfo.getBinderInfo().getBinderId() );
-			}//end onFailure()
+			}
 			
 			@Override
 			public void onSuccess( VibeRpcResponse response )
@@ -4213,9 +4112,9 @@ public class GwtMainPage extends ResizeComposite
 				// the What's New tab and other information gets fully
 				// refreshed.
 				FullUIReloadEvent.fireOne();
-			}// end onSuccess()
+			}
 		});
-	}// end onUntrackCurrentPerson()
+	}
 	
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only
@@ -4322,12 +4221,12 @@ public class GwtMainPage extends ResizeComposite
 				}
 			} );
 		}
-	}// end relayoutPage()
+	}
 	
 	public void relayoutPage()
 	{
 		relayoutPage( false );
-	}// end relayoutPage()
+	}
 
 	
 	/**
@@ -4351,7 +4250,7 @@ public class GwtMainPage extends ResizeComposite
 		{
 			ContentControl.reload( m_contentCtrl );
 		}
-	}// end reloadContentPanel()
+	}
 	
 	/**
 	 * Restore the previous ui state.
@@ -4370,7 +4269,7 @@ public class GwtMainPage extends ResizeComposite
 	public boolean isActivityStreamActive()
 	{
 		return ((null != m_wsTreeCtrl) && m_wsTreeCtrl.isInActivityStreamMode());
-	}// end isActivityStreamActive()
+	}
 
 	/**
 	 * Returns true if the administration control is active and visible
@@ -4381,7 +4280,7 @@ public class GwtMainPage extends ResizeComposite
 	public boolean isAdminActive()
 	{
 		return ( ( null != m_adminControl ) && m_adminControl.isShowing() );
-	}// end isAdminActive()
+	}
 
 	/**
 	 * Returns true if the requested key is currently pressed and false
@@ -4403,7 +4302,7 @@ public class GwtMainPage extends ResizeComposite
 	public boolean isInSearch()
 	{
 		return m_inSearch;
-	}// end isInSearch()
+	}
 	
 	/**
 	 * Return whether the user is logged in.
@@ -4432,7 +4331,7 @@ public class GwtMainPage extends ResizeComposite
 				{
 					// Nothing to do.  Error handled in
 					// asynchronous provider.
-				}// end onUnavailable()
+				}
 				
 				@Override
 				public void onSuccess( AdminControl adminCtrl )
@@ -4446,12 +4345,12 @@ public class GwtMainPage extends ResizeComposite
 						{
 							// ...and then show it.
 							showAdminControlImpl( fireOnLoad );
-						}// end execute()
+						}
 					} );
-				}// end onSuccess()
+				}
 			} );
 		}
-	}// end showAdminControl()
+	}
 	
 	private void showAdminControlImpl( final VibeEventBase<?> fireOnLoad )
 	{
@@ -4471,7 +4370,7 @@ public class GwtMainPage extends ResizeComposite
 			// No, position the admin control relative to the masthead
 			AdminControl.showControl( m_adminControl, m_headerPanel, fireOnLoad );
 		}
-	}// end showAdminControlImpl()
+	}
 
 	/*
 	 * Saves the status of the user list display on the given binder.
@@ -4488,13 +4387,13 @@ public class GwtMainPage extends ResizeComposite
 					t,
 					GwtTeaming.getMessages().rpcFailure_SaveUserListStatus(),
 					binderId );
-			}//end onFailure()
+			}
 			
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				FullUIReloadEvent.fireOneAsync();
-			}// end onSuccess()
+			}
 		});
 	}
 	
@@ -4504,7 +4403,7 @@ public class GwtMainPage extends ResizeComposite
 	private void fireContextChanging()
 	{
 		ContextChangingEvent.fireOne();
-	}// end fireContextChanging()
+	}
 
 	/*
 	 * Fires a DialogClosedEvent from the JSP based UI.
@@ -4514,7 +4413,7 @@ public class GwtMainPage extends ResizeComposite
 		DialogClosedEvent.fireOneAsync(
 			null,	// null -> A non-DlgBox dialog closed.
 			500 );	// We delay here to allow the JSP page to complete its action
-	}// end fireDialogClosed()
+	}
 
 	/*
 	 * Fires a FilesDroppedEvent from JSP.
@@ -4522,7 +4421,7 @@ public class GwtMainPage extends ResizeComposite
 	private void fireFilesDropped( String binderId )
 	{
 		GwtTeaming.fireEvent(new FilesDroppedEvent( Long.parseLong( binderId )));
-	}// end fireFilesDropped()
+	}
 	
 	/*
 	 * Fires a GotoContentUrlEvent from the JSP based UI.
@@ -4538,7 +4437,7 @@ public class GwtMainPage extends ResizeComposite
 			fireContextChanging();
 			GwtTeaming.fireEvent(new GotoContentUrlEvent(url));
 		}
-	}// end fireGotoContentUrl()
+	}
 		
 	/*
 	 * Fires an InvokeSimpleProfileEvent from the JSP based UI.
@@ -4547,7 +4446,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		SimpleProfileParams params = new SimpleProfileParams( element, userId, binderId, userName );
 		GwtTeaming.fireEvent( new InvokeSimpleProfileEvent( params ) );
-	}// end fireInvokeSimpleProfile()
+	}
 
 	/*
 	 * Fires an arbitrary simple Vibe event from the JSP based UI.
@@ -4555,7 +4454,7 @@ public class GwtMainPage extends ResizeComposite
 	private void fireSimpleVibeEvent( TeamingEvents eventEnum )
 	{
 		EventHelper.fireSimpleEvent( eventEnum );
-	}// end fireSimpleVibeEvent()
+	}
 
 	/**
 	 * ?
@@ -4563,7 +4462,7 @@ public class GwtMainPage extends ResizeComposite
 	public void resetMenuContext()
 	{
 		m_mainMenuCtrl.resetContext();
-	}// end resetMenuContext()
+	}
 	
 	/**
 	 * ?
@@ -4575,7 +4474,7 @@ public class GwtMainPage extends ResizeComposite
 	public void setMenuContext( BinderInfo selectedBinderInfo, boolean inSearch, String searchTabId )
 	{
 		m_mainMenuCtrl.setContext(selectedBinderInfo, inSearch, searchTabId);
-	}// end setMenuContext()
+	}
 	
 	/*
 	 * Synchronously shows the add new file dialog.
@@ -4583,7 +4482,7 @@ public class GwtMainPage extends ResizeComposite
 	private void showAddNewFolderDlgNow(Long binderId, Long folderTemplateId, boolean allowCloudFolder)
 	{
 		AddNewFolderDlg.initAndShow( m_addNewFolderDlg, binderId, folderTemplateId, allowCloudFolder );
-	}// end showAddNewFolderDlgNow()
+	}
 
 	/**
 	 * Callback interface to interact with the main page asynchronously
@@ -4638,7 +4537,7 @@ public class GwtMainPage extends ResizeComposite
 			// Prefetch parameters.
 			mainPageClient,
 			prefetch );
-	}// end doAsyncOperation()
+	}
 	
 	/*
 	 * Various control loaders used to load the split points containing
@@ -4660,16 +4559,16 @@ public class GwtMainPage extends ResizeComposite
 					// Prefetch parameters.
 					mainPageClient,
 					prefetch );
-			}// end onSuccess()
+			}
 			
 			@Override
 			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_MainPage() );
 				mainPageClient.onUnavailable();
-			}// end onFailure()
+			}
 		} );
-	}// end doAsyncOperation()
+	}
 		
 	/*
 	 * Finishes the initialization of the GwtMainPage object.
@@ -4689,7 +4588,7 @@ public class GwtMainPage extends ResizeComposite
 			GwtMainPage newMainPage = new GwtMainPage();
 			mainPageClient.onSuccess( newMainPage );
 		}
-	}// end initMainPage_Finish()
+	}
 			
 	/**
 	 * Loads the GwtMainPage split point and returns an instance of it
@@ -4703,7 +4602,7 @@ public class GwtMainPage extends ResizeComposite
 			// Prefetch parameters.  false -> Not a prefetch.  
 			mainPageClient,
 			false );
-	}// end createAsync()	
+	}	
 
 	/**
 	 * Causes the split point for the GwtMainPage to be fetched.
@@ -4722,13 +4621,13 @@ public class GwtMainPage extends ResizeComposite
 				public void onUnavailable()
 				{
 					// Unused.
-				}// end onUnavailable()
+				}
 				
 				@Override
 				public void onSuccess( GwtMainPage mainPage )
 				{
 					// Unused.
-				}// end onSuccess()
+				}
 			};
 		}
 		
@@ -4736,11 +4635,11 @@ public class GwtMainPage extends ResizeComposite
 			// Prefetch parameters.  true -> Prefetch only.  
 			mainPageClient,
 			true );
-	}// end prefetch()
+	}
 	
 	public static void prefetch()
 	{
 		// Always use the initial form of the method.
 		prefetch(null);
-	}// end prefetch()
-}// end GwtMainPage
+	}
+}
