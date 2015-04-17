@@ -1558,9 +1558,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Yes!  Create a PresenceColumn for it.
 				boolean userManagementCell = (FolderColumn.isColumnFullName(cName) && getFolderInfo().isBinderProfilesRootWSManagement());
 				PresenceClickAction clickAction;
-				if      (userManagementCell)                    clickAction = PresenceClickAction.SHOW_USER_PROPERTIES;
-				else if (showProfileEntryForPresenceWithNoWS()) clickAction = PresenceClickAction.SHOW_PROFILE_ENTRY_WITH_NO_WS;
-				else                                            clickAction = PresenceClickAction.SHOW_SIMPLE_PROFILE;
+				if (userManagementCell) clickAction = PresenceClickAction.SHOW_USER_PROPERTIES;
+				else                    clickAction = PresenceClickAction.SHOW_SIMPLE_PROFILE;
 				column = new PresenceColumn<FolderRow>(fc, clickAction) {
 					@Override
 					public PrincipalInfo getValue(FolderRow fr) {
@@ -4938,23 +4937,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			m_fixedLayout);
 	}
 
-	/**
-	 * Returns true if the PresenceColumn should show the profile entry
-	 * dialog for presence when a user has no workspace and false if it
-	 * shouldn't.
-	 * 
-	 * Stub provided as a convenience method.  Should only be
-	 * overridden by PersonalWorkspacesView so that access is provided
-	 * to modify a user profile when that user has no workspace.
-	 * 
-	 * @return
-	 */
-	public boolean showProfileEntryForPresenceWithNoWS() {
-		// Return false since by default, we don't show the profile
-		// entry dialog if a user doesn't have a workspace.
-		return false;
-	}
-	
 	/**
 	 * Invokes the sign the guest book UI. 
 	 * 
