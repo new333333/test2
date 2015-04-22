@@ -5912,9 +5912,29 @@ public class GwtViewHelper {
 										FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, entityId);
 										if (null != fa) {
 											// ...then we'll use it modification time.
-											emValue   = fa.getModification().getDate();
+											emValue = fa.getModification().getDate();
 										}
-	
+										else {
+											// No, we can't get the file entry's primary
+											// attachment!  Is there a first string value in the
+											// SearchFieldResult?
+											String[] emValues = ((SearchFieldResult) emValue).getValueArray().toArray(new String[0]);
+											int emCount = ((null == emValues) ? 0 : emValues.length);
+											String emStrValue;
+											if (0 < emCount)
+											     emStrValue = emValues[0];
+											else emStrValue = null;
+											if (MiscUtil.hasString(emStrValue)) {
+												// Yes!  Can we parse it as a Long?
+												Long time;
+												try                  {time = Long.valueOf(emStrValue);}
+												catch (Exception ex) {time = null;                    }
+												if (null != time) {
+													// Yes!  Use it as the modification time.
+													emValue = new Date(time);
+												}
+											}
+										}
 									}
 								}
 								
