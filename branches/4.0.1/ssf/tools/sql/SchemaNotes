@@ -1,0 +1,136 @@
+Version 3:
+Cortez Schema changes
+
+Version 4:
+Additional Cortez Schema changes
+Made changes to the Extensions table: Added columns: Title, Version
+
+Version 5:
+Additional Cortez Schema changes
+Made changes to the SS_Forums table: Added index: internalId_Binder
+Made changes to the SS_Definitions table: Added index: internalId_Definition
+
+Version 6:
+alter table SS_LdapConnectionConfig add column ldapGuidAttribute varchar(255);
+alter table SS_Principals add column ldapGuid varchar(128);
+create index ldapGuid_principal on SS_Principals (ldapGuid);
+
+Version 7:
+Updated Quartz to version 1.7.2
+This included new Quartz create scripts and requires changes to the upgrade scripts
+Added the brandingExt field to ss_forums table
+
+Version 8:
+alter table SS_Functions add scope varchar(16);
+alter table SS_FolderEntries add hasEntryAcl tinyint null;
+alter table SS_FolderEntries add checkFolderAcl tinyint null;
+alter table SS_Attachments add description_text ntext null;
+alter table SS_Attachments add description_format int null;
+Scope is used to separate roles between zone, binder and entry
+hasEntryAcl and checkFolderAcl are part of the per-entry ACL project
+description_text and description_format are being used to add comments to each file attachment
+
+Version 9:
+In ss_Attachments:
+  ALTER TABLE SS_Attachments add column majorVersion integer;
+  ALTER TABLE SS_Attachments add column minorVersion integer;
+  ALTER TABLE SS_Attachments add column fileStatus integer;
+  majorVersion and minorVersion are used to add levels to file versions
+  fileStatus is used to tag a version with Official, Draft, Obsolete, etc.
+alter table SS_Principals add column pwdenc varchar(32);
+
+Version 10:
+  (Column (comment) added to SS_ChangeLogs, but later removed before ship.)
+  
+Version 11:
+In SS_ZoneConfig:
+  ALTER TABLE SS_ZoneConfig add column defaultHomePage varchar(19);
+  ALTER TABLE SS_ZoneConfig add column defaultGuestHomePage varchar(19);
+  
+Version 12:
+In SS_ZoneConfig:
+  ALTER TABLE SS_LicenseStats add column activeUserCount bigint;
+
+Version 13:
+	Skipped to align version numbers between this file and the ddl-<server>.properties fileStatus
+
+Version 14:
+In SS_Events:
+  ALTER TABLE SS_Events ALTER COLUMN dtStart datetime null;
+  ALTER TABLE SS_Events add dtCalcStart datetime null;
+  ALTER TABLE SS_Events add dtCalcEnd datetime null;
+
+Version 15:
+Add new table SS_EmailLog and also add an index to the table as below:
+create table SS_EmailLog (id char(32) not null, zoneId bigint, sendDate datetime not null, fromField varchar(255), subj varchar(255), comment varchar(255), status varchar(16) not null, type varchar(32) not null, toEmailAddresses longtext, fileAttachments longtext, primary key (id)) ENGINE=InnoDB;
+create index index_emaillog on SS_EmailLog (sendDate, status, type);
+
+Version 16:
+create table SS_FunctionConditionMap (functionId bigint not null, meet varchar(16), conditionId char(32)) ENGINE=InnoDB;
+create table SS_FunctionConditions (id bigint not null auto_increment, type varchar(32) not null, zoneId bigint not null, encodedSpec longtext, title varchar(255) not null, description_text longtext, description_format integer, primary key (id)) ENGINE=InnoDB;
+alter table SS_FunctionConditionMap add constraint FK945D2AD8BCA364AE foreign key (functionId) references SS_Functions (id);
+alter table SS_FunctionConditionMap add constraint FK945D2AD868DAC30E foreign key (conditionId) references SS_FunctionConditions (id);
+
+Version 17:
+create table SS_BinderQuota (binderId bigint not null, zoneId bigint not null, diskQuota bigint, diskSpaceUsed bigint, diskSpaceUsedCumulative bigint, primary key (binderId)) ENGINE=InnoDB;
+create index diskSpaceUsed_bquota on SS_BinderQuota (diskSpaceUsed);
+create index diskSpaceUsedCumulative_bquota on SS_BinderQuota (diskSpaceUsedCumulative);
+create index diskQuota_bquota on SS_BinderQuota (diskQuota);
+
+Version 18:
+In SS_ZoneConfig:
+  alter table SS_ZoneConfig add column binderQuotasInitialized bit;
+  alter table SS_ZoneConfig add column binderQuotasEnabled bit;
+  alter table SS_ZoneConfig add column binderQuotasAllowOwner bit;
+
+Version 19:
+In SS_SeenMap:
+  alter table SS_SeenMap add pruneDays bigint;
+  
+Version 20:
+  More than a dozen changes to the indexes on various tables
+  
+Version 21:
+  Add SS_Forums columns for file version management
+  versionsEnabled, versionsToKeep, maxFileSize, and fileEncryptionEnabled
+
+Version 22:
+  Add SS_Attachments column for the version aging enabled (agingEnabled)
+
+Version 23:
+  Add SS_ZoneConfig column for the version aging date (fileVersionsMaxAge)
+  
+Version 24:
+  Add SS_Principals column for the user file size limit (fileSizeLimit)
+  Add SS_Principals column for the user max group file size limit (maxGroupsFileSizeLimit)
+  Add SS_ZoneConfig column for the default user file size limit (fileSizeLimitUserDefault)
+
+Version 25:
+  Add SS_Forums column for the version aging days (versionAgingDays)
+  Add SS_Attachments column for the version aging date (agingDate)
+  
+Version 26:
+  Add SS_Forums column for enabling the version aging (versionAgingEnabled)
+  
+Version 27:
+  Add SS_Attachments column for marking a file as encrypted (encrypted)
+  
+Version 28:
+  Add SS_Attachments column for file encryption key (encryptionKey)
+  
+Version 29:
+  alter table SS_Principals modify foreignName varchar(255);
+  
+Version 30:
+  alter table SS_Forums drop column popularity;
+  create table SS_FolderEntryStats (id bigint not null, zoneId bigint, popularity bigint, primary key (id)) ENGINE=InnoDB;
+  alter table SS_FolderEntryStats add constraint FKC94AB27AF1E91E10 foreign key (id) references SS_FolderEntries (id);
+
+Version 31:
+  alter table SS_ZoneConfig add column fsaEnabled bit;
+  alter table SS_ZoneConfig add column fsaSynchInterval integer; 
+  alter table SS_ZoneConfig add column fsaAutoUpdateUrl varchar(255);
+  
+Version 32:
+  alter table SS_Principals add column dynamic bit;
+  alter table SS_Principals add column ldapQuery longtext;

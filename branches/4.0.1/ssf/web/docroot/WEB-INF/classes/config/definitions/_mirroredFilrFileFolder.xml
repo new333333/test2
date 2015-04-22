@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_mirroredFilrFileFolder" caption="__definition_default_filr_folder_mirrored_file" type="5" nextId="14" 
+    definitionType="5" databaseId="402883a41edab1d5011edac394df0034" internalId="402883a41edab1d5011edac394df0034"> 
+  <item name="folderForm" caption="__folder_form" type="form" id="1" display="form"> 
+    <properties/>  
+    <item name="title" caption="__title" type="data" id="2"> 
+      <properties> 
+        <property name="caption" value="__title"/>  
+        <property name="name" value="title"/>  
+        <property name="width" value="60"/>  
+        <property name="generated" value=""/>  
+        <property name="itemSource" value=""/>  
+        <property name="required" value=""/> 
+      </properties> 
+    </item>  
+    <item name="description" caption="__description" type="data" id="3" dataType="description" category="commonEntryData" display="form"> 
+      <properties>
+        <property name="caption" value="__description"/>
+        <property name="name" value="description"/>
+        <property name="height" value=""/>
+        <property name="toolbarType" value="mirrored_file"/>
+        <property name="required" value="false"/>
+        <property name="fieldModificationAllowed" value="false"/>
+      </properties>
+    </item>  
+    <item name="folderRemoteApp" caption="__remoteApp" type="data" category="folderData" display="form" id="10"> 
+      <properties> 
+        <property name="caption" value="__remoteApp"/>  
+        <property name="name" value="_remoteApp"/> 
+      </properties> 
+    </item>  
+    <item name="folderIcon" caption="__icon" type="data" id="4"> 
+      <properties> 
+        <property name="caption" value="__icon"/>  
+        <property name="name" value="iconName"/> 
+      </properties> 
+    </item>  
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="13"> 
+      <properties> 
+        <property name="caption" value="__attach_files"/>  
+        <property name="name" value="ss_attachFile"/>  
+        <property name="width" value="60"/>  
+        <property name="number" value=""/>  
+        <property name="storage" value="simpleFileRepository"/>  
+        <property name="hide" value="true"/> 
+      </properties> 
+    </item> 
+  </item>  
+  <item name="forumView" caption="__folder_view" id="6"> 
+    <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="11"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
+    <item name="folderDataItem" type="dataView" caption="__folder_data_item" category="folderViewData" display="view" id="12" formItem="folderRemoteApp"> 
+      <properties> 
+        <property name="caption" value="__remoteApp"/>  
+        <property name="name" value="_remoteApp"/> 
+      </properties> 
+    </item>  
+    <item name="dashboardCanvas" caption="__dashboard_canvas" id="7"> 
+      <properties> 
+        <property name="caption" value="__dashboard_canvas"/> 
+      </properties> 
+    </item>  
+    <item name="folderDescriptionView" caption="__description" id="8"> 
+      <properties> 
+        <property name="caption" value="__description"/>  
+        <property name="viewType" value="this"/> 
+      </properties> 
+    </item>  
+    <item name="folderList" caption="__folder_listing" id="9"> 
+      <properties/> 
+    </item>  
+    <properties> 
+      <property name="type" value="file"/> 
+    </properties> 
+  </item>  
+  <properties> 
+    <property name="caption" value="__definition_default_filr_folder_mirrored_file"/>  
+    <property name="name" value="_mirroredFilrFileFolder"/>  
+    <property name="family" value="file"/>  
+    <property name="icon" value="/icons/folder_mirrored.png"/> 
+  </properties>  
+  <export-mappings/>
+</definition>

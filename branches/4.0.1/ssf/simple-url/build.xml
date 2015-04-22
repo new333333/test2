@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<project name="simple-url" basedir="." default="war">
+	<import file="../build-common.xml" />
+	<import file="../deploy-support.xml" />
+		
+	<property name="jar.file" value="kablink-teaming-simpleurl.jar" />
+	<property name="novl.war.name" value="novl" />
+	<property name="novl.war.file" value="${novl.war.name}.war" />
+	<property name="temp.dir" value="temp" />
+	
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+		<pathelement path="${project.dir}/as-common/classes" />
+		<fileset dir="../lib" includes="*.jar" />
+	</path>
+
+	<target name="clean" depends="build-common.clean">
+		<delete>
+			<fileset dir="." includes="${jar.file}" />
+			<fileset dir="." includes="${novl.war.file}" />
+		</delete>
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${temp.dir}" />
+		</delete>
+	</target>
+	
+	<target name="war" depends="clean,jar">
+		<copy todir="${temp.dir}/WEB-INF/lib">
+			<fileset dir="." includes="${jar.file}"/>
+		</copy>
+		<copy todir="${temp.dir}">
+			<fileset dir="${web.dir}" includes="**/*"/>
+		</copy>
+		<war
+			basedir="${temp.dir}"
+			destfile="${novl.war.file}"
+			webxml="${temp.dir}/WEB-INF/web.xml"
+		/>
+	</target>
+
+	<target name="build"  depends="war"/>
+
+    <target name="deploy">
+        <antcall target="deploy-war">
+        	<param name="deploy-support.war.name" value="${novl.war.name}" />
+        </antcall>
+	</target>
+
+</project>

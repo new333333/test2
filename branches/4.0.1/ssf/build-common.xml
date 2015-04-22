@@ -1,0 +1,263 @@
+<?xml version="1.0"?>
+
+<project name="build-common">
+	<property environment="env" />
+	<property name="project.dir" value=".." />
+	<property file="${project.dir}/app.server.${user.name}.properties" />
+	<property file="${project.dir}/app.server.properties" />
+	<property file="${project.dir}/release.${user.name}.properties" />
+	<property file="${project.dir}/release.properties" />
+	<property file="${project.dir}/build.${user.name}.properties" />
+	<property file="${project.dir}/build.properties" />
+	<path id="project.classpath">
+		<pathelement path="${classpath}" />
+		<pathelement location="${project.dir}/ws-client/kablink-teaming-wsclient.jar"         />
+		<pathelement location="${project.dir}/tools/gwt/gwt-user.jar"                         />
+		<pathelement location="${project.dir}/tools/gwt/gwt-dev.jar"                          />
+		<pathelement location="${project.dir}/tools/gwt/gwt-dnd.jar"                          />
+		<pathelement location="${project.dir}/tools/gwt/gwt-log.jar"                          />
+		<pathelement location="${project.dir}/tools/gwt/validation-api-1.0.0.GA.jar"          />
+		<pathelement location="${project.dir}/tools/gwt/validation-api-1.0.0.GA-sources.jar"  />
+		<fileset dir="${project.dir}/lib">
+			<include name="*.jar" />
+			<exclude name="gwt-servlet.jar" />
+		</fileset>
+	</path>
+	<taskdef classpathref="project.classpath" resource="net/sf/antcontrib/antcontrib.properties" />
+	<taskdef classpathref="project.classpath" resource="axis-tasks.properties" />
+	<property name="java2html.dir" value="${api.dir}/${ant.project.name}" />
+	<property name="javadoc.dir" value="${api.dir}/${ant.project.name}" />
+	<propertycopy name="app.server.dir" from="app.server.${portal.type}.${app.server.type}.dir" />
+	<propertycopy name="app.server.server.dir" from="app.server.${portal.type}.${app.server.type}.server.dir" />
+	<propertycopy name="app.server.deploy.dir" from="app.server.${portal.type}.${app.server.type}.deploy.dir" />
+	<propertycopy name="app.server.common.lib.dir" from="app.server.${portal.type}.${app.server.type}.common.lib.dir" />
+	<propertycopy name="app.server.shared.lib.dir" from="app.server.${portal.type}.${app.server.type}.shared.lib.dir" />
+	<propertycopy name="app.server.lib.dir" from="app.server.${portal.type}.${app.server.type}.lib.dir" />
+	<propertycopy name="app.server.ssf.dir" from="app.server.${portal.type}.${app.server.type}.ssf.dir" />
+	<propertycopy name="app.server.ssfs.dir" from="app.server.${portal.type}.${app.server.type}.ssfs.dir" />
+	<propertycopy name="app.server.webdav.dir" from="app.server.${portal.type}.${app.server.type}.webdav.dir" />
+
+	<tstamp>
+	    <format property="new.static.dir" pattern="dd-MM-yyyy-hhmm" />
+	</tstamp>
+
+	<if>
+		<isset property="doing-release-build" />
+		<then>
+			<property name="web.static.dir" value="${new.static.dir}" />
+		</then>
+		<else>
+			<if>
+				<isset property="default.static.dir" />
+				<then>
+					<property name="web.static.dir" value="${default.static.dir}" />
+				</then>
+				<else>
+    				<if>
+    					<available file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"/>
+    					<then>
+    						<loadproperties srcFile="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties">
+      							<filterchain>
+        							<linecontains>
+          								<contains value="release.static.dir"/>
+        							</linecontains>
+      							</filterchain>
+    						</loadproperties>
+    					</then>
+    				</if>
+    				
+    				<if>
+    					<not>
+    						<isset property="release.static.dir" />
+    					</not>
+    					<then>
+	    					<property name="web.static.dir" value="${new.static.dir}" />
+    					</then>
+    				</if>
+    				<if>
+    					<equals arg1="${release.static.dir}" arg2="" />
+    					<then>
+							<property name="web.static.dir" value="${new.static.dir}" />
+    					</then>
+    					<else>
+    						<property name="web.static.dir" value="${release.static.dir}" />
+    					</else>
+    				</if>
+				</else>
+			</if>
+		</else>
+	</if>
+	<if>
+		<isset property="web.static.path" />
+		<then>
+			<echo>The static files will be put in "${web.static.path}"</echo>
+		</then>
+	</if>
+			
+	<target name="clean">
+		<delete file="${jar.file}" failonerror="false" />
+		<delete dir="${java2html.dir}" />
+		<delete dir="${javadoc.dir}" />
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${classes.dir}" excludes="${classes.dir.excludes}" />
+		</delete>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${classes.dir}" />
+		<javac
+			classpathref="project.classpath"
+			bootclasspath="${javac.bootclasspath}"
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}"
+			srcdir="${source.dir}"
+			source="${javac.source}"
+			target="${javac.target}"
+			encoding="UTF-8"
+		/>
+	</target>
+
+	<target name="compile_1.4">
+		<mkdir dir="${classes.dir}" />
+		<javac
+			classpathref="project.classpath"
+			bootclasspath="${javac.bootclasspath}"
+			compiler="javac1.4"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}"
+			srcdir="${source.dir}"
+			source="1.4"
+			target="1.4"
+			encoding="UTF-8"
+		/>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar
+			basedir="${classes.dir}"
+			jarfile="${jar.file}"
+		/>
+		<antcall target="jar-manifest">
+			<param name="jar-manifest.jar.file" value="${jar.file}"/>
+		</antcall>
+	</target>
+	
+	<target name="jar-manifest">
+    	<tstamp>
+	    	<format property="timestamp.isoformat" pattern="yyyy-MM-dd' 'HH:mm:ss" />
+        </tstamp>
+		<jar jarfile="${jar-manifest.jar.file}" update="true">
+	        <manifest>
+	            <attribute name="Implementation-Title" value="${product.name}"/>
+	            <attribute name="Implementation-Version" value="${product.version}"/>
+	            <attribute name="Built-On" value="${timestamp.isoformat}"/>
+	        </manifest>
+		</jar>
+	</target>
+	
+	<target name="java2html">
+		<java
+			classname="org.kablink.util.Java2Html"
+			classpathref="project.classpath"
+			fork="true">
+				<arg value="${java2html.bat}" />
+				<arg value="${source.dir}" />
+				<arg value="${java2html.dir}" />
+		</java>
+		<move file="${java2html.dir}/stylesheet.css" tofile="${java2html.dir}/java2html.css" />
+		<antcall target="javadoc" />
+		<replace dir="${java2html.dir}">
+			<include name="**/package-summary.html" />
+			<replacefilter
+				token="/\"
+				value="/"
+			/>
+		</replace>
+	</target>
+
+	<target name="javadoc">
+		<mkdir dir="${javadoc.dir}" />
+		<javadoc
+			additionalparam="-J-Xmx128m"
+			classpathref="project.classpath"
+			destdir="${javadoc.dir}"
+			packagenames="org.kablink.teaming.domain,
+							org.kablink.teaming.security.function,
+							org.kablink.teaming.module.binder,
+							org.kablink.teaming.module.folder,
+							org.kablink.teaming.module.profile,
+							org.kablink.teaming.module.workspace"
+			excludepackagenames="org.kablink.teaming.module.binder.impl,
+				org.kablink.teaming.module.folder.impl,
+				org.kablink.teaming.module.profile.impl,
+				org.kablink.teaming.module.workspace.impl"
+			sourcepath="${source.dir}"
+			public="true"
+			stylesheetfile="${project.dir}/tools/javadoc.css"
+		/>
+	</target>
+	
+	<target name="compile-test" depends="compile">
+		<mkdir dir="${test.classes.dir}"/>
+		<javac
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${test.classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}"
+			srcdir="${test.source.dir}"
+			encoding="UTF-8">
+			<classpath location="${test.classes.dir}"/>
+			<classpath refid="project.classpath"/>
+		</javac>
+	</target>
+	
+	<!-- Note: You can run an individual test by setting test.includes property
+	     at the command line. For example, 
+	     ant unit-test -Dtest.includes=**/CoreDaoImplTests.class
+	     will only run CoreDaoImplTests and nothing else. -->
+	<target name="unit-test" depends="compile-test">
+		<delete dir="${test.report.dir}"/>
+		<mkdir dir="${test.report.dir}"/>
+		<property name="tests" value="Test*"/>
+
+		<junit printsummary="yes" haltonfailure="yes" haltonerror="yes" fork="yes">
+			<classpath location="${test.classes.dir}"/>
+			<classpath location="${test.source.dir}"/>
+			<classpath location="${project.dir}/web/docroot/WEB-INF/classes"/>
+			<classpath refid="project.classpath"/>
+
+			<formatter type="plain" usefile="false"/>
+			<!--<formatter type="brief" usefile="false"/>-->
+			<formatter type="xml"/>
+
+			<batchtest todir="${test.report.dir}">
+				<fileset dir="${test.classes.dir}" 
+					includes="${test.includes}" 
+					excludes="${test.excludes}"/>
+			</batchtest>
+		</junit>
+	</target>
+	
+	<target name="unit-test-report">
+		<mkdir dir="${test.report.dir}/html"/>
+		<junitreport todir="${test.report.dir}">
+			<fileset dir="${test.report.dir}">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report todir="${test.report.dir}/html"/>
+		</junitreport>
+	</target>
+	
+</project>

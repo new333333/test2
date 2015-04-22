@@ -1,0 +1,99 @@
+/* */
+
+/* ########################################################################################################### */
+
+
+/* Start:  GWT desktop application download page styles. */
+	.vibe-desktopAppPage-appStore            {display: block; white-space: nowrap;}
+	.vibe-desktopAppPage-appStoreImage       {width: 30px; margin-right: 5px; vertical-align: middle;}
+	.vibe-desktopAppPage-appStoreImage-first {margin-top: 8px;}
+	
+	.vibe-desktopAppPage-body {
+		font-family:Arial, Helvetica, sans-serif;
+		background: #ededed url(images/Filr/Filr_bg_repeat.png) repeat-x;
+		overflow: hidden;
+		position: relative;
+		margin: 0px;
+		height: 750px;
+		width: 1408px;
+	}
+	.vibe-desktopAppPage-body a {color: #036f9f; font-size: 13px; white-space: nowrap;}
+	.vibe-desktopAppPage-body td {
+		padding: 5px 15px 15px 0px;
+		vertical-align: top;
+	}
+	.vibe-desktopAppPage-body td.bottom {
+		border-bottom: 1px solid #fafafa;
+	}
+	.vibe-desktopAppPage-bold {
+		font-weight: bold;
+	}
+	.vibe-desktopAppPage-masthead {
+		text-align: center;
+		position: relative;
+	}
+	.vibe-desktopAppPage-masthead img.head_bg {
+		height: 150px;
+	}
+	.vibe-desktopAppPage-subhead {
+		position: absolute;
+		top: 110px;
+		left: 0px;
+		color: #f6f6f6;
+		font-size: 22px;
+		background: url(images/trans30_black.png) repeat;
+		padding: 6px;
+		min-width: 660px;
+		width: 100%;
+		text-align: center;
+	}
+	.vibe-desktopAppPage-reg {
+		font-size: 10px;
+	}
+	.vibe-desktopAppPage-content {
+		position: absolute;
+		top: 150px;
+		bottom: 10px;
+		overflow: auto;
+	}
+	.vibe-desktopAppPage-contentTable {
+		margin-top: 10px;
+	}
+	.vibe-desktopAppPage-product-title {
+		color: #1f1f1f;
+		font-size: 18px;
+		white-space: nowrap;
+		padding-top: 10px;
+		padding-left: 10px !important;
+	}
+	.vibe-desktopAppPage-columnhead, .vibe-desktopAppPage-linkhead, .vibe-desktopAppPage-instructionhead, .vibe-desktopAppPage-logo {
+		color: #505354;
+		text-transform: uppercase;
+		font-size: 12px;
+	}
+	.vibe-desktopAppPage-columnhead2 {
+		padding-left: 10px !important;
+	}
+	.vibe-desktopAppPage-linksNoWrap      {white-space: nowrap;}
+	.vibe-desktopAppPage-linksWrap        {white-space: normal;}
+	.vibe-desktopAppPage-links div        {margin-top: 6px;}
+	.vibe-desktopAppPage-linkAnchor       {text-decoration: none;}
+	.vibe-desktopAppPage-linkAnchor:hover {color: #135c8f !important; cursor: pointer; background: #cce9ee; border: 3px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+	.vibe-desktopAppPage-linkError        {}
+	.vibe-desktopAppPage-linkMd5          {color: #353838; font-size: 11px; display: block;}
+	.vibe-desktopAppPage-link2nd          {margin-top: 5px;}
+	.vibe-desktopAppPage-logo             {text-align: center;}
+	.vibe-desktopAppPage-logoImg          {width: 50px;}	
+	.vibe-desktopAppPage-instructions     {
+		color: #353838;
+		font-size: 12px;
+		line-height: 16px;
+		padding-right: 10px !important;
+	}
+	.vibe-desktopAppPage-instructionAnchor       {text-decoration: none; white-space: normal !important;}
+	.vibe-desktopAppPage-instructionAnchor:hover {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+	.vibe-desktopAppPage-smallgray               {font-size: 12px; color: #505354; padding-left: 5px;}
+	.vibe-desktopAppPage-footer                  {
+		margin-top: 0px !important;
+	}
+/* End:  GWT desktop application download page styles. */

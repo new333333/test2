@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_LoginAudit" name="org.kablink.teaming.domain.LoginAudit">
+    <id unsaved-value="null" name="id" type="long">
+      <generator class="native">
+      	<param name="sequence">ss_loginaudit_id_sequence</param>
+      </generator>
+    </id>
+    <property name="zoneId" access="field"/>
+    <property name="loginTime" access="field" index="loginTime_loginAudit"/>
+    <property name="userId" access="field" index="userId_loginAudit"/>
+ 	<property name="authenticator" access="field" type="short"/>
+    <property name="clientAddr" access="field" length="16"/>
+  </class>
+</hibernate-mapping>

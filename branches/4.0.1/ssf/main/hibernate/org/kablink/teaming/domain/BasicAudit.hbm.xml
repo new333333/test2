@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_BasicAudit" name="org.kablink.teaming.domain.BasicAudit">
+    <id unsaved-value="null" name="id" type="long">
+      <generator class="native">
+      	<param name="sequence">ss_basicaudit_id_sequence</param>
+      </generator>
+    </id>
+    <property name="zoneId" access="field"/>
+    <property name="eventDate" access="field" index="eventDate_basicAudit"/>
+    <property name="userId" access="field" index="userId_basicAudit"/>
+    <property name="entityType" access="field" type="short" index="entity_basicAudit"/>
+    <property name="entityId" access="field" index="entity_basicAudit"/>
+ 	<property name="eventType" access="field" type="short" index="etype_obkey_basicAudit"/>
+    <property name="owningBinderKey" access="field" length="255" index="etype_obkey_basicAudit"/>
+    <property name="owningBinderId" access="field" index="owningBinderId_basicAudit"/>
+    <property name="auxiliaryData" access="field" length="128"/>
+    <property name="fileId" access="field" length="32"/>
+    <property name="entityFamily" access="field" type="short"/>  
+  </class>
+</hibernate-mapping>
