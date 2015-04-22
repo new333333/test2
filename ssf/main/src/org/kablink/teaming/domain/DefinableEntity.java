@@ -219,10 +219,12 @@ public abstract class DefinableEntity extends BaseEntity {
      * @hibernate.property length="64"
      */
     public String getIconName() {
-    	return Utils.getIconNameTranslated(this.iconName);
+    	String icoName = ((null == this.iconName) ? "" : this.iconName);
+    	return Utils.getIconNameTranslated(icoName);
     }
     public String getIconName(IconSize size) {
-    	return Utils.getIconNameTranslated(this.iconName, size);
+    	String icoName = ((null == this.iconName) ? "" : this.iconName);
+    	return Utils.getIconNameTranslated(icoName, size);
     }
     public void setIconName(String iconName) {
     	this.iconName = iconName;
