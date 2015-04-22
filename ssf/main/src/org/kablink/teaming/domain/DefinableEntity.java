@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,6 +44,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.dom4j.Document;
+
 import org.kablink.teaming.comparator.FileAttachmentComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.search.BasicIndexUtils;
@@ -58,6 +59,7 @@ import org.kablink.teaming.web.util.WebHelper;
  * this class.
  *
  */
+@SuppressWarnings("unchecked")
 public abstract class DefinableEntity extends BaseEntity {
     protected String title=""; //initialized by hibernate access=field
     protected String normalTitle=""; 
@@ -65,9 +67,9 @@ public abstract class DefinableEntity extends BaseEntity {
     protected Long logVersion=Long.valueOf(0);
     protected Binder parentBinder; 
     protected boolean attachmentsParsed = false;
-    protected Set attachments;	//initialized by hiberate access=field
-    protected Map customAttributes;	//initialized by hiberate access=field
-    protected Set events;	//initialized by hiberate access=field
+	protected Set attachments;	//initialized by hibernate access=field
+    protected Map customAttributes;	//initialized by hibernate access=field
+    protected Set events;	//initialized by hibernate access=field
     protected String iconName="";
     protected Integer definitionType=null;
     protected AverageRating rating=null;
@@ -87,7 +89,7 @@ public abstract class DefinableEntity extends BaseEntity {
     	iconName = source.iconName;
     	definitionType = source.definitionType;
     	//don't copy parentBinder, 
-    	//cannot copy events,customattribute and attachments, since they need a ownerId
+    	//cannot copy events,custom attribute and attachments, since they need an ownerId
     	
     }
     
@@ -219,10 +221,12 @@ public abstract class DefinableEntity extends BaseEntity {
      * @hibernate.property length="64"
      */
     public String getIconName() {
-    	return Utils.getIconNameTranslated(this.iconName);
+    	String icoName = ((null == this.iconName) ? "" : this.iconName);
+    	return Utils.getIconNameTranslated(icoName);
     }
     public String getIconName(IconSize size) {
-    	return Utils.getIconNameTranslated(this.iconName, size);
+    	String icoName = ((null == this.iconName) ? "" : this.iconName);
+    	return Utils.getIconNameTranslated(icoName, size);
     }
     public void setIconName(String iconName) {
     	this.iconName = iconName;
@@ -453,6 +457,7 @@ public abstract class DefinableEntity extends BaseEntity {
     public String getPrimaryFileAttachmentId() {
         Set atts = getAttachments();
         Attachment att;
+        @SuppressWarnings("unused")
         FileAttachment fatt;
         for (Iterator iter=atts.iterator(); iter.hasNext();) {
             att = (Attachment)iter.next();
@@ -466,6 +471,7 @@ public abstract class DefinableEntity extends BaseEntity {
     public FileAttachment getPrimaryFileAttachment() {
         Set atts = getAttachments();
         Attachment att;
+        @SuppressWarnings("unused")
         FileAttachment fatt;
         for (Iterator iter=atts.iterator(); iter.hasNext();) {
             att = (Attachment)iter.next();
@@ -619,13 +625,15 @@ public abstract class DefinableEntity extends BaseEntity {
     	this.iCustomAttributes = iCustomAttributes;
     }
     
-    public String getEntityTypedId() {
+    @Override
+	public String getEntityTypedId() {
     	return getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
     }
     /**
      * Return the title.
      */
-    public String toString() {
+    @Override
+	public String toString() {
     	return title;
     }
     
