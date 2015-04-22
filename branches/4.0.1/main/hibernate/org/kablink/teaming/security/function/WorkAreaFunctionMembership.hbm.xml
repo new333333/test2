@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" lazy="false" table="SS_WorkAreaFunctionMemberships" name="org.kablink.teaming.security.function.WorkAreaFunctionMembership">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="id" type="long">
+      <generator class="native"/>
+    </id>
+    <version unsaved-value="undefined" name="lockVersion" type="long"/>
+    <set cascade="all" lazy="false" table="SS_WorkAreaFunctionMembers" name="memberIds">
+      <!--<cache usage="read-write"/>-->
+      <key column="workAreaFunctionMembershipId"/>
+      <element not-null="true" type="long" column="memberId"/>
+    </set>
+    <property name="workAreaId" column="workAreaId" not-null="true" type="long" index="workArea_wafms"/>
+    <property name="workAreaType" length="16" column="workAreaType" not-null="true" index="workArea_wafms"/>
+    <property name="zoneId" not-null="true"/>
+    <property name="functionId" column="functionId" not-null="true" type="long"/>
+  </class>
+  <query name="check-WorkAreaFunctionMembership"><![CDATA[select distinct fm.functionId from org.kablink.teaming.security.function.Function function join function.operationNames operationName, org.kablink.teaming.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneId=:zoneId and fm.zoneId=:zoneId and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)]]></query>
+  <query name="get-WorkAreaFunctionMembershipByOperation"><![CDATA[select distinct fm from org.kablink.teaming.security.function.Function function join function.operationNames operationName, org.kablink.teaming.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneId=:zoneId and fm.zoneId=:zoneId and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId]]></query>
+  <query name="get-FunctionMembershipByOperation"><![CDATA[select distinct fm from org.kablink.teaming.security.function.Function function join function.operationNames operationName, org.kablink.teaming.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneId=:zoneId and fm.zoneId=:zoneId and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)]]></query>
+	                    			
+</hibernate-mapping>

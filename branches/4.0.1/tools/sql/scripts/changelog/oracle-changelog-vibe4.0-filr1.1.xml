@@ -1,0 +1,600 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="dennis" context="schema" failOnError="true" id="1">
+        <comment>Is a user's workspace in the trash?</comment>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="WORKSPACEPREDELETED" type="NUMBER(1,0)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <comment>Full sync stop requested</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNCSTOPREQUESTED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Full sync status</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_STATUS" type="VARCHAR2(16 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Full sync start time</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_STARTDATE" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Full sync end time</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_ENDDATE" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Process directory only</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_DIRONLY" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Directory enumeration failed</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_ENUMFAILED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of files encountered</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFILES" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of files added</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFILEADD" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of files expunged</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFILEEXPUNGE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of files modified</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFILEMODIFY" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of files for which ACLs are set</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFILESETACL" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of files for which ownership are set</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFILESETOWNER" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of folders encountered</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDERS" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of folders added</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDERADD" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of folders expunged</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDEREXPUNGE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of folders for which ACLs are set</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDERSETACL" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of folders for which ownership are set</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDERSETOWNER" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of dangling entries expunged</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTENTRYEXPUNGE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of failure</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFAILURE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Count of folders processed</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDERPROCESSED" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Largest count of folders found in queue at once</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_COUNTFOLDERMAXQUEUE" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="3">
+        <comment>Full sync status set time</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_STATUSDATE" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="4">
+        <createIndex indexName="STATUSDATE_BINDERSTATE" tableName="SS_BINDERSTATE" unique="false">
+            <column name="FULLSYNC_STATUSDATE"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="5">
+        <comment>IPv4 address of the node from which full sync status is set</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="FULLSYNC_STATUSIPV4ADDRESS" type="VARCHAR2(16 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="6">
+        <comment>Whether or not full sync should only process directories</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="FULLSYNCDIRONLY" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="7">
+        <addColumn tableName="SS_SHAREITEM">
+			<column name="right_creatorRenameEntries" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="9">
+        <addColumn tableName="SS_ZONECONFIG">
+			<column name="AUDITTRAILENABLED" type="NUMBER(1,0)">
+			    <constraints nullable="true" />
+			</column>
+			<column name="CHANGELOGENABLED" type="NUMBER(1,0)">
+			    <constraints nullable="true" />
+			</column>
+		</addColumn>
+    </changeSet>
+    
+    <changeSet author="peter" context="schema" failOnError="true" id="10">
+        <addColumn tableName="SS_ZONECONFIG">
+			<column name="FILEARCHIVINGENABLED" type="NUMBER(1,0)">
+			    <constraints nullable="true" />
+			</column>
+		</addColumn>
+    </changeSet>
+    
+    <changeSet author="peter" context="schema" failOnError="true" id="11">
+        <comment>The binder containing entries to be copied when folder created</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="TEMPLATEENTRYSOURCEBINDERID" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <comment>Reindexing start date</comment>
+        <addColumn tableName="SS_INDEXNODE">
+            <column name="REINDEXINGSTARTDATE" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
+        <comment>Reindexing end date</comment>
+        <addColumn tableName="SS_INDEXNODE">
+            <column name="REINDEXINGENDDATE" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="14">
+        <comment>Is deployment of the Desktop application done from local files</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="FSADEPLOYLOCALAPPS" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="15">
+        <comment>IPv4 address of the node on which reindexing started</comment>
+        <addColumn tableName="SS_INDEXNODE">
+            <column name="REINDEXINGIPV4ADDRESS" type="VARCHAR2(16 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="16">
+        <comment>Net Folder sync schedule option</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="SYNCSCHEDULEOPTION" type="NUMBER(2,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="17">
+        <comment>My Files Storage folder marker.</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="MYFILESDIR" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="18">
+        <comment>Sharing - Whitelist/Blacklist.</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+			<column name="SHARELISTSBLOB" type="BLOB"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="19">
+        <comment>Enable users and groups to download files</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="DOWNLOADENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="DOWNLOADENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="20">
+        <comment>Enable users and groups to use web access</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="WEBACCESSENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="WEBACCESSENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="21">
+        <comment>Enable Personal Storage folders in a user's personal workspace</comment>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="ADHOCFOLDERSENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <comment>Sync type</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="SYNCTYPE" type="VARCHAR2(1 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <comment>IPv4 address of the node executing sync</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="SYNCIPV4ADDRESS" type="VARCHAR2(16 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <comment>Sync in progress</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="SYNCINPROGRESS" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="peter" context="schema" failOnError="true" id="25">
+        <comment>Add passKey column for sharing links with the public</comment>
+        <addColumn tableName="SS_SHAREITEM">
+            <column name="PASSKEY" type="VARCHAR2(32 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="27">
+        <comment>Whether or not full sync should only process directories</comment>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="FULLSYNCDIRONLY" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <comment>The date up to which a net folder is updated</comment>
+        <addColumn tableName="SS_BINDERSTATE">
+            <column name="UPDATEDTODATE" type="TIMESTAMP(6)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="29">
+        <comment>Can users share with ldap groups</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="ALLOWSHAREWITHLDAPGROUPS" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="30">
+        <comment>Name completion settings stored as an xml string</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="NAMECOMPLETIONSETTINGS" type="CLOB">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="dennis" context="schema" failOnError="true" id="31">
+        <comment>Mobile application management (MAM) settings</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="MOBILEOPENIN" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="MOBILECUTCOPYENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="MOBILEANDROIDSCENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="mobileDisableOnCompromised" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="MOBILEOPENINWHITELISTS" type="CLOB">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="32">
+        <comment>New fields for resource driver</comment>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="AUTHENTICATIONTYPE" type="NUMBER(2,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="34">
+        <comment>Add typelessDN field to SS_Principals</comment>
+        <addColumn tableName="SS_PRINCIPALS">
+            <column name="TYPELESSDN" type="VARCHAR2(255 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="35">
+        <createIndex indexName="TYPELESSDN_PRINCIPAL" tableName="SS_PRINCIPALS" unique="false">
+            <column name="TYPELESSDN"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="36">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="INTERNAL_BINDER"/>
+        </preConditions>
+        <comment>Drop old internal_Binder index, if exists, from SS_Forums table</comment>
+        <dropIndex indexName="INTERNAL_BINDER" tableName="SS_FORUMS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="37">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="INTERNALID_BINDER"/>
+            </not>
+        </preConditions>
+        <comment>Create index on internalId column in SS_Forums table</comment>
+        <createIndex indexName="INTERNALID_BINDER" tableName="SS_FORUMS" unique="false">
+            <column name="INTERNALID"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="38">
+        <comment>New column to hold resource handles for folders</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="RESOURCEHANDLE" type="VARCHAR2(128 BYTE)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="39">
+        <comment>New column to hold resource handles for files</comment>
+        <addColumn tableName="SS_FOLDERENTRIES">
+            <column name="RESOURCEHANDLE" type="VARCHAR2(128 BYTE)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="40">
+        <comment>Table used to represent mobile devices.</comment>
+        <createTable tableName="SS_MOBILEDEVICE">
+            <column name="USERID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEVICEID" type="VARCHAR2(128 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="DESCRIPTION" type="VARCHAR2(255 CHAR)"/>
+            <column name="USERTITLE" type="VARCHAR2(255 CHAR)"/>
+            <column name="LASTLOGIN" type="TIMESTAMP(6)"/>            
+            <column name="LASTWIPE" type="TIMESTAMP(6)"/>            
+            <column name="WIPESCHEDULED" type="NUMBER(1,0)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="41">
+        <addPrimaryKey columnNames="USERID, DEVICEID" tableName="SS_MOBILEDEVICE"/>
+    </changeSet>
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="42">
+        <comment>Add useInheritedIndexContent field to SS_Forums table</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="USEINHERITEDINDEXCONTENT" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add indexContent field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="INDEXCONTENT" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	    
+    <changeSet author="jay" context="schema" failOnError="true" id="43">
+        <comment>Add useInheritedJitsSettings field to SS_Forums table</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="USEINHERITEDJITSSETTINGS" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add jitsEnabled field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="JITSENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add jitsMaxAge field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="JITSMAXAGE" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add jitsAclMaxAge field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="JITSACLMAXAGE" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	    
+    <changeSet author="dennis" context="schema" failOnError="true" id="44">
+        <addColumn tableName="SS_SHAREITEM">
+			<column name="right_allowSharingPublicLinks" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="45">
+        <comment>Add useDirectoryRights to SS_ZoneConfig</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="USEDIRECTORYRIGHTS" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add cachedRightsRefreshInterval to SS_ZoneConfig</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="CACHEDRIGHTSREFRESHINTERVAL" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="46">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="TEMPLATEOWNINGBINDERID_BINDER"/>
+        </preConditions>
+        <comment>Drop templateOwningBinderId_Binder index from SS_Forums table</comment>
+        <dropIndex indexName="TEMPLATEOWNINGBINDERID_BINDER" tableName="SS_FORUMS"/>        
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="47">
+        <comment>Add allowDAToTriggerInitialHFSync field to SS_Forums table</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="ALLOWDATOTRIGGERINITIALHFSYNC" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add useInheritedDATriggerSetting field to SS_Forums table</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="USEINHERITEDDATRIGGERSETTING" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add allowDAToTriggerInitialHFSync field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="ALLOWDATOTRIGGERINITIALHFSYNC" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="48">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="OWNINGBINDERID_NOTIFYSTATUS"/>
+            </not>
+        </preConditions>
+        <comment>Create index owningBinderId_notifyStatus on owningBinderId column in SS_NotifyStatus table</comment>
+        <createIndex indexName="OWNINGBINDERID_NOTIFYSTATUS" tableName="SS_NOTIFYSTATUS" unique="false">
+            <column name="OWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="49">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="BINDERID_USERPROPERTIES"/>
+            </not>
+        </preConditions>
+        <comment>Create index binderId_userProperties on binderId column in SS_UserProperties table</comment>
+        <createIndex indexName="BINDERID_USERPROPERTIES" tableName="SS_USERPROPERTIES" unique="false">
+            <column name="BINDERID"/>
+        </createIndex>
+    </changeSet>
+    
+</databaseChangeLog>

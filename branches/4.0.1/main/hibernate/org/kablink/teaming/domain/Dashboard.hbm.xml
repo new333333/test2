@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" lazy="false" table="SS_Dashboards" dynamic-insert="false" name="org.kablink.teaming.domain.Dashboard">
+    <!--<cache usage="read-write"/>-->
+     <id unsaved-value="null" name="id" node="@id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <discriminator type="string" column="type" length="1"/>
+   <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <property name="zoneId" access="field"/>
+ 	<property name="nextComponentId"/>
+    <property name="showComponents"/>
+    <property name="version"/>
+<!-- use length to force medium blog in mysql -->
+    <property name="properties" length="2000000" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
+    <component name="creation" node="creation" class="org.kablink.teaming.domain.HistoryStamp">
+      <property name="date" column="creation_date" type="timestamp"/>
+      <many-to-one class="org.kablink.teaming.domain.UserPrincipal" embed-xml="false" node="Principal" name="principal">
+        <column name="creation_principal"/>
+      </many-to-one>
+    </component>
+    <component name="modification" node="modification" class="org.kablink.teaming.domain.HistoryStamp">
+      <property name="date" column="modification_date" type="timestamp"/>
+      <many-to-one class="org.kablink.teaming.domain.UserPrincipal" embed-xml="false" node="Principal" name="principal">
+        <column name="modification_principal"/>
+      </many-to-one>
+    </component>
+    <subclass name="org.kablink.teaming.domain.EntityDashboard" discriminator-value="E" dynamic-update="true">
+     <component name="ownerIdentifier" class="org.kablink.teaming.domain.EntityIdentifier">
+	    <property name="entityId" column="owner_id" index="ownerKey_Dash"/>
+   		<property name="type" column="owner_type" index="ownerKey_Dash"/>
+    </component>
+	</subclass>
+    <subclass name="org.kablink.teaming.domain.UserDashboard" discriminator-value="U" dynamic-update="true">
+	     <component name="ownerIdentifier" class="org.kablink.teaming.domain.EntityIdentifier">
+		    <property name="entityId" column="owner_id"/>
+   			<property name="type" column="owner_type"/>
+    	</component>
+  		<property name="binderId" index="binder_Dash"/>
+   	</subclass>
+   <subclass name="org.kablink.teaming.domain.DashboardPortlet" discriminator-value="P" dynamic-update="true">
+  	 <property name="portletName" length="256"/>
+   </subclass>
+   </class>
+</hibernate-mapping>

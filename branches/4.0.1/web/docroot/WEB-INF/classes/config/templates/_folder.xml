@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="5" internalId="402883b90d0de1f3010d0df5582b0001">
+  <attribute name="templateTitle" type="string">__template_folder</attribute>
+  <attribute name="templateDescription" type="description">__template_folder_description</attribute>
+  <attribute name="title" type="string">__template_folder</attribute>
+  <attribute name="description" type="description"></attribute>
+  <attribute name="iconName" type="string">icons/folder_blue_discussion.png</attribute>
+  <attribute name="name" type="string">_folder</attribute>
+  <property name="library">false</property>
+  <property name="mirrored">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="_discussionFolderList" internalId="402883b90cc53079010cc539bf260001" databaseId="402883b90cc53079010cc539bf260001"/>
+  <definition name="_discussionFolderTable" databaseId="4028839f11fb20390111fb43a3840001"/>
+  <definition name="_discussionEntry" internalId="402883b90cc53079010cc539bf260002" databaseId="402883b90cc53079010cc539bf260002"/>
+</template>

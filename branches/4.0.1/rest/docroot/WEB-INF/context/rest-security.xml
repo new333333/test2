@@ -1,0 +1,46 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+	
+	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
+		<constructor-arg>
+		    <list>
+		        <ref bean="authenticationProvider"/>
+		    </list>
+		</constructor-arg>
+		<property name="authenticator"><value>rest_b</value></property>
+		<property name="enableKey"><value>rest.basic.enable</value></property>
+	</bean>
+
+	<bean id="authenticationProvider" class="org.kablink.teaming.asmodule.spring.security.providers.AuthenticationModuleBridge"/>
+
+    <bean id="basicAuthEntryPoint" class="org.kablink.teaming.spring.security.web.authentication.BasicAuthenticationEntryPoint"/>
+	
+    <security:http create-session="never" authentication-manager-ref="_authenticationManager"
+                   entry-point-ref="basicAuthEntryPoint">
+        <security:session-management session-fixation-protection="newSession" />
+        <security:intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
+        <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
+        <security:anonymous enabled="false" />
+        <security:http-basic entry-point-ref="basicAuthEntryPoint"/>
+    </security:http>
+
+    <bean id="prioritizedRequestManager" class="org.kablink.teaming.rest.servlet.PrioritizedRequestManager"/>
+
+    <!-- ================================  JMX/MBean Support =============================== -->
+    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
+        <property name="beans">
+            <map>
+                <entry key="Vibe:type=Manager,name=prioritizedRequestManager">
+                    <ref bean="prioritizedRequestManager"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>

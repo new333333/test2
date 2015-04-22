@@ -1,0 +1,2674 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-1">
+        <createTable tableName="JBPM_ACTION">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_ACTION"/>
+            </column>
+            <column name="CLASS" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="ISPROPAGATIONALLOWED_" type="NUMBER(1,0)"/>
+            <column name="ACTIONEXPRESSION_" type="VARCHAR2(255 CHAR)"/>
+            <column name="ISASYNC_" type="NUMBER(1,0)"/>
+            <column name="REFERENCEDACTION_" type="NUMBER(19,0)"/>
+            <column name="ACTIONDELEGATION_" type="NUMBER(19,0)"/>
+            <column name="EVENT_" type="NUMBER(19,0)"/>
+            <column name="PROCESSDEFINITION_" type="NUMBER(19,0)"/>
+            <column name="TIMERNAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="DUEDATE_" type="VARCHAR2(255 CHAR)"/>
+            <column name="REPEAT_" type="VARCHAR2(255 CHAR)"/>
+            <column name="TRANSITIONNAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="TIMERACTION_" type="NUMBER(19,0)"/>
+            <column name="EXPRESSION_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="EVENTINDEX_" type="NUMBER(10,0)"/>
+            <column name="EXCEPTIONHANDLER_" type="NUMBER(19,0)"/>
+            <column name="EXCEPTIONHANDLERINDEX_" type="NUMBER(10,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-2">
+        <createTable tableName="JBPM_BYTEARRAY">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_BYTEARRAY"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="FILEDEFINITION_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-3">
+        <createTable tableName="JBPM_BYTEBLOCK">
+            <column name="PROCESSFILE_" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BYTES_" type="RAW(1024)"/>
+            <column name="INDEX_" type="NUMBER(10,0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-4">
+        <createTable tableName="JBPM_COMMENT">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_COMMENT"/>
+            </column>
+            <column name="VERSION_" type="NUMBER(10,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACTORID_" type="VARCHAR2(255 CHAR)"/>
+            <column name="TIME_" type="TIMESTAMP(6)"/>
+            <column name="MESSAGE_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="TOKEN_" type="NUMBER(19,0)"/>
+            <column name="TASKINSTANCE_" type="NUMBER(19,0)"/>
+            <column name="TOKENINDEX_" type="NUMBER(10,0)"/>
+            <column name="TASKINSTANCEINDEX_" type="NUMBER(10,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-5">
+        <createTable tableName="JBPM_DECISIONCONDITIONS">
+            <column name="DECISION_" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRANSITIONNAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="EXPRESSION_" type="VARCHAR2(255 CHAR)"/>
+            <column name="INDEX_" type="NUMBER(10,0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-6">
+        <createTable tableName="JBPM_DELEGATION">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_DELEGATION"/>
+            </column>
+            <column name="CLASSNAME_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="CONFIGURATION_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="CONFIGTYPE_" type="VARCHAR2(255 CHAR)"/>
+            <column name="PROCESSDEFINITION_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-7">
+        <createTable tableName="JBPM_EVENT">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_EVENT"/>
+            </column>
+            <column name="EVENTTYPE_" type="VARCHAR2(255 CHAR)"/>
+            <column name="TYPE_" type="CHAR(1)"/>
+            <column name="GRAPHELEMENT_" type="NUMBER(19,0)"/>
+            <column name="NODE_" type="NUMBER(19,0)"/>
+            <column name="PROCESSDEFINITION_" type="NUMBER(19,0)"/>
+            <column name="TRANSITION_" type="NUMBER(19,0)"/>
+            <column name="TASK_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-8">
+        <createTable tableName="JBPM_EXCEPTIONHANDLER">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_EXCEPTIONHANDLER"/>
+            </column>
+            <column name="EXCEPTIONCLASSNAME_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="TYPE_" type="CHAR(1)"/>
+            <column name="GRAPHELEMENT_" type="NUMBER(19,0)"/>
+            <column name="NODE_" type="NUMBER(19,0)"/>
+            <column name="GRAPHELEMENTINDEX_" type="NUMBER(10,0)"/>
+            <column name="PROCESSDEFINITION_" type="NUMBER(19,0)"/>
+            <column name="TRANSITION_" type="NUMBER(19,0)"/>
+            <column name="TASK_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-9">
+        <createTable tableName="JBPM_LOG">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_LOG"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INDEX_" type="NUMBER(10,0)"/>
+            <column name="DATE_" type="TIMESTAMP(6)"/>
+            <column name="TOKEN_" type="NUMBER(19,0)"/>
+            <column name="PARENT_" type="NUMBER(19,0)"/>
+            <column name="SWIMLANEINSTANCE_" type="NUMBER(19,0)"/>
+            <column name="TASKINSTANCE_" type="NUMBER(19,0)"/>
+            <column name="TASKACTORID_" type="VARCHAR2(255 CHAR)"/>
+            <column name="CHILD_" type="NUMBER(19,0)"/>
+            <column name="EXCEPTION_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="ACTION_" type="NUMBER(19,0)"/>
+            <column name="TRANSITION_" type="NUMBER(19,0)"/>
+            <column name="MESSAGE_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="NODE_" type="NUMBER(19,0)"/>
+            <column name="ENTER_" type="TIMESTAMP(6)"/>
+            <column name="LEAVE_" type="TIMESTAMP(6)"/>
+            <column name="DURATION_" type="NUMBER(19,0)"/>
+            <column name="SOURCENODE_" type="NUMBER(19,0)"/>
+            <column name="DESTINATIONNODE_" type="NUMBER(19,0)"/>
+            <column name="VARIABLEINSTANCE_" type="NUMBER(19,0)"/>
+            <column name="OLDBYTEARRAY_" type="NUMBER(19,0)"/>
+            <column name="NEWBYTEARRAY_" type="NUMBER(19,0)"/>
+            <column name="OLDDATEVALUE_" type="TIMESTAMP(6)"/>
+            <column name="NEWDATEVALUE_" type="TIMESTAMP(6)"/>
+            <column name="OLDLONGVALUE_" type="NUMBER(19,0)"/>
+            <column name="NEWLONGVALUE_" type="NUMBER(19,0)"/>
+            <column name="OLDLONGIDCLASS_" type="VARCHAR2(255 CHAR)"/>
+            <column name="OLDLONGIDVALUE_" type="NUMBER(19,0)"/>
+            <column name="NEWLONGIDCLASS_" type="VARCHAR2(255 CHAR)"/>
+            <column name="NEWLONGIDVALUE_" type="NUMBER(19,0)"/>
+            <column name="OLDSTRINGVALUE_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="NEWSTRINGVALUE_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="TASKOLDACTORID_" type="VARCHAR2(255 CHAR)"/>
+            <column name="OLDSTRINGIDCLASS_" type="VARCHAR2(255 CHAR)"/>
+            <column name="OLDSTRINGIDVALUE_" type="VARCHAR2(255 CHAR)"/>
+            <column name="NEWSTRINGIDCLASS_" type="VARCHAR2(255 CHAR)"/>
+            <column name="NEWSTRINGIDVALUE_" type="VARCHAR2(255 CHAR)"/>
+            <column name="OLDDOUBLEVALUE_" type="FLOAT(126)"/>
+            <column name="NEWDOUBLEVALUE_" type="FLOAT(126)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-10">
+        <createTable tableName="JBPM_MESSAGE">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_MESSAGE"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESTINATION_" type="VARCHAR2(255 CHAR)"/>
+            <column name="EXCEPTION_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="ISSUSPENDED_" type="NUMBER(1,0)"/>
+            <column name="TOKEN_" type="NUMBER(19,0)"/>
+            <column name="TEXT_" type="VARCHAR2(255 CHAR)"/>
+            <column name="ACTION_" type="NUMBER(19,0)"/>
+            <column name="TRANSITIONNAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="TASKINSTANCE_" type="NUMBER(19,0)"/>
+            <column name="NODE_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-11">
+        <createTable tableName="JBPM_MODULEDEFINITION">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_MODULEDEFINITION"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="PROCESSDEFINITION_" type="NUMBER(19,0)"/>
+            <column name="STARTTASK_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-12">
+        <createTable tableName="JBPM_MODULEINSTANCE">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_MODULEINSTANCE"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSINSTANCE_" type="NUMBER(19,0)"/>
+            <column name="TASKMGMTDEFINITION_" type="NUMBER(19,0)"/>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-13">
+        <createTable tableName="JBPM_NODE">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_NODE"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="PROCESSDEFINITION_" type="NUMBER(19,0)"/>
+            <column name="ISASYNC_" type="NUMBER(1,0)"/>
+            <column name="ACTION_" type="NUMBER(19,0)"/>
+            <column name="SUPERSTATE_" type="NUMBER(19,0)"/>
+            <column name="DECISIONEXPRESSION_" type="VARCHAR2(255 CHAR)"/>
+            <column name="DECISIONDELEGATION" type="NUMBER(19,0)"/>
+            <column name="SUBPROCESSDEFINITION_" type="NUMBER(19,0)"/>
+            <column name="SIGNAL_" type="NUMBER(10,0)"/>
+            <column name="CREATETASKS_" type="NUMBER(1,0)"/>
+            <column name="ENDTASKS_" type="NUMBER(1,0)"/>
+            <column name="NODECOLLECTIONINDEX_" type="NUMBER(10,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-14">
+        <createTable tableName="JBPM_POOLEDACTOR">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_POOLEDACTOR"/>
+            </column>
+            <column name="ACTORID_" type="VARCHAR2(255 CHAR)"/>
+            <column name="SWIMLANEINSTANCE_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-15">
+        <createTable tableName="JBPM_PROCESSDEFINITION">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_PROCESSDEFINITION"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="VERSION_" type="NUMBER(10,0)"/>
+            <column name="ISTERMINATIONIMPLICIT_" type="NUMBER(1,0)"/>
+            <column name="STARTSTATE_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-16">
+        <createTable tableName="JBPM_PROCESSINSTANCE">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_PROCESSINSTANCE"/>
+            </column>
+            <column name="VERSION_" type="NUMBER(10,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="START_" type="TIMESTAMP(6)"/>
+            <column name="END_" type="TIMESTAMP(6)"/>
+            <column name="ISSUSPENDED_" type="NUMBER(1,0)"/>
+            <column name="PROCESSDEFINITION_" type="NUMBER(19,0)"/>
+            <column name="ROOTTOKEN_" type="NUMBER(19,0)"/>
+            <column name="SUPERPROCESSTOKEN_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-17">
+        <createTable tableName="JBPM_RUNTIMEACTION">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_RUNTIMEACTION"/>
+            </column>
+            <column name="VERSION_" type="NUMBER(10,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EVENTTYPE_" type="VARCHAR2(255 CHAR)"/>
+            <column name="TYPE_" type="CHAR(1)"/>
+            <column name="GRAPHELEMENT_" type="NUMBER(19,0)"/>
+            <column name="PROCESSINSTANCE_" type="NUMBER(19,0)"/>
+            <column name="ACTION_" type="NUMBER(19,0)"/>
+            <column name="PROCESSINSTANCEINDEX_" type="NUMBER(10,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-18">
+        <createTable tableName="JBPM_SWIMLANE">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_SWIMLANE"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="ACTORIDEXPRESSION_" type="VARCHAR2(255 CHAR)"/>
+            <column name="POOLEDACTORSEXPRESSION_" type="VARCHAR2(255 CHAR)"/>
+            <column name="ASSIGNMENTDELEGATION_" type="NUMBER(19,0)"/>
+            <column name="TASKMGMTDEFINITION_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-19">
+        <createTable tableName="JBPM_SWIMLANEINSTANCE">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_SWIMLANEINSTANCE"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="ACTORID_" type="VARCHAR2(255 CHAR)"/>
+            <column name="SWIMLANE_" type="NUMBER(19,0)"/>
+            <column name="TASKMGMTINSTANCE_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-20">
+        <createTable tableName="JBPM_TASK">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_TASK"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="PROCESSDEFINITION_" type="NUMBER(19,0)"/>
+            <column name="DESCRIPTION_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="ISBLOCKING_" type="NUMBER(1,0)"/>
+            <column name="ISSIGNALLING_" type="NUMBER(1,0)"/>
+            <column name="DUEDATE_" type="VARCHAR2(255 CHAR)"/>
+            <column name="ACTORIDEXPRESSION_" type="VARCHAR2(255 CHAR)"/>
+            <column name="POOLEDACTORSEXPRESSION_" type="VARCHAR2(255 CHAR)"/>
+            <column name="TASKMGMTDEFINITION_" type="NUMBER(19,0)"/>
+            <column name="TASKNODE_" type="NUMBER(19,0)"/>
+            <column name="STARTSTATE_" type="NUMBER(19,0)"/>
+            <column name="ASSIGNMENTDELEGATION_" type="NUMBER(19,0)"/>
+            <column name="SWIMLANE_" type="NUMBER(19,0)"/>
+            <column name="TASKCONTROLLER_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-21">
+        <createTable tableName="JBPM_TASKACTORPOOL">
+            <column name="POOLEDACTOR_" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKINSTANCE_" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-22">
+        <createTable tableName="JBPM_TASKCONTROLLER">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_TASKCONTROLLER"/>
+            </column>
+            <column name="TASKCONTROLLERDELEGATION_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-23">
+        <createTable tableName="JBPM_TASKINSTANCE">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_TASKINSTANCE"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="DESCRIPTION_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="ACTORID_" type="VARCHAR2(255 CHAR)"/>
+            <column name="CREATE_" type="TIMESTAMP(6)"/>
+            <column name="START_" type="TIMESTAMP(6)"/>
+            <column name="END_" type="TIMESTAMP(6)"/>
+            <column name="DUEDATE_" type="TIMESTAMP(6)"/>
+            <column name="PRIORITY_" type="NUMBER(10,0)"/>
+            <column name="ISCANCELLED_" type="NUMBER(1,0)"/>
+            <column name="ISSUSPENDED_" type="NUMBER(1,0)"/>
+            <column name="ISOPEN_" type="NUMBER(1,0)"/>
+            <column name="ISSIGNALLING_" type="NUMBER(1,0)"/>
+            <column name="ISBLOCKING_" type="NUMBER(1,0)"/>
+            <column name="TASK_" type="NUMBER(19,0)"/>
+            <column name="TOKEN_" type="NUMBER(19,0)"/>
+            <column name="SWIMLANINSTANCE_" type="NUMBER(19,0)"/>
+            <column name="TASKMGMTINSTANCE_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-24">
+        <createTable tableName="JBPM_TIMER">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_TIMER"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="DUEDATE_" type="TIMESTAMP(6)"/>
+            <column name="REPEAT_" type="VARCHAR2(255 CHAR)"/>
+            <column name="TRANSITIONNAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="EXCEPTION_" type="VARCHAR2(4000 BYTE)"/>
+            <column name="ISSUSPENDED_" type="NUMBER(1,0)"/>
+            <column name="ACTION_" type="NUMBER(19,0)"/>
+            <column name="TOKEN_" type="NUMBER(19,0)"/>
+            <column name="PROCESSINSTANCE_" type="NUMBER(19,0)"/>
+            <column name="TASKINSTANCE_" type="NUMBER(19,0)"/>
+            <column name="GRAPHELEMENTTYPE_" type="VARCHAR2(255 CHAR)"/>
+            <column name="GRAPHELEMENT_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-25">
+        <createTable tableName="JBPM_TOKEN">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_TOKEN"/>
+            </column>
+            <column name="VERSION_" type="NUMBER(10,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="START_" type="TIMESTAMP(6)"/>
+            <column name="END_" type="TIMESTAMP(6)"/>
+            <column name="NODEENTER_" type="TIMESTAMP(6)"/>
+            <column name="NEXTLOGINDEX_" type="NUMBER(10,0)"/>
+            <column name="ISABLETOREACTIVATEPARENT_" type="NUMBER(1,0)"/>
+            <column name="ISTERMINATIONIMPLICIT_" type="NUMBER(1,0)"/>
+            <column name="ISSUSPENDED_" type="NUMBER(1,0)"/>
+            <column name="NODE_" type="NUMBER(19,0)"/>
+            <column name="PROCESSINSTANCE_" type="NUMBER(19,0)"/>
+            <column name="PARENT_" type="NUMBER(19,0)"/>
+            <column name="SUBPROCESSINSTANCE_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-26">
+        <createTable tableName="JBPM_TOKENVARIABLEMAP">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_TOKENVARIABLEMAP"/>
+            </column>
+            <column name="TOKEN_" type="NUMBER(19,0)"/>
+            <column name="CONTEXTINSTANCE_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-27">
+        <createTable tableName="JBPM_TRANSITION">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_TRANSITION"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="PROCESSDEFINITION_" type="NUMBER(19,0)"/>
+            <column name="FROM_" type="NUMBER(19,0)"/>
+            <column name="TO_" type="NUMBER(19,0)"/>
+            <column name="FROMINDEX_" type="NUMBER(10,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-28">
+        <createTable tableName="JBPM_VARIABLEACCESS">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_VARIABLEACCESS"/>
+            </column>
+            <column name="VARIABLENAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="ACCESS_" type="VARCHAR2(255 CHAR)"/>
+            <column name="MAPPEDNAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="PROCESSSTATE_" type="NUMBER(19,0)"/>
+            <column name="TASKCONTROLLER_" type="NUMBER(19,0)"/>
+            <column name="INDEX_" type="NUMBER(10,0)"/>
+            <column name="SCRIPT_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-29">
+        <createTable tableName="JBPM_VARIABLEINSTANCE">
+            <column name="ID_" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_JBPM_VARIABLEINSTANCE"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_" type="VARCHAR2(255 CHAR)"/>
+            <column name="CONVERTER_" type="CHAR(1)"/>
+            <column name="TOKEN_" type="NUMBER(19,0)"/>
+            <column name="TOKENVARIABLEMAP_" type="NUMBER(19,0)"/>
+            <column name="PROCESSINSTANCE_" type="NUMBER(19,0)"/>
+            <column name="BYTEARRAYVALUE_" type="NUMBER(19,0)"/>
+            <column name="DATEVALUE_" type="TIMESTAMP(6)"/>
+            <column name="DOUBLEVALUE_" type="FLOAT(126)"/>
+            <column name="LONGIDCLASS_" type="VARCHAR2(255 CHAR)"/>
+            <column name="LONGVALUE_" type="NUMBER(19,0)"/>
+            <column name="STRINGIDCLASS_" type="VARCHAR2(255 CHAR)"/>
+            <column name="STRINGVALUE_" type="VARCHAR2(255 CHAR)"/>
+            <column name="TASKINSTANCE_" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-30">
+        <createTable tableName="SS_ATTACHMENTS">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_ATTACHMENTS"/>
+            </column>
+            <column name="TYPE" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="FOLDERENTRY" type="NUMBER(19,0)"/>
+            <column name="PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="BINDER" type="NUMBER(19,0)"/>
+            <column name="OWNERTYPE" type="VARCHAR2(16 CHAR)"/>
+            <column name="OWNERID" type="NUMBER(19,0)"/>
+            <column name="OWNINGBINDERKEY" type="VARCHAR2(255 CHAR)"/>
+            <column name="OWNINGBINDERID" type="NUMBER(19,0)"/>
+            <column name="NAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="RELEVANCEUUID" type="VARCHAR2(256 CHAR)"/>
+            <column name="CREATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="CREATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="MODIFICATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="MODIFICATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="FILENAME" type="VARCHAR2(255 CHAR)"/>
+            <column name="FILELENGTH" type="NUMBER(19,0)"/>
+            <column name="DESCRIPTION_TEXT" type="CLOB"/>
+            <column name="DESCRIPTION_FORMAT" type="NUMBER(10,0)"/>
+            <column name="LASTVERSION" type="NUMBER(10,0)"/>
+            <column name="MAJORVERSION" type="NUMBER(10,0)"/>
+            <column name="MINORVERSION" type="NUMBER(10,0)"/>
+            <column name="FILESTATUS" type="NUMBER(10,0)"/>
+            <column name="AGINGENABLED" type="NUMBER(1,0)"/>
+            <column name="AGINGDATE" type="TIMESTAMP(6)"/>
+            <column name="ENCRYPTED" type="NUMBER(1,0)"/>
+            <column name="ENCRYPTIONKEY" type="RAW(256)"/>
+            <column name="REPOSITORYNAME" type="VARCHAR2(128 CHAR)"/>
+            <column name="FILELOCK_ID" type="VARCHAR2(128 CHAR)"/>
+            <column name="FILELOCK_SUBJECT" type="VARCHAR2(192 CHAR)"/>
+            <column name="FILELOCK_OWNER" type="NUMBER(19,0)"/>
+            <column name="FILELOCK_EXPIRATIONDATE" type="TIMESTAMP(6)"/>
+            <column name="FILELOCK_OWNERINFO" type="VARCHAR2(256 CHAR)"/>
+            <column name="FILELOCK_DIRTY" type="NUMBER(1,0)"/>
+            <column name="VERSIONNUMBER" type="NUMBER(10,0)"/>
+            <column name="VERSIONNAME" type="VARCHAR2(256 CHAR)"/>
+            <column name="PARENTATTACHMENT" type="CHAR(32)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-31">
+        <createTable tableName="SS_AUDITTRAIL">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_AUDITTRAIL"/>
+            </column>
+            <column name="TYPE" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="STARTDATE" type="TIMESTAMP(6)"/>
+            <column name="STARTBY" type="NUMBER(19,0)"/>
+            <column name="ENDBY" type="NUMBER(19,0)"/>
+            <column name="ENDDATE" type="TIMESTAMP(6)"/>
+            <column name="ENTITYTYPE" type="VARCHAR2(16 CHAR)"/>
+            <column name="ENTITYID" type="NUMBER(19,0)"/>
+            <column name="OWNINGBINDERID" type="NUMBER(19,0)"/>
+            <column name="OWNINGBINDERKEY" type="VARCHAR2(255 CHAR)"/>
+            <column name="DESCRIPTION" type="VARCHAR2(512 CHAR)"/>
+            <column name="TRANSACTIONTYPE" type="VARCHAR2(16 CHAR)"/>
+            <column name="FILEID" type="CHAR(32)"/>
+            <column name="APPLICATIONID" type="NUMBER(19,0)"/>
+            <column name="DELETEDFOLDERENTRYFAMILY" type="VARCHAR2(32 CHAR)"/>
+            <column name="TOKENID" type="NUMBER(19,0)"/>
+            <column name="STATE" type="VARCHAR2(64 CHAR)"/>
+            <column name="THREADNAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="DEFINITIONID" type="VARCHAR2(32 CHAR)"/>
+            <column name="ENDED" type="NUMBER(1,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-32">
+        <createTable tableName="SS_BINDERQUOTA">
+            <column name="BINDERID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_BINDERQUOTA"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DISKQUOTA" type="NUMBER(19,0)"/>
+            <column name="DISKSPACEUSED" type="NUMBER(19,0)"/>
+            <column name="DISKSPACEUSEDCUMULATIVE" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-33">
+        <createTable tableName="SS_CHANGELOGS">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_CHANGELOGS"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="DOCNUMBER" type="VARCHAR2(512 CHAR)"/>
+            <column name="USERNAME" type="VARCHAR2(82 CHAR)"/>
+            <column name="USERID" type="NUMBER(19,0)"/>
+            <column name="OPERATIONDATE" type="TIMESTAMP(6)"/>
+            <column name="OPERATION" type="VARCHAR2(32 CHAR)"/>
+            <column name="VERSION" type="NUMBER(19,0)"/>
+            <column name="XMLSTRING" type="CLOB"/>
+            <column name="ENTITYTYPE" type="VARCHAR2(16 CHAR)"/>
+            <column name="ENTITYID" type="NUMBER(19,0)"/>
+            <column name="OWNINGBINDERID" type="NUMBER(19,0)"/>
+            <column name="OWNINGBINDERKEY" type="VARCHAR2(255 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-34">
+        <createTable tableName="SS_CUSTOMATTRIBUTES">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_CUSTOMATTRIBUTES"/>
+            </column>
+            <column name="TYPE" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="FOLDERENTRY" type="NUMBER(19,0)"/>
+            <column name="PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="BINDER" type="NUMBER(19,0)"/>
+            <column name="OWNERTYPE" type="VARCHAR2(16 CHAR)"/>
+            <column name="OWNERID" type="NUMBER(19,0)"/>
+            <column name="OWNINGBINDERKEY" type="VARCHAR2(255 CHAR)"/>
+            <column name="OWNINGBINDERID" type="NUMBER(19,0)"/>
+            <column name="NAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="STRINGVALUE" type="VARCHAR2(2000 CHAR)"/>
+            <column name="DESCRIPTION_TEXT" type="CLOB"/>
+            <column name="DESCRIPTION_FORMAT" type="NUMBER(10,0)"/>
+            <column name="LONGVALUE" type="NUMBER(19,0)"/>
+            <column name="DATEVALUE" type="TIMESTAMP(6)"/>
+            <column name="SERIALIZEDVALUE" type="BLOB"/>
+            <column name="XMLVALUE" type="CLOB"/>
+            <column name="BOOLEANVALUE" type="NUMBER(1,0)"/>
+            <column name="VALUETYPE" type="NUMBER(10,0)"/>
+            <column name="POSITION" type="NUMBER(10,0)"/>
+            <column name="PARENT" type="CHAR(32)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-35">
+        <createTable tableName="SS_DASHBOARDS">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_DASHBOARDS"/>
+            </column>
+            <column name="TYPE" type="VARCHAR2(1 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="NEXTCOMPONENTID" type="NUMBER(10,0)"/>
+            <column name="SHOWCOMPONENTS" type="NUMBER(1,0)"/>
+            <column name="VERSION" type="NUMBER(10,0)"/>
+            <column name="PROPERTIES" type="BLOB"/>
+            <column name="CREATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="CREATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="MODIFICATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="MODIFICATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="OWNER_ID" type="NUMBER(19,0)"/>
+            <column name="OWNER_TYPE" type="NUMBER(10,0)"/>
+            <column name="BINDERID" type="NUMBER(19,0)"/>
+            <column name="PORTLETNAME" type="VARCHAR2(256 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-36">
+        <createTable tableName="SS_DEFINITIONMAP">
+            <column name="BINDER" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEFINITION" type="CHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="POSITION" type="NUMBER(10,0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-37">
+        <createTable tableName="SS_DEFINITIONS">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_DEFINITIONS"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="TITLE" type="VARCHAR2(128 CHAR)"/>
+            <column name="INTERNALID" type="VARCHAR2(32 CHAR)"/>
+            <column name="TYPE" type="NUMBER(10,0)"/>
+            <column name="VISIBILITY" type="NUMBER(10,0)"/>
+            <column name="ENCODING" type="BLOB"/>
+            <column name="BINDERID" type="NUMBER(19,0)"/>
+            <column name="CREATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="CREATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="MODIFICATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="MODIFICATION_PRINCIPAL" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-38">
+        <createTable tableName="SS_EMAILADDRESSES">
+            <column name="PRINCIPAL" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TYPE" type="VARCHAR2(64 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ADDRESS" type="VARCHAR2(256 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-39">
+        <createTable tableName="SS_EMAILLOG">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_EMAILLOG"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SENDDATE" type="TIMESTAMP(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FROMFIELD" type="VARCHAR2(255 CHAR)"/>
+            <column name="SUBJ" type="VARCHAR2(255 CHAR)"/>
+            <column name="COMMENTS" type="CLOB"/>
+            <column name="STATUS" type="VARCHAR2(16 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TYPE" type="VARCHAR2(32 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TOEMAILADDRESSES" type="CLOB"/>
+            <column name="FILEATTACHMENTS" type="CLOB"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-40">
+        <createTable tableName="SS_EVENTS">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_EVENTS"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="FOLDERENTRY" type="NUMBER(19,0)"/>
+            <column name="PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="BINDER" type="NUMBER(19,0)"/>
+            <column name="OWNERTYPE" type="VARCHAR2(16 CHAR)"/>
+            <column name="OWNERID" type="NUMBER(19,0)"/>
+            <column name="OWNINGBINDERKEY" type="VARCHAR2(255 CHAR)"/>
+            <column name="OWNINGBINDERID" type="NUMBER(19,0)"/>
+            <column name="NAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="DTSTART" type="TIMESTAMP(6)"/>
+            <column name="DTCALCSTART" type="TIMESTAMP(6)"/>
+            <column name="DTEND" type="TIMESTAMP(6)"/>
+            <column name="DTCALCEND" type="TIMESTAMP(6)"/>
+            <column name="FREQUENCY" type="NUMBER(10,0)"/>
+            <column name="REPEATINTERVAL" type="NUMBER(10,0)"/>
+            <column name="UNTIL" type="TIMESTAMP(6)"/>
+            <column name="REPEATCOUNT" type="NUMBER(10,0)"/>
+            <column name="WEEKSTART" type="NUMBER(10,0)"/>
+            <column name="TIMEZONESENSITIVE" type="NUMBER(1,0)"/>
+            <column name="DAYS" type="VARCHAR2(100 CHAR)"/>
+            <column name="MONTHDAY" type="VARCHAR2(100 CHAR)"/>
+            <column name="YEARDAY" type="VARCHAR2(100 CHAR)"/>
+            <column name="WEEKNO" type="VARCHAR2(100 CHAR)"/>
+            <column name="MONTHS" type="VARCHAR2(100 CHAR)"/>
+            <column name="MINUTES" type="VARCHAR2(100 CHAR)"/>
+            <column name="HOURS" type="VARCHAR2(100 CHAR)"/>
+            <column name="DURATION" type="VARCHAR2(32 CHAR)"/>
+            <column name="CREATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="CREATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="MODIFICATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="MODIFICATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="TIMEZONE" type="VARCHAR2(80 CHAR)"/>
+            <column name="CALUID" type="VARCHAR2(255 CHAR)"/>
+            <column name="FREEBUSY" type="VARCHAR2(32 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-41">
+        <createTable tableName="SS_EXTENSIONS">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_EXTENSIONS"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="DESCRIPTION" type="VARCHAR2(256 CHAR)"/>
+            <column name="TITLE" type="VARCHAR2(255 CHAR)"/>
+            <column name="VERSION" type="VARCHAR2(255 CHAR)"/>
+            <column name="TYPE" type="NUMBER(10,0)"/>
+            <column name="AUTHOR" type="VARCHAR2(255 CHAR)"/>
+            <column name="AUTHOREMAIL" type="VARCHAR2(255 CHAR)"/>
+            <column name="AUTHORSITE" type="VARCHAR2(255 CHAR)"/>
+            <column name="DATECREATED" type="VARCHAR2(255 CHAR)"/>
+            <column name="DATEDEPLOYED" type="VARCHAR2(255 CHAR)"/>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-42">
+        <createTable tableName="SS_FOLDERENTRIES">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_FOLDERENTRIES"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="PREDELETED" type="NUMBER(1,0)"/>
+            <column name="PREDELETEDWHEN" type="NUMBER(19,0)"/>
+            <column name="PREDELETEDBY" type="NUMBER(19,0)"/>
+            <column name="DELETED" type="NUMBER(1,0)"/>
+            <column name="SUBSCRIBED" type="NUMBER(1,0)"/>
+            <column name="HASENTRYACL" type="NUMBER(1,0)"/>
+            <column name="CHECKFOLDERACL" type="NUMBER(1,0)"/>
+            <column name="RESERVED_DATE" type="TIMESTAMP(6)"/>
+            <column name="RESERVED_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="ENTRY_LEVEL" type="NUMBER(10,0)"/>
+            <column name="ENTRY_SORTKEY" type="VARCHAR2(255 CHAR)"/>
+            <column name="OWNINGBINDERKEY" type="VARCHAR2(255 CHAR)"/>
+            <column name="LASTACTIVITY" type="TIMESTAMP(6)"/>
+            <column name="LOGVERSION" type="NUMBER(19,0)"/>
+            <column name="REPLYCOUNT" type="NUMBER(10,0)"/>
+            <column name="NEXTDESCENDANT" type="NUMBER(10,0)"/>
+            <column name="TOTALREPLYCOUNT" type="NUMBER(10,0)"/>
+            <column name="POSTEDBY" type="VARCHAR2(256 CHAR)"/>
+            <column name="TOPENTRY" type="NUMBER(19,0)"/>
+            <column name="PARENTENTRY" type="NUMBER(19,0)"/>
+            <column name="WRK_DATE" type="TIMESTAMP(6)"/>
+            <column name="WRK_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="PARENTBINDER" type="NUMBER(19,0)"/>
+            <column name="DESCRIPTION_TEXT" type="CLOB"/>
+            <column name="DESCRIPTION_FORMAT" type="NUMBER(10,0)"/>
+            <column name="TITLE" type="VARCHAR2(255 CHAR)"/>
+            <column name="NORMALTITLE" type="VARCHAR2(255 CHAR)"/>
+            <column name="ICONNAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="ENTRYDEF" type="CHAR(32)"/>
+            <column name="CREATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="CREATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="MODIFICATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="MODIFICATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="DEFINITIONTYPE" type="NUMBER(10,0)"/>
+            <column name="RATINGS_AVERAGE" type="FLOAT(126)"/>
+            <column name="RATINGS_COUNT" type="NUMBER(19,0)"/>
+            <column name="POPULARITY" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-43">
+        <createTable tableName="SS_FOLDERENTRYSTATS">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_FOLDERENTRYSTATS"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="POPULARITY" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-44">
+        <createTable tableName="SS_FORUMS">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_FORUMS"/>
+            </column>
+            <column name="TYPE" type="VARCHAR2(16 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LIBRARY" type="NUMBER(1,0)"/>
+            <column name="DELETED" type="NUMBER(1,0)"/>
+            <column name="UNIQUETITLES" type="NUMBER(1,0)"/>
+            <column name="LOGVERSION" type="NUMBER(19,0)"/>
+            <column name="MIRRORED" type="NUMBER(1,0)"/>
+            <column name="BINDERCOUNT" type="NUMBER(10,0)"/>
+            <column name="RESOURCEDRIVERNAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="RESOURCEPATH" type="VARCHAR2(1024 CHAR)"/>
+            <column name="PARENTBINDER" type="NUMBER(19,0)"/>
+            <column name="OWNER" type="NUMBER(19,0)"/>
+            <column name="NAME" type="VARCHAR2(128 CHAR)"/>
+            <column name="PATHNAME" type="VARCHAR2(1024 CHAR)"/>
+            <column name="NOTIFY_TEAMON" type="NUMBER(1,0)"/>
+            <column name="NOTIFY_STYLE" type="NUMBER(10,0)"/>
+            <column name="NOTIFY_EMAIL" type="CLOB"/>
+            <column name="NOTIFY_FROMADDRESS" type="VARCHAR2(128 CHAR)"/>
+            <column name="NOTIFY_SUBJECT" type="VARCHAR2(128 CHAR)"/>
+            <column name="POSTING" type="CHAR(32)"/>
+            <column name="PROPERTIES" type="BLOB"/>
+            <column name="FUNCTIONMEMBERSHIPINHERITED" type="NUMBER(1,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEFINITIONSINHERITED" type="NUMBER(1,0)"/>
+            <column name="DEFINITIONTYPE" type="NUMBER(10,0)"/>
+            <column name="TEAMMEMBERSHIPINHERITED" type="NUMBER(1,0)"/>
+            <column name="RATINGS_AVERAGE" type="FLOAT(126)"/>
+            <column name="RATINGS_COUNT" type="NUMBER(19,0)"/>
+            <column name="DESCRIPTION_TEXT" type="CLOB"/>
+            <column name="DESCRIPTION_FORMAT" type="NUMBER(10,0)"/>
+            <column name="BRANDING" type="CLOB"/>
+            <column name="BRANDINGEXT" type="CLOB"/>
+            <column name="TITLE" type="VARCHAR2(255 CHAR)"/>
+            <column name="NORMALTITLE" type="VARCHAR2(255 CHAR)"/>
+            <column name="ICONNAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="INTERNALID" type="VARCHAR2(32 CHAR)"/>
+            <column name="NEXTBINDERNUMBER" type="NUMBER(10,0)"/>
+            <column name="BINDER_LEVEL" type="NUMBER(10,0)"/>
+            <column name="BINDER_SORTKEY" type="VARCHAR2(255 CHAR)"/>
+            <column name="VERSIONSENABLED" type="NUMBER(1,0)"/>
+            <column name="VERSIONSTOKEEP" type="NUMBER(19,0)"/>
+            <column name="VERSIONAGINGDAYS" type="NUMBER(19,0)"/>
+            <column name="VERSIONAGINGENABLED" type="NUMBER(1,0)"/>
+            <column name="MAXFILESIZE" type="NUMBER(19,0)"/>
+            <column name="FILEENCRYPTIONENABLED" type="NUMBER(1,0)"/>
+            <column name="ENTRYDEF" type="CHAR(32)"/>
+            <column name="CREATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="CREATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="MODIFICATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="MODIFICATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="POSTINGENABLED" type="NUMBER(1,0)"/>
+            <column name="TOPFOLDER" type="NUMBER(19,0)"/>
+            <column name="NEXTENTRYNUMBER" type="NUMBER(10,0)"/>
+            <column name="ENTRYROOTKEY" type="CHAR(15)"/>
+            <column name="PREDELETED" type="NUMBER(1,0)"/>
+            <column name="PREDELETEDWHEN" type="NUMBER(19,0)"/>
+            <column name="PREDELETEDBY" type="NUMBER(19,0)"/>
+            <column name="SEARCHTITLE" type="VARCHAR2(255 CHAR)"/>
+            <column name="TEMPLATETITLE" type="VARCHAR2(128 CHAR)"/>
+            <column name="TDESCRIPTION_TEXT" type="CLOB"/>
+            <column name="TDESCRIPTION_FORMAT" type="NUMBER(10,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-45">
+        <createTable tableName="SS_FUNCTIONCONDITIONMAP">
+            <column name="FUNCTIONID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MEET" type="VARCHAR2(16 CHAR)"/>
+            <column name="CONDITIONID" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-46">
+        <createTable tableName="SS_FUNCTIONCONDITIONS">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_FUNCTIONCONDITIONS"/>
+            </column>
+            <column name="TYPE" type="VARCHAR2(32 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENCODEDSPEC" type="CLOB"/>
+            <column name="TITLE" type="VARCHAR2(255 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION_TEXT" type="CLOB"/>
+            <column name="DESCRIPTION_FORMAT" type="NUMBER(10,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-47">
+        <createTable tableName="SS_FUNCTIONOPERATIONS">
+            <column name="FUNCTIONID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="OPERATIONNAME" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-48">
+        <createTable tableName="SS_FUNCTIONS">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_FUNCTIONS"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INTERNALID" type="VARCHAR2(32 CHAR)"/>
+            <column name="ZONEWIDE" type="NUMBER(1,0)"/>
+            <column name="SCOPE" type="VARCHAR2(16 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-49">
+        <createTable tableName="SS_INDEXINGJOURNAL">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_INDEXINGJOURNAL"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="NODENAME" type="VARCHAR2(128 CHAR)"/>
+            <column name="INDEXNAME" type="VARCHAR2(160 CHAR)"/>
+            <column name="OPERATIONNAME" type="VARCHAR2(32 CHAR)"/>
+            <column name="OPERATIONARGS" type="BLOB"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-50">
+        <createTable tableName="SS_INDEXNODE">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_INDEXNODE"/>
+            </column>
+            <column name="NODENAME" type="VARCHAR2(128 CHAR)"/>
+            <column name="INDEXNAME" type="VARCHAR2(160 CHAR)"/>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="ACCESSMODE" type="VARCHAR2(16 CHAR)"/>
+            <column name="INSYNCH" type="NUMBER(1,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-51">
+        <createTable tableName="SS_LDAPCONNECTIONCONFIG">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_LDAPCONNECTIONCONFIG"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="URL" type="VARCHAR2(255 CHAR)"/>
+            <column name="USERIDATTRIBUTE" type="VARCHAR2(255 CHAR)"/>
+            <column name="MAPPINGS" type="CLOB"/>
+            <column name="USERSEARCHES" type="CLOB"/>
+            <column name="GROUPSEARCHES" type="CLOB"/>
+            <column name="PRINCIPAL" type="VARCHAR2(255 CHAR)"/>
+            <column name="CREDENTIALS" type="VARCHAR2(255 CHAR)"/>
+            <column name="POSITION" type="NUMBER(10,0)"/>
+            <column name="LDAPGUIDATTRIBUTE" type="VARCHAR2(255 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-52">
+        <createTable tableName="SS_LIBRARYENTRIES">
+            <column name="BINDERID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TYPE" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR2(255 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="ENTITYID" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-53">
+        <createTable tableName="SS_LICENSESTATS">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_LICENSESTATS"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SNAPSHOTDATE" type="TIMESTAMP(6)"/>
+            <column name="INTERNALUSERCOUNT" type="NUMBER(19,0)"/>
+            <column name="EXTERNALUSERCOUNT" type="NUMBER(19,0)"/>
+            <column name="ACTIVEUSERCOUNT" type="NUMBER(19,0)"/>
+            <column name="CHECKSUM" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-54">
+        <createTable tableName="SS_NOTIFICATIONS">
+            <column name="BINDERID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRINCIPALID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-55">
+        <createTable tableName="SS_NOTIFYSTATUS">
+            <column name="OWNERID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_NOTIFYSTATUS"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="OWNERTYPE" type="VARCHAR2(16 CHAR)"/>
+            <column name="OWNINGBINDERKEY" type="VARCHAR2(255 CHAR)"/>
+            <column name="OWNINGBINDERID" type="NUMBER(19,0)"/>
+            <column name="LASTMODIFIED" type="TIMESTAMP(6)"/>
+            <column name="LASTDIGESTSENT" type="TIMESTAMP(6)"/>
+            <column name="LASTFULLSENT" type="TIMESTAMP(6)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-56">
+        <createTable tableName="SS_POSTINGS">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_POSTINGS"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENABLED" type="NUMBER(1,0)"/>
+            <column name="EMAILADDRESS" type="VARCHAR2(256 CHAR)"/>
+            <column name="PASSWORD" type="VARCHAR2(64 CHAR)"/>
+            <column name="CREDENTIALS" type="VARCHAR2(64 CHAR)"/>
+            <column name="BINDER" type="NUMBER(19,0)"/>
+            <column name="DEFINITION" type="CHAR(32)"/>
+            <column name="REPLYPOSTINGOPTION" type="NUMBER(10,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-57">
+        <createTable tableName="SS_PRINCIPALMEMBERSHIP">
+            <column name="USERID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="GROUPID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-58">
+        <createTable tableName="SS_PRINCIPALS">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_PRINCIPALS"/>
+            </column>
+            <column name="TYPE" type="VARCHAR2(16 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="WORKSPACEID" type="NUMBER(19,0)"/>
+            <column name="INTERNALID" type="VARCHAR2(32 CHAR)"/>
+            <column name="DELETED" type="NUMBER(1,0)"/>
+            <column name="DISABLED" type="NUMBER(1,0)"/>
+            <column name="LOGVERSION" type="NUMBER(19,0)"/>
+            <column name="EMAILADDRESS" type="VARCHAR2(24 CHAR)"/>
+            <column name="NAME" type="VARCHAR2(128 CHAR)"/>
+            <column name="FOREIGNNAME" type="VARCHAR2(255 CHAR)"/>
+            <column name="LDAPGUID" type="VARCHAR2(128 CHAR)"/>
+            <column name="THEME" type="VARCHAR2(64 CHAR)"/>
+            <column name="PARENTBINDER" type="NUMBER(19,0)"/>
+            <column name="DESCRIPTION_TEXT" type="CLOB"/>
+            <column name="DESCRIPTION_FORMAT" type="NUMBER(10,0)"/>
+            <column name="TITLE" type="VARCHAR2(255 CHAR)"/>
+            <column name="NORMALTITLE" type="VARCHAR2(255 CHAR)"/>
+            <column name="ICONNAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="DEFINITIONTYPE" type="NUMBER(10,0)"/>
+            <column name="ENTRYDEF" type="CHAR(32)"/>
+            <column name="CREATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="CREATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="MODIFICATION_DATE" type="TIMESTAMP(6)"/>
+            <column name="MODIFICATION_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="DISKQUOTA" type="NUMBER(19,0)"/>
+            <column name="FILESIZELIMIT" type="NUMBER(19,0)"/>
+            <column name="DISPLAYSTYLE" type="VARCHAR2(16 CHAR)"/>
+            <column name="LOGINDATE" type="TIMESTAMP(6)"/>
+            <column name="FIRSTNAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="LASTNAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="MIDDLENAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="ORGANIZATION" type="VARCHAR2(256 CHAR)"/>
+            <column name="PHONE" type="VARCHAR2(128 CHAR)"/>
+            <column name="ZONNAME" type="VARCHAR2(100 CHAR)"/>
+            <column name="SKYPEID" type="VARCHAR2(64 CHAR)"/>
+            <column name="TWITTERID" type="VARCHAR2(64 CHAR)"/>
+            <column name="STATUS" type="VARCHAR2(256 CHAR)"/>
+            <column name="STATUSDATE" type="TIMESTAMP(6)"/>
+            <column name="MINIBLOGID" type="NUMBER(19,0)"/>
+            <column name="MAXGROUPSQUOTA" type="NUMBER(19,0)"/>
+            <column name="MAXGROUPSFILESIZELIMIT" type="NUMBER(19,0)"/>
+            <column name="DISKSPACEUSED" type="NUMBER(19,0)"/>
+            <column name="PASSWORD" type="VARCHAR2(64 CHAR)"/>
+            <column name="PWDENC" type="VARCHAR2(32 CHAR)"/>
+            <column name="TIMEZONE" type="VARCHAR2(80 CHAR)"/>
+            <column name="LOCALE" type="VARCHAR2(32 CHAR)"/>
+            <column name="DIGESTSEED" type="NUMBER(19,0)"/>
+            <column name="POSTURL" type="VARCHAR2(256 CHAR)"/>
+            <column name="TIMEOUT" type="NUMBER(10,0)"/>
+            <column name="TRUSTED" type="NUMBER(1,0)"/>
+            <column name="MAXIDLETIME" type="NUMBER(10,0)"/>
+            <column name="SAMEADDRPOLICY" type="NUMBER(1,0)"/>
+            <column name="DYNAMIC" type="NUMBER(1,0)"/>
+            <column name="LDAPQUERY" type="CLOB"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-59">
+        <createTable tableName="SS_RATINGS">
+            <column name="PRINCIPALID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENTITYID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENTITYTYPE" type="NUMBER(10,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="RATING" type="NUMBER(19,0)"/>
+            <column name="READCOUNT" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-60">
+        <createTable tableName="SS_SEENMAP">
+            <column name="PRINCIPALID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_SEENMAP"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="SEENMAP" type="BLOB">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LASTPRUNE" type="TIMESTAMP(6)"/>
+            <column name="PRUNEDAYS" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-61">
+        <createTable tableName="SS_SHAREDENTITY">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_SHAREDENTITY"/>
+            </column>
+            <column name="REFERER" type="NUMBER(19,0)"/>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="ACCESSTYPE" type="NUMBER(19,0)"/>
+            <column name="ACCESSID" type="NUMBER(19,0)"/>
+            <column name="SHAREDDATE" type="TIMESTAMP(6)"/>
+            <column name="ENTITYTYPE" type="VARCHAR2(16 CHAR)"/>
+            <column name="ENTITYID" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-62">
+        <createTable tableName="SS_SIMPLENAME">
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMAILADDRESS" type="VARCHAR2(128 CHAR)"/>
+            <column name="BINDERID" type="NUMBER(19,0)"/>
+            <column name="BINDERTYPE" type="VARCHAR2(16 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-63">
+        <createTable tableName="SS_SUBSCRIPTIONS">
+            <column name="PRINCIPALID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENTITYID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENTITYTYPE" type="NUMBER(10,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="STYLE" type="NUMBER(10,0)"/>
+            <column name="ENCODEDSTYLES" type="VARCHAR2(256 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-64">
+        <createTable tableName="SS_TAGS">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_TAGS"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="ENTITY_TYPE" type="NUMBER(10,0)"/>
+            <column name="ENTITY_ID" type="NUMBER(19,0)"/>
+            <column name="OWNER_TYPE" type="NUMBER(10,0)"/>
+            <column name="OWNER_ID" type="NUMBER(19,0)"/>
+            <column name="NAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="ISPUBLIC" type="NUMBER(1,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-65">
+        <createTable tableName="SS_TOKENINFO">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_TOKENINFO"/>
+            </column>
+            <column name="TYPE" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="SEED" type="VARCHAR2(128 CHAR)"/>
+            <column name="LASTACCESSTIME" type="TIMESTAMP(6)"/>
+            <column name="USERID" type="NUMBER(19,0)"/>
+            <column name="APPLICATIONID" type="NUMBER(19,0)"/>
+            <column name="BINDERID" type="NUMBER(19,0)"/>
+            <column name="BINDERACCESSCONSTRAINTS" type="NUMBER(10,0)"/>
+            <column name="REQUESTERID" type="NUMBER(19,0)"/>
+            <column name="CLIENTADDR" type="VARCHAR2(128 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-66">
+        <createTable tableName="SS_USERPROPERTIES">
+            <column name="PRINCIPALID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BINDERID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="PROPERTIES" type="BLOB">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-67">
+        <createTable tableName="SS_WORKAREAFUNCTIONMEMBERS">
+            <column name="WORKAREAFUNCTIONMEMBERSHIPID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MEMBERID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-68">
+        <createTable tableName="SS_WORKAREAFUNCTIONMEMBERSHIPS">
+            <column name="ID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_WORKAREAFUNCTIONMEMBERSH"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WORKAREAID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WORKAREATYPE" type="VARCHAR2(16 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FUNCTIONID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-69">
+        <createTable tableName="SS_WORKFLOWHISTORY">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_WORKFLOWHISTORY"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="STARTBY" type="NUMBER(19,0)"/>
+            <column name="STARTDATE" type="TIMESTAMP(6)"/>
+            <column name="ENDBY" type="NUMBER(19,0)"/>
+            <column name="ENDDATE" type="TIMESTAMP(6)"/>
+            <column name="ENTITYID" type="NUMBER(19,0)"/>
+            <column name="ENTITYTYPE" type="VARCHAR2(16 CHAR)"/>
+            <column name="OWNINGBINDERID" type="NUMBER(19,0)"/>
+            <column name="OWNINGBINDERKEY" type="VARCHAR2(255 CHAR)"/>
+            <column name="TOKENID" type="NUMBER(19,0)"/>
+            <column name="STATE" type="VARCHAR2(64 CHAR)"/>
+            <column name="THREADNAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="DEFINITIONID" type="VARCHAR2(32 CHAR)"/>
+            <column name="ENDED" type="NUMBER(1,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-70">
+        <createTable tableName="SS_WORKFLOWMAP">
+            <column name="BINDER" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="WORKFLOWDEFINITION" type="CHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ENTRYDEFINITION" type="VARCHAR2(32 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-71">
+        <createTable tableName="SS_WORKFLOWRESPONSES">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_WORKFLOWRESPONSES"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="FOLDERENTRY" type="NUMBER(19,0)"/>
+            <column name="PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="BINDER" type="NUMBER(19,0)"/>
+            <column name="OWNERTYPE" type="VARCHAR2(16 CHAR)"/>
+            <column name="OWNERID" type="NUMBER(19,0)"/>
+            <column name="OWNINGBINDERKEY" type="VARCHAR2(255 CHAR)"/>
+            <column name="OWNINGBINDERID" type="NUMBER(19,0)"/>
+            <column name="NAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="RESPONSE" type="VARCHAR2(2000 CHAR)"/>
+            <column name="DEFINITIONID" type="VARCHAR2(32 CHAR)"/>
+            <column name="RESPONDERID" type="NUMBER(19,0)"/>
+            <column name="RESPONSEDATE" type="TIMESTAMP(6)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-72">
+        <createTable tableName="SS_WORKFLOWSTATES">
+            <column name="TOKENID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_WORKFLOWSTATES"/>
+            </column>
+            <column name="LOCKVERSION" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="FOLDERENTRY" type="NUMBER(19,0)"/>
+            <column name="PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="BINDER" type="NUMBER(19,0)"/>
+            <column name="OWNERTYPE" type="VARCHAR2(16 CHAR)"/>
+            <column name="OWNERID" type="NUMBER(19,0)"/>
+            <column name="OWNINGBINDERKEY" type="VARCHAR2(255 CHAR)"/>
+            <column name="OWNINGBINDERID" type="NUMBER(19,0)"/>
+            <column name="WRK_DATE" type="TIMESTAMP(6)"/>
+            <column name="WRK_PRINCIPAL" type="NUMBER(19,0)"/>
+            <column name="STATE" type="VARCHAR2(64 CHAR)"/>
+            <column name="THREADNAME" type="VARCHAR2(64 CHAR)"/>
+            <column name="TIMERID" type="NUMBER(19,0)"/>
+            <column name="DEFINITION" type="CHAR(32)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-73">
+        <createTable tableName="SS_ZONECONFIG">
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_ZONECONFIG"/>
+            </column>
+            <column name="UPGRADEVERSION" type="NUMBER(10,0)"/>
+            <column name="MOBILEACCESSENABLED" type="NUMBER(1,0)"/>
+            <column name="DISKQUOTASENABLED" type="NUMBER(1,0)"/>
+            <column name="DISKQUOTAUSERDEFAULT" type="NUMBER(10,0)"/>
+            <column name="DISKQUOTASHIGHWATERPERCENTAGE" type="NUMBER(10,0)"/>
+            <column name="FILESIZELIMITUSERDEFAULT" type="NUMBER(19,0)"/>
+            <column name="BINDERQUOTASINITIALIZED" type="NUMBER(1,0)"/>
+            <column name="BINDERQUOTASENABLED" type="NUMBER(1,0)"/>
+            <column name="BINDERQUOTASALLOWOWNER" type="NUMBER(1,0)"/>
+            <column name="FILEVERSIONSMAXAGE" type="NUMBER(19,0)"/>
+            <column name="FSAENABLED" type="NUMBER(1,0)"/>
+            <column name="FSASYNCHINTERVAL" type="NUMBER(10,0)"/>
+            <column name="FSAAUTOUPDATEURL" type="VARCHAR2(255 CHAR)"/>
+            <column name="POSTINGENABLED" type="NUMBER(1,0)"/>
+            <column name="SIMPLEURLPOSTINGENABLED" type="NUMBER(1,0)"/>
+            <column name="SENDMAILENABLED" type="NUMBER(1,0)"/>
+            <column name="DEFAULTHOMEPAGEID" type="NUMBER(19,0)"/>
+            <column name="DEFAULTGUESTHOMEPAGEID" type="NUMBER(19,0)"/>
+            <column name="HOLIDAYS" type="VARCHAR2(4000 BYTE)"/>
+            <column name="WEEKENDDAYS" type="VARCHAR2(128 CHAR)"/>
+            <column name="ALLOWLOCALLOGIN" type="NUMBER(1,0)"/>
+            <column name="ALLOWANONYMOUSACCESS" type="NUMBER(1,0)"/>
+            <column name="ALLOWSELFREGISTRATION" type="NUMBER(1,0)"/>
+            <column name="LASTUPDATE" type="NUMBER(19,0)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-74">
+        <createTable tableName="SS_ZONEINFO">
+            <column name="ID" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_ZONEINFO"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONENAME" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="VIRTUALHOST" type="VARCHAR2(255 CHAR)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-75">
+        <createTable tableName="SSQRTZ_BLOB_TRIGGERS">
+            <column name="TRIGGER_NAME" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BLOB_DATA" type="BLOB"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-76">
+        <createTable tableName="SSQRTZ_CALENDARS">
+            <column name="CALENDAR_NAME" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SSQRTZ_CALENDARS"/>
+            </column>
+            <column name="CALENDAR" type="BLOB">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-77">
+        <createTable tableName="SSQRTZ_CRON_TRIGGERS">
+            <column name="TRIGGER_NAME" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CRON_EXPRESSION" type="VARCHAR2(120 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TIME_ZONE_ID" type="VARCHAR2(80 BYTE)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-78">
+        <createTable tableName="SSQRTZ_FIRED_TRIGGERS">
+            <column name="ENTRY_ID" type="VARCHAR2(95 BYTE)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SSQRTZ_FIRED_TRIGGERS"/>
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_VOLATILE" type="VARCHAR2(1 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INSTANCE_NAME" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FIRED_TIME" type="NUMBER(13,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRIORITY" type="NUMBER(13,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATE" type="VARCHAR2(16 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_NAME" type="VARCHAR2(100 BYTE)"/>
+            <column name="JOB_GROUP" type="VARCHAR2(100 BYTE)"/>
+            <column name="IS_STATEFUL" type="VARCHAR2(1 BYTE)"/>
+            <column name="REQUESTS_RECOVERY" type="VARCHAR2(1 BYTE)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-79">
+        <createTable tableName="SSQRTZ_JOB_DETAILS">
+            <column name="JOB_NAME" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_GROUP" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR2(250 BYTE)"/>
+            <column name="JOB_CLASS_NAME" type="VARCHAR2(250 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_DURABLE" type="VARCHAR2(1 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_VOLATILE" type="VARCHAR2(1 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_STATEFUL" type="VARCHAR2(1 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REQUESTS_RECOVERY" type="VARCHAR2(1 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_DATA" type="BLOB"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-80">
+        <createTable tableName="SSQRTZ_JOB_LISTENERS">
+            <column name="JOB_NAME" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_GROUP" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_LISTENER" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-81">
+        <createTable tableName="SSQRTZ_LOCKS">
+            <column name="LOCK_NAME" type="VARCHAR2(40 BYTE)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SSQRTZ_LOCKS"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-82">
+        <createTable tableName="SSQRTZ_PAUSED_TRIGGER_GRPS">
+            <column name="TRIGGER_GROUP" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SSQRTZ_PAUSED_TRIGGER_GRPS"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-83">
+        <createTable tableName="SSQRTZ_SCHEDULER_STATE">
+            <column name="INSTANCE_NAME" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SSQRTZ_SCHEDULER_STATE"/>
+            </column>
+            <column name="LAST_CHECKIN_TIME" type="NUMBER(13,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CHECKIN_INTERVAL" type="NUMBER(13,0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-84">
+        <createTable tableName="SSQRTZ_SIMPLE_TRIGGERS">
+            <column name="TRIGGER_NAME" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REPEAT_COUNT" type="NUMBER(7,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REPEAT_INTERVAL" type="NUMBER(12,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TIMES_TRIGGERED" type="NUMBER(10,0)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-85">
+        <createTable tableName="SSQRTZ_TRIGGER_LISTENERS">
+            <column name="TRIGGER_NAME" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_LISTENER" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-86">
+        <createTable tableName="SSQRTZ_TRIGGERS">
+            <column name="TRIGGER_NAME" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_NAME" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_GROUP" type="VARCHAR2(100 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_VOLATILE" type="VARCHAR2(1 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR2(250 BYTE)"/>
+            <column name="NEXT_FIRE_TIME" type="NUMBER(13,0)"/>
+            <column name="PREV_FIRE_TIME" type="NUMBER(13,0)"/>
+            <column name="PRIORITY" type="NUMBER(13,0)"/>
+            <column name="TRIGGER_STATE" type="VARCHAR2(16 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_TYPE" type="VARCHAR2(8 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="START_TIME" type="NUMBER(13,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="END_TIME" type="NUMBER(13,0)"/>
+            <column name="CALENDAR_NAME" type="VARCHAR2(100 BYTE)"/>
+            <column name="MISFIRE_INSTR" type="NUMBER(2,0)"/>
+            <column name="JOB_DATA" type="BLOB"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-87">
+        <addPrimaryKey columnNames="PROCESSFILE_, INDEX_" tableName="JBPM_BYTEBLOCK"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-88">
+        <addPrimaryKey columnNames="DECISION_, INDEX_" tableName="JBPM_DECISIONCONDITIONS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-89">
+        <addPrimaryKey columnNames="TASKINSTANCE_, POOLEDACTOR_" tableName="JBPM_TASKACTORPOOL"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-90">
+        <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="SSQRTZ_BLOB_TRIGGERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-91">
+        <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="SSQRTZ_CRON_TRIGGERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-92">
+        <addPrimaryKey columnNames="JOB_NAME, JOB_GROUP" tableName="SSQRTZ_JOB_DETAILS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-93">
+        <addPrimaryKey columnNames="JOB_NAME, JOB_GROUP, JOB_LISTENER" tableName="SSQRTZ_JOB_LISTENERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-94">
+        <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="SSQRTZ_SIMPLE_TRIGGERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-95">
+        <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="SSQRTZ_TRIGGERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-96">
+        <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP, TRIGGER_LISTENER" tableName="SSQRTZ_TRIGGER_LISTENERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-97">
+        <addPrimaryKey columnNames="BINDER, POSITION" tableName="SS_DEFINITIONMAP"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-98">
+        <addPrimaryKey columnNames="PRINCIPAL, TYPE" tableName="SS_EMAILADDRESSES"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-99">
+        <addPrimaryKey columnNames="FUNCTIONID, OPERATIONNAME" tableName="SS_FUNCTIONOPERATIONS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-100">
+        <addPrimaryKey columnNames="BINDERID, TYPE, NAME" tableName="SS_LIBRARYENTRIES"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-101">
+        <addPrimaryKey columnNames="USERID, GROUPID" tableName="SS_PRINCIPALMEMBERSHIP"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-102">
+        <addPrimaryKey columnNames="PRINCIPALID, ENTITYID, ENTITYTYPE" tableName="SS_RATINGS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-103">
+        <addPrimaryKey columnNames="ZONEID, NAME" tableName="SS_SIMPLENAME"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-104">
+        <addPrimaryKey columnNames="PRINCIPALID, ENTITYID, ENTITYTYPE" tableName="SS_SUBSCRIPTIONS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-105">
+        <addPrimaryKey columnNames="PRINCIPALID, BINDERID" tableName="SS_USERPROPERTIES"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-106">
+        <addPrimaryKey columnNames="WORKAREAFUNCTIONMEMBERSHIPID, MEMBERID" tableName="SS_WORKAREAFUNCTIONMEMBERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-107">
+        <addPrimaryKey columnNames="BINDER, ENTRYDEFINITION" tableName="SS_WORKFLOWMAP"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-108">
+        <createIndex indexName="NAME_DEFINITION" tableName="SS_DEFINITIONS" unique="true">
+            <column name="ZONEID"/>
+            <column name="BINDERID"/>
+            <column name="NAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-109">
+        <createIndex indexName="NAME_EXTENSIONS" tableName="SS_EXTENSIONS" unique="true">
+            <column name="ZONEID"/>
+            <column name="NAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-110">
+        <createIndex indexName="ENTRYSORTKEY_FENTRY" tableName="SS_FOLDERENTRIES" unique="true">
+            <column name="ENTRY_SORTKEY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-111">
+        <createIndex indexName="BINDERSORTKEY_BINDER" tableName="SS_FORUMS" unique="true">
+            <column name="BINDER_SORTKEY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-112">
+        <createIndex indexName="NAME_FUNCTIONS" tableName="SS_FUNCTIONS" unique="true">
+            <column name="ZONEID"/>
+            <column name="NAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-113">
+        <createIndex indexName="NAME_INDEXNODE" tableName="SS_INDEXNODE" unique="true">
+            <column name="NODENAME"/>
+            <column name="INDEXNAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-114">
+        <createIndex indexName="NAME_PRINCIPAL" tableName="SS_PRINCIPALS" unique="true">
+            <column name="ZONEID"/>
+            <column name="NAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-115">
+        <createIndex indexName="FOREIGNNAME_PRINCIPAL" tableName="SS_PRINCIPALS" unique="true">
+            <column name="ZONEID"/>
+            <column name="FOREIGNNAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-116">
+        <createIndex indexName="ZONEID_ZONEINFO" tableName="SS_ZONEINFO" unique="true">
+            <column name="ZONEID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-117">
+        <createIndex indexName="ZONENAME_ZONEINFO" tableName="SS_ZONEINFO" unique="true">
+            <column name="ZONENAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-118">
+        <createIndex indexName="VIRTUALHOST_ZONEINFO" tableName="SS_ZONEINFO" unique="true">
+            <column name="VIRTUALHOST"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-119">
+        <addForeignKeyConstraint baseColumnNames="ACTIONDELEGATION_" baseTableName="JBPM_ACTION" constraintName="FK_ACTION_ACTNDEL" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_DELEGATION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-120">
+        <addForeignKeyConstraint baseColumnNames="EVENT_" baseTableName="JBPM_ACTION" constraintName="FK_ACTION_EVENT" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_EVENT" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-121">
+        <addForeignKeyConstraint baseColumnNames="EXCEPTIONHANDLER_" baseTableName="JBPM_ACTION" constraintName="FK_ACTION_EXPTHDL" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_EXCEPTIONHANDLER" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-122">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_ACTION" constraintName="FK_ACTION_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-123">
+        <addForeignKeyConstraint baseColumnNames="REFERENCEDACTION_" baseTableName="JBPM_ACTION" constraintName="FK_ACTION_REFACT" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-124">
+        <addForeignKeyConstraint baseColumnNames="TIMERACTION_" baseTableName="JBPM_ACTION" constraintName="FK_CRTETIMERACT_TA" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-125">
+        <addForeignKeyConstraint baseColumnNames="FILEDEFINITION_" baseTableName="JBPM_BYTEARRAY" constraintName="FK_BYTEARR_FILDEF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-126">
+        <addForeignKeyConstraint baseColumnNames="PROCESSFILE_" baseTableName="JBPM_BYTEBLOCK" constraintName="FK_BYTEBLOCK_FILE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_BYTEARRAY" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-127">
+        <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="JBPM_COMMENT" constraintName="FK_COMMENT_TSK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TASKINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-128">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_COMMENT" constraintName="FK_COMMENT_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-129">
+        <addForeignKeyConstraint baseColumnNames="DECISION_" baseTableName="JBPM_DECISIONCONDITIONS" constraintName="FK_DECCOND_DEC" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-130">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_DELEGATION" constraintName="FK_DELEGATION_PRCD" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-131">
+        <addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="JBPM_EVENT" constraintName="FK_EVENT_NODE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-132">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_EVENT" constraintName="FK_EVENT_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-133">
+        <addForeignKeyConstraint baseColumnNames="TASK_" baseTableName="JBPM_EVENT" constraintName="FK_EVENT_TASK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TASK" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-134">
+        <addForeignKeyConstraint baseColumnNames="TRANSITION_" baseTableName="JBPM_EVENT" constraintName="FK_EVENT_TRANS" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TRANSITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-135">
+        <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="JBPM_LOG" constraintName="FK_LOG_ACTION" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-136">
+        <addForeignKeyConstraint baseColumnNames="CHILD_" baseTableName="JBPM_LOG" constraintName="FK_LOG_CHILDTOKEN" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-137">
+        <addForeignKeyConstraint baseColumnNames="DESTINATIONNODE_" baseTableName="JBPM_LOG" constraintName="FK_LOG_DESTNODE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-138">
+        <addForeignKeyConstraint baseColumnNames="NEWBYTEARRAY_" baseTableName="JBPM_LOG" constraintName="FK_LOG_NEWBYTES" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_BYTEARRAY" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-139">
+        <addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="JBPM_LOG" constraintName="FK_LOG_NODE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-140">
+        <addForeignKeyConstraint baseColumnNames="OLDBYTEARRAY_" baseTableName="JBPM_LOG" constraintName="FK_LOG_OLDBYTES" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_BYTEARRAY" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-141">
+        <addForeignKeyConstraint baseColumnNames="PARENT_" baseTableName="JBPM_LOG" constraintName="FK_LOG_PARENT" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_LOG" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-142">
+        <addForeignKeyConstraint baseColumnNames="SOURCENODE_" baseTableName="JBPM_LOG" constraintName="FK_LOG_SOURCENODE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-143">
+        <addForeignKeyConstraint baseColumnNames="SWIMLANEINSTANCE_" baseTableName="JBPM_LOG" constraintName="FK_LOG_SWIMINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_SWIMLANEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-144">
+        <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="JBPM_LOG" constraintName="FK_LOG_TASKINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TASKINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-145">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_LOG" constraintName="FK_LOG_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-146">
+        <addForeignKeyConstraint baseColumnNames="TRANSITION_" baseTableName="JBPM_LOG" constraintName="FK_LOG_TRANSITION" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TRANSITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-147">
+        <addForeignKeyConstraint baseColumnNames="VARIABLEINSTANCE_" baseTableName="JBPM_LOG" constraintName="FK_LOG_VARINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_VARIABLEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-148">
+        <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="JBPM_MESSAGE" constraintName="FK_CMD_ACTION" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-149">
+        <addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="JBPM_MESSAGE" constraintName="FK_CMD_NODE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-150">
+        <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="JBPM_MESSAGE" constraintName="FK_CMD_TASKINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TASKINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-151">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_MESSAGE" constraintName="FK_MSG_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-152">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_MODULEDEFINITION" constraintName="FK_MODDEF_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-153">
+        <addForeignKeyConstraint baseColumnNames="STARTTASK_" baseTableName="JBPM_MODULEDEFINITION" constraintName="FK_TSKDEF_START" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TASK" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-154">
+        <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="JBPM_MODULEINSTANCE" constraintName="FK_MODINST_PRCINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-155">
+        <addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_" baseTableName="JBPM_MODULEINSTANCE" constraintName="FK_TASKMGTINST_TMD" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-156">
+        <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="JBPM_NODE" constraintName="FK_NODE_ACTION" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-157">
+        <addForeignKeyConstraint baseColumnNames="DECISIONDELEGATION" baseTableName="JBPM_NODE" constraintName="FK_DECISION_DELEG" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_DELEGATION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-158">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_NODE" constraintName="FK_NODE_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-159">
+        <addForeignKeyConstraint baseColumnNames="SUBPROCESSDEFINITION_" baseTableName="JBPM_NODE" constraintName="FK_PROCST_SBPRCDEF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-160">
+        <addForeignKeyConstraint baseColumnNames="SUPERSTATE_" baseTableName="JBPM_NODE" constraintName="FK_NODE_SUPERSTATE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-161">
+        <addForeignKeyConstraint baseColumnNames="SWIMLANEINSTANCE_" baseTableName="JBPM_POOLEDACTOR" constraintName="FK_POOLEDACTOR_SLI" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_SWIMLANEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-162">
+        <addForeignKeyConstraint baseColumnNames="STARTSTATE_" baseTableName="JBPM_PROCESSDEFINITION" constraintName="FK_PROCDEF_STRTSTA" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-163">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_PROCESSINSTANCE" constraintName="FK_PROCIN_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-164">
+        <addForeignKeyConstraint baseColumnNames="ROOTTOKEN_" baseTableName="JBPM_PROCESSINSTANCE" constraintName="FK_PROCIN_ROOTTKN" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-165">
+        <addForeignKeyConstraint baseColumnNames="SUPERPROCESSTOKEN_" baseTableName="JBPM_PROCESSINSTANCE" constraintName="FK_PROCIN_SPROCTKN" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-166">
+        <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="JBPM_RUNTIMEACTION" constraintName="FK_RTACTN_ACTION" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-167">
+        <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="JBPM_RUNTIMEACTION" constraintName="FK_RTACTN_PROCINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-168">
+        <addForeignKeyConstraint baseColumnNames="ASSIGNMENTDELEGATION_" baseTableName="JBPM_SWIMLANE" constraintName="FK_SWL_ASSDEL" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_DELEGATION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-169">
+        <addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_" baseTableName="JBPM_SWIMLANE" constraintName="FK_SWL_TSKMGMTDEF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-170">
+        <addForeignKeyConstraint baseColumnNames="SWIMLANE_" baseTableName="JBPM_SWIMLANEINSTANCE" constraintName="FK_SWIMLANEINST_SL" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_SWIMLANE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-171">
+        <addForeignKeyConstraint baseColumnNames="TASKMGMTINSTANCE_" baseTableName="JBPM_SWIMLANEINSTANCE" constraintName="FK_SWIMLANEINST_TM" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-172">
+        <addForeignKeyConstraint baseColumnNames="ASSIGNMENTDELEGATION_" baseTableName="JBPM_TASK" constraintName="FK_TASK_ASSDEL" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_DELEGATION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-173">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_TASK" constraintName="FK_TASK_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-174">
+        <addForeignKeyConstraint baseColumnNames="STARTSTATE_" baseTableName="JBPM_TASK" constraintName="FK_TASK_STARTST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-175">
+        <addForeignKeyConstraint baseColumnNames="SWIMLANE_" baseTableName="JBPM_TASK" constraintName="FK_TASK_SWIMLANE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_SWIMLANE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-176">
+        <addForeignKeyConstraint baseColumnNames="TASKCONTROLLER_" baseTableName="JBPM_TASK" constraintName="FK_TSK_TSKCTRL" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TASKCONTROLLER" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-177">
+        <addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_" baseTableName="JBPM_TASK" constraintName="FK_TASK_TASKMGTDEF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-178">
+        <addForeignKeyConstraint baseColumnNames="TASKNODE_" baseTableName="JBPM_TASK" constraintName="FK_TASK_TASKNODE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-179">
+        <addForeignKeyConstraint baseColumnNames="POOLEDACTOR_" baseTableName="JBPM_TASKACTORPOOL" constraintName="FK_TSKACTPOL_PLACT" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_POOLEDACTOR" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-180">
+        <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="JBPM_TASKACTORPOOL" constraintName="FK_TASKACTPL_TSKI" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TASKINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-181">
+        <addForeignKeyConstraint baseColumnNames="TASKCONTROLLERDELEGATION_" baseTableName="JBPM_TASKCONTROLLER" constraintName="FK_TSKCTRL_DELEG" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_DELEGATION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-182">
+        <addForeignKeyConstraint baseColumnNames="SWIMLANINSTANCE_" baseTableName="JBPM_TASKINSTANCE" constraintName="FK_TASKINST_SLINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_SWIMLANEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-183">
+        <addForeignKeyConstraint baseColumnNames="TASK_" baseTableName="JBPM_TASKINSTANCE" constraintName="FK_TASKINST_TASK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TASK" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-184">
+        <addForeignKeyConstraint baseColumnNames="TASKMGMTINSTANCE_" baseTableName="JBPM_TASKINSTANCE" constraintName="FK_TASKINST_TMINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-185">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_TASKINSTANCE" constraintName="FK_TASKINST_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-186">
+        <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="JBPM_TIMER" constraintName="FK_TIMER_ACTION" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-187">
+        <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="JBPM_TIMER" constraintName="FK_TIMER_PRINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-188">
+        <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="JBPM_TIMER" constraintName="FK_TIMER_TSKINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TASKINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-189">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_TIMER" constraintName="FK_TIMER_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-190">
+        <addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="JBPM_TOKEN" constraintName="FK_TOKEN_NODE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-191">
+        <addForeignKeyConstraint baseColumnNames="PARENT_" baseTableName="JBPM_TOKEN" constraintName="FK_TOKEN_PARENT" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-192">
+        <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="JBPM_TOKEN" constraintName="FK_TOKEN_PROCINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-193">
+        <addForeignKeyConstraint baseColumnNames="SUBPROCESSINSTANCE_" baseTableName="JBPM_TOKEN" constraintName="FK_TOKEN_SUBPI" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-194">
+        <addForeignKeyConstraint baseColumnNames="CONTEXTINSTANCE_" baseTableName="JBPM_TOKENVARIABLEMAP" constraintName="FK_TKVARMAP_CTXT" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-195">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_TOKENVARIABLEMAP" constraintName="FK_TKVARMAP_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-196">
+        <addForeignKeyConstraint baseColumnNames="FROM_" baseTableName="JBPM_TRANSITION" constraintName="FK_TRANSITION_FROM" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-197">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_TRANSITION" constraintName="FK_TRANS_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-198">
+        <addForeignKeyConstraint baseColumnNames="TO_" baseTableName="JBPM_TRANSITION" constraintName="FK_TRANSITION_TO" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-199">
+        <addForeignKeyConstraint baseColumnNames="PROCESSSTATE_" baseTableName="JBPM_VARIABLEACCESS" constraintName="FK_VARACC_PROCST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-200">
+        <addForeignKeyConstraint baseColumnNames="SCRIPT_" baseTableName="JBPM_VARIABLEACCESS" constraintName="FK_VARACC_SCRIPT" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-201">
+        <addForeignKeyConstraint baseColumnNames="TASKCONTROLLER_" baseTableName="JBPM_VARIABLEACCESS" constraintName="FK_VARACC_TSKCTRL" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TASKCONTROLLER" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-202">
+        <addForeignKeyConstraint baseColumnNames="BYTEARRAYVALUE_" baseTableName="JBPM_VARIABLEINSTANCE" constraintName="FK_BYTEINST_ARRAY" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_BYTEARRAY" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-203">
+        <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="JBPM_VARIABLEINSTANCE" constraintName="FK_VARINST_PRCINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-204">
+        <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="JBPM_VARIABLEINSTANCE" constraintName="FK_VAR_TSKINST" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TASKINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-205">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_VARIABLEINSTANCE" constraintName="FK_VARINST_TK" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-206">
+        <addForeignKeyConstraint baseColumnNames="TOKENVARIABLEMAP_" baseTableName="JBPM_VARIABLEINSTANCE" constraintName="FK_VARINST_TKVARMP" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID_" referencedTableName="JBPM_TOKENVARIABLEMAP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-207">
+        <addForeignKeyConstraint baseColumnNames="BINDER" baseTableName="SS_ATTACHMENTS" constraintName="FKA1AD4C31AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-208">
+        <addForeignKeyConstraint baseColumnNames="CREATION_PRINCIPAL" baseTableName="SS_ATTACHMENTS" constraintName="FKA1AD4C3176767782" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-209">
+        <addForeignKeyConstraint baseColumnNames="FILELOCK_OWNER" baseTableName="SS_ATTACHMENTS" constraintName="FKA1AD4C31DC9F01CF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-210">
+        <addForeignKeyConstraint baseColumnNames="FOLDERENTRY" baseTableName="SS_ATTACHMENTS" constraintName="FKA1AD4C31F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FOLDERENTRIES" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-211">
+        <addForeignKeyConstraint baseColumnNames="MODIFICATION_PRINCIPAL" baseTableName="SS_ATTACHMENTS" constraintName="FKA1AD4C31BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-212">
+        <addForeignKeyConstraint baseColumnNames="PARENTATTACHMENT" baseTableName="SS_ATTACHMENTS" constraintName="FKA1AD4C312D9DE71B" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_ATTACHMENTS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-213">
+        <addForeignKeyConstraint baseColumnNames="PRINCIPAL" baseTableName="SS_ATTACHMENTS" constraintName="FKA1AD4C31E49240ED" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-214">
+        <addForeignKeyConstraint baseColumnNames="BINDER" baseTableName="SS_CUSTOMATTRIBUTES" constraintName="FK476EDFC7AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-215">
+        <addForeignKeyConstraint baseColumnNames="FOLDERENTRY" baseTableName="SS_CUSTOMATTRIBUTES" constraintName="FK476EDFC7F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FOLDERENTRIES" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-216">
+        <addForeignKeyConstraint baseColumnNames="PARENT" baseTableName="SS_CUSTOMATTRIBUTES" constraintName="FK476EDFC7F05A86A6" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_CUSTOMATTRIBUTES" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-217">
+        <addForeignKeyConstraint baseColumnNames="PRINCIPAL" baseTableName="SS_CUSTOMATTRIBUTES" constraintName="FK476EDFC7E49240ED" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-218">
+        <addForeignKeyConstraint baseColumnNames="CREATION_PRINCIPAL" baseTableName="SS_DASHBOARDS" constraintName="FKFA9653BE76767782" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-219">
+        <addForeignKeyConstraint baseColumnNames="MODIFICATION_PRINCIPAL" baseTableName="SS_DASHBOARDS" constraintName="FKFA9653BEBE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-220">
+        <addForeignKeyConstraint baseColumnNames="BINDER" baseTableName="SS_DEFINITIONMAP" constraintName="FK170F74AAFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-221">
+        <addForeignKeyConstraint baseColumnNames="DEFINITION" baseTableName="SS_DEFINITIONMAP" constraintName="FK170F74A5D291C35" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_DEFINITIONS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-222">
+        <addForeignKeyConstraint baseColumnNames="CREATION_PRINCIPAL" baseTableName="SS_DEFINITIONS" constraintName="FK7B56F60176767782" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-223">
+        <addForeignKeyConstraint baseColumnNames="MODIFICATION_PRINCIPAL" baseTableName="SS_DEFINITIONS" constraintName="FK7B56F601BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-224">
+        <addForeignKeyConstraint baseColumnNames="PRINCIPAL" baseTableName="SS_EMAILADDRESSES" constraintName="FKC706C345E49240ED" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-225">
+        <addForeignKeyConstraint baseColumnNames="BINDER" baseTableName="SS_EVENTS" constraintName="FKDE0E53F8AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-226">
+        <addForeignKeyConstraint baseColumnNames="CREATION_PRINCIPAL" baseTableName="SS_EVENTS" constraintName="FKDE0E53F876767782" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-227">
+        <addForeignKeyConstraint baseColumnNames="FOLDERENTRY" baseTableName="SS_EVENTS" constraintName="FKDE0E53F8F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" referencedColumnNames="ID" referencedTableName="SS_FOLDERENTRIES" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-228">
+        <addForeignKeyConstraint baseColumnNames="MODIFICATION_PRINCIPAL" baseTableName="SS_EVENTS" constraintName="FKDE0E53F8BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-229">
+        <addForeignKeyConstraint baseColumnNames="PRINCIPAL" baseTableName="SS_EVENTS" constraintName="FKDE0E53F8E49240ED" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-230">
+        <addForeignKeyConstraint baseColumnNames="CREATION_PRINCIPAL" baseTableName="SS_FOLDERENTRIES" constraintName="FKA6632C8376767782" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-231">
+        <addForeignKeyConstraint baseColumnNames="MODIFICATION_PRINCIPAL" baseTableName="SS_FOLDERENTRIES" constraintName="FKA6632C83BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-232">
+        <addForeignKeyConstraint baseColumnNames="PARENTBINDER" baseTableName="SS_FOLDERENTRIES" constraintName="FKA6632C835B285D8D" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-233">
+        <addForeignKeyConstraint baseColumnNames="PARENTENTRY" baseTableName="SS_FOLDERENTRIES" constraintName="FKA6632C832EBDEAFD" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FOLDERENTRIES" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-234">
+        <addForeignKeyConstraint baseColumnNames="RESERVED_PRINCIPAL" baseTableName="SS_FOLDERENTRIES" constraintName="FKA6632C83DAD68C8B" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-235">
+        <addForeignKeyConstraint baseColumnNames="TOPENTRY" baseTableName="SS_FOLDERENTRIES" constraintName="FKA6632C83B8A6E532" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FOLDERENTRIES" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-236">
+        <addForeignKeyConstraint baseColumnNames="WRK_PRINCIPAL" baseTableName="SS_FOLDERENTRIES" constraintName="FKA6632C8386C93453" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-237">
+        <addForeignKeyConstraint baseColumnNames="ID" baseTableName="SS_FOLDERENTRYSTATS" constraintName="FKC94AB27AF1E91E10" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FOLDERENTRIES" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-238">
+        <addForeignKeyConstraint baseColumnNames="CREATION_PRINCIPAL" baseTableName="SS_FORUMS" constraintName="FKDF668A5176767782" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-239">
+        <addForeignKeyConstraint baseColumnNames="ENTRYDEF" baseTableName="SS_FORUMS" constraintName="FKDF668A511CD53535" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_DEFINITIONS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-240">
+        <addForeignKeyConstraint baseColumnNames="MODIFICATION_PRINCIPAL" baseTableName="SS_FORUMS" constraintName="FKDF668A51BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-241">
+        <addForeignKeyConstraint baseColumnNames="OWNER" baseTableName="SS_FORUMS" constraintName="FKDF668A5156E7C372" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-242">
+        <addForeignKeyConstraint baseColumnNames="PARENTBINDER" baseTableName="SS_FORUMS" constraintName="FKDF668A515B285D8D" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-243">
+        <addForeignKeyConstraint baseColumnNames="POSTING" baseTableName="SS_FORUMS" constraintName="FKDF668A514477DE34" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_POSTINGS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-244">
+        <addForeignKeyConstraint baseColumnNames="TOPFOLDER" baseTableName="SS_FORUMS" constraintName="FKDF668A511CACB780" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-245">
+        <addForeignKeyConstraint baseColumnNames="CONDITIONID" baseTableName="SS_FUNCTIONCONDITIONMAP" constraintName="FK945D2AD868DAC30E" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FUNCTIONCONDITIONS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-246">
+        <addForeignKeyConstraint baseColumnNames="FUNCTIONID" baseTableName="SS_FUNCTIONCONDITIONMAP" constraintName="FK945D2AD8BCA364AE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FUNCTIONS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-247">
+        <addForeignKeyConstraint baseColumnNames="FUNCTIONID" baseTableName="SS_FUNCTIONOPERATIONS" constraintName="FKBEF25643BCA364AE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FUNCTIONS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-248">
+        <addForeignKeyConstraint baseColumnNames="BINDERID" baseTableName="SS_NOTIFICATIONS" constraintName="FK9131F9293AD146FE" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-249">
+        <addForeignKeyConstraint baseColumnNames="PRINCIPALID" baseTableName="SS_NOTIFICATIONS" constraintName="FK9131F9295212927D" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-250">
+        <addForeignKeyConstraint baseColumnNames="BINDER" baseTableName="SS_POSTINGS" constraintName="FKB05DE490AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-251">
+        <addForeignKeyConstraint baseColumnNames="DEFINITION" baseTableName="SS_POSTINGS" constraintName="FKB05DE4905D291C35" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_DEFINITIONS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-252">
+        <addForeignKeyConstraint baseColumnNames="GROUPID" baseTableName="SS_PRINCIPALMEMBERSHIP" constraintName="FK176F6225395F3D38" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-253">
+        <addForeignKeyConstraint baseColumnNames="USERID" baseTableName="SS_PRINCIPALMEMBERSHIP" constraintName="FK176F6225398E01B3" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-254">
+        <addForeignKeyConstraint baseColumnNames="CREATION_PRINCIPAL" baseTableName="SS_PRINCIPALS" constraintName="FK7693816476767782" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-255">
+        <addForeignKeyConstraint baseColumnNames="MODIFICATION_PRINCIPAL" baseTableName="SS_PRINCIPALS" constraintName="FK76938164BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-256">
+        <addForeignKeyConstraint baseColumnNames="PARENTBINDER" baseTableName="SS_PRINCIPALS" constraintName="FK769381645B285D8D" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-257">
+        <addForeignKeyConstraint baseColumnNames="REFERER" baseTableName="SS_SHAREDENTITY" constraintName="FK93426C47D4068DC7" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-258">
+        <addForeignKeyConstraint baseColumnNames="WORKAREAFUNCTIONMEMBERSHIPID" baseTableName="SS_WORKAREAFUNCTIONMEMBERS" constraintName="FK72202A04B4C37436" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_WORKAREAFUNCTIONMEMBERSHIPS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-259">
+        <addForeignKeyConstraint baseColumnNames="BINDER" baseTableName="SS_WORKFLOWMAP" constraintName="FK33D2499EAFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-260">
+        <addForeignKeyConstraint baseColumnNames="WORKFLOWDEFINITION" baseTableName="SS_WORKFLOWMAP" constraintName="FK33D2499EE2459134" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_DEFINITIONS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-261">
+        <addForeignKeyConstraint baseColumnNames="BINDER" baseTableName="SS_WORKFLOWRESPONSES" constraintName="FKC44C5F14AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-262">
+        <addForeignKeyConstraint baseColumnNames="FOLDERENTRY" baseTableName="SS_WORKFLOWRESPONSES" constraintName="FKC44C5F14F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" referencedColumnNames="ID" referencedTableName="SS_FOLDERENTRIES" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-263">
+        <addForeignKeyConstraint baseColumnNames="PRINCIPAL" baseTableName="SS_WORKFLOWRESPONSES" constraintName="FKC44C5F14E49240ED" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-264">
+        <addForeignKeyConstraint baseColumnNames="BINDER" baseTableName="SS_WORKFLOWSTATES" constraintName="FK8FA8AA80AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_FORUMS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-265">
+        <addForeignKeyConstraint baseColumnNames="DEFINITION" baseTableName="SS_WORKFLOWSTATES" constraintName="FK8FA8AA805D291C35" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_DEFINITIONS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-266">
+        <addForeignKeyConstraint baseColumnNames="FOLDERENTRY" baseTableName="SS_WORKFLOWSTATES" constraintName="FK8FA8AA80F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" referencedColumnNames="ID" referencedTableName="SS_FOLDERENTRIES" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-267">
+        <addForeignKeyConstraint baseColumnNames="PRINCIPAL" baseTableName="SS_WORKFLOWSTATES" constraintName="FK8FA8AA80E49240ED" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-268">
+        <addForeignKeyConstraint baseColumnNames="WRK_PRINCIPAL" baseTableName="SS_WORKFLOWSTATES" constraintName="FK8FA8AA8086C93453" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="ID" referencedTableName="SS_PRINCIPALS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-269">
+        <addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="SSQRTZ_BLOB_TRIGGERS" constraintName="FK_BLOB_TRIGGERS_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="SSQRTZ_TRIGGERS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-270">
+        <addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="SSQRTZ_CRON_TRIGGERS" constraintName="FK_CRON_TRIGGERS_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="SSQRTZ_TRIGGERS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-271">
+        <addForeignKeyConstraint baseColumnNames="JOB_NAME, JOB_GROUP" baseTableName="SSQRTZ_JOB_LISTENERS" constraintName="FK_JOB_LISTENERS_JOB_DETAILS" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="JOB_NAME, JOB_GROUP" referencedTableName="SSQRTZ_JOB_DETAILS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-272">
+        <addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="SSQRTZ_SIMPLE_TRIGGERS" constraintName="FK_SIMPLE_TRIGGERS_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="SSQRTZ_TRIGGERS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-273">
+        <addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="SSQRTZ_TRIGGER_LISTENERS" constraintName="FK_TRIGGER_LISTENERS_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="SSQRTZ_TRIGGERS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-274">
+        <addForeignKeyConstraint baseColumnNames="JOB_NAME, JOB_GROUP" baseTableName="SSQRTZ_TRIGGERS" constraintName="FK_TRIGGERS_JOB_DETAILS" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="JOB_NAME, JOB_GROUP" referencedTableName="SSQRTZ_JOB_DETAILS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-275">
+        <createIndex indexName="IDX_PLDACTR_ACTID" tableName="JBPM_POOLEDACTOR" unique="false">
+            <column name="ACTORID_"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-276">
+        <createIndex indexName="IDX_TASK_ACTORID" tableName="JBPM_TASKINSTANCE" unique="false">
+            <column name="ACTORID_"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-277">
+        <createIndex indexName="IDX_QRTZ_FT_JOB_GROUP" tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
+            <column name="JOB_GROUP"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-278">
+        <createIndex indexName="IDX_QRTZ_FT_JOB_NAME" tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
+            <column name="JOB_NAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-279">
+        <createIndex indexName="IDX_QRTZ_FT_JOB_REQ_RECOVERY" tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
+            <column name="REQUESTS_RECOVERY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-280">
+        <createIndex indexName="IDX_QRTZ_FT_JOB_STATEFUL" tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
+            <column name="IS_STATEFUL"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-281">
+        <createIndex indexName="IDX_QRTZ_FT_TRIG_GROUP" tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
+            <column name="TRIGGER_GROUP"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-282">
+        <createIndex indexName="IDX_QRTZ_FT_TRIG_INST_NAME" tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
+            <column name="INSTANCE_NAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-283">
+        <createIndex indexName="IDX_QRTZ_FT_TRIG_NAME" tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
+            <column name="TRIGGER_NAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-284">
+        <createIndex indexName="IDX_QRTZ_FT_TRIG_NM_GP" tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
+            <column name="TRIGGER_NAME"/>
+            <column name="TRIGGER_GROUP"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-285">
+        <createIndex indexName="IDX_QRTZ_FT_TRIG_VOLATILE" tableName="SSQRTZ_FIRED_TRIGGERS" unique="false">
+            <column name="IS_VOLATILE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-286">
+        <createIndex indexName="IDX_QRTZ_J_REQ_RECOVERY" tableName="SSQRTZ_JOB_DETAILS" unique="false">
+            <column name="REQUESTS_RECOVERY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-287">
+        <createIndex indexName="IDX_QRTZ_T_NEXT_FIRE_TIME" tableName="SSQRTZ_TRIGGERS" unique="false">
+            <column name="NEXT_FIRE_TIME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-288">
+        <createIndex indexName="IDX_QRTZ_T_NFT_ST" tableName="SSQRTZ_TRIGGERS" unique="false">
+            <column name="NEXT_FIRE_TIME"/>
+            <column name="TRIGGER_STATE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-289">
+        <createIndex indexName="IDX_QRTZ_T_STATE" tableName="SSQRTZ_TRIGGERS" unique="false">
+            <column name="TRIGGER_STATE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-290">
+        <createIndex indexName="IDX_QRTZ_T_VOLATILE" tableName="SSQRTZ_TRIGGERS" unique="false">
+            <column name="IS_VOLATILE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-291">
+        <createIndex indexName="ENTITYOWNER_ATT" tableName="SS_ATTACHMENTS" unique="false">
+            <column name="OWNERTYPE"/>
+            <column name="OWNERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-292">
+        <createIndex indexName="OWNINGBINDER_ATT" tableName="SS_ATTACHMENTS" unique="false">
+            <column name="OWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-293">
+        <createIndex indexName="ENTITYOWNER_AUDIT" tableName="SS_AUDITTRAIL" unique="false">
+            <column name="ENTITYTYPE"/>
+            <column name="ENTITYID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-294">
+        <createIndex indexName="OWNINGBINDER_AUDIT" tableName="SS_AUDITTRAIL" unique="false">
+            <column name="OWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-295">
+        <createIndex indexName="SEARCH_AUDIT" tableName="SS_AUDITTRAIL" unique="false">
+            <column name="ZONEID"/>
+            <column name="STARTDATE"/>
+            <column name="STARTBY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-296">
+        <createIndex indexName="ENTITYOWNER_CLOG" tableName="SS_CHANGELOGS" unique="false">
+            <column name="ENTITYTYPE"/>
+            <column name="ENTITYID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-297">
+        <createIndex indexName="OPERATIONDATE_CLOG" tableName="SS_CHANGELOGS" unique="false">
+            <column name="ZONEID"/>
+            <column name="OPERATIONDATE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-298">
+        <createIndex indexName="OWNINGBINDER_CLOG" tableName="SS_CHANGELOGS" unique="false">
+            <column name="OWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-299">
+        <createIndex indexName="ENTITYOWNER_CATT" tableName="SS_CUSTOMATTRIBUTES" unique="false">
+            <column name="OWNERTYPE"/>
+            <column name="OWNERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-300">
+        <createIndex indexName="OWNINGBINDER_CATT" tableName="SS_CUSTOMATTRIBUTES" unique="false">
+            <column name="OWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-301">
+        <createIndex indexName="BINDER_DASH" tableName="SS_DASHBOARDS" unique="false">
+            <column name="BINDERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-302">
+        <createIndex indexName="OWNERKEY_DASH" tableName="SS_DASHBOARDS" unique="false">
+            <column name="OWNER_ID"/>
+            <column name="OWNER_TYPE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-303">
+        <createIndex indexName="INTERNAL_DEFINITION" tableName="SS_DEFINITIONS" unique="false">
+            <column name="ZONEID"/>
+            <column name="INTERNALID"/>
+            <column name="TYPE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-304">
+        <createIndex indexName="ADDRESS_EMAIL" tableName="SS_EMAILADDRESSES" unique="false">
+            <column name="ADDRESS"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-305">
+        <createIndex indexName="SENDDATE_EMAILLOG" tableName="SS_EMAILLOG" unique="false">
+            <column name="ZONEID"/>
+            <column name="SENDDATE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-306">
+        <createIndex indexName="ENTITYOWNER_EVENT" tableName="SS_EVENTS" unique="false">
+            <column name="OWNERTYPE"/>
+            <column name="OWNERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-307">
+        <createIndex indexName="OWNINGBINDER_EVENT" tableName="SS_EVENTS" unique="false">
+            <column name="OWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-308">
+        <createIndex indexName="ENTRYDEF_FENTRY" tableName="SS_FOLDERENTRIES" unique="false">
+            <column name="ENTRYDEF"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-309">
+        <createIndex indexName="OWNINGBINDERKEY_FENTRY" tableName="SS_FOLDERENTRIES" unique="false">
+            <column name="OWNINGBINDERKEY"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-310">
+        <createIndex indexName="INTERNAL_BINDER" tableName="SS_FORUMS" unique="false">
+            <column name="ZONEID"/>
+            <column name="INTERNALID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-311">
+        <createIndex indexName="INDEXINGJOURNAL_NODEINDEX" tableName="SS_INDEXINGJOURNAL" unique="false">
+            <column name="NODENAME"/>
+            <column name="INDEXNAME"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-312">
+        <createIndex indexName="SNAPSHOT_LSTATS" tableName="SS_LICENSESTATS" unique="false">
+            <column name="ZONEID"/>
+            <column name="SNAPSHOTDATE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-313">
+        <createIndex indexName="NOTIFYSTATUS_DIGEST" tableName="SS_NOTIFYSTATUS" unique="false">
+            <column name="ZONEID"/>
+            <column name="LASTMODIFIED"/>
+            <column name="LASTDIGESTSENT"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-314">
+        <createIndex indexName="NOTIFYSTATUS_FULL" tableName="SS_NOTIFYSTATUS" unique="false">
+            <column name="ZONEID"/>
+            <column name="LASTMODIFIED"/>
+            <column name="LASTFULLSENT"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-315">
+        <createIndex indexName="EMAIL_POSTINGS" tableName="SS_POSTINGS" unique="false">
+            <column name="ZONEID"/>
+            <column name="EMAILADDRESS"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-316">
+        <createIndex indexName="ENTRYDEF_PRINCIPAL" tableName="SS_PRINCIPALS" unique="false">
+            <column name="ENTRYDEF"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-317">
+        <createIndex indexName="INTERNAL_PRINCIPAL" tableName="SS_PRINCIPALS" unique="false">
+            <column name="ZONEID"/>
+            <column name="INTERNALID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-318">
+        <createIndex indexName="LDAPGUID_PRINCIPAL" tableName="SS_PRINCIPALS" unique="false">
+            <column name="LDAPGUID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-319">
+        <createIndex indexName="TYPE_PRINCIPAL" tableName="SS_PRINCIPALS" unique="false">
+            <column name="ZONEID"/>
+            <column name="TYPE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-320">
+        <createIndex indexName="ENTITY_RATINGS" tableName="SS_RATINGS" unique="false">
+            <column name="ENTITYID"/>
+            <column name="ENTITYTYPE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-321">
+        <createIndex indexName="ACCESS_SHARED" tableName="SS_SHAREDENTITY" unique="false">
+            <column name="ACCESSTYPE"/>
+            <column name="ACCESSID"/>
+            <column name="SHAREDDATE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-322">
+        <createIndex indexName="ENTITY_SHARED" tableName="SS_SHAREDENTITY" unique="false">
+            <column name="ENTITYTYPE"/>
+            <column name="ENTITYID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-323">
+        <createIndex indexName="BINDERID_SIMPLENAME" tableName="SS_SIMPLENAME" unique="false">
+            <column name="BINDERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-324">
+        <createIndex indexName="EMAILADDRESS_SIMPLENAME" tableName="SS_SIMPLENAME" unique="false">
+            <column name="EMAILADDRESS"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-325">
+        <createIndex indexName="ENTITY_SUBSCRIPTIONS" tableName="SS_SUBSCRIPTIONS" unique="false">
+            <column name="ENTITYID"/>
+            <column name="ENTITYTYPE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-326">
+        <createIndex indexName="ENTITY_TAG" tableName="SS_TAGS" unique="false">
+            <column name="ENTITY_TYPE"/>
+            <column name="ENTITY_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-327">
+        <createIndex indexName="OWNER_TAG" tableName="SS_TAGS" unique="false">
+            <column name="OWNER_TYPE"/>
+            <column name="OWNER_ID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-328">
+        <createIndex indexName="USERID_TOKENINFOSESSION" tableName="SS_TOKENINFO" unique="false">
+            <column name="USERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-329">
+        <createIndex indexName="ENTITYOWNER_WFHISTORY" tableName="SS_WORKFLOWHISTORY" unique="false">
+            <column name="ENTITYID"/>
+            <column name="ENTITYTYPE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-330">
+        <createIndex indexName="OWNINGBINDER_WFHISTORY" tableName="SS_WORKFLOWHISTORY" unique="false">
+            <column name="OWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-331">
+        <createIndex indexName="STARTDATE_WFHISTORY" tableName="SS_WORKFLOWHISTORY" unique="false">
+            <column name="ZONEID"/>
+            <column name="STARTDATE"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-332">
+        <createIndex indexName="ENTITYOWNER" tableName="SS_WORKFLOWRESPONSES" unique="false">
+            <column name="OWNERTYPE"/>
+            <column name="OWNERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-333">
+        <createIndex indexName="OWNINGBINDER" tableName="SS_WORKFLOWRESPONSES" unique="false">
+            <column name="OWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-334">
+        <createIndex indexName="ENTITYOWNER_WSTATE" tableName="SS_WORKFLOWSTATES" unique="false">
+            <column name="OWNERTYPE"/>
+            <column name="OWNERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-335">
+        <createIndex indexName="OWNINGBINDER_WSTATE" tableName="SS_WORKFLOWSTATES" unique="false">
+            <column name="OWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-336">
+        <createSequence sequenceName="HIBERNATE_SEQUENCE"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-337">
+        <createSequence sequenceName="SEQ_JBPM_ACTION"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-338">
+        <createSequence sequenceName="SEQ_JBPM_BYTEARRAY"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-339">
+        <createSequence sequenceName="SEQ_JBPM_COMMENT"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-340">
+        <createSequence sequenceName="SEQ_JBPM_DELEGATION"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-341">
+        <createSequence sequenceName="SEQ_JBPM_EVENT"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-342">
+        <createSequence sequenceName="SEQ_JBPM_EXCEPTIONHANDLER"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-343">
+        <createSequence sequenceName="SEQ_JBPM_LOG"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-344">
+        <createSequence sequenceName="SEQ_JBPM_MODULEDEFINITION"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-345">
+        <createSequence sequenceName="SEQ_JBPM_MODULEINSTANCE"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-346">
+        <createSequence sequenceName="SEQ_JBPM_NODE"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-347">
+        <createSequence sequenceName="SEQ_JBPM_POOLEDACTOR"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-348">
+        <createSequence sequenceName="SEQ_JBPM_PROCESSDEFINITION"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-349">
+        <createSequence sequenceName="SEQ_JBPM_PROCESSINSTANCE"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-350">
+        <createSequence sequenceName="SEQ_JBPM_RUNTIMEACTION"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-351">
+        <createSequence sequenceName="SEQ_JBPM_SWIMLANE"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-352">
+        <createSequence sequenceName="SEQ_JBPM_SWIMLANEINSTANCE"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-353">
+        <createSequence sequenceName="SEQ_JBPM_TASK"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-354">
+        <createSequence sequenceName="SEQ_JBPM_TASKCONTROLLER"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-355">
+        <createSequence sequenceName="SEQ_JBPM_TASKINSTANCE"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-356">
+        <createSequence sequenceName="SEQ_JBPM_TOKEN"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-357">
+        <createSequence sequenceName="SEQ_JBPM_TOKENVARIABLEMAP"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-358">
+        <createSequence sequenceName="SEQ_JBPM_TRANSITION"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-359">
+        <createSequence sequenceName="SEQ_JBPM_VARIABLEACCESS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-360">
+        <createSequence sequenceName="SEQ_JBPM_VARIABLEINSTANCE"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-361">
+        <createSequence sequenceName="SS_BINDER_ID_SEQUENCE"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-362">
+        <createSequence sequenceName="SS_FOLDERENTRY_ID_SEQUENCE"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-363">
+        <createSequence sequenceName="SS_INDEXINGJOURNAL_ID_SEQUENCE"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325859848848-364">
+        <createSequence sequenceName="SS_PRINCIPAL_ID_SEQUENCE"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="data" id="1325859848848-365">
+        <insert tableName="SSQRTZ_LOCKS">
+            <column name="LOCK_NAME" value="CALENDAR_ACCESS" />
+        </insert>
+        <insert tableName="SSQRTZ_LOCKS">
+            <column name="LOCK_NAME" value="JOB_ACCESS" />
+        </insert>
+        <insert tableName="SSQRTZ_LOCKS">
+            <column name="LOCK_NAME" value="MISFIRE_ACCESS" />
+        </insert>
+        <insert tableName="SSQRTZ_LOCKS">
+            <column name="LOCK_NAME" value="STATE_ACCESS" />
+        </insert>
+        <insert tableName="SSQRTZ_LOCKS">
+            <column name="LOCK_NAME" value="TRIGGER_ACCESS" />
+        </insert>
+    </changeSet>
+</databaseChangeLog>
