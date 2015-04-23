@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet author="jay" context="schema" failOnError="true" id="1">
+        <comment>Group type</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="groupType" type="SMALLINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <comment>Association with a team group</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="teamGroupId" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="dennis" context="schema" failOnError="true" id="3">
+        <comment>Password policy support for local and external users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="passwordPolicyEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_Principals">
+            <column name="lastPasswordChange" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="4">
+        <comment>KeyShield SSO Configuration</comment>
+        <createTable schemaName="dbo" tableName="SS_KeyShieldConfig">
+	        <column name="zoneId" type="NUMERIC(19,0)">
+	            <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_KeyShieldConfig"/>
+	        </column>
+	        <column name="enabled" type="TINYINT">
+                <constraints nullable="false"/>
+	        </column>
+	        <column name="serverUrl" type="NVARCHAR(128)">
+                <constraints nullable="false"/>
+	        </column>
+	        <column name="httpTimeout" type="INT">
+                <constraints nullable="true" />
+	        </column>
+	        <column name="apiAuthKey" type="VARCHAR(128)">
+                <constraints nullable="true" />
+	        </column>
+	        <column name="authConnectorNames" type="VARCHAR(128)">
+                <constraints nullable="true" />
+	        </column>
+            <column name="lastUpdateTime" type="NUMERIC(19,0)">
+            	<constraints nullable="false" />
+            </column>
+	    </createTable>
+    </changeSet>
+
+    <changeSet author="david" context="schema" failOnError="true" id="5">
+        <comment>Last modified time for the zone config record</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="adHocFoldersLastModified" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="david" context="schema" failOnError="true" id="6">
+        <comment>Last modified time for the user or group configuration</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="adHocFoldersLastModified" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+            <column name="memberOfLastModified" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+            <column name="membersLastModified" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="7">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="statusDate_binderState"/>
+        </preConditions>
+        <comment>Drop old statusDate_binderState index, if exists, from SS_BinderState table</comment>
+        <dropIndex indexName="statusDate_binderState" tableName="SS_BinderState"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="8">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="statusAndDate_binderState"/>
+            </not>
+        </preConditions>
+        <comment>Create index on fullSync_status,fullSync_statusDate columns in SS_BinderState table</comment>
+        <createIndex indexName="statusAndDate_binderState" schemaName="dbo" tableName="SS_BinderState" unique="false">
+            <column name="fullSync_status"/>
+            <column name="fullSync_statusDate"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="dennis" context="schema" failOnError="true" id="9">
+        <comment>Automatically apply deferred update logs in background</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="autoApplyDeferredUpdateLogs" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10">
+        <comment>Audit information about login</comment>
+        <createTable schemaName="dbo" tableName="SS_LoginAudit">
+            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_LoginAudit"/>
+            </column>
+        	<column name="zoneId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="loginTime" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="userId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="authenticator" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+        	<column name="clientAddr" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+         </createTable>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="11">
+        <createIndex indexName="loginTime_loginAudit" schemaName="dbo" tableName="SS_LoginAudit" unique="false">
+            <column name="loginTime"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <createIndex indexName="userId_loginAudit" schemaName="dbo" tableName="SS_LoginAudit" unique="false">
+            <column name="userId"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
+        <createTable schemaName="dbo" tableName="SS_BasicAudit">
+            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_BasicAudit"/>
+            </column>
+            <column name="zoneId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="userId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityType" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="auxiliaryData" type="NVARCHAR(128)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="eventType" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owningBinderId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owningBinderKey" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fileId" type="VARCHAR(32)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="entityFamily" type="SMALLINT">
+            	<constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="14">
+        <createIndex indexName="date_basicAudit" schemaName="dbo" tableName="SS_BasicAudit" unique="false">
+            <column name="date"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="15">
+        <createIndex indexName="userId_basicAudit" schemaName="dbo" tableName="SS_BasicAudit" unique="false">
+            <column name="userId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="16">
+        <createIndex indexName="entity_basicAudit" schemaName="dbo" tableName="SS_BasicAudit" unique="false">
+            <column name="entityType"/>
+            <column name="entityId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="17">
+        <createIndex indexName="etype_obkey_basicAudit" schemaName="dbo" tableName="SS_BasicAudit" unique="false">
+            <column name="eventType"/>
+            <column name="owningBinderKey"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
+        <createIndex indexName="owningBinderId_basicAudit" schemaName="dbo" tableName="SS_BasicAudit" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="19">
+        <createTable schemaName="dbo" tableName="SS_SharingAudit">
+            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_SharingAudit"/>
+            </column>
+            <column name="zoneId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sharerId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityType" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entryTitle" type="NVARCHAR(128)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="owningBinderId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="recipientType" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="recipientId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="actionType" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="actionDate" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="roleNameValue" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="20">
+        <createTable schemaName="dbo" tableName="SS_DeletedBinder">
+            <column name="binderId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="binderType" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="binderPath" type="NVARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deletedDate" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <addPrimaryKey columnNames="binderId" constraintName="PK__SS_DeletedBinder" schemaName="dbo" tableName="SS_DeletedBinder"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <createIndex indexName="actionDate_sharingAudit" schemaName="dbo" tableName="SS_SharingAudit" unique="false">
+            <column name="actionDate"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <createIndex indexName="sharerId_sharingAudit" schemaName="dbo" tableName="SS_SharingAudit" unique="false">
+            <column name="sharerId"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <renameColumn schemaName="dbo" tableName="SS_ShareItem" columnDataType="NVARCHAR(255)" newColumnName="comments" oldColumnName="comment"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="25">
+        <renameColumn schemaName="dbo" tableName="SS_ZoneConfig" columnDataType="TINYINT" newColumnName="mobileAppsAllowPlayWithOthers" oldColumnName="mobileAppsAllowPlayWithOtherApps"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="26">
+        <renameColumn schemaName="dbo" tableName="SS_ZoneConfig" columnDataType="TINYINT" newColumnName="mobileAndroidSCEnabled" oldColumnName="mobileAndroidScreenCaptureEnabled"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="27">
+        <renameColumn schemaName="dbo" tableName="SS_ZoneConfig" columnDataType="TINYINT" newColumnName="mobileDisableOnCompromised" oldColumnName="mobileDisableOnRootedOrJailBrokenDevices"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <renameColumn schemaName="dbo" tableName="SS_Forums" columnDataType="TINYINT" newColumnName="allowDAToTriggerInitialHFSync" oldColumnName="allowDesktopAppToTriggerInitialHomeFolderSync"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="29">
+        <renameColumn schemaName="dbo" tableName="SS_Forums" columnDataType="TINYINT" newColumnName="useInheritedDATriggerSetting" oldColumnName="useInheritedDesktopAppTriggerSetting"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="30">
+        <renameColumn schemaName="dbo" tableName="SS_ResourceDriver" columnDataType="TINYINT" newColumnName="allowDAToTriggerInitialHFSync" oldColumnName="allowDesktopAppToTriggerInitialHomeFolderSync"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="31">
+        <dropIndex indexName="date_basicAudit" tableName="SS_BasicAudit"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="32">
+        <renameColumn schemaName="dbo" tableName="SS_BasicAudit" columnDataType="DATETIME" newColumnName="eventDate" oldColumnName="date"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="33">
+        <createIndex indexName="eventDate_basicAudit" schemaName="dbo" tableName="SS_BasicAudit" unique="false">
+            <column name="eventDate"/>
+        </createIndex>
+    </changeSet>
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="34">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="nvarchar">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_EmailLog' and COLUMN_NAME = 'comments'</sqlCheck>
+        </preConditions>
+        <comment>Correct column data type</comment>
+        <modifyDataType schemaName="dbo" tableName="SS_EmailLog" columnName="comments" newDataType="ntext"/>
+    </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="35">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_downloadFolderAsCsv" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="36">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<columnExists tableName="SS_IndexingJournal" columnName="ipv4Address"/>
+            </not>
+        </preConditions>
+        <comment>IPv4 address of the node adding the log</comment>
+        <addColumn tableName="SS_IndexingJournal">
+            <column name="ipv4Address" type="VARCHAR(16)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="37">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="text">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_EmailLog' and COLUMN_NAME = 'comments'</sqlCheck>
+        </preConditions>
+        <comment>Correct column data type</comment>
+        <addColumn tableName="SS_EmailLog">
+            <column name="ncomments" type="ntext"/>
+        </addColumn>
+        <sql>UPDATE SS_EmailLog SET ncomments = comments</sql>
+        <dropColumn schemaName="dbo" tableName="SS_EmailLog" columnName="comments"/>
+        <renameColumn schemaName="dbo" tableName="SS_EmailLog" columnDataType="ntext" newColumnName="comments" oldColumnName="ncomments"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="38">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="nvarchar">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_Principals' and COLUMN_NAME = 'ldapQuery'</sqlCheck>
+        </preConditions>
+        <comment>Correct column data type</comment>
+        <modifyDataType schemaName="dbo" tableName="SS_Principals" columnName="ldapQuery" newDataType="ntext"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="39">
+        <comment>IPv4 address of the appserver node on which application of deferred update logs is currently executing for the index node</comment>
+        <addColumn tableName="SS_IndexNode">
+            <column name="syncingIpv4Address" type="VARCHAR(16)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="40">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="workArea_wafms"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="workArea_wafms" schemaName="dbo" tableName="SS_WorkAreaFunctionMemberships" unique="false">
+            <column name="workAreaId"/>
+            <column name="workAreaType"/>
+        </createIndex>
+    </changeSet>
+    
+</databaseChangeLog>

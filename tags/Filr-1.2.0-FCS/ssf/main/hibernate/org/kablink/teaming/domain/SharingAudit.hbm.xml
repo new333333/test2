@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_SharingAudit" name="org.kablink.teaming.domain.SharingAudit">
+    <id unsaved-value="null" name="id" type="long">
+      <generator class="native">
+      	<param name="sequence">ss_sharingaudit_id_sequence</param>
+      </generator>
+    </id>
+    <property name="zoneId" access="field"/>
+    <property name="sharerId" access="field" index="sharerId_sharingAudit"/>
+    <property name="entityType" access="field" type="short"/>
+    <property name="entityId" access="field"/>
+    <property name="entryTitle" access="field" length="128"/>
+    <property name="owningBinderId" access="field"/>
+    <property name="recipientType" access="field" type="short"/>
+    <property name="recipientId" access="field"/>
+    <property name="actionType" access="field" type="short"/>
+    <property name="actionDate" access="field" index="actionDate_sharingAudit"/>
+    <property name="roleNameValue" access="field" type="short"/>
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class dynamic-update="true" table="SS_NotifyStatus" name="org.kablink.teaming.domain.NotifyStatus">
+    <id name="ownerId">
+      <generator class="assigned"/>
+    </id>
+    <property name="zoneId" access="field" index="notifyStatus_full,notifyStatus_digest"/>
+	<property name="ownerType" length="16"/>
+    <property name="owningBinderKey" length="255"/>
+    <property name="owningBinderId" index="owningBinderId_notifyStatus"/>
+	<property name="lastModified" index="notifyStatus_full,notifyStatus_digest"/>
+	<property name="lastDigestSent" index="notifyStatus_digest"/>
+	<property name="lastFullSent" index="notifyStatus_full"/>
+
+   </class>
+</hibernate-mapping>

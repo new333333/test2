@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_externalUserWorkspace" caption="__definition_default_external_user_workspace" type="15" nextId="17" definitionType="15" databaseId="402883b90cc53079010cc539bf26000e" internalId="402883b90cc53079010cc539bf26000e"> 
+  <item name="userWorkspaceForm" caption="__workspace_form" type="form" id="1"> 
+    <properties/>  
+    <item name="description" caption="__description" type="data" id="3"> 
+      <properties> 
+        <property name="name" value="description"/>  
+        <property name="caption" value="__description"/>  
+        <property name="height" value=""/>  
+        <property name="required" value=""/> 
+      </properties> 
+    </item>  
+    <item name="workspaceIcon" caption="__icon" type="data" id="4"> 
+      <properties> 
+        <property name="name" value="iconName"/>  
+        <property name="caption" value="__icon"/> 
+      </properties> 
+    </item>  
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="16"> 
+      <properties> 
+        <property name="caption" value="__attach_files"/>  
+        <property name="name" value="ss_attachFile"/>  
+        <property name="width" value="60"/>  
+        <property name="number" value=""/>  
+        <property name="storage" value="simpleFileRepository"/>  
+        <property name="hide" value="true"/> 
+      </properties> 
+    </item>  
+    <operations>
+      <operation name="addOption" caption="__add"/>
+      <operation name="moveItem" caption="__move"/>
+    </operations>
+    <operations>
+      <operation name="addOption" caption="__add"/>
+      <operation name="moveItem" caption="__move"/>
+    </operations>
+  </item>  
+  <item name="userWorkspaceView" caption="__user_workspace_view" id="5"> 
+    <properties/>  
+    <item name="workspaceTitleView" caption="__title" category="workspaceViewData" display="view" id="14"> 
+      <item name="workspaceTitleDescriptionView" caption="__description" category="folderViewData" display="view" id="15"> 
+        <properties> 
+          <property name="caption" value="__description"/> 
+        </properties> 
+      </item> 
+    </item>  
+    <item name="relevanceDashboard" caption="__relevance_dashboard" display="view" id="10"> 
+      <item name="userWorkspaceBusinessCard" caption="__user_workspace_businessCard" id="6"> 
+        <properties> 
+          <property name="caption" value="__user_workspace_businessCard"/> 
+        </properties> 
+      </item> 
+    </item>  
+    <operations>
+      <operation name="addOption" caption="__add"/>
+      <operation name="copyItem" caption="__copy"/>
+      <operation name="moveItem" caption="__move"/>
+    </operations>
+  </item>  
+  <properties> 
+    <property name="name" value="_externalUserWorkspace"/>  
+    <property name="caption" value="__definition_default_external_user_workspace"/>  
+    <property name="family" value="user"/> 
+  </properties>  
+  <export-mappings/>
+</definition>

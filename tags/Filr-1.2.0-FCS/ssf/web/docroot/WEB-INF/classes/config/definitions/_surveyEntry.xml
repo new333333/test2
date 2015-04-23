@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_surveyEntry" caption="__definition_default_survey_entry" type="1" nextId="66" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50004"> 
+  <item name="entryForm" caption="__entry_form_definition" type="form" id="1" display="form"> 
+    <properties/>  
+    <item name="entryFormForm" caption="__form" id="2"> 
+      <item name="title" caption="__title" type="data" id="3"> 
+        <properties> 
+          <property name="name" value="title"/>  
+          <property name="caption" value="__title"/>  
+          <property name="width" value="60"/>  
+          <property name="inline" value=""/>  
+          <property name="generated" value=""/>  
+          <property name="itemSource" value=""/> 
+        </properties> 
+      </item>  
+      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="60"> 
+        <properties> 
+          <property name="caption" value="__guest.default.caption"/>  
+          <property name="name" value="_guestName"/>  
+          <property name="width" value=""/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item>
+      <item name="captcha" caption="__captcha" multipleAllowed="false" type="data" dataType="text" category="commonEntryData" display="form" id="65">
+        <properties>
+          <property name="caption" value="__captcha"/>
+          <property name="name" value="_captcha"/>
+          <property name="guestOnly" value="true"/>
+        </properties>
+      </item>  
+      <item name="description" caption="__description" type="data" id="4"> 
+        <properties> 
+          <property name="name" value="description"/>  
+          <property name="caption" value="__description"/>  
+          <property name="height" value=""/>  
+          <property name="required" value=""/> 
+        </properties> 
+      </item>  
+      <item name="attachFiles" caption="__attach_files" type="data" id="5"> 
+        <properties> 
+          <property name="name" value="ss_attachFile"/>  
+          <property name="caption" value="__attach_files"/>  
+          <property name="width" value="60"/>  
+          <property name="number" value=""/>  
+          <property name="storage" value=""/>  
+          <property name="hide" value=""/> 
+        </properties> 
+      </item>  
+      <properties> 
+        <property name="name" value="form1"/>  
+        <property name="type" value="survey"/> 
+      </properties>  
+      <item name="date_time" caption="__date_time" type="data" id="23"> 
+        <properties> 
+          <property name="name" value="due_date"/>  
+          <property name="caption" value="__due_date"/>  
+          <property name="storage" value=""/>  
+          <property name="hide" value=""/> 
+        </properties> 
+      </item>  
+      <item name="survey" caption="__survey_questions" type="data" id="22"> 
+        <properties> 
+          <property name="name" value="survey"/>  
+          <property name="caption" value="__survey_questions"/>  
+          <property name="storage" value=""/>  
+          <property name="hide" value=""/> 
+        </properties> 
+      </item>  
+      <item name="sendMail" caption="__sendMail" category="entryData" id="59"> 
+        <properties> 
+          <property name="name" value="_sendMail"/>  
+          <property name="caption" value="__sendMail"/> 
+        </properties> 
+      </item>  
+      <item name="entryFormButtons" caption="__form_buttons" id="6"> 
+        <properties> 
+          <property name="alignment" value=""/> 
+        </properties>  
+        <item name="okButton" caption="__ok_button" id="7"> 
+          <properties> 
+            <property name="caption" value="__ok"/>  
+            <property name="onClick" value=""/> 
+          </properties> 
+        </item>  
+        <item name="cancelButton" caption="__cancel_button" id="8"> 
+          <properties> 
+            <property name="caption" value="__cancel"/>  
+            <property name="onClick" value=""/> 
+          </properties> 
+        </item> 
+      </item> 
+    </item> 
+  </item>  
+  <item name="entryView" caption="__entry_view_definition" id="9" display="view"> 
+    <item name="titleView" caption="__title" id="10"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
+    <item name="entrySignatureView" caption="__entry_signature" id="11"> 
+      <properties> 
+        <property name="caption" value=""/> 
+      </properties> 
+    </item>  
+    <item name="descriptionView" caption="__description" id="12"> 
+      <properties> 
+        <property name="caption" value="__description"/> 
+      </properties> 
+    </item>  
+    <item name="entryWorkflow" caption="__entry_workflow" id="13"> 
+      <properties> 
+        <property name="caption" value="__entry_workflow"/> 
+      </properties> 
+    </item>  
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="57" formItem="date_time"> 
+      <properties> 
+        <property name="name" value="due_date"/>  
+        <property name="caption" value="__due_date"/> 
+      </properties> 
+    </item>  
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="58" formItem="survey"> 
+      <properties> 
+        <property name="name" value="survey"/>  
+        <property name="caption" value="__survey_questions"/> 
+      </properties> 
+    </item>  
+    <properties> 
+      <property name="type" value="entryView"/> 
+    </properties>  
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="61"> 
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="tabTitle" value="comments"/> 
+      </properties> 
+    </item> 
+  </item>  
+  <item name="entryBlogView" caption="__entry_blog_view_definition" id="16" display="view"> 
+    <item name="titleBlogView" caption="__title" id="17"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
+    <item name="descriptionBlogView" caption="__description" id="18"> 
+      <properties> 
+        <property name="caption" value="__description"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogWorkflow" caption="__entry_workflow" id="19"> 
+      <properties> 
+        <property name="caption" value="__entry_workflow"/> 
+      </properties> 
+    </item>  
+    <properties> 
+      <property name="type" value="blog"/> 
+    </properties>  
+    <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="54" formItem="due_date"> 
+      <properties> 
+        <property name="name" value="due_date"/>  
+        <property name="caption" value="__due_date"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" display="view" id="63"> 
+      <properties> 
+        <property name="caption" value="__entry_attachments"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view" id="64"> 
+      <properties> 
+        <property name="caption" value="__entry_comments"/> 
+      </properties> 
+    </item> 
+  </item>  
+  <properties> 
+    <property name="caption" value="__definition_default_survey_entry"/>  
+    <property name="name" value="_surveyEntry"/>  
+    <property name="family" value="survey"/>  
+    <property name="replyStyle" value="402883c6115753d801115777f284000b"/> 
+  </properties>  
+  <export-mappings>
+    <export definitionId="402883c6115753d801115777f284000b">_comment</export>
+  </export-mappings>
+</definition>

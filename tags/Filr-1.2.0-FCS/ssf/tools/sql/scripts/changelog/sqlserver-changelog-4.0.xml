@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="jong" context="schema" failOnError="true" id="1">
+        <comment>Size limit for any attachment in an email message</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="outgoingAttachmentSizeLimit" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <comment>Size limit for the sum of all attachments in an email message</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="outgoingAttachmentSumLimit" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="3">
+        <comment>The binder owning this local template</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="templateOwningBinderId" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="4">
+        <createIndex indexName="templateOwningBinderId_Binder" schemaName="dbo" tableName="SS_Forums" unique="false">
+            <column name="templateOwningBinderId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="5">
+        <comment>XML document stored as compressed bytes</comment>
+        <addColumn tableName="SS_ChangeLogs">
+            <column name="xmlBytes" type="image">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="6">
+        <comment>Identity source type for provisioned users</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="identitySource" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="7">
+        <createTable tableName="SS_ResourceDriver">
+            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_ResourceDriver"/>
+            </column>
+            <column name="zoneId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="NVARCHAR(64)"/>
+            <column name="type" type="INT"/>
+            <column name="readonly" type="TINYINT"/>
+            <column name="synchTopDelete" type="TINYINT"/>
+            <column name="putRequiresContentLength" type="TINYINT"/>
+            <column name="allowSelfSignedCertificate" type="TINYINT"/>
+            <column name="hostUrl" type="NVARCHAR(255)"/>
+            <column name="rootPath" type="NVARCHAR(1024)"/>
+            <column name="accountName" type="NVARCHAR(255)"/>
+            <column name="password" type="NVARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="8">
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="shareName" type="NVARCHAR(255)">
+            	<constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="serverName" type="NVARCHAR(255)">
+            	<constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="serverIP" type="NVARCHAR(255)">
+            	<constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="volume" type="NVARCHAR(255)">
+            	<constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="9">
+        <comment>Enable external users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="externalUserEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Enable OpenID authentication</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="openidAuthenticationEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Enable OpenID self-provisioning</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="openidSelfProvisioningEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>The mode in which OpenID user's profile information is synchronized</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="openidProfileSyncMode" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="10">
+        <createTable tableName="SS_OpenIDProviders">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_OpenIDProviders"/>
+            </column>
+            <column name="zoneId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="NVARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="NVARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="url" type="NVARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="regex" type="NVARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="11">
+        <createIndex indexName="name_OpenIDProviders" schemaName="dbo" tableName="SS_OpenIDProviders" unique="true">
+            <column name="zoneId"/>
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <createTable schemaName="dbo" tableName="SS_ShareItem">
+            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_ShareItem"/>
+            </column>
+            <column name="zoneId" type="NUMERIC(19,0)"/>
+            <column name="latest" type="TINYINT"/>
+            <column name="sharerId" type="NUMERIC(19,0)"/>
+            <column name="sharedEntity_type" type="INT"/>
+            <column name="sharedEntity_id" type="NUMERIC(19,0)"/>
+            <column name="comment" type="NVARCHAR(255)"/>
+            <column name="daysToExpire" type="INT"/>
+            <column name="startDate" type="DATETIME"/>
+            <column name="endDate" type="DATETIME"/>
+            <column name="recipient_type" type="SMALLINT"/>
+            <column name="recipient_id" type="NUMERIC(19,0)"/>
+            <column name="expirationHandled" type="TINYINT"/>
+            <column name="right_createEntries" type="TINYINT"/>
+            <column name="right_modifyEntries" type="TINYINT"/>
+            <column name="right_modifyEntryFields" type="TINYINT"/>
+            <column name="right_deleteEntries" type="TINYINT"/>
+            <column name="right_readEntries" type="TINYINT"/>
+            <column name="right_addReplies" type="TINYINT"/>
+            <column name="right_generateReports" type="TINYINT"/>
+            <column name="right_binderAdministration" type="TINYINT"/>
+            <column name="right_createEntryAcls" type="TINYINT"/>
+            <column name="right_changeAccessControl" type="TINYINT"/>
+            <column name="right_createWorkspaces" type="TINYINT"/>
+            <column name="right_createFolders" type="TINYINT"/>
+            <column name="right_manageEntryDefs" type="TINYINT"/>
+            <column name="right_manageWorkflowDefs" type="TINYINT"/>
+            <column name="right_creatorReadEntries" type="TINYINT"/>
+            <column name="right_creatorModifyEntries" type="TINYINT"/>
+            <column name="right_creatorDeleteEntries" type="TINYINT"/>
+            <column name="right_ownerCreateEntryAcls" type="TINYINT"/>
+            <column name="right_addTags" type="TINYINT"/>
+            <column name="right_viewBinderTitle" type="TINYINT"/>
+            <column name="right_allowSharing" type="TINYINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
+        <createIndex indexName="sharerId_shareitem" schemaName="dbo" tableName="SS_ShareItem" unique="false">
+            <column name="sharerId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="14">
+        <createIndex indexName="startDate_shareitem" schemaName="dbo" tableName="SS_ShareItem" unique="false">
+            <column name="startDate"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="15">
+        <createIndex indexName="endDate_shareitem" schemaName="dbo" tableName="SS_ShareItem" unique="false">
+            <column name="endDate"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="16">
+        <createIndex indexName="sharedEntity_shareitem" schemaName="dbo" tableName="SS_ShareItem" unique="false">
+            <column name="sharedEntity_type"/>
+            <column name="sharedEntity_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="17">
+        <createIndex indexName="recipient_shareitem" schemaName="dbo" tableName="SS_ShareItem" unique="false">
+            <column name="recipient_type"/>
+            <column name="recipient_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="18">
+        <comment>Count of OpenId user accounts</comment>
+        <addColumn tableName="SS_LicenseStats">
+            <column name="openIdUserCount" type="NUMERIC(19,0)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="19">
+        <addColumn tableName="SS_ResourceDriver">
+			<column name="modifiedOn" type="DATETIME">
+				<constraints nullable="true" />
+			</column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="20">
+        <addColumn tableName="SS_Forums">
+			<column name="extFunctionMembershipInherited" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <addColumn tableName="SS_FolderEntries">
+			<column name="hasEntryExternalAcl" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="peter" context="schema" failOnError="true" id="22">
+        <addColumn tableName="SS_Forums">
+			<column name="templateHidden" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <addColumn tableName="SS_Principals">
+			<column name="objectSid" type="VARCHAR(128)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <createIndex indexName="objectSid_principal" schemaName="dbo" tableName="SS_Principals" unique="false">
+            <column name="objectSid"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="25">
+        <addColumn tableName="SS_Principals">
+			<column name="samAccountName" type="NVARCHAR(128)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="26">
+        <addColumn tableName="SS_Forums">
+			<column name="homeDir" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="27">
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="localeLanguage" type="VARCHAR(16)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="localeCountry" type="VARCHAR(16)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="david" context="schema" failOnError="true" id="29">
+        <addColumn tableName="SS_Attachments">
+			<column name="fileMd5" type="CHAR(32)"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="30">
+        <addColumn tableName="SS_Principals">
+			<column name="internal" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="31">
+        <addColumn tableName="SS_Principals">
+			<column name="fromLdap" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="32">
+        <addColumn tableName="SS_Principals">
+			<column name="fromLocal" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="33">
+        <addColumn tableName="SS_Principals">
+			<column name="fromOpenid" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="34">
+        <comment>Enable adhoc file folders in users personal workspace</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="adHocFoldersEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="data" failOnError="true" id="35">
+        <comment>Populate 4 new columns with correct values in preparation for retiring identitySource column</comment>
+        <sql>
+update SS_Principals set internal=0,fromLdap=0,fromLocal=0,fromOpenid=1 where identitySource=11;
+update SS_Principals set internal=1,fromLdap=0,fromLocal=1,fromOpenid=0 where identitySource=1;
+update SS_Principals set internal=1,fromLdap=1,fromLocal=0,fromOpenid=0 where identitySource=2;
+update SS_Principals set internal=1,fromLdap=0,fromLocal=1,fromOpenid=0 where identitySource is null and name = foreignName;
+update SS_Principals set internal=1,fromLdap=1,fromLocal=0,fromOpenid=0 where identitySource is null and name != foreignName;            
+        </sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="36">
+	    <addNotNullConstraint tableName="SS_Principals" columnName="internal" columnDataType="TINYINT"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="37">
+	    <addNotNullConstraint tableName="SS_Principals" columnName="fromLdap" columnDataType="TINYINT"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="38">
+	    <addNotNullConstraint tableName="SS_Principals" columnName="fromLocal" columnDataType="TINYINT"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="39">
+	    <addNotNullConstraint tableName="SS_Principals" columnName="fromOpenid" columnDataType="TINYINT"/>
+    </changeSet>    
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="40">
+        <comment>Is deployment of the Desktop application enabled</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="fsaDeployEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="41">
+        <comment>How many days worth of data to keep in SS_AuditTrail table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="auditTrailKeepDays" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="42">
+        <comment>How many days worth of data to keep in SS_AuditTrail table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="changeLogsKeepDays" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="43">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_allowSharingExternal" type="TINYINT"/>
+			<column name="right_allowSharingPublic" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="44">
+        <comment>Is the group a system group</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="ldapContainer" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="peter" context="schema" failOnError="true" id="45">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_allowSharingForward" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="data" failOnError="true" id="46">
+        <comment>Store all login names in lower case</comment>
+        <sql>           
+update SS_Principals set name=LOWER(name);
+        </sql>
+    </changeSet>
+    
+    <changeSet author="jong" context="data" failOnError="true" id="47">
+        <comment>Store all email addresses in lower case</comment>
+        <sql>           
+update SS_EmailAddresses set address=LOWER(address);
+        </sql>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="48">
+        <comment>This column is no longer needed</comment>
+        <dropColumn tableName="SS_Principals" columnName="identitySource"/>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="49">
+        <comment>State of the external user self-provisioning upon invitation</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="extProvState" type="SMALLINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="peter" context="schema" failOnError="true" id="50">
+        <comment>Is guest read only</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="anonymousReadOnly" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="data" failOnError="true" id="51">
+        <comment>Delete all OpenID providers other than google and yahoo</comment>
+        <sql>
+delete from SS_OpenIDProviders where name != 'google' and name != 'yahoo';
+        </sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="52">
+        <comment>Regex used to filter on email address</comment>
+        <addColumn tableName="SS_OpenIDProviders">
+            <column name="emailRegex" type="NVARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="data" failOnError="true" id="53">
+        <comment>Delete all OpenID providers other than google and yahoo</comment>
+        <sql>
+update SS_OpenIDProviders set emailRegex='.*gmail.com' where name='google';
+update SS_OpenIDProviders set emailRegex='.*yahoo.com' where name='yahoo';
+        </sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="54">
+        <comment>Seed used for external user self-provisioning</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="extProvSeed" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="55">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_allowAccessNetFolder" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="56">
+        <comment>Increase password column size from 64 to 128 characters</comment>
+        <modifyDataType tableName="SS_Principals" columnName="password" newDataType="VARCHAR(128)"/>
+    </changeSet>
+
+    <changeSet author="jong" context="data" failOnError="true" id="57">
+        <comment>Store all foreign names in lower case</comment>
+        <sql>           
+update SS_Principals set foreignName=LOWER(foreignName);
+        </sql>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="58">
+        <comment>Add fsaAllowCachePwd and fsaMaxFileSize</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="fsaAllowCachePwd" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="fsaMaxFileSize" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="59">
+        <comment>Enable mobile apps to access Filr</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Allow mobile apps to cache users password</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsAllowCachePwd" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Allow mobile apps to cache content</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsAllowCacheContent" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Allow mobile apps to interact with other applications</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsAllowPlayWithOtherApps" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Sync interval for mobile apps</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsSyncInterval" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="60">
+        <comment>Add allowDesktopAppToSyncData field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="allowDesktopAppToSyncData" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add allowMobileAppsToSyncData field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="allowMobileAppsToSyncData" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="61">
+        <comment>Add indexContent field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="indexContent" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="62">
+        <comment>Add partOfPublicShare field to SS_ShareItem table</comment>
+        <addColumn tableName="SS_ShareItem">
+            <column name="partOfPublicShare" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="david" context="schema" failOnError="true" id="63">
+        <comment>Add deletedDate field to SS_ShareItem table</comment>
+        <addColumn tableName="SS_ShareItem">
+            <column name="deletedDate" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="64">
+        <comment>Add jitsEnabled field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="jitsEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="65">
+        <comment>Add jitsMaxAge field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="jitsMaxAge" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="66">
+        <comment>Add jitsEnabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="jitsEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="67">
+        <comment>Add jitsWaitTimeout field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="jitsWaitTimeout" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="68">
+        <comment>Add jitsAclMaxAge field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="jitsAclMaxAge" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="69">
+        <createTable schemaName="dbo" tableName="SS_BinderState">
+            <column name="binderId" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_BinderState"/>
+            </column>
+            <column name="zoneId" type="NUMERIC(19,0)"/>
+            <column name="lastSyncTime" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="70">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_renameEntries" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="71">
+        <comment>Count of other external user accounts</comment>
+        <addColumn tableName="SS_LicenseStats">
+            <column name="otherExtUserCount" type="NUMERIC(19,0)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="peter" context="schema" failOnError="true" id="72">
+        <comment>is guest access enabled</comment>
+        <addColumn tableName="SS_LicenseStats">
+            <column name="guestAccessEnabled" type="TINYINT">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="73">
+        <comment>Last time full sync completed</comment>
+        <addColumn tableName="SS_BinderState">
+            <column name="lastFullSyncCompletionTime" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="74">
+        <comment>Domain name if the user was provisioned from AD</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="domainName" type="NVARCHAR(255)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="../tools/gwt/gwt-user.jar"/>
+	<classpathentry kind="lib" path="../tools/gwt/gwt-dev.jar"/>
+	<classpathentry kind="lib" path="../tools/gwt/validation-api-1.0.0.GA.jar"/>
+	<classpathentry kind="lib" path="../tools/gwt/validation-api-1.0.0.GA-sources.jar"/>
+	<classpathentry kind="lib" path="../lib/gwt-servlet.jar"/>
+	<classpathentry kind="lib" path="../lib/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="../lib/xml-apis.jar"/>
+	<classpathentry kind="lib" path="../lib/log4j.jar"/>
+	<classpathentry kind="lib" path="../lib/jna-3.4.0.jar"/>
+	<classpathentry kind="lib" path="../lib/joda-time.jar"/>
+	<classpathentry kind="lib" path="../lib/libpam4j-1.6.jar"/>
+		<classpathentry kind="lib" path="../lib/commons-fileupload.jar"/>
+		<classpathentry kind="lib" path="../lib/mail.jar"/>
+	<classpathentry kind="output" path="www/WEB-INF/classes"/>
+</classpath>

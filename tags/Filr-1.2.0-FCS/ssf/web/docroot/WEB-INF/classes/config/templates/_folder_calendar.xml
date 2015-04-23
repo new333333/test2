@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="5" internalId="402883b90d0de1f3010d0df5582b000e">
+  <attribute name="templateTitle" type="string">__template_folder_calendar</attribute>
+  <attribute name="templateDescription" type="description">__template_folder_calendar_description</attribute>
+  <attribute name="title" type="string">__template_folder_calendar</attribute>
+  <attribute name="description" type="description"></attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_calendar.png</attribute>
+  <attribute name="name" type="string">_folder_calendar</attribute>
+  <property name="library">false</property>
+  <property name="mirrored">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>
+  <definition name="_calendarEntry" databaseId="402883c6115753d80111577dbe29000d"/>
+  <definition name="_calendar_workflow" databaseId="402881e523232b3b012328bed460007f">
+    <definition name="_calendarEntry" databaseId="402883c6115753d80111577dbe29000d"/>
+  </definition>
+</template>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_IndexNode" lazy="false" name="org.kablink.teaming.domain.IndexNode">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>	    
+    <component name="name" access="field" unique="true">
+      <property name="nodeName" length="128"/>
+      <property name="indexName" length="160"/>
+    </component>
+    <property name="zoneId" access="field"/>
+    <property name="accessMode" length="16"/>
+    <property name="noDeferredUpdateLogRecords" column="inSynch"/>
+    <property name="reindexingStartDate"/>
+    <property name="reindexingEndDate"/>
+    <property name="reindexingIpv4Address" length="16"/>  
+    <property name="syncingIpv4Address" length="16"/>  
+</class>
+</hibernate-mapping>
