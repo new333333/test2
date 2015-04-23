@@ -88,7 +88,8 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 			this.dtValue = dtValue;
 		}
 		public int getValue() {return dtValue;}
-		public static DriverType valueOf(int type) {
+
+        public static DriverType valueOf(int type) {
 			switch (type) {
 			case 0: return DriverType.filesystem;
 			case 1: return DriverType.webdav;

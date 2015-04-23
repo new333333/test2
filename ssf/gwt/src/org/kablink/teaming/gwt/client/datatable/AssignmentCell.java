@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -244,7 +244,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 	private void invokeSimpleProfile(AssignmentInfo ai, Element pElement) {
 		Long wsId = ai.getPresenceUserWSId();
 		String wsIdS = ((null == wsId) ? null : String.valueOf(wsId));
-		GwtClientHelper.invokeSimpleProfile(pElement, String.valueOf(ai.getId()), wsIdS, ai.getTitle());
+		GwtClientHelper.invokeSimpleProfile(pElement, wsIdS, ai.getTitle());
 	}
 	
 	/**
@@ -369,7 +369,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 			case INDIVIDUAL: {
 				// Individual assignee!  Generate a presence control...
 				GwtPresenceInfo presence = ai.getPresence();
-				PresenceControl presenceControl = new PresenceControl(String.valueOf(ai.getId()), String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
+				PresenceControl presenceControl = new PresenceControl(String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
 				presenceControl.setImageAlignment("top");
 				presenceControl.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignMiddle");
 				presenceControl.setAnchorStyleName("cursorPointer");

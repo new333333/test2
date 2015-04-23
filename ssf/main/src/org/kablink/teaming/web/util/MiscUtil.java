@@ -60,20 +60,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.domain.AuthenticationConfig;
-import org.kablink.teaming.domain.CustomAttribute;
-import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.FileItem;
-import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.Subscription;
-import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserPrincipal;
-import org.kablink.teaming.domain.UserProperties;
-import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -84,7 +71,6 @@ import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -98,17 +84,11 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * This class contains a collection of miscellaneous utility methods.
  * 
- * @author drfoster@novell.com
+ * @author jwootton
  */
-public final class MiscUtil {
-	protected static Log m_logger = LogFactory.getLog(MiscUtil.class);
-	
-	// Initialized by the first call to get...Module();
-	private static AdminModule		m_adminModule;		//
-	private static CoreDao			m_coreDao;			//
-	private static FolderModule		m_folderModule;		//
-	private static ProfileModule	m_profileModule;	//
-	private static ZoneModule		m_zoneModule;		//
+public final class MiscUtil
+{
+	protected static Log m_logger = LogFactory.getLog( MiscUtil.class );
 	
 	// The following are used as the return values for the various
 	// comparators.
@@ -124,31 +104,12 @@ public final class MiscUtil {
 	// store whether the user's browser supports NPAPI.
 	private final static String	BROWSER_SUPPORTS_NPAPI	= "browserSupportsNPAPI";
 	
-	// The following defines the language strings that may need to be
-	// patched into a documentation URL.
-	private final static String[] DOC_LANGS = {
-		"cs-cz",
-		"da-dk",
-		"de-de",
-		"es-es",
-		"fr-fr",
-		"hu-hu",
-		"it-it",
-		"ja-jp",
-		"nl-nl",
-		"pl-pl",
-		"pt-br",
-		"ru-ru",
-		"sv-se",
-		"zh-cn",
-		"zh-tw",		
-	};
-	
-	// Names of the different help guides.
-	private static final String USER_GUIDE = "user";
-	private static final String ADV_USER_GUIDE = "adv_user";
-	private static final String ADMIN_GUIDE = "admin";
-	private static final String INSTALLATION_GUIDE = "install";
+	// Initialized by the first call to get...Module();
+	private static AdminModule		m_adminModule;		//
+	private static CoreDao			m_coreDao;			//
+	private static FolderModule		m_folderModule;		//
+	private static ProfileModule	m_profileModule;	//
+	private static ZoneModule		m_zoneModule;		//
 	
 	/*
 	 * Enumeration type to specific the platform the browser is running
@@ -178,32 +139,30 @@ public final class MiscUtil {
 		
 		public IdTriple(Long binderId, Long entryId, String entityType) {
 			super();
-			
 			m_binderId   = binderId;
 			m_entryId    = entryId;
 			m_entityType = entityType;
 		}
 	}
 
-	/*
-	 * Class constructor that prevents this class from being
-	 * instantiated.
+	/**
+	 * Class constructor that prevents this class from being instantiated.
 	 */
-	private MiscUtil() {
+	private MiscUtil()
+	{
 		// Nothing to do.
-	}
+	}// end MiscUtil()
 	
 	
 	/**
-	 * Add all of the information needed to support the "Create new
-	 * account" ui to the response.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param model
+	 * Add all of the information needed to support the "Create new account" ui to the response.
 	 */
 	@SuppressWarnings("unchecked")
-	public static void addCreateNewAccountDataToResponse(AllModulesInjected	bs, RenderRequest request, Map<String,Object> model) {
+	public static void addCreateNewAccountDataToResponse(
+		AllModulesInjected	bs,
+		RenderRequest		request,
+		Map<String,Object>	model )
+	{
 		ProfileModule			profileModule;
 		Map<String, Definition>	entryDefsMap;
 		Definition				def;
@@ -216,97 +175,101 @@ public final class MiscUtil {
 		entryDefsMap = profileModule.getProfileBinderEntryDefsAsMap();
 		entryDefsCollection = entryDefsMap.values();
 		entryDefsIterator = entryDefsCollection.iterator();
-		if (entryDefsIterator.hasNext()) {
+		if ( entryDefsIterator.hasNext() )
+		{
 			AdaptedPortletURL	adapterUrl;
 
 			def = (Definition) entryDefsIterator.next();
 
 			// Create the url needed to invoke the "Add User" page.
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profileModule.getProfileBinderId().toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-			model.put(WebKeys.ADD_USER_URL, adapterUrl.toString());
+			adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
+			adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY );
+			adapterUrl.setParameter( WebKeys.URL_BINDER_ID, profileModule.getProfileBinderId().toString() );
+			adapterUrl.setParameter( WebKeys.URL_ENTRY_TYPE, def.getId() );
+			model.put( WebKeys.ADD_USER_URL, adapterUrl.toString() );
 
 			// Add the flag that indicates the "Create new account" ui should be available.
-			model.put(WebKeys.ADD_USER_ALLOWED, "true");
+			model.put( WebKeys.ADD_USER_ALLOWED, "true" );
 		}
-	}
+	}// end addCreateNewAccountDataToResponse()
 
 	
 	/**
-	 * This method determines if self-registration is available.
-	 * Self-registration is available if the logged in user has rights
-	 * to add a user and we are not running the enterprise version
-	 * of Vibe.
-	 * 
-	 * @param bs
-	 * 
-	 * @return
+	 * This method determines if self-registration is available.  Self-registration is available
+	 * if the logged in user has rights to add a user and we are not running the enterprise version
+	 * of Teaming.
 	 */
-	public static boolean canDoSelfRegistration(AllModulesInjected bs) {
+	public static boolean canDoSelfRegistration( AllModulesInjected bs )
+	{
 		boolean	canAdd	= false;
-    	try {
+		
+    	try
+    	{
     		// Can the logged in user add an entry to the profile binder?
-			if (doesGuestUserHaveAddRightsToProfileBinder(bs)) {
+			if ( doesGuestUserHaveAddRightsToProfileBinder( bs ) )
+			{
+				AuthenticationConfig	authConfig;
+				
 				// Yes, is the "Allow people to create their own accounts" option turned on?
-				AuthenticationConfig authConfig = bs.getAuthenticationModule().getAuthenticationConfig();
-				if ((null != authConfig) && authConfig.isAllowSelfRegistration()) {
-					// Yes, are we running the Enterprise version of Vibe?
-					if (!(ReleaseInfo.isLicenseRequiredEdition())) {
+				authConfig = bs.getAuthenticationModule().getAuthenticationConfig();
+				if ( authConfig != null && authConfig.isAllowSelfRegistration() )
+				{
+					// Yes, are we running the Enterprise version of Teaming?
+					if ( ReleaseInfo.isLicenseRequiredEdition() == false )
+					{
 						// No, self registration is available.
 						canAdd = true;
 					}
 				}
 			}
     	}
-    	catch (Exception e) {
-    		// Nothing to do.  It just means that the Guest user
-    		// doesn't not have rights to the Profile binder.
+    	catch (Exception e)
+    	{
+    		// Nothing to do.  It just means that the Guest user doesn't not have rights to the Profile binder.
     	}
+		
     	return canAdd;
-	}
+	}// end canDoSelfRegistration()
 	
 	
 	/**
-	 * This method determines if the guest user has the rights needed
-	 * to add an entry to the profile binder.
-	 * 
-	 * @param bs
-	 * 
-	 * @return
+	 * This method determines if the guest user has the rights needed to add an entry to
+	 * the profile binder.
 	 */
-	public static boolean doesGuestUserHaveAddRightsToProfileBinder(AllModulesInjected bs) {
+	public static boolean doesGuestUserHaveAddRightsToProfileBinder( AllModulesInjected bs )
+	{
 		return getProfileModule().doesGuestUserHaveAddRightsToProfileBinder();
-	}
+	}// end doesGuestUserHaveAddRightsToProfileBinder()
 
 	
 	/**
 	 * Returns a string to display for an exception.
-	 * 
-	 * @param e
-	 * 
-	 * @return
 	 */
-	public static String exToString(Exception e) {
+	public static String exToString( Exception e )
+	{
 		String reply;
-		if (null == e) {
+		if ( null == e )
+		{
 			reply = "<null>";
 		}
-		else {
+		else
+		{
 			reply = e.getLocalizedMessage();
-			if ((null == reply) || reply.equalsIgnoreCase("null")) {
+			if (( null == reply ) || reply.equalsIgnoreCase( "null" ))
+			{
 				reply = e.getMessage();
-				if ((null == reply) || reply.equalsIgnoreCase("null")) {
+				if (( null == reply ) || reply.equalsIgnoreCase( "null" ))
+				{
 					reply = e.toString();
-					if (null == reply) {
+					if (null == reply)
+					{
 						reply = "<message not available>";
 					}
 				}
 			}
 		}
 		return reply;
-	}
+	}// end exToString
 	
 	
 	/**
@@ -347,7 +310,6 @@ public final class MiscUtil {
 	public static List splitUserIds(RenderRequest request, String requestKey) {
 		return splitUserIds(request, requestKey, null);
 	}
-	
 	@SuppressWarnings("unchecked")
 	public static List splitUserIds(RenderRequest request, String requestKey, Map model) {
 		// Are there any values in the request parameter?
@@ -388,7 +350,7 @@ public final class MiscUtil {
 		// If we get here, userIds refers to an ArrayList of the Long
 		// values from the request property.  Return it.
 		return userIds;
-	}
+	}//end splitUserIds
 
 	/**
 	 * Looks in formData for a title.  If one is found that's empty AND
@@ -425,7 +387,7 @@ public final class MiscUtil {
 			}
 		}
 		return formData;
-	}
+	}// end defaultTitleToFilename()
 
 	/**
 	 * Returns the entriesPerPage to use based on the settings in the
@@ -442,7 +404,6 @@ public final class MiscUtil {
 					null                 :
 					userProperties.getProperties());
 	}
-	
 	@SuppressWarnings("unchecked")
 	public static String entriesPerPage(Map propMap) {
 		return
@@ -453,7 +414,6 @@ public final class MiscUtil {
 					"folder.records.listed",
 					"25"));
 	}
-	
 	@SuppressWarnings("unchecked")
 	public static String getUserProperty(UserProperties userProperties, String property, String defValue) {
 		Map	propMap;
@@ -461,7 +421,6 @@ public final class MiscUtil {
 		else                        propMap = userProperties.getProperties();
 		return getPropertyFromMap(propMap, property, defValue);
 	}
-	
 	@SuppressWarnings("unchecked")
 	private static String getPropertyFromMap(Map propMap, String property, String defValue) {
 		String reply;
@@ -500,7 +459,6 @@ public final class MiscUtil {
 	 * false otherwise.
 	 * 
 	 * @param s
-	 * 
 	 * @return
 	 */
 	public static boolean hasString(String s) {
@@ -513,7 +471,7 @@ public final class MiscUtil {
 	 * @return
 	 */
 	public static String getStaticPath() {
-		return (ObjectKeys.STATIC_DIR + "/" + SPropsUtil.getString(ObjectKeys.STATIC_DIR_PROPERTY, "repair") + "/");
+		return ObjectKeys.STATIC_DIR + "/" + SPropsUtil.getString(ObjectKeys.STATIC_DIR_PROPERTY, "repair") + "/";
 	}
 	
 	/**
@@ -523,13 +481,9 @@ public final class MiscUtil {
 	 */
 	public static String getFullStaticPath(HttpServletRequest request) {
 		String contextPath = request.getContextPath();
-		if (contextPath.endsWith("/")) {
-			contextPath = contextPath.substring(0,contextPath.length()-1);
-		}
-		return
-			(request.getContextPath() + "/" +
-			 ObjectKeys.STATIC_DIR    + "/" + 
-			 SPropsUtil.getString(ObjectKeys.STATIC_DIR_PROPERTY, "repair") + "/");
+		if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
+		return request.getContextPath() + "/" + ObjectKeys.STATIC_DIR + "/" + 
+				SPropsUtil.getString(ObjectKeys.STATIC_DIR_PROPERTY, "repair") + "/";
 	}
 	
 	/**
@@ -563,9 +517,10 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static boolean isEmailAddressValid(String usedAs, String ema) {
-		return(null != validateEmailAddress(usedAs, ema));
-	}
+	public static boolean isEmailAddressValid( String usedAs, String ema )
+	{
+		return( null != validateEmailAddress( usedAs, ema ));
+	}// end isEmailAddressValid()
 	
 	/**
 	 * Performs a collated compare on two strings without generating any
@@ -581,12 +536,12 @@ public final class MiscUtil {
 		return
 			collator.compare(
 				((null == s1) ? "" : s1),
-				((null == s2) ? "" : s2));
+				((null == s2) ? "" : s2) );
    }
 
 	/**
-	 * Performs a collated compare on two strings without generating
-	 * any exceptions.
+	 * Performs a collated compare on two strings without generating any
+	 * exceptions.
 	 * 
 	 * @param s1
 	 * @param s2
@@ -594,7 +549,7 @@ public final class MiscUtil {
 	 * @return
 	 */
 	public static int safeSColatedCompare(String s1, String s2) {
-		Collator collator = Collator.getInstance(RequestContextHolder.getRequestContext().getUser().getLocale());
+		Collator collator = Collator.getInstance( RequestContextHolder.getRequestContext().getUser().getLocale());
 		collator.setStrength(Collator.IDENTICAL);
 		return safeSColatedCompare(s1, s2, collator);
    }
@@ -621,9 +576,10 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static ZoneInfo getCurrentZone() {
-		return getZoneModule().getZoneInfo(RequestContextHolder.getRequestContext().getZoneId());
-	}
+	public static ZoneInfo getCurrentZone()
+	{
+		return getZoneModule().getZoneInfo( RequestContextHolder.getRequestContext().getZoneId() );
+	}//end getCurrentZone()
 	
 	/**
 	 * Called to determine if there is an override specified for the
@@ -636,23 +592,27 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static String getFromOverride() {
+	public static String getFromOverride()
+	{
 		// Can we access the current zone name?
 		ZoneInfo zoneInfo = getCurrentZone();
 		String reply = zoneInfo.getZoneName();
-		if (hasString(reply)) {
+		if ( hasString( reply ) )
+		{
 			// Yes!  Check for a zone specific setting.
-			reply = SPropsUtil.getString((SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE + "." + reply), ""); 
+			reply = SPropsUtil.getString( (SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE + "." + reply), "" ); 
 		}
 
 		// Do we have a zone specific setting?
-		if (!(hasString(reply))) {
+		if ( ! ( hasString( reply ) ) )
+		{
 			// No!  Check for a global setting.
-			reply = SPropsUtil.getString(SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE, "");
+			reply = SPropsUtil.getString( SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE, "" );
 		}
 
 		// Do we have a global setting?
-		if (!(hasString(reply))) {
+		if ( ! ( hasString( reply ) ) )
+		{
 			// No!  Then ensure we return null.
 			reply = null;
 		}
@@ -660,7 +620,7 @@ public final class MiscUtil {
 		// If we get here, reply refers to the from override or is
 		// null if there wasn't one.  Return it.
 		return reply;
-	}
+	}// end getFromOverride()
 	
 	/**
 	 * Called to determine whether a from override should be applied to
@@ -668,28 +628,33 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static boolean isFromOverrideForAll() {
+	public static boolean isFromOverrideForAll()
+	{
 		// Can we access the current zone name?
 		ZoneInfo zoneInfo = getCurrentZone();
 		String value = zoneInfo.getZoneName();
-		if (hasString(value)) {
+		if ( hasString( value ) )
+		{
 			// Yes!  Check for a zone specific setting.
-			value = SPropsUtil.getString((SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE_ALL + "." + value), ""); 
+			value = SPropsUtil.getString( (SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE_ALL + "." + value), "" ); 
 		}
 
 		// Do we have a zone specific setting?
-		if (!(hasString(value))) {
+		if ( ! ( hasString( value ) ) )
+		{
 			// No!  Check for a global setting.
-			value = SPropsUtil.getString(SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE_ALL, "");
+			value = SPropsUtil.getString( SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE_ALL, "" );
 		}
 
 		// Do we have a global setting?
 		boolean reply;
-		if (!(hasString(value))) {
+		if ( ! ( hasString( value ) ) )
+		{
 			// No!  Then ensure we return false.
 			reply = false;
 		}
-		else {
+		else
+		{
 			// Otherwise, return true if the setting is true.
 			reply = value.equalsIgnoreCase("true");
 		}
@@ -697,7 +662,7 @@ public final class MiscUtil {
 		// If we get here, reply is true of the from override should
 		// apply to all outgoing email and false otherwise.  Return it.
 		return reply;
-	}
+	}// end isFromOverrideForAll()
 	
 	/**
 	 * Validates a Collection<InternetAddress> as containing valid
@@ -712,17 +677,21 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static Collection<InternetAddress> validateInternetAddressCollection(String usedAs, Collection<InternetAddress> addrs) {
+	public static Collection<InternetAddress> validateInternetAddressCollection( String usedAs, Collection<InternetAddress> addrs )
+	{
 		// Do we have any addresses to validate?
 		Collection<InternetAddress> reply = new ArrayList<InternetAddress>();
-		if (null != addrs) {
+		if ( null != addrs )
+		{
 			// Yes!  Scan them.
-			for (Iterator<InternetAddress> iaIT = addrs.iterator(); iaIT.hasNext(); ) {
+			for (Iterator<InternetAddress> iaIT = addrs.iterator(); iaIT.hasNext(); )
+			{
 				// Was this InternetAddress valid?
-				InternetAddress ia = validateIA(usedAs, iaIT.next());
-				if (null != ia) {
+				InternetAddress ia = validateIA( usedAs, iaIT.next() );
+				if ( null != ia )
+				{
 					// Yes!  Add it to the validated collection.
-					reply.add(ia);
+					reply.add( ia );
 				}
 			}
 		}
@@ -731,7 +700,7 @@ public final class MiscUtil {
 		// Collection<InternetAddress> of the valid InternetAddress's
 		// from the Collection<InternetAddress> passed in.  Return it.
 		return reply;
-	}
+	}//end validateInternetAddressCollection()
 	
 	/**
 	 * Validates a Collection<String> as containing valid email
@@ -746,19 +715,23 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static Collection<String> validateEmailAddressCollection(String usedAs, Collection<String> addrs) {
+	public static Collection<String> validateEmailAddressCollection( String usedAs, Collection<String> addrs )
+	{
 		// Do we have any email addresses to validate?
 		Collection<String> reply = new ArrayList<String>();
-		if (null != addrs) {
+		if ( null != addrs )
+		{
 			// Yes!  Scan them.
-			for (Iterator<String> itEA = addrs.iterator(); itEA.hasNext();) {
+			for ( Iterator<String> itEA = addrs.iterator(); itEA.hasNext(); )
+			{
 				// Is this email address valid?
 				String ea = itEA.next();
 				InternetAddress ia = new InternetAddress();
-				try {ia.setAddress(ea);} catch (Exception e) {};
-				if (null != validateIA(usedAs, ia)) {
+				try {ia.setAddress( ea );} catch (Exception e) {};
+				if ( null != validateIA( usedAs, ia ) )
+				{
 					// Yes!  Add it to the validated collection.
-					reply.add(ea);
+					reply.add( ea );
 				}
 			}
 		}
@@ -767,7 +740,7 @@ public final class MiscUtil {
 		// Collection<String> of the valid email addresses from the
 		// Collection<String> passed in.  Return it.
 		return reply;
-	}
+	}// end validateEmailAddressCollection()
 
 	/**
 	 * Given an email address in string form, returns the corresponding
@@ -779,21 +752,23 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static InternetAddress validateEmailAddress(String usedAs, String ema) {
+	public static InternetAddress validateEmailAddress( String usedAs, String ema )
+	{
 		// If we we don't have an email address to validate...
-		ema = ((null == ema) ? "" : ema.trim()); 
-		if (0 == ema.length()) {
+		ema = (( null == ema ) ? "" : ema.trim()); 
+		if ( 0 == ema.length() )
+		{
 			// ...return null.
 			return null;
 		}
 
 		// Otherwise, construct an InternetAddress from it...
 		InternetAddress ia = new InternetAddress();
-		try {ia.setAddress(ema);} catch (Exception e) {};
+		try { ia.setAddress( ema ); } catch ( Exception e ) {};
 		
 		// ...and validate that.
-		return validateIA(usedAs, ia);
-	}
+		return validateIA( usedAs, ia );
+	}// end validateEmailAddress()
 	
 	/*
 	 * Validates an InternetAddress as containing a valid email
@@ -802,44 +777,49 @@ public final class MiscUtil {
 	 * If it does, it is returned.  If it doesn't, an error is logged
 	 * and null is returned.
 	 */
-	private static InternetAddress validateIA(String usedAs, InternetAddress ia) {
-		try {
+	private static InternetAddress validateIA( String usedAs, InternetAddress ia )
+	{
+		try
+		{
 			// Is this InternetAddress valid?
 			ia.validate();
 		}
-		catch (Exception ex) {
+		catch ( Exception ex )
+		{
 			// No!  Log the error...
-			StringBuffer error = new StringBuffer(usedAs + ":  invalid InternetAddress dropped");
-			error.append(getIAPartString("address",  ia.getAddress() ));
-			error.append(getIAPartString("personal", ia.getPersonal()));
-			error.append(getIAPartString("type",     ia.getType()    ));
-			error.append(getIAPartString("toString", ia.toString()   ));
-			m_logger.error(error.toString());
+			StringBuffer error = new StringBuffer( usedAs + ":  invalid InternetAddress dropped" );
+			error.append( getIAPartString( "address",  ia.getAddress()  ) );
+			error.append( getIAPartString( "personal", ia.getPersonal() ) );
+			error.append( getIAPartString( "type",     ia.getType()     ) );
+			error.append( getIAPartString( "toString", ia.toString()    ) );
+			m_logger.error( error.toString() );
 						
 			// ...and forget about it.
 			ia = null;
 
 			// Was the exception we caught other than an
 			// AddressException?
-			if (!(ex instanceof AddressException)) {
+			if ( ! ( ex instanceof AddressException ) )
+			{
 				// Yes!  Then something deeper than just a bogus email
 				// address is happening.  Lets log the exception too.
-				m_logger.error("validateIA( EXCEPTION ):  ", ex);
+				m_logger.error( "MiscUtil.validateIA( EXCEPTION ):  ", ex );
 			}
 		}
 
 		// If we get here, ia refers to the validated InternetAddress
 		// or is null.  Return it.
 		return ia;
-	}
+	}// end validateIA()
 	
 	/*
 	 * Returns a String for constructing an error message about the
 	 * invalid email address.
 	 */
-	private static String getIAPartString(String name, String value) {
-		return (", " + name + ":  '" + ((null == value) ? "" : value) + "'");
-	}
+	private static String getIAPartString( String name, String value )
+	{
+		return ( ", " + name + ":  '" + ( ( null == value ) ? "" : value ) + "'" );
+	}// end getIAPartString()
 	
 	/**
 	 * Returns true if the FolderEntry is reserved and false otherwise.
@@ -854,9 +834,10 @@ public final class MiscUtil {
 	 */
 	public static boolean isEntryReserved(String binderIdS, String entryIdS) {
 		boolean reply = false;
+		
 		try {
 			Long binderId = Long.parseLong(binderIdS);
-			Long entryId  = Long.parseLong(entryIdS );
+			Long entryId  = Long.parseLong(entryIdS);
 			FolderEntry fe = getFolderModule().getEntry(binderId, entryId);
 			if (null != fe) {
 				HistoryStamp reservation = fe.getReservation();
@@ -869,83 +850,119 @@ public final class MiscUtil {
 		catch (Exception e) {
 			// Ignore.
 		}
+		
 		return reply;
 	}
 
+	// The following defines the language strings that may need to be
+	// patched into a documentation URL.
+	private final static String[] DOC_LANGS = {
+		"cs-cz",
+		"da-dk",
+		"de-de",
+		"es-es",
+		"fr-fr",
+		"hu-hu",
+		"it-it",
+		"ja-jp",
+		"nl-nl",
+		"pl-pl",
+		"pt-br",
+		"ru-ru",
+		"sv-se",
+		"zh-cn",
+		"zh-tw",		
+	};
+	
+	// Names of the different help guides.
+	private static final String USER_GUIDE = "user";
+	private static final String ADV_USER_GUIDE = "adv_user";
+	private static final String ADMIN_GUIDE = "admin";
+	private static final String INSTALLATION_GUIDE = "install";
+
 	/**
-	 * Return the url that repairs to the appropriate help
-	 * documentation.
-	 * 
-	 * @param guideName
-	 * @param pageId
-	 * @param sectionId
-	 * 
-	 * @return
+	 * Return the url that repairs to the appropriate help documentation.
 	 */
-	public static String getHelpUrl(String guideName, String pageId, String sectionId) {
+	public static String getHelpUrl( String guideName, String pageId, String sectionId )
+	{
+		String url;
+		String lang;
+		String guideComponent = null;
+		String product;
+		
 		// Get the base help url from ssf-ext.properties.
-		String url = SPropsUtil.getString("help.hostName", "http://www.novell.com");
+		url = SPropsUtil.getString( "help.hostName", "http://www.novell.com" );
 		
 		// Do we have a language code to put on the url?
-		String lang = getHelpLangCode();
-		if (hasString(lang)) {
+		lang = getHelpLangCode();
+		if ( lang != null && lang.length() > 0 )
+		{
 			// Yes
 			url +=  "/" + lang;
 		}
+		
 		url += "/documentation";
 		
-		String product = ("/" + SPropsUtil.getString("release.product", "vibe"));
+		product = ("/" + SPropsUtil.getString( "release.product", "vibe" ));
 		
 		// Are we running Filr?
-		if (Utils.checkIfFilr()) {
+		if ( Utils.checkIfFilr() )
+		{
 			// Yes
-			url    += ("/" + SPropsUtil.getString("filr.release.product.novell", "novell-filr"));
-			product = ("/" + SPropsUtil.getString("filr.release.product",        "filr"       ));
+			url    += ("/" + SPropsUtil.getString( "filr.release.product.novell", "novell-filr" ));
+			product = ("/" + SPropsUtil.getString( "filr.release.product",        "filr"        ));
 		}
-		// Are we running Novell Vibe?
-		else if (ReleaseInfo.isLicenseRequiredEdition())
-		     url += ("/" + SPropsUtil.getString("release.product",         "vibe"       ));
-		else url += ("/" + SPropsUtil.getString("release.product.kablink", "kablinkvibe"));
+		// Are we running Novell Teaming?
+		else if ( ReleaseInfo.isLicenseRequiredEdition())
+		     url += ("/" + SPropsUtil.getString( "release.product",         "vibe"        ));
+		else url += ("/" + SPropsUtil.getString( "release.product.kablink", "kablinkvibe" ));
 		
-		String guideComponent = null;
-		if (hasString(guideName)) {
-			if (guideName.equalsIgnoreCase(USER_GUIDE)) {
+		if ( guideName != null && guideName.length() > 0 )
+		{
+			if ( guideName.equalsIgnoreCase( USER_GUIDE ) )
+			{
 				// Get the url to the user guide.
 				guideComponent = product + "_user/data/";
 			}
-			else if (guideName.equalsIgnoreCase(ADV_USER_GUIDE)) {
+			else if ( guideName.equalsIgnoreCase( ADV_USER_GUIDE ) )
+			{
 				// Get the url to the advanced user guide.
 				guideComponent = product + "_useradv/data/";
 			}
-			else if (guideName.equalsIgnoreCase(ADMIN_GUIDE)) {
+			else if ( guideName.equalsIgnoreCase( ADMIN_GUIDE ) )
+			{
 				// Get the url to the administration guide.
 				guideComponent = product + "_admin/data/";
 			}
-			else if (guideName.equalsIgnoreCase(INSTALLATION_GUIDE)) {
+			else if ( guideName.equalsIgnoreCase( INSTALLATION_GUIDE ) )
+			{
 				// Get the url to the installation guide.
 				guideComponent = product + "_inst/data/";
 			}
-			else {
+			else
 				guideComponent = null;
-			}
 			
 			// Did we recognize the name of the guide?
-			if (null != guideComponent) {
+			if ( guideComponent != null )
+			{
 				// Yes, add the guide component to the url.
 				url += guideComponent;
 				
 				// Do we have a specific page to go to in the documentation?
-				if (null != pageId) {
-					// Yes, each page has its own HTML file.
+				if ( pageId != null )
+				{
+					// Yes, each page has its own html file.
 					url += pageId + ".html";
 					
 					// Do we have a specific section within the page to go to?
-					if (null != sectionId) {
+					if ( sectionId != null )
+					{
 						// Yes
 						url += "#" + sectionId;
 					}
 				}
-				else {
+				else
+				{
 					// No, take the user to the start of the guide.
 					url += "bookinfo.html";
 				}
@@ -955,49 +972,60 @@ public final class MiscUtil {
 		return url;
 	}
 
-	/*
+	/**
 	 * Return the language code that should be put on the help url.
 	 */
-	private static String getHelpLangCode() {
+	private static String getHelpLangCode()
+	{
+		String lang;
+		String originalLang;
+		int i;
+		
 		// Get the language the user is running in
-		String lang = NLT.get("Teaming.Lang", "");
-		String originalLang = lang;
+		lang = NLT.get( "Teaming.Lang", "" );
+		originalLang = lang;
 		
 		// Do we know the language? 
-		if (!(hasString(lang))) {
+		if ( lang == null || lang.length() == 0 )
+		{
 			// No
 			return null;
 		}
 		
 		// Is the language English?
-		if (0 == lang.indexOf("en")) {
+		if ( lang.indexOf( "en" ) == 0 )
+		{
 			// Yes, we don't need to put a language code on the url.
 			return null;
 		}
 
 		// We only need the first two characters of the language to
 		// localize the documentation URLs.
-		if (lang.length() > 2) {
-			lang = lang.substring(0, 2); 
+		if ( lang.length() > 2 )
+		{
+			lang = lang.substring( 0, 2 ); 
 		}
 
 		// Is the language Chinese?
-		if (lang.equalsIgnoreCase("zh")) {
+		if ( lang.equalsIgnoreCase( "zh" ) )
+		{
 			// Yes, use the full language string of zh-tw or zh-cn
 			lang = originalLang.toLowerCase();
-			lang = lang.replace('_', '-');
+			lang = lang.replace( '_', '-' );
 		}
 
 		// Look for the appropriate language code.
-		int i;
-		for (i = 0; i < DOC_LANGS.length; i += 1) {
-			if (0 == DOC_LANGS[i].indexOf(lang)) {
+		for (i = 0; i < DOC_LANGS.length; ++i)
+		{
+			if ( DOC_LANGS[i].indexOf( lang ) == 0 )
+			{
 				break;
 			}
 		}		
 
 		// Do we have a language code for this language?
-		if (i == DOC_LANGS.length) {
+		if ( i == DOC_LANGS.length )
+		{
 			// No
 			return null;
 		}
@@ -1031,11 +1059,12 @@ public final class MiscUtil {
 	 * @return
 	 */
 	public static String replace(String s, String oldSub, String newSub) {
-		if ((null == s) || (null == oldSub) || (null == newSub)) {
+		if ((s == null) || (oldSub == null) || (newSub == null)) {
 			return null;
 		}
 
 		int y = s.indexOf(oldSub);
+
 		if (y >= 0) {
 			StringBuffer sb = new StringBuffer();
 			int length = oldSub.length();
@@ -1049,9 +1078,9 @@ public final class MiscUtil {
 			}
 
 			sb.append(s.substring(x));
+
 			return sb.toString();
 		}
-		
 		else {
 			return s;
 		}
@@ -1065,12 +1094,15 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static List<IdTriple> getIdTriplesFromMultipleEntryIds(String multipleEntityIds) {
+	public static List<IdTriple> getIdTriplesFromMultipleEntryIds( String multipleEntityIds )
+	{
 		List<IdTriple> reply = new ArrayList<IdTriple>();
-		if (hasString(multipleEntityIds)) {
-			String[] meIds = multipleEntityIds.split(",");
-			for (String meId:  meIds) {
-				String[] eId = meId.split(":");
+		if ( hasString( multipleEntityIds ) )
+		{
+			String[] meIds = multipleEntityIds.split( "," );
+			for ( String meId:  meIds )
+			{
+				String[] eId = meId.split( ":" );
 				reply.add(new IdTriple(Long.parseLong(eId[0]), Long.parseLong(eId[1]), eId[2]));
 			}
 		}
@@ -1084,9 +1116,10 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static Collection<Long> validateCL(Collection<Long> lC) {
-		return ((null == lC) ? new HashSet<Long>() : lC);
-	}
+	public static Collection<Long> validateCL(Collection<Long> lC)
+	{
+		return ( ( null == lC ) ? new HashSet<Long>() : lC );
+	}// end validateCL()
 	
 	/**
 	 * Validates that a Collection<String> is non-null.
@@ -1095,9 +1128,10 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static Collection<String> validateCS(Collection<String> sC) {
-		return ((null == sC) ? new HashSet<String>() : sC);
-	}
+	public static Collection<String> validateCS(Collection<String> sC)
+	{
+		return ( ( null == sC ) ? new HashSet<String>() : sC );
+	}// end validateCS()
 	
 	/**
 	 * Validates that a List<InternetAddress> is non-null.
@@ -1106,17 +1140,12 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static List<InternetAddress> validateIAL(List<InternetAddress> iaList) {
-		return ((null == iaList) ? new ArrayList<InternetAddress>() : iaList);
-	}
+	public static List<InternetAddress> validateIAL( List<InternetAddress> iaList )
+	{
+		return ( ( null == iaList ) ? new ArrayList<InternetAddress>() : iaList );
+	}// end validateIAL()
 
-	/**
-	 * ?
-	 *  
-	 * @param localeId
-	 * 
-	 * @return
-	 */
+
     public static Locale findLocale(String localeId) {
         for (Locale locale : NLT.getLocales()) {
             if (locale.toString().equals(localeId)) {
@@ -1125,7 +1154,6 @@ public final class MiscUtil {
         }
         return null;
     }
-    
 	/**
 	 * Validates that a List<Locale> is non-null.
 	 * 
@@ -1133,25 +1161,29 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static List<Locale> validateLL(List<Locale> lList) {
-		return ((null == lList) ? new ArrayList<Locale>() : lList);
-	}
+	public static List<Locale> validateLL( List<Locale> lList )
+	{
+		return ( ( null == lList ) ? new ArrayList<Locale>() : lList );
+	}// end validateIAL()
 	
 	/*
 	 * Converts a byte[] to a string of hex characters.
 	 */
-	private static String baToHS(final byte[] b) {
-		final StringBuffer sb = new StringBuffer(b.length * 2);
+	private static String baToHS( final byte[] b )
+	{
+		final StringBuffer sb = new StringBuffer( b.length * 2 );
 		final int baLen = b.length;
-		for (int i = 0; i < baLen; i += 1) {
-			int v = (b[i] & 0xff);
-			if (v < 16) {
-				sb.append('0');
+		for ( int i = 0; i < baLen; i += 1 )
+		{
+			int v = ( b[i] & 0xff );
+			if ( v < 16 )
+			{
+				sb.append( '0' );
 			}
-			sb.append(Integer.toHexString(v));
+			sb.append( Integer.toHexString( v ) );
 		}
 		return sb.toString();
-	}
+	}// end baToHS()
 	
 	/**
 	 * Returns the MD5 hash from a byte[].
@@ -1162,28 +1194,31 @@ public final class MiscUtil {
 	 * 
 	 * @throws Exception
 	 */
-	public static String getMD5Hash(byte[] dataBytes) throws Exception {
+	public static String getMD5Hash( byte[] dataBytes ) throws Exception
+	{
 		// Read the data through the MD5 digest...
-	    InputStream		input     = new ByteArrayInputStream(dataBytes);
+	    InputStream		input     =  new ByteArrayInputStream( dataBytes );
 	    byte[]			buffer    = new byte[1024];
-	    MessageDigest	md5Digest = MessageDigest.getInstance("MD5");
+	    MessageDigest	md5Digest = MessageDigest.getInstance( "MD5" );
 	    int				read;
 	    do {
-	        read = input.read(buffer);
-	        if (read > 0) {
-	            md5Digest.update(buffer, 0, read);
+	        read = input.read( buffer );
+	        if ( read > 0 )
+	        {
+	            md5Digest.update( buffer, 0, read );
 	        }
-	    } while (read != (-1));
+	    } while ( read != (-1) );
 	    input.close();
 
 	    // ...and return the hash as a string.
-	    return baToHS(md5Digest.digest());
-	}
+	    return baToHS( md5Digest.digest() );
+	}// end getMD5Hash()
 	
-	public static String getMD5Hash(String data) throws Exception {
+	public static String getMD5Hash( String data ) throws Exception
+	{
 		// Always use the initial form of the method.
-		return getMD5Hash(data.getBytes());
-	}
+		return getMD5Hash( data.getBytes() );
+	}// end getMD5Hash()
 
 	/**
 	 * Given a DefinableEntity that's a FolderEntry, returns the
@@ -1195,25 +1230,31 @@ public final class MiscUtil {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static FileAttachment getPrimaryFileAttachment(DefinableEntity de) {
-		SimpleProfiler.start("MiscUtil.getPrimaryFileAttachment()");
-		try {
+	public static FileAttachment getPrimaryFileAttachment( DefinableEntity de )
+	{
+		SimpleProfiler.start( "MiscUtil.getPrimaryFileAttachment()" );
+		try
+		{
 			// Do we have a DefinableEntity that's a FolderEntry?
 			FileAttachment reply = null;
-			if ((null != de) && (de instanceof FolderEntry)) {
+			if ( ( null != de ) && ( de instanceof FolderEntry ) )
+			{
 				// Yes!  Does that entry have a primary file attribute?
 				FolderEntry fe = ((FolderEntry) de);
 				Map model  = new HashMap();
-				DefinitionHelper.getPrimaryFile(fe, model);
-				String attrName = ((String) model.get(WebKeys.PRIMARY_FILE_ATTRIBUTE));
-				if (hasString(attrName)) {
+				DefinitionHelper.getPrimaryFile( fe, model );
+				String attrName = ((String) model.get( WebKeys.PRIMARY_FILE_ATTRIBUTE ) );
+				if ( hasString( attrName ) )
+				{
 					// Yes!  Can we access the custom attribute values for
 					// that attribute?
-					CustomAttribute ca = fe.getCustomAttribute(attrName);
-					if (null != ca) {
+					CustomAttribute ca = fe.getCustomAttribute( attrName );
+					if ( null != ca )
+					{
 						// Yes!  Does it contain any FileAttachment's?
 						Collection values = ca.getValueSet();
-						if (hasItems(values)) {
+						if ( hasItems( values ) )
+						{
 							// Yes!  Return the first one.
 							reply = ((FileAttachment) values.iterator().next());
 						}
@@ -1221,10 +1262,11 @@ public final class MiscUtil {
 				}
 		
 				// Do we have the FileAttachment for the entry yet?
-				if (null == reply) {
+				if ( null == reply )
+				{
 					// No!  Does it have any attachments?
 					Collection<FileAttachment> atts = fe.getFileAttachments();
-					if (hasItems(atts)) {
+					if ( hasItems( atts ) ) {
 						// Yes!  Return the first one.
 						reply = ((FileAttachment) atts.iterator().next());
 					}
@@ -1237,16 +1279,19 @@ public final class MiscUtil {
 			return reply;
 		}
 		
-		finally {
-			SimpleProfiler.stop("MiscUtil.getPrimaryFileAttachment()");
+		finally
+		{
+			SimpleProfiler.stop( "MiscUtil.getPrimaryFileAttachment()" );
 		}
 	}
 
-    public static String getPrimaryFileName(DefinableEntity de) {
+    public static String getPrimaryFileName( DefinableEntity de )
+    {
         String fName = null;
-        FileAttachment fa = getPrimaryFileAttachment(de);
+        FileAttachment fa = getPrimaryFileAttachment( de );
         FileItem fi = fa.getFileItem();
-        if (null != fi) {
+        if ( null != fi )
+        {
             fName = fi.getName();
         }
         return fName;
@@ -1259,17 +1304,19 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static String getProductName(User user) {
+	public static String getProductName( User user )
+	{
 		String keyTail;
-		if (Utils.checkIfFilr())
+		if ( Utils.checkIfFilr() )
 		     keyTail = "filr";
 		else keyTail = "vibe";
-		return NLT.get(("productName." + keyTail), user.getLocale());
+		return NLT.get( ( "productName." + keyTail ), user.getLocale() );
 	}
 	
-	public static String getProductName() {
+	public static String getProductName()
+	{
 		// Always use the initial form of the method.
-		return getProductName(RequestContextHolder.getRequestContext().getUser());
+		return getProductName( RequestContextHolder.getRequestContext().getUser() );
 	}
 
 	/**
@@ -1281,21 +1328,15 @@ public final class MiscUtil {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<String> sortStringList(List<String> ls) {
-		if ((null != ls) && (1 < ls.size())) {
-			StringComparator sc = new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale());
-			Collections.sort(ls, sc);
+	public static List<String> sortStringList( List<String> ls ) {
+		if ( ( null != ls ) && ( 1 < ls.size() ) )
+		{
+			StringComparator sc = new StringComparator( RequestContextHolder.getRequestContext().getUser().getLocale() );
+			Collections.sort( ls, sc );
 		}
 		return ls;
 	}
 
-	/**
-	 * ?
-	 * 
-	 * @param filename
-	 * 
-	 * @return
-	 */
     public static boolean isPdf(String filename) {
         boolean isPdf = false;
         if (hasString(filename)) {
@@ -1391,6 +1432,7 @@ public final class MiscUtil {
 		return npapiSupported.booleanValue();
 	}
 
+
 	/*
 	 * Parses and returns the constituent parts of a Chrome version
 	 * string.
@@ -1461,13 +1503,15 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static boolean isEntryPreDeleted(Long entryId) {
+	public static boolean isEntryPreDeleted( Long entryId )
+	{
 		boolean reply = false; 
-		try {
-			FolderEntry fe = getFolderModule().getEntry(null, entryId);
+		try
+		{
+			FolderEntry fe = getFolderModule().getEntry( null, entryId );
 			reply = fe.isPreDeleted();
 		}
-		catch (Exception e) {/* Ignore. */}
+		catch ( Exception e ) {/* Ignore. */}
 		return reply;
 	}
 	
@@ -1476,13 +1520,17 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static Long getSiteAdminRoleId() {
+	public static Long getSiteAdminRoleId()
+	{
 		List<Function> fs  = getAdminModule().getFunctions();
 		Long reply = null;
-		for (Function f:  fs) {
+		for ( Function f:  fs )
+		{
 			String fId = f.getInternalId();
-			if (hasString(fId)) {
-				if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID)) {
+			if ( hasString( fId ) )
+			{
+				if ( fId.equalsIgnoreCase( ObjectKeys.FUNCTION_SITE_ADMIN_INTERNALID ) )
+				{
 					reply = f.getId();
 					break;
 				}
@@ -1492,88 +1540,14 @@ public final class MiscUtil {
 	}
 
 	/**
-	 * Returns the DefinableEntity from a List<DefinableEntity> that
-	 * corresponds to the given ID.
-	 * 
-	 * If one is not found, null is returned.
-	 * 
-	 * @param deList
-	 * @param deid
-	 * 
-	 * @return
-	 */
-	public static DefinableEntity findDEInDEListById(List<DefinableEntity> deList, Long deid) {
-		if (null != deList) {
-			for (DefinableEntity de:  deList) {
-				if (de.getId().equals(deid)) {
-					return de;
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Returns the User from a List<Principal> that corresponds to the
-	 * given user ID.
-	 * 
-	 * If one is not found, null is returned.
-	 * 
-	 * @param pList
-	 * @param uid
-	 * 
-	 * @return
-	 */
-	public static User findUserInPListById(List<Principal> pList, Long uid) {
-		if (null != pList) {
-			for (Principal p:  pList) {
-				if (p.getId().equals(uid)) {
-					return ((User) p);
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Returns a List<Principal> of the Principal's associated with the
-	 * Subscription's in a List<Subscription>.
-	 * 
-	 * @param subs
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static List<Principal> resolveSubscriptionPrincipals(List<Subscription> subs) {
-		SimpleProfiler.start("MiscUtil.resolveSubscriptionPrincipals()");
-    	try {
-			List<Principal> reply;
-			if (null != subs) {
-				List<Long> uids = new ArrayList<Long>();
-				for (Subscription sub:  subs) {
-					ListUtil.addLongToListLongIfUnique(uids, sub.getId().getPrincipalId());
-				}
-				reply = ResolveIds.getPrincipals(uids);
-			}
-			else {
-				reply = null;
-			}
-			return reply;
-    	}
-    	
-    	finally {
-    		SimpleProfiler.stop("MiscUtil.resolveSubscriptionPrincipals()");
-    	}
-	}
-	
-	/**
 	 * Returns an instance of an AdminModule.
 	 * 
 	 * @return
 	 */
 	public static AdminModule getAdminModule() {
-		if (null == m_adminModule) {
-			m_adminModule = ((AdminModule) SpringContextUtil.getBean("adminModule"));
+		if ( null == m_adminModule )
+		{
+			m_adminModule = ( (AdminModule) SpringContextUtil.getBean( "adminModule" ));
 		}
 		return m_adminModule;
 	}
@@ -1583,9 +1557,11 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static CoreDao getCoreDao() {
-		if (null == m_coreDao) {
-			m_coreDao = ((CoreDao) SpringContextUtil.getBean("coreDao"));
+	public static CoreDao getCoreDao()
+	{
+		if ( null == m_coreDao )
+		{
+			m_coreDao = ((CoreDao) SpringContextUtil.getBean( "coreDao" ));
 		}
 		return m_coreDao;
 	}
@@ -1596,8 +1572,9 @@ public final class MiscUtil {
 	 * @return
 	 */
 	public static FolderModule getFolderModule() {
-		if (null == m_folderModule) {
-			m_folderModule = ((FolderModule) SpringContextUtil.getBean("folderModule"));
+		if ( null == m_folderModule )
+		{
+			m_folderModule = ( (FolderModule) SpringContextUtil.getBean( "folderModule" ));
 		}
 		return m_folderModule;
 	}
@@ -1607,9 +1584,11 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static ProfileModule getProfileModule() {
-		if (null == m_profileModule) {
-			m_profileModule = ((ProfileModule) SpringContextUtil.getBean("profileModule"));
+	public static ProfileModule getProfileModule()
+	{
+		if ( null == m_profileModule )
+		{
+			m_profileModule = ( (ProfileModule) SpringContextUtil.getBean( "profileModule" ) );
 		}
 		return m_profileModule;
 	}
@@ -1619,10 +1598,12 @@ public final class MiscUtil {
 	 * 
 	 * @return
 	 */
-	public static ZoneModule getZoneModule() {
-		if (null == m_zoneModule) {
-			m_zoneModule = ((ZoneModule) SpringContextUtil.getBean("zoneModule"));
+	public static ZoneModule getZoneModule()
+	{
+		if ( null == m_zoneModule )
+		{
+			m_zoneModule = ( (ZoneModule) SpringContextUtil.getBean( "zoneModule" ) );
 		}
 		return m_zoneModule;
 	}
-}
+}// end MiscUtil

@@ -1448,84 +1448,39 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		
 		return entryCopy;
     }
-    
-    /**
-     * Stores a user's subscriptions to an entry.
-     * 
-     * @param user
-     * @param folderId
-     * @param entryId
-     * @param styles
-     */
     //inside write transaction    
     @Override
-	public void setSubscription(User user, Long folderId, Long entryId, Map<Integer,String[]> styles) {
-		FolderEntry entry;
-		boolean deleteSub = ((null == styles) || styles.isEmpty());
-		if (deleteSub)
-		     entry = getEntryWithoutAccessCheck(folderId, entryId);	// We allow a subscription to be deleted without access to the item.
-		else entry = getEntry(                  folderId, entryId);	// getEntry() does read check.
-		
-		// Only subscribe at top level, no comments.
-		if (!(entry.isTop())) {
-			entry = entry.getTopEntry();
-		}
+	public void setSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {
+    	//getEntry does read check
+		FolderEntry entry = getEntry(folderId, entryId);
+		//only subscribe at top level
+		if (!entry.isTop()) entry = entry.getTopEntry();
+		User user = RequestContextHolder.getRequestContext().getUser();
 		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
-		
-		// Digest doesn't make sense here - only individual messages
-		// are sent. 
-		if (deleteSub) {
+		//digest doesn't make sense here - only individual messages are sent 
+		if (styles == null || styles.isEmpty()) {
 			if (s != null) {
 				getCoreDao().delete(s);
-				
-				// If this is the last subscription, let entry know.
+				//if this is the last subscription, let entry know
 				List subs = getCoreDao().loadSubscriptionByEntity(entry.getEntityIdentifier());
-				if (subs.size() == 1) {
-					entry.setSubscribed(false);				
-				}
+				if (subs.size() == 1) entry.setSubscribed(false);				
 			}
-		}
-		else {
+		} else {
 			if (s == null) {
 				s = new Subscription(user.getId(), entry.getEntityIdentifier());
 				s.setStyles(styles);
 				getCoreDao().save(s);
-			}
-			else {
-				s.setStyles(styles);
-			}
+			} else 	s.setStyles(styles);
 			entry.setSubscribed(true);
 		}
+  	
     }
-    
-    //inside write transaction    
-    @Override
-	public void setSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {
-    	// Always use the initial form of the method.
-    	setSubscription(RequestContextHolder.getRequestContext().getUser(), folderId, entryId, styles);
-    }
-
-    /**
-     * Returns a user's subscriptions to an entry.
-     * 
-     * @param user
-     * @param entry
-     * 
-     * @return
-     */
-    @Override
-	public Subscription getSubscription(User user, FolderEntry entry) {
-		// Only subscribe at top level, no comments.
-		if (!(entry.isTop())) {
-			entry = entry.getTopEntry();
-		}
-		return getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
-    }
-
     @Override
 	public Subscription getSubscription(FolderEntry entry) {
-    	// Always use the initial form of the method.
-		return getSubscription(RequestContextHolder.getRequestContext().getUser(), entry);
+    	//have entry so assume read access
+		User user = RequestContextHolder.getRequestContext().getUser();
+		if (!entry.isTop()) entry = entry.getTopEntry();
+		return getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
     }
 
 	@Override

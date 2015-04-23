@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,6 +37,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg.ProfileEntryDlgClient;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserListInfoCmd;
@@ -66,11 +67,12 @@ import com.google.gwt.user.client.ui.RequiresResize;
  * @author drfoster@novell.com
  */
 public class UserListPanel extends ToolPanelBase {
-	private BinderInfo						m_folderInfo;	// The folder this panel is running on. 
-	private GwtTeamingDataTableImageBundle	m_images;		// Access to Vibe's data table image bundle.
-	private GwtTeamingMessages				m_messages;		// Access to Vibe's localized message resources.
-	private UserListInfoRpcResponseData		m_userListInfo;	// The UserListInfoRpcResponseData for this folder's user lists, once they've been queried.
-	private VibeFlowPanel					m_fp;			// The panel holding the UserListPanel's contents.
+	private BinderInfo						m_folderInfo;		// The folder this panel is running on. 
+	private GwtTeamingDataTableImageBundle	m_images;			// Access to Vibe's data table image bundle.
+	private GwtTeamingMessages				m_messages;			// Access to Vibe's localized message resources.
+	private ProfileEntryDlg					m_profileEntryDlg;	// An instance of a ProfileEntryDlg.
+	private UserListInfoRpcResponseData		m_userListInfo;		// The UserListInfoRpcResponseData for this folder's user lists, once they've been queried.
+	private VibeFlowPanel					m_fp;				// The panel holding the UserListPanel's contents.
 
 	/*
 	 * Constructor method.
@@ -102,7 +104,9 @@ public class UserListPanel extends ToolPanelBase {
 	 */
 	private void clickOnPresenceControl(PrincipalInfo pi, PresenceControl presenceControl) {
 		Element piElement = presenceControl.getElement();
-		invokeSimpleProfileDlg(pi, piElement);
+		if (pi.isUserHasWS())
+		     invokeSimpleProfileDlg(   pi, piElement);
+		else invokeViewProfileEntryDlg(pi, piElement);
 	}
 	
 	/**
@@ -149,9 +153,38 @@ public class UserListPanel extends ToolPanelBase {
 	private void invokeSimpleProfileDlg(PrincipalInfo pi, Element pElement) {
 		Long wsId = pi.getPresenceUserWSId();
 		String wsIdS = ((null == wsId) ? null : String.valueOf(wsId));
-		GwtClientHelper.invokeSimpleProfile(pElement, String.valueOf(pi.getId()), wsIdS, pi.getTitle());
+		GwtClientHelper.invokeSimpleProfile(pElement, wsIdS, pi.getTitle());
 	}
 	
+	/*
+	 * Called to view the profile entry on the principal.
+	 */
+	private void invokeViewProfileEntryDlg(final PrincipalInfo pi, Element pElement) {
+		// Have we instantiated a profile entry dialog yet?
+		if (null == m_profileEntryDlg) {
+			// No!  Instantiate one now.
+			ProfileEntryDlg.createAsync(new ProfileEntryDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final ProfileEntryDlg peDlg) {
+					// ...and show it.
+					m_profileEntryDlg = peDlg;
+					showProfileEntryDlgAsync(pi);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've instantiated a profile entry dialog already!
+			// Simply show it.
+			showProfileEntryDlgAsync(pi);
+		}
+	}
 	/*
 	 * Asynchronously construct's the contents of the user list panel.
 	 */
@@ -260,7 +293,7 @@ public class UserListPanel extends ToolPanelBase {
 	 */
 	private void renderPrincipalInfo(VibeFlowPanel piPanel, final PrincipalInfo pi) {
 		final GwtPresenceInfo presence = pi.getPresence();
-		final PresenceControl presenceControl = new PresenceControl(String.valueOf(pi.getId()), String.valueOf(pi.getPresenceUserWSId()), false, false, false, presence);
+		final PresenceControl presenceControl = new PresenceControl(String.valueOf(pi.getPresenceUserWSId()), false, false, false, presence);
 		presenceControl.setImageAlignment("top");
 		presenceControl.addStyleName("vibe-userListPerUserPresence-control displayInline verticalAlignTop");
 		presenceControl.setAnchorStyleName("cursorPointer");
@@ -293,5 +326,24 @@ public class UserListPanel extends ToolPanelBase {
 			presenceLabel.setTitle(hover);
 		}
 		piPanel.add(presenceLabel);
+	}
+	
+	/*
+	 * Asynchronously shows the profile entry dialog.
+	 */
+	private void showProfileEntryDlgAsync(final PrincipalInfo pi) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showProfileEntryDlgNow(pi);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously shows the profile entry dialog.
+	 */
+	private void showProfileEntryDlgNow(PrincipalInfo pi) {
+		ProfileEntryDlg.initAndShow(m_profileEntryDlg, pi.getId());
 	}
 }

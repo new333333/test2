@@ -100,8 +100,8 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     private ProfileDao profileDao;
     private LicenseManager licenseManager;
     private AuthenticationModule authenticationModule;
-    private Map synchAgentRights;
-	private Map synchAgentTokenBoostRights;
+	private Map synchAgentRights;
+    private Map synchAgentTokenBoostRights;
     private Map fileSyncAgentRights;
     
 	@Override

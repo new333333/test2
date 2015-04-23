@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -104,9 +104,6 @@ import org.kablink.teaming.gwt.client.widgets.EmailPublicLinkDlg.EmailPublicLink
 import org.kablink.teaming.gwt.client.widgets.MailToMultiplePublicLinksSelectDlg;
 import org.kablink.teaming.gwt.client.widgets.MailToMultiplePublicLinksSelectDlg.MailToMultiplePublicLinksSelectCallback;
 import org.kablink.teaming.gwt.client.widgets.MailToMultiplePublicLinksSelectDlg.MailToMultiplePublicLinksSelectDlgClient;
-import org.kablink.teaming.gwt.client.widgets.SelectCSVDelimiterDlg;
-import org.kablink.teaming.gwt.client.widgets.SelectCSVDelimiterDlg.CSVDelimiterCallback;
-import org.kablink.teaming.gwt.client.widgets.SelectCSVDelimiterDlg.SelectCSVDelimiterDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
@@ -139,7 +136,6 @@ public class BinderViewsHelper {
 	private static GwtTeamingMessages					m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
 	private static ShareThisDlg2						m_shareDlg;								// An instance of a share this dialog.
 	private static MailToMultiplePublicLinksSelectDlg	m_mailPLSelectDlg;						// An instance of the mail to multiple public links select dialog.
-	private static SelectCSVDelimiterDlg				m_selectCSVDelimiterDlg;				// An instance of the select CSV delimiter dialog.
 	private static WhoHasAccessDlg						m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
 
 	// The following is the ID/name of the <IFRAME> used to run the
@@ -876,63 +872,14 @@ public class BinderViewsHelper {
 	 * @param folderId
 	 * @param reloadEvent
 	 */
-	public static void downloadFolderAsCSVFile(final FormPanel downloadForm, final Long folderId, final VibeEventBase<?> reloadEvent) {
-		// Have we created a Select CSV Delimiter dialog yet?
-		if (null == m_selectCSVDelimiterDlg) {
-			// No!  Create one now...
-			SelectCSVDelimiterDlg.createAsync(new SelectCSVDelimiterDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in asynchronous
-					// provider.
-				}
-				
-				@Override
-				public void onSuccess(SelectCSVDelimiterDlg csvDlg) {
-					// ...and run it and do the download.
-					m_selectCSVDelimiterDlg = csvDlg;
-					selectCSVDelimiterAndDownloadAsync(downloadForm, folderId, reloadEvent);
-				}
-			});
-		}
-		
-		else {
-			// Yes, we already have a Select CSV Delimiter dialog!  Run
-			// it and do the download.
-			selectCSVDelimiterAndDownloadAsync(downloadForm, folderId, reloadEvent);
-		}
-	}
-	
-	public static void downloadFolderAsCSVFile(FormPanel downloadForm, Long folderId) {
-		// Always use the initial form of the method.
-		downloadFolderAsCSVFile(downloadForm, folderId, null);
-	}
-
-	/*
-	 * Asynchronously downloads the folder as a CSV file using the
-	 * given delimiter.
-	 */
-	private static void downloadFolderAsCSVFileImplAsync(final FormPanel downloadForm, final Long folderId, final VibeEventBase<?> reloadEvent, final String csvDelim) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				downloadFolderAsCSVFileImplNow(downloadForm, folderId, reloadEvent, csvDelim);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously downloads the folder as a CSV file using the
-	 * given delimiter.
-	 */
-	private static void downloadFolderAsCSVFileImplNow(final FormPanel downloadForm, final Long folderId, final VibeEventBase<?> reloadEvent, final String csvDelim) {
+	public static void downloadFolderAsCSVFile(final FormPanel downloadForm, Long folderId, final VibeEventBase<?> reloadEvent) {
 		// Show a busy spinner while we build the information for
 		// downloading the folder.
 		final SpinnerPopup busy = new SpinnerPopup();
 		busy.center();
 
 		// Send the request for the download folder as a CSV file URL.
-		GetDownloadFolderAsCSVFileUrlCmd cmd = new GetDownloadFolderAsCSVFileUrlCmd(folderId, csvDelim);
+		GetDownloadFolderAsCSVFileUrlCmd cmd = new GetDownloadFolderAsCSVFileUrlCmd(folderId);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -977,6 +924,11 @@ public class BinderViewsHelper {
 				}
 			}
 		});
+	}
+	
+	public static void downloadFolderAsCSVFile(FormPanel downloadForm, Long folderId) {
+		// Always use the initial form of the method.
+		downloadFolderAsCSVFile(downloadForm, folderId, null);
 	}
 	
 	/**
@@ -2154,38 +2106,6 @@ public class BinderViewsHelper {
 	public static void moveEntries(final List<EntityId> entityIds) {
 		// Always use the initial form of the method.
 		moveEntries(entityIds, null);
-	}
-
-	/*
-	 * Asynchronously runs the select a CSV delimiter dialog and does
-	 * the download.
-	 */
-	private static void selectCSVDelimiterAndDownloadAsync(final FormPanel downloadForm, final Long folderId, final VibeEventBase<?> reloadEvent) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				selectCSVDelimiterAndDownloadNow(downloadForm, folderId, reloadEvent);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously runs the select a CSV delimiter dialog and does
-	 * the download.
-	 */
-	private static void selectCSVDelimiterAndDownloadNow(final FormPanel downloadForm, final Long folderId, final VibeEventBase<?> reloadEvent) {
-		SelectCSVDelimiterDlg.initAndShow(m_selectCSVDelimiterDlg, new CSVDelimiterCallback() {
-			@Override
-			public void onCancel() {
-				// If the user cancels the dialog, we simply do
-				// nothing.
-			}
-			
-			@Override
-			public void onSelect(String csvDelim) {
-				downloadFolderAsCSVFileImplAsync(downloadForm, folderId, reloadEvent, csvDelim);
-			}
-		});
 	}
 	
 	/*

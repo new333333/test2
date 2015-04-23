@@ -80,7 +80,7 @@ import org.kablink.teaming.util.StatusTicket;
 @SuppressWarnings("unchecked")
 public interface FolderModule {
 	//these are input to the testAccess methods
-	//useful for UI's.  Use to determine which operations are allowed
+	//usefull for UI's.  Use to determine which operations are allowed
 	//if not listed, you have the entry and the operation only needs read access
    public enum FolderOperation {
 	   // Core operations
@@ -190,13 +190,11 @@ public interface FolderModule {
     	throws AccessControlException, WriteFilesException, WriteEntryDataException;
     /**
      * Subscribe to an entry.  Multiple styles can be specified and multiple address/style are permitted
-     * @param user
      * @param folderId
      * @param entryId
      * @param styles - null or empty will delete
      */
-    public void setSubscription(User user, Long folderId, Long entryId, Map<Integer,String[]> styles); 
-    public void setSubscription(           Long folderId, Long entryId, Map<Integer,String[]> styles); 
+    public void setSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles); 
     /**
      * Add a vote to a survey entry.
      * @param folderId
@@ -483,12 +481,10 @@ public interface FolderModule {
     public SortedSet<String> getSubfoldersTitles(Folder folder, boolean checkAccess);
     /**
      * Return the current users subscription the the folderEntry
-     * @param user
      * @param entry
      * @return
      */
-	public Subscription getSubscription(User user, FolderEntry entry); 
-	public Subscription getSubscription(           FolderEntry entry); 
+	public Subscription getSubscription(FolderEntry entry); 
 	/**
 	 * Return community tags and the current users personal tags on the entry
 	 * @param entry

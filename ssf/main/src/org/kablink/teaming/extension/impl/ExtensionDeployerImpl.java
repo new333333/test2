@@ -93,7 +93,6 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.util.ZipEntryStream;
-import org.kablink.teaming.web.servlet.listener.ContextListenerPostSpring;
 import org.kablink.util.LockFile;
 import org.kablink.util.Validator;
 
@@ -174,12 +173,6 @@ public class ExtensionDeployerImpl extends CommonDependencyInjection implements 
 	 */
 	@Override
 	public void check() {
-		if(ContextListenerPostSpring.isStartupInProgress()) {
-			if(logger.isDebugEnabled())
-				logger.debug("Server still starting up, skipping this round");
-			return;
-		}
-		
 		//call each zone
 		final List companies = getCoreDao().findCompanies();
    		for (int i=0; i<companies.size(); ++i) {

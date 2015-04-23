@@ -5536,17 +5536,6 @@ td.datePickerMonth {
 	.vibe-importProfilesDlg-panel      {}
 /* End:  Import profiles dialog styles. */
 
-/* Start:  Select CSV delimiter dialog styles. */
-	.vibe-selectCSVDelimiterDlg-content        {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
-	.vibe-selectCSVDelimiterDlg_customCSVInput {width: 100px;}
-	.vibe-selectCSVDelimiterDlg-grid           {width: 500px;}
-	.vibe-selectCSVDelimiterDlg-hint           {white-space: normal; color: #505354; font-size: 13px; margin-bottom:  5px;}
-	.vibe-selectCSVDelimiterDlg-hint2          {margin-top:  10px;}
-	.vibe-selectCSVDelimiterDlg-panel          {}
-	.vibe-selectCSVDelimiterDlg-radio          {margin-left: 5px;}
-	
-/* End:  SelectCSVDelimiter dialog styles. */
-
 /* Start:  User properties dialog styles. */
 	.vibe-userPropertiesDlg-aboutMe          {color: #353838; width: 330px;}
 	.vibe-userPropertiesDlg-attrCaption      {color: #949494; padding-right: 3px; display: inline-block; padding-top: 2px;; padding-bottom: 3px;}

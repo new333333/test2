@@ -38,34 +38,34 @@ import com.google.gwt.i18n.client.Messages;
  * This interface is used to retrieve strings from the file
  * GwtTeamingMessages*.properties.
  * 
- * @author drfoster@novell.com
+ * @author jwootton
  */
-public interface GwtTeamingMessages extends Messages {
+public interface GwtTeamingMessages extends Messages
+{
 	// Base product names.  Non-translatable?
 	String companyNovell();
 	String productFilr();
 	String productVibe();
 	
-	// Strings used in the 'find' name-completion control.
+	// Strings used in the "find" name-completion control
 	String findCtrl_NoItemsFound();
-	String nOfn_Approximate(int value1, int value2, int value3);
-	String nOfn_Exact(      int value1, int value2, int value3);
+	String nOfn_Approximate( int value1, int value2, int value3 );
+	String nOfn_Exact(       int value1, int value2, int value3 );
 	String searching();
 	String searchEntireSiteLabel();
 	String searchCurrentFolderWorkspaceLabel();
 
-	// Strings used in the 'Preview landing page' dialog.
+	// Strings used in the "Preview landing page" dialog.
 	String previewLandingPageDlgHeader();
 	
-	// Strings used with the Custom Jsp widget in the landing page
-	// editor.
+	// Strings used with the Custom Jsp widget in the landing page editor.
 	String customJspAssocEntry();
 	String customJspAssocFolder();
 	String customJspLabel();
 	String customJspName();
 	String customJspProperties();
 	
-	// Strings used with the Entry widget in the landing page editor.
+	// Strings used with the Entry widget in the landing page editor
 	String currentEntry();
 	String entryLabel();
 	String entryProperties();
@@ -73,7 +73,7 @@ public interface GwtTeamingMessages extends Messages {
 	String noEntrySelected();
 	String pleaseSelectAnEntry();
 	
-	// Strings used with the Folder widget in the landing page editor.
+	// Strings used with the Folder widget in the landing page editor
 	String currentFolder();
 	String findFolderLabel();
 	String folderLabel();
@@ -85,8 +85,7 @@ public interface GwtTeamingMessages extends Messages {
 	String showFolderDesc();
 	String showTitleBar();
 	
-	// Strings used with the Google Gadget widget in the landing page
-	// editor.
+	// Strings used with the Google Gadget widget in the landing page editor
 	String googleGadgetCodeLabel();
 	String googleGadgetProperties();
 	
@@ -96,8 +95,7 @@ public interface GwtTeamingMessages extends Messages {
 	String noFileAttachmentsHint();
 	String selectGraphicLabel();
 	
-	// Strings used in the Enhanced Views widget in the landing page
-	// editor.
+	// Strings used in the Enhanced Views widget in the landing page editor
 	String enhancedViewLabel();
 	String enhancedViewNameLabel();
 	String enhancedViewProperties();
@@ -124,7 +122,7 @@ public interface GwtTeamingMessages extends Messages {
 	String enhancedViewDisplaySurvey();
 	String enhancedViewDisplaySurveyDesc();
 	
-	// lpe stands for Landing Page Editor.
+	// lpe stands for Landing Page Editor
 	String lpeAltCustomJsp();
 	String lpeAltDeleteAll();
 	String lpeAltDeleteElement();
@@ -164,13 +162,13 @@ public interface GwtTeamingMessages extends Messages {
 	String lpeTable();
 	String lpeUtilityElement();
 	
-	// Strings used with the 'Link to entry' widget.
+	// Strings used with the "Link to entry" widget
 	String linkToEntryLabel();
 	String linkToEntryTitleLabel();
 	String linkToEntryProperties();
 	String openEntryInNewWnd();
 	
-	// Strings used with the 'Link to folder widget.
+	// Strings used with the "Link to folder" widget
 	String currentFolderWorkspace();
 	String folderOrWorkspaceLabel();
 	String linkToFolderLabel();
@@ -179,27 +177,27 @@ public interface GwtTeamingMessages extends Messages {
 	String openFolderInNewWnd();
 	String pleaseSelectAFolderOrWorkspace();
 	
-	// Strings used with the 'Link to URL' widget.
+	// Strings used with the "Link to url" widget
 	String linkToUrl();
 	String linkToUrlLabel();
 	String linkToUrlProperties();
-	String linkToUrlUrl(String url);
+	String linkToUrlUrl( String url );
 	String openUrlInNewWnd();
 	
-	// Strings used in the 'List' widget properties dialog.
+	// Strings used in the "List" widget properties dialog
 	String listProperties();
 	
-	// Strings used with the 'table' widget.
-	String columnXWidth(      int colNum);
-	String emptyColumnWidth(  int colNum);
-	String invalidColumnWidth(int colNum);
+	// Strings used with the "table" widget
+	String columnXWidth( int colNum );
+	String emptyColumnWidth( int colNum );
+	String invalidColumnWidth( int colNum );
 	String invalidNumberOfRows();
 	String invalidTotalTableWidth();
 	String numColumns();
 	String numRows();
 	String tableProperties();
 	
-	// String used in the 'IFrame' widget properties dialog.
+	// String used in the "IFrame" widget properties dialog.
 	String borderLabel();
 	String frameNameLabel();
 	String heightLabel();
@@ -215,7 +213,7 @@ public interface GwtTeamingMessages extends Messages {
 	String urlLabel();
 	String widthLabel();
 
-	// Miscellaneous strings.
+	// Misc strings
 	String _1();
 	String _2();
 	String _3();
@@ -227,7 +225,7 @@ public interface GwtTeamingMessages extends Messages {
 	String _9();
 	String _10();
 	String apply();
-	String betaWithProduct(String productName);
+	String betaWithProduct( String productName );
 	String cancel();
 	String cantAccessEntry();
 	String cantAccessFolder();
@@ -255,14 +253,13 @@ public interface GwtTeamingMessages extends Messages {
 	String tourDlg();
 	String tourMissingStart();
 	String tourMissingStop();
-	String unknownFileUploadError(String erro);
+	String unknownFileUploadError( String error);
 	String vibeInsideLandingPage();
 	String close();
 	String yes();
 	String no();
 	
-	// Strings used with the Utility Element widget in the landing page
-	// editor.
+	// Strings used with the Utility Element widget in the landing page editor.
 	String utilityElementHint();
 	String utilityElementLabel();
 	String utilityElementProperties();
@@ -273,10 +270,10 @@ public interface GwtTeamingMessages extends Messages {
 	String utilityElementSignInForm();
 	String utilityElementVideoTutorials();
 	
-	String testPanelState(String value);
+	String testPanelState( String value );
 	String testWaiting();
 	
-	// Strings used with extensions.
+	// Strings used with extensions
 	String extensionsName();
 	String extensionsDesc();
 	String extensionsZone();
@@ -286,7 +283,7 @@ public interface GwtTeamingMessages extends Messages {
 	String extensionsWaiting();
 	String extensionsRPCError();
 	
-	// Strings used with extensions dialog.
+	// Strings used with extensions dlg
 	String extensionsDlgDescription();
 	String extensionsDlgDeployed();
 	String extensionsDlgZoneName();
@@ -483,8 +480,6 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetPasswordPolicyConfig();
 	String rpcFailure_GetPasswordPolicyInfo();
 	String rpcFailure_GetPersonalPreferences();
-	String rpcFailure_GetPersonalWorkspaceDisplayData();
-	String rpcFailure_GetPhotoAlbumDisplayData();
 	String rpcFailure_GetPreviousFolderEntryInfo();
 	String rpcFailure_GetPreviousFolderEntryInfo_NoAccess();
 	String rpcFailure_GetPresenceInfo();
@@ -543,10 +538,8 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetViewFolderEntryUrl();
 	String rpcFailure_GetViewInfo();
 	String rpcFailure_GetWhoHasAccess();
-	String rpcFailure_GetWikiDisplayData();
 	String rpcFailure_GetWorkspaceContributorIds();
 	String rpcFailure_GetXssHtml();
-	String rpcFailure_GetXsrfToken();
 	String rpcFailure_GetZipDownloadUrl();
 	String rpcFailure_GetZoneShareRights();
 	String rpcFailure_HideShares();
@@ -662,7 +655,6 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_ValidateEmailAddress();
 	String rpcFailure_ValidateShareLists();
 	String rpcFailure_ValidateUploads();
-	String rpcFailure_XsrfTokenFailure();
 
 	// Strings used to describe various split point load failures.
 	String codeSplitFailure_AccessoriesPanel();
@@ -783,8 +775,6 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_NetFoldersWSView();
 	String codeSplitFailure_NetFolderSyncStatisticsDlg();
 	String codeSplitFailure_PersonalWorkspacesView();
-	String codeSplitFailure_PersonalWorkspaceView();
-	String codeSplitFailure_PhotoAlbumFolderView();
 	String codeSplitFailure_ProfileAttributeWidget();
 	String codeSplitFailure_ProfileEntryDlg();
 	String codeSplitFailure_ProfilePage();
@@ -797,7 +787,6 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_RenameEntityDlg();
 	String codeSplitFailure_RunAReportDlg();
 	String codeSplitFailure_SearchOptionsComposite();
-	String codeSplitFailure_SelectCSVDelimiterDlg();
 	String codeSplitFailure_SelectPrincipalsWidget();
 	String codeSplitFailure_SurveyFolderView();
 	String codeSplitFailure_ShareExpirationDlg();
@@ -819,7 +808,6 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_UserStatusControl();
 	String codeSplitFailure_ViewsMenuPopup();
 	String codeSplitFailure_WhoHasAccessDlg();
-	String codeSplitFailure_WikiFolderView();
 	String codeSplitFailure_WorkspaceTreeControl();
 	String codeSplitFailure_ZoneShareRightsSelectPrincipalsWidget();
 	
@@ -835,7 +823,7 @@ public interface GwtTeamingMessages extends Messages {
 	String eventHandling_Validation_NotListed(        String eventName, String className);
 	String eventHandling_Validation_NoValidator(      String eventName                  );
 	
-	// Strings used with the MastHead.
+	// Strings used with the MastHead
 	String adminMenuItem();
 	String administrationHint();
 	String downloadFilrDesktopApp();
@@ -881,13 +869,13 @@ public interface GwtTeamingMessages extends Messages {
 	String editBrandingDlg_Tour_backgroundImage();
 	String editBrandingDlg_Tour_brandingArea(String product);
 	String editBrandingDlg_Tour_brandingImage();
-	String editBrandingDlg_Tour_finish(       String product);
+	String editBrandingDlg_Tour_finish(String product);
 	String editBrandingDlg_Tour_loginDlgImage(String product);
-	String editBrandingDlg_Tour_start(        String product);
+	String editBrandingDlg_Tour_start(String product);
 	String editBrandingDlg_Tour_textColor();
 	String imgNone();
-	String invalidBackgroundColor(String color);
-	String invalidTextColor(      String color);
+	String invalidBackgroundColor( String color );
+	String invalidTextColor( String color );
 	String kablinkTeaming();
 	String noImagesAvailable();
 	String novellFilr();
@@ -907,7 +895,7 @@ public interface GwtTeamingMessages extends Messages {
 	String loginDlg_AuthProviderVerisign();
 	String loginDlg_AuthProviderYahoo();
 	String loginDlg_AuthProviderUnknown();
-	String loginDlg_AuthenticateUsingOpenID(String providerName);
+	String loginDlg_AuthenticateUsingOpenID( String providerName );
 	String loginDlg_ConfirmationText();
 	String loginDlg_EnterAsGuest();
 	String loginDlg_externalUserSelfRegFailed();
@@ -1142,7 +1130,7 @@ public interface GwtTeamingMessages extends Messages {
 	String treeAltEntry();
 	String treeAltFolder();
 	String treeAltWorkspace();
-	String treeBucketHover(String firstPart, String lastPart);
+	String treeBucketHover( String firstPart, String lastPart );
 	String treeCloseActivityStreams();
 	String treeCloseActivityStreamsHint();
 	String treeCloseBreadCrumbs();
@@ -1158,12 +1146,12 @@ public interface GwtTeamingMessages extends Messages {
 	String treeTrash();
 	String treeWSAndFolders();
 	
-	// Strings used in the 'Add File Attachment' dialog.
+	// Strings used in the "Add File Attachment" dialog.
 	String addFileAttachmentDlgHeader();
 	String addFileLabel();
 	String noFilesSelectedMsg();
 	
-	// Strings used in the 'Color picker' dialog
+	// Strings used in the "Color picker" dialog
 	String aliceBlue();
 	String antiqueWhite();
 	String aqua(); 
@@ -1308,7 +1296,7 @@ public interface GwtTeamingMessages extends Messages {
 	String colorPickerDlgHeader();
 	String hexValue();
 	
-	// The following strings are used with a tinyMCE editor.
+	// The following strings are used with a tinyMCE editor
 	String addFile();
 	String addUrl();
 	String imageName();
@@ -1321,8 +1309,7 @@ public interface GwtTeamingMessages extends Messages {
 	String youTubeTitle();
 	String youTubeUrl();
 	
-	// The following strings are for the User Status or Micro blog
-	// Control.
+	// The following strings are for the User Status or Micro blog Control
 	String statusMessage();
 	String clearStatus();
 	String shareStatus();
@@ -1347,7 +1334,7 @@ public interface GwtTeamingMessages extends Messages {
 	String reportCategory();
 	String systemCategory();
 	
-	// The following string are used with the Quick View popup.
+	// The following string are used with the Quick View popup
 	String qViewProfile();
 	String qViewProfileTitle();
 	String qViewWorkspace();
@@ -1362,13 +1349,15 @@ public interface GwtTeamingMessages extends Messages {
 	String qViewMicroBlogTitle();
 	String qViewInstantMessage();
 	String qViewInstantMessageTitle();
+	String qViewErrorWorkspaceDoesNotExist();
 	String qViewErrorDeletedWorkspace();
 	String qViewErrorNoProfile();
 	String qViewErrorNoRights();
+	String qViewErrorNoUserForQuickView();
 	String qViewErrorCantTrack();
 	String qViewErrorCantUntrack();
 
-	// Profile.
+	//Profile
 	String profileCallMe();
 	String profileEdit();
 	String profileDelete();
@@ -1390,7 +1379,7 @@ public interface GwtTeamingMessages extends Messages {
 	String profileUpload();
 	String profileUploadSelect();
 	
-	// Presence related strings.
+	// Presence related strings
 	String presenceAvailable();
 	String presenceAway();
 	String presenceBusy();
@@ -1398,17 +1387,16 @@ public interface GwtTeamingMessages extends Messages {
 	String presenceOffline();
 	String presenceUnknown();
 
-	// The following strings are used in the Administration Information
-	// dialog.
+	// The following strings are used in the Administration Information dialog
 	String adminInfoDlgDocumentationLink();
-	String adminInfoDlgEnterProxyCredentials(String serverName);
-	String adminInfoDlgExpiredLicense(String productName);
+	String adminInfoDlgEnterProxyCredentials( String serverName );
+	String adminInfoDlgExpiredLicense( String productName );
 	String adminInfoDlgFilrTasksToBeCompleted();
 	String adminInfoDlgHeader();
 	String adminInfoDlgInstallGuide();
 	String adminInfoDlgLoginAsAdmin();
 	String adminInfoDlgRelease();
-	String adminInfoDlgSelectNetFolderServerType(String serverName);
+	String adminInfoDlgSelectNetFolderServerType( String serverName );
 	String adminInfoDlgUpgradeDefinitions();
 	String adminInfoDlgUpgradeImportTypelessDN();
 	String adminInfoDlgUpgradeSearchIndex();
@@ -1427,8 +1415,8 @@ public interface GwtTeamingMessages extends Messages {
 	String markEntryAsReadHint();
 	String myFavorites();
 	String myTeams();
-	String multipleComments(int numComments);
-	String nextRefresh(String time);
+	String multipleComments( int numComments );
+	String nextRefresh( String time );
 	String noEntriesFound();
 	String noFavorites();
 	String noPeopleFollowed();
@@ -1436,7 +1424,7 @@ public interface GwtTeamingMessages extends Messages {
 	String noTeams();
 	String noTitle();
 	String oneComment();
-	String pauseActivityStream(int refreshRate);
+	String pauseActivityStream( int refreshRate );
 	String refresh();
 	String resumeActivityStream();
 	String selectEntryDisplayStyle();
@@ -1449,20 +1437,18 @@ public interface GwtTeamingMessages extends Messages {
 	String showUnread();
 	String showUnreadEntries();
 	String whatsNew();
-	String whatsNewWithName(String name);
+	String whatsNewWithName( String name );
 	
-	// The following strings are used in the activity stream 'reply to
-	// entry' UI.
+	// The following strings are used in the activity stream "reply to entry" ui
 	String addAComment();
-	String defaultReplyTitle(String title);
+	String defaultReplyTitle( String title );
 	String noReplyText();
 	
-	// The following strings are used in the activity stream 'share
-	// this entry' UI.
+	// The following strings are used in the activity stream "share this entry" ui.
 	String addRecipient();
 	String commentsLabel();
 	String copyPublicLinkTheseItems();
-	String defaultShareTitle(String title);
+	String defaultShareTitle( String title );
 	String editPublicLinkTheseItems();
 	String emailPublicLinkTheseItems();
 	String manageShares();
@@ -1473,12 +1459,12 @@ public interface GwtTeamingMessages extends Messages {
 	String shareCaption();
 	String shareDlg_accessLabel();
 	String shareDlg_addExternalUserTitle();
-	String shareDlg_canShareWith(String shareWith);
-	String shareDlg_alreadySharedWithSelectedRecipient(String recipientName);
+	String shareDlg_canShareWith( String shareWith );
+	String shareDlg_alreadySharedWithSelectedRecipient( String recipientName );
 	String shareDlg_cantShareWithAllExternalUsersGroup();
 	String shareDlg_cantShareWithAllInternalUsersGroup();
-	String shareDlg_cantShareWithDisabledUser(String name);
-	String shareDlg_cantShareWithExternalUser_Param(String emailAddr);
+	String shareDlg_cantShareWithDisabledUser( String name );
+	String shareDlg_cantShareWithExternalUser_Param( String emailAddr );
 	String shareDlg_cantShareWithPublic();
 	String shareDlg_cantShareWithYourself();
 	String shareDlg_clickToAddNote();
@@ -1486,14 +1472,14 @@ public interface GwtTeamingMessages extends Messages {
 	String shareDlg_deleteButton();
 	String shareDlg_editButton();
 	String shareDlg_editor();
-	String shareDlg_emailAddressInvalidPrompt_Param(   String emailAddr);
-	String shareDlg_emailAddressInvalid_blDomain_Param(String emailAddr);
-	String shareDlg_emailAddressInvalid_blEMA_Param(   String emailAddr);
-	String shareDlg_emailAddressInvalid_wl_Param(      String emailAddr);
-	String shareDlg_expiresAfter(String after);
+	String shareDlg_emailAddressInvalidPrompt_Param( String emailAddr );
+	String shareDlg_emailAddressInvalid_blDomain_Param( String emailAddr );
+	String shareDlg_emailAddressInvalid_blEMA_Param( String emailAddr );
+	String shareDlg_emailAddressInvalid_wl_Param( String emailAddr );
+	String shareDlg_expiresAfter( String after );
 	String shareDlg_expiresLabel();
 	String shareDlg_expiresNever();
-	String shareDlg_expiresOn(String on);
+	String shareDlg_expiresOn( String on );
 	String shareDlg_fileLabel();
 	String shareDlg_findByFileLabel();
 	String shareDlg_findByFolderLabel();
@@ -1508,7 +1494,7 @@ public interface GwtTeamingMessages extends Messages {
 	String shareDlg_groupMembershipLabel();
 	String shareDlg_makePublic();
 	String shareDlg_manageShares();
-	String shareDlg_manageMultipleItems(int numItems);
+	String shareDlg_manageMultipleItems( int numItems );
 	String shareDlg_noNote();
 	String shareDlg_noShareItemsFoundHint();
 	String shareDlg_noShareItemsHint();
@@ -1556,12 +1542,11 @@ public interface GwtTeamingMessages extends Messages {
 	String shareWithGroups();
 	String shareWithTeams();
 	String shareWithUsers();
-	String sharingMultipleItems(int numItems);
+	String sharingMultipleItems( int numItems );
 	String unknownShareType();
 	String usersWithoutRights();
 	
-	// The following strings are using in the 'share expiration'
-	// dialog.
+	// The following strings are using in the "share expiration" dialog
 	String shareExpirationDlg_cantEnterPriorDate();
 	String shareExpirationDlg_caption();
 	String shareExpirationDlg_days();
@@ -1572,11 +1557,11 @@ public interface GwtTeamingMessages extends Messages {
 	String shareExpirationDlg_noDateEntered();
 	String shareExpirationDlg_noDaysEntered();
 	
-	// The following strings are used in the 'share with teams' dialog.
+	// The following strings are used in the "share with teams" dialog
 	String shareWithTeamsDlg_caption();
 	String shareWithTeamsDlg_Instructions();
 	
-	// The following strings are used in the Group Membership popup.
+	// The following strings are used in the Group Membership popup
 	String allExtUsersGroupDesc();
 	String allUsersGroupDesc();
 	String noGroupMembers();
@@ -1611,7 +1596,7 @@ public interface GwtTeamingMessages extends Messages {
 	String hoverWorkspaceTop();
 	String hoverWorkspaceTrash();
 
-	// The following strings are used in the 'Actions' popup menu.
+	// The following strings are used in the "Actions" popup menu.
 	String deleteEntry();
 	String markRead();
 	String markUnread();
@@ -1622,8 +1607,7 @@ public interface GwtTeamingMessages extends Messages {
 	String tag();
 	String viewDetails();
 	
-	// The following strings are used in the 'Subscribe to Entry'
-	// dialog.
+	// The following strings are used in the "Subscribe to Entry" dialog.
 	String cantSubscribeNoEmailAddresses();
 	String sendEmailTo();
 	String sendEmailWithoutAttachmentsTo();
@@ -1631,7 +1615,7 @@ public interface GwtTeamingMessages extends Messages {
 	String subscribeToEntryDlgHeader();
 	String subscribeToEntryHeader();
 
-	// The following strings are used with the 'Tag This' dialog.
+	// The following strings are used with the "Tag This" dialog.
 	String addTag();
 	String community();
 	String deleteTagHint();
@@ -1643,7 +1627,7 @@ public interface GwtTeamingMessages extends Messages {
 	String listOfFolderTagsLabel(); 
 	String listOfWorkspaceTagsLabel();
 	String personal();
-	String promptSaveBeforeTagSearch(String tagName);
+	String promptSaveBeforeTagSearch( String tagName );
 	String tagHeader();
 	String tagName();
 	String tagThisEntry();
@@ -1774,7 +1758,7 @@ public interface GwtTeamingMessages extends Messages {
 	String taskViewAssignedTasks();
 	String taskViewFromFolder();
 	
-	// Strings used in the Landing Page Properties dialog.
+	// Strings used in the Landing Page Properties Dialog
 	String landingPagePropertiesDlgHeader();
 	String backgroundRepeatLabel();
 	String backgroundRepeat();
@@ -1791,10 +1775,10 @@ public interface GwtTeamingMessages extends Messages {
 	String hideMenu();
 	String hideSidebar();
 	String inheritPropertiesLabel();
-	String invalidBorderColor(     String color);
-	String invalidContentTextColor(String color);
-	String invalidHeaderBgColor(   String color);
-	String invalidHeaderTextColor( String color);
+	String invalidBorderColor( String color );
+	String invalidContentTextColor( String color );
+	String invalidHeaderBgColor( String color );
+	String invalidHeaderTextColor( String color );
 	String landingPagePropertiesDlg_BackgroundTab();
 	String landingPagePropertiesDlg_BorderTab();
 	String landingPagePropertiesDlg_HeaderTab();
@@ -1803,9 +1787,8 @@ public interface GwtTeamingMessages extends Messages {
 	String landingPagePropertiesDlg_PageStyleDark();
 	String landingPagePropertiesDlg_PageStyleLight();
 
-	// Strings used in the Novell Desktop Application dialog (File
-	// Sync.)
-	String fileSyncAppAllowAccess(String productName);
+	// Strings used in the Novell Desktop App dialog (File Sync)
+	String fileSyncAppAllowAccess( String productName );
 	String fileSyncAppAllowCachePwd();
 	String fileSyncAppAutoUpdateUrlLabel();
 	String fileSyncAppAutoUpdateUrlLabel_UseLocal();
@@ -1820,12 +1803,12 @@ public interface GwtTeamingMessages extends Messages {
 	String fileSyncAppMaxFileSizeLabel();
 	String fileSyncAppMBLabel();
 	String fileSyncAppMinutesLabel();
-	String fileSyncApp_OnSaveUnknownException(String desc);
+	String fileSyncApp_OnSaveUnknownException( String desc );
 	String fileSyncAppUseGlobalSettings();
 	String fileSyncAppUseGroupSettings();
 	String fileSyncAppUseUserSettings();
 	
-	// Strings used in the Manage Database Logs dialog.
+	// Strings used in the Manage Database Logs dialog
 	String databasePruneDlgHeader_Filr();
 	String databasePruneDlgHeader_Vibe();
 	String databasePruneDlgHeader1();
@@ -1841,19 +1824,19 @@ public interface GwtTeamingMessages extends Messages {
 	String databasePruneDlgCautionAuditTrail();
 	String databasePruneDlgCautionChangeLog();
 	String databasePruneDlgCautionIrrevocable();
-	String databasePruneDlg_OnSaveUnknownException(String desc);
+	String databasePruneDlg_OnSaveUnknownException( String desc );
 	String databasePruneDlgCautionFileArchiving_Both();
 	String databasePruneDlgCautionFileArchiving_Filr();
 	String databasePruneDlgCautionFileArchiving_Vibe();
-	String databasePruneDlg_Error_AuditLogTooSmall( int pruneAge);
-	String databasePruneDlg_Error_ChangeLogTooSmall(int pruneAge);
+	String databasePruneDlg_Error_AuditLogTooSmall(  int pruneAge );
+	String databasePruneDlg_Error_ChangeLogTooSmall( int pruneAge );
 	
-	// Strings used in the Configure User File Sync Application dialog.
+	// Strings used in the Configure User File Sync App dialog
 	String configureUserFileSyncAppDlgErrorHeader();
-	String configureUserFileSyncAppDlgHeaderGroups(String numGroups);
+	String configureUserFileSyncAppDlgHeaderGroups( String numGroups );
 	String configureUserFileSyncAppDlgHeaderUsers( String numUsers );
-	String configureUserFileSyncAppDlgOnSaveUnknownException(String desc);
-	String configureUserFileSyncDlgSaving(String completed, String total);
+	String configureUserFileSyncAppDlgOnSaveUnknownException( String desc );
+	String configureUserFileSyncDlgSaving( String completed, String total );
 
 	// Strings used by the filter bar in the various binder views.
 	String vibeBinderFilter_Alt_Filters();
@@ -1932,7 +1915,7 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeEntryMenu_Warning_OnlyFolders_Entries();
 	String vibeEntryMenu_Warning_OnlyFolders_Files();
 		
-	// Strings used in the Folder Columns dialog.
+	// Strings used in the Folder Columns dialog
 	String folderColumnsDlgColumn();
 	String folderColumnsDlgCustomLabel();
 	String folderColumnsDlgHeader();
@@ -2070,7 +2053,7 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeSimplePager_OfAtLeast(      String start, String end, String size);
 	String vibeSimplePager_OfOver(         String start, String end, String size);
 	
-	// String used in the Landing Page.
+	// String used in the Landing Page
 	String nowFollowingBinder();
 	String utilityElementAdminPage();
 	String utilityElementFollowWorkspace();
@@ -2078,7 +2061,7 @@ public interface GwtTeamingMessages extends Messages {
 	String utilityElementMyWorkspace();
 	String utilityElementShareWorkspace();
 
-	// Strings used in the TaskFolderWidget.
+	// Strings used in the TaskFolderWidget
 	String taskFolderWidget_assignedTo();
 	String taskFolderWidget_dueDate();
 	String taskFolderWidget_percentDone();
@@ -2129,11 +2112,11 @@ public interface GwtTeamingMessages extends Messages {
 	String html5Uploader_Warning_NoFiles();
 	String html5Uploader_Warning_NoFilesIE();
 	
-	// Strings used in the 'Child binders widget'.
+	// Strings used in the "Child binders widget"
 	String workspacesHeader();
-	String unreadEntries(Long numUnread);
+	String unreadEntries( Long numUnread );
 
-	// Strings used in the 'Unread entries' dialog.
+	// Strings used in the "Unread entries" dialog
 	String unreadEntriesDlgHeader();
 	
 	// Strings used in the CloudFolderAuthenticationDlg.
@@ -2234,7 +2217,7 @@ public interface GwtTeamingMessages extends Messages {
 	String multiErrorAlertDlgHeaderConfirm();
 	String multiErrorAlertDlgHeaderError();
 	
-	// Strings used in the Project Information widget.
+	// Strings used in the Project Information widget
 	String dueDateLabel();
 	String managerLabel();
 	String projectInformation();
@@ -2244,7 +2227,7 @@ public interface GwtTeamingMessages extends Messages {
 	String projectStatusUnknown();
 	String statusLabel();
 
-	// Strings used in the Project Statistics widget.
+	// Strings used in the Project Statistics widget
 	String projectStatistics();
 	
 	// String used by the task graphs widgets.
@@ -2260,15 +2243,15 @@ public interface GwtTeamingMessages extends Messages {
 	String taskGraphs_StatusNeedsAction(String percent, String count);
 	
 	// Strings used by the milestone graphs widgets.
-	String milestoneGraphs_StatusCompleted(String percent, String count);
-	String milestoneGraphs_StatusOpen(     String percent, String count);
-	String milestoneGraphs_StatusReopened( String percent, String count);
+	String milestoneGraphs_StatusCompleted( String percent, String count );
+	String milestoneGraphs_StatusOpen( String percent, String count );
+	String milestoneGraphs_StatusReopened( String percent, String count );
 	
 	// Strings used by the guest book folder.
 	String guestBook_Error_CouldNotGetSigningURL();
 	String guestBook_GotoProfile();
 	
-	// Strings used in the 'My Tasks' widget.
+	// Strings used in the "My Tasks" widget
 	String myTasksHeader();	
 	
 	// Strings used in the 'Binder View Helper' APIs.
@@ -2320,7 +2303,7 @@ public interface GwtTeamingMessages extends Messages {
 	String quickFilterAltOn();
 	String quickFilter_empty();
 
-	// Strings used in the 'Edit graphic properties' dialog.
+	// Strings used in the "Edit graphic properties" dialog
 	String editGraphicPropertiesDlgSetImageSize();
 
 	// Strings used in the Manage Comments composite.
@@ -2330,11 +2313,11 @@ public interface GwtTeamingMessages extends Messages {
 	// Strings used in the Manage Comments dialog.
 	String manageCommentsDlgComments(int cCount);
 	
-	// Strings used in the Manage Groups dialog.
+	// Strings used in the Manage Groups dialog
 	String manageGroupsDlgAdminCol();
 	String manageGroupsDlgAdminRightsClear();
 	String manageGroupsDlgAdminRightsSet();
-	String manageGroupsDlgConfirmDelete(String groupNames);
+	String manageGroupsDlgConfirmDelete( String groupNames );
 	String manageGroupsDlgCreatingGroup();
 	String manageGroupsDlgDeleteGroupLabel();
 	String manageGroupsDlgDeletingGroup();
@@ -2366,16 +2349,16 @@ public interface GwtTeamingMessages extends Messages {
 	String manageGroupsDlgWebAccess_Enable();
 	String manageGroupsDlgGroup();
 	
-	// Strings used in the Modify Group dialog.
+	// Strings used in the Modify Group dialog
 	String addGroupDlgHeader();
 	String modifyGroupDlgCreatingGroup();
 	String modifyGroupDlgEditGroupMembershipLabel();
-	String modifyGroupDlgErrorCreatingGroup(String desc);
+	String modifyGroupDlgErrorCreatingGroup( String desc );
 	String modifyGroupDlgDescriptionLabel();
 	String modifyGroupDlgDynamicLabel();
 	String modifyGroupDlgDynamicGroupMembershipNotAllowed();
 	String modifyGroupDlgGroupAlreadyExists();
-	String modifyGroupDlgHeader(String groupTitle);
+	String modifyGroupDlgHeader( String groupTitle );
 	String modifyGroupDlgNameLabel();
 	String modifyGroupDlgNameRequired();
 	String modifyGroupDlgNameTooLong();
@@ -2384,12 +2367,12 @@ public interface GwtTeamingMessages extends Messages {
 	String modifyGroupDlgUserAlreadyExists();
 	String modifyGroupDlgViewGroupMembershipLabel();
 
-	// Strings used in the Modify static membership dialog.
+	// Strings used in the Modify static membership dialog
 	String modifyStaticMembershipDlgDeleteLabel();
 	String modifyStaticMembershipDlgExternalAllowedLabel();
 	String modifyStaticMembershipDlgGroupLabel();
 	String modifyStaticMembershipDlgGroupTab();
-	String modifyStaticMembershipDlgHeader(String groupTitle);
+	String modifyStaticMembershipDlgHeader( String groupTitle );
 	String modifyStaticMembershipDlgNameCol();
 	String modifyStaticMembershipDlgNoGroupsLabel();
 	String modifyStaticMembershipDlgNoUsersLabel();
@@ -2398,25 +2381,25 @@ public interface GwtTeamingMessages extends Messages {
 	String modifyStaticMembershipDlgUserLabel();
 	String modifyStaticMembershipDlgUserTab();
 
-	// Strings used in the Modify dynamic membership dialog.
+	// Strings used in the Modify dynamic membership dialog
 	String modifyDynamicMembershipDlgBaseDnAlt();
 	String modifyDynamicMembershipDlgBaseDnLabel();
-	String modifyDynamicMembershipDlgCurrentMembershipLabel(int count);
+	String modifyDynamicMembershipDlgCurrentMembershipLabel( int count );
 	String modifyDynamicMembershipDlgCurrentMembershipCalculatingLabel();
 	String modifyDynamicMembershipDlgHeader();
 	String modifyDynamicMembershipDlgLdapFilterLabel();
 	String modifyDynamicMembershipDlgSearchSubtreeLabel();
 	String modifyDynamicMembershipDlgTestQueryInProgressLabel();
 	String modifyDynamicMembershipDlgTestQueryLabel();
-	String modifyDynamicMembershipDlgTestQueryResults(int count);
+	String modifyDynamicMembershipDlgTestQueryResults( int count );
 	String modifyDynamicMembershipDlgUpdateLabel();
 
-	// Strings used in the Show dynamic membership dialog.
+	// Strings used in the Show dynamic membership dialog
 	String showDynamicMembershipDlgGroupTab();
 	String showDynamicMembershipDlgHeader();
 	String showDynamicMembershipDlgUserTab();
 	
-	// String used in the blog archive control.
+	// String used in the blog archive control
 	String blogArchiveTitle();
 	
 	// Strings used in the blog global tags control.
@@ -2426,13 +2409,13 @@ public interface GwtTeamingMessages extends Messages {
 	String blogPageCtrl_newPageLabel();
 	String blogPageCtrl_selectPageLabel();
 
-	// Strings used in the 'Add blog page' dialog.
+	// Strings used in the "Add blog page" dialog
 	String createBlogPageDlg_caption();
 	String createBlogPageDlg_createFailed();
 	String createBlogPageDlg_newPageNameLabel();
 	String createBlogPageDlg_noNameSpecified();
 
-	// Strings used with Filr.
+	// Strings used with Filr
 	String administratorsList();
 	String folders();
 	String globalsList();
@@ -2446,7 +2429,7 @@ public interface GwtTeamingMessages extends Messages {
 	String sharedPublic();
 	String teamsList();
 
-	// Strings used with the 'Share send-to' widget.
+	// Strings used with the "Share send-to" widget
 	String shareSendToWidget_AllRecipients();
 	String shareSendToWidget_NoOne();
 	String shareSendToWidget_OnlyModifiedRecipients();
@@ -2454,10 +2437,10 @@ public interface GwtTeamingMessages extends Messages {
 	String shareSendToWidget_SelectedRecipients();
 	String shareSendToWidget_Unknown();
 	
-	// Strings used in the manage Net Folder Servers dialog.
+	// Strings used in the manage Net Folder Servers dialog
 	String manageNetFolderServersDlg_AddNetFolderServerLabel();
-	String manageNetFolderServersDlg_ConfirmDelete(       String netFolderServerNames);
-	String manageNetFolderServersDlg_CouldNotDeletePrompt(String netFolderServerNames);
+	String manageNetFolderServersDlg_ConfirmDelete( String netFolderServerNames );
+	String manageNetFolderServersDlg_CouldNotDeletePrompt( String netFolderServerNames );
 	String manageNetFolderServersDlg_DeleteNetFolderServerLabel();
 	String manageNetFolderServersDlg_Header();
 	String manageNetFolderServersDlg_NameCol();
@@ -2471,7 +2454,7 @@ public interface GwtTeamingMessages extends Messages {
 	String manageNetFolderServersDlg_SyncFailure();
 	String manageNetFolderServersDlg_UnknownStatus();
 
-	// Strings used in the modify Net Folder Server dialog.
+	// Strings used in the modify Net Folder Server dialog
 	String modifyNetFolderServerDlg_AddHeader();
 	String modifyNetFolderServerDlg_AllowDesktopAppToTriggerSync();
 	String modifyNetFolderServerDlg_AllowSelfSignedCertsLabel();
@@ -2483,12 +2466,12 @@ public interface GwtTeamingMessages extends Messages {
 	String modifyNetFolderServerDlg_AuthType_Ntlm();
 	String modifyNetFolderServerDlg_ConfigTab();
 	String modifyNetFolderServerDlg_CreatingNetFolderServer();
-	String modifyNetFolderServerDlg_EditHeader(String name);
+	String modifyNetFolderServerDlg_EditHeader( String name );
 	String modifyNetFolderServerDlg_EnableSyncScheduleLabel();
 	String modifyNetFolderServerDlg_EnterProxyNamePrompt();
 	String modifyNetFolderServerDlg_EnterProxyPwdPrompt();
-	String modifyNetFolderServerDlg_ErrorCreatingNetFolderServer( String err);
-	String modifyNetFolderServerDlg_ErrorModifyingNetFolderServer(String err);
+	String modifyNetFolderServerDlg_ErrorCreatingNetFolderServer( String err );
+	String modifyNetFolderServerDlg_ErrorModifyingNetFolderServer( String err );
 	String modifyNetFolderServerDlg_Group();
 	String modifyNetFolderServerDlg_HostUrlLabel();
 	String modifyNetFolderServerDlg_HostUrlRequired();
@@ -2536,17 +2519,17 @@ public interface GwtTeamingMessages extends Messages {
 	String modifyNetFolderServerDlg_UseDirectoryRightsCB();
 	String modifyNetFolderServerDlg_User();
 	
-	// Strings used in the Manage Net Folders dialog.
+	// Strings used in the Manage Net Folders dialog
 	String manageNetFoldersDlg_AddNetFolderLabel();
 	String manageNetFoldersDlg_CancelSyncRequested();
-	String manageNetFoldersDlg_ConfirmDelete(String netFolderName);
+	String manageNetFoldersDlg_ConfirmDelete( String netFolderName );
 	String manageNetFoldersDlg_DeleteFailed();
 	String manageNetFoldersDlg_DeleteInProgress();
-	String manageNetFoldersDlg_DeleteNetFolderErrorMsg(String netFolderName, String errorMsg);
+	String manageNetFoldersDlg_DeleteNetFolderErrorMsg( String netFolderName, String errorMsg );
 	String manageNetFoldersDlg_DeleteNetFolderLabel();
 	String manageNetFoldersDlg_FilterOptionsAlt();
 	String manageNetFoldersDlg_Header();
-	String manageNetFoldersDlg_nNetFoldersToDelete(int count);
+	String manageNetFoldersDlg_nNetFoldersToDelete( int count );
 	String manageNetFoldersDlg_NameCol();
 	String manageNetFoldersDlg_NoNetFoldersLabel();
 	String manageNetFoldersDlg_PromptForSync();
@@ -2563,7 +2546,7 @@ public interface GwtTeamingMessages extends Messages {
 	String manageNetFoldersDlg_SyncStatusCol();
 	String manageNetFoldersDlg_UnknownStatus();
 	
-	// Net Folder sync status.
+	// Net Folder sync status
 	String netFolderSyncStatusCanceled();
 	String netFolderSyncStatusCompleted();
 	String netFolderSyncStatusInProgress();
@@ -2572,7 +2555,7 @@ public interface GwtTeamingMessages extends Messages {
 	String netFolderSyncStatusUnknown();
 	String netFolderSyncStatusWaitingToBeSyncd();
 
-	// Strings used in the Modify Net Folder dialog.
+	// Strings used in the Modify Net Folder dialog
 	String modifyNetFolderDlg_AddHeader();
 	String modifyNetFolderDlg_AllowDataSyncBy();
 	String modifyNetFolderDlg_AllowDesktopAppToSyncLabel();
@@ -2582,11 +2565,11 @@ public interface GwtTeamingMessages extends Messages {
 	String modifyNetFolderDlg_CreateNetFolderServerLabel();
 	String modifyNetFolderDlg_CreatingNetFolder();
 	String modifyNetFolderDlg_DataSyncTab();
-	String modifyNetFolderDlg_EditHeader(String name);
+	String modifyNetFolderDlg_EditHeader( String name );
 	String modifyNetFolderDlg_EnableJitsLabel();
 	String modifyNetFolderDlg_EnableSyncScheduleLabel();
-	String modifyNetFolderDlg_ErrorCreatingNetFolder( String err);
-	String modifyNetFolderDlg_ErrorModifyingNetFolder(String err);
+	String modifyNetFolderDlg_ErrorCreatingNetFolder( String err );
+	String modifyNetFolderDlg_ErrorModifyingNetFolder( String err );
 	String modifyNetFolderDlg_ForwardSlashNotPermittedInRelativePath();
 	String modifyNetFolderDlg_FullSyncDirOnlyCB();
 	String modifyNetFolderDlg_IndexContentLabel();
@@ -2620,7 +2603,7 @@ public interface GwtTeamingMessages extends Messages {
 	String modifyNetFolderDlg_UseNetFolderServerSyncOptionRbLabel();
 	String modifyNetFolderDlg_UseNetFolderSyncOptionRbLabel();
 	
-	// Strings used in the Schedule widget.
+	// Strings used in the Schedule widget
 	String scheduleWidget_AtTimeLabel();
 	String scheduleWidget_EveryDayLabel();
 	String scheduleWidget_FridayLabel();
@@ -2634,11 +2617,11 @@ public interface GwtTeamingMessages extends Messages {
 	String scheduleWidget_TuesdayLabel();
 	String scheduleWidget_WednesdayLabel();
 
-	// Strings used in the Edit Share Note dialog.
+	// Strings used in the Edit Share Note dialog
 	String editShareNoteDlg_caption();
 	String editShareNoteDlg_noteLabel();
 
-	// Strings used in the Edit Share Rights dialog.
+	// Strings used in the Edit Share Rights dialog
 	String editShareRightsDlg_CanShareExternalLabel();
 	String editShareRightsDlg_CanShareInternalLabel();
 	String editShareRightsDlg_CanShareLabel();
@@ -2650,10 +2633,10 @@ public interface GwtTeamingMessages extends Messages {
 	String editShareRightsDlg_GrantRightsLabel();
 	String editShareRightsDlg_ViewerLabel();
 
-	// Strings used in the Edit Share dialog.
+	// Strings used in the Edit Share dialog
 	String editShareDlg_accessRightsLabel();
-	String editShareDlg_captionEdit1(String recipientName);
-	String editShareDlg_captionEditMultiple(int numShares);
+	String editShareDlg_captionEdit1( String recipientName );
+	String editShareDlg_captionEditMultiple( int numShares );
 	String editShareDlg_canReshareExternalLabel();
 	String editShareDlg_canReshareInternalLabel();
 	String editShareDlg_canResharePublicLabel();
@@ -2665,14 +2648,13 @@ public interface GwtTeamingMessages extends Messages {
 	String editShareDlg_undefinedNote();
 	String editShareDlg_yes();
 
-	// Strings used in the User Actions Popup.
+	// Strings used in the User Actions Popup
 	String userActionsPanel_ChangePassword();
 	String userActionsPanel_PersonalPreferences();
 	String userActionsPanel_ViewProfile();
 	String userActionsPanel_ViewSharedByMe();
 
-	// Strings used when testing a net folder and net folder server
-	// connection.
+	// Strings used when testing a net folder and net folder server connection
 	String testConnection_FailedError();
 	String testConnection_InProgressLabel();
 	String testConnection_NetworkError();
@@ -2680,7 +2662,7 @@ public interface GwtTeamingMessages extends Messages {
 	String testConnection_ProxyCredentialsError();
 	String testConnection_UnknownStatus();
 
-	// Strings used in the Configure User Access dialog.
+	// Strings used in the Configure User Access dialog
 	String configureUserAccessDlg_Header();
 	String configureUserAccessDlg_AllowGuestAccessLabel();
 	String configureUserAccessDlg_AllowGuestReadOnlyLabel();
@@ -2690,7 +2672,7 @@ public interface GwtTeamingMessages extends Messages {
 	String configureUserAccessDlg_DisableDownloadLabel();
 	String configureUserAccessDlg_DisableWebAccessLabel();
 	
-	// Strings used in the Configure Password Policy dialog.
+	// Strings used in the Configure Password Policy dialog
 	String configurePasswordPolicyDlg_ConfirmForcePasswordChanges();
 	String configurePasswordPolicyDlg_Header();
 	String configurePasswordPolicyDlg_Hint();
@@ -2704,7 +2686,7 @@ public interface GwtTeamingMessages extends Messages {
 	String configurePasswordPolicyDlg_Hint_Upper();
 	String configurePasswordPolicyDlg_EnablePasswordComplexityChecking();
 	
-	// Strings used in the Configure Update Logs dialog.
+	// Strings used in the Configure Update Logs dialog
 	String configureUpdateLogsDlg_AutoUpdateLogs();
 	String configureUpdateLogsDlg_Header();
 	String configureUpdateLogsDlg_Hint();
@@ -2748,7 +2730,7 @@ public interface GwtTeamingMessages extends Messages {
 	String folderEntry_ShowDescription();
 	String folderEntry_Trashed();
 	
-	// String used in the Configure adhoc Folders dialog.
+	// String used in the Configure Adhoc Folders dialog
 	String configureAdhocFoldersDlg_AllowAdhocFoldersLabel();
 	String configureAdhocFoldersDlg_Header();
 	
@@ -2815,11 +2797,11 @@ public interface GwtTeamingMessages extends Messages {
 	String downloadAppDlgUrlWin64();
 	String downloadAppDlgUrlWinXP();
 
-	// Strings used in the 'Select Principals' widget.
+	// Strings used in the "Select Principals" widget
 	String selectPrincipalsWidget_CantSelectExternalUserPrompt();
 	String selectPrincipalsWidget_NameCol();
 	String selectPrincipalsWidget_NoPrincipalsHint();
-	String selectPrincipalsWidget_PrincipalAlreadyInListPrompt(String name);
+	String selectPrincipalsWidget_PrincipalAlreadyInListPrompt( String name );
 	String selectPrincipalsWidget_RemovePrincipalHint();
 	String selectPrincipalsWidget_RightsCol();
 	String selectPrincipalsWidget_SelectPrincipalsLabel();
@@ -2833,17 +2815,17 @@ public interface GwtTeamingMessages extends Messages {
 	String manageTeamsDlgCaption();
 	
 	// Strings used by the 'Share Binder Rights' dialog.
-	String shareTeamRightsDlgHeader(     int count);
-	String shareWorkspaceRightsDlgHeader(int count);
+	String shareTeamRightsDlgHeader(      int count );
+	String shareWorkspaceRightsDlgHeader( int count );
 	
 	// Strings used by the 'Manage Users' dialog.
 	String manageUsersDlgCaption();
 	
 	// Strings used by the 'Import Profiles' dialog.
-	String importProfilesDlgErrorBogusJSONData(String msg);
-	String importProfilesDlgErrorFailed(       String msg);
+	String importProfilesDlgErrorBogusJSONData( String msg );
+	String importProfilesDlgErrorFailed( String msg );
 	String importProfilesDlgErrorNoFile();
-	String importProfilesDlgErrorParse(String msg);
+	String importProfilesDlgErrorParse( String msg );
 	String importProfilesDlgHeader();
 	String importProfilesDlgSuccess();
 	String importProfilesDlgViewSample();
@@ -2851,7 +2833,7 @@ public interface GwtTeamingMessages extends Messages {
 	// Strings used by the 'User Share Rights' dialog.
 	String userShareRightsDlgError_NoWorkspace();
 	String userShareRightsDlgError_SetFailures();
-	String userShareRightsDlgHeader(int count);
+	String userShareRightsDlgHeader( int count );
 	String userShareRightsDlgLabel_Allow();
 	String userShareRightsDlgLabel_AllowForwarding();
 	String userShareRightsDlgLabel_AllowSharingWith();
@@ -2862,7 +2844,7 @@ public interface GwtTeamingMessages extends Messages {
 	String userShareRightsDlgLabel_NoZoneSettings();
 	String userShareRightsDlgLabel_Public();
 	String userShareRightsDlgLabel_PublicLinks();
-	String userShareRightsDlgProgress(int done, int total);
+	String userShareRightsDlgProgress( int done, int total );
 
 	// Strings used by the 'Binder Share Rights' dialog.
 	String binderShareRightsDlgError_SetFailures();
@@ -2879,9 +2861,9 @@ public interface GwtTeamingMessages extends Messages {
 	String binderShareRightsDlgLabel_NoZoneSettings();
 	String binderShareRightsDlgLabel_Public();
 	String binderShareRightsDlgLabel_PublicLinks();
-	String binderShareRightsDlgProgress(int done, int total);
+	String binderShareRightsDlgProgress( int done, int total );
 
-	// Strings used to represent the different rights.
+	// Strings used to represent the different rights
 	String allowAccess();
 	String externalRights();
 	String forwardingRights();
@@ -2892,11 +2874,11 @@ public interface GwtTeamingMessages extends Messages {
 	String shareWithAllExternalRights();
 	String shareWithAllInternalRights();
 
-	// Strings used in the Edit Net Folder Rights dialog.
+	// Strings used in the Edit Net Folder Rights dialog
 	String editNetFolderRightsDlg_AllowAccessLabel();
 	String editNetFolderRightsDlg_CanShareLabel();
 	String editNetFolderRightsDlg_Caption();
-	String editNetFolderRightsDlg_ErrorRetrievingZoneShareRights(String error);
+	String editNetFolderRightsDlg_ErrorRetrievingZoneShareRights( String error );
 	String editNetFolderRightsDlg_Hint();
 	String editNetFolderRightsDlg_Instructions();
 	String editNetFolderRightsDlg_ReShareLabel();
@@ -2906,20 +2888,20 @@ public interface GwtTeamingMessages extends Messages {
 	String editNetFolderRightsDlg_SharePublicLabel();
 
 	// Strings used for the empty administrators view widget.
-	String emptyAdministrators_Info_1(String company, String product);
-	String emptyAdministrators_Info_2(String company, String product);
+	String emptyAdministrators_Info_1( String company, String product );
+	String emptyAdministrators_Info_2( String company, String product );
 	String emptyAdministrators_SubHead();
 	
 	// Strings used for the empty collection view widget.
-	String emptyCollection_Info_MyFiles(     String product);
-	String emptyCollection_Info_SharedByMe_1(String product);
+	String emptyCollection_Info_MyFiles( String product );
+	String emptyCollection_Info_SharedByMe_1( String product );
 	String emptyCollection_Info_SharedByMe_2();
-	String emptyCollection_Info_SharedWithMe(String product);
-	String emptyCollection_Info_SharedPublic(String product);
-	String emptyCollection_Info_NetFolders_1(String product);
+	String emptyCollection_Info_SharedWithMe( String product );
+	String emptyCollection_Info_SharedPublic( String product );
+	String emptyCollection_Info_NetFolders_1( String product );
 	String emptyCollection_Info_NetFolders_2();
 	String emptyCollection_Info_NetFolders_3();
-	String emptyCollection_Info_NetFolders_4(String product);
+	String emptyCollection_Info_NetFolders_4( String product );
 	String emptyCollection_SubHead_MyFiles();
 	String emptyCollection_SubHead_SharedByMe();
 	String emptyCollection_SubHead_SharedWithMe();
@@ -2928,39 +2910,39 @@ public interface GwtTeamingMessages extends Messages {
 	
 	// Strings used for the empty file folder view widget.
 	String emptyFileFolder_Info_1();
-	String emptyFileFolder_Info_2(String company, String product);
-	String emptyFileFolder_Info_3(                String product);
+	String emptyFileFolder_Info_2( String company, String product );
+	String emptyFileFolder_Info_3( String product );
 	String emptyFileFolder_SubHead();
 	
 	// Strings used for the empty mobile devices view widget.
-	String emptyMobileDevices_Info_1_System(String company, String product);
-	String emptyMobileDevices_Info_1_User(  String company, String product);
-	String emptyMobileDevices_Info_2(       String company, String product);
+	String emptyMobileDevices_Info_1_System( String company, String product );
+	String emptyMobileDevices_Info_1_User( String company, String product );
+	String emptyMobileDevices_Info_2( String company, String product );
 	String emptyMobileDevices_SubHead();
 	
 	// Strings used for the empty my files storage view widget.
 	String emptyMyFilesStorage_Info_1();
 	String emptyMyFilesStorage_Info_2();
-	String emptyMyFilesStorage_Info_3(String company, String product);
-	String emptyMyFilesStorage_Info_4(                String product);
+	String emptyMyFilesStorage_Info_3( String company, String product );
+	String emptyMyFilesStorage_Info_4( String product );
 	String emptyMyFilesStorage_SubHead();
 	
 	// Strings used for the empty people view widget.
-	String emptyPeople_Info_1(String company, String product);
-	String emptyPeople_Info_2(String company, String product);
+	String emptyPeople_Info_1( String company, String product );
+	String emptyPeople_Info_2( String company, String product );
 	String emptyPeople_SubHead();
 	
 	// Strings used for the empty teams view widget.
-	String emptyTeams_Info_1(String company, String product);
-	String emptyTeams_Info_2(String company, String product);
+	String emptyTeams_Info_1( String company, String product );
+	String emptyTeams_Info_2( String company, String product );
 	String emptyTeams_SubHead();
 	
 	// Strings used for the empty globals view widget.
-	String emptyGlobals_Info_1(String company, String product);
-	String emptyGlobals_Info_2(String company, String product);
+	String emptyGlobals_Info_1( String company, String product );
+	String emptyGlobals_Info_2( String company, String product );
 	String emptyGlobals_SubHead();
 	
-	// Strings used in the administration console home page.
+	// Strings used in the administration console home page
 	String adminConsoleInfoWidget_AdminGuideLabel();
 	String adminConsoleInfoWidget_BuildLabel();
 	String adminConsoleInfoWidget_FilrApplianceLabel();
@@ -3046,10 +3028,10 @@ public interface GwtTeamingMessages extends Messages {
 	String systemErrorLogReportCaption();
 	String systemErrorLogReportRunReport();
 
-	// Strings used in the Configure Mobile Applications dialog.
+	// Strings used in the Configure Mobile Apps dialog
 	String configureMobileAppsDlgAddAndroid();
 	String configureMobileAppsDlgAddIos();
-	String configureMobileAppsDlgAllowAccess(String productName);
+	String configureMobileAppsDlgAllowAccess( String productName );
 	String configureMobileAppsDlgAllowCacheContent();
 	String configureMobileAppsDlgAllowCachePwd();
 	String configureMobileAppsDlgButton_Add();
@@ -3059,7 +3041,7 @@ public interface GwtTeamingMessages extends Messages {
 	String configureMobileAppsDlgHeader2();
 	String configureMobileAppsDlgHeader3();
 	String configureMobileAppsDlgCutCopy();
-	String configureMobileAppsDlgOnSaveUnknownException(String err);
+	String configureMobileAppsDlgOnSaveUnknownException( String err );
 	String configureMobileAppsDlgOpenIn();
 	String configureMobileAppsDlgOpenIn_AllApps();
 	String configureMobileAppsDlgOpenIn_Disabled();
@@ -3073,12 +3055,12 @@ public interface GwtTeamingMessages extends Messages {
 	String configureMobileAppsSyncIntervalLabel();
 	String configureMobileAppsSyncMinutesLabel();
 	
-	// Strings used in the Configure User Mobile Applications dialog.
+	// Strings used in the Configure User Mobile Apps dialog
 	String configuerUserMobileAppsDlgErrorHeader();
-	String configureUserMobileAppsDlgHeaderGroups(String numGroup);
-	String configureUserMobileAppsDlgHeaderUsers( String numUsers);
-	String configureUserMobileAppsDlgOnSaveUnknownException(  String err  );
-	String configuerUserMobileAppsDlgSaving(String completed, String total);
+	String configureUserMobileAppsDlgHeaderGroups( String numGroup );
+	String configureUserMobileAppsDlgHeaderUsers( String numUsers );
+	String configureUserMobileAppsDlgOnSaveUnknownException( String err );
+	String configuerUserMobileAppsDlgSaving( String completed, String total );
 
 	// String used by the 'User Access Report' composite.
 	String userAccessReportCaption();
@@ -3162,18 +3144,18 @@ public interface GwtTeamingMessages extends Messages {
 	String userPropertiesDlgUnknown();
 	String userPropertiesDlgYes();
 
-	// Strings used in the 'Edit Zone Share Settings' dialog.
+	// Strings used in the "Edit Zone Share Settings" dialog.
 	String editZoneShareSettingsDlg_Header();
 	String editZoneShareSettingsDlg_Lists();
 	String editZoneShareSettingsDlg_Rights();
 	
-	// Strings used in the 'Edit Zone Share Rights' tab.
+	// Strings used in the "Edit Zone Share Rights" tab.
 	String editZoneShareRightsTab_AllowShareWithLdapGroups();
 	String editZoneShareRightsTab_ReadingRights();
 	String editZoneShareRightsTab_SavingRights();
 	String editZoneShareRightsTab_SelectPrincipalsHint();
 	
-	// Strings used in the 'Edit Zone Share Lists' tab.
+	// Strings used in the "Edit Zone Share Lists" tab.
 	String editZoneShareListsTab_Add();
 	String editZoneShareListsTab_Cleanup();
 	String editZoneShareListsTab_Confirm_DeleteShares();
@@ -3191,7 +3173,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editZoneShareListsTab_ModeDisabled();
 	String editZoneShareListsTab_ModeWhitelist();
 
-	// Strings used in the 'Edit Zone Share Rights' dialog.
+	// Strings used in the "Edit Zone Share Rights" dialog
 	String editUserZoneShareRightsDlg_Caption();
 	String editUserZoneShareRightsDlg_Instructions();
 	String editUserZoneShareRightsDlg_ReShareLabel();
@@ -3204,10 +3186,10 @@ public interface GwtTeamingMessages extends Messages {
 	
 	// Strings used by the 'Rename an Entity' dialog.
 	String renameEntityDlgError_BogusEntity(String entityType);
-	String renameEntityDlgError_NameTooLong_File(     int max);
-	String renameEntityDlgError_NameTooLong_Folder(   int max);
-	String renameEntityDlgError_NameTooLong_Unknown(  int max);
-	String renameEntityDlgError_NameTooLong_Workspace(int max);
+	String renameEntityDlgError_NameTooLong_File(      int max );
+	String renameEntityDlgError_NameTooLong_Folder(    int max );
+	String renameEntityDlgError_NameTooLong_Unknown(   int max );
+	String renameEntityDlgError_NameTooLong_Workspace( int max );
 	String renameEntityDlgError_NoName_File();
 	String renameEntityDlgError_NoName_Folder();
 	String renameEntityDlgError_NoName_Unknown();
@@ -3227,19 +3209,19 @@ public interface GwtTeamingMessages extends Messages {
 	String fileConflictsDlgConflictingFiles();
 	String fileConflictsDlgHeader();
 
-	// Strings used in the Share with public info dialog.
+	// Strings used in the Share with public info dialog
 	String shareWithPublicInfoDlg_Header();
 	String shareWithPublicInfoDlg_InstructionsEntry();
 	String shareWithPublicInfoDlg_InstructionsFolder();
 	String shareWithPublicInfoDlg_Instructions3();
 
-	// Strings used in the Change Password dialog.
+	// Strings used in the Change Password dialog
 	String changePasswordDlg_ChangeDefaultPasswordHint();
 	String changePasswordDlg_ChangingPassword();
 	String changePasswordDlg_ConfirmPasswordLabel();
 	String changePasswordDlg_CurrentPasswordLabel();
 	String changePasswordDlg_EnterCurrentPwd();
-	String changePasswordDlg_ErrorChangingPassword(String desc);
+	String changePasswordDlg_ErrorChangingPassword( String desc );
 	String changePasswordDlg_ChangeDefaultPasswordHeader();
 	String changePasswordDlg_NewPasswordLabel();
 	String changePasswordDlg_PasswordCannotBeEmpty();
@@ -3248,14 +3230,14 @@ public interface GwtTeamingMessages extends Messages {
 	// Strings used by the find control browser.
 	String findControlBrowser_Error_NotSupporter(String searchType);
 
-	// String used in the Forgotten Password dialog.
+	// String used in the Forgotten Password dialog
 	String forgottenPwdDlg_Caption();
 	String forgottenPwdDlg_EmailAddress();
 	String forgottenPwdDlg_EnterEmailAddress();
-	String forgottenPwdDlg_Hint2(String product);
+	String forgottenPwdDlg_Hint2( String product );
 	String forgottenPwdDlg_HintNote();
 	String forgottenPwdDlg_Instructions();
-	String forgottenPwdDlg_InvalidEmailAddress2(String product);
+	String forgottenPwdDlg_InvalidEmailAddress2( String product );
 	String forgottenPwdDlg_ForgottenPwdEmailSent();
 	String forgottenPwdDlg_OnlyForExternalUsers();
 	String forgottenPwdDlg_SelfRegistrationEmailSent();
@@ -3264,7 +3246,7 @@ public interface GwtTeamingMessages extends Messages {
 	// String used in the main content control.
 	String contentControl_Warning_ShareNoRights();
 
-	// Strings used in the Net Folder Sync Statistics dialog.
+	// Strings used in the Net Folder Sync Statistics dialog
 	String netFolderSyncStatisticsDlg_CountFailure();
 	String netFolderSyncStatisticsDlg_DirEnum();
 	String netFolderSyncStatisticsDlg_DirOnly();
@@ -3284,7 +3266,7 @@ public interface GwtTeamingMessages extends Messages {
 	String netFolderSyncStatisticsDlg_FoldersProcessed();
 	String netFolderSyncStatisticsDlg_FoldersSetAcl();
 	String netFolderSyncStatisticsDlg_FoldersSetOwnership();
-	String netFolderSyncStatisticsDlg_Header(String netFolderName);
+	String netFolderSyncStatisticsDlg_Header( String netFolderName );
 	String netFolderSyncStatisticsDlg_MiscHeading();
 	String netFolderSyncStatisticsDlg_NodeIpAddress();
 	String netFolderSyncStatisticsDlg_NoValue();
@@ -3316,10 +3298,10 @@ public interface GwtTeamingMessages extends Messages {
 	String deleteSelectedUsersDlgLabel_PurgeUsers4();
 	String deleteSelectedUsersDlgWarning_CantUndo();
 
-	// Strings used in the Edit Ldap Configuration dialog.
+	// Strings used in the Edit Ldap Configuration dialog
 	String editLdapConfigDlg_AddLdapServerLabel();
 	String editLdapConfigDlg_AllowLocalLoginLabel();
-	String editLdapConfigDlg_ConfirmDelete(String msg);
+	String editLdapConfigDlg_ConfirmDelete( String msg );
 	String editLdapConfigDlg_CreatingUsersLabel();
 	String editLdapConfigDlg_DefaultLocaleLabel();
 	String editLdapConfigDlg_DefaultTimeZoneLabel();	
@@ -3359,7 +3341,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editLdapConfigDlg_UserDNCol();
 	String editLdapConfigDlg_UsersTab();
 
-	// Strings used in the Edit ldap server configuration dialog.
+	// Strings used in the Edit ldap server configuration dialog
 	String editLdapServerConfigDlg_AddSearchLabel();
 	String editLdapServerConfigDlg_BaseDnCol();
 	String editLdapServerConfigDlg_DeleteSearchLabel();
@@ -3370,15 +3352,15 @@ public interface GwtTeamingMessages extends Messages {
 	String editLdapServerConfigDlg_ErrorNoProxyDn();
 	String editLdapServerConfigDlg_ErrorNoServerUrl();
 	String editLdapServerConfigDlg_ErrorNoUserAttribMappings();
-	String editLdapServerConfigDlg_ErrorNoUserIdAttrib(String productName);
+	String editLdapServerConfigDlg_ErrorNoUserIdAttrib( String productName );
 	String editLdapServerConfigDlg_FilterCol();
 	String editLdapServerConfigDlg_GroupsTab();
 	String editLdapServerConfigDlg_GuidAttributeHint1();
 	String editLdapServerConfigDlg_GuidAttributeLabel();
 	String editLdapServerConfigDlg_Header();
-	String editLdapServerConfigDlg_NameAttributeHint(  String productName);
-	String editLdapServerConfigDlg_NameAttributeLabel( String productName);
-	String editLdapServerConfigDlg_NameAttributePrompt(String productName);
+	String editLdapServerConfigDlg_NameAttributeHint( String productName );
+	String editLdapServerConfigDlg_NameAttributeLabel( String productName );
+	String editLdapServerConfigDlg_NameAttributePrompt( String productName );
 	String editLdapServerConfigDlg_NoSearchesLabel();
 	String editLdapServerConfigDlg_NoServerURL();
 	String editLdapServerConfigDlg_Other();
@@ -3392,7 +3374,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editLdapServerConfigDlg_UserAttributeMappingHint();
 	String editLdapServerConfigDlg_UsersTab();
 
-	// Strings used in the Edit Ldap Search dialog.
+	// Strings used in the Edit Ldap Search dialog
 	String editLdapSearchDlg_AttributeNameLabel();
 	String editLdapSearchDlg_BaseDn_Alt();
 	String editLdapSearchDlg_BaseDnLabel();
@@ -3414,7 +3396,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editLdapSearchDlg_SearchSubtreeLabel();
 	String editLdapSearchDlg_SpecifiedAttribRB();
 
-	// Strings used in the Ldap Sync Results dialog.
+	// Strings used in the Ldap Sync Results dialog
 	String ldapSyncResultsDlg_ActionCol();
 	String ldapSyncResultsDlg_AddedAction();
 	String ldapSyncResultsDlg_AddedGroupsLabel();
@@ -3458,7 +3440,7 @@ public interface GwtTeamingMessages extends Messages {
 	// Strings used by PromptDlg.
 	String promptDlgHeader();
 
-	// Strings used in the Email Public Link dialog.
+	// Strings used in the Email Public Link dialog
 	String emailPublicLinkDlg_EmailHint();
 	String emailPublicLinkDlg_Hint1();
 	String emailPublicLinkDlg_MessageHint();
@@ -3498,7 +3480,7 @@ public interface GwtTeamingMessages extends Messages {
 	String ldapBrowser_Label_Tree();
 	String ldapBrowser_Warning_Partial();
 
-	// Strings used in the name completion settings dialog.
+	// Strings used in the name completion settings dialog
 	String nameCompletionSettingsDlg_Desc();
 	String nameCompletionSettingsDlg_FQDN();
 	String nameCompletionSettingsDlg_Header();
@@ -3535,17 +3517,16 @@ public interface GwtTeamingMessages extends Messages {
 	String tourPrev();
 	String tourSkip();
 
-	// Strings used in the Net Folder Global Settings dialog.
+	// Strings used in the Net Folder Global Settings dialog
 	String netFolderGlobalSettingsDlg_EnableJits();
 	String netFolderGlobalSettingsDlg_Header();
 	String netFolderGlobalSettingsDlg_MaxWaitLabel();
-	String netFolderGlobalSettingsDlg_OnSaveUnknownException(String errMsg);
+	String netFolderGlobalSettingsDlg_OnSaveUnknownException( String errMsg );
 	String netFolderGlobalSettingsDlg_SavingConfig();
 	String netFolderGlobalSettingsDlg_SecondsLabel();
 	String netFolderGlobalSettingsDlg_UseDirRightsHint();
 
-	// Strings used in the 'Prompt for external users email address'
-	// dialog.
+	// Strings used in the "Prompt for external users email address" dialog
 	String PromptForExternalUsersEmailAddressDlg_Header();
 	String PromptForExternalUsersEmailAddressDlg_Hint();
 	String PromptForExternalUsersEmailAddressDlg_NoEmailAddressesEntered();
@@ -3600,7 +3581,7 @@ public interface GwtTeamingMessages extends Messages {
 	String copyFiltersDlgCaptionPersonal();
 	String copyFiltersDlgSelectSource();
 	
-	// Strings used by the KeyShield SSO Configuration dialog.
+	// Strings used by the KeyShield SSO Configuration dialog
 	String editKeyShieldConfigDlg_ApiAuthKeyLabel();
 	String editKeyShieldConfigDlg_AuthConnectorNamesHint();
 	String editKeyShieldConfigDlg_ConnectorNamesLabel();
@@ -3615,7 +3596,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editKeyShieldConfigDlg_StackTraceLabel();
 	String editKeyShieldConfigDlg_TestConnectionLabel();
 	
-	// Strings used by the Access Rights Info dialog.
+	// Strings used by the Access Rights Info dialog
 	String AccessRightsInfoDlg_Contributor();
 	String AccessRightsInfoDlg_ContributorDesc_Filr();
 	String AccessRightsInfoDlg_ContributorDesc_Vibe();
@@ -3627,12 +3608,4 @@ public interface GwtTeamingMessages extends Messages {
 	String AccessRightsInfoDlg_ViewerDesc_Filr();
 	String AccessRightsInfoDlg_ViewerDesc_Vibe();
 	
-	// Strings used by the 'Select CSV Delimiter' dialog.
-	String selectCSVDelimiterDlgCustom();
-	String selectCSVDelimiterDlgErr_Blank(int max);
-	String selectCSVDelimiterDlgErr_Backslash();
-	String selectCSVDelimiterDlgErr_Slash();
-	String selectCSVDelimiterDlgHeader();
-	String selectCSVDelimiterDlgHint1();
-	String selectCSVDelimiterDlgHint2(int max);
-}
+}// end GwtTeamingMessages

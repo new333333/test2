@@ -34,6 +34,7 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement(name = "net_folder_brief")
 public class NetFolderBrief extends BinderBrief {

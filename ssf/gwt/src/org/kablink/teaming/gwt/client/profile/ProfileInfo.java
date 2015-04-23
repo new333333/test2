@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.profile;
 
 import java.util.ArrayList;
@@ -39,23 +40,18 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-/**
- * ?
- * 
- * @author ?
- */
 public class ProfileInfo implements IsSerializable, VibeRpcResponseData  {
-	private boolean						m_canAccessUserWS;		//
-	private boolean						m_conferencingEnabled;	//
-	private boolean						m_hasUserWS;			//
-	private boolean						m_pictureEnabled;		//
-	private boolean						m_presenceEnabled;		//
-	private ArrayList<ProfileCategory>	m_categories;			//
-	private ArrayList<String>			m_pictureUrls;			//
-	private ArrayList<String>			m_pictureScaledUrls;	//
-	private String						m_title;				//
-	private String						m_binderId;				//
-	private String						m_userId;				//
+
+	private String title;
+	private String binderId;
+	private String userId;
+	private ArrayList<String> pictureUrls = new ArrayList<String>();
+	private ArrayList<String> pictureScaledUrls = new ArrayList<String>();
+	
+	private ArrayList<ProfileCategory> categories = new ArrayList<ProfileCategory>();
+	private boolean pictureEnabled = false;
+	private boolean conferencingEnabled = false;
+	private boolean presenceEnabled = false;
 	
 	/**
 	 * Constructor method.
@@ -63,125 +59,107 @@ public class ProfileInfo implements IsSerializable, VibeRpcResponseData  {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public ProfileInfo() {
-		// Initialize the super class...
-		super();
 		
-		// ...and initialize everything else.
-		m_categories        = new ArrayList<ProfileCategory>();
-		m_pictureUrls       = new ArrayList<String>();
-		m_pictureScaledUrls = new ArrayList<String>();
-	}
-
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public ArrayList<ProfileCategory> getCategories()         {return m_categories;         }
-	public List<String>               getPicutres()           {return m_pictureUrls;        }
-	public List<String>               getPicutreScaleds()     {return m_pictureScaledUrls;  }
-	public boolean                    canAccessUserWS()       {return m_canAccessUserWS;    }
-	public boolean                    hasUserWS()             {return m_hasUserWS;          }
-	public boolean                    isConferencingEnabled() {return m_conferencingEnabled;}
-	public boolean                    isPictureEnabled()      {return m_pictureEnabled;     }
-	public boolean                    isPresenceEnabled()     {return m_presenceEnabled;    }
-	public String                     getBinderId()           {return m_binderId;           }
-	public String                     getTitle()              {return m_title;              }
-	public String                     getUserId()             {return m_userId;             }
-
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setCanAccessUserWS(    boolean canAccessUserWS) {m_canAccessUserWS     = canAccessUserWS;}
-	public void setConferencingEnabled(boolean enabled)         {m_conferencingEnabled = enabled;        }
-	public void setHasUserWS(          boolean hasUserWS)       {m_hasUserWS           = hasUserWS;      }
-	public void setPictureEnabled(     boolean enabled)         {m_pictureEnabled      = enabled;        }
-	public void setPresenceEnabled(    boolean enabled)         {m_presenceEnabled     = enabled;        }
-	public void setBinderId(           String  binderId)        {m_binderId            = binderId;       }
-	public void setTitle(              String  title)           {m_title               = title;          }
-	public void setUserId(             String  userId)          {m_userId              = userId;         }
-
-	/**
-	 * Adds a ProfileCategory.
-	 * 
-	 * @param cat
-	 */
-	public void add(ProfileCategory cat) {
-		m_categories.add(cat);
-	}
-
-	/**
-	 * Adds a picture URL.
-	 * 
-	 * @param pictureUrl
-	 */
-	public void addPictureUrl(String pictureUrl) {
-		m_pictureUrls.add(pictureUrl);
 	}
 	
-	/**
-	 * Adds a scaled picture URL.
-	 * 
-	 * @param pictureUrl
-	 */
-	public void addPictureScaledUrl(String pictureScaledUrl) {
-		m_pictureScaledUrls.add(pictureScaledUrl);
+	public ArrayList<ProfileCategory> getCategories() {
+		return categories;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 	
-	/**
-	 * Returns a ProfileCategory based on its name.
-	 * 
-	 * @param name
-	 * 
-	 * @return
-	 */
+	public String getTitle() {
+		return this.title;
+	}
+
 	public ProfileCategory get(String name) {
+		
 		ProfileCategory category = null;
-		for(ProfileCategory cat:  m_categories) {
-			if (cat.getName().equals(name)) {
+		
+		for(ProfileCategory cat: categories) {
+			if( cat.getName().equals(name)) {
 				category = cat;
 				break;
 			}
 		}
+		
 		return category;
 	}
-
-	/**
-	 * Returns a ProfileCategory based on its index.
-	 * 
-	 * @param index
-	 * 
-	 * @return
-	 */
+	
 	public ProfileCategory get(int index) {
-		return m_categories.get(index);
+		return categories.get(index);
 	}
 
-	/**
-	 * Returns the URL of the first picture.
-	 * 
-	 * @return
-	 */
+	public void add(ProfileCategory cat) {
+		this.categories.add(cat);
+	}
+
+	public String getBinderId() {
+		return binderId;
+	}
+
+	public void setBinderId(String binderId) {
+		this.binderId = binderId;
+	}
+
 	public String getPictureUrl() {
 		String pictureUrl = null;
-		if (!(m_pictureUrls.isEmpty())) {
-			pictureUrl = m_pictureUrls.get(0);
-		};
+		if((!pictureUrls.isEmpty())){ pictureUrl = pictureUrls.get(0); };
 		return pictureUrl;
 	}
 
-	/**
-	 * Returns the URL of the first scaled picture.
-	 * 
-	 * @return
-	 */
 	public String getPictureScaledUrl() {
 		String pictureScaledUrl = null;
-		if (!(m_pictureScaledUrls.isEmpty())) {
-			pictureScaledUrl = m_pictureScaledUrls.get(0);
-		};
+		if((!pictureScaledUrls.isEmpty())){ pictureScaledUrl = pictureScaledUrls.get(0); };
 		return pictureScaledUrl;
+	}
+
+	public List<String> getPicutres() {
+		return pictureUrls;
+	}
+	
+	public List<String> getPicutreScaleds() {
+		return pictureScaledUrls;
+	}
+	
+	public void addPictureUrl(String pictureUrl) {
+		this.pictureUrls.add(pictureUrl);
+	}
+	
+	public void addPictureScaledUrl(String pictureScaledUrl) {
+		this.pictureScaledUrls.add(pictureScaledUrl);
+	}
+	
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	public void setPictureEnabled(boolean enabled) {
+		this.pictureEnabled = enabled;
+	}
+
+	public boolean isPictureEnabled() {
+		return pictureEnabled;
+	}
+	
+	public void setConferencingEnabled(boolean enabled) {
+		this.conferencingEnabled = enabled;
+	}
+	public boolean isConferencingEnabled() {
+		return conferencingEnabled;
+	}
+	
+	public void setPresenceEnabled(boolean enabled) {
+		this.presenceEnabled = enabled;
+	}
+	
+	public boolean isPresenceEnabled() {
+		return presenceEnabled;
 	}
 }

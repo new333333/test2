@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,11 +44,9 @@ import java.util.Set;
 
 import org.apache.lucene.document.Field;
 import org.apache.tools.zip.ZipOutputStream;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -71,14 +69,9 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
-/**
- * ?
- * 
- * @author phurley@novell.com
- */
+
 @SuppressWarnings({"unchecked", "unused"})
 public class EntryCsvHelper {
-	public static String DEFAULT_CSV_DELIMITER	= ",";
 	
 	public static void folderToCsv(AllModulesInjected bs, Folder folder, Map options, OutputStream out) {
 		if (options == null) options = new HashMap();
@@ -88,19 +81,6 @@ public class EntryCsvHelper {
 			attrsToSkip.add("guestName");
 			attrsToSkip.add("captcha");
 		}
-
-		// What delimiter should we use between fields in the output?
-		String csvDelim;
-		if (options.containsKey(ObjectKeys.CSV_DELIMITER)) {
-			csvDelim = ((String) options.get(ObjectKeys.CSV_DELIMITER));
-			if (!(MiscUtil.hasString(csvDelim))) {
-				csvDelim = DEFAULT_CSV_DELIMITER;
-			}
-		}
-		else {
-			csvDelim = DEFAULT_CSV_DELIMITER;
-		}
-		
 		Map folderEntries = null;
 		Long folderId = folder.getId();
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -183,7 +163,7 @@ public class EntryCsvHelper {
 		}
 		
 		//Output the Header row CSV
-		outputHeaderCsv(out, columnTemplate, csvDelim);
+		outputHeaderCsv(out, columnTemplate);
 
 		options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES_EXPORT);
 		folderEntries = bs.getFolderModule().getEntries(folderId, options);
@@ -197,7 +177,7 @@ public class EntryCsvHelper {
     				FolderEntry entry = bs.getFolderModule().getEntry(folderId, entryId);
     				
     				//Output the CSV for this entry
-    				outputEntryAsCsv(out, entry, columnTemplate, csvDelim);
+    				outputEntryAsCsv(out, entry, columnTemplate);
 				}
     		}
 
@@ -259,7 +239,7 @@ public class EntryCsvHelper {
 
 	}
 
-	private static void outputHeaderCsv(OutputStream out, List<Map<String,Object>> columnTemplate, String csvDelim) {
+	private static void outputHeaderCsv(OutputStream out, List<Map<String,Object>> columnTemplate) {
 		//Output the column headers according to the column template		
 		boolean firstColSeen = false;
 		for (Map<String,Object> cm : columnTemplate) {
@@ -267,7 +247,7 @@ public class EntryCsvHelper {
 			String attrName = (String)cm.get(ObjectKeys.CSV_ATTR);
 			try {
 				if (firstColSeen) {
-					out.write(csvDelim.getBytes());
+					out.write(",".getBytes());
 				}
 				firstColSeen = true;
 				try {
@@ -290,7 +270,7 @@ public class EntryCsvHelper {
 		}
 	}
 	
-	private static void outputEntryAsCsv(OutputStream out, FolderEntry entry, List<Map<String,Object>> columnTemplate, String csvDelim) {
+	private static void outputEntryAsCsv(OutputStream out, FolderEntry entry, List<Map<String,Object>> columnTemplate) {
 		Document defDoc = entry.getEntryDefDoc();
 		String family = DefinitionUtils.getFamily(defDoc);
 		//Output the attributes according to the column template		
@@ -300,7 +280,7 @@ public class EntryCsvHelper {
 			String attrName = (String)cm.get(ObjectKeys.CSV_ATTR);
 			try {
 				if (firstColSeen) {
-					out.write(csvDelim.getBytes());
+					out.write(",".getBytes());
 				}
 				firstColSeen = true;
 				try {
@@ -400,4 +380,5 @@ public class EntryCsvHelper {
 		}
 		return "";
 	}
+	
 }

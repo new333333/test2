@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,13 +48,14 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+
 /**
- * This class holds all of the properties needed to define an 'Entry'
- * widget in a landing page.
- * 
+ * This class holds all of the properties needed to define an "Entry" widget in a landing page.
  * @author jwootton
+ *
  */
-public class EntryProperties implements PropertiesObj
+public class EntryProperties
+	implements PropertiesObj
 {
 	private boolean m_showTitle;
 	private boolean m_showAuthor;
@@ -67,8 +68,7 @@ public class EntryProperties implements PropertiesObj
 	private String m_zoneUUID;
 	private String m_viewEntryUrl;
 	private String m_author;
-	private String m_authorId;		// Id of the author.
-	private String m_authorWsId;	// Id of the author's workspace.
+	private String m_authorWsId;	// Id of the author's workspace
 	private String m_modificationDate;
 	private ArrayList<String> m_replyIds;
 	private AsyncCallback<VibeRpcResponse> m_folderEntryCallback;
@@ -96,7 +96,6 @@ public class EntryProperties implements PropertiesObj
 		m_zoneUUID = null;
 		m_viewEntryUrl = null;
 		m_author = null;
-		m_authorId = null;
 		m_authorWsId = null;
 		m_modificationDate = null;
 		m_getterCallback = null;
@@ -186,7 +185,6 @@ public class EntryProperties implements PropertiesObj
 			m_numRepliesToShow = entryProps.getNumRepliesToShow();
 			m_viewEntryUrl = entryProps.getViewEntryUrl();
 			m_author = entryProps.getAuthor();
-			m_authorId = entryProps.getAuthorId();
 			m_authorWsId = entryProps.getAuthorWorkspaceId();
 			m_modificationDate = entryProps.getModificationDate();
 			m_replyIds = entryProps.getReplyIds();
@@ -260,14 +258,6 @@ public class EntryProperties implements PropertiesObj
 	public String getAuthor()
 	{
 		return m_author;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getAuthorId()
-	{
-		return m_authorId;
 	}
 	
 	/**
@@ -486,7 +476,6 @@ public class EntryProperties implements PropertiesObj
 		m_parentBinderName = entry.getParentBinderName();
 		m_viewEntryUrl = entry.getViewEntryUrl();
 		m_author = entry.getAuthor();
-		m_authorId = entry.getAuthorId();
 		m_authorWsId = entry.getAuthorWorkspaceId();
 		m_modificationDate = entry.getModificationDate();
 		m_replyIds = entry.getReplyIds();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,8 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.gwt.server;
-
-import java.lang.reflect.Method;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -53,11 +51,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
-import com.google.gwt.user.client.rpc.RpcTokenException;
+import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.SerializationException;
 import com.google.gwt.user.server.rpc.RPC;
 import com.google.gwt.user.server.rpc.RPCRequest;
-import com.google.gwt.user.client.rpc.XsrfProtectedService;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * ?
@@ -65,14 +63,14 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
  * @author jwootton
  */
 @SuppressWarnings({"serial", "unchecked"})
-public class GwtRpcController extends VibeXsrfProtectedServiceServlet
+public class GwtRpcController extends RemoteServiceServlet
 	implements
         Controller, ServletContextAware
 {
-	private Log 					m_logger = LogFactory.getLog( GwtRpcController.class );
-    private ServletContext			m_servletContext;
-	private Class					m_xsrfProtectedServiceClass;
-    private XsrfProtectedService	m_xsrfProtectedService;
+	private Log 				m_logger = LogFactory.getLog(GwtRpcController.class);
+    private ServletContext		m_servletContext;
+    private RemoteService		m_remoteService;
+	private Class				m_remoteServiceClass;
 
     /**
      * 
@@ -83,6 +81,7 @@ public class GwtRpcController extends VibeXsrfProtectedServiceServlet
         HttpServletResponse response) throws Exception
     {
         super.doPost( request, response );
+        
         return null;
     }// end handleRequest()
     
@@ -95,8 +94,12 @@ public class GwtRpcController extends VibeXsrfProtectedServiceServlet
     {
         try
         {
-            RPCRequest rpcRequest = RPC.decodeRequest( payload, m_xsrfProtectedServiceClass );
-            Object[]   parameters = rpcRequest.getParameters();
+            RPCRequest	rpcRequest;
+        	String results;
+
+            rpcRequest = RPC.decodeRequest( payload, m_remoteServiceClass );
+
+            Object[] parameters = rpcRequest.getParameters();
             
     		String cmdName = "Unknown";
             if ( m_logger.isDebugEnabled() )
@@ -176,17 +179,11 @@ public class GwtRpcController extends VibeXsrfProtectedServiceServlet
             	}
             }
             
-        	String results;
     		opBegin = System.nanoTime();
     		try
     		{
-                // Validate the token from the RPC request and delegate
-    			// the work to the spring injected service.
-    			Method rpcMethod = rpcRequest.getMethod();
-    			if (!(rpcMethod.getName().equals("getNewXsrfToken"))) {
-    				validateXsrfToken(rpcRequest.getRpcToken(), rpcMethod);
-    			}
-    			results = RPC.invokeAndEncodeResponse( m_xsrfProtectedService, rpcMethod, parameters );
+                // Delegate work to the spring injected service.
+    			results = RPC.invokeAndEncodeResponse( m_remoteService, rpcRequest.getMethod(), parameters );
     		}
     		finally
     		{
@@ -195,15 +192,11 @@ public class GwtRpcController extends VibeXsrfProtectedServiceServlet
             	
             return results;
         }
-        
-        catch (RpcTokenException ex) {
-            m_logger.error( "An RpcTokenException was thrown while processing this call.", ex );
-            return RPC.encodeResponseForFailure( null, ex );
-        }
-        
         catch (IncompatibleRemoteServiceException ex)
         {
-        	m_logger.error( "An IncompatibleRemoteServiceException was thrown while processing this call.", ex );
+            getServletContext().log(
+                            "An IncompatibleRemoteServiceException was thrown while processing this call.",
+                            ex );
             return RPC.encodeResponseForFailure( null, ex );
         }
     }// end processCall()
@@ -230,27 +223,23 @@ public class GwtRpcController extends VibeXsrfProtectedServiceServlet
 
     
     /**
-     * ?
-     *  
+     * 
      * @param remoteService
      */
-    public void setRemoteService( XsrfProtectedService remoteService )
+    public void setRemoteService( RemoteService remoteService )
     {
-        m_xsrfProtectedService      = remoteService;
-        m_xsrfProtectedServiceClass = m_xsrfProtectedService.getClass();
+        m_remoteService = remoteService;
+        m_remoteServiceClass = m_remoteService.getClass();
     }// end setRemoteService()
 
     /**
      * Traces any unexpected failures and bubbles up the exception.
-     * 
-     * @param t
      */
     @Override
-	protected void doUnexpectedFailure( Throwable t )
-    {
-    	m_logger.debug( "GwtRpcController.doUnexpectedFailure(EXCEPTION):  ", t );
+	protected void doUnexpectedFailure(Throwable t) {
+    	m_logger.debug("GwtRpcController.doUnexpectedFailure(EXCEPTION):  ", t);
     	super.doUnexpectedFailure(t);
-    }// end doUnexpectedFailure()
+    }
 
     /*
      * Runs the XSS checker on the parameters that require checking.

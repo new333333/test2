@@ -141,6 +141,8 @@ var ss_userDisplayStyle = "${ssUser.currentDisplayStyle}";
 var ss_entryViewStyle = "${ss_entryViewStyle}";
 
 var ss_1pix = ss_imagesPath + "pics/1pix.gif";
+var ss_forumColorsCssUrl = "<ssf:url webPath="viewCss"><ssf:param 
+		name="theme" value=""/></ssf:url>";
 
 var ss_AjaxBaseUrl = "<ssf:url adapter="true" portletName="ss_forum" actionUrl="true" />";
 

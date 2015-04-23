@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -96,7 +96,6 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -604,15 +603,14 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
     
    	@Override
 	protected boolean indexEntries_validate(Binder binder, Entry entry) {
-   		// DRF (20150323):  As of a change I'm making for Inverness,
-   		//    we now index all entries, including the Job Processing
-   		//    agent.  Prior to this change, if entry was the Job
-   		//    Processing agent, we returned false here.
+   		Principal p = (Principal)entry;
+   		//don't index job processor
+   		if (p.isReserved() && ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(p.getInternalId())) return false;
    		return true;
    	}
    	@Override
 	protected void indexEntries_load(Binder binder, List entries)  {
-   		// Bulk load any collections that need to be indexed.
+   		// bulkd load any collections that neeed to be indexed
    		getProfileDao().bulkLoadCollections((List<Principal>)entries);
    	}
 	@Override

@@ -52,7 +52,7 @@ firebug-lite 1.2
 groovy 1.8.5
 Guice 3.0 (used by openid4java)
 gQuery 1.4.2 (jQuery port to GWT)
-gwt 2.7.0 (Google Web Toolkit)
+gwt 2.6.1 (Google Web Toolkit)
 gwt-cal 0.9.4 (GWT Calendar widget)
 gwt-crypto 2.3.0-20110518.123759-2 (Crypto module for the Google Web Toolkit)
 gwt-dnd 3.3.1 (GWT drag-and-drop support)
@@ -110,7 +110,7 @@ Liferay portal-impl.jar 4.3.0
 Liferay portal-kernel.jar 4.3.0
 Liferay portal-service.jar 4.3.0
 Liferay util-java.jar 4.3.0 (needed by util-taglib)
-Liquibase 2.0.5
+Liquibase 2.0.3 
 Liquibase Hibernate integration 2.0.0
 Liquibase MS SQL Server Extensions 1.2.0
 Liquibase Oracle Extensions 1.2.0

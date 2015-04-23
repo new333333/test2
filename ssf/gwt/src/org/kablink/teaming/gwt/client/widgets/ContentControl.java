@@ -53,9 +53,7 @@ import org.kablink.teaming.gwt.client.binderviews.MicroBlogFolderView;
 import org.kablink.teaming.gwt.client.binderviews.MilestoneFolderView;
 import org.kablink.teaming.gwt.client.binderviews.MirroredFileFolderView;
 import org.kablink.teaming.gwt.client.binderviews.NetFoldersWSView;
-import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspaceView;
 import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspacesView;
-import org.kablink.teaming.gwt.client.binderviews.PhotoAlbumFolderView;
 import org.kablink.teaming.gwt.client.binderviews.ProjectManagementWSView;
 import org.kablink.teaming.gwt.client.binderviews.SurveyFolderView;
 import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
@@ -64,7 +62,6 @@ import org.kablink.teaming.gwt.client.binderviews.TeamWorkspacesView;
 import org.kablink.teaming.gwt.client.binderviews.TrashView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
-import org.kablink.teaming.gwt.client.binderviews.WikiFolderView;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
@@ -103,15 +100,12 @@ import org.kablink.teaming.gwt.client.event.ShowMicroBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowMilestoneFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowMirroredFileFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowNetFoldersWSEvent;
-import org.kablink.teaming.gwt.client.event.ShowPersonalWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.ShowPersonalWorkspacesEvent;
-import org.kablink.teaming.gwt.client.event.ShowPhotoAlbumFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowProjectManagementWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowSurveyFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowTeamRootWSEvent;
 import org.kablink.teaming.gwt.client.event.ShowTrashEvent;
-import org.kablink.teaming.gwt.client.event.ShowWikiFolderEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.ShowTeamWSEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
@@ -184,16 +178,13 @@ public class ContentControl extends Composite
 		ShowMilestoneFolderEvent.Handler,
 		ShowMirroredFileFolderEvent.Handler,
 		ShowNetFoldersWSEvent.Handler,
-		ShowPersonalWorkspaceEvent.Handler,
 		ShowPersonalWorkspacesEvent.Handler,
-		ShowPhotoAlbumFolderEvent.Handler,
 		ShowProjectManagementWSEvent.Handler,
 		ShowSurveyFolderEvent.Handler,
 		ShowTaskFolderEvent.Handler,
 		ShowTeamRootWSEvent.Handler,
 		ShowTeamWSEvent.Handler,
 		ShowTrashEvent.Handler,
-		ShowWikiFolderEvent.Handler,
 		ViewForumEntryEvent.Handler
 {
 	private boolean			m_isAdminContent;							//
@@ -242,16 +233,13 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_MILESTONE_FOLDER,
 		TeamingEvents.SHOW_MIRRORED_FILE_FOLDER,
 		TeamingEvents.SHOW_NET_FOLDERS_WORKSPACE,
-		TeamingEvents.SHOW_PERSONAL_WORKSPACE,
 		TeamingEvents.SHOW_PERSONAL_WORKSPACES,
-		TeamingEvents.SHOW_PHOTO_ALBUM_FOLDER,
 		TeamingEvents.SHOW_PROJECT_MANAGEMENT_WORKSPACE,
 		TeamingEvents.SHOW_SURVEY_FOLDER,
 		TeamingEvents.SHOW_TASK_FOLDER,
 		TeamingEvents.SHOW_TEAM_ROOT_WORKSPACE,
 		TeamingEvents.SHOW_TEAM_WORKSPACE,
 		TeamingEvents.SHOW_TRASH,
-		TeamingEvents.SHOW_WIKI_FOLDER,
 		
 		// View events.
 		TeamingEvents.GET_CURRENT_VIEW_INFO,
@@ -1014,20 +1002,9 @@ public class ContentControl extends Composite
 							
 	
 						case PHOTOALBUM:
-							boolean showGwtPA = PhotoAlbumFolderView.SHOW_GWT_PHOTO_ALBUM;	//! DRF (20150318)
-							if (showGwtPA) {
-								GwtTeaming.fireEvent( new ShowPhotoAlbumFolderEvent( bi, viewReady ) );
-								m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							}
-							break;
-	
-							
 						case WIKI:
-							boolean showGwtWiki = WikiFolderView.SHOW_GWT_WIKI;	//! DRF (20150326)
-							if (showGwtWiki) {
-								GwtTeaming.fireEvent( new ShowWikiFolderEvent( bi, viewReady ) );
-								m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							}
+							// These aren't handled!  Let things take
+							// the default flow.
 							break;
 							
 						default:
@@ -1131,13 +1108,8 @@ public class ContentControl extends Composite
 						}
 							
 						case USER:
-							boolean showGwtPWS = PersonalWorkspaceView.SHOW_GWT_PERSONAL_WORKSPACE;	//! DRF (20150318)
-							if (showGwtPWS) {
-								// Fire the event that will display the
-								// Personal Workspace view.
-								GwtTeaming.fireEvent( new ShowPersonalWorkspaceEvent( bi, viewReady ) );
-								m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							}
+							// These aren't handled!  Let things take 
+							// the default flow.
 							break;
 						
 						default:
@@ -2273,36 +2245,6 @@ public class ContentControl extends Composite
 	}
 	
 	/**
-	 * Handles ShowPersonalWorkspaceEvent's received by this class.
-	 * 
-	 * Implements the ShowPersonalWorkspaceEvent.Handler.onShowPersonalWorkspace() method.
-	 */
-	@Override
-	public void onShowPersonalWorkspace( ShowPersonalWorkspaceEvent event )
-	{
-		// Create a PersonalWorkspaceView widget for the selected
-		// binder.
-		PersonalWorkspaceView.createAsync(
-				event.getBinderInfo(),
-				event.getViewReady(), 
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( ViewBase pwsView )
-			{
-				pwsView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( pwsView );
-			}// end onSuccess()
-		} );
-	}// end onShowPersonalWorkspace()
-	
-	/**
 	 * Handles ShowPersonalWorkspacesEvent's received by this class.
 	 * 
 	 * Implements the ShowPersonalWorkspacesEvent.Handler.onShowPersonalWorkspaces() method.
@@ -2331,38 +2273,6 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		} );
 	}// end onShowPersonalWorkspaces()
-	
-	/**
-	 * Handles ShowPhotoAlbumFolderEvent's received by this class.
-	 * 
-	 * Implements the ShowPhotoAlbumFolderEvent.Handler.onShowPhotoAlbumFolder() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onShowPhotoAlbumFolder( final ShowPhotoAlbumFolderEvent event )
-	{
-		// Create a PhotoAlbumFolderView widget for the selected
-		// binder.
-		PhotoAlbumFolderView.createAsync(
-				event.getBinderInfo(),
-				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase tfView )
-			{
-				tfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( tfView );
-			}// end onSuccess()
-		});
-	}// end onShowPhotoAlbumFolder()
 	
 	/**
 	 * Handles ShowProjectManagementWSEvent's received by this class.
@@ -2551,37 +2461,6 @@ public class ContentControl extends Composite
 	}// end onShowTrash()
 	
 
-	/**
-	 * Handles ShowWikiFolderEvent's received by this class.
-	 * 
-	 * Implements the ShowWikiFolderEvent.Handler.onShowWikiFolder() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onShowWikiFolder( final ShowWikiFolderEvent event )
-	{
-		// Create a WikiFolderView widget for the selected binder.
-		WikiFolderView.createAsync(
-				event.getBinderInfo(),
-				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase tfView )
-			{
-				tfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( tfView );
-			}// end onSuccess()
-		});
-	}// end onShowWikiFolder()
-	
 	/*
 	 * Asynchronously performs the reload necessary after an item has
 	 * been deleted.

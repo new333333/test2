@@ -203,6 +203,8 @@
 			<jvmarg value="${gwt.java.xmx}"          />
 			<jvmarg value="-Xss256m"                 />
 			<jvmarg value="-Xverify:none"            />
+			<jvmarg value="-XX:PermSize=256m"        />
+			<jvmarg value="-XX:MaxPermSize=512m"     />
 			<jvmarg value="-Djava.awt.headless=true" />
 			<!-- GWT Compiler arguments. -->
 			<arg line="${gwt.war} ${gwt.style} ${gwt.logLevel} ${gwt.codeFragments} ${gwt.localWorkers} ${gwt.additionalArgs1} ${gwt.additionalArgs2} ${gwt.additionalArgs3} ${gwt.module}" />

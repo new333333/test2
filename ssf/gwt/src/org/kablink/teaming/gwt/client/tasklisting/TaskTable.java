@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -91,6 +91,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.TaskEventRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalculatedDatesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UpdateCalculatedDatesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposition;
 import org.kablink.teaming.gwt.client.tasklisting.TaskDueDateDlg;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
@@ -213,6 +214,7 @@ public class TaskTable extends Composite
 	private TaskPopupMenu				m_statusMenu;				//
 	
 	private       boolean							m_newTaskTable = true;										//
+	private final GwtRpcServiceAsync				m_rpcService   = GwtTeaming.getRpcService();				// 
 	private final GwtTeamingMessages				m_messages     = GwtTeaming.getMessages();					//
 	private final GwtTeamingTaskListingImageBundle	m_images       = GwtTeaming.getTaskListingImageBundle();	//
 
@@ -818,7 +820,7 @@ public class TaskTable extends Composite
 		case INDIVIDUAL:
 			// Individual assignee!  Generate a PresenceControl...
 			GwtPresenceInfo presence = ai.getPresence();
-			PresenceControl pc = new PresenceControl(String.valueOf(ai.getId()), String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
+			PresenceControl pc = new PresenceControl(String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
 			pc.setImageAlignment("top");
 			pc.addStyleName("displayInline");
 			pc.addStyleName("verticalAlignTop");
@@ -1634,7 +1636,7 @@ public class TaskTable extends Composite
 		// Invoke the Simple Profile dialog.
 		Long wsId = ai.getPresenceUserWSId();
 		String wsIdS = ((null == wsId) ? null : String.valueOf(wsId));
-		GwtClientHelper.invokeSimpleProfile(element, String.valueOf(ai.getId()), wsIdS, ai.getTitle());
+		GwtClientHelper.invokeSimpleProfile(element, wsIdS, ai.getTitle());
 	}
 
 	/*

@@ -53,8 +53,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmdType;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.service.GetGwtRpcServiceCallback;
-import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.widgets.AlertDlg;
 import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgClient;
@@ -86,7 +84,6 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.RpcTokenException;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -646,29 +643,14 @@ public class GwtClientHelper {
 	}	
 
 	/**
-	 * Execute the given command via GWT's RPC mechanism.
-	 * 
-	 * @param cmd
-	 * @param httpRequestInfo
-	 * @param callback
+	 * Execute the given command via GWT's rpc mechanism
 	 */
-	public static void executeCommand(final VibeRpcCmd cmd, final HttpRequestInfo httpRequestInfo, final AsyncCallback<VibeRpcResponse> callback) {
-		// Can we get the GWT RPC service to execute the command?
-		GwtTeaming.getRpcService(new GetGwtRpcServiceCallback() {
-			@Override
-			public void onFailure(Throwable caught) {
-				// No!  The user will have been told about the error.
-				// Simply tell the callback.
-				callback.onFailure(caught);
-			}
-
-			@Override
-			public void onSuccess(GwtRpcServiceAsync rpc) {
-				// Yes, we have the GWT RPC service to execute the
-				// command!  Execute it.
-				rpc.executeCommand( httpRequestInfo, cmd, callback );
-			}
-		});
+	public static void executeCommand(
+		VibeRpcCmd cmd,
+		HttpRequestInfo httpRequestInfo,
+		AsyncCallback<VibeRpcResponse> callback)
+	{
+		GwtTeaming.getRpcService().executeCommand( httpRequestInfo, cmd, callback );
 	}	
 
 	/**
@@ -801,20 +783,6 @@ public class GwtClientHelper {
 		if (hasString(pattern))
 		     reply = DateTimeFormat.getFormat(pattern);
 		else reply = DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT);
-		return reply;
-	}
-
-	/*
-	 * Returns the detailed information from a Throwable.
-	 */
-	private static String getThrowableDetails(Throwable t) {
-		String reply = t.getLocalizedMessage();
-		if (!(hasString(reply))) {
-			reply = t.getMessage();
-			if (!(hasString(reply))) {
-				reply = t.toString();
-			}
-		}
 		return reply;
 	}
 	
@@ -962,8 +930,7 @@ public class GwtClientHelper {
 	 * @param patches
 	 */
 	public static void handleGwtRPCFailure(Throwable t, String errorMessage, String[] patches) {
-		boolean displayAlert   = false;
-		boolean ensureMsgPatch = false;
+		boolean displayAlert = false;
 		if (null != t) {
 			GwtTeamingMessages messages = GwtTeaming.getMessages();
 			String cause;
@@ -1021,16 +988,11 @@ public class GwtClientHelper {
 				}
 			}
 			
-			else if (t instanceof RpcTokenException) {
-				// No matter what, we want to make sure this failure
-				// gets displayed to the user.
-				displayAlert   =
-				ensureMsgPatch = true;
-				cause = patchMessage(messages.rpcFailure_XsrfTokenFailure(), getThrowableDetails(t));
-			}
-			
 			else {
-				cause = getThrowableDetails(t);
+				cause = t.getLocalizedMessage();
+				if (!(hasString(cause))) {
+					cause = t.toString();
+				}
 			}
 			
 			if (!(hasString(cause))) {
@@ -1040,9 +1002,6 @@ public class GwtClientHelper {
 		}
 		
 		if (hasString(errorMessage) && (displayAlert || isDebugUI())) {
-			if (ensureMsgPatch && (0 > errorMessage.indexOf("[0]"))) {
-				errorMessage += "  '[0]'.";
-			}
 			errorMessage = patchMessage(errorMessage, patches);
 			deferredAlert(errorMessage);
 		}
@@ -1139,12 +1098,11 @@ public class GwtClientHelper {
 	 * Invokes the simple profile dialog off an HTML Element.
 	 * 
 	 * @param htmlElement
-	 * @param userId
 	 * @param binderId
 	 * @param userName
 	 */
-	public static native void invokeSimpleProfile(Element htmlElement, String userId, String binderId, String userName) /*-{
-		$wnd.top.ss_invokeSimpleProfile(htmlElement, userId, binderId, userName);
+	public static native void invokeSimpleProfile(Element htmlElement, String binderId, String userName) /*-{
+		$wnd.top.ss_invokeSimpleProfile(htmlElement, binderId, userName);
 	}-*/;
 
 	/**
@@ -2149,7 +2107,7 @@ public class GwtClientHelper {
 	 */
 	public static void oneWayCornerPopup(TeamingPopupPanel popup) {
 		popup.setAnimationEnabled(true);
-		popup.setAnimationType(PopupPanel.AnimationType.ONE_WAY_CORNER);
+		popup.setAnimationTypeToOneWayCorner();
 	}
 	
 	/**
@@ -2186,7 +2144,7 @@ public class GwtClientHelper {
 	 */
 	public static void rollDownPopup(TeamingPopupPanel popup) {
 		popup.setAnimationEnabled(true);
-		popup.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
+		popup.setAnimationTypeToRollDown();
 	}
 	
 	/**

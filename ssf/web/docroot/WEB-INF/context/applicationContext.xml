@@ -163,7 +163,7 @@
 	<bean id="moduleEventListenerManagerInterceptor" class="org.kablink.teaming.module.interceptor.EventListenerManagerInterceptor">
 	</bean>
 	
-	<bean id="scheduler" class="org.kablink.teaming.spring.scheduling.quartz.SchedulerFactoryBean">
+	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="dataSource"><ref bean="dataSource"/></property>
 		<property name="autoStartup"><value>${org.quartz.auto.startup}</value></property>
 		<!--Need enough time for modules to startup and possibly register jobs -->
@@ -1216,7 +1216,6 @@ text/calendar											  ics
 				<property name="jndiAccessor"><ref bean="mailJndiAccessor"/></property>
 				<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>
 				<property name="icalModule"><ref bean="icalModule"/></property>
-				<property name="binderModule"><ref bean="binderModule"/></property>
 				<property name="folderModule"><ref bean="folderModule"/></property>
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 				<property name="reportModule"><ref bean="reportModule"/></property>

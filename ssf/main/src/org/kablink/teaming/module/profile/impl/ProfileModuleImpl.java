@@ -3365,7 +3365,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     public void upgradeExternalGroupsAndTeams()
     {
     	User guestUser;
-    	List<User> listOfExternalUsers;
+    	Collection<User> listOfExternalUsers;
     	HashMap<Long,Group> listOfCompletedWork;
     	
     	listOfCompletedWork = new HashMap<Long,Group>();
@@ -3387,18 +3387,73 @@ public String[] getUsernameAndDecryptedPassword(String username) {
      * this method gets called in the upgrade process and a Vibe 3.4 system won't have the
      * "all external users" group that is used by getAllExternalUsers()
      */
-    private List<User> getListOfAllExternalUsers()
+    private Collection<User> getListOfAllExternalUsers()
     {
-    	FilterControls filter;
-    	List<User> externalUsers;
+    	Map options;
+    	SearchFilter searchTermFilter;
+    	ArrayList<User> listOfExternalUsers;
+    	
+    	listOfExternalUsers = new ArrayList<User>();
+    	
+		searchTermFilter = new SearchFilter();
+		searchTermFilter.addAndPersonFlagFilter( true );
+		searchTermFilter.addAndInternalFilter( false );
 
-    	// Do not use the search index to get the list of external users!
-    	filter = new FilterControls();
-    	filter.add( "deleted", Boolean.FALSE );
-    	filter.add( "identityInfo.internal", Boolean.FALSE );
-		externalUsers = getCoreDao().loadObjects( User.class, filter, RequestContextHolder.getRequestContext().getZoneId() );
+		options = new HashMap();
+		options.put( ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_LIMIT );
+		options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
 		
-		return externalUsers;
+		// Perform the search
+		{
+			Map retMap;
+			List userEntries;
+
+			retMap = getUsers( options );
+			userEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
+			if ( userEntries != null )
+			{
+				Iterator it;
+
+				it = userEntries.iterator();
+				while ( it.hasNext() )
+				{
+					Map<String,String> entry;
+					String userId;
+	
+					// Get the next user in the search results.
+					entry = (Map) it.next();
+	
+					// Pull information about this user from the search results.
+					userId = entry.get( "_docId" );
+					
+					try
+					{
+						if ( userId != null )
+						{
+							User nextUser;
+							IdentityInfo idInfo;
+							Long id;
+							
+							id = new Long( userId );
+							nextUser = getUserDeadOrAlive( id );
+							if ( nextUser != null && nextUser.isDeleted() == false )
+							{
+								idInfo = nextUser.getIdentityInfo();
+								if ( idInfo.isInternal() == false )
+									listOfExternalUsers.add( nextUser );
+							}
+						}
+					}
+					catch ( Exception ex )
+					{
+						// Nothing to do
+						logger.info( "---------> Could not find user with id: " + userId, ex );
+					}
+				}
+			}
+		}
+		
+		return listOfExternalUsers;
     }
     
     /**

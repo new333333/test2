@@ -32,20 +32,12 @@
  */
 package org.kablink.teaming.module.sharing.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 import org.kablink.teaming.InvalidEmailAddressException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -89,19 +81,19 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * This module gives us the transaction semantics to deal with the
- * 'Shared with Me' features.  
+ * "Shared with Me" features.  
  *
  * @author Peter Hurley
  */
 public class SharingModuleImpl extends CommonDependencyInjection implements SharingModule, ZoneSchedule {
     private static long MILLISEC_IN_A_DAY = 86400000;
 
-	private AdminModule			adminModule;			//
-	private BinderModule		binderModule;			//
-	private ConvertedFileModule	convertedFileModule;	//
-	private FolderModule		folderModule;			//
-	private ProfileModule		profileModule;			//
-	private TransactionTemplate	transactionTemplate;	//
+	private AdminModule adminModule;
+	private FolderModule folderModule;
+	private BinderModule binderModule;
+	private ProfileModule profileModule;
+	private ConvertedFileModule convertedFileModule;
+	private TransactionTemplate transactionTemplate;
 	
     protected ConvertedFileModule getConvertedFileModule() {
     	if (null == convertedFileModule) {
@@ -109,7 +101,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     	}
 		return convertedFileModule;
 	}
-    
 	public void setConvertedFileModule(ConvertedFileModule convertedFileModule) {
 		this.convertedFileModule = convertedFileModule;
 	}
@@ -117,7 +108,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
 	}
-
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
 	}
@@ -455,7 +445,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		EntityIdentifier entityIdentifier = shareItem.getSharedEntityIdentifier();
     	return testAccess(shareItem, entityIdentifier, operation);
     }
-
     @Override
 	public boolean testAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, SharingOperation operation) {
     	try {
@@ -788,6 +777,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		// Return false.
     	return false;
     }
+    
 
     //NO transaction
 	@Override
@@ -966,10 +956,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			}
 		});
 
-		// Index the entity that is being shared.
+		//Index the entity that is being shared
 		indexSharedEntity(shareItem);
 		
-		// See if there are any cached HTML files to be deleted.
+		//See if there are any cached HTML files to be deleted
 		if (shareItem.getRecipientType().equals(ShareItem.RecipientType.publicLink)) {
 			DefinableEntity entity = getSharedEntity(shareItem);
 			Binder binder = entity.getParentBinder();
@@ -979,10 +969,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				getConvertedFileModule().deleteCacheHtmlFile(shareItem, binder, entity, fa);
 			}
 		}
-
-		// Finally, delete any email subscriptions where the user's
-		// only access to the item was because of this share.
-		invalidateShareItemSubscriptions(shareItem);
 	}
 	
 	/* (non-Javadoc)
@@ -1172,8 +1158,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		return false;
 	}
 
-	/*
-	 * (non-Javadoc)
+
+	
+	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.sharing.SharingModule#getSharedEntity(org.kablink.teaming.domain.ShareItem)
 	 */
 	@Override
@@ -1183,21 +1170,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 
     @Override
 	public DefinableEntity getSharedEntityWithoutAccessCheck(ShareItem shareItem) {
-        return getEntityWithoutAccessCheck(shareItem.getSharedEntityIdentifier());
+        return loadDefinableEntity(shareItem.getSharedEntityIdentifier(), false);
     }
-    
-    /*
-     * Loads entity WITHOUT checking whether the user actually has
-     * access to it.
-     */
-	private DefinableEntity getEntityWithoutAccessCheck(EntityIdentifier eid) {
-		return loadDefinableEntity(eid, false);	// false -> No access check.
-	}
 
-    /*
-     * Loads entity optionally checking whether the user has access to
-     * it.
-     */
 	private DefinableEntity loadDefinableEntity(EntityIdentifier entityIdentifier, boolean accessCheck) {
 		EntityIdentifier.EntityType entityType = entityIdentifier.getEntityType();
 		if(entityType == EntityIdentifier.EntityType.folderEntry) {
@@ -1328,10 +1303,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		if(shareItem.isExpirationHandled())
 			return; // Already handled
 		
-		// Re-index the entity that has been shared and now expired.
+		//Re-index the entity that has been shared and now expired.
 		indexSharedEntity(shareItem);		
 
-		// Mark the share item as handled.
+		// Mark the share item as handled
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -1340,10 +1315,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				return null;
 			}
 		});
-		
-		// Finally, delete any email subscriptions where the user's
-		// only access to the item was because of this share.
-		invalidateShareItemSubscriptions(shareItem);
 	}
 
 	private BinderProcessor loadBinderProcessor(Binder binder) {
@@ -1617,7 +1588,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		    			// No!  Then we consider it invalid.  Remove it
 		    			// from the share list and database.
 		    			Long shareId = share.getId();
-						logger.error("validateShareItemsImpl():  The " + (isEntry ? "Entry" : "Binder") + " (id=" + id + ") referenced by ShareItem (id:" + shareId + ") is missing.  The ShareItem is being marked as deleted.");
+						logger.error("SharingModuleImpl.validateShareItemsImpl():  The " + (isEntry ? "Entry" : "Binder") + " (id=" + id + ") referenced by ShareItem (id:" + shareId + ") is missing.  The ShareItem is being marked as deleted.");
 		    			shares.remove(i);
 		    		    deleteShareItemImpl(shareId, false);
 		    		}
@@ -1706,301 +1677,4 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     	// null.
 		return null;
     }
-
-    /*
-     * Delete any email subscriptions where the user's only access to
-     * the item was because of this share (i.e., they no longer have
-     * access to the item.)
-     * 
-     * Note:  This method must called AFTER this share has been deleted
-     *        or expired so its affect on a user's access to the item
-     *        is no longer a factor.
-     *        
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     *                         DRF (20150416)
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-     * 
-     * This has been disabled the initial SPropsUtil check.  It has
-     * been superseded by doing similar checks when filling
-     * subscription (see MailModuleImpl.loadSubscriptionsByEntityWithACLCheck()).
-     * 
-     * This change was made based on the following comments from Jong
-     * in an email:
-     * 
-     * The implementation is not likely to work when a folder is shared
-     * with a large group such as "all internal users" group. Consider
-     * this real world scenario for example - Suppose a Filr (mid to
-     * large) customer with 500,000 folders, 5 million files, and
-     * 10,000 users. Further assume that each user subscribes to at
-     * least one entity and the number of entities each user subscribes
-     * to is 5 in average and the subscriptions are evenly distributed
-     * over available entities in the system (just to keep the
-     * calculation simple).
-     * 
-     * When a folder (say, folder X) is shared with "all internal
-     * users" group, and then subsequently expires or is deleted, I see
-     * that a number of issues can arise with the implementation:
-     * 
-     * 1) The code will try to load all subscriptions made by the
-     *    10,000 users in a single SQL query. This exceeds the "in
-     *    clause" limit that we need to enforce on some databases,
-     *    and will cause SQL error to be thrown.
-     * 2) The code will perform ACL checking 50,000 times
-     *    (10,000 x 5). Typically an ACL checking against the database
-     *    takes about 10 ms on a production system, so this ACL
-     *    checking alone can take 500 seconds (= 8+ minutes). In
-     *    addition, if we assume that half of the subscriptions are on
-     *    files (rather than folders), then this also involves making
-     *    25,000 "separate" calls to FAMT to check ACLs on those files.
-     *    Needless to say, for some files, the checking will be done
-     *    multiple times.
-     * 3) With the current implementation, as the method runs its full
-     *    course, it will end up loading ALL users (10,000 of them) in
-     *    the system into the memory and ALL entities (millions of
-     *    them) in the system into the memory. The server will crash
-     *    well before it reaches the end.
-     *    
-     * As you see, there simply is NO way this implementation can work
-     * under such scenario.
-     * 
-     * If we need to make the current algorithm workable, we should do
-     * the following additional work (all of them) at the minimum:
-     * 
-     * a) Change the code so that it would not exceed the "in clause"
-     *    limit during SQL query.
-     * b) Keep the memory usage under control. Do NOT let the
-     *    concurrent memory usage to go up proportionally to the number
-     *    of users or number of entities being dealt with.
-     * c) Introduce a mechanism whereby the number of candidate
-     *    entities being examined can be restricted to just those that
-     *    physically live under the shared folder X. Suppose the folder
-     *    X actually contains only a handful of files (say, 3 files).
-     *    Then, it makes absolutely no sense to examine the millions of
-     *    files and folders in the system just to validate each
-     *    subscription. Instead, the code could have examined
-     *    subscriptions only on those 3 files that live inside folder
-     *    X.
-     * 
-     * Doing this with the subscription table won't be easy - It will
-     * require some schema redesign around the subscription table, some
-     * data migration, and other related coding changes.
-     * 
-     * An alternative (and probably better) approach would be to use
-     * the database or search engine to quickly get back the IDs of the
-     * entities that live under the folder X (the search/query should
-     * get back just IDs and types of the entities, and NOTHING MORE!),
-     * and then use this information to quickly filter out those
-     * entities for which subscription revalidation (via ACL checking)
-     * is NOT necessary. So, in some sense, this revised algorithm is a
-     * kind of hybrid between your original first and second
-     * algorithms.
-     * 
-     * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-     */
-	private void invalidateShareItemSubscriptions(ShareItem shareItem) {
-		// If we're not supposed to validate subscriptions when a share
-		// is expired or deleted...
-		if (!(SPropsUtil.getBoolean("sharing.validate.subscriptions.on.delete", false))) {
-			// ...simply bail.
-			return;
-		}
-
-		SimpleProfiler.start("SharingModuleImpl.invalidateShareItemSubscriptions()");
-    	try {
-			// If this is a public link share...
-			RecipientType rt = shareItem.getRecipientType();
-			if (RecipientType.publicLink.equals(rt)) {
-				// ...there's nothing we need to invalidate.  Bail.
-				return;
-			}
-			
-			// There can only be subscriptions to folders and entries.  If
-			// this share doesn't encapsulate one of those...
-			EntityIdentifier eid  = shareItem.getSharedEntityIdentifier();
-			EntityType       eit  = eid.getEntityType();
-			boolean          isFE = EntityType.folderEntry.equals(eit);
-			if ((!isFE) && (!(eit.isBinder()))) {	// Check for Binder not Folder since it may be a Workspace that's shared.
-				// ...there's nothing we need to invalidate.  Bail.
-				return;
-			}
-	
-			// If we can't access the shared item...
-			DefinableEntity de;
-			try {
-				de = getSharedEntityWithoutAccessCheck(shareItem);
-			}
-			catch (Exception ex) {
-				logger.error("invalidateShareItemSubscriptions( EXCEPTION:1 ):  The " + (isFE ? "Entry" : "Binder") + " (id=" + eid.getEntityId() + ") referenced by ShareItem (id:" + shareItem.getId() + ") cannot be accessed.", ex);
-				de = null;
-			}
-			if (null == de) {
-				// ...there's nothing we need to invalidate.  Bail.
-				return;
-			}
-			
-			// Access the modules we'll need to invalidate any shares
-			// shares on the item.
-			BinderModule bm = getBinderModule();
-			FolderModule fm = getFolderModule();
-			ProfileDao   pd = getProfileDao();
-			
-			// Are there any user IDs this item is shared with?
-			Long             zid = RequestContextHolder.getRequestContext().getZoneId();
-			Long             rid = shareItem.getRecipientId();
-			Collection<Long> userIds;
-			switch (rt) {
-			case group:
-				List<Long> gIds = new ArrayList<Long>();
-				gIds.add(rid);
-				userIds = pd.explodeGroups(gIds, zid);
-				break;
-				
-			case team:
-				userIds = bm.getTeamMemberIds(rid, true);	// true -> Explode groups.
-				break;
-				
-			case user:
-				userIds = new ArrayList<Long>();
-				userIds.add(rid);
-				break;
-				
-			default:
-				// Should never get here!
-				logger.error("invalidateShareItemSubscriptions( *Internal Error* ):  Unexpected ShareItem RecipientType '" + rt.name() + "'.");
-				return;
-			}
-			
-			if (!(MiscUtil.hasItems(userIds))) {
-				// No, there are no user IDs that this item is shared with!
-				// There's nothing we need to invalidate.  Bail.
-				return;
-			}
-
-			// Is this a shared entry?
-			List<Subscription> subs;
-			if (isFE) {
-				// Yes!  Do the recipients have any subscriptions to
-				// it?
-				try {
-					subs = pd.loadSubscriptions(userIds, de.getId(), zid);
-				}
-				catch (Exception e) {
-					logger.error("invalidateShareItemSubscriptions( EXCEPTION:2 ):  Could not get the subscriptions for the share recipients to '" + de.getTitle() + "'.", e);
-					subs = null;
-				}
-				if (MiscUtil.hasItems(subs)) {
-					// Yes!  Can we resolve the user IDs of the
-					// subscriptions?  Note that we resolve the user
-					// IDs from the subscriptions instead of from the
-					// share because the number of them will be at most
-					// equal to the number for the shares but more
-					// likely a lot fewer if the share was with a group
-					// or team.
-					List<Principal> pList = MiscUtil.resolveSubscriptionPrincipals(subs);
-					if (null != pList) {
-						// Yes!  Scan the subscriptions.
-						for (Subscription sub:  subs) {
-							// If we can't find the User this
-							// subscription is for...
-							UserEntityPK subUE   = sub.getId();
-							Long         subUID  = subUE.getPrincipalId();
-							User         subUser = MiscUtil.findUserInPListById(pList, subUID);
-							if (null == subUser) {
-								// ...there's nothing we can do for
-								// ...it.  Skip it.
-								continue;
-							}
-							
-							// Does this user still have access to the
-							// shared entry?
-							if (!(fm.testReadAccess(subUser, ((WorkArea) de), true))) {
-								// No!  Delete their subscription to
-								// it.
-								fm.setSubscription(subUser, de.getParentBinder().getId(), de.getId(), null);	// null -> Delete this user's subscription.
-								logger.info("invalidateShareItemSubscriptions():  '" + subUser.getTitle() + "'s subscription to '" + de.getTitle() + "' has been deleted because they no longer have access to the entry.");
-								continue;	// Continue with the next share recipient.
-							}
-						}
-					}
-				}
-			}
-			
-			else {
-				// No, the shared item is not an entry!
-				//
-				// For binders, the check for access has to look at all
-				// the recipient user's subscriptions and check whether
-				// they still have access to the entities subscribed
-				// to.  We need to check everything because they may
-				// have subscribed to not only the shared binder
-				// itself, but any entity (folder or entry) below it.
-				// Rather than scan all the entities, I decided to
-				// scan the subscriptions instead because there are
-				// most likely fewer of them.  (Worst case:  It's
-				// shared with the All Internal Users group.)
-				//
-				// Do the user recipients have any subscriptions?
-				try {
-					subs = pd.loadSubscriptions(userIds, zid);
-				}
-				catch (Exception e) {
-					logger.error("invalidateShareItemSubscriptions( EXCEPTION:3 ):  Could not get the subscriptions for the share recipients to '" + de.getTitle() + "'.", e);
-					subs = null;
-				}
-				if (MiscUtil.hasItems(subs)) {
-					// Yes!  Can we resolve Principal's from the
-					// subscriptions?
-					List<Principal> pList = MiscUtil.resolveSubscriptionPrincipals(subs);
-					if (MiscUtil.hasItems(pList)) {
-						// Yes!  Scan the subscriptions.
-						for (Subscription sub:  subs) {
-							// If we can't find the user this
-							// subscription is for...
-							UserEntityPK subUE   = sub.getId();
-							Long         subUID  = subUE.getPrincipalId();
-							User         subUser = MiscUtil.findUserInPListById(pList, subUID);
-							if (null == subUser) {
-								// ...there's nothing we can do for
-								// ...it.  Skip it.
-								continue;
-							}
-							
-							// If we can't access the item subscribed
-							// to...
-							EntityType       subEIT  = EntityType.valueOf(  subUE.getEntityType()      );
-							EntityIdentifier subEID  = new EntityIdentifier(subUE.getEntityId(), subEIT);
-							boolean          isSubFE = EntityType.folderEntry.equals(subEIT);
-							DefinableEntity  subDE;
-							try {
-								subDE = getEntityWithoutAccessCheck(subEID);
-							}
-							catch (Exception ex) {
-								logger.error("invalidateShareItemSubscriptions( EXCEPTION:4 ):  The " + (isSubFE ? "Entry" : "Binder") + " (id=" + subEID.getEntityId() + ") referenced by a Subscription cannot be accessed.", ex);
-								subDE = null;
-							}
-							if (null == subDE) {
-								// ...there's nothing we can do for
-								// ...it.  Skip it.
-								continue;
-							}
-	
-							// Does the user still have access to the
-							// subscribed item?
-							if (!(fm.testReadAccess(subUser, ((WorkArea) subDE), true))) {
-								// No!  Delete their subscription.
-								if (isSubFE)
-								     fm.setSubscription(subUser, subDE.getParentBinder().getId(), subDE.getId(), null);	// null -> Delete this
-								else bm.setSubscription(subUser,                                  subDE.getId(), null);	// ...user's subscription.
-								logger.info("invalidateShareItemSubscriptions():  '" + subUser.getTitle() + "'s subscription to '" + subDE.getTitle() + "' has been deleted because they no longer have access to the entity.");
-							}
-						}
-					}
-				}
-			}
-    	}
-    	
-    	finally {
-    		SimpleProfiler.stop("SharingModuleImpl.invalidateShareItemSubscriptions()");
-    	}
-	}
 }

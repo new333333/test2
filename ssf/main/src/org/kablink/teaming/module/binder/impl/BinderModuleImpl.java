@@ -1955,12 +1955,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 		List<Binder> children = source.getBinders();
 		for (Binder child : children) {
-			// If the user doesn't have rights to copy this binder...
-			if (!(testAccess(child, BinderOperation.copyBinder))) {
-				// ...skip it.
-				continue;
-			}
-			
 			// If the binder is not in the trash...
 			if (!(TrashHelper.isBinderPredeleted(child))) {
 				// ...recursively copy that too.
@@ -2152,54 +2146,27 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	// inside write transaction
 	@Override
-	public void setSubscription(User user, Long binderId, Map<Integer, String[]> styles) {
-		Binder binder;
-		boolean deleteSub = ((null == styles) || styles.isEmpty());
-		if (deleteSub)
-		     binder = getBinderWithoutAccessCheck(binderId);	// We allow a subscription to be deleted without access to the item.
-		else binder = getBinder(                  binderId);	// getBinder() does read check.
-		
-		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
-		
-		if (deleteSub) {
-			if (s != null) {
+	public void setSubscription(Long binderId, Map<Integer, String[]> styles) {
+		Binder binder = getBinder(binderId);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Subscription s = getProfileDao().loadSubscription(user.getId(),
+				binder.getEntityIdentifier());
+		if (styles == null || styles.isEmpty()) {
+			if (s != null)
 				getCoreDao().delete(s);
-			}
-		}
-		else if (s == null) {
+		} else if (s == null) {
 			s = new Subscription(user.getId(), binder.getEntityIdentifier());
 			s.setStyles(styles);
 			getCoreDao().save(s);
-		}
-		else {
+		} else
 			s.setStyles(styles);
-		}
 	}
 
-	// inside write transaction
-	@Override
-	public void setSubscription(Long binderId, Map<Integer, String[]> styles) {
-		// Always use the initial form of the method.
-		setSubscription(RequestContextHolder.getRequestContext().getUser(), binderId, styles);
-	}
-	
-	/**
-	 * Returns a user's subscriptions to a binder.
-	 * 
-	 * @param user
-	 * @param binder
-	 * 
-	 * @return
-	 */
-	@Override
-	public Subscription getSubscription(User user, Binder binder) {
-		return getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
-	}
-	
 	@Override
 	public Subscription getSubscription(Binder binder) {
-		// Always use the initial form of the method.
-		return getSubscription(RequestContextHolder.getRequestContext().getUser(), binder);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return getProfileDao().loadSubscription(user.getId(),
+				binder.getEntityIdentifier());
 	}
 
 	@Override
@@ -2517,33 +2484,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	
     	if ( binder != null )
     	{
-    		String binderTitle;
-    		String binderPath;
-    		int len;
-    		
-    		len = SPropsUtil.getInt( "team.group.desc.maxlen", 100 );
-    		desc = NLT.get( "team.group.desc" );
-			len -= desc.length();
-			
-			binderTitle = binder.getTitle();
-			if ( len > 0 && binderTitle != null )
-			{
-				if ( binderTitle.length() > len )
-					binderTitle = binderTitle.substring( 0, len ) + "...";
-				
-				desc += " " + binderTitle;
-
-				len -= binderTitle.length();
-			}
-
-			binderPath = binder.getPathName();
-			if ( len > 0 && binderPath != null )
-			{
-				if ( binderPath.length() > len )
-					binderPath = binderPath.substring( 0, len ) + "...";
-				
-				desc += "\n(" + binderPath + ")";
-			}
+    		desc = NLT.get( "team.group.desc" ) + " " + binder.getTitle() + "\n(" + binder.getPathName() + ")";
     	}
     	
     	return desc;
@@ -2558,20 +2499,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	
     	if ( binder != null )
     	{
-    		String title;
-    		int len;
-    		
-    		len = SPropsUtil.getInt( "team.group.name.maxlen", 80 );
-    		title = binder.getTitle();
-    		if ( title != null )
-    		{
-    			if ( title.length() > len )
-        			title = title.substring( 0, len ) + "... ";
-    		}
-    		else
-    			title = " ";
-    		
-			name = "team - " + title + " (" + binder.getId() + ")"; 
+			name = "team - " + binder.getTitle() + " (" + binder.getId() + ")";
     	}
 
     	return name;
@@ -2586,33 +2514,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	
     	if ( binder != null )
     	{
-    		String binderTitle;
-    		String binderPath;
-    		int len;
-    		
-    		len = SPropsUtil.getInt( "team.group.title.maxlen", 100 );
-			title = NLT.get( "team.group" );
-			len -= title.length();
-			
-			binderTitle = binder.getTitle();
-			if ( len > 0 && binderTitle != null )
-			{
-				if ( binderTitle.length() > len )
-					binderTitle = binderTitle.substring( 0, len ) + "...";
-				
-				title += " " + binderTitle;
-
-				len -= binderTitle.length();
-			}
-
-			binderPath = binder.getPathName();
-			if ( len > 0 && binderPath != null )
-			{
-				if ( binderPath.length() > len )
-					binderPath = binderPath.substring( 0, len ) + "...";
-				
-				title += " (" + binderPath + ")";
-			}
+			title = NLT.get( "team.group" ) + " " + binder.getTitle() + " (" + binder.getPathName() + ")";
     	}
     	
     	return title;
@@ -2673,7 +2575,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				}
 				catch( Exception ex )
 				{
-					logger.error( "Unable to create team group: " + name, ex );
+					ex.printStackTrace();
 				}
 				
 				return newGroup;
@@ -2717,7 +2619,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				}
 				catch ( Exception ex )
 				{
-					logger.error( "Unable to delete team group: " + group.getName(), ex );
+					ex.printStackTrace();
 					retValue = Boolean.FALSE;
 				} 
 				
@@ -2782,7 +2684,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						}
 			   			catch ( Exception ex )
 			   			{
-			   				logger.error( "Unable to fixup group team name: " + name, ex );
+			   				ex.printStackTrace();
 			   				retValue = Boolean.FALSE;
 			   			}
 						
@@ -2829,6 +2731,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     			catch ( Exception ex )
     			{
     				logger.error( "In getTeamGroup() unable to get the group for the binder: " + binder.getTitle(), ex );
+    				ex.printStackTrace();
     			}
     		}
     	}
@@ -3142,11 +3045,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	/**
 	 * 
 	 */
-	private boolean setTeamMembers( Binder binder, final Collection<Long> memberIds )
+	private void setTeamMembers( Binder binder, final Collection<Long> memberIds )
 	{
 		Group teamGroup;
 		final Group finalTeamGroup;
-		boolean result = true;
 
 		teamGroup = getTeamGroup( binder );
 		
@@ -3262,8 +3164,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				retValue = RunasTemplate.runasAdmin(
 												callback,
 												RequestContextHolder.getRequestContext().getZoneName() );
-				
-				result = ((Boolean)retValue).booleanValue();
 			}
 		}
 		else
@@ -3276,11 +3176,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				deleteTeamGroup( binder, teamGroup );
 				teamGroup = null;
 			}
-			
-			result = true;
 		}
-		
-		return result;
 	}
 	
 	/**
@@ -3289,46 +3185,63 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	 */
 	private ArrayList<Binder> findAllBindersWithTeamMembershipDeprecated()
 	{
-		List<Binder> listOfAllBinders;
-		ArrayList<Binder> listOfBindersWithTeamMembership;
+		ArrayList<Binder> listOfBinders;
+		List<Map> mapOfBinders;
 		
-		listOfBindersWithTeamMembership = new ArrayList<Binder>();
-		listOfAllBinders = null;
+		listOfBinders = new ArrayList<Binder>();
 		
 		// Find all binders
 		{
-	    	FilterControls filter;
+			List<String> fieldNames;
 
-	    	// Don't use the search index to look for binders!
-	    	filter = new FilterControls();
-	    	filter.add( "deleted", Boolean.FALSE );
-	    	filter.add( "teamMembershipInherited", Boolean.FALSE );
-			listOfAllBinders = getCoreDao().loadObjects( Binder.class, filter, RequestContextHolder.getRequestContext().getZoneId() );
-			if ( listOfAllBinders != null )
-			{
-				logger.info( "------------> Found " + listOfAllBinders.size() + " binders that have might team membership that needs to be upgraded." );
-			}
+			// We use search engine to get the list of binders.
+			Criteria crit = new Criteria().add(
+											eq( Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER ) )
+											.addOrder( new Order( Constants.SORT_TITLE_FIELD, true ) );
+	
+			QueryBuilder qb = new QueryBuilder( true, false );
+			SearchObject so = qb.buildQuery( crit.toQuery() );
+	
+			fieldNames = SearchUtils.fieldNamesList(
+												Constants.DOCID_FIELD,
+												Constants.ENTITY_PATH,
+												Constants.TITLE_FIELD,
+												Constants.ENTITY_FIELD );
+	
+			Hits hits = executeLuceneQueryInternal(
+												so,
+												Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
+												0,
+												Integer.MAX_VALUE,
+												fieldNames );
+			if ( hits == null )
+				return listOfBinders;
+			
+			mapOfBinders = SearchUtils.getSearchEntries( hits );
 		}
 		
 		// Look for binders that have team membership
-		if ( listOfAllBinders != null && listOfAllBinders.size() > 0 )
 		{
-			Iterator<Binder> binderIter;
+			Iterator<Map> teamsIter;
 			
-			binderIter = listOfAllBinders.iterator();
-			while ( binderIter.hasNext() )
+			teamsIter = mapOfBinders.iterator();
+			while ( teamsIter.hasNext() )
 			{
+				Map binderMap;
+				String binderId;
 				Binder binder;
 				Set<Long> membership;
 
-				binder = binderIter.next();
+				binderMap = teamsIter.next();
+				binderId = (String) binderMap.get( Constants.DOCID_FIELD );
+				binder = getBinderWithoutAccessCheck( Long.valueOf( binderId ) );
 				
 				// Does this binder have team membership defined?
 				membership = getTeamMemberIdsDeprecated( binder );
 				if ( membership != null && membership.size() > 0 )
 				{
 					// Yes
-					listOfBindersWithTeamMembership.add( binder );
+					listOfBinders.add( binder );
 				}
 				else {
 					// No - We won't be needing this binder. Kick it out of the session to keep memory usage from going out of control
@@ -3337,7 +3250,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 		}
 		
-		return listOfBindersWithTeamMembership;
+		return listOfBinders;
 	}
 	
 	/**
@@ -3357,13 +3270,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		teamMemberIds = getTeamMemberIdsDeprecated( binder );
 		
 		if ( teamMemberIds != null && teamMemberIds.size() > 0 )
-		{
-			if ( setTeamMembers( binder, teamMemberIds ) )
-			{		
-				// Remove the team membership from the property
-				binder.removeProperty( ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS );
-			}
-		}
+			setTeamMembers( binder, teamMemberIds );
+		
+		// Remove the team membership from the property
+		binder.removeProperty( ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS );
 	}
 	
 	/**

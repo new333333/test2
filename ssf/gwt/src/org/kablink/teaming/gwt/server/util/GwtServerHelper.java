@@ -275,6 +275,7 @@ import org.kablink.teaming.gwt.client.util.GroupType;
 import org.kablink.teaming.gwt.client.util.GroupType.GroupClass;
 import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.GwtMobileOpenInSetting;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
 import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
@@ -384,7 +385,6 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
-import org.kablink.util.StringUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.servlet.StringServletResponse;
@@ -919,17 +919,11 @@ public class GwtServerHelper {
 				return;
 			}
 			
-			// If the quick filter doesn't contain a '*', add one.
-			String quickFilter_WC;
-			boolean hasWC = quickFilter.contains("*");
-			if (hasWC)
-			     quickFilter_WC =  quickFilter;
-			else quickFilter_WC = (quickFilter + "*");
-			
-			String quickFilter_NoWC;
-			if (hasWC)
-			     quickFilter_NoWC = StringUtil.replace(quickFilter, "*", "");
-			else quickFilter_NoWC = quickFilter;
+			// If the quick filter doesn't end with an '*'...
+			if (!(quickFilter.endsWith("*"))) {
+				// ...add one.
+				quickFilter += "*";
+			}
 	
 			// Create a SearchFilter from whatever filter is already in
 			// affect...
@@ -940,25 +934,23 @@ public class GwtServerHelper {
 			}
 	
 			// ...add in the quick filter...
-			SearchFilter sfQF = new SearchFilter(false);	// false -> These filter terms...
-	    	sfQF.newCurrentFilterTermsBlock(     false);	// ...should be or'ed together. 
+			SearchFilter sfQF = new SearchFilter(true);
+	    	sfQF.newCurrentFilterTermsBlock(true);
 	    	if (filterUserList) {
 	    		SearchFilter sfUserQF = new SearchFilter(false);
 	    		if (quickFilter.startsWith("@")) {
-	        		sfUserQF.addEmailDomainFilter(quickFilter_WC.substring(  1), true );
-	        		sfUserQF.addEmailDomainFilter(quickFilter_NoWC.substring(1), false);
+	        		sfUserQF.addEmailDomainFilter(quickFilter.substring(1), true);
 	    		}
 	    		else {
-		    		sfUserQF.addTitleFilter(      quickFilter_WC, true); sfUserQF.addTitleFilter(      quickFilter_NoWC, false);
-		    		sfUserQF.addEmailFilter(      quickFilter_WC, true); sfUserQF.addEmailFilter(      quickFilter_NoWC, false);
-		    		sfUserQF.addEmailDomainFilter(quickFilter_WC, true); sfUserQF.addEmailDomainFilter(quickFilter_NoWC, false);
-		    		sfUserQF.addLoginNameFilter(  quickFilter_WC, true); sfUserQF.addLoginNameFilter(  quickFilter_NoWC, false);
+		    		sfUserQF.addTitleFilter(      quickFilter, true);
+		    		sfUserQF.addEmailFilter(      quickFilter, true);
+		    		sfUserQF.addEmailDomainFilter(quickFilter, true);
+		    		sfUserQF.addLoginNameFilter(  quickFilter, true);
 	    		}
 	    		sfQF.appendFilter(sfUserQF.getFilter());
 	    	}
 	    	else {
-	    		sfQF.addTitleFilter(quickFilter_WC,   true );
-	    		sfQF.addTitleFilter(quickFilter_NoWC, false);
+	    		sfQF.addTitleFilter(quickFilter, true);
 	    	}
 	    	sf.appendFilter(sfQF.getFilter());
 	
@@ -10933,8 +10925,6 @@ public class GwtServerHelper {
 		case GET_PASSWORD_POLICY_CONFIG:
 		case GET_PASSWORD_POLICY_INFO:
 		case GET_PERSONAL_PREFERENCES:
-		case GET_PERSONAL_WORKSPACE_DISPLAY_DATA:
-		case GET_PHOTO_ALBUM_DISPLAY_DATA:
 		case GET_PRESENCE_INFO:
 		case GET_PRINCIPAL_FILE_SYNC_APP_CONFIG:
 		case GET_PRINCIPAL_MOBILE_APPS_CONFIG:
@@ -10997,7 +10987,6 @@ public class GwtServerHelper {
 		case GET_VIEW_INFO:
 		case GET_WEBACCESS_SETTING:
 		case GET_WHO_HAS_ACCESS:
-		case GET_WIKI_DISPLAY_DATA:
 		case GET_WORKSPACE_CONTRIBUTOR_IDS:
 		case HAS_ACTIVITY_STREAM_CHANGED:
 		case IMPORT_ICAL_BY_URL:
@@ -13469,7 +13458,7 @@ public class GwtServerHelper {
 	/**
 	 * Validate the list of TeamingEvents to see if the user has rights to perform the events
 	 */
-	public static void validateEntryEvents( AllModulesInjected bs, HttpServletRequest req, List<EventValidation> eventValidations, String entryId )
+	public static void validateEntryEvents( AllModulesInjected bs, HttpRequestInfo ri, List<EventValidation> eventValidations, String entryId )
 	{
 		// Initialize all events as invalid.
 		for ( EventValidation nextValidation : eventValidations )

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -179,10 +179,6 @@ public interface ProfileDao {
     public SeenMap loadSeenMap(Long userId);
 	public List<SharedEntity> loadSharedEntities(Collection ids, Collection binderIds, Date after, Long zoneId); 	
    	public Subscription loadSubscription(Long userId, EntityIdentifier entityId);
-   	public List<Subscription> loadSubscriptions(Collection<Long> userIds, Long entityId, Long zoneId);
-   	public List<Subscription> loadSubscriptions(Collection<Long> userIds,                Long zoneId);
-   	public List<Subscription> loadSubscriptions(           Long  userId,  Long entityId, Long zoneId);
-   	public List<Subscription> loadSubscriptions(           Long  userId,                 Long zoneId);
   /**
      * Load a user that is neither deleted or disabled. Check that user is in zone.
      * @param userId
@@ -419,4 +415,5 @@ public interface ProfileDao {
 			Collection<EntityIdentifier> sharedEntityIdentifiers);
 	
     public List<Long> getAllPrincipalIds(Long zoneId, boolean includeDisabled);
+
 }

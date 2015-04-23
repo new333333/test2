@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -224,9 +224,7 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_MILESTONE_FOLDER,							// Shows a milestone folder.
 	SHOW_MIRRORED_FILE_FOLDER,						// Shows a mirrored file folder.
 	SHOW_NET_FOLDERS_WORKSPACE,						// Shows the root Net Folders workspace.
-	SHOW_PERSONAL_WORKSPACE,						// Shows a Personal Workspace view.
 	SHOW_PERSONAL_WORKSPACES,						// Shows the Personal workspaces binder.
-	SHOW_PHOTO_ALBUM_FOLDER,						// Shows a photo album folder.
 	SHOW_PROJECT_MANAGEMENT_WORKSPACE,				// Show a project management workspace.
 	SHOW_SURVEY_FOLDER,								// Shows a survey folder.
 	SHOW_TASK_FOLDER,								// Shows a task folder.
@@ -234,7 +232,6 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_TEAM_WORKSPACE,							// Shows a team workspace.
 	SHOW_TRASH,										// Shows a trash view.
 	SHOW_VIEW_PERMALINKS,							// Shows the permaLinks in the current view.
-	SHOW_WIKI_FOLDER,								// Shows a wiki folder.
 	
 	HIDE_ACCESSORIES,								// Hides the accessories panel on the given binder.
 	HIDE_USER_LIST,									// Hides the user list panel on the given binder.

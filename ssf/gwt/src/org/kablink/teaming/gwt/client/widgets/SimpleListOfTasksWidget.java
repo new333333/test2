@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -57,10 +57,11 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
@@ -82,19 +83,17 @@ public class SimpleListOfTasksWidget extends VibeWidget
 	private class PersonClickHandler implements ClickHandler
 	{
 		private Element m_element;
-		private String m_userId;
 		private String m_workspaceId;
 		private String m_name;
 		
 		/**
 		 * 
 		 */
-		public PersonClickHandler( Element element, Long userId, Long workspaceId, String name )
+		public PersonClickHandler( Element element, Long workspaceId, String name )
 		{
 			super();
 			
 			m_element = element;
-			m_userId = String.valueOf( userId );
 			m_workspaceId = null;
 			if ( workspaceId != null )
 				m_workspaceId = String.valueOf( workspaceId );
@@ -111,7 +110,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 				SimpleProfileParams params;
 				
 				// Invoke the Simple Profile dialog.
-				params = new SimpleProfileParams( m_element, m_userId, m_workspaceId, m_name );
+				params = new SimpleProfileParams( m_element, m_workspaceId, m_name );
 				GwtTeaming.fireEvent(new InvokeSimpleProfileEvent( params ));
 			}
 		}
@@ -572,7 +571,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 		panel.add( userName );
 		
 		// Create a click handler
-		personClickHandler = new PersonClickHandler( userName.getElement(), assignedPerson.getId(), assignedPerson.getPresenceUserWSId(), assignedPerson.getTitle() );
+		personClickHandler = new PersonClickHandler( userName.getElement(), assignedPerson.getPresenceUserWSId(), assignedPerson.getTitle() );
 		userName.addClickHandler( personClickHandler );
 		
 		assignedToPanel.add( panel );
@@ -1202,7 +1201,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 					// On IE calling m_cellFormatter.setWidth( 0, 2, "*" ); throws an exception.
 					// That is why we are calling DOM.setElementAttribute(...) instead.
 					//!!!m_cellFormatter.setWidth( 0, 2, "*" );
-					m_cellFormatter.getElement( 0, 6 ).setAttribute( "width", "*" );
+					DOM.setElementAttribute( m_cellFormatter.getElement( 0, 6 ), "width", "*" );
 					
 					m_cellFormatter.addStyleName( 0, 0, "oltBorderLeft" );
 					m_cellFormatter.addStyleName( 0, 0, "oltHeaderBorderTop" );

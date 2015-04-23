@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.Iterator;
@@ -47,12 +48,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.WidgetCollection;
 
-/**
- * ?
- * 
- * @author ?
- */
 public abstract class ProfileSectionPanel extends FlowPanel {
+
 	protected ProfileRequestInfo 		profileRequestInfo; // Initial values passed 
 	protected GwtRpcServiceAsync	rpcService;			//
 	protected GwtTeamingMessages	messages; 			// The menu's messages.
@@ -66,6 +63,8 @@ public abstract class ProfileSectionPanel extends FlowPanel {
 	private SideBarAnchor 			sbA;
 	
 	public ProfileSectionPanel(ProfileRequestInfo requestInfo, String title) {
+
+		rpcService			= GwtTeaming.getRpcService();
 		messages			= GwtTeaming.getMessages();
 		profileRequestInfo 	= requestInfo;
 		sectionTitle        = title;
@@ -139,7 +138,6 @@ public abstract class ProfileSectionPanel extends FlowPanel {
 		 * Called when the user clicks on a team.
 		 * @param event
 		 */
-		@Override
 		public void onClick(ClickEvent event) {
 			if(selectedMore) {
 				selectedMore = false;

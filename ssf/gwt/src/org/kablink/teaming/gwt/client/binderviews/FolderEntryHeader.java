@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryCookies.Cookie;
+import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg.ProfileEntryDlgClient;
 import org.kablink.teaming.gwt.client.event.FolderEntryActionCompleteEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
@@ -79,6 +80,7 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
 	private Label							m_titleLabel;		// The Label that holds the title.
 	private Label							m_sizeLabel;		// The label holding the size of the file.
+	private ProfileEntryDlg					m_profileEntryDlg;	// A profile entry dialog, once one has been instantiated.
 	private VibeFlowPanel					m_descPanel;		// The panel that holds the entry's description.
 	private VibeFlowPanel					m_showDescPanel;	// The panel that holds the widgets that allow the user to hide/show the description.
 
@@ -133,7 +135,7 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		userPanelAnchor.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				invokeSimpleProfile(userInfo.getPrincipalInfo(), userPanelAnchor);
+				invokeProfile(userInfo.getPrincipalInfo(), userPanelAnchor);
 			}
 		});
 		contentPanel.add(userPanelAnchor);
@@ -397,7 +399,7 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		creatorAnchor.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				invokeSimpleProfile(creatorInfo.getPrincipalInfo(), creatorAnchor);
+				invokeProfile(creatorInfo.getPrincipalInfo(), creatorAnchor);
 			}
 		});
 		contentPanel.add(creatorAnchor);
@@ -471,6 +473,15 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	}
 	
 	/*
+	 * Runs the appropriate profile viewer for the given PrincipalInfo. 
+	 */
+	private void invokeProfile(PrincipalInfo pi, Widget referenceWidget) {
+		if (pi.isUserHasWS())
+		     invokeSimpleProfile(   pi, referenceWidget);
+		else invokeViewProfileEntry(pi                 );
+	}
+	
+	/*
 	 * Invokes the simple profile dialog on the principal.
 	 */
 	private void invokeSimpleProfile(PrincipalInfo pi, Widget referenceWidget) {
@@ -480,9 +491,38 @@ public class FolderEntryHeader extends VibeFlowPanel {
 			new InvokeSimpleProfileEvent(
 				new SimpleProfileParams(
 					referenceWidget.getElement(),
-					String.valueOf(pi.getId()),
 					wsIdS,
 					pi.getTitle())));
+	}
+
+	/*
+	 * Invokes the view profile entry dialog on the principal.
+	 */
+	private void invokeViewProfileEntry(final PrincipalInfo pi) {
+		// Have we instantiated a profile entry dialog yet?
+		if (null == m_profileEntryDlg) {
+			// No!  Instantiate one now.
+			ProfileEntryDlg.createAsync(new ProfileEntryDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final ProfileEntryDlg peDlg) {
+					// ...and show it.
+					m_profileEntryDlg = peDlg;
+					showProfileEntryDlgAsync(pi);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've instantiated a profile entry dialog already!
+			// Simply show it.
+			showProfileEntryDlgAsync(pi);
+		}
 	}
 
 	/*
@@ -566,5 +606,24 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		}
 		m_titleLabel.removeStyleName("width1px");	// Remove the synthetic width value we initially set.
 		m_titleLabel.getElement().getStyle().setProperty("maxWidth", (titleWidth + "px"));
+	}
+	
+	/*
+	 * Asynchronously shows the profile entry dialog.
+	 */
+	private void showProfileEntryDlgAsync(final PrincipalInfo pi) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showProfileEntryDlgNow(pi);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously shows the profile entry dialog.
+	 */
+	private void showProfileEntryDlgNow(PrincipalInfo pi) {
+		ProfileEntryDlg.initAndShow(m_profileEntryDlg, pi.getId());
 	}
 }

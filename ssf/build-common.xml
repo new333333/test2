@@ -13,7 +13,6 @@
 		<pathelement path="${classpath}" />
 		<pathelement location="${project.dir}/ws-client/kablink-teaming-wsclient.jar"         />
 		<pathelement location="${project.dir}/tools/gwt/gwt-user.jar"                         />
-		<pathelement location="${project.dir}/tools/gwt/gwt-dev.jar"                          />
 		<pathelement location="${project.dir}/tools/gwt/gwt-dnd.jar"                          />
 		<pathelement location="${project.dir}/tools/gwt/gwt-log.jar"                          />
 		<pathelement location="${project.dir}/tools/gwt/validation-api-1.0.0.GA.jar"          />

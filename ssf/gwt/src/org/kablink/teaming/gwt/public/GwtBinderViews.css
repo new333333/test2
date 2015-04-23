@@ -308,10 +308,6 @@
 		.vibe-personalWorkspacesFlowPanel {}
 	/* ...End:  Personal Workspaces view styles. */
 
-	/* ...Start:  Photo Album folder view styles. */
-		.vibe-photoAlbumFolderView {}
-	/* ...End:  Photo Album folder view styles. */
-	
 	/* ...Start:  Survey folder view styles. */
 		.vibe-surveyFolderDataTable {}
 		.vibe-surveyFolderFlowPanel {}
@@ -356,10 +352,6 @@
 		.vibe-blogFolderVerticalPanel {}
 		.vibe-blogFolderView          {}
 	/* ...End:  Task folder view styles. */
-	
-	/* ...Start:  Wiki folder view styles. */
-		.vibe-wikiFolderView {}
-	/* ...End:  Wiki folder view styles. */
 /* End:  GWT folder view styles. */
 
 /* Start:  GWT workspace view styles. */
@@ -401,14 +393,6 @@
 	.vibe-discussionWSView_TitlePanel, .vibe-teamWSView_TitlePanel
 	{
 	}
-	
-	/* ...Start:  Personal Workspace view styles. */
-		.vibe-personalWorkspaceView_AccessoriesPanel {}
-		.vibe-personalWorkspaceView_DashboardPanel   {}
-		.vibe-personalWorkspaceView_FooterPanel      {}
-		.vibe-personalWorkspaceView_HeaderPanel      {}
-		.vibe-personalWorkspaceView_MainPanel        {}
-	/* ...End:  Personal Workspace view styles. */
 /* End:  GWT workspace view styles. */
 
 /* Start:  Add files dialog styles. */

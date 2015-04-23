@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,12 +40,10 @@ import org.kablink.teaming.gwt.client.lpe.LandingPageEditor.LandingPageEditorCli
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.profile.widgets.UserStatusControl;
 import org.kablink.teaming.gwt.client.profile.widgets.UserStatusControl.UserStatusControlClient;
-import org.kablink.teaming.gwt.client.service.GetGwtRpcServiceCallback;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HistoryHelper;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
 import org.kablink.teaming.gwt.client.util.HistoryInfoCallback;
@@ -54,12 +52,6 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.HasRpcToken;
-import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import com.google.gwt.user.client.rpc.XsrfToken;
-import com.google.gwt.user.client.rpc.XsrfTokenService;
-import com.google.gwt.user.client.rpc.XsrfTokenServiceAsync;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -72,68 +64,21 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  */
 public class GwtTeaming implements EntryPoint
 {
-	private static final CommonImageBundle					m_ldapBrowserImageBundle	= GWT.create( CommonImageBundle.class                  );
-	private static final GwtTeamingMessages					m_stringMessages			= GWT.create( GwtTeamingMessages.class                 );
-	private static final GwtTeamingCloudFoldersImageBundle	m_cloudFoldersImageBundle	= GWT.create( GwtTeamingCloudFoldersImageBundle.class  );
-	private static final GwtTeamingDataTableImageBundle		m_dataTableImageBundle		= GWT.create( GwtTeamingDataTableImageBundle.class     );
-	private static final GwtTeamingFilrImageBundle			m_filrImageBundle			= GWT.create( GwtTeamingFilrImageBundle.class          );
-	private static final GwtTeamingImageBundle				m_imageBundle				= GWT.create( GwtTeamingImageBundle.class              );
-	private static final GwtTeamingMainMenuImageBundle		m_mainMenuImageBundle		= GWT.create( GwtTeamingMainMenuImageBundle.class      );
-	private static final GwtTeamingTaskListingImageBundle	m_taskListingImageBundle	= GWT.create( GwtTeamingTaskListingImageBundle.class   );
-	private static final GwtTeamingWorkspaceTreeImageBundle	m_wsTreeImageBundle			= GWT.create( GwtTeamingWorkspaceTreeImageBundle.class );
-	private static final SimpleEventBus 					m_eventBus 					= GWT.create( SimpleEventBus.class                     );
+	private static final CommonImageBundle					m_ldapBrowserImageBundle	=                       GWT.create( CommonImageBundle.class                  );
+	private static final GwtTeamingMessages					m_stringMessages			=                       GWT.create( GwtTeamingMessages.class                 );
+	private static final GwtTeamingCloudFoldersImageBundle	m_cloudFoldersImageBundle	=                       GWT.create( GwtTeamingCloudFoldersImageBundle.class  );
+	private static final GwtTeamingDataTableImageBundle		m_dataTableImageBundle		=                       GWT.create( GwtTeamingDataTableImageBundle.class     );
+	private static final GwtTeamingFilrImageBundle			m_filrImageBundle			=                       GWT.create( GwtTeamingFilrImageBundle.class          );
+	private static final GwtTeamingImageBundle				m_imageBundle				=                       GWT.create( GwtTeamingImageBundle.class              );
+	private static final GwtTeamingMainMenuImageBundle		m_mainMenuImageBundle		=                       GWT.create( GwtTeamingMainMenuImageBundle.class      );
+	private static final GwtTeamingTaskListingImageBundle	m_taskListingImageBundle	=                       GWT.create( GwtTeamingTaskListingImageBundle.class   );
+	private static final GwtTeamingWorkspaceTreeImageBundle	m_wsTreeImageBundle			=                       GWT.create( GwtTeamingWorkspaceTreeImageBundle.class );
+	private static final GwtRpcServiceAsync					m_gwtRpcService 			= ((GwtRpcServiceAsync) GWT.create( GwtRpcService.class                     ));
+	private static final SimpleEventBus 					m_eventBus 					= 						GWT.create( SimpleEventBus.class                     );
 	
 	private static GwtMainPage	m_mainPage;							// The application's main page.	
 	private static HistoryInfo	m_browserReloadInfo;				// History information for reloading the browser page.
 	public  static RequestInfo	m_requestInfo = jsGetRequestInfo();	// The current RequestInfo block loaded by the JSP.
-
-	// The following are used to interact with the server in obtaining
-	// an XsrfToken to use for GWT RPC requests and for executing the
-	// GWT RPC commands themselves.
-	private static final String					GWT_RPC_ENTRY_POINT	= "gwtTeaming.rpc";
-	private static final GwtRpcServiceAsync		m_rpcService		= ((GwtRpcServiceAsync)    GWT.create( GwtRpcService.class    ));
-	private static final XsrfTokenServiceAsync	m_xsrfTokenService	= ((XsrfTokenServiceAsync) GWT.create( XsrfTokenService.class ));
-	static
-	{
-		((ServiceDefTarget) m_xsrfTokenService).setServiceEntryPoint( GWT.getModuleBaseURL() + GWT_RPC_ENTRY_POINT );
-	}
-	private static XsrfToken m_xsrfToken;
-
-	/*
-	 * Returns the XSRF token to use for GWT RPC calls via the given
-	 * AsyncCallback.
-	 */
-	private static void getXsrfToken( final AsyncCallback<XsrfToken> callback )
-	{
-		// Do we have an XsrfToken cached yet?
-		if ( null == m_xsrfToken )
-		{
-			// No!  Request one now.
-			m_xsrfTokenService.getNewXsrfToken( new AsyncCallback<XsrfToken>()
-			{
-				@Override
-				public void onFailure( Throwable caught )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						getMessages().rpcFailure_GetXsrfToken() );
-				}
-
-				@Override
-				public void onSuccess( final XsrfToken token )
-				{
-					// We have the token!  Cache it and return it to
-					// the caller.
-					m_xsrfToken = token;
-					callback.onSuccess( m_xsrfToken );
-				}
-			});
-		}
-		else {
-			// Yes, we have an XsrfToken cached!  Simply return it.
-			callback.onSuccess( m_xsrfToken );
-		}
-	}
 	
 	/**
 	 * Returns the object that is used to retrieve Cloud Folder images.
@@ -247,48 +192,13 @@ public class GwtTeaming implements EntryPoint
 	
 	
 	/**
-	 * Returns an object used to issue GWT RPC requests (i.e., AJAX)
-	 * via a callback.
-	 *
-	 * @param callback
+	 * Returns the object used to issue GWT RPC (i.e., AJAX) requests.
+	 * 
+	 * @return
 	 */
-	public static void getRpcService(final GetGwtRpcServiceCallback callback)
+	public static GwtRpcServiceAsync getRpcService()
 	{
-		// Have we cached the XSRF token used for GWT RPC requests yet?
-		if ( null == m_xsrfToken )
-		{
-			// No!  Can we get the XSRF token for GWT RPC requests now?
-			getXsrfToken( new AsyncCallback<XsrfToken>()
-			{
-				@Override
-				public void onFailure( Throwable caught )
-				{
-					// No!  getXsrfToken() will have told the user
-					// about the error.  Simply tell the callback about
-					// the failure.
-					callback.onFailure( caught );
-				}
-
-				@Override
-				public void onSuccess( XsrfToken xsrfToken )
-				{
-					// Yes, we got the XSRF token for GWT RPC requests!
-					// Cache it, store it in the m_rpcService object
-					// and pass that back through the callback.
-					m_xsrfToken = xsrfToken;
-					((HasRpcToken) m_rpcService).setRpcToken( m_xsrfToken );
-					callback.onSuccess( m_rpcService );
-				}
-			});
-		}
-		
-		else
-		{
-			// Yes, we've cached the XSRF token used for GWT RPC
-			// requests!  Simply pass the m_rpcService object back
-			// through the callback.
-			callback.onSuccess( m_rpcService );
-		}
+		return m_gwtRpcService;
 	}// end getRpcService()
 	
 

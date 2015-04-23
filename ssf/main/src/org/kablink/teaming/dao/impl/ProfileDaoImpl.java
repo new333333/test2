@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -2246,79 +2246,6 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "loadSubscription(Long,EntityIdentifier)");
     	}	        
 	}
-
-	/**
-	 * Returns a List<Subscription> of the Subscription's associated
-	 * with the users from a List<Long> of user IDs.  Optionally only
-	 * returns the Subscription's for a given entity.
-	 * 
-	 * @param userIds	User IDs of the users whose Subscription's are being queried.
-	 * @param entityId	Option ID of the entity whose Subscription's are being queried.
-	 * @param zoneId	The zone the Subscription's are being queried from. 
-	 * 
-	 * @return
-	 */
-	@Override
-	public List<Subscription> loadSubscriptions(final Collection<Long> userIds, final Long entityId, final Long zoneId) {
-		long begin = System.nanoTime();
-		try {
-	        List result = (List)getHibernateTemplate().execute(
-               	new HibernateCallback() {
-                		@Override
-						public Object doInHibernate(Session session) throws HibernateException {
-                			String queryStr = "from org.kablink.teaming.domain.Subscription where principalId in (:uList)";
-                			if (null != entityId) {
-                				queryStr += " and entityId=:entityId";
-                			}
-    	                  	Query q = session.createQuery(queryStr);
-    	                  	q.setParameterList("uList", userIds);
-    	                  	if (null != entityId) {
-    	                  		q.setParameter("entityId", entityId);
-    	                  	}
-    	                  	q.setCacheable(true);	                			
-    	                  	List result = q.list();
-    	                  	for (int i = 0; i < result.size(); ) {
-    	                  		// Check zone here, so index is used.
-    	                  		if (!((Subscription)result.get(i)).getZoneId().equals(zoneId)) {
-    	                  			result.remove(i);
-    	                  		}
-    	                  		else {
-    	                  			i += 1;
-    	                  		}
-    	                  	}
-    	                  	return result;
-                		}
-               	}
-            );
-	        return result;
-    	}
-    	finally {
-    		end(begin, "loadSubscriptions(Collection<Long>, Long, Long)");
-    	}	        
-	}
-	
-	@Override
-	public List<Subscription> loadSubscriptions(final Collection<Long> userIds, final Long zoneId) {
-		// Always use the initial form of the method.
-		return loadSubscriptions(userIds, null, zoneId);	// null -> All subscriptions for all the users.
-	}
-	
-	@Override
-	public List<Subscription> loadSubscriptions(final Long userId, final Long entityId, final Long zoneId) {
-		// Construct a List<Long> from the user ID...
-		List<Long> userIds = new ArrayList<Long>();
-		userIds.add(userId);
-		
-		// ...and always use the initial form of the method.
-		return loadSubscriptions(userIds, entityId, zoneId);
-	}
-	
-	@Override
-	public List<Subscription> loadSubscriptions(final Long userId, final Long zoneId) {
-		// Always use the previous form of the method.
-		return loadSubscriptions(userId, null, zoneId);	// null -> All subscriptions for the user.
-	}
-	
 	//mark entries deleted - used when deleting entries in bulk and want
 	//to exclude some from future queries
 	//entries evicted from cache

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -137,8 +137,6 @@ public class WebKeys {
     public static final String URL_ZONE_UUID="zoneUUID";
     public static final String URL_BINDER_PARENT_ID="binderParentId";
     public static final String URL_BINDER_IDS="binderIds";
-    public static final String URL_FOLDER_CSV = "folderCsv";
-    public static final String URL_FOLDER_CSV_DELIM = "folderCsvDelim";
     public static final String URL_FOLDER_ID = "folderId";
     public static final String URL_RECURSIVE = "recursive";
     public static final String URL_IS_LIBRARY_BINDER="isLibraryBinder";

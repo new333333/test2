@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.module.folder.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -45,11 +46,10 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-
 import org.hibernate.exception.LockAcquisitionException;
-
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
@@ -82,7 +82,6 @@ import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.folder.index.IndexUtils;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -94,11 +93,11 @@ import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.util.Validator;
-
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
@@ -1040,7 +1039,6 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 				FilterControls filter = new FilterControls();
 				filter.setOrderBy(new OrderBy("HKey.sortKey"));
 				SFQuery query = getFolderDao().queryEntries((Folder)source, filter);
-				FolderModule fm = ((FolderModule) SpringContextUtil.getBean("folderModule"));
 		      	try {       
 		  			List<FolderEntry> batch = new ArrayList();
 		  			@SuppressWarnings("unused")
@@ -1070,11 +1068,6 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 		       				// If the entry is in the trash...
 		       				FolderEntry sEntry = (FolderEntry)batch.get(i);
 		       				if (sEntry.isPreDeleted()) {
-		       					// ...skip it.
-		       					continue;
-		       				}
-		       				// If the user doens't have rights to copy the entry...
-		       				if (!(fm.testAccess(sEntry, FolderOperation.copyEntry))) {
 		       					// ...skip it.
 		       					continue;
 		       				}
