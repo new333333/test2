@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -138,6 +138,39 @@ public class WorkAreaOperation {
 	
 	public static List<WorkAreaOperation> getDefaultExternallyControlledRights() {
 		return Arrays.asList(EXTERNALLY_CONTROLLED_RIGHTS_DEFAULT);
+	}
+
+    // Set of rights that allow granting of shares.
+	public static final WorkAreaOperation[] ALLOW_SHARING_RIGHTS = new WorkAreaOperation[] {
+	    WorkAreaOperation.ALLOW_SHARING_INTERNAL,
+	    WorkAreaOperation.ALLOW_SHARING_EXTERNAL,
+	    WorkAreaOperation.ALLOW_SHARING_PUBLIC,
+	    WorkAreaOperation.ALLOW_SHARING_FORWARD,
+	    WorkAreaOperation.ALLOW_SHARING_PUBLIC_LINKS };
+	
+	// This list is immutable
+	public static List<WorkAreaOperation> ALLOW_SHARING_RIGHTS_AS_LIST = Collections.unmodifiableList(Arrays.asList(ALLOW_SHARING_RIGHTS));
+
+	/**
+	 * Returns a List<WorkAreaOperation> containing the various 'Allow'
+	 * sharing rights.
+	 * 
+	 * @return
+	 */
+	public static List<WorkAreaOperation> getAllowSharingRights() {
+		return Arrays.asList(ALLOW_SHARING_RIGHTS);
+	}
+
+	/**
+	 * Returns true if the given WorkAreaOperation is an 'Allow'
+	 * sharing right and false otherwise.
+	 * 
+	 * @param waOp
+	 * 
+	 * @return
+	 */
+	public static boolean isAllowSharingRight(WorkAreaOperation waOp) {
+		return (getAllowSharingRights().contains(waOp));
 	}
 
     private String name;
@@ -812,7 +845,5 @@ public class WorkAreaOperation {
 		private static boolean andRights(Boolean right1, Boolean right2) {
 			return right1!=null && right1 && right1.equals(right2);
 		}
-
 	}
-
 }
