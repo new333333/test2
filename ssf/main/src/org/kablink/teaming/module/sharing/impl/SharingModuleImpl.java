@@ -592,15 +592,21 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	                if (fe.isAclExternallyControlled()) {
 	                    //This is in a net folder. we must check if the admin allows the requested operation at the root level.
 	                    parentBinderToTest = fe.getParentBinder();
+                    	// - - - - -
+                    	// (20150423:DRF:Bugzilla 928059)
+                    	//    Commented out the following while loop:
+	                    //    All necessary checks are done using just
+                    	//    the FolderEntry in the for loop below.
+                    	// - - - - -
 	                    //Find the root net folder
-	                    while (parentBinderToTest != null) {
-	                        if (parentBinderToTest.getParentBinder() != null &&
-	                                !parentBinderToTest.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
-	                            //We have found the top folder (i.e., the net folder root)
-	                            break;
-	                        }
-	                        parentBinderToTest = parentBinderToTest.getParentBinder();
-	                    }
+//	                    while (parentBinderToTest != null) {
+//	                        if (parentBinderToTest.getParentBinder() != null &&
+//	                                !parentBinderToTest.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
+//	                            //We have found the top folder (i.e., the net folder root)
+//	                            break;
+//	                        }
+//	                        parentBinderToTest = parentBinderToTest.getParentBinder();
+//	                    }
 	                }
 	
 	                for (ShareOp op : ops) {
