@@ -698,7 +698,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			if(titles != null && titles.size() > 0) {
 				BooleanQuery titleQuery = new BooleanQuery();
 				for(String title:titles) {
-					titleQuery.add(new TermQuery(new Term(Constants.TITLE_FIELD, title.toLowerCase())), BooleanClause.Occur.SHOULD);
+					titleQuery.add(new TermQuery(new Term(Constants.SORT_TITLE_FIELD, title.toLowerCase())), BooleanClause.Occur.SHOULD);
 				}
 				QueryWrapperFilter titleFilter = new QueryWrapperFilter(titleQuery);
 				if(aclFilter == null) {
