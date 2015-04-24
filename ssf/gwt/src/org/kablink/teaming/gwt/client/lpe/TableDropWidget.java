@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,10 +35,11 @@ package org.kablink.teaming.gwt.client.lpe;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgBoxClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -48,9 +49,9 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
 /**
- * 
+ * ?
+ *  
  * @author jwootton
- *
  */
 public class TableDropWidget extends DropWidget
 	implements HasDropZone
@@ -59,7 +60,6 @@ public class TableDropWidget extends DropWidget
 	private TableProperties	m_properties = null;
 	private FlowPanel			m_mainPanel;
 	private FlexTable			m_flexTable = null;
-	
 
 	/**
 	 * 
@@ -519,19 +519,8 @@ public class TableDropWidget extends DropWidget
 	@Override
 	public void onAttach()
 	{
-		Scheduler.ScheduledCommand cmd;
-		
 		super.onAttach();
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				setTableWidth();
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		setTableWidthAsync();
 	}
 	
 
@@ -577,13 +566,29 @@ public class TableDropWidget extends DropWidget
 		}
 		
 		// Adjust the width of each column so the table fits into the new drop zone
-		setTableWidth();
+		setTableWidthAsync();
 	}
 
-	/**
-	 * Set the width of the table and adjust the width of each column
+	/*
+	 * Asynchronously sets the width of the table and adjusts the width
+	 * of each column.
 	 */
-	private void setTableWidth()
+	private void setTableWidthAsync() {
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				setTableWidthNow();
+			}
+		} );
+	}
+	
+	/*
+	 * Synchronously sets the width of the table and adjusts the width
+	 * of each column.
+	 */
+	private void setTableWidthNow()
 	{
 		int row;
 		int colWidth;
@@ -749,7 +754,6 @@ public class TableDropWidget extends DropWidget
 		}
 		
 		// Set the width of the table
-		setTableWidth();
+		setTableWidthAsync();
 	}// end updateWidget()
-	
 }// end TableDropWidget
