@@ -570,8 +570,9 @@ public class TableDropWidget extends DropWidget
 		setTableWidthAsync();
 	}
 
-	/**
-	 * Set the width of the table and adjust the width of each column
+	/*
+	 * Asynchronously sets the width of the table and adjusts the width
+	 * of each column.
 	 */
 	private void setTableWidthAsync() {
 		GwtClientHelper.deferCommand( new ScheduledCommand()
@@ -583,6 +584,11 @@ public class TableDropWidget extends DropWidget
 			}
 		} );
 	}
+
+	/*
+	 * Synchronously sets the width of the table and adjusts the width
+	 * of each column.
+	 */
 	private void setTableWidthNow()
 	{
 		int row;
