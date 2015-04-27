@@ -148,9 +148,6 @@ public class WorkAreaOperation {
 	    WorkAreaOperation.ALLOW_SHARING_FORWARD,
 	    WorkAreaOperation.ALLOW_SHARING_PUBLIC_LINKS };
 	
-	// This list is immutable
-	public static List<WorkAreaOperation> ALLOW_SHARING_RIGHTS_AS_LIST = Collections.unmodifiableList(Arrays.asList(ALLOW_SHARING_RIGHTS));
-
 	/**
 	 * Returns a List<WorkAreaOperation> containing the various 'Allow'
 	 * sharing rights.
