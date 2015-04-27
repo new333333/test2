@@ -325,6 +325,20 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			} else {
 				// use the original workArea owner
 				if (testOperationRecursive(user, workAreaStart, parentWorkArea, workAreaOperation, checkSharing)) {
+					// (20150423:DRF:Bugzilla 928059)
+					//    Added the following if statement:
+					//    Are we checking for a sharing right to
+					//    something the user doesn't have access too
+					//    outside of sharing?
+					if (checkSharing &&
+							WorkAreaOperation.isAllowSharingRight(workAreaOperation) &&
+							(!(testOperationRecursive(user, workAreaStart, workAreaStart, WorkAreaOperation.READ_ENTRIES, false)))) {	// false -> We don't want to check sharing for whether the user has access to the item.
+						// Yes!  Then all we need to do is check
+						// whether that right was granted by the
+						// share.
+						return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
+					}
+					
 					if (checkRootFolderAccess(user, workAreaStart, workAreaOperation)) {
 						//OK, this is accessible by this user
 						return true;
