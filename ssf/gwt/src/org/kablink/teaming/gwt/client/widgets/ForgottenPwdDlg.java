@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,7 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.gwt.client.widgets;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +53,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
@@ -68,9 +67,9 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 
 /**
- * 
- * @author jwootton
- *
+ * ?
+ *  
+ * @author jwootton@novell.com
  */
 public class ForgottenPwdDlg extends DlgBox
 	implements EditSuccessfulHandler
@@ -169,17 +168,14 @@ public class ForgottenPwdDlg extends DlgBox
 		        // Did the user press the enter key?
 		        if ( keyCode == KeyCodes.KEY_ENTER )
 		        {
-		        	Scheduler.ScheduledCommand cmd;
-		        	
-		        	cmd = new Scheduler.ScheduledCommand()
+		        	GwtClientHelper.deferCommand( new ScheduledCommand()
 		        	{
 						@Override
 						public void execute()
 						{
 							editSuccessful( null );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 		        }
 			}
 		} );
@@ -227,9 +223,7 @@ public class ForgottenPwdDlg extends DlgBox
 				@Override
 				public void onSuccess( final VibeRpcResponse vibeResult )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
@@ -279,19 +273,16 @@ public class ForgottenPwdDlg extends DlgBox
 								
 								if ( sendEmail )
 								{
-									Scheduler.ScheduledCommand cmd;
-
 									// Issue an rpc request that will send an email to the user telling
 									// them how to reset their password.
-									cmd = new Scheduler.ScheduledCommand()
+									GwtClientHelper.deferCommand( new ScheduledCommand()
 									{
 										@Override
 										public void execute()
 										{
 											sendForgottenPwdEmail( gwtUser, emailAddress );
 										}
-									};
-									Scheduler.get().scheduleDeferred( cmd );
+									} );
 								}
 							}
 							
@@ -321,8 +312,7 @@ public class ForgottenPwdDlg extends DlgBox
 								m_emailAddressTxtBox.setFocus( true );
 							}
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}				
 			};
 
@@ -392,9 +382,7 @@ public class ForgottenPwdDlg extends DlgBox
 			@Override
 			public void onSuccess( final VibeRpcResponse vibeResult )
 			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -453,13 +441,12 @@ public class ForgottenPwdDlg extends DlgBox
 							}
 						}
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}				
 		};
 
 		// Disable the Ok button.
-		showStatusMsg( GwtTeaming.getMessages().forgottenPwdDlg_sendingEmail() );
+		showStatusMsg( GwtTeaming.getMessages().forgottenPwdDlg_sendingEmail(), "dlgBox_statusPanel_relative" );
 		setOkEnabled( false );
 		
 		// Issue an ajax request to send the forgotten password email to the given email address

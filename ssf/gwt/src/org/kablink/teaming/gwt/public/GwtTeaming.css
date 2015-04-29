@@ -1400,6 +1400,14 @@ body, table td, select
 	z-index: 1901;
 }
 
+.dlgBox_statusPanel_relative
+{
+	left: inherit !important;
+	position: inherit !important;
+	top: inherit !important;
+	z-index: inherit !important;
+}
+
 .dlgBox_statusMsg
 {
 	color: #505354;
