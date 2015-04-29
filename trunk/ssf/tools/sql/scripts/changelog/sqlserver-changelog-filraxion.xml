@@ -82,6 +82,12 @@
     </changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="4">
+        <createIndex schemaName="dbo" indexName="topFolderId_netFolderConfig" tableName="SS_NetFolderConfig" unique="true">
+            <column name="topFolderId"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5">
         <addColumn schemaName="dbo" tableName="SS_Forums">
             <column name="binderType" type="CHAR(1)" defaultValue="f">
                 <constraints nullable="false" />
@@ -89,18 +95,18 @@
         </addColumn>
     </changeSet>
 
-    <changeSet author="jong" context="schema" failOnError="true" id="5">
+    <changeSet author="jong" context="schema" failOnError="true" id="6">
         <sql>
 update dbo.SS_Forums set binderType = LEFT(type, 1);
         </sql>
     </changeSet>
     
-    <changeSet author="jong" context="schema" failOnError="true" id="6">
+    <changeSet author="jong" context="schema" failOnError="true" id="7">
         <comment>This column is replaced by binderType column</comment>
         <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="type"/>
     </changeSet>
 		
-    <changeSet author="jong" context="schema" failOnError="true" id="7">
+    <changeSet author="jong" context="schema" failOnError="true" id="8">
         <addColumn schemaName="dbo" tableName="SS_Forums">
             <column name="netFolderConfigId" type="NUMERIC(19,0)">
                 <constraints nullable="true" />
@@ -118,7 +124,7 @@ update dbo.SS_Forums set binderType = LEFT(type, 1);
         </addColumn>
     </changeSet>
 
-    <changeSet author="jong" context="schema" failOnError="true" id="8">
+    <changeSet author="jong" context="schema" failOnError="true" id="9">
         <customChange class="org.kablink.liquibase.change.custom.MigrateMirroredFoldersChange">
             <param name="dbType" value="mysql"/>
             <param name="batchSize" value="1000"/>
@@ -126,7 +132,7 @@ update dbo.SS_Forums set binderType = LEFT(type, 1);
         </customChange>
     </changeSet>
     	
-	<changeSet author="jong" context="schema" failOnError="true" id="9">
+	<changeSet author="jong" context="schema" failOnError="true" id="10">
         <comment>These columns are no longer needed because SS_NetFolderConfig table assumes the role</comment>
         <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="resourceDriverName"/>
         <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="resourcePath"/>

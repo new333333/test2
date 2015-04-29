@@ -156,4 +156,10 @@ update SS_Forums set binderType = LEFT(type, 1);
         <dropColumn tableName="SS_Forums" columnName="useInheritedDATriggerSetting"/>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <createIndex indexName="topFolderId_netFolderConfig" tableName="SS_NetFolderConfig" unique="true">
+            <column name="topFolderId"/>
+        </createIndex>
+    </changeSet>
+    
 </databaseChangeLog>
