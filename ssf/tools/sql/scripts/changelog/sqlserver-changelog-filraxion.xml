@@ -64,9 +64,6 @@
                 <constraints nullable="true" />
             </column>
         </createTable>
-        <modifySql dbms="mysql">
-            <append value=" engine innodb"/>
-        </modifySql>
     </changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="2">
@@ -126,7 +123,7 @@ update dbo.SS_Forums set binderType = LEFT(type, 1);
 
     <changeSet author="jong" context="schema" failOnError="true" id="9">
         <customChange class="org.kablink.liquibase.change.custom.MigrateMirroredFoldersChange">
-            <param name="dbType" value="mysql"/>
+            <param name="dbType" value="sqlserver"/>
             <param name="batchSize" value="1000"/>
             <param name="transactionSize" value="100"/>
         </customChange>
