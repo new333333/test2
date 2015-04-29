@@ -104,7 +104,7 @@ JUnit 4.10
 juniversalchardet  1.0.3
 Jung 1.7.6 visualization library
 kaptcha 2.3 (Used to generate the image used with text verification)
-lib-gwt-file.jar 0.3.5 (GWT W3C File APIs)
+lib-gwt-file.jar 0.3.6 (GWT W3C File APIs)
 Liferay portal-client.jar 4.3.0
 Liferay portal-impl.jar 4.3.0
 Liferay portal-kernel.jar 4.3.0
