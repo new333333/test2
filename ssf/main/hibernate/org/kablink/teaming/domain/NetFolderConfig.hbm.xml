@@ -12,8 +12,8 @@
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneId" not-null="true" access="field"/>
     <property name="name" length="64" not-null="true" index="name_netFolderConfig"/>
-    <property name="topFolderId" not-null="true"/>
-    <property name="netFolderServerId" not-null="true"/>
+    <property name="topFolderId" not-null="true" index="topFolderId_netFolderConfig"/>
+    <property name="netFolderServerId" not-null="true" index="nfsId_netFolderConfig"/>
     <property name="resourcePath" length="1024" access="field"/>
     <property name="homeDir" access="field"/>
     <property name="allowDesktopAppToSyncData" access="field"/>
