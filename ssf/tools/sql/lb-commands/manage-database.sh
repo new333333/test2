@@ -45,7 +45,7 @@ echo ""
 echo "Note: Additional parameters are read in from [db type]-liquibase.properties file."
 }
 
-CLASSPATH=./lib/mysql-connector.jar:./lib/ojdbc7.jar:./lib/jtds.jar
+CLASSPATH=./lib/kablink-teaming-liquibase.jar:./lib/mysql-connector.jar:./lib/ojdbc7.jar:./lib/jtds.jar
 
 # Set default log level. Valid values are debug, info, warning, severe, off.
 LOG_LEVEL=info
@@ -67,25 +67,25 @@ if [ "$1" != "mysql" ] && [ "$1" != "oracle" ] && [ "$1" != "sqlserver" ]; then
 fi
 
 if [ "$2" = "updateDatabase" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" update
+  java -Xmx2g -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" update
 elif [ "$2" = "generateSqlToUpdateDatabase" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" updateSQL > "./$1-update.sql"
+  java -Xmx2g -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" updateSQL > "./$1-update.sql"
 elif [ "$2" = "markDatabaseAsUpdated" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" changeLogSync
+  java -Xmx2g -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" changeLogSync
 elif [ "$2" = "generateSqlToMarkDatabaseAsUpdated" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" changeLogSyncSQL > "./$1-markasupdated.sql"
+  java -Xmx2g -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" changeLogSyncSQL > "./$1-markasupdated.sql"
 elif [ "$2" = "mark33DatabaseAsUpdated" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-3.3.xml" --contexts="$CONTEXTS" changeLogSync
+  java -Xmx2g -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-3.3.xml" --contexts="$CONTEXTS" changeLogSync
 elif [ "$2" = "generateSqlToMark33DatabaseAsUpdated" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-3.3.xml" --contexts="$CONTEXTS" changeLogSyncSQL > "./$1-markasupdated-3.3.sql"
+  java -Xmx2g -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-3.3.xml" --contexts="$CONTEXTS" changeLogSyncSQL > "./$1-markasupdated-3.3.sql"
 elif [ "$2" = "exportSchema" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" generateChangeLog > "./$1-schema-changelog.xml"
+  java -Xmx2g -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" generateChangeLog > "./$1-schema-changelog.xml"
 elif [ "$2" = "exportData" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --diffTypes="data" generateChangeLog > "./$1-data-changelog.xml"
+  java -Xmx2g -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --diffTypes="data" generateChangeLog > "./$1-data-changelog.xml"
 elif [ "$2" = "diffDatabases" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" diffChangeLog > "./$1-diff-changelog.xml"
+  java -Xmx2g -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" diffChangeLog > "./$1-diff-changelog.xml"
 elif [ "$2" = "validate" ]; then
-  java -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" validate
+  java -Xmx2g -jar "./lib/liquibase.jar" --logLevel="$LOG_LEVEL" --defaultsFile="./$1-liquibase.properties" --classpath="$CLASSPATH" --changeLogFile="scripts/changelog/$1-changelog-master.xml" --contexts="$CONTEXTS" validate
 else
   echo "Errors:"
   echo "   Invalid command"

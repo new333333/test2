@@ -1252,6 +1252,21 @@ public class ModifyNetFolderDlg extends DlgBox
 		return null;
 	}
 	
+	/**
+	 * Return the ID of the selected net folder root.
+	 */
+	private Long getNetFolderRootId()
+	{
+		NetFolderRoot root;
+		
+		// Get the selected net folder root.
+		root = getNetFolderRoot();
+		if ( root != null )
+			return root.getId();
+		
+		return null;
+	}
+	
 	
 	/**
 	 * Return the name entered by the user.

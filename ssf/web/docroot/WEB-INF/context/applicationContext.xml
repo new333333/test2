@@ -89,6 +89,7 @@
 		<property name="binderModule"><ref bean="binderModule"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="folderModule"><ref bean="folderModule"/></property>
+		<property name="netFolderModule"><ref bean="netFolderModule"/></property>
 		<property name="ldapModule"><ref bean="ldapModule"/></property>
 		<property name="profileModule"><ref bean="profileModule"/></property>
 		<property name="workflowModule"><ref bean="workflowModule"/></property>
@@ -1000,6 +1001,21 @@
 		</property>
 	</bean>			
 
+	<bean id="netFolderModule"  parent="moduleTransactionProxy" depends-on="sPropsUtil">
+		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
+		<property name="target">
+			<bean class="org.kablink.teaming.module.netfolder.impl.NetFolderModuleImpl">		
+				<property name="coreDao"><ref bean="coreDao"/></property>
+				<property name="profileDao"><ref bean="profileDao"/></property>
+			</bean>
+		</property>
+		<!-- Transaction is managed using transactionTemplate -->
+		<property name="transactionAttributes">
+			<props>
+			</props>
+		</property>
+	</bean>			
+
 	<bean id="mobileDeviceModule"  parent="moduleTransactionProxy" depends-on="sPropsUtil">
 		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
 		<property name="target">
@@ -1514,6 +1530,7 @@ text/calendar											  ics
 				<property name="templateModule"><ref bean="templateModule"/></property>
 				<property name="binderModule"><ref bean="binderModule"/></property>
 				<property name="folderModule"><ref bean="folderModule"/></property>
+				<property name="netFolderModule"><ref bean="netFolderModule"/></property>
 				<property name="adminModule"><ref bean="adminModule"/></property>
 				<property name="resourceDriverModule"><ref bean="resourceDriverModule"/></property>
 			</bean>

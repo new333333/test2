@@ -25,6 +25,7 @@
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">
 		<pathelement location="${project.dir}/tools/kablink-teaming-tools.jar"/>
+		<pathelement location="${project.dir}/liquibase/kablink-teaming-liquibase.jar"/>
 		<fileset dir="${project.dir}/lib">
 			<include name="*.jar" />
 			<exclude name="gwt-servlet.jar" />

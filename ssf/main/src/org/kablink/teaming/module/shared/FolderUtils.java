@@ -200,6 +200,8 @@ public class FolderUtils {
 			throw new IllegalArgumentException("The parent binder '" + parentBinder.getId() + "' is not a mirrored folder");
 				
 		Map<String,Object> data = new HashMap<String,Object>(); // Input data
+		if(parentBinder.getNetFolderConfigId() != null)
+			data.put(ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID, parentBinder.getNetFolderConfigId().toString());
 		if(resourceDriverName != null)
 			data.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, resourceDriverName);
 		if(resourcePath != null)

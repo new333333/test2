@@ -39,7 +39,9 @@ public class FIException extends UncheckedCodedException {
 
 	private static final long serialVersionUID = 1L;
 	
-	public static final String CANNOT_FIND_RESOURCE_DRIVER = "fi.error.cannot.find.resource.driver";
+	public static final String CANNOT_FIND_RESOURCE_DRIVER_BY_NAME = "fi.error.cannot.find.resource.driver.by.name";
+	public static final String CANNOT_FIND_STATIC_RESOURCE_DRIVER_BY_NAME_HASH = "fi.error.cannot.find.static.resource.driver.by.name.hash";
+	public static final String CANNOT_FIND_RESOURCE_DRIVER_BY_ID = "fi.error.cannot.find.resource.driver.by.id";
 	public static final String FAILED_TO_DELETE = "fi.error.failed.to.delete";
 	public static final String FAILED_TO_MOVE = "fi.error.failed.to.move";
 	public static final String FAILED_TO_WRITE = "fi.error.failed.to.write";

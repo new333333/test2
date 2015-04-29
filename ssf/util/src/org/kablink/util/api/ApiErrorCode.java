@@ -207,4 +207,7 @@ public enum ApiErrorCode {
     ADHOC_SETTING_CHANGED, // No device found with this id
 
     NOT_FOUND, // Object/item not found (generic)
+    
+    NET_FOLDER_CONFIG_NOT_FOUND, // No net folder configuration found with this name or id
+    NET_FOLDER_SERVER_NOT_FOUND, // No net folder server found with this name or id
 }

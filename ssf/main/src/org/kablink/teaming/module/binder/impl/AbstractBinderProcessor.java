@@ -521,6 +521,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  			if(binder.getResourceDriverName() == null) {
  				if(parent.isMirrored()) {
  					binder.setResourceDriverName(parent.getResourceDriverName());
+ 					binder.setNetFolderConfigId(parent.getNetFolderConfigId());
  				}
  				else {
  					if(!binder.isAclExternallyControlled() && binder.getTitle() != null && !binder.getTitle().equals(oldTitle)) {
@@ -538,6 +539,27 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  						throw new IllegalArgumentException("Specified resource driver name [" + binder.getResourceDriverName()
  								+ "] does not match the resource driver name [" + parent.getResourceDriverName()
  								+ "] of the parent binder [" + parent.getPathName() + "]");
+ 					Long binderNFCId = binder.getNetFolderConfigId();
+ 					Long parentNFCId = parent.getNetFolderConfigId();
+ 					boolean equal;
+ 					if(binderNFCId == null) {
+ 						if(parentNFCId == null)
+ 							equal = true;
+ 						else
+ 							equal = false;
+ 					}
+ 					else {
+ 						if(parentNFCId == null)
+ 							equal = false;
+ 						else if(binderNFCId.equals(parentNFCId))
+ 							equal = true;
+ 						else
+ 							equal = false;
+ 					}
+ 					if(!equal)
+						throw new IllegalArgumentException("Specified net folder config id [" + binderNFCId
+ 								+ "] does not match the net folder config id [" + parentNFCId
+ 								+ "] of the parent binder [" + parent.getPathName() + "]");
  				}
  			}
  			if(binder.getResourcePath() == null) {
@@ -552,6 +574,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		else {
  			binder.setResourceDriverName(null);
  			binder.setResourcePath(null);
+ 			binder.setNetFolderConfigId(null);
  		}
     }
 
@@ -572,7 +595,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				binder.setMirrored(true);
 			}
 	    	normalizeResourcePathIfInInput(binder, inputData);
-	    	binder.setResourceDriverName(parent.getResourceDriverName());
+	    	if(parent.isMirrored()) {
+		    	binder.setResourceDriverName(parent.getResourceDriverName());
+		    	binder.setNetFolderConfigId(parent.getNetFolderConfigId());
+	    	}
 						
 	    	if(binder.getResourceDriverName() != null) {
 				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
@@ -722,11 +748,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    			if(mirrored != null) {
    				entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, mirrored);
    			}
+   			if (inputData.exists( ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID ) &&
+      				 !entryData.containsKey( ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID )) {
+  				Long value = Long.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID ) );
+  				if ( value != null )
+  					entryData.put( ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID, value );
+      		}
    			if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME)) {
    				entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME));
    			}
    			if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
    				entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_PATH));
+   			}
+   			if (inputData.exists(ObjectKeys.FIELD_BINDER_REL_RSC_PATH) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_REL_RSC_PATH)) {
+   				entryData.put(ObjectKeys.FIELD_BINDER_REL_RSC_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_REL_RSC_PATH));
    			}
    			if (inputData.exists(ObjectKeys.FIELD_RESOURCE_HANDLE) && !entryData.containsKey(ObjectKeys.FIELD_RESOURCE_HANDLE)) {
    				entryData.put(ObjectKeys.FIELD_RESOURCE_HANDLE, inputData.getSingleValue(ObjectKeys.FIELD_RESOURCE_HANDLE));
@@ -1535,7 +1570,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    					ResourceSession session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.MOVE_FOLDER, source.getParentBinder(), destination).setPath(source.getResourcePath(), source.getResourceHandle(), Boolean.TRUE); 
 	    					try {
 	    						session.move(destination.getResourcePath(), destination.getResourceHandle(), source.getTitle());  	
-	    						// Do not yet update the resource path in the source, it will be done by callder.
+	    						// Do not yet update the resource path in the source, it will be done by caller.
 	    						resourcePathAffected=true;
 	    					}
 	    					finally {
@@ -1595,6 +1630,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		if (destination.isUniqueTitles()) getCoreDao().updateTitle(destination, source, null, source.getNormalTitle());   	
 		getCoreDao().updateFileName(source.getParentBinder(), source, null, source.getTitle());
 		if (resourcePathAffected) {
+			source.setNetFolderConfigId(destination.getNetFolderConfigId());
 			String newPath = getResourceDriverManager().normalizedResourcePath
 			(source.getResourceDriverName(), source.getParentBinder().getResourcePath(), source.getTitle());
 			source.setResourcePath(newPath);
@@ -1615,6 +1651,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		//parent has moved, just fix up path and sortKey
         	b.move(b.getParentBinder());
 			if(resourcePathAffected) {
+				b.setNetFolderConfigId(destination.getNetFolderConfigId());
 				String newPath = getResourceDriverManager().normalizedResourcePath
 				(b.getResourceDriverName(), b.getParentBinder().getResourcePath(), b.getTitle());
 				b.setResourcePath(newPath);

@@ -35,7 +35,6 @@ package org.kablink.teaming.web.util;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,8 +48,9 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NetFolderConfig;
+import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -75,10 +75,11 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
+import org.kablink.teaming.module.netfolder.NetFolderModule;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
-import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.runas.RunasCallback;
@@ -270,6 +271,7 @@ public class NetFolderHelper
 		TemplateModule templateModule,
 		BinderModule binderModule,
 		final FolderModule folderModule,
+		final NetFolderModule netFolderModule,
 		AdminModule adminModule,
 		ResourceDriverModule resourceDriverModule,
 		RunAsyncManager asyncManager,
@@ -281,6 +283,7 @@ public class NetFolderHelper
 							templateModule,
 							binderModule,
 							folderModule,
+							netFolderModule,
 							adminModule,
 							resourceDriverModule,
 							asyncManager,
@@ -298,6 +301,7 @@ public class NetFolderHelper
 		TemplateModule templateModule,
 		BinderModule binderModule,
 		final FolderModule folderModule,
+		final NetFolderModule netFolderModule,
 		final AdminModule adminModule,
 		final ResourceDriverModule resourceDriverModule,
 		RunAsyncManager asyncManager,
@@ -400,17 +404,18 @@ public class NetFolderHelper
 		if ( rdConfig != null && isNetFolderServerConfigured( rdConfig ) )
 		{
 			ConnectionTestStatus status = null;
-			Binder netFolderBinder;
+			Binder homeDirNetFolderBinder;
+			NetFolderConfig nfc = null;
 			boolean syncNeeded = false;
 			
 			// Yes
 			canSyncNetFolder = true;
 			
 			// Does a net folder already exist for this user's home directory
-			netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
+			homeDirNetFolderBinder = NetFolderHelper.findHomeDirNetFolder(
 																binderModule,
 																user.getWorkspaceId() );
-			if ( netFolderBinder == null )
+			if ( homeDirNetFolderBinder == null )
 			{
 				// No, create one.
 				// Only create the net folder if we can successfully make a connection
@@ -468,10 +473,11 @@ public class NetFolderHelper
 					scheduleInfo.setSchedule( schedule );
 
 					// Create a net folder in the user's workspace
-					netFolderBinder = NetFolderHelper.createNetFolder(
+					nfc = NetFolderHelper.createNetFolder(
 																templateModule,
 																binderModule,
 																folderModule,
+																netFolderModule,
 																adminModule,
 																user,
 																folderName,
@@ -501,8 +507,8 @@ public class NetFolderHelper
 					// Save the jits settings
 					{
 						NetFolderHelper.saveJitsSettings(
-													binderModule,
-													netFolderBinder.getId(),
+													netFolderModule,
+													nfc,
 													true,
 													true,
 													getDefaultJitsAclMaxAge(),
@@ -514,6 +520,8 @@ public class NetFolderHelper
 			}
 			else
 			{
+				nfc = NetFolderUtil.getNetFolderConfig( homeDirNetFolderBinder.getNetFolderConfigId() );
+
 				// A home dir net folder already exists for this user.
 				// Are we supposed to try and update an existing net folder?
 				if ( updateExistingNetFolder )
@@ -526,7 +534,7 @@ public class NetFolderHelper
 					// Yes
 					// Get the server unc path that is currently being used by the user's home dir net folder.
 					{
-						driver = netFolderBinder.getResourceDriver();
+						driver = nfc.getResourceDriver();
 						if ( driver != null )
 						{
 							ResourceDriverConfig currentRdConfig;
@@ -543,7 +551,7 @@ public class NetFolderHelper
 						normalizedPath = driver.normalizedResourcePath( path );
 					}
 					
-					currentBinderPath = netFolderBinder.getResourcePath();
+					currentBinderPath = nfc.getResourcePath();
 					
 					// Did any information about the home directory change?
 					if ( (serverUNC != null && serverUNC.equalsIgnoreCase( currentServerUNC ) == false) ||
@@ -572,11 +580,10 @@ public class NetFolderHelper
 							m_logger.info( "-----> Current net folder path: " + currentBinderPath );
 							m_logger.info( "-----> New net folder path: " + normalizedPath );
 							
+			   				nfc.setNetFolderServerId(rdConfig.getId());
+			   				nfc.setResourcePath(normalizedPath);
 							// Update the folder's resource driver name and relative path.
-							folderModule.modifyNetFolder(
-													netFolderBinder.getId(),
-													rdConfig.getName(),
-													normalizedPath );
+			   				netFolderModule.modifyNetFolder(nfc);
 						}
 						
 			   			syncNeeded = false;
@@ -596,14 +603,14 @@ public class NetFolderHelper
 					{
 						final Long binderId;
 						
-						binderId = netFolderBinder.getId();
+						binderId = nfc.getTopFolderId();
 
 						m_logger.info( "About to sync home directory net folder: " + binderId );
 						folderModule.enqueueFullSynchronize( binderId );
 					}
 					catch ( Exception e )
 					{
-						m_logger.error( "Error syncing next net folder: " + netFolderBinder.getName() + ", " + e.toString() );
+						m_logger.error( "Error syncing next net folder: " + nfc.getName() + ", " + e.toString() );
 					}
 				}
 			}
@@ -613,10 +620,11 @@ public class NetFolderHelper
 	/**
 	 * Create a net folder from the given data
 	 */
-	public static Binder createNetFolder(
+	public static NetFolderConfig createNetFolder(
 		TemplateModule templateModule,
 		BinderModule binderModule,
 		FolderModule folderModule,
+		NetFolderModule netFolderModule,
 		AdminModule adminModule,
 		User owner,
 		String name,
@@ -632,7 +640,7 @@ public class NetFolderHelper
 		Boolean allowDesktopAppToTriggerSync,
 		Boolean inheritAllowDesktopAppToTriggerSync ) throws WriteFilesException, WriteEntryDataException
 	{
-		Binder binder = null;
+		NetFolderConfig nfc = null;
 		Long templateId = null;
 		List<TemplateBinder> listOfTemplateBinders;
 		String templateInternalId;
@@ -668,7 +676,7 @@ public class NetFolderHelper
 
 		if ( templateId != null )
 		{			
-			binder = folderModule.createNetFolder(
+			nfc = netFolderModule.createNetFolder(
 											templateId,
 											parentBinderId,
 											name,
@@ -691,14 +699,14 @@ public class NetFolderHelper
 				if ( syncScheduleOption == SyncScheduleOption.useNetFolderServerSchedule )
 					scheduleInfo.setEnabled( false );
 				
-				scheduleInfo.setFolderId( binder.getId() );
-				folderModule.setSynchronizationSchedule( scheduleInfo, binder.getId() );
+				scheduleInfo.setFolderId( nfc.getTopFolderId() );
+				folderModule.setSynchronizationSchedule( scheduleInfo, nfc.getTopFolderId() );
 			}
 		}
 		else
 			m_logger.error( "Could not find the template binder for a mirrored folder" );
 		
-		return binder;
+		return nfc;
 	}
 	
 	/**
@@ -794,11 +802,11 @@ public class NetFolderHelper
 	 * Delete the given net folder
 	 */
 	public static void deleteNetFolder(
-		FolderModule folderModule,
+		NetFolderModule netFolderModule,
 		Long id,
 		boolean deleteSource )
 	{
-		folderModule.deleteNetFolder( id, deleteSource );
+		netFolderModule.deleteNetFolder( id, deleteSource );
 	}
 	
 	/**
@@ -983,42 +991,41 @@ public class NetFolderHelper
 		WorkspaceModule workspaceModule,
 		NetFolderSelectSpec selectSpec )
 	{
-		List<Folder> results;
-		List<Long> listOfNetFolderIds;
+		List<NetFolderConfig> results;
+		List<Long> listOfNetFolderConfigIds;
 		Workspace zone;
 		Long zoneId;
 		
 		zone = RequestContextHolder.getRequestContext().getZone();
 		zoneId = zone.getId();
 		
-		listOfNetFolderIds = new ArrayList<Long>();
+		listOfNetFolderConfigIds = new ArrayList<Long>();
 		
 		// Get the list of net folders for the given criteria.
-		results = getFolderDao().findNetFolders( selectSpec, zoneId );
+		results = getFolderDao().findNetFolderConfigs( selectSpec, zoneId );
 		
 		if ( results != null )
 		{
 			// We only want to return top-level net folders.
-			for ( Folder nextFolder: results )
+			for ( NetFolderConfig nextFolderConfig: results )
 			{
-				if ( nextFolder.isTop() && nextFolder.isDeleted() == false )
-					listOfNetFolderIds.add( nextFolder.getId() );
+				listOfNetFolderConfigIds.add( nextFolderConfig.getId() );
 			}
 		}
 
-		return listOfNetFolderIds;
+		return listOfNetFolderConfigIds;
 	}
 	
 
 	/**
 	 * Return all the net folders that are associated with the given net folder server
 	 */
-	public static List<Folder> getAllNetFolders2(
+	public static List<NetFolderConfig> getAllNetFolders2(
 		BinderModule binderModule,
 		WorkspaceModule workspaceModule,
 		NetFolderSelectSpec selectSpec )
 	{
-		List<Folder> results;
+		List<NetFolderConfig> results;
 		Workspace zone;
 		Long zoneId;
 		
@@ -1026,7 +1033,7 @@ public class NetFolderHelper
 		zoneId = zone.getId();
 		
 		// Get the list of net folders for the given criteria.
-		results = getFolderDao().findNetFolders( selectSpec, zoneId );
+		results = getFolderDao().findNetFolderConfigs( selectSpec, zoneId );
 		
 		return results;
 	}
@@ -1087,6 +1094,7 @@ public class NetFolderHelper
 	public static void modifyNetFolder(
 		BinderModule binderModule,
 		FolderModule folderModule,
+		NetFolderModule netFolderModule,
 		Long id,
 		String netFolderName,
 		String netFolderRootName,
@@ -1099,19 +1107,20 @@ public class NetFolderHelper
 		Boolean allowDesktopAppToTriggerSync,
 		Boolean inheritAllowDesktopAppToTriggerSync ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
-		// Modify the binder with the net folder information.
-		folderModule.modifyNetFolder(
-									id,
-									netFolderName,
-									netFolderRootName,
-									relativePath,
-									null,
-									indexContent,
-									inheritIndexContent,
-									syncScheduleOption,
-									fullSyncDirOnly,
-									allowDesktopAppToTriggerSync,
-									inheritAllowDesktopAppToTriggerSync );
+		Binder binder = binderModule.getBinder( id );
+		NetFolderConfig nfc = binder.getNetFolderConfig();
+		nfc.setName(netFolderName);
+		ResourceDriverConfig rdc = NetFolderUtil.getNetFolderServerByName(netFolderRootName);
+		nfc.setNetFolderServerId(rdc.getId());
+		nfc.setResourcePath(relativePath);
+		nfc.setIndexContent(indexContent);
+		nfc.setUseInheritedIndexContent(inheritIndexContent);
+		nfc.setSyncScheduleOption(syncScheduleOption);
+		nfc.setFullSyncDirOnly(fullSyncDirOnly);
+		nfc.setAllowDesktopAppToTriggerInitialHomeFolderSync(allowDesktopAppToTriggerSync);
+		nfc.setUseInheritedDesktopAppTriggerSetting(inheritAllowDesktopAppToTriggerSync);
+		
+		netFolderModule.modifyNetFolder(nfc);
 
 		// Set the net folder's sync schedule
 		if ( scheduleInfo != null )
@@ -1291,7 +1300,7 @@ public class NetFolderHelper
 
 			// Find all of the net folders that reference this net folder server.
 			selectSpec = new NetFolderSelectSpec();
-			selectSpec.setRootName( rdConfig.getName() );
+			selectSpec.setRootId( rdConfig.getId() );
 			selectSpec.setIncludeHomeDirNetFolders( true );
 			selectSpec.setFilter( null );
 			listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
@@ -1318,12 +1327,12 @@ public class NetFolderHelper
 			else {
 				// The file content indexing was not on previously, but is on now.
 				// This affects all member net folders that inherit this setting from the parent net folder server.
-				List<Folder> listOfNetFolders;
+				List<NetFolderConfig> listOfNetFolders;
 				NetFolderSelectSpec selectSpec;
 
 				// Find all of the net folders that reference this net folder server.
 				selectSpec = new NetFolderSelectSpec();
-				selectSpec.setRootName( rdConfig.getName() );
+				selectSpec.setRootId( rdConfig.getId() );
 				selectSpec.setIncludeHomeDirNetFolders( true );
 				selectSpec.setFilter( null );
 				listOfNetFolders = NetFolderHelper.getAllNetFolders2(
@@ -1333,13 +1342,13 @@ public class NetFolderHelper
 
 				if ( listOfNetFolders != null )
 				{
-					for ( Folder netFolder:  listOfNetFolders )
+					for ( NetFolderConfig netFolder:  listOfNetFolders )
 					{
 						if(netFolder.getUseInheritedIndexContent()) {
 							// This net folder inherits file content indexing setting from the net folder server.
 							// Make sure that a job exists for this net folder.
 							try {
-								folderModule.netFolderContentIndexingJobSchedule(netFolder.getId());
+								folderModule.netFolderContentIndexingJobSchedule(netFolder.getTopFolderId());
 							}
 							catch(Exception e) {
 								m_logger.error("Error scheduling file content indexing job for net folder " + netFolder.getId(), e);
@@ -1368,44 +1377,27 @@ public class NetFolderHelper
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public static void saveJitsSettings(
-		BinderModule binderModule,
-		Long binderId,
-		boolean inheritJitsSettings,
-		boolean jitsEnabled,
-		long aclMaxAge,
-		long resultsMaxAge )
-	{
-		if ( binderId != null )
+			NetFolderModule netFolderModule,
+			NetFolderConfig nfc,
+			boolean inheritJitsSettings,
+			boolean jitsEnabled,
+			long aclMaxAge,
+			long resultsMaxAge )
 		{
-			Set deleteAtts;
-			Map fileMap = null;
-			MapInputData mid;
-			Map formData = null;
-			
-			deleteAtts = new HashSet();
-			fileMap = new HashMap();
-			formData = new HashMap();
-
-			formData.put( ObjectKeys.FIELD_BINDER_USE_INHERITED_JITS_SETTINGS, Boolean.valueOf( inheritJitsSettings ) );
-
-			formData.put( ObjectKeys.FIELD_BINDER_JITS_ENABLED, Boolean.toString( jitsEnabled ) );
-			
-			formData.put( ObjectKeys.FIELD_BINDER_JITS_ACL_MAX_AGE, String.valueOf( aclMaxAge ) );
-
-			formData.put( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE, String.valueOf( resultsMaxAge ) );
-
-			mid = new MapInputData( formData );
+			nfc.setUseInheritedJitsSettings(inheritJitsSettings);
+			nfc.setJitsEnabled(jitsEnabled);
+			nfc.setJitsAclMaxAge(aclMaxAge);
+			nfc.setJitsMaxAge(resultsMaxAge);
 
 			try
 			{
-				binderModule.modifyBinder( binderId, mid, fileMap, deleteAtts, null );
+				netFolderModule.modifyNetFolder(nfc);
 			}
 			catch ( Exception ex )
 			{
 				m_logger.error( "In saveJitsSettings(), call to modifyBinder() failed. " + ex.toString() );
 			}
 		}
-	}
 	
 
 	// This method is moved from FolderModule which is transactional proxy that automatically defines
@@ -1438,22 +1430,6 @@ public class NetFolderHelper
 		return (NetFolderServerSynchronization)ReflectHelper.getInstance(className);
     }
 	
-	/**
-	 * Return the SyncScheduleOption for the given binder id
-	 */
-	public static SyncScheduleOption getSyncScheduleOption(
-		BinderModule binderModule,
-		Long folderId )
-	{
-		Binder binder;
-		
-		binder = binderModule.getBinder( folderId );
-		if ( binder != null )
-			return binder.getSyncScheduleOption();
-		
-		return null;
-	}
-
     public static List<AssignedRole> getNetFolderRights(
             AllModulesInjected ami,
             Binder binder )

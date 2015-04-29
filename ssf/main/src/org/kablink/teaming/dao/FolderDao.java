@@ -46,6 +46,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Tag;
@@ -173,7 +174,7 @@ public interface FolderDao {
 	 * 
 	 * @return
 	 */
-	public List<Folder> findNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId );
+	public List<NetFolderConfig> findNetFolderConfigs( final NetFolderSelectSpec selectSpec, final long zoneId );
 
 	/**
 	 * Used to return the number of net folders that meet the specifications

@@ -47,18 +47,17 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
+import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.modelprocessor.InstanceLevelProcessorSupport;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
-import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.Validator;
 
 /**
@@ -76,61 +75,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	
 	private static Log logger = LogFactory.getLog(Binder.class);
 	
-	/**
-	 * Different values for the sync schedule option 
-	 */
-	public enum SyncScheduleOption
-	{
-		/**
-		 * The sync schedule defined on the net folder server this net folder points to should be
-		 * used to perform scheduled syncs on this net folder.
-		 * 
-		 */
-		useNetFolderServerSchedule( (short)1 ),
-		
-		/**
-		 * The sync schedule defined on the net folder should be used to perform schedule syncs on
-		 * this net folder.
-		 */
-		useNetFolderSchedule( (short)2 );
-		
-		short value;
-		
-		/**
-		 * 
-		 */
-		SyncScheduleOption( short value )
-		{
-			this.value = value;
-		}
-		
-		/**
-		 * 
-		 */
-		public short getValue()
-		{
-			return value;
-		}
-		
-		/**
-		 * 
-		 */
-		public static SyncScheduleOption valueOf( short value )
-		{
-			switch(value)
-			{
-			case 1:
-				return SyncScheduleOption.useNetFolderServerSchedule;
-				
-			case 2:
-				return SyncScheduleOption.useNetFolderSchedule;
-				
-			default:
-				throw new IllegalArgumentException( "Invalid db value " + value + " for enum SyncScheduleOption" );
-			}
-		}
-	}
-
 	protected String name="";
     protected Principal owner; //initialized by hibernate access=field  
 	protected Map properties;
@@ -151,15 +95,23 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     //wikis which link to titles
     protected boolean uniqueTitles=false;
     protected boolean mirrored = false;
-    protected String resourceDriverName;
-    protected String resourcePath;
+    // Storage field for path information.
+    // For net folders, this is a path relative to the path information specified
+    // in the net folder configuration object (rather than to the path information 
+    // specified in the net folder server object)
+    // For legacy mirrored folder, this path is relative to the path specified in
+    // the static resource driver configuration.
+    // For others, this is null.
+    // Again, this field is about how the data is stored in the database, NOT how
+    // the path is presented to the application layer.
+    protected String relRscPath;
     protected int binderCount=0;
     protected HKey binderKey;
     protected int nextBinderNumber=1;
     protected String branding;
     protected String brandingExt;	// Additional branding information such as background color, font color, background image.
     protected Boolean postingEnabled;
-    protected String type;
+    protected String binderType;
     protected Definition entryDef; // initialized by hibernate access=field
     //File related settings
     protected Boolean versionsEnabled;
@@ -169,23 +121,22 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Long maxFileSize;	//MB (stored as the maximum number of mega-bytes)
     protected Boolean fileEncryptionEnabled;
     protected Boolean extFunctionMembershipInherited = Boolean.TRUE;
-    protected Boolean homeDir = Boolean.FALSE;
     protected Boolean myFilesDir = Boolean.FALSE;
-    protected Boolean allowDesktopAppToSyncData = Boolean.TRUE;
-    protected Boolean allowMobileAppsToSyncData = Boolean.TRUE;
-    protected Boolean indexContent = Boolean.TRUE;
-    protected Boolean jitsEnabled; // Applicable only to mirrored folders
-    protected Long jitsMaxAge; // in milliseconds
-    protected Long jitsAclMaxAge; // in milliseconds
-    protected Boolean fullSyncDirOnly; // Applicable only to mirrored folders
-    protected Boolean allowDesktopAppToTriggerInitialHomeFolderSync = Boolean.FALSE;
-    protected Short syncScheduleOption;	// SyncScheduleOption
     protected String resourceHandle;
-    protected Boolean useInheritedIndexContent = Boolean.TRUE;
-    protected Boolean useInheritedJitsSettings = Boolean.TRUE;
-    protected Boolean useInheritedDesktopAppTriggerSetting = Boolean.TRUE;
     
     protected Long teamGroupId;
+    
+    // For net folders, this field contains ID of the net folder config object.
+    // For all others (including legacy mirrored folders), this field is null.
+    protected Long netFolderConfigId;
+    // This field is used only for legacy mirrored folders.
+    protected Long legacyMirroredDriverNameHash;
+    
+    // This is full path relative to the net folder server (if net folder) or to the static
+    // mirrored folder configuration (if mirrored folder). 
+    // This field is NOT persisted. That is, this field is not about how the data is stored
+    // in the database, but how the path is presented to the application layer.
+    protected transient String fullResourcePath = null; 
 
     private ResourceDriver resolvedDriver; // To avoid having to resolve multiple times for same binder instance
     
@@ -213,24 +164,13 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 if (source.properties != null) properties = new HashMap(source.properties);
 		 owner = source.owner;
 		 mirrored = source.mirrored;
-		 resourceDriverName = source.resourceDriverName;
-		 resourcePath = source.resourcePath;
+		 relRscPath = source.relRscPath;
 		 branding = source.branding;
 		 brandingExt = source.brandingExt;
 		 //don't copy postingDef, notificationDef, internalId, binders, or pathName
 		 entryDef = source.entryDef;
-		 allowDesktopAppToSyncData = source.allowDesktopAppToSyncData;
-		 allowMobileAppsToSyncData = source.allowMobileAppsToSyncData;
-		 indexContent = source.indexContent;
-		 jitsEnabled = source.jitsEnabled;
-		 jitsMaxAge = source.jitsMaxAge;
-		 jitsAclMaxAge = source.jitsAclMaxAge;
-		 fullSyncDirOnly = source.fullSyncDirOnly;
-		 allowDesktopAppToTriggerInitialHomeFolderSync = source.allowDesktopAppToTriggerInitialHomeFolderSync;
-		 syncScheduleOption = source.syncScheduleOption;
-		 useInheritedIndexContent = source.useInheritedIndexContent;
-		 useInheritedJitsSettings = source.useInheritedJitsSettings;
-		 useInheritedDesktopAppTriggerSetting = source.useInheritedDesktopAppTriggerSetting;
+		 netFolderConfigId = source.netFolderConfigId;
+		 legacyMirroredDriverNameHash = source.legacyMirroredDriverNameHash;
      }
     /**
      * Return the zone id
@@ -387,11 +327,11 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      * @hibernate.property insert="false" update="false"
      *
      */
-    protected String getType() {
-    	return type;
+    protected String getBinderType() {
+    	return binderType;
     }
-    protected void setType(String type) {
-    	this.type = type;
+    protected void setBinderType(String binderType) {
+    	this.binderType = binderType;
     }
     /**
      * Only used on top workspace.
@@ -766,47 +706,76 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	public void setMirrored(boolean mirrored) {
 		this.mirrored = mirrored;
 	}
+	
+	/**
+	 * Return resource path that is relative to the net folder server (= resource driver config),
+	 * NOT to the net folder config.
+	 * 
+	 * NOTE: This method is guaranteed to return non-null value for all mirrored folders.
+	 */
 	public String getResourcePath() {
-		if(resourcePath != null && resourcePath.equals("/"))
-			return "";
-		else
-			return resourcePath;
-	}
-	public void setResourcePath(String resourcePath) {
-		if(resourcePath != null && resourcePath.equals("")) {
-			// bugzilla 513609 - To workaround problem with Oracle
-			resourcePath = "/";
+		if(fullResourcePath == null) {
+			pathFromStorageToFull();
 		}
-		this.resourcePath = resourcePath;
+		return fullResourcePath;
 	}
 	
-	public String getResourceDriverName() {
-		return resourceDriverName;
+	/**
+	 * 
+	 * @param resourcePath This resource path is relative to the net folder server 
+	 * (= resource driver config), NOT to the net folder config. This is so that we
+	 * won't have to change the way this has always been working in previous releases.
+	 */
+	public void setResourcePath(String resourcePath) {
+		// It is expected that the resource path was already normalized by the caller, so we're not doing it again here.
+		this.fullResourcePath = resourcePath;
+		setRelRscPath(null);
 	}
+
+    public String getResourceDriverName() {
+    	ResourceDriver rd = this.getResourceDriver();
+    	if(rd != null)
+    		return rd.getName();
+    	else
+    		return null;
+    }
+	
 	public void setResourceDriverName(String resourceDriverName) {
-		this.resourceDriverName = resourceDriverName;
+		ResourceDriver driver = ResourceDriverManagerUtil.findResourceDriver(resourceDriverName);
+		if(ResourceDriverManagerUtil.isStaticallyCreated(driver)) {
+			// The resource driver is for legacy mirrored folders. Store hash value of the driver name in the database.
+			this.legacyMirroredDriverNameHash = ResourceDriverManagerUtil.toStorageHashAsLong(resourceDriverName);
+			// net folder config id is never used for legacy mirrored folder.
+			this.netFolderConfigId = null;
+		}
+		else {
+			// For Filr drivers, driver name or its hash value is not stored with binders.
+			this.legacyMirroredDriverNameHash = null;
+			// Net folder config ID is set by the caller via a separate call. So do NOT nullify it here!
+		}
 	}
 
 	public ResourceDriver getResourceDriver() {
 		// Just a convenience method
 		if(resolvedDriver == null) {
-			if (getResourceDriverName() != null && getResourceDriverName().length() > 0) {
+			if(netFolderConfigId != null) {
+				// This is net folder.
 				try {
-					resolvedDriver = ResourceDriverManagerUtil.findResourceDriver(getResourceDriverName());
+					resolvedDriver = NetFolderUtil.getResourceDriverByNetFolderConfigId(netFolderConfigId);
 				} catch(FIException e) {
-					logger.warn("Cannot find resource driver by name '" + getResourceDriverName() + "' on binder '" + this.getId() + "'", e);
+					logger.warn("Cannot find resource driver given net folder config id '" + netFolderConfigId + "' on binder '" + this.getId() + "'", e);
 				}
-			}			
+			}	
+			else if(legacyMirroredDriverNameHash != null) {
+				// This is legacy mirrored folder.
+				try {
+					resolvedDriver = ResourceDriverManagerUtil.findStaticResourceDriverByNameHash(legacyMirroredDriverNameHash);
+				} catch(FIException e) {
+					logger.warn("Cannot find legacy resource driver by hash '" + legacyMirroredDriverNameHash + "' on binder '" + this.getId() + "'", e);
+				}
+			}
 		}
 		return resolvedDriver;
-	}
-	
-	public DriverType getResourceDriverType() {
-		// Just a convenience method
-		if(getResourceDriverName() != null)
-			return ResourceDriverManagerUtil.getResourceDriverType(getResourceDriverName());
-		else
-			return null;
 	}
 	
 	public boolean noAclDredgedWithEntries() {
@@ -858,60 +827,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     
     
     /**
-     * Return whether the desktop app can trigger initial home folder sync
-     * @return
-     */
-    public boolean getAllowDesktopAppToTriggerInitialHomeFolderSync()
-    {
-    	if ( allowDesktopAppToTriggerInitialHomeFolderSync == null )
-    		return false;
-    	else
-    		return allowDesktopAppToTriggerInitialHomeFolderSync.booleanValue();
-    }
-    
-    /**
-     * 
-     */
-    public void setAllowDesktopAppToTriggerInitialHomeFolderSync( boolean allow )
-    {
-   		allowDesktopAppToTriggerInitialHomeFolderSync = new Boolean( allow );
-    }
-    
-    /**
-     * Return whether the desktop app can sync data from this binder
-     * @return
-     */
-    public boolean getAllowDesktopAppToSyncData()
-    {
-    	if ( allowDesktopAppToSyncData == null )
-    		return true;
-    	else
-    		return allowDesktopAppToSyncData.booleanValue();
-    }
-    
-    public void setAllowDesktopAppToSyncData( boolean allow )
-    {
-   		allowDesktopAppToSyncData = new Boolean( allow );
-    }
-    
-    /**
-     * Return whether mobile apps can sync data from this binder
-     * @return
-     */
-    public boolean getAllowMobileAppsToSyncData()
-    {
-    	if ( allowMobileAppsToSyncData == null )
-    		return true;
-    	else
-    		return allowMobileAppsToSyncData.booleanValue();
-    }
-    
-    public void setAllowMobileAppsToSyncData( boolean allow )
-    {
-   		allowMobileAppsToSyncData = new Boolean( allow );
-    }
-    
-    /**
      * Return the computed value of "allow desktop app to trigger initial home folder sync".
      * If this binder is inheriting the value of "allow desktop app to trigger initial home folder sync"
      * then we will get the value of "allow desktop app to trigger initial home folder sync"
@@ -937,288 +852,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	
     	return false;
     }
-    
-    /**
-     * Return whether the the "allow desktop app to trigger initial home folder sync" setting
-     * should be inherited from the net folder server.
-     * @return
-     */
-    public boolean getUseInheritedDesktopAppTriggerSetting()
-    {
-    	boolean useInherited;
-    	
-    	if ( useInheritedDesktopAppTriggerSetting == null )
-   			useInherited = true;
-    	else
-    		useInherited = useInheritedDesktopAppTriggerSetting.booleanValue();
-    	
-    	return useInherited;
-    }
-
-    /**
-     * 
-     */
-    public void setUseInheritedDesktopAppTriggerSetting( boolean inherit )
-    {
-   		useInheritedDesktopAppTriggerSetting = new Boolean( inherit );
-    }
-    
-    /**
-     * Return whether the contents of this binder should be indexed.
-     * @return
-     */
-    public boolean getIndexContent()
-    {
-    	if ( indexContent == null )
-    		return true;
-    	else
-    		return indexContent .booleanValue();
-    }
-
-    /**
-     * 
-     */
-    public void setIndexContent( boolean index )
-    {
-   		indexContent = new Boolean( index );
-    }
-    
-    /**
-     * Return the computed value of "index content".  If this binder is inheriting the value
-     * of "index content" then we will get the value of "index content" from the net folder server
-     * this binder is pointing to.  Otherwise, we will use the value of "index content" from
-     * this binder.
-     */
-    public boolean getComputedIndexContent()
-    {
-    	ResourceDriver resourceDriver;
-    	
-    	if ( getUseInheritedIndexContent() == false )
-    		return getIndexContent();
-    	
-    	resourceDriver = getResourceDriver();
-    	if ( resourceDriver != null )
-    	{
-    		ResourceDriverConfig rdConfig;
-    		
-    		rdConfig = resourceDriver.getConfig();
-    		if ( rdConfig != null )
-    			return rdConfig.getIndexContent();
-    	}
-    	
-    	return false;
-    }
-    
-    /**
-     * Return whether the the "index content" setting should be inherited from the net folder server.
-     * @return
-     */
-    public boolean getUseInheritedIndexContent()
-    {
-    	boolean useInherited;
-    	
-    	// If the useInheritedIndexContent field is null that means this binder existed
-    	// before we added this field.
-    	if ( useInheritedIndexContent == null )
-    	{
-    		// If the content of this binder should be indexed, then we will say not to inherit
-    		// the "index content" setting from the net folder server.
-    		if ( getIndexContent() == true )
-    			useInherited = false;
-    		else
-    			useInherited = true;
-    	}
-    	else
-    	{
-    		useInherited = useInheritedIndexContent.booleanValue();
-    	}
-    	
-    	return useInherited;
-    }
-
-    /**
-     * 
-     */
-    public void setUseInheritedIndexContent( boolean inherit )
-    {
-   		useInheritedIndexContent = new Boolean( inherit );
-    }
-    
-
-    /**
-     * Return whether the the jits settings should be inherited from the net folder server.
-     * @return
-     */
-    public boolean getUseInheritedJitsSettings()
-    {
-    	boolean useInherited;
-    	
-    	// If the useInheritedJitsSettings field is null that means this binder existed
-    	// before we added this field.
-    	if ( useInheritedJitsSettings == null )
-    	{
-    		// Are we dealing with a home dir net folder?
-    		if ( isHomeDir() )
-    		{
-    			// Yes
-    			// Has the value of "enable jits" changed from the default?
-    			// The default is true.
-    			if ( isJitsEnabled() == false )
-    			{
-    				// Yes
-    				useInherited = false;
-    			}
-    			else
-    				useInherited = true;
-    		}
-    		else
-    		{
-    			// No
-    			useInherited = false;
-    		}
-    	}
-    	else
-    	{
-    		useInherited = useInheritedJitsSettings.booleanValue();
-    	}
-    	
-    	return useInherited;
-    }
-
-    /**
-     * 
-     */
-    public void setUseInheritedJitsSettings( boolean inherit )
-    {
-   		useInheritedJitsSettings = new Boolean( inherit );
-    }
-    
-    /**
-     * Return the computed value of "Enable Jits".  If this binder is inheriting the jits
-     * settings then we will get the value of "enable jits" from the net folder server
-     * this binder is pointing to.  Otherwise, we will use the value of "enable jits" from
-     * this binder.
-     */
-    public boolean getComputedIsJitsEnabled()
-    {
-    	ResourceDriver resourceDriver;
-    	
-    	if ( getUseInheritedJitsSettings() == false )
-    		return isJitsEnabled();
-    	
-    	resourceDriver = getResourceDriver();
-    	if ( resourceDriver != null )
-    	{
-    		ResourceDriverConfig rdConfig;
-    		
-    		rdConfig = resourceDriver.getConfig();
-    		if ( rdConfig != null )
-    			return rdConfig.isJitsEnabled();
-    	}
-    	
-    	return false;
-    }
-    
-    /**
-     * Return the computed value of "Jits max age".  If this binder is inheriting the jits
-     * settings then we will get the value of "jits max age" from the net folder server
-     * this binder is pointing to.  Otherwise, we will use the value of "jits max age" from
-     * this binder.
-     */
-    public long getComputedJitsMaxAge()
-    {
-    	ResourceDriver resourceDriver;
-    	
-    	if ( getUseInheritedJitsSettings() == false )
-    		return getJitsMaxAge();
-    	
-    	resourceDriver = getResourceDriver();
-    	if ( resourceDriver != null )
-    	{
-    		ResourceDriverConfig rdConfig;
-    		
-    		rdConfig = resourceDriver.getConfig();
-    		if ( rdConfig != null )
-    			return rdConfig.getJitsMaxAge();
-    	}
-    	
-    	return getJitsMaxAge();
-    }
-    
-    /**
-     * Return the computed value of "Jits max acl age".  If this binder is inheriting the jits
-     * settings then we will get the value of "jits max acl age" from the net folder server
-     * this binder is pointing to.  Otherwise, we will use the value of "jits max acl age" from
-     * this binder.
-     */
-    public long getComputedJitsAclMaxAge()
-    {
-    	ResourceDriver resourceDriver;
-    	
-    	if ( getUseInheritedJitsSettings() == false )
-    		return getJitsAclMaxAge();
-    	
-    	resourceDriver = getResourceDriver();
-    	if ( resourceDriver != null )
-    	{
-    		ResourceDriverConfig rdConfig;
-    		
-    		rdConfig = resourceDriver.getConfig();
-    		if ( rdConfig != null )
-    			return rdConfig.getJitsAclMaxAge();
-    	}
-    	
-    	return getJitsAclMaxAge();
-    }
-    
-    public boolean isJitsEnabled() {
-    	if(jitsEnabled == null)
-    		return SPropsUtil.getBoolean("nf.jits.enabled", true);
-    	else
-    		return jitsEnabled.booleanValue();
-    }
-    public void setJitsEnabled(boolean jitsEnabled) {
-    	this.jitsEnabled = jitsEnabled;
-    }
-    
-	public long getJitsMaxAge() {
-		if(jitsMaxAge == null)
-			return NetFolderHelper.getDefaultJitsResultsMaxAge();
-		else 
-			return jitsMaxAge.longValue();
-	}
-	public void setJitsMaxAge(long jitsMaxAge) {
-		this.jitsMaxAge = Long.valueOf(jitsMaxAge);
-	}
-    
-	public long getJitsAclMaxAge() {
-		if(jitsAclMaxAge == null)
-			return NetFolderHelper.getDefaultJitsAclMaxAge();
-		else 
-			return jitsAclMaxAge.longValue();
-	}
-	public void setJitsAclMaxAge(long jitsAclMaxAge) {
-		this.jitsAclMaxAge = Long.valueOf(jitsAclMaxAge);
-	}
-    
-	/**
-	 * 
-	 */
-	public Boolean getFullSyncDirOnly()
-	{
-		return fullSyncDirOnly;
-	}
-	
-	public boolean isFullSyncDirOnly() {
-		if(fullSyncDirOnly == null)
-			return SPropsUtil.getBoolean("nf.full.sync.dir.only", false);
-		else
-			return fullSyncDirOnly.booleanValue();
-	}
-	public void setFullSyncDirOnly( Boolean fullSyncDirOnly ) {
-		this.fullSyncDirOnly = fullSyncDirOnly;
-	}
-	
+        	
     /**
      * Get the xml document that holds the landing page properties such as the background color,
      * background image, etc. 
@@ -1254,32 +888,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
         
     	return parentBinder.getLandingPagePropertiesSourceBinder();
 	}
-    
-
-    /**
-     * Return the sync schedule option.  Currently there are 2 possible values:
-     * "Use sync schedule from net folder server" and "Use sync schedule from net folder"
-     * @return
-     */
-    public SyncScheduleOption getSyncScheduleOption()
-    {
-    	if ( syncScheduleOption == null )
-    		return null;
-    	
-    	return SyncScheduleOption.valueOf( syncScheduleOption.shortValue() );
-    }
-
-    /**
-     * 
-     */
-    public void setSyncScheduleOption( SyncScheduleOption option )
-    {
-    	if ( option == null )
-    		syncScheduleOption = null;
-    	else
-    		syncScheduleOption = new Short( option.getValue() );
-    }
-    
+        
     public String getResourceHandle() {
 		return resourceHandle;
 	}
@@ -1300,17 +909,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     {
     	this.postingEnabled = postingEnabled;
     }
-    
-    public boolean isHomeDir() {
-    	if(homeDir == null)
-    		return false;
-    	else
-    		return homeDir.booleanValue();
-    }
-    public void setHomeDir(boolean homeDir) {
-    	this.homeDir = homeDir;
-    }
-    
+        
     public boolean isMyFilesDir() {
     	if(myFilesDir == null)
     		return false;
@@ -1508,4 +1107,253 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		this.teamGroupId = teamGroupId;
 	}
     
+	public Long getNetFolderConfigId() {
+		return netFolderConfigId;
+	}
+	public void setNetFolderConfigId(Long netFolderConfigId) {
+		this.netFolderConfigId = netFolderConfigId;
+		if(netFolderConfigId != null)
+			this.legacyMirroredDriverNameHash = null;
+	}
+    
+	public NetFolderConfig getNetFolderConfig() {
+		if(netFolderConfigId == null)
+			return null;
+		return NetFolderUtil.getNetFolderConfig(netFolderConfigId);
+	}
+	
+	private void setRelRscPath(String relRscPath) {
+		this.relRscPath = relRscPath;
+	}
+    
+	private String getRelRscPath() {
+		return relRscPath;
+	}
+	
+	// For use by Hibernate only
+	private void setRelRscPathHibernate(String relRscPathHibernate) {
+		if("/".equals(relRscPathHibernate))
+			relRscPathHibernate = "";
+		setRelRscPath(relRscPathHibernate);
+		this.fullResourcePath = null;
+	}
+    
+	// For use by Hibernate only
+	private String getRelRscPathHibernate() {
+		if(fullResourcePath != null) {
+			pathFromFullToStorage();
+		}
+		String relRscPathHibernate = getRelRscPath();
+		if("".equals(relRscPathHibernate)) {
+			// (bug #513609) - To workaround problem with Oracle
+			// Oracle converts "" to null, which could result in lots of pointless update
+			// attempts by Hibernate during dirty check because persistent value and 
+			// in-memory value are different. To avoid this issue, we store empty string
+			// as "/" consistently for all database types.
+			relRscPathHibernate = "/";
+		}
+		return relRscPathHibernate;
+	}
+	
+	private void pathFromStorageToFull() {
+		NetFolderConfig nfc = this.getNetFolderConfig();
+		if(nfc != null) { 
+			// This is net folder.
+			fullResourcePath =  nfc.buildResourcePathRelativeToNetFolderServer(getRelRscPath());
+		}
+		else {
+			// This is either a regular (non-mirrored) binder or a legacy mirrored folder.
+			fullResourcePath =  getRelRscPath();
+		}
+	}
+	
+	private void pathFromFullToStorage() {
+		NetFolderConfig nfc = this.getNetFolderConfig();
+		if(nfc != null) {
+			// This is a net folder
+			if(fullResourcePath.equals("")) {
+				if("".equals(nfc.getResourcePath()))
+					this.setRelRscPath("");
+				else
+					throw new IllegalArgumentException("Cannot set resource path [" + fullResourcePath + "] on binder (id=" + this.getId() + ") since it doesn't start with net folder config path [" + nfc.getResourcePath() + "]");
+			}
+			else {
+				if("".equals(nfc.getResourcePath())) {
+					this.setRelRscPath(fullResourcePath);
+				}
+				else {
+					if(fullResourcePath.startsWith(nfc.getResourcePath())) {
+						if(fullResourcePath.length() <= nfc.getResourcePath().length()+1) {
+							this.setRelRscPath("");
+						}
+						else {
+							this.setRelRscPath(fullResourcePath.substring(nfc.getResourcePath().length()+1));
+						}
+					}
+					else {
+						throw new IllegalArgumentException("Cannot set resource path [" + fullResourcePath + "] on binder (id=" + this.getId() + ") because it doesn't start with net folder config path [" + nfc.getResourcePath() + "]");
+					}
+				}			
+			}
+		}
+		else {
+			// This is a legacy mirrored folder or a regular non-mirrored folder.
+			this.setRelRscPath(fullResourcePath);
+		}
+	}
+	
+	///// BEGIN: EVERY METHODS BETWEEN BEGIN & END MUST GO AS SOON AS WE CAN FIND TIME TO CLEAN UP
+    public boolean getAllowDesktopAppToSyncData() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getAllowDesktopAppToSyncData();
+    	else
+    		return false;
+    }
+	
+    public boolean getAllowMobileAppsToSyncData() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getAllowMobileAppsToSyncData();
+    	else
+    		return false;
+    }
+    
+    public boolean getComputedIndexContent() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getComputedIndexContent();
+    	else
+    		return false;
+    }
+    
+    public boolean getComputedIsJitsEnabled() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getComputedIsJitsEnabled();
+    	else
+    		return false;
+    }
+    
+    public long getComputedJitsAclMaxAge() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getComputedJitsAclMaxAge();
+    	else
+    		return 0;
+    }
+    
+    public long getComputedJitsMaxAge() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getComputedJitsMaxAge();
+    	else
+    		return 0;
+    }
+    
+	public Boolean getFullSyncDirOnly() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getFullSyncDirOnly();
+    	else
+    		return false;
+	}
+	
+    public boolean getIndexContent() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getIndexContent();
+    	else
+    		return false;
+    }
+    
+	public long getJitsAclMaxAge() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getJitsAclMaxAge();
+    	else
+    		return 0;
+	}
+	
+	public long getJitsMaxAge() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getJitsMaxAge();
+    	else
+    		return 0;
+	}
+	
+    public boolean isJitsEnabled() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.isJitsEnabled();
+    	else
+    		return false;
+    }
+    
+    public SyncScheduleOption getSyncScheduleOption() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getSyncScheduleOption();
+    	else
+    		return null;
+    }
+
+    public boolean getUseInheritedIndexContent() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getUseInheritedIndexContent();
+    	else
+    		return false;
+    }
+    
+    public boolean getUseInheritedJitsSettings() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getUseInheritedJitsSettings();
+    	else
+    		return false;	
+    }
+    
+	public boolean isFullSyncDirOnly() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.isFullSyncDirOnly();
+    	else
+    		return false;	
+	}
+	
+    public boolean isHomeDir() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.isHomeDir();
+    	else
+    		return false;	
+    }
+    
+    public boolean getAllowDesktopAppToTriggerInitialHomeFolderSync()
+    {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getAllowDesktopAppToTriggerInitialHomeFolderSync();
+    	else
+    		return false;	
+    }
+    
+    /**
+     * Return whether the the "allow desktop app to trigger initial home folder sync" setting
+     * should be inherited from the net folder server.
+     * @return
+     */
+    public boolean getUseInheritedDesktopAppTriggerSetting()
+    {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return nf.getUseInheritedDesktopAppTriggerSetting();
+    	else
+    		return false;
+    }
+        
+	///// END: EVERY METHODS BETWEEN BEGIN & END MUST GO AS SOON AS WE CAN FIND TIME TO CLEAN UP
+
 }

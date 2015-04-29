@@ -194,5 +194,4 @@ public interface ResourceDriver {
 	 * @return
 	 */
 	public ResourceDriverConfig getConfig();
-	
 }

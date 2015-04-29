@@ -32,10 +32,11 @@
  */
 package org.kablink.teaming.fi.connection;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.List;
 
-import org.kablink.teaming.domain.ResourceDriverConfig;
-import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
+import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.util.SpringContextUtil;
 
 
@@ -45,18 +46,58 @@ public class ResourceDriverManagerUtil {
 		return getResourceDriverManager().getAllowedResourceDrivers();
 	}
 	
-	public static ResourceDriver findResourceDriver(String driverName) {
+	public static ResourceDriver findResourceDriver(String driverName) throws FIException {
 		return getResourceDriverManager().getDriver(driverName);
 	}
 	
-	public static DriverType getResourceDriverType(String driverName) {
-		ResourceDriver driver = findResourceDriver(driverName);
-		if(driver != null) {
-			ResourceDriverConfig config = driver.getConfig();
-			if(config != null)
-				return config.getDriverType();
+	public static ResourceDriver findResourceDriver(Long driverId) throws FIException {
+		return getResourceDriverManager().getDriver(driverId);
+	}
+	
+	public static long toStorageHashAsLong (String driverName) {
+		try {
+			// MD5 hash the driver name to 16 byte digest.
+			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+			messageDigest.reset();
+			messageDigest.update(driverName.getBytes("UTF-8"));
+			byte[] digest = messageDigest.digest();
+			// Convert the 16 byte digest into a long value.
+			BigInteger bi = new BigInteger(digest);		
+			long value = bi.longValue();
+			// Make sure to return negative value.
+			if(value > 0L)
+				value *= -1;
+			return value;
 		}
-		return null;
+		catch(Exception e) {
+			// This shouldn't happen.
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * Returns whether this driver was instantiated from the static configuration 
+	 * information read from the config files at server startup.
+	 * Only Vibe legacy mirrored folder drivers are created this way.
+	 * 
+	 * @param driver
+	 * @return
+	 */
+	public static boolean isStaticallyCreated(ResourceDriver driver) {
+		return (driver.getConfig() == null);
+	}
+	
+	/**
+	 * Find the statically instantiated resource driver by its name hash value.
+	 * This mechanism does not apply to dynamically loaded resource drivers such
+	 * as Filr resource drivers.
+	 * 
+	 * @param nameHash
+	 * @return
+	 * @throws FIException
+	 */
+	public static ResourceDriver findStaticResourceDriverByNameHash(Long nameHash) throws FIException {
+		return getResourceDriverManager().getStaticDriverByNameHash(nameHash);
 	}
 	
 	public static ResourceDriverManager getResourceDriverManager() {

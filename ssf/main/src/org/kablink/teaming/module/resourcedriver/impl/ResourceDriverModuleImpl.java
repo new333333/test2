@@ -46,7 +46,8 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
+import org.kablink.teaming.domain.NetFolderConfig;
+import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -57,6 +58,7 @@ import org.kablink.teaming.jobs.NetFolderServerSynchronization;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
@@ -693,94 +695,97 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	 * If a net folder has a sync schedule enabled, that net folder will not be synchronized.
 	 */
 	private boolean doEnqueueSynchronize(
-		ResourceDriverConfig rdConfig,
-		boolean excludeFoldersWithSchedule
-		)
-	{
-		NetFolderSelectSpec selectSpec;
-		FolderModule folderModule;
-		List<Long> listOfNetFolderIds;
-		
-		if ( rdConfig == null )
-			return false;
-		
-		folderModule = getFolderModule();
-
-		// Find all of the net folders that reference this net folder server.
-		selectSpec = new NetFolderSelectSpec();
-		selectSpec.setFilter( null );
-		selectSpec.setIncludeHomeDirNetFolders( true );
-		selectSpec.setRootName( rdConfig.getName() );
-		listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
-													getBinderModule(),
-													getWorkspaceModule(),
-													selectSpec );
-
-		if ( listOfNetFolderIds != null )
+			ResourceDriverConfig rdConfig,
+			boolean excludeFoldersWithSchedule
+			)
 		{
-			for ( Long binderId:  listOfNetFolderIds )
-			{
-				boolean syncFolder;
-				
-				syncFolder = false;
-				
-				if ( excludeFoldersWithSchedule )
-				{
-					SyncScheduleOption syncScheduleOption;
+			NetFolderSelectSpec selectSpec;
+			FolderModule folderModule;
+			List<Long> listOfNetFolderConfigIds;
+			
+			if ( rdConfig == null )
+				return false;
+			
+			folderModule = getFolderModule();
 
-					// Does this net folder have a syncScheduleOption?
-					syncScheduleOption = NetFolderHelper.getSyncScheduleOption( getBinderModule(), binderId );
-					if ( syncScheduleOption != null )
+			// Find all of the net folders that reference this net folder server.
+			selectSpec = new NetFolderSelectSpec();
+			selectSpec.setFilter( null );
+			selectSpec.setIncludeHomeDirNetFolders( true );
+			selectSpec.setRootId( rdConfig.getId() );
+			listOfNetFolderConfigIds = NetFolderHelper.getAllNetFolders(
+														getBinderModule(),
+														getWorkspaceModule(),
+														selectSpec );
+
+			if ( listOfNetFolderConfigIds != null )
+			{
+				NetFolderConfig nfc;
+				for ( Long netFolderConfigId:  listOfNetFolderConfigIds )
+				{
+					boolean syncFolder;
+					
+					syncFolder = false;
+					
+					nfc = NetFolderUtil.getNetFolderConfig(netFolderConfigId);
+					
+					if ( excludeFoldersWithSchedule )
 					{
-						// Yes
-						// Does the syncScheduleOption indicate to use the net folder server's schedule?
-						if ( syncScheduleOption == SyncScheduleOption.useNetFolderServerSchedule )
+						SyncScheduleOption syncScheduleOption;
+
+						// Does this net folder have a syncScheduleOption?
+						syncScheduleOption = nfc.getSyncScheduleOption();
+						if ( syncScheduleOption != null )
 						{
 							// Yes
-							syncFolder = true;
+							// Does the syncScheduleOption indicate to use the net folder server's schedule?
+							if ( syncScheduleOption == SyncScheduleOption.useNetFolderServerSchedule )
+							{
+								// Yes
+								syncFolder = true;
+							}
+						}
+						else
+						{
+							ScheduleInfo scheduleInfo;
+
+							// No
+							// Does this net folder have a sync schedule that is enabled?
+							scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( nfc.getTopFolderId() );
+							if ( scheduleInfo == null || scheduleInfo.isEnabled() == false )
+							{
+								// No
+								syncFolder = true;
+							}
 						}
 					}
 					else
+						syncFolder = true;
+						
+					// Should we add this folder to the list of "to-be sync'd folders"?
+					if ( syncFolder )
 					{
-						ScheduleInfo scheduleInfo;
-
-						// No
-						// Does this net folder have a sync schedule that is enabled?
-						scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binderId );
-						if ( scheduleInfo == null || scheduleInfo.isEnabled() == false )
-						{
-							// No
-							syncFolder = true;
+						try {
+							// Yes, sync this net folder ... only if system shutdown is not in progress
+							if(!ContextListenerPostSpring.isShutdownInProgress()) {
+								folderModule.enqueueFullSynchronize( nfc.getTopFolderId() );
+							}
+							else {
+								// System shutting down. Abort the remaining work and return.
+								logger.info("System shutting down. Skipping full sync of net folder '" + nfc.getTopFolderId() + "' and the rest.");
+								break;
+							}
 						}
-					}
-				}
-				else
-					syncFolder = true;
-					
-				// Should we add this folder to the list of "to-be sync'd folders"?
-				if ( syncFolder )
-				{
-					try {
-						// Yes, sync this net folder ... only if system shutdown is not in progress
-						if(!ContextListenerPostSpring.isShutdownInProgress()) {
-							folderModule.enqueueFullSynchronize( binderId );
+						catch(Exception e) {
+							logger.error("Error during synchronization of net folder '" + nfc.getTopFolderId() + "'", e);
+							continue; // Continue to the next net folder to sync.
 						}
-						else {
-							// System shutting down. Abort the remaining work and return.
-							logger.info("System shutting down. Skipping full sync of net folder '" + binderId + "' and the rest.");
-							break;
-						}
-					}
-					catch(Exception e) {
-						logger.error("Error during synchronization of net folder '" + binderId + "'", e);
-						continue; // Continue to the next net folder to sync.
 					}
 				}
 			}
+			
+			return true;
 		}
-		
-		return true;
-	}
 	
 	/**
 	 * Synchronize all of the net folders associated with the given net folder server.

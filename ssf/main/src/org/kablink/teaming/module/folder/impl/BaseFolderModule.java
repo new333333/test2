@@ -37,10 +37,10 @@ import java.util.Map;
 
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.jobs.ScheduleInfo;
@@ -107,28 +107,11 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	public String dumpJitsStatsAsString() {
 		return "";
 	}
-
-	@Override
-	public void modifyNetFolder(
-					Long folderId,
-					String rootName,
-					String path ) throws AccessControlException, WriteFilesException, WriteEntryDataException
-	{
-	}
 	
 	@Override
 	public void modifyNetFolder(
-					Long folderId,
-					String netFolderName,
-					String rootName,
-					String path,
-					Boolean isHomeDir,
-					boolean indexContent,
-					Boolean inheritIndexContent,
-					SyncScheduleOption syncScheduleOption,
-					Boolean fullSyncDirOnly,
-					Boolean allowDesktopAppToTriggerSync,
-					Boolean inheritAllowDesktopAppToTriggerSync )
+					NetFolderConfig netFolderConfig,
+					Long folderId )
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
 	}
 
@@ -145,16 +128,8 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 					Long templateId,
 					Long parentBinderId,
 					String name,
-					User owner,
-					String rootName,
-					String path,
-					Boolean isHomeDir,
-					boolean indexContent,
-					Boolean inheritIndexContent,
-					SyncScheduleOption syncScheduleOption,
-					Boolean fullSyncDirOnly,
-					Boolean allowDesktopAppToTriggerSync,
-					Boolean inheritAllowDesktopAppToTriggerSync ) throws AccessControlException, WriteFilesException, WriteEntryDataException {
+					String title,
+					User owner ) throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		return null;
 	}
 
