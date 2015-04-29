@@ -1,4 +1,151 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
+    <changeSet author="jong" context="schema" failOnError="true" id="1">
+        <createTable  tableName="SS_NetFolderConfig">
+            <column autoIncrement="true" name="id" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>           
+            <column name="lockVersion" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR2(64 CHAR)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="topFolderId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+			</column>			
+			<column name="netFolderServerId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+			</column>			
+            <column name="resourcePath" type="VARCHAR2(1024 CHAR)">
+            	<constraints nullable="false"/>
+            </column>
+			<column name="homeDir" type="NUMBER(1,0)">
+                <constraints nullable="true"/>
+			</column>			
+			<column name="allowDesktopAppToSyncData" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+			<column name="allowMobileAppsToSyncData" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="indexContent" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="jitsEnabled" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="jitsMaxAge" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="jitsAclMaxAge" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="fullSyncDirOnly" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="syncScheduleOption" type="NUMBER(2,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="useInheritedIndexContent" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="useInheritedJitsSettings" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="allowDAToTriggerInitialHFSync" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+            <column name="useInheritedDATriggerSetting" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <createIndex  indexName="name_netFolderConfig" tableName="SS_NetFolderConfig" unique="false">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="3">
+        <createIndex  indexName="nfsId_netFolderConfig" tableName="SS_NetFolderConfig" unique="false">
+            <column name="netFolderServerId"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="4">
+        <createIndex  indexName="topFolderId_netFolderConfig" tableName="SS_NetFolderConfig" unique="true">
+            <column name="topFolderId"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5">
+        <addColumn  tableName="SS_Forums">
+            <column name="binderType" type="CHAR(1)" defaultValue="f">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6">
+        <sql>
+update SS_Forums set binderType = SUBSTR(type, 1, 1);
+        </sql>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="7">
+        <comment>This column is replaced by binderType column</comment>
+        <dropColumn  tableName="SS_Forums" columnName="type"/>
+    </changeSet>
+		
+    <changeSet author="jong" context="schema" failOnError="true" id="8">
+        <addColumn  tableName="SS_Forums">
+            <column name="netFolderConfigId" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn  tableName="SS_Forums">
+            <column name="legacyMirroredDriverNameHash" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn  tableName="SS_Forums">
+            <column name="relRscPath" type="VARCHAR2(1024 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="9">
+        <customChange class="org.kablink.liquibase.change.custom.MigrateMirroredFoldersChange">
+            <param name="dbType" value="oracle"/>
+            <param name="batchSize" value="1000"/>
+            <param name="transactionSize" value="100"/>
+        </customChange>
+    </changeSet>
+    	
+	<changeSet author="jong" context="schema" failOnError="true" id="10">
+        <comment>These columns are no longer needed because SS_NetFolderConfig table assumes the role</comment>
+        <dropColumn  tableName="SS_Forums" columnName="resourceDriverName"/>
+        <dropColumn  tableName="SS_Forums" columnName="resourcePath"/>
+        <dropColumn  tableName="SS_Forums" columnName="homeDir"/>
+        <dropColumn  tableName="SS_Forums" columnName="allowDesktopAppToSyncData"/>
+        <dropColumn  tableName="SS_Forums" columnName="allowMobileAppsToSyncData"/>
+        <dropColumn  tableName="SS_Forums" columnName="indexContent"/>
+        <dropColumn  tableName="SS_Forums" columnName="jitsEnabled"/>
+        <dropColumn  tableName="SS_Forums" columnName="jitsMaxAge"/>
+        <dropColumn  tableName="SS_Forums" columnName="jitsAclMaxAge"/>
+        <dropColumn  tableName="SS_Forums" columnName="fullSyncDirOnly"/>
+        <dropColumn  tableName="SS_Forums" columnName="syncScheduleOption"/>
+        <dropColumn  tableName="SS_Forums" columnName="useInheritedIndexContent"/>
+        <dropColumn  tableName="SS_Forums" columnName="useInheritedJitsSettings"/>
+        <dropColumn  tableName="SS_Forums" columnName="allowDAToTriggerInitialHFSync"/>
+        <dropColumn  tableName="SS_Forums" columnName="useInheritedDATriggerSetting"/>
+    </changeSet>
+
 </databaseChangeLog>
