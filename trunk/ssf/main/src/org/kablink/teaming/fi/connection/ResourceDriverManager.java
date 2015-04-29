@@ -69,6 +69,9 @@ public interface ResourceDriverManager {
 	public void initializeResourceDriverList();
 	
 	public ResourceDriver getDriver(String driverName) throws FIException;
+	public ResourceDriver getDriver(Long driverId) throws FIException;
+	public ResourceDriver getStaticDriverByNameHash(Long nameHash) throws FIException;
+	
 	public ResourceDriverConfig getDriverConfig(String driverName);
 	public ResourceDriverConfig getDriverConfig(Long id);
 

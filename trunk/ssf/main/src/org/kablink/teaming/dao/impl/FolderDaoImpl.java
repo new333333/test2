@@ -69,6 +69,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HKey;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Tag;
@@ -1040,19 +1041,42 @@ public void delete(final Folder folder) {
         if (null != wsId) {
 	        long begin = System.nanoTime();
 			try {
-	            result = ((List<Folder>) getHibernateTemplate().execute(
+		        List<Folder> candidateFolders = ((List<Folder>) getHibernateTemplate().execute(
 	            		new HibernateCallback() {
 	                @Override
 					public Object doInHibernate(Session session) throws HibernateException {
-	                   	Criteria crit = session.createCriteria(Folder.class);
-	    				crit.add(Restrictions.eq(ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.TRUE));
-	    				
 	    				Binder parentBinder = getCoreDao().loadBinder(wsId, zoneId);
-	           			crit.add( Restrictions.eq(ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder));
-	                   	
+	    				Criteria crit = session.createCriteria(Folder.class)
+	    						.add( Restrictions.eq(ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder));               	
 	                	return crit.list();
 					}
 	            }));
+		        
+		        if(candidateFolders.size() > 0) {
+			        final List<Long> candidateFolderIds = new ArrayList<Long>();
+			        for(Folder folder:candidateFolders) 
+			        	candidateFolderIds.add(folder.getId());
+		            
+		            List<NetFolderConfig> nfcs = ((List<NetFolderConfig>) getHibernateTemplate().execute(
+		            		new HibernateCallback() {
+		                @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+		                   	Criteria crit = session.createCriteria(NetFolderConfig.class)
+		                   			.add(Restrictions.eq(ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.TRUE))
+		                   			.add(Restrictions.in(ObjectKeys.FIELD_NET_FOLDER_CONFIG_TOP_FOLDER_ID, candidateFolderIds));                   	
+		                	return crit.list();
+						}
+		            }));
+		            
+		            for(NetFolderConfig nfc:nfcs) {
+		            	for(Folder folder:candidateFolders) {
+		            		if(nfc.getTopFolderId().equals(folder.getId())) {
+		            			result.add(folder);
+		            			break;
+		            		}
+		            	}
+		            }
+		        }
 	    	}
 			
 			catch (Exception ex) {
@@ -1115,7 +1139,7 @@ public void delete(final Folder folder) {
      * 
      */
  	@Override
-	public List<Folder> findNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId )
+	public List<NetFolderConfig> findNetFolderConfigs( final NetFolderSelectSpec selectSpec, final long zoneId )
 	{
         List result = null;
 
@@ -1130,65 +1154,8 @@ public void delete(final Folder folder) {
 				public Object doInHibernate( Session session ) throws HibernateException
 				{
                 	Criteria crit;
-                	String filter;
-                	String rootName;
 
-                	crit = session.createCriteria( Folder.class );
-                	
-                	// We only want net folders that have not been deleted
-                	crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE ) );
-                	
-                	// We only want mirrored folders
-                	crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE ) );
-                	
-                	// We only want top-level folders
-                	crit.add( Restrictions.isNull( "topFolder" ) );
-                	
-                	// Are we looking for a net folder that is associated with a specific net folder root?
-                	rootName = selectSpec.getRootName();
-                	if ( rootName != null && rootName.length() > 0 )
-                	{
-                		// Yes
-                		crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName ) );
-                	}
-                	
-        			// Are we including "home directory" net folders?
-        			if ( selectSpec.getIncludeHomeDirNetFolders() == false )
-        			{
-        				Binder parentBinder;
-        				
-        				// No
-        				crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.FALSE ) );
-        				
-        				// Get the binder where all non home dir net folders live.
-        				parentBinder = getCoreDao().loadReservedBinder(
-        														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-        														zoneId );
-        				if ( parentBinder != null )
-        				{
-        					crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder ) );
-        				}
-        			}
-                    else if (selectSpec.getIncludeNonHomeDirNetFolders() == false )
-                    {
-                        crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.TRUE ) );
-                    }
-                	
-                	// Do we have a filter?
-                	filter = selectSpec.getFilter();
-                	if ( filter != null && filter.length() > 0 )
-                	{
-                		Criterion title;
-                		Criterion path;
-                		Criterion server;
-                		
-                		// Yes
-                		// See if the filter is in the title or the relative path or the server name.
-                		title = Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE );
-                		path = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, filter, MatchMode.ANYWHERE );
-                		server = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, filter, MatchMode.ANYWHERE );
-                		crit.add( Restrictions.or( server, Restrictions.or( title, path ) ) );
-                	}
+                	crit = buildNetFoldersCriteria(session, selectSpec);
                 	
                 	if ( selectSpec.getStartIndex() != -1 )
                 		crit.setFirstResult( selectSpec.getStartIndex() );
@@ -1214,6 +1181,50 @@ public void delete(final Folder folder) {
       	return result;   	
 	}
 
+ 	private Criteria buildNetFoldersCriteria(Session session, NetFolderSelectSpec selectSpec) {
+ 		Criteria crit;
+    	String filter;
+    	Long rootId;
+
+    	crit = session.createCriteria( NetFolderConfig.class );
+    	
+    	// Are we looking for a net folder that is associated with a specific net folder root?
+    	rootId = selectSpec.getRootId();
+    	if ( rootId != null )
+    	{
+    		// Yes
+    		crit.add( Restrictions.eq( ObjectKeys.FIELD_NET_FOLDER_SERVER_ID, rootId ) );
+    	}
+    	
+		// Are we including "home directory" net folders?
+		if ( selectSpec.getIncludeHomeDirNetFolders() == false )
+		{
+			// No
+			crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.FALSE ) );
+		}
+        else if (selectSpec.getIncludeNonHomeDirNetFolders() == false )
+        {
+            crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.TRUE ) );
+        }
+    	
+    	// Do we have a filter?
+    	filter = selectSpec.getFilter();
+    	if ( filter != null && filter.length() > 0 )
+    	{
+    		Criterion title;
+    		Criterion path;
+    		
+    		// Yes
+    		// See if the filter is in the title or the relative path or the server name.
+    		title = Restrictions.ilike( ObjectKeys.FIELD_NET_FOLDER_CONFIG_NAME, filter, MatchMode.ANYWHERE );
+    		path = Restrictions.ilike( ObjectKeys.FIELD_NET_FOLDER_CONFIG_RESOURCE_PATH, filter, MatchMode.ANYWHERE );
+    		crit.add( Restrictions.or( title, path ) );
+    	}
+
+    	return crit;
+ 	}
+
+
     /**
      * 
      */
@@ -1233,67 +1244,10 @@ public void delete(final Folder folder) {
 				public Object doInHibernate( Session session ) throws HibernateException
 				{
                 	Criteria crit;
-                	String filter;
-                	String rootName;
                 	Object result;
                 	Long count = null;
 
-                	crit = session.createCriteria( Folder.class );
-                	
-                	// We only want net folders that have not been deleted
-                	crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE ) );
-                	
-                	// We only want mirrored folders
-                	crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE ) );
-                	
-                	// We only want top-level folders
-                	crit.add( Restrictions.isNull( "topFolder" ) );
-                	
-                	// Are we looking for a net folder that is associated with a specific net folder root?
-                	rootName = selectSpec.getRootName();
-                	if ( rootName != null && rootName.length() > 0 )
-                	{
-                		// Yes
-                		crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName ) );
-                	}
-                	
-        			// Are we including "home directory" net folders?
-        			if ( selectSpec.getIncludeHomeDirNetFolders() == false )
-        			{
-        				Binder parentBinder;
-        				
-        				// No
-        				crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.FALSE ) );
-        				
-        				// Get the binder where all non home dir net folders live.
-        				parentBinder = getCoreDao().loadReservedBinder(
-        														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-        														zoneId );
-        				if ( parentBinder != null )
-        				{
-        					crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder ) );
-        				}
-        			}
-                    else if (selectSpec.getIncludeNonHomeDirNetFolders() == false )
-                    {
-                        crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.TRUE ) );
-                    }
-
-                	// Do we have a filter?
-                	filter = selectSpec.getFilter();
-                	if ( filter != null && filter.length() > 0 )
-                	{
-                		Criterion title;
-                		Criterion path;
-                		Criterion server;
-                		
-                		// Yes
-                		// See if the filter is in the title or the relative path or the server name.
-                		title = Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE );
-                		path = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, filter, MatchMode.ANYWHERE );
-                		server = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, filter, MatchMode.ANYWHERE );
-                		crit.add( Restrictions.or( server, Restrictions.or( title, path ) ) );
-                	}
+                	crit = buildNetFoldersCriteria(session, selectSpec);
                 	
                 	crit.setProjection( Projections.rowCount() );
                 	

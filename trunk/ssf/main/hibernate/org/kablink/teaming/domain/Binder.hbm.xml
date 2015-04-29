@@ -9,7 +9,7 @@
       	<param name="sequence">ss_binder_id_sequence</param>
       </generator>
     </id>
-    <discriminator type="string" column="type" length="16"/>
+    <discriminator type="string" column="binderType" length="1"/>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneId" not-null="true"/>
 	<property name="library"/>
@@ -18,25 +18,13 @@
 	<property name="logVersion"/>
     <property name="mirrored"/>
     <property name="binderCount"/>
-    <property name="type" update="false" insert="false"/> 
-    <property name="resourceDriverName" length="64"/>
-    <property name="resourcePath" length="1024" access="field"/>
-    <property name="homeDir" access="field"/>
+    <property name="binderType" update="false" insert="false"/> 
     <property name="myFilesDir" access="field"/>
-    <property name="allowDesktopAppToSyncData" access="field"/>
-    <property name="allowMobileAppsToSyncData" access="field"/>
-    <property name="indexContent" access="field"/>
-    <property name="useInheritedIndexContent" access="field"/>
-    <property name="useInheritedJitsSettings" access="field"/>
-    <property name="jitsEnabled" access="field"/>
-    <property name="jitsMaxAge" access="field"/>
-    <property name="jitsAclMaxAge" access="field"/>
-    <property name="fullSyncDirOnly" access="field"/>
-    <property name="syncScheduleOption" access="field" type="short" />
-    <property name="allowDesktopAppToTriggerInitialHomeFolderSync" column="allowDAToTriggerInitialHFSync" access="field"/>
-    <property name="useInheritedDesktopAppTriggerSetting" column="useInheritedDATriggerSetting" access="field"/>
     <property name="resourceHandle" length="128" />
     <property name="teamGroupId" />
+    <property name="relRscPathHibernate" length="1024" column="relRscPath"/>
+    <property name="netFolderConfigId" access="field"/>
+    <property name="legacyMirroredDriverNameHash" access="field"/>
     <many-to-one name="parentBinder">
           <column name="parentBinder" index="owningBinder_Binder"/>
     </many-to-one>
@@ -146,7 +134,7 @@
       </many-to-one>
     </component>
     <property name="postingEnabled" access="field"/>
-    <subclass name="org.kablink.teaming.domain.Folder" node="ss_folder" discriminator-value="folder" dynamic-update="true">
+    <subclass name="org.kablink.teaming.domain.Folder" node="ss_folder" discriminator-value="f" dynamic-update="true">
       <many-to-one name="topFolder" />
       <property name="nextEntryNumber"/>
       <property name="entryRootKey">
@@ -156,14 +144,14 @@
  	  <property name="preDeletedWhen"/>
  	  <property name="preDeletedBy"/>
      </subclass>
-    <subclass name="org.kablink.teaming.domain.Workspace" discriminator-value="workspace" dynamic-update="true">
+    <subclass name="org.kablink.teaming.domain.Workspace" discriminator-value="w" dynamic-update="true">
     	<property name="searchTitle" length="255" access="field"/>
     	<property name="preDeleted" access="field"/>
     	<property name="preDeletedWhen"/>
     	<property name="preDeletedBy"/>
-     <subclass name="org.kablink.teaming.domain.ProfileBinder" discriminator-value="profiles" dynamic-update="true"/>
+     <subclass name="org.kablink.teaming.domain.ProfileBinder" discriminator-value="p" dynamic-update="true"/>
     </subclass>
-    <subclass name="org.kablink.teaming.domain.TemplateBinder" discriminator-value="template" dynamic-update="true">
+    <subclass name="org.kablink.teaming.domain.TemplateBinder" discriminator-value="t" dynamic-update="true">
   	  <property name="templateTitle" length="128"/>
 	  <component name="templateDescription">
    	   <property name="HDescription" column="tDescription_text" type="org.kablink.teaming.dao.util.SSClobStringType"/>

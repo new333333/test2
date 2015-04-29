@@ -109,6 +109,7 @@ import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.MobileDevice;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoBinderQuotaByTheIdException;
@@ -116,6 +117,10 @@ import org.kablink.teaming.domain.NoDashboardByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoLdapConnectionConfigByTheIdException;
 import org.kablink.teaming.domain.NoLibraryEntryByTheIdException;
+import org.kablink.teaming.domain.NoNetFolderConfigByTheIdException;
+import org.kablink.teaming.domain.NoNetFolderConfigByTheNameException;
+import org.kablink.teaming.domain.NoNetFolderServerByTheIdException;
+import org.kablink.teaming.domain.NoNetFolderServerByTheNameException;
 import org.kablink.teaming.domain.NoOpenIDProviderByTheIdException;
 import org.kablink.teaming.domain.NoPostingByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
@@ -124,6 +129,7 @@ import org.kablink.teaming.domain.NoZoneByTheIdException;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.SimpleName;
@@ -3904,4 +3910,87 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "purgeShareItems");
     	}	          
 	}
+	
+    @Override
+	public NetFolderConfig loadNetFolderConfig(Long netFolderConfigId) throws NoNetFolderConfigByTheIdException {  
+		long begin = System.nanoTime();
+		try {
+			NetFolderConfig nf = (NetFolderConfig)load(NetFolderConfig.class, netFolderConfigId);
+			if(nf != null)
+				return nf;
+			else
+				throw new NoNetFolderConfigByTheIdException(netFolderConfigId);
+    	}
+    	finally {
+    		end(begin, "loadNetFolderConfig(Long)");
+    	}	        
+    }
+    
+    @Override
+    public NetFolderConfig loadNetFolderConfigByName(final String netFolderName) throws NoNetFolderConfigByTheNameException {
+		long begin = System.nanoTime();
+		try {
+			return (NetFolderConfig)getHibernateTemplate().execute(
+		            new HibernateCallback<NetFolderConfig>() {
+		                @Override
+						public NetFolderConfig doInHibernate(Session session) throws HibernateException {
+		                	NetFolderConfig netFolder = (NetFolderConfig)session.createCriteria(NetFolderConfig.class)
+	                 		.add(Restrictions.eq("name", netFolderName))
+	                		.setCacheable(true)
+	                		.uniqueResult();
+		                    if (netFolder == null)
+		                    	throw new NoNetFolderConfigByTheNameException(netFolderName);
+		                    else
+		                    	return netFolder;
+		                }
+		            }
+		        );
+    	}
+    	finally {
+    		end(begin, "loadNetFolderConfigByName(String)");
+    	}	        
+
+    }
+
+    @Override
+	public  ResourceDriverConfig loadNetFolderServer(Long netFolderServerId) throws NoNetFolderServerByTheIdException {
+		long begin = System.nanoTime();
+		try {
+			ResourceDriverConfig rdc = (ResourceDriverConfig)load(ResourceDriverConfig.class, netFolderServerId);
+			if(rdc != null)
+				return rdc;
+			else
+				throw new NoNetFolderServerByTheIdException(netFolderServerId);
+    	}
+    	finally {
+    		end(begin, "loadNetFolderServer(Long)");
+    	}	        
+	}
+
+    @Override
+    public ResourceDriverConfig loadNetFolderServerByName(final String netFolderServerName) throws NoNetFolderServerByTheNameException {
+		long begin = System.nanoTime();
+		try {
+			return (ResourceDriverConfig)getHibernateTemplate().execute(
+		            new HibernateCallback<ResourceDriverConfig>() {
+		                @Override
+						public ResourceDriverConfig doInHibernate(Session session) throws HibernateException {
+		                	ResourceDriverConfig rdc = (ResourceDriverConfig)session.createCriteria(ResourceDriverConfig.class)
+	                 		.add(Restrictions.eq("name", netFolderServerName))
+	                		.setCacheable(true)
+	                		.uniqueResult();
+		                    if (rdc == null)
+		                    	throw new NoNetFolderServerByTheNameException(netFolderServerName);
+		                    else
+		                    	return rdc;
+		                }
+		            }
+		        );
+    	}
+    	finally {
+    		end(begin, "loadNetFolderServerByName(String)");
+    	}	        
+
+    }
+
 }

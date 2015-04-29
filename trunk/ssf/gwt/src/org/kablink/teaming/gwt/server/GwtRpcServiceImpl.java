@@ -215,6 +215,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.license.LicenseChecker;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -1158,7 +1159,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			selectSpec = new NetFolderSelectSpec();
 			selectSpec.setFilter( gnfCmd.getFilter() );
 			selectSpec.setIncludeHomeDirNetFolders( gnfCmd.getIncludeHomeDirNetFolders() );
-			selectSpec.setRootName( gnfCmd.getRootName() );
+			if(gnfCmd.getRootName() != null) {
+				ResourceDriverConfig rdc = NetFolderUtil.getNetFolderServerByName(gnfCmd.getRootName());
+				selectSpec.setRootId( rdc.getId() );
+			}
 			selectSpec.setStartIndex( gnfCmd.getStartIndex() );
 			selectSpec.setPageSize( gnfCmd.getPageSize() );
 			result = GwtNetFolderHelper.getAllNetFolders( this, selectSpec, true );

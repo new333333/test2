@@ -4,11 +4,13 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.resource.AbstractResource;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
@@ -38,34 +40,36 @@ public class AbstractAdminResource extends AbstractResource {
     protected NetFolder _createNetFolder(NetFolder netFolder, ResourceDriverConfig resourceDriverConfig) throws WriteFilesException, WriteEntryDataException {
         validateMandatoryField(netFolder, "getName");
         validateMandatoryField(netFolder, "getRelativePath");
-        Binder.SyncScheduleOption syncScheduleOption = netFolder.getInheritSyncSchedule() ?
-                Binder.SyncScheduleOption.useNetFolderServerSchedule : Binder.SyncScheduleOption.useNetFolderSchedule;
+        NetFolderConfig.SyncScheduleOption syncScheduleOption = netFolder.getInheritSyncSchedule() ?
+        		NetFolderConfig.SyncScheduleOption.useNetFolderServerSchedule : NetFolderConfig.SyncScheduleOption.useNetFolderSchedule;
         List<AssignedRole> roles = toNetFolderRoles(netFolder.getAssignedRights());
 
         Binder parentBinder = getCoreDao().loadReservedBinder(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID,
                 RequestContextHolder.getRequestContext().getZoneId() );
 
-        Binder binder = NetFolderHelper.createNetFolder(getTemplateModule(), getBinderModule(), getFolderModule(), getAdminModule(), getLoggedInUser(),
+        NetFolderConfig nfc = NetFolderHelper.createNetFolder(getTemplateModule(), getBinderModule(), getFolderModule(), getNetFolderModule(), getAdminModule(), getLoggedInUser(),
                 netFolder.getName(), resourceDriverConfig.getName(), netFolder.getRelativePath(), toScheduleInfo(netFolder.getSyncSchedule()),
                 syncScheduleOption, parentBinder.getId(), false, netFolder.getIndexContent(), netFolder.getInheritIndexContent(), netFolder.getFullSyncDirOnly(),
                 netFolder.getAllowClientInitiatedSync(),
                 netFolder.getInheritClientSyncSettings() );
 
+        Binder binder = getBinderModule().getBinder(nfc.getTopFolderId());
+
         if (roles!=null) {
             NetFolderHelper.setNetFolderRights(this, binder.getId(), roles);
         }
 
-        return AdminResourceUtil.buildNetFolder((Folder) binder, this, true);
+        return AdminResourceUtil.buildNetFolder(nfc, this, true);
     }
 
     protected NetFolder _modifyNetFolder(NetFolder netFolder, ResourceDriverConfig resourceDriverConfig) throws WriteFilesException, WriteEntryDataException {
         validateMandatoryField(netFolder, "getName");
         validateMandatoryField(netFolder, "getRelativePath");
-        Binder.SyncScheduleOption syncScheduleOption = netFolder.getInheritSyncSchedule() ?
-                Binder.SyncScheduleOption.useNetFolderServerSchedule : Binder.SyncScheduleOption.useNetFolderSchedule;
+        NetFolderConfig.SyncScheduleOption syncScheduleOption = netFolder.getInheritSyncSchedule() ?
+        		NetFolderConfig.SyncScheduleOption.useNetFolderServerSchedule : NetFolderConfig.SyncScheduleOption.useNetFolderSchedule;
         List<AssignedRole> roles = toNetFolderRoles(netFolder.getAssignedRights());
 
-        NetFolderHelper.modifyNetFolder(getBinderModule(), getFolderModule(), netFolder.getId(),
+        NetFolderHelper.modifyNetFolder(getBinderModule(), getFolderModule(), getNetFolderModule(), netFolder.getId(),
                 netFolder.getName(), resourceDriverConfig.getName(), netFolder.getRelativePath(), toScheduleInfo(netFolder.getSyncSchedule()),
                 syncScheduleOption, netFolder.getIndexContent(), netFolder.getInheritIndexContent(), netFolder.getFullSyncDirOnly(),
                 netFolder.getAllowClientInitiatedSync(),
@@ -75,7 +79,8 @@ public class AbstractAdminResource extends AbstractResource {
             NetFolderHelper.setNetFolderRights(this, netFolder.getId(), roles);
         }
 
-        return AdminResourceUtil.buildNetFolder((Folder) getBinderModule().getBinder(netFolder.getId()), this, true);
+        Binder binder = getBinderModule().getBinder(netFolder.getId());
+        return AdminResourceUtil.buildNetFolder(binder.getNetFolderConfig(), this, true);
     }
 
     protected ScheduleInfo toScheduleInfo(Schedule model) {

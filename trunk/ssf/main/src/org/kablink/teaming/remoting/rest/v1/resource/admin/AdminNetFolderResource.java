@@ -37,6 +37,7 @@ import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -87,10 +88,10 @@ public class AdminNetFolderResource extends AbstractAdminResource {
             selectSpec.setIncludeHomeDirNetFolders(true);
             selectSpec.setIncludeNonHomeDirNetFolders(true);
         }
-        List<Folder> folderList = NetFolderHelper.getAllNetFolders2(getBinderModule(), getWorkspaceModule(), selectSpec);
+        List<NetFolderConfig> folderList = NetFolderHelper.getAllNetFolders2(getBinderModule(), getWorkspaceModule(), selectSpec);
 
         SearchResultList<NetFolder> results = new SearchResultList<NetFolder>();
-        for (Folder folder : folderList) {
+        for (NetFolderConfig folder : folderList) {
             results.append(AdminResourceUtil.buildNetFolder(folder, this, fullDetails));
         }
         return results;
@@ -109,7 +110,7 @@ public class AdminNetFolderResource extends AbstractAdminResource {
     @Path("{id}")
     public NetFolder getNetFolder(@PathParam("id") Long id) {
         Folder folder = lookupNetFolder(id);
-        return AdminResourceUtil.buildNetFolder(folder, this, true);
+        return AdminResourceUtil.buildNetFolder(folder.getNetFolderConfig(), this, true);
     }
 
     @PUT
@@ -118,7 +119,7 @@ public class AdminNetFolderResource extends AbstractAdminResource {
     public NetFolder updateNetFolder(@PathParam("id") Long id, NetFolder netFolder) throws WriteFilesException, WriteEntryDataException {
         Folder folder = lookupNetFolder(id);
         netFolder.setId(id);
-        NetFolder existing = AdminResourceUtil.buildNetFolder(folder, this, false);
+        NetFolder existing = AdminResourceUtil.buildNetFolder(folder.getNetFolderConfig(), this, false);
         netFolder.replaceNullValues(existing);
         ResourceDriverConfig driverConfig = getResourceDriverModule().getResourceDriverConfig(netFolder.getServer().getId());
         return _modifyNetFolder(netFolder, driverConfig);
@@ -128,7 +129,7 @@ public class AdminNetFolderResource extends AbstractAdminResource {
     @Path("{id}")
     public void deleteNetFolderServer(@PathParam("id") Long id) {
         Folder folder = lookupNetFolder(id);
-        NetFolderHelper.deleteNetFolder(getFolderModule(), id, false);
+        NetFolderHelper.deleteNetFolder(getNetFolderModule(), id, false);
     }
 
 

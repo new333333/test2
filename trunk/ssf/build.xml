@@ -104,6 +104,7 @@
 		<ant dir="as-common" target="clean" inheritAll="false"/>
 		<ant dir="as-shared" target="clean" inheritAll="false"/>
 		<ant dir="tomcat" target="clean" inheritAll="false"/>
+		<ant dir="liquibase" target="clean" inheritAll="false"/>
 
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />
@@ -149,6 +150,7 @@
 		<ant dir="as-common" target="compile" inheritall="false"/>
 		<ant dir="as-shared" target="compile" inheritall="false"/>
 		<ant dir="tomcat" target="compile" inheritall="false"/>
+		<ant dir="liquibase" target="compile" inheritall="false"/>
 
 		<ant dir="main" target="compile-common" inheritall="false"/>
 
@@ -191,6 +193,7 @@
 		<ant dir="as-common" target="jar" inheritall="false"/>
 		<ant dir="as-shared" target="jar" inheritall="false"/>
 		<ant dir="tomcat" target="jar" inheritall="false"/>
+		<ant dir="liquibase" target="jar" inheritall="false"/>
 
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />
@@ -286,6 +289,7 @@
 		<ant dir="as-common" target="java2html" inheritAll="false"/>
 		<ant dir="as-shared" target="java2html" inheritAll="false"/>
 		<ant dir="tomcat" target="java2html" inheritAll="false"/>
+		<ant dir="liquibase" target="java2html" inheritAll="false"/>
 
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />
@@ -321,6 +325,7 @@
 		<ant dir="as-common" target="javadoc" inheritAll="false"/>
 		<ant dir="as-shared" target="javadoc" inheritAll="false"/>
 		<ant dir="tomcat" target="javadoc" inheritAll="false"/>
+		<ant dir="liquibase" target="javadoc" inheritAll="false"/>
 		
 		<if>
 			<equals arg1="${build.applets}" arg2="true" />

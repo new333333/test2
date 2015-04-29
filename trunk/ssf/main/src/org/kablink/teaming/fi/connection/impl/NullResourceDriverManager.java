@@ -143,4 +143,15 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 	public List<ResourceDriver> getAllowedResourceDrivers() {
 		return null;
 	}
+	
+	@Override
+	public ResourceDriver getDriver(Long driverId) throws FIException {
+		return null;
+	}
+
+	@Override
+	public ResourceDriver getStaticDriverByNameHash(Long nameHash)
+			throws FIException {
+		return null;
+	}
 }

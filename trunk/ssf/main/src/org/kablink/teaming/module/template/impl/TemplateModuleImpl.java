@@ -969,7 +969,10 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   boolean mirrored = cfg.isMirrored();
 	   if((EntityType.folder == parentBinder.getEntityType()) && parentBinder.isMirrored()) {
 		   mirrored = true;
-		   entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, parentBinder.getResourceDriverName());
+		   if(parentBinder.getNetFolderConfigId() != null)
+			   entryData.put(ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID, parentBinder.getNetFolderConfigId().toString());
+		   if(parentBinder.getResourceDriverName() != null)
+			   entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, parentBinder.getResourceDriverName());
 	   }
 	   entryData.put(ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.toString(mirrored));
 	   entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.toString(cfg.isUniqueTitles()));

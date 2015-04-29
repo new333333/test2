@@ -54,6 +54,7 @@ import org.kablink.teaming.module.keyshield.KeyShieldModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.mobiledevice.MobileDeviceModule;
+import org.kablink.teaming.module.netfolder.NetFolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
@@ -80,6 +81,7 @@ public abstract class SAbstractController extends AbstractController implements 
 	
 	private WorkspaceModule workspaceModule;
 	private FolderModule folderModule;
+	private NetFolderModule netFolderModule;
 	private TemplateModule templateModule;
 	private AdminModule adminModule;
 	private AuthenticationModule authenticationModule;
@@ -130,6 +132,16 @@ public abstract class SAbstractController extends AbstractController implements 
 	@Override
 	public FolderModule getFolderModule() {
 		return folderModule;
+	}
+	
+	@Override
+	public void setNetFolderModule(NetFolderModule netFolderModule) {
+		this.netFolderModule = netFolderModule;
+	}
+	
+	@Override
+	public NetFolderModule getNetFolderModule() {
+		return netFolderModule;
 	}
 	
     @Override

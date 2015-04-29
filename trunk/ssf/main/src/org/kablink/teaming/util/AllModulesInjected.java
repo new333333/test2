@@ -46,6 +46,7 @@ import org.kablink.teaming.module.keyshield.KeyShieldModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.mobiledevice.MobileDeviceModule;
+import org.kablink.teaming.module.netfolder.NetFolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
@@ -77,6 +78,10 @@ public interface AllModulesInjected {
 	void setFolderModule(FolderModule folderModule);
 
 	FolderModule getFolderModule();
+
+	void setNetFolderModule(NetFolderModule netFolderModule);
+	
+	NetFolderModule getNetFolderModule();
 
 	void setTemplateModule(TemplateModule templateModule);
 

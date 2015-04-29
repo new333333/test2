@@ -42,7 +42,7 @@ package org.kablink.teaming.dao.util;
  */
 public class NetFolderSelectSpec {
 	private String m_filter;
-	private String m_rootName;
+	private Long m_rootId;
 	private boolean m_includeHomeDirNetFolders;
 	private boolean m_includeNonHomeDirNetFolders;
 	private int m_startIndex;	// Return the net folders starting at this index.
@@ -54,7 +54,7 @@ public class NetFolderSelectSpec {
 	public NetFolderSelectSpec()
 	{
 		m_filter = null;
-		m_rootName = null;
+		m_rootId = null;
 		m_includeHomeDirNetFolders = false;
         m_includeNonHomeDirNetFolders = true;
 		m_startIndex = -1;
@@ -90,14 +90,6 @@ public class NetFolderSelectSpec {
 		m_pageSize = pageSize;
 	}
 	
-	/**
-	 * 
-	 */
-	public void setRootName( String rootName )
-	{
-		m_rootName = rootName;
-	}
-
 	/**
 	 * 
 	 */
@@ -137,16 +129,17 @@ public class NetFolderSelectSpec {
 	/**
 	 * 
 	 */
-	public String getRootName()
-	{
-		return m_rootName;
-	}
-	
-	/**
-	 * 
-	 */
 	public int getStartIndex()
 	{
 		return m_startIndex;
 	}
+	
+	public Long getRootId() {
+		return m_rootId;
+	}
+
+	public void setRootId(Long rootId) {
+		this.m_rootId = rootId;
+	}
+
 }

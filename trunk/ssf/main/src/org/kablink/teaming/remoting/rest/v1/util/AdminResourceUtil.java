@@ -37,12 +37,14 @@ import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
@@ -111,40 +113,40 @@ public class AdminResourceUtil {
         return model;
     }
 
-    public static NetFolder buildNetFolder(Folder folder, AllModulesInjected ami, boolean fullDetails) {
+    public static NetFolder buildNetFolder(NetFolderConfig nfc, AllModulesInjected ami, boolean fullDetails) {
         NetFolder model = new NetFolder();
-        model.setId(folder.getId());
-        model.setName(folder.getTitle());
-        model.setRelativePath(folder.getResourcePath());
+        model.setId(nfc.getTopFolderId());
+        model.setName(nfc.getName());
+        model.setRelativePath(nfc.getResourcePath());
 
-        ResourceDriverConfig driverConfig = NetFolderHelper.findNetFolderRootByName(ami.getAdminModule(), ami.getResourceDriverModule(), folder.getResourceDriverName());
+        ResourceDriverConfig driverConfig = NetFolderUtil.getNetFolderServerById(nfc.getNetFolderServerId());
         if (driverConfig!=null) {
             model.setServer(new LongIdLinkPair(driverConfig.getId(), AdminLinkUriUtil.getNetFolderServerLinkUri(driverConfig.getId())));
         }
-        model.setHomeDir(folder.isHomeDir());
+        model.setHomeDir(nfc.isHomeDir());
 
-        model.setIndexContent(folder.getIndexContent());
-        model.setInheritIndexContent(folder.getUseInheritedIndexContent());
+        model.setIndexContent(nfc.getIndexContent());
+        model.setInheritIndexContent(nfc.getUseInheritedIndexContent());
 
-        model.setJitsEnabled(folder.isJitsEnabled());
-        model.setJitsMaxACLAge(folder.getJitsMaxAge());
-        model.setJitsMaxAge(folder.getJitsAclMaxAge());
-
-        model.setInheritSyncSchedule(folder.getSyncScheduleOption() != Binder.SyncScheduleOption.useNetFolderSchedule);
+        model.setJitsEnabled(nfc.isJitsEnabled());
+        model.setJitsMaxACLAge(nfc.getJitsMaxAge());
+        model.setJitsMaxAge(nfc.getJitsAclMaxAge());
+        
+        model.setInheritSyncSchedule(nfc.getSyncScheduleOption() != NetFolderConfig.SyncScheduleOption.useNetFolderSchedule);
         if (fullDetails) {
-            ScheduleInfo scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( folder.getId() );
+            ScheduleInfo scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( nfc.getTopFolderId() );
             model.setSyncSchedule(buildSchedule(scheduleInfo));
-
+            Folder folder = ami.getFolderModule().getFolder(nfc.getTopFolderId());
             model.setAssignedRights(buildAssignedRights(NetFolderHelper.getNetFolderRights(ami, folder)));
         }
 
-        model.setAllowDesktopSync(folder.getAllowDesktopAppToSyncData());
-        model.setInheritClientSyncSettings(folder.getUseInheritedDesktopAppTriggerSetting());
-        model.setAllowClientInitiatedSync(folder.getAllowDesktopAppToTriggerInitialHomeFolderSync());
+        model.setAllowDesktopSync(nfc.getAllowDesktopAppToSyncData());
+        model.setInheritClientSyncSettings(nfc.getUseInheritedDesktopAppTriggerSetting());
+        model.setAllowClientInitiatedSync(nfc.getAllowDesktopAppToTriggerInitialHomeFolderSync());
 
-        model.setFullSyncDirOnly(folder.getFullSyncDirOnly());
+        model.setFullSyncDirOnly(nfc.getFullSyncDirOnly());
 
-        model.setLink(AdminLinkUriUtil.getNetFolderLinkUri(folder.getId()));
+        model.setLink(AdminLinkUriUtil.getNetFolderLinkUri(nfc.getTopFolderId()));
         model.addAdditionalLink("sync", model.getLink() + "/sync");
 
         return model;

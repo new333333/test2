@@ -56,9 +56,15 @@ import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.KeyShieldConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
+import org.kablink.teaming.domain.NetFolderConfig;
+import org.kablink.teaming.domain.NoNetFolderConfigByTheIdException;
+import org.kablink.teaming.domain.NoNetFolderConfigByTheNameException;
+import org.kablink.teaming.domain.NoNetFolderServerByTheIdException;
+import org.kablink.teaming.domain.NoNetFolderServerByTheNameException;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
@@ -317,4 +323,10 @@ public interface CoreDao {
 	public void nullifyUserPassword(Long userId);
 	
 	public int purgeShareItems(Long zoneId, Date purgeBeforeDate);
+	
+	public NetFolderConfig loadNetFolderConfig(Long netFolderConfigId) throws NoNetFolderConfigByTheIdException;
+	public NetFolderConfig loadNetFolderConfigByName(String netFolderName) throws NoNetFolderConfigByTheNameException;
+	
+	public  ResourceDriverConfig loadNetFolderServer(Long netFolderServerId) throws NoNetFolderServerByTheIdException;
+	public  ResourceDriverConfig loadNetFolderServerByName(String netFolderServerName) throws NoNetFolderServerByTheNameException;
 }

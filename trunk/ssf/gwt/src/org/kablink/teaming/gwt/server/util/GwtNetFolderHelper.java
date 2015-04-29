@@ -50,13 +50,14 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
 import org.kablink.teaming.domain.BinderState.FullSyncStatus;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.NetFolderConfig;
+import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
@@ -91,6 +92,7 @@ import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.folder.CannotDeleteSyncingNetFolderException;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -184,7 +186,7 @@ public class GwtNetFolderHelper
 		// Get the binder where all net folders are created
 		try
 		{
-			Binder binder;
+			NetFolderConfig nfc;
 			ScheduleInfo scheduleInfo = null;
 			SyncScheduleOption syncScheduleOption = null;
 			NetFolderDataSyncSettings dataSyncSettings;
@@ -209,10 +211,11 @@ public class GwtNetFolderHelper
 				}
 			}
 			
-			binder = NetFolderHelper.createNetFolder(
+			nfc = NetFolderHelper.createNetFolder(
 												ami.getTemplateModule(),
 												ami.getBinderModule(),
 												ami.getFolderModule(),
+												ami.getNetFolderModule(),
 												ami.getAdminModule(),
 												GwtServerHelper.getCurrentUser(),
 												netFolder.getName(),
@@ -229,10 +232,10 @@ public class GwtNetFolderHelper
 												dataSyncSettings.getInheritAllowDesktopAppToTriggerSync() );
 			
 			// Set the rights on the net folder
-			setNetFolderRights( ami, binder.getId(), netFolder.getRoles() );
+			setNetFolderRights( ami, nfc.getTopFolderId(), netFolder.getRoles() );
 			
 			// Set the data sync settings on the net folder
-			saveDataSyncSettings( ami, binder.getId(), dataSyncSettings );
+			saveDataSyncSettings( ami, nfc, dataSyncSettings );
 			
 			// Save the jits settings
 			{
@@ -242,8 +245,8 @@ public class GwtNetFolderHelper
 				if ( settings != null )
 				{
 					NetFolderHelper.saveJitsSettings(
-												ami.getBinderModule(),
-												binder.getId(),
+												ami.getNetFolderModule(),
+												nfc,
 												netFolder.getInheritJitsSettings(),
 												settings.getJitsEnabled(),
 												settings.getAclMaxAge(),
@@ -256,7 +259,7 @@ public class GwtNetFolderHelper
 			newNetFolder.setDisplayName( netFolder.getName() );
 			newNetFolder.setNetFolderRootName( netFolder.getNetFolderRootName() );
 			newNetFolder.setRelativePath( netFolder.getRelativePath() );
-			newNetFolder.setId( binder.getId() );
+			newNetFolder.setId( nfc.getTopFolderId() );
 			newNetFolder.setStatus( getNetFolderSyncStatus( newNetFolder.getId() ) );
 			newNetFolder.setSyncScheduleConfig( netFolder.getSyncScheduleConfig() );
 			newNetFolder.setRoles( netFolder.getRoles() );
@@ -401,7 +404,7 @@ public class GwtNetFolderHelper
 
 			try
 			{
-				NetFolderHelper.deleteNetFolder( ami.getFolderModule(), nextNetFolder.getId(), false );
+				NetFolderHelper.deleteNetFolder( ami.getNetFolderModule(), nextNetFolder.getId(), false );
 				result.setStatus( DeleteNetFolderStatus.SUCCESS, null );
 			}
 			catch ( CannotDeleteSyncingNetFolderException nfEx )
@@ -447,7 +450,7 @@ public class GwtNetFolderHelper
 				// Get a list of net folders that are referencing this net folder server.
 				selectSpec = new NetFolderSelectSpec();
 				selectSpec.setIncludeHomeDirNetFolders( true );
-				selectSpec.setRootName( nextRoot.getName() );
+				selectSpec.setRootId( nextRoot.getId() );
 				selectSpec.setFilter( null );
 				listOfNetFolders = getAllNetFolders( ami, selectSpec, true );
 				
@@ -484,26 +487,26 @@ public class GwtNetFolderHelper
 		NetFolderSelectSpec selectSpec,
 		boolean getMinimalInfo )
 	{
-		List<Folder> listOfFolders;
+		List<NetFolderConfig> listOfNetFolderConfig;
 		ArrayList<NetFolder> listOfNetFolders;
 		
 		listOfNetFolders = new ArrayList<NetFolder>();
 		
-		listOfFolders = NetFolderHelper.getAllNetFolders2(
+		listOfNetFolderConfig = NetFolderHelper.getAllNetFolders2(
 													ami.getBinderModule(),
 													ami.getWorkspaceModule(),
 													selectSpec );
 
-		if ( listOfFolders != null )
+		if ( listOfNetFolderConfig != null )
 		{
-			for ( Folder nextFolder :  listOfFolders )
+			for ( NetFolderConfig nextNetFolderConfig :  listOfNetFolderConfig )
 			{
 				NetFolder netFolder;
 				
 				if ( getMinimalInfo )
-					netFolder = GwtNetFolderHelper.getNetFolderWithMinimalInfo( ami, nextFolder );
+					netFolder = GwtNetFolderHelper.getNetFolderWithMinimalInfo( ami, nextNetFolderConfig );
 				else
-					netFolder = GwtNetFolderHelper.getNetFolder( ami, nextFolder.getId() );
+					netFolder = GwtNetFolderHelper.getNetFolder( ami, nextNetFolderConfig.getTopFolderId() );
 				
 				listOfNetFolders.add( netFolder );
 			}
@@ -619,16 +622,16 @@ public class GwtNetFolderHelper
 	 */
 	private static NetFolderDataSyncSettings getDataSyncSettings(
 		AllModulesInjected ami,
-		Binder binder )
+		NetFolderConfig nfc )
 	{
 		NetFolderDataSyncSettings settings;
 		
 		settings = new NetFolderDataSyncSettings();
 		
-		settings.setAllowDesktopAppToSyncData( binder.getAllowDesktopAppToSyncData() );
-		settings.setAllowMobileAppsToSyncData( binder.getAllowMobileAppsToSyncData() );
-		settings.setAllowDesktopAppToTriggerSync( binder.getAllowDesktopAppToTriggerInitialHomeFolderSync() );
-		settings.setInheritAllowDesktopAppToTriggerSync( binder.getUseInheritedDesktopAppTriggerSetting() );
+		settings.setAllowDesktopAppToSyncData( nfc.getAllowDesktopAppToSyncData() );
+		settings.setAllowMobileAppsToSyncData( nfc.getAllowMobileAppsToSyncData() );
+		settings.setAllowDesktopAppToTriggerSync( nfc.getAllowDesktopAppToTriggerInitialHomeFolderSync() );
+		settings.setInheritAllowDesktopAppToTriggerSync( nfc.getUseInheritedDesktopAppTriggerSetting() );
 		
 		return settings;
 	}
@@ -818,54 +821,56 @@ public class GwtNetFolderHelper
 	 * Return a NetFolder object for the given net folder id.  We won't get all of the information
 	 * about the net folder.  Just a basic set of info.
 	 */
-	public static NetFolder getNetFolderWithMinimalInfo(
+	private static NetFolder getNetFolderWithMinimalInfo(
 		AllModulesInjected ami,
-		Binder binder )
+		NetFolderConfig nfc )
 	{
 		NetFolder netFolder;
 		String name;
 		String displayName;
 		
 		netFolder = new NetFolder();
-		netFolder.setId( binder.getId() );
+		netFolder.setId( nfc.getTopFolderId() );
 		
-		netFolder.setNetFolderRootName( binder.getResourceDriverName() );
-		netFolder.setRelativePath( binder.getResourcePath() );
+		netFolder.setNetFolderRootName((nfc.getResourceDriver() != null)? nfc.getResourceDriver().getName() : null);
+		netFolder.setRelativePath( nfc.getResourcePath() );
 		netFolder.setStatus( getNetFolderSyncStatus( netFolder.getId() ) );
-		netFolder.setIsHomeDir( binder.isHomeDir() );
+		netFolder.setIsHomeDir( nfc.isHomeDir() );
 		
 		// Is this a home dir net folder?
-		name = binder.getTitle();
+		name = nfc.getName();
 		displayName = name;
-		if ( binder.isHomeDir() )
+		if ( nfc.isHomeDir() )
 		{
 			Principal owner;
 			
+			Binder nfb = NetFolderUtil.getNetFolderTopBinder( nfc );
+			
 			// Yes
-			owner = binder.getOwner();
+			owner = nfb.getOwner();
 			if ( owner != null )
 			{
 				String title;
 				
 				title = owner.getTitle();
 				if ( title != null && title.length() > 0 )
-					displayName = binder.getTitle() + " (" + title + ")";
+					displayName = nfb.getTitle() + " (" + title + ")";
 			}
 		}
 		
 		netFolder.setName( name );
 		netFolder.setDisplayName( displayName );
 		
-		netFolder.setIndexContent( binder.getIndexContent() );
-		netFolder.setInheritIndexContentSetting( binder.getUseInheritedIndexContent() );
-		netFolder.setInheritJitsSettings( binder.getUseInheritedJitsSettings() );
-		netFolder.setFullSyncDirOnly( binder.getFullSyncDirOnly() );
+		netFolder.setIndexContent( nfc.getIndexContent() );
+		netFolder.setInheritIndexContentSetting( nfc.getUseInheritedIndexContent() );
+		netFolder.setInheritJitsSettings( nfc.getUseInheritedJitsSettings() );
+		netFolder.setFullSyncDirOnly( nfc.getFullSyncDirOnly() );
 		
 		// Get the data sync settings.
 		{
 			NetFolderDataSyncSettings dataSyncSettings;
 
-			dataSyncSettings = getDataSyncSettings( ami, binder );
+			dataSyncSettings = getDataSyncSettings( ami, nfc );
 			netFolder.setDataSyncSettings( dataSyncSettings );
 		}
 
@@ -877,7 +882,7 @@ public class GwtNetFolderHelper
 	 */
 	public static NetFolder getNetFolder(
 		AllModulesInjected ami,
-		Long id )
+		Long netFolderId )
 	{
 		NetFolder netFolder;
 		Binder binder;
@@ -885,9 +890,11 @@ public class GwtNetFolderHelper
 		NetFolderDataSyncSettings dataSyncSettings;
 		GwtJitsNetFolderConfig jitsSettings;
 		
-		binder = ami.getBinderModule().getBinder( id );
+		binder = ami.getBinderModule().getBinder( netFolderId );
+		
+		NetFolderConfig nfc = binder.getNetFolderConfig();
 
-		netFolder = getNetFolderWithMinimalInfo( ami, binder );
+		netFolder = getNetFolderWithMinimalInfo( ami, nfc );
 		
 		// Get the net folder's sync schedule configuration.
 		{
@@ -1310,6 +1317,7 @@ public class GwtNetFolderHelper
 			NetFolderHelper.modifyNetFolder(
 										ami.getBinderModule(),
 										ami.getFolderModule(),
+										ami.getNetFolderModule(),
 										netFolder.getId(),
 										netFolder.getName(),
 										netFolder.getNetFolderRootName(),
@@ -1326,8 +1334,10 @@ public class GwtNetFolderHelper
 			if ( netFolder.getIsHomeDir() == false )
 				setNetFolderRights( ami, netFolder.getId(), netFolder.getRoles() );
 			
+			Binder binder = ami.getBinderModule().getBinder(netFolder.getId());
+
 			// Save the data sync settings.
-			saveDataSyncSettings( ami, netFolder.getId(), dataSyncSettings );
+			saveDataSyncSettings( ami, binder.getNetFolderConfig(), dataSyncSettings );
 			
 			// Save the jits settings
 			{
@@ -1337,8 +1347,8 @@ public class GwtNetFolderHelper
 				if ( settings != null )
 				{
 					NetFolderHelper.saveJitsSettings(
-												ami.getBinderModule(),
-												netFolder.getId(),
+												ami.getNetFolderModule(),
+												binder.getNetFolderConfig(),
 												netFolder.getInheritJitsSettings(),
 												settings.getJitsEnabled(),
 												settings.getAclMaxAge(),
@@ -1439,47 +1449,28 @@ public class GwtNetFolderHelper
 	@SuppressWarnings({ "unchecked", "unused", "rawtypes" })
 	private static void saveDataSyncSettings(
 		AllModulesInjected ami,
-		Long binderId,
+		NetFolderConfig nfc,
 		NetFolderDataSyncSettings settings )
 	{
-		if ( binderId != null && settings != null )
+		if ( nfc != null && settings != null )
 		{
-			Set deleteAtts;
-			Map fileMap = null;
-			MapInputData mid;
-			Map formData = null;
-			
-			deleteAtts = new HashSet();
-			fileMap = new HashMap();
-			formData = new HashMap();
-	   		formData.put(
-	   					ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA,
-	   					Boolean.toString( settings.getAllowDesktopAppToSyncData() ) );
-	   		
-			formData.put(
-						ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_TRIGGER_INITIAL_HOME_FOLDER_SYNC,
-						settings.getAllowDesktopAppToTriggerSync() );
-			formData.put(
-						ObjectKeys.FIELD_BINDER_USE_INHERITED_DESKTOP_APP_TRIGGER_SETTING,
-						settings.getInheritAllowDesktopAppToTriggerSync() );
+			nfc.setAllowDesktopAppToSyncData(settings.getAllowDesktopAppToSyncData());
+			nfc.setAllowDesktopAppToTriggerInitialHomeFolderSync(settings.getAllowDesktopAppToTriggerSync());
+			nfc.setUseInheritedDesktopAppTriggerSetting(settings.getInheritAllowDesktopAppToTriggerSync());
 			
 	   		if ( false )
 	   		{
 	   			// Not writing anything as per bug 816823.
-		   		formData.put(
-	   					ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA,
-	   					Boolean.toString( settings.getAllowMobileAppsToSyncData() ) );
+	   			nfc.setAllowMobileAppsToSyncData(settings.getAllowMobileAppsToSyncData());
 	   		}
-	   		
-			mid = new MapInputData( formData );
 
 			try
 			{
-				ami.getBinderModule().modifyBinder( binderId, mid, fileMap, deleteAtts, null );
+				ami.getNetFolderModule().modifyNetFolder(nfc);
 			}
 			catch ( Exception ex )
 			{
-				GwtLogHelper.error( m_logger, "In saveDataSyncSettings(), call to modifyBinder() failed. " + ex.toString() );
+				GwtLogHelper.error( m_logger, "In saveDataSyncSettings(), call to modifyNetFolder() failed. " + ex.toString() );
 			}
 		}
 	}
