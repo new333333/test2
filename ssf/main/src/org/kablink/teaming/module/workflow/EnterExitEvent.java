@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -111,22 +111,35 @@ import org.kablink.util.Html;
 import org.kablink.util.Validator;
 
 /**
- * Handle setting variables, starting/stoping threads and recording the state when
- * a new node is entered or cancelling timers when a node is exitted.
+ * Handle setting variables, starting/stopping threads and recording
+ * the state when a new node is entered or canceling timers when a node
+ * is exited.
+ * 
  * This is done as part on one action so we can maintain the ordering
- * specified in the definition and reduce the amount of synchronization needed between the
- * JBPM definition and the Sitescape definition.
+ * specified in the definition and reduce the amount of synchronization
+ * needed between the JBPM definition and the Vibe definition.
  * 
  * @author Janet McCann
  */
 @SuppressWarnings({"unchecked", "unused"})
 public class EnterExitEvent extends AbstractActionHandler {
 	  
-	//Indexing the entry is handled by the code that initiates a transition/nodeEnter/nodeExit
-	//Because mutiple states can be effected, we don't want to re-index
-	//each time.  Only need one at the end of the transaction
+	// Indexing the entry is handled by the code that initiates a
+	// transition/nodeEnter/nodeExit.
+	//
+	// Because multiple states can be effected, we don't want to
+	// re-index each time.  Only need one at the end of the
+	// transaction.
 
 	private static final long serialVersionUID = -5904672789676975912L;
+
+	/**
+	 * ?
+	 * 
+	 * @param executionContext
+	 * 
+	 * @throws Exception
+	 */
 	@Override
 	public void execute(ExecutionContext executionContext) throws Exception {
 		ContextInstance ctx = executionContext.getContextInstance();
@@ -721,10 +734,11 @@ public class EnterExitEvent extends AbstractActionHandler {
 		tMsg.append(writer.toString());
 		EmailUtil.putText(details, MailModule.TEXT_MSG, tMsg.toString());
 		
-		//Get the body text and turn it into html
+		// Get the body text and turn it into HTML.
 		TextToHtml textToHtml = new TextToHtml();
 		textToHtml.setBreakOnLines(true);
-		textToHtml.setStripHtml(false);
+		textToHtml.setEscapeHtml(false);
+		textToHtml.setStripHtml( false);
 		textToHtml.parseText(bodyText);
 		String bodyTextHtml = textToHtml.toString();
 
