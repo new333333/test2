@@ -5879,4 +5879,20 @@ public class BinderHelper {
     public static String getDefaultViewDisplayStyle() {
     	return DEFAULT_VDS;
     }
+    
+    /**
+     * Returns true if the given binder is a Vibe mirrored folder and
+     * false otherwise.
+     * 
+     * @param binder
+     * 
+     * @return
+     */
+    public static boolean isVibeMirroredFolder(Binder binder) {
+    	return (
+    		(null != binder)           &&
+    		(binder instanceof Folder) &&
+    		binder.isMirrored()        &&
+    		(!(binder.isAclExternallyControlled())));
+    }
 }
