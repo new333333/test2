@@ -46,17 +46,12 @@ import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.ReservedByAnotherUserException;
-import org.kablink.teaming.domain.TemplateBinder;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -772,9 +767,93 @@ public class FolderUtils {
     		return null;
     	*/
     }
-    
-	private static FolderModule getFolderModule() {
+
+    public static FileAttachment moveLibraryFile(FileAttachment fa, Folder destFolder, String name) throws WriteFilesException, WriteEntryDataException {
+        if (name==null) {
+            name = fa.getFileItem().getName();
+        }
+        String id = fa.getId();
+        DefinableEntity owningEntity = fa.getOwner().getEntity();
+        if(EntityType.folderEntry == owningEntity.getEntityType()) {
+            FolderEntry entry = (FolderEntry) owningEntity;
+            Long destFolderId = destFolder.getId();
+            if (entry.getParentFolder().getId().equals(destFolderId)) {
+                // The file is being moved within the same parent folder.
+                if (fa.getFileItem().getName().equals(name)) {
+                    // The target name is the same as the source name. Well, this means renaming to the same name.
+                    return fa;
+                } else { // Rename it in the current folder.
+                    // Make sure that the folder doesn't already contain a file with the new name.
+                    if (getFolderModule().getLibraryFolderEntryByFileName(entry.getParentFolder(), name) == null) {
+                        // Rename the file
+                        renameFile(entry, fa, name);
+                    } else {
+                        throw new FileExistsException(name);
+                    }
+                }
+            } else { // The file is being moved to another folder.
+                // Make sure that the destination is a library folder.
+                if (destFolder.isLibrary()) {
+                    // Make sure that the destination folder doesn't already contain a file with the new name.
+                    if (getFolderModule().getLibraryFolderEntryByFileName(destFolder, name) == null) {
+                        if (entry.getFileAttachmentsCount() > 1) {
+                            // This entry contains more than one file, therefore, moving the entire entry is no good
+                            // since it would result in multiple files being moved to the user's surprise.
+                            // On top of that, silently moving just one file out of this entry into another doesn't
+                            // seem as reasonable as the case with copy, because unlike partial copy, partial move alters
+                            // the state of the source entry. The fact that multiple files were attached to the same entry
+                            // (mostly likely through browser interface) implies that there are some logical relationship
+                            // between those files, which can not be shown/expressed through WebDAV interface.
+                            // For that reason, we will not allow partial move through WebDAV interface. If that's
+                            // indeed the intention of the user, the user will have to do that through browser interface
+                            // in the same way that WebDAV interface doesn't allow a way to attach multiple files to
+                            // the same entry.
+                            throw new IllegalArgumentException("Can not move file '" + id + "' because the enclosing entry represents more than one file");
+                        } else {
+                            // This is the only file contained in the entry, therefore, we can safely move the entire entry.
+                            HashMap options = new HashMap();
+                            options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
+                            entry = getFolderModule().moveEntry(entry.getParentBinder().getId(), entry.getId(), destFolderId, new String[]{name}, options);
+                            id = entry.getPrimaryFileAttachmentId();
+                        }
+                    } else {
+                        throw new FileExistsException(name);
+                    }
+                } else {
+                    // The destination folder is not a library folder.
+                    throw new IllegalArgumentException("Can not move file '" + id + "' because the destination folder '" + destFolder.getId() + "' is not a library folder");
+                }
+            }
+        }
+        return getFileModule().getFileAttachmentById(id);
+    }
+
+    private static void renameFile(FolderEntry entry, FileAttachment fa, String newName) throws WriteFilesException, WriteEntryDataException {
+        Map<FileAttachment,String> renamesTo = new HashMap<FileAttachment,String>();
+        renamesTo.put(fa, newName);
+
+        InputDataAccessor inputData = null;
+
+        if(fa.getFileItem().getName().equals(entry.getTitle())) {
+            // This entry's title is identical to the current name of the file.
+            // In this case, it's reasonable to change the title to match the new name as well.
+            Map data = new HashMap();
+            data.put("title", newName);
+            inputData = new MapInputData(data);
+        }
+        else {
+            inputData = new EmptyInputData();
+        }
+
+        getFolderModule().modifyEntry(entry.getParentBinder().getId(),
+                entry.getId(), inputData, null, null, renamesTo, null);
+    }
+
+    private static FolderModule getFolderModule() {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+    private static FileModule getFileModule() {
+		return (FileModule) SpringContextUtil.getBean("fileModule");
 	}
 	private static DefinitionModule getDefinitionModule() {
 		return (DefinitionModule) SpringContextUtil.getBean("definitionModule");
