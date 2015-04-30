@@ -113,6 +113,21 @@ public class RemoteAddrCondition extends Condition {
 	@Override
 	public boolean evaluate() {
 		String remoteAddr = ZoneContextHolder.getClientAddr();
+		if(remoteAddr == null) {
+			// 04302015 JK (bug #928582)
+			// Missing client address means that this request didn't come from the outside 
+			// through the regular app server interface. In other word, this request originated 
+			// from within (e.g. from a background job, etc.).
+			// In this case, evaluating against the non-existing client IP address is meaningless.
+			// At the same time, blindly rejecting an access will hinder system functions.
+			// Since there is no way for an end user to gain unauthorized access to the system by
+			// crafting and planting a background job into the product and that most (if not all)
+			// background jobs in the system run in system accounts any way (as opposed to in an
+			// individual user account), it should be safe to grant the user access to the system 
+			// if the request originates from within, as if the request was received from a client
+			// IP address acceptable to the system.
+			return true;
+		}
 		String[] includes = getIncludeAddressExpressions();
 		String[] excludes = getExcludeAddressExpressions();
 		boolean included = false;
