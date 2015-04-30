@@ -541,6 +541,21 @@ public class GwtDeleteHelper {
 							continue;
 						}
 						
+						// We never allow a top level mirrored folder
+						// (in Vibe) to have its mirrored source
+						// deleted. 
+						if (deleteMirroredSource && BinderHelper.isVibeMirroredFolder(binder)) {
+							// Note that we don't depend on the 'top
+							// folder' relationship here since in Vibe,
+							// it's possible to create a mirrored
+							// folder inside another folder.  In that
+							// case, we only want to delete the
+							// mirrored source if the container of the
+							// folder being deleted is a mirrored
+							// folder as well.
+							deleteMirroredSource = BinderHelper.isVibeMirroredFolder(binder.getParentBinder());
+						}
+						
 						// What type of binder is it?
 						if (BinderHelper.isBinderHomeFolder(binder)) {
 							// A Home folder!  We don't allow them to

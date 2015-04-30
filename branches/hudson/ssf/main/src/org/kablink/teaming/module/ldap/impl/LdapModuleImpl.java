@@ -5384,7 +5384,31 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						}
 
 						//map ldap id to sitescapeName
-						ssName = idToName((String)id.get());
+						ssName = null;
+						Object attrValue;
+						attrValue = id.get();
+						if ( attrValue != null )
+						{
+							if ( attrValue instanceof String )
+							{
+								ssName = idToName( (String) attrValue );
+							}
+							else if ( attrValue instanceof byte[] )
+							{
+								logger.info( "------> " + userIdAttribute + " is of type byte[]" );
+								try
+								{
+									String name;
+									
+									name = new String( (byte[]) attrValue, "UTF-8" );
+									ssName = idToName( name );
+								}
+								catch ( Exception ex )
+								{
+									logger.error( "Error converting user id from byte[] to String", ex );
+								}
+							}
+						}
 						if ( ssName == null )
 						{
 							logger.error( "Unable to read a value for: " + userIdAttribute + " from the ldap directory.  The value of this attribute is used to for the account name." );
@@ -6768,6 +6792,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			attrNames = ldapGuidAttributeName + " " + OBJECT_SID_ATTRIBUTE;
 			attrNames += " " + NDS_HOME_DIR_ATTRIBUTE;
 			attrNames += " " + NETWORK_ADDRESS_ATTRIBUTE;
+			attrNames += " " + "uid";
 			
 			if ( getLdapDirType( ldapGuidAttributeName ) == LdapDirType.EDIR )
 				attrNames += " " + HOME_DIR_ATTRIBUTE;

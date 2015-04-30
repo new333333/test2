@@ -140,6 +140,36 @@ public class WorkAreaOperation {
 		return Arrays.asList(EXTERNALLY_CONTROLLED_RIGHTS_DEFAULT);
 	}
 
+    // Set of rights that allow granting of shares.
+	public static final WorkAreaOperation[] ALLOW_SHARING_RIGHTS = new WorkAreaOperation[] {
+	    WorkAreaOperation.ALLOW_SHARING_INTERNAL,
+	    WorkAreaOperation.ALLOW_SHARING_EXTERNAL,
+	    WorkAreaOperation.ALLOW_SHARING_PUBLIC,
+	    WorkAreaOperation.ALLOW_SHARING_FORWARD,
+	    WorkAreaOperation.ALLOW_SHARING_PUBLIC_LINKS };
+	
+	/**
+	 * Returns a List<WorkAreaOperation> containing the various 'Allow'
+	 * sharing rights.
+	 * 
+	 * @return
+	 */
+	public static List<WorkAreaOperation> getAllowSharingRights() {
+		return Arrays.asList(ALLOW_SHARING_RIGHTS);
+	}
+
+	/**
+	 * Returns true if the given WorkAreaOperation is an 'Allow'
+	 * sharing right and false otherwise.
+	 * 
+	 * @param waOp
+	 * 
+	 * @return
+	 */
+	public static boolean isAllowSharingRight(WorkAreaOperation waOp) {
+		return (getAllowSharingRights().contains(waOp));
+	}
+
     private String name;
     private boolean zoneWide=false;
     private WorkAreaOperation(String name) {
