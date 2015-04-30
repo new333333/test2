@@ -794,7 +794,7 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
     	
     	if (destination.isLibrary()) {
     		//Check that there wouldn't be any duplicate file names because of this move
-    		BinderHelper.copyOrMoveEntryCheckUniqueFileNames(destination, entry);
+    		BinderHelper.copyOrMoveEntryCheckUniqueFileNames(destination, entry, toFileNames);
     	}
     	
     	//Remove this entry from the RSS index

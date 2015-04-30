@@ -298,7 +298,8 @@ public class FileResource extends AbstractFileResource {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties moveFile(@PathParam("id") String fileId,
-                                     @FormParam("folder_id") Long newFolderId) throws WriteFilesException, WriteEntryDataException {
+                                     @FormParam("folder_id") Long newFolderId,
+                                     @FormParam("name") String name) throws WriteFilesException, WriteEntryDataException {
         FileAttachment fa = findFileAttachment(fileId);
         if (newFolderId ==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'folder_id' form parameter");
@@ -320,8 +321,14 @@ public class FileResource extends AbstractFileResource {
         if (!(entity instanceof FolderEntry)) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Only files that are contained in an entry can be moved.");
         }
-        FolderEntry newEntry = getFolderModule().moveEntry(null, entity.getId(), newFolderId, null, null);
-        FileAttachment newAttachment = newEntry.getFileAttachment(fa.getFileItem().getName());
+
+        FileAttachment newAttachment;
+        if (binder.isLibrary()) {
+            newAttachment = FolderUtils.moveLibraryFile(fa, (Folder) binder, name);
+        } else {
+            FolderEntry newEntry = getFolderModule().moveEntry(null, entity.getId(), newFolderId, null, null);
+            newAttachment = newEntry.getFileAttachment(fa.getFileItem().getName());
+        }
 
         FileProperties fileProperties = ResourceUtil.buildFileProperties(newAttachment);
         if (finalParentId!=null) {

@@ -5853,7 +5853,12 @@ public class BinderHelper {
  	   }
     }
     
-    public static void copyOrMoveEntryCheckUniqueFileNames(Binder destination, Entry entry) 
+    public static void copyOrMoveEntryCheckUniqueFileNames(Binder destination, Entry entry)
+    		throws TitleException {
+        copyOrMoveEntryCheckUniqueFileNames(destination, entry, null);
+    }
+
+    public static void copyOrMoveEntryCheckUniqueFileNames(Binder destination, Entry entry, String [] toFileNames)
     		throws TitleException {
     	//get Entry Children
     	if (entry instanceof FolderEntry) {
@@ -5863,11 +5868,16 @@ public class BinderHelper {
        		for (Iterator iter=entries.iterator(); iter.hasNext();) {
        			FolderEntry e = (FolderEntry)iter.next();
        	    	Collection<FileAttachment> atts = entry.getFileAttachments();
+                int i=0;
        	    	for (FileAttachment att : atts) {
        	    		String fileName = att.getFileItem().getName();
+                    if (e.getId()==entry.getId() && toFileNames!=null) {
+                        fileName = toFileNames[i];
+                    }
 	       			if (getCoreDao().isFileNameRegistered(destination.getId(), fileName)) {
 	       				throw new TitleException(fileName);
 	       			}
+                    i++;
        	    	}
        		}
     	}
