@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,39 +40,45 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.SingletonViolationException;
+
 import org.kablink.util.Html;
-import org.kablink.util.Validator;
 
 /**
+ * ?
+ * 
  * @author Peter Hurley
- *
  */
 public class TextToHtml {
-
 	protected static Log logger = LogFactory.getLog(NLT.class);
-	private static final String PATTERN_LINE = "([^\\n]*)\\n(.*)";
-	private static final String PATTERN_INDENT = "((?:\\s*|\\s*[>]*\\s+))([^\\s]?.*)";
-	private static final String PATTERN_LIST_LINE = "^\\s*(?:o |- |\\* |[0-9]+\\)|[0-9]+\\.|[0-9]+ |>>).*$";
+	
+	private static final String PATTERN_LINE       = "([^\\n]*)\\n(.*)";
+	private static final String PATTERN_INDENT     = "((?:\\s*|\\s*[>]*\\s+))([^\\s]?.*)";
+	private static final String PATTERN_LIST_LINE  = "^\\s*(?:o |- |\\* |[0-9]+\\)|[0-9]+\\.|[0-9]+ |>>).*$";
 	private static final String PATTERN_LIST_LINE2 = "^\\s*[^\\s]+:.*$";
-	private static final String PATTERN_URL = "(?:^|[^\"'])\\s*(https*://[^ ]+)";
-	private static final String PATTERN_URL2 = "(https*://[^ ]+)";
-	private static final int  INDENTATION_FACTOR = 4;  // Translation between spaces and "px". i.e., 4px = 1 space
+	private static final String PATTERN_URL        = "(?:^|[^\"'])\\s*(https*://[^ ]+)";
+	private static final String PATTERN_URL2       = "(https*://[^ ]+)";
+	private static final int    INDENTATION_FACTOR = 4;  // Translation between spaces and "px". i.e., 4px = 1 space.
 	
-	private List<Para> paraList = new ArrayList<Para>();
-	private List<String> lines = new ArrayList<String>();
-	private Boolean breakOnLines = false;
-	private Boolean stripHtml = false;
-	
+	private Boolean			breakOnLines = false;
+	private Boolean			escapeHtml   = true;
+	private Boolean			stripHtml    = false;
+	private List<Para>		paraList     = new ArrayList<Para>();
+	private List<String>	lines        = new ArrayList<String>();
+
+	/**
+	 * ?
+	 * 
+	 * @param inputText
+	 */
 	public void parseText(String inputText) {
-		
-		//Break the text into a list of lines
+		// Break the text into a list of lines.
 		String s = inputText;
-		//Make sure there aren't any "<" or ">" chars that might turn into bogus HTML
-		s = StringEscapeUtils.escapeHtml(s);
-		if (stripHtml) {
-			s = Html.stripHtml(s);
-		}
+		
+		// Make sure there aren't any "<" or ">" chars that might turn
+		// into bogus HTML.
+		if (escapeHtml) s = StringEscapeUtils.escapeHtml(s);
+		if (stripHtml)  s = Html.stripHtml(              s);
+		
 		Pattern pLines = Pattern.compile(PATTERN_LINE, Pattern.DOTALL);
 		Matcher mLines = pLines.matcher(s);
 		while (mLines.find()) {
@@ -116,17 +122,39 @@ public class TextToHtml {
 				
 	}
 	
-	//Strip html from the text
+	/**
+	 * Escape HTML in the text.
+	 * 
+	 * @param escapeHtml
+	 */
+	public void setEscapeHtml(Boolean escapeHtml) {
+		this.escapeHtml = escapeHtml;
+	}
+	
+	/**
+	 * Strip HTML from the text.
+	 * 
+	 * @param stripHtml
+	 */
 	public void setStripHtml(Boolean stripHtml) {
 		this.stripHtml = stripHtml;
 	}
 	
-	//Break on lines
+	/**
+	 * Break on lines.
+	 * 
+	 * @param breakOnLines
+	 */
 	public void setBreakOnLines(Boolean breakOnLines) {
 		this.breakOnLines = breakOnLines;
 	}
 	
-	//Return the html string
+	/**
+	 * Return the HTML string.
+	 * 
+	 * @return
+	 */
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		for (Para p : paraList) {
@@ -135,9 +163,11 @@ public class TextToHtml {
 		return buf.toString();
 	}
 	
-	//Look at a para to see if is a block (or multiple blocks) of lines. 
-	//Capture indentation level.
-	//Strip leading spaces (or >>>)
+	/*
+	 * Look at a paragraph to see if is a block (or multiple blocks) of
+	 * lines.  Capture indentation level.  Strip leading spaces
+	 * (or >>>).
+	 */
 	protected List<Para> scanForBlocks(Para p) {
 		List<Para> results = new ArrayList<Para>();
 		List<String> lines = p.getLines();
@@ -169,7 +199,9 @@ public class TextToHtml {
 		return results;
 	}
 	
-	//Replace all http:// links with <a>...</a>
+	/*
+	 * Replace all http:// links with <a>...</a>
+	 */
 	protected void scanForUrls(Para p) {
 		List<String> lines = p.getLines();
 		if (!lines.isEmpty()) {
@@ -206,26 +238,35 @@ public class TextToHtml {
 		}
 	}
 	
-	//A paragraph is a set of lines. It may be a block or a list. It is put within <div>...</div>
+	/*
+	 * A paragraph is a set of lines. It may be a block or a list. It
+	 * is put within <div>...</div>
+	 */
 	protected class Para {
-		private List<String> lines;
-		private int indentation;
+		private int				indentation;
+		private List<String>	lines;
 		
 		public Para() {
 			lines = new ArrayList<String>();
 		}
+		
 		public Para(List<String> lineList) {
 			lines = lineList;
 		}
+		
 		public void addLine(String line) {
 			lines.add(line);
 		}
+		
 		public List<String> getLines() {
 			return lines;
 		}
+		
 		public void setIndentation(int i) {
 			indentation = i;
 		}
+		
+		@Override
 		public String toString() {
 			boolean firstLine = true;
 			StringBuffer buf = new StringBuffer();
@@ -247,7 +288,9 @@ public class TextToHtml {
 		}
 	}
 
-	//Get the indentation
+	/*
+	 * Get the indentation
+	 */
 	private String getIndentationPx(int i) {
 		return String.valueOf(i * INDENTATION_FACTOR) + "px";
 	}
