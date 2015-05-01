@@ -741,17 +741,27 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
 	
 	public void setResourceDriverName(String resourceDriverName) {
-		ResourceDriver driver = ResourceDriverManagerUtil.findResourceDriver(resourceDriverName);
-		if(ResourceDriverManagerUtil.isStaticallyCreated(driver)) {
-			// The resource driver is for legacy mirrored folders. Store hash value of the driver name in the database.
-			this.legacyMirroredDriverNameHash = ResourceDriverManagerUtil.toStorageHashAsLong(resourceDriverName);
-			// net folder config id is never used for legacy mirrored folder.
+		if(resourceDriverName == null) {
+			// It must be that this is not a mirrored folder.
+			this.legacyMirroredDriverNameHash = null;
 			this.netFolderConfigId = null;
 		}
 		else {
-			// For Filr drivers, driver name or its hash value is not stored with binders.
-			this.legacyMirroredDriverNameHash = null;
-			// Net folder config ID is set by the caller via a separate call. So do NOT nullify it here!
+			// It must be that this is a mirrored folder.
+			ResourceDriver driver = ResourceDriverManagerUtil.findResourceDriver(resourceDriverName);
+			if(ResourceDriverManagerUtil.isStaticallyCreated(driver)) {
+				// The resource driver is for legacy mirrored folders. Store hash value of the driver name in the database.
+				this.legacyMirroredDriverNameHash = ResourceDriverManagerUtil.toStorageHashAsLong(resourceDriverName);
+				// net folder config id is never used for legacy mirrored folder.
+				this.netFolderConfigId = null;
+			}
+			else {
+				// For Filr drivers, driver name or its hash value is not stored with binders.
+				this.legacyMirroredDriverNameHash = null;
+				// Net folder config ID is set by the caller via a separate call. Since we don't know when 
+				// the caller would make that call (i.e. before or after this call), do NOT nullify its
+				// effect by setting the variable to null here!
+			}
 		}
 	}
 
