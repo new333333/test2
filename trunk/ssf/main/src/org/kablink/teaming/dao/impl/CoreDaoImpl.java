@@ -2736,8 +2736,11 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		            new HibernateCallback() {
 		                @Override
 						public Object doInHibernate(Session session) throws HibernateException {
+		                	Conjunction conj = Restrictions.conjunction();
+		                	conj.add(Restrictions.isNull("netFolderConfigId"))
+		                	.add(Restrictions.isNull("legacyMirroredDriverNameHash"));
 		                 	return session.createCriteria(Binder.class)
-		                 		.add(Restrictions.isNull("resourceDriverName"))
+		                 		.add(conj)
 	                 			.setProjection(Projections.projectionList()
 								.add(Projections.min("creation.date"))
 								.add(Projections.max("creation.date")))
