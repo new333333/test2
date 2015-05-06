@@ -2127,7 +2127,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 ((DefinableEntity)obj).setParentBinder(parent);
             } else if (obj instanceof DefinableEntityBrief && allParentIds.contains(((DefinableEntityBrief)obj).getParentBinder().getId())) {
                 ((DefinableEntityBrief)obj).setParentBinder(parent);
-            } else if (obj instanceof BinderChange) {
+            } else if (obj instanceof org.kablink.teaming.rest.v1.model.BinderChange) {
                 org.kablink.teaming.rest.v1.model.BinderChange binderChange = (org.kablink.teaming.rest.v1.model.BinderChange) obj;
                 if (allParentIds.contains(binderChange.getId()) &&
                         BinderChange.Action.modify.name().equals(binderChange.getAction())) {
