@@ -95,7 +95,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     //wikis which link to titles
     protected boolean uniqueTitles=false;
     protected boolean mirrored = false;
-    // Storage field for path information.
+    // Relative path information.
     // For net folders, this is a path relative to the path information specified
     // in the net folder configuration object (rather than to the path information 
     // specified in the net folder server object)
@@ -715,7 +715,11 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	 */
 	public String getResourcePath() {
 		if(fullResourcePath == null) {
-			pathFromStorageToFull();
+			// Either full resource path hasn't been constructed yet or it was impossible to construct it.
+			if(getRelRscPath() != null) {
+				// The relative path has a value. Construct a full path from it.
+				pathFromRelativeToFull();
+			}
 		}
 		return fullResourcePath;
 	}
@@ -1132,15 +1136,21 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		return NetFolderUtil.getNetFolderConfig(netFolderConfigId);
 	}
 	
+	// Relative path used to construct full path used by application.
+	// Empty string denotes empty path.
 	private void setRelRscPath(String relRscPath) {
 		this.relRscPath = relRscPath;
 	}
     
+	// Relative path used to construct full path used by application.
+	// Empty string denotes empty path.
 	private String getRelRscPath() {
 		return relRscPath;
 	}
 	
 	// For use by Hibernate only
+	// The value passed to this method is the value loaded from the database
+	// where an empty path is represented as "/".
 	private void setRelRscPathHibernate(String relRscPathHibernate) {
 		if("/".equals(relRscPathHibernate))
 			relRscPathHibernate = "";
@@ -1149,9 +1159,11 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	}
     
 	// For use by Hibernate only
+	// The value returned from this method is what gets stored in the database
+	// where an empty path is represented as "/".
 	private String getRelRscPathHibernate() {
 		if(fullResourcePath != null) {
-			pathFromFullToStorage();
+			pathFromFullToRelative();
 		}
 		String relRscPathHibernate = getRelRscPath();
 		if("".equals(relRscPathHibernate)) {
@@ -1165,22 +1177,23 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		return relRscPathHibernate;
 	}
 	
-	private void pathFromStorageToFull() {
+	private void pathFromRelativeToFull() {
 		NetFolderConfig nfc = this.getNetFolderConfig();
 		if(nfc != null) { 
-			// This is net folder.
+			// This is net folder. Build a full path from the relative one.
 			fullResourcePath =  nfc.buildResourcePathRelativeToNetFolderServer(getRelRscPath());
 		}
 		else {
-			// This is either a regular (non-mirrored) binder or a legacy mirrored folder.
+			// This is either a regular (non-mirrored) binder or a legacy mirrored folder
+			// for which there's no difference between full and relative.
 			fullResourcePath =  getRelRscPath();
 		}
 	}
 	
-	private void pathFromFullToStorage() {
+	private void pathFromFullToRelative() {
 		NetFolderConfig nfc = this.getNetFolderConfig();
 		if(nfc != null) {
-			// This is a net folder
+			// This is a net folder. Get the path relative to the net folder config.
 			if(fullResourcePath.equals("")) {
 				if("".equals(nfc.getResourcePath()))
 					this.setRelRscPath("");
@@ -1207,7 +1220,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 			}
 		}
 		else {
-			// This is a legacy mirrored folder or a regular non-mirrored folder.
+			// This is a legacy mirrored folder or a regular non-mirrored folder
+			// for which there is no difference between full and relative.
 			this.setRelRscPath(fullResourcePath);
 		}
 	}
