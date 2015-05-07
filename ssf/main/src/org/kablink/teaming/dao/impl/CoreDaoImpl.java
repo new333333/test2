@@ -563,10 +563,11 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			   			session.createQuery("DELETE org.kablink.teaming.domain.BinderState where binderId=:binderId")
 		   				.setLong("binderId", binder.getId())
 		   				.executeUpdate();
-			   			//delete associated net folder config
+			   			//delete associated net folder config ONLY IF this binder represents a net folder top.
 			   			if(binder.getNetFolderConfigId() != null) {
-				   			session.createQuery("DELETE org.kablink.teaming.domain.NetFolderConfig where id=:netFolderConfigId")
+				   			session.createQuery("DELETE org.kablink.teaming.domain.NetFolderConfig where id=:netFolderConfigId and topFolderId=:topFolderId")
 			   				.setLong("netFolderConfigId", binder.getNetFolderConfigId())
+			   				.setLong("topFolderId", binder.getId())
 			   				.executeUpdate();			   				
 			   			}
 	

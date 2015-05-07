@@ -599,9 +599,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    	binder.setResourceDriverName(parent.getResourceDriverName());
 		    	binder.setNetFolderConfigId(parent.getNetFolderConfigId());
 	    	}
-						
-	    	if(binder.getResourceDriverName() != null) {
-				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
+	    	
+	    	ResourceDriver driver = binder.getResourceDriver();
+	    	if(driver != null) {
 				ResourceSession session = null;
 				try {
 					if(binder.getResourcePath() == null && parent.getResourcePath() != null) {
