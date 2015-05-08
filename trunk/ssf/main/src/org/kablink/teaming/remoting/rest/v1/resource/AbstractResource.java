@@ -2019,19 +2019,23 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Set<FolderEntry> folderEntryByTitle = folderModule.getFolderEntryByTitle(parentFolder.getId(), name);
         Set<Long> ids = new HashSet<Long>();
         for (FolderEntry entry : folderEntryByTitle) {
-            if (addAsFile) {
-                results.append(ResourceUtil.buildFileProperties(entry.getPrimaryFileAttachment()));
-            } else {
-                results.append(ResourceUtil.buildFolderEntryBrief(entry));
+            if (!entry.isPreDeleted()) {
+                if (addAsFile) {
+                    results.append(ResourceUtil.buildFileProperties(entry.getPrimaryFileAttachment()));
+                } else {
+                    results.append(ResourceUtil.buildFolderEntryBrief(entry));
+                }
+                ids.add(entry.getId());
             }
-            ids.add(entry.getId());
         }
         FolderEntry entry = folderModule.getLibraryFolderEntryByFileName(parentFolder, name);
         if (entry!=null && !ids.contains(entry.getId())) {
-            if (addAsFile) {
-                results.append(ResourceUtil.buildFileProperties(entry.getPrimaryFileAttachment()));
-            } else {
-                results.append(ResourceUtil.buildFolderEntryBrief(entry));
+            if (!entry.isPreDeleted()) {
+                if (addAsFile) {
+                    results.append(ResourceUtil.buildFileProperties(entry.getPrimaryFileAttachment()));
+                } else {
+                    results.append(ResourceUtil.buildFolderEntryBrief(entry));
+                }
             }
         }
     }
