@@ -55,7 +55,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -75,8 +74,10 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
@@ -92,7 +93,6 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.HttpHeaders;
-
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -104,10 +104,12 @@ public final class MiscUtil {
 	protected static Log m_logger = LogFactory.getLog(MiscUtil.class);
 	
 	// Initialized by the first call to get...Module();
+	private static BinderModule		m_binderModule;		//
 	private static AdminModule		m_adminModule;		//
 	private static CoreDao			m_coreDao;			//
 	private static FolderModule		m_folderModule;		//
 	private static ProfileModule	m_profileModule;	//
+	private static WorkspaceModule	m_wsModule;			//
 	private static ZoneModule		m_zoneModule;		//
 	
 	// The following are used as the return values for the various
@@ -1579,6 +1581,18 @@ public final class MiscUtil {
 	}
 
 	/**
+	 * Returns an instance of a BinderModule.
+	 * 
+	 * @return
+	 */
+	public static BinderModule getBinderModule() {
+		if (null == m_binderModule) {
+			m_binderModule = ((BinderModule) SpringContextUtil.getBean("binderModule"));
+		}
+		return m_binderModule;
+	}
+
+	/**
 	 * Returns an instance of a CoreDao.
 	 * 
 	 * @return
@@ -1612,6 +1626,18 @@ public final class MiscUtil {
 			m_profileModule = ((ProfileModule) SpringContextUtil.getBean("profileModule"));
 		}
 		return m_profileModule;
+	}
+
+	/**
+	 * Returns an instance of a WorkspaceModule.
+	 * 
+	 * @return
+	 */
+	public static WorkspaceModule getWorkspaceModule() {
+		if (null == m_wsModule) {
+			m_wsModule = ((WorkspaceModule) SpringContextUtil.getBean("workspaceModule"));
+		}
+		return m_wsModule;
 	}
 
 	/**
