@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,15 +32,9 @@
  */
 package org.kablink.teaming.module.zone.impl;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.Field;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,30 +44,20 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.hibernate.HibernateException;
-import org.hibernate.ReplicationMode;
-import org.hibernate.StatelessSession;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
-import org.kablink.teaming.dao.StatelessSessionTemplate;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.ApplicationGroup;
-import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.DeletedBinder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
@@ -82,7 +66,6 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
-import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -104,11 +87,8 @@ import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.template.TemplateModule;
-import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneException;
 import org.kablink.teaming.module.zone.ZoneModule;
-import org.kablink.teaming.runas.RunasCallback;
-import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
@@ -118,18 +98,15 @@ import org.kablink.teaming.security.impl.AccessControlManagerImpl;
 import org.kablink.teaming.util.AuditTrailMigrationUtil;
 import org.kablink.teaming.util.AuditTrailMigrationUtil.MigrationStatus;
 import org.kablink.teaming.util.FileStore;
+import org.kablink.teaming.util.LandingPageHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.LocaleUtils;
-import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
-import org.kablink.teaming.web.util.ExportException;
-import org.kablink.teaming.web.util.ExportHelper;
-import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
@@ -337,57 +314,23 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		DefinitionCache.clear();
  	}
  	
+	@Override
 	public void initZonesPostProcessing() {
 		boolean closeSession = false;
 		if (!SessionUtil.sessionActive()) {
 			SessionUtil.sessionStartup();	
 			closeSession = true;
 		}
+		
 		try {
-			final List<Workspace> companies = getTopWorkspacesFromEachZone();
-			final String zoneName = SZoneConfig.getDefaultZoneName();
-
-			if (companies.size() > 0) {
- 				// take care of upgrade need if any
-        		for (int i=0; i<companies.size(); ++i) {
-        			final Workspace zone = (Workspace)companies.get(i);
-        			try {
-	    				getTransactionTemplate().execute(new TransactionCallback() {
-	    					@Override
-							public Object doInTransaction(TransactionStatus status) {
-	    						
-	    						//See if there are any workspaces to be imported
-	    						if ( SPropsUtil.getBoolean( "import.workspaces", false ) ) {
-	    			                RunasTemplate.runasAdmin(
-	    			                		new RunasCallback() {
-	    			                            @Override
-	    			                            public Object doAs() {
-					    							importWorkspaces();
-
-					    							// At this point we must flush out any indexing changes that might have occurred
-					    							// before clearing the context.
-					    							IndexSynchronizationManager.applyChanges();
-					    							
-					    					 		RequestContextHolder.clear();
-					    					 		
-					    					 		DefinitionCache.clear();
-					    							return null;
-	    			                            }
-	    			                        },
-	    			                        zone.getName()
-	    			                );
-
-	    						}
-	    						return null;
-	    					}
-	    				});
-        			} catch(Exception e) {
-        				logger.warn("Failed to do zone upgrade post processing " + zone.getZoneId(), e);
-        			}       			
-        		}        		
- 			}
-		} finally {
-			if (closeSession) SessionUtil.sessionStop();
+			LandingPageHelper.importVibeDefaultLandingPages(
+				getTopWorkspacesFromEachZone(),
+				getTransactionTemplate());
+		}
+		finally {
+			if (closeSession) {
+				SessionUtil.sessionStop();
+			}
 		}
 	}
  	
@@ -890,121 +833,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			zoneConfig.setUpgradeVersion(ZoneConfig.ZONE_LATEST_VERSION);
 		}
  	}
- 	
- 	/**
- 	 * 
- 	 */
- 	private void importWorkspaces()
- 	{
- 		File zipFile;
- 		String fileName;
- 		
- 		fileName = SPropsUtil.getString( "import.workspace.name" );
- 		if ( fileName == null || fileName.length() == 0 )
- 		{
- 			logger.info( "In importWorkspace(), file name is empty" );
- 			return;
- 		}
- 		
- 		logger.info( "In importWorkspace(), about to import file: " + fileName );
- 		zipFile = new File( fileName );
- 		if ( zipFile.exists() )
- 		{
- 	 		FileInputStream fIn;
- 	 		BufferedInputStream b_fIn;
- 	 		Map reportMap;
- 			
- 	 		try
- 	 		{
- 	 			fIn = new FileInputStream( fileName );
- 	 		}
- 	 		catch ( FileNotFoundException fnfEx )
- 	 		{
- 	 			logger.info( "could not find zip file!!!" );
- 	 			return;
- 	 		}
- 	 		
- 	 		b_fIn = new BufferedInputStream( fIn );
- 	 		reportMap = new HashMap();
 
- 	 		reportMap.put( ExportHelper.workspaces, new Integer(0));
- 	 		reportMap.put( ExportHelper.folders, new Integer(0));
- 	 		reportMap.put( ExportHelper.entries, new Integer(0));
- 	 		reportMap.put( ExportHelper.files, new Integer(0));
- 	 		reportMap.put( ExportHelper.errors, new Integer(0));
- 	 		reportMap.put( ExportHelper.errorList, new ArrayList());
- 	 		try
- 	 		{
- 	 			Binder topBinder;
- 	 			List childBinders;
- 	 			WorkspaceModule wsModule;
- 	 			
- 				wsModule = (WorkspaceModule) SpringContextUtil.getBean( "workspaceModule" );
- 	 			topBinder = wsModule.getTopWorkspace();
- 	 			childBinders = topBinder.getBinders();
- 	 			if ( childBinders != null )
- 	 			{
- 	 				Iterator iter;
- 	 				
- 	 				iter = childBinders.iterator();
- 	 				while ( iter.hasNext() )
- 	 				{
- 	 					Binder nextBinder;
- 	 					String internalId;
- 	 					
- 	 					nextBinder = (Binder) iter.next();
- 	 					internalId = nextBinder.getInternalId();
- 	 					if ( internalId.equalsIgnoreCase( ObjectKeys.GLOBAL_ROOT_INTERNALID ) )
- 	 					{
- 	 						Long binderId = null;
- 	 						
- 	 						logger.info( "about to call ExportHelper.importZip()" );
- 	 		 	 			binderId = ExportHelper.importZip( nextBinder.getId(), fIn, null, reportMap );
- 	 		 	 			
- 	 		 	 			// Set the new workspace as the default landing page
- 	 		 	 			if ( binderId != null )
- 	 		 	 			{
- 	 		 	 				//At least one binder was created. Find the top binder created and index it
- 	 		 	 				Binder newBinder = binderModule.getBinder(binderId);
- 	 		 	 				while (newBinder.getParentBinder() != null && nextBinder.getId() != newBinder.getParentBinder().getId()) {
- 	 		 	 					newBinder = newBinder.getParentBinder();
- 	 		 	 				}
- 	 		 	 				if (newBinder.getParentBinder() != null && nextBinder.getId() == newBinder.getParentBinder().getId()) {
- 	 		 	 					 binderModule.indexBinder(newBinder.getId(), true);
- 	 		 	 				}
-	 	 		 	 			if ( SPropsUtil.getBoolean( "import.set.homepage", false ) )
-	 	 		 	 			{
-		 	 		 	 			HomePageConfig homePageConfig;
-		 	 		 				AdminModule adminModule;
-	
-		 	 		 				adminModule = getAdminModule();
-		 	 		 				
-		 	 		 				homePageConfig = new HomePageConfig();
-		 	 		 				homePageConfig.setDefaultHomePageId( binderId );
-		 	 		 				homePageConfig.setDefaultGuestHomePageId( null );
-		 	 		 				adminModule.setHomePageConfig( homePageConfig );
-	 	 		 	 			}
- 	 		 	 			}
- 	 		 	 			break;
- 	 					}
- 	 				}
- 	 			}
- 	 		}
- 	 		catch( IOException ioEx )
- 			{
- 				logger.info( "ExportHelper.importZip() threw an io exception.", ioEx );
- 			}
- 			catch( ExportException ex )
- 			{
- 				logger.info( "ExportHelper.importZip() threw an export exception.", ex );
- 			}
- 			catch( Exception e )
- 			{
- 				logger.info( "ExportHelper.importZip() threw an exception.", e );
- 			}
- 		}
- 	}
- 	
+ 	/*
+ 	 */
  	private void correctFilrRoles(ZoneConfig zoneConfig) {
 		Function function;
 		List<Function> functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
