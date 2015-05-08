@@ -1348,11 +1348,18 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	}
 	
     public boolean isHomeDir() {
+    	// This check applies ONLY to the home folder top, not sub-folders in them!
+    	// In other word, this method should return true ONLY for the top of a home folder and nothing else.
     	NetFolderConfig nf = this.getNetFolderConfig();
-    	if(nf != null)
-    		return nf.isHomeDir();
-    	else
-    		return false;	
+    	if(nf != null) {
+    		if(nf.getTopFolderId().equals(getId()))
+    			return nf.isHomeDir();
+    		else
+    			return false;
+    	}
+    	else {
+    		return false;
+    	}
     }
     
     public boolean getAllowDesktopAppToTriggerInitialHomeFolderSync()
