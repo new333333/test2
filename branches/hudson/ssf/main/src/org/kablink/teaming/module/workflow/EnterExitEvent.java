@@ -724,7 +724,8 @@ public class EnterExitEvent extends AbstractActionHandler {
 		//Get the body text and turn it into html
 		TextToHtml textToHtml = new TextToHtml();
 		textToHtml.setBreakOnLines(true);
-		textToHtml.setStripHtml(false);
+		textToHtml.setEscapeHtml(false);
+		textToHtml.setStripHtml( false);
 		textToHtml.parseText(bodyText);
 		String bodyTextHtml = textToHtml.toString();
 

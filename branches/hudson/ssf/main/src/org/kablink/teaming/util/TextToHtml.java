@@ -40,9 +40,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.SingletonViolationException;
 import org.kablink.util.Html;
-import org.kablink.util.Validator;
 
 /**
  * @author Peter Hurley
@@ -62,6 +60,7 @@ public class TextToHtml {
 	private List<Para> paraList = new ArrayList<Para>();
 	private List<String> lines = new ArrayList<String>();
 	private Boolean breakOnLines = false;
+	private Boolean escapeHtml = true;
 	private Boolean stripHtml = false;
 	
 	public void parseText(String inputText) {
@@ -69,10 +68,9 @@ public class TextToHtml {
 		//Break the text into a list of lines
 		String s = inputText;
 		//Make sure there aren't any "<" or ">" chars that might turn into bogus HTML
-		s = StringEscapeUtils.escapeHtml(s);
-		if (stripHtml) {
-			s = Html.stripHtml(s);
-		}
+		if (escapeHtml) s = StringEscapeUtils.escapeHtml(s);
+		if (stripHtml)  s = Html.stripHtml(              s);
+
 		Pattern pLines = Pattern.compile(PATTERN_LINE, Pattern.DOTALL);
 		Matcher mLines = pLines.matcher(s);
 		while (mLines.find()) {
@@ -116,6 +114,11 @@ public class TextToHtml {
 				
 	}
 	
+	//Escape html in the text
+	public void setEscapeHtml(Boolean escapeHtml) {
+		this.escapeHtml = escapeHtml;
+	}
+	
 	//Strip html from the text
 	public void setStripHtml(Boolean stripHtml) {
 		this.stripHtml = stripHtml;
@@ -127,6 +130,7 @@ public class TextToHtml {
 	}
 	
 	//Return the html string
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		for (Para p : paraList) {
@@ -226,6 +230,7 @@ public class TextToHtml {
 		public void setIndentation(int i) {
 			indentation = i;
 		}
+		@Override
 		public String toString() {
 			boolean firstLine = true;
 			StringBuffer buf = new StringBuffer();
