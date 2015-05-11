@@ -1112,18 +1112,69 @@ function ss_postRequestSetFileStatus(s, data) {
 	ss_hideDiv("ss_fileStatusMenu"+data.statusObjId+"_" + data.fileId);
 }
 
+//Searches for <SCRIPT> elements in the given HTML element and
+//executes the JavaScript.
+//
+//Only <SRCIPT> tags without a src="..." are executed.
 function ss_executeJavascript(xmlNode, globalScope) {
+ var scripts = xmlNode.getElementsByTagName("script");
+	ss_executeJavascriptPhase2(scripts, xmlNode, globalScope);	// Phase 2 executes the <SCRIPT> tags without a src="..."
+}
+
+//Searches for <SCRIPT> elements in the given HTML element and
+//executes the JavaScript.
+//
+//Executes <SCRIPT src="..."> tags first followed by <SRCIPT> tags
+//without a src="...".
+function ss_executePhasedJavascript(xmlNode) {
+ var scripts = xmlNode.getElementsByTagName("script");
+	var executedJSFromSrc = ss_executeJavascriptPhase1(scripts, xmlNode);
+ if (!executedJSFromSrc) {
+ 	ss_executeJavascriptPhase2(scripts, xmlNode, true);	// true -> Always globalScope.
+ }
+}
+
+//Executes <SCRIPT src="..."> tags first followed by <SRCIPT> tags
+//without a src="...".
+function ss_executeJavascriptPhase1(scripts, xmlNode) {
 	// Scan the <script>'s in xmlNode.
-    var scripts = xmlNode.getElementsByTagName("script");
-    for (var i = 0; i < scripts.length; i++) {
-    	// Is this <script> JavaScript?
-        var script = scripts[i];
-        if (script.getAttribute("type") == "text/javascript") {
-        	// Yes!  Does it contain anything to execute?
-        	var js = script.innerHTML;
-        	if ((null != js) && (0 < js.length)) {
-        		// Yes!  Are we supposed to evaluate it at a global
-        		// scope?
+ var executedJSFromSrc = false;
+ for (var i = 0; i < scripts.length; i++) {
+ 	// Is this <script> JavaScript?
+     var script = scripts[i];
+     if (script.getAttribute("type") == "text/javascript") {
+     	// Yes!  Does it have a 'src=...' setting?
+     	var jsSrc = script.getAttribute("src");
+     	if (jsSrc && (null != jsSrc) && (0 < jsSrc.length)) {
+     		// Yes!  Force it's source to actually be loaded
+     		// via the <HEAD> tag.
+     		var tag = document.createElement("script");
+             tag.setAttribute("type", "text/javascript");
+     		tag.src = jsSrc;
+     		tag.onload = function(){ss_executeJavascriptPhase2(scripts, xmlNode, true);}
+     		document.getElementsByTagName("head")[0].appendChild(tag);
+     		executedJSFromSrc = true;
+     	}
+     }
+ }
+
+ // Return true if we executed any JavaScript from a src="..." and
+ // false otherwise.
+ return executedJSFromSrc;
+}
+
+//Executes <SCRIPT> tags without a src="...".
+function ss_executeJavascriptPhase2(scripts, xmlNode, globalScope) {
+	// Scan the <script>'s in xmlNode again.
+ for (var i = 0; i < scripts.length; i++) {
+ 	// Is this <script> JavaScript?
+     var script = scripts[i];
+     if (script.getAttribute("type") == "text/javascript") {
+     	// Yes!  Does it contain anything to execute?
+     	var js = script.innerHTML;
+     	if ((null != js) && (0 < js.length)) {
+     		// Yes!  Are we supposed to evaluate it at a global
+     		// scope?
 	        	if (globalScope) {
 	        		// Yes!  Evaluate it.
 		        	if (window.execScript)
@@ -1136,9 +1187,9 @@ function ss_executeJavascript(xmlNode, globalScope) {
 	        		// we've always done.
 	        		eval(js);
 	        	}
-        	}
-        }
-    }
+     	}
+     }
+ }
 }
 
 function ss_showFolderPageIndex(hrefUrl, binderId, currentPageIndex, divId, cTag, pTag, yearMonth, endDate) {

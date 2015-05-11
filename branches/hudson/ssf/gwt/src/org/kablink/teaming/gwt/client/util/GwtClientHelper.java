@@ -1617,11 +1617,13 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Search for <SCRIPT> elements found in the given HTML element and
-	 * execute the JavaScript.
+	 * Searches for <SCRIPT> elements in the given HTML element and
+	 * executes the JavaScript.
 	 * 
-	 * Note:  This is done in 2 methods to facility setting a
-	 * breakpoint within this method.
+	 * Notes:
+	 * 1) This is done in 2 steps to facilitate setting a breakpoint
+	 *    within this method.
+	 * 2) Only <SRCIPT> tags without a src="..." are executed.
 	 * 
 	 * @param htmlElement
 	 * @param globelScope
@@ -1636,12 +1638,29 @@ public class GwtClientHelper {
 		jsExecuteJavaScript(htmlElement, false);
 	}
 
-	/*
-	 * Search for <SCRIPT> elements found in the given HTML element and
-	 * execute the JavaScript.
-	 */
 	private static native void jsExecuteJavaScriptImpl(Element htmlElement, boolean globalScope) /*-{
 		$wnd.parent.ss_executeJavascript(htmlElement, globalScope);
+	}-*/;
+
+	/**
+	 * Searches for <SCRIPT> elements in the given HTML element and
+	 * executes the JavaScript.
+	 * 
+	 * Notes:
+	 * 1) This is done in 2 steps to facilitate setting a breakpoint
+	 *    within this method.
+	 * 2) Executes <SCRIPT src="..."> tags first followed by <SRCIPT>
+	 *    tags without a src="...".
+	 * 
+	 * @param htmlElement
+	 */
+	public static void jsExecutePhasedJavaScript(Element htmlElement) {
+		// Always use the implementation form of the method.
+		jsExecutePhasedJavaScriptImpl(htmlElement);
+	}
+	
+	private static native void jsExecutePhasedJavaScriptImpl(Element htmlElement) /*-{
+		$wnd.parent.ss_executePhasedJavascript(htmlElement);
 	}-*/;
 
 	/**

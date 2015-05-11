@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -41,176 +40,178 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-
-
+import com.google.gwt.user.client.ui.HTMLPanel;
 
 /**
+ * Widget that renders a custom JSP in a landing page.
  * 
- * @author jwootton
- *
+ * @author jwootton@novell.com
  */
-public class CustomJspWidget extends VibeWidget
-{
-	private String m_lpBinderId;	// landing page binder id
-	private CustomJspProperties m_properties;
-	private AsyncCallback<VibeRpcResponse> m_executeJspCallback = null;
-	private VibeFlowPanel m_mainPanel;
-	private String m_html;		// The html that we got from executing a jsp
-	
-	/**
-	 * This widget simply displays the name of the jsp file that is associated with the view type. 
-	 */
-	public CustomJspWidget( CustomJspConfig config, String lpBinderId )
-	{
-		VibeFlowPanel mainPanel;
-		
-		// Remember the landing page binderId.
-		m_lpBinderId = lpBinderId;
-		
-		mainPanel = init( config.getProperties(), config.getLandingPageStyle() );
-		
-		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
-	}
-	
-	/**
-	 * Evaluate scripts in the html found in the given element.
-	 */
-	public static native void executeJavaScript( com.google.gwt.dom.client.Element element ) /*-{
-		//$wnd.alert( 'In executeJavaScript()' );
-		if ( $wnd.top.ss_executeJavascript != null && (typeof $wnd.top.ss_executeJavascript != 'undefined') )
-		{
-			//$wnd.alert( 'found ss_executeJavascript()' );
-			$wnd.top.ss_executeJavascript( element, false );
-		}
-	}-*/;
+public class CustomJspWidget extends VibeWidget {
+	private CustomJspProperties	m_properties;
+	private String				m_lpBinderId;	// Landing page binder ID.
+	private VibeFlowPanel		m_mainPanel;
 
-	/**
-	 * Execute the jsp associated with this enhanced view
+	/*
+	 * Inner class that that will load HTML and then execute the
+	 * JavaScript contained within it.
 	 */
-	private void executeJsp()
-	{
-		// Execute the jsp associated with this enhanced view by issuing an rpc request.
-		executeJspViaRpc();
+	private static class HTMLWithJavaScript extends HTMLPanel {
+		/**
+		 * Constructor method.
+		 * 
+		 * @param html
+		 */
+		public HTMLWithJavaScript(String html) {
+			super(html);
+			addStyleName("customJspWidgetHtmlWithJavaScriptPanel");
+		}
+		
+		/**
+		 * Called when the HTMLPanel is attached to execute its
+		 * JavaScript.
+		 * 
+		 * Overrides the Widget.onAttach() method.
+		 */
+		@Override
+		public void onAttach() {
+			// Let the super class process the attach...
+			super.onAttach();
+			
+			// ...and execute the JavaScript contained within the JSP.
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					GwtClientHelper.jsExecutePhasedJavaScript(getElement());
+				}
+			});
+		}
 	}
 	
 	/**
-	 * Execute the jsp associated with this enhanced view using GWT rpc
+	 * Constructor method.
+	 * 
+	 * This widget simply displays the name of the jsp file that is
+	 * associated with the view type.
+	 * 
+	 * @param config
+	 * @param lpBinderId
 	 */
-	private void executeJspViaRpc()
-	{
-		ExecuteLandingPageCustomJspCmd cmd;
+	public CustomJspWidget(CustomJspConfig config, String lpBinderId) {
+		// Remember the landing page binderId...
+		m_lpBinderId = lpBinderId;
+
+		// ...create the main panel for the widget...
+		VibeFlowPanel mainPanel = init(config.getProperties(), config.getLandingPageStyle());
 		
-		// Create the callback that will be used when we issue an ajax call to execute the jsp.
-		if ( m_executeJspCallback == null )
-		{
-			m_executeJspCallback = new AsyncCallback<VibeRpcResponse>()
-			{
-				/**
-				 * 
-				 */
-				public void onFailure( Throwable t )
-				{
+		// ...and call initWidget(), as all composites must do.
+		initWidget(mainPanel);
+	}
+	
+	/*
+	 * Asynchronously executes the RPC associated with this enhanced
+	 * view using a GWT RPC command.
+	 */
+	private void executeJspAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				executeJspNow();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously executes the RPC associated with this enhanced
+	 * view using a GWT RPC command.
+	 */
+	private void executeJspNow() {
+		GwtClientHelper.executeCommand(
+			new ExecuteLandingPageCustomJspCmd(m_lpBinderId, m_properties.getJspName(), m_properties.createConfigString()),
+			new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						GwtTeaming.getMessages().rpcFailure_executeCustomJsp(),
-						m_properties.getJspName() );
+						m_properties.getJspName());
 				}
 		
-				/**
-				 * 
-				 * @param result
-				 */
-				public void onSuccess( VibeRpcResponse response )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					m_html = "";
-					
-					if ( response.getResponseData() != null )
-					{
-						StringRpcResponseData responseData;
-						
-						responseData = (StringRpcResponseData) response.getResponseData();
-						m_html = responseData.getStringValue();
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Extract the JSP's HTML from the response...
+					String html;
+					if (response.getResponseData() != null) {
+						StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+						html = responseData.getStringValue();
+					}
+					else {
+						html = "";
 					}
 
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							m_mainPanel.getElement().setInnerHTML( m_html );
-							executeJavaScript( m_mainPanel.getElement() );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					// ...and replace the content of the panel with it.
+					m_mainPanel.clear();
+					m_mainPanel.add(new HTMLWithJavaScript(html));
 				}
-			};
-		}
-
-		// Execute the custom jsp
-		cmd = new ExecuteLandingPageCustomJspCmd( m_lpBinderId, m_properties.getJspName(), m_properties.createConfigString() );
-		GwtClientHelper.executeCommand( cmd, m_executeJspCallback );
+			}
+		);
 	}
 	
-	/**
-	 * 
+	/*
+	 * Initializes/constructs the JSP widget using the properties and
+	 * styles provided.
 	 */
-	private VibeFlowPanel init( CustomJspProperties properties, String landingPageStyle )
-	{
+	private VibeFlowPanel init(CustomJspProperties properties, String landingPageStyle) {
+		// Create a copy of the JSP properties...
 		m_properties = new CustomJspProperties();
-		m_properties.copy( properties );
+		m_properties.copy(properties);
+
+		// ...create the widget's main content panel...
+		m_mainPanel = new VibeFlowPanel();
+		m_mainPanel.addStyleName("landingPageWidgetMainPanel" + landingPageStyle);
+		m_mainPanel.addStyleName("customJspWidgetMainPanel"   + landingPageStyle);
 		
-		m_mainPanel = new VibeFlowPanel();
-		m_mainPanel = new VibeFlowPanel();
-		m_mainPanel.addStyleName( "landingPageWidgetMainPanel" + landingPageStyle );
-		m_mainPanel.addStyleName( "customJspWidgetMainPanel" + landingPageStyle );
-
-		// Set the width and height
-		{
-			Style style;
-			int width;
-			int height;
-			Unit unit;
-			
-			style = m_mainPanel.getElement().getStyle();
-			
-			// Don't set the width if it is set to 100%.  This causes a scroll bar to appear
-			width = m_properties.getWidth();
-			unit = m_properties.getWidthUnits();
-			if ( width != 100 || unit != Unit.PCT )
-				style.setWidth( width, unit );
-			
-			// Don't set the height if it is set to 100%.  This causes a scroll bar to appear.
-			height = m_properties.getHeight();
-			unit = m_properties.getHeightUnits();
-			if ( height != 100 || unit != Unit.PCT )
-				style.setHeight( height, unit );
-			
-			style.setOverflow( m_properties.getOverflow() );
-		}
-
-		// Issue a request to execute the jsp associated with this enhanced view
-		{
-			Scheduler.ScheduledCommand schCmd;
-			
-			schCmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute()
-				{
-					executeJsp();
-				}
-			};
-			Scheduler.get().scheduleDeferred( schCmd );
+		// ...and set its width and height.
+		Style style = m_mainPanel.getElement().getStyle();
+		
+		// Don't set the width if it is set to 100%.  This causes a
+		// scroll bar to appear.
+		int  width = m_properties.getWidth();
+		Unit unit  = m_properties.getWidthUnits();
+		if ((width != 100) || (unit != Unit.PCT)) {
+			style.setWidth(width, unit);
 		}
 		
+		// Don't set the height if it is set to 100%.  This causes a
+		// scroll bar to appear.
+		int height = m_properties.getHeight();
+		unit       = m_properties.getHeightUnits();
+		if ((height != 100) || (unit != Unit.PCT)) {
+			style.setHeight(height, unit);
+		}
+
+		// Set when scroll bars are supposed to show.
+		style.setOverflow(m_properties.getOverflow());
+
+		// Finally, return the main content panel.
 		return m_mainPanel;
 	}
-}
 
+	/**
+	 * Called when the JSP widget is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		// Let the super class process the attach...
+		super.onAttach();
+		
+		// ...and execute the JSP.
+		executeJspAsync();
+	}
+}
