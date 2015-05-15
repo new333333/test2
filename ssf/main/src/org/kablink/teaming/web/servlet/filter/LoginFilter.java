@@ -352,7 +352,7 @@ public class LoginFilter  implements Filter {
 					req.setAttribute(WebKeys.REFERER_URL, currentURL);
 					chain.doFilter(req, res);											
 				}
-				if ((!isReadFile) && guestAccessAllowed()) {
+				else if ((!isReadFile) && guestAccessAllowed()) {
 					// Guest access allow, just not to that URL.
 					// Send them to their personal workspace.
 					currentURL = getUserPermalinkFromId(req, WebKeys.URL_USER_ID_PLACE_HOLDER);
