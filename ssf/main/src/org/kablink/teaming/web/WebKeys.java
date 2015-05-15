@@ -168,6 +168,7 @@ public class WebKeys {
 	public static final String URL_VIBE_URL_FLAG_DEPRECATED="vibe_url";	
 	public static final String URL_NOVL_ROOT_FLAG="novl_root";
 	public static final String URL_NOVL_URL_FLAG="novl_url";	
+	public static final String URL_NOVL_LANDING_PAGE_FLAG="novl_landing";	
 	public static final String URL_INVOKE_SHARE="invokeShare";	
 	public static final String URL_INVOKE_SUBSCRIBE="invokeSubscribe";	
 	public static final String URL_CONTEXT="context";
