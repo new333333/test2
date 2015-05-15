@@ -352,9 +352,9 @@ public class LoginFilter  implements Filter {
 					req.setAttribute(WebKeys.REFERER_URL, currentURL);
 					chain.doFilter(req, res);											
 				}
-				else if ((!isReadFile) && guestAccessAllowed()) {
-					// Guest access is allowed, just not to that URL.
-					// Send them to the Guest workspace.
+				if ((!isReadFile) && guestAccessAllowed()) {
+					// Guest access allow, just not to that URL.
+					// Send them to their personal workspace.
 					currentURL = getUserPermalinkFromId(req, WebKeys.URL_USER_ID_PLACE_HOLDER);
 					res.sendRedirect(currentURL);
 				}
@@ -885,7 +885,7 @@ public class LoginFilter  implements Filter {
 	}
 
 	/*
-	 * Returns a permalink for a user's based on a user ID.
+	 * Returns a permalink for a user based on a user ID.
 	 */
 	private static String getUserPermalinkFromId(final HttpServletRequest req, final String userId) {
 		return ((String) RunasTemplate.runasAdmin(
@@ -899,7 +899,7 @@ public class LoginFilter  implements Filter {
 							GwtUIHelper.isActivityStreamOnLogin(),
 							Utils.checkIfFilr());
 				}
-			}, WebHelper.getRequiredZoneName(req)));
+			}, WebHelper.getRequiredZoneName(req)));									
 	}
 	
 	/*
