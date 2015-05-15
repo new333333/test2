@@ -19,7 +19,7 @@ ASM 3.1.0 (from spring distribution, needed by cglib and jersey)
 Asm-attrs 1.5.3 (from spring distribution, needed by cglib)
 Axis 1.4 (removed log4j.properties)
 backport-concurrent.jar 2.1 Concurrent(Backport)
-bcprov-jdk15.jar 1.32 (BouncyCastle library; required by WSS4J)
+bcprov-jdk15on.jar 1.52 (BouncyCastle library; required by WSS4J)
 bsh 2.0b2
 cglib 2.2.0(from Hibernate distribution, needed by Hibernate)
 Colt CERN Colt Library 1.2

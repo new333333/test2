@@ -169,7 +169,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jackson-mapper-asl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-xc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/lucene-queries.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/gwt-user.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/gwt-dev.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA-sources.jar"/>
@@ -200,5 +199,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring-rabbit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/rabbitmq-client.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-retry.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15on.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
