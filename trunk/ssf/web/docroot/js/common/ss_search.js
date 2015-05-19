@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -367,19 +367,40 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
 		fieldValue2Div.appendChild(selectObj);
 		
 		if (typeof value != "undefined" && valueOptionValue != "") {
-			var selectObj = document.createElement("select");
-			selectObj.name = "elementValue" + orderNo + "_selected";
-			selectObj.id = "elementValue" + orderNo + "_selected";
-			var optionObj = document.createElement("option");
-			optionObj.value = valueOptionValue;
-			optionObj.selected = true;
-			if (typeof valueLabel != "undefined" && valueLabel != "") {
-				optionObj.innerHTML = valueLabel;
-			} else {
-				optionObj.innerHTML = valueOptionValue;
+			if (typeof valueType != "undefined" && valueType == "text") {
+				// - - - - - - - - - - - - - - - - - - - - - - - - - -
+				// Bugzilla 924275 (20150519):  When the value type is
+				// 'text', use an <input> instead of a <select>
+				// for specifying the value.
+				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+				// Sample data from the ss_debug(...) on method entry:
+				//    fieldName,   value,        valueLabel,    valueType, fieldNameTitle, entryType,                        entryTypeTitle
+				//    drfTestText, My Test Text, DRF Test Text, text,      DRF Test Text,  8a80814d4d6d3b6a014d6d7cf4ff0004, DRF Discussion Entry
+				// - - - - - - - - - - - - - - - - - - - - - - - - - -
+				var inpt = document.createElement('input');
+				inpt.type = "text";
+				inpt.id = "elementValue" + orderNo + "_selected";
+				inpt.name = "elementValue" + orderNo + "_selected";
+				if (valueOptionValue) {
+					inpt.value = valueOptionValue;
+				}
+				fieldValue3Div.appendChild(inpt);
 			}
-			selectObj.appendChild(optionObj);
-			fieldValue3Div.appendChild(selectObj);
+			else {
+				var selectObj = document.createElement("select");
+				selectObj.name = "elementValue" + orderNo + "_selected";
+				selectObj.id = "elementValue" + orderNo + "_selected";
+				var optionObj = document.createElement("option");
+				optionObj.value = valueOptionValue;
+				optionObj.selected = true;
+				if (typeof valueLabel != "undefined" && valueLabel != "") {
+					optionObj.innerHTML = valueLabel;
+				} else {
+					optionObj.innerHTML = valueOptionValue;
+				}
+				selectObj.appendChild(optionObj);
+				fieldValue3Div.appendChild(selectObj);
+			}
 		}
 	}
 	document.getElementById('ss_entries_options').appendChild(div);
