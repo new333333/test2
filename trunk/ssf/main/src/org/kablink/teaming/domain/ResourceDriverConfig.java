@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,8 +43,12 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public class ResourceDriverConfig extends ZonedObject implements WorkArea {
-
 	public static final String WORKAREA_TYPE = "resourceDriver";
 	
 	private Long id; // This is primary key
@@ -82,7 +86,8 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		famt (5),
 		cloud_folders (6),
 		share_point_2010 (7),
-		share_point_2013 (8);
+		share_point_2013 (8),
+		oes2015 (9);
 		int dtValue;
 		DriverType(int dtValue) {
 			this.dtValue = dtValue;
@@ -99,6 +104,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 			case 6: return DriverType.cloud_folders;
 			case 7: return DriverType.share_point_2010;
 			case 8: return DriverType.share_point_2013;
+			case 9: return DriverType.oes2015;
 			default: return DriverType.filesystem;
 			}
 		}
@@ -175,7 +181,8 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		}
 	}
 
-    public boolean equals(Object obj) {
+    @Override
+	public boolean equals(Object obj) {
     	if(!(obj instanceof ResourceDriverConfig))
     		return false;
     	ResourceDriverConfig config = (ResourceDriverConfig)obj;
@@ -272,7 +279,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		return driverType.getValue();
 	}
 	protected void setType(int type) {
-		for (DriverType dT : driverType.values()) {
+		for (DriverType dT : DriverType.values()) {
 			if (type == dT.getValue()) {
 				driverType=dT;
 				break;
@@ -544,6 +551,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 				ResourceDriverConfig.DriverType.windows_server == this.getDriverType() ||
 				ResourceDriverConfig.DriverType.netware == this.getDriverType() ||
 				ResourceDriverConfig.DriverType.oes == this.getDriverType() ||
+				ResourceDriverConfig.DriverType.oes2015 == this.getDriverType() ||
 				//ResourceDriverConfig.DriverType.cloud_folders == this.getDriverType() ||
 				ResourceDriverConfig.DriverType.share_point_2010 == this.getDriverType() ||
 				ResourceDriverConfig.DriverType.share_point_2013 == this.getDriverType()) {
@@ -558,20 +566,24 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		if (ResourceDriverConfig.DriverType.famt == this.getDriverType() ||
 				ResourceDriverConfig.DriverType.windows_server == this.getDriverType() ||
 				ResourceDriverConfig.DriverType.netware == this.getDriverType() ||
-				ResourceDriverConfig.DriverType.oes == this.getDriverType()) {
+				ResourceDriverConfig.DriverType.oes== this.getDriverType() ||
+				ResourceDriverConfig.DriverType.oes2015 == this.getDriverType()) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-    public boolean isAclExternallyControlled() {
+    @Override
+	public boolean isAclExternallyControlled() {
     	return Boolean.FALSE;
     }
-    public List<WorkAreaOperation> getExternallyControlledRights() {
+    @Override
+	public List<WorkAreaOperation> getExternallyControlledRights() {
     	return WorkAreaOperation.getDefaultExternallyControlledRights();
     }
-    public String getRegisteredRoleType() {
+    @Override
+	public String getRegisteredRoleType() {
     	return "";
     }
 
@@ -699,6 +711,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	}
 	
 	// Used by Hibernate only
+	@SuppressWarnings("unused")
 	private String getChangeDetectionMechanismStr() {
 		if(changeDetectionMechanism == null)
 			return null;
@@ -706,6 +719,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 			return changeDetectionMechanism.name();
 	}
 	
+	@SuppressWarnings("unused")
 	private void setChangeDetectionMechanism(String changeDetectionMechanismStr) {
 		if(changeDetectionMechanismStr == null) {
 			changeDetectionMechanism = null;

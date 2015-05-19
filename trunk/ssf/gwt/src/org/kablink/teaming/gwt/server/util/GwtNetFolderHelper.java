@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,10 +34,7 @@ package org.kablink.teaming.gwt.server.util;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,7 +51,6 @@ import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
 import org.kablink.teaming.domain.BinderState.FullSyncStatus;
 import org.kablink.teaming.domain.Description;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
@@ -95,7 +91,6 @@ import org.kablink.teaming.module.folder.CannotDeleteSyncingNetFolderException;
 import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
-import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -661,6 +656,9 @@ public class GwtNetFolderHelper
 		case OES:
 			return DriverType.oes;
 			
+		case OES2015:
+			return DriverType.oes2015;
+			
 		case SHARE_POINT_2010:
 			return DriverType.share_point_2010;
 			
@@ -887,7 +885,6 @@ public class GwtNetFolderHelper
 		NetFolder netFolder;
 		Binder binder;
 		ArrayList<GwtRole> listOfRoles;
-		NetFolderDataSyncSettings dataSyncSettings;
 		GwtJitsNetFolderConfig jitsSettings;
 		
 		binder = ami.getBinderModule().getBinder( netFolderId );
@@ -1251,6 +1248,9 @@ public class GwtNetFolderHelper
 		case oes:
 			return NetFolderRootType.OES;
 			
+		case oes2015:
+			return NetFolderRootType.OES2015;
+			
 		case share_point_2010:
 			return NetFolderRootType.SHARE_POINT_2010;
 
@@ -1446,7 +1446,7 @@ public class GwtNetFolderHelper
 	/**
 	 * Save the data sync settings for the given net folder binder
 	 */
-	@SuppressWarnings({ "unchecked", "unused", "rawtypes" })
+	@SuppressWarnings( "unused" )
 	private static void saveDataSyncSettings(
 		AllModulesInjected ami,
 		NetFolderConfig nfc,
