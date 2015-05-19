@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -178,6 +178,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		FILE_SYSTEM,
 		NETWARE,
 		OES,
+		OES2015,
 		SHARE_POINT_2010,
 		SHARE_POINT_2013,
 		WEB_DAV,
@@ -205,6 +206,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 			if ( type.equalsIgnoreCase( NetFolderRootType.OES.toString() ) )
 				return NetFolderRootType.OES;
+
+			if ( type.equalsIgnoreCase( NetFolderRootType.OES2015.toString() ) )
+				return NetFolderRootType.OES2015;
 
 			if ( type.equalsIgnoreCase( NetFolderRootType.SHARE_POINT_2010.toString() ) )
 				return NetFolderRootType.SHARE_POINT_2010;
@@ -389,7 +393,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			table.setWidget( nextRow, 0, m_authTypeLabel );
 
 			// Add the listbox where the user can select the authentication
-			m_authTypeListbox = new ListBox( false );
+			m_authTypeListbox = new ListBox();
+			m_authTypeListbox.setMultipleSelect( false );
 			m_authTypeListbox.setVisibleItemCount( 1 );
 			
 			m_authTypeListbox.addItem(
@@ -463,7 +468,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
 			
 			// Add the listbox where the user can select the type of net folder root
-			m_rootTypeListbox = new ListBox( false );
+			m_rootTypeListbox = new ListBox();
+			m_rootTypeListbox.setMultipleSelect( false );
 			m_rootTypeListbox.setVisibleItemCount( 1 );
 			
 			m_rootTypeListbox.addItem(
@@ -474,6 +480,10 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_OES(),
 						NetFolderRootType.OES.toString() );
 			
+			m_rootTypeListbox.addItem(
+					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_OES2015(),
+					NetFolderRootType.OES2015.toString() );
+		
 			m_rootTypeListbox.addItem(
 					GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_Netware(),
 					NetFolderRootType.NETWARE.toString() );
@@ -973,6 +983,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					switch( type )
 					{
 					case OES:
+					case OES2015:
 					case NETWARE:
 						label = new Label( messages.modifyNetFolderServerDlg_ServerPathHint1() );
 						m_serverPathHintPanel.add( label );

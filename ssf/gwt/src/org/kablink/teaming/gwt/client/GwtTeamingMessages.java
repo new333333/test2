@@ -2528,6 +2528,7 @@ public interface GwtTeamingMessages extends Messages {
 	String modifyNetFolderServerDlg_Type_FileSystem();
 	String modifyNetFolderServerDlg_Type_Netware();
 	String modifyNetFolderServerDlg_Type_OES();
+	String modifyNetFolderServerDlg_Type_OES2015();
 	String modifyNetFolderServerDlg_Type_SharePoint2010();
 	String modifyNetFolderServerDlg_Type_SharePoint2013();
 	String modifyNetFolderServerDlg_Type_Undefined();
