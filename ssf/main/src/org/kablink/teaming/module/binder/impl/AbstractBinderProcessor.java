@@ -35,6 +35,7 @@ package org.kablink.teaming.module.binder.impl;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -56,9 +57,12 @@ import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.SortField;
+
 import org.dom4j.Element;
+
 import org.hibernate.ReplicationMode;
 import org.hibernate.exception.LockAcquisitionException;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NoObjectByTheIdException;
@@ -68,6 +72,8 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.docconverter.ITextConverterManager;
 import org.kablink.teaming.docconverter.TextConverter;
+import org.kablink.teaming.docconverter.TextStreamConverter;
+import org.kablink.teaming.docconverter.TextStreamConverterManager;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
@@ -267,6 +273,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     public void setTextConverterManager(ITextConverterManager textConverterManager) {
     	this.textConverterManager = textConverterManager;
+    }
+
+    private TextStreamConverterManager textStreamConverterManager;
+    protected TextStreamConverterManager getTextStreamConverterManager() {
+    	return textStreamConverterManager;
+    }
+    public void setTextStreamConverterManager(TextStreamConverterManager textStreamConverterManager) {
+    	this.textStreamConverterManager = textStreamConverterManager;
     }
 
 	//***********************************************************************************************************	
@@ -2840,9 +2854,22 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				(rootFolderIsNetFolder && rootFolder.getComputedIndexContent())))) {
 			//The file contents of files in this folder are to be added to the index
 			// Get the Text converter from manager
-	    	TextConverter converter = textConverterManager.getConverter();
+	    	TextConverter       fileConverter   = null;
+	    	TextStreamConverter streamConverter = null;
+			boolean useStreamConverter = SPropsUtil.getBoolean("use.stream.text.converter", false);
+			if (useStreamConverter)
+			     streamConverter = textStreamConverterManager.getConverter();	// Uses Apache Tika.
+			else fileConverter   = textConverterManager.getConverter();			// Uses Oracle OIT or OpenOffice.
 			try {
-				text = converter.convert(binder, entity, fa);
+				if (useStreamConverter) {
+					InputStream is = getFileModule().readFile(binder, entity, fa);
+					if (null != is) {
+						text = streamConverter.convert(fa.getFileItem().getName(), is, "");
+					}
+				}
+				else {
+					text = fileConverter.convert(binder, entity, fa);
+				}
 			}
 			catch (Exception e) {
 				// Most likely conversion did not succeed, nothing client

@@ -92,6 +92,12 @@
     	<property name="openOfficeConverter"><ref bean="textOpenOfficeConverter"/></property>
     </bean>
     
+    <bean id="textStreamConverterManager" class="org.kablink.teaming.docconverter.impl.TextStreamConverterManagerImpl">
+    	<!-- Options 1=Tika -->
+    	<property name="active"><value>1</value></property>
+    	<property name="tikaConverter"><ref bean="textTikaConverter"/></property>
+    </bean>
+    
     <bean id="imageConverterManager" class="org.kablink.teaming.docconverter.impl.ImageConverterManagerImpl">
     	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
     	<property name="active"><value>1</value></property>

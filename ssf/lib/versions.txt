@@ -161,6 +161,7 @@ Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
 SubEthaSMTP subethasmtp.jar 3.1.7
 swfobject 2.1 (Javascript library)
 tcllib 1.11.1 (for installer)
+tika 1.8
 TestNG 6.8
 Tomcat 7.0.55 (Also includes catalina.jar and tomcat-dbcp.jar)
 Trove 3.0.1
