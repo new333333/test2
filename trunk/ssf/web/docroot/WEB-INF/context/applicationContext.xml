@@ -535,6 +535,10 @@
         <property name="excludedExtensions"><value>jpg,jpeg,gif,tiff,png,exe,mpeg,mov,bmp,exe,wav,wma,mpa,mp3,mpg,mp4,swf,ogg,m4a,flv,bin</value></property>
     </bean>
     
+    <bean id="textTikaConverter" class="org.kablink.teaming.docconverter.impl.TextTikaConverter" depends-on="sPropsUtil">
+        <property name="excludedExtensions"><value>gif,tiff,png,exe,mpeg,mov,bmp,exe,wav,wma,mpa,mp3</value></property>
+    </bean>
+    
     <bean id="imageOpenOfficeConverter" class="org.kablink.teaming.docconverter.impl.ImageOpenOfficeConverter" parent="converterCommon">
         <property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
@@ -675,6 +679,7 @@
 		<property name="rssModule"><ref bean="rssModule"/></property>
 		<property name="templateModule"><ref bean="templateModule"/></property>
 		<property name="textConverterManager"><ref bean="textConverterManager"/></property>
+		<property name="textStreamConverterManager"><ref bean="textStreamConverterManager"/></property>
 	</bean>
 	
 	<bean id="workspaceModule" parent="moduleTransactionProxy">
@@ -1472,6 +1477,9 @@ text/calendar											  ics
 	        </entry>
 	        <entry key="Vibe:type=Converter,name=textConverterManager">
 	          <ref bean="textConverterManager"/>
+	        </entry>
+	        <entry key="Vibe:type=Converter,name=textStreamConverterManager">
+	          <ref bean="textStreamConverterManager"/>
 	        </entry>
 	        <entry key="Vibe:type=Converter,name=imageConverterManager">
 	          <ref bean="imageConverterManager"/>
