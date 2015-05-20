@@ -226,41 +226,33 @@ public class GwtClientHelper {
 	 * 
 	 * @param
 	 */
-	public static void alertViaDlg(
-		final Panel contentPanel )
-	{
+	public static void alertViaDlg(final Panel contentPanel) {
 		// Have we created an instance of an AlertDlg yet?
-		if ( null == m_alertDlg )
-		{
+		if (null == m_alertDlg) {
 			// No!  Create one now...
-			AlertDlg.createAsync( new AlertDlgClient()
-			{
+			AlertDlg.createAsync(new AlertDlgClient() {
 				@Override
-				public void onUnavailable()
-				{
+				public void onUnavailable() {
 					// Nothing to do.  Error handled in asynchronous
 					// provider.
 				}
 				
 				@Override
-				public void onSuccess(AlertDlg aDlg)
-				{
+				public void onSuccess(AlertDlg aDlg) {
 					// ...save it and use it to display the message.
 					m_alertDlg = aDlg;
-					alertViaDlg( contentPanel );
+					alertViaDlg(contentPanel);
 				}
 			});
 		}
-		else
-		{
+		
+		else {
 			// Yes, we've created an instance of an AlertDlg!  Use it
 			// to display the message.
-			deferCommand(new ScheduledCommand()
-			{
+			deferCommand(new ScheduledCommand() {
 				@Override
-				public void execute()
-				{
-					AlertDlg.initAndShow( m_alertDlg, contentPanel );
+				public void execute() {
+					AlertDlg.initAndShow(m_alertDlg, contentPanel);
 				}
 			});
 		}
@@ -300,17 +292,24 @@ public class GwtClientHelper {
 
 	/**
 	 * Determine if the two string are equal
+	 * 
+	 * @param s1
+	 * @param s2
+	 * 
+	 * @return
 	 */
-	public static boolean areStringsEqual( String s1, String s2 )
-	{
-		if ( s1 != null && s2 == null )
+	public static boolean areStringsEqual(String s1, String s2) {
+		if ((s1 != null) && (s2 == null)) {
 			return false;
+		}
 		
-		if ( s1 == null && s2 != null )
+		if ((s1 == null) && (s2 != null)) {
 			return false;
+		}
 		
-		if ( s1 != null && s1.equalsIgnoreCase( s2 ) == false )
+		if ((s1 != null) && (!(s1.equalsIgnoreCase(s2)))) {
 			return false;
+		}
 		
 		return true;
 	}
@@ -357,6 +356,8 @@ public class GwtClientHelper {
 	 * Returns a base Anchor widget.
 	 * 
 	 * @param styles
+	 * 
+	 * @return
 	 */
 	public static Anchor buildAnchor(List<String> styles) {
 		Anchor reply = new Anchor();
@@ -384,6 +385,8 @@ public class GwtClientHelper {
 	 * 
 	 * @param res
 	 * @param title
+	 * 
+	 * @return
 	 */
 	public static Image buildImage(ImageResource res, String title) {
 		Image reply = new Image();
@@ -403,6 +406,8 @@ public class GwtClientHelper {
 	 * 
 	 * @param resUri
 	 * @param title
+	 * 
+	 * @return
 	 */
 	public static Image buildImage(SafeUri resUri, String title) {
 		Image reply = new Image();
@@ -422,6 +427,8 @@ public class GwtClientHelper {
 	 * 
 	 * @param resUrl
 	 * @param title
+	 * 
+	 * @return
 	 */
 	public static Image buildImage(String resUrl, String title) {
 		Image reply = new Image();
@@ -665,8 +672,42 @@ public class GwtClientHelper {
 			@Override
 			public void onSuccess(GwtRpcServiceAsync rpc) {
 				// Yes, we have the GWT RPC service to execute the
-				// command!  Execute it.
-				rpc.executeCommand( httpRequestInfo, cmd, callback );
+				// command!  Can we execute it.
+				rpc.executeCommand(httpRequestInfo, cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						// No!  Did we get an RpcTokenException on the initial
+						// try of the RPC request?
+						if ((!(httpRequestInfo.isRetry()))&& (caught instanceof RpcTokenException)) {
+							// Yes!  Reset the RPC service and try it
+							// again!  This may happen, for instance,
+							// when dealing with a session timeout on
+							// the server.
+							GwtTeaming.resetRpcService();
+							httpRequestInfo.setRetry(true);
+							deferCommand(new ScheduledCommand() {
+								@Override
+								public void execute() {
+									debugAlert("GwtClientHelper.executeCommand( Retrying Command ):  " + VibeRpcCmdType.getEnum(cmd.getCmdType()).name());
+									executeCommand(cmd, httpRequestInfo, callback);
+								}
+							});
+						}
+						
+						else {
+							// No, this isn't the initial try or it's
+							// not an RpcTokenException!  Simply tell
+							// the callback about the error.
+							callback.onFailure(caught);
+						}
+					}
+
+					@Override
+					public void onSuccess(VibeRpcResponse result) {
+						// Yes!  Pass the result back to the caller.
+						callback.onSuccess(result);
+					}
+				});
 			}
 		});
 	}	
@@ -826,6 +867,8 @@ public class GwtClientHelper {
 	 *    GregorianCalendar equivalent.  This is the only way to
 	 *    manipulate a date and time.
      * 
+     * @param date
+     * 
      * @return
      */
 	@SuppressWarnings("deprecation")
@@ -836,6 +879,8 @@ public class GwtClientHelper {
 	
 	/**
 	 * Returns the client's timezone offset in milliseconds.
+	 * 
+	 * @param date
 	 * 
 	 * @return
 	 */
@@ -851,9 +896,9 @@ public class GwtClientHelper {
 	@SuppressWarnings("deprecation")
 	public static Date getTomorrow() {
 		Date reply = new Date();
-		reply.setHours(  24);
-		reply.setMinutes( 0);
-		reply.setSeconds( 0);
+		reply.setHours( 24);
+		reply.setMinutes(0);
+		reply.setSeconds(0);
 		return reply;
 	}
 	
@@ -1121,8 +1166,10 @@ public class GwtClientHelper {
 	}
 
 	/**
-	 * Open a window with the url that points to the appropriate help
+	 * Open a window with the URL that points to the appropriate help
 	 * documentation.
+	 * 
+	 * @param helpData
 	 */
 	public static void invokeHelp(HelpData helpData) {
 		if (null != helpData) {
@@ -1149,24 +1196,32 @@ public class GwtClientHelper {
 
 	/**
 	 * Returns true if the given group is belongs to the "all external users" group.
+	 * 
+	 * @param groupId
+	 * 
+	 * @return
 	 */
-	public static boolean isAllExternalUsersGroup( String groupId )
-	{
-		if ( groupId == null )
+	public static boolean isAllExternalUsersGroup(String groupId) {
+		if (groupId == null) {
 			return false;
+		}
 
-		return groupId.equalsIgnoreCase( getRequestInfo().getAllExternalUsersGroupId() );
+		return groupId.equalsIgnoreCase(getRequestInfo().getAllExternalUsersGroupId());
 	}
 	
 	/**
 	 * Returns true if the given group is belongs to the "all internal users" group.
+	 * 
+	 * @param groupId
+	 * 
+	 * @return
 	 */
-	public static boolean isAllInternalUsersGroup( String groupId )
-	{
-		if ( groupId == null )
+	public static boolean isAllInternalUsersGroup(String groupId) {
+		if (groupId == null) {
 			return false;
+		}
 		
-		return groupId.equalsIgnoreCase( getRequestInfo().getAllInternalUsersGroupId() );
+		return groupId.equalsIgnoreCase(getRequestInfo().getAllInternalUsersGroupId());
 	}
 	
 	/**
@@ -1249,12 +1304,12 @@ public class GwtClientHelper {
 	 * 
 	 * @return
 	 */
-	public static boolean isGuest( String id )
-	{
-		if ( id == null )
+	public static boolean isGuest(String id) {
+		if (id == null) {
 			return false;
+		}
 
-		return id.equalsIgnoreCase( getRequestInfo().getGuestId() );
+		return id.equalsIgnoreCase(getRequestInfo().getGuestId());
 	}
 	
 	/**
@@ -1269,59 +1324,62 @@ public class GwtClientHelper {
 
 	/**
 	 * Returns true if the current user is guest
+	 * 
+	 * @return
 	 */
-	public static boolean isCurrentUserGuest()
-	{
-		String currentUserId;
-		
-		// Get the id if the current user.
-		currentUserId = getRequestInfo().getUserId();
-		
-		return isGuest( currentUserId );
+	public static boolean isCurrentUserGuest() {
+		// Get the ID if the current user.
+		String currentUserId = getRequestInfo().getUserId();
+		return isGuest(currentUserId);
 	}
 	
 	/**
 	 * Return true if the key that was pressed is valid in a numeric field. 
+	 *
+	 * @param charCode
+	 * @param keyCode
+	 * 
+	 * @return
 	 */
-	public static boolean isKeyValidForNumericField( char charCode, int keyCode )
-	{
-        if ( Character.isDigit( charCode ) == false &&
-        	 keyCode != KeyCodes.KEY_TAB &&
-        	 keyCode != KeyCodes.KEY_BACKSPACE &&
-        	 keyCode != KeyCodes.KEY_DELETE &&
-        	 keyCode != KeyCodes.KEY_ENTER &&
-        	 keyCode != KeyCodes.KEY_HOME &&
-        	 keyCode != KeyCodes.KEY_END &&
-        	 keyCode != KeyCodes.KEY_LEFT &&
-        	 keyCode != KeyCodes.KEY_UP &&
-        	 keyCode != KeyCodes.KEY_RIGHT &&
-        	 keyCode != KeyCodes.KEY_DOWN )
-        {
+	public static boolean isKeyValidForNumericField(char charCode, int keyCode) {
+        if ((!(Character.isDigit(charCode)))     &&
+        	 (keyCode != KeyCodes.KEY_TAB)       &&
+        	 (keyCode != KeyCodes.KEY_BACKSPACE) &&
+        	 (keyCode != KeyCodes.KEY_DELETE)    &&
+        	 (keyCode != KeyCodes.KEY_ENTER)     &&
+        	 (keyCode != KeyCodes.KEY_HOME)      &&
+        	 (keyCode != KeyCodes.KEY_END)       &&
+        	 (keyCode != KeyCodes.KEY_LEFT)      &&
+        	 (keyCode != KeyCodes.KEY_UP)        &&
+        	 (keyCode != KeyCodes.KEY_RIGHT)     &&
+        	 (keyCode != KeyCodes.KEY_DOWN)) {
         	return false;
         }
 
         // On Chrome, the keyCode for '.' is the same as for KEY_DELETE.
-        if ( charCode == '.' )
+        if (charCode == '.') {
         	return false;
+        }
         
         return true;
 	}
 	
 	/**
 	 * Returns true if the given keyCode is a navigation key.
+	 * 
+	 * @param keyCode
+	 * 
+	 * @return
 	 */
-	public static boolean isNavigationKey( int keyCode )
-	{
+	public static boolean isNavigationKey(int keyCode) {
 		boolean result = false;
-		
-        if ( keyCode == KeyCodes.KEY_TAB ||
-        	 keyCode == KeyCodes.KEY_HOME ||
-        	 keyCode == KeyCodes.KEY_END ||
-        	 keyCode == KeyCodes.KEY_LEFT ||
-        	 keyCode == KeyCodes.KEY_UP ||
-             keyCode == KeyCodes.KEY_RIGHT ||
-             keyCode == KeyCodes.KEY_DOWN )
-        {
+        if ((keyCode == KeyCodes.KEY_TAB)   ||
+        	(keyCode == KeyCodes.KEY_HOME)  ||
+        	(keyCode == KeyCodes.KEY_END)   ||
+        	(keyCode == KeyCodes.KEY_LEFT)  ||
+        	(keyCode == KeyCodes.KEY_UP)    ||
+            (keyCode == KeyCodes.KEY_RIGHT) ||
+            (keyCode == KeyCodes.KEY_DOWN)) {
         	result = true;
         }
 
@@ -2556,38 +2614,28 @@ public class GwtClientHelper {
 	 * @param s
 	 * @param delimiter
 	 */
-	public static String[] split( String s, String delimiter )
-	{
-		List<String> nodeValues;
-		int offset = 0;
-		int pos;
-
-		if ( s == null || delimiter == null )
-		{
+	public static String[] split(String s, String delimiter) {
+		if ((s == null) || (delimiter == null)) {
 			return new String[0];
 		}
 
 		s = s.trim();
-
-		if ( !s.endsWith( delimiter ) )
-		{
+		if (!(s.endsWith(delimiter))) {
 			s += delimiter;
 		}
 
-		if ( s.equals( delimiter ) )
-		{
+		if (s.equals(delimiter)) {
 			return new String[0];
 		}
 
-		nodeValues = new ArrayList<String>();
+		List<String> nodeValues = new ArrayList<String>();
+		int offset = 0;
+		int pos = s.indexOf(delimiter, offset);
+		while (pos != (-1)) {
+			nodeValues.add(s.substring(offset, pos));
 
-		pos = s.indexOf( delimiter, offset );
-		while ( pos != (-1) )
-		{
-			nodeValues.add( s.substring( offset, pos ) );
-
-			offset = pos + delimiter.length();
-			pos = s.indexOf( delimiter, offset );
+			offset = (pos + delimiter.length());
+			pos = s.indexOf(delimiter, offset);
 		}
 
 		return (String[])nodeValues.toArray(new String[0]);
