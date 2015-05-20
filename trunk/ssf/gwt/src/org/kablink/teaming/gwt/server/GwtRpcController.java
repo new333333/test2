@@ -93,6 +93,7 @@ public class GwtRpcController extends VibeXsrfProtectedServiceServlet
     @Override
     public String processCall( String payload ) throws SerializationException
     {
+		boolean isRetry = false;
         try
         {
             RPCRequest rpcRequest = RPC.decodeRequest( payload, m_xsrfProtectedServiceClass );
@@ -130,7 +131,7 @@ public class GwtRpcController extends VibeXsrfProtectedServiceServlet
     		}
             
             // Is the first parameter to the method is an
-            // HttpRequestInfo object.?
+            // HttpRequestInfo object?
             if ( ( null != parameters ) && ( 0 < parameters.length ) && ( parameters[0] instanceof HttpRequestInfo ) )
             {
             	HttpServletRequest req;
@@ -150,6 +151,7 @@ public class GwtRpcController extends VibeXsrfProtectedServiceServlet
             	ri.setRequestObj( req );
             	ri.setResponseObj( resp );
             	ri.setServletContext( getServletContext() );
+            	isRetry = ri.isRetry();
             	
             	// Is the user logged in?
             	if ( WebHelper.isGuestLoggedIn( req ) )
@@ -197,7 +199,12 @@ public class GwtRpcController extends VibeXsrfProtectedServiceServlet
         }
         
         catch (RpcTokenException ex) {
-            m_logger.error( "An RpcTokenException was thrown while processing this call.", ex );
+        	// If this call is a retry of the GWT RPC request...
+        	if ( isRetry )
+        	{
+        		// ...log the error.
+        		m_logger.error( "An RpcTokenException was thrown while processing this call.", ex );
+        	}
             return RPC.encodeResponseForFailure( null, ex );
         }
         
