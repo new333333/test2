@@ -130,8 +130,7 @@
 
 .entryWidgetDesc, .entryWidgetDesc_dark
 {
-	padding-left: 4px;
-	padding-right: 4px;	
+	padding: 8px;
 }
 
 .entryWidgetMainPanel
