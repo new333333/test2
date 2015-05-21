@@ -88,10 +88,12 @@ public class GwtTeaming implements EntryPoint {
 	// The following are used to interact with the server in obtaining
 	// an XsrfToken to use for GWT RPC requests and for executing the
 	// GWT RPC commands themselves.
-	private static final String					GWT_RPC_ENTRY_POINT	= "gwtTeaming.rpc";
-	private static final XsrfTokenServiceAsync	m_xsrfTokenService	= ((XsrfTokenServiceAsync) GWT.create(XsrfTokenService.class));
+	private static final String					GWT_RPC_PATH				= "/ssf/gwt/";
+	private static final String					GWT_RPC_ENTRY_POINT			= "gwtTeaming.rpc";
+	private static final String					GWT_RPC_ENTRY_POINT_PATH	= (GWT_RPC_PATH + GWT_RPC_ENTRY_POINT);
+	private static final XsrfTokenServiceAsync	m_xsrfTokenService			= ((XsrfTokenServiceAsync) GWT.create(XsrfTokenService.class));
 	static {
-		((ServiceDefTarget) m_xsrfTokenService).setServiceEntryPoint(GWT.getModuleBaseURL() + GWT_RPC_ENTRY_POINT);
+		((ServiceDefTarget) m_xsrfTokenService).setServiceEntryPoint(GWT_RPC_ENTRY_POINT_PATH);
 	}
 	private static GwtRpcServiceAsync	m_rpcService;
 	private static XsrfToken			m_xsrfToken;
@@ -253,8 +255,9 @@ public class GwtTeaming implements EntryPoint {
 					// Yes, we got the XSRF token for GWT RPC requests!
 					// Cache it, store it in the m_rpcService object
 					// and pass that back through the callback.
-					m_xsrfToken = xsrfToken;
+					m_xsrfToken  = xsrfToken;
 					m_rpcService = ((GwtRpcServiceAsync) GWT.create(GwtRpcService.class));
+					((ServiceDefTarget) m_rpcService).setServiceEntryPoint(GWT_RPC_ENTRY_POINT_PATH);
 					((HasRpcToken) m_rpcService).setRpcToken(m_xsrfToken);
 					callback.onSuccess(m_rpcService);
 				}

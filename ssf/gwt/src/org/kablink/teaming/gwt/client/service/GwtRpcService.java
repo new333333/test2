@@ -38,20 +38,16 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.user.client.rpc.XsrfProtectedService;
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.user.server.rpc.XsrfProtect;
 
 /**
- * This interface defines the methods that can be called when we want
- * to make a remote procedure call.
+ * This interface defines the method called when we want to invoke a
+ * GWT RPC command.
  * 
- * @author jwootton
+ * @author drfoster@novell.com
  */
-@RemoteServiceRelativePath("gwtTeaming.rpc")
 @XsrfProtect
-public interface GwtRpcService extends XsrfProtectedService
-{
-	// Execute the given command.
-	public VibeRpcResponse executeCommand( HttpRequestInfo ri, VibeRpcCmd cmd ) throws GwtTeamingException;
-	
+public interface GwtRpcService extends XsrfProtectedService {
+	// Called to execute the given GWT RPC command.
+	public VibeRpcResponse executeCommand(HttpRequestInfo ri, VibeRpcCmd cmd) throws GwtTeamingException;
 }
