@@ -51,9 +51,12 @@ public class FieldBuilderUserlist extends AbstractFieldBuilder {
         Field field;
         int i = 0;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
-	        val = Long.valueOf((String)it.next());
-	        field = FieldFactory.createField(fieldName, val.toString(), getFieldStore(), getFieldIndex());
-	        fields[i] = field;
+        	try {
+		        val = Long.valueOf((String)it.next());
+		        field = FieldFactory.createField(fieldName, val.toString(), getFieldStore(), getFieldIndex());
+		        fields[i] = field;
+        	}
+        	catch(NumberFormatException ignore) {}
         }
         
         return fields;
