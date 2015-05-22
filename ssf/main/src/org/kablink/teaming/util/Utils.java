@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -327,7 +327,9 @@ public class Utils {
 	  	User user = RequestContextHolder.getRequestContext().getUser();
 	  	return canUserOnlySeeCommonGroupMembers(user);
   	}
-  	public static boolean canUserOnlySeeCommonGroupMembers(User user) {
+
+  	@SuppressWarnings("unused")
+	public static boolean canUserOnlySeeCommonGroupMembers(User user) {
 		if (user == null) return false;
 		HashMapCache<Long, Boolean> onlySeeCache = null;
 		HttpSession session = ZoneContextHolder.getHttpSession();
@@ -380,7 +382,24 @@ public class Utils {
 			//If any error occurs, assume limited
 			return true;
 		}
-		return (Boolean)onlySeeCache.get(user.getId());
+		if (null == onlySeeCache) {
+			m_logger.error("canOnlySeeCommonGroupMembers():  onlySeeCache is null, returning false");
+			return false;
+		}
+		if (null == user) {
+			m_logger.error("canOnlySeeCommonGroupMembers():  user is null, returning false");
+			return false;
+		}
+		if (null == user.getId()) {
+			m_logger.error("canOnlySeeCommonGroupMembers():  user.getId() is null, returning false");
+			return false;
+		}
+		Boolean reply = onlySeeCache.get(user.getId());
+		if (null == reply) {
+			m_logger.error("canOnlySeeCommonGroupMembers():  onlySeeCache.get(user.getId()) is null, returning false");
+			return false;
+		}
+		return reply;
 	}
 
 	public static boolean isWorkareaInProfilesTree(WorkArea workArea) {
