@@ -2848,7 +2848,6 @@ public class GwtServerHelper {
 				}
 				catch( AccessControlException e ) {}
 */
-				//! DRF (20150302)
 			}
 			
 			// Is this the built-in administrator?
@@ -2872,6 +2871,27 @@ public class GwtServerHelper {
 				catch( AccessControlException e ) {}
 			}
 			
+			// Does the user have rights to "Limit User Visibility"?
+			try
+			{
+				if ( userHasAdminRights )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.limitUserVisibility" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_USER_VISIBILITY );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_USER_VISIBILITY );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
 			// Does the user have rights to "Manage shares"?
 			try
 			{
@@ -6859,7 +6879,7 @@ public class GwtServerHelper {
 			lpConfigData.initLandingPageProperties( lpProperties );
 		}
 	}
-	
+
 	/**
 	 * Return a list of child binders for the given binder.
 	 */
@@ -10905,6 +10925,7 @@ public class GwtServerHelper {
 		case GET_LDAP_OBJECT_FROM_AD:
 		case GET_LDAP_SERVER_DATA:
 		case GET_LDAP_SYNC_RESULTS:
+		case GET_LIMIT_USER_VISIBILITY_INFO:
 		case GET_LIST_OF_CHILD_BINDERS:
 		case GET_LIST_OF_FILES:
 		case GET_LOCALES:
@@ -11086,6 +11107,7 @@ public class GwtServerHelper {
 		case SET_SEEN:
 		case SET_UNSEEN:
 		case SET_USER_SHARING_RIGHTS_INFO:
+		case SET_USER_VISIBILITY:
 		case SHARE_ENTRY:
 		case SHOW_SHARES:
 		case START_LDAP_SYNC:

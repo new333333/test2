@@ -98,6 +98,7 @@ public class EventHelper {
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
 		case INVOKE_IMPORT_PROFILES_DLG:			reply = new InvokeImportProfilesDlgEvent();		  break;
+		case INVOKE_LIMIT_USER_VISIBILITY_DLG:		reply = new InvokeLimitUserVisibilityDlgEvent();  break;
 		case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:	reply = new InvokeNetFolderGlobalSettingsDlgEvent(); break;
 		case INVOKE_LDAP_SYNC_RESULTS_DLG:			reply = new InvokeLdapSyncResultsDlgEvent();	  break;
 		case INVOKE_MANAGE_DATABASE_PRUNE_DLG:		reply = new InvokeManageDatabasePruneDlgEvent();  break;
@@ -111,6 +112,7 @@ public class EventHelper {
 		case LOGIN:                             	reply = new LoginEvent();                         break;
 		case PRE_LOGOUT:                        	reply = new PreLogoutEvent();                     break;
 		case PREVIEW_LANDING_PAGE:					reply = new PreviewLandingPageEvent();			  break;
+		case MANAGE_USER_VISIBILITY:                reply = new ManageUserVisibilityEvent();          break;
 		case MASTHEAD_HIDE:                     	reply = new MastheadHideEvent();                  break;
 		case MASTHEAD_SHOW:                     	reply = new MastheadShowEvent();                  break;
 		case MASTHEAD_UNHIGHLIGHT_ALL_ACTIONS:     	reply = new MastheadUnhighlightAllActionsEvent(); break;
@@ -1353,6 +1355,16 @@ public class EventHelper {
 				}
 				break;
 			
+			case INVOKE_LIMIT_USER_VISIBILITY_DLG:
+				// An InvokeLimitUserVisibilityDlgEvent!  Can the event
+				// handler we were given handle that?
+				if ( eventHandler instanceof InvokeLimitUserVisibilityDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeLimitUserVisibilityDlgEvent.registerEvent( eventBus, ((InvokeLimitUserVisibilityDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:
 				// An InvokeNetFolderGlobalSettingsDlgEvent!  Can the event handler we were given handle that?
 				if ( eventHandler instanceof InvokeNetFolderGlobalSettingsDlgEvent.Handler)
@@ -1765,6 +1777,15 @@ public class EventHelper {
 				if (eventHandler instanceof ManageUsersFilterEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = ManageUsersFilterEvent.registerEvent(eventBus, ((ManageUsersFilterEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case MANAGE_USER_VISIBILITY:
+				// An ManageUserVisibilityEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ManageUserVisibilityEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ManageUserVisibilityEvent.registerEvent(eventBus, ((ManageUserVisibilityEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -2994,6 +3015,7 @@ public class EventHelper {
 			case INVOKE_IMPORT_ICAL_FILE:           	       hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);                   break;
 			case INVOKE_IMPORT_ICAL_URL:            	       hasHandler = (eventHandler instanceof InvokeImportIcalUrlEvent.Handler);                    break;
 			case INVOKE_IMPORT_PROFILES_DLG:				   hasHandler = (eventHandler instanceof InvokeImportProfilesDlgEvent.Handler);		           break;
+			case INVOKE_LIMIT_USER_VISIBILITY_DLG:		       hasHandler = (eventHandler instanceof InvokeLimitUserVisibilityDlgEvent.Handler);           break;
 			case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:		   hasHandler = (eventHandler instanceof InvokeNetFolderGlobalSettingsDlgEvent.Handler); 	   break;
 			case INVOKE_LDAP_SYNC_RESULTS_DLG:			       hasHandler = (eventHandler instanceof InvokeLdapSyncResultsDlgEvent.Handler); 	           break;
 			case INVOKE_MANAGE_ADMINISTRATORS_DLG:			   hasHandler = (eventHandler instanceof InvokeManageAdministratorsDlgEvent.Handler);		   break;
@@ -3033,6 +3055,7 @@ public class EventHelper {
 			case PREVIEW_LANDING_PAGE:      			       hasHandler = (eventHandler instanceof PreviewLandingPageEvent.Handler);     	               break;
 
 			case MANAGE_SHARES_SELECTED_ENTITIES:              hasHandler = (eventHandler instanceof ManageSharesSelectedEntitiesEvent.Handler);           break;
+			case MANAGE_USER_VISIBILITY:                       hasHandler = (eventHandler instanceof ManageUserVisibilityEvent.Handler);                   break;
 			case MARK_ENTRY_READ:                   	       hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                          break;
 			case MARK_ENTRY_UNREAD:                 	       hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);                        break;
 			case MARK_FOLDER_CONTENTS_READ:                    hasHandler = (eventHandler instanceof MarkFolderContentsReadEvent.Handler);                 break;

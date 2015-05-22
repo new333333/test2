@@ -447,6 +447,7 @@ public class WebKeys {
 	public static final String ACTION_MANAGE_RESOURCE_DRIVERS="manage_resource_drivers";
 	public static final String ACTION_MANAGE_SHARE_ITEMS = "manage_share_items";
 	public static final String ACTION_MANAGE_USER_ACCOUNTS="manage_user_accounts";
+	public static final String ACTION_MANAGE_USER_VISIBILITY = "manage_user_visibility";
 	public static final String ACTION_MANAGE_LICENSE="manage_license";
 	public static final String ACTION_MANAGE_ZONES="manage_zones";
 	public static final String ACTION_MANAGE_APPLICATIONS="manage_applications";
