@@ -367,6 +367,7 @@ public class Utils {
 		CoreDao coreDao = (CoreDao) SpringContextUtil.getBean("coreDao");
 		AccessControlManager accessControlManager = (AccessControlManager)SpringContextUtil.getBean("accessControlManager");
 		WorkArea zone = coreDao.loadZoneConfig(user.getZoneId());
+		Boolean reply;
 		try {
 			// DRF (20141211):  Reworked this check to only test
 			// OVERRIDE_ONLY_SEE_GROUP_MEMBERS if it has to (i.e.,
@@ -374,30 +375,15 @@ public class Utils {
 			// all the time.
 			boolean canOnlySeeGroupMembers = accessControlManager.testOperation(user, zone, WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS);
 			if (canOnlySeeGroupMembers && !accessControlManager.testOperation(user, zone, WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS)) {
-				onlySeeCache.put(user.getId(), Boolean.TRUE);
+				reply = Boolean.TRUE;
+				onlySeeCache.put(user.getId(), reply);
 			} else {
-				onlySeeCache.put(user.getId(), Boolean.FALSE);
+				reply = Boolean.FALSE;
+				onlySeeCache.put(user.getId(), reply);
 			}
 		} catch(Exception e) {
 			//If any error occurs, assume limited
 			return true;
-		}
-		if (null == onlySeeCache) {
-			m_logger.error("canOnlySeeCommonGroupMembers():  onlySeeCache is null, returning false");
-			return false;
-		}
-		if (null == user) {
-			m_logger.error("canOnlySeeCommonGroupMembers():  user is null, returning false");
-			return false;
-		}
-		if (null == user.getId()) {
-			m_logger.error("canOnlySeeCommonGroupMembers():  user.getId() is null, returning false");
-			return false;
-		}
-		Boolean reply = onlySeeCache.get(user.getId());
-		if (null == reply) {
-			m_logger.error("canOnlySeeCommonGroupMembers():  onlySeeCache.get(user.getId()) is null, returning false");
-			return false;
 		}
 		return reply;
 	}
