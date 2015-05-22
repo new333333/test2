@@ -102,6 +102,11 @@
 		.vibe-filtersPanel                 {padding-left: 10px; font-size: 11px !important;}
 	/* ...End:  Filter panel styles. */
 	
+	/* ...Start:  Limit User Visibility view styles. */
+		.vibe-limitUserVisibilityDataTable {}
+		.vibe-limitUserVisibilityFlowPanel {}
+	/* ...End:  Limit User Visibility view styles. */
+
 	/* Start:  Quick filter styles. */
 		.vibe-quickFilter_image      {cursor: pointer; margin-right: 5px;}
 		.vibe-quickFilter_input      {font-size: 11px !important; width: 130px; border: none !important; background-color: transparent !important; padding: 1px 0 !important; vertical-align: middle;}

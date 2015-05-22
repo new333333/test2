@@ -38,7 +38,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.rpc.shared.LimitUserVisibilityInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.util.AllModulesInjected;
 
@@ -58,41 +57,6 @@ public class GwtUserVisibilityHelper {
 		// Nothing to do.
 	}
 	
-	/**
-	 * Returns a LimitUserVisibilityInfoRpcResponseData containing
-	 * information about the user visibility limitations currently in
-	 * affect.
-	 * 
-	 * @param bs
-	 * @param request
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static LimitUserVisibilityInfoRpcResponseData getLimitUserVisibilityInfo(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtUserVisibilityHelper.getLimitUserVisibilityInfo()");
-		try {
-			LimitUserVisibilityInfoRpcResponseData reply = new LimitUserVisibilityInfoRpcResponseData();
-			
-//!			...this needs to be implemented...
-			
-			// If we get here, reply contains a
-			// LimitUserVisibilityInfoRpcResponseData containing the
-			// user visibility limitations currently in affect.  Return
-			// it.
-			return reply;
-		}
-		
-		catch (Exception ex) {
-			throw GwtLogHelper.getGwtClientException(m_logger, ex);
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-
 	/**
 	 * Sets the 'Can Only See Members of Group I'm In' and
 	 * corresponding override flags on the given principal.
