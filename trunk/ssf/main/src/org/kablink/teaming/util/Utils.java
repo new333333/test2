@@ -328,7 +328,6 @@ public class Utils {
 	  	return canUserOnlySeeCommonGroupMembers(user);
   	}
 
-  	@SuppressWarnings("unused")
 	public static boolean canUserOnlySeeCommonGroupMembers(User user) {
 		if (user == null) return false;
 		HashMapCache<Long, Boolean> onlySeeCache = null;
@@ -919,6 +918,7 @@ public class Utils {
 				//This template is allowed
 				filteredList.add(def);
 			} else {
+			  	@SuppressWarnings("unused")
 				Document doc = def.getDefinition();
 				if (def.getType() == definitionType && checkIfValidDefinition(def)) {
 					//This template is allowed
