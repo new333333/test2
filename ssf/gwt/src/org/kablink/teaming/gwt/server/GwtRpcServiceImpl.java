@@ -207,6 +207,7 @@ import org.kablink.teaming.gwt.server.util.GwtSearchHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.server.util.GwtShareHelper;
 import org.kablink.teaming.gwt.server.util.GwtTaskHelper;
+import org.kablink.teaming.gwt.server.util.GwtUserVisibilityHelper;
 import org.kablink.teaming.gwt.server.util.GwtViewHelper;
 import org.kablink.teaming.gwt.server.util.GwtWikiHelper;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -2175,6 +2176,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_LIMIT_USER_VISIBILITY_INFO:
+		{
+			LimitUserVisibilityInfoRpcResponseData data = GwtUserVisibilityHelper.getLimitUserVisibilityInfo(this, req);
+			response = new VibeRpcResponse(data);
+			return response;
+		}
+		
 		case GET_LIST_OF_CHILD_BINDERS:
 		{
 			GetListOfChildBindersCmd glocbCmd;
@@ -4056,6 +4064,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			SetUserSharingRightsInfoCmd susrCmd = ((SetUserSharingRightsInfoCmd) cmd);
 			ErrorListRpcResponseData result = GwtServerHelper.setUserSharingRightsInfo( this, req, susrCmd.getUserIds(), susrCmd.getSharingRights() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case SET_USER_VISIBILITY:
+		{
+			SetUserVisibilityCmd suvCmd = ((SetUserVisibilityCmd) cmd);
+			StringRpcResponseData result = GwtUserVisibilityHelper.setUserVisibility( this, req, suvCmd.getPrincipalId(), suvCmd.getCanOnlySeeMembersOfGroupsImIn(), suvCmd.getOverrideCanOnlySeeMembersOfGroupsImIn() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

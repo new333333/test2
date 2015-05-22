@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,6 +52,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditKeyShieldConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditLdapConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeLimitUserVisibilityDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageAdministratorsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeNetFolderGlobalSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageDatabasePruneDlgEvent;
@@ -66,6 +67,7 @@ import org.kablink.teaming.gwt.client.event.InvokePrincipalDesktopSettingsDlgEve
 import org.kablink.teaming.gwt.client.event.InvokePrincipalMobileSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeRunAReportDlgEvent;
 import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.ManageUserVisibilityEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -113,6 +115,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUs
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
+import org.kablink.teaming.gwt.client.widgets.LimitUserVisibilityDlg.LimitUserVisibilityDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageAdministratorsDlg.ManageAdministratorsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.NetFolderGlobalSettingsDlg.NetFolderGlobalSettingsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageDatabasePruneDlg.ManageDatabasePruneDlgClient;
@@ -158,11 +161,12 @@ import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
- * This widget will display the controls that make up the "Administration" control.
- * There is a widget that displays the list of administration actions and a widget
- * that displays the page for the selected administration action.
+ * This widget will display the controls that make up the
+ * 'Administration' control.  There is a widget that displays the list
+ * of administration actions and a widget that displays the page for
+ * the selected administration action.
  * 
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
 public class AdminControl extends TeamingPopupPanel
 	implements 
@@ -179,6 +183,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeEditKeyShieldConfigDlgEvent.Handler,
 		InvokeEditLdapConfigDlgEvent.Handler,
 		InvokeEditNetFolderDlgEvent.Handler,
+		InvokeLimitUserVisibilityDlgEvent.Handler,
 		InvokeNetFolderGlobalSettingsDlgEvent.Handler,
 		InvokeManageAdministratorsDlgEvent.Handler,
 		InvokeManageDatabasePruneDlgEvent.Handler,
@@ -193,6 +198,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokePrincipalMobileSettingsDlgEvent.Handler,
 		InvokeRunAReportDlgEvent.Handler,
 		ManageSharesSelectedEntitiesEvent.Handler,
+		ManageUserVisibilityEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
@@ -225,6 +231,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
 	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
 	private EditZoneShareSettingsDlg m_editZoneShareSettingsDlg = null;
+	private LimitUserVisibilityDlg m_limitUserVisibilityDlg = null;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg = null;
 	private ShareThisDlg2 m_shareDlg = null;
 	private NetFolderGlobalSettingsDlg m_nfGlobalSettingsDlg = null;
@@ -237,15 +244,15 @@ public class AdminControl extends TeamingPopupPanel
 	private AdminConsoleDialogMode m_acDlgMode = AdminConsoleDialogMode.MODAL; 
 	private Map<AdminAction, Boolean> m_modalActionMap = null;	// Maps AdminAction's to whether they should display in a modal dialog.
 	
-	// The following are used to coordinate firing a 'on layout' event
+	// The following are used to coordinate firing an 'on layout' event
 	// AFTER all the layout requests in a sequence of them have
 	// finished.
 	private Timer				m_onLayoutEventTimer;
 	private VibeEventBase<?>	m_onLayoutEvent;
 	private final static int	ON_LAYOUT_EVENT_DELAY = 250;
 
-	private final static int CONTENT_CONTROL_Z_INDEX = 1010;
-	private final static int GLASS_PANEL_Z_INDEX = 1000;
+	private final static int CONTENT_CONTROL_Z_INDEX	= 1010;
+	private final static int GLASS_PANEL_Z_INDEX		= 1000;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -264,6 +271,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_EDIT_KEYSHIELD_CONFIG_DLG,
 		TeamingEvents.INVOKE_EDIT_LDAP_CONFIG_DLG,
 		TeamingEvents.INVOKE_EDIT_NET_FOLDER_DLG,
+		TeamingEvents.INVOKE_LIMIT_USER_VISIBILITY_DLG,
 		TeamingEvents.INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG,
 		TeamingEvents.INVOKE_MANAGE_ADMINISTRATORS_DLG,
 		TeamingEvents.INVOKE_MANAGE_DATABASE_PRUNE_DLG,
@@ -278,6 +286,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_MANAGE_MOBILE_DEVICES_DLG,
 		TeamingEvents.INVOKE_RUN_A_REPORT_DLG,
 		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
+		TeamingEvents.MANAGE_USER_VISIBILITY,
 		
 		// Login/out events.
 		TeamingEvents.PRE_LOGOUT,
@@ -287,16 +296,14 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.SIDEBAR_SHOW,
 	};
 
-	/**
-	 * 
+	/*
 	 */
 	private class AdminControlGlassPanel extends PopupPanel
 	{
 		private boolean m_glassModal;	//
 		
-		AdminControlGlassPanel()
-		{
-			super( false, false );
+		AdminControlGlassPanel() {
+			super(false, false);
 		}
 		
 		/*
@@ -331,11 +338,9 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		
 		/**
-		 * 
 		 */
 		@Override
-		public Element getGlassElement()
-		{
+		public Element getGlassElement() {
 			return super.getGlassElement();
 		}
 
@@ -345,106 +350,86 @@ public class AdminControl extends TeamingPopupPanel
 		 * 
 		 * @param glassModal
 		 */
-		public void setGlassModal( boolean glassModal )
-		{
+		public void setGlassModal(boolean glassModal) {
 			m_glassModal = glassModal;
-			if ( glassModal )
-			     setGlassStyleName( "teamingDlgBox_Glass"      );
-			else setGlassStyleName( "teamingDlgBox_GlassClear" );
+			if (glassModal)
+			     setGlassStyleName("teamingDlgBox_Glass"     );
+			else setGlassStyleName("teamingDlgBox_GlassClear");
 		}
 	}
 	
-	/**
-	 * Class used for the ui for an administration action.
+	/*
+	 * Inner class used for the UI for an administration action.
 	 */
-	private class AdminActionControl extends Composite
-		implements ClickHandler, MouseOverHandler, MouseOutHandler
-	{
-		private GwtAdminAction m_adminAction;
-		private InlineLabel m_actionName;
+	private class AdminActionControl extends Composite implements ClickHandler, MouseOverHandler, MouseOutHandler {
+		private GwtAdminAction	m_adminAction;	//
+		private InlineLabel		m_actionName;	//
 		
 		/**
-		 * 
 		 */
-		public AdminActionControl( GwtAdminAction adminAction )
-		{
-			FlowPanel mainPanel;
-			String id;
-			
+		public AdminActionControl(GwtAdminAction adminAction) {
 			// Remember the action we are associated with.
 			m_adminAction = adminAction;
 			
-			mainPanel = new FlowPanel();
+			FlowPanel mainPanel = new FlowPanel();
 			
-			m_actionName = new InlineLabel( adminAction.getLocalizedName() );
-			m_actionName.addClickHandler( this );
-			m_actionName.addMouseOverHandler( this );
-			m_actionName.addMouseOutHandler( this );
-			m_actionName.addStyleName( "adminActionControl" );
-			m_actionName.addStyleName( "cursorPointer" );
+			m_actionName = new InlineLabel(adminAction.getLocalizedName());
+			m_actionName.addClickHandler(    this);
+			m_actionName.addMouseOverHandler(this);
+			m_actionName.addMouseOutHandler( this);
+			m_actionName.addStyleName("adminActionControl");
+			m_actionName.addStyleName("cursorPointer"     );
 			
 			// For automation purposes, give the label a unique id.
-			id = "adminAction-" + String.valueOf( adminAction.getActionType().ordinal() );
-			m_actionName.getElement().setId( id );
+			String id = ("adminAction-" + String.valueOf(adminAction.getActionType().ordinal()));
+			m_actionName.getElement().setId(id);
 			
-			mainPanel.add( m_actionName );
+			mainPanel.add(m_actionName);
 			
-			// All composites must call initWidget() in their constructors.
-			initWidget( mainPanel );
-			
-		}// end AdminActionControl()
+			// All composites must call initWidget() in their
+			// constructors.
+			initWidget(mainPanel);
+		}
 		
 		/**
-		 * 
 		 */
 		@Override
-		public void onClick( ClickEvent event )
-		{
+		public void onClick(ClickEvent event) {
 			// Push it into the history cache...
-			HistoryHelper.pushHistoryInfoAsync( m_adminAction );
+			HistoryHelper.pushHistoryInfoAsync(m_adminAction);
 			
 			// ...and tell the AdminControl that an action was
 			// ...selected.
-			adminActionSelected( m_adminAction );
-		}// end onClick()
+			adminActionSelected(m_adminAction);
+		}
 		
 		/**
-		 * 
 		 */
 		@Override
-		public void onMouseOver( MouseOverEvent event )
-		{
-			m_actionName.addStyleName( "adminActionControlMouseOver" );
-		}// end onMouseOver()
-		
+		public void onMouseOver(MouseOverEvent event) {
+			m_actionName.addStyleName("adminActionControlMouseOver");
+		}
 		
 		/**
-		 * 
 		 */
 		@Override
-		public void onMouseOut( MouseOutEvent event )
-		{
-			m_actionName.removeStyleName( "adminActionControlMouseOver" );
-		}// end onMouseOut()
-	}// end AdminActionControl
+		public void onMouseOut(MouseOutEvent event) {
+			m_actionName.removeStyleName("adminActionControlMouseOver");
+		}
+	}
 	
-	
-	/**
-	 * Class used for the ui for an administration category.
+	/*
+	 * Inner class used for the UI for an administration category.
 	 */
-	private class AdminCategoryControl extends Composite
-		implements ClickHandler
-	{
-		private FlexTable m_mainTable;
-		private FlexTable m_actionsTable;
-		private Image m_expandedImg;
-		private Image m_collapsedImg;
+	private class AdminCategoryControl extends Composite implements ClickHandler {
+		private FlexTable	m_actionsTable;	//
+		private FlexTable	m_mainTable;	//
+		private Image		m_collapsedImg;	//
+		private Image		m_expandedImg;	//
 		
 		/**
-		 * 
 		 */
-		public AdminCategoryControl( GwtAdminCategory category )
-		{
+		public AdminCategoryControl(GwtAdminCategory category) {
 			ArrayList<GwtAdminAction> actions = null;
 			ImageResource imgResource;
 			FlexTable.FlexCellFormatter cellFormatter; 
@@ -513,39 +498,31 @@ public class AdminControl extends TeamingPopupPanel
 
 			// Create a table to hold all the actions.
 			m_actionsTable = new FlexTable();
-			cellFormatter.setColSpan( row, 1, 2 );
-			m_mainTable.setWidget( row, 1, m_actionsTable );
+			cellFormatter.setColSpan(row, 1, 2);
+			m_mainTable.setWidget(row, 1, m_actionsTable);
 			
-			// Add a ui widget for all of the actions associated with this category.
+			// Add a UI widget for all of the actions associated with
+			// this category.
 			actions = category.getActions();
-			if ( actions != null )
-			{
-				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
-				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
-				for (GwtAdminAction action : actions )
-				{
-					if ( action.getActionType().equals( AdminAction.MANAGE_MOBILE_DEVICES ) && ( ! showManageMobileDevices ) )
-					{
-						continue;
-					}
+			if (null != actions) {
+				boolean showManageMobileDevices    = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
+				boolean showPasswordPolicy         = GwtClientHelper.isPasswordPolicyEnabled();
+				boolean showLimitUserVisibilityDlg = LimitUserVisibilityDlg.SHOW_LIMIT_USER_VISIBILITY_DLG;	//! DRF (20150922):  false on checkin until it's all working.
+				for (GwtAdminAction action : actions) {
+					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices))    continue;
+					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))         continue;
+					else if (action.getActionType().equals(AdminAction.MANAGE_USER_VISIBILITY)    && (!showLimitUserVisibilityDlg)) continue;
 					
-					if ( action.getActionType().equals( AdminAction.CONFIGURE_PASSWORD_POLICY ) && ( ! showPasswordPolicy ))
-					{
-						continue;
-					}
-					
-					AdminActionControl adminActionControl;
-					
-					// Add a ui widget for this administration action.
-					adminActionControl = new AdminActionControl( action );
+					// Add a UI widget for this administration action.
+					AdminActionControl adminActionControl = new AdminActionControl( action );
 					m_actionsTable.setWidget( m_actionsTable.getRowCount(), 0, adminActionControl );
 				}
 			}
 			
-			// All composites must call initWidget() in their constructors.
-			initWidget( m_mainTable );
-
-		}// end AdminCategoryControl()
+			// All composites must call initWidget() in their
+			// constructors.
+			initWidget(m_mainTable);
+		}
 		
 		/**
 		 * Hide all the actions associated with this category.
@@ -979,6 +956,14 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the "Manage net folders" dialog.
 			InvokeManageNetFoldersDlgEvent.fireOne();
 		}
+		
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_USER_VISIBILITY )
+		{
+			// Fire the event to invoke the limit user visibility
+			// dialog.
+			ManageUserVisibilityEvent.fireOne();
+		}
+				
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_SHARE_ITEMS )
 		{
 			ManageSharesSelectedEntitiesEvent event;
@@ -1498,7 +1483,7 @@ public class AdminControl extends TeamingPopupPanel
 								null );
 	}
 
-	/**
+	/*
 	 * Invokes the Share dialog in administrative mode.
 	 */
 	private void invokeManageSharesDlg()
@@ -2610,6 +2595,58 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Handles InvokeLimitUserVisibilityDlgEvent received by this
+	 * class.
+	 * 
+	 * Implements the InvokeLimitUserVisibilityDlgEvent.Handler.onInvokeLimitUserVisibilityDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeLimitUserVisibilityDlg(InvokeLimitUserVisibilityDlgEvent event) {
+		// Get the position of the content control.
+		final int x = m_contentControlX;
+		final int y = m_contentControlY;
+		
+		// Have we already created a 'Limit User Visibility' dialog?
+		if (null == m_limitUserVisibilityDlg) {
+			// No!  Create one now.
+			LimitUserVisibilityDlg.createAsync(new LimitUserVisibilityDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(final LimitUserVisibilityDlg luvDlg) {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							m_limitUserVisibilityDlg = luvDlg;
+							LimitUserVisibilityDlg.initAndShow(m_limitUserVisibilityDlg, x, y, m_dlgWidth, m_dlgHeight);
+						}
+					} );
+				}
+			},
+			isActionAutoHide(AdminAction.MANAGE_USER_VISIBILITY),
+			isActionModal(   AdminAction.MANAGE_USER_VISIBILITY),
+			x, 
+			y,
+			m_dlgWidth,
+			m_dlgHeight );
+		}
+		
+		else
+		{
+			// Yes, we've already created a 'Limit User Visibility'
+			// dialog!  Simply initialize and show it.
+			m_limitUserVisibilityDlg.setPixelSize(m_dlgWidth, m_dlgHeight);
+			LimitUserVisibilityDlg.initAndShow(m_limitUserVisibilityDlg, x, y, m_dlgWidth, m_dlgHeight);
+		}
+	}
+	
+	/**
 	 * Handles the InvokeNetFolderGlobalSettingsDlgEvent received by this class.
 	 * 
 	 * Implements the InvokeNetFolderGlobalSettingsDlgEvent.Handler.onInvokeNetFolderGlobalSettingsDlg() method.
@@ -3455,6 +3492,19 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Handles ManageUserVisibilityEvent's received by this class.
+	 * 
+	 * Implements the ManageUserVisibilityEvent.Handler.onManageUserVisibility() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onManageUserVisibility(ManageUserVisibilityEvent event) {
+		// Fire the event to invoke the 'Limit User Visibility' dialog.
+		InvokeLimitUserVisibilityDlgEvent.fireOneAsync();
+	}
+	
+	/**
 	 * Handles SidebarHideEvent's received by this class.
 	 * 
 	 * Implements the SidebarHideEvent.Handler.onSidebarHide() method.
@@ -3841,36 +3891,30 @@ public class AdminControl extends TeamingPopupPanel
 	 * Returns true if the AdminAction should be in an auto hide dialog
 	 * and false otherwise.
 	 */
-	private boolean isActionAutoHide( AdminAction aa )
-	{
-		return ( ! ( isActionModal( aa ) ) );
+	private boolean isActionAutoHide(AdminAction aa) {
+		return (!(isActionModal(aa)));
 	}
 	
 	/*
 	 * Returns true if the AdminAction should be in a modal dialog and
 	 * false otherwise.
 	 */
-	private boolean isActionModal( AdminAction aa )
-	{
+	private boolean isActionModal(AdminAction aa) {
 		populateModalActionsMap();
-		Boolean modal = m_modalActionMap.get( aa );
-		return ( ( null == modal ) || modal );
+		Boolean modal = m_modalActionMap.get(aa);
+		return ((null == modal) || modal);
 	}
 	
 	/*
 	 * Populates the modal actions map.
 	 */
-	private void populateModalActionsMap()
-	{
+	private void populateModalActionsMap() {
 		// If we haven't populated the modal actions map yet...
-		if ( null == m_modalActionMap )
-		{
+		if (null == m_modalActionMap) {
 			// ...populate it now.
 			m_modalActionMap = new HashMap<AdminAction, Boolean>();
-			for ( AdminAction aa:  AdminAction.values() )
-			{
-				switch ( aa )
-				{
+			for (AdminAction aa:  AdminAction.values()) {
+				switch (aa) {
 				// Non modal (i.e., simple Close button) actions.
 				case ADD_USER:
 				case CONFIGURE_ROLE_DEFINITIONS:
@@ -3886,16 +3930,17 @@ public class AdminControl extends TeamingPopupPanel
 				case MANAGE_NET_FOLDERS:
 				case MANAGE_RESOURCE_DRIVERS:
 				case MANAGE_TEAMS:
+				case MANAGE_USER_VISIBILITY:
 				case MANAGE_WORKSPACE_AND_FOLDER_TEMPLATES:
 				case MANAGE_ZONES:
 				case RUN_A_REPORT:
 					// These are modeless unless all dialogs are being
 					// forced to be modal.
-					m_modalActionMap.put( aa, new Boolean( m_acDlgMode.isModal() ) );
+					m_modalActionMap.put(aa, new Boolean(m_acDlgMode.isModal()));
 					break;
 	
 				default:
-					GwtClientHelper.debugAlert( "AdminControl.m_modalActionMap():  Mapping missing for " + aa.name() );
+					GwtClientHelper.debugAlert("AdminControl.m_modalActionMap():  Mapping missing for " + aa.name());
 					
 					// * * * * * * * * * * * * * * * * * * * * * * * //
 					// Fall through and treat it as a modal action.  //
@@ -3944,10 +3989,10 @@ public class AdminControl extends TeamingPopupPanel
 				case UNDEFINED:
 					// These are modal unless all dialogs are being
 					// forced to be modeless.
-					m_modalActionMap.put( aa, ( ! ( m_acDlgMode.isModeless() )) );
+					m_modalActionMap.put(aa, (!(m_acDlgMode.isModeless())));
 					break;
 				}
 			}
 		}
 	}
-}// end AdminControl
+}

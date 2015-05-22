@@ -754,6 +754,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_LandingPageWidget();
 	String codeSplitFailure_LdapBrowserDlg();
 	String codeSplitFailure_LdapSyncResultsDlg();
+	String codeSplitFailure_LimitUserVisibilityDlg();
 	String codeSplitFailure_LoginDlg();
 	String codeSplitFailure_MailToMultiplePublicLinksSelectDlg();
 	String codeSplitFailure_MailToPanel();
@@ -3636,4 +3637,7 @@ public interface GwtTeamingMessages extends Messages {
 	String selectCSVDelimiterDlgHeader();
 	String selectCSVDelimiterDlgHint1();
 	String selectCSVDelimiterDlgHint2(int max);
+	
+	// Strings used by the 'Limit User Visibility' dialog.
+	String limitUserVisibilityDlg_Header();
 }

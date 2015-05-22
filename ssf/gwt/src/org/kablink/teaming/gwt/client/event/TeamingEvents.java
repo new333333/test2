@@ -135,6 +135,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_IMPORT_PROFILES_DLG,						// Invokes the "Import Profiles" dialog.
 	INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG,			// Invokes the "Net Folder Global Settings" dialog.
 	INVOKE_LDAP_SYNC_RESULTS_DLG,					// Invokes the "Ldap sync results" dialog.
+	INVOKE_LIMIT_USER_VISIBILITY_DLG,				// Invokes the Limit User Visibility dialog.
 	INVOKE_MANAGE_ADMINISTRATORS_DLG,				// Invokes the "Manage administrators" dialog.
 	INVOKE_MANAGE_DATABASE_PRUNE_DLG,				// Invokes the "Manage database prune" dialog.
 	INVOKE_MANAGE_GROUPS_DLG,						// Invokes the "Manage groups" dialog.
@@ -325,6 +326,7 @@ public enum TeamingEvents implements IsSerializable {
 	LOCK_SELECTED_ENTITIES,							// Locks the Selected Entities.
 	MAILTO_PUBLIC_LINK_ENTITY,						// Mails the Public Link of the Entity Using a 'mailto://...' URL.
 	MANAGE_SHARES_SELECTED_ENTITIES,				// Invokes the Share dialog in administrative mode.
+	MANAGE_USER_VISIBILITY,							// Invokes the limit user visibility dialog.
 	MARK_READ_SELECTED_ENTITIES,					// Marks the Selected Entities as     Having Been Read.
 	MARK_UNREAD_SELECTED_ENTITIES,					// Marks the Selected Entities as Not Having Been Read.
 	MOBILE_DEVICE_WIPE_SCHEDULE_CHANGED,			// Signifies a mobile devices wipe schedule has changed.
