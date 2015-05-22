@@ -41,24 +41,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.license.LicenseChecker;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.cache.DefinitionCache;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.ExportException;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PermaLinkUtil;
+
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -83,6 +92,22 @@ public class LandingPageHelper {
 		// Nothing to do.
 	}
 
+	/*
+	 * Appends a 'novl_landing' flag to a URL.
+	 */
+	private static String addLandingPageFlagToUrl(String url) {
+		if (null == url) {
+			return url;
+		}
+		
+		String reply;
+		boolean crawler = url.contains(Constants.SLASH + WebKeys.URL_NOVL_URL_FLAG + Constants.SLASH);
+		if (crawler)
+		     reply = (url + Constants.SLASH     + WebKeys.URL_NOVL_LANDING_PAGE_FLAG + Constants.SLASH + "1");
+		else reply = (url + Constants.AMPERSAND + WebKeys.URL_NOVL_LANDING_PAGE_FLAG + Constants.EQUAL + "1");
+		return reply;
+	}
+	
 	/*
 	 * Returns true if the given landing page exists in the Global
 	 * Workspaces binder in the current zone.  Otherwise, returns
@@ -157,6 +182,72 @@ public class LandingPageHelper {
 		return (SpringContextUtil.getServletContext().getRealPath(LOCAL_LANDING_PAGE_BASE) + File.separator + lpName);
 	}
 
+	/**
+	 * Returns the URL for the Default Home Page or null if one isn't
+	 * accessible or specified.
+	 * 
+	 * @param req
+	 * 
+	 * @return
+	 */
+	public static String getDefaultLandingPageUrl(HttpServletRequest req) {
+		// Is there a Default Home Page defined?
+		String reply = null;
+		ZoneModule zm = MiscUtil.getZoneModule();
+		Long zoneId = zm.getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+		HomePageConfig homePageConfig = zm.getZoneConfig(zoneId).getHomePageConfig();
+		Long homeId = ((null == homePageConfig) ? null : homePageConfig.getDefaultHomePageId());
+		if (null != homeId) {
+			try {
+				// Yes!  Can we access it?
+				reply = getLandingPageUrlFromId(req, homeId);
+			}
+			catch (Exception ex) {
+				// May cause an exception depending on who's logged in
+				// and whether they have access to it.  That's not an
+				// error for the purposes of this method.
+				reply = null;
+			}
+		}
+		
+		// If we get here, reply refers to the Default Home Page URL if
+		// one is defined and accessible or is null.  Return it.
+		return reply;
+	}
+	
+	/**
+	 * Returns the URL for the Default Guest Home Page or null if one
+	 * isn't accessible or specified.
+	 * 
+	 * @param req
+	 * 
+	 * @return
+	 */
+	public static String getDefaultGuestLandingPageUrl(HttpServletRequest req) {
+		// Is there a Default Guest Home Page defined?
+		String reply = null;
+		ZoneModule zm = MiscUtil.getZoneModule();
+		Long zoneId = zm.getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+		HomePageConfig homePageConfig = zm.getZoneConfig(zoneId).getHomePageConfig();
+		Long guestHomeId = ((null == homePageConfig) ? null : homePageConfig.getDefaultGuestHomePageId());
+		if (null != guestHomeId) {
+			try {
+				// Yes!  Can we access it?
+				reply = getLandingPageUrlFromId(req, guestHomeId);
+			}
+			catch (Exception ex) {
+				// May cause an exception depending on who's logged in
+				// and whether they have access to it.  That's not an
+				// error for the purposes of this method.
+				reply = null;
+			}
+		}
+		
+		// If we get here, reply refers to the Default Guest Home Page
+		// URL if one is defined and accessible or is null.  Return it.
+		return reply;
+	}
+	
 	/*
 	 * Returns the Global Workspaces binder for the current zone.
 	 */
@@ -176,6 +267,20 @@ public class LandingPageHelper {
 		return reply;
 	}
 
+	/**
+	 * Returns a landing URL given the binderId of the landing page.
+	 * 
+	 * @param req
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static String getLandingPageUrlFromId(HttpServletRequest req, Long binderId) {
+		String reply = PermaLinkUtil.getPermalink(req, binderId, EntityType.folder);
+		reply = addLandingPageFlagToUrl(reply);
+		return reply;
+	}
+	
 	/**
 	 * Imports the Vibe default landing page into the given zones as
 	 * necessary.
