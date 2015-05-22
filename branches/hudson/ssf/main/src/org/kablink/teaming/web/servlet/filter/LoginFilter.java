@@ -73,6 +73,7 @@ import org.kablink.teaming.portal.PortalLogin;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
+import org.kablink.teaming.util.LandingPageHelper;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -300,12 +301,12 @@ public class LoginFilter  implements Filter {
 	public void destroy() {
 	}
 
-	protected void handleGuestAccess(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
+	protected void handleGuestAccess(final HttpServletRequest req, final HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
 		Boolean readFileWithGuestAccessFlag = getReadFileWithGuestAccessFlag(req);
 		boolean isReadFile                  = (null != readFileWithGuestAccessFlag);
 		boolean isReadFileWithGuestAccess   = (isReadFile && readFileWithGuestAccessFlag);
 		
-		if (isReadFileWithGuestAccess || isPathPermittedUnauthenticated(req.getPathInfo()) || isActionPermittedUnauthenticated(req.getParameter("action"))) {
+		if (isReadFileWithGuestAccess || isPathPermittedUnauthenticated(req.getPathInfo()) || isActionPermittedUnauthenticated(req)) {
 			String action;
 			
 			action = req.getParameter( "action" );
@@ -346,10 +347,16 @@ public class LoginFilter  implements Filter {
 			else {
 				// The guest is requesting a non-mobile page that isn't the login form.
 				// We need to check whether we should allow this or not.
-				if ((!isReadFile) && guestAccessAllowed()) { 
-					// Guest access allowed. Let it proceed as normal.
+				if ((!isReadFile) && isValidGuestUrl(req, currentURL)) {
+					// Guest is allowed to access this URL. Let it proceed as normal.
 					req.setAttribute(WebKeys.REFERER_URL, currentURL);
 					chain.doFilter(req, res);											
+				}
+				else if ((!isReadFile) && guestAccessAllowed()) {
+					// Guest access allowed, just not to that URL.
+					// Send them to their personal workspace.
+					currentURL = getUserPermalinkFromId(req, WebKeys.URL_USER_ID_PLACE_HOLDER);
+					res.sendRedirect(currentURL);
 				}
 				else {
 					// It's a readFile URL to an entry that the Guest
@@ -441,7 +448,7 @@ public class LoginFilter  implements Filter {
 								binder = getBinderModule().getBinder( defaultBinderId );
 								
 								// If we get here, guest as access to the default home page.
-								return PermaLinkUtil.getPermalink( req, defaultBinderId, EntityType.folder);
+								return LandingPageHelper.getLandingPageUrlFromId( req, defaultBinderId );
 							}
 						};
 						url = (String) RunasTemplate.runas(
@@ -467,7 +474,7 @@ public class LoginFilter  implements Filter {
 			if ( binderId != null ) 
 			{
 				// Yes
-				return PermaLinkUtil.getPermalink( req, binderId, EntityType.folder );
+				return LandingPageHelper.getLandingPageUrlFromId( req, binderId );
 			}
 		} else if (!WebHelper.isGuestLoggedIn(req)) {
 			//This user is logged in. Look for a default home page
@@ -501,30 +508,17 @@ public class LoginFilter  implements Filter {
 							//  If not, go to the user workspace page instead
 							@SuppressWarnings("unused")
 							Binder binder = getBinderModule().getBinder(binderId);
-							return PermaLinkUtil.getPermalink( req, binderId, EntityType.folder);
+							return LandingPageHelper.getLandingPageUrlFromId( req, binderId );
 						}
 					}, WebHelper.getRequiredZoneName(req), WebHelper.getRequiredUserId(req));									
 				} catch(Exception e) {}
 			}
 		}
 		
-		if (WebHelper.isGuestLoggedIn(req)) {
-			userId = WebKeys.URL_USER_ID_PLACE_HOLDER;
-		} else {
-			userId = WebHelper.getRequiredUserId(req).toString();
-		}
-		
-		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
-			@Override
-			public Object doAs() {
-				return
-					PermaLinkUtil.getUserPermalink(
-						req,
-						userId,
-						GwtUIHelper.isActivityStreamOnLogin(),
-						Utils.checkIfFilr());
-			}
-		}, WebHelper.getRequiredZoneName(req));									
+		if (WebHelper.isGuestLoggedIn(req))
+		     userId = WebKeys.URL_USER_ID_PLACE_HOLDER;
+		else userId = WebHelper.getRequiredUserId(req).toString();
+		return getUserPermalinkFromId(req, userId);
 	}
 	
 	protected String getWapLandingPageURL(final HttpServletRequest req) {
@@ -771,10 +765,47 @@ public class LoginFilter  implements Filter {
 						path.equals("/"+WebKeys.SERVLET_VIEW_CSS)));
 	}
 	
-	protected boolean isActionPermittedUnauthenticated(String actionValue) {
-		return (actionValue != null && 
-				(actionValue.startsWith("__") || 
-						actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK)));
+	/*
+	 * Returns true if the action from the request is allowed when
+	 * no user is authenticated and false otherwise.
+	 */
+	protected boolean isActionPermittedUnauthenticated(HttpServletRequest req) {
+		// Is Guest access allowed?
+		boolean reply = guestAccessAllowed();
+		if (reply) {
+			// Yes!  Does the request have an action value?
+			String actionValue = req.getParameter("action");
+			reply = (actionValue != null);
+			if (reply) {
+				// Yes!  If the action value starts with '__', it's
+				// valid.  If it's 'view_permalink', it requires more
+				// checking when we're Guest.  Do we need to do more
+				// checking?
+				boolean actionIsViewPermalink = actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK);
+				reply = (actionIsViewPermalink || (actionValue.startsWith("__")));
+				if (actionIsViewPermalink && WebHelper.isGuestLoggedIn(req)) {
+					// Yes!  Is there a Default Home Page defined?
+					String homeUrl = LandingPageHelper.getDefaultLandingPageUrl(req);
+					if (null != homeUrl) {
+						// Yes!  If there's no Default Guest Home Page
+						// defined or the Default Home Page and Default
+						// Guest Home Page are not the same and we're
+						// trying to navigate to the Default Home
+						// Page...
+						String guestHomeUrl = LandingPageHelper.getDefaultGuestLandingPageUrl(req);
+						String requestUrl   = Http.getCompleteURL(                            req);
+						if (((null == guestHomeUrl) || (!(homeUrl.equals(guestHomeUrl)))) && requestUrl.startsWith(homeUrl)) {
+							// ...we disallow the action.
+							reply = false;
+						}
+					}
+				}
+			}
+		}
+		
+		// If we get here, reply is true if the action is permitted
+		// when were not authenticated and false otherwise.  Return it.
+		return reply;
 	}
 	
 	@SuppressWarnings("unused")
@@ -851,5 +882,54 @@ public class LoginFilter  implements Filter {
 		}
 		
 		return false;
+	}
+
+	/*
+	 * Returns a permalink for a user based on a user ID.
+	 */
+	private static String getUserPermalinkFromId(final HttpServletRequest req, final String userId) {
+		return ((String) RunasTemplate.runasAdmin(
+			new RunasCallback() {
+				@Override
+				public Object doAs() {
+					return
+						PermaLinkUtil.getUserPermalink(
+							req,
+							userId,
+							GwtUIHelper.isActivityStreamOnLogin(),
+							Utils.checkIfFilr());
+				}
+			}, WebHelper.getRequiredZoneName(req)));									
+	}
+	
+	/*
+	 * Returns true if Guest can navigate to the given URL and false
+	 * otherwise.
+	 */
+	private boolean isValidGuestUrl(HttpServletRequest req, String url) {
+		// Is Guest access allowed?
+		boolean reply = guestAccessAllowed();
+		if (reply) {
+			// Yes!  Is there a Default Home Page defined? 
+			String homeUrl = LandingPageHelper.getDefaultLandingPageUrl(req);
+			if (null != homeUrl) {
+				// Yes!  Does the given URL refer to it?
+				if (url.startsWith(homeUrl)) {
+					// Yes!  If there's not a Default Guest Home Page
+					// defined or the Default Guest Home Page is not
+					// the same as the Default Home Page...
+					String guestHomeUrl = LandingPageHelper.getDefaultGuestLandingPageUrl(req);
+					if ((null == guestHomeUrl) || (!(guestHomeUrl.equals(homeUrl)))) {
+						// ...we don't allow Guest to navigate to it.
+						reply = false;
+					}
+				}
+			}
+		}
+		
+		// If we get here, reply is true if the given URL is a valid
+		// for the Guest to navigate to and false otherwise.  Return
+		// it.
+		return reply;
 	}
 }
