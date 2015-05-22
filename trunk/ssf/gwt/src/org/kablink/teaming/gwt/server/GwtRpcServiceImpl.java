@@ -2176,13 +2176,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_LIMIT_USER_VISIBILITY_INFO:
-		{
-			LimitUserVisibilityInfoRpcResponseData data = GwtUserVisibilityHelper.getLimitUserVisibilityInfo(this, req);
-			response = new VibeRpcResponse(data);
-			return response;
-		}
-		
 		case GET_LIST_OF_CHILD_BINDERS:
 		{
 			GetListOfChildBindersCmd glocbCmd;

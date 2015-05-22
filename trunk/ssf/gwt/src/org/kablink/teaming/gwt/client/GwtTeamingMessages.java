@@ -755,6 +755,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_LdapBrowserDlg();
 	String codeSplitFailure_LdapSyncResultsDlg();
 	String codeSplitFailure_LimitUserVisibilityDlg();
+	String codeSplitFailure_LimitUserVisibilityView();
 	String codeSplitFailure_LoginDlg();
 	String codeSplitFailure_MailToMultiplePublicLinksSelectDlg();
 	String codeSplitFailure_MailToPanel();
@@ -2437,6 +2438,7 @@ public interface GwtTeamingMessages extends Messages {
 	String administratorsList();
 	String folders();
 	String globalsList();
+	String limitUserVisibilityList();
 	String mobileDevicesList();
 	String myFiles();
 	String myFilesStorage();
@@ -2933,6 +2935,11 @@ public interface GwtTeamingMessages extends Messages {
 	String emptyFileFolder_Info_2(String company, String product);
 	String emptyFileFolder_Info_3(                String product);
 	String emptyFileFolder_SubHead();
+	
+	// Strings used for the empty limit user visibility view widget.
+	String emptyLimitUserVisibility_Info_1(String company, String product);
+	String emptyLimitUserVisibility_Info_2(String company, String product);
+	String emptyLimitUserVisibility_SubHead();
 	
 	// Strings used for the empty mobile devices view widget.
 	String emptyMobileDevices_Info_1_System(String company, String product);
