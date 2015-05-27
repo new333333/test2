@@ -13,5 +13,6 @@
 	<property name="apiAuthKey" access="field" length="128"/>
 	<property name="authConnectorNames" access="field" length="128"/>
 	<property name="lastUpdateTime" access="field"/>
+	<property name="usernameAttributeAlias" access="field" length="16"/>
   </class>
 </hibernate-mapping>

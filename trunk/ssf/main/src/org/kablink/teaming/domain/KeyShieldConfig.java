@@ -47,6 +47,7 @@ public class KeyShieldConfig extends ZonedObject implements LastUpdateTimeAware
 	private String apiAuthKey;
 	private String authConnectorNames;	// Names are separated by a ','
 	private Long lastUpdateTime;
+	private String usernameAttributeAlias;
 
 	/**
 	 * 
@@ -219,6 +220,14 @@ public class KeyShieldConfig extends ZonedObject implements LastUpdateTimeAware
 		this.serverUrl = url;
 	}
 	
+	public String getUsernameAttributeAlias() {
+		return usernameAttributeAlias;
+	}
+
+	public void setUsernameAttributeAlias(String usernameAttributeAlias) {
+		this.usernameAttributeAlias = usernameAttributeAlias;
+	}
+
 	/**
 	 * 
 	 * @param zoneId
