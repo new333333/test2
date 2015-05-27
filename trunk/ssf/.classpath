@@ -201,5 +201,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/rabbitmq-client.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-retry.jar"/>
 	<classpathentry kind="lib" path="lib/tika-app.jar"/>
+	<classpathentry kind="lib" path="lib/tika-core.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

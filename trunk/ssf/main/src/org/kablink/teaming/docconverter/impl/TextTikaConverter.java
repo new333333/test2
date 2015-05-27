@@ -58,6 +58,19 @@ import org.xml.sax.ContentHandler;
 /**
  * Performs file conversion to search index text using Apache Tika.
  * 
+ * *** Warning *** Warning *** Warning *** Warning *** Warning ***
+ * ***                                                         ***
+ * *** The Tika text converter as it currently stands does NOT ***
+ * *** work!  The only dependencies for it that we're bringing ***
+ * *** in are tika-core.jar and tika-parsers.jar.  In order    ***
+ * *** for it to work, we need to use tika-app.jar instead     ***
+ * *** (which brings in dependencies that break other things)  ***
+ * *** or track down and bring in all the dependencies of      ***
+ * *** tika-parsers.jar (with Tika 1.8, there were 78 of       ***
+ * *** them.)                                                  ***  
+ * ***                                                         ***  
+ * *** Warning *** Warning *** Warning *** Warning *** Warning ***  
+ * 
  * @author drfoster@novell.com
  */
 public class TextTikaConverter extends TextStreamConverter implements TextTikaConverterMBean, InitializingBean, DisposableBean {
