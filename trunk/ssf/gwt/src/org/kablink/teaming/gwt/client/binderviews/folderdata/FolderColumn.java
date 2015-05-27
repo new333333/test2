@@ -64,7 +64,6 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public final static String COLUMN_ADMINISTRATOR					= "administrator";
 	public final static String COLUMN_AUTHOR						= "author";
 	public final static String COLUMN_CAN_ONLY_SEE_MEMBERS			= "canOnlySeeMembers";
-	public final static String COLUMN_CAN_ONLY_SEE_MEMBERS_OVERRIDE	= "canOnlySeeMembersOverride";
 	public final static String COLUMN_COMMENTS						= "comments";
 	public final static String COLUMN_DATE							= "date";
 	public final static String COLUMN_DESCRIPTION					= "description";
@@ -82,6 +81,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public final static String COLUMN_FULL_NAME						= "fullName";
 	public final static String COLUMN_GUEST							= "guest";
 	public final static String COLUMN_HTML							= "html";
+	public final static String COLUMN_LIMITED_VISIBILITY_USER		= "limitedVisibilityUser";
 	public final static String COLUMN_LOCATION						= "location";
 	public final static String COLUMN_LOGIN_ID						= "loginId";
 	public final static String COLUMN_MOBILE_DEVICES				= "mobileDevices";
@@ -257,38 +257,38 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public static boolean isColumnAdminRights(              String       columnName) {return columnName.equals(FolderColumn.COLUMN_ADMIN_RIGHTS);                 }
-	public static boolean isColumnAdministrator(            String       columnName) {return columnName.equals(FolderColumn.COLUMN_ADMINISTRATOR);                }
-	public static boolean isColumnAccess(                   String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_ACCESS);                 }
-	public static boolean isColumnCanOnlySeeMembers(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_CAN_ONLY_SEE_MEMBERS);         }
-	public static boolean isColumnCanOnlySeeMembersOverride(String       columnName) {return columnName.equals(FolderColumn.COLUMN_CAN_ONLY_SEE_MEMBERS_OVERRIDE);}
-	public static boolean isColumnComments(                 String       columnName) {return columnName.equals(FolderColumn.COLUMN_COMMENTS);                     }
-	public static boolean isColumnCustom(                   FolderColumn column)     {return column.isCustomColumn();                                             }
-	public static boolean isColumnDescriptionHtml(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_DESCRIPTION_HTML);             }
-	public static boolean isColumnDeviceDescription(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_DEVICE_DESCRIPTION);           }
-	public static boolean isColumnDeviceLastLogin(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_DEVICE_LAST_LOGIN);            }
-	public static boolean isColumnDeviceUser(               String       columnName) {return columnName.equals(FolderColumn.COLUMN_DEVICE_USER);                  }
-	public static boolean isColumnDeviceWipeDate(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_DEVICE_WIPE_DATE);             }
-	public static boolean isColumnDeviceWipeScheduled(      String       columnName) {return columnName.equals(FolderColumn.COLUMN_DEVICE_WIPE_SCHEDULED);        }
-	public static boolean isColumnDownload(                 String       columnName) {return columnName.equals(FolderColumn.COLUMN_DOWNLOAD);                     }
-	public static boolean isColumnEmailAddress(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_EMAIL_ADDRESS);                }
-	public static boolean isColumnFamily(                   String       columnName) {return columnName.equals(FolderColumn.COLUMN_FAMILY);                       }
-	public static boolean isColumnFullName(                 String       columnName) {return columnName.equals(FolderColumn.COLUMN_FULL_NAME);                    }
-	public static boolean isColumnGuest(                    String       columnName) {return columnName.equals(FolderColumn.COLUMN_GUEST);                        }
-	public static boolean isColumnLoginId(                  String       columnName) {return columnName.equals(FolderColumn.COLUMN_LOGIN_ID);                     }
-	public static boolean isColumnMobileDevices(            String       columnName) {return columnName.equals(FolderColumn.COLUMN_MOBILE_DEVICES);               }
-	public static boolean isColumnNetFolderAccess(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_NETFOLDER_ACCESS);             }
-	public static boolean isColumnRating(                   String       columnName) {return columnName.equals(FolderColumn.COLUMN_RATING);                       }
-	public static boolean isColumnPresence(                 String       columnName) {return columnName.equals(FolderColumn.COLUMN_AUTHOR);                       }
-	public static boolean isColumnPrincipalType(            String       columnName) {return columnName.equals(FolderColumn.COLUMN_PRINCIPAL_TYPE);               }
-	public static boolean isColumnTaskFolders(              String       columnName) {return columnName.equals(FolderColumn.COLUMN_TASKS);                        }
-	public static boolean isColumnTeamMembers(              String       columnName) {return columnName.equals(FolderColumn.COLUMN_TEAM_MEMBERS);                 }
-	public static boolean isColumnTitle(                    String       columnName) {return columnName.equals(FolderColumn.COLUMN_TITLE);                        }
-	public static boolean isColumnView(                     String       columnName) {return columnName.equals(FolderColumn.COLUMN_HTML);                         }
-	public static boolean isColumnSharedBy(                 String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_SHARED_BY);              }
-	public static boolean isColumnSharedWith(               String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_SHARED_WITH);            }
-	public static boolean isColumnShareMessage(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_MESSAGE);                }
-	public static boolean isColumnShareStringValue(         String       columnName) {
+	public static boolean isColumnAdminRights(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_ADMIN_RIGHTS);           }
+	public static boolean isColumnAdministrator(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_ADMINISTRATOR);          }
+	public static boolean isColumnAccess(               String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_ACCESS);           }
+	public static boolean isColumnCanOnlySeeMembers(    String       columnName) {return columnName.equals(FolderColumn.COLUMN_CAN_ONLY_SEE_MEMBERS);   }
+	public static boolean isColumnComments(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_COMMENTS);               }
+	public static boolean isColumnCustom(               FolderColumn column)     {return column.isCustomColumn();                                       }
+	public static boolean isColumnDescriptionHtml(      String       columnName) {return columnName.equals(FolderColumn.COLUMN_DESCRIPTION_HTML);       }
+	public static boolean isColumnDeviceDescription(    String       columnName) {return columnName.equals(FolderColumn.COLUMN_DEVICE_DESCRIPTION);     }
+	public static boolean isColumnDeviceLastLogin(      String       columnName) {return columnName.equals(FolderColumn.COLUMN_DEVICE_LAST_LOGIN);      }
+	public static boolean isColumnDeviceUser(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_DEVICE_USER);            }
+	public static boolean isColumnDeviceWipeDate(       String       columnName) {return columnName.equals(FolderColumn.COLUMN_DEVICE_WIPE_DATE);       }
+	public static boolean isColumnDeviceWipeScheduled(  String       columnName) {return columnName.equals(FolderColumn.COLUMN_DEVICE_WIPE_SCHEDULED);  }
+	public static boolean isColumnDownload(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_DOWNLOAD);               }
+	public static boolean isColumnEmailAddress(         String       columnName) {return columnName.equals(FolderColumn.COLUMN_EMAIL_ADDRESS);          }
+	public static boolean isColumnFamily(               String       columnName) {return columnName.equals(FolderColumn.COLUMN_FAMILY);                 }
+	public static boolean isColumnFullName(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_FULL_NAME);              }
+	public static boolean isColumnGuest(                String       columnName) {return columnName.equals(FolderColumn.COLUMN_GUEST);                  }
+	public static boolean isColumnLimitedVisibilityUser(String       columnName) {return columnName.equals(FolderColumn.COLUMN_LIMITED_VISIBILITY_USER);}
+	public static boolean isColumnLoginId(              String       columnName) {return columnName.equals(FolderColumn.COLUMN_LOGIN_ID);               }
+	public static boolean isColumnMobileDevices(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_MOBILE_DEVICES);         }
+	public static boolean isColumnNetFolderAccess(      String       columnName) {return columnName.equals(FolderColumn.COLUMN_NETFOLDER_ACCESS);       }
+	public static boolean isColumnRating(               String       columnName) {return columnName.equals(FolderColumn.COLUMN_RATING);                 }
+	public static boolean isColumnPresence(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_AUTHOR);                 }
+	public static boolean isColumnPrincipalType(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_PRINCIPAL_TYPE);         }
+	public static boolean isColumnTaskFolders(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_TASKS);                  }
+	public static boolean isColumnTeamMembers(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_TEAM_MEMBERS);           }
+	public static boolean isColumnTitle(                String       columnName) {return columnName.equals(FolderColumn.COLUMN_TITLE);                  }
+	public static boolean isColumnView(                 String       columnName) {return columnName.equals(FolderColumn.COLUMN_HTML);                   }
+	public static boolean isColumnSharedBy(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_SHARED_BY);        }
+	public static boolean isColumnSharedWith(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_SHARED_WITH);      }
+	public static boolean isColumnShareMessage(         String       columnName) {return columnName.equals(FolderColumn.COLUMN_SHARE_MESSAGE);          }
+	public static boolean isColumnShareStringValue(     String       columnName) {
 		return
 			(columnName.equals(FolderColumn.COLUMN_SHARE_ACCESS)     ||
 			 columnName.equals(FolderColumn.COLUMN_SHARE_DATE)       ||

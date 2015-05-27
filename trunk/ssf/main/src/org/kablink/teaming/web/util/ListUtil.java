@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,6 +33,7 @@
 package org.kablink.teaming.web.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -54,6 +55,28 @@ public final class ListUtil {
 	private ListUtil() {
 		// Nothing to do.
 		super();
+	}
+	
+	/**
+	 * Adds a Collection<Long> to a List<Long> if the values are not already
+	 * there.
+	 * 
+	 * @param lListDest
+	 * @param lCollectionSrc
+	 */
+	public static void addCollectionLongToListLongIfUnique(List<Long> lListDest, Collection<Long> lCollectionSrc) {
+		// Do we have a Collection<Long> to add and a list to add it
+		// to?
+		if ((null != lCollectionSrc) && (null != lListDest)) {
+			// Yes!  Scan the Collection<Long>.
+			for (Long l:  lCollectionSrc) {
+				// If the List<Long> doesn't contain this Long...
+				if (!(lListDest.contains(l))) {
+					// ...add it.
+					lListDest.add(l);
+				}
+			}
+		}
 	}
 	
 	/**

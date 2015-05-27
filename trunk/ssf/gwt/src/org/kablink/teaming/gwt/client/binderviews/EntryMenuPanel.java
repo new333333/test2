@@ -1657,6 +1657,7 @@ public class EntryMenuPanel extends ToolPanelBase
 
 			case ADMINISTRATOR_MANAGEMENT:
 			case GLOBAL_ROOT:
+			case LIMIT_USER_VISIBILITY:
 			case PROFILE_ROOT:
 			case PROFILE_ROOT_MANAGEMENT:
 			case TEAM_ROOT:

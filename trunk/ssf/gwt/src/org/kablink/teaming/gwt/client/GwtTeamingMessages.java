@@ -459,6 +459,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetInheritedLandingPageProperties();
 	String rpcFailure_GetIsDynamicGroupMembershipAllowed();
 	String rpcFailure_GetLdapSyncResults();
+	String rpcFailure_GetLimitUserVisibilityInfo();
 	String rpcFailure_GetListOfChildBinders();
 	String rpcFailure_GetLocale();
 	String rpcFailure_GetMailToPublicLinks();
@@ -2025,6 +2026,7 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeDataTable_InternalError_NestedCloudFolderAuthentication();
 	String vibeDataTable_InternalError_UnexpectedRowCount(int rowsRequested, int rowsRead);
 	String vibeDataTable_InternalError_UnsupportedStructuredToolbar();
+	String vibeDataTable_LimitedUserVisibility();
 	String vibeDataTable_MemberCount(String count);
 	String vibeDataTable_MobileDevices();
 	String vibeDataTable_People();

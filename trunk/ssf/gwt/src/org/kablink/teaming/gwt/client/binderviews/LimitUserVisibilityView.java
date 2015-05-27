@@ -37,6 +37,7 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.GWT;
@@ -59,9 +60,9 @@ public class LimitUserVisibilityView extends DataTableFolderViewBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private LimitUserVisibilityView(ViewReady viewReady) {
+	private LimitUserVisibilityView(final BinderInfo folderInfo, ViewReady viewReady) {
 		// Simply initialize the base class.
-		super(null, viewReady, "vibe-limitUserVisibilityDataTable");
+		super(folderInfo, viewReady, "vibe-limitUserVisibilityDataTable");
 	}
 	
 	/**
@@ -78,10 +79,9 @@ public class LimitUserVisibilityView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(FolderColumn.COLUMN_ADMINISTRATOR,                 new ColumnWidth(50)         );
-		columnWidths.put(FolderColumn.COLUMN_PRINCIPAL_TYPE,                new ColumnWidth(60, Unit.PX));
-		columnWidths.put(FolderColumn.COLUMN_CAN_ONLY_SEE_MEMBERS,          new ColumnWidth(25)         );
-		columnWidths.put(FolderColumn.COLUMN_CAN_ONLY_SEE_MEMBERS_OVERRIDE, new ColumnWidth(25)         );
+		columnWidths.put(FolderColumn.COLUMN_LIMITED_VISIBILITY_USER, new ColumnWidth(60)         );
+		columnWidths.put(FolderColumn.COLUMN_PRINCIPAL_TYPE,          new ColumnWidth(60, Unit.PX));
+		columnWidths.put(FolderColumn.COLUMN_CAN_ONLY_SEE_MEMBERS,    new ColumnWidth(40)         );
 	}
 
 	/**
@@ -108,11 +108,11 @@ public class LimitUserVisibilityView extends DataTableFolderViewBase {
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(LimitUserVisibilityView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				LimitUserVisibilityView dfView = new LimitUserVisibilityView(viewReady);
+				LimitUserVisibilityView dfView = new LimitUserVisibilityView(folderInfo, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			

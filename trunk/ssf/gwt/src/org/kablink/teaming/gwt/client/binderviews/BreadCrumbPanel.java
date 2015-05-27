@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -366,7 +366,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 		// No, we we aren't displaying a bread crumb panel for a
 		// collection!  Are we displaying it for the profile, global
 		// or team root workspace, or a mobile devices view?
-		else if (m_binderInfo.isBinderAdministratorManagement() || m_binderInfo.isBinderProfilesRootWS() || m_binderInfo.isBinderGlobalRootWS() || m_binderInfo.isBinderTeamsRootWS() || m_binderInfo.isBinderMobileDevices()) {
+		else if (m_binderInfo.isBinderAdministratorManagement() || m_binderInfo.isBinderLimitUserVisibility() || m_binderInfo.isBinderProfilesRootWS() || m_binderInfo.isBinderGlobalRootWS() || m_binderInfo.isBinderTeamsRootWS() || m_binderInfo.isBinderMobileDevices()) {
 			// Yes!  We don't need a tree, just the image and title.
 			// Create the panel for it...
 			VibeFlowPanel fp = new VibeFlowPanel();
@@ -380,6 +380,14 @@ public class BreadCrumbPanel extends ToolPanelBase
 				case SMALL:   iRes = m_filrImages.adminRoot();        break;
 				case MEDIUM:  iRes = m_filrImages.adminRoot_medium(); break;
 				case LARGE:   iRes = m_filrImages.adminRoot_large();  break;
+				}
+			}
+			else if (m_binderInfo.isBinderLimitUserVisibility()) {
+				switch (BinderIconSize.getBreadCrumbIconSize()) {
+				default:
+				case SMALL:   iRes = m_filrImages.limitedUserVisibility();        break;
+				case MEDIUM:  iRes = m_filrImages.limitedUserVisibility_medium(); break;
+				case LARGE:   iRes = m_filrImages.limitedUserVisibility_large();  break;
 				}
 			}
 			else if (m_binderInfo.isBinderProfilesRootWS()) {
@@ -429,6 +437,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 			// ...create the title label...
 			String txt;
 			if      (m_binderInfo.isBinderAdministratorManagement()) txt = m_messages.vibeDataTable_People();
+			else if (m_binderInfo.isBinderLimitUserVisibility())     txt = m_messages.vibeDataTable_LimitedUserVisibility();
 			else if (m_binderInfo.isBinderProfilesRootWS())          txt = m_messages.vibeDataTable_People();
 			else if (m_binderInfo.isBinderGlobalRootWS())            txt = m_messages.vibeDataTable_Globals();
 			else if (m_binderInfo.isBinderTeamsRootWS())             txt = m_messages.vibeDataTable_Teams();
@@ -436,7 +445,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 			final InlineLabel il = new InlineLabel(txt);
 			il.addStyleName("vibe-breadCrumbProfiles-label");
 			fp.add(il);
-			if (m_binderInfo.isBinderAdministratorManagement() || m_binderInfo.isBinderProfilesRootWSManagement() || m_binderInfo.isBinderTeamsRootWSManagement() || m_binderInfo.isBinderMobileDevices()) {
+			if (m_binderInfo.isBinderAdministratorManagement() || m_binderInfo.isBinderLimitUserVisibility() || m_binderInfo.isBinderProfilesRootWSManagement() || m_binderInfo.isBinderTeamsRootWSManagement() || m_binderInfo.isBinderMobileDevices()) {
 				GwtTeaming.fireEvent(
 					new GetManageTitleEvent(
 						m_binderInfo,
@@ -492,6 +501,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 	private boolean needsBinderConfig() {
 		boolean reply = (
 			(!(m_binderInfo.isBinderAdministratorManagement()))  &&	// Not on manage administrators...
+			(!(m_binderInfo.isBinderLimitUserVisibility()))      &&	// ...or on limitied user visiblity...
 			(!(m_binderInfo.isBinderProfilesRootWSManagement())) &&	// ...or on manage users...
 			(!(m_binderInfo.isBinderTeamsRootWSManagement()))    &&	// ...or on manage teams...
 			(!(m_binderInfo.isBinderMobileDevices()))            &&	// ...or the mobile devices view...
@@ -509,6 +519,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 		if (!reply) {
 			reply = (
 				(!(m_binderInfo.isBinderAdministratorManagement())) &&	// Not on view of administrators...
+				(!(m_binderInfo.isBinderLimitUserVisibility()))     &&	// ...or limited user visibility...
 				(!(m_binderInfo.isBinderProfilesRootWS()))          &&	// ...or view of users...
 				(!(m_binderInfo.isBinderTeamsRootWS()))             &&	// ...or view of teams...
 				(!(m_binderInfo.isBinderMirroredFolder()))          &&	// ...or any mirrored/net folder...
@@ -535,6 +546,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 	private boolean needsWhatsNewLink() {
 		boolean reply = (
 			(!(m_binderInfo.isBinderAdministratorManagement())) &&	// Not on a view of administrators...
+			(!(m_binderInfo.isBinderLimitUserVisibility()))     &&	// ...or limited user visibility...
 			(!(m_binderInfo.isBinderProfilesRootWS()))          &&	// ...or any view of users...
 			(!(m_binderInfo.isBinderTeamsRootWS()))             &&	// ...or any view of teams...
 			(!(m_binderInfo.isBinderMobileDevices()))           &&	// ...or the mobile devices view...
