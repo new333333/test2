@@ -148,4 +148,12 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
         <dropColumn  tableName="SS_Forums" columnName="useInheritedDATriggerSetting"/>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="11">
+        <addColumn tableName="SS_KeyShieldConfig">
+            <column name="usernameAttributeAlias" type="VARCHAR2(16 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

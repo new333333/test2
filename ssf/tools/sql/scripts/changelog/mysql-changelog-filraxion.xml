@@ -162,4 +162,12 @@ update SS_Forums set binderType = LEFT(type, 1);
         </createIndex>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
+        <addColumn tableName="SS_KeyShieldConfig">
+            <column name="usernameAttributeAlias" type="VARCHAR(16)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

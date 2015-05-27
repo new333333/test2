@@ -148,4 +148,12 @@ update dbo.SS_Forums set binderType = LEFT(type, 1);
         <dropColumn schemaName="dbo" tableName="SS_Forums" columnName="useInheritedDATriggerSetting"/>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="11">
+        <addColumn schemaName="dbo" tableName="SS_KeyShieldConfig">
+            <column name="usernameAttributeAlias" type="NVARCHAR(16)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
