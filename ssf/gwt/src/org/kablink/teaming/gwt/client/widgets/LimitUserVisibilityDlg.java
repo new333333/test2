@@ -43,14 +43,21 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetLimitUserVisibilityInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.LimitUserVisibilityInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.LimitUserVisibilityDlg;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
@@ -67,25 +74,27 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class LimitUserVisibilityDlg extends DlgBox
 	implements ViewReady,
 		// Event handlers implemented by this class.
-		FullUIReloadEvent.Handler
+		FullUIReloadEvent.Handler,
+		GetManageTitleEvent.Handler
 {
 	public static final boolean SHOW_LIMIT_USER_VISIBILITY_DLG	= false;	//! DRF (20150922):  Leave false on checkin until it's all working.
 	
-	private boolean						m_dlgAttached;				// true when the dialog is attached to the document, false otherwise.
-	private boolean						m_viewReady;				// true once the embedded view is ready,             false otherwise.
-	private FlowPanel					m_rootPanel;				//
-	private GwtTeamingMessages			m_messages;					//
-	private int							m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
-	private int							m_showX;					//
-	private int							m_showY;					//
-	private int							m_showCX;					//
-	private int							m_showCY;					//
-	private LimitUserVisibilityView		m_limitUserVisibilityView;	// The limit user visibility view.
-	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private boolean									m_dlgAttached;				// true when the dialog is attached to the document, false otherwise.
+	private boolean									m_viewReady;				// true once the embedded view is ready,             false otherwise.
+	private FlowPanel								m_rootPanel;				//
+	private GwtTeamingMessages						m_messages;					//
+	private int										m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
+	private int										m_showX;					//
+	private int										m_showY;					//
+	private int										m_showCX;					//
+	private int										m_showCY;					//
+	private LimitUserVisibilityInfoRpcResponseData	m_limitUserVisibilityInfo;	// Information necessary to run the limit user visibility dialog.
+	private LimitUserVisibilityView					m_limitUserVisibilityView;	// The limit user visibility view.
+	private List<HandlerRegistration>				m_registeredEventHandlers;	// Event handlers that are currently registered.
 	
 	// Constant adjustments to the size of the view so that it properly
 	// fits the dialog's content area.
-	private final static int DIALOG_HEIGHT_ADJUST	= 35;
+	private final static int DIALOG_HEIGHT_ADJUST	= 45;
 	private final static int DIALOG_WIDTH_ADJUST	= 20;
 	
 	// The following defines the TeamingEvents that are handled by
@@ -93,6 +102,7 @@ public class LimitUserVisibilityDlg extends DlgBox
 	// this array is used.
 	private static final TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
 		TeamingEvents.FULL_UI_RELOAD,
+		TeamingEvents.GET_MANAGE_TITLE,
 	};
 	
 	/*
@@ -102,7 +112,7 @@ public class LimitUserVisibilityDlg extends DlgBox
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private LimitUserVisibilityDlg(boolean autoHide, boolean modal, int x, int y, int cx, int cy) {
+	private LimitUserVisibilityDlg(LimitUserVisibilityDlgClient luvDlgClient, boolean autoHide, boolean modal, int x, int y, int cx, int cy) {
 		// Initialize the super class...
 		super(
 			autoHide,
@@ -120,11 +130,12 @@ public class LimitUserVisibilityDlg extends DlgBox
 		m_messages = GwtTeaming.getMessages();
 		
 		// ...and create the dialog's content.
+		addStyleName("vibe-limitUserVisibilityDlg");
 		createAllDlgContent(
 			m_messages.limitUserVisibilityDlg_Header(),
 			DlgBox.getSimpleSuccessfulHandler(),
 			DlgBox.getSimpleCanceledHandler(),
-			null);
+			luvDlgClient);
 	}
 
 	/**
@@ -137,14 +148,39 @@ public class LimitUserVisibilityDlg extends DlgBox
 	 * @return
 	 */
 	@Override
-	public Panel createContent(Object unused) {
-		// Create the FlowPanel containing the dialog's content.
+	public Panel createContent(Object callbackData) {
+		// Can we get the information necessary to manage
+		// administrators?
+		final LimitUserVisibilityDlg		luvDlg       = this;
+		final LimitUserVisibilityDlgClient	luvDlgClient = ((LimitUserVisibilityDlgClient) callbackData);
+		GwtClientHelper.executeCommand(new GetLimitUserVisibilityInfoCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				// No!  Tell the user about the problem...
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetLimitUserVisibilityInfo());
+
+				// ...and tell the caller that the dialog will be
+				// ...unavailable.
+				luvDlgClient.onUnavailable();
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// Yes!  Store it and tell the caller that the dialog
+				// is available.
+				m_limitUserVisibilityInfo = ((LimitUserVisibilityInfoRpcResponseData) result.getResponseData());
+				luvDlgClient.onSuccess(luvDlg);
+			}
+		});
+		
+		// Create the main panel that will hold the dialog's content...
 		m_rootPanel = new VibeFlowPanel();
-		m_rootPanel.setStyleName("teamingDlgBoxContent");
+		m_rootPanel.addStyleName("vibe-limitUserVisibilityDlg-rootPanel");
 
-//!		...this needs to be implemented...
-
-		// Return the FlowPanel containing the dialog's content.
+		// ...and return it.  Note that it will get populated during
+		// ...the initAndShow() call.
 		return m_rootPanel;
 	}
 	
@@ -190,40 +226,6 @@ public class LimitUserVisibilityDlg extends DlgBox
 		return helpData;
 	}
 
-	/*
-	 * Asynchronously creates the embedded LimitUserVisibilityView for
-	 * the dialog
-	 */
-	private void loadPart1Async() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart1Now();
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously creates the embedded LimitUserVisibilityView for
-	 * the dialog
-	 */
-	private void loadPart1Now() {
-		LimitUserVisibilityView.createAsync(this, new ViewClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ViewBase limitUserVisibilityView) {
-				// Store the view and add it to the panel.
-				m_limitUserVisibilityView = ((LimitUserVisibilityView) limitUserVisibilityView);
-				m_rootPanel.add(m_limitUserVisibilityView);
-			}
-		});
-	}
-
 	/**
 	 * Called when the data table is attached.
 	 * 
@@ -231,9 +233,13 @@ public class LimitUserVisibilityDlg extends DlgBox
 	 */
 	@Override
 	public void onAttach() {
-		// Let the widget attach and then register our event handlers.
+		// Attach the widget and register the event handlers...
 		super.onAttach();
 		registerEvents();
+		
+		// ...and set the views size if its ready.
+		m_dlgAttached = true;
+		setViewSizeIfReady();
 	}
 	
 	/**
@@ -244,9 +250,12 @@ public class LimitUserVisibilityDlg extends DlgBox
 	@Override
 	public void onDetach() {
 		// Let the widget detach and then unregister our event
-		// handlers.
+		// handlers...
 		super.onDetach();
 		unregisterEvents();
+		
+		// ...and mark the dialog as being detached.
+		m_dlgAttached = false;
 	}
 	
 	/**
@@ -264,6 +273,22 @@ public class LimitUserVisibilityDlg extends DlgBox
 		}
 	}
 	
+	/**
+	 * Handles GetManageTitleEvent's received by this class.
+	 * 
+	 * Implements the GetManageTitleEvent.Handler.onGetManageTitle() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onGetManageTitle(GetManageTitleEvent event) {
+		// If this event is targeted to this dialog...
+		if (event.getBinderInfo().isEqual(m_limitUserVisibilityInfo.getRootWSInfo())) {
+			// ...respond to it.
+			event.getManageTitleCallback().manageTitle(m_limitUserVisibilityInfo.getAdminActionTitle());
+		}
+	}
+
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
@@ -288,7 +313,21 @@ public class LimitUserVisibilityDlg extends DlgBox
 		m_rootPanel.clear();
 		
 		// ...repopulate it with data from the server...
-		loadPart1Async();
+		final BinderInfo rwsBI = m_limitUserVisibilityInfo.getRootWSInfo();
+		LimitUserVisibilityView.createAsync(rwsBI, this, new ViewClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ViewBase limitUserVisibilityView) {
+				// Store the view and add it to the panel.
+				m_limitUserVisibilityView = ((LimitUserVisibilityView) limitUserVisibilityView);
+				m_rootPanel.add(m_limitUserVisibilityView);
+			}
+		});
 		
 		// ...and position and show the dialog.
 		setPopupPosition(m_showX, m_showY);
@@ -321,12 +360,12 @@ public class LimitUserVisibilityDlg extends DlgBox
 	 * Asynchronously runs the given instance of the limit user
 	 * visibility dialog.
 	 */
-	private static void runDlgAsync(final LimitUserVisibilityDlg luvDlg, final int x, final int y, final int width, final int height) {
+	private static void runDlgAsync(final LimitUserVisibilityDlg luvDlg, final int x, final int y, final int cx, final int cy) {
 		GwtClientHelper.deferCommand(
 			new ScheduledCommand() {
 				@Override
 				public void execute() {
-					luvDlg.runDlgNow(x, y, width, height);
+					luvDlg.runDlgNow(x, y, cx, cy);
 				}
 			});
 	}
@@ -467,6 +506,7 @@ public class LimitUserVisibilityDlg extends DlgBox
 				if (null != luvDlgClient) {
 					// Yes!  Create the dialog....
 					LimitUserVisibilityDlg luvDlg = new LimitUserVisibilityDlg(
+						luvDlgClient,
 						autoHide,
 						modal,
 						createX,

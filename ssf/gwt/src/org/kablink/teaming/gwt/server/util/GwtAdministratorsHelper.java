@@ -90,18 +90,24 @@ public class GwtAdministratorsHelper {
 		// Nothing to do.
 	}
 	
-	/*
+	/**
 	 * When initially built, the AssignmentInfo's in the
 	 * List<FolderRow>'s only contain the assignee ID and type.  We
 	 * need to complete them with each assignee's title, ...
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param assignmentList
+	 * @param assignmentRows
+	 * @param assignmentColumn
 	 */
-	private static void completeAdministratorAIs(AllModulesInjected bs, HttpServletRequest request, List<Principal> adminList, List<FolderRow> adminRows, FolderColumn administratorColumn) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtAdministratorsHelper.completeAdministratorAIs()");
+	public static void completeAssignmentAIs(AllModulesInjected bs, HttpServletRequest request, List<Principal> assignmentList, List<FolderRow> assignmentRows, FolderColumn assignmentColumn) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtAdministratorsHelper.completeAssignmentAIs()");
 		try {
 			// Allocate a List<Long> and track the administrators that
 			// need to be completed.
 			List<Long> principalIds = new ArrayList<Long>();
-			for (Principal admin: adminList) {
+			for (Principal admin: assignmentList) {
 				ListUtil.addLongToListLongIfUnique(principalIds, admin.getId());
 			}
 	
@@ -137,10 +143,10 @@ public class GwtAdministratorsHelper {
 				avatarUrls);
 	
 			// Scan the List<FolderRow>'s...
-			for (FolderRow adminRow:  adminRows) {
+			for (FolderRow adminRow:  assignmentRows) {
 				// ...completing the information in each one's
 				// ...AssignmentInfo.
-				List<AssignmentInfo> aiList = adminRow.getColumnValueAsAssignmentInfos(administratorColumn);
+				List<AssignmentInfo> aiList = adminRow.getColumnValueAsAssignmentInfos(assignmentColumn);
 				AssignmentInfo ai = aiList.get(0);	// Will only ever be one.
 				switch (ai.getAssigneeType()) {
 				case INDIVIDUAL:
@@ -297,7 +303,7 @@ public class GwtAdministratorsHelper {
 						// The principal type column!  Generate value
 						// for it.
 						PrincipalType pt = GwtViewHelper.getPrincipalType(adminPrincipal);
-						fr.setColumnValue(fc, new PrincipalAdminType(pt, true));
+						fr.setColumnValue(fc, new PrincipalAdminType(pt, true));	// true -> Show these as having admin rights.
 					}
 					
 					else if (FolderColumn.isColumnAdminRights(cName)) {
@@ -332,7 +338,7 @@ public class GwtAdministratorsHelper {
 				// Yes!  If we have an administrator column...
 				if (null != administratorColumn) {
 					// ...complete the AssignmentInfo's for them.
-					completeAdministratorAIs(bs, request, adminList, adminRows, administratorColumn);
+					completeAssignmentAIs(bs, request, adminList, adminRows, administratorColumn);
 				}
 				
 				// If we have a quick filter...

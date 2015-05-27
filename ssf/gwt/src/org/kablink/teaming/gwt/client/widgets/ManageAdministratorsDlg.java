@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -533,53 +533,6 @@ public class ManageAdministratorsDlg extends DlgBox
 		else GwtClientHelper.deferredAlert(m_messages.manageAdministratorsDlgErrorInvalidSearchResult());
 	}
 	
-	/*
-	 * Sets the view's size once thing are ready for it.
-	 */
-	private void setViewSizeIfReady() {
-		// If the dialog is attached and the view is ready...
-		if (m_dlgAttached && m_viewReady) {
-			// ...it's ready to be sized.
-			setViewSizeAsync();
-		}
-	}
-	
-	/*
-	 * Asynchronously adjusts the views size based on its header and
-	 * footer. 
-	 */
-	private void setViewSizeAsync() {
-		GwtClientHelper.deferCommand(
-			new ScheduledCommand() {
-				@Override
-				public void execute() {
-					setViewSizeNow();
-				}
-			});
-	}
-	
-	/*
-	 * Synchronously adjusts the views size based on its header and
-	 * footer. 
-	 */
-	private void setViewSizeNow() {
-		// If we don't have the height adjustment for the dialog yet...
-		if ((-1) == m_dlgHeightAdjust) {
-			// ...calculate it now...
-			m_dlgHeightAdjust =
-				(DIALOG_HEIGHT_ADJUST              +
-				getHeaderPanel().getOffsetHeight() +
-				getFooterPanel().getOffsetHeight());
-		}
-
-		// ...and set the size of the appropriate view.
-		int width  = (m_showCX - DIALOG_WIDTH_ADJUST);
-		int height = (m_showCY - m_dlgHeightAdjust);
-		if (null != m_adminView) {
-			m_adminView.setPixelSize(width, height);
-		}
-	}
-	
 	/**
 	 * Called when the contained view reaches the ready state.
 	 * 
@@ -662,12 +615,12 @@ public class ManageAdministratorsDlg extends DlgBox
 	 * Asynchronously runs the given instance of the manage
 	 * administrators dialog.
 	 */
-	private static void runDlgAsync(final ManageAdministratorsDlg maDlg, final int x, final int y, final int width, final int height) {
+	private static void runDlgAsync(final ManageAdministratorsDlg maDlg, final int x, final int y, final int cx, final int cy) {
 		GwtClientHelper.deferCommand(
 			new ScheduledCommand() {
 				@Override
 				public void execute() {
-					maDlg.runDlgNow(x, y, width, height);
+					maDlg.runDlgNow(x, y, cx, cy);
 				}
 			});
 	}
@@ -676,12 +629,12 @@ public class ManageAdministratorsDlg extends DlgBox
 	 * Synchronously runs the given instance of the manage
 	 * administrators dialog.
 	 */
-	private void runDlgNow(int x, int y, int width, int height) {
+	private void runDlgNow(int x, int y, int cx, int cy) {
 		// Store the parameters...
 		m_showX  = x;
 		m_showY  = y;
-		m_showCX = width;
-		m_showCY = height;
+		m_showCX = cx;
+		m_showCY = cy;
 		
 		// ...and start populating the dialog.
 		loadPart1Async();
@@ -696,6 +649,53 @@ public class ManageAdministratorsDlg extends DlgBox
 			// ...unregister them.  (Note that this will also empty the
 			// ...list.)
 			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
+	}
+	
+	/*
+	 * Sets the view's size once thing are ready for it.
+	 */
+	private void setViewSizeIfReady() {
+		// If the dialog is attached and the view is ready...
+		if (m_dlgAttached && m_viewReady) {
+			// ...it's ready to be sized.
+			setViewSizeAsync();
+		}
+	}
+	
+	/*
+	 * Asynchronously adjusts the views size based on its header and
+	 * footer. 
+	 */
+	private void setViewSizeAsync() {
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					setViewSizeNow();
+				}
+			});
+	}
+	
+	/*
+	 * Synchronously adjusts the views size based on its header and
+	 * footer. 
+	 */
+	private void setViewSizeNow() {
+		// If we don't have the height adjustment for the dialog yet...
+		if ((-1) == m_dlgHeightAdjust) {
+			// ...calculate it now...
+			m_dlgHeightAdjust =
+				(DIALOG_HEIGHT_ADJUST              +
+				getHeaderPanel().getOffsetHeight() +
+				getFooterPanel().getOffsetHeight());
+		}
+
+		// ...and set the size of the appropriate view.
+		int width  = (m_showCX - DIALOG_WIDTH_ADJUST);
+		int height = (m_showCY - m_dlgHeightAdjust);
+		if (null != m_adminView) {
+			m_adminView.setPixelSize(width, height);
 		}
 	}
 	
@@ -732,7 +732,9 @@ public class ManageAdministratorsDlg extends DlgBox
 			// Parameters used to initialize and show an instance of the dialog.
 			final ManageAdministratorsDlg	maDlg,
 			final int						initX,
-			final int						initY) {
+			final int						initY,
+			final int						initCX,
+			final int						initCY) {
 		GWT.runAsync(ManageAdministratorsDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -756,7 +758,7 @@ public class ManageAdministratorsDlg extends DlgBox
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(maDlg, initX, initY, createCX, createCY);
+					runDlgAsync(maDlg, initX, initY, initCX, initCY);
 				}
 			}
 		});
@@ -775,7 +777,7 @@ public class ManageAdministratorsDlg extends DlgBox
 	 * @param cy
 	 */
 	public static void createAsync(ManageAdministratorsDlgClient maDlgClient, boolean autoHide, boolean modal, int x, int y, int cx, int cy) {
-		doAsyncOperation(maDlgClient, autoHide, modal, x, y, cx, cy, null, (-1), (-1));
+		doAsyncOperation(maDlgClient, autoHide, modal, x, y, cx, cy, null, (-1), (-1), (-1), (-1));
 	}
 	
 	/**
@@ -784,8 +786,10 @@ public class ManageAdministratorsDlg extends DlgBox
 	 * @param maDlg
 	 * @param x
 	 * @param y
+	 * @param cx
+	 * @param cy
 	 */
-	public static void initAndShow(ManageAdministratorsDlg maDlg, int x, int y, int width, int height) {
-		doAsyncOperation(null, false, false, (-1), (-1), width, height, maDlg, x, y);
+	public static void initAndShow(ManageAdministratorsDlg maDlg, int x, int y, int cx, int cy) {
+		doAsyncOperation(null, false, false, (-1), (-1), (-1), (-1), maDlg, x, y, cx, cy);
 	}
 }

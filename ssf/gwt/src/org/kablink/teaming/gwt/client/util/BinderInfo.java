@@ -197,6 +197,16 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	}
 
 	/**
+	 * Returns true if this BinderInfo defines the root binder
+	 * in limit user visibility mode and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinderLimitUserVisibility() {
+		return (isBinderWorkspace() && m_wsType.isLimitUserVisibility());
+	}
+	
+	/**
 	 * Returns true of this BinderInfo defines a Mirrored Folder and
 	 * false otherwise.
 	 * 

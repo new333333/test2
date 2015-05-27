@@ -1037,6 +1037,13 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem for the limit user visibility view.
+	 */
+	private static void constructEntryLimitUserVisibilityItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws) {
+//!		...this needs to be implemented...
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for the root manage administrators
 	 * view.
 	 */
@@ -3794,11 +3801,12 @@ public class GwtMenuHelper {
 			// Are we returning the toolbar items for other than a
 			// trash, collections mobile devices or administrator
 			// management view and are we in other than Filr mode?
-			boolean isBinderCollection    = folderInfo.isBinderCollection();
-			boolean isBinderManageAdmins  = folderInfo.isBinderAdministratorManagement();
-			boolean isBinderMobileDevices = folderInfo.isBinderMobileDevices();
-			boolean isBinderTrash         = folderInfo.isBinderTrash();
-			if ((!isBinderTrash) && (!isBinderCollection) && (!isBinderMobileDevices) && (!isBinderManageAdmins) && (!(Utils.checkIfFilr()))) {
+			boolean isBinderCollection          = folderInfo.isBinderCollection();
+			boolean isBinderLimitUserVisibility = folderInfo.isBinderLimitUserVisibility();
+			boolean isBinderManageAdmins        = folderInfo.isBinderAdministratorManagement();
+			boolean isBinderMobileDevices       = folderInfo.isBinderMobileDevices();
+			boolean isBinderTrash               = folderInfo.isBinderTrash();
+			if ((!isBinderTrash) && (!isBinderCollection) && (!isBinderLimitUserVisibility) && (!isBinderMobileDevices) && (!isBinderManageAdmins) && (!(Utils.checkIfFilr()))) {
 				// Yes!  Add the configure accessories item to the
 				// toolbar...
 				constructEntryConfigureAccessories(
@@ -3830,8 +3838,17 @@ public class GwtMenuHelper {
 			}
 			
 			// No, we aren't returning the toolbar items for a trash
-			// view!  Are we returning them for the administrator
-			// management view?
+			// view!  Are we returning them for the limit user
+			// visibility view?
+			else if (isBinderLimitUserVisibility) {
+				// Yes!  Construct the items for limiting user
+				// visibility.
+				constructEntryLimitUserVisibilityItems(entryToolbar, bs, request, ws);
+			}
+			
+			// No, we aren't returning the toolbar items for limiting
+			// user visibility either!  Are we returning them for the
+			// administrator management view?
 			else if (isBinderManageAdmins) {
 				// Yes!  Construct the items for managing
 				// administrators.
