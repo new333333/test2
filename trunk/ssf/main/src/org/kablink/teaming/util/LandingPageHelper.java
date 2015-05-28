@@ -83,7 +83,7 @@ public class LandingPageHelper {
 	// Relative path within the local file system where the default
 	// landing page file can be found for installing.
 	private static final String LOCAL_LANDING_PAGE_NODE = "vibelandingpage";
-	private static final String LOCAL_LANDING_PAGE_BASE = ("/../" + LOCAL_LANDING_PAGE_NODE);
+	private static final String LOCAL_LANDING_PAGE_BASE = ("/" + LOCAL_LANDING_PAGE_NODE);
 	
 	/*
 	 * Inhibits this class from being instantiated. 
