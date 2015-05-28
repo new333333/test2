@@ -327,6 +327,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				getTopWorkspacesFromEachZone(),
 				getTransactionTemplate());
 		}
+		catch (Exception ex) {
+			logger.error("initZonesPostProcessing():  Importing the default Vibe Landing page threw the following Exception:", ex);
+		}
 		finally {
 			if (closeSession) {
 				SessionUtil.sessionStop();
