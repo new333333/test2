@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
@@ -108,6 +109,7 @@ import org.kablink.teaming.util.LocaleUtils;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.util.Validator;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
@@ -326,6 +328,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			LandingPageHelper.importVibeDefaultLandingPages(
 				getTopWorkspacesFromEachZone(),
 				getTransactionTemplate());
+		}
+		catch (Exception ex) {
+			logger.error("initZonesPostProcessing():  Importing the default Vibe Landing page threw the following Exception:", ex);
 		}
 		finally {
 			if (closeSession) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -67,11 +67,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipOutputStream;
+
 import org.dom4j.Branch;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -140,12 +142,13 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
+
+import static org.kablink.util.search.Restrictions.in;
+
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.FileCopyUtils;
-
-import static org.kablink.util.search.Restrictions.in;
 
 /**
  * ?
@@ -823,6 +826,7 @@ public class ExportHelper {
 		final ElementBuilder.BuilderContext context = null;
 
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
+			@Override
 			public void visit(Element entityElement, Element flagElement, Map args) {
 				if (flagElement.attributeValue("apply", "").equals("true")) {
 					String fieldBuilder = flagElement.attributeValue("elementBuilder");
@@ -836,6 +840,7 @@ public class ExportHelper {
 				}
 			}
 
+			@Override
 			public String getFlagElementName() {
 				return "export";
 			}
@@ -1790,6 +1795,7 @@ public class ExportHelper {
 			if(logger.isDebugEnabled())
 				logger.debug("Importing workflows for the binder " + newBinderId);
 			transactionTemplate.execute(new TransactionCallback() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 
 					// workflows
@@ -1884,6 +1890,7 @@ public class ExportHelper {
 					statusTicket.setStatus(NLT.get("administration.export_import.importingEntry", 
 						new String[] {"[" + String.valueOf(reportMap.get("entries")) + "] " + entry.getTitle()}));
 				transactionTemplate.execute(new TransactionCallback() {
+					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						importWorkflows(doc, fEntry, fDefinitionIdMap, rMap, fNameCache, topBinder, false);
 						return null;
@@ -1987,6 +1994,7 @@ public class ExportHelper {
 				final Map fNameCache = nameCache;
 				final FolderEntry fEntry = entry;
 				transactionTemplate.execute(new TransactionCallback() {
+					@Override
 					public Object doInTransaction(TransactionStatus status) {
 						importWorkflows(doc, fEntry, fDefinitionIdMap, rMap, fNameCache, topBinder, false);
 						return null;
@@ -2777,6 +2785,7 @@ public class ExportHelper {
 					workflowAssociations);
 			} catch(Exception e) {
 				String[] args = new String[] {entity.getTitle(), e.getMessage()};
+				logger.error("importWorkflows():  Exception from BinderModule.setDefinitions():  ", e);
 				throw new ExportException(
 						new Exception(NLT.get("export.error.settingWorkflows", args)));
 			}
