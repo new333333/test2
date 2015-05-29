@@ -56,11 +56,13 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.LimitUserVisibilityInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SetLimitedUserVisibilityRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.LimitedUserVisibilityInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalAdminType;
 import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -251,11 +253,12 @@ public class GwtUserVisibilityHelper {
 					else if (FolderColumn.isColumnCanOnlySeeMembers(cName)) {
 						// The 'Can Only Seem Members of Group I'm In'
 						// column!  Generate a value for it.
-						String cosmKey;
-						if      (luvOverride.contains(luvId)) cosmKey = "limitUserVisibility.value.limited";
-						else if (luvLimited.contains(luvId))  cosmKey = "limitUserVisibility.value.override";
-						else                                  cosmKey = "limitUserVisibility.value.unknown";
-						fr.setColumnValue(fc, NLT.get(cosmKey));
+						fr.setColumnValue(
+							fc,
+							new LimitedUserVisibilityInfo(
+								luvLimited.contains( luvId),
+								luvOverride.contains(luvId),
+								luvId));
 					}
 				}
 			}
@@ -357,20 +360,20 @@ public class GwtUserVisibilityHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param principalId
-	 * @param canOnlySeeMembersOfGroupsImIn
-	 * @param overrideCanOnlySeeMembersOfGroupsImIn
+	 * @param principalIds
+	 * @param limited
+	 * @param override
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static StringRpcResponseData setUserVisibility(AllModulesInjected bs, HttpServletRequest request, Long principalId, Boolean canOnlySeeMembersOfGroupsImIn, Boolean overrideCanOnlySeeMembersOfGroupsImIn) throws GwtTeamingException {
+	public static SetLimitedUserVisibilityRpcResponseData setUserVisibility(AllModulesInjected bs, HttpServletRequest request, List<Long> principalIds, Boolean limited, Boolean override) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtUserVisibilityHelper.setUserVisibility()");
 		try {
 			// If no flags need to be set...
-			StringRpcResponseData reply = new StringRpcResponseData();
-			if ((null == canOnlySeeMembersOfGroupsImIn) || (null == overrideCanOnlySeeMembersOfGroupsImIn)) {
+			SetLimitedUserVisibilityRpcResponseData reply = new SetLimitedUserVisibilityRpcResponseData();
+			if ((null == limited) || (null == override)) {
 				// ...bail.
 				return reply;
 			}

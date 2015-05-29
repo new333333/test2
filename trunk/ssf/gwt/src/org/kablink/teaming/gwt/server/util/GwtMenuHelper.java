@@ -1040,7 +1040,28 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for the limit user visibility view.
 	 */
 	private static void constructEntryLimitUserVisibilityItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws) {
-//!		...this needs to be implemented...
+		// Add the 'Add' items...
+		ToolbarItem luvTBI = new ToolbarItem("1_addLimitUserVisibility");
+		markTBITitle(luvTBI, "toolbar.admin.addLimitUserVisibility");
+		markTBIEvent(luvTBI, TeamingEvents.SET_SELECTED_PRINCIPALS_LIMIT_USER_VISIBILITY);
+		markTBIBoolean(luvTBI, "limited",         Boolean.TRUE);
+		markTBIBoolean(luvTBI, "selectPrincipal", Boolean.TRUE);
+		entryToolbar.addNestedItem(luvTBI);
+		
+		luvTBI = new ToolbarItem("1_addOverrideUserVisibility");
+		markTBITitle(luvTBI, "toolbar.admin.addOverrideUserVisibility");
+		markTBIEvent(luvTBI, TeamingEvents.SET_SELECTED_PRINCIPALS_LIMIT_USER_VISIBILITY);
+		markTBIBoolean(luvTBI, "override",        Boolean.TRUE);
+		markTBIBoolean(luvTBI, "selectPrincipal", Boolean.TRUE);
+		entryToolbar.addNestedItem(luvTBI);
+		
+		// ...and a 'Remove' item.
+		luvTBI = new ToolbarItem("1_removeAdminRights");
+		markTBITitle(luvTBI, "toolbar.admin.removeLimitUserVisibility");
+		markTBIEvent(luvTBI, TeamingEvents.SET_SELECTED_PRINCIPALS_LIMIT_USER_VISIBILITY);
+		markTBIBoolean(luvTBI, "limited",  Boolean.FALSE);
+		markTBIBoolean(luvTBI, "override", Boolean.FALSE);
+		entryToolbar.addNestedItem(luvTBI);
 	}
 	
 	/*
@@ -1054,7 +1075,7 @@ public class GwtMenuHelper {
 		markTBIEvent(manageAdminTBI, TeamingEvents.ADD_PRINCIPAL_ADMIN_RIGHTS);
 		entryToolbar.addNestedItem(manageAdminTBI);
 		
-		// ...and a 'Remove' rights item...
+		// ...and a 'Remove' rights item.
 		manageAdminTBI = new ToolbarItem("1_removeAdminRights");
 		markTBITitle(manageAdminTBI, "toolbar.admin.removeRights");
 		markTBIEvent(manageAdminTBI, TeamingEvents.SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS);

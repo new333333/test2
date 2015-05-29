@@ -626,6 +626,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_SetHasSeenOesWarning();
 	String rpcFailure_SetMobileDevicesWipeScheduledState();
 	String rpcFailure_SetPrincipalsAdminRights();
+	String rpcFailure_SetPrincipalsLimitedUserVisibility();
 	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
 	String rpcFailure_SetUnseen();
@@ -2015,6 +2016,7 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeDataTable_Error_ForcingPasswordChange();
 	String vibeDataTable_Error_MirroredDriverNotConfigured();
 	String vibeDataTable_Error_SavingAdminRights();
+	String vibeDataTable_Error_SavingLimitedUserVisibility();
 	String vibeDataTable_Empty();
 	String vibeDataTable_Empty_Pinning();
 	String vibeDataTable_Event_AllDay();
@@ -2027,6 +2029,9 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeDataTable_InternalError_UnexpectedRowCount(int rowsRequested, int rowsRead);
 	String vibeDataTable_InternalError_UnsupportedStructuredToolbar();
 	String vibeDataTable_LimitedUserVisibility();
+	String vibeDataTable_LimitedUserVisibility_Limited();
+	String vibeDataTable_LimitedUserVisibility_None();
+	String vibeDataTable_LimitedUserVisibility_Override();
 	String vibeDataTable_MemberCount(String count);
 	String vibeDataTable_MobileDevices();
 	String vibeDataTable_People();
