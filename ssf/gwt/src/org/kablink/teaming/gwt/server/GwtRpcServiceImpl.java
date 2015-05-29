@@ -194,6 +194,7 @@ import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
 import org.kablink.teaming.gwt.server.util.GwtFolderEntryTypeHelper;
 import org.kablink.teaming.gwt.server.util.GwtHistoryHelper;
 import org.kablink.teaming.gwt.server.util.GwtHtml5Helper;
+import org.kablink.teaming.gwt.server.util.GwtKeyShieldSSOHelper;
 import org.kablink.teaming.gwt.server.util.GwtLdapHelper;
 import org.kablink.teaming.gwt.server.util.GwtLogHelper;
 import org.kablink.teaming.gwt.server.util.GwtMobileDeviceHelper;
@@ -2117,10 +2118,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_KEYSHIELD_CONFIG:
 		{
-			GwtKeyShieldConfig config;
-			
-			config = GwtServerHelper.getKeyShieldConfig( this );
-			return new VibeRpcResponse( config );
+			GwtKeyShieldConfig config = GwtKeyShieldSSOHelper.getKeyShieldConfig(this);
+			return new VibeRpcResponse(config);
 		}
 		
 		case GET_LANDING_PAGE_DATA:
@@ -3620,12 +3619,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case SAVE_KEYSHIELD_CONFIG:
 		{
-			SaveKeyShieldConfigCmd skcCmd;
-			SaveKeyShieldConfigRpcResponseData responseData;
-			
-			skcCmd = (SaveKeyShieldConfigCmd) cmd;
-			responseData = GwtServerHelper.saveKeyShieldConfig( this, skcCmd.getConfig() );
-			response = new VibeRpcResponse( responseData );
+			SaveKeyShieldConfigCmd skcCmd = ((SaveKeyShieldConfigCmd) cmd);
+			SaveKeyShieldConfigRpcResponseData responseData = GwtKeyShieldSSOHelper.saveKeyShieldConfig(this, skcCmd.getConfig());
+			response = new VibeRpcResponse(responseData);
 			return response;
 		}
 		
@@ -4165,12 +4161,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case TEST_KEYSHIELD_CONNECTION:
 		{
-			TestKeyShieldConnectionCmd tkcCmd;
-			TestKeyShieldConnectionResponse responseData;
-			
-			tkcCmd = (TestKeyShieldConnectionCmd) cmd;
-			responseData = GwtServerHelper.testKeyShieldConnection( this, tkcCmd.getKeyShieldConfig() );
-			response = new VibeRpcResponse( responseData );
+			TestKeyShieldConnectionCmd tkcCmd = ((TestKeyShieldConnectionCmd) cmd);
+			TestKeyShieldConnectionResponse responseData = GwtKeyShieldSSOHelper.testKeyShieldConnection(this, tkcCmd.getKeyShieldConfig());
+			response = new VibeRpcResponse(responseData);
 			return response;
 		}
 		
