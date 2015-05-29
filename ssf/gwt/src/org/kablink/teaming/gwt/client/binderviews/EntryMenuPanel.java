@@ -84,6 +84,7 @@ import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedBinderShareRightsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedPrincipalsAdminRightsEvent;
+import org.kablink.teaming.gwt.client.event.SetSelectedPrincipalsLimitedUserVisibilityEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserDesktopSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserMobileSettingsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserShareRightsEvent;
@@ -155,41 +156,42 @@ public class EntryMenuPanel extends ToolPanelBase
 		// Event handlers implemented by this class.
 		ResetEntryMenuEvent.Handler
 {
-	private BinderFiltersRpcResponseData	m_binderFilters;			//
-	private BinderInfo						m_binderInfo;				//
-	private boolean							m_includeColumnResizer;		//
-	private boolean							m_isIE;						//
-	private boolean							m_panelInitialized;			// Set true after the panel has completed initializing.
-	private boolean							m_viewingPinnedEntries;		//
-	private boolean							m_viewingSharedFiles;		//
-	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private List<ToolbarItem>				m_configureToolbarItems;	//
-	private List<ToolbarItem>				m_toolbarItems;				//
-	private ManageUserFilterItems			m_manageUserFilters;		//
-	private ManageUsersState				m_manageUsersState;			//
-	private SharedViewFilterItems			m_sharedViewFilters;		//
-	private SharedViewState					m_sharedViewState;			//
-	private VibeFlexTable					m_grid;						//
-	private VibeFlowPanel					m_configPanel;				//
-	private VibeFlowPanel					m_filterOptionsPanel;		//
-	private VibeFlowPanel					m_filtersPanel;				//
-	private VibeFlowPanel					m_quickFilterPanel;			//
-	private VibeMenuBar						m_entryMenu;				//
-	private VibeMenuItem					m_addAdminRightsMenu;		//
-	private VibeMenuItem					m_addFilesMenu;				//
-	private VibeMenuItem					m_deleteMenu;				//
-	private VibeMenuItem					m_detailsMenu;				//
-	private VibeMenuItem					m_moreMenu;					//
-	private VibeMenuItem					m_moreSingleItem;			//
-	private VibeMenuItem					m_setAdminRightsMenu;		//
-	private VibeMenuItem					m_shareMenu;				//
-	private VibeMenuItem					m_shareSingleItem;			//
-	private VibeMenuItem					m_trashPurgeAllMenu;		//
-	private VibeMenuItem					m_trashPurgeSelectedMenu;	//
-	private VibeMenuItem					m_trashRestoreAllMenu;		//
-	private VibeMenuItem					m_trashRestoreSelectedMenu;	//
-	private VibeMenuItem					m_wipeMenu;					//
-	private VibeMenuItem					m_wipeSingleItem;			//
+	private BinderFiltersRpcResponseData	m_binderFilters;					//
+	private BinderInfo						m_binderInfo;						//
+	private boolean							m_includeColumnResizer;				//
+	private boolean							m_isIE;								//
+	private boolean							m_panelInitialized;					// Set true after the panel has completed initializing.
+	private boolean							m_viewingPinnedEntries;				//
+	private boolean							m_viewingSharedFiles;				//
+	private List<HandlerRegistration>		m_registeredEventHandlers;			// Event handlers that are currently registered.
+	private List<ToolbarItem>				m_configureToolbarItems;			//
+	private List<ToolbarItem>				m_toolbarItems;						//
+	private ManageUserFilterItems			m_manageUserFilters;				//
+	private ManageUsersState				m_manageUsersState;					//
+	private SharedViewFilterItems			m_sharedViewFilters;				//
+	private SharedViewState					m_sharedViewState;					//
+	private VibeFlexTable					m_grid;								//
+	private VibeFlowPanel					m_configPanel;						//
+	private VibeFlowPanel					m_filterOptionsPanel;				//
+	private VibeFlowPanel					m_filtersPanel;						//
+	private VibeFlowPanel					m_quickFilterPanel;					//
+	private VibeMenuBar						m_entryMenu;						//
+	private VibeMenuItem					m_addAdminRightsMenu;				//
+	private VibeMenuItem					m_addFilesMenu;						//
+	private VibeMenuItem					m_deleteMenu;						//
+	private VibeMenuItem					m_detailsMenu;						//
+	private VibeMenuItem					m_moreMenu;							//
+	private VibeMenuItem					m_moreSingleItem;					//
+	private VibeMenuItem					m_removeLimitUserVisibilityMenu;	//
+	private VibeMenuItem					m_setAdminRightsMenu;				//
+	private VibeMenuItem					m_shareMenu;						//
+	private VibeMenuItem					m_shareSingleItem;					//
+	private VibeMenuItem					m_trashPurgeAllMenu;				//
+	private VibeMenuItem					m_trashPurgeSelectedMenu;			//
+	private VibeMenuItem					m_trashRestoreAllMenu;				//
+	private VibeMenuItem					m_trashRestoreSelectedMenu;			//
+	private VibeMenuItem					m_wipeMenu;							//
+	private VibeMenuItem					m_wipeSingleItem;					//
 
 	private final static String	TBI_MORE_NAME	= "1_more";
 	private final static String	TBI_SHARE_NAME	= "1_share";
@@ -1352,6 +1354,16 @@ public class EntryMenuPanel extends ToolPanelBase
 						event = new SetSelectedPrincipalsAdminRightsEvent(folderId, Boolean.parseBoolean(setRights));
 						break;
 						
+					case SET_SELECTED_PRINCIPALS_LIMIT_USER_VISIBILITY:
+						String  str             = simpleTBI.getQualifierValue("limited");
+						Boolean limited         = (GwtClientHelper.hasString(str) ? Boolean.parseBoolean(str) : null);
+						str                     = simpleTBI.getQualifierValue("override");
+						Boolean override        = (GwtClientHelper.hasString(str) ? Boolean.parseBoolean(str) : null);
+						str                     = simpleTBI.getQualifierValue("selectPrincipal");
+						boolean selectPrincipal = (GwtClientHelper.hasString(str) ? Boolean.parseBoolean(str) : false);
+						event = new SetSelectedPrincipalsLimitedUserVisibilityEvent(null, limited, override, selectPrincipal);
+						break;
+						
 					case SET_FOLDER_SORT:
 						String sortKey        = simpleTBI.getQualifierValue("sortKey"       );
 						String sortDescending = simpleTBI.getQualifierValue("sortDescending");
@@ -1389,6 +1401,18 @@ public class EntryMenuPanel extends ToolPanelBase
 		case SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS:
 			if (m_binderInfo.isBinderAdministratorManagement()) {
 				m_setAdminRightsMenu = reply;
+			}
+			break;
+			
+		case SET_SELECTED_PRINCIPALS_LIMIT_USER_VISIBILITY:
+			if (m_binderInfo.isBinderLimitUserVisibility()) {
+				String limited  = simpleTBI.getQualifierValue("limited" );
+				String override = simpleTBI.getQualifierValue("override");
+				String falseS   = String.valueOf(false);
+				if ((null != limited)  && limited.equals( falseS) &&
+				    (null != override) && override.equals(falseS)) {
+					m_removeLimitUserVisibilityMenu = reply;
+				}
 			}
 			break;
 			
@@ -1533,6 +1557,12 @@ public class EntryMenuPanel extends ToolPanelBase
 		if (null != m_setAdminRightsMenu) {
 			// ...enable disable it.
 			setMenuItemEnabled(m_setAdminRightsMenu, enable);
+		}
+
+		// If we have a remove limit user visibility menu item...
+		if (null != m_removeLimitUserVisibilityMenu) {
+			// ...enable disable it.
+			setMenuItemEnabled(m_removeLimitUserVisibilityMenu, enable);
 		}
 
 		// If we have a more popup menu item...

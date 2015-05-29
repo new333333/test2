@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.List;
+
 /**
  * This class holds all of the information necessary to execute the
  * 'set user sharing rights info' command.
@@ -39,9 +41,9 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  * @author drfoster@novell.com
  */
 public class SetUserVisibilityCmd extends VibeRpcCmd {
-	private Boolean	m_canOnlySeeMembersOfGroupsImIn;			// null -> No change to this for the given Principal.
-	private Boolean m_overrideCanOnlySeeMembersOfGroupsImIn;	// null -> No change to this for the given Principal.
-	private Long	m_principalId;								// The Principal (User or Group) the settings are to be applied to.
+	private Boolean		m_limited;		// null -> No change to this for the given Principals.
+	private Boolean 	m_override;		// null -> No change to this for the given Principals.
+	private List<Long>	m_principalIds;	// The Principals (Users or Groups) the settings are to be applied to.
 	
 	/*
 	 * Constructor method.
@@ -56,17 +58,18 @@ public class SetUserVisibilityCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param principalId
-	 * @param 
+	 * @param principalIds
+	 * @param limited
+	 * @param override
 	 */
-	public SetUserVisibilityCmd(Long principalId, Boolean canOnlySeeMembersOfGroupsImIn, Boolean overrideCanOnlySeeMembersOfGroupsImIn) {
+	public SetUserVisibilityCmd(List<Long> principalIds, Boolean limited, Boolean override) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setPrincipalId(                          principalId                          );
-		setCanOnlySeeMembersOfGroupsImIn(                canOnlySeeMembersOfGroupsImIn);
-		setOverrideCanOnlySeeMembersOfGroupsImIn(overrideCanOnlySeeMembersOfGroupsImIn);
+		setPrincipalIds(principalIds);
+		setLimited(     limited     );
+		setOverride(    override    );
 	}
 	
 	/**
@@ -74,18 +77,18 @@ public class SetUserVisibilityCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public Boolean getCanOnlySeeMembersOfGroupsImIn()         {return m_canOnlySeeMembersOfGroupsImIn;        }
-	public Boolean getOverrideCanOnlySeeMembersOfGroupsImIn() {return m_overrideCanOnlySeeMembersOfGroupsImIn;}
-	public Long    getPrincipalId()                           {return m_principalId;                          }
+	public Boolean    getLimited()      {return m_limited;     }
+	public Boolean    getOverride()     {return m_override;    }
+	public List<Long> getPrincipalIds() {return m_principalIds;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setCanOnlySeeMembersOfGroupsImIn(        Boolean         canOnlySeeMembersOfGroupsImIn) {m_canOnlySeeMembersOfGroupsImIn         =         canOnlySeeMembersOfGroupsImIn;}
-	public void setOverrideCanOnlySeeMembersOfGroupsImIn(Boolean overrideCanOnlySeeMembersOfGroupsImIn) {m_overrideCanOnlySeeMembersOfGroupsImIn = overrideCanOnlySeeMembersOfGroupsImIn;}
-	public void setPrincipalId(                          Long    principalId)                           {m_principalId                           = principalId;                          }
+	public void setLimited(     Boolean    limited)      {m_limited      = limited;     }
+	public void setOverride(    Boolean    override)     {m_override     = override;    }
+	public void setPrincipalIds(List<Long> principalIds) {m_principalIds = principalIds;}
 	
 	/**
 	 * Returns the command's enumeration value.

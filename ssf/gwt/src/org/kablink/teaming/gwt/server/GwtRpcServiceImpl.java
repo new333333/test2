@@ -4067,7 +4067,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SET_USER_VISIBILITY:
 		{
 			SetUserVisibilityCmd suvCmd = ((SetUserVisibilityCmd) cmd);
-			StringRpcResponseData result = GwtUserVisibilityHelper.setUserVisibility( this, req, suvCmd.getPrincipalId(), suvCmd.getCanOnlySeeMembersOfGroupsImIn(), suvCmd.getOverrideCanOnlySeeMembersOfGroupsImIn() );
+			SetLimitedUserVisibilityRpcResponseData result = GwtUserVisibilityHelper.setUserVisibility( this, req, suvCmd.getPrincipalIds(), suvCmd.getLimited(), suvCmd.getOverride() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

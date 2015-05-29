@@ -227,6 +227,8 @@
 		.vibe-dataTableItem-Img                   {vertical-align: middle; margin-right: 2px;}
 		.vibe-dataTableLink-hover                 {color: #135c8f !important; cursor: pointer; background-color: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-dataTableLink-hoverNoLPad           {}
+		.vibe-dataTableLUV-hover                  {color: #135c8f !important; cursor: pointer; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableLUV-title                  {cursor: pointer; color: #036f9f !important; padding: 2px;}
 		.vibe-dataTableMobileDevices-bubble       {color: #036f9f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 8px; padding-right: 8px; text-align: center; display: inline;}
 		.vibe-dataTableMobileDevices-bubbleBig    {background: url(images/devices_25_wide.png) no-repeat scroll center center transparent;}
 		.vibe-dataTableMobileDevices-bubbleSmall  {background: url(images/devices_25.png)      no-repeat scroll center center transparent;}

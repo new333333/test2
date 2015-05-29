@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -53,28 +53,29 @@ public class VibeDataTableConstants {
 	public final static String CELL_EVENT_MOUSEOVER	= BrowserEvents.MOUSEOVER;
 	
 	// The following are used to name widgets stored in various cells.
-	public final static String CELL_WIDGET_ATTRIBUTE					= "n-cellWidget";
-	public final static String CELL_WIDGET_ENTRY_ACTION_MENU_IMAGE		= "entryActionMenuImg";
-	public final static String CELL_WIDGET_ENTRY_COMMENTS_PANEL			= "entryCommentsPanel";
-	public final static String CELL_WIDGET_EMAIL_ADDRESS_LABEL			= "emailAddressLabel";
-	public final static String CELL_WIDGET_EMAIL_ADDRESS_LABEL_NOLINK	= "emailAddressLabelNoLink";
-	public final static String CELL_WIDGET_ENTITY_ID					= "n-entityId";
-	public final static String CELL_WIDGET_ENTITY_TITLE					= "n-entityTitle";
-	public final static String CELL_WIDGET_ENTRY_DOWNLOAD_LABEL			= "entryDownloadLabel";
-	public final static String CELL_WIDGET_ENTRY_PIN_IMAGE				= "entryPinImg";
-	public final static String CELL_WIDGET_ENTRY_TITLE_LABEL			= "entryTitleLabel";
-	public final static String CELL_WIDGET_ENTRY_TITLE_LABEL_NOLINK		= "entryTitleLabelNoLink";
-	public final static String CELL_WIDGET_ENTRY_UNSEEN_IMAGE			= "entryUnseenImg";
-	public final static String CELL_WIDGET_ENTRY_VIEW_ANCHOR			= "entryViewAnchor";
-	public final static String CELL_WIDGET_ENTRY_VIEW_LABEL				= "entryViewLabel";
-	public final static String CELL_WIDGET_GROUP_ID						= "n-groupId";
-	public final static String CELL_WIDGET_INDEX						= "n-cellWidgetIndex";
-	public final static String CELL_WIDGET_GUEST_AVATAR					= "guestAvatar";
-	public final static String CELL_WIDGET_MOBILE_DEVICES_PANEL			= "mobileDevicesPanel";
-	public final static String CELL_WIDGET_MOBILE_WIPE_SCHEDULED		= "mobileWipeScheduled";
-	public final static String CELL_WIDGET_PRESENCE						= "presenceControl";
-	public final static String CELL_WIDGET_PRESENCE_LABEL				= "presenceLabel";
-	public final static String CELL_WIDGET_TASK_FOLDER					= "taskFolder";
+	public final static String CELL_WIDGET_ATTRIBUTE					 = "n-cellWidget";
+	public final static String CELL_WIDGET_ENTRY_ACTION_MENU_IMAGE		 = "entryActionMenuImg";
+	public final static String CELL_WIDGET_ENTRY_COMMENTS_PANEL			 = "entryCommentsPanel";
+	public final static String CELL_WIDGET_EMAIL_ADDRESS_LABEL			 = "emailAddressLabel";
+	public final static String CELL_WIDGET_EMAIL_ADDRESS_LABEL_NOLINK	 = "emailAddressLabelNoLink";
+	public final static String CELL_WIDGET_ENTITY_ID					 = "n-entityId";
+	public final static String CELL_WIDGET_ENTITY_TITLE					 = "n-entityTitle";
+	public final static String CELL_WIDGET_ENTRY_DOWNLOAD_LABEL			 = "entryDownloadLabel";
+	public final static String CELL_WIDGET_ENTRY_PIN_IMAGE				 = "entryPinImg";
+	public final static String CELL_WIDGET_ENTRY_TITLE_LABEL			 = "entryTitleLabel";
+	public final static String CELL_WIDGET_ENTRY_TITLE_LABEL_NOLINK		 = "entryTitleLabelNoLink";
+	public final static String CELL_WIDGET_ENTRY_UNSEEN_IMAGE			 = "entryUnseenImg";
+	public final static String CELL_WIDGET_ENTRY_VIEW_ANCHOR			 = "entryViewAnchor";
+	public final static String CELL_WIDGET_ENTRY_VIEW_LABEL				 = "entryViewLabel";
+	public final static String CELL_WIDGET_GROUP_ID						 = "n-groupId";
+	public final static String CELL_WIDGET_INDEX						 = "n-cellWidgetIndex";
+	public final static String CELL_WIDGET_LIMITED_USER_VISIBILITY_LABEL = "limitedUserVisibilityLabel";
+	public final static String CELL_WIDGET_GUEST_AVATAR					 = "guestAvatar";
+	public final static String CELL_WIDGET_MOBILE_DEVICES_PANEL			 = "mobileDevicesPanel";
+	public final static String CELL_WIDGET_MOBILE_WIPE_SCHEDULED		 = "mobileWipeScheduled";
+	public final static String CELL_WIDGET_PRESENCE						 = "presenceControl";
+	public final static String CELL_WIDGET_PRESENCE_LABEL				 = "presenceLabel";
+	public final static String CELL_WIDGET_TASK_FOLDER					 = "taskFolder";
 	
 	// Width, in pixels for the action menu shown in conjunction with a
 	// title column.

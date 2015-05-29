@@ -2051,6 +2051,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case SET_SELECTED_PRINCIPALS_LIMIT_USER_VISIBILITY:
+				// An SetSelectedPrincipalsLimitedUserVisibilityEvent!
+				// Can the event handler we were given handle that?
+				if (eventHandler instanceof SetSelectedPrincipalsLimitedUserVisibilityEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SetSelectedPrincipalsLimitedUserVisibilityEvent.registerEvent(eventBus, ((SetSelectedPrincipalsLimitedUserVisibilityEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case SET_SELECTED_USER_DESKTOP_SETTINGS:
 				// An SetSelectedUserDesktopSettingsEvent!  Can the
 				// event handler we were given handle that?
@@ -3210,6 +3219,7 @@ public class EventHelper {
 			case SET_FOLDER_SORT:                              hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                          break;
 			case SET_SELECTED_BINDER_SHARE_RIGHTS:             hasHandler = (eventHandler instanceof SetSelectedBinderShareRightsEvent.Handler);           break;
 			case SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS:         hasHandler = (eventHandler instanceof SetSelectedPrincipalsAdminRightsEvent.Handler);       break;
+			case SET_SELECTED_PRINCIPALS_LIMIT_USER_VISIBILITY: hasHandler = (eventHandler instanceof SetSelectedPrincipalsLimitedUserVisibilityEvent.Handler); break;
 			case SET_SELECTED_USER_DESKTOP_SETTINGS:           hasHandler = (eventHandler instanceof SetSelectedUserDesktopSettingsEvent.Handler);         break;
 			case SET_SELECTED_USER_MOBILE_SETTINGS:            hasHandler = (eventHandler instanceof SetSelectedUserMobileSettingsEvent.Handler);          break;
 			case SET_SELECTED_USER_SHARE_RIGHTS:               hasHandler = (eventHandler instanceof SetSelectedUserShareRightsEvent.Handler);             break;

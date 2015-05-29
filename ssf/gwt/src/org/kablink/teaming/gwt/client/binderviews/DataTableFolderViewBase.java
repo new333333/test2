@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.datatable.EmailAddressColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.GuestColumn;
+import org.kablink.teaming.gwt.client.datatable.LimitedUserVisibilityColumn;
 import org.kablink.teaming.gwt.client.datatable.MobileDeviceWipeScheduleInfo;
 import org.kablink.teaming.gwt.client.datatable.MobileDevicesColumn;
 import org.kablink.teaming.gwt.client.datatable.MobileDeviceWipeScheduledColumn;
@@ -129,6 +130,7 @@ import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedBinderShareRightsEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedPrincipalsAdminRightsEvent;
+import org.kablink.teaming.gwt.client.event.SetSelectedPrincipalsLimitedUserVisibilityEvent;
 import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ShowSelectedSharesEvent;
@@ -164,9 +166,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveSharedFilesStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveSharedViewStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetEntriesPinStateCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetLimitedUserVisibilityRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData.AdminRights;
+import org.kablink.teaming.gwt.client.rpc.shared.SetUserVisibilityCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
@@ -180,6 +184,7 @@ import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntryPinInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.LimitedUserVisibilityInfo;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalAdminType;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
@@ -282,6 +287,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		QuickFilterEvent.Handler,
 		SetSelectedBinderShareRightsEvent.Handler,
 		SetSelectedPrincipalsAdminRightsEvent.Handler,
+		SetSelectedPrincipalsLimitedUserVisibilityEvent.Handler,
 		SharedViewFilterEvent.Handler,
 		ShareSelectedEntitiesEvent.Handler,
 		ShowSelectedSharesEvent.Handler,
@@ -391,6 +397,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SET_SELECTED_BINDER_SHARE_RIGHTS,
 		TeamingEvents.SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS,
+		TeamingEvents.SET_SELECTED_PRINCIPALS_LIMIT_USER_VISIBILITY,
 		TeamingEvents.SHARED_VIEW_FILTER,
 		TeamingEvents.SHARE_SELECTED_ENTITIES,
 		TeamingEvents.SHOW_SELECTED_SHARES,
@@ -1878,8 +1885,20 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				};
 			}
 			
+			// No, this column isn't a principal type either!  Is it a
+			// can only see member?
+			else if (FolderColumn.isColumnCanOnlySeeMembers(cName)) {
+				// Yes!  Create a LimitedUserVisibilityColumn for it.
+				column = new LimitedUserVisibilityColumn<FolderRow>(fc) {
+					@Override
+					public LimitedUserVisibilityInfo getValue(FolderRow fr) {
+						return fr.getColumnValueAsLimitedUserVisibility(fc);
+					}
+				};
+			}
+			
 			else {
-				// No, this column isn't a principal type either!
+				// No, this column isn't a can only see members either!
 				// Define a StringColumn for it.
 				column = new StringColumn<FolderRow>(fc) {
 					@Override
@@ -3850,6 +3869,126 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 											AdminRights ar = adminRightsChangeMap.get(key);
 											row.setColumnValue(                    adminCol,       ar.getAdminRights());
 											row.getColumnValueAsPrincipalAdminType(ptCol).setAdmin(ar.isAdmin()       );
+											m_dataTable.redrawRow(rowIndex);
+											break;
+										}
+										rowIndex += 1;
+									}
+								}
+							}
+						}
+					});
+				}
+			}
+		});
+	}
+
+	/**
+	 * Handles SetSelectedPrincipalsLimitedUserVisibilityEvent's received by this class.
+	 * 
+	 * Implements the SetSelectedPrincipalsLimitedUserVisibilityEvent.Handler.onSetSelectedPrincipalsLimitedUserVisibility() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSetSelectedPrincipalsLimitedUserVisibility(SetSelectedPrincipalsLimitedUserVisibilityEvent event) {
+		// We only support setting limited user visibility from the
+		// limited user visibility view.  Is it supported?
+		WorkspaceType wt = getFolderInfo().getWorkspaceType();
+		if (wt.isLimitUserVisibility()) {
+			// Yes!  Get the selected EntityId's...
+			List<Long> selectedPrincipalsList;
+			if (event.isSelectPrincipal()) {
+				selectedPrincipalsList = null;
+			}
+			else {
+				List<EntityId> selectedEntityIds = event.getSelectedEntities();
+				if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+					selectedEntityIds = getSelectedEntityIds();
+				}
+				
+				// ...extract the selected user ID's from that...
+				selectedPrincipalsList = new ArrayList<Long>();
+				for (EntityId eid:  selectedEntityIds) {
+					selectedPrincipalsList.add(eid.getEntityId());
+				}
+			}
+			final List<Long> finalPrincipalsList = selectedPrincipalsList;
+
+			// ...and perform the rights set.
+			onSetSelectedPrincipalsLimitedUserVisibilityAsync(finalPrincipalsList, event.getLimited(), event.getOverride(), event.isSelectPrincipal());
+		}
+	}
+
+	/*
+	 * Asynchronously sets or clears the limited user visibility
+	 * settings on the selected principals.
+	 */
+	private void onSetSelectedPrincipalsLimitedUserVisibilityAsync(final List<Long> selectedPrincipalsList, final Boolean limited, final Boolean override, final boolean selectPrincipal) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				if (selectPrincipal)
+//!					...this needs to be implemented...
+				     GwtClientHelper.deferredAlert("DataTableFolderViewBase.onSetSelectedPrincipalsLimitedUserVisibilityAsync( Select Principal ):  ...this needs to be implemented...");
+				else onSetSelectedPrincipalsLimitedUserVisibilityNow(selectedPrincipalsList, limited, override);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously sets or clears the limited user visibility
+	 * settings on the selected principals.
+	 */
+	private void onSetSelectedPrincipalsLimitedUserVisibilityNow(final List<Long> selectedPrincipalsList, final Boolean limited, final Boolean override) {
+	    showBusySpinner();
+		SetUserVisibilityCmd cmd = new SetUserVisibilityCmd(selectedPrincipalsList, limited, override);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+			    hideBusySpinner();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_SetPrincipalsLimitedUserVisibility());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// We're done.  If we had any errors...
+			    hideBusySpinner();
+			    SetLimitedUserVisibilityRpcResponseData responseData = ((SetLimitedUserVisibilityRpcResponseData) response.getResponseData()); 
+				List<ErrorInfo> erList = responseData.getErrorList();
+				if (GwtClientHelper.hasItems(erList)) {
+					// ...display them...
+					GwtClientHelper.displayMultipleErrors(m_messages.vibeDataTable_Error_SavingLimitedUserVisibility(), erList);
+				}
+
+				// ...and if we changed anything...
+				final Map<Long, LimitedUserVisibilityInfo> luvChangeMap = responseData.getLimitedUserVisibilityChangeMap(); 
+				if (GwtClientHelper.hasItems(luvChangeMap)) {
+					// ...force the rows that changed to refresh to
+					// ...reflect the change.
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							// If we're removing settings in the limit
+							// user visibility view...
+							if ((((null != limited) && (!limited)) || ((null != override) && (!override))) && getFolderInfo().isBinderLimitUserVisibility()) {
+								// ...force the full UI to refresh...
+								FullUIReloadEvent.fireOneAsync();
+							}
+							else {
+								// ...otherwise, update the rows that
+								// ...were changed.
+								List<FolderRow> rows          = m_dataTable.getVisibleItems();
+								FolderColumn	limitationCol = getColumnByName(m_folderColumnsList, FolderColumn.COLUMN_CAN_ONLY_SEE_MEMBERS);
+								Set<Long>		keySet        = luvChangeMap.keySet();
+								for (Long key:  keySet) {
+									int rowIndex = 0;
+									for (FolderRow row:  rows) {
+										EntityId rowEID = row.getEntityId();
+										if (rowEID.getEntityId().equals(key)) {
+											row.setColumnValue(limitationCol, luvChangeMap.get(key));
 											m_dataTable.redrawRow(rowIndex);
 											break;
 										}
