@@ -34,13 +34,11 @@ package org.kablink.teaming.gwt.server.util;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -134,7 +132,6 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
-import org.kablink.teaming.domain.KeyShieldConfig;
 import org.kablink.teaming.domain.MobileAppsConfig;
 import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.domain.MobileOpenInWhiteLists;
@@ -167,7 +164,6 @@ import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
-import org.kablink.teaming.gwt.client.GwtKeyShieldConfig;
 import org.kablink.teaming.gwt.client.GwtNetFolderGlobalSettings;
 import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
@@ -230,7 +226,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.ManageAdministratorsInfoRpcResp
 import org.kablink.teaming.gwt.client.rpc.shared.ManageTeamsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyInfoRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveKeyShieldConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
@@ -246,8 +241,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData.AdminRights;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.TestKeyShieldConnectionResponse;
-import org.kablink.teaming.gwt.client.rpc.shared.TestKeyShieldConnectionResponse.GwtKeyShieldConnectionTestStatusCode;
 import org.kablink.teaming.gwt.client.rpc.shared.UpdateLogsConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.UserAccessConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
@@ -309,7 +302,6 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.ical.AttendedEntries;
-import org.kablink.teaming.module.keyshield.KeyShieldModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapModule.LdapOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
@@ -6608,86 +6600,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * 
-	 */
-	public static GwtKeyShieldConfig getKeyShieldConfig( AllModulesInjected ami )
-	{
-		KeyShieldModule keyShieldModule;
-		GwtKeyShieldConfig config = null;
-		KeyShieldConfig keyShieldConfig = null;
-
-		keyShieldModule = ami.getKeyShieldModule();
-		
-		try
-		{
-			keyShieldConfig = keyShieldModule.getKeyShieldConfig( RequestContextHolder.getRequestContext().getZoneId() );
-		}
-		catch ( Exception ex )
-		{
-			ex.printStackTrace();
-		}
-
-		if ( keyShieldConfig == null )
-			config = GwtKeyShieldConfig.getGwtKeyShieldConfig();
-		else
-			config = getGwtKeyShieldConfigFromKeyShieldConfig( keyShieldConfig );
-		
-		return config;
-	}
-	
-	/**
-	 * 
-	 */
-	private static KeyShieldConfig getKeyShieldConfigFromGwtKeyShieldConfig(
-		Long zoneId,
-		GwtKeyShieldConfig config )
-	{
-		KeyShieldConfig keyShieldConfig;
-		
-		keyShieldConfig = new KeyShieldConfig( zoneId );
-		
-		if ( config != null )
-		{
-			keyShieldConfig.setApiAuthKey( config.getApiAuthKey() );
-			keyShieldConfig.setAuthConnectorNamesFromSet( config.getAuthConnectorNames() );
-			keyShieldConfig.setEnabled( config.isEnabled() );
-			keyShieldConfig.setHttpTimeout( config.getHttpConnectionTimeout() );
-			keyShieldConfig.setServerUrl( config.getServerUrl() );
-		}
-		
-		return keyShieldConfig;
-	}
-	
-	/**
-	 *
-	 */
-	private static GwtKeyShieldConfig getGwtKeyShieldConfigFromKeyShieldConfig( KeyShieldConfig keyShieldConfig )
-	{
-		GwtKeyShieldConfig config;
-		
-		config = GwtKeyShieldConfig.getGwtKeyShieldConfig();
-		
-		config.setApiAuthKey( keyShieldConfig.getApiAuthKey() );
-		config.setAuthConnectorNames( keyShieldConfig.getAuthConnectorNamesAsSet() );
-		
-		{
-			Integer timeout;
-			
-			timeout = keyShieldConfig.getHttpTimeout();
-			if ( timeout == null )
-				config.setHttpConnectionTimeout( 250 );
-			else
-				config.setHttpConnectionTimeout( timeout );
-		}
-		
-		config.setIsEnabled( keyShieldConfig.getEnabled() );
-		config.setServerUrl( keyShieldConfig.getServerUrl() );
-		
-		return config;
-	}
-	
-	
-	/**
 	 * Return a GwtJitsZoneConfig object that holds the jits zone config data.
 	 * 
 	 * @return
@@ -11703,40 +11615,6 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * 
-	 */
-	public static SaveKeyShieldConfigRpcResponseData saveKeyShieldConfig(
-		AllModulesInjected ami,
-		GwtKeyShieldConfig config )
-	{
-		KeyShieldModule keyShieldModule;
-		SaveKeyShieldConfigRpcResponseData responseData;
-
-		responseData = new SaveKeyShieldConfigRpcResponseData();
-		responseData.setSaveSuccessfull( false );
-
-		keyShieldModule = ami.getKeyShieldModule();
-		
-		try
-		{
-			KeyShieldConfig keyShieldConfig;
-			Long zoneId;
-			
-			zoneId = RequestContextHolder.getRequestContext().getZoneId();
-			keyShieldConfig = getKeyShieldConfigFromGwtKeyShieldConfig( zoneId, config );
-			
-			keyShieldModule.saveKeyShieldConfig( zoneId, keyShieldConfig );
-			responseData.setSaveSuccessfull( true );
-		}
-		catch ( Exception ex )
-		{
-			ex.printStackTrace();
-		}
-
-		return responseData;
-	}
-	
-	/**
 	 * Save the given Jits zone config
 	 */
 	public static Boolean saveNetFolderGlobalSettings(
@@ -13201,63 +13079,6 @@ public class GwtServerHelper {
 		}
 		
 		return count;
-	}
-	
-	/**
-	 * Test the connection for the given KeyShield configuration
-	 */
-	public static TestKeyShieldConnectionResponse testKeyShieldConnection(
-		AllModulesInjected ami,
-		GwtKeyShieldConfig gwtConfig )
-	{
-		TestKeyShieldConnectionResponse response;
-		KeyShieldModule keyShieldModule;
-		KeyShieldConfig keyShieldConfig = null;
-
-		response = new TestKeyShieldConnectionResponse();
-		keyShieldModule = ami.getKeyShieldModule();
-		
-		try
-		{
-			keyShieldConfig = getKeyShieldConfigFromGwtKeyShieldConfig(
-																	RequestContextHolder.getRequestContext().getZoneId(),
-																	gwtConfig );
-			
-			keyShieldModule.testConnection( keyShieldConfig );
-			response.setStatusCode( GwtKeyShieldConnectionTestStatusCode.NORMAL );
-		}
-		catch ( Exception ex )
-		{
-			response.setStatusCode( GwtKeyShieldConnectionTestStatusCode.FAILED );
-			
-			// Capture a description of the exception
-			{
-				Throwable cause;
-				String desc = null;
-
-				cause = ex.getCause();
-				if ( cause != null )
-					desc = cause.getMessage();
-				else
-					desc = ex.getMessage();
-				
-				response.setStatusDescription( desc );
-			}
-			
-			// Capture the stack trace
-			{
-				ByteArrayOutputStream outputStream;
-				PrintStream printStream;
-				
-				outputStream = new ByteArrayOutputStream();
-				printStream = new PrintStream( outputStream );
-				ex.printStackTrace( printStream );
-				
-				response.setStackTrace( outputStream.toString() );
-			}
-		}
-
-		return response;
 	}
 	
 	/**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,119 +38,64 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
- * This class is used to represent the KeyShield SSO configuration data
- * @author jwootton
- *
+ * This class is used to represent the KeyShield SSO configuration
+ * data.
+ * 
+ * @author drfoster@novell.com
  */
-public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData
-{
-	private boolean m_enabled;
-	private String m_serverUrl;
-	private int m_httpConnectionTimeout;	// Timeout in milliseconds
-	private String m_apiAuthKey;
-	private TreeSet<String> m_setOfAuthConnectorNames;
+public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData {
+	private boolean			m_enabled;					//
+	private int				m_httpConnectionTimeout;	// Timeout in milliseconds.
+	private String			m_apiAuthKey;				//
+	private String			m_serverUrl;				//
+	private String			m_usernameAttributeAlias;	//
+	private TreeSet<String>	m_setOfAuthConnectorNames;	//
 	
 	/**
 	 * Constructor method. 
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
-	private GwtKeyShieldConfig()
-	{
-		m_enabled = false;
-		m_serverUrl = null;
-		m_httpConnectionTimeout = 250;
-		m_apiAuthKey = null;
-		m_setOfAuthConnectorNames = null;
+	private GwtKeyShieldConfig() {
+		// Initialize the super class...
+		super();
+		
+		// ...and set the defaults that require it.
+		setHttpConnectionTimeout(250);
 	}
 
 	/**
+	 * Static method to create one of these.
 	 * 
+	 * @return
 	 */
-	public static GwtKeyShieldConfig getGwtKeyShieldConfig()
-	{
+	public static GwtKeyShieldConfig getGwtKeyShieldConfig() {
 		return new GwtKeyShieldConfig();
 	}
 	
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public String getApiAuthKey()
-	{
-		return m_apiAuthKey;
-	}
+	public boolean                   isEnabled()                 {return m_enabled;                }
+	public int                       getHttpConnectionTimeout()  {return m_httpConnectionTimeout;  }
+	public String                    getApiAuthKey()             {return m_apiAuthKey;             }
+	public String                    getServerUrl()              {return m_serverUrl;              }
+	public String                    getUsernameAttributeAlias() {return m_usernameAttributeAlias; }
+	public TreeSet<String>           getAuthConnectorNames()     {return m_setOfAuthConnectorNames;}
+	
 	
 	/**
+	 * Set'er methods.
 	 * 
+	 * @param
 	 */
-	public TreeSet<String> getAuthConnectorNames()
-	{
-		return m_setOfAuthConnectorNames;
-	}
-	
-	/**
-	 * 
-	 */
-	public int getHttpConnectionTimeout()
-	{
-		return m_httpConnectionTimeout;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getServerUrl()
-	{
-		return m_serverUrl;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean isEnabled()
-	{
-		return m_enabled;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setApiAuthKey( String authKey )
-	{
-		m_apiAuthKey = authKey;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAuthConnectorNames( TreeSet<String> authConnectorNames )
-	{
-		m_setOfAuthConnectorNames = authConnectorNames;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setHttpConnectionTimeout( int timeout )
-	{
-		m_httpConnectionTimeout = timeout;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setIsEnabled( boolean enabled )
-	{
-		m_enabled = enabled;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setServerUrl( String serverUrl )
-	{
-		m_serverUrl = serverUrl;
-	}
+	public void setIsEnabled(             boolean         enabled)                {m_enabled                 = enabled;               }
+	public void setHttpConnectionTimeout( int             timeout)                {m_httpConnectionTimeout   = timeout;               }
+	public void setApiAuthKey(            String          authKey)                {m_apiAuthKey              = authKey;               }
+	public void setServerUrl(             String          serverUrl)              {m_serverUrl               = serverUrl;             }
+	public void setUsernameAttributeAlias(String          usernameAttributeAlias) {m_usernameAttributeAlias  = usernameAttributeAlias;}
+	public void setAuthConnectorNames(    TreeSet<String> authConnectorNames)     {m_setOfAuthConnectorNames = authConnectorNames;    }
 }
