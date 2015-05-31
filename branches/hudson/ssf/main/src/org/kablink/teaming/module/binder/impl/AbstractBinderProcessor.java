@@ -2447,7 +2447,28 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			}
 			errors.add(binderErrors);
 			getCoreDao().evict(tags);
-			getCoreDao().evict(b);
+			// 05/30/2015 JK (bug #932689) - Do NEVER evict the loaded binder here!! 
+			// It effectively causes the input binder to this method to be evicted
+			// out of the session without the caller knowing about it. If the caller
+			// attempts any subsequent state-changing operation around the now-detached
+			// binder object, then this tends to result in the infamous "a different 
+			// object with the same identifier value was already associated with the 
+			// session" Hibernate object. Here's a concrete example:
+			// The call to importSettingsList() in ExportHelper.binder_addBinderWithXML()
+			// method eventually calls this method, and the input binder passed to this
+			// call stack gets evicted from the session in secrecy. And then, the call
+			// to importWorkflows() in the same method calls BinderModule.setDefinitions()
+			// which then attempts to load the same binder before making modification.
+			// Because the previous instance is now detached from the session, the code
+			// ends up loading a different instance of the binder through the session.
+			// At a later point, some change is made to the binder's parent binder, and
+			// due to the defined Hibernate cascade settings, the change is cascaded to
+			// the child binder (which is the binder evicted), and Hibernate finds that
+			// it has another instance of the binder associated with the same session,
+			// hence raising this infamous org.hibernate.NonUniqueObjectException (which
+			// maps to org.springframework.dao.DuplicateKeyException). Needless to say,
+			// this is one of those extremely difficult bug to track down.
+			//getCoreDao().evict(b);
 		}
 		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt(
 				"lucene.flush.threshold", 100));

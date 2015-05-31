@@ -50,9 +50,9 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.license.LicenseChecker;
@@ -68,8 +68,6 @@ import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -318,66 +316,56 @@ public class LandingPageHelper {
 	    			try {
 	    				// Within each zone, check for the landing page
 	    				// and import it if necessary.
-	    				transactionTemplate.execute(new TransactionCallback() {
-	    					@Override
-							public Object doInTransaction(TransactionStatus status) {
-				                RunasTemplate.runasAdmin(
-			                		new RunasCallback() {
-			                            @Override
-			                            public Object doAs() {
-			                            	// Can we get the Global
-			                            	// Workspaces binder for
-			                            	// this zone?
-			                        		Binder globalWS = getGlobalWorkspaces();
-			                        		if (null == globalWS) {
-			                        			// No!  Then we're done 
-			                        			// with it.
-			                        			return null;
-			                        		}
-			                        		
-			                            	// Does this zone already
-			                            	// have a default landing
-			                            	// page defined?
-			                 			    HomePageConfig curLP = am.getHomePageConfig();
-			                 			    boolean hasCurLP = (null != curLP);
-			                 			    if (hasCurLP && (null != curLP.getDefaultHomePageId())) {
-			                 			    	// Yes!  Then we're
-			                 			    	// done with it.
-			                 			    	return null;
-			                 			    }
-			                 			    
-			                        		// Does this default
-			                        		// landing page already
-			                        		// exist in this zone?
-			                        		String lpFileName = getDefaultLandingPageFileName();
-			                        		if (doesDefaultLandingPageExist(globalWS, lpFileName)) {
-			                        			// No!  Then we're 
-			                        			// done with it.
-			                        			return null;
-			                        		}
-			                        		
-			                        		m_logger.debug("importVibeDefaultLandingPageImpl():  About to import file '" + lpFileName + "'...");
-			    							importVibeDefaultLandingPageImpl(globalWS, lpFileName, finalLPFileStream, (hasCurLP ? curLP.getDefaultGuestHomePageId() : null));
-	
-			    							// At this point we must
-			    							// flush out any indexing
-			    							// changes that might have
-			    							// occurred before clearing
-			    							// the context.
-			    							IndexSynchronizationManager.applyChanges();
-			    					 		RequestContextHolder.clear();
-			    					 		DefinitionCache.clear();
-			    					 		
-			    							return null;
-			                            }
-			                        },
-			                        zoneName
-				                );
-	
-	    						return null;
-	    					}
-	    				});
-	    				
+		                RunasTemplate.runasAdmin(
+	                		new RunasCallback() {
+	                            @Override
+	                            public Object doAs() {
+	                            	// Can we get the Global
+	                            	// Workspaces binder for
+	                            	// this zone?
+	                        		Binder globalWS = getGlobalWorkspaces();
+	                        		if (null == globalWS) {
+	                        			// No!  Then we're done 
+	                        			// with it.
+	                        			return null;
+	                        		}
+	                        		
+	                            	// Does this zone already
+	                            	// have a default landing
+	                            	// page defined?
+	                 			    HomePageConfig curLP = am.getHomePageConfig();
+	                 			    boolean hasCurLP = (null != curLP);
+	                 			    if (hasCurLP && (null != curLP.getDefaultHomePageId())) {
+	                 			    	// Yes!  Then we're
+	                 			    	// done with it.
+	                 			    	return null;
+	                 			    }
+	                 			    
+	                        		// Does this default
+	                        		// landing page already
+	                        		// exist in this zone?
+	                        		String lpFileName = getDefaultLandingPageFileName();
+	                        		if (doesDefaultLandingPageExist(globalWS, lpFileName)) {
+	                        			// No!  Then we're 
+	                        			// done with it.
+	                        			return null;
+	                        		}
+	                        		
+	                        		m_logger.debug("importVibeDefaultLandingPageImpl():  About to import file '" + lpFileName + "'...");
+	    							importVibeDefaultLandingPageImpl(globalWS, lpFileName, finalLPFileStream, (hasCurLP ? curLP.getDefaultGuestHomePageId() : null));
+
+	    							
+	    							// At this point we must flush out any indexing changes that might have occurred
+	    							// before clearing the context.
+	    							IndexSynchronizationManager.applyChanges();
+	    					 		RequestContextHolder.clear();	    					 		
+	    					 		DefinitionCache.clear();
+	    					 		
+	    					 		return null;
+	                            }
+	                        },
+	                        zoneName
+		                );
 	    			}
 	    			catch (Exception e) {
 	    				m_logger.error("importVibeDefaultLandingPages():  Failed to import Vibe default landing page for zone " + zone.getZoneId(), e);
