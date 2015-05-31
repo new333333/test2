@@ -1268,7 +1268,7 @@ public class ExportHelper {
 		
 		// key-value pairs: old exported definition id - new definition id assigned
 		// during import
-		HashMap<String, Definition> definitionIdMap = new HashMap<String, Definition>();
+		HashMap<String, String> definitionIdMap = new HashMap<String, String>();
 
 		//List of new definitions added during this import
 		List<String> newDefIds = new ArrayList<String>();
@@ -1318,8 +1318,8 @@ public class ExportHelper {
 	}
 
 	private static void importDir(File currentDir, String tempDir, Long topBinderId,
-			Map entryIdMap, Map binderIdMap, Map<Long, Map<String, Object>> binderPropertyMap, Map<Long, ServerTaskLinkage> taskLinkageMap, 
-			Map<String, Definition> definitionIdMap, List<String> newDefIds, 
+			Map<Long,Long> entryIdMap, Map<Long,Long> binderIdMap, Map<Long, Map<String, Object>> binderPropertyMap, Map<Long, ServerTaskLinkage> taskLinkageMap, 
+			Map<String, String> definitionIdMap, List<String> newDefIds, 
 			StatusTicket statusTicket, Map reportMap, Map<String, Principal> nameCache) throws IOException {
 
 		Binder topBinder = loadBinder(topBinderId);
@@ -1379,12 +1379,12 @@ public class ExportHelper {
 								def = definitionModule.getDefinitionByReservedId(internalId);
 							} catch(NoDefinitionByTheIdException e) {}
 							if (def != null) {
-								definitionIdMap.put(defId, def);
+								definitionIdMap.put(defId, def.getId());
 							} else {
 								try {
 									def = definitionModule.getDefinitionByName(null, false, defName);
 								} catch(NoDefinitionByTheIdException e) {}
-								if (def != null) definitionIdMap.put(defId, def);
+								if (def != null) definitionIdMap.put(defId, def.getId());
 							}
 						} else {
 							try {
@@ -1395,7 +1395,7 @@ public class ExportHelper {
 									def = definitionModule.getDefinitionByName(topBinder, false, defName);
 								} catch(NoDefinitionByTheIdException e) {}
 							}
-							if (def != null) definitionIdMap.put(defId, def);
+							if (def != null) definitionIdMap.put(defId, def.getId());
 						}
 					}
 
@@ -1407,7 +1407,7 @@ public class ExportHelper {
 					} else {
 						if (def == null) def = definitionModule.addDefinition(tempDoc, topBinder, false);
 						if (def != null) {
-							definitionIdMap.put(defId, def);
+							definitionIdMap.put(defId, def.getId());
 							//Remember the new def so we can update its principal ids later
 							newDefIds.add(def.getId());
 						}
@@ -1480,7 +1480,6 @@ public class ExportHelper {
 										def, tempDoc.asXML(), tempDir, entryIdMap, binderIdMap, 
 										definitionIdMap, entryId, statusTicket, reportMap, nameCache);
 							
-									coreDao.flush();
 									Integer count = (Integer)reportMap.get(entries);
 									reportMap.put(entries, ++count);
 								} catch(Exception e) {
@@ -1495,7 +1494,6 @@ public class ExportHelper {
 									folder_addReplyWithXML(null, newBinderId, topBinderId,
 											newParentId, def, tempDoc.asXML(), tempDir, entryIdMap, binderIdMap, 
 											definitionIdMap, entryId, reportMap, nameCache);
-									coreDao.flush();
 								} catch(Exception e) {
 									Integer c = (Integer)reportMap.get(errors);
 									reportMap.put(errors, ++c);
@@ -1527,7 +1525,8 @@ public class ExportHelper {
 						Document tempDoc = getDocument(xmlStr, nameCache);
 						String defId = getEntityDefinitionId(tempDoc);
 						Definition def = null;
-						if (definitionIdMap.containsKey(defId)) def = definitionIdMap.get(defId);
+						if (definitionIdMap.containsKey(defId)) 
+							def = coreDao.loadDefinition(definitionIdMap.get(defId), null);
 
 						String entType = getEntityType(tempDoc);
 						Long parentId = null;
@@ -1547,7 +1546,6 @@ public class ExportHelper {
 								binder_addBinderWithXML(null, newParentId, def,
 										xmlStr, binderId, topBinderId, binderIdMap, binderPropertyMap, taskLinkageMap, definitionIdMap, tempDir, reportMap,
 										statusTicket, nameCache);
-								coreDao.flush();
 								Integer count = (Integer)reportMap.get(workspaces);
 								reportMap.put(workspaces, ++count);
 							} catch(Exception e) {
@@ -1580,7 +1578,8 @@ public class ExportHelper {
 						Document tempDoc = getDocument(xmlStr, nameCache);
 						String defId = getEntityDefinitionId(tempDoc);
 						Definition def = null;
-						if (definitionIdMap.containsKey(defId)) def = definitionIdMap.get(defId);
+						if (definitionIdMap.containsKey(defId)) 
+							def = coreDao.loadDefinition(definitionIdMap.get(defId), null);
 
 						if (def != null && ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF.equals(def.getId())) {
 							def = definitionModule.getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_FOLDER_DEF);
@@ -1606,7 +1605,6 @@ public class ExportHelper {
 								binder_addBinderWithXML(null, newParentId, def,
 										tempDoc.asXML(), binderId, topBinderId, binderIdMap, binderPropertyMap, taskLinkageMap, definitionIdMap, tempDir, reportMap, 
 										statusTicket, nameCache);
-								coreDao.flush();
 								Integer count = (Integer)reportMap.get(folders);
 								reportMap.put(folders, ++count);
 							} catch(Exception e) {
@@ -1704,18 +1702,18 @@ public class ExportHelper {
 	}
 	
 	private static Definition getTargetDefinition(String defId, String defName, 
-			Map<String, Definition> definitionIdMap, Map reportMap, Binder topBinder) {
+			Map<String, String> definitionIdMap, Map reportMap, Binder topBinder) {
 		Definition def = null;
 		if (definitionIdMap.containsKey(defId)) {
-			def = definitionIdMap.get(defId);
+			def = coreDao.loadDefinition(definitionIdMap.get(defId), null);
 		} else if (!defId.equals("") && !defName.equals("")) {
 			try {
 				def = definitionModule.getDefinitionByName(null, false, defName);
-				if (def != null) definitionIdMap.put(defId, def);
+				if (def != null) definitionIdMap.put(defId, def.getId());
 			} catch(Exception e) {
 				try {
 					def = definitionModule.getDefinitionByName(topBinder, false, defName);
-					if (def != null) definitionIdMap.put(defId, def);
+					if (def != null) definitionIdMap.put(defId, def.getId());
 				} catch(Exception e2) {
 					Integer c = (Integer)reportMap.get(errors);
 					reportMap.put(errors, ++c);
@@ -1727,16 +1725,16 @@ public class ExportHelper {
 	}
 
 	private static long binder_addBinderWithXML(String accessToken, long parentId, Definition def,
-			String inputDataAsXML, long binderId, Long topBinderId, Map binderIdMap, Map<Long, Map<String, Object>> binderPropertyMap, 
+			String inputDataAsXML, long binderId, Long topBinderId, Map<Long,Long> binderIdMap, Map<Long, Map<String, Object>> binderPropertyMap, 
 			Map<Long, ServerTaskLinkage> taskLinkageMap, 
-			Map<String, Definition> definitionIdMap, String tempDir, Map reportMap, 
+			Map<String, String> definitionIdMap, String tempDir, Map reportMap, 
 			StatusTicket statusTicket, Map<String, Principal> nameCache) {
 
 		final Binder topBinder = loadBinder(topBinderId);
 		final Binder parentBinder = loadBinder(parentId);
 
 		final Document doc = getDocument(inputDataAsXML, nameCache);
-		final Map<String, Definition> fDefIdMap = new HashMap<String, Definition>(definitionIdMap);
+		final Map<String, String> fDefIdMap = new HashMap<String, String>(definitionIdMap);
 
 		try {
 			if(logger.isDebugEnabled())
@@ -1761,18 +1759,24 @@ public class ExportHelper {
 			Long newBinderId = newBinder.getId().longValue();
 			binderIdMap.put(binderId, newBinderId);
 			final Binder binder = loadBinder(newBinderId);
-			String libraryFolder = doc.getRootElement().attributeValue("libraryFolder", "");
-			if (libraryFolder.equalsIgnoreCase("true")) {
-				binder.setLibrary(true);
-			} else {
-				binder.setLibrary(false);
-			}
-			String uniqueTitles = doc.getRootElement().attributeValue("uniqueTitles", "");
-			if (uniqueTitles.equalsIgnoreCase("true")) {
-				binder.setUniqueTitles(true);
-			} else {
-				binder.setUniqueTitles(false);
-			}
+			transactionTemplate.execute(new TransactionCallback() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					String libraryFolder = doc.getRootElement().attributeValue("libraryFolder", "");
+					if (libraryFolder.equalsIgnoreCase("true")) {
+						binder.setLibrary(true);
+					} else {
+						binder.setLibrary(false);
+					}
+					String uniqueTitles = doc.getRootElement().attributeValue("uniqueTitles", "");
+					if (uniqueTitles.equalsIgnoreCase("true")) {
+						binder.setUniqueTitles(true);
+					} else {
+						binder.setUniqueTitles(false);
+					}
+					return null;
+				}
+			});
 
 			// add file attachments
 			addBinderFileAttachments(newBinderId, topBinderId, binderIdMap, doc, tempDir, reportMap);
@@ -1794,20 +1798,25 @@ public class ExportHelper {
 
 			if(logger.isDebugEnabled())
 				logger.debug("Importing workflows for the binder " + newBinderId);
-			transactionTemplate.execute(new TransactionCallback() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-
-					// workflows
-					importWorkflows(doc, binder, fDefIdMap, rMap, fNameCache, topBinder, true);
-					return null;
-				}
-			});
+			// workflows
+			importWorkflows(doc, binder, fDefIdMap, rMap, fNameCache, topBinder, true);
 			
 			// task linkage
 			importTaskLinkage(doc, newBinderId, taskLinkageMap);
 			
-			// Don't evict the binder, since we need to reference it repeatedly while processing entries contained in the binder.
+			// 05/30/2015 JK (bug #932689) Simply evicting the newly added binder alone is not enough. We need to clear 
+			// the entire session so that the next iteration can start over with a fresh new empty session. Otherwise, 
+			// we tend to run into this infamous "a different object with the same identifier value was already associated
+			// with the session" Hibernate error because the application ends up operating with duplicate copies of the 
+			// same object where one is associated with the session while the other is detached. Of course, it is NOT 
+			// sufficient to  just clear the session in order to avoid that situation. More importantly, we need to 
+			// ensure that the application code doesn't hang on to and reuse loaded (and subsequently detached) objects
+			// across iterations. Also critically important is to NOT misuse transaction boundaries.
+			// To that regard, unless other precautions are taken appropriately, simply (and blindly?) clearing 
+			// session cannot do any magic. But when other things are in good order, doing this at the right place at
+			// the right time should help with resource management, so it's not unimportant.
+			coreDao.clear();
+			
 			return newBinderId;
 		} catch (WriteFilesException e) {
 			Integer c = (Integer)reportMap.get(errors);
@@ -1831,7 +1840,7 @@ public class ExportHelper {
 
 	private static long folder_addEntryWithXML(String accessToken, long binderId, Long topBinderId,
 			Definition def, String inputDataAsXML, String tempDir,
-			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, 
+			Map entryIdMap, Map binderIdMap, Map<String, String> definitionIdMap, 
 			Long entryId, StatusTicket statusTicket,
 			Map reportMap, Map<String, Principal> nameCache) {
 		return addFolderEntry(accessToken, binderId, topBinderId, def,
@@ -1841,7 +1850,7 @@ public class ExportHelper {
 
 	private static long addFolderEntry(String accessToken, long binderId, Long topBinderId,
 			Definition def, String inputDataAsXML, String tempDir, Map entryIdMap, 
-			Map binderIdMap, Map<String, Definition> definitionIdMap, 
+			Map binderIdMap, Map<String, String> definitionIdMap, 
 			Long entryId, StatusTicket statusTicket, Map reportMap,
 			Map<String, Principal> nameCache) {
 
@@ -1882,20 +1891,14 @@ public class ExportHelper {
 			if(logger.isDebugEnabled())
 				logger.debug("Importing workflows for the entry " + newEntryId);
 			try {
-				final Map fDefinitionIdMap = definitionIdMap;
+				final Map<String,String> fDefinitionIdMap = definitionIdMap;
 				final Map rMap = reportMap;
 				final Map fNameCache = nameCache;
 				final FolderEntry fEntry = entry;
 				if ( statusTicket != null )
 					statusTicket.setStatus(NLT.get("administration.export_import.importingEntry", 
 						new String[] {"[" + String.valueOf(reportMap.get("entries")) + "] " + entry.getTitle()}));
-				transactionTemplate.execute(new TransactionCallback() {
-					@Override
-					public Object doInTransaction(TransactionStatus status) {
-						importWorkflows(doc, fEntry, fDefinitionIdMap, rMap, fNameCache, topBinder, false);
-						return null;
-					}
-				});
+				importWorkflows(doc, fEntry, fDefinitionIdMap, rMap, fNameCache, topBinder, false);
 			} catch(Exception e) {}
 			
 			//Access controls
@@ -1913,8 +1916,6 @@ public class ExportHelper {
 			// and that will come into play in subsequent iterations of this whole action...
 			if(logger.isDebugEnabled())
 				logger.debug("Clearing the session of the entry");
-			coreDao.flush();
-			coreDao.evict(entry);
 			
 			return newEntryId;
 		} catch (WriteFilesException e) {
@@ -1940,7 +1941,7 @@ public class ExportHelper {
 
 	private static long folder_addReplyWithXML(String accessToken, long binderId, Long topBinderId,
 			long parentId, Definition def, String inputDataAsXML,
-			String tempDir, Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, 
+			String tempDir, Map entryIdMap, Map binderIdMap, Map<String, String> definitionIdMap, 
 			Long entryId, Map reportMap, Map<String, Principal> nameCache) {
 		return addReply(accessToken, binderId, topBinderId, parentId, def, inputDataAsXML, 
 				tempDir, entryIdMap, binderIdMap, definitionIdMap, entryId, reportMap, nameCache);
@@ -1948,7 +1949,7 @@ public class ExportHelper {
 
 	private static long addReply(String accessToken, long binderId, Long topBinderId, long parentId,
 			Definition def, String inputDataAsXML, String tempDir,
-			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, 
+			Map entryIdMap, Map binderIdMap, Map<String, String> definitionIdMap, 
 			Long entryId, Map reportMap, Map<String, Principal> nameCache) {
 
 		final Binder topBinder = loadBinder(topBinderId);
@@ -1989,17 +1990,11 @@ public class ExportHelper {
 			if(logger.isDebugEnabled())
 				logger.debug("Importing workflows for the reply " + newEntryId);			
 			try {
-				final Map fDefinitionIdMap = definitionIdMap;
+				final Map<String,String> fDefinitionIdMap = definitionIdMap;
 				final Map rMap = reportMap;
 				final Map fNameCache = nameCache;
 				final FolderEntry fEntry = entry;
-				transactionTemplate.execute(new TransactionCallback() {
-					@Override
-					public Object doInTransaction(TransactionStatus status) {
-						importWorkflows(doc, fEntry, fDefinitionIdMap, rMap, fNameCache, topBinder, false);
-						return null;
-					}
-				});
+				importWorkflows(doc, fEntry, fDefinitionIdMap, rMap, fNameCache, topBinder, false);
 			} catch(Exception e) {
 				Integer c = (Integer)reportMap.get(errors);
 				reportMap.put(errors, ++c);
@@ -2065,7 +2060,7 @@ public class ExportHelper {
 			} else {
 				zoneFunctions = adminModule.getFunctions(ObjectKeys.ROLE_TYPE_BINDER);
 			}
-			workArea.setFunctionMembershipInherited(false);
+			adminModule.setWorkAreaFunctionMembershipInherited(workArea, false);
 			Map functionMemberships = new HashMap();
 			
 			for (Element functionEle : functions) {
@@ -2607,7 +2602,7 @@ public class ExportHelper {
 		Binder binder = loadBinder(binderId);
 
 		if (teamInherited) {
-			binder.setTeamMembershipInherited(true);
+			binderModule.setTeamMembershipInherited(binderId, true);
 		} else {
 			xPath = "//team//principal";
 			List principals = entityDoc.selectNodes(xPath);
@@ -2637,65 +2632,72 @@ public class ExportHelper {
 		return entryElem;
 	}
 
-	private static void importWorkflows(Document entityDoc, DefinableEntity entity, 
-			Map<String, Definition> definitionIdMap, Map reportMap, 
-			Map<String, Principal> nameCache, Binder topBinder, boolean doIndex) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String zoneUUID = entityDoc.getRootElement().attributeValue("zoneUUID", "");
+	private static void importWorkflows(final Document entityDoc, final DefinableEntity entity, 
+			final Map<String, String> definitionIdMap, final Map reportMap, 
+			final Map<String, Principal> nameCache, final Binder topBinder, boolean doIndex) {
+		final User user = RequestContextHolder.getRequestContext().getUser();
+		final String zoneUUID = entityDoc.getRootElement().attributeValue("zoneUUID", "");
 		
 		if (entity instanceof FolderEntry) {
-			boolean needsToBeIndexed = false;
+			boolean needsToBeIndexed = transactionTemplate.execute(new TransactionCallback<Boolean>() {
+				@Override
+				public Boolean doInTransaction(TransactionStatus status) {
+					boolean needsToBeIndexed = false;
+					
+					// end all workflows that started upon entry creation (none should have been started)
+					Set defaultWorkflows = ((FolderEntry) entity).getWorkflowStates();
+					Iterator iter = defaultWorkflows.iterator();
 
-			// end all workflows that started upon entry creation (none should have been started)
-			Set defaultWorkflows = ((FolderEntry) entity).getWorkflowStates();
-			Iterator iter = defaultWorkflows.iterator();
+					while (iter.hasNext()) {
+						((FolderEntry) entity).removeWorkflowState((WorkflowState) iter
+								.next());
+						needsToBeIndexed = true;
+					}
 
-			while (iter.hasNext()) {
-				((FolderEntry) entity).removeWorkflowState((WorkflowState) iter
-						.next());
-				needsToBeIndexed = true;
-			}
+					// add workflow responses
+					List<Element> repsonses = entityDoc.selectNodes("//workflows//response");
 
-			// add workflow responses
-			List<Element> repsonses = entityDoc.selectNodes("//workflows//response");
+					for (Element response : repsonses) {
+						String defId = response.attributeValue("definitionId", "");
+						String defName = response.attributeValue("definitionName", "");
+						Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap, topBinder);
+						String question = response.attributeValue("responseName", "");
+						String responseValue = response.attributeValue("responseValue", "");
+						String responseDate = response.attributeValue("responseDate", "");
 
-			for (Element response : repsonses) {
-				String defId = response.attributeValue("definitionId", "");
-				String defName = response.attributeValue("definitionName", "");
-				Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap, topBinder);
-				String question = response.attributeValue("responseName", "");
-				String responseValue = response.attributeValue("responseValue", "");
-				String responseDate = response.attributeValue("responseDate", "");
+						Element responderEle = (Element)response.selectSingleNode("./principal");
+						String responderName = responderEle.attributeValue("name", "");
+						String responderEmailAdr = responderEle.attributeValue("emailAddress", "");
+						Principal responder = matchPrincipal(responderName, responderEmailAdr, zoneUUID, nameCache);
+						if (responder == null) responder = user;
 
-				Element responderEle = (Element)response.selectSingleNode("./principal");
-				String responderName = responderEle.attributeValue("name", "");
-				String responderEmailAdr = responderEle.attributeValue("emailAddress", "");
-				Principal responder = matchPrincipal(responderName, responderEmailAdr, zoneUUID, nameCache);
-				if (responder == null) responder = user;
+				    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+				    	Date date = new Date();
+				    	try {
+							date.setTime(sdf.parse(responseDate).getTime());
+				    	} catch(Exception e) {}
 
-		    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		    	Date date = new Date();
-		    	try {
-					date.setTime(sdf.parse(responseDate).getTime());
-		    	} catch(Exception e) {}
+						try {
+							WorkflowResponse wr = new WorkflowResponse();
+							wr.setResponderId(responder.getId());
+							wr.setResponseDate(date);
+							wr.setDefinitionId(def.getId());
+							wr.setName(question);
+							wr.setResponse(responseValue);
+							wr.setOwner(entity);
+							coreDao.save(wr);
+							((WorkflowSupport)entity).addWorkflowResponse(wr);
 
-				try {
-					WorkflowResponse wr = new WorkflowResponse();
-					wr.setResponderId(responder.getId());
-					wr.setResponseDate(date);
-					wr.setDefinitionId(def.getId());
-					wr.setName(question);
-					wr.setResponse(responseValue);
-					wr.setOwner(entity);
-					coreDao.save(wr);
-					((WorkflowSupport)entity).addWorkflowResponse(wr);
-
-					//processor.processChangeLog(entity, ChangeLog.ADDWORKFLOWRESPONSE);
-				
-				} catch(Exception e) {
-					logger.error(e);
+							//processor.processChangeLog(entity, ChangeLog.ADDWORKFLOWRESPONSE);
+						
+						} catch(Exception e) {
+							logger.error(e);
+						}
+					}
+					
+					return needsToBeIndexed;
 				}
-			}
+			});
 
 			// start up the imported workflows
 			List<Element> workflows = entityDoc.selectNodes("//workflows//process");
@@ -2756,7 +2758,10 @@ public class ExportHelper {
 				String defName = process.attributeValue("definitionName", "");
 				if (!defId.equals("")) {
 					Definition def = getTargetDefinition(defId, defName, definitionIdMap, reportMap, topBinder);
-					if (def != null) newDefinitionList.add(def.getId());
+					if (def != null) {
+						if(!newDefinitionList.contains(def.getId()))
+							newDefinitionList.add(def.getId());
+					}
 				}
 			}
 
@@ -2779,9 +2784,9 @@ public class ExportHelper {
 						workflowAssociations.put(entryDef.getId(), workflowDef.getId());
 				}
 			}
-
+			
 			try {
-			binderModule.setDefinitions(entity.getId(), newDefinitionList,
+				binderModule.setDefinitions(entity.getId(), newDefinitionList,
 					workflowAssociations);
 			} catch(Exception e) {
 				String[] args = new String[] {entity.getTitle(), e.getMessage()};
@@ -2792,15 +2797,15 @@ public class ExportHelper {
 		}
 	}
 
-	private static void importSettingsList(Document entityDoc, Binder binder, 
-			Map<String, Definition>definitionIdMap, Map reportMap, Binder topBinder, 
+	private static void importSettingsList(Document entityDoc, final Binder binder, 
+			Map<String, String>definitionIdMap, Map reportMap, Binder topBinder, 
 			Map<String, Principal> nameCache, Map<Long, Map<String, Object>> binderPropertyMap) {
 		String zoneUUID = entityDoc.getRootElement().attributeValue("zoneUUID", "");
 		FilesErrors filesErrors = new FilesErrors();
 
 		// current binder definitions
 
-		List<Definition> newDefinitionList = binder.getDefinitions();
+		final List<Definition> newDefinitionList = binder.getDefinitions();
 		
 		//Branding
 		Element brandingEle = (Element)entityDoc.selectSingleNode("//settings//branding");
@@ -2822,7 +2827,8 @@ public class ExportHelper {
 			if (def != null) {
 				// don't want to include mirrored file folder as an imported view setting
 				if (!def.getId().equals(ObjectKeys.DEFAULT_MIRRORED_FILE_FOLDER_DEF)) {
-					newDefinitionList.add(def);
+					if(!newDefinitionList.contains(def))
+						newDefinitionList.add(def);
 				}
 			}
 		}
@@ -2841,11 +2847,19 @@ public class ExportHelper {
 			if (def != null) {
 				// don't want to include mirrored file entry as an imported allowed entry setting
 				if (!def.getId().equals(ObjectKeys.DEFAULT_MIRRORED_FILE_ENTRY_DEF)) {
-					newDefinitionList.add(def);
+					if(!newDefinitionList.contains(def))
+						newDefinitionList.add(def);
 				}
 			}
 		}
-		binder.setDefinitions(newDefinitionList);
+		
+		transactionTemplate.execute(new TransactionCallback() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				binder.setDefinitions(newDefinitionList);
+				return null;
+			}
+		});
 		
 		// version controls
 		xPath = "//settings//versionControls";
