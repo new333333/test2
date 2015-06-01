@@ -154,7 +154,7 @@ function handleRepeatEveryOnFocus()
 	<%  for (int i = 0; i < 24; i++) {
 			int hour = i - offsetHour;
 	%>
-			<c:set var="schedHour" value="<%= (hour % 24) %>"/>
+			<c:set var="schedHour"><%= (hour % 24) %></c:set>
 	    	<option <c:if test="${schedule.hours == schedHour}">selected="selected"</c:if> 
 	    	    value="<fmt:formatNumber type="number" minIntegerDigits="2" value="<%= (hour % 24) %>"/>"
 	    	><fmt:formatNumber type="number" minIntegerDigits="2" value="<%= (i % 24) %>"/></option>
