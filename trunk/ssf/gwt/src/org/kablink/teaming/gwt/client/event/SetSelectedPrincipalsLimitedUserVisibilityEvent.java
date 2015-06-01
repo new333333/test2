@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.event;
 import org.kablink.teaming.gwt.client.util.EntityId;
 
 import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
@@ -52,10 +53,10 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class SetSelectedPrincipalsLimitedUserVisibilityEvent extends SelectedEntitiesEventBase<SetSelectedPrincipalsLimitedUserVisibilityEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
-    private Boolean	m_limited;			// true -> The          Can Only See Members of Groups I am In rights are to be set.  false -> The rights are to be cleared.  null -> No action taken.
-    private Boolean	m_override;			// true -> The Override Can Only See Members of Groups I am In rights are to be set.  false -> The rights are to be cleared.  null -> No action taken.
-    
-    private boolean	m_selectPrincipal;	// true -> When the event is handled, allow the user to select the specified principal.  false -> The selected principals must be provided.
+    private boolean		m_selectPrincipal;	// true -> When the event is handled, allow the user to select the specified principal.  false -> The selected principals must be provided.
+    private Boolean		m_limited;			// true -> The          Can Only See Members of Groups I am In rights are to be set.  false -> The rights are to be cleared.  null -> No action taken.
+    private Boolean		m_override;			// true -> The Override Can Only See Members of Groups I am In rights are to be set.  false -> The rights are to be cleared.  null -> No action taken.
+    private UIObject	m_showRelativeTo;	//
     
 	/**
 	 * Handler interface for this event.
@@ -96,18 +97,20 @@ public class SetSelectedPrincipalsLimitedUserVisibilityEvent extends SelectedEnt
 	 * 
 	 * @return
 	 */
-	public boolean isSelectPrincipal() {return m_selectPrincipal;}
-	public Boolean getLimited()        {return m_limited;        }
-	public Boolean getOverride()       {return m_override;       }
+	public boolean  isSelectPrincipal() {return m_selectPrincipal;}
+	public Boolean  getLimited()        {return m_limited;        }
+	public Boolean  getOverride()       {return m_override;       }
+	public UIObject getShowRelativeTo() {return m_showRelativeTo; }
 	
 	/**
 	 * Set'er method.
 	 * 
 	 * @param
 	 */
-	public void setSelectPrincipal(boolean selectPrincipal) {m_selectPrincipal = selectPrincipal;}
-	public void setLimited(        Boolean limited)         {m_limited         = limited;        }
-	public void setOverride(       Boolean override)        {m_override        = override;       }
+	public void setSelectPrincipal(boolean  selectPrincipal) {m_selectPrincipal = selectPrincipal;}
+	public void setLimited(        Boolean  limited)         {m_limited         = limited;        }
+	public void setOverride(       Boolean  override)        {m_override        = override;       }
+	public void setShowRelativeTo( UIObject showRelativeTo)  {m_showRelativeTo  = showRelativeTo; } 
 	
 	/**
 	 * Dispatches this event when one is triggered.

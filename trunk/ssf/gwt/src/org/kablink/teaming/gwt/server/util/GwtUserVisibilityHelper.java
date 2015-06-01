@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,8 +48,10 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -57,7 +60,6 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.LimitUserVisibilityInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SetLimitedUserVisibilityRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -72,12 +74,13 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 
 /**
- * Helper methods for GWT photo album folder views.
+ * Helper methods for limited user visibility.
  *
  * @author drfoster@novell.com
  */
@@ -97,7 +100,7 @@ public class GwtUserVisibilityHelper {
 	 * Visibility' rows.  A List<FolderRow> of the the FolderRow's from
 	 * the input list that matches the filter is returned.
 	 */
-	public static List<FolderRow> filterLimitedUserVisibilityRows(List<FolderColumn> folderColumns, List<FolderRow> adminRows, String quickFilter) {
+	public static List<FolderRow> filterLimitedUserVisibilityRows(List<FolderColumn> folderColumns, List<FolderRow> luvRows, String quickFilter) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtUserVisibilityHelper.filterLimitedUserVisibilityRows()");
 		try {
 			// Do we have a string to filter with and some FolderRow's
@@ -105,10 +108,10 @@ public class GwtUserVisibilityHelper {
 			if (null != quickFilter) {
 				quickFilter = quickFilter.trim().toLowerCase();
 			}
-			if (MiscUtil.hasString(quickFilter) && MiscUtil.hasItems(adminRows)) {
+			if (MiscUtil.hasString(quickFilter) && MiscUtil.hasItems(luvRows)) {
 				// Yes!  Yes!  Scan the rows.
 				List<FolderRow> reply = new ArrayList<FolderRow>();
-				for (FolderRow fr:  adminRows) {
+				for (FolderRow fr:  luvRows) {
 					// Scan the columns.
 					for (FolderColumn fc:  folderColumns) {
 						// What column is this?
@@ -143,12 +146,12 @@ public class GwtUserVisibilityHelper {
 						}
 					}
 				}
-				adminRows = reply;
+				luvRows = reply;
 			}
 			
 			// If we get here, filterRows refers to the filtered list
 			// of rows.  Return it. 
-			return adminRows;
+			return luvRows;
 		}
 		
 		finally {
@@ -207,9 +210,9 @@ public class GwtUserVisibilityHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static FolderRowsRpcResponseData getLimitUserVisibilityRows(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, BinderInfo bi, List<FolderColumn> folderColumns) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtAdministratorsHelper.getLimitUserVisibilityRows()");
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtUserVisibilityHelper.getLimitUserVisibilityRows()");
 		try {
-			// Scan the user administrators list.
+			// Scan the user limited user visibility list.
 			List<FolderRow> luvRows     = new ArrayList<FolderRow>();
 			List<Principal> luvList     = new ArrayList<Principal>();
 			List<Long>      luvLimited  = new ArrayList<Long>();
@@ -223,8 +226,8 @@ public class GwtUserVisibilityHelper {
 					continue;
 				}
 				
-				// Create the FolderRow for this administrator and add
-				// it to the list.
+				// Create the FolderRow for this limited user
+				// visibility setting and add it to the list.
 				Long      luvId = luvPrincipal.getId();
 				EntityId  eid   = new EntityId(binder.getId(), luvId, (luvIsGroup ? EntityId.GROUP : EntityId.USER));
 				FolderRow fr    = new FolderRow(eid, folderColumns);
@@ -356,7 +359,7 @@ public class GwtUserVisibilityHelper {
 	
 	/**
 	 * Sets the 'Can Only See Members of Group I'm In' and
-	 * corresponding override flags on the given principal.
+	 * corresponding override flags on the given principals.
 	 * 
 	 * @param bs
 	 * @param request
@@ -368,20 +371,168 @@ public class GwtUserVisibilityHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
+	@SuppressWarnings("unchecked")
 	public static SetLimitedUserVisibilityRpcResponseData setUserVisibility(AllModulesInjected bs, HttpServletRequest request, List<Long> principalIds, Boolean limited, Boolean override) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtUserVisibilityHelper.setUserVisibility()");
 		try {
 			// If no flags need to be set...
 			SetLimitedUserVisibilityRpcResponseData reply = new SetLimitedUserVisibilityRpcResponseData();
-			if ((null == limited) || (null == override)) {
+			Map<Long, LimitedUserVisibilityInfo> luvChangeMap = new HashMap<Long, LimitedUserVisibilityInfo>();
+			reply.setLimitedUserVisibilityChangeMap(luvChangeMap);
+			if ((null == limited) && (null == override)) {
 				// ...bail.
 				return reply;
 			}
+
+			// What are we setting and/or clearing?
+			boolean    clearLimited  = ((null != limited)  && (!limited) );
+			boolean    clearOverride = ((null != override) && (!override));
+			boolean    setLimited    = ((null != limited)  &&   limited  );
+			boolean    setOverride   = ((null != override) &&   override );
+			boolean    setRights     = (setLimited || setOverride);
 			
-//!			...this needs to be implemented...
+			// We're we given any Principal IDs to set or clear the
+			// rights from?
+			if (MiscUtil.hasItems(principalIds)) {
+				// Yes!  What's the current user's ID?
+				Long currentUserId = GwtServerHelper.getCurrentUserId();
+				
+				// Can we resolved the Principal IDs?
+				List<Principal> pList = ResolveIds.getPrincipals(principalIds, false);	// false -> Don't check for active users.
+				if (MiscUtil.hasItems(pList)) {
+					// Yes!  Scan them.
+					AdminModule am = bs.getAdminModule();
+					List<Long> validPIDs = new ArrayList<Long>();
+					for (Principal p:  pList) {
+						// If this Principal has been deleted...
+						if (p.isDeleted()) {
+							// ...skip it.
+							continue;
+						}
+						
+						// Is this Principal a Group?
+						String  errKey = null;
+						String  pTitle = null;
+						if (p instanceof GroupPrincipal) {
+							// Yes!  Can we set its limited user
+							// visibility rights?
+							Group g = ((Group) p);
+							pTitle = g.getTitle();
+							if (g.isDisabled() && setRights) {
+								// You can clear rights from a disabled
+								// group, but not set them.
+								errKey = "setLimitUserVisibilityRightsError.GroupDisabled";
+							}
+							else if (g.isLdapContainer() && setRights) {
+								// You can't set limited user
+								// visibility rights on an LDAP
+								// container group.
+								errKey = "setLimitUserVisibilityRightsError.GroupLdapContainer";
+							}
+						}
+						
+						// No, this Principal is not a Group!  Is it a
+						// User?
+						else if (p instanceof UserPrincipal) {
+							// Yes!  Can we set its limited user
+							// visibility rights?
+							User u = ((User) p);
+							pTitle = Utils.getUserTitle(u);
+							if (u.isDisabled() && setRights) {
+								// You can clear rights from a disabled
+								// user, but not set them.
+								errKey = "setLimitUserVisibilityRightsError.UserDisabled";
+							}
+							else if ((!(u.isPerson())) && setRights) {
+								// You can't set limited user
+								// visibility rights on built-in system
+								// users.
+								errKey = "setLimitUserVisibilityRightsError.NotAPerson";
+							}
+							else if (u.isAdmin()) {
+								// The built-in admin account can't
+								// have its limited user visibility
+								// rights changed.
+								if (setRights)
+								     errKey = "setLimitUserVisibilityRightsError.UserAdmin.set";
+								else errKey = "setLimitUserVisibilityRightsError.UserAdmin.clear";
+							}
+							else if (currentUserId.equals(u.getId())) {
+								// A user cannot change their own
+								// limited user visibility rights.
+								errKey = "setLimitUserVisibilityRightsError.UserSelf";
+							}
+						}
+						
+						else {
+							// No, it wasn't a Group either!  What ever
+							// it was, we can't handle it.
+							pTitle  = p.getTitle();
+							errKey = "setLimitUserVisibilityRightsError.UnknownPrincipal";
+						}
+						
+						// Is there a problem with setting limited user
+						// visibility rights on this Principal?
+						if (null != errKey) {
+							// Yes!  Add the error to the reply and
+							// skip it.
+							reply.addError(NLT.get(errKey, new String[]{pTitle}));
+							continue;
+						}
+						
+						// If we get here, this Principal can have its
+						// limited user visibility rights set!  Track
+						// its ID.
+						validPIDs.add(p.getId());
+					}
+
+					// Do we have any Principal IDs that we can set the
+					// limited user visibility rights on?
+					if (!(validPIDs.isEmpty())) {
+						// Yes!  Can we find the limit user visibility
+						// roles so we can grant or remove them?
+						Long limitedRole  = MiscUtil.getCanOnlySeeMembersOfGroupsIAmInRoleId();
+						Long overrideRole = MiscUtil.getOverrideCanOnlySeeMembersOfGroupsIAmInRoleId();
+						if ((null == limitedRole) || (null == overrideRole)) {
+							// No!  Tell the user about the problem.
+							reply.addError(NLT.get("setLimitUserVisibilityRightsError.UnknownLimitUserVisibilityRole"));
+							validPIDs.clear();
+						}
+						
+						else {
+							// Yes, we have the limited user visibility
+							// roles so we can grant or remove them!
+							// Set/clear it from the valid Principal
+							// IDs...
+					    	ZoneConfig zoneConfig = MiscUtil.getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+					    	if (setLimited  || clearLimited)  am.updateWorkAreaFunctionMemberships(zoneConfig, limitedRole,  setLimited, validPIDs );
+					    	if (setOverride || clearOverride) am.updateWorkAreaFunctionMemberships(zoneConfig, overrideRole, setOverride, validPIDs);
+
+					    	// ...and setup the luvChangeMap with the
+					    	// ...new limited user visibility rights
+					    	// ...for each item.
+					    	for (Long id:  validPIDs) {
+					    		for (Principal p:  pList) {
+					    			if (id.equals(p.getId())) {
+					    				luvChangeMap.put(
+					    					id,
+					    					new LimitedUserVisibilityInfo(
+					    						setLimited,
+					    						setOverride,
+					    						id));
+					    				break;
+					    			}
+					    		}
+					    	}
+						}
+					}
+				}
+			}
 			
-			// If we get here, reply contains a StringRpcResponseData
-			// containing any error generated.  Return it.
+			
+			// If we get here, reply contains a
+			// SetLimitedUserVisibilityRpcResponseData containing any
+			// error generated or what changed.  Return it.
 			return reply;
 		}
 		

@@ -3928,10 +3928,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				if (selectPrincipal)
-//!					...this needs to be implemented...
-				     GwtClientHelper.deferredAlert("DataTableFolderViewBase.onSetSelectedPrincipalsLimitedUserVisibilityAsync( Select Principal ):  ...this needs to be implemented...");
-				else onSetSelectedPrincipalsLimitedUserVisibilityNow(selectedPrincipalsList, limited, override);
+				// Note that the 'select principal' variation of this
+				// event is handled in LimitUserVisibilityDlg.java.
+				if (!selectPrincipal) {
+					onSetSelectedPrincipalsLimitedUserVisibilityNow(selectedPrincipalsList, limited, override);
+				}
 			}
 		});
 	}

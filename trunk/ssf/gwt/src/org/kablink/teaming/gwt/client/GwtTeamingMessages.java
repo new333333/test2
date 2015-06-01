@@ -3655,4 +3655,5 @@ public interface GwtTeamingMessages extends Messages {
 	
 	// Strings used by the 'Limit User Visibility' dialog.
 	String limitUserVisibilityDlg_Header();
+	String limitUserVisibilityDlgErrorInvalidSearchResult();
 }

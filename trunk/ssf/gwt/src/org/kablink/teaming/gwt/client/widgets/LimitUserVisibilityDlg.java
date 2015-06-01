@@ -34,25 +34,38 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.binderviews.LimitUserVisibilityView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
+import org.kablink.teaming.gwt.client.GwtPrincipal;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.FindControlBrowseEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
+import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
+import org.kablink.teaming.gwt.client.event.SetSelectedPrincipalsLimitedUserVisibilityEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLimitUserVisibilityInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LimitUserVisibilityInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SetLimitedUserVisibilityRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SetUserVisibilityCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
+import org.kablink.teaming.gwt.client.util.LimitedUserVisibilityInfo;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.LimitUserVisibilityDlg;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -61,6 +74,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
+import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -74,13 +90,19 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class LimitUserVisibilityDlg extends DlgBox
 	implements ViewReady,
 		// Event handlers implemented by this class.
+		FindControlBrowseEvent.Handler,
 		FullUIReloadEvent.Handler,
-		GetManageTitleEvent.Handler
+		GetManageTitleEvent.Handler,
+		SearchFindResultsEvent.Handler,
+		SetSelectedPrincipalsLimitedUserVisibilityEvent.Handler
 {
-	public static final boolean SHOW_LIMIT_USER_VISIBILITY_DLG	= false;	//! DRF (20150922):  Leave false on checkin until it's all working.
+	public static final boolean SHOW_LIMIT_USER_VISIBILITY_DLG	= false;	//! DRF (20150522):  Leave false on checkin until it's all working.
 	
 	private boolean									m_dlgAttached;				// true when the dialog is attached to the document, false otherwise.
 	private boolean									m_viewReady;				// true once the embedded view is ready,             false otherwise.
+	private Boolean									m_findLimited;				// Boolean.TRUE if the FindCtrl is being used to add          limit user visibility rights.  null otherwise.
+	private Boolean									m_findOverride;				// Boolean.TRUE if the FindCtrl is being used to add override limit user visibility rights.  null otherwise.
+	private FindCtrl								m_findControl;				// The search widget.
 	private FlowPanel								m_rootPanel;				//
 	private GwtTeamingMessages						m_messages;					//
 	private int										m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
@@ -91,6 +113,7 @@ public class LimitUserVisibilityDlg extends DlgBox
 	private LimitUserVisibilityInfoRpcResponseData	m_limitUserVisibilityInfo;	// Information necessary to run the limit user visibility dialog.
 	private LimitUserVisibilityView					m_limitUserVisibilityView;	// The limit user visibility view.
 	private List<HandlerRegistration>				m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private TeamingPopupPanel						m_findPopupPanel;			// The popup panel that will host m_findControl.
 	
 	// Constant adjustments to the size of the view so that it properly
 	// fits the dialog's content area.
@@ -101,8 +124,11 @@ public class LimitUserVisibilityDlg extends DlgBox
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private static final TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.FIND_CONTROL_BROWSE,
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.GET_MANAGE_TITLE,
+		TeamingEvents.SEARCH_FIND_RESULTS,
+		TeamingEvents.SET_SELECTED_PRINCIPALS_LIMIT_USER_VISIBILITY,
 	};
 	
 	/*
@@ -138,6 +164,60 @@ public class LimitUserVisibilityDlg extends DlgBox
 			luvDlgClient);
 	}
 
+	/*
+	 * Asynchronously add limit user visibility rights to the given
+	 * Principal.
+	 */
+	private void addLimitUserVisibilityRightsToPrincipalAsync(final GwtPrincipal adminPrincipal) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				addLimitUserVisibilityRightsToPrincipalNow(adminPrincipal);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously add limit user visibility rights to the given
+	 * Principal.
+	 */
+	private void addLimitUserVisibilityRightsToPrincipalNow(final GwtPrincipal limitVisibilityPrincipal) {
+		// Set the limit user visibility rights.
+		showDlgBusySpinner();
+		List<Long> pids = new ArrayList<Long>();
+		pids.add(limitVisibilityPrincipal.getIdLong());
+		SetUserVisibilityCmd cmd = new SetUserVisibilityCmd(pids, m_findLimited, m_findOverride);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				// No!  Tell the user about the problem.
+				hideDlgBusySpinner();
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_SetPrincipalsLimitedUserVisibility());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// If we got any errors...
+				hideDlgBusySpinner();
+				SetLimitedUserVisibilityRpcResponseData responseData = ((SetLimitedUserVisibilityRpcResponseData) result.getResponseData()); 
+				List<ErrorInfo> erList = responseData.getErrorList();
+				if (GwtClientHelper.hasItems(erList)) {
+					// ...display them...
+					GwtClientHelper.displayMultipleErrors(m_messages.vibeDataTable_Error_SavingLimitedUserVisibility(), erList);
+				}
+
+				// ...and if we changed anything...
+				final Map<Long, LimitedUserVisibilityInfo> adminRightsChangeMap = responseData.getLimitedUserVisibilityChangeMap(); 
+				if (GwtClientHelper.hasItems(adminRightsChangeMap)) {
+					// ...and force the UI to refresh.
+					FullUIReloadEvent.fireOneAsync();
+				}
+			}
+		});
+	}
+	
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
@@ -226,6 +306,82 @@ public class LimitUserVisibilityDlg extends DlgBox
 		return helpData;
 	}
 
+	/*
+	 * Asynchronously invokes a FindCtrl to add limit user visibility
+	 * rights to the selected principals.
+	 */
+	private void invokeAddRightsAsync(final Boolean limited, final Boolean override, final UIObject showRelativeTo) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				invokeAddRightsNow(limited, override, showRelativeTo);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously invokes a FindCtrl to add limit user visibility
+	 * rights to the selected principals.
+	 */
+	private void invokeAddRightsNow(final Boolean limited, final Boolean override, final UIObject showRelativeTo) {
+		// Show the find control's popup panel relative to the given
+		// UIObject...
+		m_findLimited  = limited;
+		m_findOverride = override;
+		m_findPopupPanel.showRelativeTo(showRelativeTo);
+		
+		// ...and give it the focus.
+		FocusWidget fw = m_findControl.getFocusWidget();
+		if (null != fw) {
+			GwtClientHelper.setFocusDelayed(fw);
+		}
+	}
+	
+	/*
+	 * Asynchronously loads the find control.
+	 */
+	private void loadPart1Async() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the find control.
+	 */
+	private void loadPart1Now() {
+		FindCtrl.createAsync(this, SearchType.PRINCIPAL, new FindCtrlClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(FindCtrl findCtrl) {
+				// Store the FindCtrl...
+				m_findControl = findCtrl;
+				m_findControl.addStyleName("vibe-manageAdministratorsDlg-findWidget");
+
+				// ...tell it the kind of principals we want...
+				m_findControl.setSearchForExternalPrincipals(false);
+				m_findControl.setSearchForInternalPrincipals(true );
+				m_findControl.setSearchForLdapGroups(        true );
+
+				// ...wrap in in a TeamingPopupPanel...
+				m_findPopupPanel = new TeamingPopupPanel(true);	// true -> This popup is auto hide.
+				m_findPopupPanel.addStyleName("vibe-manageAdministratorsDlg-findPopup");
+				m_findPopupPanel.setWidget(m_findControl);
+
+				// ...and finish populating the dialog.
+				populateDlgAsync();
+			}
+		});
+	}
+	
 	/**
 	 * Called when the data table is attached.
 	 * 
@@ -259,6 +415,21 @@ public class LimitUserVisibilityDlg extends DlgBox
 	}
 	
 	/**
+	 * Handles FindControlBrowseEvent's received by this class.
+	 * 
+	 * Implements the FindControlBrowseEvent.Handler.onFindControlBrowse()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onFindControlBrowse(FindControlBrowseEvent event) {
+		// Simply invoke the find browser using the parameters from the
+		// event.
+		FindControlBrowserPopup.doBrowse(event.getFindControl(), event.getFindStart());
+	}
+	
+	/**
 	 * Handles FullUIReloadEvent's received by this class.
 	 * 
 	 * Implements the FullUIReloadEvent.Handler.onFullUIReload() method.
@@ -273,6 +444,59 @@ public class LimitUserVisibilityDlg extends DlgBox
 		}
 	}
 	
+	/**
+	 * Handles SearchFindResultsEvent's received by this class.
+	 * 
+	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchFindResults(SearchFindResultsEvent event) {
+		// If the find results aren't for the limit user visibility
+		// dialog...
+		if (!(((Widget) event.getSource()).equals(this))) {
+			// ...ignore the event.
+			return;
+		}
+		
+		// Hide the find widgets.
+		m_findControl.hideSearchResults();
+		m_findControl.clearText();
+		m_findPopupPanel.hide();
+
+		// If the search result is a GwtPrincipal, add the appropriate
+		// limit user visibility rights to it.
+		GwtTeamingItem obj = event.getSearchResults();
+		if (obj instanceof GwtPrincipal)
+		     addLimitUserVisibilityRightsToPrincipalAsync(((GwtPrincipal) obj));
+		else GwtClientHelper.deferredAlert(m_messages.limitUserVisibilityDlgErrorInvalidSearchResult());
+	}
+	
+	/**
+	 * Handles SetSelectedPrincipalsLimitedUserVisibilityEvent's received by this class.
+	 * 
+	 * Implements the SetSelectedPrincipalsLimitedUserVisibilityEvent.Handler.onSetSelectedPrincipalsLimitedUserVisibility() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSetSelectedPrincipalsLimitedUserVisibility(SetSelectedPrincipalsLimitedUserVisibilityEvent event) {
+		// We only support setting rights from the limit user
+		// visibility admin console dialog.  Is it supported?
+		BinderInfo bi = m_limitUserVisibilityInfo.getRootWSInfo();
+		WorkspaceType wt = bi.getWorkspaceType();
+		if (wt.isLimitUserVisibility()) {
+			// Yes!  Also, we only handle the 'select principal'
+			// variation of this event.  Is that what this is?
+			if (event.isSelectPrincipal()) {
+				// Yes!  Is the event targeted to this view!
+				invokeAddRightsAsync(event.getLimited(), event.getOverride(), event.getShowRelativeTo());
+			}
+		}
+	}
+
 	/**
 	 * Handles GetManageTitleEvent's received by this class.
 	 * 
@@ -382,7 +606,7 @@ public class LimitUserVisibilityDlg extends DlgBox
 		m_showCY = cy;
 		
 		// ...and start populating the dialog.
-		populateDlgAsync();
+		loadPart1Async();
 	}
 
 	/*

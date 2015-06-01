@@ -144,6 +144,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -178,6 +179,8 @@ public class EntryMenuPanel extends ToolPanelBase
 	private VibeMenuBar						m_entryMenu;						//
 	private VibeMenuItem					m_addAdminRightsMenu;				//
 	private VibeMenuItem					m_addFilesMenu;						//
+	private VibeMenuItem					m_addLimitUserVisibilityMenu;		//
+	private VibeMenuItem					m_addOverrideUserVisibilityMenu;	//
 	private VibeMenuItem					m_deleteMenu;						//
 	private VibeMenuItem					m_detailsMenu;						//
 	private VibeMenuItem					m_moreMenu;							//
@@ -1361,7 +1364,15 @@ public class EntryMenuPanel extends ToolPanelBase
 						Boolean override        = (GwtClientHelper.hasString(str) ? Boolean.parseBoolean(str) : null);
 						str                     = simpleTBI.getQualifierValue("selectPrincipal");
 						boolean selectPrincipal = (GwtClientHelper.hasString(str) ? Boolean.parseBoolean(str) : false);
-						event = new SetSelectedPrincipalsLimitedUserVisibilityEvent(null, limited, override, selectPrincipal);
+						SetSelectedPrincipalsLimitedUserVisibilityEvent sspluvEvent = new SetSelectedPrincipalsLimitedUserVisibilityEvent(null, limited, override, selectPrincipal);
+						if (selectPrincipal) {
+							UIObject showRelativeTo;
+							if      ((null != limited)  && limited)  showRelativeTo = m_addLimitUserVisibilityMenu;
+							else if ((null != override) && override) showRelativeTo = m_addOverrideUserVisibilityMenu;
+							else                                     showRelativeTo = null;
+							sspluvEvent.setShowRelativeTo(showRelativeTo);
+						}
+						event = sspluvEvent;
 						break;
 						
 					case SET_FOLDER_SORT:
@@ -1409,9 +1420,16 @@ public class EntryMenuPanel extends ToolPanelBase
 				String limited  = simpleTBI.getQualifierValue("limited" );
 				String override = simpleTBI.getQualifierValue("override");
 				String falseS   = String.valueOf(false);
+				String trueS    = String.valueOf(true );
 				if ((null != limited)  && limited.equals( falseS) &&
 				    (null != override) && override.equals(falseS)) {
 					m_removeLimitUserVisibilityMenu = reply;
+				}
+				else if ((null != limited)  && limited.equals( trueS)) {
+					m_addLimitUserVisibilityMenu = reply;
+				}
+				else if ((null != override) && override.equals(trueS)) {
+					m_addOverrideUserVisibilityMenu = reply;
 				}
 			}
 			break;

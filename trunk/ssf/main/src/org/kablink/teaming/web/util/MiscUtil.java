@@ -55,6 +55,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -93,6 +94,7 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.HttpHeaders;
+
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -1473,6 +1475,48 @@ public final class MiscUtil {
 		return reply;
 	}
 	
+	/**
+	 * Returns the ID of the 'Can Only See Members of Group I Am In'
+	 * role.
+	 * 
+	 * @return
+	 */
+	public static Long getCanOnlySeeMembersOfGroupsIAmInRoleId() {
+		List<Function> fs  = getAdminModule().getFunctions();
+		Long reply = null;
+		for (Function f:  fs) {
+			String fId = f.getInternalId();
+			if (hasString(fId)) {
+				if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ONLY_SEE_GROUP_MEMBERS_INTERNALID)) {
+					reply = f.getId();
+					break;
+				}
+			}
+		}
+		return reply;
+	}
+
+	/**
+	 * Returns the ID of the 'Override - Can Only See Members of Group
+	 * I Am In' role.
+	 * 
+	 * @return
+	 */
+	public static Long getOverrideCanOnlySeeMembersOfGroupsIAmInRoleId() {
+		List<Function> fs  = getAdminModule().getFunctions();
+		Long reply = null;
+		for (Function f:  fs) {
+			String fId = f.getInternalId();
+			if (hasString(fId)) {
+				if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_OVERRIDE_ONLY_SEE_GROUP_MEMBERS_INTERNALID)) {
+					reply = f.getId();
+					break;
+				}
+			}
+		}
+		return reply;
+	}
+
 	/**
 	 * Returns the ID of the site admin role.
 	 * 

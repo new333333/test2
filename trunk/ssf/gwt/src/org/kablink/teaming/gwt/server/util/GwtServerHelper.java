@@ -2813,11 +2813,11 @@ public class GwtServerHelper {
 			// Are we exposing Vibe features?
 			if ( LicenseChecker.showVibeFeatures() )
 			{
-				//! DRF (20150302)
-				//!    Commented out until we have a full Team
-				//!    management solution.  What's there simply
-				//!    manages the contents of the root Team Workspaces
-				//!    binder.
+				// DRF (20150302)
+				//    Commented out until we have a full Team
+				//    management solution.  What's there simply
+				//    manages the contents of the root Team Workspaces
+				//    binder.
 /*
 				// Yes!  Does the user have rights to "Manage teams"?
 				try
@@ -2905,7 +2905,6 @@ public class GwtServerHelper {
 			}
 			catch(AccessControlException e) {}
 
-//!			...this needs to be implemented..
 			// DRF (20131105):
 			//    As part of Lynn's redesign of the Management and
 			//    System categories for Filr, I folded the single item
