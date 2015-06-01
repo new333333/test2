@@ -600,7 +600,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				groupInfo.setId( group.getId() );
 				groupInfo.setName( group.getName() );
 				groupInfo.setTitle( group.getTitle() );
-				allowExternal = true;//!!! Get the group the group object
+				allowExternal = true;	// JW:  Get the group the group object?
 				groupInfo.setMembershipInfo( group.isDynamic(), allowExternal );
 
 				groupInfo.setDn( group.getForeignName() );
@@ -6777,7 +6777,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				HashMap<String, Object> hashMap = new HashMap<String, Object>();
 				
 				// Add the old-style branding to the map.
-				//!!! Do we need to do something with the html found in the branding?
+				// JW:  Do we need to do something with the HTML found
+				//      in the branding?
 				String branding = brandingData.getBranding();
 				if (branding == null) {
 					branding = "";
