@@ -226,6 +226,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ManageAdministratorsInfoRpcResp
 import org.kablink.teaming.gwt.client.rpc.shared.ManageTeamsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.PrincipalInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
@@ -9278,6 +9279,66 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return a PrincipalInfoRpcResponseData object that holds
+	 * information about the given principal.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param principalId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static PrincipalInfoRpcResponseData getPrincipalInfo(AllModulesInjected bs, HttpServletRequest request, Long principalId) throws GwtTeamingException {
+		try {
+			// Can we resolve the Principal?
+			PrincipalInfoRpcResponseData reply;
+			List<Long> pIds = new ArrayList<Long>();
+			pIds.add(principalId);
+			List<Principal> principals = ResolveIds.getPrincipals(pIds);
+			if ((null != principals) && (!(principals.isEmpty()))) {
+				// Yes!  Use it to construct a
+				// PrincipalInfoRpcResponseData to return.
+				String pName;
+				EntityId eId;
+				Principal p = principals.get(0);
+				if (p instanceof GroupPrincipal) {
+					pName = p.getTitle();
+					eId   = new EntityId(principalId, EntityId.GROUP);
+				}
+				else {
+					pName = Utils.getUserTitle((User) p);
+					eId   = new EntityId(principalId, EntityId.USER);
+				}
+				reply = new PrincipalInfoRpcResponseData(pName, eId);
+			}
+			
+			else {
+				// No, we couldn't resolve the principal!  Return an
+				// error to that affect.
+				String[] patch = new String[]{String.valueOf(principalId)};
+				reply = new PrincipalInfoRpcResponseData(NLT.get("get.principal.info.error.unresolved", patch));
+			}
+
+			// If we get here, reply refers to an
+			// PrincipalInfoRpcResponseData with information about the
+			// Principal or an error.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					ex,
+					"GwtServerHelper.getPrincipalInfo( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
+	/**
 	 * Given a user ID, returns the corresponding User object.
 	 * 
 	 * @param bs
@@ -10869,6 +10930,7 @@ public class GwtServerHelper {
 		case GET_PHOTO_ALBUM_DISPLAY_DATA:
 		case GET_PRESENCE_INFO:
 		case GET_PRINCIPAL_FILE_SYNC_APP_CONFIG:
+		case GET_PRINCIPAL_INFO:
 		case GET_PRINCIPAL_MOBILE_APPS_CONFIG:
 		case GET_PROFILE_AVATARS:
 		case GET_PROFILE_ENTRY_INFO:

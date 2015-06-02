@@ -489,6 +489,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetPreviousFolderEntryInfo();
 	String rpcFailure_GetPreviousFolderEntryInfo_NoAccess();
 	String rpcFailure_GetPresenceInfo();
+	String rpcFailure_GetPrincipalInfo();
 	String rpcFailure_GetProfileAvatars();
 	String rpcFailure_GetProfileEntryInfo();
 	String rpcFailure_GetProfileInfo();
@@ -780,6 +781,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_MirroredFileFolderView();
 	String codeSplitFailure_MobileDevicesView();
 	String codeSplitFailure_ModifyGroupDlg();
+	String codeSplitFailure_ModifyLimitedUserVisibilityDlg();
 	String codeSplitFailure_ModifyNetFolderDlg();
 	String codeSplitFailure_ModifyNetFolderServerDlg();
 	String codeSplitFailure_MultiErrorAlertDlg();
@@ -2029,6 +2031,7 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeDataTable_InternalError_UnexpectedRowCount(int rowsRequested, int rowsRead);
 	String vibeDataTable_InternalError_UnsupportedStructuredToolbar();
 	String vibeDataTable_LimitedUserVisibility();
+	String vibeDataTable_LimitedUserVisibility_Alt();
 	String vibeDataTable_LimitedUserVisibility_Limited();
 	String vibeDataTable_LimitedUserVisibility_None();
 	String vibeDataTable_LimitedUserVisibility_Override();
@@ -3656,4 +3659,12 @@ public interface GwtTeamingMessages extends Messages {
 	// Strings used by the 'Limit User Visibility' dialog.
 	String limitUserVisibilityDlg_Header();
 	String limitUserVisibilityDlgErrorInvalidSearchResult();
+	
+	// Strings used by the 'Modify Limit User Visibility' dialog.
+	String modifyLimitedUserVisibilityDlgHeader();
+	String modifyLimitedUserVisibilityDlgHint_Group(String name);
+	String modifyLimitedUserVisibilityDlgHint_User( String name);
+	String modifyLimitedUserVisibilityDlgRB_Clear();
+	String modifyLimitedUserVisibilityDlgRB_Limited();
+	String modifyLimitedUserVisibilityDlgRB_Override();
 }

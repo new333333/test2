@@ -2463,12 +2463,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_PRINCIPAL_FILE_SYNC_APP_CONFIG:
 		{
-			GwtPrincipalFileSyncAppConfig config;
-			GetPrincipalFileSyncAppConfigCmd gpfsacCmd;
-
-			gpfsacCmd = (GetPrincipalFileSyncAppConfigCmd) cmd;
-			config = GwtServerHelper.getPrincipalFileSyncAppConfig( this, gpfsacCmd.getPrincipalId() );
-			response = new VibeRpcResponse( config );
+			GetPrincipalFileSyncAppConfigCmd gpfsacCmd = ((GetPrincipalFileSyncAppConfigCmd) cmd);
+			GwtPrincipalFileSyncAppConfig config = GwtServerHelper.getPrincipalFileSyncAppConfig(this, gpfsacCmd.getPrincipalId());
+			response = new VibeRpcResponse(config);
+			return response;
+		}
+		
+		case GET_PRINCIPAL_INFO:
+		{
+			GetPrincipalInfoCmd gpiCmd = ((GetPrincipalInfoCmd) cmd);
+			PrincipalInfoRpcResponseData pInfo = GwtServerHelper.getPrincipalInfo(this, req, gpiCmd.getPrincipalId());
+			response = new VibeRpcResponse(pInfo);
 			return response;
 		}
 		
