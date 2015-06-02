@@ -773,6 +773,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case EDIT_ACTIVITY_STREAM_UI_ENTRY:
+				// A EditActivityStreamUIEntryEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof EditActivityStreamUIEntryEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = EditActivityStreamUIEntryEvent.registerEvent(eventBus, ((EditActivityStreamUIEntryEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case EDIT_PUBLIC_LINK_SELECTED_ENTITIES:
 				// A EditPublicLinkSelectedEntitiesEvent!  Can the
 				// event handler we were given handle that?
@@ -2960,6 +2969,7 @@ public class EventHelper {
 			case CONTRIBUTOR_IDS_REQUEST:                      hasHandler = (eventHandler instanceof ContributorIdsRequestEvent.Handler);                  break;
 			
 			case DELETE_ACTIVITY_STREAM_UI_ENTRY:              hasHandler = (eventHandler instanceof DeleteActivityStreamUIEntryEvent.Handler);            break;
+			case EDIT_ACTIVITY_STREAM_UI_ENTRY:                hasHandler = (eventHandler instanceof EditActivityStreamUIEntryEvent.Handler);              break;
 
 			case EDIT_CURRENT_BINDER_BRANDING:      	       hasHandler = (eventHandler instanceof EditCurrentBinderBrandingEvent.Handler);              break;
 			case EDIT_PERSONAL_PREFERENCES:         	       hasHandler = (eventHandler instanceof EditPersonalPreferencesEvent.Handler);                break;

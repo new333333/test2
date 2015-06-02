@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.DeleteActivityStreamUIEntryEvent;
+import org.kablink.teaming.gwt.client.event.EditActivityStreamUIEntryEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeReplyEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendToFriendEvent;
@@ -92,7 +93,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -117,7 +118,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * This widget will display a list of entries that are the results from
  * a search query.
  * 
- * @author jwootton
+ * @author drfoster@novell.com
  */
 public class ActivityStreamCtrl extends ResizeComposite
 	implements ClickHandler,
@@ -125,6 +126,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
 		DeleteActivityStreamUIEntryEvent.Handler,
+		EditActivityStreamUIEntryEvent.Handler,
 		InvokeReplyEvent.Handler,
 		InvokeSendToFriendEvent.Handler,
 		InvokeShareEvent.Handler,
@@ -135,19 +137,24 @@ public class ActivityStreamCtrl extends ResizeComposite
 		ViewAllEntriesEvent.Handler,
 		ViewUnreadEntriesEvent.Handler
 {
-	public enum ActivityStreamCtrlUsage
-	{
+	/**
+	 * Enumeration class that specifies the usage context of this
+	 * ActivityStreamCtrl. 
+	 */
+	public enum ActivityStreamCtrlUsage {
 		BLOG,
 		COMMENTS,
 		UNREAD_ENTRIES,
 		STANDALONE;
 		
-		public boolean isEmbedded()   { return ( !( STANDALONE.equals( this ) ) ); }
-		public boolean isStandalone() { return      STANDALONE.equals( this );     }
+		public boolean isEmbedded()   {return (!(STANDALONE.equals(this)));}
+		public boolean isStandalone() {return    STANDALONE.equals(this);  }
 	}
-	
-	public enum DescViewFormat
-	{
+
+	/**
+	 * Enumeration class that defines the format of a description.
+	 */
+	public enum DescViewFormat {
 		FULL,
 		PARTIAL
 	}
@@ -212,8 +219,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
 		
-		// Delete events
+		// Delete and edit events.
 		TeamingEvents.DELETE_ACTIVITY_STREAM_UI_ENTRY,
+		TeamingEvents.EDIT_ACTIVITY_STREAM_UI_ENTRY,
 		
 		// Invoke events.
 		TeamingEvents.INVOKE_REPLY,
@@ -231,42 +239,36 @@ public class ActivityStreamCtrl extends ResizeComposite
 		TeamingEvents.VIEW_UNREAD_ENTRIES,
 	};
 	
-	/**
-	 * 
+	/*
 	 */
-	private class ASCLayoutPanel extends VibeDockLayoutPanel
-	{
-		@SuppressWarnings("unused")
-		ActivityStreamCtrl m_asCtrl;
-		
+	private class ASCLayoutPanel extends VibeDockLayoutPanel {
 		/**
+		 * Constructor method.
 		 * 
+		 * @param asCtrl
 		 */
-		public ASCLayoutPanel( ActivityStreamCtrl asCtrl )
-		{
-			super( Style.Unit.PX );
-			
-			m_asCtrl = asCtrl;
+		public ASCLayoutPanel(ActivityStreamCtrl asCtrl) {
+			super(Style.Unit.PX);
 		}
 		
 		/**
-		 * 
 		 */
 		@Override
-		public void onResize()
-		{
+		public void onResize() {
 			super.onResize();
-			//!!!m_asCtrl.setSize( getOffsetWidth(), getOffsetHeight() );
 		}
 	}
 	
 	/*
+	 * Constructor method.
+	 * 
 	 * Note that the class constructor is private to facilitate code
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ActivityStreamCtrl( ActivityStreamCtrlUsage usage, boolean createHeader, ActionsPopupMenu actionsMenu )
-	{
+	private ActivityStreamCtrl(ActivityStreamCtrlUsage usage, boolean createHeader, ActionsPopupMenu actionsMenu) {
+		super();
+		
 		m_usage = usage;
 		m_actionsPopupMenu = actionsMenu;
 		
@@ -313,7 +315,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			m_msgPanel.setVisible( false );
 		}
 
-		// Create the callback that will be used when we issue an ajax call to do a search.
+		// Create the callback that will be used when we issue a GWT RPC call to do a search.
 		m_searchResultsCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -326,7 +328,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				m_searchInProgress = false;
 				hideSearchingText();
 				showMessage( GwtTeaming.getMessages().noEntriesFound() );
-			}// end onFailure()
+			}
 
 			@Override
 			public void onSuccess( VibeRpcResponse result )
@@ -336,23 +338,18 @@ public class ActivityStreamCtrl extends ResizeComposite
 				
 				if ( activityStreamData != null )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
-						public void execute()
-						{
+						public void execute() {
 							m_searchInProgress = false;
 							hideSearchingText();
 
 							// Add the search results to the search results widget.
 							addSearchResults( activityStreamData );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					});
 				}
-			}// end onSuccess()
+			}
 		};
 		m_searchInProgress = false;
 		
@@ -368,7 +365,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	
-	/**
+	/*
 	 * Add the given search results to the list of search results.
 	 */
 	private void addSearchResults( ActivityStreamData activityStreamData )
@@ -418,7 +415,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				
 				// Add this ui widget to the search results panel.
 				m_searchResultsPanel.add( topEntry );
-			}// end for()
+			}
 		}
 
 		// Figure out the position of the last result within the total number of results.
@@ -481,7 +478,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	
 	
 	/**
-	 * 
 	 */
 	public void cancelCheckForChangesTimer()
 	{
@@ -508,18 +504,15 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		if ( m_activityStreamParams == null )
 		{
-			Window.alert( "In checkForChanges(), m_activityStreamParams is null.  This should never happen." );
+			GwtClientHelper.deferredAlert("ActivityStreamCtrl.checkForChanges( *Internal Error* ):  m_activityStreamParams is null.  This should never happen." );
 			return;
 		}
 		
-		// Create the callback that will be used when we issue an ajax call to do check for updates.
+		// Create the callback that will be used when we issue a GWT RPC call to do check for updates.
 		if ( m_checkForChangesCallback == null )
 		{
 			m_checkForChangesCallback = new AsyncCallback<VibeRpcResponse>()
 			{
-				/**
-				 * 
-				 */
 				@Override
 				public void onFailure(Throwable t)
 				{
@@ -529,12 +522,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						GwtTeaming.getMessages().rpcFailure_CheckForActivityStreamChanges() );
-				}// end onFailure()
+				}
 		
-				/**
-				 * 
-				 * @param result
-				 */
 				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
@@ -549,29 +538,24 @@ public class ActivityStreamCtrl extends ResizeComposite
 						// Is the user composing a reply?
 						if ( isReplyInProgress() == false )
 						{
-							Scheduler.ScheduledCommand cmd;
-							
 							// No
 							// Refresh the activity stream.
-							cmd = new Scheduler.ScheduledCommand()
-							{
+							GwtClientHelper.deferCommand(new ScheduledCommand() {
 								@Override
-								public void execute()
-								{
+								public void execute() {
 									refreshActivityStream();
 								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
+							});
 						}
 					}
-				}// end onSuccess()
+				}
 			};
 		}
 		
 		// Update the text that indicates when we will check for changes.
 		updatePauseTitle();
 		
-		// Issue an ajax request to see if there is anything new.
+		// Issue a GWT RPC request to see if there is anything new.
 		{
 			HasActivityStreamChangedCmd cmd;
 			
@@ -581,7 +565,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	
-	/**
+	/*
 	 * Remove any search results we may be displaying. 
 	 */
 	private void clearCurrentSearchResults()
@@ -607,7 +591,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	
-	/**
+	/*
 	 * Create the footer that holds the pagination controls.
 	 */
 	private void createFooter( FlowPanel mainPanel )
@@ -662,7 +646,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	
-	/**
+	/*
 	 * 
 	 */
 	private void createHeader( FlowPanel mainPanel )
@@ -693,9 +677,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 			
 			mouseOverHandler = new MouseOverHandler()
 			{
-				/**
-				 * 
-				 */
 				@Override
 				public void onMouseOver( MouseOverEvent event )
 				{
@@ -717,9 +698,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 			
 			mouseOutHandler = new MouseOutHandler()
 			{
-				/**
-				 * 
-				 */
 				@Override
 				public void onMouseOut( MouseOutEvent event )
 				{
@@ -736,9 +714,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 			
 			ch = new ClickHandler()
 			{
-				/**
-				 * 
-				 */
 				@Override
 				public void onClick( ClickEvent event )
 				{
@@ -832,18 +807,13 @@ public class ActivityStreamCtrl extends ResizeComposite
 				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
-					Scheduler.ScheduledCommand cmd;
-
-					cmd = new Scheduler.ScheduledCommand()
-					{
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
-						public void execute()
-						{
+						public void execute() {
 							// Issue a request to refresh the activity stream.
 							refreshActivityStream();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					});
 				}
 			};
 			img.addClickHandler( clickHandler );
@@ -855,7 +825,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	
-	/**
+	/*
 	 * Add the ui widgets needed to allow the user to "show all" and "show unread"
 	 */
 	private void addShowSettingWidgets( FlexTable table, int row, int col )
@@ -897,9 +867,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 			
 			mouseOverHandler = new MouseOverHandler()
 			{
-				/**
-				 * 
-				 */
 				@Override
 				public void onMouseOver( MouseOverEvent event )
 				{
@@ -919,9 +886,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 			
 			mouseOutHandler = new MouseOutHandler()
 			{
-				/**
-				 * 
-				 */
 				@Override
 				public void onMouseOut( MouseOutEvent event )
 				{
@@ -944,13 +908,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
-						public void execute()
-						{
+						public void execute() {
 							m_showSettingPanel.removeStyleName( "activityStreamHover" );
 							m_showSettingImg1.setVisible( true );
 							m_showSettingImg2.setVisible( false );
@@ -958,8 +918,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 							// Popup the "show all/show unread" popup menu.
 							m_showSettingPopupMenu.showRelativeToTarget( m_showSettingImg1 );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					});
 				}
 			};
 			m_showSettingImg1.addClickHandler( clickHandler );
@@ -969,7 +928,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 
 
-	/**
+	/*
 	 * Create the panel that will hold the search results. 
 	 */
 	private void createSearchResultsPanel( FlowPanel mainPanel )
@@ -981,14 +940,13 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	
-	/**
-	 * 
+	/*
 	 */
 	private void executeSearch()
 	{
 		if ( m_activityStreamParams == null )
 		{
-			Window.alert( "In executeSearch(), m_activityStreamParams is null.  This should never happen." );
+			GwtClientHelper.deferredAlert("ActivityStreamControl.executeSearch( *Internal Error* ):  m_activityStreamParams is null.  This should never happen.");
 			return;
 		}
 		
@@ -1002,16 +960,15 @@ public class ActivityStreamCtrl extends ResizeComposite
 		// Clear any results we may be currently displaying.
 		clearCurrentSearchResults();
 
-		// Issue an ajax request to search for the specified type of object.
+		// Issue a GWT RPC request to search for the specified type of object.
 		m_searchInProgress = true;
-		switch ( m_showSetting )
-		{
+		switch (m_showSetting) {
 		case ALL:
 		case UNREAD:
 			break;
 			
 		default:
-			Window.alert( "in executeSearch() unknown m_showSetting" );
+			GwtClientHelper.deferredAlert("ActivityStreamCtrl.executeSearch( Unknown m_showSetting ):  " + m_showSetting.name());
 			return;
 		}
 		
@@ -1024,16 +981,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 		{
 			m_searchTimer = new Timer()
 			{
-				/**
-				 * 
-				 */
 				@Override
 				public void run()
 				{
 					// If the search is still in progress show "Searching..."
-					if ( m_searchInProgress )
+					if ( m_searchInProgress ) {
 						showSearchingText();
-				}// end run()
+					}
+				}
 			};
 		}
 		
@@ -1058,7 +1013,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		return m_activityStreamInfo;
 	}
 	
-	/**
+	/*
 	 * Return the id of the binder that is the source of the activity stream
 	 */
 	private String getActivityStreamSourceBinderId()
@@ -1154,9 +1109,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	
-	/**
+	/*
 	 * Take all the actions necessary to handle the changing of the show setting.
-	 * 
 	 */
 	private void handleNewShowSetting( ActivityStreamDataType showSetting, boolean doRefresh )
 	{
@@ -1207,26 +1161,19 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 
-	/**
+	/*
 	 * Invoke the "Send to friend" dialog for the given entry.
 	 */
 	private void invokeSendToFriendDlg( final ActivityStreamUIEntry entry )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
+			public void execute() {
 				GetSendToFriendUrlCmd cmd;
 				AsyncCallback<VibeRpcResponse> callback;
 				
 				callback = new AsyncCallback<VibeRpcResponse>()
 				{
-					/**
-					 * 
-					 */
 					@Override
 					public void onFailure(Throwable t)
 					{
@@ -1235,9 +1182,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 								GwtTeaming.getMessages().rpcFailure_GetSendToFriendUrl() );
 					}
 					
-					/**
-					 * 
-					 */
 					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
@@ -1249,34 +1193,28 @@ public class ActivityStreamCtrl extends ResizeComposite
 						
 						if ( url != null )
 						{
-							Scheduler.ScheduledCommand schCmd;
-
-							schCmd = new Scheduler.ScheduledCommand()
-							{
+							GwtClientHelper.deferCommand(new ScheduledCommand() {
 								@Override
-								public void execute()
-								{
+								public void execute() {
 									String features;
 									
 									// Open a new window for the "send to friend" page to live in.
 									features = "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=630,height=780";
 									Window.open( url, "sendToFriend", features );
 								}
-							};
-							Scheduler.get().scheduleDeferred( schCmd );
+							});
 						}
 					}
 				};
 				
-				// Issue an ajax request to get the url needed to open the "send to friend" page.
+				// Issue a GWT RPC request to get the url needed to open the "send to friend" page.
 				cmd = new GetSendToFriendUrlCmd( entry.getEntryId() );
 				GwtClientHelper.executeCommand( cmd, callback );
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		});
 	}
 	
-	/**
+	/*
 	 * Invoke the Subscribe to Entry dialog for the given entry.
 	 */
 	private void invokeSubscribeToEntryDlg( final ActivityStreamUIEntry entry )
@@ -1292,13 +1230,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	private void invokeShareThisDlg( final ActivityStreamUIEntry entry )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
+			public void execute() {
 				// If we've already created the dialog... 
 				if ( m_shareThisDlg != null )
 				{
@@ -1323,30 +1257,24 @@ public class ActivityStreamCtrl extends ResizeComposite
 						{
 							// Nothing to do.  Error handled in
 							// asynchronous provider.
-						}// end onUnavailable()
+						}
 						
 						@Override
 						public void onSuccess( ShareThisDlg2 stDlg )
 						{
-							Scheduler.ScheduledCommand cmd;
-							
 							m_shareThisDlg = stDlg;
-							cmd = new Scheduler.ScheduledCommand()
-							{
+							GwtClientHelper.deferCommand(new ScheduledCommand() {
 								@Override
-								public void execute()
-								{
-									showShareThisDlg( entry );
+								public void execute() {
+									showShareThisDlg(entry);
 								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
-						}// end onSuccess()
+							});
+						}
 					});
 				}
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-	}// end invokeShareThisDlg()
+		});
+	}
 
 	
 	/**
@@ -1372,21 +1300,17 @@ public class ActivityStreamCtrl extends ResizeComposite
 							entityIds,
 							ShareThisDlgMode.NORMAL,
 							null );
-	}// end showShareThisDlg()
+	}
 	
 	
-	/**
+	/*
 	 * Invoke the Tag This dialog for the given entry.
 	 */
 	private void invokeTagThisDlg( final ActivityStreamUIEntry entry )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
+			public void execute() {
 				if ( m_tagThisDlg == null )
 				{
 					TagThisDlg.createAsync(
@@ -1415,12 +1339,10 @@ public class ActivityStreamCtrl extends ResizeComposite
 					invokeTagThisDlgImpl( entry );
 				}
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-	}// end invokeTagThisDlg()
+		});
+	}
 	
-	/**
-	 * 
+	/*
 	 */
 	private void invokeTagThisDlgImpl( final ActivityStreamUIEntry entry )
 	{
@@ -1431,24 +1353,23 @@ public class ActivityStreamCtrl extends ResizeComposite
 		// Sometimes in Firefox getAbsoluteTop() returns the value that would
 		// normally be returned by getOffsetTop()
 		// Make sure the y value is reasonable.
-		if ( y > Window.getClientHeight() )
+		if (y > Window.getClientHeight()) {
 			y = Window.getClientHeight();
+		}
 
 		TagThisDlg.initAndShow(
-				m_tagThisDlg,
-				entry.getEntryId(),
-				entry.getEntryTitle(),
-				(Window.getClientWidth() - 75),
-				y );
-	}// end invokeTagThisDlgImpl()	
+			m_tagThisDlg,
+			entry.getEntryId(),
+			entry.getEntryTitle(),
+			(Window.getClientWidth() - 75),
+			y);
+	}	
 	
-	/**
+	/*
 	 * Is the source of the activity stream a binder?
 	 */
-	private boolean isActivityStreamSourceABinder()
-	{
-		switch ( m_activityStreamInfo.getActivityStream() )
-		{
+	private boolean isActivityStreamSourceABinder() {
+		switch (m_activityStreamInfo.getActivityStream()) {
 		case FOLLOWED_PLACE:
 		case MY_FAVORITE:
 		case MY_TEAM:
@@ -1469,7 +1390,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 
 	
-	/**
+	/*
 	 * Is the source of the activity stream a person?
 	 */
 	private boolean isActivityStreamSourceAPerson()
@@ -1478,7 +1399,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	
-	/**
+	/*
 	 * Go through all the entries and see if the user has the "Reply to Entry" widget open
 	 */
 	private boolean isReplyInProgress()
@@ -1593,7 +1514,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	
-	/**
+	/*
 	 * Issue a new search. 
 	 */
 	private void refreshActivityStream()
@@ -1611,23 +1532,17 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	public void relayoutPage()
 	{
-		Scheduler.ScheduledCommand cmd;
-
-		cmd = new Scheduler.ScheduledCommand()
-		{
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
+			public void execute() {
 				relayoutPageNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-	}// end relayoutPage()
+		});
+	}
 	
 	
 
-	/**
-	 * 
+	/*
 	 */
 	private void relayoutPageNow()
 	{
@@ -1652,7 +1567,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		if ( m_headerPanel != null )
 			m_headerPanel.setWidth( String.valueOf( m_width ) + "px" );
 		m_footerPanel.setWidth( String.valueOf( m_width-6 ) + "px" );
-	}// end relayoutPageNow()
+	}
 
 	
 	/*
@@ -1698,7 +1613,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	
 	
 	/*
-	 * Issue an ajax request to save the current show setting to the
+	 * Issue a GWT RPC request to save the current show setting to the
 	 * user's properties.
 	 */
 	private void saveShowSetting()
@@ -1708,18 +1623,12 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		callback = new AsyncCallback<VibeRpcResponse>()
 		{
-			/**
-			 * 
-			 */
 			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure( t, GwtTeaming.getMessages().rpcFailure_SaveWhatsNewShowSetting() );
 			}
 			
-			/**
-			 * 
-			 */
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
@@ -1727,7 +1636,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			}
 		};
 		
-		// Issue an ajax request to get the permalink of the source of the activity stream.
+		// Issue a GWT RPC request to get the permalink of the source of the activity stream.
 		cmd = new SaveWhatsNewSettingsCmd( m_showSetting );
 		GwtClientHelper.executeCommand( cmd, callback );
 	}
@@ -1802,9 +1711,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		{
 			m_getActivityStreamParamsCallback = new AsyncCallback<VibeRpcResponse>()
 			{
-				/**
-				 * 
-				 */
 				@Override
 				public void onFailure(Throwable t)
 				{
@@ -1812,14 +1718,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 				}
 
 				
-				/**
-				 * 
-				 */
 				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
 					m_activityStreamParams = (ActivityStreamParams) response.getResponseData();
 					
 					if ( showSetting != null )
@@ -1830,11 +1731,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 					// Check the appropriate menu item to reflect the show setting.
 					m_showSettingPopupMenu.updateMenu( m_showSetting );
 					
-					cmd = new Scheduler.ScheduledCommand()
-					{
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
-						public void execute()
-						{
+						public void execute() {
 							// Now that we have the activity stream parameters, execute the search.
 							executeSearch();
 							
@@ -1844,13 +1743,12 @@ public class ActivityStreamCtrl extends ResizeComposite
 							// Update the label that shows whether we are displaying all or unread.
 							updateShowSettingLabel();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					});
 				}
 			};
 		}
 		
-		// Issue an ajax request to get the activity stream params.
+		// Issue a GWT RPC request to get the activity stream params.
 		{
 			GetActivityStreamParamsCmd cmd;
 			
@@ -1872,9 +1770,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 				
 				callback = new AsyncCallback<VibeRpcResponse>()
 				{
-					/**
-					 * 
-					 */
 					@Override
 					public void onFailure(Throwable t)
 					{
@@ -1887,9 +1782,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 						GwtClientHelper.handleGwtRPCFailure( t, msg, asSourceId );
 					}
 					
-					/**
-					 * 
-					 */
 					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
@@ -1900,7 +1792,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 					}
 				};
 				
-				// Issue an ajax request to get the permalink of the source of the activity stream.
+				// Issue a GWT RPC request to get the permalink of the source of the activity stream.
 				if ( isActivityStreamSourceAPerson() ) {
 					GetUserPermalinkCmd cmd;
 					
@@ -1985,8 +1877,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	public void show( ActivityStreamDataType ss )
 	{
-		Scheduler.ScheduledCommand cmd;
-
 		// Register handlers for all the events we are interested in.
 		registerEvents();
 
@@ -2000,15 +1890,12 @@ public class ActivityStreamCtrl extends ResizeComposite
 		// Restart the "check for changes" timer.
 		startCheckForChangesTimer();
 		
-		cmd = new Scheduler.ScheduledCommand()
-		{
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
+			public void execute() {
 				relayoutPage();
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		});
 	}
 	
 	public void show()
@@ -2022,15 +1909,11 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	public void showMessage( String msg )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
 		m_msgText.setText( msg );
 		
-		cmd = new Scheduler.ScheduledCommand()
-		{
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
+			public void execute() {
 				int width;
 				int x;
 
@@ -2043,8 +1926,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				// Show the message
 				m_msgPanel.setVisible( true );
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		});
 	}
 
 	
@@ -2067,8 +1949,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 
 	
-	/**
-	 * 
+	/*
 	 */
 	private void startCheckForChangesTimer()
 	{
@@ -2095,9 +1976,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 					// No, create one.
 					m_checkForChangesTimer = new Timer()
 					{
-						/**
-						 * 
-						 */
 						@Override
 						public void run()
 						{
@@ -2139,7 +2017,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		}
 	}
 	
-	/**
+	/*
 	 * Update the mouse over text on the pause image
 	 */
 	@SuppressWarnings("deprecation")
@@ -2177,7 +2055,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	
-	/**
+	/*
 	 * Update the label that display the show setting (show all or show unread)
 	 */
 	private void updateShowSettingLabel()
@@ -2218,7 +2096,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		setActivityStream( event.getActivityStreamInfo(), null );
 		show();
-	}// end onActivityStream()
+	}
 	
 	/**
 	 * Handles ActivityStreamExitEvent's received by this class.
@@ -2237,7 +2115,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			
 			hide();
 		}
-	}// end onActivityStreamExit()
+	}
 
 	/**
 	 * Handles DeleteActivityStreamUIEntryEvent's received by this class.
@@ -2294,7 +2172,24 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		}
 	}
-	
+
+	/**
+	 * Handles EditActivityStreamUIEntryEvent's received by this class.
+	 * 
+	 * Implements the EditActivityStreamUIEntryEvent.Handler.onEditActivityStreamUIEntry() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEditActivityStreamUIEntry(EditActivityStreamUIEntryEvent event) {
+		// Can we find the UI entry to be edited?
+		final ActivityStreamUIEntry uiEntry = event.getUIEntry();
+		if (null != uiEntry) {
+			// Yes!  Edit it.
+//!			...this needs to be implemented...
+			GwtClientHelper.deferredAlert("ActivityStreamCtrl.onEditActivityStreamUIEntry():  ...this needs to be implemented...");
+		}
+	}
 
 	/**
 	 * Called when widget is detached from the document.
@@ -2302,16 +2197,12 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * Overrides Widget.onDetach()
 	 */
 	@Override
-	public void onDetach()
-	{
+	public void onDetach() {
 		// Let the widget detach and then unregister our event
 		// handlers.
 		super.onDetach();
-	
 		unregisterEvents();
 	}
-	
-	/**
 	
 	/**
 	 * Handles InvokeReplyEvent's received by this class.
@@ -2329,7 +2220,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			// Tell the entry to display the reply ui.
 			uiEntry.invokeReplyUI();
 		}
-	}// end onInvokeReply()
+	}
 	
 	/**
 	 * Handles InvokeSendToFriendEvent's received by this class.
@@ -2365,7 +2256,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			// Invoke the Share this Entry dialog.
 			invokeShareThisDlg( uiEntry );
 		}
-	}// end onInvokeShare()
+	}
 	
 	/**
 	 * Handles InvokeSubscribeEvent's received by this class.
@@ -2383,7 +2274,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			// Invoke the Subscribe to Entry dialog.
 			invokeSubscribeToEntryDlg( uiEntry );
 		}
-	}// end onInvokeSubscribe()
+	}
 	
 	/**
 	 * Handles InvokeTagEvent's received by this class.
@@ -2407,7 +2298,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				invokeTagThisDlg( uiEntry );
 			}
 		}
-	}// end onInvokeTag()
+	}
 	
 	/**
 	 * Handles MarkEntryReadEvent's received by this class.
@@ -2432,7 +2323,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			// Mark the given entry as read.
 			uiEntry.markEntryAsRead( hide );
 		}
-	}// end onMarkEntryRead()
+	}
 	
 	/**
 	 * Handles MarkEntryUnreadEvent's received by this class.
@@ -2450,7 +2341,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			// Mark the given entry as unread.
 			uiEntry.markEntryAsUnread();
 		}
-	}// end onMarkEntryUnread()
+	}
 	
 	/**
 	 * Handles ViewAllEntriesEvent's received by this class.
@@ -2463,7 +2354,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	public void onViewAllEntries( ViewAllEntriesEvent event )
 	{
 		handleNewShowSetting( ActivityStreamDataType.ALL, true );
-	}// end onViewAllEntries()
+	}
 	
 	/**
 	 * Handles ViewUnreadEntriesEvent's received by this class.
@@ -2476,7 +2367,13 @@ public class ActivityStreamCtrl extends ResizeComposite
 	public void onViewUnreadEntries( ViewUnreadEntriesEvent event )
 	{
 		handleNewShowSetting( ActivityStreamDataType.UNREAD, true );
-	}// end onViewUnreadEntries()
+	}
+
+	
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	/* The following code is used to load the split point containing */
+	/* the activity stream control and perform some operation on it. */
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
 	/**
 	 * Callback interface to interact with the content control
@@ -2505,20 +2402,20 @@ public class ActivityStreamCtrl extends ResizeComposite
 			{
 				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( usage, createHeader, actionsMenu );
 				asCtrlClient.onSuccess( asCtrl );
-			}// end onSuccess()
+			}
 			
 			@Override
 			public void onFailure( Throwable reason )
 			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ActivityStreamCtrl() );
+				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_ActivityStreamCtrl());
 				asCtrlClient.onUnavailable();
-			}// end onFailure()
+			}
 		} );
-	}// end createAsync()
+	}
 
 	public static void createAsync( final ActivityStreamCtrlUsage usage, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
 	{
 		// Always use the initial form of the method.
 		createAsync( usage, true, actionsMenu, asCtrlClient );	// true -> Create header.
-	}// end createAsync()
-}// end ActivityStreamCtrl
+	}
+}

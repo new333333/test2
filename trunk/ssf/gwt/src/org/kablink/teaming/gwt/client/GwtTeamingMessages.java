@@ -663,6 +663,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_UploadFileBlob();
 	String rpcFailure_SetUserSharingRightsInfo();
 	String rpcFailure_ValidateEmailAddress();
+	String rpcFailure_ValidateEntryEvents();
 	String rpcFailure_ValidateShareLists();
 	String rpcFailure_ValidateUploads();
 	String rpcFailure_XsrfTokenFailure();
@@ -1619,6 +1620,7 @@ public interface GwtTeamingMessages extends Messages {
 
 	// The following strings are used in the 'Actions' popup menu.
 	String deleteEntry();
+	String editEntry();
 	String markRead();
 	String markUnread();
 	String reply();
