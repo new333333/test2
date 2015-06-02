@@ -505,13 +505,13 @@ public class AdminControl extends TeamingPopupPanel
 			// this category.
 			actions = category.getActions();
 			if (null != actions) {
-				boolean showManageMobileDevices    = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
-				boolean showPasswordPolicy         = GwtClientHelper.isPasswordPolicyEnabled();
-				boolean showLimitUserVisibilityDlg = LimitUserVisibilityDlg.SHOW_LIMIT_USER_VISIBILITY_DLG;	//! DRF (20150922):  false on checkin until it's all working.
+				//! DRF:  Add controls here to limit things shown while
+				//!       they're being implemented.
+				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
+				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
 				for (GwtAdminAction action : actions) {
-					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices))    continue;
-					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))         continue;
-					else if (action.getActionType().equals(AdminAction.MANAGE_USER_VISIBILITY)    && (!showLimitUserVisibilityDlg)) continue;
+					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices)) continue;
+					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))      continue;
 					
 					// Add a UI widget for this administration action.
 					AdminActionControl adminActionControl = new AdminActionControl( action );

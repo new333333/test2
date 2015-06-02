@@ -34,6 +34,11 @@ package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.binderviews.ModifyLimitedUserVisibilityDlg;
+import org.kablink.teaming.gwt.client.binderviews.ModifyLimitedUserVisibilityDlg.ModifyLimitedUserVisibilityDlgClient;
+import org.kablink.teaming.gwt.client.binderviews.ModifyLimitedUserVisibilityDlg.ModifyLimitedUserVisibilityCallback;
+import org.kablink.teaming.gwt.client.event.SetSelectedPrincipalsLimitedUserVisibilityEvent;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.LimitedUserVisibilityInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -54,8 +59,9 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * 
  * @author drfoster@novell.com
  */
-public class LimitedUserVisibilityCell extends AbstractCell<LimitedUserVisibilityInfo> {
-	private GwtTeamingMessages	m_messages;	//
+public class LimitedUserVisibilityCell extends AbstractCell<LimitedUserVisibilityInfo> implements ModifyLimitedUserVisibilityCallback {
+	private GwtTeamingMessages				m_messages;	//
+	private ModifyLimitedUserVisibilityDlg	m_mluvDlg;	//
 	
 	/**
 	 * Constructor method.
@@ -81,10 +87,53 @@ public class LimitedUserVisibilityCell extends AbstractCell<LimitedUserVisibilit
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-//!				...this needs to be implemented...
-				GwtClientHelper.alertViaDlg("LimitedUserVisibilityCell.invokeLimitedUserVisibilityAsync():  ...this needs to be implemented...");
+				invokeLimitedUserVisibilityNow(luvi);
 			}
 		});
+	}
+	
+	/*
+	 * Synchronously invokes an edit limited user visibility setting
+	 * dialog.
+	 */
+	private void invokeLimitedUserVisibilityNow(final LimitedUserVisibilityInfo luvi) {
+		// Have we created a modify limited user visibility dialog yet?
+		final ModifyLimitedUserVisibilityCallback mluvCallback = this;
+		if (null == m_mluvDlg) {
+			// No!  Create one now...
+			ModifyLimitedUserVisibilityDlg.createAsync(new ModifyLimitedUserVisibilityDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(ModifyLimitedUserVisibilityDlg mluvDlg) {
+					// ...and save the dialog...
+					m_mluvDlg = mluvDlg;
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							// ...and run it.
+							ModifyLimitedUserVisibilityDlg.initAndShow(
+								m_mluvDlg,
+								luvi,
+								mluvCallback);
+						}
+					});
+				}
+			});
+		}
+		
+		else {
+			// Yes, we have a modify limited user visibility dialog!
+			// Run it.
+			ModifyLimitedUserVisibilityDlg.initAndShow(
+				m_mluvDlg,
+				luvi,
+				mluvCallback);
+		}
 	}
 	
 	/**
@@ -155,7 +204,48 @@ public class LimitedUserVisibilityCell extends AbstractCell<LimitedUserVisibilit
     protected void onEnterKeyDown(Context context, Element parent, LimitedUserVisibilityInfo luvi, NativeEvent event, ValueUpdater<LimitedUserVisibilityInfo> valueUpdater) {
     	invokeLimitedUserVisibilityAsync(luvi);
     }
-    
+
+    /**
+     * Called when the user presses OK in the modify limited user
+     * visibility dialog.
+     * 
+     * Implements the ModifyLimitedUserVisibilityCallback.onEditSuccessful() method.
+     * 
+     * @param luvEid,
+     * @param luvInfo
+     * 
+     * @return
+     */
+    @Override
+	public boolean onEditSuccessful(EntityId luvEid, LimitedUserVisibilityInfo luvInfo) {
+    	// Put the new limited user visibility settings into affect...
+    	Boolean limited;
+    	Boolean override;
+    	if      (luvInfo.isOverride()) {limited = Boolean.FALSE; override = Boolean.TRUE; }	// Override only.
+    	else if (luvInfo.isLimited())  {limited = Boolean.TRUE;  override = Boolean.FALSE;}	// Limited  only.
+    	else                           {limited =                override = Boolean.FALSE;}	// Remove both.
+    	GwtTeaming.fireEventAsync(
+    		new SetSelectedPrincipalsLimitedUserVisibilityEvent(
+        		luvEid,
+        		limited,
+        		override,
+        		false));	// false -> Use the entity provide.
+    	
+    	// ...and return true to allow the dialog to be closed.
+		return true;
+	}
+	
+    /**
+     * Called when the user presses Cancel in the modify limited user
+     * visibility dialog.
+     * 
+     * Implements the ModifyLimitedUserVisibilityCallback.onEditCanceled() method.
+     */
+    @Override
+	public void onEditCanceled() {
+		// Nothing to do.
+	}
+	
 	/**
 	 * Called to render an instance of this cell.
 	 * 
@@ -184,6 +274,7 @@ public class LimitedUserVisibilityCell extends AbstractCell<LimitedUserVisibilit
 		else                        luvText = m_messages.vibeDataTable_LimitedUserVisibility_None();
 		InlineLabel luvLabel = new InlineLabel(luvText);
 		luvLabel.addStyleName("vibe-dataTableLUV-title");
+		luvLabel.setTitle(m_messages.vibeDataTable_LimitedUserVisibility_Alt());
 		Element luvE = luvLabel.getElement(); 
 		String widgetAttr = VibeDataTableConstants.CELL_WIDGET_LIMITED_USER_VISIBILITY_LABEL;
 		luvE.setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, widgetAttr);

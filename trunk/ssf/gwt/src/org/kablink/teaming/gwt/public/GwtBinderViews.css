@@ -554,6 +554,13 @@
 	.vibe-manageMobileDevicesDlg-user               {width: 800px; height: 600px;}
 /* End:  Manage devices dialog styles. */
 
+/* Start:  Modify limited user visibility dialog styles. */
+	.vibe-modifyLimitedUserVisibilityDlg-hint      {white-space: normal; width:  300px; padding-bottom: 10px; font-size: 14px; color: #505354;}
+	.vibe-modifyLimitedUserVisibilityDlg-rb        {display: block;}
+	.vibe-modifyLimitedUserVisibilityDlg-rb label  {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;}
+	.vibe-modifyLimitedUserVisibilityDlg-rootPanel {padding: 10px;}
+/* End:  Modify limited user visibility dialog styles. */
+
 /* Start:  Size columns dialog styles. */
 	.vibe-sizeColumnsDlg-colCaptionImg {}
 	.vibe-sizeColumnsDlg-colCaptionTxt {font-size:  14px;}

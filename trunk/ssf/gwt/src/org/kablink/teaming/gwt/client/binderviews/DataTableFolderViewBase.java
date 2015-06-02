@@ -304,23 +304,23 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ZipAndDownloadFolderEvent.Handler,
 		ZipAndDownloadSelectedFilesEvent.Handler
 {
-	private BinderShareRightsDlg			m_binderShareRightsDlg;		// A BinderShareRightsDlg, once one is created.
-	private boolean							m_fixedLayout;				//
-	private CloudFolderAuthenticationDlg	m_cfaDlg;					//
-	private Column<FolderRow, Boolean>		m_selectColumn;				//
-	private ColumnWidth						m_actionMenuColumnWidth;	//
-	private ColumnWidth						m_100PctColumnWidth;		//
-	private ColumnWidth						m_defaultColumnWidth;		//
-	private List<FolderColumn>				m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
-	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private List<Long>						m_contributorIds;			//
-	private Map<String, ColumnWidth>		m_defaultColumnWidths;		// Map of column names -> Default ColumnWidth objects.
-	private Map<String, ColumnWidth>		m_columnWidths;				// Map of column names -> Current ColumnWidth objects.
-	private SizeColumnsDlg					m_sizeColumnsDlg;			//
-	private String							m_folderStyles;				// Specific style(s) for the for the folders that extend this.
-	private String							m_quickFilter;				// Any quick filter that's active.
-	private VibeDataGrid<FolderRow>			m_dataTable;				// The actual data table holding the view's information.
-	private VibeSimplePager 				m_dataTablePager;			// Pager widgets at the bottom of the data table.
+	private BinderShareRightsDlg			m_binderShareRightsDlg;				// A BinderShareRightsDlg, once one is created.
+	private boolean							m_fixedLayout;						//
+	private CloudFolderAuthenticationDlg	m_cfaDlg;							//
+	private Column<FolderRow, Boolean>		m_selectColumn;						//
+	private ColumnWidth						m_actionMenuColumnWidth;			//
+	private ColumnWidth						m_100PctColumnWidth;				//
+	private ColumnWidth						m_defaultColumnWidth;				//
+	private List<FolderColumn>				m_folderColumnsList;				// The List<FolderColumn>' of the columns to be displayed.
+	private List<HandlerRegistration>		m_dtfvb_registeredEventHandlers;	// Event handlers that are currently registered.
+	private List<Long>						m_contributorIds;					//
+	private Map<String, ColumnWidth>		m_defaultColumnWidths;				// Map of column names -> Default ColumnWidth objects.
+	private Map<String, ColumnWidth>		m_columnWidths;						// Map of column names -> Current ColumnWidth objects.
+	private SizeColumnsDlg					m_sizeColumnsDlg;					//
+	private String							m_folderStyles;						// Specific style(s) for the for the folders that extend this.
+	private String							m_quickFilter;						// Any quick filter that's active.
+	private VibeDataGrid<FolderRow>			m_dataTable;						// The actual data table holding the view's information.
+	private VibeSimplePager 				m_dataTablePager;					// Pager widgets at the bottom of the data table.
 	
 	protected GwtTeamingDataTableImageBundle	m_images;		//
 	protected GwtTeamingFilrImageBundle			m_filrImages;	//
@@ -355,7 +355,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private static final TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+	private static final TeamingEvents[] dtfvb_REGISTERED_EVENTS = new TeamingEvents[] {
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
 		TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD,
@@ -4739,19 +4739,19 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private void registerEvents() {
 		// If we having allocated a list to track events we've
 		// registered yet...
-		if (null == m_registeredEventHandlers) {
+		if (null == m_dtfvb_registeredEventHandlers) {
 			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+			m_dtfvb_registeredEventHandlers = new ArrayList<HandlerRegistration>();
 		}
 
 		// If the list of registered events is empty...
-		if (m_registeredEventHandlers.isEmpty()) {
+		if (m_dtfvb_registeredEventHandlers.isEmpty()) {
 			// ...register the events.
 			EventHelper.registerEventHandlers(
 				GwtTeaming.getEventBus(),
-				REGISTERED_EVENTS,
+				dtfvb_REGISTERED_EVENTS,
 				this,
-				m_registeredEventHandlers);
+				m_dtfvb_registeredEventHandlers);
 		}
 	}
 
@@ -5252,10 +5252,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void unregisterEvents() {
 		// If we have a non-empty list of registered events...
-		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
+		if (GwtClientHelper.hasItems(m_dtfvb_registeredEventHandlers)) {
 			// ...unregister them.  (Note that this will also empty the
 			// ...list.)
-			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+			EventHelper.unregisterEventHandlers(m_dtfvb_registeredEventHandlers);
 		}
 	}
 }

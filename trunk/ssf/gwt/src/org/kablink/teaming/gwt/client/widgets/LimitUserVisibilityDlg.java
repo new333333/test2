@@ -96,8 +96,6 @@ public class LimitUserVisibilityDlg extends DlgBox
 		SearchFindResultsEvent.Handler,
 		SetSelectedPrincipalsLimitedUserVisibilityEvent.Handler
 {
-	public static final boolean SHOW_LIMIT_USER_VISIBILITY_DLG	= false;	//! DRF (20150522):  Leave false on checkin until it's all working.
-	
 	private boolean									m_dlgAttached;				// true when the dialog is attached to the document, false otherwise.
 	private boolean									m_viewReady;				// true once the embedded view is ready,             false otherwise.
 	private Boolean									m_findLimited;				// Boolean.TRUE if the FindCtrl is being used to add          limit user visibility rights.  null otherwise.
