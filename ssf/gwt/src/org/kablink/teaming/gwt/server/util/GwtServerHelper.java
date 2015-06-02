@@ -13371,126 +13371,106 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Validate the list of TeamingEvents to see if the user has rights to perform the events
+	 * Validate the list of TeamingEvents to see if the user has rights
+	 * to perform the events.
+	 * 
+	 * @param bs
+	 * @param req
+	 * @param eventValidations
+	 * @param entryId
 	 */
-	public static void validateEntryEvents( AllModulesInjected bs, HttpServletRequest req, List<EventValidation> eventValidations, String entryId )
-	{
+	public static void validateEntryEvents(AllModulesInjected bs, HttpServletRequest req, List<EventValidation> eventValidations, String entryId) {
 		// Initialize all events as invalid.
-		for ( EventValidation nextValidation : eventValidations )
-		{
-			// Validate this event.
-			nextValidation.setIsValid( false );
+		for (EventValidation nextValidation:  eventValidations) {
+			nextValidation.setIsValid(false);
 		}
 
-		try
-		{
-			FolderModule folderModule;
-			FolderEntry folderEntry;
-			Long entryIdL;
-			
-			folderModule = bs.getFolderModule();
-			entryIdL = new Long( entryId );
-
-			folderEntry = folderModule.getEntry( null, entryIdL );
-	        
-			for ( EventValidation nextValidation : eventValidations )
-			{
-				TeamingEvents teamingEvent;
-				
+		try {
+			FolderModule fm = bs.getFolderModule();
+			Long entryIdL = Long.parseLong(entryId);
+			FolderEntry fe = fm.getEntry(null, entryIdL);
+			for (EventValidation nextValidation:  eventValidations) {
 				// Validate the next event.
-				try
-				{
-					teamingEvent = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
+				try {
+					TeamingEvents teamingEvent = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
+					switch (teamingEvent) {
+					case DELETE_ACTIVITY_STREAM_UI_ENTRY:
+						fm.checkAccess(fe, FolderOperation.deleteEntry);
+						break;
 					
-					switch (teamingEvent)
-					{
-						case DELETE_ACTIVITY_STREAM_UI_ENTRY:
-							folderModule.checkAccess( folderEntry, FolderOperation.deleteEntry );
-							break;
-						
-						case INVOKE_REPLY:
-							if ( canEntryHaveAComment( folderEntry ) == false )
-								continue;
-							
-							folderModule.checkAccess( folderEntry, FolderOperation.addReply );
-							break;
-						
-						case INVOKE_TAG:
-						{
-							// Tag is valid if the user can manage public tags or can read the entry.
-							if ( canManagePublicEntryTags( bs, entryId ) == true )
-							{
-								// Nothing to do.
-							}
-							else if ( canManagePersonalEntryTags( bs, entryId ) )
-							{
-								// Nothing to do.
-							}
-							else
-								throw new AccessControlException();
-							break;
+					case EDIT_ACTIVITY_STREAM_UI_ENTRY:
+						fm.checkAccess(fe, FolderOperation.modifyEntry);
+						break;
+					
+					case INVOKE_REPLY:
+						if (!(canEntryHaveAComment(fe))) {
+							continue;
 						}
-						
-						case INVOKE_SHARE:
-							if ( bs.getSharingModule().testAddShareEntity( folderEntry ) == false )
-								throw new AccessControlException();
-							
-							break;
-						
-						case INVOKE_SUBSCRIBE:
-							folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
-							break;
-							
-						case INVOKE_SEND_TO_FRIEND:
-						{
-							User user;
-							
-							user = getCurrentUser();
-	
-							// Does the user have an e-mail address and is the user not guest?
-							if ( !user.getEmailAddresses().isEmpty() && 
-									!ObjectKeys.GUEST_USER_INTERNALID.equals( user.getInternalId() ) )
-							{
-								// Yes, nothing to do
-							}
-							else
-							{
-								throw new AccessControlException();
-							}
-							break;
+						fm.checkAccess(fe, FolderOperation.addReply);
+						break;
+					
+					case INVOKE_TAG:
+						// Tag is valid if the user can manage public
+						// tags or can read the entry.
+						if (canManagePublicEntryTags(bs, entryId)) {
+							// Nothing to do.
 						}
-						
-						case MARK_ENTRY_READ:
-						case MARK_ENTRY_UNREAD:
+						else if (canManagePersonalEntryTags(bs, entryId)) {
 							// Nothing to do.
-							break;
+						}
+						else {
+							throw new AccessControlException();
+						}
+						break;
+					
+					case INVOKE_SHARE:
+						if (!(bs.getSharingModule().testAddShareEntity(fe))) {
+							throw new AccessControlException();
+						}
+						break;
+					
+					case INVOKE_SUBSCRIBE:
+						fm.checkAccess(fe, FolderOperation.readEntry);
+						break;
 						
-						case VIEW_SELECTED_ENTRY:
-							// Nothing to do.
-							break;
-							
-						default:
-							GwtLogHelper.info(m_logger, "Unknown event in GwtServerHelper.validateEntryEvents() - " + teamingEvent.toString());
-							break;
+					case INVOKE_SEND_TO_FRIEND: {
+						// Does the user have an e-mail address and is
+						// the user not guest?
+						User user = getCurrentUser();
+						if ((!(user.getEmailAddresses().isEmpty())) && (!(user.isShared()))) { 
+							// Yes, nothing to do
+						}
+						else {
+							throw new AccessControlException();
+						}
+						break;
+					}
+					
+					case MARK_ENTRY_READ:
+					case MARK_ENTRY_UNREAD:
+						// Nothing to do.
+						break;
+					
+					case VIEW_SELECTED_ENTRY:
+						// Nothing to do.
+						break;
+						
+					default:
+						GwtLogHelper.info(m_logger, "GwtServerHelper.validateEntryEvents( Unknown event ):  "  + teamingEvent.name());
+						break;
 					}
 
 					// If we get here the action is valid.
-					nextValidation.setIsValid( true );
+					nextValidation.setIsValid(true);
 				}
-				catch (AccessControlException acEx)
-				{
-				}
+				
+				catch (AccessControlException acEx) {/* Ignore. */}
 			}
 		}
-		catch (NoFolderEntryByTheIdException nbEx)
-		{
-		}
-		catch (AccessControlException acEx)
-		{
-		}
-		catch (Exception e)
-		{
-		}
+		
+		catch (NoFolderEntryByTheIdException nbEx) {/* Ignore. */}
+		catch (AccessControlException        acEx) {/* Ignore. */}
+		catch (Exception                     e)    {/* Ignore. */}
 	}
 
 	/*

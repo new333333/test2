@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -54,7 +54,7 @@ import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStream
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlUsage;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -63,35 +63,38 @@ import com.google.gwt.user.client.ui.Composite;
 /**
  * This widget is used to display the comments for a given entity.
  * 
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
-public class CommentsWidget extends Composite
-	implements ActivityStreamCommentsContainer, CommentAddedCallback
-{
-	private boolean m_acsPseudoAttached;	// Set true once m_activityStreamCtrl is used and pseudo attached to the DOM.
-	private CommentAddedCallback m_commentAddedCallback;
-	private CommentsInfo m_commentsInfo;
-	private VibeFlowPanel m_mainPanel;
-	private ActivityStreamCtrl m_activityStreamCtrl;
-	private AsyncCallback<VibeRpcResponse> m_getCommentsCallback;
-	private boolean m_showTitle;
+public class CommentsWidget extends Composite implements ActivityStreamCommentsContainer, CommentAddedCallback {
+	private ActivityStreamCtrl		m_activityStreamCtrl;	//
+	private boolean					m_acsPseudoAttached;	// Set true once m_activityStreamCtrl is used and pseudo attached to the DOM.
+	private boolean					m_showTitle;			//
+	private CommentAddedCallback	m_commentAddedCallback;	//
+	private CommentsInfo			m_commentsInfo;			//
+	private VibeFlowPanel			m_mainPanel;			//
 	
-	private static final BigDecimal DELTA = BigDecimal.valueOf( 1, 1 );
-	
-	private static final boolean DUMP_DOC_NUMBERS	= false;	// DRF (20140423):  Debug only, leave false on checkin. 
+	private static final BigDecimal	DELTA				= BigDecimal.valueOf(1, 1);
+	private static final boolean	DUMP_DOC_NUMBERS	= false;	// DRF (20140423):  Debug only, leave false on checkin. 
 	
 
 	/**
+	 * Constructor method.
 	 * 
+	 * @param showTitle
 	 */
-	public CommentsWidget( boolean showTitle )
-	{
-		m_mainPanel = new VibeFlowPanel();
-		m_mainPanel.addStyleName( "commentsWidget_commentsPanel" );
+	public CommentsWidget(boolean showTitle) {
+		// Initialize the super class.
+		super();
 		
+		// Store the parameter.
 		m_showTitle = showTitle;
+		
+		// Create a panel for the widget...
+		m_mainPanel = new VibeFlowPanel();
+		m_mainPanel.addStyleName("commentsWidget_commentsPanel");
 
-		initWidget( m_mainPanel );
+		// ...and use that panel to initialize the composite.
+		initWidget(m_mainPanel);
 	}
 
 	/**
@@ -101,287 +104,204 @@ public class CommentsWidget extends Composite
 	 * @param append
 	 * @param scrollIntoView
 	 */
-	public void addComment( ActivityStreamEntry activityStreamEntry, boolean scrollIntoView )
-	{
-		ActivityStreamComment commentUI = null;
-		
-		commentUI = new ActivityStreamComment(
-											m_activityStreamCtrl,
-											this,
-											DescViewFormat.FULL,
-											m_showTitle );
-		commentUI.addStyleName( "commentsWidget_commentStylesOverride" );
-		commentUI.setData( activityStreamEntry );
-		m_mainPanel.add( commentUI );
+	public void addComment(ActivityStreamEntry activityStreamEntry, boolean scrollIntoView) {
+		ActivityStreamComment commentUI = new ActivityStreamComment(
+			m_activityStreamCtrl,
+			this,
+			DescViewFormat.FULL,
+			m_showTitle);
+		commentUI.addStyleName("commentsWidget_commentStylesOverride");
+		commentUI.setData(activityStreamEntry);
+		m_mainPanel.add(commentUI);
 
 		// If the activity stream control hasn't been pseudo attached
 		// to the DOM yet...
-		if ( ! m_acsPseudoAttached )
-		{
+		if (!m_acsPseudoAttached) {
 			// ...tell it to attach.
 			m_activityStreamCtrl.onAttach();
 			m_acsPseudoAttached = true;
 		}
 		
-		if ( scrollIntoView )
-		{
-			showNewComment( commentUI );
+		if (scrollIntoView) {
+			showNewComment(commentUI);
 		}
 	}
 	
-	/**
+	/*
 	 * Add the list of comments to out list of comments.
 	 */
-	private void addComments( List<ActivityStreamEntry> listOfComments )
-	{
-		if ( listOfComments != null )
-		{
-			ArrayList<ActivityStreamEntry> topLevelComments;
-			String baseDocNum;
-			
+	private void addComments(List<ActivityStreamEntry> listOfComments) {
+		if (null != listOfComments) {
 			// Get the base doc number
-			baseDocNum = ( GwtClientHelper.hasItems( listOfComments ) ? getBaseDocNum( listOfComments.get( 0 ) ) : null );
-			
-			if ( baseDocNum != null )
-			{
+			String baseDocNum = (GwtClientHelper.hasItems(listOfComments) ? getBaseDocNum(listOfComments.get(0)) : null);
+			if (null != baseDocNum) {
 				// Get a list of all the top-level comments.
-				topLevelComments = getListOfChildComments( baseDocNum, listOfComments );
+				ArrayList<ActivityStreamEntry> topLevelComments = getListOfChildComments(baseDocNum, listOfComments);
 				
 				// For each top-level comment get all of it's children.
-				getChildComments( topLevelComments, listOfComments );
-
-				for ( ActivityStreamEntry nextComment: topLevelComments )
-				{
-					// Add this comment to our ui
-					addComment( nextComment, false );
+				getChildComments(topLevelComments, listOfComments);
+				for (ActivityStreamEntry nextComment:  topLevelComments) {
+					// Add this comment to our UI.
+					addComment(nextComment, false);
 				}
 			}
 		}
 	}
 	
 	/**
-	 * This method gets called when a reply is added to one of our sub comments
+	 * This method gets called when a reply is added to one of our sub
+	 * comments.
+	 * 
+	 * @param callbackData
 	 */
 	@Override
-	public void commentAdded( Object callbackData )
-	{
-		if ( m_commentAddedCallback != null )
-			m_commentAddedCallback.commentAdded( m_commentsInfo );
+	public void commentAdded(Object callbackData) {
+		if (null != m_commentAddedCallback) {
+			m_commentAddedCallback.commentAdded(m_commentsInfo);
+		}
 	}
 
 	/*
 	 * If enabled, dumps document numbers as they're analyzed via an
 	 * alert.
 	 */
-	private void dumpDocNumbers(String start, String baseDocNum, String docNum)
-	{
-		if ( DUMP_DOC_NUMBERS )
-		{
-			if ( null == start )      start      = "";
-			if ( null == baseDocNum ) baseDocNum = "";
-			if ( null == docNum )     docNum     = "";
+	private void dumpDocNumbers(String start, String baseDocNum, String docNum) {
+		if (DUMP_DOC_NUMBERS) {
+			if (null == start)      start      = "";
+			if (null == baseDocNum) baseDocNum = "";
+			if (null == docNum)     docNum     = "";
 			
 			GwtClientHelper.deferredAlert(start + ": baseDocNum: " + baseDocNum + ", docNum: " + docNum);
 		}
 	}
 	
-	/**
+	/*
 	 * Return the base doc number.
 	 * 
 	 * Examples:
 	 * 1) If the given ActivityStreamEntry has a doc number of '4.x',   it returns '4'.
 	 * 2) If the given ActivityStreamEntry has a doc number of '4.x.y', it returns '4.x'/
 	 */
-	private String getBaseDocNum( ActivityStreamEntry activityStreamEntry )
-	{
+	private String getBaseDocNum(ActivityStreamEntry activityStreamEntry) {
 		String baseDocNum = null;
-		
-		if ( activityStreamEntry != null && activityStreamEntry.getEntryDocNum() != null )
-		{
-			String entryDocNum;
-			int index;
-			
-			entryDocNum = activityStreamEntry.getEntryDocNum();
-			index = entryDocNum.lastIndexOf( '.' );
-			if ( index > 0 )
-				baseDocNum = entryDocNum.substring( 0, index );
+		if ((null != activityStreamEntry) && (null != activityStreamEntry.getEntryDocNum())) {
+			String entryDocNum = activityStreamEntry.getEntryDocNum();
+			int index = entryDocNum.lastIndexOf('.');
+			if (0 < index) {
+				baseDocNum = entryDocNum.substring(0, index);
+			}
 		}
-		
 		return baseDocNum;
 	}
 	
-	/**
-	 * Issue an rpc request to get the comments for the given entity
+	/*
+	 * Issue GWT RPC request to get the comments for the given entity.
 	 */
-	private void getCommentsFromServer()
-	{
-		if ( m_commentsInfo != null )
-		{
-			GetEntryCommentsCmd cmd;
-			
-			if ( m_getCommentsCallback == null )
-			{
-				m_getCommentsCallback = new AsyncCallback<VibeRpcResponse>()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void onFailure(Throwable t)
-					{
-						GwtClientHelper.handleGwtRPCFailure(
-												t,
-												GwtTeaming.getMessages().rpcFailure_GetEntryComments(),
-												m_commentsInfo.getEntityTitle() );
+	private void getCommentsFromServer() {
+		if (null != m_commentsInfo) {
+			// Issue a request to get all the comments for this entry.
+			GetEntryCommentsCmd cmd = new GetEntryCommentsCmd(getEntityId());
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetEntryComments(),
+						m_commentsInfo.getEntityTitle());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Clear all data from the existing ui comment objects
+					if (null != m_mainPanel) {
+						m_mainPanel.clear();
 					}
 					
-					/**
-					 * 
-					 */
-					@Override
-					public void onSuccess(  VibeRpcResponse response )
-					{
-						Scheduler.ScheduledCommand cmd;
-						ActivityStreamEntryListRpcResponseData responseData;
-						final List<ActivityStreamEntry> listOfComments;
-	
-						// Clear all data from the existing ui comment objects
-						if ( m_mainPanel != null )
-						{
-							m_mainPanel.clear();
-						}
-						
-						// Get the list of comments from the response.
-						responseData = (ActivityStreamEntryListRpcResponseData) response.getResponseData();
-						listOfComments = responseData.getActivityStreamEntryList();
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								// Do we have a list of comments?
-								if ( listOfComments != null )
-								{
-									// Add the comments to the widget
-									addComments( listOfComments );
-								}
+					// Get the list of comments from the response.
+					ActivityStreamEntryListRpcResponseData responseData = ((ActivityStreamEntryListRpcResponseData) response.getResponseData());
+					final List<ActivityStreamEntry> listOfComments = responseData.getActivityStreamEntryList();
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							// Do we have a list of comments?
+							if (null != listOfComments) {
+								// Add the comments to the widget.
+								addComments(listOfComments);
 							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				};
-			}
-			
-			// Issue a request to get all the comments for this entry.
-			cmd = new GetEntryCommentsCmd( getEntityId() );
-			GwtClientHelper.executeCommand( cmd, m_getCommentsCallback );
+						}
+					});
+				}
+			});
 		}
 	}
 	
-	/**
-	 * 
+	/*
 	 */
-	private String getEntityId()
-	{
+	private String getEntityId() {
 		String entityIdS = "";
-		
-		if ( m_commentsInfo != null )
-		{
-			EntityId entityId;
-			
-			entityId = m_commentsInfo.getEntityId();
-			if ( entityId != null )
-			{
-				if ( entityId.getEntityType().equalsIgnoreCase( EntityId.FOLDER_ENTRY ) )
-					entityIdS = entityId.getEntityId().toString();
-				else
-					entityIdS = entityId.getBinderId().toString();
+		if (null != m_commentsInfo) {
+			EntityId entityId = m_commentsInfo.getEntityId();
+			if (null != entityId) {
+				if (entityId.getEntityType().equalsIgnoreCase(EntityId.FOLDER_ENTRY))
+				     entityIdS = entityId.getEntityId().toString();
+				else entityIdS = entityId.getBinderId().toString();
 			}
 		}
-		
 		return entityIdS;
 	}
 	
-	/**
-	 * Return a list of all the child sub comments for the given doc number.
-	 * For example, if we are passed "4" as the doc number we would return "4.1", "4.2" but not "4.1.1"
-	 * if we are passed "4.1" we would "4.1.1", "4.1.2" but not "4.1.1.1"
+	/*
+	 * Return a list of all the child sub comments for the given doc
+	 * number.  For example, if we are passed '4' as the doc number we
+	 * would return '4.1', '4.2' but not '4.1.1'.  If we are passed
+	 * '4.1' we would '4.1.1', '4.1.2' but not '4.1.1.1'.
 	 */
-	private ArrayList<ActivityStreamEntry> getListOfChildComments(
-		String baseDocNum,
-		List<ActivityStreamEntry> listOfComments )
-	{
-		ArrayList<ActivityStreamEntry> listOfChildComments;
-		
-		listOfChildComments = new ArrayList<ActivityStreamEntry>();
-		
-		if ( listOfComments != null && baseDocNum != null )
-		{
-			int baseDocNumLen;
-			int i;
-			
+	private ArrayList<ActivityStreamEntry> getListOfChildComments(String baseDocNum, List<ActivityStreamEntry> listOfComments) {
+		ArrayList<ActivityStreamEntry> listOfChildComments = new ArrayList<ActivityStreamEntry>();
+		if ((null != listOfComments) && (null != baseDocNum)) {
 			baseDocNum += ".";
-			baseDocNumLen = baseDocNum.length();
-			
-			for ( i = 0; i < listOfComments.size(); ++i )
-			{
-				ActivityStreamEntry nextComment;
-				String docNum;
-				
-				nextComment = listOfComments.get( i );
-				
+			int baseDocNumLen = baseDocNum.length();
+			for (int i = 0; i < listOfComments.size(); i += 1) {
 				// Does the doc number have a '.' in it after the base doc number?
-				docNum = nextComment.getEntryDocNum();
-				if ( docNum != null &&
-					 docNum.startsWith( baseDocNum ) &&
-					 docNum.indexOf( '.', baseDocNumLen ) < 0 )
-				{
-					// No, comment is a child comment
+				ActivityStreamEntry nextComment = listOfComments.get(i);
+				String docNum = nextComment.getEntryDocNum();
+				if ((null != docNum) &&
+					 docNum.startsWith(baseDocNum) &&
+					 (docNum.indexOf('.', baseDocNumLen) < 0)) {
+					// No, comment is a child comment.
 					dumpDocNumbers("CommentsWidget.getListOfChildComments( Matched )", baseDocNum, docNum);
-					listOfChildComments.add( nextComment );
+					listOfChildComments.add(nextComment);
 					
 					// Remove the comment from the list of comments so we don't include it when
 					// we are searching for sub comments.
-					listOfComments.remove( i );
-					--i;
+					listOfComments.remove(i);
+					i -= 1;
 				}
-				else
-				{
+				
+				else {
 					dumpDocNumbers("CommentsWidget.getListOfChildComments( Not matched )", baseDocNum, docNum);
 				}
 			}
 		}
-		
 		return listOfChildComments;
 	}
 	
-	/**
-	 * For each parent comment, find it's child comments from the listOfAllComments.
+	/*
+	 * For each parent comment, find it's child comments from the
+	 * listOfAllComments.
 	 */
-	private void getChildComments(
-		ArrayList<ActivityStreamEntry> listOfParentComments,
-		List<ActivityStreamEntry> listOfAllComments )
-	{
-		if ( listOfParentComments != null && listOfAllComments != null )
-		{
-			for ( ActivityStreamEntry nextComment: listOfParentComments )
-			{
-				String baseDocNum;
-				
+	private void getChildComments(ArrayList<ActivityStreamEntry> listOfParentComments, List<ActivityStreamEntry> listOfAllComments) {
+		if ((null != listOfParentComments) && (null != listOfAllComments)) {
+			for (ActivityStreamEntry nextComment:  listOfParentComments) {
 				// Get the list of child comments
-				baseDocNum = nextComment.getEntryDocNum();
-				if ( baseDocNum != null )
-				{
-					ArrayList<ActivityStreamEntry> childComments;
-					
-					childComments = getListOfChildComments( baseDocNum, listOfAllComments );
-					nextComment.setComments( childComments );
+				String baseDocNum = nextComment.getEntryDocNum();
+				if (null != baseDocNum) {
+					ArrayList<ActivityStreamEntry> childComments = getListOfChildComments(baseDocNum, listOfAllComments);
+					nextComment.setComments(childComments);
 					
 					// For each child comment, get its child comments.
-					if ( childComments != null )
-					{
-						getChildComments( childComments, listOfAllComments );
+					if (null != childComments) {
+						getChildComments(childComments, listOfAllComments);
 					}
 				}
 			}
@@ -394,127 +314,104 @@ public class CommentsWidget extends Composite
 	 * @param commentsInfo
 	 * @param commentAddedCallback
 	 */
-	public void init( CommentsInfo commentsInfo, CommentAddedCallback commentAddedCallback )
-	{
-		m_commentsInfo = commentsInfo;
+	public void init(CommentsInfo commentsInfo, CommentAddedCallback commentAddedCallback) {
+		m_commentsInfo         = commentsInfo;
 		m_commentAddedCallback = commentAddedCallback;
 		
 		// Have we created an ActivityStreamCtrl before?
-		if ( m_activityStreamCtrl == null )
-		{
-			ActionsPopupMenu actionsMenu;
-			ArrayList<ActionMenuItem> list;
-			
-			list = new ArrayList<ActionMenuItem>();
-			list.add( ActionMenuItem.REPLY );
-			list.add( ActionMenuItem.SUBSCRIBE );
-			if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
-			{
-				list.add( ActionMenuItem.TAG );
-				list.add( ActionMenuItem.SEND_TO_FRIEND );
-				list.add( ActionMenuItem.SEPARATOR );
-				list.add( ActionMenuItem.MARK_READ );
-				list.add( ActionMenuItem.MARK_UNREAD );
+		if (null == m_activityStreamCtrl) {
+			ArrayList<ActionMenuItem> list = new ArrayList<ActionMenuItem>();
+			list.add(ActionMenuItem.REPLY    );
+			list.add(ActionMenuItem.DELETE   );
+			list.add(ActionMenuItem.EDIT     );
+			list.add(ActionMenuItem.SUBSCRIBE);
+			if (!(GwtTeaming.m_requestInfo.isLicenseFilr())) {
+				list.add(ActionMenuItem.TAG           );
+				list.add(ActionMenuItem.SEND_TO_FRIEND);
+				list.add(ActionMenuItem.SEPARATOR     );
+				list.add(ActionMenuItem.MARK_READ     );
+				list.add(ActionMenuItem.MARK_UNREAD   );
 			}
-			
-			actionsMenu = new ActionsPopupMenu( true, true, list.toArray( new ActionMenuItem[list.size()] ) );
 			
 			// No, create one.  The only reason we need to create an ActivityStreamCtrl
 			// is because the ActivityStreamComment object needs one.
-			ActivityStreamCtrl.createAsync( ActivityStreamCtrlUsage.COMMENTS, false, actionsMenu, new ActivityStreamCtrlClient()
-			{			
+			ActionsPopupMenu actionsMenu = new ActionsPopupMenu(true, true, list.toArray(new ActionMenuItem[0]));
+			ActivityStreamCtrl.createAsync(ActivityStreamCtrlUsage.COMMENTS, false, actionsMenu, new ActivityStreamCtrlClient() {			
 				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
 				}
 				
 				@Override
-				public void onSuccess( ActivityStreamCtrl asCtrl )
-				{
+				public void onSuccess(ActivityStreamCtrl asCtrl) {
 					m_activityStreamCtrl = asCtrl;
-					m_activityStreamCtrl.setCheckForChanges( false );
-					m_activityStreamCtrl.setDefaultDescViewFormat( DescViewFormat.FULL );
+					m_activityStreamCtrl.setCheckForChanges(false);
+					m_activityStreamCtrl.setDefaultDescViewFormat(DescViewFormat.FULL);
 					
-					// Issue an rpc request to get the comments on the given entity
+					// Issue GWT RPC request to get the comments on the
+					// given entity.
 					getCommentsFromServer();
 				}
-			} );
+			});
 		}
-		else
-		{
-			// Issue an rpc request to get the comments on the given entity
+		
+		else {
+			// Issue a GWT RPC request to get the comments on the given
+			// entity.
 			getCommentsFromServer();
 		}
 	}
 	
-	public void init( CommentsInfo commentsInfo )
-	{
+	public void init(CommentsInfo commentsInfo) {
 		// Always use the initial form of the method.
-		init( commentsInfo, null );	// null -> Caller doesn't need notifications of added comments.
+		init(commentsInfo, null);	// null -> Caller doesn't need notifications of added comments.
 	}
 	
 	/**
 	 * Insert the given comments as the first comment.
+	 * 
+	 * @param
 	 */
 	@Override
-	public void insertReply( ActivityStreamEntry reply )
-	{
-		addComment( reply, true );
-		
-		if ( m_commentAddedCallback != null )
-			m_commentAddedCallback.commentAdded( m_commentsInfo );
+	public void insertReply(ActivityStreamEntry reply) {
+		addComment(reply, true);
+		if (null != m_commentAddedCallback) {
+			m_commentAddedCallback.commentAdded(m_commentsInfo);
+		}
 	}
 	
-	/**
-	 * 
+	/*
 	 */
-	private void showNewComment( ActivityStreamComment asComment )
-	{
-		Timer showTimer;
-		final Element element;
-		
-		element = asComment.getElement();
+	private void showNewComment(ActivityStreamComment asComment) {
+		final Element element = asComment.getElement();
 		
 		element.scrollIntoView();
-		element.getStyle().setOpacity( 0 );
+		element.getStyle().setOpacity(0);
 
-		showTimer = new Timer()
-		{
+		Timer showTimer = new Timer() {
 			@Override
-			public void run()
-			{
-				String opacityStr;
+			public void run() {
 				boolean increased = false;
-
-				opacityStr = element.getStyle().getOpacity();
-				if ( opacityStr != null && opacityStr.length() > 0 )
-				{
-					try
-					{
-						BigDecimal opacity;
-				
-						opacity = new BigDecimal( opacityStr );
-						if ( opacity.compareTo( new BigDecimal( 1 ) ) < 0 )
-						{
-							element.getStyle().setOpacity( opacity.add( DELTA ).doubleValue() );
+				String opacityStr = element.getStyle().getOpacity();
+				if (GwtClientHelper.hasString(opacityStr)) {
+					try {
+						BigDecimal opacity = new BigDecimal(opacityStr);
+						if (0 > opacity.compareTo(new BigDecimal(1))) {
+							element.getStyle().setOpacity(opacity.add(DELTA).doubleValue());
 							increased = true;
 						}
 					}
-					catch ( NumberFormatException nfe )
-					{
-					}
+					catch (NumberFormatException nfe) {/* Ignore. */}
 				}
 				
-				if ( increased == false )
-				{
-					element.getStyle().setOpacity( 1 );
+				if (!increased) {
+					element.getStyle().setOpacity(1);
 					cancel();
 				}
 			}
 		};
-         
-		showTimer.scheduleRepeating( 75 );
+		showTimer.scheduleRepeating(75);
 	}
 
 	/**
@@ -538,12 +435,10 @@ public class CommentsWidget extends Composite
 
 		// If the activity stream control has been pseudo attached to
 		// the DOM...
-		if ( m_acsPseudoAttached )
-		{
+		if (m_acsPseudoAttached) {
 			// ...tell it to detach.
 			m_activityStreamCtrl.onDetach();
 			m_acsPseudoAttached = false;
 		}
 	}
 }
-
