@@ -1426,7 +1426,6 @@ public interface GwtTeamingMessages extends Messages {
 	// The following strings are used in the activity stream control.
 	String actionsLabel();
 	String autoRefreshIsPaused();
-	String confirmDeleteEntry();
 	String followedPeople();
 	String followedPlaces();
 	String hideComments();

@@ -320,21 +320,35 @@ public class CommentsWidget extends Composite implements ActivityStreamCommentsC
 		
 		// Have we created an ActivityStreamCtrl before?
 		if (null == m_activityStreamCtrl) {
+			// Note:  The order of the items in the popup menu is the
+			// same as that used in the base, 'What's New' display.
 			ArrayList<ActionMenuItem> list = new ArrayList<ActionMenuItem>();
-			list.add(ActionMenuItem.REPLY    );
-			list.add(ActionMenuItem.DELETE   );
-			list.add(ActionMenuItem.EDIT     );
-			list.add(ActionMenuItem.SUBSCRIBE);
-			if (!(GwtTeaming.m_requestInfo.isLicenseFilr())) {
-				list.add(ActionMenuItem.TAG           );
+			list.add(ActionMenuItem.REPLY);
+			boolean notFilr = (!(GwtTeaming.m_requestInfo.isLicenseFilr()));
+			if (notFilr) {
 				list.add(ActionMenuItem.SEND_TO_FRIEND);
-				list.add(ActionMenuItem.SEPARATOR     );
-				list.add(ActionMenuItem.MARK_READ     );
-				list.add(ActionMenuItem.MARK_UNREAD   );
+			}
+			list.add(ActionMenuItem.SUBSCRIBE);
+			if (notFilr) {
+				list.add(ActionMenuItem.TAG);
+			}
+			boolean showEditOption = ActionsPopupMenu.SHOW_EDIT_OPTION;	//! DRF (20150602)
+			if (showEditOption) {
+				list.add(ActionMenuItem.EDIT);
+			}
+			list.add(ActionMenuItem.DELETE);
+			if (notFilr && m_showTitle) {
+				// Note:  We only add the read/unread options when were
+				// showing the title since that where the clickable
+				// 'blue bubble' is located.
+				list.add(ActionMenuItem.SEPARATOR  );
+				list.add(ActionMenuItem.MARK_READ  );
+				list.add(ActionMenuItem.MARK_UNREAD);
 			}
 			
-			// No, create one.  The only reason we need to create an ActivityStreamCtrl
-			// is because the ActivityStreamComment object needs one.
+			// No, create one.  The only reason we need to create an
+			// ActivityStreamCtrl is because the ActivityStreamComment
+			// object needs one.
 			ActionsPopupMenu actionsMenu = new ActionsPopupMenu(true, true, list.toArray(new ActionMenuItem[0]));
 			ActivityStreamCtrl.createAsync(ActivityStreamCtrlUsage.COMMENTS, false, actionsMenu, new ActivityStreamCtrlClient() {			
 				@Override
@@ -371,7 +385,7 @@ public class CommentsWidget extends Composite implements ActivityStreamCommentsC
 	/**
 	 * Insert the given comments as the first comment.
 	 * 
-	 * @param
+	 * @param reply
 	 */
 	@Override
 	public void insertReply(ActivityStreamEntry reply) {

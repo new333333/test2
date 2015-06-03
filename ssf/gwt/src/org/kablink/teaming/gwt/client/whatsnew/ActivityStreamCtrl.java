@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
+import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.DeleteActivityStreamUIEntryEvent;
@@ -58,6 +59,8 @@ import org.kablink.teaming.gwt.client.event.ViewUnreadEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
@@ -70,9 +73,6 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
-import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlgMode;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
@@ -159,54 +159,57 @@ public class ActivityStreamCtrl extends ResizeComposite
 		PARTIAL
 	}
 	
-	private DescViewFormat m_defaultDescViewFormat = DescViewFormat.PARTIAL;
-	private int m_width;
-	private int m_height;
-	private InlineLabel m_sourceName;
-	private ASCLayoutPanel m_mainLayoutPanel;
-	private FlowPanel m_headerPanel;
-	private FlowPanel m_searchResultsPanel;
-	private FlowPanel m_footerPanel;
-	private FlowPanel m_showSettingPanel;
-	private Object m_selectedObj = null;
-	private AsyncCallback<VibeRpcResponse> m_searchResultsCallback;
-	private AsyncCallback<VibeRpcResponse> m_checkForChangesCallback = null;
-	private AsyncCallback<VibeRpcResponse> m_getActivityStreamParamsCallback = null;
-	private PagingData m_pagingData = null;
-	private ActivityStreamParams m_activityStreamParams = null;
-	private SpecificFolderData m_specificFolderData = null;
-	private Timer m_searchTimer = null;
-	private Timer m_checkForChangesTimer = null;	// This timer is used to check for updates in the current activity stream.
-	private boolean m_checkForChanges = true;
-	private boolean m_searchInProgress = false;
-	private InlineLabel m_showSettingLabel;
-	private Image m_pauseImg;
-	private Image m_resumeImg;
-	private Image m_prevDisabledImg;
-	private Image m_prevImg;
-	private Image m_nextDisabledImg;
-	private Image m_nextImg;
-	private Image m_showSettingImg1;
-	private Image m_showSettingImg2;
-	private InlineLabel m_nOfnLabel;
-	private FlowPanel m_searchingPanel;
-	private FlowPanel m_msgPanel;
-	private InlineLabel m_msgText;
-	private ActivityStreamInfo m_activityStreamInfo = null;
-	private String m_asSourcePermalink = null;		// Permalink to the binder or user that is the source of the activity stream.
-	// This is a list of ui widgets, one for each entry returned by the search.
-	// We will reuse these ui widgets every time we get a new page of results.
-	// We will NOT create new ui widgets every time we get a new page of results.
+	private ActionsPopupMenu				m_actionsPopupMenu;									// This menu is used to display an Actions menu for an item in the list.
+	private ActivityStreamCtrlUsage			m_usage;											// How this ActivityStreamCtrl is being used.
+	private ActivityStreamDataType			m_showSetting = ActivityStreamDataType.OTHER;		//
+	private ActivityStreamInfo				m_activityStreamInfo;								//
+	private ActivityStreamParams			m_activityStreamParams;								//
+	private ASCLayoutPanel					m_mainLayoutPanel;									//
+	private AsyncCallback<VibeRpcResponse>	m_checkForChangesCallback;							//
+	private AsyncCallback<VibeRpcResponse>	m_getActivityStreamParamsCallback;					//
+	private AsyncCallback<VibeRpcResponse>	m_searchResultsCallback;							//
+	private boolean							m_checkForChanges = true;							//
+	private boolean							m_searchInProgress;									//
+	private DescViewFormat					m_defaultDescViewFormat = DescViewFormat.PARTIAL;	//
+	private FlowPanel						m_footerPanel;										//
+	private FlowPanel						m_headerPanel;										//
+	private FlowPanel						m_msgPanel;											//
+	private FlowPanel						m_searchingPanel;									//
+	private FlowPanel						m_searchResultsPanel;								//
+	private FlowPanel						m_showSettingPanel;									//
+	private GwtTeamingImageBundle			m_images;											// Access to our image resources.
+	private GwtTeamingMessages				m_messages;											// Access to our localized string resources.
+	private Image							m_nextDisabledImg;									//
+	private Image							m_nextImg;											//
+	private Image							m_pauseImg;											//
+	private Image							m_prevDisabledImg;									//
+	private Image							m_prevImg;											//
+	private Image							m_resumeImg;										//
+	private Image							m_showSettingImg1;									//
+	private Image							m_showSettingImg2;									//
+	private InlineLabel						m_nOfnLabel;										//
+	private InlineLabel						m_msgText;											//
+	private InlineLabel						m_showSettingLabel;									//
+	private InlineLabel						m_sourceName;										//
+	private int								m_height;											//
+	private int								m_width;											//
+	private List<HandlerRegistration>		m_asc_registeredEventHandlers;						// Event handlers that are currently registered.
+	private Object							m_selectedObj;										//
+	private PagingData						m_pagingData;										//
+	private ShareThisDlg2					m_shareThisDlg;										//
+	private ShowSettingPopupMenu			m_showSettingPopupMenu;								//
+	private SpecificFolderData				m_specificFolderData;								//
+	private String							m_asSourcePermalink;								// Permalink to the binder or user that is the source of the activity stream.
+	private TagThisDlg						m_tagThisDlg;										//
+	private Timer							m_checkForChangesTimer;								// This timer is used to check for updates in the current activity stream.
+	private Timer							m_searchTimer;										//
+	
+	// This is a list of UI widgets, one for each entry returned by the
+	// search.  We will reuse these ui widgets every time we get a new
+	// page of results.  We will NOT create new ui widgets every time
+	// we get a new page of results.
 	private ArrayList<ActivityStreamTopEntry> m_searchResultsUIWidgets;
-	// This menu is used to display an Actions menu for an item in the list.
-	private ActionsPopupMenu m_actionsPopupMenu = null;
-	private ShowSettingPopupMenu m_showSettingPopupMenu = null;
-	private TagThisDlg m_tagThisDlg = null;
-	private ShareThisDlg2 m_shareThisDlg = null;
-	private ActivityStreamDataType m_showSetting = ActivityStreamDataType.OTHER;
-	private ActivityStreamCtrlUsage m_usage;	// How this ActivityStreamCtrl is being used.
-	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-
+	
 	// Used to adjust the size and position of things to account for
 	// the padding the footer's style.
 	private final static int FOOTER_PADDING_ADJUST	= 6;
@@ -214,7 +217,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+	private final static TeamingEvents[] asc_REGISTERED_EVENTS = new TeamingEvents[] {
 		// Activity stream events.
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
@@ -269,75 +272,68 @@ public class ActivityStreamCtrl extends ResizeComposite
 	private ActivityStreamCtrl(ActivityStreamCtrlUsage usage, boolean createHeader, ActionsPopupMenu actionsMenu) {
 		super();
 		
-		m_usage = usage;
+		m_usage            = usage;
 		m_actionsPopupMenu = actionsMenu;
 		
-		FlowPanel mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "activityStreamCtrl" );
+		m_images   = GwtTeaming.getImageBundle();
+		m_messages = GwtTeaming.getMessages();
 		
-		// Create the list that will hold the ui widgets, one for each entry returned by the search.
+		FlowPanel mainPanel = new FlowPanel();
+		mainPanel.addStyleName("activityStreamCtrl");
+		
+		// Create the list that will hold the UI widgets, one for each
+		// entry returned by the search.
 		m_searchResultsUIWidgets = new ArrayList<ActivityStreamTopEntry>();
 		
-		if ( createHeader )
-		{
+		if (createHeader) {
 			// Create the header
-			createHeader( mainPanel );
+			createHeader(mainPanel);
 		}
 
 		// Create a panel where the search results will live.
-		createSearchResultsPanel( mainPanel );
+		createSearchResultsPanel(mainPanel);
 
-		// Create the footer
-		createFooter( mainPanel );
+		// Create the footer.
+		createFooter(mainPanel);
 		
-		// Create a panel to hold "Searching..."
-		{
-			InlineLabel searching;
-			Image spinnerImg;
-			
-			m_searchingPanel = new FlowPanel();
-			m_searchingPanel.addStyleName( "activityStreamSearchingPanel" );
-			mainPanel.add( m_searchingPanel );
-			searching = new InlineLabel( GwtTeaming.getMessages().searching() );
-			m_searchingPanel.add( searching );
-			spinnerImg = new Image( GwtTeaming.getImageBundle().spinner16() );
-			m_searchingPanel.add( spinnerImg );
-			m_searchingPanel.setVisible( false );
-		}
+		// Create a panel to hold 'Searching...'
+		m_searchingPanel = new FlowPanel();
+		m_searchingPanel.addStyleName("activityStreamSearchingPanel");
+		mainPanel.add(m_searchingPanel);
+		InlineLabel searching = new InlineLabel(m_messages.searching());
+		m_searchingPanel.add(searching);
+		Image spinnerImg = new Image(m_images.spinner16());
+		m_searchingPanel.add(spinnerImg);
+		m_searchingPanel.setVisible(false);
 		
-		// Create a panel to hold "No entries found"
-		{
-			m_msgPanel = new FlowPanel();
-			m_msgPanel.addStyleName( "activityStreamNoEntriesFoundPanel" );
-			mainPanel.add( m_msgPanel );
-			m_msgText = new InlineLabel( "" );
-			m_msgPanel.add( m_msgText );
-			m_msgPanel.setVisible( false );
-		}
+		// Create a panel to hold 'No entries found'.
+		m_msgPanel = new FlowPanel();
+		m_msgPanel.addStyleName("activityStreamNoEntriesFoundPanel");
+		mainPanel.add(m_msgPanel);
+		m_msgText = new InlineLabel("");
+		m_msgPanel.add(m_msgText);
+		m_msgPanel.setVisible(false);
 
-		// Create the callback that will be used when we issue a GWT RPC call to do a search.
-		m_searchResultsCallback = new AsyncCallback<VibeRpcResponse>()
-		{
+		// Create the callback that will be used when we issue a GWT
+		// RPC call to do a search.
+		m_searchResultsCallback = new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure( Throwable caught )
-			{
+			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					GwtTeaming.getMessages().rpcFailure_Search() );
+					m_messages.rpcFailure_Search() );
 				
 				m_searchInProgress = false;
 				hideSearchingText();
-				showMessage( GwtTeaming.getMessages().noEntriesFound() );
+				showMessage(m_messages.noEntriesFound());
 			}
 
 			@Override
-			public void onSuccess( VibeRpcResponse result )
-			{
+			public void onSuccess(VibeRpcResponse result) {
 				ActivityStreamDataRpcResponseData asDataResponse = ((ActivityStreamDataRpcResponseData) result.getResponseData());
 				final ActivityStreamData activityStreamData = asDataResponse.getActivityStreamDataResults();
 				
-				if ( activityStreamData != null )
-				{
+				if (activityStreamData != null) {
 					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
@@ -345,7 +341,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 							hideSearchingText();
 
 							// Add the search results to the search results widget.
-							addSearchResults( activityStreamData );
+							addSearchResults(activityStreamData);
 						}
 					});
 				}
@@ -353,193 +349,151 @@ public class ActivityStreamCtrl extends ResizeComposite
 		};
 		m_searchInProgress = false;
 		
-		// Create the popup menu used to set "show all" or "show unread"
-		m_showSettingPopupMenu  = new ShowSettingPopupMenu( true, true );
+		// Create the popup menu used to set 'show all' or 'show
+		// unread'.
+		m_showSettingPopupMenu = new ShowSettingPopupMenu(true, true);
 		
-		m_mainLayoutPanel = new ASCLayoutPanel( this );
-		m_mainLayoutPanel.addStyleName( "activityStreamLayoutPanel" );
-		m_mainLayoutPanel.add( mainPanel );
+		m_mainLayoutPanel = new ASCLayoutPanel(this);
+		m_mainLayoutPanel.addStyleName("activityStreamLayoutPanel");
+		m_mainLayoutPanel.add(mainPanel);
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget( m_mainLayoutPanel );
+		initWidget(m_mainLayoutPanel);
 	}
-	
 	
 	/*
 	 * Add the given search results to the list of search results.
 	 */
-	private void addSearchResults( ActivityStreamData activityStreamData )
-	{
-		List<ActivityStreamEntry> entries;
-		int position;
-		int value1;
-		int searchCountTotal;
-		int displayCount;
-		String nOfn;
-
+	private void addSearchResults(ActivityStreamData activityStreamData) {
 		m_pagingData = activityStreamData.getPagingData();
 		
 		// Get the list of entries from the search.
-		entries = activityStreamData.getEntries();
+		List<ActivityStreamEntry> entries = activityStreamData.getEntries();
 		
-		displayCount = 0;
-		searchCountTotal = m_pagingData.getTotalRecords();
+		int displayCount     = 0;
+		int searchCountTotal = m_pagingData.getTotalRecords();
 
-		if ( entries != null )
-		{
-			int i;
-
+		if (null != entries) {
 			displayCount = entries.size();
-			for (i = 0; i < displayCount; ++i)
-			{
-				ActivityStreamEntry item;
-				ActivityStreamTopEntry topEntry;
-				
+			for (int i = 0; i < displayCount; i += 1) {
 				// Get the next entry from the search results.
-				item = entries.get( i );
+				ActivityStreamEntry item = entries.get(i);
 				
 				// We recycle ActivityStreamTopEntry objects.
 				// Do we have an old one we can use?
-				topEntry = null;
-				if ( i < m_searchResultsUIWidgets.size() )
-					topEntry = m_searchResultsUIWidgets.get( i );
-				if ( topEntry == null )
-				{
+				ActivityStreamTopEntry topEntry;
+				if (i < m_searchResultsUIWidgets.size())
+				     topEntry = m_searchResultsUIWidgets.get(i);
+				else topEntry = null;
+				if (null == topEntry) {
 					// No, create a new one.
-					topEntry = new ActivityStreamTopEntry( this, getDefaultDescViewFormat() );
-					m_searchResultsUIWidgets.add( topEntry );
+					topEntry = new ActivityStreamTopEntry(this, getDefaultDescViewFormat());
+					m_searchResultsUIWidgets.add(topEntry);
 				}
 				
 				// Set the data the ui widget will display.
-				topEntry.setData( item );
+				topEntry.setData(item);
 				
 				// Add this ui widget to the search results panel.
-				m_searchResultsPanel.add( topEntry );
+				m_searchResultsPanel.add(topEntry);
 			}
 		}
 
-		// Figure out the position of the last result within the total number of results.
-		position = (m_pagingData.getPageIndex() * m_pagingData.getEntriesPerPage()) + displayCount;
+		// Figure out the position of the last result within the total
+		// number of results.
+		int position = ((m_pagingData.getPageIndex() * m_pagingData.getEntriesPerPage()) + displayCount);
 		
-		// Construct the string n - n of n based on the number of items found in the search.
-		value1 = (m_pagingData.getPageIndex() * m_pagingData.getEntriesPerPage()) + 1;
-		if ( searchCountTotal == 0 )
+		// Construct the string n - n of n based on the number of items
+		// found in the search.
+		int value1 = (m_pagingData.getPageIndex() * m_pagingData.getEntriesPerPage()) + 1;
+		if (0 == searchCountTotal) {
 			value1 = 0;
+		}
 		
-		if ( m_pagingData.isTotalApproximate() )
-		     nOfn = GwtTeaming.getMessages().nOfn_Approximate( value1, position, searchCountTotal );
-		else nOfn = GwtTeaming.getMessages().nOfn_Exact(       value1, position, searchCountTotal );
-		m_nOfnLabel.setText( nOfn );
+		String nOfn;
+		if (m_pagingData.isTotalApproximate())
+		     nOfn = m_messages.nOfn_Approximate(value1, position, searchCountTotal);
+		else nOfn = m_messages.nOfn_Exact(      value1, position, searchCountTotal);
+		m_nOfnLabel.setText(nOfn);
 
-		// Hide the previous and next images
-		m_prevImg.setVisible( false );
-		m_nextImg.setVisible( false );
+		// Hide the previous and next images.
+		m_prevImg.setVisible(false);
+		m_nextImg.setVisible(false);
 		
-		// Do we need to show the "prev" image?
-		if ( position > m_pagingData.getEntriesPerPage() )
-		{
-			// Yes
-			m_prevDisabledImg.setVisible( false );
-			m_prevImg.setVisible( true );
+		// Do we need to show the 'previous' image?
+		if (position > m_pagingData.getEntriesPerPage()) {
+			// Yes!
+			m_prevDisabledImg.setVisible(false);
+			m_prevImg.setVisible(        true );
 		}
-		else
-		{
-			// No
-			m_prevDisabledImg.setVisible( true );
-			m_prevImg.setVisible( false );
+		else {
+			// No!
+			m_prevDisabledImg.setVisible(true );
+			m_prevImg.setVisible(        false);
 		}
 		
-		// Do we need to show the "next" image?
-		if ( searchCountTotal > position )
-		{
-			// Yes
-			m_nextDisabledImg.setVisible( false );
-			m_nextImg.setVisible( true );
+		// Do we need to show the 'next' image?
+		if (searchCountTotal > position) {
+			// Yes!
+			m_nextDisabledImg.setVisible(false);
+			m_nextImg.setVisible(        true );
 		}
-		else
-		{
-			// No
-			m_nextDisabledImg.setVisible( true );
-			m_nextImg.setVisible( false );
+		else {
+			// No!
+			m_nextDisabledImg.setVisible(true );
+			m_nextImg.setVisible(        false);
 		}
 		
 		// Do we have any results?
-		if ( displayCount == 0 )
-		{
-			// No
-			showMessage( GwtTeaming.getMessages().noEntriesFound() );
-		}
-		else
-		{
-			// Yes
-			hideMessage();
-		}
+		if (0 == displayCount)
+		     showMessage(m_messages.noEntriesFound());
+		else hideMessage();
 	}
-	
 	
 	/**
 	 */
-	public void cancelCheckForChangesTimer()
-	{
-		if ( m_checkForChangesTimer != null )
-		{
+	public void cancelCheckForChangesTimer() {
+		if (null != m_checkForChangesTimer) {
 			// Cancel the timer.
 			m_checkForChangesTimer.cancel();
 		}
 	}
 	
-	
 	/**
-	 * Issue an rpc request to check for anything new.  If there is something new we will issue a
-	 * new search request.
+	 * Issue a GWT RPC request to check for anything new.  If there is
+	 * something new we will issue a new search request.
 	 */
-	public void checkForChanges()
-	{
+	public void checkForChanges() {
 		// Should we be checking for changes?
-		if ( !m_checkForChanges )
-		{
+		if (!m_checkForChanges) {
 			// No, bail
 			return;
 		}
 		
-		if ( m_activityStreamParams == null )
-		{
+		if (null == m_activityStreamParams) {
 			GwtClientHelper.deferredAlert("ActivityStreamCtrl.checkForChanges( *Internal Error* ):  m_activityStreamParams is null.  This should never happen." );
 			return;
 		}
 		
 		// Create the callback that will be used when we issue a GWT RPC call to do check for updates.
-		if ( m_checkForChangesCallback == null )
-		{
-			m_checkForChangesCallback = new AsyncCallback<VibeRpcResponse>()
-			{
+		if (null == m_checkForChangesCallback) {
+			m_checkForChangesCallback = new AsyncCallback<VibeRpcResponse>() {
 				@Override
-				public void onFailure(Throwable t)
-				{
+				public void onFailure(Throwable t) {
 					// We don't want to keep checking for changes.
 					cancelCheckForChangesTimer();
-					
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
-						GwtTeaming.getMessages().rpcFailure_CheckForActivityStreamChanges() );
+						m_messages.rpcFailure_CheckForActivityStreamChanges());
 				}
 		
 				@Override
-				public void onSuccess( VibeRpcResponse response )
-				{
-					Boolean haveChanges;
-					BooleanRpcResponseData responseData;
-					
-					responseData = (BooleanRpcResponseData) response.getResponseData();
-					haveChanges = responseData.getBooleanValue();
-					
-					if ( haveChanges )
-					{
+				public void onSuccess(VibeRpcResponse response) {
+					BooleanRpcResponseData responseData = ((BooleanRpcResponseData) response.getResponseData());
+					if (responseData.getBooleanValue()) {
 						// Is the user composing a reply?
-						if ( isReplyInProgress() == false )
-						{
-							// No
-							// Refresh the activity stream.
+						if (!(isReplyInProgress())) {
+							// No!  Refresh the activity stream.
 							GwtClientHelper.deferCommand(new ScheduledCommand() {
 								@Override
 								public void execute() {
@@ -552,117 +506,95 @@ public class ActivityStreamCtrl extends ResizeComposite
 			};
 		}
 		
-		// Update the text that indicates when we will check for changes.
+		// Update the text that indicates when we will check for
+		// changes.
 		updatePauseTitle();
 		
 		// Issue a GWT RPC request to see if there is anything new.
-		{
-			HasActivityStreamChangedCmd cmd;
-			
-			cmd = new HasActivityStreamChangedCmd( m_activityStreamInfo );
-			GwtClientHelper.executeCommand( cmd, m_checkForChangesCallback );
-		}
+		HasActivityStreamChangedCmd cmd = new HasActivityStreamChangedCmd(m_activityStreamInfo);
+		GwtClientHelper.executeCommand(cmd, m_checkForChangesCallback);
 	}
-	
 	
 	/*
 	 * Remove any search results we may be displaying. 
 	 */
-	private void clearCurrentSearchResults()
-	{
+	private void clearCurrentSearchResults() {
 		// Remove all ui widgets we've added.
 		m_searchResultsPanel.clear();
 		
 		// We recycle the ActivityStreamTopEntry objects.
-		// Clear the data from the ActivityStreamTopEntry we have created objects.
-		for ( ActivityStreamTopEntry nextEntry : m_searchResultsUIWidgets)
-		{
+		// Clear the data from the ActivityStreamTopEntry we have
+		// created objects.
+		for (ActivityStreamTopEntry nextEntry:  m_searchResultsUIWidgets) {
+			// Sometimes we hide an entry.  Make sure each entry is
+			// visible.
 			nextEntry.clearEntrySpecificInfo();
-			
-			// Sometimes we hide an entry.  Make sure each entry is visible.
-			nextEntry.setVisible( true );
+			nextEntry.setVisible(true);
 		}
 		
-		m_nOfnLabel.setText( "" );
-		m_prevImg.setVisible( false );
-		m_nextImg.setVisible( false );
-		m_prevDisabledImg.setVisible( true );
-		m_nextDisabledImg.setVisible( true );
+		m_nOfnLabel.setText("");
+		m_prevImg.setVisible(false);
+		m_nextImg.setVisible(false);
+		m_prevDisabledImg.setVisible(true);
+		m_nextDisabledImg.setVisible(true);
 	}
-	
 	
 	/*
 	 * Create the footer that holds the pagination controls.
 	 */
-	private void createFooter( FlowPanel mainPanel )
-	{
-		FlexTable table;
-		FlowPanel imgPanel;
-		ImageResource imageResource;
-		
+	private void createFooter(FlowPanel mainPanel) {
 		m_footerPanel = new FlowPanel();
-		m_footerPanel.addStyleName( "activityStreamCtrlFooter" );
+		m_footerPanel.addStyleName("activityStreamCtrlFooter");
 
-		table = new FlexTable();
-		table.addStyleName( "activityStreamFooterImages" );
-		m_footerPanel.add( table );
-		imgPanel = new FlowPanel();
-		table.setWidget( 0, 0, imgPanel );
+		FlexTable table = new FlexTable();
+		table.addStyleName("activityStreamFooterImages");
+		m_footerPanel.add(table);
+		FlowPanel imgPanel = new FlowPanel();
+		table.setWidget(0, 0, imgPanel);
 		
 		// Add the previous images to the footer.
-		imageResource = GwtTeaming.getImageBundle().previousDisabled16();
+		ImageResource imageResource = m_images.previousDisabled16();
 		m_prevDisabledImg = new Image(imageResource);
-		m_prevDisabledImg.addStyleName( "viewPreviousDisabledImg" );
-		imgPanel.add( m_prevDisabledImg );
-		imageResource = GwtTeaming.getImageBundle().previous16();
+		m_prevDisabledImg.addStyleName("viewPreviousDisabledImg");
+		imgPanel.add(m_prevDisabledImg);
+		imageResource = m_images.previous16();
 		m_prevImg = new Image(imageResource);
-		m_prevImg.addStyleName( "cursorPointer" );
-		m_prevImg.getElement().setAttribute( "id", "viewPreviousPageOfResults" );
-		imgPanel.add( m_prevImg );
-		m_prevImg.setVisible( false );
-		m_prevImg.addClickHandler( this );
+		m_prevImg.addStyleName("cursorPointer");
+		m_prevImg.getElement().setAttribute("id", "viewPreviousPageOfResults");
+		imgPanel.add(m_prevImg);
+		m_prevImg.setVisible(false);
+		m_prevImg.addClickHandler(this);
 		
 		// Add a label that we'll use to display 4-10 of 128
 		m_nOfnLabel = new InlineLabel();
-		m_nOfnLabel.addStyleName( "marginLeftPoint25em" );
-		m_nOfnLabel.addStyleName( "marginRightPoint25em" );
-		m_nOfnLabel.addStyleName( "marginBottomPoint25em" );
-		imgPanel.add( m_nOfnLabel );
+		m_nOfnLabel.addStyleName("marginLeftPoint25em"  );
+		m_nOfnLabel.addStyleName("marginRightPoint25em" );
+		m_nOfnLabel.addStyleName("marginBottomPoint25em");
+		imgPanel.add(m_nOfnLabel);
 
 		// Add the next images to the footer.
-		imageResource = GwtTeaming.getImageBundle().nextDisabled16();
+		imageResource = m_images.nextDisabled16();
 		m_nextDisabledImg = new Image(imageResource);
-		m_nextDisabledImg.addStyleName( "viewNextDisabledImg" );
-		imgPanel.add( m_nextDisabledImg );
-		imageResource = GwtTeaming.getImageBundle().next16();
+		m_nextDisabledImg.addStyleName("viewNextDisabledImg");
+		imgPanel.add(m_nextDisabledImg);
+		imageResource = m_images.next16();
 		m_nextImg = new Image(imageResource);
-		m_nextImg.addStyleName( "cursorPointer" );
-		m_nextImg.getElement().setAttribute( "id", "viewNextPageOfResults" );
-		imgPanel.add( m_nextImg );
-		m_nextImg.setVisible( false );
-		m_nextImg.addClickHandler( this );
+		m_nextImg.addStyleName("cursorPointer");
+		m_nextImg.getElement().setAttribute("id", "viewNextPageOfResults");
+		imgPanel.add(m_nextImg);
+		m_nextImg.setVisible(false);
+		m_nextImg.addClickHandler(this);
 		
-		mainPanel.add( m_footerPanel );
+		mainPanel.add(m_footerPanel);
 	}
 	
-	
 	/*
-	 * 
 	 */
-	private void createHeader( FlowPanel mainPanel )
-	{
-		ImageResource imageResource;
-		ClickHandler clickHandler;
-		InlineLabel whatsNewLabel;
-		FlowPanel header2;
-		FlowPanel pauseResumePanel;
-		FlexTable table;
-		int col;
-
+	private void createHeader(FlowPanel mainPanel) {
 		m_headerPanel = new FlowPanel();
 		m_headerPanel.addStyleName( "activityStreamCtrlHeader" );
 		
-		header2 = new FlowPanel();
+		FlowPanel header2 = new FlowPanel();
 		header2.addStyleName( "activityStreamCtrlHeader2" );
 		m_headerPanel.add( header2 );
 		
@@ -733,48 +665,46 @@ public class ActivityStreamCtrl extends ResizeComposite
 			m_sourceName.addClickHandler( ch );
 		}
 		
-		// Create a label for "What's New"
-		whatsNewLabel = new InlineLabel( GwtTeaming.getMessages().whatsNew() );
-		whatsNewLabel.addStyleName( "activityStreamCtrlHeaderSubtitle" );
-		header2.add( whatsNewLabel );
+		// Create a label for 'What's New'.
+		InlineLabel whatsNewLabel = new InlineLabel(m_messages.whatsNew());
+		whatsNewLabel.addStyleName("activityStreamCtrlHeaderSubtitle");
+		header2.add(whatsNewLabel);
 		
 		// Create a table that will hold Show all/unread, pause/resume and refresh
-		table = new FlexTable();
+		FlexTable table = new FlexTable();
 		table.addStyleName( "activityStreamCtrlHeaderActionsTable" );
-		col = 0;
+		int col = 0;
 		
 		// Add the text that displays what the show setting is (show all or show unread)
-		// and an image for the user to click on to invoke the "Show setting" popup menu.
+		// and an image for the user to click on to invoke the 'Show setting' popup menu.
 		addShowSettingWidgets( table, 0, col );
-		++col;
+		col += 1;
 		
 		// Add a pause button to the header.
-		pauseResumePanel = new FlowPanel();
-		imageResource = GwtTeaming.getImageBundle().pauseActivityStream();
+		FlowPanel pauseResumePanel = new FlowPanel();
+		ImageResource imageResource = m_images.pauseActivityStream();
 		m_pauseImg = new Image( imageResource );
 		m_pauseImg.addStyleName( "activityStreamCtrlHeaderPausePlay" );
 		m_pauseImg.setVisible( false );
 		pauseResumePanel.add( m_pauseImg );
 		table.setWidget( 0, col, pauseResumePanel );
-		++col;
+		col += 1;
 		
 		// Add a click handler for the pause button.
-		clickHandler = new ClickHandler()
-		{
+		ClickHandler clickHandler = new ClickHandler() {
 			@Override
-			public void onClick( ClickEvent clickEvent )
-			{
+			public void onClick(ClickEvent clickEvent) {
 				// Pause the refreshing of the activity stream.
 				pauseActivityStream();
 			}
 		};
-		m_pauseImg.addClickHandler( clickHandler );
+		m_pauseImg.addClickHandler(clickHandler);
 		
 		// Add a resume button to the header.
-		imageResource = GwtTeaming.getImageBundle().resumeActivityStream();
+		imageResource = m_images.resumeActivityStream();
 		m_resumeImg = new Image( imageResource );
 		m_resumeImg.addStyleName( "activityStreamCtrlHeaderPausePlay" );
-		m_resumeImg.setTitle( GwtTeaming.getMessages().resumeActivityStream() );
+		m_resumeImg.setTitle( m_messages.resumeActivityStream() );
 		m_resumeImg.setVisible( false );
 		pauseResumePanel.add( m_resumeImg );
 		
@@ -794,12 +724,12 @@ public class ActivityStreamCtrl extends ResizeComposite
 		{
 			Image img;
 			
-			imageResource = GwtTeaming.getImageBundle().refresh();
+			imageResource = m_images.refresh();
 			img = new Image( imageResource );
 			img.addStyleName( "activityStreamCtrlHeaderRefresh" );
-			img.setTitle( GwtTeaming.getMessages().refresh() );
+			img.setTitle( m_messages.refresh() );
 			table.setWidget( 0, col, img );
-			++col;
+			col += 1;
 
 			// Add a click handler for the refresh button.
 			clickHandler = new ClickHandler()
@@ -824,16 +754,15 @@ public class ActivityStreamCtrl extends ResizeComposite
 		mainPanel.add( m_headerPanel );
 	}
 	
-	
 	/*
-	 * Add the ui widgets needed to allow the user to "show all" and "show unread"
+	 * Add the ui widgets needed to allow the user to 'show all' and 'show unread'.
 	 */
 	private void addShowSettingWidgets( FlexTable table, int row, int col )
 	{
 		m_showSettingPanel = new FlowPanel();
-		m_showSettingPanel.setTitle( GwtTeaming.getMessages().selectEntryDisplayStyle() );
+		m_showSettingPanel.setTitle( m_messages.selectEntryDisplayStyle() );
 		
-		// Add the label that shows what the current selection is, "show all" or "show unread"
+		// Add the label that shows what the current selection is, 'show all' or 'show unread'
 		{
 			m_showSettingLabel = new InlineLabel();
 			m_showSettingLabel.addStyleName( "activityStreamCtrlHeaderShowSettingLabel" );
@@ -841,17 +770,17 @@ public class ActivityStreamCtrl extends ResizeComposite
 			m_showSettingPanel.add( m_showSettingLabel );
 		}
 		
-		// Add a "show all/show unread" image the user can click on.
+		// Add a 'show all/show unread' image the user can click on.
 		{
 			ImageResource imageResource;
 			
-			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
+			imageResource = m_images.activityStreamActions1();
 			m_showSettingImg1 = new Image( imageResource );
 			m_showSettingImg1.addStyleName( "activityStreamCtrlHeaderShowImg" );
 			m_showSettingImg1.getElement().setAttribute( "align", "absmiddle" );
 			m_showSettingPanel.add( m_showSettingImg1 );
 	
-			imageResource = GwtTeaming.getImageBundle().activityStreamActions2();
+			imageResource = m_images.activityStreamActions2();
 			m_showSettingImg2 = new Image( imageResource );
 			m_showSettingImg2.addStyleName( "activityStreamCtrlHeaderShowImg" );
 			m_showSettingImg2.getElement().setAttribute( "align", "absmiddle" );
@@ -899,7 +828,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			m_showSettingPanel.addDomHandler( mouseOutHandler, MouseOutEvent.getType() );
 		}
 		
-		// Add a click handler for the "show all/show unread" image.
+		// Add a click handler for the 'show all/show unread' image.
 		{
 			ClickHandler clickHandler;
 			
@@ -915,7 +844,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 							m_showSettingImg1.setVisible( true );
 							m_showSettingImg2.setVisible( false );
 	
-							// Popup the "show all/show unread" popup menu.
+							// Popup the 'show all/show unread' popup menu.
 							m_showSettingPopupMenu.showRelativeToTarget( m_showSettingImg1 );
 						}
 					});
@@ -926,7 +855,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 			m_showSettingLabel.addClickHandler( clickHandler );
 		}
 	}
-
 
 	/*
 	 * Create the panel that will hold the search results. 
@@ -939,14 +867,13 @@ public class ActivityStreamCtrl extends ResizeComposite
 		mainPanel.add( m_searchResultsPanel );
 	}
 	
-	
 	/*
 	 */
 	private void executeSearch()
 	{
 		if ( m_activityStreamParams == null )
 		{
-			GwtClientHelper.deferredAlert("ActivityStreamControl.executeSearch( *Internal Error* ):  m_activityStreamParams is null.  This should never happen.");
+			GwtClientHelper.deferredAlert("ActivityStreamCtrl.executeSearch( *Internal Error* ):  m_activityStreamParams is null.  This should never happen.");
 			return;
 		}
 		
@@ -972,29 +899,25 @@ public class ActivityStreamCtrl extends ResizeComposite
 			return;
 		}
 		
-		GetActivityStreamDataCmd cmd = new GetActivityStreamDataCmd( m_showSetting, m_activityStreamInfo, m_activityStreamParams, m_pagingData, m_specificFolderData );
-		GwtClientHelper.executeCommand( cmd, m_searchResultsCallback );
+		GetActivityStreamDataCmd cmd = new GetActivityStreamDataCmd(m_showSetting, m_activityStreamInfo, m_activityStreamParams, m_pagingData, m_specificFolderData);
+		GwtClientHelper.executeCommand(cmd, m_searchResultsCallback);
 		
-		// We only want to show "Searching..." after the search has taken more than .5 seconds.
+		// We only want to show 'Searching...' after the search has taken more than .5 seconds.
 		// Have we already created a timer?
-		if ( m_searchTimer == null )
-		{
-			m_searchTimer = new Timer()
-			{
+		if (null == m_searchTimer) {
+			m_searchTimer = new Timer() {
 				@Override
-				public void run()
-				{
-					// If the search is still in progress show "Searching..."
-					if ( m_searchInProgress ) {
+				public void run() {
+					// If the search is still in progress show
+					// 'Searching...'
+					if (m_searchInProgress) {
 						showSearchingText();
 					}
 				}
 			};
 		}
-		
-		m_searchTimer.schedule( 250 );
+		m_searchTimer.schedule(250);
 	}
-	
 	
 	/**
 	 * Return the Actions menu that is used with items in the list.
@@ -1003,7 +926,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	{
 		return m_actionsPopupMenu;
 	}
-	
 	
 	/**
 	 * Return the ActivityStreamInfo object we are currently using.
@@ -1068,7 +990,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		// Go through each entry on the page and get the id of the creator of the entry
 		numEntries = m_searchResultsPanel.getWidgetCount();
-		for (i = 0; i < numEntries; ++i)
+		for (i = 0; i < numEntries; i += 1)
 		{
 			Widget nextWidget;
 			
@@ -1108,7 +1030,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		return returnValue;
 	}
 	
-	
 	/*
 	 * Take all the actions necessary to handle the changing of the show setting.
 	 */
@@ -1132,16 +1053,13 @@ public class ActivityStreamCtrl extends ResizeComposite
 		saveShowSetting();
 	}
 	
-	
 	/**
-	 * 
 	 */
 	public void hide()
 	{
 		cancelCheckForChangesTimer();
 		setVisible( false );
 	}
-	
 	
 	/**
 	 * Hide the panel that displays the message.
@@ -1151,18 +1069,16 @@ public class ActivityStreamCtrl extends ResizeComposite
 		m_msgPanel.setVisible( false );
 	}
 	
-	
 	/**
-	 * Hide the "Searching..." text.
+	 * Hide the 'Searching...' text.
 	 */
 	public void hideSearchingText()
 	{
 		m_searchingPanel.setVisible( false );
 	}
-	
 
 	/*
-	 * Invoke the "Send to friend" dialog for the given entry.
+	 * Invoke the 'Send to friend' dialog for the given entry.
 	 */
 	private void invokeSendToFriendDlg( final ActivityStreamUIEntry entry )
 	{
@@ -1179,7 +1095,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 					{
 						GwtClientHelper.handleGwtRPCFailure(
 								t,
-								GwtTeaming.getMessages().rpcFailure_GetSendToFriendUrl() );
+								m_messages.rpcFailure_GetSendToFriendUrl() );
 					}
 					
 					@Override
@@ -1198,7 +1114,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 								public void execute() {
 									String features;
 									
-									// Open a new window for the "send to friend" page to live in.
+									// Open a new window for the 'send to friend' page to live in.
 									features = "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width=630,height=780";
 									Window.open( url, "sendToFriend", features );
 								}
@@ -1207,7 +1123,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 					}
 				};
 				
-				// Issue a GWT RPC request to get the url needed to open the "send to friend" page.
+				// Issue a GWT RPC request to get the url needed to open the 'send to friend' page.
 				cmd = new GetSendToFriendUrlCmd( entry.getEntryId() );
 				GwtClientHelper.executeCommand( cmd, callback );
 			}
@@ -1224,9 +1140,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 		BinderViewsHelper.subscribeToEntries( entityIds, entry );
 	}
 	
-	
 	/*
-	 * Invoke the "Share This" dialog for the given entry.
+	 * Invoke the 'Share This' dialog for the given entry.
 	 */
 	private void invokeShareThisDlg( final ActivityStreamUIEntry entry )
 	{
@@ -1276,7 +1191,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		});
 	}
 
-	
 	/**
 	 * Set the information that is used when searching a specific folder 
 	 */
@@ -1285,9 +1199,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 		m_specificFolderData = specificFolderData;
 	}
 	
-	
 	/*
-	 * Shows an existing "Share This" dialog for the given entry.
+	 * Shows an existing 'Share This' dialog for the given entry.
 	 */
 	private void showShareThisDlg( final ActivityStreamUIEntry entry )
 	{
@@ -1296,12 +1209,11 @@ public class ActivityStreamCtrl extends ResizeComposite
 		ShareThisDlg2.initAndShow(
 							m_shareThisDlg,
 							entry,
-							GwtTeaming.getMessages().shareCaption(),
+							m_messages.shareCaption(),
 							entityIds,
 							ShareThisDlgMode.NORMAL,
 							null );
 	}
-	
 	
 	/*
 	 * Invoke the Tag This dialog for the given entry.
@@ -1319,7 +1231,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 							null,
 							0,
 							0,
-							GwtTeaming.getMessages().tagThisEntry(),
+							m_messages.tagThisEntry(),
 						new TagThisDlgClient() {						
 							@Override
 							public void onUnavailable() {
@@ -1389,7 +1301,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		}
 	}
 
-	
 	/*
 	 * Is the source of the activity stream a person?
 	 */
@@ -1398,9 +1309,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 		return ActivityStream.FOLLOWED_PERSON == m_activityStreamInfo.getActivityStream();
 	}
 	
-	
 	/*
-	 * Go through all the entries and see if the user has the "Reply to Entry" widget open
+	 * Go through all the entries and see if the user has the 'Reply to Entry' widget open
 	 */
 	private boolean isReplyInProgress()
 	{
@@ -1410,9 +1320,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		inProgress = false;
 		
-		// Go through each entry on the page and see if the user has the "Reply to entry" widget open.
+		// Go through each entry on the page and see if the user has the 'Reply to entry' widget open.
 		numEntries = m_searchResultsPanel.getWidgetCount();
-		for (i = 0; i < numEntries && inProgress == false; ++i)
+		for (i = 0; i < numEntries && inProgress == false; i += 1)
 		{
 			Widget nextWidget;
 			
@@ -1435,17 +1345,15 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * Overrides Widget.onAttach()
 	 */
 	@Override
-	public void onAttach()
-	{
+	public void onAttach() {
 		// Let the widget attach and then register our event handlers.
 		super.onAttach();
-	
-		// Register handlers for all the events we are interested in.
 		registerEvents();
 	}
 	
 	/**
-	 * This method gets called when the user clicks on the "previous" or "next" image in the search results window.
+	 * This method gets called when the user clicks on the 'previous'
+	 * or 'next' image in the search results window.
 	 */
 	@Override
 	public void onClick( ClickEvent clickEvent )
@@ -1476,19 +1384,18 @@ public class ActivityStreamCtrl extends ResizeComposite
 					// Yes, increment the page number and do another search.
 					if ( m_pagingData != null )
 					{
-						++pgIndex;
+						pgIndex += 1;
 						m_pagingData.setPageIndex( pgIndex );
 					}
 					executeSearch();
 				}
-				// Did the user click on prev?
-				else if ( id.equalsIgnoreCase( "viewPreviousPageOfResults" ) )
-				{
+				
+				// Did the user click on previous?
+				else if (id.equalsIgnoreCase("viewPreviousPageOfResults")) {
 					// Yes, decrement the page number and do another search.
-					if ( m_pagingData != null )
-					{
-						--pgIndex;
-						m_pagingData.setPageIndex( pgIndex );
+					if (null != m_pagingData) {
+						pgIndex -= 1;
+						m_pagingData.setPageIndex(pgIndex);
 					}
 					executeSearch();
 				}
@@ -1496,7 +1403,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		}
 	}
 
-	
 	/**
 	 * Pause the refreshing of the activity stream.
 	 */
@@ -1513,7 +1419,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		cancelCheckForChangesTimer();
 	}
 	
-	
 	/*
 	 * Issue a new search. 
 	 */
@@ -1526,7 +1431,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		executeSearch();
 	}
 	
-
 	/**
 	 * 
 	 */
@@ -1540,8 +1444,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		});
 	}
 	
-	
-
 	/*
 	 */
 	private void relayoutPageNow()
@@ -1569,29 +1471,25 @@ public class ActivityStreamCtrl extends ResizeComposite
 		m_footerPanel.setWidth( String.valueOf( m_width-6 ) + "px" );
 	}
 
-	
 	/*
 	 * Registers any global event handlers that need to be registered.
 	 */
-	private void registerEvents()
-	{
-		// If we having allocated a list to track events we've
+	private void registerEvents() {
+		// If we haven't allocated a list to track events we've
 		// registered yet...
-		if ( null == m_registeredEventHandlers )
-		{
+		if (null == m_asc_registeredEventHandlers) {
 			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+			m_asc_registeredEventHandlers = new ArrayList<HandlerRegistration>();
 		}
 
 		// If the list of registered events is empty...
-		if ( m_registeredEventHandlers.isEmpty() )
-		{
+		if (m_asc_registeredEventHandlers.isEmpty()) {
 			// ...register the events.
 			EventHelper.registerEventHandlers(
-										GwtTeaming.getEventBus(),
-										REGISTERED_EVENTS,
-										this,
-										m_registeredEventHandlers );
+				GwtTeaming.getEventBus(),
+				asc_REGISTERED_EVENTS,
+				this,
+				m_asc_registeredEventHandlers);
 		}
 	}
 	
@@ -1611,7 +1509,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		startCheckForChangesTimer();
 	}
 	
-	
 	/*
 	 * Issue a GWT RPC request to save the current show setting to the
 	 * user's properties.
@@ -1626,7 +1523,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			@Override
 			public void onFailure( Throwable t )
 			{
-				GwtClientHelper.handleGwtRPCFailure( t, GwtTeaming.getMessages().rpcFailure_SaveWhatsNewShowSetting() );
+				GwtClientHelper.handleGwtRPCFailure( t, m_messages.rpcFailure_SaveWhatsNewShowSetting() );
 			}
 			
 			@Override
@@ -1641,7 +1538,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
-	
 	/**
 	 * Set the activity stream this control is dealing with.
 	 */
@@ -1649,7 +1545,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	{
 		ActivityStream src;
 		
-		// No, issue an rpc request to get the ActivityStreamParams.
+		// No, issue a GWT RPC request to get the ActivityStreamParams.
 		m_activityStreamInfo = activityStreamInfo;
 		
 		// Change our title to reflect the new activity stream source.
@@ -1679,25 +1575,25 @@ public class ActivityStreamCtrl extends ResizeComposite
 				msg = "Unknown";
 				if ( src == ActivityStream.MY_FAVORITES )
 				{
-					msg = GwtTeaming.getMessages().noFavorites();
+					msg = m_messages.noFavorites();
 				}
 				else if ( src == ActivityStream.MY_TEAMS )
 				{
-					msg = GwtTeaming.getMessages().noTeams();
+					msg = m_messages.noTeams();
 				}
 				else if ( src == ActivityStream.FOLLOWED_PEOPLE )
 				{
-					msg = GwtTeaming.getMessages().noPeopleFollowed();
+					msg = m_messages.noPeopleFollowed();
 				}
 				else if ( src == ActivityStream.FOLLOWED_PLACES )
 				{
-					msg = GwtTeaming.getMessages().noPlacesFollowed();
+					msg = m_messages.noPlacesFollowed();
 				}
 
 				// Clear any results we may be currently displaying.
 				clearCurrentSearchResults();
 
-				// Display the appropriate message.  ie, "you are not a member of any teams"
+				// Display the appropriate message.  i.e., 'you are not a member of any teams'
 				showMessage( msg );
 				
 				return;
@@ -1714,7 +1610,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				@Override
 				public void onFailure(Throwable t)
 				{
-					GwtClientHelper.handleGwtRPCFailure( t, GwtTeaming.getMessages().rpcFailure_GetActivityStreamParams() );
+					GwtClientHelper.handleGwtRPCFailure( t, m_messages.rpcFailure_GetActivityStreamParams() );
 				}
 
 				
@@ -1748,13 +1644,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 			};
 		}
 		
-		// Issue a GWT RPC request to get the activity stream params.
-		{
-			GetActivityStreamParamsCmd cmd;
-			
-			cmd = new GetActivityStreamParamsCmd();
-			GwtClientHelper.executeCommand( cmd, m_getActivityStreamParamsCallback );
-		}
+		// Issue a GWT RPC request to get the activity stream
+		// parameters.
+		GwtClientHelper.executeCommand(new GetActivityStreamParamsCmd(), m_getActivityStreamParamsCallback);
 		
 		// Is the source of the activity stream a binder or person?
 		m_asSourcePermalink = null;
@@ -1776,8 +1668,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 						String msg;
 						
 						if ( isActivityStreamSourceAPerson() )
-						     msg = GwtTeaming.getMessages().rpcFailure_GetUserPermalink();
-						else msg = GwtTeaming.getMessages().rpcFailure_GetBinderPermalink();
+						     msg = m_messages.rpcFailure_GetUserPermalink();
+						else msg = m_messages.rpcFailure_GetBinderPermalink();
 						
 						GwtClientHelper.handleGwtRPCFailure( t, msg, asSourceId );
 					}
@@ -1808,7 +1700,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 			}
 		}
 	}
-	
 	
 	/**
 	 * Reset the size of this control.
@@ -1855,7 +1746,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		relayoutPage();
 	}
 	
-	
 	/**
 	 * Set the text in the title.
 	 */
@@ -1870,7 +1760,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 			m_sourceName.setTitle( srcName );
 		}
 	}
-
 
 	/**
 	 * 
@@ -1887,7 +1776,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		
 		setVisible( true );
 		
-		// Restart the "check for changes" timer.
+		// Restart the 'check for changes' timer.
 		startCheckForChangesTimer();
 		
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
@@ -1903,9 +1792,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 		show( ActivityStreamDataType.OTHER );
 	}
 	
-	
 	/**
-	 * Show the given message, ie "No entries found"
+	 * Show the given message, i.e., 'No entries found'.
 	 */
 	public void showMessage( String msg )
 	{
@@ -1929,26 +1817,24 @@ public class ActivityStreamCtrl extends ResizeComposite
 		});
 	}
 
-	
 	/**
-	 * Show the "Searching..." text.
+	 * Show the 'Searching...' text.
 	 */
 	public void showSearchingText()
 	{
 		int width;
 		int x;
 	
-		// Center the "searching..." text
+		// Center the 'searching...' text
 		width = getWidget().getOffsetWidth();
 		x = (width - m_searchingPanel.getOffsetWidth()) / 2;
 		x -= 40;
 		m_searchingPanel.getElement().getStyle().setProperty( "left", Integer.toString( x ) + "px" );
 		
-		// Show the "searching..." text
+		// Show the 'searching...' text
 		m_searchingPanel.setVisible( true );
 	}
 
-	
 	/*
 	 */
 	private void startCheckForChangesTimer()
@@ -2002,18 +1888,15 @@ public class ActivityStreamCtrl extends ResizeComposite
 		}
 	}
 	
-	
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */
-	private void unregisterEvents()
-	{
+	private void unregisterEvents() {
 		// If we have a non-empty list of registered events...
-		if ( (null != m_registeredEventHandlers) && (!(m_registeredEventHandlers.isEmpty())) )
-		{
+		if (GwtClientHelper.hasItems(m_asc_registeredEventHandlers)) {
 			// ...unregister them.  (Note that this will also empty the
 			// ...list.)
-			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
+			EventHelper.unregisterEventHandlers(m_asc_registeredEventHandlers);
 		}
 	}
 	
@@ -2034,7 +1917,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		{
 			seconds = m_activityStreamParams.getClientRefresh();
 			if ( seconds > 0 )
-				title = GwtTeaming.getMessages().pauseActivityStream( seconds );
+				title = m_messages.pauseActivityStream( seconds );
 		}
 		
 		// Get the current time.
@@ -2048,12 +1931,11 @@ public class ActivityStreamCtrl extends ResizeComposite
 		dateTimeFormat = DateTimeFormat.getShortTimeFormat();
 		text = dateTimeFormat.format( date );
 		
-		title += GwtTeaming.getMessages().nextRefresh( text );
+		title += m_messages.nextRefresh( text );
 		
 		if ( m_pauseImg != null )
 			m_pauseImg.setTitle( title );
 	}
-	
 	
 	/*
 	 * Update the label that display the show setting (show all or show unread)
@@ -2063,9 +1945,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 		String text;
 		
 		if ( m_showSetting == ActivityStreamDataType.ALL )
-			text = GwtTeaming.getMessages().showAllEntries();
+			text = m_messages.showAllEntries();
 		else if ( m_showSetting == ActivityStreamDataType.UNREAD )
-			text = GwtTeaming.getMessages().showUnreadEntries();
+			text = m_messages.showUnreadEntries();
 		else
 			text = "Unknown show setting";
 		
@@ -2106,13 +1988,10 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * @param event
 	 */
 	@Override
-	public void onActivityStreamExit( ActivityStreamExitEvent event )
-	{
-		if (m_usage.isStandalone())
-		{
+	public void onActivityStreamExit(ActivityStreamExitEvent event) {
+		if (m_usage.isStandalone()) {
 			// Unregister all the events we have registered for.
 			unregisterEvents();
-			
 			hide();
 		}
 	}
@@ -2125,51 +2004,30 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * @param event
 	 */
 	@Override
-	public void onDeleteActivityStreamUIEntry( DeleteActivityStreamUIEntryEvent event )
-	{
+	public void onDeleteActivityStreamUIEntry(DeleteActivityStreamUIEntryEvent event) {
+		// Can we find the entry to delete?
 		final ActivityStreamUIEntry uiEntry = event.getUIEntry();
-		if ( null != uiEntry )
-		{
-			// Ask the user if they really want to delete this entry
-			ConfirmDlg.createAsync( new ConfirmDlgClient()
-			{
+		if (null != uiEntry) {
+			// Yes!  Attempt to delete it.
+			List<EntityId> delEIDs = new ArrayList<EntityId>();
+			delEIDs.add(uiEntry.getEntryEntityId());
+			BinderViewsHelper.deleteSelections(delEIDs, new DeleteEntitiesCallback() {
 				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
+				public void operationCanceled() {
+					// Nothing to do!
+				}
+
+				@Override
+				public void operationComplete() {
+					uiEntry.setVisible(false);
 				}
 				
 				@Override
-				public void onSuccess( ConfirmDlg cDlg )
-				{
-					ConfirmDlg.initAndShow(
-						cDlg,
-						new ConfirmCallback() 
-						{
-							@Override
-							public void dialogReady() 
-							{
-								// Ignored.  We don't really care when the dialog is ready.
-							}
-
-							@Override
-							public void accepted() 
-							{
-								// Yes, they're sure!
-								// Issue an rpc request to delete this entry
-								uiEntry.deleteEntry();
-							}
-
-							@Override
-							public void rejected() 
-							{
-								// No, they're not sure!
-							}
-						},
-						GwtTeaming.getMessages().confirmDeleteEntry() );
+				public void operationFailed() {
+					// Nothing to do.  The delete call will have told
+					// the user about the failure.
 				}
 			});
-		
 		}
 	}
 
@@ -2235,7 +2093,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		ActivityStreamUIEntry uiEntry = event.getUIEntry();
 		if ( null != uiEntry )
 		{
-			// Invoke the "Send to friend" dialog.
+			// Invoke the 'Send to friend' dialog.
 			invokeSendToFriendDlg( uiEntry );
 		}
 	}
@@ -2315,7 +2173,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		{
 			boolean hide;
 			
-			// If we are displaying "show unread" we need to hide this entry.
+			// If we are displaying 'show unread' we need to hide this entry.
 			hide = false;
 			if ( m_showSetting == ActivityStreamDataType.UNREAD )
 				hide = true;
@@ -2364,9 +2222,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * @param event
 	 */
 	@Override
-	public void onViewUnreadEntries( ViewUnreadEntriesEvent event )
-	{
-		handleNewShowSetting( ActivityStreamDataType.UNREAD, true );
+	public void onViewUnreadEntries(ViewUnreadEntriesEvent event) {
+		handleNewShowSetting(ActivityStreamDataType.UNREAD, true);
 	}
 
 	
@@ -2393,29 +2250,24 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * @param actionMenu
 	 * @param asCtrlClient
 	 */
-	public static void createAsync( final ActivityStreamCtrlUsage usage, final boolean createHeader, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
-	{
-		GWT.runAsync( ActivityStreamCtrl.class, new RunAsyncCallback()
-		{			
+	public static void createAsync(final ActivityStreamCtrlUsage usage, final boolean createHeader, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient) {
+		GWT.runAsync(ActivityStreamCtrl.class, new RunAsyncCallback() {			
 			@Override
-			public void onSuccess()
-			{
-				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( usage, createHeader, actionsMenu );
-				asCtrlClient.onSuccess( asCtrl );
+			public void onSuccess() {
+				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl(usage, createHeader, actionsMenu);
+				asCtrlClient.onSuccess(asCtrl);
 			}
 			
 			@Override
-			public void onFailure( Throwable reason )
-			{
+			public void onFailure(Throwable reason) {
 				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_ActivityStreamCtrl());
 				asCtrlClient.onUnavailable();
 			}
 		} );
 	}
 
-	public static void createAsync( final ActivityStreamCtrlUsage usage, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
-	{
+	public static void createAsync(final ActivityStreamCtrlUsage usage, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient) {
 		// Always use the initial form of the method.
-		createAsync( usage, true, actionsMenu, asCtrlClient );	// true -> Create header.
+		createAsync(usage, true, actionsMenu, asCtrlClient);	// true -> Create header.
 	}
 }
