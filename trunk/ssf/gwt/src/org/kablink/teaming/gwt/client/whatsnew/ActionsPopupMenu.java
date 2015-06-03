@@ -76,7 +76,6 @@ import com.google.gwt.user.client.ui.UIObject;
  * @author drfoster@novell.com
  */
 public class ActionsPopupMenu extends PopupMenu {
-	public final static boolean SHOW_DELETE_OPTION	= false;	//! DRF (20150602):  Leave false on checkin until its working.
 	public final static boolean SHOW_EDIT_OPTION	= false;	//! DRF (20150602):  Leave false on checkin until its working.
 	
 	/**
@@ -205,33 +204,10 @@ public class ActionsPopupMenu extends PopupMenu {
 						EventValidationListRpcResponseData responseData = ((EventValidationListRpcResponseData) result.getResponseData());
 						List<EventValidation> eventValidations = responseData.getEventValidationListResults();
 						for(EventValidation nextValidation: eventValidations) {
-							//! DRF:  Add controls here to limit things shown while
-							//!       they're being implemented.
-							
-							// Is this an item we need to hide until
-							// it's fully implemented?
-							TeamingEvents event = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
-							boolean showOption = SHOW_EDIT_OPTION;	//! DRF.
-							if ((!showOption) && event.equals(TeamingEvents.EDIT_ACTIVITY_STREAM_UI_ENTRY)) {
-								if (null != m_editMenuItem) {
-									// Yes!  Hide it.
-									m_editMenuItem.setVisible(false);
-									continue;
-								}
-							}
-							showOption = SHOW_DELETE_OPTION;	//! DRF.
-							if ((!showOption) && event.equals(TeamingEvents.DELETE_ACTIVITY_STREAM_UI_ENTRY)) {
-								if (null != m_deleteMenuItem) {
-									// Yes!  Hide it.
-									m_deleteMenuItem.setVisible(false);
-									continue;
-								}
-							}
-
 							// Is this menu item valid?
 							if (!(nextValidation.isValid())) {
 								// No!  Hide it.
-								switch (event) {
+								switch (TeamingEvents.getEnum(nextValidation.getEventOrdinal())) {
 								case DELETE_ACTIVITY_STREAM_UI_ENTRY:  if (null != m_deleteMenuItem)       m_deleteMenuItem.setVisible(      false); break;
 								case EDIT_ACTIVITY_STREAM_UI_ENTRY:    if (null != m_editMenuItem)         m_editMenuItem.setVisible(        false); break;
 								case INVOKE_REPLY:                     if (null != m_replyMenuItem)        m_replyMenuItem.setVisible(       false); break;
@@ -239,6 +215,8 @@ public class ActionsPopupMenu extends PopupMenu {
 								case INVOKE_SHARE:                     if (null != m_shareMenuItem)        m_shareMenuItem.setVisible(       false); break;
 								case INVOKE_SUBSCRIBE:                 if (null != m_subscribeMenuItem)    m_subscribeMenuItem.setVisible(   false); break;
 								case INVOKE_TAG:                       if (null != m_tagMenuItem)          m_tagMenuItem.setVisible(         false); break;
+								case MARK_ENTRY_READ:                  if (null != m_markReadMenuItem)     m_markReadMenuItem.setVisible(    false); break;
+								case MARK_ENTRY_UNREAD:                if (null != m_markUnreadMenuItem)   m_markUnreadMenuItem.setVisible(  false); break;
 								case VIEW_FORUM_ENTRY:                 if (null != m_viewDetailsMenuItem)  m_viewDetailsMenuItem.setVisible( false); break;
 								}
 							}
@@ -348,17 +326,13 @@ public class ActionsPopupMenu extends PopupMenu {
 		if (null != m_markReadMenuItem) {
 			MarkEntryReadEvent markRead = ((MarkEntryReadEvent) m_markReadMenuItem.getEvent());
 			markRead.setUIEntry(entry);
-			if (entry instanceof ActivityStreamTopEntry)
-			     m_markReadMenuItem.setVisible(true );
-			else m_markReadMenuItem.setVisible(false);
+		    m_markReadMenuItem.setVisible(true);
 		}
 		
 		if (null != m_markUnreadMenuItem) {
 			MarkEntryUnreadEvent markUnread = ((MarkEntryUnreadEvent) m_markUnreadMenuItem.getEvent());
 			markUnread.setUIEntry(entry);
-			if (entry instanceof ActivityStreamTopEntry)
-			     m_markUnreadMenuItem.setVisible(true );
-			else m_markUnreadMenuItem.setVisible(false);
+			m_markUnreadMenuItem.setVisible(true);
 		}
 		
 		// Hide 'Mark read' or 'Mark unread' depending on whether or

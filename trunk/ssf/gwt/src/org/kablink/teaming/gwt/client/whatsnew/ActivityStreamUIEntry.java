@@ -42,14 +42,12 @@ import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClickOnTitleActionRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.DeleteSelectionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetClickOnTitleActionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
-import org.kablink.teaming.gwt.client.util.DeleteSelectionsMode;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
@@ -129,6 +127,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private ActivityStreamReply m_replyWidget;
 	private DescViewFormat m_descViewFormat;
 	private boolean m_showTitle;
+	private boolean	m_entrySeen;
 	private ClickOnTitleActionRpcResponseData m_titleClickAction;
 	
 	/**
@@ -507,46 +506,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
-	 * Issue an rpc request to delete this entry
-	 */
-	public void deleteEntry()
-	{
-		DeleteSelectionsCmd cmd;
-		EntityId entityId;
-		
-		entityId = getEntryEntityId();
-		
-		// Issue an ajax request to delete this entry
-		cmd = new DeleteSelectionsCmd( entityId, DeleteSelectionsMode.TRASH_ALL );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			@Override
-			public void onFailure( Throwable caught )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					GwtTeaming.getMessages().rpcFailure_DeleteSelections(),
-					m_entryId );
-			}
-
-			@Override
-			public void onSuccess( VibeRpcResponse result )
-			{
-				GwtClientHelper.deferCommand( new ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						// Hide this entry
-						setVisible( false );
-					}
-				} );
-			}			
-		} );
-	}
-	
-	
-	/**
 	 * Return the activity stream we are associated with.
 	 */
 	public ActivityStreamCtrl getActivityStreamCtrl()
@@ -916,15 +875,20 @@ public abstract class ActivityStreamUIEntry extends Composite
 	}
 	
 	/**
-	 * Return whether this entry is unread. 
+	 * Return whether this entry is unread.
+	 * 
+	 * @return
 	 */
-	public boolean isEntryUnread()
-	{
-		// Base our decision of whether the entry is unread on the visibility of the unread image.
-		if ( m_unreadImg != null )
+	public boolean isEntryUnread() {
+		// First, try basing our decision of whether the entry is
+		// unread on the visibility of the unread image.
+		if (null != m_unreadImg) {
 			return m_unreadImg.isVisible();
-		
-		return false;
+		}
+
+		// Otherwise, base it on the entry seen flag copied from the
+		// ActivityStreamEntry.
+		return (!m_entrySeen);
 	}
 	
 	/**
@@ -1174,92 +1138,87 @@ public abstract class ActivityStreamUIEntry extends Composite
 	}
 	
 	/**
-	 * Set the data this we should display from the given ActivityStreamEntry
+	 * Set the data this we should display from the given
+	 * ActivityStreamEntry.
+	 * 
+	 * @param
 	 */
-	public void setData( ActivityStreamEntry entryItem )
-	{
-		String title;
-		String avatarUrl;
-		PresenceControl presenceCtrl;
+	public void setData(ActivityStreamEntry entryItem) {
+		String avatarUrl = getEntryImgUrl(entryItem);
+		m_avatarImg.removeStyleName("activityStreamTopEntryFileImg"  );
+		m_avatarImg.removeStyleName("activityStreamTopEntryAvatarImg");
+		m_avatarImg.removeStyleName("activityStreamCommentAvatarImg" );
+		m_avatarImg.addStyleName(getAvatarImageStyleName(entryItem));
+		m_avatarImg.setUrl(avatarUrl);
+		m_avatarImg.setVisible(true);
 		
-		avatarUrl = getEntryImgUrl( entryItem );
-		m_avatarImg.removeStyleName( "activityStreamTopEntryFileImg" );
-		m_avatarImg.removeStyleName( "activityStreamTopEntryAvatarImg" );
-		m_avatarImg.removeStyleName( "activityStreamCommentAvatarImg" );
-		m_avatarImg.addStyleName( getAvatarImageStyleName( entryItem ) );
-		m_avatarImg.setUrl( avatarUrl );
-		m_avatarImg.setVisible( true );
-		
-		title = getEntryTitle( entryItem );
-		if ( title == null || title.length() == 0 )
+		String title = getEntryTitle(entryItem);
+		if (!(GwtClientHelper.hasString(title))) {
 			title = GwtTeaming.getMessages().noTitle();
-		if ( m_titleAnchor != null )
-			m_titleAnchor.getElement().setInnerHTML( title );
-		updateReadUnreadUI( entryItem.getEntrySeen() );
+		}
+		if (null != m_titleAnchor) {
+			m_titleAnchor.getElement().setInnerHTML(title);
+		}
+		updateReadUnreadUI(entryItem.getEntrySeen());
 		
-		m_author.setText( entryItem.getAuthorName() );
+		m_entrySeen = entryItem.getEntrySeen();
+		
+		m_author.setText(entryItem.getAuthorName());
 		m_authorId = entryItem.getAuthorId();
 		m_authorWSId = entryItem.getAuthorWorkspaceId();
-		m_date.setText( entryItem.getEntryModificationDate() );
+		
+		m_date.setText(entryItem.getEntryModificationDate());
 		
 		// Set the description
-		{
-			String desc;
+		String desc = getEntryDesc(entryItem);
+		m_descPanel.getElement().setInnerHTML(desc);
+		
+		// Do we have a description?
+		if (GwtClientHelper.hasString(desc)) {
+			// Yes
+			makeDescClickable();
 			
-			desc = getEntryDesc( entryItem );
-			m_descPanel.getElement().setInnerHTML( desc );
-			
-			// Do we have a description?
-			if ( desc != null && desc.length() > 0 )
-			{
-				// Yes
-				makeDescClickable();
-				
-				// Schedule a command that will determine if the description is totally visible.
-				GwtClientHelper.deferCommand( new ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						// Is the description view format partial and the
-						// description is totally visible anyway?
-						if ( getDescViewFormat() == DescViewFormat.PARTIAL && isDescTotallyVisible() )
-						{
-							// Yes, no need to make the description clickable.
-							makeDescNotClickable();
-						}
+			// Schedule a command that will determine if the
+			// description is totally visible.
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					// Is the description view format partial and the
+					// description is totally visible anyway?
+					if ((getDescViewFormat() == DescViewFormat.PARTIAL) && isDescTotallyVisible()) {
+						// Yes, no need to make the description
+						// clickable.
+						makeDescNotClickable();
 					}
-				} );
-			}
-			else
-			{
-				// No, remove the click handler on the description panel.
-				makeDescNotClickable();
-			}
+				}
+			});
+		}
+		else {
+			// No, remove the click handler on the description panel.
+			makeDescNotClickable();
 		}
 		
-		m_entryId = entryItem.getEntryId();
+		m_entryId  = entryItem.getEntryId();
 		m_binderId = entryItem.getParentBinderId();
 		
 		// Has the author's workspace been deleted?
-		if ( m_authorWSId != null && m_authorWSId.length() > 0 )
-		{
-			// No
-			// Create a presence control for the author.
-			presenceCtrl = new PresenceControl( m_authorId, m_authorWSId, false, false, false, entryItem.getAuthorPresence() );
-			presenceCtrl.setImageAlignment( "top" );
-			presenceCtrl.addClickHandler( m_presenceClickHandler );
-			presenceCtrl.addStyleName( "displayInline" );
-			presenceCtrl.addStyleName( "verticalAlignTop" );
-			presenceCtrl.setAnchorStyleName( "cursorPointer" );
+		if (GwtClientHelper.hasString(m_authorWSId)) {
+			// No!  Create a presence control for the author.
+			PresenceControl presenceCtrl = new PresenceControl(m_authorId, m_authorWSId, false, false, false, entryItem.getAuthorPresence());
+			presenceCtrl.setImageAlignment("top");
+			presenceCtrl.addClickHandler(m_presenceClickHandler);
+			presenceCtrl.addStyleName("displayInline");
+			presenceCtrl.addStyleName("verticalAlignTop");
+			presenceCtrl.setAnchorStyleName("cursorPointer");
 			m_presencePanel.clear();	// Fixes bug 650204.
-			m_presencePanel.add( presenceCtrl );
+			m_presencePanel.add(presenceCtrl);
 		}
 		
 		m_titleClickAction = null;
 		
-		// Set the format of how to view the description back to the default.
-		setDescViewFormat( m_activityStreamCtrl.getDefaultDescViewFormat() );
+		// Set the format of how to view the description back to the
+		// default.
+		setDescViewFormat(m_activityStreamCtrl.getDefaultDescViewFormat());
 	}
 	
 	/**
