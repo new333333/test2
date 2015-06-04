@@ -1938,21 +1938,19 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	/*
-	 * Update the label that display the show setting (show all or show unread)
+	 * Update the label that display the show setting (show all or show
+	 * unread.)
 	 */
-	private void updateShowSettingLabel()
-	{
-		String text;
-		
-		if ( m_showSetting == ActivityStreamDataType.ALL )
-			text = m_messages.showAllEntries();
-		else if ( m_showSetting == ActivityStreamDataType.UNREAD )
-			text = m_messages.showUnreadEntries();
-		else
-			text = "Unknown show setting";
-		
-		if ( m_showSettingLabel != null )
-			m_showSettingLabel.setText( text );
+	private void updateShowSettingLabel() {
+		if (null != m_showSettingLabel) {
+			String text;
+			switch (m_showSetting) {
+			case ALL:     text = m_messages.showAllEntries();    break;
+			case UNREAD:  text = m_messages.showUnreadEntries(); break;
+			default:      text = "Unknown show setting";         break;
+			}
+			m_showSettingLabel.setText(text);
+		}
 	}
 
 	/**
@@ -2043,9 +2041,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 		// Can we find the UI entry to be edited?
 		final ActivityStreamUIEntry uiEntry = event.getUIEntry();
 		if (null != uiEntry) {
-			// Yes!  Edit it.
-//!			...this needs to be implemented...
-			GwtClientHelper.deferredAlert("ActivityStreamCtrl.onEditActivityStreamUIEntry():  ...this needs to be implemented...");
+			// Yes!  Tell the entry to display the edit UI.
+			uiEntry.invokeEditUI();
 		}
 	}
 
@@ -2070,11 +2067,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * @param event
 	 */
 	@Override
-	public void onInvokeReply( InvokeReplyEvent event )
-	{
+	public void onInvokeReply(InvokeReplyEvent event) {
 		ActivityStreamUIEntry uiEntry = event.getUIEntry();
-		if ( null != uiEntry )
-		{
+		if (null != uiEntry) {
 			// Tell the entry to display the reply ui.
 			uiEntry.invokeReplyUI();
 		}

@@ -332,10 +332,7 @@ public class CommentsWidget extends Composite implements ActivityStreamCommentsC
 			if (notFilr) {
 				list.add(ActionMenuItem.TAG);
 			}
-			boolean showEditOption = ActionsPopupMenu.SHOW_EDIT_OPTION;	//! DRF (20150602)
-			if (showEditOption) {
-				list.add(ActionMenuItem.EDIT);
-			}
+			list.add(ActionMenuItem.EDIT  );
 			list.add(ActionMenuItem.DELETE);
 			if (notFilr && m_showTitle) {
 				// Note:  We only add the read/unread options when were

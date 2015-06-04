@@ -353,6 +353,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_DisableUsersDownload();
 	String rpcFailure_DisableUsersPublicCollection();
 	String rpcFailure_DisableUsersWebAccess();
+	String rpcFailure_EditEntry();
 	String rpcFailure_EmailPublicLink();
 	String rpcFailure_EnableUsers();
 	String rpcFailure_EnableUsersAdHocFolders();

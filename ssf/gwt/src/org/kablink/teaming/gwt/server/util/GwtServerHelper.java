@@ -209,6 +209,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData.FileDownloadInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.EditEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityIdListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityIdRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
@@ -2194,6 +2195,35 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
+	/**
+	 * Edits the given reply.
+	 * 
+	 * @param bs
+	 * @param entryId
+	 * @param title
+	 * @param desc
+	 */
+	public static FolderEntry editReply(AllModulesInjected bs, Long entryId, String title, String desc) throws WriteEntryDataException, WriteFilesException {
+		// Get the ID of the binder the given entry lives in.
+		FolderModule folderModule = bs.getFolderModule();
+		FolderEntry entry = folderModule.getEntry(null, entryId);
+		Long binderId = entry.getParentBinder().getId();
+		
+		if (null == title) {
+			title = NLT.get("reply.re.title", new String[]{getFolderEntryTitle(entry)});
+		}
+		
+		Map<String, String> inputMap = new HashMap<String, String>();
+		inputMap.put(ObjectKeys.FIELD_ENTITY_TITLE,       title);
+		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
+		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_HTML));
+		inputMap.put(ObjectKeys.FIELD_ENTITY_GWT_COMMENT_ENTRY,  String.valueOf(Boolean.TRUE)           );
+		MapInputData inputData = new MapInputData(inputMap);
+
+    	folderModule.modifyEntry(binderId, entryId, inputData, new HashMap(), new ArrayList(), new HashMap(), new HashMap());
+    	return entry;
+	}
+
 	/**
 	 * Execute the given enhanced view jsp and return the resulting html.
 	 */
@@ -10655,30 +10685,38 @@ public class GwtServerHelper {
 		// What RPC command are we XSS checking?
 		VibeRpcCmdType cmdEnum = VibeRpcCmdType.getEnum( cmd.getCmdType() );
 		switch (cmdEnum) {
-		case CREATE_GROUP:
-		{
-			CreateGroupCmd cgCmd;
-			String value;
-			
-			cgCmd = (CreateGroupCmd) cmd;
-			value = cgCmd.getName();
-			if ( MiscUtil.hasString( value ) )
-				cgCmd.setName( StringCheckUtil.check( value ) );
-			
+		// The following commands require XSS checks.
+		case CREATE_GROUP: {
+			CreateGroupCmd cgCmd = (CreateGroupCmd) cmd;
+			String value = cgCmd.getName();
+			if (MiscUtil.hasString(value)) {
+				cgCmd.setName(StringCheckUtil.check(value));
+			}
 			value = cgCmd.getDesc();
-			if ( MiscUtil.hasString( value ) )
-				cgCmd.setDesc( StringCheckUtil.check( value ) );
-			
+			if (MiscUtil.hasString(value)) {
+				cgCmd.setDesc(StringCheckUtil.check(value));
+			}
 			value = cgCmd.getTitle();
-			if ( MiscUtil.hasString( value ) )
-				cgCmd.setTitle( StringCheckUtil.check( value ) );
-			
+			if (MiscUtil.hasString(value)) {
+				cgCmd.setTitle( StringCheckUtil.check(value));
+			}
 			break;
 		}
 			
-		// The following commands require XSS checks.
-		case MARKUP_STRING_REPLACEMENT:
-		{
+		case EDIT_ENTRY: {
+			EditEntryCmd eeCmd = ((EditEntryCmd) cmd);
+			String title = eeCmd.getTitle();
+			if (MiscUtil.hasString(title)) {
+				eeCmd.setTitle(StringCheckUtil.check(title));
+			}
+			String desc = eeCmd.getDescription();
+			if (MiscUtil.hasString(desc)) {
+				eeCmd.setDescription(StringCheckUtil.check(desc));
+			}
+			break;
+		}
+			
+		case MARKUP_STRING_REPLACEMENT: {
 			MarkupStringReplacementCmd msrCmd = ((MarkupStringReplacementCmd) cmd);
 			String html = msrCmd.getHtml();
 			if (MiscUtil.hasString(html)) {
@@ -10688,25 +10726,20 @@ public class GwtServerHelper {
 		}
 			
 			
-		case MODIFY_GROUP:
-		{
-			ModifyGroupCmd mgCmd;
-			String value;
-			
-			mgCmd = (ModifyGroupCmd) cmd;
-			value = mgCmd.getDesc();
-			if ( MiscUtil.hasString( value ) )
-				mgCmd.setDesc( StringCheckUtil.check( value ) );
-			
+		case MODIFY_GROUP: {
+			ModifyGroupCmd mgCmd = ((ModifyGroupCmd) cmd);
+			String value = mgCmd.getDesc();
+			if (MiscUtil.hasString(value)) {
+				mgCmd.setDesc(StringCheckUtil.check(value));
+			}
 			value = mgCmd.getTitle();
-			if ( MiscUtil.hasString( value ) )
-				mgCmd.setTitle( StringCheckUtil.check( value ) );
-			
+			if (MiscUtil.hasString(value)) {
+				mgCmd.setTitle(StringCheckUtil.check(value));
+			}
 			break;
 		}
 			
-		case SAVE_BRANDING:
-		{
+		case SAVE_BRANDING: {
 			SaveBrandingCmd sbCmd = ((SaveBrandingCmd) cmd);
 			GwtBrandingData bd = sbCmd.getBrandingData(); 
 			String html = bd.getBranding();
@@ -10716,8 +10749,7 @@ public class GwtServerHelper {
 			break;
 		}
 			
-		case SAVE_USER_STATUS:
-		{
+		case SAVE_USER_STATUS: {
 			SaveUserStatusCmd susCmd = ((SaveUserStatusCmd) cmd);
 			String status = susCmd.getStatus();
 			if (MiscUtil.hasString(status)) {
@@ -10726,8 +10758,7 @@ public class GwtServerHelper {
 			break;
 		}
 			
-		case REPLY_TO_ENTRY:
-		{
+		case REPLY_TO_ENTRY: {
 			ReplyToEntryCmd rteCmd = ((ReplyToEntryCmd) cmd);
 			String title = rteCmd.getTitle();
 			if (MiscUtil.hasString(title)) {
@@ -10740,8 +10771,7 @@ public class GwtServerHelper {
 			break;
 		}
 			
-		case SAVE_FOLDER_COLUMNS:
-		{
+		case SAVE_FOLDER_COLUMNS: {
 			SaveFolderColumnsCmd saveFCCmd = ((SaveFolderColumnsCmd) cmd);
 			for (FolderColumn fc : saveFCCmd.getFolderColumns()) {
 				fc.setColumnCustomTitle(StringCheckUtil.check(fc.getColumnCustomTitle()));
@@ -10749,8 +10779,7 @@ public class GwtServerHelper {
 			break;
 		}
 		
-		case GET_JSP_HTML:
-		{
+		case GET_JSP_HTML: {
 			GetJspHtmlCmd jspHtmlCmd = ((GetJspHtmlCmd) cmd);
 			Map<String,Object> model = jspHtmlCmd.getModel();
 			StringCheckUtil.check(model, Boolean.TRUE);
