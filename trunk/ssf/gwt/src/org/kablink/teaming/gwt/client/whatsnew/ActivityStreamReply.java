@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,15 +36,15 @@ import java.util.HashMap;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -52,232 +52,209 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
 /**
- * This widget is used to let the user enter a reply to an entry
+ * This widget is used to let the user enter a reply to an entry.
  * 
- * @author jwootton
+ * @author drfoster@novell.com
  */
-public class ActivityStreamReply extends Composite
-{
-	private TextBox m_titleTextBox = null;
-	private TextArea m_descTextArea;
-	private EditSuccessfulHandler m_onSuccessHandler;
-	private FlowPanel m_addACommentPanel;
+public class ActivityStreamReply extends Composite {
+	private EditSuccessfulHandler	m_onSuccessHandler;	//
+	private FlowPanel				m_addACommentPanel;	//
+	private GwtTeamingMessages		m_messages;			//
+	private TextArea				m_descTextArea;		//
+	private TextBox					m_titleTextBox;		//
 	
 	/**
+	 * Constructor method.
 	 * 
+	 * @param showAddACommentHint
+	 * @param onSuccessHandler
 	 */
-	public ActivityStreamReply( EditSuccessfulHandler onSuccessHandler )
-	{
-		FlowPanel mainPanel;
-		FlowPanel inputPanel;
-		FlowPanel footerPanel;
+	public ActivityStreamReply(boolean showAddACommentHint, EditSuccessfulHandler onSuccessHandler) {
+		// Initialize the super class...
+		super();
 		
-		// Remember the handler we should call when the user presses Ok.
+		// ...store the parameters...
 		m_onSuccessHandler = onSuccessHandler;
 		
-		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "activityStreamReply" );
-		mainPanel.addStyleName( "roundcornerSM" );
+		// ...and initialize anything else that requires it.
+		m_messages = GwtTeaming.getMessages();
 		
-		// Add a textbox for the title
-		if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
-		{
+		FlowPanel mainPanel = new FlowPanel();
+		mainPanel.addStyleName("activityStreamReply roundcornerSM");
+		
+		// Add a text box for the title.
+		FlowPanel inputPanel;
+		if (!(GwtTeaming.m_requestInfo.isLicenseFilr())) {
 			inputPanel = new FlowPanel();
-			inputPanel.addStyleName( "activityStreamReplyTitlePanel" );
+			inputPanel.addStyleName("activityStreamReplyTitlePanel");
 			m_titleTextBox = new TextBox();
-			m_titleTextBox.addStyleName( "activityStreamReplyTitleTextBox" );
-			inputPanel.add( m_titleTextBox );
-			mainPanel.add( inputPanel );
+			m_titleTextBox.addStyleName("activityStreamReplyTitleTextBox");
+			inputPanel.add(m_titleTextBox);
+			mainPanel.add(inputPanel);
 		}
 		
 		inputPanel = new FlowPanel();
-		inputPanel.addStyleName( "activityStreamReply_RelativePos" );
+		inputPanel.addStyleName("activityStreamReply_RelativePos");
 
-		// Add a panel that will hold "Add a comment" hint
-		{
-			m_addACommentPanel = new FlowPanel();
-			m_addACommentPanel.addStyleName( "activityStreamReplyAddACommentPanel" );
-			m_addACommentPanel.getElement().setInnerText( GwtTeaming.getMessages().addAComment() );
-			inputPanel.add( m_addACommentPanel );
-		}
+		// Add a panel that will hold 'Add a comment' hint.
+		m_addACommentPanel = new FlowPanel();
+		m_addACommentPanel.addStyleName("activityStreamReplyAddACommentPanel");
+		m_addACommentPanel.getElement().setInnerText(m_messages.addAComment());
+		inputPanel.add(m_addACommentPanel);
+		m_addACommentPanel.setVisible(showAddACommentHint);
 		
-		// Create a textbox
+		// Create a text box.
 		m_descTextArea = new TextArea();
-		m_descTextArea.addStyleName( "activityStreamReplyTextArea" );
-		m_descTextArea.addKeyPressHandler( new KeyPressHandler()
-		{
+		m_descTextArea.addStyleName("activityStreamReplyTextArea");
+		m_descTextArea.addKeyPressHandler(new KeyPressHandler() {
 			@Override
-			public void onKeyPress( KeyPressEvent event )
-			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
-				{
+			public void onKeyPress(KeyPressEvent event) {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					@Override
-					public void execute() 
-					{
-						// Hide the "Add a comment" message
-						m_addACommentPanel.setVisible( false );
+					public void execute() {
+						// Hide the 'Add a comment' message.
+						m_addACommentPanel.setVisible(false);
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				});
 			}
-		} );
-		inputPanel.add( m_descTextArea );
-		mainPanel.add( inputPanel );
+		});
+		inputPanel.add(m_descTextArea);
+		mainPanel.add(inputPanel);
 		
 		// Create the footer.
-		footerPanel = createFooter();
-		mainPanel.add( footerPanel );
+		FlowPanel footerPanel = createFooter();
+		mainPanel.add(footerPanel);
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
+		initWidget(mainPanel);
+	}
+	
+	public ActivityStreamReply(EditSuccessfulHandler onSuccessHandler) {
+		// Always use the initial form of the constructor.
+		this(true, onSuccessHandler);
 	}
 	
 	/**
-	 * 
+	 * Hides the reply widget. 
 	 */
-	public void close()
-	{
-		setVisible( false );
+	public void close() {
+		setVisible(false);
 	}
 	
-	/**
-	 * Create the footer panel
+	/*
+	 * Create the footer panel.
 	 */
-	private FlowPanel createFooter()
-	{
-		FlowPanel footerPanel;
-		Button sendBtn;
-		Button cancelBtn;
-		ClickHandler clickHandler;
-		
-		footerPanel = new FlowPanel();
-		footerPanel.addStyleName( "activityStreamReplyFooter" );
+	private FlowPanel createFooter() {
+		FlowPanel footerPanel = new FlowPanel();
+		footerPanel.addStyleName("activityStreamReplyFooter");
 
-		sendBtn = new Button( GwtTeaming.getMessages().send() );
-		sendBtn.addStyleName( "activityStreamReplyBtn" );
-		footerPanel.add( sendBtn );
+		Button sendBtn = new Button(m_messages.send());
+		sendBtn.addStyleName("activityStreamReplyBtn");
+		footerPanel.add(sendBtn);
 		
 		// Add a click handler for the send button.
-		clickHandler = new ClickHandler()
-		{
+		sendBtn.addClickHandler(new ClickHandler() {
 			@Override
-			public void onClick( ClickEvent event )
-			{
+			public void onClick(ClickEvent event) {
 				handleClickOnSendBtn();
 			}
-		};
-		sendBtn.addClickHandler( clickHandler );
+		});
 		
-		cancelBtn = new Button( GwtTeaming.getMessages().cancel() );
-		cancelBtn.addStyleName( "activityStreamReplyBtn" );
-		footerPanel.add( cancelBtn );
+		Button cancelBtn = new Button(m_messages.cancel());
+		cancelBtn.addStyleName("activityStreamReplyBtn");
+		footerPanel.add(cancelBtn);
 		
 		// Add a click handler for the cancel button.
-		clickHandler = new ClickHandler()
-		{
+		cancelBtn.addClickHandler(new ClickHandler() {
 			@Override
-			public void onClick( ClickEvent event )
-			{
+			public void onClick(ClickEvent event) {
 				close();
 			}
-		};
-		cancelBtn.addClickHandler( clickHandler );
+		});
 
 		return footerPanel;
 	}
 	
 	/**
 	 * Return the text the user has entered for the description.
+	 * 
+	 * @return
 	 */
-	public String getDesc()
-	{
+	public String getDesc() {
 		return m_descTextArea.getText();
 	}
 	
-	/**
+	/*
 	 * This gets called when the user clicks on the Send button.
 	 */
-	private void handleClickOnSendBtn()
-	{
-		if ( m_onSuccessHandler != null )
-		{
-			String title;
-			String replyText;
-			HashMap<String, String> results;
-			
+	private void handleClickOnSendBtn() {
+		if (null != m_onSuccessHandler) {
 			// Get the reply entered by the user.
-			replyText = m_descTextArea.getText();
-			
-			if ( GwtClientHelper.hasString( replyText ) == false )
-			{
-				Window.alert( GwtTeaming.getMessages().noReplyText() );
+			String replyText = m_descTextArea.getText();
+			if (!(GwtClientHelper.hasString(replyText))) {
+				GwtClientHelper.deferredAlert(m_messages.noReplyText());
 				setFocusToTextArea();
 				return;
 			}
 			
-			// HTML escape the text entered by the user and replace newlines with <br>
-			{
-				SafeHtmlBuilder builder;
-				
-				builder = new SafeHtmlBuilder();
-				builder = builder.appendEscapedLines( replyText );
-				replyText = builder.toSafeHtml().asString();
-			}
+			// HTML escape the text entered by the user and replace
+			// newlines with <BR>.
+			SafeHtmlBuilder builder = new SafeHtmlBuilder();
+			builder = builder.appendEscapedLines(replyText);
+			replyText = builder.toSafeHtml().asString();
 
-			title = null;
-			if ( m_titleTextBox != null )
-				title = m_titleTextBox.getText();
+			String title;
+			if (null != m_titleTextBox)
+			     title = m_titleTextBox.getText();
+			else title = null;
 			
-			results = new HashMap<String, String>();
-			results.put( "title", title );
-			results.put( "description", replyText );
-			m_onSuccessHandler.editSuccessful( results );
+			HashMap<String, String> results = new HashMap<String, String>();
+			results.put("title",       title    );
+			results.put("description", replyText);
+			m_onSuccessHandler.editSuccessful(results);
 		}
 		
 		close();
 	}
 	
-	/**
-	 * 
+	/*
 	 */
-	private void init( String title )
-	{
-		if ( m_titleTextBox != null )
-			m_titleTextBox.setText( title );
-		
-		m_descTextArea.setText( "" );
+	private void init(String title, String description) {
+		if (null != m_titleTextBox) {
+			m_titleTextBox.setText(title);
+		}
+		m_descTextArea.setText(description);
 	}
 
-	/**
-	 * 
+	/*
 	 */
-	private void setFocusToTextArea()
-	{
-		Scheduler.ScheduledCommand cmd;
-		
-		// Issue a deferred command to give the focus to the textarea control.
-		cmd = new Scheduler.ScheduledCommand()
-		{
+	private void setFocusToTextArea() {
+		// Issue a deferred command to give the focus to the text area
+		// control.
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
-				m_descTextArea.setFocus( true );
+			public void execute() {
+				m_descTextArea.setFocus(true);
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		});
 	}
 
 	/**
+	 * ?
 	 * 
+	 * @param title
+	 * @param description
 	 */
-	public void show( String title )
-	{
-		init( title );
-		setVisible( true );
+	public void show(String title, String description) {
+		init(title, description);
+		setVisible(true);
 		
-		// Give the focus to the textarea.
+		// Give the focus to the text area.
 		setFocusToTextArea();
+	}
+	
+	public void show(String title) {
+		// Always use the initial form of the method.
+		show(title, "");
 	}
 }

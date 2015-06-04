@@ -761,6 +761,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case EDIT_ENTRY: {
+			EditEntryCmd eeCmd = ((EditEntryCmd) cmd);
+			ActivityStreamEntry result = editEntry(
+				req,
+				eeCmd.getEntryId(),
+				eeCmd.getTitle(),
+				eeCmd.getDescription());
+			ActivityStreamEntryRpcResponseData responseData = new ActivityStreamEntryRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case EMAIL_PUBLIC_LINK:
 		{
 			EmailPublicLinkCmd eplCmd;
@@ -3407,11 +3419,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case REPLY_TO_ENTRY:
-		{
+		case REPLY_TO_ENTRY: {
 			ReplyToEntryCmd reCmd = ((ReplyToEntryCmd) cmd);
 			ActivityStreamEntry result = replyToEntry(
-					req, reCmd.getEntryId(), reCmd.getTitle(), reCmd.getDescription() );
+				req,
+				reCmd.getEntryId(),
+				reCmd.getTitle(),
+				reCmd.getDescription());
 			ActivityStreamEntryRpcResponseData responseData = new ActivityStreamEntryRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -6742,6 +6756,27 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		subscriptionData = GwtServerHelper.getSubscriptionData( this, entryId );
 		
 		return subscriptionData;
+	}
+	
+	/*
+	 * Edits the given entry.  Returns an object that can be used by
+	 * the What's New page.
+	 */
+	private ActivityStreamEntry editEntry(HttpServletRequest req, Long entryId, String title, String desc) throws GwtTeamingException {
+		ActivityStreamEntry reply;
+		try {
+			// Edit the given reply.
+			FolderEntry entry = GwtServerHelper.editReply(this, entryId, title, desc);
+			
+			// Get an ActivityStreamEntry from the reply's FolderEntry.
+			reply = GwtActivityStreamHelper.getActivityStreamEntry(req, this, entry);
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(ex);
+		}
+		
+		return reply;
 	}
 	
 	/*

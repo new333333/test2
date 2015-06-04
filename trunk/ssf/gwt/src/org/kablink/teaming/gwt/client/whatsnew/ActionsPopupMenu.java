@@ -76,8 +76,6 @@ import com.google.gwt.user.client.ui.UIObject;
  * @author drfoster@novell.com
  */
 public class ActionsPopupMenu extends PopupMenu {
-	public final static boolean SHOW_EDIT_OPTION	= false;	//! DRF (20150602):  Leave false on checkin until its working.
-	
 	/**
 	 * Enumeration that defines the various actions that are supported. 
 	 */
