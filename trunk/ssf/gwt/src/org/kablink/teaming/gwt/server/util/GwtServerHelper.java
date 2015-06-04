@@ -2195,7 +2195,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static String executeLandingPageJsp( AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String binderId, String jspName, String configStr) {
+	public static String executeLandingPageJsp(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String binderId, String jspName, String configStr) {
 		RequestDispatcher     reqDispatcher = request.getRequestDispatcher(jspName);
 		StringServletResponse ssResponse    = new StringServletResponse(response);
 
@@ -2323,7 +2323,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static String executeJsp( AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String jspName, Map<String,Object> model) {
+	public static String executeJsp(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String jspName, Map<String,Object> model) {
 		// Construct the full path to the jsp
 		String path = ("/WEB-INF/jsp/" + jspName);
 		
@@ -2656,7 +2656,7 @@ public class GwtServerHelper {
 		zoneModule = bs.getZoneModule();
 		
 		user = getCurrentUser();
-		userHasAdminRights = adminModule.testAccess( AdminOperation.manageFunction );
+		userHasAdminRights = adminModule.testAccess(AdminOperation.manageFunction);
 		
 		isFilr = LicenseChecker.showFilrFeatures();
 		
@@ -3786,12 +3786,12 @@ public class GwtServerHelper {
 		ArrayList<GroupInfo> reply = new ArrayList<GroupInfo>();
 
 		GroupSelectSpec groupSelectSpec = new GroupSelectSpec();
-		groupSelectSpec.setFilter( filter );
-		groupSelectSpec.setExcludeAllExternalUsersGroup( true );
-		groupSelectSpec.setExcludeAllUsersGroup( true );
-		groupSelectSpec.setExcludeTeamGroups( true );
+		groupSelectSpec.setFilter(filter);
+		groupSelectSpec.setExcludeAllExternalUsersGroup(true);
+		groupSelectSpec.setExcludeAllUsersGroup(true);
+		groupSelectSpec.setExcludeTeamGroups(true);
 		
-		List<Group> listOfGroups = bs.getProfileModule().getGroups( groupSelectSpec );
+		List<Group> listOfGroups = bs.getProfileModule().getGroups(groupSelectSpec);
 		if (null != listOfGroups) {
 			for (Group nextGroup:  listOfGroups) {
 				GroupInfo groupInfo = new GroupInfo();
@@ -3931,422 +3931,344 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Return the "raw" branding data for the given binder.  We will not fixup any image urls.
+	 * Return the 'raw' branding data for the given binder.  We will
+	 * not fixup any image URLs.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param request
+	 * @param servletContext
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	public static GwtBrandingData getRawBinderBrandingData(
-		AbstractAllModulesInjected allModules,
-		String binderId,
-		HttpServletRequest request,
-		ServletContext servletContext ) throws GwtTeamingException
-	{
-		BinderModule binderModule;
-		Long binderIdL;
-		GwtBrandingData brandingData;
+	public static GwtBrandingData getRawBinderBrandingData(AbstractAllModulesInjected bs, String binderId, HttpServletRequest request, ServletContext servletContext) throws GwtTeamingException {
+		GwtBrandingData brandingData = new GwtBrandingData();
+		brandingData.setBrandingType(GwtBrandingDataExt.BRANDING_TYPE_IMAGE);
 		
-		brandingData = new GwtBrandingData();
-		brandingData.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
-		
-		try
-		{
-			binderModule = allModules.getBinderModule();
-	
-			binderIdL = new Long( binderId );
-			
+		try {
 			// Get the binder object.
-			if ( binderIdL != null )
-			{
-				String branding;
-				GwtBrandingDataExt brandingExt;
-				Binder binder;
-				
-				binder = binderModule.getBinder( binderIdL );
-				
+			BinderModule bm = bs.getBinderModule();
+			Long binderIdL = new Long(binderId);
+			if (null != binderIdL) {
 				// Does the user have rights to the binder where the branding is coming from?
-				if ( !binderModule.testAccess( binder, BinderOperation.readEntries ) )
-				{
+				Binder binder = bm.getBinder(binderIdL);
+				if (!(bm.testAccess(binder, BinderOperation.readEntries))) {
 					return brandingData;
 				}
-				
-				brandingData.setBinderId( binderId );
+				brandingData.setBinderId(binderId);
 
-				// Get the advanced branding that should be applied for this binder.
-				branding = binder.getBranding();
+				// Get the advanced branding that should be applied for
+				// this binder.
+				String branding = binder.getBranding();
 				
-				// For some unknown reason, if there is no branding in the db the string we get back
-				// will contain only a \n.  We don't want that.
-				if ( branding != null && branding.length() == 1 && branding.charAt( 0 ) == '\n' )
+				// For some unknown reason, if there is no branding in
+				// the database the string we get back will contain
+				// only a '\n'.  We don't want that.
+				if ((null != branding) && (1 == branding.length()) && ('\n' == branding.charAt(0))) {
 					branding = "";
-				
-				// Remove mce_src as an attribute from all <img> tags.  See bug 766415.
-				// There was a bug that caused the mce_src attribute to be included in the <img>
-				// tag and written to the db.  We want to remove it.
-				branding = MarkupUtil.removeMceSrc( branding );
-
-				brandingData.setBranding( branding );
-				
-				// Get the additional branding information.
-				{
-					String xmlStr;
-					
-					brandingExt = new GwtBrandingDataExt();
-					
-					// Get the xml that represents the branding data.  The following is an example of what the xml should look like.
-					// 	<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced">
-					// 		<background color="" imgName="" />
-					// 	</brandingData>
-					xmlStr = binder.getBrandingExt();
-					
-					// Is there old-style branding?
-					if ( branding != null && branding.length() > 0 )
-					{
-						// Yes
-						brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_ADVANCED );
-						
-						// Is there additional branding data?
-						if ( xmlStr == null || xmlStr.length() == 0 )
-						{
-							// Yes, We are dealing with branding that was created before the Durango release.
-							// In order to have existing branding still look good even though we aren't
-							// using the old background image, we will set the background color to white
-							// and the font color to black.
-							brandingExt.setBackgroundColor( "white" );
-							brandingExt.setFontColor( "black" );
-						}
-					}
-					else
-					{
-						// No
-						brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
-					}
-
-					if ( xmlStr != null && xmlStr.length() > 0 )
-					{
-						try
-			    		{
-			    			Document doc;
-			    			Node node;
-			    			Node attrNode;
-		        			String imgName;
-							
-							// Parse the xml string into an xml document.
-							doc = DocumentHelper.parseText( xmlStr );
-			    			
-			    			// Get the root element.
-			    			node = doc.getRootElement();
-			    			
-			    			// Get the font color.
-			    			attrNode = node.selectSingleNode( "@fontColor" );
-			    			if ( attrNode != null )
-			    			{
-			        			String fontColor;
-			
-			        			fontColor = attrNode.getText();
-			        			brandingExt.setFontColor( fontColor );
-			    			}
-			    			
-			    			// Get the name of the branding image
-			    			attrNode = node.selectSingleNode( "@brandingImgName" );
-			    			if ( attrNode != null )
-			    			{
-			        			imgName = attrNode.getText();
-
-			    				if ( imgName != null && imgName.length() > 0 )
-			    				{
-			    					brandingExt.setBrandingImgName( imgName );
-			    				}
-			    			}
-			    			
-			    			// Get the name of the branding image for the login dialog
-			    			attrNode = node.selectSingleNode( "@loginDlgImgName" );
-			    			if ( attrNode != null )
-			    			{
-			        			imgName = attrNode.getText();
-
-			    				if ( imgName != null && imgName.length() > 0 )
-			    				{
-			    					brandingExt.setLoginDlgImgName( imgName );
-			    				}
-			    			}
-			    			
-			    			// Get the type of branding, "advanced" or "image"
-			    			attrNode = node.selectSingleNode( "@brandingType" );
-			    			if ( attrNode != null )
-			    			{
-			    				String type;
-			    				
-			    				type = attrNode.getText();
-			    				if ( type != null && type.equalsIgnoreCase( GwtBrandingDataExt.BRANDING_TYPE_IMAGE ) )
-			    					brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
-			    				else
-			    					brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_ADVANCED );
-			    			}
-			    			
-			    			// Get the branding rule.
-			    			attrNode = node.selectSingleNode( "@brandingRule" );
-			    			if ( attrNode != null )
-			    			{
-			    				String ruleName;
-			    				
-			    				ruleName = attrNode.getText();
-			    				if ( ruleName != null )
-			    				{
-			    					if ( ruleName.equalsIgnoreCase( GwtBrandingDataExt.BrandingRule.BINDER_BRANDING_OVERRIDES_SITE_BRANDING.toString() ) )
-			    						brandingExt.setBrandingRule( GwtBrandingDataExt.BrandingRule.BINDER_BRANDING_OVERRIDES_SITE_BRANDING );
-			    					else if ( ruleName.equalsIgnoreCase( GwtBrandingDataExt.BrandingRule.DISPLAY_BOTH_SITE_AND_BINDER_BRANDING.toString() ) )
-			    						brandingExt.setBrandingRule( GwtBrandingDataExt.BrandingRule.DISPLAY_BOTH_SITE_AND_BINDER_BRANDING );
-			    					else if ( ruleName.equalsIgnoreCase( GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY.toString() ) )
-			    						brandingExt.setBrandingRule( GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY );
-			    				}
-			    			}
-			    			
-			    			// Get the <background color="" imgName="" stretchImg="" /> node
-			    			node = node.selectSingleNode( "background" );
-			    			if ( node != null )
-			    			{
-			    				// Get the background color.
-			    				attrNode = node.selectSingleNode( "@color" );
-			    				if ( attrNode != null )
-			    				{
-			        				String bgColor;
-			
-			        				bgColor = attrNode.getText();
-			        				brandingExt.setBackgroundColor( bgColor );
-			    				}
-			    				
-			    				// Get the name of the background image.
-			    				attrNode = node.selectSingleNode( "@imgName" );
-			    				if ( attrNode != null )
-			    				{
-			        				imgName = attrNode.getText();
-
-				    				if ( imgName != null && imgName.length() > 0 )
-				    				{
-				    					brandingExt.setBackgroundImgName( imgName );
-				    				}
-			    				}
-
-			    				// Get the value of whether or not to stretch the background image.
-	        					brandingExt.setBackgroundImgStretchValue( true );
-			    				attrNode = node.selectSingleNode( "@stretchImg" );
-			    				if ( attrNode != null )
-			    				{
-			        				String stretch;
-			
-			        				stretch = attrNode.getText();
-			        				if ( stretch != null && stretch.equalsIgnoreCase( "false" ) )
-			        					brandingExt.setBackgroundImgStretchValue( false );
-			    				}
-			    			}
-			    		}
-			    		catch(Exception e)
-			    		{
-			    			GwtLogHelper.warn( m_logger, "Unable to parse branding ext " + xmlStr, e );
-			    		}
-					}
-					
-					brandingData.setBrandingExt( brandingExt );
 				}
 				
-				// Are we dealing with site branding?
-				{
-					Long topWorkspaceId;
+				// Remove mce_src as an attribute from all <IMG> tags.
+				// See bug 766415.  There was a bug that caused the
+				// mce_src attribute to be included in the <IMG> tag
+				// and written to the database.  We want to remove it.
+				branding = MarkupUtil.removeMceSrc(branding);
+				brandingData.setBranding(branding);
+				
+				// Get the additional branding information.
+				GwtBrandingDataExt brandingExt = new GwtBrandingDataExt();
+				
+				// Get the XML that represents the branding data.  The
+				// following is an example of what the XML should look
+				// like:
+				//
+				//		<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced">
+				// 			<background color="" imgName="" />
+				// 		</brandingData>
+				String xmlStr = binder.getBrandingExt();
+				
+				// Is there old-style branding?
+				if (MiscUtil.hasString(branding)) {
+					// Yes!
+					brandingExt.setBrandingType(GwtBrandingDataExt.BRANDING_TYPE_ADVANCED);
 					
-					// Get the top workspace ID.
-					topWorkspaceId = allModules.getWorkspaceModule().getTopWorkspaceId();				
-					
-					// Are we dealing with the site branding.
-					if ( binderIdL.compareTo( topWorkspaceId ) == 0 )
-					{
-						// Yes
-						brandingData.setIsSiteBranding( true );
+					// Is there additional branding data?
+					if ((null == xmlStr) || (0 == xmlStr.length())) {
+						// Yes, We are dealing with branding that was
+						// created before the Durango release.  In
+						// order to have existing branding still look
+						// good even though we aren't using the old
+						// background image, we will set the background
+						// color to white and the font color to black.
+						brandingExt.setBackgroundColor("white");
+						brandingExt.setFontColor(      "black");
 					}
+				}
+				
+				else {
+					// No!
+					brandingExt.setBrandingType(GwtBrandingDataExt.BRANDING_TYPE_IMAGE);
+				}
+
+				if (MiscUtil.hasString(xmlStr)) {
+					try {
+						// Parse the XML string into an XML document.
+		    			Document doc = DocumentHelper.parseText(xmlStr);
+		    			
+		    			// Get the root element.
+		    			Node node = doc.getRootElement();
+		    			
+		    			// Get the font color.
+		    			Node attrNode = node.selectSingleNode("@fontColor");
+		    			if (null != attrNode) {
+		        			String fontColor = attrNode.getText();
+		        			brandingExt.setFontColor(fontColor);
+		    			}
+		    			
+		    			// Get the name of the branding image
+	        			String imgName;
+		    			attrNode = node.selectSingleNode("@brandingImgName");
+		    			if (null != attrNode) {
+		        			imgName = attrNode.getText();
+		    				if (MiscUtil.hasString(imgName)) {
+		    					brandingExt.setBrandingImgName(imgName);
+		    				}
+		    			}
+		    			
+		    			// Get the name of the branding image for the
+		    			// login dialog.
+		    			attrNode = node.selectSingleNode("@loginDlgImgName");
+		    			if (null != attrNode) {
+		        			imgName = attrNode.getText();
+		    				if (MiscUtil.hasString(imgName)) {
+		    					brandingExt.setLoginDlgImgName(imgName);
+		    				}
+		    			}
+		    			
+		    			// Get the type of branding, 'advanced' or
+		    			// 'image'.
+		    			attrNode = node.selectSingleNode("@brandingType");
+		    			if (null != attrNode) {
+		    				String type = attrNode.getText();
+		    				if ((null != type) && type.equalsIgnoreCase(GwtBrandingDataExt.BRANDING_TYPE_IMAGE))
+		    				     brandingExt.setBrandingType(GwtBrandingDataExt.BRANDING_TYPE_IMAGE   );
+		    				else brandingExt.setBrandingType(GwtBrandingDataExt.BRANDING_TYPE_ADVANCED);
+		    			}
+		    			
+		    			// Get the branding rule.
+		    			attrNode = node.selectSingleNode("@brandingRule");
+		    			if (null != attrNode) {
+		    				String ruleName = attrNode.getText();
+		    				if (null != ruleName) {
+		    					if      (ruleName.equalsIgnoreCase(GwtBrandingDataExt.BrandingRule.BINDER_BRANDING_OVERRIDES_SITE_BRANDING.toString())) brandingExt.setBrandingRule(GwtBrandingDataExt.BrandingRule.BINDER_BRANDING_OVERRIDES_SITE_BRANDING);
+		    					else if (ruleName.equalsIgnoreCase(GwtBrandingDataExt.BrandingRule.DISPLAY_BOTH_SITE_AND_BINDER_BRANDING.toString()))   brandingExt.setBrandingRule(GwtBrandingDataExt.BrandingRule.DISPLAY_BOTH_SITE_AND_BINDER_BRANDING  );
+		    					else if (ruleName.equalsIgnoreCase(GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY.toString()))              brandingExt.setBrandingRule(GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY             );
+		    				}
+		    			}
+		    			
+		    			// Get the <background color="" imgName="" stretchImg="" />
+		    			// node.
+		    			node = node.selectSingleNode("background");
+		    			if (null != node) {
+		    				// Get the background color.
+		    				attrNode = node.selectSingleNode("@color");
+		    				if (null != attrNode) {
+		        				String bgColor = attrNode.getText();
+		        				brandingExt.setBackgroundColor(bgColor);
+		    				}
+		    				
+		    				// Get the name of the background image.
+		    				attrNode = node.selectSingleNode("@imgName");
+		    				if (null != attrNode) {
+		        				imgName = attrNode.getText();
+			    				if (MiscUtil.hasString(imgName)) {
+			    					brandingExt.setBackgroundImgName(imgName);
+			    				}
+		    				}
+
+		    				// Get the value of whether or not to
+		    				// stretch the background image.
+        					brandingExt.setBackgroundImgStretchValue(true);
+		    				attrNode = node.selectSingleNode("@stretchImg");
+		    				if (null != attrNode) {
+		        				String stretch = attrNode.getText();
+		        				if ((null != stretch) && stretch.equalsIgnoreCase("false")) {
+		        					brandingExt.setBackgroundImgStretchValue(false);
+		        				}
+		    				}
+		    			}
+		    		}
+		    		catch (Exception e) {
+		    			GwtLogHelper.warn(m_logger, "Unable to parse branding ext " + xmlStr, e);
+		    		}
+				}
+				
+				brandingData.setBrandingExt(brandingExt);
+				
+				// Are we dealing with site branding?  Get the top
+				// workspace ID.
+				Long topWorkspaceId = bs.getWorkspaceModule().getTopWorkspaceId();				
+				
+				// Are we dealing with the site branding.
+				if (0 == binderIdL.compareTo(topWorkspaceId)) {
+					// Yes!
+					brandingData.setIsSiteBranding(true);
 				}
 			}
 		}
-		catch (NoBinderByTheIdException nbEx)
-		{
-			// Nothing to do
-		}
-		catch (AccessControlException acEx)
-		{
-			// Nothing to do
-		}
-		catch (Exception e)
-		{
-			// Nothing to do
-		}
+		catch (NoBinderByTheIdException nbEx) {/* Ignore. */}
+		catch (AccessControlException   acEx) {/* Ignore. */}
+		catch (Exception                e   ) {/* Ignore. */}
 		
 		return brandingData;
 	}
 
 	/**
 	 * Return the branding data for the given binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param useInheritance
+	 * @param request
+	 * @param servletContext
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	public static GwtBrandingData getBinderBrandingData(
-		AbstractAllModulesInjected allModules,
-		String binderId,
-		boolean useInheritance,
-		HttpServletRequest request,
-		ServletContext servletContext ) throws GwtTeamingException
-	{
-		BinderModule binderModule;
-		Binder binder;
-		Long binderIdL;
-		GwtBrandingData brandingData;
+	public static GwtBrandingData getBinderBrandingData(AbstractAllModulesInjected bs, String binderId, boolean useInheritance, HttpServletRequest request, ServletContext servletContext) throws GwtTeamingException {
+		GwtBrandingData brandingData = new GwtBrandingData();
+		brandingData.setBrandingType(GwtBrandingDataExt.BRANDING_TYPE_IMAGE);
 		
-		brandingData = new GwtBrandingData();
-		brandingData.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
-		
-		try
-		{
-			binderModule = allModules.getBinderModule();
-	
-			binderIdL = new Long( binderId );
-			
+		try {
 			// Get the binder object.
-			if ( binderIdL != null )
-			{
-				String imgName;
-				String branding;
+			BinderModule bm = bs.getBinderModule();
+			Long binderIdL = new Long(binderId);
+			if (null != binderIdL) {
+				// Are we supposed to use inheritance to get the branding?
+				Binder binder = bm.getBinder(binderIdL);
 				Binder brandingSourceBinder;
 				String brandingSourceBinderId;
-				
-				binder = binderModule.getBinder( binderIdL );
-				
-				// Are we supposed to use inheritance to get the branding?
-				if ( useInheritance )
-				{
-					// Yes
-					// Get the binder where branding comes from.
+				if (useInheritance) {
+					// Yes!  Get the binder where branding comes from.
 					brandingSourceBinder = binder.getBrandingSource();
 					
-					// Does the user have rights to the binder where the branding is coming from?
-					if ( !binderModule.testAccess( brandingSourceBinder, BinderOperation.readEntries ) )
-					{
+					// Does the user have rights to the binder where
+					// the branding is coming from?
+					if (!(bm.testAccess(brandingSourceBinder, BinderOperation.readEntries))) {
 						// No, don't use inherited branding.
 						brandingSourceBinderId = binderId;
-						brandingSourceBinder = binder;
+						brandingSourceBinder   = binder;
 					}
-					else
-					{
+					else {
 						brandingSourceBinderId = brandingSourceBinder.getId().toString();
 					}
 				}
-				else
-				{
-					// No
-					// Get the branding from the given binder.
+				else {
+					// No!  Get the branding from the given binder.
 					brandingSourceBinderId = binderId;
-					brandingSourceBinder = binder;
+					brandingSourceBinder   = binder;
 				}
 				
-				brandingData.setBinderId( brandingSourceBinderId );
-
-				brandingData = GwtServerHelper.getRawBinderBrandingData(
-																	allModules,
-																	brandingSourceBinderId,
-																	request,
-																	servletContext );
+				brandingData.setBinderId(brandingSourceBinderId);
+				brandingData = getRawBinderBrandingData(
+					bs,
+					brandingSourceBinderId,
+					request,
+					servletContext);
 				
-				// Get the advanced branding that should be applied for this binder.
-				branding = brandingSourceBinder.getBranding();
+				// Get the advanced branding that should be applied for
+				// this binder.
+				String branding = brandingSourceBinder.getBranding();
 				
-				// Parse the advanced branding and replace all <img src="{{attachmentUrl: image-name}}" with a url
-				// to the image that is visible to all users (including the guest user).
-				// For example, <img src="http://somehost/ssf/branding/binder/binderId/imgName" />
+				// Parse the advanced branding and replace all
+				// <IMG src="{{attachmentUrl: image-name}}" /> with a
+				// URL to the image that is visible to all users
+				// (including the guest user.)  For example:
+				//		<IMGg src="http://somehost/ssf/branding/binder/binderId/imgName" />
 				branding = MarkupUtil.fixupImgUrls(
-												allModules,
-												request,
-												servletContext,
-												brandingSourceBinder,
-												branding );
+					bs,
+					request,
+					servletContext,
+					brandingSourceBinder,
+					branding);
 												
-				// Parse the advanced branding and replace any markup with the appropriate url.  For example,
-				// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
-				branding = MarkupUtil.markupStringReplacement( null, null, request, null, brandingSourceBinder, branding, "view" );
-	
-				brandingData.setBranding( branding );
+				// Parse the advanced branding and replace any mark up
+				// with the appropriate URL.  For example, replace
+				//		{{atachmentUrl: somename.png}}
+				// with a URL that looks like:
+				// 		http://somehost/ssf/s/readFile/.../somename.png
+				branding = MarkupUtil.markupStringReplacement(
+					null,
+					null,
+					request,
+					null,
+					brandingSourceBinder,
+					branding,
+					"view");
+				brandingData.setBranding(branding);
 				
 				// Do we have a branding image?
-				imgName = brandingData.getBrandingImageName();
-				if ( imgName != null && imgName.length() > 0 )
-				{
-					// Yes
-					// Is the image name "__no image__" or "__default teaming image__"?
-					// These are special names that don't represent a real image file name.
-					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
-					{
-						String fileUrl;
-						
+				String imgName = brandingData.getBrandingImageName();
+				if (MiscUtil.hasString(imgName)) {
+					// Yes!  Is the image name '__no image__' or
+					// '__default teaming image__'?  (These are special
+					// names that don't represent a real image file
+					// name.)
+					if ((!(imgName.equalsIgnoreCase("__no image__"))) && (!(imgName.equalsIgnoreCase("__default teaming image__")))) {
 						// No, Get a url to the file.
-						fileUrl = BrandingUtil.getUrlToBinderBrandingImg(
-			    													allModules,
-			    													request,
-			    													servletContext,
-			    													brandingSourceBinder,
-			    													imgName );
-						
-						brandingData.setBrandingImageUrl( fileUrl );
+						String fileUrl = BrandingUtil.getUrlToBinderBrandingImg(
+							bs,
+			    			request,
+			    			servletContext,
+			    			brandingSourceBinder,
+			    			imgName);
+						brandingData.setBrandingImageUrl(fileUrl);
 					}
 				}
 				
 				// Do we have a background image?
 				imgName = brandingData.getBgImageName();
-				if ( imgName != null && imgName.length() > 0 )
-				{
+				if (MiscUtil.hasString(imgName)) {
+					// Yes!  Get a url to the file.
 					String fileUrl;
-					
-					// Yes
-					// Get a url to the file.
 					fileUrl = BrandingUtil.getUrlToBinderBrandingImg(
-		    													allModules,
-		    													request,
-		    													servletContext,
-		    													brandingSourceBinder,
-		    													imgName );
-					
-					brandingData.setBgImageUrl( fileUrl );
+						bs,
+		    			request,
+		    			servletContext,
+		    			brandingSourceBinder,
+		    			imgName);
+					brandingData.setBgImageUrl(fileUrl);
 				}
 				
 				// Do we have a branding image for the login dialog?
 				imgName = brandingData.getLoginDlgImageName();
-				if ( imgName != null && imgName.length() > 0 )
-				{
-					// Yes
-					// Is the image name "__no image__" or "__default teaming image__"?
-					// These are special names that don't represent a real image file name.
-					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
-					{
-						String fileUrl;
-						
-						// No, get a url to the file
-    					fileUrl = BrandingUtil.getUrlToLoginBrandingImg(
-			    													allModules,
-			    													request,
-			    													servletContext,
-			    													brandingSourceBinder,
-			    													imgName );
-
-    					brandingData.setLoginDlgImageUrl( fileUrl );
+				if (MiscUtil.hasString(imgName)) {
+					// Yes!  Is the image name '__no image__' or
+					// '__default teaming image__'?  (These are special
+					// names that don't represent a real image file
+					// name.)
+					if ((!(imgName.equalsIgnoreCase("__no image__"))) && (!(imgName.equalsIgnoreCase("__default teaming image__")))) {
+						// No, get a url to the file.
+						String fileUrl = BrandingUtil.getUrlToLoginBrandingImg(
+							bs,
+			    			request,
+			    			servletContext,
+			    			brandingSourceBinder,
+			    			imgName);
+    					brandingData.setLoginDlgImageUrl(fileUrl);
 					}
 				}
 			}
 		}
-		catch (NoBinderByTheIdException nbEx)
-		{
-			// Nothing to do
-		}
-		catch (AccessControlException acEx)
-		{
-			// Nothing to do
-		}
-		catch (Exception e)
-		{
-			// Nothing to do
-		}
+		catch (NoBinderByTheIdException nbEx) {/* Ignore. */}
+		catch (AccessControlException   acEx) {/* Ignore. */}
+		catch (Exception                e   ) {/* Ignore. */}
 		
 		return brandingData;
-	}// end getBinderBrandingData()
+	}
 
 	/**
 	 * Returns the User object that's the creator of a Binder.
@@ -5054,7 +4976,7 @@ public class GwtServerHelper {
 	 */
 	public static GwtDynamicGroupMembershipCriteria getDynamicMembershipCriteria(AllModulesInjected bs, Long groupId) {
 		GwtDynamicGroupMembershipCriteria membershipCriteria = new GwtDynamicGroupMembershipCriteria();
-		Principal principal = bs.getProfileModule().getEntry( groupId );
+		Principal principal = bs.getProfileModule().getEntry(groupId);
 		if ((null != principal) && (principal instanceof Group)) {
 			// Get the XML that defines the membership criteria.
 			Group group = ((Group) principal);
@@ -6208,118 +6130,92 @@ public class GwtServerHelper {
 	
 	/**
 	 * Return the membership of the given group.
+	 * 
+	 * @param bs
+	 * @param retList
+	 * @param groupId
+	 * @param offset
+	 * @param numResults
+	 * @param filter
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	public static int getGroupMembership(
-			AllModulesInjected ami,
-			ArrayList<GwtTeamingItem> retList,
-			String groupId,
-			int offset,
-			int numResults,
-			MembershipFilter filter ) throws GwtTeamingException
-	{
-		int totalNumberOfMembers = 0;
-		
-		if ( retList == null )
+	public static int getGroupMembership(AllModulesInjected bs, ArrayList<GwtTeamingItem> retList, String groupId, int offset, int numResults, MembershipFilter filter) throws GwtTeamingException {
+		if (null == retList) {
 			return 0;
+		}
 		
-		try
-		{
-			Long groupIdL;
-			Principal group;
-
+		int totalNumberOfMembers = 0;
+		try {
 			// Get the group object.
-			groupIdL = Long.valueOf(groupId);
-			group = ami.getProfileModule().getEntry(groupIdL);
-			if ( group != null && group instanceof Group )
-			{
-				Iterator<Principal> itMembers;
-				List<Long> membership;
-				List<Principal> memberList;
-				int i;
-				
+			Long groupIdL = Long.valueOf(groupId);
+			Principal group = bs.getProfileModule().getEntry(groupIdL);
+			if ((null != group) && (group instanceof Group)) {
 				// Get the members of the group.
-				memberList = ((Group) group).getMembers();
+				List<Principal> memberList = ((Group) group).getMembers();
 				
-				// Get a list of the ids of all the members of this group.
-				membership = new ArrayList<Long>();
-				itMembers = memberList.iterator();
-				while (itMembers.hasNext())
-				{
-					Principal member;
-					
-					member = (Principal) itMembers.next();
-					membership.add( member.getId() );
+				// Get a list of the IDs of all the members of this group.
+				List<Long> membership = new ArrayList<Long>();
+				Iterator<Principal> itMembers = memberList.iterator();
+				while (itMembers.hasNext()) {
+					Principal member = ((Principal) itMembers.next());
+					membership.add(member.getId());
 				}
 				
-				// Get all the members of the group.  We call ResolveIDs.getPrincipals()
-				// because it handles users the logged-in user has
-				// rights to see.
-				memberList = ResolveIds.getPrincipals( membership, false );
+				// Get all the members of the group.  We call
+				// ResolveIDs.getPrincipals() because it handles users
+				// the logged-in user has rights to see.
+				memberList = ResolveIds.getPrincipals(membership, false);
 				
-				// Sort the list of users/groups
-				Collections.sort( memberList, new PrincipalComparator( true ) );
-				
+				// Sort the list of users/groups.
+				Collections.sort(memberList, new PrincipalComparator(true));
 				totalNumberOfMembers = memberList.size();
 
 				// For each member of the group create a GwtUser or GwtGroup object.
-				for (i = offset; i < memberList.size() && retList.size() < numResults; ++i)
-				{
-					Principal member;
-	
-					member = (Principal) memberList.get( i );
-					if ( member.isDeleted() == true )
+				for (int i = offset; i < memberList.size() && retList.size() < numResults; i += 1) {
+					Principal member = ((Principal) memberList.get(i));
+					if (member.isDeleted()) {
 						continue;
+					}
 					
-					if (member instanceof Group)
-					{
-						if ( filter == MembershipFilter.RETRIEVE_ALL_MEMBERS || filter == MembershipFilter.RETRIEVE_GROUPS_ONLY )
-						{
-							Group nextGroup;
-							GwtGroup gwtGroup;
-							Description desc;
-							
-							nextGroup = (Group) member;
-							
-							gwtGroup = new GwtGroup();
-							gwtGroup.setInternal( nextGroup.getIdentityInfo().isInternal() );
-							gwtGroup.setId( nextGroup.getId().toString() );
-							gwtGroup.setName( nextGroup.getName() );
-							gwtGroup.setTitle( nextGroup.getTitle() );
-							gwtGroup.setDn( nextGroup.getForeignName() );
-							desc = nextGroup.getDescription();
-							if ( desc != null )
-								gwtGroup.setDesc( desc.getText() );
-							gwtGroup.setGroupType( GwtServerHelper.getGroupType( nextGroup ) );
-							
-							retList.add( gwtGroup );
+					if (member instanceof Group) {
+						if ((filter == MembershipFilter.RETRIEVE_ALL_MEMBERS) || (filter == MembershipFilter.RETRIEVE_GROUPS_ONLY)) {
+							Group nextGroup = ((Group) member);
+							GwtGroup gwtGroup = new GwtGroup();
+							gwtGroup.setInternal(nextGroup.getIdentityInfo().isInternal());
+							gwtGroup.setId(nextGroup.getId().toString());
+							gwtGroup.setName(nextGroup.getName());
+							gwtGroup.setTitle(nextGroup.getTitle());
+							gwtGroup.setDn(nextGroup.getForeignName());
+							Description desc = nextGroup.getDescription();
+							if (null != desc) {
+								gwtGroup.setDesc(desc.getText());
+							}
+							gwtGroup.setGroupType(GwtServerHelper.getGroupType(nextGroup));
+							retList.add(gwtGroup);
 						}
 					}
-					else if (member instanceof User)
-					{
-						if ( filter == MembershipFilter.RETRIEVE_ALL_MEMBERS || filter == MembershipFilter.RETRIEVE_USERS_ONLY )
-						{
-							User user;
-							GwtUser gwtUser;
-							
-							user = (User) member;
-		
-							gwtUser = new GwtUser();
-							gwtUser.setInternal( user.getIdentityInfo().isInternal() );
-							gwtUser.setUserId( user.getId() );
-							gwtUser.setName( user.getName() );
-							gwtUser.setTitle( Utils.getUserTitle( user ) );
-							gwtUser.setWorkspaceTitle( user.getWSTitle() );
-							gwtUser.setEmail( user.getEmailAddress() );
-							gwtUser.setDisabled( user.isDisabled() );
-		
-							retList.add( gwtUser );
+					
+					else if (member instanceof User) {
+						if ((filter == MembershipFilter.RETRIEVE_ALL_MEMBERS) || (filter == MembershipFilter.RETRIEVE_USERS_ONLY)) {
+							User user = ((User) member);
+							GwtUser gwtUser = new GwtUser();
+							gwtUser.setInternal(user.getIdentityInfo().isInternal());
+							gwtUser.setUserId(user.getId());
+							gwtUser.setName(user.getName());
+							gwtUser.setTitle(Utils.getUserTitle(user));
+							gwtUser.setWorkspaceTitle(user.getWSTitle());
+							gwtUser.setEmail(user.getEmailAddress());
+							gwtUser.setDisabled(user.isDisabled());
+							retList.add(gwtUser);
 						}
 					}
 				}
 			}
 		}
-		catch (Exception ex)
-		{
+		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
@@ -6327,23 +6223,20 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Get the information about the given group's membership.  Is the membership dynamic or static.
-	 * Are external users/groups allowed.
+	 * Get the information about the given group's membership.  Is the
+	 * membership dynamic or static.  Are external users/groups
+	 * allowed.
+	 * 
+	 * @param bs
+	 * @param groupId
+	 * 
+	 * @return
 	 */
-	public static GroupMembershipInfo getGroupMembershipInfo(
-		AllModulesInjected ami,
-		Long groupId )
-	{
-		GroupMembershipInfo info;
-		boolean isDynamic;
-		boolean externalAllowed;
-		
-		info = new GroupMembershipInfo();
-		
-		externalAllowed = isExternalMembersAllowed( ami, groupId );
-		isDynamic = isGroupMembershipDynamic( ami, groupId );
-		info.setMembershipInfo( isDynamic, externalAllowed );
-		
+	public static GroupMembershipInfo getGroupMembershipInfo(AllModulesInjected bs, Long groupId) {
+		GroupMembershipInfo info = new GroupMembershipInfo();
+		boolean externalAllowed = isExternalMembersAllowed(bs, groupId);
+		boolean isDynamic       = isGroupMembershipDynamic(bs, groupId);
+		info.setMembershipInfo(isDynamic, externalAllowed);
 		return info;
 	}
 
@@ -6404,33 +6297,33 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Get the inherited landing page properties (background color, background image, etc) for
-	 * the given binder.
+	 * Get the inherited landing page properties (background color,
+	 * background image, etc...) for the given binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param request
+	 * 
+	 * @return
+	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static GwtLandingPageProperties getInheritedLandingPageProperties( AllModulesInjected ami, String binderId, HttpServletRequest request ) throws GwtTeamingException
-	{
-		GwtLandingPageProperties lpProperties = null;
+	public static GwtLandingPageProperties getInheritedLandingPageProperties(AllModulesInjected bs, String binderId, HttpServletRequest request) throws GwtTeamingException {
+		GwtLandingPageProperties lpProperties = new GwtLandingPageProperties();
+		lpProperties.setInheritProperties(true);
 		
-		lpProperties = new GwtLandingPageProperties();
-		lpProperties.setInheritProperties( true );
-		
-		try
-		{
-			Binder binder;
-			Binder parentBinder;
-			
-			binder = ami.getBinderModule().getBinder( Long.parseLong( binderId ) );
-			
+		try {
 			// Get the binder's parent.
-			parentBinder = binder.getParentBinder();
-			if ( parentBinder != null )
+			Binder binder = bs.getBinderModule().getBinder(Long.parseLong(binderId));
+			Binder parentBinder = binder.getParentBinder();
+			if (null != parentBinder) {
 				binder = parentBinder;
+			}
 			
-			lpProperties = getLandingPageProperties( ami, String.valueOf( binder.getId() ), request );
+			lpProperties = getLandingPageProperties(bs, String.valueOf(binder.getId()), request);
 		}
-		catch (Exception ex)
-		{
+		
+		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
@@ -6439,31 +6332,27 @@ public class GwtServerHelper {
 	
 	/**
 	 * Return a GwtJitsZoneConfig object that holds the jits zone config data.
+	 *
+	 * @param bs
 	 * 
 	 * @return
 	 */
-	public static GwtNetFolderGlobalSettings getNetFolderGlobalSettings( AllModulesInjected allModules )
-	{
-		GwtNetFolderGlobalSettings nfGlobalSettings;
-		ZoneConfig zoneConfig;
-		ZoneModule zoneModule;
+	public static GwtNetFolderGlobalSettings getNetFolderGlobalSettings(AllModulesInjected bs) {
+		ZoneModule zm = bs.getZoneModule();
+		ZoneConfig zc = zm.getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+		GwtNetFolderGlobalSettings nfGlobalSettings = new GwtNetFolderGlobalSettings();
 		
-		zoneModule = allModules.getZoneModule();
-		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-		
-		nfGlobalSettings = new GwtNetFolderGlobalSettings();
-		
-		// Get the whether jits is enabled.
-		nfGlobalSettings.setJitsEnabled( zoneConfig.getJitsEnabled() );
+		// Get the whether JITS enabled.
+		nfGlobalSettings.setJitsEnabled(zc.getJitsEnabled());
 		
 		// Get the max wait time.
-		nfGlobalSettings.setMaxWaitTime( zoneConfig.getJitsWaitTimeout() / 1000 );
+		nfGlobalSettings.setMaxWaitTime(zc.getJitsWaitTimeout() / 1000);
 		
-		// Get the setting for "use directory rights"
-		nfGlobalSettings.setUseDirectoryRights( zoneConfig.getUseDirectoryRights() );
+		// Get the setting for 'use directory rights'.
+		nfGlobalSettings.setUseDirectoryRights(zc.getUseDirectoryRights());
 		
-		// Get the "cached rights refresh interval"
-		nfGlobalSettings.setCachedRightsRefreshInterval( zoneConfig.getCachedRightsRefreshInterval() );
+		// Get the 'cached rights refresh interval'.
+		nfGlobalSettings.setCachedRightsRefreshInterval(zc.getCachedRightsRefreshInterval());
 		
 		return nfGlobalSettings;
 	}
@@ -6510,36 +6399,35 @@ public class GwtServerHelper {
 	
 	/**
 	 * Get the landing page data for the given binder.
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	public static ConfigData getLandingPageData( HttpServletRequest request, AllModulesInjected allModules, String binderId ) throws GwtTeamingException
-	{
-		ConfigData configData;
-		
-		configData = new ConfigData();
-		configData.setBinderId( binderId );
+	public static ConfigData getLandingPageData(HttpServletRequest request, AllModulesInjected bs, String binderId) throws GwtTeamingException {
+		ConfigData configData = new ConfigData();
+		configData.setBinderId(binderId);
 
-		try
-		{
-			Binder binder;
-			CustomAttribute customAttr;
-			
-			binder = allModules.getBinderModule().getBinder( Long.parseLong( binderId ) );
-			
-			// The landing page configuration data is stored as a custom attribute with the name "mashup"
-			customAttr = binder.getCustomAttribute( "mashup" );
-    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.STRING )
-    		{
-    			String configStr;
-
-    			configStr = (String) customAttr.getValue();
-    			configData.setConfigStr( configStr );
+		try {
+			// The landing page configuration data is stored as a
+			// custom attribute with the name 'mashup'.
+			Binder binder = bs.getBinderModule().getBinder(Long.parseLong(binderId));
+			CustomAttribute customAttr = binder.getCustomAttribute("mashup");
+    		if ((customAttr != null) && (customAttr.getValueType() == CustomAttribute.STRING)) {
+    			String configStr = ((String) customAttr.getValue());
+    			configData.setConfigStr(configStr);
     		}
     		
-			// Get the other settings that are stored in the "mashup__properties" custom attribute
-   			getLandingPageProperties( allModules, binderId, configData, request );
+			// Get the other settings that are stored in the
+    		// 'mashup__properties' custom attribute.
+   			getLandingPageProperties(bs, binderId, configData, request);
 		}
-		catch (Exception ex)
-		{
+		
+		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
@@ -6547,66 +6435,63 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Get the landing page properties (background color, background image, etc) for
-	 * the given binder.
+	 * Get the landing page properties (background color, background
+	 * image, etc, ...) for the given binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param request
+	 * 
+	 * @return
+	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static GwtLandingPageProperties getLandingPageProperties( AllModulesInjected ami, String binderId, HttpServletRequest request ) throws GwtTeamingException
-	{
-		GwtLandingPageProperties gwtLpProperties = null;
+	public static GwtLandingPageProperties getLandingPageProperties(AllModulesInjected bs, String binderId, HttpServletRequest request) throws GwtTeamingException {
+		GwtLandingPageProperties gwtLpProperties = new GwtLandingPageProperties();
+		gwtLpProperties.setInheritProperties(true);
 		
-		gwtLpProperties = new GwtLandingPageProperties();
-		gwtLpProperties.setInheritProperties( true );
-		
-		try
-		{
-			Binder binder;
-			Binder sourceBinder;
-			LandingPageProperties lpProps;
+		try {
+			// Landing page properties can be inherited.  Get the
+			// binder that holds the landing page properties.
+			Binder binder = bs.getBinderModule().getBinder(Long.parseLong(binderId));
+			Binder sourceBinder = binder.getLandingPagePropertiesSourceBinder();
 			
-			binder = ami.getBinderModule().getBinder( Long.parseLong( binderId ) );
-			
-			// Landing page properties can be inherited.  Get the binder that holds the landing
-			// page properties.
-			sourceBinder = binder.getLandingPagePropertiesSourceBinder();
-			
-			// Does the user have rights to the binder where the landing page properties are coming from?
-			if ( !ami.getBinderModule().testAccess( sourceBinder, BinderOperation.readEntries ) )
-			{
+			// Does the user have rights to the binder where the
+			// landing page properties are coming from?
+			if (!(bs.getBinderModule().testAccess(sourceBinder, BinderOperation.readEntries))) {
 				// No, don't use inherited landing page properties.
 				sourceBinder = binder;
 			}
 			
-			// Get the landing page properties from the binder we inherit from.
-			lpProps = DefinitionHelper.getLandingPageProperties( request, sourceBinder );
-
-			if ( lpProps != null )
-			{
-				// Did we inherit the properties from another landing page.
-				if ( sourceBinder == binder )
-				{
-					// No
-					gwtLpProperties.setInheritProperties( false );
+			// Get the landing page properties from the binder we
+			// inherit from.
+			LandingPageProperties lpProps = DefinitionHelper.getLandingPageProperties(request, sourceBinder);
+			if (lpProps != null) {
+				// Did we inherit the properties from another landing
+				// page.
+				if (sourceBinder == binder) {
+					// No!
+					gwtLpProperties.setInheritProperties(false);
 				}
 				
-				gwtLpProperties.setBackgroundColor( lpProps.getBackgroundColor() );
-				gwtLpProperties.setBackgroundImgName( lpProps.getBackgroundImageName() );
+				gwtLpProperties.setBackgroundColor(  lpProps.getBackgroundColor()    );
+				gwtLpProperties.setBackgroundImgName(lpProps.getBackgroundImageName());
 				gwtLpProperties.setBackgroundImgUrl( lpProps.getBackgroundImageUrl() );
-				gwtLpProperties.setBackgroundRepeat( lpProps.getBackgroundRepeat() );
-				gwtLpProperties.setBorderColor( lpProps.getBorderColor() );
-				gwtLpProperties.setBorderWidth( lpProps.getBorderWidth() );
-				gwtLpProperties.setContentTextColor( lpProps.getContentTextColor() );
-				gwtLpProperties.setHeaderBgColor( lpProps.getHeaderBgColor() );
-				gwtLpProperties.setHeaderTextColor( lpProps.getHeaderTextColor() );
-				gwtLpProperties.setHideFooter( lpProps.getHideFooter() );
-				gwtLpProperties.setHideMasthead( lpProps.getHideMasthead() );
-				gwtLpProperties.setHideMenu( lpProps.getHideMenu() );
-				gwtLpProperties.setHideSidebar( lpProps.getHideSidebar() );
-				gwtLpProperties.setStyle( lpProps.getStyle() );
+				gwtLpProperties.setBackgroundRepeat( lpProps.getBackgroundRepeat()   );
+				gwtLpProperties.setBorderColor(      lpProps.getBorderColor()        );
+				gwtLpProperties.setBorderWidth(      lpProps.getBorderWidth()        );
+				gwtLpProperties.setContentTextColor( lpProps.getContentTextColor()   );
+				gwtLpProperties.setHeaderBgColor(    lpProps.getHeaderBgColor()      );
+				gwtLpProperties.setHeaderTextColor(  lpProps.getHeaderTextColor()    );
+				gwtLpProperties.setHideFooter(       lpProps.getHideFooter()         );
+				gwtLpProperties.setHideMasthead(     lpProps.getHideMasthead()       );
+				gwtLpProperties.setHideMenu(         lpProps.getHideMenu()           );
+				gwtLpProperties.setHideSidebar(      lpProps.getHideSidebar()        );
+				gwtLpProperties.setStyle(            lpProps.getStyle()              );
 			}
 		}
-		catch (Exception ex)
-		{
+		
+		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
@@ -6614,241 +6499,201 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Get the landing page properties (background color, background image, etc) for
-	 * the given binder.
+	 * Get the landing page properties (background color, background
+	 * image, etc, ...) for the given binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param lpConfigData
+	 * @param request
+	 * 
+	 * @return
+	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static void getLandingPageProperties( AllModulesInjected ami, String binderId, ConfigData lpConfigData, HttpServletRequest request ) throws GwtTeamingException
-	{
-		GwtLandingPageProperties lpProperties;
-		
+	public static void getLandingPageProperties(AllModulesInjected bs, String binderId, ConfigData lpConfigData, HttpServletRequest request) throws GwtTeamingException {
 		// Get the landing page properties for the given binder.
-		lpProperties = getLandingPageProperties( ami, binderId, request );
-		if ( lpProperties != null )
-		{
-			lpConfigData.initLandingPageProperties( lpProperties );
+		GwtLandingPageProperties lpProperties = getLandingPageProperties(bs, binderId, request);
+		if (null != lpProperties) {
+			lpConfigData.initLandingPageProperties(lpProperties);
 		}
 	}
 
 	/**
 	 * Return a list of child binders for the given binder.
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param findBrowser
+	 * @param binderId
+	 * 
+	 * @return
 	 */
-	public static ArrayList<TreeInfo> getListOfChildBinders( HttpServletRequest request, AllModulesInjected ami, boolean findBrowser, String binderId )
-	{
-		Binder binder;
-		ArrayList<TreeInfo> listOfChildBinders;
-    	Map<String, Counter> unseenCounts;
-
+	public static ArrayList<TreeInfo> getListOfChildBinders(HttpServletRequest request, AllModulesInjected bs, boolean findBrowser, String binderId) {
+    	List<Map> entries;
+		SeenMap seen;
+		
 		// Get the count of unseen items in the given binder and sub binders
-		{
-			@SuppressWarnings("unused")
-			HashMap options;
-			List binderIds;
-			Date creationDate;
-			String startDate;
-			String now;
-			Criteria crit;
-			Map results;
-	    	List<Map> entries;
-			SeenMap seen;
+    	Map<String, Counter> unseenCounts = new HashMap();
+		List binderIds = new ArrayList();
+		binderIds.add(binderId);
+	    
+		// Get entries created within last 30 days
+		Date creationDate = new Date();
+		creationDate.setTime(creationDate.getTime() - (ObjectKeys.SEEN_TIMEOUT_DAYS * 24 * 60 * 60 * 1000));
+		String startDate = DateTools.dateToString(creationDate, DateTools.Resolution.SECOND);
+		String now = DateTools.dateToString(new Date(), DateTools.Resolution.SECOND);
+		Criteria crit = SearchUtils.newEntriesDescendants(binderIds);
+		crit.add(org.kablink.util.search.Restrictions.between(Constants.MODIFICATION_DATE_FIELD, startDate, now));
+		Map results = bs.getBinderModule().executeSearchQuery(
+			crit,
+			Constants.SEARCH_MODE_NORMAL,
+			0,
+			ObjectKeys.MAX_BINDER_ENTRIES_RESULTS,
+			org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(
+				Constants.ENTRY_ANCESTRY,
+				Constants.DOCID_FIELD,
+				Constants.LASTACTIVITY_FIELD,
+				Constants.MODIFICATION_DATE_FIELD));
+    	entries = ((List) results.get(ObjectKeys.SEARCH_ENTRIES));
+
+		// Get the count of unseen entries.
+		seen = bs.getProfileModule().getUserSeenMap(null);
+    	for (Map entry:  entries) {
+    		SearchFieldResult entryAncestors = ((SearchFieldResult) entry.get(Constants.ENTRY_ANCESTRY));
+			if (null == entryAncestors) {
+				continue;
+			}
 			
-	    	unseenCounts = new HashMap();
-	    	
-			options = new HashMap();
-			binderIds = new ArrayList();
-			binderIds.add( binderId );
-		    
-			// Get entries created within last 30 days
-			creationDate = new Date();
-			creationDate.setTime( creationDate.getTime() - ObjectKeys.SEEN_TIMEOUT_DAYS*24*60*60*1000 );
-			startDate = DateTools.dateToString( creationDate, DateTools.Resolution.SECOND );
-			now = DateTools.dateToString( new Date(), DateTools.Resolution.SECOND );
-			crit = SearchUtils.newEntriesDescendants( binderIds );
-			crit.add( org.kablink.util.search.Restrictions.between( Constants.MODIFICATION_DATE_FIELD, startDate, now ) );
-			results = ami.getBinderModule().executeSearchQuery( crit, Constants.SEARCH_MODE_NORMAL, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS,
-					org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.ENTRY_ANCESTRY,Constants.DOCID_FIELD,Constants.LASTACTIVITY_FIELD,Constants.MODIFICATION_DATE_FIELD));
-	    	entries = (List) results.get( ObjectKeys.SEARCH_ENTRIES );
-
-			// Get the count of unseen entries
-			seen = ami.getProfileModule().getUserSeenMap( null );
-	    	for (Map entry : entries)
-	    	{
-	    		SearchFieldResult entryAncestors;
-				String entryIdString;
-				Iterator itAncestors;
-
-	    		entryAncestors = (SearchFieldResult) entry.get( Constants.ENTRY_ANCESTRY );
-				if ( entryAncestors == null )
+			String entryIdString = ((String) entry.get(Constants.DOCID_FIELD));
+			if ((null == entryIdString) || seen.checkIfSeen(entry)) {
+				continue;
+			}
+			
+			// Count up the unseen counts for all ancestor binders.
+			Iterator itAncestors = entryAncestors.getValueSet().iterator();
+			while (itAncestors.hasNext()) {
+				String binderIdString = ((String) itAncestors.next());
+				if (binderIdString.equals("")) {
 					continue;
-				
-				entryIdString = (String) entry.get( Constants.DOCID_FIELD );
-				if ( entryIdString == null || ( seen.checkIfSeen( entry ) ) )
-					continue;
-				
-				// Count up the unseen counts for all ancestor binders
-				itAncestors = entryAncestors.getValueSet().iterator();
-				while ( itAncestors.hasNext() )
-				{
-					String binderIdString;
-					Counter cnt;
-
-					binderIdString = (String)itAncestors.next();
-					if ( binderIdString.equals("") )
-						continue;
-					
-					cnt = unseenCounts.get( binderIdString );
-					if ( cnt == null )
-					{
-						cnt = new WorkspaceTreeHelper.Counter();
-						unseenCounts.put( binderIdString, cnt );
-					}
-					cnt.increment();
 				}
-	    	}
-		}
+				
+				Counter cnt = unseenCounts.get(binderIdString);
+				if (null == cnt) {
+					cnt = new WorkspaceTreeHelper.Counter();
+					unseenCounts.put(binderIdString, cnt);
+				}
+				
+				cnt.increment();
+			}
+    	}
 
-		listOfChildBinders = new ArrayList<TreeInfo>();
-		binder = GwtUIHelper.getBinderSafely( ami.getBinderModule(), binderId );
-		if ( binder != null )
-		{
+		ArrayList<TreeInfo> listOfChildBinders = new ArrayList<TreeInfo>();
+		Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
+		if (null != binder) {
+			// This is needed by buildTreeInfoFromBinder().
 			ArrayList<Long> expandedBindersList;
-			TreeInfo treeInfo;
-			List<Map> children;
-
-			// This is needed by buildTreeInfoFromBinder()
 			expandedBindersList = new ArrayList<Long>();
 			
 			// Get all of the child binders.
-			{
-				Map options;
-				Map searchResults;
-
-				options = new HashMap();
-				options.put( ObjectKeys.SEARCH_SORT_BY, org.kablink.util.search.Constants.SORT_TITLE_FIELD );
-				options.put( ObjectKeys.SEARCH_SORT_DESCEND, new Boolean( false ) );
-				options.put( ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS );
-				searchResults = ami.getBinderModule().getBinders( binder, options );
-				children = (List)searchResults.get( ObjectKeys.SEARCH_ENTRIES );
-				
-			}
-			
-			if ( children != null )
-			{
-				for (Map child : children)
-				{
-					String childBinderId;
-					Binder childBinder;
-					
-					// Get the next child binder
-					childBinderId = (String) child.get( Constants.DOCID_FIELD );
-					childBinder = GwtUIHelper.getBinderSafely( ami.getBinderModule(), childBinderId );
-					
-					if ( childBinder != null )
-					{
-						treeInfo = buildTreeInfoFromBinder( request, ami, findBrowser, childBinder, expandedBindersList, false, 1 );
-	
-						// Set the number of unseen entries for this binder
-						{
-							Counter counter;
-							
-							counter = unseenCounts.get( childBinderId );
-							if ( counter != null )
-								treeInfo.getBinderInfo().setNumUnread( counter.getCount() );
+			Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_SORT_BY, org.kablink.util.search.Constants.SORT_TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+			options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
+			Map searchResults = bs.getBinderModule().getBinders(binder, options);
+			List<Map> children = ((List) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+			if (null != children) {
+				for (Map child:  children) {
+					// Get the next child binder.
+					String childBinderId = ((String) child.get(Constants.DOCID_FIELD));
+					Binder childBinder   = GwtUIHelper.getBinderSafely(bs.getBinderModule(), childBinderId);
+					if (null != childBinder) {
+						// Set the number of unseen entries for this
+						// binder.
+						TreeInfo treeInfo = buildTreeInfoFromBinder(
+							request,
+							bs,
+							findBrowser,
+							childBinder,
+							expandedBindersList,
+							false,
+							1);
+						Counter counter = unseenCounts.get(childBinderId);
+						if (null != counter) {
+							treeInfo.getBinderInfo().setNumUnread(counter.getCount());
 						}
-						
-						listOfChildBinders.add( treeInfo );
+						listOfChildBinders.add(treeInfo);
 					}
 				}
 			}
 		}
 		
 		// Sort the list of child binders.
-		if ( listOfChildBinders.isEmpty() == false )
-		{
-			Collections.sort( listOfChildBinders, new TreeInfoComparator( true ) );
+		if (!(listOfChildBinders.isEmpty())) {
+			Collections.sort(listOfChildBinders, new TreeInfoComparator(true));
 		}
 
 		return listOfChildBinders;
 	}
 	
 	/**
-	 * Return a list of all the locales
+	 * Return a list of all the locales.
+	 * 
+	 * @return
 	 */
-	public static GwtLocales getLocales()
-	{
-		GwtLocales locales;
-		TreeMap<String,Locale> localeMap;
-		TreeMap<String,String> localeMap2;
+	public static GwtLocales getLocales() {
+		GwtLocales locales = new GwtLocales();
+		TreeMap<String,String> localeMap2 = new TreeMap<String,String>();
+		TreeMap<String,Locale> localeMap = NLT.getSortedLocaleList(getCurrentUser());
 		
-		locales = new GwtLocales();
-		
-		localeMap2 = new TreeMap<String,String>();
-		
-		localeMap = NLT.getSortedLocaleList( getCurrentUser() );
-		
-		if ( localeMap != null )
-		{
-			for ( Map.Entry<String,Locale> mapEntry: localeMap.entrySet() )
-			{
-				Locale locale;
-				
-				locale = mapEntry.getValue();
-				
-				localeMap2.put( mapEntry.getKey(), locale.toString() );
+		if (null != localeMap) {
+			for (Map.Entry<String,Locale> mapEntry:  localeMap.entrySet()) {
+				Locale locale = mapEntry.getValue();
+				localeMap2.put(mapEntry.getKey(), locale.toString());
 			}
 		}
 		
-		locales.setListOfLocales( localeMap2 );
-		
+		locales.setListOfLocales(localeMap2);
 		return locales;
 	}
 	
 	
 	/**
-	 * Return login information such as self registration and auto complete.
+	 * Return login information such as self registration and auto
+	 * complete.
+	 * 
+	 * @param request
+	 * @param bs
+	 * 
+	 * @return
 	 */
-	public static GwtLoginInfo getLoginInfo( HttpServletRequest request, AllModulesInjected ami )
-	{
-		GwtLoginInfo loginInfo;
-		GwtSelfRegistrationInfo selfRegInfo;
-		boolean allowAutoComplete;
-		
-		loginInfo = new GwtLoginInfo();
-		
+	public static GwtLoginInfo getLoginInfo(HttpServletRequest request, AllModulesInjected bs) {
 		// Get self-registration info.
-		selfRegInfo = getSelfRegistrationInfo( request, ami );
-		loginInfo.setSelfRegistrationInfo( selfRegInfo );
+		GwtSelfRegistrationInfo selfRegInfo = getSelfRegistrationInfo(request, bs);
+		GwtLoginInfo loginInfo = new GwtLoginInfo();
+		loginInfo.setSelfRegistrationInfo(selfRegInfo);
 		
-		// Read the value of the enable.login.autocomplete key from ssf.properties
-		allowAutoComplete = SPropsUtil.getBoolean( "enable.login.autocomplete", false );
-		loginInfo.setAllowAutoComplete( allowAutoComplete );
+		// Read the value of the enable.login.autocomplete key from
+		// ssf.properties.
+		boolean allowAutoComplete = SPropsUtil.getBoolean("enable.login.autocomplete", false);
+		loginInfo.setAllowAutoComplete(allowAutoComplete);
 		
 		// Are we running the Enterprise version of Vibe?
-		if ( ReleaseInfo.isLicenseRequiredEdition() )
-		{
-			// Yes
-			// Does the license allow external users?
-			if ( LicenseChecker.isAuthorizedByLicense( "com.novell.teaming.ExtUsers" ) )
-			{
-				ZoneConfig zoneConfig;
-				ZoneModule zoneModule;
-				boolean allowOpenIdAuth;
+		if (ReleaseInfo.isLicenseRequiredEdition()) {
+			// Yes!  Does the license allow external users?
+			if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.ExtUsers")) {
+				// Yes!
+				ZoneModule zm = bs.getZoneModule();
+				ZoneConfig zc = zm.getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+				boolean allowOpenIdAuth = zc.isExternalUserEnabled() && zc.getOpenIDConfig().isAuthenticationEnabled();
+				loginInfo.setAllowOpenIdAuthentication(allowOpenIdAuth); 
 				
-				// Yes
-				zoneModule = ami.getZoneModule();
-				zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-				allowOpenIdAuth = zoneConfig.isExternalUserEnabled() && zoneConfig.getOpenIDConfig().isAuthenticationEnabled();
-				loginInfo.setAllowOpenIdAuthentication( allowOpenIdAuth ); 
-				
-				// Is openid authentication enabled?
-				if ( allowOpenIdAuth )
-				{
-					ArrayList<GwtOpenIDAuthenticationProvider> listOfProviders;
-					
-					// Yes
-					// Get a list of the openid authentication providers supported by Vibe
-					listOfProviders = getOpenIDAuthenticationProviders( ami );
-					loginInfo.setListOfOpenIDAuthProviders( listOfProviders );
+				// Is OpenID authentication enabled?
+				if (allowOpenIdAuth) {
+					// Yes!  Get a list of the OpenID authentication
+					// providers supported by Vibe.
+					ArrayList<GwtOpenIDAuthenticationProvider> listOfProviders = getOpenIDAuthenticationProviders(bs);
+					loginInfo.setListOfOpenIDAuthProviders(listOfProviders);
 				}
 			}
 		}
@@ -6914,16 +6759,15 @@ public class GwtServerHelper {
 			boolean superUser = false;
 			
 			user = getCurrentUser();
-			if ( user != null )
-			{
+			if (null != user) {
 				// Is this the super user (admin)?
-				if ( ObjectKeys.SUPER_USER_INTERNALID.equals( user.getInternalId() ) )
+				if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) {
 					superUser = true;
+				}
 				
 				// Is this the first time the admin has logged in?
-				if ( user.getFirstLoginDate() == null )
-				{
-					// Yes
+				if (null == user.getFirstLoginDate()) {
+					// Yes!
 					firstLogin = true;
 				}
 			}
@@ -6939,7 +6783,7 @@ public class GwtServerHelper {
 					showDesktopAppDownloader,
 					useHomeAsMyFiles,
 					firstLogin,
-					superUser );
+					superUser);
 		}
 		
 		catch (Exception ex) {
@@ -7101,6 +6945,8 @@ public class GwtServerHelper {
 		}		
 	}
 
+//!	...DRF (20150604):  Left off reformatting here!
+	
 	/**
 	 * Return a GwtMobileAppsConfiguration object that holds the mobile apps configuration data
 	 * 
