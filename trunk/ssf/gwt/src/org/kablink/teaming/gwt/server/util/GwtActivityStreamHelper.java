@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -534,14 +534,14 @@ public class GwtActivityStreamHelper {
 				// for this top level entry?
 				List<ASEntryData> commentEntryDataList = entryData.getCommentEntryDataList();
 				
-				// We only want the last n comments.  If we have already added n comments to the
-				// top level entry, remove the first one.
-				if ( commentEntryDataList.size() == activeComments )
-				{
-					commentEntryDataList.remove( 0 );
+				// We only want the last n comments.  If we have
+				// already added n comments to the top level entry,
+				// remove the first one.
+				if (commentEntryDataList.size() == activeComments) {
+					commentEntryDataList.remove(0);
 				}
 
-				if ( commentEntryDataList.size() < activeComments ) {
+				if (commentEntryDataList.size() < activeComments) {
 					// No!  Add a stubbed out ASEntryData to the
 					// comment List<ASEntryData> that we're completing.
 					if (!isAll) {
@@ -1537,31 +1537,24 @@ public class GwtActivityStreamHelper {
 			}
 		}
 		
-		// Do we have a creation start/end time/
+		// Do we have a creation start/end time?
 		creationStartTime = sfData.getCreationStartTime();
-		creationEndTime = sfData.getCreationEndTime();
-		if ( creationStartTime != null && creationEndTime != null ) 
-		{
-			String startDate;
-			String endDate;
-			Date date;
-			DateTimeFormatter fmt;
-			
-			// Yes, Add it to the filter.
-			fmt = DateTimeFormat.forPattern( "yyyy-MM-dd HH:mm" ).withZone( DateTimeZone.forTimeZone( GwtServerHelper.getCurrentUser().getTimeZone() ) );
-			date = new Date( creationStartTime.longValue() );
-			startDate = fmt.print( new DateTime( date ) );
-			date = new Date( creationEndTime.longValue() );
-			endDate = fmt.print( new DateTime( date ) );
-			sf.addCreationDateRange( startDate, endDate );
+		creationEndTime   = sfData.getCreationEndTime();
+		if ((null != creationStartTime) && (null != creationEndTime)) {
+			// Yes!  Add it to the filter.
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(GwtServerHelper.getCurrentUser().getTimeZone()));
+			Date date = new Date(creationStartTime.longValue());
+			String startDate = fmt.print(new DateTime(date));
+			date = new Date(creationEndTime.longValue());
+			String endDate = fmt.print(new DateTime(date));
+			sf.addCreationDateRange(startDate, endDate);
 		}
 		
 		// Do we have a global tag?
 		globalTagInfo = sfData.getGlobalTagInfo();
-		if ( globalTagInfo != null )
-		{
-			// Yes, add it to the filter.
-			sf.addCommunityTag( globalTagInfo.getTagSearchText() );
+		if (null != globalTagInfo) {
+			// Yes!  Add it to the filter.
+			sf.addCommunityTag(globalTagInfo.getTagSearchText());
 		}
 
 		// If we get here, sf refers to a SearchFilter object
@@ -1991,21 +1984,17 @@ public class GwtActivityStreamHelper {
 		ActivityStreamParams reply = m_activityStreamParams.copyBaseASP();
 
 		try {
-			UserProperties userProperties;
-			ActivityStreamDataType showSetting;
-			
-			// Get the user's properties
-			userProperties = bs.getProfileModule().getUserProperties( null );
+			// Get the user's properties.
+			UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
 			
 			// Read the user's show setting for the what's new page.
-			showSetting = GwtServerHelper.getWhatsNewShowSetting( userProperties );
-			reply.setShowSetting( showSetting );
+			ActivityStreamDataType showSetting = GwtServerHelper.getWhatsNewShowSetting(userProperties);
+			reply.setShowSetting(showSetting);
 
 			// Read the user's entries per page setting and store it in
 			// the ActivityStreamParams.
-			String eppS = MiscUtil.entriesPerPage( userProperties );
-			if ( eppS != null && eppS.length() > 0 )
-			{
+			String eppS = MiscUtil.entriesPerPage(userProperties);
+			if (MiscUtil.hasString(eppS)) {
 				int epp = Integer.parseInt(eppS);
 				reply.setEntriesPerPage(epp);
 			}

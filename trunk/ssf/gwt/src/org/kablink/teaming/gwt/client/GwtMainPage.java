@@ -623,48 +623,42 @@ public class GwtMainPage extends ResizeComposite
 	 * Loads the split point for the ActivityStreamCtrl and
 	 * instantiates an object from it.
 	 */
-	private void loadActivityStreamCtrl()
-	{
-		ActionsPopupMenu actionsMenu;
-		ArrayList<ActionMenuItem> list;
+	private void loadActivityStreamCtrl() {
+		ArrayList<ActionMenuItem> list = new ArrayList<ActionMenuItem>();
+		list.add(ActionMenuItem.REPLY       );
+		list.add(ActionMenuItem.SHARE       );
+		list.add(ActionMenuItem.VIEW_DETAILS);
+		list.add(ActionMenuItem.SUBSCRIBE   );
+		if (!(GwtTeaming.m_requestInfo.isLicenseFilr())) {
+			list.add(ActionMenuItem.TAG);
+		}
+		list.add(ActionMenuItem.EDIT       );	// Will only be allowed on comments!
+		list.add(ActionMenuItem.DELETE     );
+		list.add(ActionMenuItem.SEPARATOR  );
+		list.add(ActionMenuItem.MARK_READ  );
+		list.add(ActionMenuItem.MARK_UNREAD);
 		
-		list = new ArrayList<ActionMenuItem>();
-		list.add(ActionMenuItem.REPLY );
-		list.add( ActionMenuItem.SHARE );
-		list.add( ActionMenuItem.VIEW_DETAILS );
-		list.add( ActionMenuItem.SUBSCRIBE );
-		if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
-			list.add( ActionMenuItem.TAG );
-		list.add( ActionMenuItem.SEPARATOR );
-		list.add( ActionMenuItem.MARK_READ );
-		list.add( ActionMenuItem.MARK_UNREAD );
-		
-		actionsMenu = new ActionsPopupMenu( true, true, list.toArray( new ActionMenuItem[list.size()] ) );
-		ActivityStreamCtrl.createAsync( ActivityStreamCtrlUsage.STANDALONE, actionsMenu, new ActivityStreamCtrlClient()
-		{			
+		ActionsPopupMenu actionsMenu = new ActionsPopupMenu(true, true, list.toArray(new ActionMenuItem[0]));
+		ActivityStreamCtrl.createAsync(ActivityStreamCtrlUsage.STANDALONE, actionsMenu, new ActivityStreamCtrlClient() {			
 			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
 			}
 			
 			@Override
-			public void onSuccess( ActivityStreamCtrl asCtrl )
-			{
+			public void onSuccess(ActivityStreamCtrl asCtrl) {
 				m_activityStreamCtrl = asCtrl;
-				GwtClientHelper.deferCommand( new ScheduledCommand()
-				{
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					@Override
-					public void execute()
-					{
-						if ( m_mainPageInfo.isShowDesktopAppDownloader() )
+					public void execute() {
+						if (m_mainPageInfo.isShowDesktopAppDownloader())
 						     loadDesktopAppDownloadCtrl();
 						else constructMainPage_Finish();
 					}
-				} );
+				});
 			}
-		} );
+		});
 	}
 
 	/*
