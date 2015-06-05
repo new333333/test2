@@ -60,6 +60,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.comparator.LongIdComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -1430,9 +1431,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		if((zoneId != null && !user.getZoneId().equals(zoneId)) || !user.isActive()) {
     			throw new NoUserByTheIdException(userId);
     		}
-    		user = (User) filterInaccessiblePrincipal(user);
-            if (user == null) 
-            	throw new NoUserByTheIdException(userId); 
+    		// Redact user ONLY IF this call isn't being made during authentication process (bug #930603)
+    		// Normally, authentication is performed under guest context, and therefore, it is necessary
+    		// for guest account to be able to load other user objects including admin account.
+    		if(AuthenticationContextHolder.getAuthenticator() == null) {
+	    		user = (User) filterInaccessiblePrincipal(user);
+	            if (user == null) 
+	            	throw new NoUserByTheIdException(userId); 
+    		}
     		return user;
     	} catch (ClassCastException ce) {
    			throw new NoUserByTheIdException(userId);   		
