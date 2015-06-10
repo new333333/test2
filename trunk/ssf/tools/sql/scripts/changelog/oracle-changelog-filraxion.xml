@@ -156,4 +156,25 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
         </addColumn>
     </changeSet>
 
+    <changeSet author="dennis" context="schema" failOnError="true" id="12">
+        <comment>Proxy Identities</comment>
+        <createTable tableName="SS_ProxyIdentity">
+            <column autoIncrement="true" name="id" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>           
+            <column name="zoneId" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR2(128 CHAR)">
+				<constraints nullable="true" />
+            </column>
+            <column name="proxyName" type="VARCHAR2(255 CHAR)">
+                <constraints nullable="false" />
+            </column>
+            <column name="title" type="VARCHAR2(255 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+	</changeSet>
+
 </databaseChangeLog>

@@ -106,6 +106,7 @@
 		<property name="zoneModule"><ref bean="zoneModule"/></property>
 		<property name="sharingModule"><ref bean="sharingModule"/></property>
 		<property name="keyShieldModule"><ref bean="keyShieldModule"/></property>
+		<property name="proxyIdentityModule"><ref bean="proxyIdentityModule"/></property>
 	</bean>
 
 	<!-- Default lob handler.  Override this in applicationContext-ext.xml for specific databases -->

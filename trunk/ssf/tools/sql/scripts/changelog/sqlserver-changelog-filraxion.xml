@@ -156,4 +156,25 @@ update dbo.SS_Forums set binderType = LEFT(type, 1);
         </addColumn>
     </changeSet>
 
+    <changeSet author="dennis" context="schema" failOnError="true" id="12">
+        <comment>Proxy Identities</comment>
+        <createTable tableName="SS_ProxyIdentity">
+            <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>           
+            <column name="zoneId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+            <column name="proxyName" type="NVARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="title" type="NVARCHAR(255)">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+	</changeSet>
+
 </databaseChangeLog>

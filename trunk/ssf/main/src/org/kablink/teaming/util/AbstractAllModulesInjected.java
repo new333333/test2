@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,6 +50,7 @@ import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.mobiledevice.MobileDeviceModule;
 import org.kablink.teaming.module.netfolder.NetFolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.proxyidentity.ProxyIdentityModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.rss.RssModule;
@@ -91,6 +92,7 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	private SharingModule sharingModule;
 	private MobileDeviceModule mobileDeviceModule;
 	private KeyShieldModule keyShieldModule;
+	private ProxyIdentityModule proxyIdentityModule;
 
 	@Override
 	public void setBinderModule(BinderModule binderModule) {
@@ -353,8 +355,9 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 	
 	@Override
 	public MobileDeviceModule getMobileDeviceModule() {
-		if(mobileDeviceModule == null)
-			mobileDeviceModule = (MobileDeviceModule) SpringContextUtil.getBean("mobileDeviceModule");
+		if(mobileDeviceModule == null) {
+			mobileDeviceModule = ((MobileDeviceModule) SpringContextUtil.getBean("mobileDeviceModule"));
+		}
 		return mobileDeviceModule;
 	}
 	@Override
@@ -362,24 +365,27 @@ public abstract class AbstractAllModulesInjected implements AllModulesInjected {
 		this.mobileDeviceModule = mobileDeviceModule;
 	}
 
-	/**
-	 * 
-	 */
 	@Override
-	public KeyShieldModule getKeyShieldModule()
-	{
-		if ( keyShieldModule == null )
-			keyShieldModule = (KeyShieldModule) SpringContextUtil.getBean( "keyShieldModule" );
-		
+	public KeyShieldModule getKeyShieldModule() {
+		if (null == keyShieldModule) {
+			keyShieldModule = ((KeyShieldModule) SpringContextUtil.getBean("keyShieldModule"));
+		}
 		return keyShieldModule;
 	}
-	
-	/**
-	 * 
-	 */
 	@Override
-	public void setKeyShieldModule( KeyShieldModule keyShieldModule )
-	{
+	public void setKeyShieldModule(KeyShieldModule keyShieldModule) {
 		this.keyShieldModule = keyShieldModule;
+	}
+	
+	@Override
+	public ProxyIdentityModule getProxyIdentityModule() {
+		if (null == proxyIdentityModule) {
+			proxyIdentityModule = ((ProxyIdentityModule) SpringContextUtil.getBean("proxyIdentityModule"));
+		}
+		return proxyIdentityModule;
+	}
+	@Override
+	public void setProxyIdentityModule(ProxyIdentityModule proxyIdentityModule) {
+		this.proxyIdentityModule = proxyIdentityModule;
 	}
 }
