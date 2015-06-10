@@ -343,6 +343,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_DeleteMobileDevices();
 	String rpcFailure_DeleteNetFolders();
 	String rpcFailure_DeleteNetFolderServers();
+	String rpcFailure_DeleteProxyIdentities();
 	String rpcFailure_DeleteGroups();
 	String rpcFailure_DeleteSelectedUsers();
 	String rpcFailure_DeleteSelections();
@@ -467,6 +468,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetMainPageInfo();
 	String rpcFailure_GetManageAdministratorsInfo();
 	String rpcFailure_GetManageMobileDevicesInfo();
+	String rpcFailure_GetManageProxyIdentitiesInfo();
 	String rpcFailure_GetManageTeamsInfo();
 	String rpcFailure_GetManageTeamsState();
 	String rpcFailure_GetManageUsersInfo();
@@ -775,6 +777,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_ManageNetFoldersDlg();
 	String codeSplitFailure_ManageNetFolderServersDlg();
 	String codeSplitFailure_ManageMenuPopup();
+	String codeSplitFailure_ManageProxyIdentitiesDlg();
 	String codeSplitFailure_ManageSavedSearchesDlg();
 	String codeSplitFailure_ManageTeamsDlg();
 	String codeSplitFailure_ManageUsersDlg();
@@ -800,6 +803,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_ProjectInfoWidget();
 	String codeSplitFailure_ProjectStatsWidget();
 	String codeSplitFailure_ProjectManagementWSView();
+	String codeSplitFailure_ProxyIdentitiesView();
 	String codeSplitFailure_PromptDlg();
 	String codeSplitFailure_QuickViewDlg();
 	String codeSplitFailure_RenameEntityDlg();
@@ -2041,6 +2045,7 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeDataTable_MobileDevices();
 	String vibeDataTable_People();
 	String vibeDataTable_Pin();
+	String vibeDataTable_ProxyIdentities();
 	String vibeDataTable_Select();
 	String vibeDataTable_Teams();
 	String vibeDataTable_TrashConfirmPurge();
@@ -2456,6 +2461,7 @@ public interface GwtTeamingMessages extends Messages {
 	String myFilesStorage();
 	String netFolders();
 	String peopleList();
+	String proxyIdentitiesList();
 	String sharedByMe();
 	String sharedWithMe();
 	String sharedPublic();
@@ -2958,6 +2964,11 @@ public interface GwtTeamingMessages extends Messages {
 	String emptyMobileDevices_Info_1_User(  String company, String product);
 	String emptyMobileDevices_Info_2(       String company, String product);
 	String emptyMobileDevices_SubHead();
+	
+	// Strings used for the empty proxy identities view widget.
+	String emptyProxyIdentities_Info_1(String company, String product);
+	String emptyProxyIdentities_Info_2(String company, String product);
+	String emptyProxyIdentities_SubHead();
 	
 	// Strings used for the empty my files storage view widget.
 	String emptyMyFilesStorage_Info_1();
@@ -3669,4 +3680,10 @@ public interface GwtTeamingMessages extends Messages {
 	String modifyLimitedUserVisibilityDlgRB_Clear();
 	String modifyLimitedUserVisibilityDlgRB_Limited();
 	String modifyLimitedUserVisibilityDlgRB_Override();
+	
+	// Strings used in the Manage Proxy Identities dialog.
+	String manageProxyIdentitiesDlg();
+	String manageProxyIdentitiesDlgCaption();
+	String manageProxyIdentitiesDlg_confirmDelete();
+	String manageProxyIdentitiesDlg_failureDeletingProxyIdentities();
 }

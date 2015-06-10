@@ -4437,6 +4437,7 @@ public class GwtViewHelper {
 			boolean        isLimitUserVisibility = folderInfo.isBinderLimitUserVisibility();
 			boolean        isManageAdmins        = folderInfo.isBinderAdministratorManagement();
 			boolean        isMobileDevicesView   = folderInfo.isBinderMobileDevices();
+			boolean        isProxyIdentitiesView = folderInfo.isBinderProxyIdentities();
 			boolean        isFileFolder          = ((null != folder) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)));
 			boolean        isCollection          = folderInfo.isBinderCollection();
 			boolean        isTrash               = folderInfo.isBinderTrash();
@@ -4458,8 +4459,16 @@ public class GwtViewHelper {
 			}
 			
 			// No, we aren't showing a mobile devices view either!  Are
-			// we looking at the root binder in limit user visibility
-			// mode?
+			// we looking at proxy identities view? 
+			else if (isProxyIdentitiesView) {
+				// Yes!
+				baseNameKey = "proxyIdentities.column.";
+				columnNames = getColumnsLHMFromAS(new String[]{"title", "proxyName"});
+			}
+			
+			// No, we aren't showing a proxy identities view either!
+			// Are we looking at the root binder in limit user
+			// visibility mode?
 			else if (isLimitUserVisibility) {
 				baseNameKey = "limitUserVisibility.column.";
 				columnNames = getColumnsLHMFromAS(new String[]{"limitedVisibilityUser", "principalType", "canOnlySeeMembers"});
@@ -5584,8 +5593,9 @@ public class GwtViewHelper {
 			boolean isMilestone             = false;
 			boolean isSurvey                = false;
 			boolean isGlobalRootWS          = folderInfo.isBinderGlobalRootWS();
-			boolean isMobileDevicesViewSpec = folderInfo.isBinderMobileDevices();
+			boolean isMobileDevicesView     = folderInfo.isBinderMobileDevices();
 			boolean isProfilesRootWS        = folderInfo.isBinderProfilesRootWS();
+			boolean isProxyIdentitiesView   = folderInfo.isBinderProxyIdentities();
 			boolean isTeamsRootWS           = folderInfo.isBinderTeamsRootWS();
 			boolean isLimitUserVisibility   = folderInfo.isBinderLimitUserVisibility();
 			boolean isManageAdministrators  = folderInfo.isBinderAdministratorManagement();
@@ -5720,7 +5730,8 @@ public class GwtViewHelper {
 				// No, the user isn't currently viewing pinned entries!
 				// Read the entries based on a search.
 				Map searchResults;
-				if      (isMobileDevicesViewSpec)         return          GwtMobileDeviceHelper.getMobileDeviceRows(         bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
+				if      (isMobileDevicesView)             return          GwtMobileDeviceHelper.getMobileDeviceRows(         bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
+				else if (isProxyIdentitiesView)           return          GwtProxyIdentityHelper.getProxyIdentityRows(       bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
 				else if (isLimitUserVisibility)           return          GwtUserVisibilityHelper.getLimitUserVisibilityRows(bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
 				else if (isManageAdministrators)          return          GwtAdministratorsHelper.getAdministratorsRows(     bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
 				else if (isTrash)                         searchResults = TrashHelper.getTrashEntities(                      bs,          binder,              options                               );

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -59,6 +59,7 @@ public class EntityId implements IsSerializable {
 	public final static String MOBILE_DEVICE		= EntityIdType.mobileDevice.name();
 	public final static String NONE					= EntityIdType.none.name();
 	public final static String PROFILES				= EntityIdType.profiles.name();
+	public final static String PROXY_IDENTITY		= EntityIdType.proxyIdentity.name();
 	public final static String SHARE_WITH			= EntityIdType.shareWith.name();
 	public final static String USER					= EntityIdType.user.name();
 	public final static String WORKSPACE			= EntityIdType.workspace.name();
@@ -90,6 +91,7 @@ public class EntityId implements IsSerializable {
 		mobileDevice,	// Unique to the GWT code.  This doesn't exist in EntityIdentifier.EntityType!
 		none,
 		profiles,
+		proxyIdentity,	// Unique to the GWT code.  This doesn't exist in EntityIdentifier.EntityType!
 		shareWith,
 		user,
 		workspace;
@@ -108,6 +110,7 @@ public class EntityId implements IsSerializable {
 		public boolean isMobileDevice()     {return this.equals(mobileDevice    );}
 		public boolean isNone()             {return this.equals(none            );}
 		public boolean isProfiles()         {return this.equals(profiles        );}
+		public boolean isProxyIdentity()    {return this.equals(proxyIdentity   );}
 		public boolean isShareWith()        {return this.equals(shareWith       );}
 		public boolean isUser()             {return this.equals(user            );}
 		public boolean isWorkspace()        {return this.equals(workspace       );}

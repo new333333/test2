@@ -280,6 +280,22 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource profileRoot_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/proxyIdentities_72.png")
+	public ImageResource proxyIdentities_transparent_72();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/proxyIdentities_25.png")
+	public ImageResource proxyIdentities();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/proxyIdentities_36.png")
+	public ImageResource proxyIdentities_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/proxyIdentities_48.png")
+	public ImageResource proxyIdentities_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/sharedbyme.png")
 	public ImageResource sharedByMe();
 	

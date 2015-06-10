@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedMobileDevicesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedProxyIdentitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
@@ -68,6 +69,7 @@ import org.kablink.teaming.gwt.client.event.HideAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.HideUserListEvent;
 import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
+import org.kablink.teaming.gwt.client.event.InvokeAddNewProxyIdentityEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeCopyFiltersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
@@ -1283,6 +1285,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case COPY_SELECTED_ENTITIES:                        event = new CopySelectedEntitiesEvent(                   folderId      ); break;
 					case DELETE_SELECTED_ENTITIES:                      event = new DeleteSelectedEntitiesEvent(                 folderId      ); break;
 					case DELETE_SELECTED_MOBILE_DEVICES:                event = new DeleteSelectedMobileDevicesEvent(            m_binderInfo  ); break;
+					case DELETE_SELECTED_PROXY_IDENTITIES:              event = new DeleteSelectedProxyIdentitiesEvent(          m_binderInfo  ); break;
 					case DELETE_SELECTED_USERS:                         event = new DeleteSelectedUsersEvent(                    folderId      ); break;
 					case DISABLE_SELECTED_USERS:                        event = new DisableSelectedUsersEvent(                   folderId      ); break;
 					case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:          event = new DisableSelectedUsersAdHocFoldersEvent(       folderId      ); break;
@@ -1297,6 +1300,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case HIDE_ACCESSORIES:                              event = new HideAccessoriesEvent(                        folderId      ); break;
 					case HIDE_SELECTED_SHARES:                          event = new HideSelectedSharesEvent(                     folderId      ); break;
 					case HIDE_USER_LIST:                                event = new HideUserListEvent(                           folderId      ); break;
+					case INVOKE_ADD_NEW_PROXY_IDENTITITY:               event = new InvokeAddNewProxyIdentityEvent(                            ); break;
 					case INVOKE_COLUMN_RESIZER:                         event = new InvokeColumnResizerEvent(                    m_binderInfo  ); break;
 					case INVOKE_DROPBOX:                                event = new InvokeDropBoxEvent(                          folderId      ); break;
 					case INVOKE_SIGN_GUESTBOOK:                         event = new InvokeSignGuestbookEvent(                    folderId      ); break;
@@ -1398,16 +1402,17 @@ public class EntryMenuPanel extends ToolPanelBase
 		});
 		reply.getElement().setId(simpleTBI.getName());
 		switch (simpleTBI.getTeamingEvent()) {
-		case ADD_PRINCIPAL_ADMIN_RIGHTS:      m_addAdminRightsMenu       = reply; break;
-		case INVOKE_DROPBOX:                  m_addFilesMenu             = reply; break;
-		case DELETE_SELECTED_ENTITIES:        m_deleteMenu               = reply; break;
-		case DELETE_SELECTED_MOBILE_DEVICES:  m_deleteMenu               = reply; break;
-		case DELETE_SELECTED_USERS:           m_deleteMenu               = reply; break;
-		case TRASH_PURGE_ALL:                 m_trashPurgeAllMenu        = reply; break;
-		case TRASH_PURGE_SELECTED_ENTITIES:   m_trashPurgeSelectedMenu   = reply; break;
-		case TRASH_RESTORE_ALL:               m_trashRestoreAllMenu      = reply; break;
-		case TRASH_RESTORE_SELECTED_ENTITIES: m_trashRestoreSelectedMenu = reply; break;
-		case VIEW_SELECTED_ENTRY:             m_detailsMenu              = reply; break;
+		case ADD_PRINCIPAL_ADMIN_RIGHTS:        m_addAdminRightsMenu       = reply; break;
+		case INVOKE_DROPBOX:                    m_addFilesMenu             = reply; break;
+		case DELETE_SELECTED_ENTITIES:          m_deleteMenu               = reply; break;
+		case DELETE_SELECTED_MOBILE_DEVICES:    m_deleteMenu               = reply; break;
+		case DELETE_SELECTED_PROXY_IDENTITIES:  m_deleteMenu               = reply; break;
+		case DELETE_SELECTED_USERS:             m_deleteMenu               = reply; break;
+		case TRASH_PURGE_ALL:                   m_trashPurgeAllMenu        = reply; break;
+		case TRASH_PURGE_SELECTED_ENTITIES:     m_trashPurgeSelectedMenu   = reply; break;
+		case TRASH_RESTORE_ALL:                 m_trashRestoreAllMenu      = reply; break;
+		case TRASH_RESTORE_SELECTED_ENTITIES:   m_trashRestoreSelectedMenu = reply; break;
+		case VIEW_SELECTED_ENTRY:               m_detailsMenu              = reply; break;
 		
 		case SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS:
 			if (m_binderInfo.isBinderAdministratorManagement()) {

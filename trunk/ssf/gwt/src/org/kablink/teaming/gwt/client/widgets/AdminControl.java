@@ -39,6 +39,8 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg;
 import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg.ManageMobileDevicesDlgClient;
+import org.kablink.teaming.gwt.client.datatable.ManageProxyIdentitiesDlg;
+import org.kablink.teaming.gwt.client.datatable.ManageProxyIdentitiesDlg.ManageProxyIdentitiesDlgClient;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.AdministrationActionEvent;
@@ -58,6 +60,7 @@ import org.kablink.teaming.gwt.client.event.InvokeNetFolderGlobalSettingsDlgEven
 import org.kablink.teaming.gwt.client.event.InvokeManageDatabasePruneDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageMobileDevicesDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageProxyIdentitiesDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageTeamsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
@@ -89,6 +92,7 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.binderviews.MobileDevicesView;
+import org.kablink.teaming.gwt.client.binderviews.ProxyIdentitiesView;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDatabasePruneConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
@@ -191,6 +195,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
 		InvokeManageMobileDevicesDlgEvent.Handler,
+		InvokeManageProxyIdentitiesDlgEvent.Handler,
 		InvokeManageTeamsDlgEvent.Handler,
 		InvokeManageUsersDlgEvent.Handler,
 		InvokeNameCompletionSettingsDlgEvent.Handler,
@@ -223,6 +228,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
 	private ManageMobileDevicesDlg m_manageMobileDevicesDlg = null;
+	private ManageProxyIdentitiesDlg m_manageProxyIdentitiesDlg = null;
 	private ManageTeamsDlg m_manageTeamsDlg = null;
 	private ManageUsersDlg m_manageUsersDlg = null;
 	private RunAReportDlg m_runAReportDlg = null;
@@ -277,6 +283,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_MANAGE_DATABASE_PRUNE_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
+		TeamingEvents.INVOKE_MANAGE_PROXY_IDENTITIES_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
 		TeamingEvents.INVOKE_MANAGE_USERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_TEAMS_DLG,
@@ -508,9 +515,11 @@ public class AdminControl extends TeamingPopupPanel
 				//! DRF:  Add controls here to limit things shown while
 				//!       they're being implemented.
 				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
+				boolean showProxyIdentities     = ProxyIdentitiesView.SHOW_PROXY_IDENTITIES;	//! DRF (20150610)
 				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
 				for (GwtAdminAction action : actions) {
 					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices)) continue;
+					else if (action.getActionType().equals(AdminAction.MANAGE_PROXY_IDENTITIES)   && (!showProxyIdentities))     continue;
 					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))      continue;
 					
 					// Add a UI widget for this administration action.
@@ -989,6 +998,12 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Fire the event to invoke the "Manage mobile devices" dialog.
 			InvokeManageMobileDevicesDlgEvent.fireOne();
+		}
+		
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_PROXY_IDENTITIES )
+		{
+			// Fire the event to invoke the "Manage proxy identities" dialog.
+			InvokeManageProxyIdentitiesDlgEvent.fireOne();
 		}
 		
 		else if ( adminAction.getActionType() == AdminAction.RUN_A_REPORT )
@@ -3134,6 +3149,58 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Handles InvokeManageProxyIdentitiesDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeManageProxyIdentitiesDlgEvent.Handler.onInvokeManageProxyIdentitiesDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeManageProxyIdentitiesDlg(InvokeManageProxyIdentitiesDlgEvent event) {
+		// Get the position of the content control.
+		final boolean autoHide = isActionAutoHide(AdminAction.MANAGE_PROXY_IDENTITIES);
+		final boolean modal    = isActionModal(   AdminAction.MANAGE_PROXY_IDENTITIES);
+		final int     x        = m_contentControlX;
+		final int     y        = m_contentControlY;
+		
+		// Have we already created a 'Manage Proxy Identities' dialog?
+		if (null == m_manageProxyIdentitiesDlg) {
+			// No!  Create one now.
+			ManageProxyIdentitiesDlg.createAsync(new ManageProxyIdentitiesDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(final ManageProxyIdentitiesDlg mpiDlg) {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							m_manageProxyIdentitiesDlg = mpiDlg;
+							ManageProxyIdentitiesDlg.initAndShow(m_manageProxyIdentitiesDlg, autoHide, modal, x, y, m_dlgWidth, m_dlgHeight);
+						}
+					} );
+				}
+			},
+			autoHide,
+			modal,
+			x, 
+			y,
+			m_dlgWidth,
+			m_dlgHeight );
+		}
+		
+		else {
+			// Yes, we've already created a 'Manage Proxy Identities'
+			// dialog!  Simply initialize and show it.
+			m_manageProxyIdentitiesDlg.setPixelSize(m_dlgWidth, m_dlgHeight);
+			ManageProxyIdentitiesDlg.initAndShow(m_manageProxyIdentitiesDlg, autoHide, modal, x, y, m_dlgWidth, m_dlgHeight);
+		}
+	}
+	
+	/**
 	 * Handles InvokeManageTeamsDlgEvent received by this class.
 	 * 
 	 * Implements the InvokeManageTeamsDlgEvent.Handler.onInvokeManageTeamsDlg() method.
@@ -3928,6 +3995,7 @@ public class AdminControl extends TeamingPopupPanel
 				case MANAGE_LICENSE:
 				case MANAGE_MOBILE_DEVICES:
 				case MANAGE_NET_FOLDERS:
+				case MANAGE_PROXY_IDENTITIES:
 				case MANAGE_RESOURCE_DRIVERS:
 				case MANAGE_TEAMS:
 				case MANAGE_USER_VISIBILITY:
