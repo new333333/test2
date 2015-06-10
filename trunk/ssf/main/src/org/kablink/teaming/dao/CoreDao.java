@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,10 +38,12 @@ import java.util.Map;
 import java.util.Date;
 
 import org.hibernate.ReplicationMode;
+
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.MobileDeviceSelectSpec;
 import org.kablink.teaming.dao.util.ObjectControls;
+import org.kablink.teaming.dao.util.ProxyIdentitySelectSpec;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.domain.Binder;
@@ -65,7 +67,6 @@ import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.ResourceDriverConfig;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
@@ -73,6 +74,7 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.UserDashboard;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -313,6 +315,20 @@ public interface CoreDao {
 	 * @return
 	 */
 	public Map findMobileDevices(final MobileDeviceSelectSpec selectSpec, final Long zoneId);
+	
+	/**
+	 * Used to find all ProxyIdentity's that meet the specifications.
+	 * 
+	 * Returns a Map containing:
+	 * 		Key:  ObjectKeys.SEARCH_ENTRIES:      List<ProxyIdentity> of the ProxyIdentity's.
+	 *		Key:  ObjectKeys.SEARCH_COUNT_TOTAL:  Long of the total entries available that satisfy the selection specifications.
+	 * 
+	 * @param selectSpec
+	 * @param zoneId
+	 * 
+	 * @return
+	 */
+	public Map findProxyIdentities(final ProxyIdentitySelectSpec selectSpec, final Long zoneId);
 	
 	public List<Long> getSubBinderIds(Binder binder);
 	

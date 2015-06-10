@@ -733,6 +733,9 @@ public interface ObjectKeys {
     public static final String FIELD_MOBILE_DEVICE_WIPE_DATE      = "lastWipe";
     public static final String FIELD_MOBILE_DEVICE_WIPE_SCHEDULED = "wipeScheduled";
     
+    public static final String FIELD_PROXY_IDENTITY_NAME	= "proxyName";
+    public static final String FIELD_PROXY_IDENTITY_TITLE	= "title";
+    
     public static final String FIELD_APPLICATION_POST_URL="postUrl";
     public static final String FIELD_APPLICATION_TIMEOUT="timeout";
     public static final String FIELD_APPLICATION_TRUSTED="trusted";

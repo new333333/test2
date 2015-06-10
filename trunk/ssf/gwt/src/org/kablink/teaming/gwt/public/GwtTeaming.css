@@ -4357,6 +4357,13 @@ td.datePickerMonth {
 	.vibe-addNewFolderDlg_TypeSelect {width: 250px;}
 /* End:  Add new folder dialog styles. */
 
+/* Start:  Add new proxy identity dialog styles. */
+	.vibe-addNewProxyIdentityDlg_Grid       {}
+	.vibe-addNewProxyIdentityDlg_NameInput  {width: 250px;}
+	.vibe-addNewProxyIdentityDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-addNewProxyIdentityDlg_Panel      {padding: 10px;}
+/* End:  Add new proxy identity dialog styles. */
+
 /* Start:  Calendar settings dialog styles. */
 	.vibe-calendarSettingsDlg-grid  {}
 	.vibe-calendarSettingsDlg-label {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}

@@ -69,6 +69,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.exception.ConstraintViolationException;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.LongIdComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -78,6 +79,7 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.MobileDeviceSelectSpec;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.OrderBy;
+import org.kablink.teaming.dao.util.ProxyIdentitySelectSpec;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AnyOwner;
 import org.kablink.teaming.domain.Attachment;
@@ -129,6 +131,7 @@ import org.kablink.teaming.domain.NoZoneByTheIdException;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.ProxyIdentity;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SharedEntity;
@@ -3778,6 +3781,111 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
       	return result;   	
 	}
 	
+	/**
+	 * Used to find all ProxyIdentity's that meet the specifications.
+	 * 
+	 * Returns a Map containing:
+	 * 		Key:  ObjectKeys.SEARCH_ENTRIES:      List<ProxyIdentity> of the ProxyIdentity's.
+	 *		Key:  ObjectKeys.SEARCH_COUNT_TOTAL:  Long of the total entries available that satisfy the selection specifications.
+	 * 
+	 * @param selectSpec
+	 * @param zoneId
+	 * 
+	 * @return
+	 */
+	@Override
+	public Map findProxyIdentities(final ProxyIdentitySelectSpec selectSpec, final Long zoneId) {
+        Map result = null;
+        long begin  = System.nanoTime();
+		try {
+			HibernateCallback callback = new HibernateCallback() {
+                @Override
+				public Object doInHibernate( Session session ) throws HibernateException {
+                	// Create the base Criteria's for the queries.
+                	Criteria critQuery = session.createCriteria(ProxyIdentity.class);	// Criteria for reading the list.
+                	Criteria critTotal = session.createCriteria(ProxyIdentity.class);	// Criteria for determining the total count when paging.
+                	critTotal.setProjection(Projections.rowCount());
+
+                	// Factor in the sorting required.
+                	String sortBy = selectSpec.getSortBy();
+                	if (!(MiscUtil.hasString(sortBy))) {
+                		sortBy = ObjectKeys.FIELD_MOBILE_DEVICE_DESCRIPTION;
+                	}
+                	Order order = (selectSpec.isSortAscend() ? Order.asc(sortBy) : Order.desc(sortBy));
+                	critQuery.addOrder(order);	// Not used for the total count.
+                	
+                	// Factor in the paging required.
+                	int     startIndex = selectSpec.getStartIndex();
+                	boolean hasStart   = (0 < startIndex);
+                	if (hasStart) {
+                		critQuery.setFirstResult(startIndex);	// Not used for the total count.
+                	}
+                	int     pageSize = selectSpec.getPageSize();
+                	boolean hasSize  = (((-1) != pageSize) && (Integer.MAX_VALUE != pageSize));
+                	if (hasSize)  {
+                		critQuery.setMaxResults(pageSize);	// Not used for the total count.
+                	}
+                	boolean paging = (hasStart || hasSize);
+                	
+                	// If we're querying for a proxy name...
+                	String proxyName = selectSpec.getProxyName();
+                	if (MiscUtil.hasString(proxyName)) {
+                		// ...add it to the criteria.
+                		critQuery.add(Restrictions.eq(ObjectKeys.FIELD_PROXY_IDENTITY_NAME, proxyName));
+                		critTotal.add(Restrictions.eq(ObjectKeys.FIELD_PROXY_IDENTITY_NAME, proxyName));
+                	}
+                	
+                	// If we're querying for a title...
+                	String title = selectSpec.getProxyName();
+                	if (MiscUtil.hasString(title)) {
+                		// ...add it to the criteria.
+                		critQuery.add(Restrictions.eq(ObjectKeys.FIELD_PROXY_IDENTITY_TITLE, title));
+                		critTotal.add(Restrictions.eq(ObjectKeys.FIELD_PROXY_IDENTITY_TITLE, title));
+                	}
+                	
+                	// Do we have a quick filter?
+                	String quickFilter = selectSpec.getQuickFilter();
+                	if (MiscUtil.hasString(quickFilter)) {
+                		// Yes!  See if it's in the name or title
+                		// columns.
+                		Criterion proxyNameCrit = Restrictions.ilike(ObjectKeys.FIELD_PROXY_IDENTITY_NAME,  quickFilter, MatchMode.ANYWHERE);
+                		Criterion titleCrit     = Restrictions.ilike(ObjectKeys.FIELD_PROXY_IDENTITY_TITLE, quickFilter, MatchMode.ANYWHERE);
+                		critQuery.add(Restrictions.or(proxyNameCrit, titleCrit));
+                		critTotal.add(Restrictions.or(proxyNameCrit, titleCrit));
+                	}
+
+                	// Get the results.
+                	Map reply = new HashMap();
+                	List<ProxyIdentity> mdList = critQuery.list();
+                	if (null == mdList) {
+                		mdList = new ArrayList<ProxyIdentity>();
+                	}
+                	reply.put(ObjectKeys.SEARCH_ENTRIES, mdList);
+                	
+                	Long mdTotal;
+                	if (paging)
+                	     mdTotal = ((Long) critTotal.uniqueResult());	// If we're paging, we have to obtain the total separately...
+                	else mdTotal = new Long(mdList.size());				// ...otherwise, the size of the list to the total.
+                	reply.put(ObjectKeys.SEARCH_COUNT_TOTAL, mdTotal);
+                	return reply;
+                }
+            };
+
+            // Issue the database query.
+            result = ((Map) getHibernateTemplate().execute(callback));
+    	}
+		
+		catch (Exception ex) {
+			logger.error("findProxyIdentities() caught an exception: " + ex.toString());
+		}
+		
+    	finally {
+    		end(begin, "findProxyIdentities(ProxyIdentitySelectSpec)");
+    	}	              	
+
+      	return result;   	
+	}
+	
 	@Override
 	public List<Long> getSubBinderIds(final Binder binder) {
 		// Return a list of IDs of binders whose parents are the specified binder
@@ -4002,5 +4110,4 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 
     }
-
 }

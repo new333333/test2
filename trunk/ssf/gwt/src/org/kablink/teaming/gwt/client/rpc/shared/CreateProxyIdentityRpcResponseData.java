@@ -30,40 +30,90 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client;
+package org.kablink.teaming.gwt.client.rpc.shared;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Various constants used throughout the GWT UI.
+ * This class holds the response data for the 'create proxy identity'
+ * RPC command.
  * 
  * @author drfoster@novell.com
  */
-public class GwtConstants {
-	public static final int		PANEL_PADDING				= 8;		// Number of pixels of padding used around our various widgets.
+public class CreateProxyIdentityRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private ErrorListRpcResponseData	m_errorList;	//
 	
-	public static final int		CONTENT_WIDTH_ADJUST		= ( -8);	// Adjust all content area controls by this horizontally...
-	public static final int		CONTENT_HEIGHT_ADJUST		= (-20);	// ...and this vertically.
-	
-	public static final double	HEADER_HEIGHT				= 200;		// Default height of the header panel.
-	public static final int		WORKSPACE_TREE_WIDTH		= 250;		// Must match the definition of the workspaceTreeWidth style. 
-	public static final int		SIDEBAR_TREE_WIDTH_ADJUST	=  16;		// Based on empirical evidence (left, right spacing, ...)
-	public static final double	SIDEBAR_TREE_WIDTH			= (WORKSPACE_TREE_WIDTH + SIDEBAR_TREE_WIDTH_ADJUST);	// Default width of the sidebar tree panel.
-	public static final double	DESKTOP_APP_DOWNLOAD_HEIGHT	= 50;		// Height of the desktop application download control.
-	
-	// Default height and width of popup windows launched from URLs.
-	public final static int DEFAULT_POPUP_WIDTH		= 1024;
-	public final static int DEFAULT_POPUP_HEIGHT	=  768;
-	
-	// Defines the maximum lengths a binder or file name can be.
-	public final static int MAX_BINDER_NAME_LENGTH				= 255;
-	public final static int MAX_FILE_NAME_LENGTH				= 225;
-	public final static int MAX_PROXY_IDENTITY_NAME_LENGTH		= 255;
-	public final static int MAX_PROXY_IDENTITY_PASSWORD_LENGTH	= 128;
-	public final static int MAX_PROXY_IDENTITY_TITLE_LENGTH		= 255;
-	
-	/*
-	 * Constructor method. 
+	/**
+	 * Constructor method.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	private GwtConstants() {
-		// Inhibits this class from being instantiated.
+	public CreateProxyIdentityRpcResponseData() {
+		// Initialize the super class.
+		super();
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param errorList
+	 */
+	public CreateProxyIdentityRpcResponseData(List<ErrorInfo> errorList) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameter.
+		setErrorList(errorList);
+	}
+	
+	/**
+	 * Adds an error to the list.
+	 * 
+	 * @param error
+	 */
+	public void addError(String error) {
+		// If we weren't given an error...
+		if ((null == error) || (0 == error.length())) {
+			// ...bail.
+			return;
+		}
+
+		// If we don't have an error list yet...
+		if (null == m_errorList) {
+			// Create one...
+			m_errorList = new ErrorListRpcResponseData();
+		}
+
+		// ...and add the error to the list.
+		m_errorList.addError(error);
+	}
+
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public List<ErrorInfo> getErrorList() {
+		if (null != m_errorList) {
+			return m_errorList.getErrorList();
+		}
+		return new ArrayList<ErrorInfo>();
+	}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setErrorList(List<ErrorInfo> errorList) {
+		if (null == m_errorList) {
+			m_errorList = new ErrorListRpcResponseData();
+		}
+		m_errorList.setErrorList(errorList);
 	}
 }

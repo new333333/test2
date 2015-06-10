@@ -46,6 +46,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ProxyIdentity;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.rpc.shared.CreateProxyIdentityRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteProxyIdentitiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageProxyIdentitiesInfoRpcResponseData;
@@ -55,6 +56,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.module.proxyidentity.ProxyIdentityModule;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 
@@ -72,6 +74,45 @@ public class GwtProxyIdentityHelper {
 	 */
 	private GwtProxyIdentityHelper() {
 		// Nothing to do.
+	}
+	
+	/**
+	 * Adds a new proxy identity.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param title
+	 * @param proxyName
+	 * @param password
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static CreateProxyIdentityRpcResponseData addNewProxyIdentity(AllModulesInjected bs, HttpServletRequest request, String title, String proxyName, String password) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtProxyIdentityHelper.addNewProxyIdentity()");
+		try {
+			CreateProxyIdentityRpcResponseData reply = new CreateProxyIdentityRpcResponseData();
+			try {
+				// Can we create the proxy identity?
+				bs.getProxyIdentityModule().addProxyIdentity(new ProxyIdentity(password, proxyName, title));
+			}
+			
+			catch (Exception ex) {
+				// No!  Add an error to the error list and log it.
+				reply.addError(NLT.get("addNewProxyIdentityError.Exception", new String[]{proxyName, ex.getMessage()}));
+				GwtLogHelper.error(m_logger, "GwtProxyIdentityHelper.addNewProxyIdentity( Name:  '" + proxyName + "', EXCEPTION ):  ", ex);
+			}
+			
+			// If we get here, reply refers to a
+			// CreateProxyIdentityRpcResponseData containing any errors
+			// we encountered.  Return it.
+			return reply;
+		}
+		
+		finally {
+			gsp.stop();
+		}
 	}
 	
 	/**
@@ -134,7 +175,7 @@ public class GwtProxyIdentityHelper {
 			// Construct the ManageDevicesInfoRpcResponseData
 			// object we'll fill in and return.
 			BinderInfo bi = GwtServerHelper.getBinderInfo(bs, request, bs.getWorkspaceModule().getTopWorkspaceId());
-			if (!(bi.getWorkspaceType().isTopWS())) {
+			if ((!(bi.getWorkspaceType().isTopWS())) && (!(bi.getWorkspaceType().isLandingPage()))) {
 				GwtLogHelper.error(m_logger, "GwtProxyIdentityHelper.getManageProxyIdentitiesInformation():  The workspace type of the top workspace was incorrect.  Found:  " + bi.getWorkspaceType().name() + ", Expected:  " + WorkspaceType.TOP.name());
 			}
 			bi.setWorkspaceType(WorkspaceType.PROXY_IDENTITIES);
