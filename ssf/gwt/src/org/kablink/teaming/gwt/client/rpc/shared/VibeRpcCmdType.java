@@ -37,13 +37,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 /**
  * This enumeration defines all possible Vibe OnPrem GWT RPC commands.
  * 
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
-public enum VibeRpcCmdType implements IsSerializable
-{
+public enum VibeRpcCmdType implements IsSerializable {
 	ABORT_FILE_UPLOAD,
 	ADD_FAVORITE,
 	ADD_NEW_FOLDER,
+	ADD_NEW_PROXY_IDENTITY,
 	CAN_ADD_FOLDER,
 	CAN_MODIFY_BINDER,
 	CHANGE_ENTRY_TYPES,
@@ -417,17 +417,14 @@ public enum VibeRpcCmdType implements IsSerializable
 	 * 
 	 * @return
 	 */
-	public static VibeRpcCmdType getEnum( int cmdOrdinal )
-	{
+	public static VibeRpcCmdType getEnum(int cmdOrdinal) {
 		VibeRpcCmdType cmd;
-		try
-		{
+		try {
 			cmd = VibeRpcCmdType.values()[cmdOrdinal];
 		}
-		catch ( ArrayIndexOutOfBoundsException e )
-		{
+		catch (ArrayIndexOutOfBoundsException e) {
 			cmd = VibeRpcCmdType.UNDEFINED;
 		}
 		return cmd;
-	}// end getEnum()
-}// end VibeRpcCmdType()
+	}
+}

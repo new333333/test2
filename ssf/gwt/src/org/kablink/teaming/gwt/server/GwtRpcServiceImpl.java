@@ -412,8 +412,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
-		case ADD_NEW_FOLDER:
-		{
+		case ADD_NEW_FOLDER:  {
 			AddNewFolderCmd afCmd = ((AddNewFolderCmd) cmd);
 			CreateFolderRpcResponseData responseData = GwtViewHelper.addNewFolder(
 				this,
@@ -421,8 +420,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				afCmd.getBinderId(),
 				afCmd.getFolderTemplateId(),
 				afCmd.getFolderName(),
-				afCmd.getCloudFolderType() ); 
-			response = new VibeRpcResponse( responseData );
+				afCmd.getCloudFolderType()); 
+			response = new VibeRpcResponse(responseData);
+			return response;
+		}
+
+		case ADD_NEW_PROXY_IDENTITY:  {
+			AddNewProxyIdentityCmd apiCmd = ((AddNewProxyIdentityCmd) cmd);
+			CreateProxyIdentityRpcResponseData responseData = GwtProxyIdentityHelper.addNewProxyIdentity(
+				this,
+				req,
+				apiCmd.getTitle(),
+				apiCmd.getProxyName(),
+				apiCmd.getPassword()); 
+			response = new VibeRpcResponse(responseData);
 			return response;
 		}
 

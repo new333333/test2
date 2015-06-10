@@ -10456,6 +10456,7 @@ public class GwtServerHelper {
 		case ABORT_FILE_UPLOAD:
 		case ADD_FAVORITE:
 		case ADD_NEW_FOLDER:
+		case ADD_NEW_PROXY_IDENTITY:
 		case CAN_ADD_FOLDER:
 		case CAN_MODIFY_BINDER:
 		case CHANGE_ENTRY_TYPES:

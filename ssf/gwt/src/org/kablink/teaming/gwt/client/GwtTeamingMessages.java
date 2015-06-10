@@ -313,6 +313,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_AddFavorite();
 	String rpcFailure_AddFavoriteLimitExceeded();
 	String rpcFailure_AddNewFolder();
+	String rpcFailure_AddNewProxyIdentity();
 	String rpcFailure_CanAddFolder();
 	String rpcFailure_CanManagePublicTags();
 	String rpcFailure_CanModifyBinder();
@@ -677,6 +678,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_AddFilesDlg();
 	String codeSplitFailure_AddFilesHtml5Popup();
 	String codeSplitFailure_AddNewFolderDlg();
+	String codeSplitFailure_AddNewProxyIdentityDlg();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_AdministratorsView();
@@ -3686,4 +3688,20 @@ public interface GwtTeamingMessages extends Messages {
 	String manageProxyIdentitiesDlgCaption();
 	String manageProxyIdentitiesDlg_confirmDelete();
 	String manageProxyIdentitiesDlg_failureDeletingProxyIdentities();
+	
+	// Strings used by the 'Add New Proxy Identity' dialog.
+	String addNewProxyIdentityDlgError_AddFailed();
+	String addNewProxyIdentityDlgError_NameTooLong(int max);
+	String addNewProxyIdentityDlgError_NoName();
+	String addNewProxyIdentityDlgError_NoPassword();
+	String addNewProxyIdentityDlgError_NoPasswordVerify();
+	String addNewProxyIdentityDlgError_PasswordsDontMatch();
+	String addNewProxyIdentityDlgError_PasswordTooLong(      int max);
+	String addNewProxyIdentityDlgError_PasswordVerifyTooLong(int max);
+	String addNewProxyIdentityDlgError_TitleTooLong(         int max);
+	String addNewProxyIdentityDlgHeader();
+	String addNewProxyIdentityDlgName();
+	String addNewProxyIdentityDlgPassword();
+	String addNewProxyIdentityDlgPasswordVerify();
+	String addNewProxyIdentityDlgTitle();
 }

@@ -56,6 +56,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.AddNewProxyIdentityDlg;
+import org.kablink.teaming.gwt.client.widgets.AddNewProxyIdentityDlg.AddNewProxyIdentityDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -66,6 +68,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -73,7 +76,7 @@ import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
- * Implements Vibe's 'Manage Proxy Identities' dialog.
+ * Implements Filr's 'Manage Proxy Identities' dialog.
  *  
  * @author drfoster@novell.com
  */
@@ -86,19 +89,20 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 		GetManageTitleEvent.Handler,
 		InvokeAddNewProxyIdentityEvent.Handler
 {
-	private boolean										m_dlgAttached;					// true when the dialog is attached to the document.     false otherwise.
-	private boolean										m_viewReady;					// true once the embedded proxy identities view is ready.  false otherwise.
-	private GwtTeamingMessages							m_messages;						// Access to Vibe's messages.
-	private int											m_dlgHeightAdjust = (-1);		// Calculated the first time the dialog is shown.
-	private int											m_showX;						//
-	private int											m_showY;						//
-	private Integer										m_showCX;						//
-	private Integer										m_showCY;						//
-	private List<HandlerRegistration>					m_registeredEventHandlers;		// Event handlers that are currently registered.
-	private ManageProxyIdentitiesInfoRpcResponseData	m_manageProxyIdentitiesInfo;	// Information necessary to run the manage proxy identities dialog.
-	private ProxyIdentitiesView							m_piView;						// The proxy identities view.
-	private UIObject									m_showRelativeTo;				// The UIObject to show the dialog relative to.  null -> Center the dialog.
-	private VibeFlowPanel								m_rootPanel;					// The panel that holds the dialog's contents.
+	private AddNewProxyIdentityDlg						m_addNewProxyIdentityDlg;			// An instance of the AddNewProxyIdentityDlg once one is created.
+	private boolean										m_dlgAttached;						// true when the dialog is attached to the document.       false otherwise.
+	private boolean										m_viewReady;						// true once the embedded proxy identities view is ready.  false otherwise.
+	private FlowPanel									m_rootPanel;						// The panel that holds the dialog's contents.
+	private GwtTeamingMessages							m_messages;							// Access to Filr's messages.
+	private int											m_dlgHeightAdjust = (-1);			// Calculated the first time the dialog is shown.
+	private int											m_showX;							//
+	private int											m_showY;							//
+	private Integer										m_showCX;							//
+	private Integer										m_showCY;							//
+	private List<HandlerRegistration>					m_mpiDlg_registeredEventHandlers;	// Event handlers that are currently registered.
+	private ManageProxyIdentitiesInfoRpcResponseData	m_manageProxyIdentitiesInfo;		// Information necessary to run the manage proxy identities dialog.
+	private ProxyIdentitiesView							m_piView;							// The proxy identities view.
+	private UIObject									m_showRelativeTo;					// The UIObject to show the dialog relative to.  null -> Center the dialog.
 
 	// Constant adjustments to the size of the proxy identities view so
 	// that it properly fits the dialog's content area.
@@ -110,7 +114,7 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+	private final static TeamingEvents[] mpiDlg_REGISTERED_EVENTS = new TeamingEvents[] {
 		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.DELETE_SELECTED_PROXY_IDENTITIES,
 		TeamingEvents.FULL_UI_RELOAD,
@@ -435,8 +439,50 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 	 */
 	@Override
 	public void onInvokeAddNewProxyIdentity(InvokeAddNewProxyIdentityEvent event) {
-//!		...this needs to be implemented...
-		GwtClientHelper.deferredAlert("ManageProxyIdentitiesDlg.onInvokeAddNewProxyIdentity():  ...this needs to be implemented...");
+		// Have we created an instance of the 'Add New Proxy Identity'
+		// dialog yet?
+		if (null == m_addNewProxyIdentityDlg) {
+			// No!  Create one now...
+			AddNewProxyIdentityDlg.createAsync(new AddNewProxyIdentityDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(AddNewProxyIdentityDlg anpiDlg) {
+					// ...and run it.
+					m_addNewProxyIdentityDlg = anpiDlg;
+					onInvokeAddNewProxyIdentityAsync();
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've already create an instance of the dialog!
+			// Run it.
+			onInvokeAddNewProxyIdentityAsync();
+		}
+	}
+
+	/*
+	 * Asynchronously runs the 'Add New Proxy Identity' dialog.
+	 */
+	private void onInvokeAddNewProxyIdentityAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onInvokeAddNewProxyIdentityNow();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously runs the 'Add New Proxy Identity' dialog.
+	 */
+	private void onInvokeAddNewProxyIdentityNow() {
+		AddNewProxyIdentityDlg.initAndShow(m_addNewProxyIdentityDlg);
 	}
 
 	/**
@@ -503,19 +549,19 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 	private void registerEvents() {
 		// If we having allocated a list to track events we've
 		// registered yet...
-		if (null == m_registeredEventHandlers) {
+		if (null == m_mpiDlg_registeredEventHandlers) {
 			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+			m_mpiDlg_registeredEventHandlers = new ArrayList<HandlerRegistration>();
 		}
 		
 		// If the list of registered events is empty...
-		if (m_registeredEventHandlers.isEmpty()) {
+		if (m_mpiDlg_registeredEventHandlers.isEmpty()) {
 			// ...register the events.
 			EventHelper.registerEventHandlers(
 				GwtTeaming.getEventBus(),
-				REGISTERED_EVENTS,
+				mpiDlg_REGISTERED_EVENTS,
 				this,
-				m_registeredEventHandlers);
+				m_mpiDlg_registeredEventHandlers);
 		}
 	}
 
@@ -637,10 +683,10 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 	 */
 	private void unregisterEvents() {
 		// If we have a non-empty list of registered events...
-		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
+		if (GwtClientHelper.hasItems(m_mpiDlg_registeredEventHandlers)) {
 			// ...unregister them.  (Note that this will also empty the
 			// ...list.)
-			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+			EventHelper.unregisterEventHandlers(m_mpiDlg_registeredEventHandlers);
 		}
 	}
 	
@@ -728,8 +774,7 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 	 * Initializes and shows the manage proxy identities dialog via its
 	 * split point.
 	 * 
-	 * @param mpiDlg
-	 * @param showRelativeTo
+	 * @param
 	 */
 	public static void initAndShow(ManageProxyIdentitiesDlg mpiDlg, UIObject showRelativeTo) {
 		doAsyncOperation(null, false, true, 0, 0, null, null, mpiDlg, showRelativeTo);
