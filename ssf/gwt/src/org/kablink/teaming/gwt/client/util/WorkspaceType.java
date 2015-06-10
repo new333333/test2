@@ -51,6 +51,7 @@ public enum WorkspaceType implements IsSerializable {
 	PROFILE_ROOT,				// When used anywhere except the administration console.
 	PROFILE_ROOT_MANAGEMENT,	// When used within          the administration console.
 	PROJECT_MANAGEMENT,
+	PROXY_IDENTITIES,
 	TEAM,
 	TEAM_ROOT,					// When used anywhere except the administration console.
 	TEAM_ROOT_MANAGEMENT,		// When used within          the administration console.
@@ -133,6 +134,17 @@ public enum WorkspaceType implements IsSerializable {
 	 */
 	public boolean isProfileRootManagement() {
 		return this.equals(PROFILE_ROOT_MANAGEMENT);
+	}
+	
+	/**
+	 * Returns true if this WorkspaceType value represents a proxy
+	 * identities view, as used by the administration console and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isProxyIdentities() {
+		return this.equals(PROXY_IDENTITIES);
 	}
 	
 	/**

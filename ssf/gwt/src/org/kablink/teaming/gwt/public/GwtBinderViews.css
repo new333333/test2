@@ -310,6 +310,11 @@
 		.vibe-mobileDevicesFlowPanel {}
 	/* ...End:  Mobile Devices view styles. */
 
+	/* ...Start:  Proxy Identities view styles. */
+		.vibe-proxyIdentitiesDataTable {}
+		.vibe-proxyIdentitiesFlowPanel {}
+	/* ...End:  Proxy Identities view styles. */
+
 	/* ...Start:  Personal Workspaces view styles. */
 		.vibe-personalWorkspacesDataTable {}
 		.vibe-personalWorkspacesFlowPanel {}
@@ -544,7 +549,7 @@
 	.vibe-manageCommentsDlg-headerCaption {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 420px;}
 /* End:  Manage comments dialog styles. */
 
-/* Start:  Manage devices dialog styles. */
+/* Start:  Manage mobile devices dialog styles. */
 	.vibe-manageMobileDevicesDlg                    {}
 	.vibe-manageMobileDevicesDlg .popupContent      {background-color: white !important;}
 	.vibe-manageMobileDevicesDlg-captionCount       {position: absolute; top: 11px; right: 40px; padding-left: 10px; padding-right: 10px; font-size: 13px;}
@@ -552,7 +557,15 @@
 	.vibe-manageMobileDevicesDlg-panel              {}
 	.vibe-manageMobileDevicesDlg-system             {}
 	.vibe-manageMobileDevicesDlg-user               {width: 800px; height: 600px;}
-/* End:  Manage devices dialog styles. */
+/* End:  Manage mobile devices dialog styles. */
+
+/* Start:  Manage proxy identities dialog styles. */
+	.vibe-manageProxyIdentitiesDlg                    {}
+	.vibe-manageProxyIdentitiesDlg .popupContent      {background-color: white !important;}
+	.vibe-manageProxyIdentitiesDlg-captionCount       {position: absolute; top: 11px; right: 40px; padding-left: 10px; padding-right: 10px; font-size: 13px;}
+	.vibe-manageProxyIdentitiesDlg-headerCaption-user {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 600px;}
+	.vibe-manageProxyIdentitiesDlg-panel              {}
+/* End:  Manage proxy identities dialog styles. */
 
 /* Start:  Modify limited user visibility dialog styles. */
 	.vibe-modifyLimitedUserVisibilityDlg-hint      {white-space: normal; width:  300px; padding-bottom: 10px; font-size: 14px; color: #505354;}

@@ -203,6 +203,7 @@ import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
 import org.kablink.teaming.gwt.server.util.GwtPersonalWorkspaceHelper;
 import org.kablink.teaming.gwt.server.util.GwtPhotoAlbumHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
+import org.kablink.teaming.gwt.server.util.GwtProxyIdentityHelper;
 import org.kablink.teaming.gwt.server.util.GwtReportsHelper;
 import org.kablink.teaming.gwt.server.util.GwtSearchHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
@@ -713,6 +714,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case DELETE_PROXY_IDENTITIES:  {
+			DeleteProxyIdentitiesCmd dpiCmd = ((DeleteProxyIdentitiesCmd) cmd);
+			DeleteProxyIdentitiesRpcResponseData responseData = GwtProxyIdentityHelper.deleteProxyIdentities(this, req, dpiCmd.getEntityIds());
+			response = new VibeRpcResponse(responseData);
+			return response;
+		}
+		
 		case DELETE_SELECTED_USERS:
 		{
 			DeleteSelectedUsersCmd dsuCmd = ((DeleteSelectedUsersCmd) cmd);
@@ -761,7 +769,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case EDIT_ENTRY: {
+		case EDIT_ENTRY:  {
 			EditEntryCmd eeCmd = ((EditEntryCmd) cmd);
 			ActivityStreamEntry result = editEntry(
 				req,
@@ -1134,30 +1142,27 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_ADMIN_ACTIONS:
-		{
+		case GET_ADMIN_ACTIONS:  {
+			String mode = SPropsUtil.getString("admin.console.dialog.mode", "modal");
+			if (null == mode) {
+				mode = "";
+			}
 			AdminConsoleDialogMode acDlgMode;
-			String mode = SPropsUtil.getString( "admin.console.dialog.mode", "modal" );
-			if ( null == mode ) mode = "";
-			if      ( mode.equalsIgnoreCase( AdminConsoleDialogMode.MIXED.name() ) )    acDlgMode = AdminConsoleDialogMode.MIXED; 
-			else if ( mode.equalsIgnoreCase( AdminConsoleDialogMode.MODELESS.name() ) ) acDlgMode = AdminConsoleDialogMode.MODELESS;
-			else                                                                        acDlgMode = AdminConsoleDialogMode.MODAL;
+			if      (mode.equalsIgnoreCase(AdminConsoleDialogMode.MIXED.name()))    acDlgMode = AdminConsoleDialogMode.MIXED; 
+			else if (mode.equalsIgnoreCase(AdminConsoleDialogMode.MODELESS.name())) acDlgMode = AdminConsoleDialogMode.MODELESS;
+			else                                                                    acDlgMode = AdminConsoleDialogMode.MODAL;
 			
-			AdminConsoleInfo adminConsoleInfo = new AdminConsoleInfo( acDlgMode );
+			AdminConsoleInfo adminConsoleInfo = new AdminConsoleInfo(acDlgMode);
 			String binderId = ((GetAdminActionsCmd)cmd).getBinderId();
-			ArrayList<GwtAdminCategory> adminActions = getAdminActions( req, binderId );
-			adminConsoleInfo.setCategories( adminActions );
+			ArrayList<GwtAdminCategory> adminActions = getAdminActions(req, binderId);
+			adminConsoleInfo.setCategories(adminActions);
 			
 			// Get the url for the administration console "home page"
-			{
-				AdaptedPortletURL adaptedUrl;
-				
-				adaptedUrl = new AdaptedPortletURL( req, "ss_forum", false );
-				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_ADMIN_CONSOLE_HOME_PAGE );
-				adminConsoleInfo.setHomePageUrl( adaptedUrl.toString() );
-			}
+			AdaptedPortletURL adaptedUrl = new AdaptedPortletURL(req, "ss_forum", false);
+			adaptedUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_ADMIN_CONSOLE_HOME_PAGE);
+			adminConsoleInfo.setHomePageUrl(adaptedUrl.toString());
 			
-			response = new VibeRpcResponse( adminConsoleInfo );
+			response = new VibeRpcResponse(adminConsoleInfo);
 			return response;
 		}
 		
@@ -2242,11 +2247,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_MANAGE_MOBILE_DEVICES_INFO:
-		{
+		case GET_MANAGE_MOBILE_DEVICES_INFO:  {
 			GetManageMobileDevicesInfoCmd gmmdiCmd = ((GetManageMobileDevicesInfoCmd) cmd); 
-			ManageMobileDevicesInfoRpcResponseData result = GwtMobileDeviceHelper.getManageMobileDevicesInfo( this, req, gmmdiCmd.getUserId() );
-			response = new VibeRpcResponse( result );
+			ManageMobileDevicesInfoRpcResponseData result = GwtMobileDeviceHelper.getManageMobileDevicesInfo(this, req, gmmdiCmd.getUserId());
+			response = new VibeRpcResponse(result);
+			return response;
+		}
+		
+		case GET_MANAGE_PROXY_IDENTITIES_INFO:  {
+			ManageProxyIdentitiesInfoRpcResponseData result = GwtProxyIdentityHelper.getManageProxyIdentitiesInfo(this, req);
+			response = new VibeRpcResponse(result);
 			return response;
 		}
 		
@@ -3419,7 +3429,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case REPLY_TO_ENTRY: {
+		case REPLY_TO_ENTRY:  {
 			ReplyToEntryCmd reCmd = ((ReplyToEntryCmd) cmd);
 			ActivityStreamEntry result = replyToEntry(
 				req,
@@ -6342,22 +6352,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Return the administration options the user has rights to run.
 	 */
-	@SuppressWarnings("unused")
 	private ArrayList<GwtAdminCategory> getAdminActions(HttpServletRequest req, String binderId) throws GwtTeamingException {
 		try {
-			ArrayList<GwtAdminCategory> adminActions;
-			BinderModule binderModule = getBinderModule();
-			Long binderIdL = new Long( binderId );
-			if (binderIdL != null) {
-				Binder binder = binderModule.getBinder( binderIdL );
-				adminActions = GwtServerHelper.getAdminActions( req, binder, this );
-			}
-			
-			else {
-				GwtLogHelper.warn(logger, "In GwtRpcServiceImpl.getAdminActions(), binderIdL is null");
-				adminActions = new ArrayList<GwtAdminCategory>();
-			}
-			
+			Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
+			ArrayList<GwtAdminCategory> adminActions = GwtServerHelper.getAdminActions(req, binder, this);
 			return adminActions;
 		}
 		

@@ -3000,6 +3000,19 @@ public class GwtServerHelper {
 					// Add this action to the "management" category
 					managementCategory.addAdminOption( adminAction );
 				}
+				
+				// Does the user have rights to "manage proxy identities"?
+				if ( userHasAdminRights )
+				{
+					// Yes
+					title = NLT.get( "administration.configure_proxy_identities" );
+
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, "", AdminAction.MANAGE_PROXY_IDENTITIES );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
 			}
 			else
 			{
@@ -10466,6 +10479,7 @@ public class GwtServerHelper {
 		case DELETE_MOBILE_DEVICES:
 		case DELETE_NET_FOLDERS:
 		case DELETE_NET_FOLDER_ROOTS:
+		case DELETE_PROXY_IDENTITIES:
 		case DELETE_GROUPS:
 		case DELETE_SELECTED_USERS:
 		case DELETE_SELECTIONS:
@@ -10590,6 +10604,7 @@ public class GwtServerHelper {
 		case GET_MAIN_PAGE_INFO:
 		case GET_MANAGE_ADMINISTRATORS_INFO:
 		case GET_MANAGE_MOBILE_DEVICES_INFO:
+		case GET_MANAGE_PROXY_IDENTITIES_INFO:
 		case GET_MANAGE_TEAMS_INFO:
 		case GET_MANAGE_USERS_INFO:
 		case GET_MANAGE_USERS_STATE:

@@ -366,7 +366,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 		// No, we we aren't displaying a bread crumb panel for a
 		// collection!  Are we displaying it for the profile, global
 		// or team root workspace, or a mobile devices view?
-		else if (m_binderInfo.isBinderAdministratorManagement() || m_binderInfo.isBinderLimitUserVisibility() || m_binderInfo.isBinderProfilesRootWS() || m_binderInfo.isBinderGlobalRootWS() || m_binderInfo.isBinderTeamsRootWS() || m_binderInfo.isBinderMobileDevices()) {
+		else if (m_binderInfo.isBinderAdministratorManagement() || m_binderInfo.isBinderLimitUserVisibility() || m_binderInfo.isBinderProfilesRootWS() || m_binderInfo.isBinderGlobalRootWS() || m_binderInfo.isBinderTeamsRootWS() || m_binderInfo.isBinderMobileDevices() || m_binderInfo.isBinderProxyIdentities()) {
 			// Yes!  We don't need a tree, just the image and title.
 			// Create the panel for it...
 			VibeFlowPanel fp = new VibeFlowPanel();
@@ -414,12 +414,20 @@ public class BreadCrumbPanel extends ToolPanelBase
 				case LARGE:   iRes = m_filrImages.teamRoot_large();  break;
 				}
 			}
-			else {
+			else if (m_binderInfo.isBinderMobileDevices()) {
 				switch (BinderIconSize.getBreadCrumbIconSize()) {
 				default:
 				case SMALL:   iRes = m_filrImages.mobileDevices();        break;
 				case MEDIUM:  iRes = m_filrImages.mobileDevices_medium(); break;
 				case LARGE:   iRes = m_filrImages.mobileDevices_large();  break;
+				}
+			}
+			else {
+				switch (BinderIconSize.getBreadCrumbIconSize()) {
+				default:
+				case SMALL:   iRes = m_filrImages.proxyIdentities();        break;
+				case MEDIUM:  iRes = m_filrImages.proxyIdentities_medium(); break;
+				case LARGE:   iRes = m_filrImages.proxyIdentities_large();  break;
 				}
 			}
 			Image i = GwtClientHelper.buildImage(iRes.getSafeUri().asString());
@@ -441,11 +449,12 @@ public class BreadCrumbPanel extends ToolPanelBase
 			else if (m_binderInfo.isBinderProfilesRootWS())          txt = m_messages.vibeDataTable_People();
 			else if (m_binderInfo.isBinderGlobalRootWS())            txt = m_messages.vibeDataTable_Globals();
 			else if (m_binderInfo.isBinderTeamsRootWS())             txt = m_messages.vibeDataTable_Teams();
-			else                                                     txt = m_messages.vibeDataTable_MobileDevices();
+			else if (m_binderInfo.isBinderMobileDevices())           txt = m_messages.vibeDataTable_MobileDevices();
+			else                                                     txt = m_messages.vibeDataTable_ProxyIdentities();
 			final InlineLabel il = new InlineLabel(txt);
 			il.addStyleName("vibe-breadCrumbProfiles-label");
 			fp.add(il);
-			if (m_binderInfo.isBinderAdministratorManagement() || m_binderInfo.isBinderLimitUserVisibility() || m_binderInfo.isBinderProfilesRootWSManagement() || m_binderInfo.isBinderTeamsRootWSManagement() || m_binderInfo.isBinderMobileDevices()) {
+			if (m_binderInfo.isBinderAdministratorManagement() || m_binderInfo.isBinderLimitUserVisibility() || m_binderInfo.isBinderProfilesRootWSManagement() || m_binderInfo.isBinderTeamsRootWSManagement() || m_binderInfo.isBinderMobileDevices() || m_binderInfo.isBinderProxyIdentities()) {
 				GwtTeaming.fireEvent(
 					new GetManageTitleEvent(
 						m_binderInfo,
@@ -501,10 +510,11 @@ public class BreadCrumbPanel extends ToolPanelBase
 	private boolean needsBinderConfig() {
 		boolean reply = (
 			(!(m_binderInfo.isBinderAdministratorManagement()))  &&	// Not on manage administrators...
-			(!(m_binderInfo.isBinderLimitUserVisibility()))      &&	// ...or on limitied user visiblity...
+			(!(m_binderInfo.isBinderLimitUserVisibility()))      &&	// ...or on limited user visibility...
 			(!(m_binderInfo.isBinderProfilesRootWSManagement())) &&	// ...or on manage users...
 			(!(m_binderInfo.isBinderTeamsRootWSManagement()))    &&	// ...or on manage teams...
 			(!(m_binderInfo.isBinderMobileDevices()))            &&	// ...or the mobile devices view...
+			(!(m_binderInfo.isBinderProxyIdentities()))          &&	// ...or the proxy identities view...
 			(!(m_binderInfo.isBinderTrash())));						// ...or the trash view.
 		
 		return reply;
@@ -524,6 +534,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 				(!(m_binderInfo.isBinderTeamsRootWS()))             &&	// ...or view of teams...
 				(!(m_binderInfo.isBinderMirroredFolder()))          &&	// ...or any mirrored/net folder...
 				(!(m_binderInfo.isBinderMobileDevices()))           &&	// ...or the mobile devices view...
+				(!(m_binderInfo.isBinderProxyIdentities()))         &&	// ...or the proxy identities view...
 				(!(m_binderInfo.isBinderTrash())));						// ...or the trash view itself.
 			
 			if (reply) {
@@ -550,6 +561,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 			(!(m_binderInfo.isBinderProfilesRootWS()))          &&	// ...or any view of users...
 			(!(m_binderInfo.isBinderTeamsRootWS()))             &&	// ...or any view of teams...
 			(!(m_binderInfo.isBinderMobileDevices()))           &&	// ...or the mobile devices view...
+			(!(m_binderInfo.isBinderProxyIdentities()))         &&	// ...or the proxy identities view...
 			(!(m_binderInfo.isBinderTrash())));						// ...or the trash view.
 		
 		return reply;

@@ -107,6 +107,7 @@ public enum TeamingEvents implements IsSerializable {
 
 	INVOKE_ABOUT,									// Invokes the About dialog.
 	INVOKE_ADD_NEW_FOLDER,							// Invokes the Add New Folder dialog.
+	INVOKE_ADD_NEW_PROXY_IDENTITITY,				// Invokes the Add New Proxy Identity dialog.
 	INVOKE_BINDER_SHARE_RIGHTS_DLG,					// Invokes the 'binder share rights' dialog.
 	INVOKE_CHANGE_PASSWORD_DLG,						// Invoke the Change Password dialog.
 	INVOKE_CLIPBOARD,								// Invokes the Clipboard dialog.
@@ -141,6 +142,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_MANAGE_DATABASE_PRUNE_DLG,				// Invokes the "Manage database prune" dialog.
 	INVOKE_MANAGE_GROUPS_DLG,						// Invokes the "Manage groups" dialog.
 	INVOKE_MANAGE_MOBILE_DEVICES_DLG,				// Invokes the "Manage mobile devices" dialog.
+	INVOKE_MANAGE_PROXY_IDENTITIES_DLG,				// Invokes the "Manage proxy identities" dialog.
 	INVOKE_MANAGE_USERS_DLG,						// Invokes the "Manage users" dialog.
 	INVOKE_MANAGE_TEAMS_DLG,						// Invokes the "Manage teams" dialog.
 	INVOKE_EDIT_NET_FOLDER_RIGHTS_DLG,				// Invokes the "edit net folder rights" dialog.
@@ -304,6 +306,7 @@ public enum TeamingEvents implements IsSerializable {
 	COPY_SELECTED_ENTITIES,							// Copies the Selected Entities.
 	DELETE_SELECTED_ENTITIES,						// Deletes the Selected Entities.
 	DELETE_SELECTED_MOBILE_DEVICES,					// Deletes the Selected Mobile Devices.
+	DELETE_SELECTED_PROXY_IDENTITIES,				// Deletes the Selected Proxy Identities.
 	DELETE_SELECTED_USERS,							// Deletes the Selected Users.
 	DIALOG_CLOSED,									// Signals that a DlgBox has closed.
 	DISABLE_SELECTED_USERS,							// Disables the Selected Users.

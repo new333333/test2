@@ -76,6 +76,7 @@ public enum AdminAction implements IsSerializable {
 	MANAGE_QUOTAS("Manage quotas"),
 	MANAGE_FILE_UPLOAD_LIMITS("Manage file upload limits"),
 	MANAGE_MOBILE_DEVICES("Manage mobile devices"),
+	MANAGE_PROXY_IDENTITIES("Manage Proxy Identities"),
 	MANAGE_RESOURCE_DRIVERS("Manage resource drivers"),
 	MANAGE_SHARE_ITEMS("Manage share items"),
 	MANAGE_TEAMS("Manage teams"),

@@ -85,13 +85,14 @@ public class EventHelper {
 		case GOTO_MY_WORKSPACE:                 	reply = new GotoMyWorkspaceEvent();               break;
 		case HIDE_MANAGE_MENU:                 	    reply = new HideManageMenuEvent();                break;
 		case INVOKE_ABOUT:							reply = new InvokeAboutEvent();                   break;
+		case INVOKE_ADD_NEW_PROXY_IDENTITITY:		reply = new InvokeAddNewProxyIdentityEvent();     break;
 		case INVOKE_CLIPBOARD:						reply = new InvokeClipboardEvent();               break;
 		case INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG:	reply = new InvokeConfigureAdhocFoldersDlgEvent();break;
 		case INVOKE_CONFIGURE_COLUMNS:				reply = new InvokeConfigureColumnsEvent();        break;
 		case INVOKE_CONFIGURE_FILE_SYNC_APP_DLG:	reply = new InvokeConfigureFileSyncAppDlgEvent(); break;
 		case INVOKE_CONFIGURE_MOBILE_APPS_DLG:		reply = new InvokeConfigureMobileAppsDlgEvent();  break;
-		case INVOKE_CONFIGURE_PASSWORD_POLICY_DLG:	reply = new InvokeConfigurePasswordPolicyDlgEvent(); break;
-		case INVOKE_CONFIGURE_SHARE_SETTINGS_DLG:	reply = new InvokeConfigureShareSettingsDlgEvent();  break;
+		case INVOKE_CONFIGURE_PASSWORD_POLICY_DLG:	reply = new InvokeConfigurePasswordPolicyDlgEvent();break;
+		case INVOKE_CONFIGURE_SHARE_SETTINGS_DLG:	reply = new InvokeConfigureShareSettingsDlgEvent();break;
 		case INVOKE_CONFIGURE_UPDATE_LOGS_DLG:	    reply = new InvokeConfigureUpdateLogsDlgEvent();  break;
 		case INVOKE_CONFIGURE_USER_ACCESS_DLG:		reply = new InvokeConfigureUserAccessDlgEvent();  break;
 		case INVOKE_DOWNLOAD_DESKTOP_APP:           reply = new InvokeDownloadDesktopAppEvent();      break;
@@ -99,14 +100,15 @@ public class EventHelper {
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
 		case INVOKE_IMPORT_PROFILES_DLG:			reply = new InvokeImportProfilesDlgEvent();		  break;
 		case INVOKE_LIMIT_USER_VISIBILITY_DLG:		reply = new InvokeLimitUserVisibilityDlgEvent();  break;
-		case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:	reply = new InvokeNetFolderGlobalSettingsDlgEvent(); break;
+		case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:	reply = new InvokeNetFolderGlobalSettingsDlgEvent();break;
 		case INVOKE_LDAP_SYNC_RESULTS_DLG:			reply = new InvokeLdapSyncResultsDlgEvent();	  break;
 		case INVOKE_MANAGE_DATABASE_PRUNE_DLG:		reply = new InvokeManageDatabasePruneDlgEvent();  break;
 		case INVOKE_MANAGE_NET_FOLDERS_DLG:			reply = new InvokeManageNetFoldersDlgEvent();	  break;
 		case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	reply = new InvokeManageNetFolderRootsDlgEvent(); break;
 		case INVOKE_MANAGE_GROUPS_DLG:				reply = new InvokeManageGroupsDlgEvent();		  break;
 		case INVOKE_MANAGE_MOBILE_DEVICES_DLG:		reply = new InvokeManageMobileDevicesDlgEvent();  break;
-		case INVOKE_NAME_COMPLETION_SETTINGS_DLG:	reply = new InvokeNameCompletionSettingsDlgEvent(); break;
+		case INVOKE_MANAGE_PROXY_IDENTITIES_DLG:	reply = new InvokeManageProxyIdentitiesDlgEvent();break;
+		case INVOKE_NAME_COMPLETION_SETTINGS_DLG:	reply = new InvokeNameCompletionSettingsDlgEvent();break;
 		case INVOKE_RENAME_ENTITY:				    reply = new InvokeRenameEntityEvent();		      break;
 		case INVOKE_RUN_A_REPORT_DLG:				reply = new InvokeRunAReportDlgEvent();		      break;
 		case LOGIN:                             	reply = new LoginEvent();                         break;
@@ -683,6 +685,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case DELETE_SELECTED_PROXY_IDENTITIES:
+				// A DeleteSelectedProxyIdentitiesEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof DeleteSelectedProxyIdentitiesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = DeleteSelectedProxyIdentitiesEvent.registerEvent(eventBus, ((DeleteSelectedProxyIdentitiesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case DELETE_SELECTED_USERS:
 				// A DeleteSelectedUsersEvent!  Can the event handler
 				// we were given handle that?
@@ -1109,6 +1120,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_ADD_NEW_PROXY_IDENTITITY:
+				// An InvokeAddNewProxyIdentityEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof InvokeAddNewProxyIdentityEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeAddNewProxyIdentityEvent.registerEvent(eventBus, ((InvokeAddNewProxyIdentityEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_BINDER_SHARE_RIGHTS_DLG:
 				// An InvokeBinderShareRightsDlgEvent!  Can the event
 				// handler we were given handle that?
@@ -1469,6 +1489,15 @@ public class EventHelper {
 				if (eventHandler instanceof InvokeManageMobileDevicesDlgEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = InvokeManageMobileDevicesDlgEvent.registerEvent(eventBus, ((InvokeManageMobileDevicesDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case INVOKE_MANAGE_PROXY_IDENTITIES_DLG:
+				// An InvokeManageProxyIdentitiesDlgEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof InvokeManageProxyIdentitiesDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeManageProxyIdentitiesDlgEvent.registerEvent(eventBus, ((InvokeManageProxyIdentitiesDlgEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -3007,6 +3036,7 @@ public class EventHelper {
 
 			case INVOKE_ABOUT:							       hasHandler = (eventHandler instanceof InvokeAboutEvent.Handler);                            break;
 			case INVOKE_ADD_NEW_FOLDER:					       hasHandler = (eventHandler instanceof InvokeAddNewFolderEvent.Handler);                     break;
+			case INVOKE_ADD_NEW_PROXY_IDENTITITY:			   hasHandler = (eventHandler instanceof InvokeAddNewProxyIdentityEvent.Handler);              break;
 			case INVOKE_BINDER_SHARE_RIGHTS_DLG:			   hasHandler = (eventHandler instanceof InvokeBinderShareRightsDlgEvent.Handler);		       break;
 			case INVOKE_CHANGE_PASSWORD_DLG:			       hasHandler = (eventHandler instanceof InvokeChangePasswordDlgEvent.Handler);                break;
 			case INVOKE_CLIPBOARD:						       hasHandler = (eventHandler instanceof InvokeClipboardEvent.Handler);                        break;
@@ -3043,6 +3073,7 @@ public class EventHelper {
 			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	       hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler);          break;
 			case INVOKE_MANAGE_GROUPS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		           break;
 			case INVOKE_MANAGE_MOBILE_DEVICES_DLG:			   hasHandler = (eventHandler instanceof InvokeManageMobileDevicesDlgEvent.Handler);		   break;
+			case INVOKE_MANAGE_PROXY_IDENTITIES_DLG:		   hasHandler = (eventHandler instanceof InvokeManageProxyIdentitiesDlgEvent.Handler);		   break;
 			case INVOKE_MANAGE_TEAMS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageTeamsDlgEvent.Handler);		           break;
 			case INVOKE_MANAGE_USERS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageUsersDlgEvent.Handler);		           break;
 			case INVOKE_NAME_COMPLETION_SETTINGS_DLG:	       hasHandler = (eventHandler instanceof InvokeNameCompletionSettingsDlgEvent.Handler);		   break;
@@ -3197,6 +3228,7 @@ public class EventHelper {
 			case COPY_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof CopySelectedEntitiesEvent.Handler);                   break;
 			case DELETE_SELECTED_ENTITIES:                     hasHandler = (eventHandler instanceof DeleteSelectedEntitiesEvent.Handler);                 break;
 			case DELETE_SELECTED_MOBILE_DEVICES:               hasHandler = (eventHandler instanceof DeleteSelectedMobileDevicesEvent.Handler);            break;
+			case DELETE_SELECTED_PROXY_IDENTITIES:             hasHandler = (eventHandler instanceof DeleteSelectedProxyIdentitiesEvent.Handler);          break;
 			case DELETE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof DeleteSelectedUsersEvent.Handler);                    break;
 			case DIALOG_CLOSED:                                hasHandler = (eventHandler instanceof DialogClosedEvent.Handler);                           break;
 			case DISABLE_SELECTED_USERS:                       hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);                   break;

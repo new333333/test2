@@ -998,7 +998,7 @@ public class GwtMenuHelper {
 	 */
 	private static void constructEntryDownloadAsCSVFile(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
 		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
-		if (canDownload && bs.getFolderModule().testAccess( folder, FolderOperation.downloadFolderAsCsv )) {
+		if (canDownload && bs.getFolderModule().testAccess(folder, FolderOperation.downloadFolderAsCsv)) {
 			ToolbarItem downloadAsCSVFileTBI = new ToolbarItem("1_downloadAsCSVFile");
 			markTBITitle(   downloadAsCSVFileTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
 			markTBIEvent(   downloadAsCSVFileTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
@@ -1248,7 +1248,7 @@ public class GwtMenuHelper {
     	// Is the current user a zone administrator?
 		User currentUser = GwtServerHelper.getCurrentUser();
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig( zoneId );
+    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
 		AccessControlManager accessControlManager = getAccessControlManager();
 		accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
 		if (accessControlManager.testOperation(currentUser, zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION)) {
@@ -2390,16 +2390,12 @@ public class GwtMenuHelper {
 				
 				// For folders...
 				if (isFolder ) {
-					Folder folder;
-					
-					folder = bs.getFolderModule().getFolder( binder.getId() );
-					
-					// Does the user have rights to download the folder as a csv file?
-					if ( bs.getFolderModule().testAccess( folder, FolderOperation.downloadFolderAsCsv ) )
-					{
-						// Yes
-						// ...add a ToolbarItem for for downloading it as a
-						// ...CSV file.
+					// ...does the user have rights to download the
+					// ...folder as a CSV file?
+					Folder folder = bs.getFolderModule().getFolder(binder.getId());
+					if (bs.getFolderModule().testAccess(folder, FolderOperation.downloadFolderAsCsv)) {
+						// Yes!  Add a ToolbarItem for for downloading
+						// it as a CSV file.
 						actionTBI = new ToolbarItem(DOWNLOAD_AS_CSV_FILE);
 						markTBITitle(   actionTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
 						markTBIEvent(   actionTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
@@ -2766,7 +2762,7 @@ public class GwtMenuHelper {
 						markTBISelected(viewTBI);
 					}				
 					markTBITitleGetDef(viewTBI, def.getTitle());
-					markTBIUrl(  viewTBI, url           );
+					markTBIUrl(viewTBI, url);
 					viewsTBI.addNestedItem(viewTBI);
 				}
 			}
@@ -3510,20 +3506,18 @@ public class GwtMenuHelper {
 		return reply;
 	}
 	
-	/**
-	 * 
+	/*
+	 * Returns the AccessControlManager bean. 
 	 */
-	private static AccessControlManager getAccessControlManager()
-	{
-		return (AccessControlManager) SpringContextUtil.getBean( "accessControlManager" );
+	private static AccessControlManager getAccessControlManager() {
+		return ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
 	}
 
-	/**
-	 * 
+	/*
+	 * Returns the CoreDao bean. 
 	 */
-	private static CoreDao getCoreDao()
-	{
-		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
+	private static CoreDao getCoreDao() {
+		return ((CoreDao) SpringContextUtil.getBean("coreDao"));
 	}
 	
 	/*
@@ -3826,8 +3820,9 @@ public class GwtMenuHelper {
 			boolean isBinderLimitUserVisibility = folderInfo.isBinderLimitUserVisibility();
 			boolean isBinderManageAdmins        = folderInfo.isBinderAdministratorManagement();
 			boolean isBinderMobileDevices       = folderInfo.isBinderMobileDevices();
+			boolean isBinderProxyIdentities     = folderInfo.isBinderProxyIdentities();
 			boolean isBinderTrash               = folderInfo.isBinderTrash();
-			if ((!isBinderTrash) && (!isBinderCollection) && (!isBinderLimitUserVisibility) && (!isBinderMobileDevices) && (!isBinderManageAdmins) && (!(Utils.checkIfFilr()))) {
+			if ((!isBinderTrash) && (!isBinderCollection) && (!isBinderLimitUserVisibility) && (!isBinderMobileDevices) && (!isBinderProxyIdentities) && (!isBinderManageAdmins) && (!(Utils.checkIfFilr()))) {
 				// Yes!  Add the configure accessories item to the
 				// toolbar...
 				constructEntryConfigureAccessories(
@@ -3953,11 +3948,28 @@ public class GwtMenuHelper {
 				constructMobileDeviceWipeItems(entryToolbar, bs, request);
 			}
 			
+			// No, we aren't returning the toolbar items for a
+			// mobile devices view either!  Are we returning them for a
+			// proxy identities view?
+			else if (isBinderProxyIdentities) {
+				// Yes!  Construct the appropriate menu items for
+				// it.
+				ToolbarItem piTBI = new ToolbarItem("1_add");
+				markTBITitle(piTBI, "toolbar.proxyIdentities.add");
+				markTBIEvent(piTBI, TeamingEvents.INVOKE_ADD_NEW_PROXY_IDENTITITY);
+				entryToolbar.addNestedItem(piTBI);
+				
+				piTBI = new ToolbarItem("1_deleteSelected");
+				markTBITitle(piTBI, "toolbar.proxyIdentities.delete.multi");
+				markTBIEvent(piTBI, TeamingEvents.DELETE_SELECTED_PROXY_IDENTITIES);
+				entryToolbar.addNestedItem(piTBI);
+			}
+			
 			else {
 				// No, we aren't returning the toolbar items for a
-				// mobile devices view either!  Is this is other than a
-				// mirrored folder, or if its a mirrored folder, is its
-				// resource driver configured?
+				// proxy identities view either!  Is this is other than
+				// a mirrored folder, or if its a mirrored folder, is
+				// its resource driver configured?
 				boolean isMirrored           = (isFolder && folder.isMirrored());
 				boolean isMirroredConfigured = isMirrored && MiscUtil.hasString(folder.getResourceDriverName());
 				if ((!isMirrored) || isMirroredConfigured) {
@@ -4259,7 +4271,7 @@ public class GwtMenuHelper {
 				if ((null != binder) && (EntityIdentifier.EntityType.profiles != binder.getEntityType())) {				
 					// Yes!  Can the user work with teams on this
 					// binder?
-					if ((!(Utils.checkIfFilr())) || (0 < bs.getBinderModule().getTeamMemberIds( binder ).size())) {
+					if ((!(Utils.checkIfFilr())) || (0 < bs.getBinderModule().getTeamMemberIds(binder).size())) {
 						// Yes!  Then the user is allowed to view team membership.
 						reply.setViewAllowed(true);
 		
