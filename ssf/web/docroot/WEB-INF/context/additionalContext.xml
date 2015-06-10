@@ -171,4 +171,7 @@
 	<!-- =============================== KeyShield Support ============================== -->
 	<bean id="keyShieldModule" class="org.kablink.teaming.module.keyshield.impl.NullKeyShieldModule"/>		
 	
+	<!-- ============================= ProxyIdentity Support ============================ -->
+	<bean id="proxyIdentityModule" class="org.kablink.teaming.module.proxyidentity.impl.NullProxyIdentityModule"/>		
+	
 </beans>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,9 +38,12 @@ import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.jasypt.encryption.StringEncryptor;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.cache.impl.HashMapCache;
+import org.kablink.teaming.domain.ProxyIdentity;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -187,7 +190,22 @@ public class EncryptUtil {
 		return result;
 	}
 	
+	public static String encryptPasswordForStorage(String passwordToStore, ProxyIdentity pi) {
+		long startTime = System.nanoTime();
+
+		// This is the time to individualize the password encryption algorithm for the user if it hasn't happened yet. 
+		String result = encryptPassword(passwordEncryptionAlgorithmForStorage(pi), passwordToStore, pi.getProxyName());
+		
+		end(startTime, "encryptPasswordForStorage");
+		
+		return result;
+	}
+	
 	public static String passwordEncryptionAlgorithmForStorage(User user) {
+		return PASSWORD_ENCRYPTION_ALGORITHM_AFTER_INDIVIDUALIZATION;
+	}
+	
+	public static String passwordEncryptionAlgorithmForStorage(ProxyIdentity pi) {
 		return PASSWORD_ENCRYPTION_ALGORITHM_AFTER_INDIVIDUALIZATION;
 	}
 	
