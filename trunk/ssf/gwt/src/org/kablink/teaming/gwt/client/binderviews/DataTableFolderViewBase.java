@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.kablink.teaming.gwt.client.GwtProxyIdentity;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
@@ -74,6 +75,7 @@ import org.kablink.teaming.gwt.client.datatable.MobileDeviceWipeScheduledColumn;
 import org.kablink.teaming.gwt.client.datatable.PresenceCell.PresenceClickAction;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.PrincipalAdminTypeColumn;
+import org.kablink.teaming.gwt.client.datatable.ProxyIdentityTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
 import org.kablink.teaming.gwt.client.datatable.ShareStringValueColumn;
 import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg;
@@ -1897,9 +1899,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				};
 			}
 			
+			// No, this column isn't a can only see member column
+			// either!  Is it a proxy title column??
+			else if (FolderColumn.isColumnProxyTitle(cName)) {
+				// Yes!  Create a ProxyIdentityTitleColumn for it.
+				column = new ProxyIdentityTitleColumn<FolderRow>(fc) {
+					@Override
+					public GwtProxyIdentity getValue(FolderRow fr) {
+						return fr.getColumnValueAsProxyIdentity(fc);
+					}
+				};
+			}
+			
 			else {
-				// No, this column isn't a can only see members either!
-				// Define a StringColumn for it.
+				// No, this column isn't a proxy title either!  Define
+				// a StringColumn for it.
 				column = new StringColumn<FolderRow>(fc) {
 					@Override
 					public String getValue(FolderRow fr) {

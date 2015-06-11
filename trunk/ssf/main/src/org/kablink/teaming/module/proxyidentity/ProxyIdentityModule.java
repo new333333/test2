@@ -86,7 +86,7 @@ public interface ProxyIdentityModule {
      * 
      * @return
      */
-	public Map getProxyIdentitys(Map options);
+	public Map getProxyIdentities(Map options);
     
     /**
      * Modifies a ProxyIdentity.

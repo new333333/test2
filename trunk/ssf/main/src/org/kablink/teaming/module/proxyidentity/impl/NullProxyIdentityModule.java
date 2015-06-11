@@ -105,7 +105,7 @@ public class NullProxyIdentityModule extends CommonDependencyInjection implement
      * @return
      */
 	@Override
-	public Map getProxyIdentitys(Map options) {
+	public Map getProxyIdentities(Map options) {
 		return null;
 	}
     

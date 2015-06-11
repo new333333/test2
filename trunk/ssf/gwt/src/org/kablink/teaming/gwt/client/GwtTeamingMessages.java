@@ -566,6 +566,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_markupStringReplacement();
 	String rpcFailure_ModifyGroup();
 	String rpcFailure_ModifyGroupMembership();
+	String rpcFailure_ModifyProxyIdentity();
 	String rpcFailure_MoveEntries();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
@@ -678,7 +679,6 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_AddFilesDlg();
 	String codeSplitFailure_AddFilesHtml5Popup();
 	String codeSplitFailure_AddNewFolderDlg();
-	String codeSplitFailure_AddNewProxyIdentityDlg();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_AdminInfoDlg();
 	String codeSplitFailure_AdministratorsView();
@@ -806,6 +806,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_ProjectStatsWidget();
 	String codeSplitFailure_ProjectManagementWSView();
 	String codeSplitFailure_ProxyIdentitiesView();
+	String codeSplitFailure_ProxyIdentityDlg();
 	String codeSplitFailure_PromptDlg();
 	String codeSplitFailure_QuickViewDlg();
 	String codeSplitFailure_RenameEntityDlg();
@@ -2048,6 +2049,7 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeDataTable_People();
 	String vibeDataTable_Pin();
 	String vibeDataTable_ProxyIdentities();
+	String vibeDataTable_ProxyIdentity_Alt();
 	String vibeDataTable_Select();
 	String vibeDataTable_Teams();
 	String vibeDataTable_TrashConfirmPurge();
@@ -3689,19 +3691,22 @@ public interface GwtTeamingMessages extends Messages {
 	String manageProxyIdentitiesDlg_confirmDelete();
 	String manageProxyIdentitiesDlg_failureDeletingProxyIdentities();
 	
-	// Strings used by the 'Add New Proxy Identity' dialog.
-	String addNewProxyIdentityDlgError_AddFailed();
-	String addNewProxyIdentityDlgError_NameTooLong(int max);
-	String addNewProxyIdentityDlgError_NoName();
-	String addNewProxyIdentityDlgError_NoPassword();
-	String addNewProxyIdentityDlgError_NoPasswordVerify();
-	String addNewProxyIdentityDlgError_PasswordsDontMatch();
-	String addNewProxyIdentityDlgError_PasswordTooLong(      int max);
-	String addNewProxyIdentityDlgError_PasswordVerifyTooLong(int max);
-	String addNewProxyIdentityDlgError_TitleTooLong(         int max);
-	String addNewProxyIdentityDlgHeader();
-	String addNewProxyIdentityDlgName();
-	String addNewProxyIdentityDlgPassword();
-	String addNewProxyIdentityDlgPasswordVerify();
-	String addNewProxyIdentityDlgTitle();
+	// Strings used by the 'Proxy Identity' dialog.
+	String proxyIdentityDlgError_AddFailed();
+	String proxyIdentityDlgError_ModifyFailed();
+	String proxyIdentityDlgError_NameTooLong(int max);
+	String proxyIdentityDlgError_NoName();
+	String proxyIdentityDlgError_NoPassword();
+	String proxyIdentityDlgError_NoPasswordVerify();
+	String proxyIdentityDlgError_NoTitle();
+	String proxyIdentityDlgError_PasswordsDontMatch();
+	String proxyIdentityDlgError_PasswordTooLong(      int max);
+	String proxyIdentityDlgError_PasswordVerifyTooLong(int max);
+	String proxyIdentityDlgError_TitleTooLong(         int max);
+	String proxyIdentityDlgHeader_Add();
+	String proxyIdentityDlgHeader_Modify();
+	String proxyIdentityDlgName();
+	String proxyIdentityDlgPassword();
+	String proxyIdentityDlgPasswordVerify();
+	String proxyIdentityDlgTitle();
 }

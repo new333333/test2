@@ -36,11 +36,11 @@ import org.kablink.teaming.gwt.client.GwtProxyIdentity;
 
 /**
  * This class holds all of the information necessary to execute the
- * 'add new proxy identity' command.
+ * 'modify proxy identity' command.
  * 
  * @author drfoster@novell.com
  */
-public class AddNewProxyIdentityCmd extends VibeRpcCmd {
+public class ModifyProxyIdentityCmd extends VibeRpcCmd {
 	private GwtProxyIdentity	m_pi;	//
 	
 	/*
@@ -49,7 +49,7 @@ public class AddNewProxyIdentityCmd extends VibeRpcCmd {
 	 * For GWT serialization requirements, must have a zero parameter
 	 * constructor.
 	 */
-	private AddNewProxyIdentityCmd() {
+	private ModifyProxyIdentityCmd() {
 		// Initialize the super class.
 		super();
 	}
@@ -59,11 +59,11 @@ public class AddNewProxyIdentityCmd extends VibeRpcCmd {
 	 * 
 	 * @param pi
 	 */
-	public AddNewProxyIdentityCmd(GwtProxyIdentity pi) {
+	public ModifyProxyIdentityCmd(GwtProxyIdentity pi) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameters.
+		// ...and store the parameter.
 		setProxyIdentity(pi);
 	}
 	
@@ -90,6 +90,6 @@ public class AddNewProxyIdentityCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.ADD_NEW_PROXY_IDENTITY.ordinal();
+		return VibeRpcCmdType.MODIFY_PROXY_IDENTITY.ordinal();
 	}
 }

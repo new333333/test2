@@ -1713,6 +1713,7 @@ public class EntryMenuPanel extends ToolPanelBase
 			case LIMIT_USER_VISIBILITY:
 			case PROFILE_ROOT:
 			case PROFILE_ROOT_MANAGEMENT:
+			case PROXY_IDENTITIES:
 			case TEAM_ROOT:
 			case TEAM_ROOT_MANAGEMENT:
 				reply = true;

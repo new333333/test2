@@ -30,41 +30,61 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
+package org.kablink.teaming.gwt.client;
 
-import org.kablink.teaming.gwt.client.GwtProxyIdentity;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'add new proxy identity' command.
+ * Class used in GWT RPC calls to represent a domain ProxyIdentity
+ * object.
  * 
  * @author drfoster@novell.com
  */
-public class AddNewProxyIdentityCmd extends VibeRpcCmd {
-	private GwtProxyIdentity	m_pi;	//
+public class GwtProxyIdentity implements IsSerializable {
+	private Long	m_id;			//
+	private String	m_password;		//
+	private String	m_proxyName;	//
+	private String	m_title;		//
 	
-	/*
-	 * Constructor method.
+	/**
+	 * Constructor method. 
 	 * 
-	 * For GWT serialization requirements, must have a zero parameter
-	 * constructor.
+	 * No parameters as per GWT serialization requirements.
 	 */
-	private AddNewProxyIdentityCmd() {
-		// Initialize the super class.
+	public GwtProxyIdentity() {
 		super();
 	}
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param pi
+	 * @param title
+	 * @param proxyName
+	 * @param password
 	 */
-	public AddNewProxyIdentityCmd(GwtProxyIdentity pi) {
+	public GwtProxyIdentity(String title, String proxyName, String password) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setProxyIdentity(pi);
+		setTitle(    title    );
+		setProxyName(proxyName);
+		setPassword( password );
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param title
+	 * @param proxyName
+	 * @param password
+	 */
+	public GwtProxyIdentity(Long id, String title, String proxyName, String password) {
+		// Initialize this object...
+		this(title, proxyName, password);
+		
+		// ...and store the remaining parameter.
+		setId(id);
 	}
 	
 	/**
@@ -72,24 +92,18 @@ public class AddNewProxyIdentityCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public GwtProxyIdentity getProxyIdentity() {return m_pi;}
+	public Long   getId()        {return m_id;       }
+	public String getPassword()  {return m_password; }
+	public String getProxyName() {return m_proxyName;}
+	public String getTitle()     {return m_title;    }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setProxyIdentity(GwtProxyIdentity pi) {m_pi = pi;}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.ADD_NEW_PROXY_IDENTITY.ordinal();
-	}
+	public void setId(       Long   id)        {m_id        = id;       }
+	public void setPassword( String password ) {m_password  = password; }
+	public void setProxyName(String proxyName) {m_proxyName = proxyName;}
+	public void setTitle(    String title)     {m_title     = title;    }
 }

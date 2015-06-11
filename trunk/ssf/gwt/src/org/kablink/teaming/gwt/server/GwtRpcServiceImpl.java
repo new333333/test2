@@ -426,13 +426,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 
 		case ADD_NEW_PROXY_IDENTITY:  {
-			AddNewProxyIdentityCmd apiCmd = ((AddNewProxyIdentityCmd) cmd);
-			CreateProxyIdentityRpcResponseData responseData = GwtProxyIdentityHelper.addNewProxyIdentity(
-				this,
-				req,
-				apiCmd.getTitle(),
-				apiCmd.getProxyName(),
-				apiCmd.getPassword()); 
+			AddNewProxyIdentityCmd anpiCmd = ((AddNewProxyIdentityCmd) cmd);
+			ProxyIdentityRpcResponseData responseData = GwtProxyIdentityHelper.addNewProxyIdentity(this, req, anpiCmd.getProxyIdentity()); 
 			response = new VibeRpcResponse(responseData);
 			return response;
 		}
@@ -3307,6 +3302,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case MODIFY_PROXY_IDENTITY:  {
+			ModifyProxyIdentityCmd mpiCmd = ((ModifyProxyIdentityCmd) cmd);
+			ProxyIdentityRpcResponseData responseData = GwtProxyIdentityHelper.modifyProxyIdentity(this, req, mpiCmd.getProxyIdentity()); 
+			response = new VibeRpcResponse(responseData);
+			return response;
+		}
+
 		case MOVE_ENTRIES:
 		{
 			MoveEntriesCmd meCmd = ((MoveEntriesCmd) cmd);

@@ -44,13 +44,16 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ProxyIdentity;
+import org.kablink.teaming.gwt.client.GwtProxyIdentity;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
-import org.kablink.teaming.gwt.client.rpc.shared.CreateProxyIdentityRpcResponseData;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteProxyIdentitiesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageProxyIdentitiesInfoRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.ProxyIdentityRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -81,31 +84,31 @@ public class GwtProxyIdentityHelper {
 	 *
 	 * @param bs
 	 * @param request
-	 * @param title
-	 * @param proxyName
-	 * @param password
+	 * @param gwtPI
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static CreateProxyIdentityRpcResponseData addNewProxyIdentity(AllModulesInjected bs, HttpServletRequest request, String title, String proxyName, String password) throws GwtTeamingException {
+	public static ProxyIdentityRpcResponseData addNewProxyIdentity(AllModulesInjected bs, HttpServletRequest request, GwtProxyIdentity gwtPI) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtProxyIdentityHelper.addNewProxyIdentity()");
 		try {
-			CreateProxyIdentityRpcResponseData reply = new CreateProxyIdentityRpcResponseData();
+			ProxyIdentityRpcResponseData reply = new ProxyIdentityRpcResponseData();
 			try {
 				// Can we create the proxy identity?
-				bs.getProxyIdentityModule().addProxyIdentity(new ProxyIdentity(password, proxyName, title));
+				ProxyIdentity pi = convertGwtPIToPI(gwtPI);
+				pi.setId(null);	// An add requires a null ID.
+				bs.getProxyIdentityModule().addProxyIdentity(pi);
 			}
 			
 			catch (Exception ex) {
 				// No!  Add an error to the error list and log it.
-				reply.addError(NLT.get("addNewProxyIdentityError.Exception", new String[]{proxyName, ex.getMessage()}));
-				GwtLogHelper.error(m_logger, "GwtProxyIdentityHelper.addNewProxyIdentity( Name:  '" + proxyName + "', EXCEPTION ):  ", ex);
+				reply.addError(NLT.get("addNewProxyIdentityError.Exception", new String[]{gwtPI.getTitle(), ex.getMessage()}));
+				GwtLogHelper.error(m_logger, "GwtProxyIdentityHelper.addNewProxyIdentity( Name:  '" + gwtPI.getTitle() + "', EXCEPTION ):  ", ex);
 			}
 			
-			// If we get here, reply refers to a
-			// CreateProxyIdentityRpcResponseData containing any errors
+			// If we get here, reply refers to a 
+			// ProxyIdentityRpcResponseData containing any errors
 			// we encountered.  Return it.
 			return reply;
 		}
@@ -113,6 +116,27 @@ public class GwtProxyIdentityHelper {
 		finally {
 			gsp.stop();
 		}
+	}
+
+	/*
+	 * Converts a domain ProxyIdentity to a GwtProxyIdentity.
+	 */
+	private static GwtProxyIdentity convertPIToGwtPI(ProxyIdentity pi) {
+		GwtProxyIdentity reply = new GwtProxyIdentity();
+		reply.setId(       pi.getId()       );
+//		reply.setPassword( pi.getPassword() );
+		reply.setProxyName(pi.getProxyName());
+		reply.setTitle(    pi.getTitle()    );
+		return reply;
+	}
+	
+	/*
+	 * Converts a GwtProxyIdentity to a domain ProxyIdentity.
+	 */
+	private static ProxyIdentity convertGwtPIToPI(GwtProxyIdentity gwtPI) {
+		ProxyIdentity reply = new ProxyIdentity(gwtPI.getPassword(), gwtPI.getProxyName(), gwtPI.getTitle());
+		reply.setId(gwtPI.getId());
+		return reply;
 	}
 	
 	/**
@@ -219,7 +243,7 @@ public class GwtProxyIdentityHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings({"unchecked", "unused"})
+	@SuppressWarnings("unchecked")
 	public static FolderRowsRpcResponseData getProxyIdentityRows(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, BinderInfo bi, List<FolderColumn> folderColumns) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtProxyIdentityHelper.getProxyIdentityRows()");
 		try {
@@ -233,8 +257,116 @@ public class GwtProxyIdentityHelper {
 			// Where are we starting the read from? 
 			int startIndex = GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET, 0);
 			
-//!			...this needs to be implemented...
-			return GwtViewHelper.buildEmptyFolderRows(binder);
+			// Are there any proxy identities to show?
+			Map piMap = bs.getProxyIdentityModule().getProxyIdentities(options);
+			List<ProxyIdentity> piList = (MiscUtil.hasItems(piMap) ? ((List<ProxyIdentity>) piMap.get(ObjectKeys.SEARCH_ENTRIES)) : null);
+			if (!(MiscUtil.hasItems(piList))) {
+				// No!  Return an empty row set.
+				return GwtViewHelper.buildEmptyFolderRows(binder);
+			}
+			Long piTotal = ((Long) piMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+
+			// Scan the proxy identity map.
+			List<FolderRow> piRows = new ArrayList<FolderRow>();
+			for (ProxyIdentity pi:  piList) {
+				// Create the FolderRow for this proxy identity and add
+				// it to the list. 
+				EntityId  eid = new EntityId(binder.getId(), pi.getId(), EntityId.PROXY_IDENTITY);
+				FolderRow fr  = new FolderRow(eid, folderColumns);
+				piRows.add(fr);
+
+				// Scan the columns.
+				for (FolderColumn fc:  folderColumns) {
+					// What proxy identity column is this?
+					String cName = fc.getColumnName();
+					if (FolderColumn.isColumnProxyName(cName)) {
+						// Proxy Name!  Simply store the name.
+						fr.setColumnValue(fc, pi.getProxyName());
+					}
+					
+					else if (FolderColumn.isColumnProxyTitle(cName)) {
+						// Proxy Title!  Convert the domain
+						// ProxyIdentity to a GwtProxyIdentity and
+						// store that.
+						fr.setColumnValue(fc, convertPIToGwtPI(pi));
+					}
+				}
+			}
+
+			// Return a FolderRowsRpcResponseData containing the row
+			// data.
+			FolderRowsRpcResponseData reply =
+				new FolderRowsRpcResponseData(
+					piRows,					// FolderRows.
+					startIndex,				// Start index.
+					piTotal.intValue(),		// Total count.
+					TotalCountType.EXACT,	// How the total count should be interpreted.
+					new ArrayList<Long>());	// Contributor IDs.
+			
+			// If we get here, reply refers to a
+			// FolderRowsRpcResponseData containing the rows from the
+			// proxy identities.  Return it.
+			if (GwtLogHelper.isDebugEnabled(m_logger)) {
+				GwtViewHelper.dumpFolderRowsRpcResponseData(m_logger, binder, reply);
+			}
+			
+			return reply;
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+	
+	/**
+	 * Modifies an existing proxy identity.
+	 *
+	 * @param bs
+	 * @param request
+	 * @param gwtPI
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ProxyIdentityRpcResponseData modifyProxyIdentity(AllModulesInjected bs, HttpServletRequest request, GwtProxyIdentity gwtPI) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtProxyIdentityHelper.modifyProxyIdentity()");
+		try {
+			ProxyIdentityRpcResponseData reply = new ProxyIdentityRpcResponseData();
+			try {
+				// If the GwtProxyIdentity doesn't contain an ID...
+				Long id = gwtPI.getId();
+				if (null == id) {
+					// ...tell the user about the problem and bail.
+					reply.addError(NLT.get("modifyProxyIdentityError.MissingID", new String[]{gwtPI.getTitle()}));
+					return reply;
+				}
+
+				// If we can't find an existing ProxyIdentity with
+				// that ID...
+				ProxyIdentityModule pim = bs.getProxyIdentityModule();
+				ProxyIdentity pi = pim.getProxyIdentity(id);
+				if (null == pi) {
+					// ...tell the user about the problem and bail.
+					reply.addError(NLT.get("modifyProxyIdentityError.NotFound", new String[]{String.valueOf(id)}));
+					return reply;
+				}
+				
+				// Can we modify the proxy identity?
+				pi = convertGwtPIToPI(gwtPI);
+				bs.getProxyIdentityModule().modifyProxyIdentity(pi);
+			}
+			
+			catch (Exception ex) {
+				// No!  Add an error to the error list and log it.
+				reply.addError(NLT.get("modifyProxyIdentityError.Exception", new String[]{gwtPI.getTitle(), ex.getMessage()}));
+				GwtLogHelper.error(m_logger, "GwtProxyIdentityHelper.modifyProxyIdentity( Name:  '" + gwtPI.getTitle() + "', EXCEPTION ):  ", ex);
+			}
+			
+			// If we get here, reply refers to a 
+			// ProxyIdentityRpcResponseData containing any errors
+			// we encountered.  Return it.
+			return reply;
 		}
 		
 		finally {
