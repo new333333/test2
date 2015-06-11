@@ -166,13 +166,13 @@ update dbo.SS_Forums set binderType = LEFT(type, 1);
                 <constraints nullable="false"/>
             </column>
             <column name="password" type="VARCHAR(128)">
-                <constraints nullable="true" />
+                <constraints nullable="false" />
             </column>
             <column name="proxyName" type="NVARCHAR(255)">
                 <constraints nullable="false" />
             </column>
             <column name="title" type="NVARCHAR(255)">
-                <constraints nullable="true" />
+                <constraints nullable="false" />
             </column>
         </createTable>
 	</changeSet>

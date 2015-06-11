@@ -166,13 +166,13 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
                 <constraints nullable="false"/>
             </column>
             <column name="password" type="VARCHAR2(128 CHAR)">
-				<constraints nullable="true" />
+				<constraints nullable="false" />
             </column>
             <column name="proxyName" type="VARCHAR2(255 CHAR)">
                 <constraints nullable="false" />
             </column>
             <column name="title" type="VARCHAR2(255 CHAR)">
-                <constraints nullable="true" />
+                <constraints nullable="false" />
             </column>
         </createTable>
 	</changeSet>
