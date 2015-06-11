@@ -12,6 +12,6 @@
     <property name="zoneId"    not-null="true" access="field"              />
 	<property name="password"  not-null="true" access="field" length="128" />
     <property name="proxyName" not-null="true" access="field" length="255" />
-    <property name="title"                     access="field" length="255" />
+    <property name="title"     not-null="true" access="field" length="255" />
   </class>
 </hibernate-mapping>
