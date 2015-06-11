@@ -3311,6 +3311,8 @@ public class GwtViewHelper {
 			else if (colName.equals("netfolder_access"))      {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);      fc.setColumnSortable(false);                                       }
 			else if (colName.equals("number"))                {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);                 fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);                   }
 			else if (colName.equals("principalType"))         {fc.setColumnSearchKey(Constants.IDENTITY_INTERNAL_FIELD);         fc.setColumnSortKey(Constants.IDENTITY_INTERNAL_FIELD);            }
+			else if (colName.equals("proxyName"))             {fc.setColumnSearchKey(FolderColumn.COLUMN_PROXY_NAME);            fc.setColumnSortKey(ObjectKeys.FIELD_PROXY_IDENTITY_NAME);         }
+			else if (colName.equals("proxyTitle"))            {fc.setColumnSearchKey(FolderColumn.COLUMN_PROXY_TITLE);           fc.setColumnSortKey(ObjectKeys.FIELD_PROXY_IDENTITY_TITLE);        }
 			else if (colName.equals("rating"))                {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                                       }
 			else if (colName.equals("responsible"))           {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                                  }
 			else if (colName.equals("size"))                  {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                                    }
@@ -4463,7 +4465,7 @@ public class GwtViewHelper {
 			else if (isProxyIdentitiesView) {
 				// Yes!
 				baseNameKey = "proxyIdentities.column.";
-				columnNames = getColumnsLHMFromAS(new String[]{"title", "proxyName"});
+				columnNames = getColumnsLHMFromAS(new String[]{"proxyTitle", "proxyName"});
 			}
 			
 			// No, we aren't showing a proxy identities view either!
@@ -4830,6 +4832,12 @@ public class GwtViewHelper {
 				propSortDescend += cName;
 			}
 			
+			else if (folderInfo.isBinderProxyIdentities()) {
+				String cName     = ".proxyIdentities";
+				propSortBy      += cName;
+				propSortDescend += cName;
+			}
+			
 			else if (folderInfo.isBinderAdministratorManagement()) {
 				String cName     = ".administrators.";
 				propSortBy      += cName;
@@ -4853,6 +4861,9 @@ public class GwtViewHelper {
 				}
 				else if (folderInfo.isBinderMobileDevices()) {
 					sortBy = ObjectKeys.FIELD_MOBILE_DEVICE_DESCRIPTION;
+				}
+				else if (folderInfo.isBinderProxyIdentities()) {
+					sortBy = ObjectKeys.FIELD_PROXY_IDENTITY_TITLE;
 				}
 				else {
 					switch (folderInfo.getFolderType()) {

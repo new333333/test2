@@ -88,6 +88,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public final static String COLUMN_NETFOLDER_ACCESS				= "netfolder_access";
 	public final static String COLUMN_PRINCIPAL_TYPE				= "principalType";
 	public final static String COLUMN_PROXY_NAME					= "proxyName";
+	public final static String COLUMN_PROXY_TITLE					= "proxyTitle";
 	public final static String COLUMN_RATING						= "rating";
 	public final static String COLUMN_RESPONSIBLE					= "responsible";
 	public final static String COLUMN_SHARE_ACCESS					= "share_access";
@@ -283,6 +284,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public static boolean isColumnPresence(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_AUTHOR);                 }
 	public static boolean isColumnPrincipalType(        String       columnName) {return columnName.equals(FolderColumn.COLUMN_PRINCIPAL_TYPE);         }
 	public static boolean isColumnProxyName(            String       columnName) {return columnName.equals(FolderColumn.COLUMN_PROXY_NAME);             }
+	public static boolean isColumnProxyTitle(           String       columnName) {return columnName.equals(FolderColumn.COLUMN_PROXY_TITLE);            }
 	public static boolean isColumnTaskFolders(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_TASKS);                  }
 	public static boolean isColumnTeamMembers(          String       columnName) {return columnName.equals(FolderColumn.COLUMN_TEAM_MEMBERS);           }
 	public static boolean isColumnTitle(                String       columnName) {return columnName.equals(FolderColumn.COLUMN_TITLE);                  }

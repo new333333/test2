@@ -30,66 +30,23 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
+package org.kablink.teaming.gwt.client.datatable;
 
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.GwtProxyIdentity;
 
 /**
- * This class holds all of the information necessary to execute the
- * 'add new proxy identity' command.
+ * A column that displays the contents for a proxy identity title cell.
+ *
+ * @param <T> is a FolderRow.
  * 
  * @author drfoster@novell.com
  */
-public class AddNewProxyIdentityCmd extends VibeRpcCmd {
-	private GwtProxyIdentity	m_pi;	//
-	
-	/*
-	 * Constructor method.
-	 * 
-	 * For GWT serialization requirements, must have a zero parameter
-	 * constructor.
-	 */
-	private AddNewProxyIdentityCmd() {
-		// Initialize the super class.
-		super();
-	}
-	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param pi
-	 */
-	public AddNewProxyIdentityCmd(GwtProxyIdentity pi) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the parameters.
-		setProxyIdentity(pi);
-	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public GwtProxyIdentity getProxyIdentity() {return m_pi;}
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setProxyIdentity(GwtProxyIdentity pi) {m_pi = pi;}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.ADD_NEW_PROXY_IDENTITY.ordinal();
-	}
+public abstract class ProxyIdentityTitleColumn<T> extends VibeColumn<T, GwtProxyIdentity> {
+  /**
+   * Constructor method.
+   */
+  public ProxyIdentityTitleColumn(FolderColumn fc) {
+	  super(fc, new ProxyIdentityTitleCell());
+  }
 }

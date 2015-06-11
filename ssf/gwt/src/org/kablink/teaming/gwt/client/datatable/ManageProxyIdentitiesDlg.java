@@ -56,13 +56,13 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.AddNewProxyIdentityDlg;
-import org.kablink.teaming.gwt.client.widgets.AddNewProxyIdentityDlg.AddNewProxyIdentityDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
-import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
+import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.ProxyIdentityDlg;
+import org.kablink.teaming.gwt.client.widgets.ProxyIdentityDlg.ProxyIdentityDlgClient;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -89,7 +89,6 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 		GetManageTitleEvent.Handler,
 		InvokeAddNewProxyIdentityEvent.Handler
 {
-	private AddNewProxyIdentityDlg						m_addNewProxyIdentityDlg;			// An instance of the AddNewProxyIdentityDlg once one is created.
 	private boolean										m_dlgAttached;						// true when the dialog is attached to the document.       false otherwise.
 	private boolean										m_viewReady;						// true once the embedded proxy identities view is ready.  false otherwise.
 	private FlowPanel									m_rootPanel;						// The panel that holds the dialog's contents.
@@ -101,6 +100,7 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 	private Integer										m_showCY;							//
 	private List<HandlerRegistration>					m_mpiDlg_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ManageProxyIdentitiesInfoRpcResponseData	m_manageProxyIdentitiesInfo;		// Information necessary to run the manage proxy identities dialog.
+	private ProxyIdentityDlg							m_proxyIdentityDlg;					// An instance of the ProxyIdentityDlg once one is created.
 	private ProxyIdentitiesView							m_piView;							// The proxy identities view.
 	private UIObject									m_showRelativeTo;					// The UIObject to show the dialog relative to.  null -> Center the dialog.
 
@@ -439,11 +439,11 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 	 */
 	@Override
 	public void onInvokeAddNewProxyIdentity(InvokeAddNewProxyIdentityEvent event) {
-		// Have we created an instance of the 'Add New Proxy Identity'
-		// dialog yet?
-		if (null == m_addNewProxyIdentityDlg) {
+		// Have we created an instance of the 'Proxy Identity' dialog
+		// yet?
+		if (null == m_proxyIdentityDlg) {
 			// No!  Create one now...
-			AddNewProxyIdentityDlg.createAsync(new AddNewProxyIdentityDlgClient() {
+			ProxyIdentityDlg.createAsync(new ProxyIdentityDlgClient() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in asynchronous
@@ -451,9 +451,9 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 				}
 				
 				@Override
-				public void onSuccess(AddNewProxyIdentityDlg anpiDlg) {
+				public void onSuccess(ProxyIdentityDlg piDlg) {
 					// ...and run it.
-					m_addNewProxyIdentityDlg = anpiDlg;
+					m_proxyIdentityDlg = piDlg;
 					onInvokeAddNewProxyIdentityAsync();
 				}
 			});
@@ -467,7 +467,7 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 	}
 
 	/*
-	 * Asynchronously runs the 'Add New Proxy Identity' dialog.
+	 * Asynchronously runs the 'Proxy Identity' dialog.
 	 */
 	private void onInvokeAddNewProxyIdentityAsync() {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
@@ -479,10 +479,10 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 	}
 	
 	/*
-	 * Synchronously runs the 'Add New Proxy Identity' dialog.
+	 * Synchronously runs the 'Proxy Identity' dialog.
 	 */
 	private void onInvokeAddNewProxyIdentityNow() {
-		AddNewProxyIdentityDlg.initAndShow(m_addNewProxyIdentityDlg);
+		ProxyIdentityDlg.initAndShow(m_proxyIdentityDlg);
 	}
 
 	/**

@@ -36,12 +36,15 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtConstants;
+import org.kablink.teaming.gwt.client.GwtProxyIdentity;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.AddNewProxyIdentityCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.CreateProxyIdentityRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.ModifyProxyIdentityCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ProxyIdentityRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -64,17 +67,20 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 
 /**
- * Implements Filr's add new proxy identity dialog.
+ * Implements Filr's proxy identity dialog.  This dialog is used to add
+ * a new proxy identity as well as modify an existing one.
  *  
  * @author drfoster@novell.com
  */
-public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
+public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
+	private boolean				m_adding;				// true -> We're adding a proxy identity.  false -> We're modifying an existing one.
 	private FlowPanel			m_dlgPanel;				// The panel holding the dialog's content.
 	private GwtTeamingMessages	m_messages;				// Access to Filr's messages.
-	private TextBox 			m_passwordInput;		//
-	private TextBox 			m_passwordVerifyInput;	//
-	private TextBox 			m_proxyNameInput;		//
-	private TextBox 			m_titleInput;			//
+	private GwtProxyIdentity	m_proxyIdentity;		// null -> Adding a new proxy identity.  non-null -> References a proxy identity to be modified.
+	private TextBox 			m_passwordInput;		// The <INPUT> widget for the proxy identity's password.
+	private TextBox 			m_passwordVerifyInput;	// The <INPUT> widget to verify the proxy identity's password.
+	private TextBox 			m_proxyNameInput;		// The <INPUT> widget for the proxy identity's name.
+	private TextBox 			m_titleInput;			// The <INPUT> widget for the proxy identity's title.
 
 	/*
 	 * Interface used to interact with the content of the TextBox
@@ -92,7 +98,7 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private AddNewProxyIdentityDlg() {
+	private ProxyIdentityDlg() {
 		// Initialize the super class...
 		super(false, true);
 
@@ -101,7 +107,7 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
-			m_messages.addNewProxyIdentityDlgHeader(),
+			"",							// No caption yet.  It's set appropriately when the dialog runs.
 			this,						// The dialog's EditSuccessfulHandler.
 			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
 			null);						// Create callback data.  Unused. 
@@ -120,7 +126,7 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 	public Panel createContent(Object callbackData) {
 		// Create and return a FlowPanel to hold the dialog's content.
 		m_dlgPanel = new VibeFlowPanel();
-		m_dlgPanel.addStyleName("vibe-addNewProxyIdentityDlg_Panel");
+		m_dlgPanel.addStyleName("vibe-proxyIdentityDlg_Panel");
 		return m_dlgPanel;
 	}
 
@@ -130,7 +136,7 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 	 * 
 	 * The TextBox widget is returned.
 	 */
-	private TextBox createInputWidget(FlexTable grid, int row, String labelText, String labelStyle, String tbStyle, boolean isPassword) {
+	private TextBox createInputWidget(FlexTable grid, int row, String initialValue, String labelText, String labelStyle, String tbStyle, boolean isPassword) {
 		// Get a FlexCellFormatter for working with the Grid.
 		FlexCellFormatter gridCellFmt = grid.getFlexCellFormatter();
 		
@@ -163,6 +169,9 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 				}
 			}
 		});
+		if (GwtClientHelper.hasString(initialValue)) {
+			reply.setValue(initialValue);
+		}
 		grid.setWidget(                  row, 1, reply                            );
 		gridCellFmt.setVerticalAlignment(row, 1, HasVerticalAlignment.ALIGN_MIDDLE);
 		
@@ -188,12 +197,9 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 	 */
 	private void createNewProxyIdentityNow() {
 		// Did the user supply a valid title for the proxy identity?
-		String title = getTextBoxValue(m_titleInput, false, GwtConstants.MAX_PROXY_IDENTITY_TITLE_LENGTH, new GetTextBoxValueError() {
-			@Override
-			public String getNoValueError() {return null;}	// null -> Error doesn't matter since this input doesn't have to have a value.
-
-			@Override
-			public String getTooLongError(int maxLength) {return m_messages.addNewProxyIdentityDlgError_TitleTooLong(maxLength);}
+		String title = getTextBoxValue(m_titleInput, true, GwtConstants.MAX_PROXY_IDENTITY_TITLE_LENGTH, new GetTextBoxValueError() {
+			@Override public String getNoValueError()              {return m_messages.proxyIdentityDlgError_NoTitle();              }
+			@Override public String getTooLongError(int maxLength) {return m_messages.proxyIdentityDlgError_TitleTooLong(maxLength);}
 		});
 		if (null == title) {
 			// No!  The user will have been told about the error.
@@ -203,11 +209,8 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 		
 		// Did the user supply a valid name for the proxy identity?
 		final String proxyName = getTextBoxValue(m_proxyNameInput, true, GwtConstants.MAX_PROXY_IDENTITY_NAME_LENGTH, new GetTextBoxValueError() {
-			@Override
-			public String getNoValueError() {return m_messages.addNewProxyIdentityDlgError_NoName();}
-
-			@Override
-			public String getTooLongError(int maxLength) {return m_messages.addNewProxyIdentityDlgError_NameTooLong(maxLength);}
+			@Override public String getNoValueError()              {return m_messages.proxyIdentityDlgError_NoName();              }
+			@Override public String getTooLongError(int maxLength) {return m_messages.proxyIdentityDlgError_NameTooLong(maxLength);}
 		});
 		if (null == proxyName) {
 			// No!  The user will have been told about the error.
@@ -216,12 +219,9 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 		}
 		
 		// Did the user supply a valid password for the proxy identity?
-		String password = getTextBoxValue(m_passwordInput, true, GwtConstants.MAX_PROXY_IDENTITY_PASSWORD_LENGTH, new GetTextBoxValueError() {
-			@Override
-			public String getNoValueError() {return m_messages.addNewProxyIdentityDlgError_NoPassword();}
-
-			@Override
-			public String getTooLongError(int maxLength) {return m_messages.addNewProxyIdentityDlgError_PasswordTooLong(maxLength);}
+		String password = getTextBoxValue(m_passwordInput, m_adding, GwtConstants.MAX_PROXY_IDENTITY_PASSWORD_LENGTH, new GetTextBoxValueError() {
+			@Override public String getNoValueError()              {return m_messages.proxyIdentityDlgError_NoPassword();              }
+			@Override public String getTooLongError(int maxLength) {return m_messages.proxyIdentityDlgError_PasswordTooLong(maxLength);}
 		});
 		if (null == password) {
 			// No!  The user will have been told about the error.
@@ -231,12 +231,9 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 
 		// Did the user supply a valid password verification for the
 		// proxy identity?
-		String passwordVerify = getTextBoxValue(m_passwordVerifyInput, true, GwtConstants.MAX_PROXY_IDENTITY_PASSWORD_LENGTH, new GetTextBoxValueError() {
-			@Override
-			public String getNoValueError() {return m_messages.addNewProxyIdentityDlgError_NoPasswordVerify();}
-
-			@Override
-			public String getTooLongError(int maxLength) {return m_messages.addNewProxyIdentityDlgError_PasswordVerifyTooLong(maxLength);}
+		String passwordVerify = getTextBoxValue(m_passwordVerifyInput, m_adding, GwtConstants.MAX_PROXY_IDENTITY_PASSWORD_LENGTH, new GetTextBoxValueError() {
+			@Override public String getNoValueError()              {return m_messages.proxyIdentityDlgError_NoPasswordVerify();              }
+			@Override public String getTooLongError(int maxLength) {return m_messages.proxyIdentityDlgError_PasswordVerifyTooLong(maxLength);}
 		});
 		if (null == passwordVerify) {
 			// No!  The user will have been told about the error.
@@ -247,14 +244,17 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 		// Does the password match the password verification?
 		if (!(password.equals(passwordVerify))) {
 			// No!  Tell the user about the error and bail.
-			GwtClientHelper.deferredAlert(m_messages.addNewProxyIdentityDlgError_PasswordsDontMatch());
+			GwtClientHelper.deferredAlert(m_messages.proxyIdentityDlgError_PasswordsDontMatch());
 			return;
 		}
 
 		// We have the parts we need.  Can we use them to add the new
-		// proxy identity?
+		// proxy identity or modify the existing one?
 		showDlgBusySpinner();
-		AddNewProxyIdentityCmd cmd = new AddNewProxyIdentityCmd(title, proxyName, password);
+		VibeRpcCmd cmd;
+		if (m_adding)
+		     cmd = new AddNewProxyIdentityCmd(new GwtProxyIdentity(                         title, proxyName,                                    password ));
+		else cmd = new ModifyProxyIdentityCmd(new GwtProxyIdentity(m_proxyIdentity.getId(), title, proxyName, ((0 == password.length()) ? null : password)));
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -265,7 +265,9 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 				// ...and tell the user about the problem.
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					m_messages.rpcFailure_AddNewProxyIdentity(),
+					(m_adding                                       ?
+						m_messages.rpcFailure_AddNewProxyIdentity() :
+						m_messages.rpcFailure_ModifyProxyIdentity()),
 					proxyName);
 			}
 			
@@ -275,12 +277,16 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 				hideDlgBusySpinner();
 				setButtonsEnabled(true);
 				
-				// Were there any errors returned from the add?
-				CreateProxyIdentityRpcResponseData responseData = ((CreateProxyIdentityRpcResponseData) response.getResponseData());
+				// Were there any errors returned from the command?
+				ProxyIdentityRpcResponseData responseData = ((ProxyIdentityRpcResponseData) response.getResponseData());
 				List<ErrorInfo> errors = responseData.getErrorList();
 				if ((null != errors) && (0 < errors.size())) {
 					// Yes!  Display them.
-					GwtClientHelper.displayMultipleErrors(m_messages.addNewProxyIdentityDlgError_AddFailed(), errors);
+					GwtClientHelper.displayMultipleErrors(
+						(m_adding                                        ?
+							m_messages.proxyIdentityDlgError_AddFailed() :
+							m_messages.proxyIdentityDlgError_ModifyFailed()),
+						errors);
 				}
 				
 				else {
@@ -417,14 +423,14 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 
 		// Create a FlexTable to hold the input widgets...
 		VibeFlexTable grid = new VibeFlexTable();
-		grid.addStyleName("vibe-addNewProxyIdentityDlg_Grid");
+		grid.addStyleName("vibe-proxyIdentityDlg_Grid");
 		m_dlgPanel.add(grid);
 
 		// ...and create the input widgets.
-		m_titleInput          = createInputWidget(grid, 0, m_messages.addNewProxyIdentityDlgTitle(),          "vibe-addNewProxyIdentityDlg_NameLabel", "vibe-addNewProxyIdentityDlg_NameInput", false);	// false -> Normal TextBox.
-		m_proxyNameInput      = createInputWidget(grid, 1, m_messages.addNewProxyIdentityDlgName(),           "vibe-addNewProxyIdentityDlg_NameLabel", "vibe-addNewProxyIdentityDlg_NameInput", false);	// false -> Normal TextBox.
-		m_passwordInput       = createInputWidget(grid, 2, m_messages.addNewProxyIdentityDlgPassword(),       "vibe-addNewProxyIdentityDlg_NameLabel", "vibe-addNewProxyIdentityDlg_NameInput", true );	// true  -> PasswordTextBox.
-		m_passwordVerifyInput = createInputWidget(grid, 3, m_messages.addNewProxyIdentityDlgPasswordVerify(), "vibe-addNewProxyIdentityDlg_NameLabel", "vibe-addNewProxyIdentityDlg_NameInput", true );	// true  -> PasswordTextBox.
+		m_titleInput          = createInputWidget(grid, 0, (m_adding ? null : m_proxyIdentity.getTitle()),     m_messages.proxyIdentityDlgTitle(),          "vibe-proxyIdentityDlg_NameLabel", "vibe-proxyIdentityDlg_NameInput", false);	// false -> Normal TextBox.
+		m_proxyNameInput      = createInputWidget(grid, 1, (m_adding ? null : m_proxyIdentity.getProxyName()), m_messages.proxyIdentityDlgName(),           "vibe-proxyIdentityDlg_NameLabel", "vibe-proxyIdentityDlg_NameInput", false);	// false -> Normal TextBox.
+		m_passwordInput       = createInputWidget(grid, 2, null,                                               m_messages.proxyIdentityDlgPassword(),       "vibe-proxyIdentityDlg_NameLabel", "vibe-proxyIdentityDlg_NameInput", true );	// true  -> PasswordTextBox.
+		m_passwordVerifyInput = createInputWidget(grid, 3, null,                                               m_messages.proxyIdentityDlgPasswordVerify(), "vibe-proxyIdentityDlg_NameLabel", "vibe-proxyIdentityDlg_NameInput", true );	// true  -> PasswordTextBox.
 		
 		// Finally, show the dialog, centered on the screen.
 		setButtonsEnabled(true);
@@ -432,24 +438,30 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 	}
 	
 	/*
-	 * Asynchronously runs the given instance of the add new proxy
-	 * identity dialog.
+	 * Asynchronously runs the given instance of the proxy identity
+	 * dialog.
 	 */
-	private static void runDlgAsync(final AddNewProxyIdentityDlg anpiDlg) {
+	private static void runDlgAsync(final ProxyIdentityDlg piDlg, final GwtProxyIdentity pi) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				anpiDlg.runDlgNow();
+				piDlg.runDlgNow(pi);
 			}
 		});
 	}
 	
 	/*
-	 * Synchronously runs this instance of the add new proxy identity
-	 * dialog.
+	 * Synchronously runs this instance of the proxy identity dialog.
 	 */
-	private void runDlgNow() {
-		// Populate the dialog.
+	private void runDlgNow(final GwtProxyIdentity pi) {
+		// Store the parameters.
+		m_adding        = (null == pi);
+		m_proxyIdentity = pi;
+		
+		// Set an appropriate dialog caption...
+		setCaption(m_adding ? m_messages.proxyIdentityDlgHeader_Add() : m_messages.proxyIdentityDlgHeader_Modify());
+
+		// ...and populate the dialog.
 		populateDlgAsync();
 	}
 
@@ -464,73 +476,85 @@ public class AddNewProxyIdentityDlg extends DlgBox implements EditSuccessfulHand
 
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
-	/* the add new proxy identity dialog and perform some operation  */
-	/* on it.                                                        */
+	/* the proxy identity dialog and perform some operation on it.   */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
 	/**
-	 * Callback interface to interact with the add new proxy identity
-	 * dialog asynchronously after it loads. 
+	 * Callback interface to interact with the proxy identity dialog
+	 * asynchronously after it loads. 
 	 */
-	public interface AddNewProxyIdentityDlgClient {
-		void onSuccess(AddNewProxyIdentityDlg anpiDlg);
+	public interface ProxyIdentityDlgClient {
+		void onSuccess(ProxyIdentityDlg piDlg);
 		void onUnavailable();
 	}
 
 	/*
-	 * Asynchronously loads the AddNewProxyIdentityDlg and performs some
+	 * Asynchronously loads the ProxyIdentityDlg and performs some
 	 * operation against the code.
 	 */
 	private static void doAsyncOperation(
 			// createAsync parameters.
-			final AddNewProxyIdentityDlgClient	anpiDlgClient,
+			final ProxyIdentityDlgClient	piDlgClient,
 			
 			// initAndShow parameters,
-			final AddNewProxyIdentityDlg	anpiDlg) {
-		GWT.runAsync(AddNewProxyIdentityDlg.class, new RunAsyncCallback() {
+			final ProxyIdentityDlg			piDlg,
+			final GwtProxyIdentity			pi) {
+		GWT.runAsync(ProxyIdentityDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
-				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_AddNewProxyIdentityDlg());
-				if (null != anpiDlgClient) {
-					anpiDlgClient.onUnavailable();
+				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_ProxyIdentityDlg());
+				if (null != piDlgClient) {
+					piDlgClient.onUnavailable();
 				}
 			}
 
 			@Override
 			public void onSuccess() {
 				// Is this a request to create a dialog?
-				if (null != anpiDlgClient) {
+				if (null != piDlgClient) {
 					// Yes!  Create it and return it via the callback.
-					AddNewProxyIdentityDlg anpiDlg = new AddNewProxyIdentityDlg();
-					anpiDlgClient.onSuccess(anpiDlg);
+					ProxyIdentityDlg piDlg = new ProxyIdentityDlg();
+					piDlgClient.onSuccess(piDlg);
 				}
 				
 				else {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(anpiDlg);
+					runDlgAsync(piDlg, pi);
 				}
 			}
 		});
 	}
 	
 	/**
-	 * Loads the AddNewProxyIdentityDlg split point and returns an instance of it
+	 * Loads the ProxyIdentityDlg split point and returns an instance of it
 	 * via the callback.
 	 * 
-	 * @param anpiDlgClient
+	 * @param piDlgClient
 	 */
-	public static void createAsync(AddNewProxyIdentityDlgClient anpiDlgClient) {
-		doAsyncOperation(anpiDlgClient, null);
+	public static void createAsync(ProxyIdentityDlgClient piDlgClient) {
+		doAsyncOperation(piDlgClient, null, null);
 	}
 	
 	/**
-	 * Initializes and shows the add new proxy identity dialog.
+	 * Initializes and shows the proxy identity dialog for adding a new
+	 * proxy identity.
 	 * 
-	 * @param anpiDlg
+	 * @param piDlg
 	 */
-	public static void initAndShow(AddNewProxyIdentityDlg anpiDlg) {
-		doAsyncOperation(null, anpiDlg);
+	public static void initAndShow(ProxyIdentityDlg piDlg) {
+		doAsyncOperation(null, piDlg, null);
+	}
+	
+	/**
+	 * Initializes and shows the proxy identity dialog for modifying an
+	 * existing proxy identity.
+	 * 
+	 * @param piDlg
+	 * @param pi
+	 */
+	public static void initAndShow(ProxyIdentityDlg piDlg, GwtProxyIdentity pi) {
+		doAsyncOperation(null, piDlg, pi);
 	}
 }

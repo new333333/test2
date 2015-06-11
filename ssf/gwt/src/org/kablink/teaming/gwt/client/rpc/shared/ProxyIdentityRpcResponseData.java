@@ -40,12 +40,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorI
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds the response data for the 'create proxy identity'
- * RPC command.
+ * This class holds the response data for the GWT RPC command that
+ * create or modify a proxy identity.
  * 
  * @author drfoster@novell.com
  */
-public class CreateProxyIdentityRpcResponseData implements IsSerializable, VibeRpcResponseData {
+public class ProxyIdentityRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	private ErrorListRpcResponseData	m_errorList;	//
 	
 	/**
@@ -53,7 +53,7 @@ public class CreateProxyIdentityRpcResponseData implements IsSerializable, VibeR
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public CreateProxyIdentityRpcResponseData() {
+	public ProxyIdentityRpcResponseData() {
 		// Initialize the super class.
 		super();
 	}
@@ -63,7 +63,7 @@ public class CreateProxyIdentityRpcResponseData implements IsSerializable, VibeR
 	 * 
 	 * @param errorList
 	 */
-	public CreateProxyIdentityRpcResponseData(List<ErrorInfo> errorList) {
+	public ProxyIdentityRpcResponseData(List<ErrorInfo> errorList) {
 		// Initialize this object...
 		this();
 		

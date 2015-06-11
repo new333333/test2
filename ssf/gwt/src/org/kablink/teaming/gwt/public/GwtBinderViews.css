@@ -242,6 +242,8 @@
 		.vibe-dataTablePresence-disabled          {color: #c4c4c4;}
 		.vibe-dataTablePresence-enabled           {color: #353838;}
 		.vibe-dataTablePresence-image             {width: 20px; height: 20px; border-radius: 2px; margin-right: 3px;}
+		.vibe-dataTableProxyIdentity-hover        {color: #135c8f !important; cursor: pointer; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableProxyIdentity-title        {cursor: pointer; color: #036f9f !important; padding: 2px;}
 		.vibe-dataTableShareStringValue-expired   {color: red; font-weight: bold;}
 		.vibe-dataTableShareStringValue-label     {white-space: nowrap; padding-top: 5px;}
 		.vibe-dataTableShareStringValue-panel     {white-space: nowrap; height: 25px;}

@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.GwtProxyIdentity;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
@@ -83,6 +84,7 @@ public class FolderRow implements IsSerializable {
 	private Map<String, EntryLinkInfo>				m_rowEntryLinks;			// A map of column names to EntryLinkInfo's                       possibly stored for a column.
 	private Map<String, EntryTitleInfo>				m_rowEntryTitles;			// A map of column names to EntryTitleInfo's                      possibly stored for a column.
 	private Map<String, GuestInfo>					m_rowGuests;				// A map of column names to GuestInfo's                           possibly stored for a column.
+	private Map<String, GwtProxyIdentity>			m_rowProxyIdentities;		// A map of column names to GwtProxyIdentity's                    possibly stored for a column.
 	private Map<String, LimitedUserVisibilityInfo>	m_rowLimitedUserVisibility;	// A map of column names to LimitUserVisibilityInfo's             possibly stored for a column.
 	private Map<String, List<AssignmentInfo>>		m_rowAssigneeInfos;			// A map of column names to List<AssignmentInfo>'s                possibly stored for a column.
 	private Map<String, MobileDevicesInfo>			m_rowMobileDevices;			// A map of column names to MobileDevicesInfo's                   possibly stored for a column.
@@ -193,6 +195,7 @@ public class FolderRow implements IsSerializable {
 	public Map<String, EntryLinkInfo>			  getRowEntryLinkMap()                   {validateMapLinks();                 return m_rowEntryLinks;           }
 	public Map<String, EntryTitleInfo>			  getRowEntryTitlesMap()                 {validateMapTitles();                return m_rowEntryTitles;          }
 	public Map<String, GuestInfo>				  getRowGuestsMap()                      {validateMapGuests();                return m_rowGuests;               }
+	public Map<String, GwtProxyIdentity>		  getRowProxyIdentitiesMap()             {validateMapProxyIdentities();       return m_rowProxyIdentities;      }
 	public Map<String, LimitedUserVisibilityInfo> getRowLimitedUserVisibilityMap()       {validateMapLimitedUserVisibility(); return m_rowLimitedUserVisibility;} 
 	public Map<String, List<AssignmentInfo>>	  getRowAssigneeInfoListsMap()           {validateMapAssignees();             return m_rowAssigneeInfos;        }
 	public Map<String, MobileDevicesInfo>		  getRowMobileDevicesMap()               {validateMapMobileDevices();         return m_rowMobileDevices;        } 
@@ -245,6 +248,7 @@ public class FolderRow implements IsSerializable {
 		else if (v instanceof EntryLinkInfo)             {validateMapLinks();                 m_rowEntryLinks.put(           vk, ((EntryLinkInfo)             v));}
 		else if (v instanceof EntryTitleInfo)            {validateMapTitles();                m_rowEntryTitles.put(          vk, ((EntryTitleInfo)            v));}
 		else if (v instanceof GuestInfo)                 {validateMapGuests();                m_rowGuests.put(               vk, ((GuestInfo)                 v));}
+		else if (v instanceof GwtProxyIdentity)          {validateMapProxyIdentities();       m_rowProxyIdentities.put(      vk, ((GwtProxyIdentity)          v));}
 		else if (v instanceof LimitedUserVisibilityInfo) {validateMapLimitedUserVisibility(); m_rowLimitedUserVisibility.put(vk, ((LimitedUserVisibilityInfo) v));}
 		else if (v instanceof MobileDevicesInfo)         {validateMapMobileDevices();         m_rowMobileDevices.put(        vk, ((MobileDevicesInfo)         v));}
 		else if (v instanceof PrincipalInfo)             {validateMapPrincipals();            m_rowPrincipals.put(           vk, ((PrincipalInfo)             v));}
@@ -406,6 +410,17 @@ public class FolderRow implements IsSerializable {
 	 */
 	public GuestInfo getColumnValueAsGuestInfo(FolderColumn fc) {
 		return ((null == m_rowGuests) ? null : m_rowGuests.get(getValueKey(fc)));
+	}
+
+	/**
+	 * Returns the GwtProxyIdentity value for a specific column.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public GwtProxyIdentity getColumnValueAsProxyIdentity(FolderColumn fc) {
+		return ((null == m_rowProxyIdentities) ? null : m_rowProxyIdentities.get(getValueKey(fc)));
 	}
 
 	/**
@@ -571,22 +586,28 @@ public class FolderRow implements IsSerializable {
 					reply = gi.getTitle();
 				}
 				else {
-					DescriptionHtml dh = ((null == m_rowDescriptionHtmls) ? null : m_rowDescriptionHtmls.get(vk));
-					if (null != dh) {
-						reply = dh.getDescription();
+					GwtProxyIdentity gpi = ((null == m_rowProxyIdentities) ? null : m_rowProxyIdentities.get(vk));
+					if (null != gpi) {
+						reply = gpi.getTitle();
 					}
 					else {
-						EmailAddressInfo emai = ((null == m_rowEmailAddresses) ? null : m_rowEmailAddresses.get(vk));
-						if (null != emai) {
-							reply = emai.getEmailAddress(); 
+						DescriptionHtml dh = ((null == m_rowDescriptionHtmls) ? null : m_rowDescriptionHtmls.get(vk));
+						if (null != dh) {
+							reply = dh.getDescription();
 						}
-						
 						else {
-							Boolean wipeScheduled = ((null == m_rowWipesScheduled) ? null : m_rowWipesScheduled.get(vk));
-							if (null == wipeScheduled) {
-								wipeScheduled = Boolean.FALSE;
+							EmailAddressInfo emai = ((null == m_rowEmailAddresses) ? null : m_rowEmailAddresses.get(vk));
+							if (null != emai) {
+								reply = emai.getEmailAddress(); 
 							}
-							reply = (wipeScheduled ? GwtTeaming.getMessages().yes() : GwtTeaming.getMessages().no());
+							
+							else {
+								Boolean wipeScheduled = ((null == m_rowWipesScheduled) ? null : m_rowWipesScheduled.get(vk));
+								if (null == wipeScheduled) {
+									wipeScheduled = Boolean.FALSE;
+								}
+								reply = (wipeScheduled ? GwtTeaming.getMessages().yes() : GwtTeaming.getMessages().no());
+							}
 						}
 					}
 				}
@@ -719,6 +740,18 @@ public class FolderRow implements IsSerializable {
 	}
 
 	/**
+	 * Returns true if a column's value is a GwtProxyIdentity and false
+	 * otherwise.
+	 * 
+	 * @param fc
+	 * 
+	 * @return
+	 */
+	public boolean isColumnValueProxyIdentity(FolderColumn fc) {
+		return ((null != m_rowProxyIdentities) && (null != m_rowProxyIdentities.get(getValueKey(fc))));
+	}
+
+	/**
 	 * Returns true if a column's value is a PrincipalInfo and false
 	 * otherwise.
 	 * 
@@ -796,6 +829,7 @@ public class FolderRow implements IsSerializable {
 	private void validateMapEmailAddresses()        {if (null == m_rowEmailAddresses)		 m_rowEmailAddresses		= new HashMap<String, EmailAddressInfo>();         }
 	private void validateMapEvents()                {if (null == m_rowEntryEvents)			 m_rowEntryEvents			= new HashMap<String, EntryEventInfo>();           }
 	private void validateMapGuests()                {if (null == m_rowGuests)		   		 m_rowGuests			    = new HashMap<String, GuestInfo>();                }
+	private void validateMapProxyIdentities()       {if (null == m_rowProxyIdentities)		 m_rowProxyIdentities       = new HashMap<String, GwtProxyIdentity>();         }
 	private void validateMapLimitedUserVisibility() {if (null == m_rowLimitedUserVisibility) m_rowLimitedUserVisibility = new HashMap<String, LimitedUserVisibilityInfo>();}
 	private void validateMapLinks()                 {if (null == m_rowEntryLinks)			 m_rowEntryLinks			= new HashMap<String, EntryLinkInfo>();            }
 	private void validateMapMobileDevices()         {if (null == m_rowMobileDevices)		 m_rowMobileDevices			= new HashMap<String, MobileDevicesInfo>();        }

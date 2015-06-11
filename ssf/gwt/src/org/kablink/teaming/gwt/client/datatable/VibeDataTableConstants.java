@@ -75,6 +75,7 @@ public class VibeDataTableConstants {
 	public final static String CELL_WIDGET_MOBILE_WIPE_SCHEDULED		 = "mobileWipeScheduled";
 	public final static String CELL_WIDGET_PRESENCE						 = "presenceControl";
 	public final static String CELL_WIDGET_PRESENCE_LABEL				 = "presenceLabel";
+	public final static String CELL_WIDGET_PROXY_IDENTITY_TITLE_LABEL    = "proxyIdentityTitleLabel";
 	public final static String CELL_WIDGET_TASK_FOLDER					 = "taskFolder";
 	
 	// Width, in pixels for the action menu shown in conjunction with a

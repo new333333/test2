@@ -73,8 +73,8 @@ public class ProxyIdentitiesView extends DataTableFolderViewBase {
 	 */
 	@Override
 	protected void adjustFixedColumnWidths(Map<String, ColumnWidth> columnWidths) {
-		columnWidths.put(FolderColumn.COLUMN_TITLE,      new ColumnWidth(24));
-		columnWidths.put(FolderColumn.COLUMN_PROXY_NAME, new ColumnWidth(76));
+		columnWidths.put(FolderColumn.COLUMN_PROXY_TITLE, new ColumnWidth(24));
+		columnWidths.put(FolderColumn.COLUMN_PROXY_NAME,  new ColumnWidth(76));
 	}
 
 	/**
