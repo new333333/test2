@@ -514,13 +514,13 @@ public class AdminControl extends TeamingPopupPanel
 			if (null != actions) {
 				//! DRF:  Add controls here to limit things shown while
 				//!       they're being implemented.
-				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
-				boolean showProxyIdentities     = ProxyIdentitiesView.SHOW_PROXY_IDENTITIES;	//! DRF (20150610)
-				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
+				boolean showManageMobileDevices   = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
+				boolean showManageProxyIdentities = ProxyIdentitiesView.SHOW_MANAGE_PROXY_IDENTITIES;	//! DRF (20150610)
+				boolean showPasswordPolicy        = GwtClientHelper.isPasswordPolicyEnabled();
 				for (GwtAdminAction action : actions) {
-					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices)) continue;
-					else if (action.getActionType().equals(AdminAction.MANAGE_PROXY_IDENTITIES)   && (!showProxyIdentities))     continue;
-					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))      continue;
+					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices))   continue;
+					else if (action.getActionType().equals(AdminAction.MANAGE_PROXY_IDENTITIES)   && (!showManageProxyIdentities)) continue;
+					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))        continue;
 					
 					// Add a UI widget for this administration action.
 					AdminActionControl adminActionControl = new AdminActionControl( action );

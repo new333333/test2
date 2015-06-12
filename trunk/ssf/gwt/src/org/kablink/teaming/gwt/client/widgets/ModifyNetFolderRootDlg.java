@@ -41,16 +41,21 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtPrincipal;
+import org.kablink.teaming.gwt.client.GwtProxyIdentity;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.NetFolderRoot.GwtAuthenticationType;
+import org.kablink.teaming.gwt.client.binderviews.ProxyIdentitiesView;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderRootCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderRootModifiedEvent;
+import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapServer.DirectoryType;
@@ -64,6 +69,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.LdapBrowserDlg.LdapBrowseListCallback;
 import org.kablink.teaming.gwt.client.widgets.LdapBrowserDlg.LdapBrowserDlgClient;
 import org.kablink.teaming.gwt.client.widgets.SelectPrincipalsWidget.SelectPrincipalsWidgetClient;
@@ -97,77 +104,72 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
- * This dialog can be used to add a net folder root or modify a net folder root.
+ * This dialog can be used to add a net folder root or modify a net
+ * folder root.
  * 
  * @author jwootton
  */
 public class ModifyNetFolderRootDlg extends DlgBox
 	implements
 		EditCanceledHandler,
-		EditSuccessfulHandler
+		EditSuccessfulHandler,
+		SearchFindResultsEvent.Handler
 {
-	private Button m_browseProxyDnBtn;	// LDAP browse button next to m_proxyNameTxtBox.
-	private NetFolderRoot m_netFolderRoot;	// If we are modifying a net folder this is the net folder.
-	private TextBox m_nameTxtBox;
-	private ListBox m_rootTypeListbox;
-	private FlowPanel m_serverPathHintPanel;
-	private TextBox m_rootPathTxtBox;
-	private TextBox m_proxyNameTxtBox;
-	private PasswordTextBox m_proxyPwdTxtBox;
-	private InlineLabel m_authTypeLabel;
-	private ListBox m_authTypeListbox;
-	private FlowPanel m_webDavSpacerPanel;
-	private InlineLabel m_hostUrlLabel;
-	private TextBox m_hostUrlTxtBox;
-	private CheckBox m_allowSelfSignedCertsCkbox;
-	private CheckBox m_isSharePointServerCkbox;
-	private SelectPrincipalsWidget m_selectPrincipalsWidget;
-	private ScheduleWidget m_scheduleWidget;
-	private FlowPanel m_inProgressPanel;
-	private List<HandlerRegistration> m_registeredEventHandlers;
-	private CheckBox m_fullSyncDirOnlyCB = null;
-	private Label m_oesProxyNameHint1;
-	private Label m_oesProxyNameHint;
-	private Label m_windowsProxyNameHint;
-	private TabPanel m_tabPanel;
-	private LdapBrowserDlg m_ldapBrowserDlg;
-	private CheckBox m_indexContentCB;
-	private CheckBox m_jitsEnabledCkbox;
-	private TextBox m_jitsResultsMaxAge;
-	private TextBox m_jitsAclMaxAge;
-	private CheckBox m_allowDesktopAppToTriggerSyncCB;
+	private Button						m_browseProxyDnBtn;					// LDAP browse button next to m_proxyNameTxtBox.
+	private CheckBox					m_allowDesktopAppToTriggerSyncCB;	//
+	private CheckBox					m_allowSelfSignedCertsCkbox;		//
+	private CheckBox					m_fullSyncDirOnlyCB;				//
+	private CheckBox					m_indexContentCB;					//
+	private CheckBox					m_isSharePointServerCkbox;			//
+	private CheckBox					m_jitsEnabledCkbox;					//
+	private FindCtrl					m_proxyIdentityFindControl;			//
+	private FlowPanel					m_inProgressPanel;					//
+	private FlowPanel					m_serverPathHintPanel;				//
+	private FlowPanel					m_webDavSpacerPanel;				//
+	private GwtProxyIdentity			m_proxyIdentity;					//
+	private InlineLabel					m_authTypeLabel;					//
+	private InlineLabel					m_hostUrlLabel;						//
+	private Label						m_oesProxyNameHint;					//
+	private Label						m_oesProxyNameHint1;				//
+	private Label						m_windowsProxyNameHint;				//
+	private LdapBrowserDlg				m_ldapBrowserDlg;					//
+	private ListBox						m_authTypeListbox;					//
+	private ListBox						m_rootTypeListbox;					//
+	private List<HandlerRegistration>	m_mnfrDlg_registeredEventHandlers;	//
+	private List<LdapBrowseSpec>		m_ldapServerList;					// List of LDAP servers obtained the first time m_browseProxyDnBtn is clicked.
+	private NetFolderRoot				m_netFolderRoot;					// If we are modifying a net folder this is the net folder.
+	private PasswordTextBox				m_proxyPwdTxtBox;					//
+	private RadioButton					m_proxyTypeIdentityRB;				//
+	private RadioButton					m_proxyTypeManualRB;				//
+	private SelectPrincipalsWidget		m_selectPrincipalsWidget;			//
+	private ScheduleWidget				m_scheduleWidget;					//
+	private TabPanel					m_tabPanel;							//
+	private TextBox						m_hostUrlTxtBox;					//
+	private TextBox						m_jitsResultsMaxAge;				//
+	private TextBox						m_jitsAclMaxAge;					//
+	private TextBox						m_nameTxtBox;						//
+	private TextBox						m_proxyNameTxtBox;					//
+	private TextBox						m_rootPathTxtBox;					//
 	
-	private List<LdapBrowseSpec> m_ldapServerList;	// List of LDAP servers obtained the first time m_browseProxyDnBtn is clicked.
-	
-	private static boolean m_showPrivilegedUsersUI = false;
-	private static boolean m_showNetFolderServerType = true;
-	private static boolean m_showWebDavControls = false;
+	private static final boolean SHOW_PRIVILEGED_USERS_UI		= false;	//
+	private static final boolean SHOW_NET_FOLDER_SERVER_TYPE	= true;		//
+	private static final boolean SHOW_WEBDAV_CONTROLS			= false;	//
 
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[]
-    {
+	private static final TeamingEvents[] mnfrDlg_REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.SEARCH_FIND_RESULTS,
 	};
-
 	
-	/**
-	 * Callback interface to interact with the "modify net folder root" dialog
-	 * asynchronously after it loads. 
-	 */
-	public interface ModifyNetFolderRootDlgClient
-	{
-		void onSuccess( ModifyNetFolderRootDlg mnfrDlg );
-		void onUnavailable();
-	}
-
-
 	/**
 	 * 
 	 */
@@ -289,13 +291,68 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				++nextRow;
 			}
 			
+			boolean showUseProxyIdentities = ProxyIdentitiesView.SHOW_USE_PROXY_IDENTITIES;	//! DRF (20150610)
+			if (showUseProxyIdentities) {
+				m_proxyTypeIdentityRB = new RadioButton("proxyType", messages.modifyNetFolderServerDlg_ProxyTypeIdentity());
+				table.setWidget( nextRow, 0, m_proxyTypeIdentityRB );
+				cellFormatter.setColSpan(nextRow, 0, 2);
+				++nextRow;
+				label = new InlineLabel( messages.modifyNetFolderServerDlg_ProxyIdentityLabel() );
+				table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
+				cellFormatter.setStyleName( nextRow, 0, "modifyNetFolderServerDlg_PadWithProxyIdentities" );
+				
+				final int fcRow = nextRow;
+				FindCtrl.createAsync( this, SearchType.PROXY_IDENTITY, new FindCtrlClient()
+				{			
+					@Override
+					public void onUnavailable()
+					{
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess( FindCtrl findCtrl )
+					{
+						// Store and style the FindCtrl...
+						m_proxyIdentityFindControl = findCtrl;
+						m_proxyIdentityFindControl.addStyleName( "modifyNetFolderServerDlg_FindProxyIdentity" );
+
+						// ...and add it to the table.
+						table.setWidget ( fcRow, 1, m_proxyIdentityFindControl );
+					}
+				} );
+				++nextRow;
+				
+				m_proxyTypeManualRB = new RadioButton( "proxyType", messages.modifyNetFolderServerDlg_ProxyTypeManual() );
+				table.setWidget( nextRow, 0, m_proxyTypeManualRB );
+				m_proxyTypeManualRB.setValue ( true );
+				cellFormatter.setColSpan( nextRow, 0, 2 );
+				++nextRow;
+			}
+			
 			label = new InlineLabel( messages.modifyNetFolderServerDlg_ProxyNameLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
+			if (showUseProxyIdentities) {
+				cellFormatter.setStyleName( nextRow, 0, "modifyNetFolderServerDlg_PadWithProxyIdentities" );
+			}
 			
 			FlowPanel tmpPanel = new FlowPanel();
 			m_proxyNameTxtBox = new TextBox();
 			m_proxyNameTxtBox.setVisibleLength( 30 );
 			tmpPanel.add(m_proxyNameTxtBox);
+			m_proxyNameTxtBox.addChangeHandler(new ChangeHandler() {
+				@Override
+				public void onChange(ChangeEvent event) {
+					boolean showUseProxyIdentities = ProxyIdentitiesView.SHOW_USE_PROXY_IDENTITIES;	//! DRF (20150610)
+					if (showUseProxyIdentities) {
+						String s = m_proxyNameTxtBox.getValue();
+						if (GwtClientHelper.hasString(s)) {
+							m_proxyTypeManualRB.setValue(true);	// Automatically check the 'use proxy name and password' radio button.
+						}
+					}
+				}
+			});
 			Image btnImg = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().browseLdap().getSafeUri().asString() );
 			btnImg.setTitle( messages.modifyNetFolderServerDlg_ProxyName_Alt() );
 			FlowPanel html = new FlowPanel();
@@ -316,6 +373,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			
 			label = new InlineLabel( messages.modifyNetFolderServerDlg_ProxyPwdLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
+			if (showUseProxyIdentities) {
+				cellFormatter.setStyleName( nextRow, 0, "modifyNetFolderServerDlg_PadWithProxyIdentities" );
+			}
 			
 			m_proxyPwdTxtBox = new PasswordTextBox();
 			m_proxyPwdTxtBox.setVisibleLength( 30 );
@@ -463,7 +523,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 		
 		// Create a select control for selecting the type of net folder root
-		if ( m_showNetFolderServerType )
+		if ( SHOW_NET_FOLDER_SERVER_TYPE )
 		{
 			label = new InlineLabel( messages.modifyNetFolderServerDlg_TypeLabel() );
 			table.setHTML( nextRow, 0, label.getElement().getInnerHTML() );
@@ -554,7 +614,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 		
 		// Create the WebDAV specific controls
-		if ( m_showWebDavControls )
+		if ( SHOW_WEBDAV_CONTROLS )
 		{
 			// Add some space
 			m_webDavSpacerPanel = new FlowPanel();
@@ -588,7 +648,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		
 		// Create the controls used to select who can create net folders using this
 		// net folder root.
-		if ( m_showPrivilegedUsersUI )
+		if ( SHOW_PRIVILEGED_USERS_UI )
 		{
 			final int selectPrincipalsWidgetRow;
 			
@@ -1168,7 +1228,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	@Override
 	public boolean editCanceled()
 	{
-		if ( m_showPrivilegedUsersUI )
+		if ( SHOW_PRIVILEGED_USERS_UI )
 		{
 			m_selectPrincipalsWidget.closePopups();
 		}
@@ -1212,13 +1272,28 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				@Override
 				public void execute()
 				{
-					Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SelectServerTypePrompt() );
+					GwtClientHelper.deferredAlert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SelectServerTypePrompt() );
 					m_tabPanel.selectTab( 0 );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
 
 			return false;
+		}
+		
+		boolean showUseProxyIdentities = ProxyIdentitiesView.SHOW_USE_PROXY_IDENTITIES;	//! DRF (20150610)
+		if ( showUseProxyIdentities )
+		{
+			// Is the 'use proxy identity' radio button selected?
+			if ( m_proxyTypeIdentityRB.getValue() ) {
+				// Yes!  Is there a proxy identity selected?
+				if ( null == m_proxyIdentity ) {
+					// No!  Tell the user about the problem and bail.
+					GwtClientHelper.deferredAlert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SelectProxyIdentityPrompt() );
+					m_tabPanel.selectTab( 1 );
+					return false;
+				}
+			}
 		}
 		
 		clearErrorPanel();
@@ -1491,11 +1566,12 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 	}
 	
-	/**
-	 * 
+	/*
 	 */
-	private void setProxyName( String name )
-	{
+	private void setProxyName(String name) {
+		if (GwtClientHelper.hasString(name) && (null != m_proxyTypeManualRB)) {
+			m_proxyTypeManualRB.setValue(true);;
+		}
 		m_proxyNameTxtBox.setValue( name );
 	}
 	
@@ -1662,7 +1738,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	{
 		ArrayList<GwtPrincipal> listOfPrincipals;
 
-		if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )
+		boolean spuUI = SHOW_PRIVILEGED_USERS_UI;
+		if ( spuUI && m_selectPrincipalsWidget != null )
 			listOfPrincipals = m_selectPrincipalsWidget.getListOfSelectedPrincipals();
 		else
 			listOfPrincipals = new ArrayList<GwtPrincipal>();
@@ -1684,6 +1761,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		netFolderRoot.setRootPath( getRootPath() );
 		netFolderRoot.setProxyName( getProxyName() );
 		netFolderRoot.setProxyPwd( getProxyPwd() );
+		netFolderRoot.setProxyIdentity( m_proxyIdentity );
 		netFolderRoot.setAuthType( getAuthType() );
 		netFolderRoot.setFullSyncDirOnly( getFullSyncDirOnly() );
 		netFolderRoot.setIndexContent( getIndexContent() );
@@ -1692,7 +1770,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		netFolderRoot.setJitsAclMaxAge( getJitsAclMaxAge() );
 		netFolderRoot.setAllowDesktopAppToTriggerInitialHomeFolderSync( getAllowDesktopAppToTriggerSync() );
 		
-		if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )
+		boolean spuUI = SHOW_PRIVILEGED_USERS_UI;
+		if ( spuUI && m_selectPrincipalsWidget != null )
 			netFolderRoot.setListOfPrincipals( getListOfPrivilegedPrincipals() );
 		
 		if ( getSelectedRootType() == NetFolderRootType.WEB_DAV )
@@ -1827,7 +1906,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_isSharePointServerCkbox.setValue( false );
 		m_inProgressPanel.setVisible( false );
 
-		if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )
+		boolean spuUI = SHOW_PRIVILEGED_USERS_UI;
+		if ( spuUI && m_selectPrincipalsWidget != null )
 			m_selectPrincipalsWidget.init( null );//!!! Finish
 
 		// Clear out the sync schedule controls
@@ -1867,11 +1947,25 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				m_isSharePointServerCkbox.setValue( netFolderRoot.getIsSharePointServer() );
 			}
 			
-			m_rootPathTxtBox.setValue( netFolderRoot.getRootPath() );
+			m_rootPathTxtBox.setValue(  netFolderRoot.getRootPath()  );
 			m_proxyNameTxtBox.setValue( netFolderRoot.getProxyName() );
-			m_proxyPwdTxtBox.setValue( netFolderRoot.getProxyPwd() );
+			m_proxyPwdTxtBox.setValue(  netFolderRoot.getProxyPwd()  );
+			boolean showUseProxyIdentities = ProxyIdentitiesView.SHOW_USE_PROXY_IDENTITIES;	//! DRF (20150610)
+			if ( showUseProxyIdentities )
+			{
+				m_proxyIdentity = netFolderRoot.getProxyIdentity();
+				if ( null != m_proxyIdentity )
+				{
+					m_proxyTypeIdentityRB.setValue( true );
+					m_proxyIdentityFindControl.setInitialSearchString( m_proxyIdentity.getTitle() );
+				}
+				else 
+				{
+					m_proxyTypeManualRB.setValue( true );
+				}
+			}
 		
-			if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )
+			if ( spuUI && m_selectPrincipalsWidget != null )
 				m_selectPrincipalsWidget.init( m_netFolderRoot.getListOfPrincipals() );
 
 			// Initialize the sync schedule controls
@@ -2043,7 +2137,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				@Override
 				public void execute()
 				{
-					Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SelectServerTypePrompt() );
+					GwtClientHelper.deferredAlert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SelectServerTypePrompt() );
 					m_tabPanel.selectTab( 0 );
 				}
 			};
@@ -2062,7 +2156,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				@Override
 				public void execute()
 				{
-					Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_EnterProxyNamePrompt() );
+					GwtClientHelper.deferredAlert( GwtTeaming.getMessages().modifyNetFolderServerDlg_EnterProxyNamePrompt() );
 					m_tabPanel.selectTab( 1 );
 					m_proxyNameTxtBox.setFocus( true );
 				}
@@ -2082,7 +2176,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				@Override
 				public void execute()
 				{
-					Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_EnterProxyPwdPrompt() );
+					GwtClientHelper.deferredAlert( GwtTeaming.getMessages().modifyNetFolderServerDlg_EnterProxyPwdPrompt() );
 					m_tabPanel.selectTab( 1 );
 					m_proxyPwdTxtBox.setFocus( true );
 				}
@@ -2106,7 +2200,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		value = m_hostUrlTxtBox.getValue();
 		if ( value == null || value.length() == 0 )
 		{
-			Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_HostUrlRequired() );
+			GwtClientHelper.deferredAlert( GwtTeaming.getMessages().modifyNetFolderServerDlg_HostUrlRequired() );
 			return false;
 		}
 		
@@ -2123,7 +2217,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		value = m_nameTxtBox.getValue();
 		if ( value == null || value.length() == 0 )
 		{
-			Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_NameRequired() );
+			GwtClientHelper.deferredAlert( GwtTeaming.getMessages().modifyNetFolderServerDlg_NameRequired() );
 			return false;
 		}
 		
@@ -2274,27 +2368,59 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		unregisterEvents();
 	}
 	
+	/**
+	 * Handles SearchFindResultsEvent's received by this class.
+	 * 
+	 * Implements the SearchFindResultsEvent.Handler.onSearchFindResults()
+	 * method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSearchFindResults(SearchFindResultsEvent event) {
+		// If the find results aren't for the limit user visibility
+		// dialog...
+		if (!(((Widget) event.getSource()).equals(this))) {
+			// ...ignore the event.
+			return;
+		}
+		
+		// Hide the find widgets.
+		m_proxyIdentityFindControl.hideSearchResults();
+
+		// If the search result is a GwtPrincipal, add the appropriate
+		// limit user visibility rights to it.
+		GwtTeamingItem obj = event.getSearchResults();
+		if (obj instanceof GwtProxyIdentity) {
+			m_proxyIdentity = ((GwtProxyIdentity) obj);
+			m_proxyTypeIdentityRB.setValue(true);	// Automatically check the 'use proxy identity' radio button.
+		}
+		else {
+			GwtClientHelper.deferredAlert(GwtTeaming.getMessages().modifyNetFolderServerDlg_ErrorInvalidSearchResult());
+		}
+	}
+	
 	/*
 	 * Registers any global event handlers that need to be registered.
 	 */
 	private void registerEvents()
 	{
 		// If we haven't allocated a list to track events we've registered yet...
-		if ( null == m_registeredEventHandlers )
+		if ( null == m_mnfrDlg_registeredEventHandlers )
 		{
 			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+			m_mnfrDlg_registeredEventHandlers = new ArrayList<HandlerRegistration>();
 		}
 
 		// If the list of registered events is empty...
-		if ( m_registeredEventHandlers.isEmpty() )
+		if ( m_mnfrDlg_registeredEventHandlers.isEmpty() )
 		{
 			// ...register the events.
 			EventHelper.registerEventHandlers(
-											GwtTeaming.getEventBus(),
-											REGISTERED_EVENTS,
-											this,
-											m_registeredEventHandlers );
+				GwtTeaming.getEventBus(),
+				mnfrDlg_REGISTERED_EVENTS,
+				this,
+				m_mnfrDlg_registeredEventHandlers);
 		}
 	}
 	
@@ -2341,7 +2467,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					public void execute()
 					{
 						// Tell the user the synchronization of the net folder server has started.
-						//!!!Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SyncOfNetFolderServerStarted() );
+						//!!!GwtClientHelper.deferredAlert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SyncOfNetFolderServerStarted() );
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -2391,7 +2517,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				
 				m_inProgressPanel.setVisible( false );
 				errMsg = GwtTeaming.getMessages().rpcFailure_ErrorTestingNetFolderServerConnection();
-				Window.alert( errMsg );
+				GwtClientHelper.deferredAlert( errMsg );
 			}
 
 			@Override
@@ -2422,7 +2548,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				}
 				
 				m_inProgressPanel.setVisible( false );
-				Window.alert( msg );
+				GwtClientHelper.deferredAlert( msg );
 			}						
 		};
 		
@@ -2443,50 +2569,63 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private void unregisterEvents()
 	{
 		// If we have a non-empty list of registered events...
-		if ( ( null != m_registeredEventHandlers ) && ( ! ( m_registeredEventHandlers.isEmpty() ) ) )
+		if ( ( null != m_mnfrDlg_registeredEventHandlers ) && ( ! ( m_mnfrDlg_registeredEventHandlers.isEmpty() ) ) )
 		{
 			// ...unregister them.  (Note that this will also empty the list.)
-			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
+			EventHelper.unregisterEventHandlers( m_mnfrDlg_registeredEventHandlers );
 		}
 	}
 
 	
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	/* The following code is used to load the split point containing */
+	/* the modify net folder root dialog and perform some operation  */
+	/* on it.                                                        */
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
 	/**
-	 * Loads the ModifyNetFolderRootDlg split point and returns an instance
-	 * of it via the callback.
+	 * Callback interface to interact with the 'modify net folder root'
+	 * dialog asynchronously after it loads. 
+	 */
+	public interface ModifyNetFolderRootDlgClient {
+		void onSuccess(ModifyNetFolderRootDlg mnfrDlg);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the ModifyNetFolderRootDlg split point and returns an
+	 * instance of it via the callback.
 	 * 
+	 * @param autoHide
+	 * @param modal
+	 * @param left
+	 * @param top
+	 * @param mnfrDlgClient
 	 */
 	public static void createAsync(
-							final boolean autoHide,
-							final boolean modal,
-							final int left,
-							final int top,
-							final ModifyNetFolderRootDlgClient mnfrDlgClient )
+		final boolean autoHide,
+		final boolean modal,
+		final int left,
+		final int top,
+		final ModifyNetFolderRootDlgClient mnfrDlgClient)
 	{
-		GWT.runAsync( ModifyNetFolderRootDlg.class, new RunAsyncCallback()
-		{
+		GWT.runAsync(ModifyNetFolderRootDlg.class, new RunAsyncCallback() {
 			@Override
-			public void onFailure(Throwable reason)
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ModifyNetFolderServerDlg() );
-				if ( mnfrDlgClient != null )
-				{
+			public void onFailure(Throwable reason) {
+				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_ModifyNetFolderServerDlg());
+				if (mnfrDlgClient != null) {
 					mnfrDlgClient.onUnavailable();
 				}
 			}
 
 			@Override
-			public void onSuccess()
-			{
-				ModifyNetFolderRootDlg mnfrDlg;
-				
-				mnfrDlg = new ModifyNetFolderRootDlg(
-											autoHide,
-											modal,
-											left,
-											top );
-				mnfrDlgClient.onSuccess( mnfrDlg );
+			public void onSuccess() {
+				ModifyNetFolderRootDlg mnfrDlg = new ModifyNetFolderRootDlg(
+					autoHide,
+					modal,
+					left,
+					top);
+				mnfrDlgClient.onSuccess(mnfrDlg);
 			}
 		});
 	}
