@@ -40,7 +40,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author drfoster@novell.com
  */
-public class GwtProxyIdentity implements IsSerializable {
+public class GwtProxyIdentity extends GwtTeamingItem implements IsSerializable {
 	private Long	m_id;			//
 	private String	m_password;		//
 	private String	m_proxyName;	//
@@ -95,6 +95,7 @@ public class GwtProxyIdentity implements IsSerializable {
 	public Long   getId()        {return m_id;       }
 	public String getPassword()  {return m_password; }
 	public String getProxyName() {return m_proxyName;}
+	@Override
 	public String getTitle()     {return m_title;    }
 	
 	/**
@@ -106,4 +107,46 @@ public class GwtProxyIdentity implements IsSerializable {
 	public void setPassword( String password ) {m_password  = password; }
 	public void setProxyName(String proxyName) {m_proxyName = proxyName;}
 	public void setTitle(    String title)     {m_title     = title;    }
+
+	/**
+	 * Unused with GwtProxyIdentity's.
+	 * 
+	 * Implements the GwtTeamingItem.getImageUrl() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getImageUrl() {
+		return null;
+	}
+
+	/**
+	 * Implements the GwtTeamingItem.getName() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getName() {
+		return getTitle();
+	}
+
+	/**
+	 * Implements the GwtTeamingItem.getSecondaryDisplayText() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getSecondaryDisplayText() {
+		return getTitle();
+	}
+
+	/**
+	 * Implements the GwtTeamingItem.getShortDisplayName() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public String getShortDisplayName() {
+		return getTitle();
+	}
 }

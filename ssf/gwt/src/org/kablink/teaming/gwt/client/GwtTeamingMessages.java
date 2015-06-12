@@ -2513,6 +2513,7 @@ public interface GwtTeamingMessages extends Messages {
 	String modifyNetFolderServerDlg_EnterProxyNamePrompt();
 	String modifyNetFolderServerDlg_EnterProxyPwdPrompt();
 	String modifyNetFolderServerDlg_ErrorCreatingNetFolderServer( String err);
+	String modifyNetFolderServerDlg_ErrorInvalidSearchResult();
 	String modifyNetFolderServerDlg_ErrorModifyingNetFolderServer(String err);
 	String modifyNetFolderServerDlg_Group();
 	String modifyNetFolderServerDlg_HostUrlLabel();
@@ -2527,15 +2528,19 @@ public interface GwtTeamingMessages extends Messages {
 	String modifyNetFolderServerDlg_NoLdapServers();
 	String modifyNetFolderServerDlg_NotFullyConfigured();
 	String modifyNetFolderServerDlg_PrivilegedPrincipalsHint();
+	String modifyNetFolderServerDlg_ProxyIdentityLabel();
 	String modifyNetFolderServerDlg_ProxyName_Alt();
 	String modifyNetFolderServerDlg_ProxyNameHint1();
 	String modifyNetFolderServerDlg_ProxyNameHint2();
 	String modifyNetFolderServerDlg_ProxyNameHint3();
 	String modifyNetFolderServerDlg_ProxyNameLabel();
 	String modifyNetFolderServerDlg_ProxyPwdLabel();
+	String modifyNetFolderServerDlg_ProxyTypeIdentity();
+	String modifyNetFolderServerDlg_ProxyTypeManual();
 	String modifyNetFolderServerDlg_RefreshRightsLabel();
 	String modifyNetFolderServerDlg_ScheduleTab();
 	String modifyNetFolderServerDlg_SelectServerTypePrompt();
+	String modifyNetFolderServerDlg_SelectProxyIdentityPrompt();
 	String modifyNetFolderServerDlg_ServerAlreadyExists();
 	String modifyNetFolderServerDlg_ServerPathHint1();
 	String modifyNetFolderServerDlg_ServerPathOESHint();

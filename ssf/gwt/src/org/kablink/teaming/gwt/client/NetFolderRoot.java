@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,7 +42,6 @@ import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRo
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
  * Class used in GWT RPC calls to represent a Net Folder Root object.
  * 
@@ -57,6 +56,7 @@ public class NetFolderRoot
 	private String m_rootPath;
 	private String m_proxyName = "";
 	private String m_proxyPwd = "";
+	private GwtProxyIdentity m_proxyIdentity;
 	private GwtSchedule m_syncSchedule;
 	private Boolean m_indexContent;
 	private Boolean m_jitsEnabled;
@@ -202,6 +202,7 @@ public class NetFolderRoot
 		m_rootPath = root.getRootPath();
 		m_proxyName = root.getProxyName();
 		m_proxyPwd = root.getProxyPwd();
+		m_proxyIdentity = root.getProxyIdentity();
 		m_principals = root.getListOfPrincipals();
 		m_syncSchedule = root.getSyncSchedule();
 		m_indexContent = root.getIndexContent();
@@ -320,6 +321,14 @@ public class NetFolderRoot
 	}
 	
 	/**
+	 * 
+	 */
+	public GwtProxyIdentity getProxyIdentity()
+	{
+		return m_proxyIdentity;
+	}
+	
+	/**
 	 * Returns the root path
 	 */
 	public String getRootPath()
@@ -407,10 +416,10 @@ public class NetFolderRoot
 		if ( m_rootPath == null || m_rootPath.length() == 0 )
 			return false;
 		
-		if ( m_proxyName == null || m_proxyName.length() == 0 )
+		if ( (m_proxyName == null || m_proxyName.length() == 0) && ( null == m_proxyIdentity ) )
 			return false;
 		
-		if ( m_proxyPwd == null || m_proxyPwd.length() == 0 )
+		if ( ( m_proxyPwd == null || m_proxyPwd.length() == 0 ) && ( null == m_proxyIdentity ) )
 			return false;
 		
 		if ( m_rootType == null || m_rootType == NetFolderRootType.FAMT || m_rootType == NetFolderRootType.UNKNOWN )
@@ -502,6 +511,14 @@ public class NetFolderRoot
 	}
 	
 	/**
+	 *
+	 */
+	public void setProxyIdentity( GwtProxyIdentity pi )
+	{
+		m_proxyIdentity = pi;
+	}
+	
+	/**
 	 * Stores the root path
 	 * 
 	 * @param rootPath
@@ -582,5 +599,4 @@ public class NetFolderRoot
 	{
 		m_syncSchedule = schedule;
 	}
-
 }

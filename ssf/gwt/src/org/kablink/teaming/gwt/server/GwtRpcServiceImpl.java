@@ -108,7 +108,6 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
-import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -864,38 +863,32 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case EXECUTE_SEARCH:
-		{
-			GwtSearchResults searchResults;
-			GwtSearchCriteria searchCriteria;
-			
+		case EXECUTE_SEARCH:  {
 			ExecuteSearchCmd esCmd = ((ExecuteSearchCmd) cmd);
-			searchCriteria = esCmd.getSearchCriteria();
-
-			if (ExecuteSearchCmd.DEBUG_SEARCH_SEQUENCE)
-			{ 
+			if (ExecuteSearchCmd.DEBUG_SEARCH_SEQUENCE) { 
 				// This try/catch is used for debug purposes to
 				// randomize how long a search might take.  It invokes
 				// a random delay between 0 and 5 seconds before
 				// performing the search.
-				try {Thread.sleep( new Random().nextInt( 5000 ) );}
-				catch ( Exception e ) {}
+				try {Thread.sleep(new Random().nextInt(5000));}
+				catch (Exception e) {}
 			}
 			
-			try
-			{
-				searchResults = GwtSearchHelper.executeSearch( this, req, searchCriteria );
+			GwtSearchResults searchResults;
+			try {
+				searchResults = GwtSearchHelper.executeSearch(this, req, esCmd.getSearchCriteria());
+				if (null == searchResults) {
+					// Protects against NPEs.
+					searchResults = new GwtSearchResults();
+					searchResults.setResults(new ArrayList<GwtTeamingItem>());
+				}
 				searchResults.setSearchSequence(esCmd.getSearchSequence());
 			}
-			catch (Exception ex)
-			{
-				GwtTeamingException gtEx;
-				
-				gtEx = GwtLogHelper.getGwtClientException( ex );
+			catch (Exception ex) {
+				GwtTeamingException gtEx = GwtLogHelper.getGwtClientException(ex);
 				throw gtEx;				
 			}
-			
-			response = new VibeRpcResponse( searchResults );
+			response = new VibeRpcResponse(searchResults);
 			return response;
 		}
 		

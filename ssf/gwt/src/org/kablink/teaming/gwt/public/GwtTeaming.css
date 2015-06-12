@@ -5175,6 +5175,15 @@ td.datePickerMonth {
 	margin-left: 3px;
 }
 
+.modifyNetFolderServerDlg_FindProxyIdentity
+{
+	display: inline;
+}
+
+.modifyNetFolderServerDlg_PadWithProxyIdentities
+{
+	padding-left: 30px;
+}
 
 .modifyNetFolderServerDlg_ProxyNameHint
 {
