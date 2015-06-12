@@ -89,6 +89,16 @@ public interface ProxyIdentityModule {
 	public Map getProxyIdentities(Map options);
     
     /**
+     * Returns a List<ProxyIdentity>, of the ProxyIdentities that match
+     * the given title.
+     * 
+     * @param title
+     * 
+     * @return
+     */
+    public List<ProxyIdentity> getProxyIdentitiesByTitle(String title);
+    
+    /**
      * Modifies a ProxyIdentity.
      * 
      * @param proxyIdentity

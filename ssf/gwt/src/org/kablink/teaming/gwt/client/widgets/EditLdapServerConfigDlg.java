@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.ldapbrowser.DirectoryServer;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapSearchInfo;
+import org.kablink.teaming.gwt.client.ldapbrowser.LdapServer.DirectoryType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditLdapSearchDlg.EditLdapSearchDlgClient;
@@ -604,7 +605,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 				tmpPanel.add( label );
 				m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
 				
-				m_dirTypeLB = new ListBox( false );
+				m_dirTypeLB = new ListBox();
+				m_dirTypeLB.setMultipleSelect( false );
 				m_dirTypeLB.setVisibleItemCount( 1 );
 				m_dirTypeLB.addItem( EDIR_NAME, DIR_TYPE_EDIR );
 				m_dirTypeLB.addItem( AD_NAME, DIR_TYPE_AD );
@@ -660,7 +662,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 				m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
 				
 				// Add a listbox that holds the names of the attributes used by eDir and AD
-				m_guidLB = new ListBox( false );
+				m_guidLB = new ListBox();
+				m_guidLB.setMultipleSelect( false );
 				m_guidLB.setVisibleItemCount( 1 );
 				m_guidLB.addItem( EDIR_GUID_NAME, EDIR_GUID_NAME );
 				m_guidLB.addItem( AD_GUID_NAME, AD_GUID_NAME );
@@ -719,7 +722,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 
 			// Add a listbox where the user can select the attribute that is used for the
 			// user's account name.
-			m_nameAttribLB = new ListBox( false );
+			m_nameAttribLB = new ListBox();
+			m_nameAttribLB.setMultipleSelect( false );
 			m_nameAttribLB.setVisibleItemCount( 1 );
 			m_nameAttribLB.addChangeHandler( new ChangeHandler()
 			{
@@ -844,7 +848,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 				}
 
 				@Override
-				public void selectionChanged( LdapObject selection )
+				public void selectionChanged( LdapObject selection, DirectoryType dt )
 				{
 					// Since we're browsing for user DN, it will ONLY
 					// be a leaf node.  Ignore non-leaf selections.

@@ -4358,6 +4358,7 @@ td.datePickerMonth {
 /* End:  Add new folder dialog styles. */
 
 /* Start:  Proxy identity dialog styles. */
+	.vibe-proxyIdentityDlg_BrowseDN   {margin-bottom: 3px; margin-left: 3px;}
 	.vibe-proxyIdentityDlg_Grid       {}
 	.vibe-proxyIdentityDlg_NameInput  {width: 250px;}
 	.vibe-proxyIdentityDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}

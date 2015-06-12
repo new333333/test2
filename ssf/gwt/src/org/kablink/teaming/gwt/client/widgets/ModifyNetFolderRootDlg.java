@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.event.NetFolderRootCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderRootModifiedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
+import org.kablink.teaming.gwt.client.ldapbrowser.LdapServer.DirectoryType;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateNetFolderRootCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLdapObjectFromADCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyNetFolderRootCmd;
@@ -1439,7 +1440,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				}
 
 				@Override
-				public void selectionChanged( LdapObject selection )
+				public void selectionChanged( LdapObject selection, DirectoryType dt )
 				{
 					// Since we're browsing for user DN, it will ONLY
 					// be a leaf node.  Ignore non-leaf selections.

@@ -3706,6 +3706,7 @@ public interface GwtTeamingMessages extends Messages {
 	String proxyIdentityDlgHeader_Add();
 	String proxyIdentityDlgHeader_Modify();
 	String proxyIdentityDlgName();
+	String proxyIdentityDlgName_Alt();
 	String proxyIdentityDlgPassword();
 	String proxyIdentityDlgPasswordVerify();
 	String proxyIdentityDlgTitle();
