@@ -110,6 +110,19 @@ public class NullProxyIdentityModule extends CommonDependencyInjection implement
 	}
     
     /**
+     * Returns a List<ProxyIdentity>, of the ProxyIdentities that match
+     * the given title.
+     * 
+     * @param title
+     * 
+     * @return
+     */
+	@Override
+    public List<ProxyIdentity> getProxyIdentitiesByTitle(String title) {
+    	return null;
+    }
+    
+    /**
      * Modifies a ProxyIdentity.
      * 
      * @param proxyIdentity

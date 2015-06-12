@@ -3809,7 +3809,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                 	// Factor in the sorting required.
                 	String sortBy = selectSpec.getSortBy();
                 	if (!(MiscUtil.hasString(sortBy))) {
-                		sortBy = ObjectKeys.FIELD_MOBILE_DEVICE_DESCRIPTION;
+                		sortBy = ObjectKeys.FIELD_PROXY_IDENTITY_TITLE;
                 	}
                 	Order order = (selectSpec.isSortAscend() ? Order.asc(sortBy) : Order.desc(sortBy));
                 	critQuery.addOrder(order);	// Not used for the total count.
@@ -3836,7 +3836,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                 	}
                 	
                 	// If we're querying for a title...
-                	String title = selectSpec.getProxyName();
+                	String title = selectSpec.getTitle();
                 	if (MiscUtil.hasString(title)) {
                 		// ...add it to the criteria.
                 		critQuery.add(Restrictions.eq(ObjectKeys.FIELD_PROXY_IDENTITY_TITLE, title));

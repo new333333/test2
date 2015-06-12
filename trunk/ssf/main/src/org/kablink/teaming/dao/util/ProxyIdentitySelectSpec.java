@@ -80,13 +80,13 @@ public class ProxyIdentitySelectSpec {
 	public ProxyIdentitySelectSpec() {
 		// Initialize the this object.
 		this(
-			false,							// false -> Sort descending.
-			ObjectKeys.FIELD_ENTITY_TITLE,	// Primary sort key.
-			(-1),							// (-1) -> No starting index.
-			(-1),							// (-1) -> No page size.
-			null,							// null -> No proxy name.
-			null,							// null -> No title.
-			null);							// null -> No quick filter.
+			false,									// false -> Sort descending.
+			ObjectKeys.FIELD_PROXY_IDENTITY_TITLE,	// Primary sort key.
+			(-1),									// (-1) -> No starting index.
+			(-1),									// (-1) -> No page size.
+			null,									// null -> No proxy name.
+			null,									// null -> No title.
+			null);									// null -> No quick filter.
 	}
 	
 	/**

@@ -32,35 +32,52 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtADLdapObject;
 import org.kablink.teaming.gwt.client.GwtConstants;
+import org.kablink.teaming.gwt.client.GwtLdapConfig;
+import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
 import org.kablink.teaming.gwt.client.GwtProxyIdentity;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.ldapbrowser.DirectoryServer;
+import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
+import org.kablink.teaming.gwt.client.ldapbrowser.LdapSearchInfo;
+import org.kablink.teaming.gwt.client.ldapbrowser.LdapServer.DirectoryType;
 import org.kablink.teaming.gwt.client.rpc.shared.AddNewProxyIdentityCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.GetLdapConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetLdapObjectFromADCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyProxyIdentityCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ProxyIdentityRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.LdapBrowserDlg;
+import org.kablink.teaming.gwt.client.widgets.LdapBrowserDlg.LdapBrowserDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
@@ -73,14 +90,17 @@ import com.google.gwt.user.client.ui.TextBox;
  * @author drfoster@novell.com
  */
 public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
-	private boolean				m_adding;				// true -> We're adding a proxy identity.  false -> We're modifying an existing one.
-	private FlowPanel			m_dlgPanel;				// The panel holding the dialog's content.
-	private GwtTeamingMessages	m_messages;				// Access to Filr's messages.
-	private GwtProxyIdentity	m_proxyIdentity;		// null -> Adding a new proxy identity.  non-null -> References a proxy identity to be modified.
-	private TextBox 			m_passwordInput;		// The <INPUT> widget for the proxy identity's password.
-	private TextBox 			m_passwordVerifyInput;	// The <INPUT> widget to verify the proxy identity's password.
-	private TextBox 			m_proxyNameInput;		// The <INPUT> widget for the proxy identity's name.
-	private TextBox 			m_titleInput;			// The <INPUT> widget for the proxy identity's title.
+	private boolean					m_adding;				// true -> We're adding a proxy identity.  false -> We're modifying an existing one.
+	private FlowPanel				m_dlgPanel;				// The panel holding the dialog's content.
+	private GwtTeamingImageBundle	m_images;				// Access to Filr's images.
+	private GwtTeamingMessages		m_messages;				// Access to Filr's messages.
+	private GwtProxyIdentity		m_proxyIdentity;		// null -> Adding a new proxy identity.  non-null -> References a proxy identity to be modified.
+	private InputWidgets 			m_passwordInput;		// The <INPUT> widget for the proxy identity's password.
+	private InputWidgets 			m_passwordVerifyInput;	// The <INPUT> widget to verify the proxy identity's password.
+	private InputWidgets 			m_proxyNameInput;		// The <INPUT> widget for the proxy identity's name.
+	private InputWidgets 			m_titleInput;			// The <INPUT> widget for the proxy identity's title.
+	private LdapBrowserDlg			m_ldapBrowserDlg;		// An instance of an LDAP browser, once one is created.
+	private List<LdapBrowseSpec>	m_ldapConnections;		// List of LDAP connections that have been defined.
 
 	/*
 	 * Interface used to interact with the content of the TextBox
@@ -89,6 +109,46 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 	private interface GetTextBoxValueError {
 		public String getNoValueError();
 		public String getTooLongError(int maxLength);
+	}
+
+	/*
+	 * Inner class used to encapsulate a TextBox with an associated
+	 * LDAP browse Button.
+	 */
+	private static class InputWidgets {
+		private Button	m_ldapBrowseButton;		//
+		private TextBox	m_textBox;				//
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param ldapBrowseButton
+		 * @param textBox
+		 */
+		public InputWidgets(Button ldapBrowseButton, TextBox textBox) {
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameters.
+			setLdapBrowseButton(ldapBrowseButton);
+			setTextBox(         textBox         );
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public Button  getLdapBrowseButton() {return m_ldapBrowseButton;}
+		public TextBox getTextBox()          {return m_textBox;         }
+
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setLdapBrowseButton(Button  ldapBrowseButton) {m_ldapBrowseButton = ldapBrowseButton;}
+		public void setTextBox(         TextBox textBox)          {m_textBox          = textBox;         }
 	}
 	
 	/*
@@ -103,6 +163,7 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 		super(false, true);
 
 		// ...initialize everything else...
+		m_images   = GwtTeaming.getImageBundle();
 		m_messages = GwtTeaming.getMessages();
 	
 		// ...and create the dialog's content.
@@ -113,6 +174,69 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 			null);						// Create callback data.  Unused. 
 	}
 
+	/*
+	 * Runs the LDAP browser for a user DN.
+	 */
+	private void browseLdapForUserDN(final InputWidgets ldapBrowserWidgets) {
+		// Have we instantiated an LDAP browser yet?
+		if (null == m_ldapBrowserDlg) {
+			// No!  Create one now...
+			LdapBrowserDlg.createAsync(new LdapBrowserDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(LdapBrowserDlg ldapDlg) {
+					// ...save it away...
+					m_ldapBrowserDlg = ldapDlg;
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							// ...and run it.
+							browseLdapForUserDNImpl(ldapBrowserWidgets);
+						}
+					});
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've already instantiated an LDAP browser!  Simply
+			// run it.
+			browseLdapForUserDNImpl(ldapBrowserWidgets);
+		}
+	}
+	
+	/*
+	 * Implementation method to run an LDAP browser for a user DN.
+	 */
+	private void browseLdapForUserDNImpl(final InputWidgets ldapBrowserWidgets) {
+		LdapBrowserDlg.initAndShow(
+			m_ldapBrowserDlg,
+			new LdapBrowserCallback() {
+				@Override
+				public void closed() {
+					// Ignored.  We don't care if the user closes the
+					// browser.
+				}
+	
+				@Override
+				public void selectionChanged(LdapObject selection, DirectoryType dt) {
+					// Since we're browsing for a user DN, it can ONLY
+					// be a leaf node.  Ignore non-leaf selections.
+					if (selection.isLeaf()) {
+						setLdapNameFromBrowser(m_proxyNameInput.getTextBox(), selection.getDn(), dt);
+						m_ldapBrowserDlg.hide();
+					}
+				}
+			},
+			m_ldapConnections,
+			ldapBrowserWidgets.getLdapBrowseButton());
+	}
+	
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
@@ -136,7 +260,7 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 	 * 
 	 * The TextBox widget is returned.
 	 */
-	private TextBox createInputWidget(FlexTable grid, int row, String initialValue, String labelText, String labelStyle, String tbStyle, boolean isPassword) {
+	private InputWidgets createInputWidget(FlexTable grid, int row, String initialValue, String labelText, String labelStyle, String tbStyle, boolean isPassword, boolean isLdapDN) {
 		// Get a FlexCellFormatter for working with the Grid.
 		FlexCellFormatter gridCellFmt = grid.getFlexCellFormatter();
 		
@@ -147,12 +271,13 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 		gridCellFmt.setVerticalAlignment(row, 0, HasVerticalAlignment.ALIGN_MIDDLE);
 
 		// ...and create the TextBox widget and add it to the Grid.
-		TextBox reply = new TextBox();
+		FlowPanel tbPanel = new VibeFlowPanel();
+		TextBox   tb      = new TextBox();
 		if (isPassword)
-		     reply = new PasswordTextBox();
-		else reply = new TextBox();
-		reply.addStyleName(tbStyle);
-		reply.addKeyDownHandler(new KeyDownHandler() {
+		     tb = new PasswordTextBox();
+		else tb = new TextBox();
+		tb.addStyleName(tbStyle);
+		tb.addKeyDownHandler(new KeyDownHandler() {
 			@Override
 			public void onKeyDown(KeyDownEvent event) {
 				// What key is being pressed?
@@ -170,13 +295,46 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 			}
 		});
 		if (GwtClientHelper.hasString(initialValue)) {
-			reply.setValue(initialValue);
+			tb.setValue(initialValue);
 		}
-		grid.setWidget(                  row, 1, reply                            );
+		tbPanel.add(tb);
+		final InputWidgets reply = new InputWidgets(null, tb);	// Will fill in the LDAP browse button below if one is created.
+		
+		Button ldapBrowseBtn;
+		if (isLdapDN) {
+			Image btnImg = GwtClientHelper.buildImage(m_images.browseLdap().getSafeUri().asString());
+			btnImg.setTitle(m_messages.proxyIdentityDlgName_Alt());
+			FlowPanel html = new VibeFlowPanel();
+			html.add(btnImg);
+			ldapBrowseBtn = new Button(html.getElement().getInnerHTML());
+			ldapBrowseBtn.addStyleName("vibe-proxyIdentityDlg_BrowseDN");
+			ldapBrowseBtn.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							browseLdapForUserDN(reply);
+						}
+					});
+				}
+			});
+			reply.setLdapBrowseButton(ldapBrowseBtn);
+			
+			// Because most customers do not have anonymous access
+			// turned on in their LDAP directory we are not going to
+			// add an LDAP browse button.
+			tbPanel.add(ldapBrowseBtn);
+		}
+		else {
+			ldapBrowseBtn = null;
+		}
+		grid.setWidget(                  row, 1, tbPanel                         );
 		gridCellFmt.setVerticalAlignment(row, 1, HasVerticalAlignment.ALIGN_MIDDLE);
 		
-		// If we get here, reply refers to the TextBox we created.
-		// Return it.
+		// If we get here, reply refers to an InputWidgets containing
+		// the TextBox and optionally, the LDAP browse button we
+		// created.  Return it.
 		return reply;
 	}
 	
@@ -197,7 +355,7 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 	 */
 	private void createNewProxyIdentityNow() {
 		// Did the user supply a valid title for the proxy identity?
-		String title = getTextBoxValue(m_titleInput, true, GwtConstants.MAX_PROXY_IDENTITY_TITLE_LENGTH, new GetTextBoxValueError() {
+		String title = getTextBoxValue(m_titleInput.getTextBox(), true, GwtConstants.MAX_PROXY_IDENTITY_TITLE_LENGTH, new GetTextBoxValueError() {
 			@Override public String getNoValueError()              {return m_messages.proxyIdentityDlgError_NoTitle();              }
 			@Override public String getTooLongError(int maxLength) {return m_messages.proxyIdentityDlgError_TitleTooLong(maxLength);}
 		});
@@ -208,7 +366,7 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 		}
 		
 		// Did the user supply a valid name for the proxy identity?
-		final String proxyName = getTextBoxValue(m_proxyNameInput, true, GwtConstants.MAX_PROXY_IDENTITY_NAME_LENGTH, new GetTextBoxValueError() {
+		final String proxyName = getTextBoxValue(m_proxyNameInput.getTextBox(), true, GwtConstants.MAX_PROXY_IDENTITY_NAME_LENGTH, new GetTextBoxValueError() {
 			@Override public String getNoValueError()              {return m_messages.proxyIdentityDlgError_NoName();              }
 			@Override public String getTooLongError(int maxLength) {return m_messages.proxyIdentityDlgError_NameTooLong(maxLength);}
 		});
@@ -219,7 +377,7 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 		}
 		
 		// Did the user supply a valid password for the proxy identity?
-		String password = getTextBoxValue(m_passwordInput, m_adding, GwtConstants.MAX_PROXY_IDENTITY_PASSWORD_LENGTH, new GetTextBoxValueError() {
+		String password = getTextBoxValue(m_passwordInput.getTextBox(), m_adding, GwtConstants.MAX_PROXY_IDENTITY_PASSWORD_LENGTH, new GetTextBoxValueError() {
 			@Override public String getNoValueError()              {return m_messages.proxyIdentityDlgError_NoPassword();              }
 			@Override public String getTooLongError(int maxLength) {return m_messages.proxyIdentityDlgError_PasswordTooLong(maxLength);}
 		});
@@ -231,7 +389,7 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 
 		// Did the user supply a valid password verification for the
 		// proxy identity?
-		String passwordVerify = getTextBoxValue(m_passwordVerifyInput, m_adding, GwtConstants.MAX_PROXY_IDENTITY_PASSWORD_LENGTH, new GetTextBoxValueError() {
+		String passwordVerify = getTextBoxValue(m_passwordVerifyInput.getTextBox(), m_adding, GwtConstants.MAX_PROXY_IDENTITY_PASSWORD_LENGTH, new GetTextBoxValueError() {
 			@Override public String getNoValueError()              {return m_messages.proxyIdentityDlgError_NoPasswordVerify();              }
 			@Override public String getTooLongError(int maxLength) {return m_messages.proxyIdentityDlgError_PasswordVerifyTooLong(maxLength);}
 		});
@@ -245,6 +403,8 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 		if (!(password.equals(passwordVerify))) {
 			// No!  Tell the user about the error and bail.
 			GwtClientHelper.deferredAlert(m_messages.proxyIdentityDlgError_PasswordsDontMatch());
+			GwtClientHelper.setFocusDelayed(m_passwordInput.getTextBox());
+			setButtonsEnabled(true);
 			return;
 		}
 
@@ -347,7 +507,7 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 	 */
 	@Override
 	public FocusWidget getFocusWidget() {
-		return m_titleInput;
+		return ((null == m_titleInput) ? null : m_titleInput.getTextBox());
 	}
 
 	/*
@@ -361,6 +521,7 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 		if (valueRequired && (0 == replyLength)) {
 			// No!  Tell them about the error and bail.
 			GwtClientHelper.deferredAlert(gtbvErrorCallback.getNoValueError());
+			GwtClientHelper.setFocusDelayed(tb);
 			setButtonsEnabled(true);
 			return null;
 		}
@@ -369,6 +530,7 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 		if (maxLength < replyLength) {
 			// Yes!  Tell them about the error and bail.
 			GwtClientHelper.deferredAlert(gtbvErrorCallback.getTooLongError(maxLength));
+			GwtClientHelper.setFocusDelayed(tb);
 			setButtonsEnabled(true);
 			return null;
 		}
@@ -376,6 +538,74 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 		// If we get here, reply refers to the non-null, range checked
 		// value requested.  Return it.
 		return reply;
+	}
+
+	/*
+	 * Asynchronously loads the currently defined LDAP server and
+	 * populates the dialog.
+	 */
+	private void loadPart1Async() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the currently defined LDAP server and
+	 * populates the dialog.
+	 */
+	private void loadPart1Now() {
+		// Can we load the LDAP connections?
+		GwtClientHelper.executeCommand(new GetLdapConfigCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// No!  Tell the user about the problem...
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_GetLdapConfig());
+
+				// ...and run the dialog without them.
+				m_ldapConnections = null;
+				populateDlgAsync();
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// Perhaps!  Did we actually get any?
+				GwtLdapConfig                 ldapConfig      = ((GwtLdapConfig) result.getResponseData());
+				List<GwtLdapConnectionConfig> ldapConnections = ldapConfig.getListOfLdapConnections();
+				if (GwtClientHelper.hasItems(ldapConnections)) {
+					// Yes!  Scan them...
+					m_ldapConnections = new ArrayList<LdapBrowseSpec>();
+					for (GwtLdapConnectionConfig ldapConnection:  ldapConnections) {
+						// ...creating an LdapBrowseSpec for each.
+						DirectoryServer ds = new DirectoryServer();
+						ds.setAddress(      ldapConnection.getServerUrl());
+						ds.setSyncUser(     ldapConnection.getProxyDn());
+						ds.setSyncPassword( ldapConnection.getProxyPwd());
+						ds.setGuidAttribute(ldapConnection.getLdapGuidAttribute());
+
+						LdapSearchInfo si = new LdapSearchInfo();
+						si.setSearchObjectClass(LdapSearchInfo.RETURN_USERS);
+						si.setSearchSubTree(false);
+						
+						m_ldapConnections.add(new LdapBrowseSpec(ds, si));
+					}
+				}
+				
+				else {
+					// No, we didn't get any LDAP connections!  Well
+					// run the dialog without any.
+					m_ldapConnections = null;
+				}
+				
+				// Finish populating the dialog.
+				populateDlgAsync();
+			}
+		});
 	}
 	
     /**
@@ -427,10 +657,10 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 		m_dlgPanel.add(grid);
 
 		// ...and create the input widgets.
-		m_titleInput          = createInputWidget(grid, 0, (m_adding ? null : m_proxyIdentity.getTitle()),     m_messages.proxyIdentityDlgTitle(),          "vibe-proxyIdentityDlg_NameLabel", "vibe-proxyIdentityDlg_NameInput", false);	// false -> Normal TextBox.
-		m_proxyNameInput      = createInputWidget(grid, 1, (m_adding ? null : m_proxyIdentity.getProxyName()), m_messages.proxyIdentityDlgName(),           "vibe-proxyIdentityDlg_NameLabel", "vibe-proxyIdentityDlg_NameInput", false);	// false -> Normal TextBox.
-		m_passwordInput       = createInputWidget(grid, 2, null,                                               m_messages.proxyIdentityDlgPassword(),       "vibe-proxyIdentityDlg_NameLabel", "vibe-proxyIdentityDlg_NameInput", true );	// true  -> PasswordTextBox.
-		m_passwordVerifyInput = createInputWidget(grid, 3, null,                                               m_messages.proxyIdentityDlgPasswordVerify(), "vibe-proxyIdentityDlg_NameLabel", "vibe-proxyIdentityDlg_NameInput", true );	// true  -> PasswordTextBox.
+		m_titleInput          = createInputWidget(grid, 0, (m_adding ? null : m_proxyIdentity.getTitle()),     m_messages.proxyIdentityDlgTitle(),          "vibe-proxyIdentityDlg_NameLabel", "vibe-proxyIdentityDlg_NameInput", false, false                                      );
+		m_proxyNameInput      = createInputWidget(grid, 1, (m_adding ? null : m_proxyIdentity.getProxyName()), m_messages.proxyIdentityDlgName(),           "vibe-proxyIdentityDlg_NameLabel", "vibe-proxyIdentityDlg_NameInput", false, GwtClientHelper.hasItems(m_ldapConnections));
+		m_passwordInput       = createInputWidget(grid, 2, null,                                               m_messages.proxyIdentityDlgPassword(),       "vibe-proxyIdentityDlg_NameLabel", "vibe-proxyIdentityDlg_NameInput", true,  false                                      );
+		m_passwordVerifyInput = createInputWidget(grid, 3, null,                                               m_messages.proxyIdentityDlgPasswordVerify(), "vibe-proxyIdentityDlg_NameLabel", "vibe-proxyIdentityDlg_NameInput", true,  false                                      );
 		
 		// Finally, show the dialog, centered on the screen.
 		setButtonsEnabled(true);
@@ -462,7 +692,7 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 		setCaption(m_adding ? m_messages.proxyIdentityDlgHeader_Add() : m_messages.proxyIdentityDlgHeader_Modify());
 
 		// ...and populate the dialog.
-		populateDlgAsync();
+		loadPart1Async();
 	}
 
 	/*
@@ -471,6 +701,56 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 	private void setButtonsEnabled(boolean enabled) {
 		setOkEnabled(    enabled);
 		setCancelEnabled(enabled);
+	}
+	
+	/*
+	 * If the selected directory type is Windows, get the proxy name in
+	 * the format domain\samAccountName and store that in the TextBox.
+	 */
+	private void setLdapNameFromBrowser(TextBox tb, String ldapName, DirectoryType dt) {
+		switch (dt) {
+		default:
+		case EDIRECTORY:        setLdapName(                  tb, ldapName); break;
+		case ACTIVE_DIRECTORY:  setLdapNameUsingWindowsFormat(tb, ldapName); break;
+		}
+	}
+	
+	/*
+	 * Stores an LDAP name in the given TextBox.
+	 */
+	private void setLdapName(TextBox tb, String ldapName) {
+		tb.setValue(ldapName);
+	}
+	
+	/*
+	 * For the given full qualified DN, get the proxy name in the
+	 * Windows format of domain-name\samAccountName and stick that
+	 * proxy name in the text box.
+	 */
+	private void setLdapNameUsingWindowsFormat(final TextBox tb, final String initialLDAPName) {
+		// Issue a GWT RPC request to get an LDAP object from AD.  We
+		// will get the domain-name and samAccountName from the LDAP
+		// object.
+		GwtClientHelper.executeCommand(new GetLdapObjectFromADCmd(initialLDAPName), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// Ignore any error and simply use the LDAP name we
+				// were given directly.
+				setLdapName(tb, initialLDAPName);
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				GwtADLdapObject ldapObject = ((GwtADLdapObject) result.getResponseData());
+				String domainName = ldapObject.getDomainName();
+				String samAccountName = ldapObject.getSamAccountName();
+				String finalLDAPName;
+				if (GwtClientHelper.hasString(domainName) && GwtClientHelper.hasString(samAccountName))
+				     finalLDAPName = (domainName + "\\" + samAccountName);
+				else finalLDAPName = initialLDAPName;
+				setLdapName(tb, finalLDAPName);
+			}						
+		});
 	}
 	
 

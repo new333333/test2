@@ -95,10 +95,21 @@ public class GwtProxyIdentityHelper {
 		try {
 			ProxyIdentityRpcResponseData reply = new ProxyIdentityRpcResponseData();
 			try {
+				// Are there any ProxyIdentity's already defined with
+				// the given title?
+				ProxyIdentityModule pim = bs.getProxyIdentityModule();
+				List<ProxyIdentity> matches = pim.getProxyIdentitiesByTitle(gwtPI.getTitle());
+				if (MiscUtil.hasItems(matches)) {
+					// Yes!  That's an error.  Tell the user about the
+					// problem and bail.
+					reply.addError(NLT.get("addNewProxyIdentityError.DuplicateTitle", new String[]{gwtPI.getTitle()}));
+					return reply;
+				}
+				
 				// Can we create the proxy identity?
 				ProxyIdentity pi = convertGwtPIToPI(gwtPI);
 				pi.setId(null);	// An add requires a null ID.
-				bs.getProxyIdentityModule().addProxyIdentity(pi);
+				pim.addProxyIdentity(pi);
 			}
 			
 			catch (Exception ex) {
@@ -137,6 +148,27 @@ public class GwtProxyIdentityHelper {
 		ProxyIdentity reply = new ProxyIdentity(gwtPI.getPassword(), gwtPI.getProxyName(), gwtPI.getTitle());
 		reply.setId(gwtPI.getId());
 		return reply;
+	}
+	
+	/*
+	 * Copies the fields that have a value from a GwtProxyIdentity into
+	 * a domain ProxyIdentity.
+	 */
+	private static void copyGwtPIToPI(GwtProxyIdentity gwtPISrc, ProxyIdentity piDest) {
+		String str = gwtPISrc.getPassword();
+		if (MiscUtil.hasString(str)) {
+			piDest.setPassword(str);
+		}
+		
+		str = gwtPISrc.getProxyName();
+		if (MiscUtil.hasString(str)) {
+			piDest.setProxyName(str);
+		}
+		
+		str = gwtPISrc.getTitle();
+		if (MiscUtil.hasString(str)) {
+			piDest.setTitle(str);
+		}
 	}
 	
 	/**
@@ -342,19 +374,53 @@ public class GwtProxyIdentityHelper {
 					return reply;
 				}
 
-				// If we can't find an existing ProxyIdentity with
-				// that ID...
+				// Do we have a title for the ProxyIdentity being
+				// modified? 
 				ProxyIdentityModule pim = bs.getProxyIdentityModule();
-				ProxyIdentity pi = pim.getProxyIdentity(id);
-				if (null == pi) {
-					// ...tell the user about the problem and bail.
-					reply.addError(NLT.get("modifyProxyIdentityError.NotFound", new String[]{String.valueOf(id)}));
-					return reply;
+				String title = gwtPI.getTitle();
+				ProxyIdentity modifyPI = null;
+				if (MiscUtil.hasString(title)) {
+					// Yes!  Can we find any ProxyIdentitiy's that
+					// match that title?
+					List<ProxyIdentity> matches = pim.getProxyIdentitiesByTitle(title);
+					if (MiscUtil.hasItems(matches)) {
+						// Yes!  Scan them.
+						for (ProxyIdentity match:  matches) {
+							// Is this the ProxyIdentity that's to be
+							// modified?
+							if (match.getId().equals(id)) {
+								// Yes!  Track it.
+								modifyPI = match;
+							}
+							
+							else {
+								// No, this isn't the ProxyIdentity
+								// that's to be modified!  It's an
+								// error to have multiple with the same
+								// title.  Tell the user about the
+								// problem and bail.
+								reply.addError(NLT.get("modifyProxyIdentityError.DuplicateTitle", new String[]{title}));
+								return reply;
+							}
+						}
+					}
+				}
+
+				// Did we find the ProxyIdentity by title?
+				if (null == modifyPI) {
+					// No!  If we can't find an existing ProxyIdentity
+					// with that ID...
+					modifyPI = pim.getProxyIdentity(id);
+					if (null == modifyPI) {
+						// ...tell the user about the problem and bail.
+						reply.addError(NLT.get("modifyProxyIdentityError.NotFound", new String[]{String.valueOf(id)}));
+						return reply;
+					}
 				}
 				
 				// Can we modify the proxy identity?
-				pi = convertGwtPIToPI(gwtPI);
-				bs.getProxyIdentityModule().modifyProxyIdentity(pi);
+				copyGwtPIToPI(gwtPI, modifyPI);
+				bs.getProxyIdentityModule().modifyProxyIdentity(modifyPI);
 			}
 			
 			catch (Exception ex) {
