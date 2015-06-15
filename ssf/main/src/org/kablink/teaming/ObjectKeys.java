@@ -552,6 +552,8 @@ public interface ObjectKeys {
 	public static final String RESOURCE_DRIVER_HOST_URL = "hostUrl";
 	public static final String RESOURCE_DRIVER_ACCOUNT_NAME = "accountName";
 	public static final String RESOURCE_DRIVER_PASSWORD = "password";
+	public static final String RESOURCE_DRIVER_USE_PROXY_IDENTITY = "useProxyIdentity";
+	public static final String RESOURCE_DRIVER_PROXY_IDENTITY_ID = "proxyIdentityId";
 	public static final String RESOURCE_DRIVER_SHARE_NAME = "shareName";
 	public static final String RESOURCE_DRIVER_SERVER_NAME = "serverName";
 	public static final String RESOURCE_DRIVER_SERVER_IP = "serverIP";

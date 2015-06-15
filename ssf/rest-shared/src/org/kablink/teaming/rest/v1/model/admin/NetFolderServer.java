@@ -1,5 +1,5 @@
 /*
- * Copyright © 2009-2010 Novell, Inc.  All Rights Reserved.
+ * Copyright © 2009-2015 Novell, Inc.  All Rights Reserved.
  *
  * THIS WORK IS SUBJECT TO U.S. AND INTERNATIONAL COPYRIGHT LAWS AND TREATIES.  IT MAY NOT BE USED, COPIED,
  * DISTRIBUTED, DISCLOSED, ADAPTED, PERFORMED, DISPLAYED, COLLECTED, COMPILED, OR LINKED WITHOUT NOVELL'S
@@ -16,10 +16,10 @@
 package org.kablink.teaming.rest.v1.model.admin;
 
 import org.kablink.teaming.rest.v1.model.BaseRestObject;
-import org.kablink.teaming.rest.v1.model.SharingPermission;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.util.Date;
 
 /**
@@ -36,6 +36,8 @@ public class NetFolderServer extends BaseRestObject {
     private String rootPath;
     private String accountName;
     private String password; //set by hibernate access="field" type="encrypted"
+	private Boolean useProxyIdentity;
+	private Long proxyIdentityId;
     private Date modifiedOn;
     private String changeDetectionMechanism;
     private String authenticationType;
@@ -54,6 +56,8 @@ public class NetFolderServer extends BaseRestObject {
         rootPath = (rootPath==null) ? server.rootPath : rootPath;
         accountName = (accountName==null) ? server.accountName : accountName;
         password = (password==null) ? server.password : password;
+        useProxyIdentity = (useProxyIdentity == null) ? server.useProxyIdentity : useProxyIdentity;
+        proxyIdentityId = (proxyIdentityId == null) ? server.proxyIdentityId : proxyIdentityId;
         changeDetectionMechanism = (changeDetectionMechanism==null) ? server.changeDetectionMechanism : changeDetectionMechanism;
         authenticationType = (authenticationType==null) ? server.authenticationType : authenticationType;
         indexContent = (indexContent==null) ? server.indexContent : indexContent;
@@ -121,6 +125,27 @@ public class NetFolderServer extends BaseRestObject {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @XmlElement(name="proxy_use_identity")
+    public Boolean getUseProxyIdentity() {
+    	if (null == useProxyIdentity) {
+    		return false;
+    	}
+        return useProxyIdentity;
+    }
+
+    public void setUseProxyIdentity(Boolean useProxyIdentity) {
+        this.useProxyIdentity = useProxyIdentity;
+    }
+
+    @XmlElement(name="proxy_identity_id")
+    public Long getProxyIdentityId() {
+        return proxyIdentityId;
+    }
+
+    public void setProxyIdentityId(Long proxyIdentityId) {
+        this.proxyIdentityId = proxyIdentityId;
     }
 
     @XmlElement(name="last_modified")

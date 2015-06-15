@@ -768,7 +768,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 	/**
 	 * Initialize the controls in the dialog with the values from the PropertiesObj.
 	 */
-//!!!	public abstract void init( PropertiesObj properties );
+//~JW:  public abstract void init( PropertiesObj properties );
 	
 	/**
 	 * Hide this dialog.

@@ -129,22 +129,31 @@ public class GwtProxyIdentityHelper {
 		}
 	}
 
-	/*
+	/**
 	 * Converts a domain ProxyIdentity to a GwtProxyIdentity.
+	 * 
+	 * @param pi
+	 * @param includePassword
+	 * 
+	 * @return
 	 */
-	private static GwtProxyIdentity convertPIToGwtPI(ProxyIdentity pi) {
+	public static GwtProxyIdentity convertPIToGwtPI(ProxyIdentity pi) {
 		GwtProxyIdentity reply = new GwtProxyIdentity();
 		reply.setId(       pi.getId()       );
-//		reply.setPassword( pi.getPassword() );
+		reply.setPassword( pi.getPassword() );
 		reply.setProxyName(pi.getProxyName());
 		reply.setTitle(    pi.getTitle()    );
 		return reply;
 	}
 	
-	/*
+	/**
 	 * Converts a GwtProxyIdentity to a domain ProxyIdentity.
+	 * 
+	 * @param gwtPI
+	 * 
+	 * @param
 	 */
-	private static ProxyIdentity convertGwtPIToPI(GwtProxyIdentity gwtPI) {
+	public static ProxyIdentity convertGwtPIToPI(GwtProxyIdentity gwtPI) {
 		ProxyIdentity reply = new ProxyIdentity(gwtPI.getPassword(), gwtPI.getProxyName(), gwtPI.getTitle());
 		reply.setId(gwtPI.getId());
 		return reply;
@@ -193,13 +202,30 @@ public class GwtProxyIdentityHelper {
 		try {
 			// Were we given any proxy identities to delete?
 			if (MiscUtil.hasItems(entityIds)) {
-				// Yes!  Scan them...
+				// Yes!  Scan them.
 				ProxyIdentityModule pim = bs.getProxyIdentityModule();
+				List<EntityId> successfulDeletes = new ArrayList<EntityId>();
 				for (EntityId eid:  entityIds) {
-					// ...deleting each.
-					pim.deleteProxyIdentity(eid.getEntityId());
+					// Are there any Net Folder Roots referencing this
+					// proxy identity?
+					Long proxyIdentityId = eid.getEntityId();
+					List<String> nfRootList = GwtNetFolderHelper.getNetFolderRootNamesReferencingProxyIdentityId(bs, proxyIdentityId);
+					if (MiscUtil.hasItems(nfRootList)) {
+						// Yes!  Return the Net Folder Root names as
+						// blocking the delete of this proxy identity.
+						String piName = getProxyIdentityTitleById(bs, proxyIdentityId);
+						for (String nfRoot:  nfRootList) {
+							reply.addError(NLT.get("deleteProxyIdentityError.InUse", new String[]{nfRoot, piName}));
+						}
+					}
+					else {
+						// No, there aren't any Net Folder Roots
+						// referencing it!  Delete it.
+						pim.deleteProxyIdentity(proxyIdentityId);
+						successfulDeletes.add(eid);
+					}
 				}
-				reply.setSuccessfulDeletes(entityIds);
+				reply.setSuccessfulDeletes(successfulDeletes);
 			}
 		}
 		
@@ -348,6 +374,24 @@ public class GwtProxyIdentityHelper {
 		finally {
 			gsp.stop();
 		}
+	}
+
+	/*
+	 * Returns the title of the given proxy identity.
+	 */
+	private static String getProxyIdentityTitleById(AllModulesInjected bs, Long proxyIdentityId) {
+		String piName = null;
+		try {
+			ProxyIdentity pi = getProxyIdentity(bs, proxyIdentityId);
+			if (null != pi) {
+				piName = pi.getTitle();
+			}
+		}
+		catch (Exception ex) {/* Ignore. */}
+		if (null == piName) {
+			piName = String.valueOf(proxyIdentityId);
+		}
+		return piName;
 	}
 	
 	/**

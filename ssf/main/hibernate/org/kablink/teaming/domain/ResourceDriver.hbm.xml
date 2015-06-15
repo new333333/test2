@@ -24,6 +24,8 @@
     <property name="rootPath"/>
     <property name="accountName"/>
 	<property name="password" access="field" length="64" type="encrypted"/>
+    <property name="useProxyIdentity" access="field"/>
+    <property name="proxyIdentityId" access="field"/>
     <property name="shareName"/>
     <property name="serverName"/>
     <property name="serverIP"/>

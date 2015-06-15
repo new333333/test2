@@ -64,6 +64,8 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	private String rootPath;
 	private String accountName;
 	private String password; //set by hibernate access="field" type="encrypted"
+	private Boolean useProxyIdentity;
+	private Long proxyIdentityId;
 	private String shareName;
 	private String serverName;
 	private String serverIP;
@@ -211,6 +213,10 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     	if(!objectEquals(accountName, config.accountName))
     		return false;
     	if(!objectEquals(password, config.password))
+    		return false;
+    	if (!objectEquals(useProxyIdentity, config.useProxyIdentity))
+    		return false;
+    	if (!objectEquals(proxyIdentityId, config.proxyIdentityId))
     		return false;
     	if(!objectEquals(shareName, config.shareName))
     		return false;
@@ -434,22 +440,18 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		this.allowSelfSignedCertificate = allowSelfSignedCertificate;
 	}
 
-	/**
-	 * 
-	 */
-	public Boolean getFullSyncDirOnly()
-	{
+	public Boolean getFullSyncDirOnly() {
 		return fullSyncDirOnly;
 	}
 
-	/**
-	 * 
-	 */
-	public void setFullSyncDirOnly( Boolean fullSyncDirOnly )
-	{
+	public void setFullSyncDirOnly(Boolean fullSyncDirOnly) {
 		this.fullSyncDirOnly = fullSyncDirOnly;
 	}
 
+	public void setProxyIdentityId(Long proxyIdentityId) {
+		this.proxyIdentityId = proxyIdentityId;
+	}
+    
 	public String getHostUrl() {
 		return hostUrl;
 	}
@@ -482,6 +484,20 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		this.password = password;
 	}
 
+	public Boolean getUseProxyIdentity() {
+		if(useProxyIdentity == null)
+		     return false;
+		else return useProxyIdentity;
+	}
+
+	public void setUseProxyIdentity(Boolean useProxyIdentity) {
+		this.useProxyIdentity = useProxyIdentity;
+	}
+
+	public Long getProxyIdentityId() {
+		return proxyIdentityId;
+	}
+	
 	//Workarea implementation
 	@Override
 	public Long getWorkAreaId() {

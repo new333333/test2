@@ -4202,19 +4202,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case TEST_NET_FOLDER_CONNECTION:
-		{
-			TestNetFolderConnectionCmd tcCmd;
+		case TEST_NET_FOLDER_CONNECTION:  {
+			TestNetFolderConnectionCmd tcCmd = ((TestNetFolderConnectionCmd) cmd);
 			TestNetFolderConnectionResponse responseData;
-			
-			tcCmd = (TestNetFolderConnectionCmd) cmd;
-			responseData = GwtNetFolderHelper.testNetFolderConnection(
-																tcCmd.getRootName(),
-																tcCmd.getRootType(),
-																tcCmd.getRootPath(),
-																tcCmd.getSubPath(),
-																tcCmd.getProxyName(),
-																tcCmd.getProxyPwd() );
+			if (tcCmd.useProxyIdentity())
+			     responseData = GwtNetFolderHelper.testNetFolderConnection(tcCmd.getRootName(), tcCmd.getRootType(), tcCmd.getRootPath(), tcCmd.getSubPath(), tcCmd.getProxyIdentity()                 );
+			else responseData = GwtNetFolderHelper.testNetFolderConnection(tcCmd.getRootName(), tcCmd.getRootType(), tcCmd.getRootPath(), tcCmd.getSubPath(), tcCmd.getProxyName(), tcCmd.getProxyPwd());
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

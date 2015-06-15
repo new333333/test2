@@ -57,7 +57,7 @@ public class GwtConstants {
 	public final static int MAX_BINDER_NAME_LENGTH				= 255;
 	public final static int MAX_FILE_NAME_LENGTH				= 225;
 	public final static int MAX_PROXY_IDENTITY_NAME_LENGTH		= 255;
-	public final static int MAX_PROXY_IDENTITY_PASSWORD_LENGTH	= 128;
+	public final static int MAX_PROXY_IDENTITY_PASSWORD_LENGTH	= 255;
 	public final static int MAX_PROXY_IDENTITY_TITLE_LENGTH		= 255;
 	
 	/*

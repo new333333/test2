@@ -7812,7 +7812,7 @@ public class GwtViewHelper {
 			
 			// We don't need to get team ids because team membership is now stored in a "team group"
 			List<Long> teams = new ArrayList<Long>();
-			//!!!List<Long>	teams  = GwtServerHelper.getTeamIds( request, bs, userId);
+			//~JW:  List<Long>	teams  = GwtServerHelper.getTeamIds(request, bs, userId);
 			
 			// ...get the List<ShareItem> of those things shared with
 			// ...the user...

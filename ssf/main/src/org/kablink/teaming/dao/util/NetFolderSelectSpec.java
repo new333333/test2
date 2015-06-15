@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,114 +32,54 @@
  */
 package org.kablink.teaming.dao.util;
 
-
 /**
- * This class encapsulates select specifications used to retrieve only those net folders
- * that fulfill specified criteria.
+ * This class encapsulates select specifications used to retrieve only
+ * those net folders that fulfill specified criteria.
  * 
- * @author jwootton
- *
+ * @author drfoster@novell.com
  */
 public class NetFolderSelectSpec {
-	private String m_filter;
-	private Long m_rootId;
-	private boolean m_includeHomeDirNetFolders;
-	private boolean m_includeNonHomeDirNetFolders;
-	private int m_startIndex;	// Return the net folders starting at this index.
-	private int m_pageSize;
+	private boolean	m_includeHomeDirNetFolders;		//
+	private boolean	m_includeNonHomeDirNetFolders;	//
+	private int		m_startIndex;					// Return the net folders starting at this index.
+	private int		m_pageSize;						//
+	private Long	m_rootId;						//
+	private String	m_filter;						//
 	
 	/**
-	 * 
+	 * Constructor method.
 	 */
-	public NetFolderSelectSpec()
-	{
-		m_filter = null;
-		m_rootId = null;
-		m_includeHomeDirNetFolders = false;
+	public NetFolderSelectSpec() {
+		// Initialize the super class...
+		super();
+		
+		// ...and everything else that requires it.
         m_includeNonHomeDirNetFolders = true;
-		m_startIndex = -1;
-		m_pageSize = -1;
+		m_startIndex                  = (-1);
+		m_pageSize                    = (-1);
 	}
 	
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public void setFilter( String filter )
-	{
-		m_filter = filter;
-	}
+	public boolean getIncludeHomeDirNetFolders()    {return m_includeHomeDirNetFolders;   }
+    public boolean getIncludeNonHomeDirNetFolders() {return m_includeNonHomeDirNetFolders;}
+	public String  getFilter()                      {return m_filter;                     }
+	public Long    getRootId()                      {return m_rootId;                     }
+	public int     getPageSize()                    {return m_pageSize;                   }
+	public int     getStartIndex()                  {return m_startIndex;                 }
 	
 	/**
+	 * Set'er methods.
 	 * 
+	 * @param
 	 */
-	public void setIncludeHomeDirNetFolders( boolean include )
-	{
-		m_includeHomeDirNetFolders = include;
-	}
-
-    public void setIncludeNonHomeDirNetFolders(boolean include)
-    {
-        this.m_includeNonHomeDirNetFolders = include;
-    }
-
-    /**
-	 * 
-	 */
-	public void setPageSize( int pageSize )
-	{
-		m_pageSize = pageSize;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setStartIndex( int startIndex )
-	{
-		m_startIndex = startIndex;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getFilter()
-	{
-		return m_filter;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getIncludeHomeDirNetFolders()
-	{
-		return m_includeHomeDirNetFolders;
-	}
-
-    public boolean getIncludeNonHomeDirNetFolders() {
-        return m_includeNonHomeDirNetFolders;
-    }
-
-    /**
-	 * 
-	 */
-	public int getPageSize()
-	{
-		return m_pageSize;
-	}
-	
-	/**
-	 * 
-	 */
-	public int getStartIndex()
-	{
-		return m_startIndex;
-	}
-	
-	public Long getRootId() {
-		return m_rootId;
-	}
-
-	public void setRootId(Long rootId) {
-		this.m_rootId = rootId;
-	}
-
+	public void setIncludeHomeDirNetFolders(   boolean include)    {m_includeHomeDirNetFolders    = include;   }
+    public void setIncludeNonHomeDirNetFolders(boolean include)    {m_includeNonHomeDirNetFolders = include;   }
+	public void setPageSize(                   int     pageSize)   {m_pageSize                    = pageSize;  }
+	public void setStartIndex(                 int     startIndex) {m_startIndex                  = startIndex;}
+	public void setRootId(                     Long    rootId)     {m_rootId                      = rootId;    }
+	public void setFilter(                     String  filter)     {m_filter                      = filter;    }
 }

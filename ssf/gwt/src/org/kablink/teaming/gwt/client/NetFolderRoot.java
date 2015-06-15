@@ -56,6 +56,7 @@ public class NetFolderRoot
 	private String m_rootPath;
 	private String m_proxyName = "";
 	private String m_proxyPwd = "";
+	private boolean m_useProxyIdentity;
 	private GwtProxyIdentity m_proxyIdentity;
 	private GwtSchedule m_syncSchedule;
 	private Boolean m_indexContent;
@@ -202,6 +203,7 @@ public class NetFolderRoot
 		m_rootPath = root.getRootPath();
 		m_proxyName = root.getProxyName();
 		m_proxyPwd = root.getProxyPwd();
+		m_useProxyIdentity = root.getUseProxyIdentity();
 		m_proxyIdentity = root.getProxyIdentity();
 		m_principals = root.getListOfPrincipals();
 		m_syncSchedule = root.getSyncSchedule();
@@ -323,6 +325,14 @@ public class NetFolderRoot
 	/**
 	 * 
 	 */
+	public boolean getUseProxyIdentity()
+	{
+		return m_useProxyIdentity;
+	}
+	
+	/**
+	 * 
+	 */
 	public GwtProxyIdentity getProxyIdentity()
 	{
 		return m_proxyIdentity;
@@ -416,10 +426,10 @@ public class NetFolderRoot
 		if ( m_rootPath == null || m_rootPath.length() == 0 )
 			return false;
 		
-		if ( (m_proxyName == null || m_proxyName.length() == 0) && ( null == m_proxyIdentity ) )
+		if ( m_useProxyIdentity && ( null == m_proxyIdentity ) )
 			return false;
 		
-		if ( ( m_proxyPwd == null || m_proxyPwd.length() == 0 ) && ( null == m_proxyIdentity ) )
+		if ( ( m_proxyPwd == null || m_proxyPwd.length() == 0 ) )
 			return false;
 		
 		if ( m_rootType == null || m_rootType == NetFolderRootType.FAMT || m_rootType == NetFolderRootType.UNKNOWN )
@@ -508,6 +518,14 @@ public class NetFolderRoot
 	public void setProxyPwd( String pwd )
 	{
 		m_proxyPwd = pwd;
+	}
+	
+	/**
+	 *
+	 */
+	public void setUseProxyIdentity( boolean useProxyIdentity )
+	{
+		m_useProxyIdentity = useProxyIdentity;
 	}
 	
 	/**

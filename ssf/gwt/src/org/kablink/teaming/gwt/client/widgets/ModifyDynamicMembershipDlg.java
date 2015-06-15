@@ -257,7 +257,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 			btn = new Button( messages.modifyDynamicMembershipDlgTestQueryLabel() );
 			btn.addStyleName( "teamingButton" );
 			table.setWidget( nextRow, 0, btn );
-			//!!!cellFormatter.setColSpan( nextRow, 0, 2 );
+			//~JW:  cellFormatter.setColSpan( nextRow, 0, 2 );
 			
 			clickHandler = new ClickHandler()
 			{

@@ -2,16 +2,19 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  <class table="SS_ProxyIdentity" dynamic-update="true" lazy="false" dynamic-insert="false" name="org.kablink.teaming.domain.ProxyIdentity">
-    <!--<cache usage="read-write"/>-->
-    <id unsaved-value="null" name="id" type="long">
-      <generator class="native">
-      	<param name="sequence">ss_proxy_identity_id_sequence</param>
-      </generator>
-    </id>
-    <property name="zoneId"    not-null="true" access="field"              />
-	<property name="password"  not-null="true" access="field" length="128" />
-    <property name="proxyName" not-null="true" access="field" length="255" />
-    <property name="title"     not-null="true" access="field" length="255" />
-  </class>
+	<typedef name="encrypted" class="org.jasypt.hibernate.type.EncryptedStringType">
+		<param name="encryptorRegisteredName">hibernateStringEncryptor</param>
+	</typedef>
+	<class table="SS_ProxyIdentity" dynamic-update="true" lazy="false" dynamic-insert="false" name="org.kablink.teaming.domain.ProxyIdentity">
+		<!--<cache usage="read-write"/>-->
+		<id unsaved-value="null" name="id" type="long">
+			<generator class="native">
+				<param name="sequence">ss_proxy_identity_id_sequence</param>
+			</generator>
+		</id>
+		<property name="zoneId"    not-null="true" access="field"                               />
+		<property name="password"  not-null="true" access="field" length="255" type="encrypted" />
+		<property name="proxyName" not-null="true" access="field" length="255"                  />
+		<property name="title"     not-null="true" access="field" length="255"                  />
+	</class>
 </hibernate-mapping>

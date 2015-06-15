@@ -183,7 +183,7 @@ public class HelpData
 		String guideComponent = null;
 		String product;
 		
-		//!!! Get the base help url from ssf-ext.properties.
+		//~JW:  Get the base help url from ssf-ext.properties.
 		url = "http://www.novell.com";
 		
 		// Do we have a language code to put on the url?
