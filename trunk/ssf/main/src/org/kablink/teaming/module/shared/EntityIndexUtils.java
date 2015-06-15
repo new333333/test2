@@ -1464,49 +1464,30 @@ public class EntityIndexUtils {
     public static void addBinderHasResourceDriver(Document doc, Binder binder, boolean fieldsOnly) {
     	if ((binder instanceof Folder) && binder.isMirrored()) {
     		boolean hasResourceDriver = MiscUtil.hasString(binder.getResourceDriverName());
-    		
-    		if ( hasResourceDriver )
-    		{
-    			try
-    			{
-    				ResourceDriver driver;
-    				
-    				hasResourceDriver = false;
-    				
-    				driver = binder.getResourceDriver();
-    				if ( driver != null )
-    				{
+    		if (hasResourceDriver) {
+    			try {
+    				ResourceDriver driver = binder.getResourceDriver();
+    				if (null != driver) {
     					String dc = driver.getClass().getName();
-    					if ( MiscUtil.hasString( dc ) && dc.equals( "com.novell.teaming.fi.connection.file.FileResourceDriver" ))
-    					{
-    						hasResourceDriver = MiscUtil.hasString( driver.getRootPath() );
+    					if (MiscUtil.hasString(dc) && dc.equals("com.novell.teaming.fi.connection.file.FileResourceDriver")) {
+    						hasResourceDriver = MiscUtil.hasString(driver.getRootPath());
     					}
     					
     					else
     					{
-	        				ResourceDriverConfig rdConfig;
-	        				String rootPath;
-	        				String proxyName;
-	        				String proxyPwd;
-	    					
-	        				rdConfig = driver.getConfig();
-	
-	        				if ( rdConfig != null )
-	        				{
+	        				ResourceDriverConfig rdConfig = driver.getConfig();
+	        				if (null != rdConfig) {
 		        				// Is everything configured?
-		        				rootPath = rdConfig.getRootPath();
-		        				if ( rootPath != null && rootPath.length() > 0 ) {
-			        				proxyName = rdConfig.getAccountName();
-			        				proxyPwd = rdConfig.getPassword();
-		        					if (proxyName != null && proxyName.length() > 0 &&
-		        					    proxyPwd != null && proxyPwd.length() > 0 )
-			        				{
-			        					// Yes
+		        				String rootPath = rdConfig.getRootPath();
+		        				if (MiscUtil.hasString(rootPath)) {
+		        					Boolean useProxyIdentity = rdConfig.getUseProxyIdentity();
+			        				if ((null != useProxyIdentity) && useProxyIdentity && (null != rdConfig.getProxyIdentityId())) {
 			        					hasResourceDriver = true;
 			        				}
-		        					else if ( CloudFolderHelper.isCloudFolder( binder ) )
-		        					{
-			        					// Yes
+			        				else if (MiscUtil.hasString(rdConfig.getAccountName()) && MiscUtil.hasString(rdConfig.getPassword())) {
+			        					hasResourceDriver = true;
+			        				}
+		        					else if (CloudFolderHelper.isCloudFolder(binder)) {
 			        					hasResourceDriver = true;
 		        					}
 		        				}
@@ -1514,8 +1495,8 @@ public class EntityIndexUtils {
     					}
     				}
     			}
-    			catch ( Exception ex )
-    			{
+    			
+    			catch (Exception ex) {
     				hasResourceDriver = false;
     			}
     		}

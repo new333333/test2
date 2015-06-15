@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -967,8 +967,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		netFolderServerName = homeDirConfig.getNetFolderServerName();
 		path = homeDirConfig.getPath();
-//!!!		netFolderServerName = "net-folder-server-2";
-//!!!		path = "Language\\%Language%\\Cn\\%cn%\\Mail\\%mail%\\Cn\\%cn%";
+//~JW:	netFolderServerName = "net-folder-server-2";
+//~JW:	path = "Language\\%Language%\\Cn\\%cn%\\Mail\\%mail%\\Cn\\%cn%";
 		
 		if ( netFolderServerName == null || netFolderServerName.length() == 0 )
 		{
@@ -3334,9 +3334,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  			{
 			  			logError(NLT.get("errorcode.ldap.context"), ex);
 
-			  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-			  			//!!! errors and return them instead of just throwing an exception for the first
-			  			//!!! problem we find.
+			  			//~JW:  When we re-write the ldap config page in GWT, we need to collect all of these
+			  			//~JW:  errors and return them instead of just throwing an exception for the first
+			  			//~JW:  problem we find.
 			  			// Have we already encountered a problem?
 			  			if ( ldapSyncEx == null )
 			  			{
@@ -3351,9 +3351,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  			{
 		  				logger.error( "Unknown exception: " + ex.toString() );
 		  				
-			  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-			  			//!!! errors and return them instead of just throwing an exception for the first
-			  			//!!! problem we find.
+			  			//~JW:  When we re-write the ldap config page in GWT, we need to collect all of these
+			  			//~JW:  errors and return them instead of just throwing an exception for the first
+			  			//~JW:  problem we find.
 			  			// Have we already encountered a problem?
 			  			if ( ldapSyncEx == null )
 			  			{
@@ -3372,9 +3372,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				  		{
 							logger.error( "closing user context threw an exception: ", namingEx );
 							
-				  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-				  			//!!! errors and return them instead of just throwing an exception for the first
-				  			//!!! problem we find.
+				  			//~JW:  When we re-write the ldap config page in GWT, we need to collect all of these
+				  			//~JW:  errors and return them instead of just throwing an exception for the first
+				  			//~JW:  problem we find.
 				  			// Have we already encountered a problem?
 				  			if ( ldapSyncEx == null )
 				  			{
@@ -3425,9 +3425,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				logger.info( "userCoordinator.wrapUp() threw an exception: ", ex );
   				
-	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-	  			//!!! errors and return them instead of just throwing an exception for the first
-	  			//!!! problem we find.
+	  			//~JW:  When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//~JW:  errors and return them instead of just throwing an exception for the first
+	  			//~JW:  problem we find.
 	  			// Have we already encountered a problem?
 	  			if ( ldapSyncEx == null )
 	  			{
@@ -3490,9 +3490,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  			{
 			  			logError( NLT.get( "errorcode.ldap.context" ), ex );
 
-			  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-			  			//!!! errors and return them instead of just throwing an exception for the first
-			  			//!!! problem we find.
+			  			//~JW:  When we re-write the ldap config page in GWT, we need to collect all of these
+			  			//~JW:  errors and return them instead of just throwing an exception for the first
+			  			//~JW:  problem we find.
 			  			// Have we already encountered a problem?
 			  			if ( ldapSyncEx == null )
 			  			{
@@ -3507,9 +3507,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  			{
 		  				logger.error( "Unknown exception: " + ex.toString() );
 		  				
-			  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-			  			//!!! errors and return them instead of just throwing an exception for the first
-			  			//!!! problem we find.
+			  			//~JW:  When we re-write the ldap config page in GWT, we need to collect all of these
+			  			//~JW:  errors and return them instead of just throwing an exception for the first
+			  			//~JW:  problem we find.
 			  			// Have we already encountered a problem?
 			  			if ( ldapSyncEx == null )
 			  			{
@@ -3529,9 +3529,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				  		{
 							logger.error( "closing group context threw an exception: ", namingEx );
 							
-				  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-				  			//!!! errors and return them instead of just throwing an exception for the first
-				  			//!!! problem we find.
+				  			//~JW:  When we re-write the ldap config page in GWT, we need to collect all of these
+				  			//~JW:  errors and return them instead of just throwing an exception for the first
+				  			//~JW:  problem we find.
 				  			// Have we already encountered a problem?
 				  			if ( ldapSyncEx == null )
 				  			{
@@ -3586,9 +3586,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		{
   				logger.error( "groupCoordinator.deleteObsoleteGroups() threw exception: ", ex );
   				
-	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-	  			//!!! errors and return them instead of just throwing an exception for the first
-	  			//!!! problem we find.
+	  			//~JW:  When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//~JW:  errors and return them instead of just throwing an exception for the first
+	  			//~JW:  problem we find.
 	  			// Have we already encountered a problem?
 	  			if ( ldapSyncEx == null )
 	  			{
@@ -3623,9 +3623,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		{
   				logger.error( "updateDynamicGroupMembership() threw exception: ", ex );
   				
-	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-	  			//!!! errors and return them instead of just throwing an exception for the first
-	  			//!!! problem we find.
+	  			//~JW:  When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//~JW:  errors and return them instead of just throwing an exception for the first
+	  			//~JW:  problem we find.
 	  			// Have we already encountered a problem?
 	  			if ( ldapSyncEx == null )
 	  			{
@@ -3648,9 +3648,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		{
   				logger.error( "m_containerCoordinator.wrapUp() threw exception: ", ex );
   				
-	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-	  			//!!! errors and return them instead of just throwing an exception for the first
-	  			//!!! problem we find.
+	  			//~JW:  When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//~JW:  errors and return them instead of just throwing an exception for the first
+	  			//~JW:  problem we find.
 	  			// Have we already encountered a problem?
 	  			if ( ldapSyncEx == null )
 	  			{
@@ -3678,9 +3678,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		{
   				logger.error( "Removing admin task to run ldap sync threw exception: ", ex );
   				
-	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-	  			//!!! errors and return them instead of just throwing an exception for the first
-	  			//!!! problem we find.
+	  			//~JW:  When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//~JW:  errors and return them instead of just throwing an exception for the first
+	  			//~JW:  problem we find.
 	  			// Have we already encountered a problem?
 	  			if ( ldapSyncEx == null )
 	  			{
@@ -5452,7 +5452,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							dn = relativeName;
 						}
 						
-						//!!! How do we want to determine if a user is a duplicate?
+						//~JW:  How do we want to determine if a user is a duplicate?
 						if (userCoordinator.isDuplicate(dn)) {
 							logger.error( NLT.get( "errorcode.ldap.userAlreadyProcessed", new Object[] {ssName, dn} ) );
 							continue;

@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -55,6 +56,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ProxyIdentity;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
@@ -65,6 +67,7 @@ import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtJitsNetFolderConfig;
 import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig;
 import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig.NetFolderSyncScheduleOption;
+import org.kablink.teaming.gwt.client.GwtProxyIdentity;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
@@ -103,14 +106,13 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
 
 /**
- * Helper methods for the GWT UI server code that services requests dealing with
- * net folder roots and net folders.
+ * Helper methods for the GWT UI server code that services requests
+ * dealing with Net Folder Roots and Net Folders.
  *
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
-public class GwtNetFolderHelper 
-{
-	protected static Log m_logger = LogFactory.getLog( GwtNetFolderHelper.class );
+public class GwtNetFolderHelper {
+	protected static Log m_logger = LogFactory.getLog(GwtNetFolderHelper.class);
 
 	
 	/**
@@ -289,8 +291,7 @@ public class GwtNetFolderHelper
 				gtEx.setAdditionalDetails( NLT.get( "netfolder.cant.load.parent.binder" ) );
 			}
 			
-			GwtLogHelper.error( m_logger, "Error creating net folder: " + netFolder.getName(), ex);
-			
+			GwtLogHelper.error(m_logger, "Error creating net folder: " + netFolder.getName(), ex);
 			throw gtEx;				
 		}
 		
@@ -317,6 +318,8 @@ public class GwtNetFolderHelper
 			
 			authType = getAuthType( netFolderRoot.getAuthType() );
 			
+			GwtProxyIdentity pi = netFolderRoot.getProxyIdentity();
+			Long proxyIdentityId = ((null == pi) ? null : pi.getId());
 			rdConfig = NetFolderHelper.createNetFolderRoot(
 													ami.getAdminModule(),
 													ami.getResourceDriverModule(),
@@ -325,6 +328,8 @@ public class GwtNetFolderHelper
 													driverType,
 													netFolderRoot.getProxyName(),
 													netFolderRoot.getProxyPwd(),
+													netFolderRoot.getUseProxyIdentity(),
+													proxyIdentityId,
 													netFolderRoot.getListOfPrincipalIds(),
 													netFolderRoot.getHostUrl(),
 													netFolderRoot.getAllowSelfSignedCerts(),
@@ -350,10 +355,20 @@ public class GwtNetFolderHelper
 		{
 			newRoot = new NetFolderRoot();
 			newRoot.setRootType( getRootTypeFromDriverType( driverType ) );
-			newRoot.setId( rdConfig.getId() );
-			newRoot.setName( rdConfig.getName() );
+			newRoot.setId(        rdConfig.getId()          );
+			newRoot.setName(      rdConfig.getName()        );
 			newRoot.setProxyName( rdConfig.getAccountName() );
-			newRoot.setProxyPwd( rdConfig.getPassword() );
+			newRoot.setProxyPwd(  rdConfig.getPassword()    );
+			
+			newRoot.setUseProxyIdentity(rdConfig.getUseProxyIdentity());
+			Long proxyIdentityId = rdConfig.getProxyIdentityId();
+			if (null != proxyIdentityId) {
+				ProxyIdentity pi = GwtProxyIdentityHelper.getProxyIdentity(ami, proxyIdentityId);
+				if (null != pi) {
+					newRoot.setProxyIdentity(GwtProxyIdentityHelper.convertPIToGwtPI(pi));
+				}
+			}
+			
 			newRoot.setRootPath( rdConfig.getRootPath() );
 			newRoot.setHostUrl( rdConfig.getHostUrl() );
 			newRoot.setAllowSelfSignedCerts( rdConfig.isAllowSelfSignedCertificate() );
@@ -365,12 +380,9 @@ public class GwtNetFolderHelper
 			newRoot.setJitsResultsMaxAge( rdConfig.getJitsMaxAge() );
 			newRoot.setJitsAclMaxAge( rdConfig.getJitsAclMaxAge() );
 			
-			{
-				AuthenticationType authType;
-				
-				authType = rdConfig.getAuthenticationType();
-				if ( authType != null )
-					newRoot.setAuthType( GwtAuthenticationType.getType( authType.getValue() ) );
+			AuthenticationType authType = rdConfig.getAuthenticationType();
+			if (null != authType) {
+				newRoot.setAuthType(GwtAuthenticationType.getType(authType.getValue()));
 			}
 
 			// Get the list of principals that can use the net folder root
@@ -410,8 +422,8 @@ public class GwtNetFolderHelper
 			}
 			catch ( Exception e )
 			{
-				GwtLogHelper.error( m_logger, "Error deleting next net folder: " + nextNetFolder.getName(), e );
-				result.setStatus( DeleteNetFolderStatus.DELETE_FAILED, e.toString() );
+				GwtLogHelper.error(m_logger, "Error deleting next net folder: " + nextNetFolder.getName(), e);
+				result.setStatus(DeleteNetFolderStatus.DELETE_FAILED, e.toString());
 			}
 			
 			results.addResult( nextNetFolder, result );
@@ -421,51 +433,44 @@ public class GwtNetFolderHelper
 	}
 
 	/**
-	 * Delete the given list of net folder roots
+	 * Delete the given list of net folder roots.
+	 * 
+	 * @param ami
+	 * @param netFolderRoots
+	 * 
+	 * @return
 	 */
-	public static DeleteNetFolderServersRpcResponseData deleteNetFolderRoots(
-		AllModulesInjected ami,
-		Set<NetFolderRoot> netFolderRoots )
-	{
-		DeleteNetFolderServersRpcResponseData result;
-		ResourceDriverModule rdModule;
-		
-		ami.getAdminModule().checkAccess( AdminOperation.manageResourceDrivers );
+	public static DeleteNetFolderServersRpcResponseData deleteNetFolderRoots(AllModulesInjected ami, Set<NetFolderRoot> netFolderRoots) {
+		ami.getAdminModule().checkAccess(AdminOperation.manageResourceDrivers);
 
-		result = new DeleteNetFolderServersRpcResponseData();
-		rdModule = ami.getResourceDriverModule();
+		DeleteNetFolderServersRpcResponseData result = new DeleteNetFolderServersRpcResponseData();
+		ResourceDriverModule rdModule = ami.getResourceDriverModule();
 		
-		for ( NetFolderRoot nextRoot : netFolderRoots )
-		{
-			try
-			{
-				NetFolderSelectSpec selectSpec;
-				List<NetFolder> listOfNetFolders;
-				
-				// Get a list of net folders that are referencing this net folder server.
-				selectSpec = new NetFolderSelectSpec();
-				selectSpec.setIncludeHomeDirNetFolders( true );
-				selectSpec.setRootId( nextRoot.getId() );
-				selectSpec.setFilter( null );
-				listOfNetFolders = getAllNetFolders( ami, selectSpec, true );
+		for (NetFolderRoot nextRoot:  netFolderRoots) {
+			try {
+				// Get a list of net folders that are referencing this
+				// net folder server.
+				NetFolderSelectSpec selectSpec = new NetFolderSelectSpec();
+				selectSpec.setIncludeHomeDirNetFolders(true);
+				selectSpec.setRootId(nextRoot.getId());
+				List<NetFolder> listOfNetFolders = getAllNetFolders(ami, selectSpec, true);
 				
 				// Is this net folder server being referenced by a net folder?
-				if ( listOfNetFolders == null || listOfNetFolders.size() == 0 )
-				{
+				if (!(MiscUtil.hasItems(listOfNetFolders))) {
 					// No, go ahead and delete it.
-					rdModule.deleteResourceDriver( nextRoot.getName() );
-					result.addDeletedNetFolderServer( nextRoot );
+					rdModule.deleteResourceDriver(   nextRoot.getName());
+					result.addDeletedNetFolderServer(nextRoot          );
 				}
-				else
-				{
-					// Yes, add it to the list of net folder servers that can't be deleted.
-					result.addCouldNotBeDeletedNetFolderServer( nextRoot );
+				else {
+					// Yes, add it to the list of net folder servers
+					// that can't be deleted.
+					result.addCouldNotBeDeletedNetFolderServer(nextRoot);
 				}
 			}
-			catch ( Exception ex )
-			{
-				GwtLogHelper.error( m_logger, "Error deleting next folder root: " + nextRoot.getName(), ex );
-				result.addCouldNotBeDeletedNetFolderServer( nextRoot );
+			
+			catch (Exception ex) {
+				GwtLogHelper.error(m_logger, "Error deleting next folder root: " + nextRoot.getName(), ex);
+				result.addCouldNotBeDeletedNetFolderServer(nextRoot);
 			}
 		}
 		
@@ -474,36 +479,33 @@ public class GwtNetFolderHelper
 
 	/**
 	 * Return a list of all the net folders.
-	 * If includeHomeDirNetFolders is true we will include "home directory" net folders in our list.
-	 * If rootName is not null, we will only return net folders associated with the given net folder root. 
+	 * 
+	 * If selectSpec.m_includeHomeDirNetFolders is true we will include
+	 * 'home directory' net folders in our list.
+	 * 
+	 * If selectSpec.m_rootid is not null, we will only return net
+	 * folders associated with the given net folder root.
+	 * 
+	 * @param ami
+	 * @param selectSpec
+	 * @param getMinimalInfo
+	 * 
+	 * @return
 	 */
-	public static List<NetFolder> getAllNetFolders(
-		AllModulesInjected ami,
-		NetFolderSelectSpec selectSpec,
-		boolean getMinimalInfo )
-	{
-		List<NetFolderConfig> listOfNetFolderConfig;
-		ArrayList<NetFolder> listOfNetFolders;
-		
-		listOfNetFolders = new ArrayList<NetFolder>();
-		
-		listOfNetFolderConfig = NetFolderHelper.getAllNetFolders2(
-													ami.getBinderModule(),
-													ami.getWorkspaceModule(),
-													selectSpec );
+	public static List<NetFolder> getAllNetFolders(AllModulesInjected ami, NetFolderSelectSpec selectSpec, boolean getMinimalInfo) {
+		List<NetFolderConfig> listOfNetFolderConfig = NetFolderHelper.getAllNetFolders2(
+			ami.getBinderModule(),
+			ami.getWorkspaceModule(),
+			selectSpec);
 
-		if ( listOfNetFolderConfig != null )
-		{
-			for ( NetFolderConfig nextNetFolderConfig :  listOfNetFolderConfig )
-			{
+		ArrayList<NetFolder> listOfNetFolders = new ArrayList<NetFolder>();
+		if (MiscUtil.hasItems(listOfNetFolderConfig)) {
+			for (NetFolderConfig nextNetFolderConfig:  listOfNetFolderConfig) {
 				NetFolder netFolder;
-				
-				if ( getMinimalInfo )
-					netFolder = GwtNetFolderHelper.getNetFolderWithMinimalInfo( ami, nextNetFolderConfig );
-				else
-					netFolder = GwtNetFolderHelper.getNetFolder( ami, nextNetFolderConfig.getTopFolderId() );
-				
-				listOfNetFolders.add( netFolder );
+				if (getMinimalInfo)
+				     netFolder = getNetFolderWithMinimalInfo(ami, nextNetFolderConfig                 );
+				else netFolder = getNetFolder(               ami, nextNetFolderConfig.getTopFolderId());
+				listOfNetFolders.add(netFolder);
 			}
 		}
 		
@@ -534,15 +536,25 @@ public class GwtNetFolderHelper
 				GwtSchedule gwtSchedule;
 				
 				nfRoot = new NetFolderRoot();
-				nfRoot.setId( driver.getId() );
+				nfRoot.setId(   driver.getId()   );
 				nfRoot.setName( driver.getName() );
 				
 				driverType = driver.getDriverType();
 				nfRoot.setRootType( getRootTypeFromDriverType( driverType ) );
 				
-				nfRoot.setRootPath( driver.getRootPath() );
+				nfRoot.setRootPath(  driver.getRootPath()    );
 				nfRoot.setProxyName( driver.getAccountName() );
-				nfRoot.setProxyPwd( driver.getPassword() );
+				nfRoot.setProxyPwd(  driver.getPassword()    );
+				
+				nfRoot.setUseProxyIdentity(driver.getUseProxyIdentity());
+				Long proxyIdentityId = driver.getProxyIdentityId();
+				if (null != proxyIdentityId) {
+					ProxyIdentity pi = GwtProxyIdentityHelper.getProxyIdentity(ami, proxyIdentityId);
+					if (null != pi) {
+						nfRoot.setProxyIdentity(GwtProxyIdentityHelper.convertPIToGwtPI(pi));
+					}
+				}
+				
 				nfRoot.setHostUrl( driver.getHostUrl() );
 				nfRoot.setAllowSelfSignedCerts( driver.isAllowSelfSignedCertificate() );
 				nfRoot.setIsSharePointServer( driver.isPutRequiresContentLength() );
@@ -554,12 +566,9 @@ public class GwtNetFolderHelper
 				nfRoot.setAllowDesktopAppToTriggerInitialHomeFolderSync( driver.getAllowDesktopAppToTriggerInitialHomeFolderSync() );
 				nfRoot.setAllowDesktopAppToTriggerInitialHomeFolderSync( driver.getAllowDesktopAppToTriggerInitialHomeFolderSync() );
 				
-				{
-					AuthenticationType authType;
-					
-					authType = driver.getAuthenticationType();
-					if ( authType != null )
-						nfRoot.setAuthType( GwtAuthenticationType.getType( authType.getValue() ) );
+				AuthenticationType authType = driver.getAuthenticationType();
+				if (null != authType) {
+					nfRoot.setAuthType(GwtAuthenticationType.getType(authType.getValue()));
 				}
 
 				// Get the list of principals that can use the net folder root
@@ -577,99 +586,100 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
+	 * Return a list of the names of the Net Folder Root's that reference the given proxy identity ID.
 	 * 
+	 * @param bs
+	 * @param proxyIdentityId
+	 * 
+	 * @return
 	 */
-	private static AuthenticationType getAuthType( GwtAuthenticationType gwtAuthType )
-	{
-		if ( gwtAuthType == null )
+	public static List<String> getNetFolderRootNamesReferencingProxyIdentityId(AllModulesInjected bs, Long proxyIdentityId) {
+		// Allocate a List<String> we can return with the names of the
+		// Net Folder Roots that are referencing the give proxy
+		// identity.
+		List<String> reply = new ArrayList<String>();
+
+		// Are there a any Net Folder Roots defined?
+		List<ResourceDriverConfig> drivers = bs.getResourceDriverModule().getAllNetFolderResourceDriverConfigs();
+		if (MiscUtil.hasItems(drivers)) {
+			// Yes!  Scan them.
+			for (ResourceDriverConfig driver:  drivers) {
+				// Is this Net Folder Root referencing the given proxy
+				// identity?
+				Long driverProxyIdentityId = driver.getProxyIdentityId();
+				if ((null != driverProxyIdentityId) && driverProxyIdentityId.equals(proxyIdentityId)) {
+					// Yes!  Add it's name to the List<String> we're
+					// returning.
+					reply.add(driver.getName());
+				}
+			}
+		}
+
+		// If we get here, reply refers to a List<String> containing
+		// the names of the Net Folder roots that are referencing the
+		// given proxy identity ID.  Return it.
+		return reply;
+	}
+	
+	/*
+	 */
+	private static AuthenticationType getAuthType(GwtAuthenticationType gwtAuthType) {
+		if (null == gwtAuthType) {
 			return null;
+		}
 		
-		switch( gwtAuthType )
-		{
-		case KERBEROS:
-			return AuthenticationType.kerberos;
+		switch(gwtAuthType) {
+		case KERBEROS:            return AuthenticationType.kerberos;
+		case KERBEROS_THEN_NTLM:  return AuthenticationType.kerberos_then_ntlm;
+		case NMAS:                return AuthenticationType.nmas;
+		case NTLM:                return AuthenticationType.ntlm;
 		
-		case NTLM:
-			return AuthenticationType.ntlm;
-			
-		case KERBEROS_THEN_NTLM:
-			return AuthenticationType.kerberos_then_ntlm;
-			
-		case NMAS:
-			return AuthenticationType.nmas;
-			
 		default:
 			return AuthenticationType.kerberos;
 		}
 	}
 	
-	/**
-	 * 
+	/*
 	 */
-	private static CoreDao getCoreDao()
-	{
-		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
+	private static CoreDao getCoreDao() {
+		return ((CoreDao) SpringContextUtil.getBean("coreDao"));
 	}
 	
-	/**
-	 * Get the data sync settings for the given net folder binder and store them in the
-	 * given NetFolder
+	/*
+	 * Get the data sync settings for the given net folder binder and
+	 * store them in the given NetFolder.
 	 */
-	private static NetFolderDataSyncSettings getDataSyncSettings(
-		AllModulesInjected ami,
-		NetFolderConfig nfc )
-	{
-		NetFolderDataSyncSettings settings;
+	private static NetFolderDataSyncSettings getDataSyncSettings(AllModulesInjected bs, NetFolderConfig nfc) {
+		NetFolderDataSyncSettings settings = new NetFolderDataSyncSettings();
 		
-		settings = new NetFolderDataSyncSettings();
-		
-		settings.setAllowDesktopAppToSyncData( nfc.getAllowDesktopAppToSyncData() );
-		settings.setAllowMobileAppsToSyncData( nfc.getAllowMobileAppsToSyncData() );
-		settings.setAllowDesktopAppToTriggerSync( nfc.getAllowDesktopAppToTriggerInitialHomeFolderSync() );
-		settings.setInheritAllowDesktopAppToTriggerSync( nfc.getUseInheritedDesktopAppTriggerSetting() );
+		settings.setAllowDesktopAppToSyncData(          nfc.getAllowDesktopAppToSyncData()                    );
+		settings.setAllowMobileAppsToSyncData(          nfc.getAllowMobileAppsToSyncData()                    );
+		settings.setAllowDesktopAppToTriggerSync(       nfc.getAllowDesktopAppToTriggerInitialHomeFolderSync());
+		settings.setInheritAllowDesktopAppToTriggerSync(nfc.getUseInheritedDesktopAppTriggerSetting()         );
 		
 		return settings;
 	}
 	
-	/**
-	 * Return the appropriate DriverType from the given NetFolderRootType
+	/*
+	 * Return the appropriate DriverType from the given
+	 * NetFolderRootType.
 	 */
-	private static DriverType getDriverType( NetFolderRootType type )
-	{
-		switch ( type )
+	private static DriverType getDriverType(NetFolderRootType type) {
+		switch (type)
 		{
-		case WINDOWS:
-			return DriverType.windows_server;
-			
-		case CLOUD_FOLDERS:
-			return DriverType.cloud_folders;
-			
-		case FAMT:
-			return DriverType.famt;
-			
-		case FILE_SYSTEM:
-			return DriverType.filesystem;
-			
-		case NETWARE:
-			return DriverType.netware;
-			
-		case OES:
-			return DriverType.oes;
-			
-		case OES2015:
-			return DriverType.oes2015;
-			
-		case SHARE_POINT_2010:
-			return DriverType.share_point_2010;
-			
-		case SHARE_POINT_2013:
-			return DriverType.share_point_2013;
-			
-		case WEB_DAV:
-			return DriverType.webdav;
-			
-		case UNKNOWN:
+		case CLOUD_FOLDERS:     return DriverType.cloud_folders;
+		case FAMT:              return DriverType.famt;
+		case FILE_SYSTEM:       return DriverType.filesystem;
+		case NETWARE:           return DriverType.netware;
+		case OES:               return DriverType.oes;
+		case OES2015:           return DriverType.oes2015;
+		case SHARE_POINT_2010:  return DriverType.share_point_2010;
+		case SHARE_POINT_2013:  return DriverType.share_point_2013;
+		case WEB_DAV:           return DriverType.webdav;
+		case WINDOWS:           return DriverType.windows_server;
+		
 		default:
+		case UNKNOWN:
 			return DriverType.famt;
 		}
 	}
@@ -992,10 +1002,9 @@ public class GwtNetFolderHelper
 			fnId = GwtServerHelper.getFunctionIdFromRole( ami, nextRole );
 
 			// Did we find the function for the given role?
-			if ( fnId == null )
-			{
+			if (null == fnId) {
 				// No
-				GwtLogHelper.error( m_logger, "In GwtNetFolderHelper.getNetFolderRights(), could not find function for role: " + nextRole.getType() );
+				GwtLogHelper.error(m_logger, "In GwtNetFolderHelper.getNetFolderRights(), could not find function for role: " + nextRole.getType());
 				continue;
 			}
 
@@ -1377,8 +1386,8 @@ public class GwtNetFolderHelper
 			{
 				gtEx = GwtLogHelper.getGwtClientException( ex );
 			}
-			GwtLogHelper.error( m_logger, "Error modifying net folder: " + netFolder.getName(), ex);
 			
+			GwtLogHelper.error(m_logger, "Error modifying net folder: " + netFolder.getName(), ex);
 			throw gtEx;				
 		}
 		
@@ -1406,6 +1415,8 @@ public class GwtNetFolderHelper
 			
 			authType = getAuthType( netFolderRoot.getAuthType() );
 			
+			GwtProxyIdentity pi = netFolderRoot.getProxyIdentity();
+			Long proxyIdentityId = ((null == pi) ? null : pi.getId());
 			NetFolderHelper.modifyNetFolderRoot(
 											ami.getAdminModule(),
 											ami.getResourceDriverModule(),
@@ -1417,6 +1428,8 @@ public class GwtNetFolderHelper
 											netFolderRoot.getRootPath(),
 											netFolderRoot.getProxyName(),
 											netFolderRoot.getProxyPwd(),
+											netFolderRoot.getUseProxyIdentity(),
+											proxyIdentityId,
 											driverType,
 											netFolderRoot.getHostUrl(),
 											netFolderRoot.getAllowSelfSignedCerts(),
@@ -1431,46 +1444,37 @@ public class GwtNetFolderHelper
 											netFolderRoot.getAllowDesktopAppToTriggerInitialHomeFolderSync(),
 											scheduleInfo );
 		}
-		catch ( Exception ex )
-		{
-			GwtTeamingException gtEx;
-			
-			gtEx = GwtLogHelper.getGwtClientException( ex );
-			GwtLogHelper.error( m_logger, "Error modifying net folder root: " + netFolderRoot.getName(), ex);
+		
+		catch (Exception ex) {
+			GwtTeamingException gtEx = GwtLogHelper.getGwtClientException(ex);
+			GwtLogHelper.error(m_logger, "Error modifying net folder root: " + netFolderRoot.getName(), ex);
 			throw gtEx;				
 		}
 		
 		return netFolderRoot;
 	}
 
-	/**
-	 * Save the data sync settings for the given net folder binder
+	/*
+	 * Save the data sync settings for the given net folder binder.
 	 */
-	@SuppressWarnings( "unused" )
-	private static void saveDataSyncSettings(
-		AllModulesInjected ami,
-		NetFolderConfig nfc,
-		NetFolderDataSyncSettings settings )
-	{
-		if ( nfc != null && settings != null )
-		{
+	@SuppressWarnings("unused")
+	private static void saveDataSyncSettings(AllModulesInjected ami, NetFolderConfig nfc, NetFolderDataSyncSettings settings) {
+		if ((null != nfc) && (null != settings)) {
 			nfc.setAllowDesktopAppToSyncData(settings.getAllowDesktopAppToSyncData());
 			nfc.setAllowDesktopAppToTriggerInitialHomeFolderSync(settings.getAllowDesktopAppToTriggerSync());
 			nfc.setUseInheritedDesktopAppTriggerSetting(settings.getInheritAllowDesktopAppToTriggerSync());
 			
-	   		if ( false )
-	   		{
+	   		if (false) {
 	   			// Not writing anything as per bug 816823.
 	   			nfc.setAllowMobileAppsToSyncData(settings.getAllowMobileAppsToSyncData());
 	   		}
 
-			try
-			{
+			try {
 				ami.getNetFolderModule().modifyNetFolder(nfc);
 			}
-			catch ( Exception ex )
-			{
-				GwtLogHelper.error( m_logger, "In saveDataSyncSettings(), call to modifyNetFolder() failed. " + ex.toString() );
+			
+			catch (Exception ex) {
+				GwtLogHelper.error(m_logger, "In saveDataSyncSettings(), call to modifyNetFolder() failed. " + ex.toString());
 			}
 		}
 	}
@@ -1488,7 +1492,7 @@ public class GwtNetFolderHelper
 
 		if ( binderId == null && roles == null )
 		{
-			GwtLogHelper.error( m_logger, "In GwtNetFolderHelper.setNetFolderRights(), invalid parameters" );
+			GwtLogHelper.error(m_logger, "In GwtNetFolderHelper.setNetFolderRights(), invalid parameters");
 		}
 		
 		adminModule = ami.getAdminModule();
@@ -1504,10 +1508,9 @@ public class GwtNetFolderHelper
 			fnId = GwtServerHelper.getFunctionIdFromRole( ami, nextRole );
 
 			// Did we find the function for the given role?
-			if ( fnId == null )
-			{
-				// No
-				GwtLogHelper.error( m_logger, "In GwtNetFolderHelper.setNetFolderRights(), could not find function for role: " + nextRole.getType() );
+			if (null == fnId) {
+				// No!
+				GwtLogHelper.error(m_logger, "In GwtNetFolderHelper.setNetFolderRights(), could not find function for role: " + nextRole.getType());
 				continue;
 			}
 
@@ -1520,29 +1523,29 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
-	 * Stop the sync of the given list of net folders
+	 * Stop the sync of the given list of Net Folders.
+	 * 
+	 * @param bs
+	 * @param req
+	 * @param netFolders
+	 * 
+	 * @return
 	 */
-	public static Set<NetFolder> stopSyncNetFolders(
-		AllModulesInjected ami,
-		HttpServletRequest req,
-		Set<NetFolder> netFolders )
-	{
-		for ( NetFolder nextNetFolder : netFolders )
-		{
-			try
-			{
-				if ( ami.getFolderModule().requestNetFolderFullSyncStop( nextNetFolder.getId() ) == false )
-				{
-					// The net folder was not in the "started" state.
-					// Make a request to remove the net folder from the "waiting to be sync'd" state.
-					ami.getFolderModule().dequeueFullSynchronize( nextNetFolder.getId() );
+	public static Set<NetFolder> stopSyncNetFolders(AllModulesInjected bs, HttpServletRequest req, Set<NetFolder> netFolders) {
+		for (NetFolder nextNetFolder: netFolders) {
+			try {
+				if (!(bs.getFolderModule().requestNetFolderFullSyncStop(nextNetFolder.getId()))) {
+					// The net folder was not in the 'started' state.
+					// Make a request to remove the net folder from the
+					// 'waiting to be sync'd' state.
+					bs.getFolderModule().dequeueFullSynchronize(nextNetFolder.getId());
 				}
 				
-				nextNetFolder.setStatus( getNetFolderSyncStatus( nextNetFolder.getId() ) );
+				nextNetFolder.setStatus(getNetFolderSyncStatus(nextNetFolder.getId()));
 			}
-			catch ( Exception e )
-			{
-				GwtLogHelper.error( m_logger, "Error trying to stop the syncing of the net folder: " + nextNetFolder.getName() + ", " + e.toString() );
+			
+			catch (Exception e) {
+				GwtLogHelper.error(m_logger, "Error trying to stop the syncing of the net folder: " + nextNetFolder.getName() + ", " + e.toString());
 			}
 		}
 		
@@ -1550,25 +1553,24 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
-	 * Sync the given list of net folders
+	 * Sync the given list of Net Folders.
+	 * 
+	 * @param bs
+	 * @param req
+	 * @param netFolders
+	 * 
+	 * @return
 	 */
-	public static Set<NetFolder> syncNetFolders(
-		AllModulesInjected ami,
-		HttpServletRequest req,
-		Set<NetFolder> netFolders )
-	{
-		for ( NetFolder nextNetFolder : netFolders )
-		{
-			try
-			{
-				if( ami.getFolderModule().enqueueFullSynchronize( nextNetFolder.getId() ) )
-				{
-					nextNetFolder.setStatus( getNetFolderSyncStatus( nextNetFolder.getId() ) );
+	public static Set<NetFolder> syncNetFolders(AllModulesInjected bs, HttpServletRequest req, Set<NetFolder> netFolders) {
+		for (NetFolder nextNetFolder:  netFolders) {
+			try {
+				if(bs.getFolderModule().enqueueFullSynchronize(nextNetFolder.getId())) {
+					nextNetFolder.setStatus(getNetFolderSyncStatus(nextNetFolder.getId()));
 				}
 			}
-			catch ( Exception e )
-			{
-				GwtLogHelper.error( m_logger, "Error trying to sync the net folder: " + nextNetFolder.getName() + ", " + e.toString() );
+			
+			catch (Exception e) {
+				GwtLogHelper.error(m_logger, "Error trying to sync the net folder: " + nextNetFolder.getName() + ", " + e.toString());
 			}
 		}
 		
@@ -1576,30 +1578,25 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
-	 * Sync the given net folder servers by syncing all the net folders associated with it.
+	 * Sync the given Net Folder Servers by sync'ing all the Net
+	 * Folders associated with it.
+	 * 
+	 * @param bs
+	 * @param req
+	 * @param netFolderServers
 	 */
-	public static Set<NetFolderRoot> syncNetFolderServers(
-		AllModulesInjected ami,
-		HttpServletRequest req,
-		Set<NetFolderRoot> netFolderServers )
-	{
-		for ( NetFolderRoot nextServer : netFolderServers )
-		{
-			@SuppressWarnings("unused")
-			StatusTicket statusTicket = null;
-			String statusTicketId;
-
-			statusTicketId = "sync_net_folder_server" + nextServer.getName();
-			statusTicket = GwtWebStatusTicket.newStatusTicket( statusTicketId, req );
-			if ( ami.getResourceDriverModule().enqueueSynchronize( nextServer.getName(), false ) )
-			{
+	public static Set<NetFolderRoot> syncNetFolderServers(AllModulesInjected bs, HttpServletRequest req, Set<NetFolderRoot> netFolderServers) {
+		for (NetFolderRoot nextServer: netFolderServers) {
+			String statusTicketId = ("sync_net_folder_server" + nextServer.getName());
+			GwtWebStatusTicket.newStatusTicket(statusTicketId, req);
+			if (bs.getResourceDriverModule().enqueueSynchronize(nextServer.getName(), false)) {
 				// The binder was not deleted (typical situation).
-				nextServer.setStatus( NetFolderRootStatus.SYNC_IN_PROGRESS );
-				nextServer.setStatusTicketId( statusTicketId );
+				nextServer.setStatus(NetFolderRootStatus.SYNC_IN_PROGRESS);
+				nextServer.setStatusTicketId(statusTicketId);
 			}
-			else
-			{
-				nextServer.setStatus( NetFolderRootStatus.SYNC_FAILURE );
+			
+			else {
+				nextServer.setStatus(NetFolderRootStatus.SYNC_FAILURE);
 			}
 		}
 
@@ -1607,54 +1604,49 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
-	 * Test the connection for the given net folder root
+	 * Test the connection for the given net folder root.
+	 * 
+	 * @param rootName
+	 * @param rootType
+	 * @param rootPath
+	 * @param subPath
+	 * @param proxyName
+	 * @param proxyPwd
+	 * 
+	 * @return
 	 */
-	public static TestNetFolderConnectionResponse testNetFolderConnection(
-		String rootName,
-		NetFolderRootType rootType,
-		String rootPath,
-		String subPath,
-		String proxyName,
-		String proxyPwd )
-	{
-		TestNetFolderConnectionResponse response;
-		ConnectionTestStatus status;
-		GwtConnectionTestStatusCode statusCode;
+	public static TestNetFolderConnectionResponse testNetFolderConnection(String rootName, NetFolderRootType rootType, String rootPath, String subPath, String proxyName, String proxyPwd) {
+		TestNetFolderConnectionResponse response = new TestNetFolderConnectionResponse();
+		GwtConnectionTestStatusCode statusCode = GwtConnectionTestStatusCode.UNKNOWN;
+		ConnectionTestStatus status = NetFolderHelper.testNetFolderConnection(
+			rootName,
+			getDriverType(rootType),
+			rootPath,
+			subPath,
+			proxyName,
+			proxyPwd);
 		
-		response = new TestNetFolderConnectionResponse();
-		statusCode = GwtConnectionTestStatusCode.UNKNOWN;
-		
-		status = NetFolderHelper.testNetFolderConnection(
-														rootName,
-														getDriverType( rootType ),
-														rootPath,
-														subPath,
-														proxyName,
-														proxyPwd );
-		if ( status != null )
-		{
-			switch ( status.getCode() )
-			{
-			case NETWORK_ERROR:
-				statusCode = GwtConnectionTestStatusCode.NETWORK_ERROR;
-				break;
-			
-			case NORMAL:
-				statusCode = GwtConnectionTestStatusCode.NORMAL;
-				break;
-			
-			case PROXY_CREDENTIALS_ERROR:
-				statusCode = GwtConnectionTestStatusCode.PROXY_CREDENTIALS_ERROR;
-				break;
-			
-			default:
-				statusCode = GwtConnectionTestStatusCode.UNKNOWN;
-				break;
+		if (null != status) {
+			switch (status.getCode()) {
+			case NETWORK_ERROR:            statusCode = GwtConnectionTestStatusCode.NETWORK_ERROR;           break;
+			case NORMAL:                   statusCode = GwtConnectionTestStatusCode.NORMAL;                  break;
+			case PROXY_CREDENTIALS_ERROR:  statusCode = GwtConnectionTestStatusCode.PROXY_CREDENTIALS_ERROR; break;
+			default:                       statusCode = GwtConnectionTestStatusCode.UNKNOWN;                 break;
 			}
 		}
 		
-		response.setStatusCode( statusCode );
-		
+		response.setStatusCode(statusCode);
 		return response;
+	}
+	
+	public static TestNetFolderConnectionResponse testNetFolderConnection(String rootName, NetFolderRootType rootType, String rootPath, String subPath, GwtProxyIdentity proxyIdentity) {
+		// Always use the initial form of the method.
+		return testNetFolderConnection(
+			rootName,
+			rootType,
+			rootPath,
+			subPath,
+			proxyIdentity.getProxyName(),
+			proxyIdentity.getPassword());
 	}
 }

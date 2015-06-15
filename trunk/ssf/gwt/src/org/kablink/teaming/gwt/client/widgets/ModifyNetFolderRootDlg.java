@@ -1761,7 +1761,11 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		netFolderRoot.setRootPath( getRootPath() );
 		netFolderRoot.setProxyName( getProxyName() );
 		netFolderRoot.setProxyPwd( getProxyPwd() );
-		netFolderRoot.setProxyIdentity( m_proxyIdentity );
+		boolean showUseProxyIdentities = ProxyIdentitiesView.SHOW_USE_PROXY_IDENTITIES;	//! DRF (20150610)
+		if (showUseProxyIdentities) {
+			netFolderRoot.setUseProxyIdentity( m_proxyTypeIdentityRB.getValue() );
+			netFolderRoot.setProxyIdentity( m_proxyIdentity );
+		}
 		netFolderRoot.setAuthType( getAuthType() );
 		netFolderRoot.setFullSyncDirOnly( getFullSyncDirOnly() );
 		netFolderRoot.setIndexContent( getIndexContent() );
@@ -1908,7 +1912,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 		boolean spuUI = SHOW_PRIVILEGED_USERS_UI;
 		if ( spuUI && m_selectPrincipalsWidget != null )
-			m_selectPrincipalsWidget.init( null );//!!! Finish
+			m_selectPrincipalsWidget.init( null );//~JW:  Finish
 
 		// Clear out the sync schedule controls
 		m_scheduleWidget.init( null );
@@ -1955,14 +1959,12 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			{
 				m_proxyIdentity = netFolderRoot.getProxyIdentity();
 				if ( null != m_proxyIdentity )
-				{
-					m_proxyTypeIdentityRB.setValue( true );
-					m_proxyIdentityFindControl.setInitialSearchString( m_proxyIdentity.getTitle() );
-				}
-				else 
-				{
-					m_proxyTypeManualRB.setValue( true );
-				}
+				     m_proxyIdentityFindControl.setInitialSearchString( m_proxyIdentity.getTitle() );
+				else m_proxyIdentityFindControl.clearText();
+				
+				if ( netFolderRoot.getUseProxyIdentity() )
+				     m_proxyTypeManualRB.setValue(   true );
+				else m_proxyTypeIdentityRB.setValue( true );
 			}
 		
 			if ( spuUI && m_selectPrincipalsWidget != null )
@@ -2467,7 +2469,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					public void execute()
 					{
 						// Tell the user the synchronization of the net folder server has started.
-						//!!!GwtClientHelper.deferredAlert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SyncOfNetFolderServerStarted() );
+						//~JW:  GwtClientHelper.deferredAlert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SyncOfNetFolderServerStarted() );
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -2481,86 +2483,62 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	
-	/**
-	 * Test the connection to the server to see if the information they have entered is valid.
+	/*
+	 * Test the connection to the server to see if the information they
+	 * have entered is valid.
 	 */
-	private void testConnection()
-	{
-		NetFolderRoot netFolderRoot;
-		AsyncCallback<VibeRpcResponse> rpcCallback;
-		TestNetFolderConnectionCmd cmd;
-
-		// Is there a "test connection" request currently running?
-		if ( m_inProgressPanel.isVisible() )
-		{
-			// Yes, bail
+	private void testConnection() {
+		// Is there a 'test connection' request currently running?
+		if (m_inProgressPanel.isVisible()) {
+			// Yes!  Bail!
 			return;
 		}
 		
 		// Is the data needed to test the connection valid?
-		if ( isDataValidNeededToTestConnection() == false )
-		{
+		if (!(isDataValidNeededToTestConnection())) {
 			// No, the user has already been told what to do.
 			return;
 		}
+
+		// Show the 'in progress' panel since we'll now be starting
+		// a connection test.
+		m_inProgressPanel.setVisible(true);
 		
-		m_inProgressPanel.setVisible( true );
-		
-		netFolderRoot = getNetFolderRootFromDlg();
-		
-		rpcCallback = new AsyncCallback<VibeRpcResponse>()
-		{
+		// Issue a GWT RPC request to test the Net Folder Root
+		// connection.
+		TestNetFolderConnectionCmd cmd;
+		NetFolderRoot netFolderRoot = getNetFolderRootFromDlg();
+		if (netFolderRoot.getUseProxyIdentity())
+		     cmd = new TestNetFolderConnectionCmd(netFolderRoot.getName(), netFolderRoot.getRootType(), netFolderRoot.getRootPath(), "", netFolderRoot.getProxyIdentity()                         ); 
+		else cmd = new TestNetFolderConnectionCmd(netFolderRoot.getName(), netFolderRoot.getRootType(), netFolderRoot.getRootPath(), "", netFolderRoot.getProxyName(), netFolderRoot.getProxyPwd()); 
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure( Throwable caught )
-			{
-				String errMsg;
-				
-				m_inProgressPanel.setVisible( false );
-				errMsg = GwtTeaming.getMessages().rpcFailure_ErrorTestingNetFolderServerConnection();
-				GwtClientHelper.deferredAlert( errMsg );
+			public void onFailure(Throwable caught) {
+				m_inProgressPanel.setVisible(false);
+				String errMsg = GwtTeaming.getMessages().rpcFailure_ErrorTestingNetFolderServerConnection();
+				GwtClientHelper.deferredAlert(errMsg);
 			}
 
 			@Override
-			public void onSuccess( VibeRpcResponse result )
-			{
-				TestNetFolderConnectionResponse response;
+			public void onSuccess(VibeRpcResponse result) {
+				TestNetFolderConnectionResponse response = ((TestNetFolderConnectionResponse) result.getResponseData());
 				String msg;
-				
-				response = (TestNetFolderConnectionResponse) result.getResponseData();
-				switch ( response.getStatusCode() )
+				switch (response.getStatusCode())
 				{
-				case NETWORK_ERROR:
-					msg = GwtTeaming.getMessages().testConnection_NetworkError();
-					break;
+				case NETWORK_ERROR:            msg = GwtTeaming.getMessages().testConnection_NetworkError();          break;
+				case NORMAL:                   msg = GwtTeaming.getMessages().testConnection_Normal();                break;
+				case PROXY_CREDENTIALS_ERROR:  msg = GwtTeaming.getMessages().testConnection_ProxyCredentialsError(); break;
 				
-				case NORMAL:
-					msg = GwtTeaming.getMessages().testConnection_Normal();
-					break;
-				
-				case PROXY_CREDENTIALS_ERROR:
-					msg = GwtTeaming.getMessages().testConnection_ProxyCredentialsError();
-					break;
-				
-				case UNKNOWN:
 				default:
+				case UNKNOWN:
 					msg = GwtTeaming.getMessages().testConnection_UnknownStatus();
 					break;
 				}
 				
-				m_inProgressPanel.setVisible( false );
-				GwtClientHelper.deferredAlert( msg );
+				m_inProgressPanel.setVisible(false);
+				GwtClientHelper.deferredAlert(msg);
 			}						
-		};
-		
-		// Issue an rpc request to test net folder root connection
-		cmd = new TestNetFolderConnectionCmd(
-										netFolderRoot.getName(),
-										netFolderRoot.getRootType(),
-										netFolderRoot.getRootPath(),
-										"",
-										netFolderRoot.getProxyName(),
-										netFolderRoot.getProxyPwd() ); 
-		GwtClientHelper.executeCommand( cmd, rpcCallback );
+		});
 	}
 	
 	/*

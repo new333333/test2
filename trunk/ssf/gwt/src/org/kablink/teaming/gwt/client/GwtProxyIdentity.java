@@ -137,7 +137,7 @@ public class GwtProxyIdentity extends GwtTeamingItem implements IsSerializable {
 	 */
 	@Override
 	public String getSecondaryDisplayText() {
-		return getTitle();
+		return getProxyName();
 	}
 
 	/**

@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.domain;
 
-import org.kablink.teaming.util.encrypt.EncryptUtil;
-
 /**
  * Domain object that models a proxy identity for Net Folder Server
  * authentication.
@@ -41,7 +39,7 @@ import org.kablink.teaming.util.encrypt.EncryptUtil;
  * @author drfoster@novell.com
  */
 public class ProxyIdentity extends PersistentLongIdObject {
-    protected String	password;	//
+    protected String	password;	// Set by hibernate access='field' type='encrypted'.
 	protected String	proxyName;	//
 	protected String	title;		//
 
@@ -58,14 +56,14 @@ public class ProxyIdentity extends PersistentLongIdObject {
 	 * 
      * Used by the application.
      * 
-     * @param clearTextPassword
+     * @param password
      * @param proxyName
      * @param title
 	 */
-	public ProxyIdentity(String clearTextPassword, String proxyName, String title) {
-		setPassword( clearTextPassword );
-		setProxyName(proxyName         );
-		setTitle(    title             );
+	public ProxyIdentity(String password, String proxyName, String title) {
+		setPassword( password );
+		setProxyName(proxyName);
+		setTitle(    title    );
     }
 
 	/**
@@ -77,9 +75,9 @@ public class ProxyIdentity extends PersistentLongIdObject {
 	 */
 	public void copy(ProxyIdentity pi) {
 		// Don't copy ID and zone ID. Copy just the data.
-		setEncryptedPassword(pi.getPassword() );
-		setProxyName(        pi.getProxyName());
-		setTitle(            pi.getTitle()    );
+		setPassword( pi.getPassword() );
+		setProxyName(pi.getProxyName());
+		setTitle(    pi.getTitle()    );
 	}
 	
 	/**
@@ -92,16 +90,12 @@ public class ProxyIdentity extends PersistentLongIdObject {
 	}
 	
 	/**
-	 * Encrypts and sets the proxy's password supplied in clear text.
+	 * Sets the proxy's password.
 	 * 
-	 * @param clearTextPassword clear text password
+	 * @param password
 	 */
-	public void setPassword(String clearTextPassword) {
-		setEncryptedPassword(EncryptUtil.encryptPasswordForStorage(clearTextPassword, this));
-	}
-
-	private void setEncryptedPassword(String encryptedPassword) {
-		this.password = encryptedPassword;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	/**
@@ -109,7 +103,9 @@ public class ProxyIdentity extends PersistentLongIdObject {
 	 * 
 	 * @return
 	 */
-	public String getProxyName() {return this.proxyName;}
+	public String getProxyName() {
+		return this.proxyName;
+	}
 	
 	/**
 	 * Sets the proxy's name.

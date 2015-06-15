@@ -165,7 +165,7 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
             <column name="zoneId" type="NUMBER(19,0)">
                 <constraints nullable="false"/>
             </column>
-            <column name="password" type="VARCHAR2(128 CHAR)">
+            <column name="password" type="VARCHAR2(255 CHAR)">
 				<constraints nullable="false" />
             </column>
             <column name="proxyName" type="VARCHAR2(255 CHAR)">

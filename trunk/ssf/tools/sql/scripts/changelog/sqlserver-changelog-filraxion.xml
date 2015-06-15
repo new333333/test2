@@ -165,7 +165,7 @@ update dbo.SS_Forums set binderType = LEFT(type, 1);
             <column name="zoneId" type="NUMERIC(19,0)">
                 <constraints nullable="false"/>
             </column>
-            <column name="password" type="VARCHAR(128)">
+            <column name="password" type="VARCHAR(255)">
                 <constraints nullable="false" />
             </column>
             <column name="proxyName" type="NVARCHAR(255)">

@@ -1201,7 +1201,7 @@ public class SimpleListOfTasksWidget extends VibeWidget
 					
 					// On IE calling m_cellFormatter.setWidth( 0, 2, "*" ); throws an exception.
 					// That is why we are calling DOM.setElementAttribute(...) instead.
-					//!!!m_cellFormatter.setWidth( 0, 2, "*" );
+					//~JW:  m_cellFormatter.setWidth( 0, 2, "*" );
 					m_cellFormatter.getElement( 0, 6 ).setAttribute( "width", "*" );
 					
 					m_cellFormatter.addStyleName( 0, 0, "oltBorderLeft" );

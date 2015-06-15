@@ -1936,7 +1936,7 @@ public class GwtMainPage extends ResizeComposite
 
 			// No
 			// Save the current ui state so we can restore it when the user moves to another page.
-			//!!!saveUIState();
+			//~JW:  saveUIState();
 			
 			// Hide or show the sidebar.
 			if ( hideSidebar )

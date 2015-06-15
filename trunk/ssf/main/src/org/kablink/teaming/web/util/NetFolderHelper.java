@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,13 +42,13 @@ import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -218,6 +218,8 @@ public class NetFolderHelper
 													DriverType.famt,
 													null,
 													null,
+													false,
+													null,
 													null,
 													null,
 													false,
@@ -293,9 +295,24 @@ public class NetFolderHelper
 	}
 	
 	/**
-	 * Create a net folder and if needed a net folder root for the given home directory information
+	 * Create a net folder and if needed a net folder root for the
+	 * given home directory information.
+	 * 
+	 * @param profileModule
+	 * @param templateModule
+	 * @param binderModule
+	 * @param folderModule
+	 * @param netFolderModule
+	 * @param adminModule
+	 * @param resourceDriverModule
+	 * @param asyncManager
+	 * @param homeDirInfo
+	 * @param user
+	 * @param updateExistingNetFolder
+	 * 
+	 * @throws WriteFilesException
+	 * @throws WriteEntryDataException
 	 */
-	@SuppressWarnings("unchecked")
 	public static void createHomeDirNetFolder(
 		final ProfileModule profileModule,
 		TemplateModule templateModule,
@@ -721,6 +738,8 @@ public class NetFolderHelper
 		DriverType driverType,
 		String proxyName,
 		String proxyPwd,
+		boolean useProxyIdentity,
+		Long proxyIdentityId,
 		Set<Long> memberIds,
 		String hostUrl,
 		boolean allowSelfSignedCerts,
@@ -752,6 +771,8 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
 		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, proxyName ); 
 		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, proxyPwd );
+		options.put( ObjectKeys.RESOURCE_DRIVER_USE_PROXY_IDENTITY, ( useProxyIdentity ? Boolean.TRUE : null ));
+		options.put( ObjectKeys.RESOURCE_DRIVER_PROXY_IDENTITY_ID, proxyIdentityId );
 		options.put( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY, fullSyncDirOnly );
 		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
 		options.put( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT, indexContent );
@@ -823,8 +844,8 @@ public class NetFolderHelper
 		if ( workspaceId == null )
 			return null;
 		
-		//!!! Ask Dennis how to do a search so I don't have to read the list of binders.
-		//!!! Maybe it is ok to enumerate through the list of binders.
+		//~JW:  Ask Dennis how to do a search so I don't have to read the list of binders.
+		//~JW:  Maybe it is OK to enumerate through the list of binders.
 		
 		binder = binderModule.getBinder( workspaceId );
 		childBinders = binder.getBinders();
@@ -1150,6 +1171,8 @@ public class NetFolderHelper
 		String rootPath,
 		String proxyName,
 		String proxyPwd,
+		boolean useProxyIdentity,
+		Long proxyIdentityId,
 		DriverType driverType,
 		String hostUrl,
 		boolean allowSelfSignedCerts,
@@ -1188,6 +1211,8 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
 		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, proxyName ); 
 		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, proxyPwd );
+		options.put( ObjectKeys.RESOURCE_DRIVER_USE_PROXY_IDENTITY, ( useProxyIdentity ? Boolean.TRUE : null ));
+		options.put( ObjectKeys.RESOURCE_DRIVER_PROXY_IDENTITY_ID, proxyIdentityId );
 		options.put( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY, fullSyncDirOnly );
 		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
 		options.put( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT, indexContent );
@@ -1373,9 +1398,15 @@ public class NetFolderHelper
 	}
 
 	/**
-	 * Save the jits settings for the given net folder binder
+	 * Save the JITS settings for the given net folder binder.
+	 * 
+	 * @param netFolderModule
+	 * @param nfc
+	 * @param inheritJitsSettings
+	 * @param jitsEnabled
+	 * @param aclmaxAge
+	 * @param resultsMaxAge
 	 */
-	@SuppressWarnings({ "unchecked" })
 	public static void saveJitsSettings(
 			NetFolderModule netFolderModule,
 			NetFolderConfig nfc,

@@ -229,7 +229,7 @@ function ss_getUserDisplayStyle() {
 		try {
 			// When we have figured out how to dynamically update everything needed to view
 			// an entry with a new entry display style, uncomment the if ( ss_isGwtUIActive == false ) statement.
-			//!!!if ( ss_isGwtUIActive == false )
+			//~JW:  if ( ss_isGwtUIActive == false )
 				self.location.reload();	  	
 		} catch (e) {alert(e);}
 	}
@@ -713,7 +713,6 @@ function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
 	    ss_setObjectTop(iframeDivObj, y);
 	    ss_setObjectLeft(iframeDivObj, x);
 	}
-//!	iframeObj.src = url;
 	ss_setUrlInFrame(iframeObj, url);
 }
 
@@ -2709,7 +2708,6 @@ function ss_showBackgroundIFrame(divId, frmId) {
 		frm = document.createElement("iframe");
 		if (typeof ss_baseRootPathUrl != 'undefined') {
 			var teaming_url = ss_baseRootPathUrl + 'js/forum/null.html';
-//!			frm.src = teaming_url;
 			ss_setUrlInFrame(frm, teaming_url);
 		}
 		frm.frameBorder = 0;
@@ -3138,7 +3136,6 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 			entryContentDiv.style.display = "none";
 		}
 		ss_resizePopupDiv();
-//!		popupIframe.src = url;
 		ss_setUrlInFrame(popupIframe, url);
 	} else if (url != "" && self.window.name == "ss_showentryframe") {
 		// Instead of popping up into another window, we now use the current
@@ -4470,7 +4467,6 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 	
 	// alert("ss_showAddAttachmentBrowse: frameObj.src: "+frameObj.src);
 	
-//!	frameObj.src = ss_rootPath + "js/attachments/entry_attachment_browse.html";
 	ss_setUrlInFrame(frameObj, ss_rootPath + "js/attachments/entry_attachment_browse.html");
 	
 	ss_showDiv(divId);
@@ -4548,7 +4544,6 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	frameObj.style.visibility = "visible";
 
 	if (frameObj.src == "" || frameObj.src.indexOf("null.html") >= 0) {
-//!		frameObj.src = url;
 		ss_setUrlInFrame(frameObj, url);
 	}
 	
@@ -4586,7 +4581,6 @@ function ss_openWebDAVFileOld(binderId, entryId, namespace, OSInfo, strURLValue)
 	ss_showDiv(divId);
 	frameObj.style.visibility = "visible";
 
-//!	frameObj.src = url;
 	ss_setUrlInFrame(frameObj, url);
 	
 	if (divObj != null) {
@@ -4615,7 +4609,6 @@ function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, fileId) {
 	if (divObj != null) divObj.style.visibility = "visible";
 	frameObj.style.visibility = "visible";
 
-//!	frameObj.src = url;
 	ss_setUrlInFrame(frameObj, url);
 }
 
@@ -5077,13 +5070,10 @@ function ss_showForumEntryInIframe_Overlay(url) {
 
     if (wObj.src && wObj.src == url) {
     	ss_nextUrl = url
-//!    	wObj.src = ss_forumRefreshUrl;
     	ss_setUrlInFrame(wObj, ss_forumRefreshUrl);
     } else if (wObj.src && wObj.src == ss_forumRefreshUrl && ss_nextUrl == url) {
-//!    	wObj.src = ss_forumRefreshUrl;
     	ss_setUrlInFrame(wObj, ss_forumRefreshUrl);
     } else {
-//!    	wObj.src = url
     	ss_setUrlInFrame(wObj, url);
     }
     try {wObj.focus();} catch(e){}
@@ -5638,7 +5628,6 @@ function ssTeams(namespace) {
 		dObj.style.display = "block";
 	    dojo.style(dObj, "visibility", "visible");
 	    dObj.style.zIndex = parseInt(ssMenuZ);
-//!	    fObj.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace});
     	ss_setUrlInFrame(fObj, ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace}));
 	    try {fObj.focus();} catch(e){}
 	}
@@ -8580,7 +8569,6 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
     if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
     	ss_setSelfLocation(url);
 	} else {
-//!		iframeObj.src = url;
     	ss_setUrlInFrame(iframeObj, url);
 	}
 }
