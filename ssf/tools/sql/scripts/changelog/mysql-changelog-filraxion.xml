@@ -171,7 +171,7 @@ update SS_Forums set binderType = LEFT(type, 1);
     </changeSet>
 
     <changeSet author="dennis" context="schema" failOnError="true" id="14">
-        <comment>Proxy Identities</comment>
+        <comment>Manage Proxy Identities</comment>
         <createTable tableName="SS_ProxyIdentity">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
@@ -190,5 +190,19 @@ update SS_Forums set binderType = LEFT(type, 1);
             </column>
         </createTable>
 	</changeSet>
+	
+    <changeSet author="dennis" context="schema" failOnError="true" id="15">
+        <comment>Use Proxy Identities</comment>
+        <addColumn  tableName="SS_ResourceDriver">
+            <column name="useProxyIdentity" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn  tableName="SS_ResourceDriver">
+            <column name="proxyIdentityId" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>
