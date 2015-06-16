@@ -43,6 +43,8 @@ import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.NoProxyIdentityByTheIdException;
+import org.kablink.teaming.domain.NoProxyIdentityByTheNameException;
 import org.kablink.teaming.domain.ProxyIdentity;
 import org.kablink.teaming.gwt.client.GwtProxyIdentity;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -98,7 +100,9 @@ public class GwtProxyIdentityHelper {
 				// Are there any ProxyIdentity's already defined with
 				// the given title?
 				ProxyIdentityModule pim = bs.getProxyIdentityModule();
-				List<ProxyIdentity> matches = pim.getProxyIdentitiesByTitle(gwtPI.getTitle());
+				List<ProxyIdentity> matches;
+				try                                             {matches = pim.getProxyIdentitiesByTitle(gwtPI.getTitle());}
+				catch (NoProxyIdentityByTheNameException npiEX) {matches = null;                                           }
 				if (MiscUtil.hasItems(matches)) {
 					// Yes!  That's an error.  Tell the user about the
 					// problem and bail.
@@ -426,7 +430,9 @@ public class GwtProxyIdentityHelper {
 				if (MiscUtil.hasString(title)) {
 					// Yes!  Can we find any ProxyIdentitiy's that
 					// match that title?
-					List<ProxyIdentity> matches = pim.getProxyIdentitiesByTitle(title);
+					List<ProxyIdentity> matches;
+					try                                             {matches = pim.getProxyIdentitiesByTitle(title);}
+					catch (NoProxyIdentityByTheNameException npiEX) {matches = null;                                }
 					if (MiscUtil.hasItems(matches)) {
 						// Yes!  Scan them.
 						for (ProxyIdentity match:  matches) {
@@ -454,7 +460,8 @@ public class GwtProxyIdentityHelper {
 				if (null == modifyPI) {
 					// No!  If we can't find an existing ProxyIdentity
 					// with that ID...
-					modifyPI = pim.getProxyIdentity(id);
+					try                                           {modifyPI = pim.getProxyIdentity(id);}
+					catch (NoProxyIdentityByTheIdException npiEX) {modifyPI = null;                    }
 					if (null == modifyPI) {
 						// ...tell the user about the problem and bail.
 						reply.addError(NLT.get("modifyProxyIdentityError.NotFound", new String[]{String.valueOf(id)}));

@@ -56,6 +56,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -1002,6 +1003,14 @@ public class FindCtrl extends Composite
 	public HandlerRegistration addKeyPressHandler( KeyPressHandler handler )
 	{
 		return m_txtBox.addKeyPressHandler( handler );
+	}
+	
+	/**
+	 * Add a change handler
+	 */
+	public HandlerRegistration addChangeHandler( ChangeHandler handler )
+	{
+		return m_txtBox.addChangeHandler( handler );
 	}
 	
 	/**

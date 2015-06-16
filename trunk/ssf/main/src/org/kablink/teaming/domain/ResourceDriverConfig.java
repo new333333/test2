@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.module.proxyidentity.ProxyIdentityModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -181,6 +182,42 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 				throw new IllegalArgumentException( "Invalid db value " + value + " for enum AuthenticationType" );
 			}
 		}
+	}
+	
+	/**
+	 * Inner class used to encapsulate the account name and password to
+	 * use to a resource driver's credentials.
+	 */
+	public class ResourceDriverCredentials {
+		private String	m_accountName;	//
+		private String	m_password;		//
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param accountName
+		 * @param password
+		 */
+		public ResourceDriverCredentials(String accountName, String password) {
+			setAccountName(accountName);
+			setPassword(   password   );
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public String getAccountName() {return m_accountName;}
+		public String getPassword()    {return m_password;   }
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param accountName
+		 */
+		public void setAccountName(String accountName) {m_accountName = accountName;}
+		public void setPassword(   String password)    {m_password    = password;   }
 	}
 
     @Override
@@ -699,16 +736,16 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		return zoneConfig.getCachedRightsRefreshInterval();
 	}
 	
-	/**
-	 * 
+	/*
 	 */
-	private ZoneModule getZoneModule()
-	{
-		ZoneModule zoneModule;
-		
-		zoneModule = ((ZoneModule) SpringContextUtil.getBean( "zoneModule" ) );
-
-		return zoneModule;
+	private ProxyIdentityModule getProxyIdentityModule() {
+		return ((ProxyIdentityModule) SpringContextUtil.getBean("proxyIdentityModule"));
+	}
+	
+	/*
+	 */
+	private ZoneModule getZoneModule() {
+		return ((ZoneModule) SpringContextUtil.getBean("zoneModule"));
 	}
 	
 
@@ -772,5 +809,31 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	@Override
 	public String toString() {
 		return name;
+	}
+
+	/**
+	 * Returns a ResourceDriverCredentials object containing the
+	 * credentials to be used for this resource driver.
+	 * 
+	 * @return
+	 */
+	public ResourceDriverCredentials getCredentials() {
+		// Is this driver's proxy based on a proxy identity?
+		ResourceDriverCredentials reply;
+		if (getUseProxyIdentity()) {
+			// Yes!  Use that for the credentials.
+			ProxyIdentity pi = getProxyIdentityModule().getProxyIdentity(getProxyIdentityId());
+			reply = new ResourceDriverCredentials(pi.getProxyName(), getPassword());
+		}
+		else {
+			// No, this driver's proxy is not based on a proxy
+			// identity!  Use the credentials from the driver directly.
+			reply = new ResourceDriverCredentials(getAccountName(), getPassword());
+		}
+		
+		// If we get here, reply refers to a ResourceDriverCredentials
+		// object containing the account name and password to user for
+		// this driver's proxy.  Return it.
+		return reply;
 	}
 }
