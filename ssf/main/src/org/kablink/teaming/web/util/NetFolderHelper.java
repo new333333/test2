@@ -53,11 +53,12 @@ import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
+import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
+import org.kablink.teaming.domain.ResourceDriverConfig.ResourceDriverCredentials;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
@@ -426,6 +427,7 @@ public class NetFolderHelper
 			boolean syncNeeded = false;
 			
 			// Yes
+			ResourceDriverCredentials rdCredentials = rdConfig.getCredentials();
 			canSyncNetFolder = true;
 			
 			// Does a net folder already exist for this user's home directory
@@ -441,8 +443,8 @@ public class NetFolderHelper
 																rdConfig.getDriverType(),
 																rdConfig.getRootPath(),
 																path,
-																rdConfig.getAccountName(),
-																rdConfig.getPassword() );
+																rdCredentials.getAccountName(),
+																rdCredentials.getPassword() );
 				
 				if ( status != null && status.getCode() == ConnectionTestStatusCode.NORMAL )
 				{
@@ -580,8 +582,8 @@ public class NetFolderHelper
 																		rdConfig.getDriverType(),
 																		rdConfig.getRootPath(),
 																		normalizedPath,
-																		rdConfig.getAccountName(),
-																		rdConfig.getPassword() );
+																		rdCredentials.getAccountName(),
+																		rdCredentials.getPassword() );
 
 						if ( status != null && status.getCode() == ConnectionTestStatusCode.NORMAL )
 						{
@@ -1086,23 +1088,33 @@ public class NetFolderHelper
 	 */
 	private static boolean isNetFolderServerConfigured( ResourceDriverConfig rdConfig )
 	{
-		String path;
-		String name;
-		String pwd;
-		
 		if ( rdConfig == null )
 			return false;
-		
-		// Is the driver configured
-		path = rdConfig.getRootPath();
-		name = rdConfig.getAccountName();
-		pwd = rdConfig.getPassword();
-		if ( path != null && path.length() > 0 &&
-			 name != null && name.length() > 0 &&
-			 pwd != null && pwd.length() > 0 )
+
+		String path = rdConfig.getRootPath();
+		if ( rdConfig.getUseProxyIdentity() )
 		{
-			// Yes
-			return true;
+			Long proxyIdentityId = rdConfig.getProxyIdentityId();
+			if ( path != null && path.length() > 0 &&
+					 proxyIdentityId != null )
+				{
+					// Yes
+					return true;
+				}
+		}
+		
+		else
+		{
+			// Is the driver configured
+			String name = rdConfig.getAccountName();
+			String pwd  = rdConfig.getPassword();
+			if ( path != null && path.length() > 0 &&
+				 name != null && name.length() > 0 &&
+				 pwd != null && pwd.length() > 0 )
+			{
+				// Yes
+				return true;
+			}
 		}
 		
 		// If we get here the net folder server is not fully configured
