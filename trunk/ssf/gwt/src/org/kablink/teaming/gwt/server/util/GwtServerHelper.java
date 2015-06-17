@@ -6958,67 +6958,62 @@ public class GwtServerHelper {
 		}		
 	}
 
-//!	...DRF (20150604):  Left off reformatting here!
-	
 	/**
-	 * Return a GwtMobileAppsConfiguration object that holds the mobile apps configuration data
+	 * Return a GwtMobileAppsConfiguration object that holds the mobile
+	 * application configuration data.
+	 * 
+	 * @param bs
 	 * 
 	 * @return
 	 */
-	public static GwtZoneMobileAppsConfig getMobileAppsConfiguration( AllModulesInjected allModules )
-	{
-		GwtZoneMobileAppsConfig gwtMobileAppsConfig;
-		MobileAppsConfig mobileAppsConfig;
-		ZoneConfig zoneConfig;
-		ZoneModule zoneModule;
+	public static GwtZoneMobileAppsConfig getMobileAppsConfiguration(AllModulesInjected bs) {
+		ZoneModule zm = bs.getZoneModule();
+		ZoneConfig zc = zm.getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+		MobileAppsConfig mobileAppsConfig = zc.getMobileAppsConfig();
 		
-		zoneModule = allModules.getZoneModule();
-		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-		mobileAppsConfig = zoneConfig.getMobileAppsConfig();
+		// Get the whether mobile applications are enabled.
+		GwtZoneMobileAppsConfig gwtMobileAppsConfig = new GwtZoneMobileAppsConfig();
+		gwtMobileAppsConfig.setMobileAppsEnabled(mobileAppsConfig.getMobileAppsEnabled());
 		
-		gwtMobileAppsConfig = new GwtZoneMobileAppsConfig();
+		// Get the setting that determines whether the mobile
+		// applications can remember the password.
+		gwtMobileAppsConfig.setAllowCachePwd(mobileAppsConfig.getMobileAppsAllowCachePwd());
 		
-		// Get the whether mobile apps are enabled.
-		gwtMobileAppsConfig.setMobileAppsEnabled( mobileAppsConfig.getMobileAppsEnabled() );
-		
-		// Get the setting that determines whether the mobile apps can remember the password
-		gwtMobileAppsConfig.setAllowCachePwd( mobileAppsConfig.getMobileAppsAllowCachePwd() );
-		
-		// Get the setting that determines if mobile apps can cache content.
-		gwtMobileAppsConfig.setAllowCacheContent( mobileAppsConfig.getMobileAppsAllowCacheContent() );
+		// Get the setting that determines if mobile applications can
+		// cache content.
+		gwtMobileAppsConfig.setAllowCacheContent(mobileAppsConfig.getMobileAppsAllowCacheContent());
 
-		// Get the setting that determines if the mobile apps can play with other apps.
-		gwtMobileAppsConfig.setAllowPlayWithOtherApps( mobileAppsConfig.getMobileAppsAllowPlayWithOtherApps() );
+		// Get the setting that determines if the mobile applications
+		//can play with other applications.
+		gwtMobileAppsConfig.setAllowPlayWithOtherApps(mobileAppsConfig.getMobileAppsAllowPlayWithOtherApps());
 
-		// Get the Mobile Apps sync interval.
-		gwtMobileAppsConfig.setSyncInterval( mobileAppsConfig.getMobileAppsSyncInterval() );
+		// Get the Mobile applications sync interval.
+		gwtMobileAppsConfig.setSyncInterval(mobileAppsConfig.getMobileAppsSyncInterval());
 		
 		// Get the Mobile Application Management (MAM) settings.
-		gwtMobileAppsConfig.setMobileCutCopyEnabled( mobileAppsConfig.getMobileCutCopyEnabled() );
-		gwtMobileAppsConfig.setMobileAndroidScreenCaptureEnabled( mobileAppsConfig.getMobileAndroidScreenCaptureEnabled() );
-		gwtMobileAppsConfig.setMobileDisableOnRootedOrJailBrokenDevices( mobileAppsConfig.getMobileDisableOnRootedOrJailBrokenDevices() );
+		gwtMobileAppsConfig.setMobileCutCopyEnabled(                    mobileAppsConfig.getMobileCutCopyEnabled()                    );
+		gwtMobileAppsConfig.setMobileAndroidScreenCaptureEnabled(       mobileAppsConfig.getMobileAndroidScreenCaptureEnabled()       );
+		gwtMobileAppsConfig.setMobileDisableOnRootedOrJailBrokenDevices(mobileAppsConfig.getMobileDisableOnRootedOrJailBrokenDevices());
 		GwtMobileOpenInSetting gwtMoi;
 		MobileOpenInSetting moi = mobileAppsConfig.getMobileOpenInEnum();
-		if ( null == moi )
-		{
+		if (null == moi) {
 			gwtMoi = GwtMobileOpenInSetting.ALL_APPLICATIONS;
 		}
-		else
-		{
-			switch ( moi )
-			{
+		
+		else {
+			switch (moi) {
 			default:
 			case ALL_APPLICATIONS:  gwtMoi = GwtMobileOpenInSetting.ALL_APPLICATIONS; break;
 			case DISABLED:          gwtMoi = GwtMobileOpenInSetting.DISABLED;         break;
 			case WHITE_LIST:        gwtMoi = GwtMobileOpenInSetting.WHITE_LIST;       break;
 			}
 		}
-		gwtMobileAppsConfig.setMobileOpenIn( gwtMoi );
-		MobileOpenInWhiteLists mwl = mobileAppsConfig.getMobileOpenInWhiteLists();
+		gwtMobileAppsConfig.setMobileOpenIn(gwtMoi);
+		
 		List<String> androidApplications;
 		List<String> iosApplications;
-		if ( null == mwl )
-		{
+		MobileOpenInWhiteLists mwl = mobileAppsConfig.getMobileOpenInWhiteLists();
+		if (null == mwl) {
 			androidApplications =
 			iosApplications     = null;
 		}
@@ -7026,10 +7021,10 @@ public class GwtServerHelper {
 			androidApplications = mwl.getAndroidApplications();
 			iosApplications     = mwl.getIosApplications();
 		}
-		if ( null == androidApplications ) androidApplications = new ArrayList<String>();
-		if ( null == iosApplications     ) iosApplications     = new ArrayList<String>();
-		gwtMobileAppsConfig.setAndroidApplications( MiscUtil.sortStringList( androidApplications ) );
-		gwtMobileAppsConfig.setIosApplications(     MiscUtil.sortStringList( iosApplications     ) );
+		if (null == androidApplications) androidApplications = new ArrayList<String>();
+		if (null == iosApplications    ) iosApplications     = new ArrayList<String>();
+		gwtMobileAppsConfig.setAndroidApplications(MiscUtil.sortStringList(androidApplications));
+		gwtMobileAppsConfig.setIosApplications(    MiscUtil.sortStringList(iosApplications    ));
 		
 		return gwtMobileAppsConfig;
 	}
@@ -7096,121 +7091,91 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Return the Name Completion Settings
+	 * Return the Name Completion Settings.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
 	 */
-	public static GwtNameCompletionSettings getNameCompletionSettings( AllModulesInjected ami )
-	{
-		GwtNameCompletionSettings gwtSettings;
-		ZoneConfig zoneConfig;
-		ZoneModule zoneModule;
-		NameCompletionSettings settings;
+	public static GwtNameCompletionSettings getNameCompletionSettings(AllModulesInjected bs) {
+		GwtNameCompletionSettings gwtSettings = new GwtNameCompletionSettings();
 
-		gwtSettings = new GwtNameCompletionSettings();
-
-		zoneModule = ami.getZoneModule();
-		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-		settings = zoneConfig.getNameCompletionSettings();
-		
-		if ( settings != null )
-		{
-			NCDisplayField fld;
-			GwtDisplayField gwtFld;
-			
+		ZoneModule zm = bs.getZoneModule();
+		ZoneConfig zc = zm.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+		NameCompletionSettings settings = zc.getNameCompletionSettings();
+		if (settings != null) {
 			// Get the field used for the group's primary display.
-			{
-				fld = settings.getGroupPrimaryFld();
+			NCDisplayField  fld    = settings.getGroupPrimaryFld();
+			GwtDisplayField gwtFld = GwtDisplayField.TITLE;
+			if      (fld == NCDisplayField.NAME)  gwtFld = GwtDisplayField.NAME;
+			else if (fld == NCDisplayField.TITLE) gwtFld = GwtDisplayField.TITLE;
+			gwtSettings.setGroupPrimaryDisplayField(gwtFld);
 			
-				gwtFld = GwtDisplayField.TITLE;
-				if ( fld == NCDisplayField.NAME )
-					gwtFld = GwtDisplayField.NAME;
-				else if ( fld == NCDisplayField.TITLE )
-					gwtFld = GwtDisplayField.TITLE;
-				
-				gwtSettings.setGroupPrimaryDisplayField( gwtFld );
-			}
-			
-			// Get the field used for the groups' secondary display
-			{
-				fld = settings.getGroupSecondaryFld();
-				
-				gwtFld = GwtDisplayField.DESCRIPTION;
-				if ( fld == NCDisplayField.DESCRIPTION )
-					gwtFld = GwtDisplayField.DESCRIPTION;
-				else if ( fld == NCDisplayField.FQDN )
-					gwtFld = GwtDisplayField.FQDN;
-
-				gwtSettings.setGroupSecondaryDisplayField( gwtFld );
-			}
+			// Get the field used for the groups' secondary display.
+			fld    = settings.getGroupSecondaryFld();
+			gwtFld = GwtDisplayField.DESCRIPTION;
+			if      (fld == NCDisplayField.DESCRIPTION) gwtFld = GwtDisplayField.DESCRIPTION;
+			else if (fld == NCDisplayField.FQDN)        gwtFld = GwtDisplayField.FQDN;
+			gwtSettings.setGroupSecondaryDisplayField(gwtFld);
 		}
 		
 		return gwtSettings;
 	}
 	
 	/**
-	 * Return the number of members in the given group
+	 * Return the number of members in the given group.
+	 * 
+	 * @param bs
+	 * @param groupIdL
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	public static int getNumberOfMembers( AllModulesInjected ami, Long groupIdL ) throws GwtTeamingException
-	{
+	public static int getNumberOfMembers(AllModulesInjected bs, Long groupIdL ) throws GwtTeamingException {
 		int count = 0;
-		
-		try
-		{
-			Principal group;
-
+		try {
 			// Get the group object.
-			group = ami.getProfileModule().getEntry( groupIdL );
-			if ( group != null && group instanceof Group )
-			{
-				List<Principal> memberList;
-				
+			Principal group = bs.getProfileModule().getEntry(groupIdL);
+			if (group != null && group instanceof Group) {
 				// Get the members of the group.
-				memberList = ((Group) group).getMembers();
-				if ( memberList != null )
+				List<Principal> memberList = ((Group) group).getMembers();
+				if (memberList != null) {
 					count = memberList.size();
+				}
 			}
 		}
-		catch (Exception ex)
-		{
+		
+		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
 		GwtLogHelper.debug(m_logger, "number of users in the group: " + String.valueOf( count ) );
-		
 		return count;
 	}
 
 	/**
-	 * Return a list of OpenID Authentication providers supported by Vibe
+	 * Return a list of OpenID Authentication providers supported by
+	 * Vibe.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
 	 */
-	public static ArrayList<GwtOpenIDAuthenticationProvider> getOpenIDAuthenticationProviders( AllModulesInjected ami )
-	{
-		ArrayList<GwtOpenIDAuthenticationProvider> listOfProviders;
-		List<OpenIDProvider> providers; 
-		
-		listOfProviders = new ArrayList<GwtOpenIDAuthenticationProvider>();
-
+	public static ArrayList<GwtOpenIDAuthenticationProvider> getOpenIDAuthenticationProviders(AllModulesInjected bs) {
 		// Get a list of the OpenID providers
-		providers = ami.getAdminModule().getOpenIDProviders();
-		if ( providers != null && providers.size() > 0 )
-		{
-			Iterator<OpenIDProvider> iterator;
-			
-			iterator = providers.iterator();
-			while ( iterator.hasNext() )
-			{
-				OpenIDProvider provider;
-				GwtOpenIDAuthenticationProvider gwtProvider;
-				
-				provider = iterator.next();
-				
-				gwtProvider = new GwtOpenIDAuthenticationProvider();
-				gwtProvider.setName( provider.getName() );
+		ArrayList<GwtOpenIDAuthenticationProvider> listOfProviders = new ArrayList<GwtOpenIDAuthenticationProvider>();
+		List<OpenIDProvider> providers = bs.getAdminModule().getOpenIDProviders();
+		if (providers != null && providers.size() > 0) {
+			Iterator<OpenIDProvider> iterator = providers.iterator();
+			while (iterator.hasNext()) {
+				OpenIDProvider provider = iterator.next();
+				GwtOpenIDAuthenticationProvider gwtProvider = new GwtOpenIDAuthenticationProvider();
+				gwtProvider.setName(provider.getName());
 				gwtProvider.setUrl( provider.getUrl() );
-				
-				listOfProviders.add( gwtProvider );
+				listOfProviders.add(gwtProvider);
 			}
 		}
-		
 		return listOfProviders;
 	}
 	
@@ -7325,186 +7290,138 @@ public class GwtServerHelper {
 		String dudeGif;
 		switch (pi.getStatus()) {
 		case PresenceInfo.STATUS_AVAILABLE:  dudeGif = "pics/presence/online_16.png";  break;
-		case PresenceInfo.STATUS_AWAY:       dudeGif = "pics/presence/away_16.png"; break;
-		case PresenceInfo.STATUS_IDLE:       dudeGif = "pics/presence/away_16.png"; break;
+		case PresenceInfo.STATUS_AWAY:       dudeGif = "pics/presence/away_16.png";    break;
+		case PresenceInfo.STATUS_IDLE:       dudeGif = "pics/presence/away_16.png";    break;
 		case PresenceInfo.STATUS_BUSY:       dudeGif = "pics/presence/busy_16.png";    break;
-		case PresenceInfo.STATUS_OFFLINE:    dudeGif = "pics/presence/offline_16.png";   break;
-		default:                             dudeGif = "pics/presence/unknown_16.png";  break;
+		case PresenceInfo.STATUS_OFFLINE:    dudeGif = "pics/presence/offline_16.png"; break;
+		default:                             dudeGif = "pics/presence/unknown_16.png"; break;
 		}
 		return dudeGif;
 	}
 
 	/**
-	 * Construct a url the user can click on that will invoke the "change password" dialog.
-	 * Then send an e-mail that includes that url to the given e-mail address
+	 * Construct a URL the user can click on that will invoke the
+	 * 'change password' dialog.  Then send an e-mail that includes
+	 * that URL to the given e-mail address.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param gwtuser
+	 * @param emailAddress
+	 * 
+	 * @return
 	 */
-	public static SendForgottenPwdEmailRpcResponseData sendForgottenPwdEmail(
-		final AllModulesInjected ami,
-		final HttpServletRequest request,
-		final GwtUser gwtUser,
-		final String emailAddress )
-	{
-		final SendForgottenPwdEmailRpcResponseData responseData;
-		
-		responseData = new SendForgottenPwdEmailRpcResponseData();
-		
-		if ( gwtUser == null || emailAddress == null || emailAddress.length() == 0 || ami == null )
-		{
-			responseData.addError( "Invalid parameters passed to sendForgottenPwdEmail()" );
+	public static SendForgottenPwdEmailRpcResponseData sendForgottenPwdEmail(final AllModulesInjected bs, final HttpServletRequest request, final GwtUser gwtUser, final String emailAddress) {
+		final SendForgottenPwdEmailRpcResponseData responseData = new SendForgottenPwdEmailRpcResponseData();
+		if (gwtUser == null || emailAddress == null || emailAddress.length() == 0 || bs == null) {
+			responseData.addError("Invalid parameters passed to sendForgottenPwdEmail()");
 			return responseData;
 		}
 		
-		RunasCallback callback;
+		// Do the necessary work as the admin user.
+		RunasTemplate.runasAdmin(
+			new RunasCallback() {
+				@Override
+				public Object doAs() {
+					try {
+						// Is this an external user?
+						User user = ((User) bs.getProfileModule().getEntry(gwtUser.getIdLong()));
+						IdentityInfo identityInfo = user.getIdentityInfo();
+						if (!(identityInfo.isInternal())) {
+							// Yes!  Get a URL to the user's workspace.
+							AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, false);
+							adapterUrl.setParameter(WebKeys.ACTION,          WebKeys.ACTION_VIEW_PERMALINK          );
+							adapterUrl.setParameter(WebKeys.URL_ENTRY_ID,    String.valueOf(user.getId())           );
+							adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name());
 
-		callback = new RunasCallback()
-		{
-			@Override
-			public Object doAs()
-			{
-				try
-				{
-					User user;
-					IdentityInfo identityInfo;
+							// If we are running Filr, take the user to
+							// 'my files'.
+							if (Utils.checkIfFilr()) {
+								adapterUrl.setParameter(WebKeys.URL_SHOW_COLLECTION, "0");	// 0 -> CollectionType.MY_FILES
+							}
 
-					// Is this an external user?
-					user = ((User) ami.getProfileModule().getEntry( gwtUser.getIdLong() ));
-					identityInfo = user.getIdentityInfo();
-					if ( identityInfo.isInternal() == false )
-					{
-						String token;
-						String url;
-						AdaptedPortletURL adapterUrl;
-						Map<String,Object> errorMap = null;
-						UrlNotificationType notificationType;
-						
-						// Yes
-						// Get a url to the user's workspace.
-						adapterUrl = new AdaptedPortletURL( request, "ss_forum", true, false );
-						adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK );
-						adapterUrl.setParameter( WebKeys.URL_ENTRY_ID, String.valueOf( user.getId() ) );
-						adapterUrl.setParameter( WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name() );
+							// Append the encoded user token to the
+							// URL.
+							String token = ExternalUserUtil.encodeUserToken(user);
+							adapterUrl.setParameter( ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN, token );
+							String url = adapterUrl.toString();
 
-						// If we are running Filr, take the user to "my files"
-						if ( Utils.checkIfFilr() )
-							adapterUrl.setParameter( WebKeys.URL_SHOW_COLLECTION, "0" );	// 0 -> CollectionType.MY_FILES
+							// Has this external user already
+							// self-registered?
+							UrlNotificationType notificationType;
+							if (user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested) {
+								// Yes
+								notificationType = UrlNotificationType.FORGOTTEN_PASSWORD;
+							}
+							else if (identityInfo.isFromOpenid() && (!(identityInfo.isFromLocal()))) {
+								notificationType = UrlNotificationType.SELF_REGISTRATION_REQUIRED;
+							}
+							else {
+								String err = NLT.get("request.pwd.reset.invalid.user.state");
+								responseData.addError(err);
+								return null;
+							}
 
-						// Append the encoded user token to the url.
-						token = ExternalUserUtil.encodeUserToken( user );
-						adapterUrl.setParameter( ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN, token );
-						url = adapterUrl.toString();
+							Map<String, Object> errorMap = EmailHelper.sendUrlNotification(
+								bs,
+								url,
+								notificationType,
+								user.getId());
 
-						// Has this external user already self-registered?
-						if ( user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested )
-						{
-							// Yes
-							notificationType = UrlNotificationType.FORGOTTEN_PASSWORD;
-						}
-						else if ( identityInfo.isFromOpenid() && identityInfo.isFromLocal() == false )
-						{
-							notificationType = UrlNotificationType.SELF_REGISTRATION_REQUIRED;
-						}
-						else
-						{
-							String err;
-							
-							err = NLT.get( "request.pwd.reset.invalid.user.state" );
-							responseData.addError( err );
-							return null;
-						}
-						
-
-						errorMap = EmailHelper.sendUrlNotification(
-																ami,
-																url,
-																notificationType,
-																user.getId() );
-
-						if ( errorMap != null )
-						{
-							List<SendMailErrorWrapper> emailErrors;
-							
-							emailErrors = ((List<SendMailErrorWrapper>) errorMap.get( ObjectKeys.SENDMAIL_ERRORS ));
-							if ( emailErrors != null && emailErrors.size() > 0 )
-								responseData.addErrors( SendMailErrorWrapper.getErrorMessages( emailErrors ) );
-							else
-							{
-								// Sending the e-mail worked.  Change the users "external user provisioned state" to
-								// "password reset requested"
-								if ( user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested )
-								{
-									ExternalUserUtil.markAsPwdResetRequested( user );
+							if (errorMap != null) {
+								List<SendMailErrorWrapper> emailErrors = ((List<SendMailErrorWrapper>) errorMap.get(ObjectKeys.SENDMAIL_ERRORS));
+								if (emailErrors != null && emailErrors.size() > 0) {
+									responseData.addErrors(SendMailErrorWrapper.getErrorMessages(emailErrors));
+								}
+								
+								else {
+									// Sending the e-mail worked.
+									// Change the users 'external user
+									// provisioned state' to 'password
+									// reset requested'.
+									if (user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested) {
+										ExternalUserUtil.markAsPwdResetRequested(user);
+									}
 								}
 							}
 						}
 					}
-				}
-				catch ( Exception ex )
-				{
-					String error;
 					
-					error = NLT.get( "send.forgotten.pwd.send.email.failed", new String[]{ex.toString()} );
-					responseData.addError( error );
-					
-					GwtLogHelper.error(m_logger, "GwtServerHelper.SendForgottenPwdEmail( EXCEPTION ):  ", ex);
+					catch (Exception ex) {
+						String error = NLT.get("send.forgotten.pwd.send.email.failed", new String[]{ex.toString()});
+						responseData.addError(error);
+						GwtLogHelper.error(m_logger, "GwtServerHelper.SendForgottenPwdEmail( EXCEPTION ):  ", ex);
+					}
+
+					return null;
 				}
-
-				return null;
-			}
-		}; 
-
-		// Do the necessary work as the admin user.
-		RunasTemplate.runasAdmin(
-								callback,
-								RequestContextHolder.getRequestContext().getZoneName() );
+			},
+			RequestContextHolder.getRequestContext().getZoneName());
 		
 		return responseData;
 	}
 	
 	/**
+	 * ?
 	 * 
+	 * @param gwtUser
+	 * @param user
 	 */
-	public static void setExtUserProvState( GwtUser gwtUser, User user )
-	{
-		IdentityInfo idInfo;
-		
+	public static void setExtUserProvState(GwtUser gwtUser, User user) {
 		// Are we dealing with an external user?
-		idInfo = user.getIdentityInfo();
-		if ( idInfo != null && idInfo.isInternal() == false )
-		{
-			ExtProvState extProvState;
-			
+		IdentityInfo idInfo = user.getIdentityInfo();
+		if (idInfo != null && (!(idInfo.isInternal()))) {
 			// Yes.
-			gwtUser.setExtUserProvState( ExtUserProvState.UNKNOWN );
-			
-			extProvState = user.getExtProvState();
-			
-			if ( extProvState != null )
-			{
-				switch ( extProvState )
-				{
-				case credentialed:
-					gwtUser.setExtUserProvState( ExtUserProvState.CREDENTIALED );
-					break;
-					
-				case initial:
-					gwtUser.setExtUserProvState( ExtUserProvState.INITIAL );
-					break;
-				
-				case pwdResetRequested:
-					gwtUser.setExtUserProvState( ExtUserProvState.PWD_RESET_REQUESTED );
-					break;
-				
-				case pwdResetWaitingForVerification:
-					gwtUser.setExtUserProvState( ExtUserProvState.PWD_RESET_WAITING_FOR_VERIFICATION );
-					break;
-				
-				case verified:
-					gwtUser.setExtUserProvState( ExtUserProvState.VERIFIED );
-					break;
-				
-				default:
-					gwtUser.setExtUserProvState( ExtUserProvState.UNKNOWN );
-					break;
+			gwtUser.setExtUserProvState(ExtUserProvState.UNKNOWN);
+			ExtProvState extProvState = user.getExtProvState();
+			if (extProvState != null) {
+				switch (extProvState) {
+				case credentialed:                    gwtUser.setExtUserProvState(ExtUserProvState.CREDENTIALED);                       break;
+				case initial:                         gwtUser.setExtUserProvState(ExtUserProvState.INITIAL);                            break;
+				case pwdResetRequested:               gwtUser.setExtUserProvState(ExtUserProvState.PWD_RESET_REQUESTED);                break;
+				case pwdResetWaitingForVerification:  gwtUser.setExtUserProvState(ExtUserProvState.PWD_RESET_WAITING_FOR_VERIFICATION); break;
+				case verified:                        gwtUser.setExtUserProvState(ExtUserProvState.VERIFIED);                           break;
+				default:                              gwtUser.setExtUserProvState(ExtUserProvState.UNKNOWN);                            break;
 				}
 			}
 		}
@@ -7529,6 +7446,8 @@ public class GwtServerHelper {
 		pi.setStatusText(statusText);
 	}
 
+//!	...DRF (20150617):  Left off reformatting here!
+	
 	/**
 	 * Get the project information for the given binder
 	 * 
