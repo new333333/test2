@@ -50,9 +50,6 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class ProxyIdentitiesView extends DataTableFolderViewBase {
-	public final static boolean	SHOW_MANAGE_PROXY_IDENTITIES	= false;	//! DRF (20150610):  Leave false on checkin until it's all working.  Controls whether they show up in AdminControl.
-	public final static boolean	SHOW_USE_PROXY_IDENTITIES		= false;	//! DRF (20150610):  Leave false on checkin until it's all working.  Controls whether they can be selected in the ModifyNextFolderRootDlg.
-	
 	/*
 	 * Class constructor.
 	 * 
