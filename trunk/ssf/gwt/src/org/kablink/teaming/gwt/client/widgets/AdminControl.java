@@ -92,7 +92,6 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.binderviews.MobileDevicesView;
-import org.kablink.teaming.gwt.client.binderviews.ProxyIdentitiesView;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDatabasePruneConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
@@ -514,13 +513,11 @@ public class AdminControl extends TeamingPopupPanel
 			if (null != actions) {
 				//! DRF:  Add controls here to limit things shown while
 				//!       they're being implemented.
-				boolean showManageMobileDevices   = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
-				boolean showManageProxyIdentities = ProxyIdentitiesView.SHOW_MANAGE_PROXY_IDENTITIES;	//! DRF (20150610)
-				boolean showPasswordPolicy        = GwtClientHelper.isPasswordPolicyEnabled();
-				for (GwtAdminAction action : actions) {
-					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices))   continue;
-					else if (action.getActionType().equals(AdminAction.MANAGE_PROXY_IDENTITIES)   && (!showManageProxyIdentities)) continue;
-					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))        continue;
+				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
+				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
+				for (GwtAdminAction action:  actions) {
+					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices)) continue;
+					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))      continue;
 					
 					// Add a UI widget for this administration action.
 					AdminActionControl adminActionControl = new AdminActionControl( action );

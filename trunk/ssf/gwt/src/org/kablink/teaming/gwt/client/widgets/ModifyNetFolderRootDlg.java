@@ -52,7 +52,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
 import org.kablink.teaming.gwt.client.NetFolderRoot.GwtAuthenticationType;
-import org.kablink.teaming.gwt.client.binderviews.ProxyIdentitiesView;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderRootCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderRootModifiedEvent;
@@ -395,30 +394,25 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			}
 			
 			Label label;
-			boolean showUseProxyIdentities = ProxyIdentitiesView.SHOW_USE_PROXY_IDENTITIES;	//! DRF (20150610)
-			if (showUseProxyIdentities) {
-				m_proxyTypeIdentityRB = new RadioButton("proxyType", m_messages.modifyNetFolderServerDlg_ProxyTypeIdentity());
-				table.setWidget(nextRow, 0, m_proxyTypeIdentityRB);
-				cellFormatter.setColSpan(nextRow, 0, 2);
-				nextRow += 1;
-				label = new InlineLabel(m_messages.modifyNetFolderServerDlg_ProxyIdentityLabel());
-				table.setHTML(nextRow, 0, label.getElement().getInnerHTML());
-				cellFormatter.setStyleName(nextRow, 0, "modifyNetFolderServerDlg_PadWithProxyIdentities");
-				
-				table.setWidget (nextRow, 1, m_proxyIdentityFindControl);
-				nextRow += 1;
-				
-				m_proxyTypeManualRB = new RadioButton("proxyType", m_messages.modifyNetFolderServerDlg_ProxyTypeManual());
-				table.setWidget(nextRow, 0, m_proxyTypeManualRB);
-				cellFormatter.setColSpan(nextRow, 0, 2);
-				nextRow += 1;
-			}
+			m_proxyTypeIdentityRB = new RadioButton("proxyType", m_messages.modifyNetFolderServerDlg_ProxyTypeIdentity());
+			table.setWidget(nextRow, 0, m_proxyTypeIdentityRB);
+			cellFormatter.setColSpan(nextRow, 0, 2);
+			nextRow += 1;
+			label = new InlineLabel(m_messages.modifyNetFolderServerDlg_ProxyIdentityLabel());
+			table.setHTML(nextRow, 0, label.getElement().getInnerHTML());
+			cellFormatter.setStyleName(nextRow, 0, "modifyNetFolderServerDlg_PadWithProxyIdentities");
+			
+			table.setWidget (nextRow, 1, m_proxyIdentityFindControl);
+			nextRow += 1;
+			
+			m_proxyTypeManualRB = new RadioButton("proxyType", m_messages.modifyNetFolderServerDlg_ProxyTypeManual());
+			table.setWidget(nextRow, 0, m_proxyTypeManualRB);
+			cellFormatter.setColSpan(nextRow, 0, 2);
+			nextRow += 1;
 			
 			label = new InlineLabel(m_messages.modifyNetFolderServerDlg_ProxyNameLabel());
 			table.setHTML(nextRow, 0, label.getElement().getInnerHTML());
-			if (showUseProxyIdentities) {
-				cellFormatter.setStyleName(nextRow, 0, "modifyNetFolderServerDlg_PadWithProxyIdentities");
-			}
+			cellFormatter.setStyleName(nextRow, 0, "modifyNetFolderServerDlg_PadWithProxyIdentities");
 			
 			FlowPanel tmpPanel = new FlowPanel();
 			m_proxyNameTxtBox = new TextBox();
@@ -427,12 +421,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_proxyNameTxtBox.addChangeHandler(new ChangeHandler() {
 				@Override
 				public void onChange(ChangeEvent event) {
-					boolean showUseProxyIdentities = ProxyIdentitiesView.SHOW_USE_PROXY_IDENTITIES;	//! DRF (20150610)
-					if (showUseProxyIdentities) {
-						String s = m_proxyNameTxtBox.getValue();
-						if (GwtClientHelper.hasString(s)) {
-							checkProxyTypeManual();
-						}
+					String s = m_proxyNameTxtBox.getValue();
+					if (GwtClientHelper.hasString(s)) {
+						checkProxyTypeManual();
 					}
 				}
 			});
@@ -454,9 +445,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			
 			label = new InlineLabel(m_messages.modifyNetFolderServerDlg_ProxyPwdLabel());
 			table.setHTML(nextRow, 0, label.getElement().getInnerHTML());
-			if (showUseProxyIdentities) {
-				cellFormatter.setStyleName(nextRow, 0, "modifyNetFolderServerDlg_PadWithProxyIdentities");
-			}
+			cellFormatter.setStyleName(nextRow, 0, "modifyNetFolderServerDlg_PadWithProxyIdentities");
 			
 			m_proxyPwdTxtBox = new PasswordTextBox();
 			m_proxyPwdTxtBox.setVisibleLength(30);
@@ -1207,18 +1196,26 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	}
 
 	/**
-	 * This gets called when the user presses ok.  If we are editing an existing net folder root
-	 * we will issue a GWT RPC request to save the net folder root and then throw a "net folder root modified"
-	 * event.
-	 * If we are creating a new net folder root we will issue a GWT RPC request to create the new net folder root
-	 * and then throw a "net folder root created" event.
+	 * This gets called when the user presses OK.
+	 * 
+	 * If we are editing an existing net folder root, we will issue a
+	 * GWT RPC request to save the net folder root and then throw a
+	 * 'net folder root modified' event.
+	 * 
+	 * If we are creating a new net folder root we will issue a GWT RPC
+	 * request to create the new net folder root and then throw a 'net
+	 * folder root created' event.
+	 * 
+	 * Implements the EditSuccessfulHandler.editSuccessful() method.
+	 * 
+	 * @param obj
+	 * 
+	 * @return
 	 */
 	@Override
 	public boolean editSuccessful(Object obj) {
-		NetFolderRootType serverType;
-		
 		// Is the root type WebDAV?
-		serverType = getSelectedRootType();
+		NetFolderRootType serverType = getSelectedRootType();
 		if (serverType.equals(NetFolderRootType.WEB_DAV)) {
 			// Yes, make sure they entered the host url
 			if (isHostUrlValid() == false) {
@@ -1241,17 +1238,14 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			return false;
 		}
 		
-		boolean showUseProxyIdentities = ProxyIdentitiesView.SHOW_USE_PROXY_IDENTITIES;	//! DRF (20150610)
-		if (showUseProxyIdentities) {
-			// Is the 'use proxy identity' radio button selected?
-			if (m_proxyTypeIdentityRB.getValue()) {
-				// Yes!  Is there a proxy identity selected?
-				if (null == m_proxyIdentity) {
-					// No!  Tell the user about the problem and bail.
-					GwtClientHelper.deferredAlert(GwtTeaming.getMessages().modifyNetFolderServerDlg_SelectProxyIdentityPrompt());
-					m_tabPanel.selectTab(1);
-					return false;
-				}
+		// Is the 'use proxy identity' radio button selected?
+		if (m_proxyTypeIdentityRB.getValue()) {
+			// Yes!  Is there a proxy identity selected?
+			if (null == m_proxyIdentity) {
+				// No!  Tell the user about the problem and bail.
+				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().modifyNetFolderServerDlg_SelectProxyIdentityPrompt());
+				m_tabPanel.selectTab(1);
+				return false;
 			}
 		}
 		
@@ -1546,6 +1540,10 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	
 	/**
 	 * Get the data from the controls in the dialog box.
+	 * 
+	 * Implements the DlgBox.getDataFromDlg() method.
+	 * 
+	 * @return
 	 */
 	@Override
 	public Object getDataFromDlg() {
@@ -1555,7 +1553,12 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	
 	
 	/**
-	 * Return the widget that should get the focus when the dialog is shown. 
+	 * Return the widget that should get the focus when the dialog
+	 * is shown.
+	 * 
+	 * Implements the DlgBox.getFocusWidget() method.
+	 * 
+	 * @return
 	 */
 	@Override
 	public FocusWidget getFocusWidget() {
@@ -1566,7 +1569,10 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	}
 	
 	/**
-	 * Return the value of the "Synchronize only the directory structure"
+	 * Return the value of the 'Synchronize only the directory
+	 * structure'.
+	 * 
+	 * @return
 	 */
 	public Boolean getFullSyncDirOnly() {
 		if (GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI())
@@ -1633,11 +1639,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		netFolderRoot.setRootPath(getRootPath());
 		netFolderRoot.setProxyName(getProxyName());
 		netFolderRoot.setProxyPwd(getProxyPwd());
-		boolean showUseProxyIdentities = ProxyIdentitiesView.SHOW_USE_PROXY_IDENTITIES;	//! DRF (20150610)
-		if (showUseProxyIdentities) {
-			netFolderRoot.setUseProxyIdentity(m_proxyTypeIdentityRB.getValue());
-			netFolderRoot.setProxyIdentity(  m_proxyIdentity                );
-		}
+		netFolderRoot.setUseProxyIdentity(m_proxyTypeIdentityRB.getValue());
+		netFolderRoot.setProxyIdentity(m_proxyIdentity);
 		netFolderRoot.setAuthType(getAuthType());
 		netFolderRoot.setFullSyncDirOnly(getFullSyncDirOnly());
 		netFolderRoot.setIndexContent(getIndexContent());
@@ -1788,7 +1791,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_ldapServerList = null;
 		
 		// Are we modifying an existing net folder root?
-		boolean showUseProxyIdentities = ProxyIdentitiesView.SHOW_USE_PROXY_IDENTITIES;	//! DRF (20150610)
 		if (m_netFolderRoot != null) {
 			// Yes!  Update the dialog's header to say 'Edit Net Folder
 			// Root'.
@@ -1805,24 +1807,22 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 			// If the root type is WebDAV, initialize the WebDAV specific controls
 			if (netFolderRoot.getRootType().equals(NetFolderRootType.WEB_DAV)) {
-				m_hostUrlTxtBox.setValue(           netFolderRoot.getHostUrl()             );
+				m_hostUrlTxtBox.setValue(            netFolderRoot.getHostUrl()             );
 				m_allowSelfSignedCertsCkbox.setValue(netFolderRoot.getAllowSelfSignedCerts());
-				m_isSharePointServerCkbox.setValue( netFolderRoot.getIsSharePointServer()  );
+				m_isSharePointServerCkbox.setValue(  netFolderRoot.getIsSharePointServer()  );
 			}
 			
-			m_rootPathTxtBox.setValue(netFolderRoot.getRootPath() );
+			m_rootPathTxtBox.setValue(netFolderRoot.getRootPath());
 			m_proxyNameTxtBox.setValue(netFolderRoot.getProxyName());
-			m_proxyPwdTxtBox.setValue(netFolderRoot.getProxyPwd() );
-			if (showUseProxyIdentities) {
-				m_proxyIdentity = netFolderRoot.getProxyIdentity();
-				if (null != m_proxyIdentity)
-				     m_proxyIdentityFindControl.setInitialSearchString(m_proxyIdentity.getTitle());
-				else m_proxyIdentityFindControl.clearText();
-				
-				if (netFolderRoot.getUseProxyIdentity())
-				     checkProxyTypeIdentity();
-				else checkProxyTypeManual();
-			}
+			m_proxyPwdTxtBox.setValue(netFolderRoot.getProxyPwd());
+			m_proxyIdentity = netFolderRoot.getProxyIdentity();
+			if (null != m_proxyIdentity)
+			     m_proxyIdentityFindControl.setInitialSearchString(m_proxyIdentity.getTitle());
+			else m_proxyIdentityFindControl.clearText();
+			
+			if (netFolderRoot.getUseProxyIdentity())
+			     checkProxyTypeIdentity();
+			else checkProxyTypeManual();
 		
 			if (spuUI && (m_selectPrincipalsWidget != null)) {
 				m_selectPrincipalsWidget.init(m_netFolderRoot.getListOfPrincipals());
@@ -1858,12 +1858,11 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			// No!  Update the dialog's header to say 'Add Net Folder
 			// Root'.
 			setCaption(GwtTeaming.getMessages().modifyNetFolderServerDlg_AddHeader());
-			
-			if (showUseProxyIdentities) {
-				checkProxyTypeManual();
-				m_proxyIdentityFindControl.clearText();
-				m_proxyIdentity = null;
-			}
+
+			// Default to using a proxy name and password.
+			checkProxyTypeManual();
+			m_proxyIdentityFindControl.clearText();
+			m_proxyIdentity = null;
 			
 			// Enable the 'Name' field.
 			m_nameTxtBox.setEnabled(true);
@@ -1988,9 +1987,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 
 		// Do we need manual proxy identity settings?
-		boolean showUseProxyIdentities = ProxyIdentitiesView.SHOW_USE_PROXY_IDENTITIES;	//! DRF (20150610)
-		boolean checkProxyManual = ((!showUseProxyIdentities) || m_proxyTypeManualRB.getValue());
-		if (checkProxyManual) {
+		if (m_proxyTypeManualRB.getValue()) {
 			// Yes!  Did the user enter a proxy name?
 			value = getProxyName();
 			if (value == null || (value.length() == 0)) {
