@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,11 +50,14 @@ import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.util.Validator;
 
 /**
+ * ?
+ * 
  * @hibernate.subclass discriminator-value="G" dynamic-update="true" 
  *
+ * @author ?
  */
+@SuppressWarnings("unchecked")
 public class Group extends UserPrincipal implements GroupPrincipal {
-
 	/**
 	 * 
 	 */
@@ -119,16 +122,19 @@ public class Group extends UserPrincipal implements GroupPrincipal {
 		super(identityInfo);
 	}
 
+	@Override
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.group;
 	}
-    public String getTitle() {
+    @Override
+	public String getTitle() {
     	String title = super.getTitle();
     	if (Validator.isNull(title)) return getName();
     	return title;
     }
    
-    public List getMembers() {
+    @Override
+	public List getMembers() {
     	if (members == null) members = new ArrayList();
     	return members;
     }
@@ -136,7 +142,8 @@ public class Group extends UserPrincipal implements GroupPrincipal {
      * Set the group membership.  Each members memberOf set will by updated
      * @param members
      */
-    public void setMembers(Collection newMembers) { 		
+    @Override
+	public void setMembers(Collection newMembers) { 		
     	if(isLdapContainer()) {
     		throw new UnsupportedOperationException("setMembers() is not supported on the container group '" + getName() + "'");
     	}
@@ -161,7 +168,8 @@ public class Group extends UserPrincipal implements GroupPrincipal {
         }
   	} 	
     
-    public void addMember(IPrincipal member) {
+    @Override
+	public void addMember(IPrincipal member) {
     	if(isLdapContainer()) {
     		throw new UnsupportedOperationException("addMember() is not supported on the container group '" + getName() + "'");
     	}
@@ -175,7 +183,8 @@ public class Group extends UserPrincipal implements GroupPrincipal {
             setMembersLastModified(new Date());
         }
     }
-    public void removeMember(IPrincipal member) {
+    @Override
+	public void removeMember(IPrincipal member) {
     	if(isLdapContainer()) {
     		throw new UnsupportedOperationException("removeMember() is not supported on the container group '" + getName() + "'");
     	}
@@ -244,5 +253,15 @@ public class Group extends UserPrincipal implements GroupPrincipal {
 		else
 			this.groupType = groupType.getValue();
 	}
-    
+
+	/**
+	 * Returns true if this Group is a 'team' Group and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isTeamGroup() {
+		GroupType gt = getGroupType();
+		return ((null != gt) && gt.equals(GroupType.team));
+	}
 }

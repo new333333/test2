@@ -1461,6 +1461,28 @@ public class FindCtrl extends Composite
 		return m_searchCriteria.getSearchType();
 	}// end getSearchType()
 
+	/**
+	 * Asynchronously sets the focus in the FindCtrl's TextBox.
+	 */
+	public void setFocusAsync(final boolean focused) {
+		if (null != m_txtBox) {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					setFocus(focused);
+				}
+			});
+		}
+	}
+	
+	/**
+	 * Synchronously sets the focus in the FindCtrl's TextBox.
+	 */
+	public void setFocus(final boolean focused) {
+		if (null != m_txtBox) {
+			m_txtBox.setFocus(focused);
+		}
+	}
 	
 	/*
 	 * Sets the selected item in the FindCtrl.

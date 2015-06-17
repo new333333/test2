@@ -1986,37 +1986,60 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 			return false;
 		}
-		
-		// Did the user enter a proxy name?
-		value = getProxyName();
-		if (value == null || (value.length() == 0)) {
-			// No
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					GwtClientHelper.deferredAlert(GwtTeaming.getMessages().modifyNetFolderServerDlg_EnterProxyNamePrompt());
-					m_tabPanel.selectTab(1);
-					m_proxyNameTxtBox.setFocus(true);
-				}
-			});
 
-			return false;
+		// Do we need manual proxy identity settings?
+		boolean showUseProxyIdentities = ProxyIdentitiesView.SHOW_USE_PROXY_IDENTITIES;	//! DRF (20150610)
+		boolean checkProxyManual = ((!showUseProxyIdentities) || m_proxyTypeManualRB.getValue());
+		if (checkProxyManual) {
+			// Yes!  Did the user enter a proxy name?
+			value = getProxyName();
+			if (value == null || (value.length() == 0)) {
+				// No
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						GwtClientHelper.deferredAlert(GwtTeaming.getMessages().modifyNetFolderServerDlg_EnterProxyNamePrompt());
+						m_tabPanel.selectTab(1);
+						m_proxyNameTxtBox.setFocus(true);
+					}
+				});
+	
+				return false;
+			}
+			
+			// Did the user enter a proxy password?
+			value = getProxyPwd();
+			if (value == null || (value.length() == 0)) {
+				// No
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						GwtClientHelper.deferredAlert(GwtTeaming.getMessages().modifyNetFolderServerDlg_EnterProxyPwdPrompt());
+						m_tabPanel.selectTab(1);
+						m_proxyPwdTxtBox.setFocus(true);
+					}
+				});
+	
+				return false;
+			}
 		}
 		
-		// Did the user enter a proxy pwd?
-		value = getProxyPwd();
-		if (value == null || (value.length() == 0)) {
-			// No
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					GwtClientHelper.deferredAlert(GwtTeaming.getMessages().modifyNetFolderServerDlg_EnterProxyPwdPrompt());
-					m_tabPanel.selectTab(1);
-					m_proxyPwdTxtBox.setFocus(true);
-				}
-			});
-
-			return false;
+		else {
+			// No, we don't we need manual proxy identity settings!  We
+			// need a proxy identity.  Was one specified?
+			if (null == m_proxyIdentity) {
+				// No
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						GwtClientHelper.deferredAlert(GwtTeaming.getMessages().modifyNetFolderServerDlg_SelectProxyIdentityPrompt());
+						m_tabPanel.selectTab(1);
+						m_proxyIdentityFindControl.setFocus(true);
+					}
+				});
+	
+				return false;
+			}
 		}
 	
 		// If we get here everything is ok

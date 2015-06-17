@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ProxyIdentity;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.SeenMap;
@@ -119,6 +120,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtEnterProxyCredentialsTask;
+import org.kablink.teaming.gwt.client.admin.GwtEnterProxyIdentityTask;
 import org.kablink.teaming.gwt.client.admin.GwtSelectNetFolderServerTypeTask;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
@@ -241,6 +243,7 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.EnterProxyCredentialsTask;
+import org.kablink.teaming.web.util.EnterProxyIdentityTask;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.FavoritesLimitExceededException;
 import org.kablink.teaming.web.util.FilrAdminTasks;
@@ -5689,6 +5692,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			FilrAdminTasks filrAdminTasks;
 			ArrayList<EnterProxyCredentialsTask> listOfTasks;
 			ArrayList<SelectNetFolderServerTypeTask> listOfTasks2;
+			ArrayList<EnterProxyIdentityTask> listOfTasks3;
 			boolean saveNeeded = false;
 			List<ResourceDriverConfig> drivers;
 
@@ -5700,29 +5704,40 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			// Get a list of the currently defined Net Folder Roots
 			drivers = getResourceDriverModule().getAllNetFolderResourceDriverConfigs();
 			
-			// Go through the list of net folder servers and see if there are any who are still using
-			// famt as their net folder server type.
-			if ( drivers != null )
-			{
-				for ( ResourceDriverConfig driver : drivers )
-				{
-					DriverType driverType;
-					
-					driverType = driver.getDriverType();
-					if ( driverType == null || driverType == DriverType.famt )
-					{
-						filrAdminTasks.addSelectNetFolderServerTypeTask( driver.getId() );
+			// Go through the list of net folder servers and see if
+			// there are any who are still using FAMT as their net
+			// folder server type or that don't have the proper proxy
+			// credentials setup.
+			if (drivers != null) {
+				for (ResourceDriverConfig driver:  drivers) {
+					DriverType driverType = driver.getDriverType();
+					if (driverType == null || driverType == DriverType.famt) {
+						filrAdminTasks.addSelectNetFolderServerTypeTask(driver.getId());
 					}
-					else
-					{
-						String name;
-						String pwd;
-
-						name = driver.getAccountName();
-						pwd = driver.getPassword();
-						if ( name == null || name.length() == 0 || pwd == null || pwd.length() == 0 )
-						{
-							filrAdminTasks.addEnterNetFolderServerProxyCredentialsTask( driver.getId() );
+					
+					else {
+						if (driver.getUseProxyIdentity()) {
+							Long proxyIdentityId = driver.getProxyIdentityId();
+							if (null == proxyIdentityId) {
+								filrAdminTasks.addEnterNetFolderServerProxyIdentityTask(driver.getId());
+							}
+							
+							else {
+								ProxyIdentity pi;
+								try                  {pi = getProxyIdentityModule().getProxyIdentity(proxyIdentityId);}
+								catch (Exception ex) {pi = null;                                                      }
+								if (null == pi) {
+									filrAdminTasks.addEnterNetFolderServerProxyIdentityTask(driver.getId());
+								}
+							}
+						}
+						
+						else {
+							String name = driver.getAccountName();
+							String pwd  = driver.getPassword();
+							if (name == null || name.length() == 0 || pwd == null || pwd.length() == 0) {
+								filrAdminTasks.addEnterNetFolderServerProxyCredentialsTask(driver.getId());
+							}
 						}
 					}
 				}
@@ -5749,7 +5764,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 						name = rdConfig.getAccountName();
 						pwd = rdConfig.getPassword();
-						if ( name == null || name.length() == 0 || pwd == null || pwd.length() == 0 )
+						if ((!(rdConfig.getUseProxyIdentity())) && (name == null || name.length() == 0 || pwd == null || pwd.length() == 0))
 						{
 							String serverName;
 
@@ -5774,6 +5789,45 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 						// Remove the task for the administrator to enter the proxy credentials for this net folder server.
 						netFolderServerId = new Long( nextTask.getNetFolderServerId() );
 						filrAdminTasks.deleteEnterNetFolderServerProxyCredentialsTask( netFolderServerId );
+						
+						saveNeeded = true;
+					}
+				}
+			}
+
+			// Get the list of "enter proxy identity" tasks
+			listOfTasks3 = filrAdminTasks.getAllEnterProxyIdentityTasks();
+			if (MiscUtil.hasItems(listOfTasks3)) {
+				for (EnterProxyIdentityTask nextTask:  listOfTasks3) {
+					GwtEnterProxyIdentityTask gwtTask;
+					boolean removeTask = false;
+					
+					// Get the net folder server object with the given id
+					ResourceDriverConfig rdConfig = NetFolderHelper.findNetFolderRootById(drivers, nextTask.getNetFolderServerId()); 
+					if (rdConfig != null) {
+						if (rdConfig.getUseProxyIdentity() && (null == rdConfig.getProxyIdentityId())) {
+							String serverName = rdConfig.getName();
+							gwtTask = new GwtEnterProxyIdentityTask();
+							gwtTask.setServerId(nextTask.getNetFolderServerId());
+							gwtTask.setServerName(serverName);
+							upgradeInfo.addFilrAdminTask(gwtTask);
+						}
+						
+						else {
+							removeTask = true;
+						}
+					}
+					
+					else {
+						removeTask = true;
+					}
+					
+					if (removeTask) {
+						// Remove the task for the administrator to
+						// enter the proxy identity for this net folder
+						// server.
+						Long netFolderServerId = new Long(nextTask.getNetFolderServerId());
+						filrAdminTasks.deleteEnterNetFolderServerProxyIdentityTask(netFolderServerId);
 						
 						saveNeeded = true;
 					}
