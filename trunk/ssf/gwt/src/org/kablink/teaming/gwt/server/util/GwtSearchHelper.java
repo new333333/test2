@@ -508,8 +508,7 @@ public class GwtSearchHelper {
 
 									String name  = group.getName();
 									String title = group.getTitle();
-									if ((group instanceof Group) &&
-										 ((Group)group).getGroupType().equals(GroupType.team)) {
+									if ((group instanceof Group) && ((Group)group).isTeamGroup()) {
 										// Use the title of the group
 										// instead of the group name
 										// for display purposes.
@@ -746,8 +745,7 @@ public class GwtSearchHelper {
 
 								String name  = principal.getName();
 								String title = principal.getTitle();
-								if ((principal instanceof Group) &&
-										 ((Group)principal).getGroupType().equals(GroupType.team)) {
+								if ((principal instanceof Group) && ((Group)principal).isTeamGroup()) {
 									// Use the title of the group
 									// instead of the group name for
 									// display purposes.

@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
+import org.kablink.teaming.domain.ResourceDriverConfig.ResourceDriverCredentials;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
@@ -849,10 +850,12 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		if ( rdConfig == null )
 			return false;
 		
+		ResourceDriverCredentials rdCredentials = rdConfig.getCredentials();
+		
 		// Is everything configured?
 		rootPath = rdConfig.getRootPath();
-		proxyName = rdConfig.getAccountName();
-		proxyPwd = rdConfig.getPassword();
+		proxyName = rdCredentials.getAccountName();
+		proxyPwd = rdCredentials.getPassword();
 		if ( rootPath != null && rootPath.length() > 0 &&
 			 proxyName != null && proxyName.length() > 0 &&
 			 proxyPwd != null && proxyPwd.length() > 0 )

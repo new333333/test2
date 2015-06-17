@@ -823,7 +823,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		if (getUseProxyIdentity()) {
 			// Yes!  Use that for the credentials.
 			ProxyIdentity pi = getProxyIdentityModule().getProxyIdentity(getProxyIdentityId());
-			reply = new ResourceDriverCredentials(pi.getProxyName(), getPassword());
+			reply = new ResourceDriverCredentials(pi.getProxyName(), pi.getPassword());
 		}
 		else {
 			// No, this driver's proxy is not based on a proxy

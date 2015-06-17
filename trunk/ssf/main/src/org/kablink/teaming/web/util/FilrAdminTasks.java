@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,7 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.web.util;
-
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -55,17 +54,20 @@ import org.dom4j.Node;
  *			<NetFolderServer id="some value" />
  *			<NetFolderServer id="some value" />
  *		</EnterNetFolderServerProxyCredentials>
+ *		<EnterNetFolderServerProxyIdentity>
+ *			<NetFolderServer id="some value" />
+ *			<NetFolderServer id="some value" />
+ *		</EnterNetFolderServerProxyIdentity>
  *		<SelectNetFolderServerType>
  *			<NetFolderServer id="some value" />
  *			<NetFolderServer id="some value" />
  *		</SelectNetFolderServerType>
  *	</FilrAdminTasks>
  * 
- * @author jwootton
+ * @author jwootton@novell.com
  */
-public class FilrAdminTasks
-{
-	private Document m_adminTasksDoc = null;
+public class FilrAdminTasks {
+	private Document	m_adminTasksDoc;	//
 	
 	/**
 	 * 
@@ -126,6 +128,41 @@ public class FilrAdminTasks
 		
 		// Get the <EnterNetFolderServerProxyCredentials> element
 		parentElement = getEnterProxyCredentialsElement();
+		
+		// Add <NetFolderServer id="some value" />
+		taskElement = parentElement.addElement( "NetFolderServer" );
+		taskElement.addAttribute( "id", idStr );
+		
+		return m_adminTasksDoc;
+	}
+
+	/**
+	 * Add a 'select net folder server proxy identity' task. 
+	 */
+	public Document addEnterNetFolderServerProxyIdentityTask( Long netFolderServerId )
+	{
+		Element taskElement;
+		Element parentElement;
+		String idStr;
+		
+		if ( netFolderServerId == null )
+			return null;
+		
+		idStr = String.valueOf( netFolderServerId );
+		
+		// Make sure we have a document to work with.
+		getAdminTasksDoc();
+		
+		// Does a <NetFolderServer id="xxx" /> exists under <EnterNetFolderServerProxyIdentity>?
+		taskElement = getEnterProxyIdentityTask( idStr );
+		if ( taskElement != null )
+		{
+			// Yes
+			return m_adminTasksDoc;
+		}
+		
+		// Get the <EnterNetFolderServerProxyIdentity> element
+		parentElement = getEnterProxyIdentityElement();
 		
 		// Add <NetFolderServer id="some value" />
 		taskElement = parentElement.addElement( "NetFolderServer" );
@@ -196,6 +233,28 @@ public class FilrAdminTasks
 		
 		// Does a <NetFolderServer id="xxx" /> exists under <EnterNetFolderServerProxyCredentials>?
 		taskElement = getEnterProxyCredentialsTask( idStr );
+		if ( taskElement != null )
+		{
+			taskElement.getParent().remove( taskElement );
+		}
+		
+		return m_adminTasksDoc;
+	}
+
+	/**
+	 * 
+	 */
+	public Document deleteEnterNetFolderServerProxyIdentityTask( Long netFolderServerId )
+	{
+		Element taskElement;
+		String idStr;
+		
+		getAdminTasksDoc();
+		
+		idStr = String.valueOf( netFolderServerId );
+		
+		// Does a <NetFolderServer id="xxx" /> exists under <EnterNetFolderServerProxyIdentity>?
+		taskElement = getEnterProxyIdentityTask( idStr );
 		if ( taskElement != null )
 		{
 			taskElement.getParent().remove( taskElement );
@@ -285,6 +344,51 @@ public class FilrAdminTasks
 	}
 	
 	/**
+	 * Return all of the "enter proxy identity" tasks
+	 */
+	@SuppressWarnings("rawtypes")
+	public ArrayList<EnterProxyIdentityTask> getAllEnterProxyIdentityTasks()
+	{
+		ArrayList<EnterProxyIdentityTask> listOfTasks;
+		List listOfElements;
+		
+		listOfTasks = new ArrayList<EnterProxyIdentityTask>();
+		
+		getAdminTasksDoc();
+		
+		// Get all of the <NetFolderServer> elements that live under <EnterNetFolderServerProxyIdentity>
+		listOfElements = m_adminTasksDoc.selectNodes( "/FilrAdminTasks/EnterNetFolderServerProxyIdentity/NetFolderServer" ); 
+		
+		if ( listOfElements != null )
+		{
+			Iterator iter;
+			
+			iter = listOfElements.iterator();
+			while ( iter.hasNext() ) 
+			{
+				Element nextElement;
+				Node node;
+				
+				nextElement = (Element) iter.next();
+				node = nextElement.selectSingleNode( "@id" );
+				if ( node != null && node instanceof Attribute )
+				{
+					Attribute attrib;
+					EnterProxyIdentityTask task;
+
+					attrib = (Attribute) node;
+					task = new EnterProxyIdentityTask();
+					task.setNetFolderServerId( attrib.getValue() );
+					
+					listOfTasks.add( task );
+				}
+			}
+		}
+		
+		return listOfTasks;
+	}
+	
+	/**
 	 * Return all of the "select net folder server type" tasks
 	 */
 	@SuppressWarnings("rawtypes")
@@ -349,6 +453,25 @@ public class FilrAdminTasks
 	}
 	
 	/**
+	 * See if a <NetFolderServer id="xxx" /> exists under <EnterNetFolderServerProxyIdentity>
+	 */
+	private Element getEnterProxyIdentityTask( String netFolderServerId )
+	{
+		Element rootElement;
+		Element serverElement;
+
+		if ( netFolderServerId == null )
+			return null;
+		
+		rootElement = m_adminTasksDoc.getRootElement();
+		
+		// Look for the <NetFolderServer> element
+		serverElement = (Element)rootElement.selectSingleNode( "/FilrAdminTasks/EnterNetFolderServerProxyIdentity/NetFolderServer[@id='" + netFolderServerId + "']" ); 
+			
+		return serverElement;
+	}
+	
+	/**
 	 * Find the <EnterNetFolderServerProxyCredentials> element.  If it doesn't exist, create it.
 	 */
 	private Element getEnterProxyCredentialsElement()
@@ -369,6 +492,29 @@ public class FilrAdminTasks
 		}
 		
 		return enterProxyCredentialsElement;
+	}
+
+	/**
+	 * Find the <EnterNetFolderServerProxyIdentity> element.  If it doesn't exist, create it.
+	 */
+	private Element getEnterProxyIdentityElement()
+	{
+		Element rootElement;
+		Element enterProxyIdentityElement;
+		
+		rootElement = m_adminTasksDoc.getRootElement();
+		
+		// Look for the <EnterNetFolderServerProxyIdentity> element
+		enterProxyIdentityElement = (Element)rootElement.selectSingleNode( "/FilrAdminTasks/EnterNetFolderServerProxyIdentity" ); 
+			
+		// Did we find a <EnterNetFolderServerProxyIdentity> element?
+		if ( enterProxyIdentityElement == null )
+		{
+			// No, create one.
+			enterProxyIdentityElement = rootElement.addElement( "EnterNetFolderServerProxyIdentity" );
+		}
+		
+		return enterProxyIdentityElement;
 	}
 
 	/**

@@ -425,12 +425,19 @@ public class NetFolderRoot
 	{
 		if ( m_rootPath == null || m_rootPath.length() == 0 )
 			return false;
+
+		if ( m_useProxyIdentity ) {
+			if ( null == m_proxyIdentity )
+				return false;
+		}
 		
-		if ( m_useProxyIdentity && ( null == m_proxyIdentity ) )
-			return false;
-		
-		if ( ( m_proxyPwd == null || m_proxyPwd.length() == 0 ) )
-			return false;
+		else {
+			if ( m_proxyName == null || m_proxyName.length() == 0 )
+				return false;
+			
+			if ( ( m_proxyPwd == null || m_proxyPwd.length() == 0 ) )
+				return false;
+		}
 		
 		if ( m_rootType == null || m_rootType == NetFolderRootType.FAMT || m_rootType == NetFolderRootType.UNKNOWN )
 			return false;

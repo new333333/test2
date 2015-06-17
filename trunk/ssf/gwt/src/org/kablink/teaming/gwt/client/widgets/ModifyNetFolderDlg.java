@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,7 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.gwt.client.widgets;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,11 +101,10 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
-
 /**
- * This dialog can be used to create a net folder or modify a net folder.
- * @author jwootton
- *
+ * This dialog can be used to create or modify a Net Folder.
+ * 
+ * @author jwootton@novell.com
  */
 public class ModifyNetFolderDlg extends DlgBox
 	implements
@@ -320,7 +318,8 @@ public class ModifyNetFolderDlg extends DlgBox
 
 			// Add the listbox where the user can select the net folder root
 			flowPanel = new FlowPanel();
-			m_netFolderRootsListbox = new ListBox( false );
+			m_netFolderRootsListbox = new ListBox();
+			m_netFolderRootsListbox.setMultipleSelect( false );
 			m_netFolderRootsListbox.setVisibleItemCount( 1 );
 			m_netFolderRootsListbox.setSelectedIndex( 0 );
 			flowPanel.add( m_netFolderRootsListbox );
@@ -1255,6 +1254,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	/**
 	 * Return the ID of the selected net folder root.
 	 */
+	@SuppressWarnings("unused")
 	private Long getNetFolderRootId()
 	{
 		NetFolderRoot root;
@@ -1948,7 +1948,6 @@ public class ModifyNetFolderDlg extends DlgBox
 		NetFolder netFolder;
 		NetFolderRoot root;
 		AsyncCallback<VibeRpcResponse> rpcCallback;
-		TestNetFolderConnectionCmd cmd;
 
 		// Is there a "test connection" request currently running?
 		if ( m_inProgressPanel.isVisible() )
@@ -2009,14 +2008,11 @@ public class ModifyNetFolderDlg extends DlgBox
 				}						
 			};
 			
-			// Issue an rpc request to test net folder root connection
-			cmd = new TestNetFolderConnectionCmd( 
-											root.getName(),
-											root.getRootType(),
-											root.getRootPath(),
-											netFolder.getRelativePath(),
-											root.getProxyName(),
-											root.getProxyPwd() ); 
+			// Issue a GWT RPC request to test net folder root connection.
+			TestNetFolderConnectionCmd cmd;
+			if ( root.getUseProxyIdentity() )
+			     cmd = new TestNetFolderConnectionCmd( root.getName(), root.getRootType(), root.getRootPath(), netFolder.getRelativePath(), root.getProxyIdentity()                 ); 
+			else cmd = new TestNetFolderConnectionCmd( root.getName(), root.getRootType(), root.getRootPath(), netFolder.getRelativePath(), root.getProxyName(), root.getProxyPwd() ); 
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
 	}
