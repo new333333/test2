@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -129,7 +129,6 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.IndexSynchronizationManager;
-import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.survey.Survey;
@@ -3027,6 +3026,11 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 				reply.setAllowPlayWithOtherApps(playValue);
 			}
 
+			Boolean forcePinCodeValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_FORCE_PIN_CODE);
+			if (null != forcePinCodeValue) {
+				reply.setForcePinCode(forcePinCodeValue);
+			}
+
 			// Mobile Application Management (MAM) settings.
 			Boolean cutCopyEnabledValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED);
 			if (null != cutCopyEnabledValue) {
@@ -3131,6 +3135,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 		String pwdValue;
 		String contentValue;
 		String playValue;
+		String forcePinCodeValue;
 		
 		// Mobile Application Management (MAM) settings.
 		String cutCopyEnabledValue;
@@ -3141,10 +3146,11 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 		String iosApplicationsValue;
 		
 		if (config.getUseDefaultSettings()) {
-			accessValue  =
-			contentValue =
-			playValue    =
-			pwdValue     = null;
+			accessValue       =
+			contentValue      =
+			playValue         =
+			forcePinCodeValue =
+			pwdValue          = null;
 			
 			// Mobile Application Management (MAM) settings.
 			cutCopyEnabledValue              =
@@ -3156,10 +3162,11 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 		}
 		
 		else {
-			accessValue  = String.valueOf(config.getMobileAppsEnabled()     );
-			contentValue = String.valueOf(config.getAllowCacheContent()     );
-			playValue    = String.valueOf(config.getAllowPlayWithOtherApps());
-			pwdValue     = String.valueOf(config.getAllowCachePwd()         );
+			accessValue       = String.valueOf(config.getMobileAppsEnabled()     );
+			contentValue      = String.valueOf(config.getAllowCacheContent()     );
+			playValue         = String.valueOf(config.getAllowPlayWithOtherApps());
+			forcePinCodeValue = String.valueOf(config.getForcePinCode()          );
+			pwdValue          = String.valueOf(config.getAllowCachePwd()         );
 			
 			// Mobile Application Management (MAM) settings.
 			cutCopyEnabledValue              = String.valueOf(config.getMobileCutCopyEnabled()                    );
@@ -3179,10 +3186,11 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     	// Store the properties to save into a Map<String, Object> so
     	// we can write them out in a single transaction...
 		Map<String, Object> propMap = new HashMap<String, Object>();
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR,          accessValue );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD,            pwdValue    );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT,        contentValue);
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS, playValue   );
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR,          accessValue      );
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD,            pwdValue         );
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT,        contentValue     );
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS, playValue        );
+		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_FORCE_PIN_CODE,       forcePinCodeValue);
 		
 		// Mobile Application Management (MAM) settings.
 		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED,                         cutCopyEnabledValue             );
@@ -3364,7 +3372,6 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     @Override
     public void upgradeExternalGroupsAndTeams()
     {
-    	User guestUser;
     	List<User> listOfExternalUsers;
     	HashMap<Long,Group> listOfCompletedWork;
     	

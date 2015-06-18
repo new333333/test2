@@ -3096,6 +3096,7 @@ public interface GwtTeamingMessages extends Messages {
 	String configureMobileAppsDlgButton_Add();
 	String configureMobileAppsDlgButton_Delete();
 	String configureMobileAppsDlgDisableApplicationsOnRootedOrJailBrokenDevices();
+	String configureMobileAppsDlgForcePinCode();
 	String configureMobileAppsDlgHeader();
 	String configureMobileAppsDlgHeader2();
 	String configureMobileAppsDlgHeader3();

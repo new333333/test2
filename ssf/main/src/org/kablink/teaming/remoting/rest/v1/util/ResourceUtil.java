@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -558,6 +558,7 @@ public class ResourceUtil {
         mobileAppConfig.setAllowCachedContent(mac.getMobileAppsAllowCacheContent());
         mobileAppConfig.setAllowCachedPassword(mac.getMobileAppsAllowCachePwd());
         mobileAppConfig.setAllowPlayWithOtherApps(mac.getMobileAppsAllowPlayWithOtherApps());
+        mobileAppConfig.setForcePinCode(mac.getMobileAppsForcePinCode());
         mobileAppConfig.setEnabled(mac.getMobileAppsEnabled());
         mobileAppConfig.setSyncInterval(mac.getMobileAppsSyncInterval());
         mobileAppConfig.setAllowCutCopy(mac.getMobileCutCopyEnabled());
@@ -588,6 +589,7 @@ public class ResourceUtil {
         mobileAppConfig.setAllowCachedContent(mac.getAllowCacheContent());
         mobileAppConfig.setAllowCachedPassword(mac.getAllowCachePwd());
         mobileAppConfig.setAllowPlayWithOtherApps(mac.getAllowPlayWithOtherApps());
+        mobileAppConfig.setForcePinCode(mac.getForcePinCode());
         mobileAppConfig.setEnabled(mac.getMobileAppsEnabled());
         mobileAppConfig.setAllowCutCopy(mac.getMobileCutCopyEnabled());
         mobileAppConfig.setAllowRootedDevices(Boolean.FALSE.equals(mac.getMobileDisableOnRootedOrJailBrokenDevices()));

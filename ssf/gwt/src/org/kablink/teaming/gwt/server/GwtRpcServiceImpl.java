@@ -198,6 +198,7 @@ import org.kablink.teaming.gwt.server.util.GwtHtml5Helper;
 import org.kablink.teaming.gwt.server.util.GwtKeyShieldSSOHelper;
 import org.kablink.teaming.gwt.server.util.GwtLdapHelper;
 import org.kablink.teaming.gwt.server.util.GwtLogHelper;
+import org.kablink.teaming.gwt.server.util.GwtMobileApplicationsHelper;
 import org.kablink.teaming.gwt.server.util.GwtMobileDeviceHelper;
 import org.kablink.teaming.gwt.server.util.GwtNetFolderHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
@@ -2319,12 +2320,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_MOBILE_APPS_CONFIG:
-		{
-			GwtZoneMobileAppsConfig mobileAppsConfiguration; 
-
-			mobileAppsConfiguration = GwtServerHelper.getMobileAppsConfiguration( this );
-			response = new VibeRpcResponse( mobileAppsConfiguration );
+		case GET_MOBILE_APPS_CONFIG:  {
+			GwtZoneMobileAppsConfig mobileAppsConfiguration = GwtMobileApplicationsHelper.getMobileAppsConfiguration(this, req);
+			response = new VibeRpcResponse(mobileAppsConfiguration);
 			return response;
 		}
 		
@@ -2501,14 +2499,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_PRINCIPAL_MOBILE_APPS_CONFIG:
-		{
-			GwtPrincipalMobileAppsConfig config;
-			GetPrincipalMobileAppsConfigCmd gpmacCmd;
-
-			gpmacCmd = (GetPrincipalMobileAppsConfigCmd) cmd;
-			config = GwtServerHelper.getPrincipalMobileAppsConfig( this, gpmacCmd.getPrincipalId() );
-			response = new VibeRpcResponse( config );
+		case GET_PRINCIPAL_MOBILE_APPS_CONFIG:  {
+			GetPrincipalMobileAppsConfigCmd gpmacCmd = ((GetPrincipalMobileAppsConfigCmd) cmd);
+			GwtPrincipalMobileAppsConfig config = GwtMobileApplicationsHelper.getPrincipalMobileAppsConfig(this, req, gpmacCmd.getPrincipalId());
+			response = new VibeRpcResponse(config);
 			return response;
 		}
 		
@@ -3704,14 +3698,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case SAVE_MOBILE_APPS_CONFIGURATION:
-		{
-			SaveMobileAppsConfigurationCmd smacCmd;
-			Boolean result;
-			
-			smacCmd = ((SaveMobileAppsConfigurationCmd) cmd);
-			result = GwtServerHelper.saveMobileAppsConfiguration( this, smacCmd.getMobileAppsConfiguration() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+		case SAVE_MOBILE_APPS_CONFIGURATION:  {
+			SaveMobileAppsConfigurationCmd smacCmd = ((SaveMobileAppsConfigurationCmd) cmd);
+			Boolean result = GwtMobileApplicationsHelper.saveMobileAppsConfiguration(this, req, smacCmd.getMobileAppsConfiguration());
+			response = new VibeRpcResponse( new BooleanRpcResponseData(result));
 			return response;
 		}
 		
@@ -3881,18 +3871,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case SAVE_PRINCIPAL_MOBILE_APPS_CONFIGURATION:
-		{
-			SavePrincipalMobileAppsConfigCmd spmacCmd;
-			SavePrincipalMobileAppsConfigRpcResponseData result;
-			
-			spmacCmd = ((SavePrincipalMobileAppsConfigCmd) cmd);
-			result = GwtServerHelper.savePrincipalMobileAppsConfig(
-															this,
-															spmacCmd.getConfig(),
-															spmacCmd.getPrincipalIds(),
-															spmacCmd.getPrincipalsAreUsers());
-			response = new VibeRpcResponse( result );
+		case SAVE_PRINCIPAL_MOBILE_APPS_CONFIGURATION:  {
+			SavePrincipalMobileAppsConfigCmd spmacCmd = ((SavePrincipalMobileAppsConfigCmd) cmd);
+			SavePrincipalMobileAppsConfigRpcResponseData result = GwtMobileApplicationsHelper.savePrincipalMobileAppsConfig(
+				this,
+				req,
+				spmacCmd.getConfig(),
+				spmacCmd.getPrincipalIds(),
+				spmacCmd.getPrincipalsAreUsers());
+			response = new VibeRpcResponse(result);
 			return response;
 		}
 		

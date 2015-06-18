@@ -190,5 +190,14 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
             </column>
         </addColumn>
     </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="14">
+        <comment>Add force pin code option to mobile applications configuration for Filr</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsForcePinCode" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

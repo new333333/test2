@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,16 +38,16 @@ import org.kablink.teaming.util.SPropsUtil;
  * Component of zoneConfig that holds the settings for mobile
  * applications.
  * 
- * @author jwootton
+ * @author drfoster@novell.com
  */
 @SuppressWarnings("unused")
-public class MobileAppsConfig
-{
-	private Boolean mobileAppsEnabled;
-	private Boolean mobileAppsAllowCachePwd;
-	private Boolean mobileAppsAllowCacheContent;
-	private Boolean mobileAppsAllowPlayWithOtherApps;
-	private Integer mobileAppsSyncInterval;
+public class MobileAppsConfig {
+	private Boolean	mobileAppsEnabled;					//
+	private Boolean	mobileAppsAllowCachePwd;			//
+	private Boolean	mobileAppsAllowCacheContent;		//
+	private Boolean	mobileAppsAllowPlayWithOtherApps;	//
+	private Boolean	mobileAppsForcePinCode;				//
+	private Integer	mobileAppsSyncInterval;				//
 
 	// The following are the data members for the Mobile Application
 	// Management (MAM) settings.
@@ -63,11 +63,10 @@ public class MobileAppsConfig
      * Note:  The ordinal numbers for these MUST MATCH EXACTLY
      * those defined in GwtMobileOpenInSetting.
      */
-    public enum MobileOpenInSetting
-    {
-    	DISABLED( 0 ),
-    	ALL_APPLICATIONS( 1 ),
-    	WHITE_LIST( 2 );
+    public enum MobileOpenInSetting {
+    	DISABLED(0),
+    	ALL_APPLICATIONS(1),
+    	WHITE_LIST(2);
     	
     	private int m_value;
 
@@ -76,8 +75,7 @@ public class MobileAppsConfig
     	 * 
     	 * @param value
     	 */
-    	MobileOpenInSetting( int value )
-    	{
+    	MobileOpenInSetting(int value) {
     		m_value = value;
     	}
 
@@ -86,8 +84,7 @@ public class MobileAppsConfig
     	 * 
     	 * @return
     	 */
-    	public int getValue()
-    	{
+    	public int getValue() {
     		return m_value;
     	}
 
@@ -98,118 +95,112 @@ public class MobileAppsConfig
     	 * 
     	 * @return
     	 */
-    	public static MobileOpenInSetting valueOf( int setting )
-    	{
+    	public static MobileOpenInSetting valueOf(int setting) {
     		MobileOpenInSetting reply;
-    		if      ( DISABLED.getValue()   == setting ) reply = MobileOpenInSetting.DISABLED;
-    		else if ( WHITE_LIST.getValue() == setting ) reply = MobileOpenInSetting.WHITE_LIST;
-    		else                                         reply = MobileOpenInSetting.ALL_APPLICATIONS;
+    		if      (DISABLED.getValue()   == setting) reply = MobileOpenInSetting.DISABLED;
+    		else if (WHITE_LIST.getValue() == setting) reply = MobileOpenInSetting.WHITE_LIST;
+    		else                                       reply = MobileOpenInSetting.ALL_APPLICATIONS;
     		return reply;
     	}
     }
 	
 	/**
-	 * 
+	 * Constructor method. 
 	 */
-	public MobileAppsConfig()
-	{
+	public MobileAppsConfig() {
 		super();
 		this.mobileOpenInWhiteLists = new MobileOpenInWhiteLists();
 	}
 
 	/**
-	 * 
 	 */
-	public Boolean getMobileAppsAllowCacheContent()
-	{
-		if ( mobileAppsAllowCacheContent == null )
-			return SPropsUtil.getBoolean( "mobile.apps.allow.cache.content.default", true );
-
-		return mobileAppsAllowCacheContent;
+	public Boolean getMobileAppsAllowCacheContent() {
+		if (this.mobileAppsAllowCacheContent == null) {
+			return SPropsUtil.getBoolean("mobile.apps.allow.cache.content.default", true);
+		}
+		return this.mobileAppsAllowCacheContent;
 	}
 	
 	/**
-	 * 
 	 */
-	public Boolean getMobileAppsAllowCachePwd()
-	{
-		if ( mobileAppsAllowCachePwd == null )
-			return SPropsUtil.getBoolean( "mobile.apps.allow.cache.pwd.default", true );
-		
-		return mobileAppsAllowCachePwd;
+	public Boolean getMobileAppsAllowCachePwd() {
+		if (this.mobileAppsAllowCachePwd == null) {
+			return SPropsUtil.getBoolean("mobile.apps.allow.cache.pwd.default", true);
+		}
+		return this.mobileAppsAllowCachePwd;
 	}
 
 	/**
-	 * 
 	 */
-	public Boolean getMobileAppsAllowPlayWithOtherApps()
-	{
-		if ( mobileAppsAllowPlayWithOtherApps == null )
-			return SPropsUtil.getBoolean( "mobile.apps.allow.play.with.other.apps.default", true );
-		
-		return mobileAppsAllowPlayWithOtherApps;
+	public Boolean getMobileAppsAllowPlayWithOtherApps() {
+		if (this.mobileAppsAllowPlayWithOtherApps == null) {
+			return SPropsUtil.getBoolean("mobile.apps.allow.play.with.other.apps.default", true);
+		}
+		return this.mobileAppsAllowPlayWithOtherApps;
 	}
 	
 	/**
-	 * 
 	 */
-	public Boolean getMobileAppsEnabled()
-	{
-		if( mobileAppsEnabled == null )
-			return SPropsUtil.getBoolean( "mobile.apps.enabled.default", true );
-		
-		return mobileAppsEnabled;
+	public Boolean getMobileAppsForcePinCode() 	{
+		if (this.mobileAppsForcePinCode == null) {
+			return SPropsUtil.getBoolean("mobile.apps.force.pin.code.default", false);
+		}
+		return this.mobileAppsForcePinCode;
+	}
+	
+	/**
+	 */
+	public Boolean getMobileAppsEnabled() {
+		if(this.mobileAppsEnabled == null) {
+			return SPropsUtil.getBoolean("mobile.apps.enabled.default", true);
+		}
+		return this.mobileAppsEnabled;
 	}
 
 	/**
 	 * The sync interval is in minutes.
 	 */
-	public int getMobileAppsSyncInterval()
-	{
-		if ( mobileAppsSyncInterval == null )
-			return SPropsUtil.getInt( "mobile.apps.sync.interval.default", 15 );
-		
-		return mobileAppsSyncInterval.intValue();
+	public int getMobileAppsSyncInterval() {
+		if (this.mobileAppsSyncInterval == null) {
+			return SPropsUtil.getInt("mobile.apps.sync.interval.default", 15);
+		}
+		return this.mobileAppsSyncInterval.intValue();
 	}
 
 	/**
-	 * 
 	 */
-	public void setMobileAppsAllowCacheContent( Boolean allow )
-	{
-		mobileAppsAllowCacheContent = allow;
+	public void setMobileAppsAllowCacheContent(Boolean allow) {
+		this.mobileAppsAllowCacheContent = allow;
 	}
 	
 	/**
-	 * 
 	 */
-	public void setMobileAppsAllowCachePwd( Boolean allow )
-	{
-		mobileAppsAllowCachePwd = allow;
+	public void setMobileAppsAllowCachePwd(Boolean allow) {
+		this.mobileAppsAllowCachePwd = allow;
 	}
 
 	/**
-	 * 
 	 */
-	public void setMobileAppsAllowPlayWithOtherApps( Boolean allow )
-	{
-		mobileAppsAllowPlayWithOtherApps = allow;
+	public void setMobileAppsAllowPlayWithOtherApps(Boolean allow) {
+		this.mobileAppsAllowPlayWithOtherApps = allow;
 	}
 
 	/**
-	 * 
 	 */
-	public void setMobileAppsEnabled( Boolean enabled )
-	{
-		mobileAppsEnabled = enabled;
+	public void setMobileAppsForcePinCode(Boolean forcePinCode) {
+		this.mobileAppsForcePinCode = forcePinCode;
+	}
+
+	/**
+	 */
+	public void setMobileAppsEnabled(Boolean enabled) {
+		this.mobileAppsEnabled = enabled;
 	}
 	
 	/**
-	 * 
 	 */
-	public void setMobileAppsSyncInterval( Integer intervalInMinutes )
-	{
-		mobileAppsSyncInterval = intervalInMinutes;
+	public void setMobileAppsSyncInterval(Integer intervalInMinutes) {
+		this.mobileAppsSyncInterval = intervalInMinutes;
 	}
 	
     /**
@@ -218,56 +209,42 @@ public class MobileAppsConfig
      * 
      * @return
      */
-    public Boolean getMobileCutCopyEnabled()
-    {
-		if ( null == mobileCutCopyEnabled )
-		{
-			return SPropsUtil.getBoolean( "mobile.apps.cut.copy.enabled", true );
+    public Boolean getMobileCutCopyEnabled() {
+		if (null == this.mobileCutCopyEnabled) {
+			return SPropsUtil.getBoolean("mobile.apps.cut.copy.enabled", true);
 		}
-
     	return this.mobileCutCopyEnabled;
     }
     
-    public Boolean getMobileAndroidScreenCaptureEnabled()
-    {
-    	if ( null == mobileAndroidScreenCaptureEnabled )
-    	{
-			return SPropsUtil.getBoolean( "mobile.apps.android.screen.capture.enabled", true );
+    public Boolean getMobileAndroidScreenCaptureEnabled() {
+    	if (null == this.mobileAndroidScreenCaptureEnabled) {
+			return SPropsUtil.getBoolean("mobile.apps.android.screen.capture.enabled", true);
     	}
-    	
     	return this.mobileAndroidScreenCaptureEnabled;
     }
     
-    public Boolean getMobileDisableOnRootedOrJailBrokenDevices()
-    {
-    	if ( null == mobileDisableOnRootedOrJailBrokenDevices )
-    	{
-			return SPropsUtil.getBoolean( "mobile.apps.disable.on.rooted.or.jail.broken.devices", true );
+    public Boolean getMobileDisableOnRootedOrJailBrokenDevices() {
+    	if (null == this.mobileDisableOnRootedOrJailBrokenDevices) {
+			return SPropsUtil.getBoolean("mobile.apps.disable.on.rooted.or.jail.broken.devices", true);
     	}
-    	
     	return this.mobileDisableOnRootedOrJailBrokenDevices;
     }
 
     /*
      * private:  Used only by hibernate.
      */
-	private Integer getMobileOpenIn()
-    {
+	private Integer getMobileOpenIn() {
     	return this.mobileOpenIn;
     }
     
-    public MobileOpenInSetting getMobileOpenInEnum()
-    {
-    	if ( null == this.mobileOpenIn )
-    	{
+    public MobileOpenInSetting getMobileOpenInEnum() {
+    	if (null == this.mobileOpenIn) {
     		return null;
     	}
-    	
-    	return MobileOpenInSetting.valueOf( this.mobileOpenIn );
+    	return MobileOpenInSetting.valueOf(this.mobileOpenIn);
     }
     
-    public MobileOpenInWhiteLists getMobileOpenInWhiteLists()
-    {
+    public MobileOpenInWhiteLists getMobileOpenInWhiteLists() {
     	return this.mobileOpenInWhiteLists;
     }
     
@@ -279,10 +256,10 @@ public class MobileAppsConfig
      * 
      * @param
      */
-    public  void setMobileCutCopyEnabled(                     Boolean                mobileCutCopyEnabled )                     { this.mobileCutCopyEnabled                     = mobileCutCopyEnabled;                                       }
-    public  void setMobileAndroidScreenCaptureEnabled(        Boolean                mobileAndroidScreenCaptureEnabled )        { this.mobileAndroidScreenCaptureEnabled        = mobileAndroidScreenCaptureEnabled;                          }
-    public  void setMobileDisableOnRootedOrJailBrokenDevices( Boolean                mobileDisableOnRootedOrJailBrokenDevices ) { this.mobileDisableOnRootedOrJailBrokenDevices = mobileDisableOnRootedOrJailBrokenDevices;                   }
-    private void setMobileOpenIn(                             Integer                mobileOpenIn )                             { this.mobileOpenIn                             = mobileOpenIn;                                               }
-    public  void setMobileOpenInEnum(                         MobileOpenInSetting    mobileOpenIn )                             { this.mobileOpenIn                             = ((null == mobileOpenIn) ? null : mobileOpenIn.getValue());  }
-    public  void setMobileOpenInWhiteLists(                   MobileOpenInWhiteLists mobileOpenInWhiteLists )                   { this.mobileOpenInWhiteLists                   = mobileOpenInWhiteLists;                                     }
+    public  void setMobileCutCopyEnabled(                    Boolean                mobileCutCopyEnabled)                     {this.mobileCutCopyEnabled                     = mobileCutCopyEnabled;                                     }
+    public  void setMobileAndroidScreenCaptureEnabled(       Boolean                mobileAndroidScreenCaptureEnabled)        {this.mobileAndroidScreenCaptureEnabled        = mobileAndroidScreenCaptureEnabled;                        }
+    public  void setMobileDisableOnRootedOrJailBrokenDevices(Boolean                mobileDisableOnRootedOrJailBrokenDevices) {this.mobileDisableOnRootedOrJailBrokenDevices = mobileDisableOnRootedOrJailBrokenDevices;                 }
+    private void setMobileOpenIn(                            Integer                mobileOpenIn)                             {this.mobileOpenIn                             = mobileOpenIn;                                             }
+    public  void setMobileOpenInEnum(                        MobileOpenInSetting    mobileOpenIn)                             {this.mobileOpenIn                             = ((null == mobileOpenIn) ? null : mobileOpenIn.getValue());}
+    public  void setMobileOpenInWhiteLists(                  MobileOpenInWhiteLists mobileOpenInWhiteLists)                   {this.mobileOpenInWhiteLists                   = mobileOpenInWhiteLists;                                   }
 }
