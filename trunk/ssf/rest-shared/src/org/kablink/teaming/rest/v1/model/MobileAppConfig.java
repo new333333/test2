@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  *
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -18,7 +18,7 @@
  * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -55,6 +55,7 @@ public class MobileAppConfig {
     private Boolean allowCachedPassword;
    	private Boolean allowCachedContent;
    	private Boolean allowPlayWithOtherApps;
+   	private Boolean forcePinCode;
    	private Integer syncInterval;
     private Boolean	allowCutCopy;
     private Boolean	allowScreenCapture;
@@ -97,6 +98,15 @@ public class MobileAppConfig {
 
     public void setAllowPlayWithOtherApps(Boolean allowPlayWithOtherApps) {
         this.allowPlayWithOtherApps = allowPlayWithOtherApps;
+    }
+
+    @XmlElement(name="force_pin_code")
+    public Boolean getForcePinCode() {
+        return forcePinCode;
+    }
+
+    public void setForcePinCode(Boolean forcePinCode) {
+        this.forcePinCode = forcePinCode;
     }
 
     @XmlElement(name="sync_interval")

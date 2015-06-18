@@ -611,6 +611,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT = "userMobileApps_CacheContent";
     public static final String USER_PROPERTY_MOBILE_APPS_CACHE_PWD = "userMobileApps_CachePwd";
     public static final String USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS = "userMobileApps_PlayWithOtherApps";
+    public static final String USER_PROPERTY_MOBILE_APPS_FORCE_PIN_CODE = "userMobileApps_ForcePinCode";
     public static final String USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED = "userMobileApps_cutCopyEnabled";
     public static final String USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED = "userMobileApps_androidScreenCaptureEnabled";
     public static final String USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES = "userMobileApps_disableOnJailBroken";

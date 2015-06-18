@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,209 +40,73 @@ import org.kablink.teaming.gwt.client.util.GwtMobileOpenInSetting;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class is used to hold the Mobile applications Configuration
+ * This class is used to hold the Mobile Applications Configuration
  * data stored at the zone level.
  * 
- * @author jwootton
+ * @author drfoster@novell.com
  */
-public class GwtZoneMobileAppsConfig
-	implements IsSerializable, VibeRpcResponseData
-{
-	private boolean m_mobileAppsEnabled = true;
-	private boolean m_allowCachePwd = true;
-	private boolean m_allowCacheContent = true;
-	private boolean m_allowPlayWithOtherApps = true;
-	private int m_syncInterval = 15;
+public class GwtZoneMobileAppsConfig implements IsSerializable, VibeRpcResponseData {
+	private boolean	m_allowCacheContent      = true;	//
+	private boolean	m_allowCachePwd          = true;	//
+	private boolean	m_allowPlayWithOtherApps = true;	//
+	private boolean m_forcePinCode;						//
+	private boolean	m_mobileAppsEnabled      = true;	//
+	private int		m_syncInterval           = 15;		//
 	
 	// The following are the data members for the Mobile Application
 	// Management (MAM) settings.
-    private boolean					m_mobileCutCopyEnabled;						//
     private boolean					m_mobileAndroidScreenCaptureEnabled;		//
+    private boolean					m_mobileCutCopyEnabled;						//
     private boolean					m_mobileDisableOnRootedOrJailBrokenDevices;	//
     private GwtMobileOpenInSetting	m_mobileOpenIn;								//
     private List<String>			m_androidApplications;						//
     private List<String>			m_iosApplications;							//
     
 	/**
+	 * Constructor method.
 	 * 
+	 * Zero parameter constructor required for GWT serialization.
 	 */
-	public GwtZoneMobileAppsConfig()
-	{
+	public GwtZoneMobileAppsConfig() {
+		// Initialize the super class.
+		super();
 	}
 
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public boolean getAllowCacheContent()
-	{
-		return m_allowCacheContent;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getAllowCachePwd()
-	{
-		return m_allowCachePwd;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getAllowPlayWithOtherApps()
-	{
-		return m_allowPlayWithOtherApps;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getMobileAppsEnabled()
-	{
-		return m_mobileAppsEnabled;
-	}
-	
-	/**
-	 * The sync interval is in minutes.
-	 */
-	public int getSyncInterval()
-	{
-		return m_syncInterval;
-	}
+	public boolean getAllowCacheContent()      {return m_allowCacheContent;     }
+	public boolean getAllowCachePwd()          {return m_allowCachePwd;         }
+	public boolean getAllowPlayWithOtherApps() {return m_allowPlayWithOtherApps;}
+	public boolean getForcePinCode()           {return m_forcePinCode;          }
+	public boolean getMobileAppsEnabled()      {return m_mobileAppsEnabled;     }
+	public int     getSyncInterval()           {return m_syncInterval;          }
+
+    public boolean                getMobileAndroidScreenCaptureEnabled()        {return m_mobileAndroidScreenCaptureEnabled;       }
+    public boolean                getMobileCutCopyEnabled()                     {return m_mobileCutCopyEnabled;                    }
+    public boolean                getMobileDisableOnRootedOrJailBrokenDevices() {return m_mobileDisableOnRootedOrJailBrokenDevices;}
+    public GwtMobileOpenInSetting getMobileOpenIn()                             {return m_mobileOpenIn;                            }
+    public List<String>           getAndroidApplications()                      {return m_androidApplications;                     }
+    public List<String>           getIosApplications()                          {return m_iosApplications;                         }
 
 	/**
+	 * Set'er methods.
 	 * 
+	 * @param
 	 */
-    public boolean getMobileCutCopyEnabled()
-    {
-    	return m_mobileCutCopyEnabled;
-    }
-    
-	/**
-	 * 
-	 */
-    public boolean getMobileAndroidScreenCaptureEnabled()
-    {
-    	return m_mobileAndroidScreenCaptureEnabled;
-    }
-    
-	/**
-	 * 
-	 */
-    public boolean getMobileDisableOnRootedOrJailBrokenDevices()
-    {
-    	return m_mobileDisableOnRootedOrJailBrokenDevices;
-    }
-    
-	/**
-	 * 
-	 */
-    public GwtMobileOpenInSetting getMobileOpenIn()
-    {
-    	return m_mobileOpenIn;
-    }
-    
-	/**
-	 * 
-	 */
-    public List<String> getAndroidApplications()
-    {
-    	return m_androidApplications;
-    }
-    
-	/**
-	 * 
-	 */
-    public List<String> getIosApplications()
-    {
-    	return m_iosApplications;
-    }
-
-	/**
-	 * 
-	 */
-	public void setAllowCacheContent( boolean allow )
-	{
-		m_allowCacheContent = allow;
-	}
+	public void setAllowCacheContent(     boolean allow)             {m_allowCacheContent      = allow;            }
+	public void setAllowCachePwd(         boolean allow)             {m_allowCachePwd          = allow;            }
+	public void setAllowPlayWithOtherApps(boolean allow)             {m_allowPlayWithOtherApps = allow;            }
+	public void setForcePinCode(          boolean forcePinCode)      {m_forcePinCode           = forcePinCode;     }
+	public void setMobileAppsEnabled(     boolean enabled)           {m_mobileAppsEnabled      = enabled;          }
+	public void setSyncInterval(          int     intervalInMinutes) {m_syncInterval           = intervalInMinutes;}
 	
-	/**
-	 * 
-	 */
-	public void setAllowCachePwd( boolean allow )
-	{
-		m_allowCachePwd = allow;
-	}
-
-	/**
-	 * 
-	 */
-	public void setAllowPlayWithOtherApps( boolean allow )
-	{
-		m_allowPlayWithOtherApps = allow;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setMobileAppsEnabled( boolean enabled )
-	{
-		m_mobileAppsEnabled = enabled;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setSyncInterval( int intervalInMinutes )
-	{
-		m_syncInterval = intervalInMinutes;
-	}
-	
-	/**
-	 * 
-	 */
-    public void setMobileCutCopyEnabled(boolean mobileCutCopyEnabled)
-    {
-    	m_mobileCutCopyEnabled = mobileCutCopyEnabled;
-    }
-    
-	/**
-	 * 
-	 */
-    public void setMobileAndroidScreenCaptureEnabled(boolean mobileAndroidScreenCaptureEnabled)
-    {
-    	m_mobileAndroidScreenCaptureEnabled = mobileAndroidScreenCaptureEnabled;
-    }
-    
-	/**
-	 * 
-	 */
-    public void setMobileDisableOnRootedOrJailBrokenDevices(boolean mobileDisableOnRootedOrJailBrokenDevices)
-    {
-    	m_mobileDisableOnRootedOrJailBrokenDevices = mobileDisableOnRootedOrJailBrokenDevices;
-    }
-    
-	/**
-	 * 
-	 */
-    public void setMobileOpenIn(GwtMobileOpenInSetting mobileOpenIn)
-    {
-    	m_mobileOpenIn = mobileOpenIn;
-    }
-    
-	/**
-	 * 
-	 */
-    public void setAndroidApplications(List<String> androidApplications)
-    {
-    	m_androidApplications = androidApplications;
-    }
-    
-	/**
-	 * 
-	 */
-    public void setIosApplications(List<String> iosApplications)
-    {
-    	m_iosApplications = iosApplications;
-    }
+    public void setMobileAndroidScreenCaptureEnabled(       boolean                mobileAndroidScreenCaptureEnabled)        {m_mobileAndroidScreenCaptureEnabled        = mobileAndroidScreenCaptureEnabled;       }
+    public void setMobileCutCopyEnabled(                    boolean                mobileCutCopyEnabled)                     {m_mobileCutCopyEnabled                     = mobileCutCopyEnabled;                    }
+    public void setMobileDisableOnRootedOrJailBrokenDevices(boolean                mobileDisableOnRootedOrJailBrokenDevices) {m_mobileDisableOnRootedOrJailBrokenDevices = mobileDisableOnRootedOrJailBrokenDevices;}
+    public void setMobileOpenIn(                            GwtMobileOpenInSetting mobileOpenIn)                             {m_mobileOpenIn                             = mobileOpenIn;                            }
+    public void setAndroidApplications(                     List<String>           androidApplications)                      {m_androidApplications                      = androidApplications;                     }
+    public void setIosApplications(                         List<String>           iosApplications)                          {m_iosApplications                          = iosApplications;                         }
 }

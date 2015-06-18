@@ -74,6 +74,7 @@
 		<property name="mobileAppsAllowCachePwd"/>
    		<property name="mobileAppsAllowCacheContent"/>
    		<property name="mobileAppsAllowPlayWithOtherApps" column="mobileAppsAllowPlayWithOthers"/>
+		<property name="mobileAppsForcePinCode"/>
    		<property name="mobileAppsSyncInterval"/>
    		
 		<!-- The following are the fields for the Mobile -->

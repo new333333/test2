@@ -132,9 +132,6 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
-import org.kablink.teaming.domain.MobileAppsConfig;
-import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
-import org.kablink.teaming.domain.MobileOpenInWhiteLists;
 import org.kablink.teaming.domain.NameCompletionSettings;
 import org.kablink.teaming.domain.NameCompletionSettings.NCDisplayField;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
@@ -170,12 +167,10 @@ import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtNameCompletionSettings;
 import org.kablink.teaming.gwt.client.GwtNameCompletionSettings.GwtDisplayField;
 import org.kablink.teaming.gwt.client.GwtPrincipalFileSyncAppConfig;
-import org.kablink.teaming.gwt.client.GwtPrincipalMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtTimeZones;
 import org.kablink.teaming.gwt.client.GwtUser.ExtUserProvState;
-import org.kablink.teaming.gwt.client.GwtZoneMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
@@ -230,7 +225,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.PasswordPolicyInfoRpcResponseDa
 import org.kablink.teaming.gwt.client.rpc.shared.PrincipalInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersStateRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
@@ -269,7 +263,6 @@ import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GroupType;
 import org.kablink.teaming.gwt.client.util.GroupType.GroupClass;
 import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
-import org.kablink.teaming.gwt.client.util.GwtMobileOpenInSetting;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.MilestoneStats;
 import org.kablink.teaming.gwt.client.util.PerEntityShareRightsInfo;
@@ -340,7 +333,6 @@ import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
-import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
@@ -6959,77 +6951,6 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Return a GwtMobileAppsConfiguration object that holds the mobile
-	 * application configuration data.
-	 * 
-	 * @param bs
-	 * 
-	 * @return
-	 */
-	public static GwtZoneMobileAppsConfig getMobileAppsConfiguration(AllModulesInjected bs) {
-		ZoneModule zm = bs.getZoneModule();
-		ZoneConfig zc = zm.getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-		MobileAppsConfig mobileAppsConfig = zc.getMobileAppsConfig();
-		
-		// Get the whether mobile applications are enabled.
-		GwtZoneMobileAppsConfig gwtMobileAppsConfig = new GwtZoneMobileAppsConfig();
-		gwtMobileAppsConfig.setMobileAppsEnabled(mobileAppsConfig.getMobileAppsEnabled());
-		
-		// Get the setting that determines whether the mobile
-		// applications can remember the password.
-		gwtMobileAppsConfig.setAllowCachePwd(mobileAppsConfig.getMobileAppsAllowCachePwd());
-		
-		// Get the setting that determines if mobile applications can
-		// cache content.
-		gwtMobileAppsConfig.setAllowCacheContent(mobileAppsConfig.getMobileAppsAllowCacheContent());
-
-		// Get the setting that determines if the mobile applications
-		//can play with other applications.
-		gwtMobileAppsConfig.setAllowPlayWithOtherApps(mobileAppsConfig.getMobileAppsAllowPlayWithOtherApps());
-
-		// Get the Mobile applications sync interval.
-		gwtMobileAppsConfig.setSyncInterval(mobileAppsConfig.getMobileAppsSyncInterval());
-		
-		// Get the Mobile Application Management (MAM) settings.
-		gwtMobileAppsConfig.setMobileCutCopyEnabled(                    mobileAppsConfig.getMobileCutCopyEnabled()                    );
-		gwtMobileAppsConfig.setMobileAndroidScreenCaptureEnabled(       mobileAppsConfig.getMobileAndroidScreenCaptureEnabled()       );
-		gwtMobileAppsConfig.setMobileDisableOnRootedOrJailBrokenDevices(mobileAppsConfig.getMobileDisableOnRootedOrJailBrokenDevices());
-		GwtMobileOpenInSetting gwtMoi;
-		MobileOpenInSetting moi = mobileAppsConfig.getMobileOpenInEnum();
-		if (null == moi) {
-			gwtMoi = GwtMobileOpenInSetting.ALL_APPLICATIONS;
-		}
-		
-		else {
-			switch (moi) {
-			default:
-			case ALL_APPLICATIONS:  gwtMoi = GwtMobileOpenInSetting.ALL_APPLICATIONS; break;
-			case DISABLED:          gwtMoi = GwtMobileOpenInSetting.DISABLED;         break;
-			case WHITE_LIST:        gwtMoi = GwtMobileOpenInSetting.WHITE_LIST;       break;
-			}
-		}
-		gwtMobileAppsConfig.setMobileOpenIn(gwtMoi);
-		
-		List<String> androidApplications;
-		List<String> iosApplications;
-		MobileOpenInWhiteLists mwl = mobileAppsConfig.getMobileOpenInWhiteLists();
-		if (null == mwl) {
-			androidApplications =
-			iosApplications     = null;
-		}
-		else {
-			androidApplications = mwl.getAndroidApplications();
-			iosApplications     = mwl.getIosApplications();
-		}
-		if (null == androidApplications) androidApplications = new ArrayList<String>();
-		if (null == iosApplications    ) iosApplications     = new ArrayList<String>();
-		gwtMobileAppsConfig.setAndroidApplications(MiscUtil.sortStringList(androidApplications));
-		gwtMobileAppsConfig.setIosApplications(    MiscUtil.sortStringList(iosApplications    ));
-		
-		return gwtMobileAppsConfig;
-	}
-	
-	/**
 	 * Returns the ID of the folder that a user will use as their My
 	 * Files container.
 	 * 
@@ -8974,52 +8895,6 @@ public class GwtServerHelper {
 		return reply;
 	}
 
-	/**
-	 * Return a GwtPrincipalMobileAppsConfig object that holds the
-	 * mobile application configuration data for the given user or
-	 * group.
-	 * 
-	 * @param bs
-	 * @param principalId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static GwtPrincipalMobileAppsConfig getPrincipalMobileAppsConfig(AllModulesInjected bs, Long principalId) throws GwtTeamingException {
-		try {
-			PrincipalMobileAppsConfig pConfig = bs.getProfileModule().getPrincipalMobileAppsConfig(principalId);
-			
-			GwtPrincipalMobileAppsConfig reply = new GwtPrincipalMobileAppsConfig();
-			boolean useDefault = pConfig.getUseDefaultSettings();
-			reply.setUseGlobalSettings(useDefault);
-			if (!useDefault) {
-				reply.setMobileAppsEnabled(                          pConfig.getMobileAppsEnabled()                       );
-				reply.setAllowCachePwd(                              pConfig.getAllowCachePwd()                           );
-				reply.setAllowCacheContent(                          pConfig.getAllowCacheContent()                       );
-				reply.setAllowPlayWithOtherApps(                     pConfig.getAllowPlayWithOtherApps()                  );
-				reply.setMobileCutCopyEnabled(                       pConfig.getMobileCutCopyEnabled()                    );
-				reply.setMobileAndroidScreenCaptureEnabled(          pConfig.getMobileAndroidScreenCaptureEnabled()       );
-				reply.setMobileDisableOnRootedOrJailBrokenDevices(   pConfig.getMobileDisableOnRootedOrJailBrokenDevices());
-				reply.setMobileOpenIn(GwtMobileOpenInSetting.valueOf(pConfig.getMobileOpenIn().ordinal() )                );
-				reply.setAndroidApplications(                        pConfig.getAndroidApplications()                     );
-				reply.setIosApplications(                            pConfig.getIosApplications()                         );
-			}
-			
-			return reply;
-		}
-		
-		catch (Exception ex) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					ex,
-					"GwtServerHelper.getPrincipalMobileAppsConfig( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
 	/**
 	 * Returns sharing rights information about the system and a list
 	 * of users, based on their IDs.
@@ -11370,75 +11245,6 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Save the given Mobile Apps configuration
-	 */
-	public static Boolean saveMobileAppsConfiguration(
-		AllModulesInjected allModules,
-		GwtZoneMobileAppsConfig gwtMobileAppsConfig ) throws GwtTeamingException
-	{
-		try {
-			AdminModule adminModule;
-			MobileAppsConfig mobileAppsConfig;
-			
-			adminModule = allModules.getAdminModule();
-			
-			mobileAppsConfig = new MobileAppsConfig();
-			mobileAppsConfig.setMobileAppsAllowCacheContent( gwtMobileAppsConfig.getAllowCacheContent() );
-			mobileAppsConfig.setMobileAppsAllowCachePwd( gwtMobileAppsConfig.getAllowCachePwd() );
-			mobileAppsConfig.setMobileAppsAllowPlayWithOtherApps( gwtMobileAppsConfig.getAllowPlayWithOtherApps() );
-			mobileAppsConfig.setMobileAppsEnabled( gwtMobileAppsConfig.getMobileAppsEnabled() );
-			mobileAppsConfig.setMobileAppsSyncInterval( new Integer( gwtMobileAppsConfig.getSyncInterval() ) );
-
-			// Save the various Mobile Application Management (MAM)
-			// settings.
-			mobileAppsConfig.setMobileCutCopyEnabled( gwtMobileAppsConfig.getMobileCutCopyEnabled() );
-			mobileAppsConfig.setMobileAndroidScreenCaptureEnabled( gwtMobileAppsConfig.getMobileAndroidScreenCaptureEnabled() );
-			mobileAppsConfig.setMobileDisableOnRootedOrJailBrokenDevices( gwtMobileAppsConfig.getMobileDisableOnRootedOrJailBrokenDevices() );
-			GwtMobileOpenInSetting gwtMoi = gwtMobileAppsConfig.getMobileOpenIn();
-			MobileOpenInSetting moi;
-			if ( null == gwtMoi )
-			{
-				moi = MobileOpenInSetting.ALL_APPLICATIONS;
-			}
-			else
-			{
-				switch ( gwtMoi )
-				{
-				default:
-				case ALL_APPLICATIONS:  moi = MobileOpenInSetting.ALL_APPLICATIONS; break;
-				case DISABLED:          moi = MobileOpenInSetting.DISABLED;         break;
-				case WHITE_LIST:        moi = MobileOpenInSetting.WHITE_LIST;       break;
-				}
-			}
-			mobileAppsConfig.setMobileOpenInEnum( moi );
-			MobileOpenInWhiteLists mwl = mobileAppsConfig.getMobileOpenInWhiteLists();
-			if ( null == mwl )
-			{
-				mwl = new MobileOpenInWhiteLists();
-				mobileAppsConfig.setMobileOpenInWhiteLists( mwl );
-			}
-			mwl.setMobileOpenInWhiteLists(
-				MiscUtil.sortStringList( gwtMobileAppsConfig.getAndroidApplications() ),
-				MiscUtil.sortStringList( gwtMobileAppsConfig.getIosApplications()   ) );
-			
-			adminModule.setMobileAppsConfig( mobileAppsConfig );
-	
-			return Boolean.TRUE;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtServerHelper.saveMobileAppsConfiguration( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
-	
-	/**
 	 * Save the PasswordPolicyConfig information.
 	 * 
 	 * @param bs
@@ -11693,94 +11499,6 @@ public class GwtServerHelper {
 		}
 		
 		return responseData;
-	}
-	
-	/**
-	 * Save the given GwtPrincipalMobileAppsConfig settings for the
-	 * given users or groups.
-	 *
-	 * @param bs
-	 * @param config
-	 * @param principalIds
-	 * @param principalsAreUsers
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static SavePrincipalMobileAppsConfigRpcResponseData savePrincipalMobileAppsConfig(AllModulesInjected bs, GwtPrincipalMobileAppsConfig config, List<Long> principalIds, boolean principalsAreUsers) throws GwtTeamingException {
-		try {
-			SavePrincipalMobileAppsConfigRpcResponseData responseData = new SavePrincipalMobileAppsConfigRpcResponseData();
-			if ((null == config) || (!(MiscUtil.hasItems(principalIds)))) {
-				responseData.addError("Invalid parameters passed to savePrincipalMobileAppsConfig()");
-				return responseData;
-			}
-
-			// Map the GWT based configuration to a non-GWT one.
-			PrincipalMobileAppsConfig pConfig = new PrincipalMobileAppsConfig();
-			boolean useDefault = config.getUseGlobalSettings();
-			pConfig.setUseDefaultSettings(useDefault);
-			if (!useDefault) {
-				pConfig.setMobileAppsEnabled(     config.getMobileAppsEnabled()     );
-				pConfig.setAllowCachePwd(         config.getAllowCachePwd()         );
-				pConfig.setAllowCacheContent(     config.getAllowCacheContent()     );
-				pConfig.setAllowPlayWithOtherApps(config.getAllowPlayWithOtherApps());
-				
-				// Mobile Application Management (MAM) settings.
-				pConfig.setMobileCutCopyEnabled(                    config.getMobileCutCopyEnabled()                    );
-				pConfig.setMobileAndroidScreenCaptureEnabled(       config.getMobileAndroidScreenCaptureEnabled()       );
-				pConfig.setMobileDisableOnRootedOrJailBrokenDevices(config.getMobileDisableOnRootedOrJailBrokenDevices());
-				pConfig.setMobileOpenIn(MobileOpenInSetting.valueOf(config.getMobileOpenIn().ordinal())                 );
-				pConfig.setAndroidApplications(                     config.getAndroidApplications()                     );
-				pConfig.setIosApplications(                         config.getIosApplications()                         );
-			}
-
-			ProfileModule pm = bs.getProfileModule();
-			for (Long pId:  principalIds) {
-				try {
-					// We write them individually so that we can capture
-					// errors individually.
-					pm.savePrincipalMobileAppsConfig(pId, principalsAreUsers, pConfig);
-				}
-				
-				catch (Exception ex) {
-					// Save the error in the response...
-					Principal p = pm.getEntry(pId);
-					String cause;
-					if (p.isDisabled()) {
-						String key;
-						if (principalsAreUsers)
-						     key = "save.user.mobile.app.config.error.disabled.user";
-						else key = "save.user.mobile.app.config.error.disabled.group";
-						cause = NLT.get(key);
-					}
-					else {
-						cause = ex.getLocalizedMessage();
-					}
-					String[] errorArgs = new String[] {p.getTitle(), cause};
-					String errMsg = NLT.get("save.user.mobile.app.config.error", errorArgs);
-					responseData.addError( errMsg );
-
-					// ...and log it.
-					GwtLogHelper.error(
-						m_logger,
-						"GwtServerHelper.savePrincipalMobileAppConfig( EXCEPTION ):  ",
-						ex);
-				}
-			}
-			
-			return responseData;
-		}
-		
-		catch (Exception ex) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					ex,
-					"GwtServerHelper.savePrincipalMobileAppsConfig( SOURCE EXCEPTION ):  ");
-		}
 	}
 	
 	/**
