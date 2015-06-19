@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GetterCallback;
@@ -46,12 +45,10 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineLabel;
 
-
-
 /**
+ * ?
  * 
  * @author jwootton
- *
  */
 public class LinkToEntryWidget extends VibeWidget
 {
@@ -111,7 +108,6 @@ public class LinkToEntryWidget extends VibeWidget
 	{
 		LinkToEntryProperties properties;
 		VibeFlowPanel mainPanel;
-		String title;
 		Scheduler.ScheduledCommand cmd;
 		
 		m_properties = new LinkToEntryProperties();
@@ -124,11 +120,7 @@ public class LinkToEntryWidget extends VibeWidget
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "linkToEntryWidgetMainPanel" + m_style );
 		
-		title = m_properties.getTitle();
-		if ( title == null || title.length() == 0 )
-			title = GwtTeaming.getMessages().noTitle();
-
-		m_link = new InlineLabel( title );
+		GwtClientHelper.setLandingPageTitleContent(m_link, m_properties.getTitle(), GwtTeaming.getMessages().noTitle());
 		m_link.addStyleName( "linkToEntryWidgetLink" + m_style );
 		
 		// Set the text color for the content.
