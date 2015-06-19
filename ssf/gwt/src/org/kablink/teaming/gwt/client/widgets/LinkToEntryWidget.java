@@ -120,7 +120,9 @@ public class LinkToEntryWidget extends VibeWidget
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "linkToEntryWidgetMainPanel" + m_style );
 		
+		m_link = new InlineLabel();
 		GwtClientHelper.setLandingPageTitleContent(m_link, m_properties.getTitle(), GwtTeaming.getMessages().noTitle());
+		final boolean updateTitle = (!(GwtClientHelper.hasString(m_properties.getTitle())));
 		m_link.addStyleName( "linkToEntryWidgetLink" + m_style );
 		
 		// Set the text color for the content.
@@ -146,6 +148,12 @@ public class LinkToEntryWidget extends VibeWidget
 						// Did we successfully get the data from the server?
 						if ( value )
 						{
+							if (updateTitle) {
+								String title = m_properties.getEntryName();
+								if (GwtClientHelper.hasString(title)) {
+									m_link.setText(title);
+								}
+							}
 							updateWidget();
 							getWidget().setVisible( true );
 						}

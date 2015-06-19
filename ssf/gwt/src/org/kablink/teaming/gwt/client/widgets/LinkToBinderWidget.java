@@ -126,6 +126,7 @@ public class LinkToBinderWidget extends VibeWidget
 		
 		m_link = new InlineLabel();
 		GwtClientHelper.setLandingPageTitleContent(m_link, m_properties.getTitle(), GwtTeaming.getMessages().noTitle());
+		final boolean updateTitle = (!(GwtClientHelper.hasString(m_properties.getTitle())));
 		m_link.addStyleName( "linkToBinderWidgetLink" + m_style );
 		
 		// Set the text color for the content.
@@ -150,6 +151,12 @@ public class LinkToBinderWidget extends VibeWidget
 						// Did we successfully get the data from the server?
 						if ( value )
 						{
+							if (updateTitle) {
+								String title = m_properties.getFolderName();
+								if (GwtClientHelper.hasString(title)) {
+									m_link.setText(title);
+								}
+							}
 							updateWidget();
 							getWidget().setVisible( true );
 						}
