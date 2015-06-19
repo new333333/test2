@@ -78,6 +78,7 @@ public abstract class Principal extends Entry implements IPrincipal {
     protected String objectSid;
     protected String samAccountName;
     protected String domainName;
+    protected String netbiosName;
     protected List memberOf;//initialized by hiberate access=field
     protected Date memberOfLastModified;
     protected Long workspaceId;
@@ -346,6 +347,18 @@ public abstract class Principal extends Entry implements IPrincipal {
 			domainName = domainName.toLowerCase();
 		this.domainName = domainName;
 	}
+
+	public String getNetbiosName()
+	{
+		return netbiosName;
+	}
+	public void setNetbiosName( String netbiosName )
+	{
+		if(netbiosName != null)
+			netbiosName = netbiosName.toLowerCase();
+		this.netbiosName = netbiosName;
+	}
+
 	
 	/**
      * This method will return true if this object is a "local" principal.  In other words, this

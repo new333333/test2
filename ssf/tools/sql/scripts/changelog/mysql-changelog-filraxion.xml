@@ -214,4 +214,13 @@ update SS_Forums set binderType = LEFT(type, 1);
         </addColumn>
     </changeSet>
 
+    <changeSet author="dhivya" context="schema" failOnError="true" id="17">
+        <comment>Netbios name if the user was provisioned from AD</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="netbiosName" type="VARCHAR(16)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet> 
+
 </databaseChangeLog>

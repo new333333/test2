@@ -48,6 +48,7 @@
     <property name="objectSid" length="128" index="objectSid_principal"/>
     <property name="samAccountName" length="128"/>
     <property name="domainName" length="255" />
+    <property name="netbiosName" length="16" />
 	<property name="theme" length="64"/>
     <properties name="nameKey" unique="true" update="false" insert="false">
       <property name="zoneId" update="false" insert="false"/>

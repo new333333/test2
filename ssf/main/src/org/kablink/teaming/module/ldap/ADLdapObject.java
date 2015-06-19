@@ -44,6 +44,7 @@ public class ADLdapObject
 {
 	private String m_fqdn;
 	private String m_domainName;
+        private String m_netbiosName;
 	private String m_samAccountName;
 	
 	/**
@@ -55,6 +56,7 @@ public class ADLdapObject
     	
     	m_fqdn = null;
     	m_domainName = null;
+        m_netbiosName = null;
     	m_samAccountName = null;
     }
     
@@ -65,7 +67,11 @@ public class ADLdapObject
     {
     	return m_domainName;
     }
-
+    
+    public String getNetbiosName()
+    {
+        return m_netbiosName;
+    }
 
     /**
      *  
@@ -91,6 +97,11 @@ public class ADLdapObject
     public void setDomainName( String domainName )
     {
     	m_domainName = domainName;
+    }
+    
+    public void setNetbiosName(String netbiosName)
+    {
+        m_netbiosName = netbiosName;
     }
 
     /**

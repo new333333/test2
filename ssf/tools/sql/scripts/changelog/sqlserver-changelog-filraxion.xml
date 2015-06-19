@@ -200,4 +200,13 @@ update dbo.SS_Forums set binderType = LEFT(type, 1);
         </addColumn>
     </changeSet>
 
+    <changeSet author="dhivya" context="schema" failOnError="true" id="15">
+        <comment>Netbios name if the user was provisioned from AD</comment>
+        <addColumn schemaName="dbo" tableName="SS_Principals">
+            <column name="netbiosName" type="NVARCHAR(16)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

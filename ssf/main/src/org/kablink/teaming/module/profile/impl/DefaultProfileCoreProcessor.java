@@ -584,7 +584,13 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
    		if ( inputData.exists( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME ) && !entryData.containsKey( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME ) )
    		{
     		entryData.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME ) );
-    	} 
+    	}
+
+        // Handle the netbiosName attribute
+   		if ( inputData.exists( ObjectKeys.FIELD_PRINCIPAL_NETBIOS_NAME ) && !entryData.containsKey( ObjectKeys.FIELD_PRINCIPAL_NETBIOS_NAME ) )
+   		{
+    		entryData.put( ObjectKeys.FIELD_PRINCIPAL_NETBIOS_NAME, inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_NETBIOS_NAME ) );
+    	}
 
    		String name = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_NAME);
        	if (Validator.isNotNull(name)) {
