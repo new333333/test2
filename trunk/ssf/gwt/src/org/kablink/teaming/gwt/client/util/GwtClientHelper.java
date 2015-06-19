@@ -92,6 +92,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -2484,6 +2485,19 @@ public class GwtClientHelper {
 				style.setWidth(width, unit);
 			}
 		}
+	}
+
+	/**
+	 * Sets the appropriate content in a landing page widget's title.
+	 * 
+	 * @param titleLabel
+	 * @param title
+	 * @param defaultTitle
+	 */
+	public static void setLandingPageTitleContent(Label titleLabel, String title, String defaultTitle) {
+		if (hasString(title))
+		     titleLabel.getElement().setInnerHTML(title       );
+		else titleLabel.setText(                  defaultTitle);
 	}
 	
 	/**
