@@ -2136,14 +2136,24 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     /**
      * Read the domain name from AD and convert it to aaa.bbb.ccc.com format
      */
-    private String getDomainName( LdapConnectionConfig ldapConfig )
+    private ADLdapObject getDomainInfo( LdapConnectionConfig ldapConfig )
     {
-    	String mixedCaseDomainName;
-    	String domainName = null;
-    	
+        ADLdapObject domainInfo;
+    	String mixedCaseDomainName = null, netbiosName = null;            
+    		
     	// Read the domain name from AD.  The value returned will be in the format, dc=aaa,dc=bbb,dc=com
-    	mixedCaseDomainName = readDomainNameFromAD( ldapConfig );
+    	domainInfo = readDomainInfoFromAD( ldapConfig );
     	
+        if (domainInfo == null)
+            return null;
+        
+        netbiosName = domainInfo.getNetbiosName();
+        if (netbiosName != null) {
+            netbiosName = netbiosName.toLowerCase();
+            domainInfo.setNetbiosName(netbiosName);
+        }
+        
+        mixedCaseDomainName = domainInfo.getDomainName();
     	// Convert the domain name from dc=aaa,dc=bbb,dc=com to aaa.bbb.com format
     	if ( mixedCaseDomainName != null )
     	{
@@ -2187,88 +2197,120 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     			else
     				finished = true;
     		}
-    		
-    		domainName = strBuff.toString();
+
+            domainInfo.setDomainName(strBuff.toString());
     	}
-    	
-    	return domainName;
+        return domainInfo;
     }
-    
+
 	/**
 	 * Read the "defaultNamingContext" attribute from the rootDSE object in AD.
 	 * The value of the attribute will be in the format, dc=aaa,dc=bbb,dc=ccc,dc=com
 	 */
-	private String readDomainNameFromAD( LdapConnectionConfig config )
-	{
-        String domainName = null;
-		LdapContext ctx = null;
+	private ADLdapObject readDomainInfoFromAD( LdapConnectionConfig config )
+    {
+        ADLdapObject domainInfo = null;
+        LdapContext ctx = null;
+        String configContext = null;
 
-		try
-		{
-			Workspace zone;
-	        SearchControls controls;
-	        NamingEnumeration answer;
-	        String base;
-	        String filter;
+        try {
+            Workspace zone;
+            SearchControls controls;
+            NamingEnumeration answer;
+            String base;
+            String filter;            
+                  
+            zone = RequestContextHolder.getRequestContext().getZone();
 
-			zone = RequestContextHolder.getRequestContext().getZone();
+            ctx = getUserContext(zone.getId(), config);
 
-	        ctx = getUserContext( zone.getId(), config );
-	
-	        base = "";
-	        filter = "(objectclass=*)";
-	        controls = new SearchControls();
-	        controls.setSearchScope( SearchControls.OBJECT_SCOPE );
-	        answer = ctx.search( base, filter, controls );
-	
-	        if ( hasMore( answer ) )
-	        {
-	        	SearchResult sr;
-	        	Attributes attrs;
-	        	
-	        	sr = (SearchResult) answer.next();
-	        	if ( sr != null )
-	        	{
-	        		attrs = sr.getAttributes();
-	        		if ( attrs != null )
-	        		{
-	        			Attribute attrib;
-	        			
-	        			attrib = attrs.get( "defaultNamingContext" );
-	        			if ( attrib != null )
-	        			{
-		        			Object value;
-	        				
-		        			value = attrib.get();
-		        			if ( value != null && value instanceof String )
-		        				domainName = (String) value;
-	        			}
-	        		}
-	        	}
-	        }
-		}
-		catch ( Exception ex )
-		{
-			logger.error( "readDomainNameFromAD() caught exception: ", ex );
-		}
-		finally
-		{
-	        if ( ctx != null )
-			{
-				try
-				{
-					ctx.close();
-				}
-				catch ( NamingException ex )
-				{
-					// Nothing to do
-				}
-			}
-		}
-		
-		return domainName;
-	}
-	
+            base = "";
+            filter = "(objectclass=*)";
+            controls = new SearchControls();
+            controls.setSearchScope(SearchControls.OBJECT_SCOPE);
+            answer = ctx.search(base, filter, controls);
+
+            if (hasMore(answer)) {                
+                SearchResult sr;
+                Attributes attrs;
+
+                sr = (SearchResult) answer.next();
+                if (sr != null) {
+                    attrs = sr.getAttributes();
+                    if (attrs != null) {
+                        Attribute attrib, configAttrib;
+
+                        attrib = attrs.get("defaultNamingContext");
+                        if (attrib != null) {
+                            Object value;                           
+
+                            value = attrib.get();
+                            if (value != null && value instanceof String) {
+                                domainInfo = new ADLdapObject();
+                                domainInfo.setDomainName((String) value);
+                            }
+                        }
+                        if (domainInfo != null && domainInfo.getDomainName()!= null)
+                        {
+                            configAttrib = attrs.get("configurationNamingContext");
+                            if (configAttrib != null) {
+                                Object value;
+                                value = configAttrib.get();
+                                if (value != null && value instanceof String) {
+                                    configContext = (String) value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (domainInfo != null && domainInfo.getDomainName()!= null && configContext != null && !configContext.isEmpty()) {
+                base = "CN=Partitions," + configContext;
+                filter = "(&(objectClass=crossRef)(nCName=" + domainInfo.getDomainName() + ")(systemflags:1.2.840.113556.1.4.803:=2))";
+                String[] attr = {"nETBIOSName"};
+                controls = new SearchControls();
+                controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+                controls.setReturningAttributes(attr);
+                answer = ctx.search(base, filter, controls);
+
+                if (hasMore(answer)) {
+                    SearchResult sr;
+                    Attributes attrs;
+
+                    sr = (SearchResult) answer.next();
+                    if (sr != null) {
+                        attrs = sr.getAttributes();
+                        if (attrs != null) {
+                            Attribute attrib;
+
+                            attrib = attrs.get("nETBIOSName");
+                            if (attrib != null) {
+                                Object value;
+
+                                value = attrib.get();
+                                if (value != null && value instanceof String) {
+                                    domainInfo.setNetbiosName((String) value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            logger.error("readDomainInfoFromAD() caught exception: ", ex);
+        } finally {
+            if (ctx != null) {
+                try {
+                    ctx.close();
+                } catch (NamingException ex) {
+                    // Nothing to do
+                }
+            }
+        }
+
+        return domainInfo;
+    }
+
 	/**
 	 * Create a HomeDirInfo object based on the HomeDirConfig defined in the ldap configuration.
 	 * @throws NamingException 
@@ -2922,7 +2964,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			logger.debug("Synching LDAP user '" + ldapUserName + "' to Vibe user '" + teamingUserName + "'");
 		
 		Workspace zone = RequestContextHolder.getRequestContext().getZone();
-
+                ADLdapObject domainInfo = null;
 		LdapSchedule schedule = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
 		Map mods = new HashMap();
 		for(LdapConnectionConfig config : this.getConfigsReadOnlyCache(zone.getZoneId())) {
@@ -2930,9 +2972,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			String dn=null;
 			Map userAttributes = config.getMappings();
 			String [] userAttributeNames = 	(String[])(userAttributes.keySet().toArray(sample));
-			String domainName;
+			String domainName =  null, netbiosName = null;
 
-			domainName = getDomainName( config );
+			domainInfo = getDomainInfo( config);
+                        if (domainInfo != null) {
+                            domainName = domainInfo.getDomainName();
+                            netbiosName = domainInfo.getNetbiosName();
+                        }                               
 			
 			for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) 
 			{
@@ -2979,6 +3025,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					mods.put( ObjectKeys.FIELD_PRINCIPAL_NAME, ldapUserName );
 					
 					mods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
+                                        
+                                        mods.put( ObjectKeys.FIELD_PRINCIPAL_NETBIOS_NAME, netbiosName);
 
 					// Update the typelessDN field
 					mods.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
@@ -3082,12 +3130,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	public ADLdapObject getLdapObjectFromAD( String fqdn )
 		throws NamingException
 	{
+                ADLdapObject objInfo = null;
 		Workspace zone;
 		LdapSchedule schedule;
 		String samAccountName = null;
 		String baseDN;
-
-		zone = RequestContextHolder.getRequestContext().getZone();
+                
+                zone = RequestContextHolder.getRequestContext().getZone();
 		schedule = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
 		
 		// Get the dn of the container the object is in.
@@ -3099,7 +3148,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		for( LdapConnectionConfig config : this.getConfigsReadOnlyCache(zone.getZoneId()) )
 		{
 			LdapContext ctx;
-			String domainName;
+			String domainName = null, netbiosName = null;
 			LdapDirType dirType;
 
 			ctx = getUserContext( zone.getId(), config );
@@ -3108,8 +3157,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			if ( dirType != LdapDirType.AD )
 				continue;
 			
-			domainName = getDomainName( config );
-			
+			objInfo = getDomainInfo( config );
+                        
 			try
 			{
 				String[] attributesToRead;
@@ -3175,16 +3224,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 			}
 
-			if ( samAccountName != null && domainName != null )
+			if ( objInfo != null && samAccountName != null )
 			{
-				ADLdapObject ldapObj;
-				
-				ldapObj = new ADLdapObject();
-				ldapObj.setFQDN( fqdn );
-				ldapObj.setDomainName( domainName );
-				ldapObj.setSamAccountName( samAccountName );
+				objInfo.setFQDN( fqdn );                                
+				objInfo.setSamAccountName( samAccountName );
 
-				return ldapObj;
+				return objInfo;
 			}
 		}
 		
@@ -4665,6 +4710,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Attributes lAttrs,
 			String ldapGuidAttribute,
 			String domainName,
+                        String netbiosName,
 			HomeDirInfo homeDirInfo ) throws NamingException
 		{
 			boolean foundLdapGuid = false;
@@ -4760,6 +4806,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					// Update the domain name
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
+                                        
+                                        // Update the netbios name
+					userMods.put( ObjectKeys.FIELD_PRINCIPAL_NETBIOS_NAME, netbiosName );
 
 					// Update the typelessDN field
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
@@ -4839,6 +4888,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
 					userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
+                                        userMods.put( ObjectKeys.FIELD_PRINCIPAL_NETBIOS_NAME, netbiosName );
+
 					
 					// Get the default time zone.
 					timeZone = getDefaultTimeZone();
@@ -5261,13 +5312,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    return true;
 	}
 	
-	protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
+            protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
 		throws NamingException
 	{
 		String ssName;
 		String[] attributesToRead;
 		String ldapGuidAttribute;
-		String domainName = null;
+                ADLdapObject domainInfo;
+		String domainName = null, netbiosName = null;
 		LdapDirType dirType;
 		LdapContext ldapContextForReadingHomeDirInfo=null;
 		int pageSize = 1500;
@@ -5304,7 +5356,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		if ( dirType == LdapDirType.AD )
 		{
 			// Yes
-			domainName = getDomainName( config );
+                    domainInfo = getDomainInfo(config);
+                    if (domainInfo != null) {
+                        domainName = domainInfo.getDomainName();
+                        netbiosName = domainInfo.getNetbiosName();
+                    }
 		}
 		
 		if ( Utils.checkIfFilr() )
@@ -5484,6 +5540,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 											lAttrs,
 											ldapGuidAttribute,
 											domainName,
+                                                                                        netbiosName,
 											homeDirInfo);
 						
 						if ( m_showTiming )
@@ -5707,7 +5764,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			String teamingName,
 			Attributes lAttrs,
 			String ldapGuidAttribute,
-			String domainName ) throws NamingException
+			String domainName,
+                        String netbiosName) throws NamingException
 		{
 			boolean isSSGroup = false;
 			boolean foundLdapGuid = false;
@@ -5727,6 +5785,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			if ( domainName != null )
 				domainName = domainName.toLowerCase();
+                        
+                        if (netbiosName != null)
+                            netbiosName = netbiosName.toLowerCase();
 			
 			// Do we have the name of the ldap attribute that holds the guid?
 			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
@@ -5787,6 +5848,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						userMods.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
 						userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
 						userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
+                                                userMods.put(ObjectKeys.FIELD_PRINCIPAL_NETBIOS_NAME, netbiosName);
 
 						if (logger.isDebugEnabled())
 							logger.debug("Creating group:" + ssName);
@@ -5881,6 +5943,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					// Update the domain name
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
+                                        
+                                        //Update the Netbios name
+                                        userMods.put(ObjectKeys.FIELD_PRINCIPAL_NETBIOS_NAME, netbiosName);
 
 					updateGroup( zoneId, (Long)row[PRINCIPAL_ID], userMods, m_syncMode, m_ldapSyncResults );
 				} 
@@ -6202,7 +6267,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						String groupName;
 						String fixedUpGroupName;
 						String teamingName;
-						String domainName;
+                                                ADLdapObject domainInfo;
+						String domainName = null, netbiosName = null;
+                                                
 						Attribute id;
 						SearchResult sr;
 						
@@ -6239,14 +6306,20 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if ( teamingName == null )
 							continue;
 
-						if ( workingWithAD )
-							domainName = getDomainName( config );
-						else
+						if ( workingWithAD ) {
+							domainInfo = getDomainInfo( config );
+                                                        if (domainInfo != null) {
+                                                            domainName = domainInfo.getDomainName();
+                                                            netbiosName = domainInfo.getNetbiosName();   
+                                                        }
+                                                }
+                                                else {
+                                                        netbiosName = null;
 							domainName = null;
-						
+                                                }
 						//doing this one at a time is going to be slow for lots of groups
 						//not sure why it was changed for v2
-						if ( groupCoordinator.record( dn, teamingName, lAttrs, ldapGuidAttribute, domainName ) && syncMembership )
+						if ( groupCoordinator.record( dn, teamingName, lAttrs, ldapGuidAttribute, domainName, netbiosName ) && syncMembership )
 						{ 
 							//Get map indexed by id
 							Object[] gRow = groupCoordinator.getGroup(dn);
@@ -7245,8 +7318,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		try
 		{
 			SearchControls sch;
+                        ADLdapObject domainInfo;
 			String search;
-			String baseDN;
+			String baseDN = null;
 			String[] attributesToRead = { AD_MAX_PWD_AGE_ATTRIBUTE };
 			NamingEnumeration ctxSearch;
 
@@ -7257,7 +7331,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			sch.setReturningAttributes( attributesToRead );
 
 			search = "(objectClass=domain)";
-			baseDN = readDomainNameFromAD( ldapConfig );
+			domainInfo = readDomainInfoFromAD( ldapConfig );
+                        if (domainInfo != null)
+                            baseDN = domainInfo.getDomainName();
 			
 			// Get the Domain Root Object
 			ctxSearch = ldapCtx.search( baseDN, search, sch );

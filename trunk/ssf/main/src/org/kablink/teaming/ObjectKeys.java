@@ -811,6 +811,7 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_TYPELESS_DN = "typelessDN";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
     public static final String FIELD_PRINCIPAL_DOMAIN_NAME = "domainName";
+    public static final String FIELD_PRINCIPAL_NETBIOS_NAME = "netbiosName";
     public static final String FIELD_GROUP_DYNAMIC = "dynamic";
     public static final String FIELD_GROUP_LDAP_QUERY = "ldapQuery";
     public static final String FIELD_GROUP_PRINCIPAL_MEMBERS="members";
