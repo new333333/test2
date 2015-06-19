@@ -60,139 +60,159 @@ import com.google.gwt.user.server.rpc.RPCRequest;
 import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 /**
- * ?
+ * Servlet controller for GWT RPC request.
  *  
- * @author jwootton
+ * @author drfoster@novell.com
  */
 @SuppressWarnings({"serial", "unchecked"})
-public class GwtRpcController extends VibeXsrfProtectedServiceServlet
-	implements
-        Controller, ServletContextAware
-{
-	private Log 					m_logger = LogFactory.getLog( GwtRpcController.class );
-    private ServletContext			m_servletContext;
-	private Class					m_xsrfProtectedServiceClass;
-    private XsrfProtectedService	m_xsrfProtectedService;
+public class GwtRpcController extends VibeXsrfProtectedServiceServlet implements Controller, ServletContextAware {
+	private Log 					m_logger = LogFactory.getLog(GwtRpcController.class);
+	
+    private ServletContext			m_servletContext;				//
+	private Class					m_xsrfProtectedServiceClass;	//
+    private XsrfProtectedService	m_xsrfProtectedService;			//
 
-    /**
-     * 
+    /*
+     * Write information about how long an operation took to the log if
+     * debug is enabled.
      */
-    @Override
-	public ModelAndView handleRequest(
-    	HttpServletRequest request,
-        HttpServletResponse response) throws Exception
-    {
-        super.doPost( request, response );
-        return null;
-    }// end handleRequest()
+    private void debugLogOperationTime(String cmdName, String operation, long opBegin) {
+		if (m_logger.isDebugEnabled()) {
+			double diff = ((System.nanoTime() - opBegin) / 1000000.0);
+			m_logger.info("..." + cmdName + ":" + operation + " took " + diff + " ms to complete.");
+		}
+    }
     
-
     /**
+     * Traces any unexpected failures and bubbles up the exception.
      * 
+     * @param t
      */
     @Override
-    public String processCall( String payload ) throws SerializationException
-    {
+	protected void doUnexpectedFailure(Throwable t) {
+    	m_logger.debug("GwtRpcController.doUnexpectedFailure(EXCEPTION):  ", t);
+    	super.doUnexpectedFailure(t);
+    }
+
+    /**
+     * ?
+     * 
+     * @return
+     */
+    @Override
+    public ServletContext getServletContext() {
+        return m_servletContext;
+    }
+    
+    /**
+     * ?
+     * 
+     * @param request
+     * @param response
+     * 
+     * @return
+     * 
+     * @throws Exception
+     */
+    @Override
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        super.doPost(request, response);
+        return null;
+    }
+
+    /**
+     * ?
+     * 
+     * @param payload
+     * 
+     * @return
+     * 
+     * @throws SerializationException
+     */
+    @Override
+    public String processCall(String payload) throws SerializationException {
 		boolean isRetry = false;
-        try
-        {
-            RPCRequest rpcRequest = RPC.decodeRequest( payload, m_xsrfProtectedServiceClass );
+        try {
+            RPCRequest rpcRequest = RPC.decodeRequest(payload, m_xsrfProtectedServiceClass);
             Object[]   parameters = rpcRequest.getParameters();
             
     		String cmdName = "Unknown";
-            if ( m_logger.isDebugEnabled() )
-            {
+            if (m_logger.isDebugEnabled()) {
                 String methodName = rpcRequest.getMethod().getName();
-            	if ( methodName.equalsIgnoreCase( "executeCommand" ) )
-            	{
-            		// Get the name of the command we are trying to execute.
-            		if ( parameters != null && parameters.length > 1 && parameters[1] instanceof VibeRpcCmd )
-            		{
+            	if (methodName.equalsIgnoreCase("executeCommand")) {
+            		// Get the name of the command we are trying to
+            		// execute.
+            		if (parameters != null && parameters.length > 1 && parameters[1] instanceof VibeRpcCmd) {
             			cmdName = ((VibeRpcCmd)parameters[1]).getClass().getSimpleName();
             		}
-        			m_logger.debug( "Executing GWT RPC command:  " + cmdName );
+        			m_logger.debug("Executing GWT RPC command:  " + cmdName);
             	}
-            	else
-            	{
-            		m_logger.debug( "Executing old style GWT RPC request:  " + methodName );
+            	
+            	else {
+            		m_logger.debug("Executing old style GWT RPC request:  " + methodName);
             		cmdName = methodName;
             	}
             }
 
     		long opBegin = System.nanoTime();
-    		try
-    		{
+    		try {
             	// Run the parameters through the XSS checker.
-    			performXSSChecks( parameters );
+    			performXSSChecks(parameters);
     		}
-    		finally
-    		{
-    			debugLogOperationTime( cmdName, "performXSSChecks()", opBegin );
+    		finally {
+    			debugLogOperationTime(cmdName, "performXSSChecks()", opBegin);
     		}
             
             // Is the first parameter to the method is an
-            // HttpRequestInfo object?
-            if ( ( null != parameters ) && ( 0 < parameters.length ) && ( parameters[0] instanceof HttpRequestInfo ) )
-            {
-            	HttpServletRequest req;
-            	HttpServletResponse resp;
-            	HttpRequestInfo ri;
+    		// HttpRequestInfo object?
+            if ((null != parameters) && (0 < parameters.length) && (parameters[0] instanceof HttpRequestInfo)) {
+            	// Yes!  Get the HttpServletRequest we are working
+            	// with.
+            	HttpServletRequest req = getThreadLocalRequest();
             	
-            	// Yes!  Get the HttpServletRequest we are working with.
-            	req = getThreadLocalRequest();
-            	
-            	// Get the HttpServletResponse
-            	resp = getThreadLocalResponse();
+            	// Get the HttpServletResponse.
+            	HttpServletResponse resp = getThreadLocalResponse();
             	
             	// Get the HttpRequestInfo object that is the first
             	// parameter and drop in the current
             	// HttpServletRequest.
-            	ri = ((HttpRequestInfo) parameters[0]);                
+            	HttpRequestInfo ri = ((HttpRequestInfo) parameters[0]);                
             	ri.setRequestObj( req );
-            	ri.setResponseObj( resp );
-            	ri.setServletContext( getServletContext() );
+            	ri.setResponseObj(resp);
+            	ri.setServletContext(getServletContext());
             	isRetry = ri.isRetry();
             	
             	// Is the user logged in?
-            	if ( WebHelper.isGuestLoggedIn( req ) )
-            	{
-            		String guestId;
-                	String clientUserId = null;
+            	if (WebHelper.isGuestLoggedIn(req)) {
+            		// No!  Get the id of the user the client thinks it
+            		// is dealing with.
+                	String clientUserId = ri.getUserLoginId();
                 	
-            		// No
-            		// Get the id of the user the client thinks it is dealing with.
-            		clientUserId = ri.getUserLoginId();
-                	
-            		// Does the client think they are working with the guest user?
-            		guestId = SZoneConfig.getGuestUserName( WebHelper.getZoneNameByVirtualHost( req) );
-            		if ( clientUserId != null && clientUserId.equalsIgnoreCase( guestId ) == false )
-            		{
-                		GwtTeamingException ex;
-                		
-            			// No, pass back a "not logged in" exception
-                		ex = new GwtTeamingException();
-                		ex.setExceptionType( GwtTeamingException.ExceptionType.USER_NOT_LOGGED_IN );
-
-                        return RPC.encodeResponseForFailure( null, ex );
+            		// Does the client think they are working with the
+                	// guest user?
+            		String guestId = SZoneConfig.getGuestUserName(WebHelper.getZoneNameByVirtualHost(req));
+            		if (clientUserId != null && (!(clientUserId.equalsIgnoreCase(guestId)))) {
+            			// No, pass back a 'not logged in' exception.
+                		GwtTeamingException ex = new GwtTeamingException();
+                		ex.setExceptionType(GwtTeamingException.ExceptionType.USER_NOT_LOGGED_IN);
+                        return RPC.encodeResponseForFailure(null, ex);
             		}
             	}
             }
             
         	String results;
     		opBegin = System.nanoTime();
-    		try
-    		{
+    		try {
                 // Validate the token from the RPC request and delegate
-    			// the work to the spring injected service.
+    			// the work to the Spring injected service.
     			Method rpcMethod = rpcRequest.getMethod();
     			if (!(rpcMethod.getName().equals("getNewXsrfToken"))) {
     				validateXsrfToken(rpcRequest.getRpcToken(), rpcMethod);
     			}
-    			results = RPC.invokeAndEncodeResponse( m_xsrfProtectedService, rpcMethod, parameters );
+    			results = RPC.invokeAndEncodeResponse(m_xsrfProtectedService, rpcMethod, parameters);
     		}
-    		finally
-    		{
-    			debugLogOperationTime( cmdName, "RPC.invokeAndEncodeResponse()", opBegin );
+    		finally {
+    			debugLogOperationTime(cmdName, "RPC.invokeAndEncodeResponse()", opBegin);
     		}
             	
             return results;
@@ -200,92 +220,51 @@ public class GwtRpcController extends VibeXsrfProtectedServiceServlet
         
         catch (RpcTokenException ex) {
         	// If this call is a retry of the GWT RPC request...
-        	if ( isRetry )
-        	{
+        	if (isRetry) {
         		// ...log the error.
-        		m_logger.error( "An RpcTokenException was thrown while processing this call.", ex );
+        		m_logger.error("An RpcTokenException was thrown while processing this call.", ex);
         	}
-            return RPC.encodeResponseForFailure( null, ex );
+            return RPC.encodeResponseForFailure(null, ex);
         }
         
-        catch (IncompatibleRemoteServiceException ex)
-        {
-        	m_logger.error( "An IncompatibleRemoteServiceException was thrown while processing this call.", ex );
-            return RPC.encodeResponseForFailure( null, ex );
+        catch (IncompatibleRemoteServiceException ex) {
+        	m_logger.error("An IncompatibleRemoteServiceException was thrown while processing this call.", ex);
+            return RPC.encodeResponseForFailure(null, ex);
         }
-    }// end processCall()
+    }
     
-
-    /**
-     * 
+    /*
+     * Runs the XSS checker on the parameters that require checking.
      */
-    @Override
-    public ServletContext getServletContext()
-    {
-        return m_servletContext;
-    }// end getServletContext()
-
-    
-    /**
-     * 
-     */
-    @Override
-	public void setServletContext( ServletContext servletContext )
-    {
-        m_servletContext = servletContext;
-    }// end setServletContext()
-
+    private void performXSSChecks(Object[] parameters) {
+    	// Scan the parameters...
+    	int pCount = ((null == parameters) ? 0 : parameters.length );
+		for(int i = 0; i < pCount; i += 1) {
+			// ...and for any that are VibeRpcCmd's...
+			if (parameters[i] instanceof VibeRpcCmd) {
+				// ...perform XSS checking on the command.
+				GwtServerHelper.performXSSCheckOnRpcCmd((VibeRpcCmd) parameters[i]); 
+			}
+		}
+    }
     
     /**
      * ?
      *  
      * @param remoteService
      */
-    public void setRemoteService( XsrfProtectedService remoteService )
-    {
+    public void setRemoteService(XsrfProtectedService remoteService) {
         m_xsrfProtectedService      = remoteService;
         m_xsrfProtectedServiceClass = m_xsrfProtectedService.getClass();
-    }// end setRemoteService()
-
+    }
+    
     /**
-     * Traces any unexpected failures and bubbles up the exception.
+     * ?
      * 
-     * @param t
+     * @param servletContext
      */
     @Override
-	protected void doUnexpectedFailure( Throwable t )
-    {
-    	m_logger.debug( "GwtRpcController.doUnexpectedFailure(EXCEPTION):  ", t );
-    	super.doUnexpectedFailure(t);
-    }// end doUnexpectedFailure()
-
-    /*
-     * Runs the XSS checker on the parameters that require checking.
-     */
-    private void performXSSChecks( Object[] parameters )
-    {
-    	// Scan the parameters...
-    	int pCount = ( ( null == parameters ) ? 0 : parameters.length  );
-		for( int i = 0; i < pCount; i += 1 ) {
-			// ...and for any that are VibeRpcCmd's...
-			if( parameters[i] instanceof VibeRpcCmd )
-			{
-				// ...perform XSS checking on the command.
-				GwtServerHelper.performXSSCheckOnRpcCmd( (VibeRpcCmd) parameters[i] ); 
-			}
-		}
-    }// end performXSSChecks()
-    
-    /*
-     * Write information about how long an operation took to the log if
-     * debug is enabled.
-     */
-    private void debugLogOperationTime( String cmdName, String operation, long opBegin )
-    {
-		if ( m_logger.isDebugEnabled() )
-		{
-			double diff = ( ( System.nanoTime() - opBegin ) / 1000000.0 );
-			m_logger.info( "..." + cmdName + ":" + operation + " took " + diff + " ms to complete." );
-		}
-    }// end debugLogOperationTime()
-}// end GwtRpcController
+	public void setServletContext(ServletContext servletContext) {
+        m_servletContext = servletContext;
+    }
+}
