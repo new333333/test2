@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,12 +45,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.InlineLabel;
 
-
-
 /**
+ * ?
  * 
- * @author jwootton
- *
+ * @author jwootton@novell.com
  */
 public class UrlWidget extends VibeWidget
 {
@@ -77,7 +75,6 @@ public class UrlWidget extends VibeWidget
 	{
 		LinkToUrlProperties properties;
 		VibeFlowPanel mainPanel;
-		String title;
 		String url;
 		
 		m_properties = new LinkToUrlProperties();
@@ -90,22 +87,16 @@ public class UrlWidget extends VibeWidget
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "urlWidgetMainPanel" + m_style );
 		
-		title = m_properties.getTitle();
 		url = m_properties.getUrl();
 		if ( url != null && url.length() > 0 )
 		{
-			Anchor link;
-			InlineLabel span;
-			
-			if ( title == null || title.length() == 0 )
-				title = url;
-			
-			link = new Anchor();
+			Anchor link = new Anchor();
 			link.setHref( url );
 			link.addStyleName( "urlWidgetLink" + m_style );
 
 			// Set the text color for the title.
-			span = new InlineLabel( title );
+			InlineLabel span = new InlineLabel();
+			GwtClientHelper.setLandingPageTitleContent(span, m_properties.getTitle(), url);
 			GwtClientHelper.setElementTextColor( span.getElement(), widgetStyles.getContentTextColor() );
 			
 			link.getElement().appendChild( span.getElement() );
