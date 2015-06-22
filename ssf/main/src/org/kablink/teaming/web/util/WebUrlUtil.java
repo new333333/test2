@@ -526,8 +526,8 @@ public class WebUrlUtil {
 		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf((String)searchResults.get(org.kablink.util.search.Constants.ENTITY_FIELD));
 		String entityId = (String)searchResults.get(org.kablink.util.search.Constants.DOCID_FIELD);
 		String fileTime=null,fileName=null,fileId=null;
-		Object fileIdResult = searchResults.get(org.kablink.util.search.Constants.PRIMARY_FILE_ID_FIELD);
-		if (fileIdResult == null) fileIdResult = searchResults.get(org.kablink.util.search.Constants.FILE_ID_FIELD);
+		Object fileIdResult = searchResults.get(org.kablink.util.search.Constants.FILE_ID_FIELD);
+		if (fileIdResult == null) fileIdResult = searchResults.get(org.kablink.util.search.Constants.PRIMARY_FILE_ID_FIELD);
 		if (fileIdResult == null) return "";
 		//since their may be more than one attachment, we get need a consistent picture of the first one.
 		if (Validator.isNull(file)) {
