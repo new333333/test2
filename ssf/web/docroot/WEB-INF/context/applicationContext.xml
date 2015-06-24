@@ -1250,13 +1250,13 @@ text/calendar											  ics
 	</bean>
 
 	<bean id="smtpService" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.smtp.impl.SMTPManagerImpl"
-			depends-on="zoneConfig, springContextUtil">
+			depends-on="zoneConfig, springContextUtil, sPropsUtil">
 		<property name="enabled"><value>${smtp.service.enable}</value></property>
 		<property name="bindAddress"><value>${smtp.service.bindAddress}</value></property>
 		<property name="port"><value>${smtp.service.port}</value></property>
 		<property name="tls"><value>${smtp.service.tls}</value></property>
 		<property name="username"><value>${smtp.service.authentication.username}</value></property>
-		<property name="password"><value>${smtp.service.authentication.password}</value></property>
+		<property name="keystoreFile"><value>${smtp.service.keystore.file}</value></property>
 		<property name="zoneModule"><ref bean="zoneModule"/></property>
 		<property name="binderModule"><ref bean="binderModule"/></property>
 	</bean>
