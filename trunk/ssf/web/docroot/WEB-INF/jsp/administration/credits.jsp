@@ -170,6 +170,7 @@ a:hover {
 <br/><span>Spring</span>
 <br/><span>Struts</span>
 <br/><span>SubEthaSMTP</span>
+<br/><span>StrongTls</span>
 <br/><span>Tika</span>
 <br/><span>Tomcat</span>
 <br/><span>Velocity</span>

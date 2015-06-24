@@ -159,6 +159,7 @@ Spring Retry 1.1.3 (used in conjunction with Spring AMQP/Rabbit)
 spy memcached 2.10.3 (MIT License; http://code.google.com/p/spymemcached)
 Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
 SubEthaSMTP subethasmtp.jar 3.1.7
+StrongTls (for TLS support in SubEthaSMTP)
 swfobject 2.1 (Javascript library)
 tcllib 1.11.1 (for installer)
 tika-app 1.8
