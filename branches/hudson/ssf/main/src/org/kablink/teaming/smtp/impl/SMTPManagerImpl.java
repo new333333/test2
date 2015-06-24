@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,11 +32,15 @@
  */
 package org.kablink.teaming.smtp.impl;
 
-import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +50,11 @@ import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,7 +72,9 @@ import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mail.EmailPoster;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.smtp.SMTPManager;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SessionUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 
 import org.springframework.beans.factory.DisposableBean;
@@ -84,18 +95,22 @@ import org.subethamail.smtp.server.SMTPServer;
  * 
  * @author ?
  */
-@SuppressWarnings("unused")
 public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPManager, SMTPManagerImplMBean, InitializingBean, DisposableBean {
 	private Log m_logger = LogFactory.getLog(getClass());
 	
-	private boolean m_enabled = false;
-	private boolean m_tls = false;
-	private int m_port = 2525;
-	private String m_bindAddress = null;
-	private String m_username = null;
-	private String m_password = null;
+	private boolean		m_enabled;		//
+	private boolean		m_tls;			//
+	private int			m_port = 2525;	//
+	private SMTPServer	m_server;		//
+	private String		m_bindAddress;	//
+	private String		m_keystorePass;	//
+	private String		m_keystoreFile;	//
+	private String 		m_password;		//
+	private String		m_username;		//
 
-	private SMTPServer m_server = null;
+	// The following control which key material to use by default.
+	private final static String DEFAULT_KEYSTORE_PASS	= "changeit";
+	private final static String	DEFAULT_KEYSTORE_FILE	= "conf/.keystore";
 	
 	public void setEnabled(boolean enabled) {
 		m_enabled = enabled;
@@ -147,7 +162,10 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		m_logger.debug("Inbound SMTP Server:  m_password is set to:  \"" + ((null == password) ? "null" : "<sorry, it's not logged>") + "\".");
 	}
 	public String getPassword() {
-		return m_password;
+		if (null == m_password) {
+			m_password = SPropsUtil.getString("smtp.service.authentication.password", "");
+		}
+		return ((0 == m_password.length()) ? null : m_password);
 	}
 	
 	public void setPort(int port) {
@@ -173,6 +191,29 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 	}
 	public BinderModule getBinderModule() {
 		return m_binderModule;
+	}
+
+	public void setKeystorePass(String keystorePass) {
+		m_keystorePass = keystorePass;
+		m_logger.debug("Inbound SMTP Server:  m_keystorePass is set to:  \"" + ((null == m_keystorePass) ? "null" : "<sorry, it's not logged>") + "\".");
+	}
+	public String getKeystorePass() {
+		if (!(MiscUtil.hasString(m_keystorePass))) {
+			setKeystorePass(SPropsUtil.getString("smtp.service.keystore.password", DEFAULT_KEYSTORE_PASS));
+		}
+		return m_keystorePass;
+	}
+	
+	public void setKeystoreFile(String keystoreFile) {
+		m_keystoreFile = keystoreFile;
+		m_logger.debug("Inbound SMTP Server:  m_keystoreFile is set to:  \"" + m_keystoreFile + "\".");
+	}
+	@Override
+	public String getKeystoreFile() {
+		if (!(MiscUtil.hasString(m_keystoreFile))) {
+		     setKeystoreFile(DEFAULT_KEYSTORE_FILE);
+		}
+		return m_keystoreFile;
 	}
 	
 	@Override
@@ -214,32 +255,77 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 			return;
 		}
 			
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 		// Construct the SMTPServer object.  We must do this prior to
 		// the TLS handling because it loads a default SSLFilter
 		// that the TLS handling needs to override.  If we don't do
 		// this first, it would override the SSLFilter setup in the TLS
 		// handling below.
-		m_server = new SMTPServer(
-			// The MessageHandler to use for messages as they're
-			// received.
-			new MessageHandlerFactory() {
-				@Override
-				public MessageHandler create(MessageContext ctx) {
-					return new Handler();
-				}
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+		// Key store for key and signing certificates.
+		String ksTail = getKeystoreFile();
+		if (!(ksTail.startsWith(File.separator))) {
+			ksTail = (File.separator + ksTail); 
+		}
+		ksTail = (File.separator + ".." + File.separator + ".." + ksTail);
+		String ksPath = SpringContextUtil.getServletContext().getRealPath(ksTail);
+		InputStream keyStoreIS = new FileInputStream(ksPath);
+		char[] keyktorePass = getKeystorePass().toCharArray();
+		KeyStore ksKeys = KeyStore.getInstance("JKS");
+		ksKeys.load(keyStoreIS, keyktorePass);
+		 
+		// KeyManagers decide which key material to use.
+		KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+		kmf.init(ksKeys, keyktorePass);
+		KeyManager[] keyManagers = kmf.getKeyManagers();
+		 
+		// SSLContext based on the Tomcat keystore and default trust
+		// managers.
+		final SSLContext sslContext = SSLContext.getInstance("TLS");
+		sslContext.init(keyManagers, null, new java.security.SecureRandom());
+
+		// MessageHandler to use for messages as they're received.
+		MessageHandlerFactory mhf = new MessageHandlerFactory() {
+			@Override
+			public MessageHandler create(MessageContext ctx) {
+				return new Handler();
 			}
-		);
+		};
+		
+		m_server = new SMTPServer(mhf) {
+			@Override
+			public SSLSocket createSSLSocket(Socket socket) throws IOException {
+				InetSocketAddress remoteAddress = ((InetSocketAddress) socket.getRemoteSocketAddress());
+				
+				SSLSocketFactory sf = sslContext.getSocketFactory();
+				SSLSocket s = ((SSLSocket) (sf.createSocket(socket, remoteAddress.getHostName(), socket.getPort(), true)));
+ 
+				// We are a server.
+				s.setUseClientMode(false);
+ 
+				// Select strong protocols and cipher suites.
+				s.setEnabledProtocols(   SMTPStrongTls.intersection(s.getSupportedProtocols(),    SMTPStrongTls.ENABLED_PROTOCOLS)    );
+				s.setEnabledCipherSuites(SMTPStrongTls.intersection(s.getSupportedCipherSuites(), SMTPStrongTls.ENABLED_CIPHER_SUITES));
+ 
+				// Client must authenticate
+				// s.setNeedClientAuth(true);
+ 
+				return s;
+			}
+		};
 
 		// If we have both a username and password to authenticate
 		// with...
-		if (MiscUtil.hasString(m_username) && MiscUtil.hasString(m_password)) {
+		if (MiscUtil.hasString(getUsername()) && MiscUtil.hasString(getPassword())) {
 			// ...set an AuthenticationHandler to handle it.
 			m_server.setAuthenticationHandlerFactory(new EasyAuthenticationHandlerFactory(new Authenticator()));
 		}
 		
 		// Finally, complete the initializations of the inbound SMTP
 		// m_server.
-		m_server.setHideTLS(!m_tls);
+		m_server.setEnableTLS(m_tls);
+		m_server.setHideTLS( !m_tls);
 		m_server.setBindAddress(iNetAddr);
 		m_server.setPort(m_port);
 		m_server.start();
@@ -264,8 +350,8 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		@Override
 		public void login(String username, String password) throws LoginFailedException {
 			m_logger.debug("Inbound SMTP Server:  login('" + username + "')");
-			if ((!(MiscUtil.hasString(username))) || (!(username.equalsIgnoreCase(m_username))) ||
-			    (!(MiscUtil.hasString(password))) || (!(password.equals(m_password)))) {
+			if ((!(MiscUtil.hasString(username))) || (!(username.equalsIgnoreCase(getUsername()))) ||
+			    (!(MiscUtil.hasString(password))) || (!(password.equals(          getPassword())))) {
 				m_logger.debug("...login failed.");
 				throw new LoginFailedException("Inbound SMTP server - Authentication Failed");
 			}
@@ -339,7 +425,7 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 					//    'new MimeMessage(session, data);' above and
 					//    set a breakpoint on the 'ba = s.getBytes();',
 					//    you can patch 's' with your MIME string so
-					//    that it gets processed instead of thet data
+					//    that it gets processed instead of the data
 					//    passed in.
 					// - - - - - - - - - - - - - - - - - - - - - - - -
  
