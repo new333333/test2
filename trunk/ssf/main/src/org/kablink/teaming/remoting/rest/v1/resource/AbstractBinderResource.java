@@ -10,6 +10,7 @@ import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TitleException;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.BinderUtils;
@@ -539,6 +540,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No folder title was supplied in the POST data.");
         }
         try {
+            org.kablink.teaming.domain.Binder child = getBinderModule().getBinderByParentAndTitle(parent.getId(), newBinder.getTitle());
+            if (child!=null) {
+                throw new TitleException(newBinder.getTitle());
+            }
             org.kablink.teaming.domain.Binder binder = FolderUtils.createLibraryFolder(parent, newBinder.getTitle());
             return ResourceUtil.buildBinder(binder, true, descriptionFormat);
         } catch (TitleException e) {
