@@ -1155,19 +1155,31 @@ public class GwtProfileHelper {
 		boolean isMirrored = false;
 		
 		Long binderIdL = Long.valueOf(binderId);
+		User currentUser = GwtServerHelper.getCurrentUser();
+		Long userWSId = currentUser.getWorkspaceId();
+		boolean binderIsUsersWS = ((null != userWSId) && userWSId.equals(binderIdL));
 		
-		Binder binder = bs.getBinderModule().getBinder(binderIdL);
+		Binder binder;
+		if (binderIsUsersWS)
+		     binder = bs.getBinderModule().getBinderWithoutAccessCheck(binderIdL);
+		else binder = bs.getBinderModule().getBinder(binderIdL);
 		if (binder instanceof Folder) {
 			isMirrored = ((Folder)binder).isMirrored();
 		}
 		
 		// Get the User object for this principal.
-		User u = null;
-		Principal p = getPrincipalByBinderId(bs, binderId);
-		if (null != p) {
-			p = Utils.fixProxy(p);
-			if (p instanceof User) {
-				u = ((User) p);
+		User u;
+		if (binderIsUsersWS) {
+			u = currentUser;
+		}
+		else {
+			u = null;
+			Principal p = getPrincipalByBinderId(bs, binderId);
+			if (null != p) {
+				p = Utils.fixProxy(p);
+				if (p instanceof User) {
+					u = ((User) p);
+				}
 			}
 		}
 		
