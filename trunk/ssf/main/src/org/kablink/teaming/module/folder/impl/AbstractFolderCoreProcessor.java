@@ -596,7 +596,7 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 	   if (destination.isLibrary()) {
 		   //Check that there wouldn't be any duplicate file names because of this move
 		   try {
-			   BinderHelper.copyOrMoveEntryCheckUniqueFileNames(destination, source);
+			   BinderHelper.copyOrMoveEntryCheckUniqueFileNames(destination, source, toFileNames);
 		   } catch(Exception e) {
 			   //Cannot copy this entry because it will violate the unique names requirement
 			   FilesErrors errors = new FilesErrors();
