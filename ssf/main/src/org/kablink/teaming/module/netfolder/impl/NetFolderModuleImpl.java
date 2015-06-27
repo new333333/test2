@@ -44,6 +44,7 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoNetFolderConfigByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -96,27 +97,39 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
     			name,
     			owner);
     	
-    	// Create and save a new net folder config object        		
-		final NetFolderConfig nfc = new NetFolderConfig(NetFolderUtil.getNetFolderServerByName(rootName).getId());
-    	nfc.setName(name);
-    	nfc.setTopFolderId(folder.getId());
-    	nfc.setResourcePath(path);
-    	nfc.setHomeDir(isHomeDir);
-    	nfc.setIndexContent(indexContent);
-    	nfc.setUseInheritedIndexContent(inheritIndexContent);
-    	nfc.setSyncScheduleOption(syncScheduleOption);
-    	nfc.setFullSyncDirOnly(fullSyncDirOnly);	
-    	nfc.setAllowDesktopAppToTriggerInitialHomeFolderSync(allowDesktopAppToTriggerSync);
-    	nfc.setUseInheritedDesktopAppTriggerSetting(inheritAllowDesktopAppToTriggerSync);
-		if(logger.isDebugEnabled())
-			logger.debug("Creating new net folder config object " + nfc.toString());
-		final NetFolderConfig netFolderConfig = (NetFolderConfig) getTransactionTemplate().execute(new TransactionCallback<Object>() {
-        	@Override
-			public Object doInTransaction(final TransactionStatus status) {
-        		getCoreDao().save(nfc);
-				return nfc;
-        	}
-        });
+    	// Create and save a new net folder config object    
+    	NetFolderConfig netFolderConfig;
+    	try {
+			final NetFolderConfig nfc = new NetFolderConfig(NetFolderUtil.getNetFolderServerByName(rootName).getId());
+	    	nfc.setName(name);
+	    	nfc.setTopFolderId(folder.getId());
+	    	nfc.setResourcePath(path);
+	    	nfc.setHomeDir(isHomeDir);
+	    	nfc.setIndexContent(indexContent);
+	    	nfc.setUseInheritedIndexContent(inheritIndexContent);
+	    	nfc.setSyncScheduleOption(syncScheduleOption);
+	    	nfc.setFullSyncDirOnly(fullSyncDirOnly);	
+	    	nfc.setAllowDesktopAppToTriggerInitialHomeFolderSync(allowDesktopAppToTriggerSync);
+	    	nfc.setUseInheritedDesktopAppTriggerSetting(inheritAllowDesktopAppToTriggerSync);
+			if(logger.isDebugEnabled())
+				logger.debug("Creating new net folder config object " + nfc.toString());
+			netFolderConfig = (NetFolderConfig) getTransactionTemplate().execute(new TransactionCallback<Object>() {
+	        	@Override
+				public Object doInTransaction(final TransactionStatus status) {
+	        		getCoreDao().save(nfc);
+					return nfc;
+	        	}
+	        });
+    	}
+    	catch(Exception e) {
+    		// Something went wrong, which implies that the creation of the net folder config object
+    		// didn't go as planned. In this case, we need to clean up by deleting the net folder top
+    		// that was created in the previous step. Otherwise, subsequent attempt to recreate the
+    		// net folder will fail because the name is already taken in the folder name space.
+    		logger.error("Failed to create net folder config object with name [" + name + "]. Cleaning up associated net folder top with id=" + folder.getId());
+    		getBinderModule().deleteBinder(folder.getId());
+    		throw e; // Rethrow
+    	}
 
     	// Modify the folder with the additional net folder config information.
     	getFolderModule().modifyNetFolder(netFolderConfig, folder.getId());
@@ -189,6 +202,10 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
     	
 	protected FolderModule getFolderModule() {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
+	}
+	
+	protected BinderModule getBinderModule() {
+		return (BinderModule) SpringContextUtil.getBean("binderModule");
 	}
 	
 	protected TemplateModule getTemplateModule() {
