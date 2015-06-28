@@ -42,8 +42,10 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoNetFolderConfigByTheIdException;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
+import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -82,6 +84,12 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
     		Boolean fullSyncDirOnly,
     		Boolean allowDesktopAppToTriggerSync,
     		Boolean inheritAllowDesktopAppToTriggerSync) throws AccessControlException, WriteFilesException, WriteEntryDataException {
+		
+		// Before doing anything, make sure that the specified net folder server exists and the
+		// corresponding resource driver has been loaded in memory.
+		ResourceDriverConfig nfs = NetFolderUtil.getNetFolderServerByName(rootName);
+		ResourceDriver driver = NetFolderUtil.getResourceDriverByNetFolderServerId(nfs.getId());
+		// If still here, above validation was successful.
     	
 		// Create top-level folder corresponding to the net folder as data. If there is a naming
 		// conflict, this operation will fail right here.
@@ -100,7 +108,7 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
     	// Create and save a new net folder config object    
     	NetFolderConfig netFolderConfig;
     	try {
-			final NetFolderConfig nfc = new NetFolderConfig(NetFolderUtil.getNetFolderServerByName(rootName).getId());
+			final NetFolderConfig nfc = new NetFolderConfig(nfs.getId());
 	    	nfc.setName(name);
 	    	nfc.setTopFolderId(folder.getId());
 	    	nfc.setResourcePath(path);
