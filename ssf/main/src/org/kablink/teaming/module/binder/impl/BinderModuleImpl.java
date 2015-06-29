@@ -434,7 +434,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
 				}
 				else { // Legacy Vibe folder
-					getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+					WorkAreaOperation copyOp;
+					if (user.isShared())
+					     copyOp = WorkAreaOperation.BINDER_ADMINISTRATION;	// Gust must be the binder admin to copy...
+					else copyOp = WorkAreaOperation.READ_ENTRIES;			// ...everybody else just needs read access.
+					getAccessControlManager().checkOperation(user, binder, copyOp);
 				}
 				break;
 			case manageTeamMembers:

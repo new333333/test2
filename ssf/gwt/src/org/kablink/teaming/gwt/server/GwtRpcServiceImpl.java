@@ -1416,6 +1416,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return new VibeRpcResponse( responseData );
 		}
 		
+		case GET_CAN_MANAGE_BINDER_TAGS:  {
+			GetCanManageBinderTagsCmd gcmbtCmd = ((GetCanManageBinderTagsCmd) cmd);
+			BooleanRpcResponseData responseData = GwtServerHelper.getCanManageBinderTags(this, req, gcmbtCmd.getBinderId());
+			return new VibeRpcResponse(responseData);
+		}
+		
 		case GET_CLICK_ON_TITLE_ACTION:
 		{
 			GetClickOnTitleActionCmd gcotaCmd = ((GetClickOnTitleActionCmd) cmd);

@@ -8515,6 +8515,34 @@ public class GwtServerHelper {
 		Long userId = getCurrentUserId();
 		return SearchUtils.getTrackedPlacesIds(bs, userId);
 	}
+
+	/**
+	 * Returns a BooleanRpcResponseData contain true if the logged in
+	 * user has rights to manage tags on the given binder and false
+	 * otherwise.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData getCanManageBinderTags(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
+		try {
+			BinderModule bm = bs.getBinderModule();
+			Binder binder = bm.getBinder(binderId);
+			return new BooleanRpcResponseData(bm.testAccess(binder, BinderOperation.manageTag));
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(
+				m_logger,
+				ex,
+				"GwtServerHelper.getCanManageBinderTags( SOURCE EXCEPTION ):  ");
+		}
+	}
 	
 	/*
 	 * Using a search query, returns a List<BinderData> containing
@@ -10319,6 +10347,7 @@ public class GwtServerHelper {
 		case GET_CALENDAR_NEXT_PREVIOUS_PERIOD:
 		case GET_CAN_ADD_ENTITIES:
 		case GET_CAN_ADD_ENTITIES_TO_BINDERS:
+		case GET_CAN_MANAGE_BINDER_TAGS:
 		case GET_CLICK_ON_TITLE_ACTION:
 		case GET_CLIPBOARD_TEAM_USERS:
 		case GET_CLIPBOARD_USERS:

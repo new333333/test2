@@ -39,6 +39,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.MenuIds;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FolderOptionsDlg.FolderOptionsDlgClient;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetCanManageBinderTagsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -50,6 +53,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * Class used for the Manage menu item popup.  
@@ -511,6 +515,14 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	 */
 	@Override
 	public void populateMenu() {
+		// Begin populating the menu.
+		populateMenuPart1();
+	}
+
+	/*
+	 * Begins the menu construction.
+	 */
+	private void populateMenuPart1() {
 		// Have we constructed the menu's contents yet?
 		if (!(hasContent())) {
 			// No!  We need to construct it now.  First the primary
@@ -538,52 +550,76 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			if (!hasMiscSection) {
 				hasMiscSection = m_currentBinder.isBinderWorkspace();
 			}
-			if (hasMiscSection && isSpacerNeeded()) {
-				// ...and add a spacer when required.
-				addSpacerMenuItem();
-			}
-			boolean isFilr = GwtClientHelper.isLicenseFilr();
-			if (!(isFilr)) {
-				showTagThis();
-			}
-			addContextMenuItemsFromList(IDBASE, m_miscBucket);
-			
-			// Then the config section...
-			boolean hasConfigSection = (!(m_configBucket.isEmpty()));
-			if (hasConfigSection && isSpacerNeeded()) {
-				// ...and add a spacer when required.
-				addSpacerMenuItem();
-			}
-			addContextMenuItemsFromList(IDBASE, m_configBucket);
-			addContextMenuItem(IDBASE, m_emailNotificationTBI);
-			showFolderOptions(m_folderViewsTBI, m_calendarImportTBI);
-
-			// Then the Filr section...
-			boolean hasFilrSection = (isFilr && (!(m_filrBucket.isEmpty())));
-			if (hasFilrSection) {
-				if (isSpacerNeeded()) {
+			boolean needsMiscSpacer = (hasMiscSection && isSpacerNeeded());
+			if (GwtClientHelper.isLicenseFilr()) {
+				if (needsMiscSpacer) {
 					// ...and add a spacer when required.
 					addSpacerMenuItem();
 				}
-				addContextMenuItemsFromList(IDBASE, m_filrBucket);
+				populateMenuPart2Now();
 			}
-			
-			// Finally, a section containing anything that's left over.
-			boolean hasLeftOversSection = ((null != m_commonActionsTBI) && m_commonActionsTBI.hasNestedToolbarItems());
-			if (hasLeftOversSection && isSpacerNeeded()) {
+			else {
+				// Note that this will call populateMenuPart2Async()
+				// after performing its asynchronous operations.
+				showTagThis(needsMiscSpacer);
+			}
+		}
+	}
+	
+	/*
+	 * Asynchronously completes the menu construction.
+	 */
+	private void populateMenuPart2Async() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				populateMenuPart2Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously completes the menu construction.
+	 */
+	private void populateMenuPart2Now() {
+		// Add the items from the miscellaneous bucket.
+		addContextMenuItemsFromList(IDBASE, m_miscBucket);
+		
+		// Then the config section...
+		boolean hasConfigSection = (!(m_configBucket.isEmpty()));
+		if (hasConfigSection && isSpacerNeeded()) {
+			// ...and add a spacer when required.
+			addSpacerMenuItem();
+		}
+		addContextMenuItemsFromList(IDBASE, m_configBucket);
+		addContextMenuItem(IDBASE, m_emailNotificationTBI);
+		showFolderOptions(m_folderViewsTBI, m_calendarImportTBI);
+
+		// Then the Filr section...
+		boolean hasFilrSection = (GwtClientHelper.isLicenseFilr() && (!(m_filrBucket.isEmpty())));
+		if (hasFilrSection) {
+			if (isSpacerNeeded()) {
 				// ...and add a spacer when required.
 				addSpacerMenuItem();
 			}
-			addNestedContextMenuItems(IDBASE, m_commonActionsTBI);
+			addContextMenuItemsFromList(IDBASE, m_filrBucket);
 		}
+		
+		// Finally, a section containing anything that's left over.
+		boolean hasLeftOversSection = ((null != m_commonActionsTBI) && m_commonActionsTBI.hasNestedToolbarItems());
+		if (hasLeftOversSection && isSpacerNeeded()) {
+			// ...and add a spacer when required.
+			addSpacerMenuItem();
+		}
+		addNestedContextMenuItems(IDBASE, m_commonActionsTBI);
 	}
 	
 	/*
 	 * Adds a tag this menu item when appropriate.
 	 */
-	private void showTagThis() {
+	private void showTagThis(final boolean needsSpacer) {
 		// Is the current binder a folder?
-		String menuText;
+		final String menuText;
 		final String dlgCaption;
 		
 		if (m_currentBinder.isBinderFolder()) {
@@ -615,20 +651,45 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			return;
 		}
 
-		// Add an anchor to run the tag this dialog.
-		final String menuId = (IDBASE + "TagThis");
-		MenuPopupAnchor mtA = new MenuPopupAnchor(menuId, menuText, null, new Command() {
+		// Does the user have rights to manage tags on this binder?
+		final Long binderId = m_currentBinder.getBinderIdAsLong();
+		GetCanManageBinderTagsCmd cmd = new GetCanManageBinderTagsCmd(binderId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void execute() {
-				GwtClientHelper.deferCommand(new ScheduledCommand() {
-					@Override
-					public void execute() {
-						showTagThisAsync(menuId, dlgCaption);
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetCanManageBinderTags(),
+					binderId);
+				populateMenuPart2Async();
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				BooleanRpcResponseData reply = ((BooleanRpcResponseData) response.getResponseData());
+				if (reply.getBooleanValue()) {
+					// Yes!  Add an anchor to run the tag this dialog.
+					final String menuId = (IDBASE + "TagThis");
+					MenuPopupAnchor mtA = new MenuPopupAnchor(menuId, menuText, null, new Command() {
+						@Override
+						public void execute() {
+							GwtClientHelper.deferCommand(new ScheduledCommand() {
+								@Override
+								public void execute() {
+									showTagThisAsync(menuId, dlgCaption);
+								}
+							});
+						}
+					});
+					if (needsSpacer) {
+						// ...and add a spacer when required.
+						addSpacerMenuItem();
 					}
-				});
+					addContentMenuItem(mtA);
+				}
+				populateMenuPart2Async();
 			}
 		});
-		addContentMenuItem(mtA);
 	}
 
 	private void showTagThisAsync(String menuId, String dlgCaption) {
