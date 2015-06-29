@@ -356,7 +356,7 @@
     -moz-border-radius: 5px;
     border-radius: 5px;
     -webkit-border-radius: 5px;
-    text-decoration: underline;
+    text-decoration: none !important;
 }
 
 .linkToBinderWidgetLink:hover, .linkToBinderWidgetLink_dark:hover
@@ -386,7 +386,7 @@
     -moz-border-radius: 5px;
     border-radius: 5px;
     -webkit-border-radius: 5px;
-    text-decoration: underline;
+    text-decoration: none !important;
 }
 
 .linkToEntryWidgetLink:hover, .linkToEntryWidgetLink_dark:hover
@@ -582,6 +582,7 @@
     -moz-border-radius: 5px;
     border-radius: 5px;
     -webkit-border-radius: 5px;
+    text-decoration: none !important;
 }
 
 .urlWidgetLink:hover, .urlWidgetLink_dark:hover
