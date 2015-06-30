@@ -103,7 +103,7 @@ var noMemberProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 						 </td>
 						<td class="ss_nowrap">
 						  <a href="javascript: ;"
-							onClick="ss_launchSimpleProfile( this, '${member.workspaceId}','<ssf:escapeJavaScript><ssf:userTitle user="${member}"/></ssf:escapeJavaScript>', noMemberProfileErrorText);return false;"
+							onClick="ss_launchSimpleProfile( this, '${member.id}','${member.workspaceId}','<ssf:escapeJavaScript><ssf:userTitle user="${member}"/></ssf:escapeJavaScript>', noMemberProfileErrorText);return false;"
 							><ssf:userTitle user="${member}"/></a>
 						</td>
 						<td><c:if test="${!empty member.organization}"><c:out value="${member.organization}" /></c:if></td>

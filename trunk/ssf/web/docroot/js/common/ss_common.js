@@ -9571,9 +9571,9 @@ function ss_deleteMultipleFileVersions(formId, confirmText) {
 	}
 }
 
-function ss_launchSimpleProfile(element, workspaceId, userName, errorText) {
+function ss_launchSimpleProfile(element, userId, workspaceId, userName, errorText) {
 	if(window.top.ss_invokeSimpleProfile != null ) {
-		window.top.ss_invokeSimpleProfile(element, workspaceId, userName);
+		window.top.ss_invokeSimpleProfile(element, userId, workspaceId, userName);
 	} else {
 		alert(errorText);
 	}

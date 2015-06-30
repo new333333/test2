@@ -1,7 +1,7 @@
 
 <%
 	/**
-	 * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+	 * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
 	 * 
 	 * This work is governed by the Common Public Attribution License Version 1.0 (the
 	 * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -17,10 +17,10 @@
 	 * 
 	 * The Original Code is ICEcore, now called Kablink. The Original Developer is
 	 * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
-	 * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+	 * (c) 1998-2015 Novell, Inc. All Rights Reserved.
 	 * 
 	 * Attribution Information:
-	 * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+	 * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
 	 * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
 	 * Attribution URL: [www.kablink.org]
 	 * Graphic Image as provided in the Covered Code
@@ -127,7 +127,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 	<td>
 	<a href="javascript: ;" title="<c:out value="${presenceAltText}"/>"
 		class="ss_presence_dude"
-		onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><img
+		onClick="ss_launchSimpleProfile( this,'${ss_presence_user.id}','${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><img
 		border="0" align="absmiddle"
 		style="height:14px !important; width:15px !important; line-height:14px !important;" 
 		src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
@@ -146,7 +146,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 					<a
 						<c:if test="${!empty ss_presence_target}">target="${ss_presence_target}"</c:if>
 						href="<ssf:permalink entity="${ss_presence_user}"/>"
-						onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><span
+						onClick="ss_launchSimpleProfile( this,'${ss_presence_user.id}','${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><span
 						id="${ss_presence_user.id}"
 						class="ss_presence_title_style ss_muster_users"
 						title="<c:out value="${presenceAltText}"/>"
@@ -183,7 +183,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 					href="<ssf:url windowState="maximized"><ssf:param 
 					  	name="action" value="view_ws_listing"/><ssf:param 
 					  	name="binderId" value="${ss_presence_user.workspaceId}"/></ssf:url>"
-					onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><span
+					onClick="ss_launchSimpleProfile( this,'${ss_presence_user.id}','${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><span
 					id="${ss_presence_user.id}"
 					class="ss_presence_title_style ss_muster_users"
 					title="<c:out value="${presenceAltText}"/>"
