@@ -637,6 +637,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			case PROFILE_ROOT_MANAGEMENT:
 			case NOT_A_WORKSPACE:
 				// Yes!  Bail.
+				populateMenuPart2Async();
 				return;
 			}
 			
@@ -648,6 +649,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		else {
 			// No, it isn't a workspace either!  We don't show a
 			// tag this menu item on it.
+			populateMenuPart2Async();
 			return;
 		}
 
