@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -614,6 +614,18 @@ public class GwtUIHelper {
 		hSession.setAttribute(CACHED_TOP_RANKED_PLACES_KEY, new GwtUISessionData(model.get(WebKeys.FOLDER_ENTRYPLACES)));
 	}
 
+	/*
+	 * Returns true if the logged in user can access their own personal
+	 * workspace and false otherwise.
+	 */
+	private static boolean canLoggedInUserAccessOwnWorkspace(AllModulesInjected bs) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long userWSId = user.getWorkspaceId();
+		BinderModule bm = bs.getBinderModule();
+		Binder userWS = bm.getBinderWithoutAccessCheck(userWSId);
+		return bm.testAccess(userWS, BinderOperation.readEntries);
+	}
+	
 	/**
 	 * Return the 'AdHoc folder' setting from the given user or group
 	 * (i.e., a UserPrinciapl object.)
@@ -1603,6 +1615,10 @@ public class GwtUIHelper {
 		// Put out the ID of the top Vibe workspace.
 		String topWSId = getTopWSIdSafely(bs);
 		model.put("topWSId", topWSId);
+		
+		// Put out whether the user can access their own workspace.
+		boolean canAccessOwnWorkspace = canLoggedInUserAccessOwnWorkspace(bs);
+		model.put("canAccessOwnWorkspace", String.valueOf(canAccessOwnWorkspace));
 		
 		// Put out the ID of the profileBinder.
 		String profileBinderId = getProfileBinderIdSafely(bs);

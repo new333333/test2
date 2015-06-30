@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,9 @@
  */
 package org.kablink.teaming.module.workflow.impl;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,11 +45,12 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.hibernate.HibernateException;
+
 import org.jbpm.JbpmContext;
 import org.jbpm.graph.def.DelegationException;
 import org.jbpm.calendar.BusinessCalendar;
-import org.jbpm.calendar.Duration;
 import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.db.SchedulerSession;
 import org.jbpm.graph.def.Action;
@@ -64,7 +67,7 @@ import org.jbpm.instantiation.Delegation;
 import org.jbpm.scheduler.def.CancelTimerAction;
 import org.jbpm.scheduler.def.CreateTimerAction;
 import org.jbpm.scheduler.exe.Timer;
-import org.kablink.teaming.ConfigurationException;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -73,9 +76,9 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.DefinitionInvalidException;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
@@ -83,9 +86,7 @@ import org.kablink.teaming.jobs.WorkflowTimeout;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionUtils;
-import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
-import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
@@ -101,17 +102,23 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.util.Validator;
 import org.kablink.util.VibeRuntimeException;
 import org.kablink.util.api.ApiErrorCode;
+
 import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"unchecked", "unused"})
 public class WorkflowModuleImpl extends CommonDependencyInjection implements WorkflowModule, ZoneSchedule, InitializingBean {
    static BusinessCalendar businessCalendar;
    protected TransactionTemplate transactionTemplate;
@@ -133,7 +140,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     * junit test work without SZoneConfig.
     *
     */
-   public void afterPropertiesSet() {
+   @Override
+public void afterPropertiesSet() {
 	   businessCalendar = new BusinessCalendar();
    }
 	protected WorkflowTimeout getProcessor(Workspace zone) {
@@ -149,6 +157,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     	return (WorkflowTimeout)ReflectHelper.getInstance(className);		   		
 	}
 	//called on zone delete
+	@Override
 	public void stopScheduledJobs(Workspace zone) {
 		if (!Utils.checkIfFilr()) {
 			// This is Vibe
@@ -157,7 +166,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		}
 	}
 	//called on zone startup
-   public void startScheduledJobs(Workspace zone) {
+   @Override
+public void startScheduledJobs(Workspace zone) {
 	   if (!Utils.checkIfFilr()) {
 			// This is Vibe
 		   if (zone.isDeleted()) return;
@@ -214,6 +224,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	   	}
     }
 
+	@Override
 	public void deleteProcessDefinition(String name) {
 		JbpmContext context = WorkflowFactory.getContext();
 	    try {
@@ -241,6 +252,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}
 	
 	//Routine to build (or modify) a workflow process definition from a Definition
+	@Override
 	public void modifyProcessDefinition(String definitionName, Definition def) {
 		JbpmContext context = WorkflowFactory.getContext();
 	    try {
@@ -262,6 +274,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    }
 		
 	}
+	@Override
 	public void modifyStateName(String definitionName, String oldName, String newName) {
 		JbpmContext context = WorkflowFactory.getContext();
 	    try {
@@ -269,7 +282,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	        if (pD == null) return;
 	        Node stateNode = pD.getNode(oldName);
 	        if (stateNode == null) return;
-	        Set<Transition> incoming = stateNode.getArrivingTransitions();
+			Set<Transition> incoming = stateNode.getArrivingTransitions();
 	        //change name on incomming
 	        for (Transition in:incoming) {
 	        	String prefix = in.getName().substring(0, in.getName().length()-oldName.length());
@@ -499,6 +512,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 //	    logger.info("Workflow process definition created: " + pD.getName());
 //	    logger.info(writer.toString());
 	}
+	
 	private Event addTimer(JbpmContext context, Node node, String name, String timeout, String toState) {
 		//	make sure start threads event exits
 		Event event = node.getEvent(Event.EVENTTYPE_NODE_ENTER);
@@ -604,6 +618,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		return action;
 
 	}
+	@Override
 	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef, Map options) {
 		String startState=null;
 		if (options != null) startState = (String)options.get(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE);
@@ -692,6 +707,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		return true;
 	}
 
+	@Override
 	public void deleteEntryWorkflow(WorkflowSupport wEntry, WorkflowState state) {
 	    try {
 	    	WorkflowProcessUtils.endWorkflow(wEntry, state, true);
@@ -700,6 +716,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	    } 
 	}
 
+	@Override
 	public void deleteEntryWorkflow(WorkflowSupport wEntry, Definition def) {
 		Set<WorkflowState> states = wEntry.getWorkflowStates();
 		for (WorkflowState state: states) {
@@ -729,6 +746,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		
 	}
 	//cleanup when deleteing an entry.  Caller takes care of states
+	@Override
 	public void deleteEntryWorkflow(WorkflowSupport entry) {
 		//Delete all JBPM tokens and process instances associated with this entry
 		JbpmContext context=WorkflowFactory.getContext();
@@ -757,6 +775,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	/**
 	 * Signal a transition.  The caller is responsible for updating the index.
 	 */
+	@Override
 	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, String toState) {
 		entry.startWorkflowStateLoopDetector();
 		WorkflowProcessUtils.processManualTransition(entry, state, toState);
@@ -765,6 +784,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	/**
 	 * Set some workflow variables and continue processing.
 	 */
+	@Override
 	public void setWorkflowVariables(WorkflowSupport entry, WorkflowState state, Map<String, Object> variables) {
 		if (variables.isEmpty()) return;
 		JbpmContext context=WorkflowFactory.getContext();
@@ -785,6 +805,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			context.close();
 		}
 	}
+	@Override
 	public void processTimers() {
     	JbpmContext jContext = WorkflowFactory.getContext();
    		HashSet<Long>timers = new HashSet();
@@ -836,7 +857,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				if (token == null) continue; //don't support
 				//each timer needs its own transaction so we can rollback failures with out effecting others
  				getTransactionTemplate().execute(new TransactionCallback() {
- 					public Object doInTransaction(TransactionStatus status) {
+ 					@Override
+					public Object doInTransaction(TransactionStatus status) {
  						Long runAsId=null;
  						//token id is id of workflowState
  						WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
@@ -872,13 +894,15 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
  						}
 	        			try {
 	        				RunasTemplate.runas(new RunasCallback() {
-	        					public Object doAs() {
+	        					@Override
+								public Object doAs() {
 	        						timer.execute();
 	        						//re-index for state changes
 	        						EntryProcessor processor = loadEntryProcessor(entry.getParentBinder());
 	        						entry.incrLogVersion();
 	        						processor.processChangeLog(entry, ChangeLog.WORKFLOWTIMEOUT);
 	        						processor.indexEntry(entry);
+	        				  		getRssModule().updateRssFeed(entry); 
 	        						return null;
 	        					}
 	        				}, zoneId, runAsId);
@@ -929,12 +953,14 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		}
 		
 	}
+
 	/**
 	 * See if any conditions have been met for a transition to a new state.
 	 * This would be triggered by a modify.  The caller is responsible for
 	 * updating the index.
 	 * @param entry
 	 */
+	@Override
 	public boolean modifyWorkflowStateOnUpdate(WorkflowSupport entry) {
 		entry.startWorkflowStateLoopDetector();
 		boolean result = WorkflowProcessUtils.processConditions(entry, true, false);
@@ -947,6 +973,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * updating the index.
 	 * @param entry
 	 */
+	@Override
 	public boolean modifyWorkflowStateOnResponse(WorkflowSupport entry) {
 		entry.startWorkflowStateLoopDetector();
 		boolean result = WorkflowProcessUtils.processConditions(entry, false, false);
@@ -958,6 +985,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	 * The caller is responsible for updating the index.
 	 * @param entry
 	 */
+	@Override
 	public boolean modifyWorkflowStateOnReply(WorkflowSupport entry) {
 		entry.startWorkflowStateLoopDetector();
 		boolean result = WorkflowProcessUtils.processConditions(entry, false, true);	
@@ -966,7 +994,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}	
 
 	//see if anything to do after a deleted entry gets restored
-    public void  modifyWorkflowStateOnRestore(WorkflowSupport wfEntry) {
+    @Override
+	public void  modifyWorkflowStateOnRestore(WorkflowSupport wfEntry) {
     	wfEntry.startWorkflowStateLoopDetector();
 		boolean changed = WorkflowProcessUtils.processConditions(wfEntry, false, false);
 		wfEntry.stopWorkflowStateLoopDetector();
@@ -982,7 +1011,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     }
 	
 	//see if anything to do after some external event
-    public void  modifyWorkflowStateOnChange(WorkflowSupport wfEntry) {
+    @Override
+	public void  modifyWorkflowStateOnChange(WorkflowSupport wfEntry) {
     	wfEntry.startWorkflowStateLoopDetector();
 		boolean changed = WorkflowProcessUtils.processConditions(wfEntry, false, false);
     	wfEntry.stopWorkflowStateLoopDetector();
