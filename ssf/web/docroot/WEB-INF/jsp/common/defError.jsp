@@ -58,17 +58,16 @@
 
 <c:if test="${!empty exception}" >
 <p>
-${exception.class}<br/>
+This is where the JasperException was.
 <%
 	Exception exception = (Exception)request.getAttribute("exception");
-	if (exception != null) {
-		String message = exception.getLocalizedMessage() == null ? exception.toString() : exception.getLocalizedMessage();
-		if (message != null) {
-			message = org.kablink.teaming.util.stringcheck.StringCheckUtil.check(message);
-		}
+	String message = exception.getLocalizedMessage() == null ? exception.toString() : exception.getLocalizedMessage();
+	if (message != null) {
+		message = org.kablink.teaming.util.stringcheck.StringCheckUtil.check(message);
+	}
 %>
-		<%= message.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;") %>
-<%  }  %>
+<%=exception.getClass()%><br>
+<%= message.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;") %>
 </p>
 
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
@@ -86,7 +85,6 @@ ${exception.class}<br/>
 	</div>
 </c:if>
 </c:if>
-
 <ssf:ifnotadapter>
 	<c:if test="${!empty ssUser.workspaceId}">
 		<p style="text-align:center;"><a href="<ssf:url action="view_ws_listing"
