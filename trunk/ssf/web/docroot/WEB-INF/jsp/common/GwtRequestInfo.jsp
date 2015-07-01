@@ -84,6 +84,8 @@
 		isFormLoginAllowed:					'${isFormLoginAllowed}',
 		isModifyAllowed:					'${ss_modifyEntryAllowed}',
 		isNovellTeaming:					'${isNovellTeaming}',
+		isLicenseExpired:					'${isLicenseExpired}',
+		isLicenseValid:						'${isLicenseValid}',
 		isLicenseFilr:						'${isLicenseFilr}',
 		isLicenseFilrAndVibe:				'${isLicenseFilrAndVibe}',
 		isLicenseVibe:						'${isLicenseVibe}',

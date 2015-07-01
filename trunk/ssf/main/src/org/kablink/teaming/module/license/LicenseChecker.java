@@ -33,8 +33,11 @@
 package org.kablink.teaming.module.license;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import org.dom4j.Document;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
@@ -83,6 +86,11 @@ public class LicenseChecker {
 	
 	public static boolean isAuthorizedByLicense(String featureName, boolean ignoreExpiration) {
 		return getInstance().getLicenseManager().isAuthorizedByLicense(featureName, ignoreExpiration);
+	}
+	
+	public static int getLicenseCount() {
+		Collection<Document> licenses = getInstance().getLicenseManager().getLicenses();
+		return ((null == licenses) ? 0 : licenses.size());
 	}
 	
 	public static String getLicenseType() {
@@ -165,5 +173,16 @@ public class LicenseChecker {
 		// If we get here, reply is true if we should show Vibe
 		// features and false otherwise.  Return it.
 		return reply;
+	}
+	
+	/**
+	 * Returns true if this is a software version that requires a
+	 * license (e.g., Novell Filr or Novell Vibe) and false otherwise
+	 * (e.g., Kablink Vibe.)
+	 * 
+	 * @return
+	 */
+	public static boolean licenseRequiredEdition() {
+		return getInstance().getLicenseManager().licenseRequiredEdition();
 	}
 }

@@ -228,6 +228,8 @@ public interface GwtTeamingMessages extends Messages {
 	String _10();
 	String apply();
 	String betaWithProduct(String productName);
+	String licenseExpired( String productName);
+	String licenseInvalid( String productName);
 	String cancel();
 	String cantAccessEntry();
 	String cantAccessFolder();

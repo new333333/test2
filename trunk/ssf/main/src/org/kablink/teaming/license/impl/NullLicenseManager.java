@@ -153,4 +153,15 @@ public class NullLicenseManager implements LicenseManager {
 	{
 		return false;
 	}
+
+	/**
+	 * Always returns false since this is the NullLicenseManager and
+	 * hence, a no license required editition.
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean licenseRequiredEdition() {
+		return false;
+	}
 }

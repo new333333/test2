@@ -676,6 +676,28 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the flag that tells us if we are running with an expired
+	 * license.
+	 * 
+	 * @return
+	 */
+	public final native boolean isLicenseExpired()
+	/*-{
+		return (this.getBFromS( this.isLicenseExpired ));
+	}-*/;
+
+	/**
+	 * Return the flag that tells us if we are running with a valid
+	 * license.
+	 * 
+	 * @return
+	 */
+	public final native boolean isLicenseValid()
+	/*-{
+		return (this.getBFromS( this.isLicenseValid ));
+	}-*/;
+
+	/**
 	 * Return the flag that tells us if we are running in Filr and Vibe mode.
 	 * 
 	 * @return

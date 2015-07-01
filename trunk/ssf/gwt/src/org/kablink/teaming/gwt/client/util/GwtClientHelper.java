@@ -1365,28 +1365,18 @@ public class GwtClientHelper {
 	}
 	
 	/**
-	 * Returns true if the given keyCode is a navigation key.
+	 * Returns true if we're running with an expired license and false
+	 * otherwise.
 	 * 
-	 * @param keyCode
+	 * Note:  Kablink Vibe will NEVER have an expired license.
 	 * 
 	 * @return
 	 */
-	public static boolean isNavigationKey(int keyCode) {
-		boolean result = false;
-        if ((keyCode == KeyCodes.KEY_TAB)   ||
-        	(keyCode == KeyCodes.KEY_HOME)  ||
-        	(keyCode == KeyCodes.KEY_END)   ||
-        	(keyCode == KeyCodes.KEY_LEFT)  ||
-        	(keyCode == KeyCodes.KEY_UP)    ||
-            (keyCode == KeyCodes.KEY_RIGHT) ||
-            (keyCode == KeyCodes.KEY_DOWN)) {
-        	result = true;
-        }
-
-        return result;
+	public static boolean isLicenseExpired() {
+		RequestInfo ri = getRequestInfo(); 
+		return ((null == ri) || ri.isLicenseExpired());
 	}
-	
-	
+
 	/**
 	 * Returns true if we're running in Filr mode and false
 	 * otherwise.
@@ -1436,6 +1426,19 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Returns true if we're running with a valid license and false
+	 * otherwise.
+	 * 
+	 * Note:  Kablink Vibe will ALWAYS have a valid license.
+	 * 
+	 * @return
+	 */
+	public static boolean isLicenseValid() {
+		RequestInfo ri = getRequestInfo(); 
+		return ((null != ri) && ri.isLicenseValid());
+	}
+
+	/**
 	 * Returns true if we're running in a mode with Vibe enabled and
 	 * false otherwise.
 	 * 
@@ -1443,6 +1446,28 @@ public class GwtClientHelper {
 	 */
 	public static boolean isLicenseVibeEnabled() {
 		return getLicenseType().isVibeEnabled();
+	}
+	
+	/**
+	 * Returns true if the given keyCode is a navigation key.
+	 * 
+	 * @param keyCode
+	 * 
+	 * @return
+	 */
+	public static boolean isNavigationKey(int keyCode) {
+		boolean result = false;
+        if ((keyCode == KeyCodes.KEY_TAB)   ||
+        	(keyCode == KeyCodes.KEY_HOME)  ||
+        	(keyCode == KeyCodes.KEY_END)   ||
+        	(keyCode == KeyCodes.KEY_LEFT)  ||
+        	(keyCode == KeyCodes.KEY_UP)    ||
+            (keyCode == KeyCodes.KEY_RIGHT) ||
+            (keyCode == KeyCodes.KEY_DOWN)) {
+        	result = true;
+        }
+
+        return result;
 	}
 	
 	/**
