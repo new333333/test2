@@ -209,4 +209,94 @@ update dbo.SS_Forums set binderType = LEFT(type, 1);
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="16">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="char">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_ChangeLogs' and COLUMN_NAME = 'id'</sqlCheck>
+        </preConditions>
+        <comment>Change primary key column data type from CHAR(32) to NCHAR(32) for SS_ChangeLogs table</comment>
+		<sql>
+DECLARE @pkname nvarchar(128)
+SET @pkname = (SELECT name FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_ChangeLogs]') AND name LIKE N'PK__SS_%')
+IF (@pkname IS NOT NULL)
+BEGIN
+DECLARE @statement nvarchar(2000)
+SET @statement = 'ALTER TABLE [dbo].[SS_ChangeLogs] DROP CONSTRAINT [' + @pkName + ']'
+EXEC(@statement)
+END
+GO
+ALTER TABLE SS_ChangeLogs ALTER COLUMN id nchar(32) NOT NULL
+GO
+ALTER TABLE [dbo].[SS_ChangeLogs] ADD CONSTRAINT [PK__SS_ChangLogs] PRIMARY KEY CLUSTERED ([id]) 
+GO
+		</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="17">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="char">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_Attachments' and COLUMN_NAME = 'id'</sqlCheck>
+        </preConditions>
+        <comment>Change primary key column data type from CHAR(32) to NCHAR(32) for SS_Attachments table</comment>
+		<sql>
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FKA1AD4C312D9DE71B]') AND parent_object_id = OBJECT_ID(N'[dbo].[SS_Attachments]'))
+ALTER TABLE [dbo].[SS_Attachments] DROP CONSTRAINT [FKA1AD4C312D9DE71B]
+GO
+DECLARE @pkname nvarchar(128)
+SET @pkname = (SELECT name FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_Attachments]') AND name LIKE N'PK__SS_%')
+IF (@pkname IS NOT NULL)
+BEGIN
+DECLARE @statement nvarchar(2000)
+SET @statement = 'ALTER TABLE [dbo].[SS_Attachments] DROP CONSTRAINT [' + @pkName + ']'
+EXEC(@statement)
+END
+GO
+IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_Attachments]') AND name = N'owningAttachment_Att')
+DROP INDEX [owningAttachment_Att] ON [dbo].[SS_Attachments]
+GO
+ALTER TABLE SS_Attachments ALTER COLUMN id nchar(32) NOT NULL
+GO
+ALTER TABLE SS_Attachments ALTER COLUMN parentAttachment nchar(32) NULL
+GO
+ALTER TABLE [dbo].[SS_Attachments] ADD CONSTRAINT [PK__SS_Attachments] PRIMARY KEY CLUSTERED (id) 
+GO
+ALTER TABLE [dbo].[SS_Attachments] ADD CONSTRAINT [FKA1AD4C312D9DE71B] FOREIGN KEY([parentAttachment]) REFERENCES [dbo].[SS_Attachments] ([id])
+GO
+CREATE NONCLUSTERED INDEX [owningAttachment_Att] ON [dbo].[SS_Attachments] ([parentAttachment])
+GO
+		</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="char">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_CustomAttributes' and COLUMN_NAME = 'id'</sqlCheck>
+        </preConditions>
+        <comment>Change primary key column data type from CHAR(32) to NCHAR(32) for SS_CustomAttributes table</comment>
+		<sql>
+IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK476EDFC7F05A86A6]') AND parent_object_id = OBJECT_ID(N'[dbo].[SS_CustomAttributes]'))
+ALTER TABLE [dbo].[SS_CustomAttributes] DROP CONSTRAINT [FK476EDFC7F05A86A6]
+GO
+DECLARE @pkname nvarchar(128)
+SET @pkname = (SELECT name FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_CustomAttributes]') AND name LIKE N'PK__SS_%')
+IF (@pkname IS NOT NULL)
+BEGIN
+DECLARE @statement nvarchar(2000)
+SET @statement = 'ALTER TABLE [dbo].[SS_CustomAttributes] DROP CONSTRAINT [' + @pkName + ']'
+EXEC(@statement)
+END
+GO
+IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_CustomAttributes]') AND name = N'owningAttribute_cAtt')
+DROP INDEX [owningAttribute_cAtt] ON [dbo].[SS_CustomAttributes]
+GO
+ALTER TABLE dbo.SS_CustomAttributes ALTER COLUMN id nchar(32) NOT NULL
+GO
+ALTER TABLE dbo.SS_CustomAttributes ALTER COLUMN parent nchar(32) NULL
+GO
+ALTER TABLE [dbo].[SS_CustomAttributes] ADD CONSTRAINT [PK__SS_CustomAttributes] PRIMARY KEY CLUSTERED (id) 
+GO
+ALTER TABLE [dbo].[SS_CustomAttributes] ADD CONSTRAINT [FK476EDFC7F05A86A6] FOREIGN KEY([parent]) REFERENCES [dbo].[SS_CustomAttributes] ([id])
+GO
+CREATE NONCLUSTERED INDEX [owningAttribute_cAtt] ON [dbo].[SS_CustomAttributes] ([parent])
+GO
+		</sql>
+    </changeSet>
+
 </databaseChangeLog>
