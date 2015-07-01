@@ -1505,7 +1505,7 @@ public class GwtUIHelper {
 		
 		// Put out the flag indicating whether the landing page is in debug mode.
 		model.put(WebKeys.VIBE_LP_DEBUG, isVibeDebugLP());
-		
+
 		// Put out the flag indicating which product we're running as.
 		// Note that we do this first as it has the side affect of
 		// setting the session captive flag products that require it.
@@ -1514,6 +1514,26 @@ public class GwtUIHelper {
 
 		// Put out the session captive flag.
 		model.put(WebKeys.SESSION_CAPTIVE, String.valueOf(isSessionCaptive(request)));
+		
+		// Query some licensing information.
+		boolean licenseRequired  = LicenseChecker.licenseRequiredEdition();
+		boolean hasLicense       = (0 < LicenseChecker.getLicenseCount());
+		
+		// Put out an indication of whether we're running with an
+		// invalid or missing license.
+		boolean isLicenseValid = (!licenseRequired);
+		if (!isLicenseValid) {
+			isLicenseValid = (hasLicense && LicenseChecker.validLicenseExists());
+			if (isLicenseValid) {
+				isLicenseValid = (Utils.checkIfVibe() || Utils.checkIfFilr());
+			}
+		}
+		model.put("isLicenseValid", String.valueOf(isLicenseValid));
+		
+		// Put out an indication of whether we're running with an
+		// expired license.
+		boolean isLicenseExpired = (licenseRequired && hasLicense && LicenseChecker.isLicenseExpired());
+		model.put("isLicenseExpired", String.valueOf(isLicenseExpired));
 		
 		// Put out the flag that tells us if we are running Novell or
 		// Kablink Vibe.

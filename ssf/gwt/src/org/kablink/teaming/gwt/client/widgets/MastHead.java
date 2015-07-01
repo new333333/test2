@@ -93,7 +93,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class MastHead extends Composite
 	implements ClickHandler,
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
 		ActivityStreamExitEvent.Handler,
 		ContextChangedEvent.Handler,
 		GetMastHeadLeftEdgeEvent.Handler,
@@ -101,6 +101,10 @@ public class MastHead extends Composite
 		MastheadShowEvent.Handler,
 		MastheadUnhighlightAllActionsEvent.Handler
 {
+	// Controls whether or not a beta note is displayed in Vibe's
+	// masthead.
+	private final static boolean SHOW_VIBE_BETA_NOTE = true;
+
 	private BrandingPanel m_siteBrandingPanel = null;
 	private BrandingPanel m_binderBrandingPanel = null;
 	private RequestInfo m_requestInfo = null;
@@ -149,7 +153,6 @@ public class MastHead extends Composite
 	public MastHead( RequestInfo requestInfo )
 	{
 		Scheduler.ScheduledCommand cmd;
-		final boolean beta = false;
 		
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
@@ -177,23 +180,35 @@ public class MastHead extends Composite
 		m_binderBrandingPanel.setVisible( false );
 		m_mainMastheadPanel.add( m_binderBrandingPanel );
 		
-		// Create a place for the beta text to go.
-		if ( beta && m_requestInfo.isLicenseFilr() == false )
-		{
-			String productName;
-			
-			if ( m_requestInfo.isLicenseFilr() )
-			{
-				productName = GwtTeaming.getMessages().novellFilr();
-			}
-			else
-			{
-				productName = m_requestInfo.getProductName();
-			}
-			
-			m_betaLabel = new Label( GwtTeaming.getMessages().betaWithProduct( productName ) );
-			m_betaLabel.addStyleName( "mastheadBeta" );
-			m_mainMastheadPanel.add( m_betaLabel );
+		// We need the appropriate product name for displaying a beta
+		// message and/or a licensing error.
+		String productName;
+		if (m_requestInfo.isLicenseFilr())
+		     productName = GwtTeaming.getMessages().novellFilr();
+		else productName = m_requestInfo.getProductName();
+
+		// Is the license being used in error?
+		boolean isLicenseExpired =    GwtClientHelper.isLicenseExpired();
+		boolean isLicenseInvalid = (!(GwtClientHelper.isLicenseValid()));
+		boolean licensingError = (isLicenseExpired || isLicenseInvalid);
+		if (licensingError) {
+			// Yes!  Display a licensing error!
+			String licenseError;
+			if (isLicenseExpired)
+			     licenseError = GwtTeaming.getMessages().licenseExpired(productName);
+			else licenseError = GwtTeaming.getMessages().licenseInvalid(productName);
+			Label licenseErrorLabel = new Label(licenseError);
+			licenseErrorLabel.addStyleName("mastheadLicenseError");
+			m_mainMastheadPanel.add(licenseErrorLabel);
+		}
+		
+		// Do we need to show that this is a beta version of Vibe?
+		boolean showVibeBetaNote = (SHOW_VIBE_BETA_NOTE && (!licensingError) && (!(m_requestInfo.isLicenseFilr())));
+		if (showVibeBetaNote) {
+			// Yes!  Create a place for the beta text to go.
+			m_betaLabel = new Label(GwtTeaming.getMessages().betaWithProduct(productName));
+			m_betaLabel.addStyleName("mastheadBeta");
+			m_mainMastheadPanel.add(m_betaLabel);
 		}
 		
 		// Are we running Filr?

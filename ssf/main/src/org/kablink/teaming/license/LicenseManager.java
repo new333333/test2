@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,8 +37,12 @@ import java.util.Collection;
 
 import org.dom4j.Document;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public interface LicenseManager {
-
 	/**
 	 * Loads (or reloads) license information
 	 *
@@ -112,45 +116,48 @@ public interface LicenseManager {
 	 */
 	public Calendar getEffectiveDate();
 	
-	
 	/**
 	 * 
 	 * @return License documents loaded by last loadLicense(), or null if no license found
 	 */
 	public Collection<Document> getLicenses();
 
-	
 	/**
 	 * 
 	 * @return Total number of registered users from all licenses
 	 */
 	public long getRegisteredUsers();
 
-	
 	/**
 	 * 
 	 * @return Total number of external users from all licenses
 	 */
 	public long getExternalUsers();
 
-	
 	/**
 	 * 
 	 * @return Total number of internal devices from all licenses
 	 */
 	public long getInternalDevices();
 
-	
 	/**
 	 * 
 	 * @return Total number of external devices from all licenses
 	 */
 	public long getExternalDevices();
 
-	
 	/**
 	 * 
 	 * @return whether there is a valid license loaded
 	 */
 	public boolean validLicenseExists();
+
+	/**
+	 * Returns true if this is a software version that requires a
+	 * license (e.g., Novell Filr or Novell Vibe) and false otherwise
+	 * (e.g., Kablink Vibe.)
+	 * 
+	 * @return
+	 */
+	public boolean licenseRequiredEdition();
 }
