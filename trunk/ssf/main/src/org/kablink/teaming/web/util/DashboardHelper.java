@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -105,11 +105,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	
 	private static DashboardHelper instance; // A singleton instance
 
-
 	public final static String[] ComponentLists = {Dashboard.WIDE_TOP, Dashboard.NARROW_FIXED, Dashboard.NARROW_VARIABLE, Dashboard.WIDE_BOTTOM};
 	 
 	public final static String DisplayStyleDefault = "border";
-
 	
 	//Component data keys
 	public final static String SearchFormSavedSearchQuery = "__savedSearchQuery";
@@ -395,7 +393,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	}
 	//penlets
 	static public Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope, String componentId, boolean isConfig) {
-		return getDashboardMap(binder, userProperties, model, scope, componentId, false, true);
+		return getDashboardMap(binder, userProperties, model, scope, componentId, isConfig, true);
 	}
 	//penlets
 	static public Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope, 
@@ -1866,5 +1864,4 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		idData.put(WebKeys.APPLICATIONS, getProfileModule().getApplications((Collection) null));
 	}
-
 }
