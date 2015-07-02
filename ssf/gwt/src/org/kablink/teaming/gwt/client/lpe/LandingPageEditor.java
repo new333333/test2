@@ -81,19 +81,21 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * This widget is the Landing Page Editor.  As its name implies, it is used to edit a 
- * landing page configuration.
+ * This widget is the Landing Page Editor.  As its name implies, it is
+ * used to edit a landing page configuration.
+ * 
  * @author jwootton
- *
  */
 public class LandingPageEditor extends Composite
-	implements MouseDownHandler,
-				MouseUpHandler,
-				HasMouseUpHandlers,
-				EditSuccessfulHandler, EditCanceledHandler,
-				Event.NativePreviewHandler,
-				EditLandingPagePropertiesEvent.Handler,
-				PreviewLandingPageEvent.Handler
+	implements
+		MouseDownHandler,
+		MouseUpHandler,
+		HasMouseUpHandlers,
+		EditSuccessfulHandler,
+		EditCanceledHandler,
+		Event.NativePreviewHandler,
+		EditLandingPagePropertiesEvent.Handler,
+		PreviewLandingPageEvent.Handler
 {
 	private Palette		m_palette;
 	private Canvas		m_canvas;
@@ -275,9 +277,11 @@ public class LandingPageEditor extends Composite
 			try
 			{
 				element = Document.get().getElementById( m_lpeConfig.getMashupPropertyName() + "__hideMenu" );
-				ckboxElement = InputElement.as( element );
-			
-				m_landingPageProperties.setHideMenu( ckboxElement.isChecked() );
+				if ( null != element )
+				{
+					ckboxElement = InputElement.as( element );
+					m_landingPageProperties.setHideMenu( ckboxElement.isChecked() );
+				}
 			}
 			catch (Exception ex)
 			{
