@@ -43,7 +43,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
  * ?
@@ -95,8 +94,8 @@ public class UrlWidget extends VibeWidget
 			link.addStyleName( "urlWidgetLink" + m_style );
 
 			// Set the text color for the title.
-			InlineLabel span = new InlineLabel();
-			GwtClientHelper.setLandingPageTitleContent(span, m_properties.getTitle(), url);
+			LandingPageTitle span = new LandingPageTitle();
+			span.setContent(m_properties.getTitle(), url);
 			GwtClientHelper.setElementTextColor( span.getElement(), widgetStyles.getContentTextColor() );
 			
 			link.getElement().appendChild( span.getElement() );
