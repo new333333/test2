@@ -44,7 +44,6 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
  * ?
@@ -55,7 +54,7 @@ public class LinkToEntryWidget extends VibeWidget
 {
 	private LinkToEntryProperties m_properties;
 	private String m_style;
-	private InlineLabel m_link;
+	private LandingPageTitle m_link;
 
 	/**
 	 * 
@@ -121,8 +120,8 @@ public class LinkToEntryWidget extends VibeWidget
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "linkToEntryWidgetMainPanel" + m_style );
 		
-		m_link = new InlineLabel();
-		GwtClientHelper.setLandingPageTitleContent(m_link, m_properties.getTitle(), GwtTeaming.getMessages().noTitle());
+		m_link = new LandingPageTitle();
+		m_link.setContent(m_properties.getTitle(), GwtTeaming.getMessages().noTitle());
 		final boolean updateTitle = (!(GwtClientHelper.hasString(m_properties.getTitle())));
 		m_link.addStyleName( "linkToEntryWidgetLink" + m_style );
 		
