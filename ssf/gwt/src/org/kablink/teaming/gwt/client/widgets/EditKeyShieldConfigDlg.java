@@ -93,6 +93,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 	private CheckBox					m_enableKeyShieldCheckbox;			//
 	private GwtKeyShieldConfig			m_config;							//
 	private GwtTeamingMessages			m_messages;							//
+	private Label						m_usernameAttributeAliasHint;		//
 	private TextBox						m_apiAuthKeyTextBox;				//
 	private TextBox						m_authConnectorNamesTextBox;		//
 	private TextBox						m_serverUrlTextBox;					//
@@ -230,6 +231,11 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		m_authConnectorNamesTextBox = new TextBox();
 		m_authConnectorNamesTextBox.setVisibleLength(40);
 		table.setWidget(row, 1, m_authConnectorNamesTextBox);
+		row += 1;
+		
+		m_usernameAttributeAliasHint = new Label(m_messages.editKeyShieldConfigDlg_UsernameAttributeAliasHint());
+		m_usernameAttributeAliasHint.addStyleName("editKeyShieldConfigDlg_Hint gwtUI_nowrap");
+		table.setWidget(row, 1, m_usernameAttributeAliasHint);
 		row += 1;
 		
 		tmpPanel = new FlowPanel();
@@ -503,16 +509,14 @@ public class EditKeyShieldConfigDlg extends DlgBox
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				if ((null != response.getResponseData()) && response.getResponseData() instanceof GwtKeyShieldConfig) {
-					final GwtKeyShieldConfig config = ((GwtKeyShieldConfig) response.getResponseData());
-					GwtClientHelper.deferCommand(new ScheduledCommand() {
-						@Override
-						public void execute() {
-							hideStatusMsg();
-							init(config);
-						}
-					});
-				}
+				final GwtKeyShieldConfig config = ((GwtKeyShieldConfig) response.getResponseData());
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						hideStatusMsg();
+						init(config);
+					}
+				});
 			}
 		});
 	}
@@ -539,26 +543,32 @@ public class EditKeyShieldConfigDlg extends DlgBox
 	 */
 	private void init(GwtKeyShieldConfig config) {
 		if (null == config) {
+			m_config = GwtKeyShieldConfig.getGwtKeyShieldConfig();
+			
 			m_enableKeyShieldCheckbox.setValue(false);
 			m_serverUrlTextBox.setValue("");
 			m_timeoutTextBox.setValue("");
 			m_apiAuthKeyTextBox.setValue("");
 			m_authConnectorNamesTextBox.setValue("");
 			m_usernameAttributeAliasTextBox.setValue(GwtClientHelper.isLicenseFilr() ? "x-filr" : "x-vibe");
-			
-			return;
+			m_usernameAttributeAliasHint.setVisible(true);
 		}
 		
-		m_config = config;
-		
-		m_enableKeyShieldCheckbox.setValue(m_config.isEnabled());
-		m_serverUrlTextBox.setValue(m_config.getServerUrl());
-		m_timeoutTextBox.setValue(String.valueOf(m_config.getHttpConnectionTimeout()));
-		m_apiAuthKeyTextBox.setValue(m_config.getApiAuthKey());
-		m_usernameAttributeAliasTextBox.setValue(m_config.getUsernameAttributeAlias());
-		
-		String value = convertTreeSetToCommaDelimitedString(m_config.getAuthConnectorNames());
-		m_authConnectorNamesTextBox.setValue(value);
+		else {
+			m_config = config;
+			
+			m_enableKeyShieldCheckbox.setValue(m_config.isEnabled());
+			m_serverUrlTextBox.setValue(m_config.getServerUrl());
+			m_timeoutTextBox.setValue(String.valueOf(m_config.getHttpConnectionTimeout()));
+			m_apiAuthKeyTextBox.setValue(m_config.getApiAuthKey());
+			
+			String value = convertTreeSetToCommaDelimitedString(m_config.getAuthConnectorNames());
+			m_authConnectorNamesTextBox.setValue(value);
+			
+			String unaa = m_config.getUsernameAttributeAlias();
+			m_usernameAttributeAliasTextBox.setValue((null == unaa) ? "" : unaa);
+			m_usernameAttributeAliasHint.setVisible(false);
+		}
 	}
 	
 	/*

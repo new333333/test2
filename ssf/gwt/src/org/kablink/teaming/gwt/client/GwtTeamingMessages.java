@@ -3659,6 +3659,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editKeyShieldConfigDlg_ServerUrlLabel();
 	String editKeyShieldConfigDlg_StackTraceLabel();
 	String editKeyShieldConfigDlg_TestConnectionLabel();
+	String editKeyShieldConfigDlg_UsernameAttributeAliasHint();
 	String editKeyShieldConfigDlg_UsernameAttributeAliasLabel();
 	
 	// Strings used by the Access Rights Info dialog.
