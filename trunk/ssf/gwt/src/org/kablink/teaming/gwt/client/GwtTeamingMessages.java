@@ -2545,6 +2545,7 @@ public interface GwtTeamingMessages extends Messages {
 	String modifyNetFolderServerDlg_SelectServerTypePrompt();
 	String modifyNetFolderServerDlg_SelectProxyIdentityPrompt();
 	String modifyNetFolderServerDlg_ServerAlreadyExists();
+	String modifyNetFolderServerDlg_ServerPathCleaned(String page);
 	String modifyNetFolderServerDlg_ServerPathHint1();
 	String modifyNetFolderServerDlg_ServerPathOESHint();
 	String modifyNetFolderServerDlg_ServerPathWindowsHint();

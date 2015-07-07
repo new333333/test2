@@ -1691,7 +1691,19 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	 * Return the root path entered by the user.
 	 */
 	private String getRootPath() {
-		return m_rootPathTxtBox.getValue();
+		String path = m_rootPathTxtBox.getValue();
+		if (null == path)
+		     path = "";
+		else path = path.trim();
+		boolean strippedTrailingSlash = false;
+		while (path.endsWith("\\")) {
+			strippedTrailingSlash = true;
+			path = path.substring(0, (path.length() - 1));
+		}
+		if (strippedTrailingSlash) {
+			GwtClientHelper.deferredAlert(m_messages.modifyNetFolderServerDlg_ServerPathCleaned(path));
+		}
+		return path;
 	}
 	
 	/*
