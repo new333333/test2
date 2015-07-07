@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -74,6 +74,20 @@ function ss_checkIfNumberValid(s) {
 	}
 	alert("<ssf:escapeJavaScript><ssf:nlt tag="error.mustBeANumber"/></ssf:escapeJavaScript>");
 	return false;
+}
+
+function ss_validateFileSizeLimitDefault(s) {
+	<c:if test="${!empty ss_fileSizeLimitUserDefault}">
+		if (s && (0 < s.length)) {
+			var fsDefault = Number("${ss_fileSizeLimitUserDefault}");
+			var fsNew     = Number(s);
+			if (fsNew > fsDefault) {
+				alert("<ssf:escapeJavaScript><ssf:nlt tag="error.fileSizeLimitExceeded"><ssf:param name="value" value="${ss_fileSizeLimitUserDefault}" /></ssf:nlt></ssf:escapeJavaScript>");
+				return false;
+			}
+		}
+	</c:if>
+	return true;
 }
 
 function ss_confirmEncryption(cbObj) {
@@ -240,7 +254,7 @@ function ss_confirmEncryptAll() {
           <input type="text" name="maxFileSize" 
             value="${ss_binder_versions_max_file_size}"
             style="width:50px; text-align:right;"
-            onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
+            onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";} if (!ss_validateFileSizeLimitDefault(this.value)){this.value="${ss_fileSizeLimitUserDefault}";}'
           >&nbsp;<ssf:nlt tag="file.sizeMB"/>
         <c:if test="${ss_binder_file_size_limit_inherited}">
 		  <span class="ss_smallprint" style="padding-left:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
