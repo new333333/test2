@@ -45,8 +45,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveKeyShieldConfigRpcResponseD
 import org.kablink.teaming.gwt.client.rpc.shared.TestKeyShieldConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.TestKeyShieldConnectionResponse.GwtKeyShieldConnectionTestStatusCode;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.util.MiscUtil;
 
 /**
  * Helper methods for GWT manipulating KeyShield SSO configurations.
@@ -71,14 +69,9 @@ public class GwtKeyShieldSSOHelper {
 	private static GwtKeyShieldConfig getGwtKeyShieldConfigFromKeyShieldConfig(KeyShieldConfig keyShieldConfig) {
 		GwtKeyShieldConfig config = GwtKeyShieldConfig.getGwtKeyShieldConfig();
 		
-		config.setApiAuthKey(        keyShieldConfig.getApiAuthKey()             );
-		config.setAuthConnectorNames(keyShieldConfig.getAuthConnectorNamesAsSet());
-		
-		String unaa = keyShieldConfig.getUsernameAttributeAlias();
-		if (!(MiscUtil.hasString(unaa))) {
-			unaa = (Utils.checkIfFilr() ? "x-filr" : "x-vibe");
-		}
-		config.setUsernameAttributeAlias(unaa);
+		config.setApiAuthKey(        keyShieldConfig.getApiAuthKey()                );
+		config.setAuthConnectorNames(keyShieldConfig.getAuthConnectorNamesAsSet()   );
+		config.setUsernameAttributeAlias(keyShieldConfig.getUsernameAttributeAlias());
 		
 		Integer timeout = keyShieldConfig.getHttpTimeout();
 		if (null == timeout) config.setHttpConnectionTimeout(250    );
@@ -110,7 +103,7 @@ public class GwtKeyShieldSSOHelper {
 			config = null;
 		}
 
-		if (null == keyShieldConfig) config = GwtKeyShieldConfig.getGwtKeyShieldConfig();
+		if (null == keyShieldConfig) config = null;	// We return null as an indication that there was no value for this zone.
 		else                         config = getGwtKeyShieldConfigFromKeyShieldConfig( keyShieldConfig );
 		
 		return config;
