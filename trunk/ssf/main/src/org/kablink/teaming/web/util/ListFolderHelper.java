@@ -457,6 +457,9 @@ public class ListFolderHelper {
 			Integer perPage = Integer.valueOf(entriesPerPage);
 			options.put(ObjectKeys.SEARCH_MAX_HITS, perPage);
 			tabOptions.put(Tabs.RECORDS_IN_PAGE, perPage);
+			if (null == recordsInPage) {
+				recordsInPage = Integer.valueOf(entriesPerPage);
+			}
 			if (recordsInPage != null) {
 				int intEntriesPerPage = perPage.intValue();
 				int intEntriesPerPageInTab = recordsInPage.intValue();

@@ -2828,7 +2828,7 @@ public class BinderHelper {
     }
 
 	public static Tabs.TabEntry initTabs(Tabs tabs, Binder binder, boolean clearData) throws Exception {
-		return tabs.findTab(binder, true);
+		return tabs.findTab(binder, clearData);
 	}
 
 	public static Tabs.TabEntry initTabs(PortletRequest request, Binder binder) throws Exception {

@@ -9950,6 +9950,16 @@ function ss_ensureAnchorsTargetTopFrame() {
 				//    work.
 				continue;
 			}
+
+			// If it's a page navigation URL...
+			if (0 < href.indexOf("operation=save_folder_page_info")) {
+				// ...skip it.
+				//
+				// DRF (20150706):  This is a special case to address
+				//    bug#929716.  Without this fix, paging through a
+				//    photo album did not work.
+				continue;
+			}
 			
 			// Add a 'target="_top"' to it.
 			patched += 1;
