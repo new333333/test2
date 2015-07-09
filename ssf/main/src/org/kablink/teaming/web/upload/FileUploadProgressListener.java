@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,8 +35,14 @@ package org.kablink.teaming.web.upload;
 import org.apache.commons.fileupload.ProgressListener;
 import org.apache.log4j.Logger;
 
+import org.kablink.teaming.util.SPropsUtil;
+
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public class FileUploadProgressListener implements ProgressListener {
-	
 	Logger logger = Logger.getLogger(FileUploadProgressListener.class);
 
 	private long bytesRead = 0;
@@ -56,10 +62,21 @@ public class FileUploadProgressListener implements ProgressListener {
 	private long lastUpdateBytesRead = 0;
 	
 	private int timeLeft = 0;
+	
+	private long updatesPerTrace;
+	private long updateCount;
 
 	public FileUploadProgressListener() {
 		this.uploadStartTime = System.currentTimeMillis();
 		this.lastUpdateTime = System.currentTimeMillis();
+
+		if (logger.isDebugEnabled()) {
+			this.updatesPerTrace = SPropsUtil.getLong("upload.multipart.updates.per.trace", 1L);
+			if (1 > updatesPerTrace) {
+				updatesPerTrace = 1L;
+			}
+			this.updateCount = 0L;
+		}
 	}
 	
 	public boolean isFinished() {
@@ -75,6 +92,7 @@ public class FileUploadProgressListener implements ProgressListener {
 		return (int) Math.abs(bytesRead * 100.0 / contentLength);
 	}
 
+	@Override
 	public void update(long bytesRead, long contentLength, int items) {
 		if ((this.lastUpdateTime + 1200) < System.currentTimeMillis()) {
 			float b =(bytesRead - this.lastUpdateBytesRead);
@@ -93,6 +111,20 @@ public class FileUploadProgressListener implements ProgressListener {
 		this.items = items;
 		if (this.bytesRead == this.contentLength) {
 			this.multipartFinished = true;
+		}
+		
+		if (logger.isDebugEnabled()) {
+			if (0L == ((this.updateCount++) % this.updatesPerTrace)) {
+				logger.debug("update():");
+				if ((-1) != contentLength) {
+					logger.debug("...contentLength:  "               + this.contentLength);
+					logger.debug("...percentDone:  "                 + getPercentDone());
+					logger.debug("...multipartFinished:  "           + this.multipartFinished);
+				}
+				logger.debug("...update()'s:  "                      + this.updateCount);
+				logger.debug("...items:  "                           + this.items);
+				logger.debug("...bytesRead (lastUpdateBytesRead):  " + this.bytesRead + " (" + this.lastUpdateBytesRead + ")");
+			}
 		}
 	}
 
