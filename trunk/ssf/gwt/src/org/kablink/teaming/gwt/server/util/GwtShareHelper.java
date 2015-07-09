@@ -241,8 +241,21 @@ public class GwtShareHelper
 					if ( (milliSecLeft % MILLISEC_IN_A_DAY) > 0 )
 						++expiresAfterDays;
 				}
-				reply.setType( ShareExpirationType.AFTER_DAYS );
-				reply.setValue( Long.valueOf( expiresAfterDays ) );
+				
+				// If the share has already expired...
+				if ( 0 > expiresAfterDays )
+				{
+					// ...let the UI handle it as an expired on date.
+					reply.setType( ShareExpirationType.ON_DATE );
+					reply.setValue( endDate.getTime() );
+				}
+				else
+				{
+					// ...otherwise, it can continue to handle it as an
+					// ...expired after days.
+					reply.setType( ShareExpirationType.AFTER_DAYS );
+					reply.setValue( Long.valueOf( expiresAfterDays ) );
+				}
 			}
 			else
 			{
