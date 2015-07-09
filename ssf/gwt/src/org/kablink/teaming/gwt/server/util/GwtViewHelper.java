@@ -10417,6 +10417,10 @@ public class GwtViewHelper {
 	 */
 	public static Boolean saveAccessoryStatus(AllModulesInjected bs, HttpServletRequest request, Long binderId, boolean showAccessoryPanel) throws GwtTeamingException {
 		try {
+			// 7/8/2015 JK (bug #935487) To reduce the chance of getting optimistic locking error 
+			// during the transaction, clear the session before the attempt to make the changes.
+			getCoreDao().clear();
+			
 			// Save the accessory status...
 			bs.getProfileModule().setUserProperty(
 				GwtServerHelper.getCurrentUserId(),
