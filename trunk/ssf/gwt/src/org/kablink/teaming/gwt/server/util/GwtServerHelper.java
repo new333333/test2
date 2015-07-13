@@ -331,6 +331,7 @@ import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.IconSize;
+import org.kablink.teaming.util.LandingPageHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -6419,9 +6420,8 @@ public class GwtServerHelper {
 
 		try {
 			// The landing page configuration data is stored as a
-			// custom attribute with the name 'mashup'.
-			Binder binder = bs.getBinderModule().getBinder(Long.parseLong(binderId));
-			CustomAttribute customAttr = binder.getCustomAttribute("mashup");
+			// custom attribute.
+			CustomAttribute customAttr = LandingPageHelper.getLandingPageMashupAttribute(bs, binderId);
     		if ((customAttr != null) && (customAttr.getValueType() == CustomAttribute.STRING)) {
     			String configStr = ((String) customAttr.getValue());
     			configData.setConfigStr(configStr);
@@ -9322,9 +9322,9 @@ public class GwtServerHelper {
 		if (binder instanceof Workspace) {
 			// Yes!  Is it a reserved workspace?
 			reply = WorkspaceType.OTHER;
-			Workspace ws = ((Workspace) binder);
-			String  view    = BinderHelper.getBinderDefaultViewName(binder);
-			boolean hasView = MiscUtil.hasString(view);
+			Workspace ws      = ((Workspace) binder);
+			String    view    = BinderHelper.getBinderDefaultViewName(binder);
+			boolean   hasView = MiscUtil.hasString(view);
 			if (ws.isReserved()) {
 				// Yes!  Then we can determine its type based on its
 				// internal ID.
@@ -9354,6 +9354,15 @@ public class GwtServerHelper {
 						else if (view.equals(VIEW_WORKSPACE_USER))        reply = WorkspaceType.USER;
 						else if (view.equals(VIEW_WORKSPACE_WELCOME))     reply = WorkspaceType.LANDING_PAGE;
 						else if (view.equals(VIEW_WORKSPACE_GENERIC))     reply = WorkspaceType.WORKSPACE;
+						else {
+							HashMap model = new HashMap();
+							DefinitionHelper.getDefinitions(binder, model, null);		
+							Definition entityDef = ((Definition) model.get(WebKeys.DEFAULT_FOLDER_DEFINITION));
+							String family = BinderHelper.getFamilyNameFromDef(entityDef);
+							if (family.equals("landingpage")) {
+								reply = WorkspaceType.LANDING_PAGE;
+							}
+						}
 					}					
 				}
 			}
