@@ -46,10 +46,14 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.dom4j.Document;
+import org.dom4j.Element;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -63,6 +67,7 @@ import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.ExportException;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -266,6 +271,56 @@ public class LandingPageHelper {
 	}
 
 	/**
+	 * Returns the CustomAttribute to use as the mashup for a landing
+	 * page.
+	 *  
+	 * @param bs
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static CustomAttribute getLandingPageMashupAttribute(Binder binder) {
+		// Determine the name of the mashup custom attribute.
+		String  customAttrName     = null;
+		boolean customAttrIsMashup = false;
+		Map<String,Object> tmpModel = new HashMap<String,Object>();
+		DefinitionHelper.getDefinitions(binder, tmpModel);
+		Document configDocument = ((Document) tmpModel.get(WebKeys.CONFIG_DEFINITION));
+		if (null != configDocument) {
+			List<Element> propertyElements = configDocument.selectNodes("//item[@type='form']//item[@type='data' and @name='mashupCanvas']/properties/property[@name='name']");
+	    	if ((null != propertyElements) && (!(propertyElements.isEmpty()))) {
+        		customAttrName     = propertyElements.get(0).attributeValue("value");
+        		customAttrIsMashup = ((null != customAttrName) && customAttrName.equals("mashup"));
+	        }
+		}
+
+		// Can we get the custom attribute using the name we determined
+		// above?
+		CustomAttribute reply;
+		if (MiscUtil.hasString(customAttrName))
+		     reply = binder.getCustomAttribute(customAttrName);
+		else reply = null;
+		if ((null == reply) && (!customAttrIsMashup)) {
+			// No!  Try using the default name for the mashup custom
+			// attribute.
+			reply = binder.getCustomAttribute("mashup");
+		}
+		return reply;
+	}
+	
+	public static CustomAttribute getLandingPageMashupAttribute(AllModulesInjected bs, Long binderId) {
+		// Always use the initial version of the method.
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		return getLandingPageMashupAttribute(binder);
+	}
+	
+	public static CustomAttribute getLandingPageMashupAttribute(AllModulesInjected bs, String binderId) {
+		// Always use the previous version of the method.
+		return getLandingPageMashupAttribute(bs, Long.parseLong(binderId));
+	}
+	
+	/**
 	 * Returns a landing URL given the binderId of the landing page.
 	 * 
 	 * @param req
@@ -286,7 +341,6 @@ public class LandingPageHelper {
 	 * @param zones
 	 * @param transactionTemplate 
 	 */
-	@SuppressWarnings("unchecked")
 	public static void importVibeDefaultLandingPages(final List<Workspace> zones, final TransactionTemplate transactionTemplate) {
 		// Are we running as Vibe?
 		if (!(LicenseChecker.showVibeFeatures())) {
