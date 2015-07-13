@@ -345,6 +345,7 @@ import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.IconSize;
+import org.kablink.teaming.util.LandingPageHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
 import org.kablink.teaming.util.PrincipalMobileAppsConfig;
@@ -6732,36 +6733,34 @@ public class GwtServerHelper {
 	
 	/**
 	 * Get the landing page data for the given binder.
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	public static ConfigData getLandingPageData( HttpServletRequest request, AllModulesInjected allModules, String binderId ) throws GwtTeamingException
-	{
-		ConfigData configData;
-		
-		configData = new ConfigData();
-		configData.setBinderId( binderId );
+	public static ConfigData getLandingPageData(HttpServletRequest request, AllModulesInjected bs, String binderId) throws GwtTeamingException {
+		ConfigData configData = new ConfigData();
+		configData.setBinderId(binderId);
 
-		try
-		{
-			Binder binder;
-			CustomAttribute customAttr;
-			
-			binder = allModules.getBinderModule().getBinder( Long.parseLong( binderId ) );
-			
-			// The landing page configuration data is stored as a custom attribute with the name "mashup"
-			customAttr = binder.getCustomAttribute( "mashup" );
-    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.STRING )
-    		{
-    			String configStr;
-
-    			configStr = (String) customAttr.getValue();
-    			configData.setConfigStr( configStr );
+		try {
+			// The landing page configuration data is stored as a
+			// custom attribute.
+			CustomAttribute customAttr = LandingPageHelper.getLandingPageMashupAttribute(bs, binderId);
+    		if ((customAttr != null) && (customAttr.getValueType() == CustomAttribute.STRING)) {
+    			String configStr = ((String) customAttr.getValue());
+    			configData.setConfigStr(configStr);
     		}
     		
-			// Get the other settings that are stored in the "mashup__properties" custom attribute
-   			getLandingPageProperties( allModules, binderId, configData, request );
+			// Get the other settings that are stored in the
+    		// 'mashup__properties' custom attribute.
+   			getLandingPageProperties(bs, binderId, configData, request);
 		}
-		catch (Exception ex)
-		{
+		
+		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
@@ -9803,9 +9802,9 @@ public class GwtServerHelper {
 		if (binder instanceof Workspace) {
 			// Yes!  Is it a reserved workspace?
 			reply = WorkspaceType.OTHER;
-			Workspace ws = ((Workspace) binder);
-			String  view    = BinderHelper.getBinderDefaultViewName(binder);
-			boolean hasView = MiscUtil.hasString(view);
+			Workspace ws      = ((Workspace) binder);
+			String    view    = BinderHelper.getBinderDefaultViewName(binder);
+			boolean   hasView = MiscUtil.hasString(view);
 			if (ws.isReserved()) {
 				// Yes!  Then we can determine its type based on its
 				// internal ID.
@@ -9835,6 +9834,15 @@ public class GwtServerHelper {
 						else if (view.equals(VIEW_WORKSPACE_USER))        reply = WorkspaceType.USER;
 						else if (view.equals(VIEW_WORKSPACE_WELCOME))     reply = WorkspaceType.LANDING_PAGE;
 						else if (view.equals(VIEW_WORKSPACE_GENERIC))     reply = WorkspaceType.WORKSPACE;
+						else {
+							HashMap model = new HashMap();
+							DefinitionHelper.getDefinitions(binder, model, null);		
+							Definition entityDef = ((Definition) model.get(WebKeys.DEFAULT_FOLDER_DEFINITION));
+							String family = BinderHelper.getFamilyNameFromDef(entityDef);
+							if (family.equals("landingpage")) {
+								reply = WorkspaceType.LANDING_PAGE;
+							}
+						}
 					}					
 				}
 			}
