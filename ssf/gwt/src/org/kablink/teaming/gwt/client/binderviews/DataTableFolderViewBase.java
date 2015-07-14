@@ -65,6 +65,7 @@ import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DescriptionHtmlColumn;
 import org.kablink.teaming.gwt.client.datatable.DownloadColumn;
 import org.kablink.teaming.gwt.client.datatable.EmailAddressColumn;
+import org.kablink.teaming.gwt.client.datatable.EmailTemplateNameColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.GuestColumn;
@@ -1662,7 +1663,19 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 			
 			// No, this column doesn't show an entry title either!
-			// Does it show a view link?
+			// Does it show an email template name?
+			else if (FolderColumn.isColumnEmailTemplateName(cName)) {
+				// Yes!  Create a EmailTemplateNameColumn for it.
+				column = new EmailTemplateNameColumn<FolderRow>(fc) {
+					@Override
+					public EntryTitleInfo getValue(FolderRow fr) {
+						return fr.getColumnValueAsEntryTitle(fc);
+					}
+				};
+			}
+			
+			// No, this column doesn't show an email template name
+			// either!  Does it show a view link?
 			else if (FolderColumn.isColumnView(cName)) {
 				// Yes!  Create a ViewColumn for it.
 				column = new ViewColumn<FolderRow>(fc) {
