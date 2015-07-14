@@ -32,7 +32,11 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -41,18 +45,26 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteCustomizedEmailTemplatesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageEmailTemplatesInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.EmailTemplatesHelper;
+import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.WebUrlUtil;
 
 /**
  * Helper methods for the GWT UI server code in dealing with email
@@ -114,6 +126,122 @@ public class GwtEmailTemplatesHelper {
 		}
 	}
 
+	/*
+	 * Iterates through the contents of an email templates directory,
+	 * adding a FolderRow to the List<FolderRow> for each email
+	 * template found.
+	 */
+	private static void enumerateEmailTemplateRows(HttpServletRequest request, List<FolderRow> rows, File emailTemplatesDir, List<FolderColumn> folderColumns, boolean defaultEmailTemplates) {
+		// If we don't have a directory to enumerate through...
+		if ((null == emailTemplatesDir) || (!(emailTemplatesDir.exists())) || (!(emailTemplatesDir.isDirectory()))) {
+			// ...bail.
+			return;
+		}
+
+		// List the email template files from the directory.
+		File[] emailTemplates = emailTemplatesDir.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File f) {
+				// Is this a file that really exists? 
+				if (f.exists() && f.isFile()) {
+					// Yes!  Is it an email template file?
+					String fName = f.getName();
+					if (MiscUtil.hasString(fName) && fName.endsWith(EmailTemplatesHelper.TEMPLATE_EXTENSION)) {
+						// Yes!  Return true so that we include it.
+						return true;
+					}
+				}
+
+				// If we get here, this isn't a file that we care
+				// about.  Return false so that we skip it.
+				return false;
+			}
+		});
+		
+		// If we didn't find any email templates in that directory...
+		if ((null == emailTemplates) || (0 == emailTemplates.length)) {
+			// ...bail.
+			return;
+		}
+
+		// Find need the email template name FolderColumn for use
+		// within the row generation loop.
+		FolderColumn fcName = null;
+		for (FolderColumn fc:  folderColumns) {
+			if (FolderColumn.isColumnEmailTemplateName(FolderColumn.COLUMN_EMAIL_TEMPLATE_NAME)) {
+				fcName = fc;
+				break;
+			}
+		}
+		
+		// What's the type of these email templates.
+		String templateType = (defaultEmailTemplates ? "emailTemplates.type.default" : "emailTemplates.type.custom");
+		templateType = NLT.get(templateType);
+
+		// Scan the email template files.  At this point, we know that
+		// these are all email template files that actually exist.
+		for (File emailTemplate:  emailTemplates) {
+			// Find/create the FolderRow for this email template.
+			FolderRow row;
+			String    fileName = emailTemplate.getName();
+			if (defaultEmailTemplates || (null == fcName))
+			     row = null;
+			else row = findRowByFileName(rows, fcName, fileName);
+			if (null == row) {
+				row = new FolderRow();
+				row.setEntityId(new EntityId(EntityId.EMAIL_TEMPLATE, fileName));
+				rows.add(row);
+			}
+			
+			// ...and populate it.
+			for (FolderColumn fc:  folderColumns) {
+				String cn = fc.getColumnName();
+				if (FolderColumn.isColumnEmailTemplateName(cn)) {
+					EntryTitleInfo etInfo = new EntryTitleInfo();
+					etInfo.setTitle(fileName);
+					etInfo.setFileDownloadUrl(WebUrlUtil.getFileEmailTemplateUrl(request, WebKeys.ACTION_READ_FILE, fileName, defaultEmailTemplates));
+					row.setColumnValue(fc, etInfo);
+				}
+				
+				else if (FolderColumn.isColumnEmailTemplateType(cn)) {
+					row.setColumnValue(fc, templateType);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns the FolderRow from a List<FolderRow> whose filename is
+	 * fileName.
+	 * 
+	 * @param rows
+	 * @param fcName
+	 * @param fileName
+	 * 
+	 * @return
+	 */
+	private static FolderRow findRowByFileName(List<FolderRow> rows, FolderColumn fcName, String fileName) {
+		// If we don't have any rows...
+		if (!(MiscUtil.hasItems(rows))) {
+			// ...it can't be found.
+			return null;
+		}
+
+		// Scan the rows.
+		for (FolderRow row:  rows) {
+			// Is this the requested row? 
+			EntryTitleInfo etInfo = row.getColumnValueAsEntryTitle(fcName);
+			if (etInfo.getTitle().equals(fileName)) {
+				// Yes!  Return it.
+				return row;
+			}
+		}
+
+		// If we get here, we couldn't find a row with the requested
+		// filename.  Return null.
+		return null;
+	}
+	
 	/**
 	 * Returns the rows for the email templates view.
 	 * 
@@ -130,10 +258,43 @@ public class GwtEmailTemplatesHelper {
 	public static FolderRowsRpcResponseData getEmailTemplatesRows(AllModulesInjected bs, HttpServletRequest request, Binder binder, String quickFilter, Map options, BinderInfo bi, List<FolderColumn> folderColumns) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtEmailTemplatesHelper.getProxyIdentityRows()");
 		try {
-			// Return a FolderRowsRpcResponseData containing the row
-			// data.
-//!			...this needs to be implemented...
-			FolderRowsRpcResponseData reply = GwtViewHelper.buildEmptyFolderRows(binder);
+			// Allocate a List<FolderRow> to hold the rows of email
+			// templates we'll return.
+			List<FolderRow> rows = new ArrayList<FolderRow>();
+			
+			// Add rows for the default email templates.
+			File emailTemplatesDir = EmailTemplatesHelper.getEmailTemplatesDefault();
+			enumerateEmailTemplateRows(request, rows, emailTemplatesDir, folderColumns, true);	// true -> These are the default email templates.
+			
+			// Add rows for the customized email templates.
+			emailTemplatesDir = EmailTemplatesHelper.getEmailTemplatesCustomized();
+			enumerateEmailTemplateRows(request, rows, emailTemplatesDir, folderColumns, false);	// false -> These are the customized email templates.
+
+			// Is there more than one row?
+			int totalRecords = rows.size();
+			if (1 < totalRecords) {
+				// Yes!  Then we need to sort them using the user's
+				// current sort criteria.
+				String sortBy       = ((String)  options.get(ObjectKeys.SEARCH_SORT_BY)     );
+				boolean sortDescend = ((boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND));
+				Comparator<FolderRow> comparator =
+					new FolderRowComparator(
+						sortBy,
+						sortDescend,
+						folderColumns);
+				
+				Collections.sort(rows, comparator);
+			}
+			
+			// Finally, return the List<FolderRow> wrapped in a
+			// FolderRowsRpcResponseData.
+			FolderRowsRpcResponseData reply =
+				new FolderRowsRpcResponseData(
+					rows,
+					0,
+					totalRecords,
+					TotalCountType.EXACT,
+					new ArrayList<Long>());
 			
 			// If we get here, reply refers to a
 			// FolderRowsRpcResponseData containing the rows from the

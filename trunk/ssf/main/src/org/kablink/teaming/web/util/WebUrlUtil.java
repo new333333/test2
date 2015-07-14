@@ -406,17 +406,17 @@ public class WebUrlUtil {
 		return adapterUrl.toString();
 	}
 	public static String getFileUrl(PortletRequest req, String path, FileAttachment fAtt) {
-		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt, false);
+		return getFileUrl(getServletRootURL(req), path, fAtt, false);
 	}
 	public static String getFileUrl(PortletRequest req, String path, FileAttachment fAtt, boolean useVersionNumber) {
-		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt, useVersionNumber);
+		return getFileUrl(getServletRootURL(req), path, fAtt, useVersionNumber);
 	}
 	public static String getFileUrl(HttpServletRequest req, String path, FileAttachment fAtt) {
-		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt, false);
+		return getFileUrl(getServletRootURL(req), path, fAtt, false);
 	}
 	public static String getFileUrl(HttpServletRequest req, String path, FileAttachment fAtt, 
 			boolean useVersionNumber, boolean download) {
-		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt, useVersionNumber, download);
+		return getFileUrl(getServletRootURL(req), path, fAtt, useVersionNumber, download);
 	}
 	public static String getFileUrl(String webPath, String action, FileAttachment fAtt) {
 		return getFileUrl(webPath, action, fAtt, false);
@@ -447,28 +447,31 @@ public class WebUrlUtil {
 		}
 	}
 	public static String getFileUrl(PortletRequest req, String action, DefinableEntity entity, String fileName) {
-		return getFileUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileName);
+		return getFileUrl(getServletRootURL(req), action, entity, fileName);
 	}
 	public static String getFileUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileName) {
-		return getFileUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileName);
+		return getFileUrl(getServletRootURL(req), action, entity, fileName);
 	}
 	public static String getFileZipUrl(HttpServletRequest req, String action, DefinableEntity entity) {
-		return getFileZipUrl(WebUrlUtil.getServletRootURL(req), action, entity);
+		return getFileZipUrl(getServletRootURL(req), action, entity);
 	}
 	public static String getFileZipUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileId) {
-		return getFileZipUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileId);
+		return getFileZipUrl(getServletRootURL(req), action, entity, fileId);
 	}
 	public static String getFileListZipUrl(HttpServletRequest req, Collection<FolderEntry> fileList, Collection<Folder> folderList, boolean recursive) {
-		return getFileListZipUrl(WebUrlUtil.getServletRootURL(req), fileList, folderList, recursive);
+		return getFileListZipUrl(getServletRootURL(req), fileList, folderList, recursive);
 	}
 	public static String getFolderZipUrl(HttpServletRequest req, Long folderId, boolean recursive) {
-		return getFolderZipUrl(WebUrlUtil.getServletRootURL(req), folderId, recursive);
+		return getFolderZipUrl(getServletRootURL(req), folderId, recursive);
 	}
 	public static String getFolderAsCSVFileUrl(HttpServletRequest req, Long folderId, String csvDelim) {
-		return getFolderAsCSVFileUrl(WebUrlUtil.getServletRootURL(req), folderId, csvDelim);
+		return getFolderAsCSVFileUrl(getServletRootURL(req), folderId, csvDelim);
 	}
 	public static String getFolderAsCSVFileUrl(HttpServletRequest req, Long folderId) {
 		return getFolderAsCSVFileUrl(req, folderId, ",");
+	}
+	public static String getFileEmailTemplateUrl(HttpServletRequest req, String action, String fName, boolean defaultEmailTemplate) {
+		return getFileEmailTemplateUrl(getServletRootURL(req), action, fName, defaultEmailTemplate);
 	}
 	public static String getFileHtmlUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileName) {
 		if (entity == null) return "";
@@ -478,7 +481,7 @@ public class WebUrlUtil {
 				fAtt = entity.getFileAttachment(fileName);
 			} catch (Exception e) {}
 		if (fAtt != null) {
-			StringBuffer webUrl = new StringBuffer(WebUrlUtil.getServletRootURL(req) + action + Constants.QUESTION);
+			StringBuffer webUrl = new StringBuffer(getServletRootURL(req) + action + Constants.QUESTION);
 			webUrl.append(WebKeys.URL_BINDER_ID + Constants.EQUAL + entity.getParentBinder().getId().toString());
 			webUrl.append(Constants.AMPERSAND + WebKeys.URL_ENTRY_ID + Constants.EQUAL + entity.getId().toString());
 			webUrl.append(Constants.AMPERSAND + WebKeys.URL_ENTITY_TYPE + Constants.EQUAL + entity.getEntityType().name());
@@ -498,29 +501,29 @@ public class WebUrlUtil {
 				fAtt = entity.getFileAttachment(fileName);
 			} catch (Exception e) {}
 		if (fAtt != null) {
-			return WebUrlUtil.getFileUrl(webPath, action, entity.getId().toString(), 
+			return getFileUrl(webPath, action, entity.getId().toString(), 
 				entity.getEntityType().name(), String.valueOf(fAtt.getId()), String.valueOf(fAtt.getModification().getDate().getTime()), null, fileName);
 		} else {
-			return WebUrlUtil.getFileUrl(webPath, action, entity.getId().toString(), 
+			return getFileUrl(webPath, action, entity.getId().toString(), 
 					entity.getEntityType().name(), null, String.valueOf(new Date().getTime()) , null, fileName);
 			
 		}
 	}
 	public static String getFileZipUrl(String webPath, String action, DefinableEntity entity, String fileId) {
 		if (entity == null) return "";
-		return WebUrlUtil.getFileZipUrl(webPath, action, entity.getId().toString(), 
+		return getFileZipUrl(webPath, action, entity.getId().toString(), 
 					entity.getEntityType().name(), fileId);			
 	}
 	public static String getFileZipUrl(String webPath, String action, DefinableEntity entity) {
 		if (entity == null) return "";
-		return WebUrlUtil.getFileZipUrl(webPath, action, entity.getId().toString(), 
+		return getFileZipUrl(webPath, action, entity.getId().toString(), 
 					entity.getEntityType().name(), "");			
 	}
 	public static String getFileUrl(PortletRequest req, String path, Map searchResults) {
-		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, 	searchResults);
+		return getFileUrl(getServletRootURL(req), path, 	searchResults);
 	}
 	public static String getFileUrl(HttpServletRequest req, String path, Map searchResults) {
-		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, searchResults);
+		return getFileUrl(getServletRootURL(req), path, searchResults);
 	}
 	public static String getFileUrl(String webPath, String action, Map searchResults) {
 		return getFileUrl(webPath, action, searchResults, null);
@@ -637,7 +640,7 @@ public class WebUrlUtil {
 				version = WebKeys.READ_FILE_LAST;
 			}
 		}
-		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
+		if (Validator.isNull(webPath)) webPath = getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + action);
 		webUrl.append(Constants.SLASH + entityType);
 		webUrl.append(Constants.SLASH + entityId);
@@ -649,12 +652,20 @@ public class WebUrlUtil {
 	}
 
 	public static String getFileZipUrl(String webPath, String action, String entityId, String entityType, String fileId) {
-		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
+		if (Validator.isNull(webPath)) webPath = getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + action);
 		webUrl.append(Constants.SLASH + entityType);
 		webUrl.append(Constants.SLASH + entityId);
 		webUrl.append(Constants.SLASH + "zip"); 
 		if (!fileId.equals("")) webUrl.append(Constants.SLASH + fileId); 
+		return webUrl.toString();
+	}
+
+	public static String getFileEmailTemplateUrl(String webPath, String action, String fileName, boolean defaultEmailTemplate) {
+		StringBuffer webUrl = new StringBuffer(webPath + action);
+		webUrl.append(Constants.SLASH + "emailTemplate"); 
+		webUrl.append(Constants.SLASH + (defaultEmailTemplate ? "default" : "customized")); 
+		webUrl.append(Constants.SLASH + urlEncodeFilename(fileName));
 		return webUrl.toString();
 	}
 
@@ -704,7 +715,7 @@ public class WebUrlUtil {
 		else folderIds = folderIdsBuf.toString();
 
 		// Construct and return the URL.
-		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
+		if (Validator.isNull(webPath)) webPath = getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
 		webUrl.append(Constants.SLASH + WebKeys.URL_OPERATION);
 		webUrl.append(Constants.SLASH + WebKeys.OPERATION_READ_FILE_LIST);
@@ -733,7 +744,7 @@ public class WebUrlUtil {
 	 */
 	public static String getFolderZipUrl(String webPath, Long folderId, boolean recursive) {
 		// Construct and return the URL.
-		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
+		if (Validator.isNull(webPath)) webPath = getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
 		webUrl.append(Constants.SLASH + WebKeys.URL_OPERATION);
 		webUrl.append(Constants.SLASH + WebKeys.OPERATION_READ_FOLDER);
@@ -758,7 +769,7 @@ public class WebUrlUtil {
 	 */
 	public static String getFolderAsCSVFileUrl(String webPath, Long folderId, String csvDelim) {
 		// Construct and return the URL.
-		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
+		if (Validator.isNull(webPath)) webPath = getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
 		webUrl.append(Constants.SLASH + WebKeys.URL_OPERATION);
 		webUrl.append(Constants.SLASH + WebKeys.OPERATION_READ_FOLDER);

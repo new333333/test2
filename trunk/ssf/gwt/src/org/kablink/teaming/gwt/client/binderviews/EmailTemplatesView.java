@@ -179,4 +179,16 @@ public class EmailTemplatesView extends DataTableFolderViewBase {
 	public void resizeView() {
 		// Nothing to do.
 	}
+	
+	/**
+	 * Allows the view's that extend this to decide whether or not they
+	 * want an entry icon on their title cell.
+	 * 
+	 * @return
+	 */
+	@Override
+	protected boolean showEntryTitleIcon() {
+		// By default, we don't show an icon for email templates.
+		return false;
+	}
 }
