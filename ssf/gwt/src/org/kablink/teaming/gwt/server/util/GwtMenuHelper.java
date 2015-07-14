@@ -3821,8 +3821,9 @@ public class GwtMenuHelper {
 			boolean isBinderManageAdmins        = folderInfo.isBinderAdministratorManagement();
 			boolean isBinderMobileDevices       = folderInfo.isBinderMobileDevices();
 			boolean isBinderProxyIdentities     = folderInfo.isBinderProxyIdentities();
+			boolean isBinderEmailTemplates      = folderInfo.isBinderEmailTemplates();
 			boolean isBinderTrash               = folderInfo.isBinderTrash();
-			if ((!isBinderTrash) && (!isBinderCollection) && (!isBinderLimitUserVisibility) && (!isBinderMobileDevices) && (!isBinderProxyIdentities) && (!isBinderManageAdmins) && (!(Utils.checkIfFilr()))) {
+			if ((!isBinderTrash) && (!isBinderCollection) && (!isBinderLimitUserVisibility) && (!isBinderMobileDevices) && (!isBinderProxyIdentities) && (!isBinderEmailTemplates) && (!isBinderManageAdmins) && (!(Utils.checkIfFilr()))) {
 				// Yes!  Add the configure accessories item to the
 				// toolbar...
 				constructEntryConfigureAccessories(
@@ -3965,9 +3966,21 @@ public class GwtMenuHelper {
 				entryToolbar.addNestedItem(piTBI);
 			}
 			
+			// No, we aren't returning the toolbar items for a
+			// proxy identities view either!  Are we returning them for
+			// an email templates view?
+			else if (isBinderEmailTemplates) {
+				// Yes!  Construct the appropriate menu items for
+				// it.
+				ToolbarItem etTBI = new ToolbarItem("1_deleteSelected");
+				markTBITitle(etTBI, "toolbar.emailTemplates.delete.multi");
+				markTBIEvent(etTBI, TeamingEvents.DELETE_SELECTED_CUSTOMIZED_EMAIL_TEMPLATES);
+				entryToolbar.addNestedItem(etTBI);
+			}
+			
 			else {
-				// No, we aren't returning the toolbar items for a
-				// proxy identities view either!  Is this is other than
+				// No, we aren't returning the toolbar items for an
+				// email templates view either!  Is this is other than
 				// a mirrored folder, or if its a mirrored folder, is
 				// its resource driver configured?
 				boolean isMirrored           = (isFolder && folder.isMirrored());

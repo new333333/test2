@@ -37,6 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.kablink.teaming.gwt.client.datatable.ManageEmailTemplatesDlg;
+import org.kablink.teaming.gwt.client.datatable.ManageEmailTemplatesDlg.ManageEmailTemplatesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg;
 import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg.ManageMobileDevicesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.ManageProxyIdentitiesDlg;
@@ -58,6 +60,7 @@ import org.kablink.teaming.gwt.client.event.InvokeLimitUserVisibilityDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageAdministratorsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeNetFolderGlobalSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageDatabasePruneDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageEmailTemplatesDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageMobileDevicesDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageProxyIdentitiesDlgEvent;
@@ -91,6 +94,7 @@ import org.kablink.teaming.gwt.client.admin.AdminConsoleHomePage;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
+import org.kablink.teaming.gwt.client.binderviews.EmailTemplatesView;
 import org.kablink.teaming.gwt.client.binderviews.MobileDevicesView;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDatabasePruneConfigurationCmd;
@@ -190,6 +194,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeNetFolderGlobalSettingsDlgEvent.Handler,
 		InvokeManageAdministratorsDlgEvent.Handler,
 		InvokeManageDatabasePruneDlgEvent.Handler,
+		InvokeManageEmailTemplatesDlgEvent.Handler,
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
@@ -223,6 +228,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ConfigureUserFileSyncAppDlg m_configureUserFileSyncAppDlg = null;
 	private ManageAdministratorsDlg m_manageAdministratorsDlg = null;
 	private ManageDatabasePruneDlg m_manageDatabasePruneDlg = null;
+	private ManageEmailTemplatesDlg m_manageEmailTemplatesDlg = null;
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
@@ -280,6 +286,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG,
 		TeamingEvents.INVOKE_MANAGE_ADMINISTRATORS_DLG,
 		TeamingEvents.INVOKE_MANAGE_DATABASE_PRUNE_DLG,
+		TeamingEvents.INVOKE_MANAGE_EMAIL_TEMPLATES_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_PROXY_IDENTITIES_DLG,
@@ -513,11 +520,13 @@ public class AdminControl extends TeamingPopupPanel
 			if (null != actions) {
 				//! DRF:  Add controls here to limit things shown while
 				//!       they're being implemented.
+				boolean showEmailTemplates      = EmailTemplatesView.SHOW_EMAIL_TEMPLATES;
 				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
 				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
 				for (GwtAdminAction action:  actions) {
 					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices)) continue;
 					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))      continue;
+					else if (action.getActionType().equals(AdminAction.CONFIGURE_EMAIL_TEMPLATES) && (!showEmailTemplates))      continue;
 					
 					// Add a UI widget for this administration action.
 					AdminActionControl adminActionControl = new AdminActionControl( action );
@@ -905,6 +914,11 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the "Configure Adhoc folders" dialog
 			InvokeConfigureAdhocFoldersDlgEvent.fireOne();
 			
+		}
+		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_EMAIL_TEMPLATES )
+		{
+			// Fire the event to invoke the "Configure Email Templates" dialog.
+			InvokeManageEmailTemplatesDlgEvent.fireOne();
 		}
 		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_FILE_SYNC_APP )
 		{
@@ -2886,6 +2900,59 @@ public class AdminControl extends TeamingPopupPanel
 	}
 		
 	/**
+	 * Handles InvokeManageEmailTemplatesDlgEvent received by this
+	 * class.
+	 * 
+	 * Implements the InvokeManageEmailTemplatesDlgEvent.Handler.onInvokeManageEmailTemplatesDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeManageEmailTemplatesDlg(InvokeManageEmailTemplatesDlgEvent event) {
+		// Get the position of the content control.
+		final boolean autoHide = isActionAutoHide(AdminAction.CONFIGURE_EMAIL_TEMPLATES);
+		final boolean modal    = isActionModal(   AdminAction.CONFIGURE_EMAIL_TEMPLATES);
+		final int     x        = m_contentControlX;
+		final int     y        = m_contentControlY;
+		
+		// Have we already created a 'Manage Email Templates' dialog?
+		if (null == m_manageEmailTemplatesDlg) {
+			// No!  Create one now.
+			ManageEmailTemplatesDlg.createAsync(new ManageEmailTemplatesDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(final ManageEmailTemplatesDlg mpiDlg) {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							m_manageEmailTemplatesDlg = mpiDlg;
+							ManageEmailTemplatesDlg.initAndShow(m_manageEmailTemplatesDlg, autoHide, modal, x, y, m_dlgWidth, m_dlgHeight);
+						}
+					} );
+				}
+			},
+			autoHide,
+			modal,
+			x, 
+			y,
+			m_dlgWidth,
+			m_dlgHeight );
+		}
+		
+		else {
+			// Yes, we've already created a 'Manage Email Templates'
+			// dialog!  Simply initialize and show it.
+			m_manageEmailTemplatesDlg.setPixelSize(m_dlgWidth, m_dlgHeight);
+			ManageEmailTemplatesDlg.initAndShow(m_manageEmailTemplatesDlg, autoHide, modal, x, y, m_dlgWidth, m_dlgHeight);
+		}
+	}
+	
+	/**
 	 * Handles InvokeManageNetFoldersDlgEvent received by this class.
 	 * 
 	 * Implements the InvokeManageNetFoldersDlgEvent.Handler.onInvokeManageNetFoldersDlg() method.
@@ -3981,6 +4048,7 @@ public class AdminControl extends TeamingPopupPanel
 				switch (aa) {
 				// Non modal (i.e., simple Close button) actions.
 				case ADD_USER:
+				case CONFIGURE_EMAIL_TEMPLATES:
 				case CONFIGURE_ROLE_DEFINITIONS:
 				case CONFIGURE_SEARCH_INDEX:
 				case FORM_VIEW_DESIGNER:

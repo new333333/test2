@@ -177,13 +177,13 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	}
 
 	/**
-	 * Returns true if this BinderInfo defines the root global
-	 * workspaces binder and false otherwise.
+	 * Returns true if this BinderInfo defines an email templates view
+	 * and false otherwise.
 	 * 
 	 * @return
 	 */
-	public boolean isBinderGlobalRootWS() {
-		return (isBinderWorkspace() && m_wsType.isGlobalRoot());
+	public boolean isBinderEmailTemplates() {
+		return (isBinderWorkspace() && m_wsType.isEmailTemplates());
 	}
 	
 	/**
@@ -196,6 +196,16 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		return (BinderType.FOLDER == m_binderType);
 	}
 
+	/**
+	 * Returns true if this BinderInfo defines the root global
+	 * workspaces binder and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBinderGlobalRootWS() {
+		return (isBinderWorkspace() && m_wsType.isGlobalRoot());
+	}
+	
 	/**
 	 * Returns true if this BinderInfo defines the root binder
 	 * in limit user visibility mode and false otherwise.

@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.event.ClearSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedCustomizedEmailTemplatesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedMobileDevicesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedProxyIdentitiesEvent;
@@ -1283,6 +1284,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case CLEAR_SELECTED_USERS_WEBACCESS:                event = new ClearSelectedUsersWebAccessEvent(            folderId      ); break;
 					case COPY_PUBLIC_LINK_SELECTED_ENTITIES:            event = new CopyPublicLinkSelectedEntitiesEvent(         folderId      ); break;
 					case COPY_SELECTED_ENTITIES:                        event = new CopySelectedEntitiesEvent(                   folderId      ); break;
+					case DELETE_SELECTED_CUSTOMIZED_EMAIL_TEMPLATES:    event = new DeleteSelectedCustomizedEmailTemplatesEvent( m_binderInfo  ); break;
 					case DELETE_SELECTED_ENTITIES:                      event = new DeleteSelectedEntitiesEvent(                 folderId      ); break;
 					case DELETE_SELECTED_MOBILE_DEVICES:                event = new DeleteSelectedMobileDevicesEvent(            m_binderInfo  ); break;
 					case DELETE_SELECTED_PROXY_IDENTITIES:              event = new DeleteSelectedProxyIdentitiesEvent(          m_binderInfo  ); break;
@@ -1402,17 +1404,18 @@ public class EntryMenuPanel extends ToolPanelBase
 		});
 		reply.getElement().setId(simpleTBI.getName());
 		switch (simpleTBI.getTeamingEvent()) {
-		case ADD_PRINCIPAL_ADMIN_RIGHTS:        m_addAdminRightsMenu       = reply; break;
-		case INVOKE_DROPBOX:                    m_addFilesMenu             = reply; break;
-		case DELETE_SELECTED_ENTITIES:          m_deleteMenu               = reply; break;
-		case DELETE_SELECTED_MOBILE_DEVICES:    m_deleteMenu               = reply; break;
-		case DELETE_SELECTED_PROXY_IDENTITIES:  m_deleteMenu               = reply; break;
-		case DELETE_SELECTED_USERS:             m_deleteMenu               = reply; break;
-		case TRASH_PURGE_ALL:                   m_trashPurgeAllMenu        = reply; break;
-		case TRASH_PURGE_SELECTED_ENTITIES:     m_trashPurgeSelectedMenu   = reply; break;
-		case TRASH_RESTORE_ALL:                 m_trashRestoreAllMenu      = reply; break;
-		case TRASH_RESTORE_SELECTED_ENTITIES:   m_trashRestoreSelectedMenu = reply; break;
-		case VIEW_SELECTED_ENTRY:               m_detailsMenu              = reply; break;
+		case ADD_PRINCIPAL_ADMIN_RIGHTS:                  m_addAdminRightsMenu       = reply; break;
+		case INVOKE_DROPBOX:                              m_addFilesMenu             = reply; break;
+		case DELETE_SELECTED_CUSTOMIZED_EMAIL_TEMPLATES:  m_deleteMenu               = reply; break;
+		case DELETE_SELECTED_ENTITIES:                    m_deleteMenu               = reply; break;
+		case DELETE_SELECTED_MOBILE_DEVICES:              m_deleteMenu               = reply; break;
+		case DELETE_SELECTED_PROXY_IDENTITIES:            m_deleteMenu               = reply; break;
+		case DELETE_SELECTED_USERS:                       m_deleteMenu               = reply; break;
+		case TRASH_PURGE_ALL:                             m_trashPurgeAllMenu        = reply; break;
+		case TRASH_PURGE_SELECTED_ENTITIES:               m_trashPurgeSelectedMenu   = reply; break;
+		case TRASH_RESTORE_ALL:                           m_trashRestoreAllMenu      = reply; break;
+		case TRASH_RESTORE_SELECTED_ENTITIES:             m_trashRestoreSelectedMenu = reply; break;
+		case VIEW_SELECTED_ENTRY:                         m_detailsMenu              = reply; break;
 		
 		case SET_SELECTED_PRINCIPALS_ADMIN_RIGHTS:
 			if (m_binderInfo.isBinderAdministratorManagement()) {

@@ -192,6 +192,7 @@ import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtDeleteHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
+import org.kablink.teaming.gwt.server.util.GwtEmailTemplatesHelper;
 import org.kablink.teaming.gwt.server.util.GwtFolderEntryTypeHelper;
 import org.kablink.teaming.gwt.server.util.GwtHistoryHelper;
 import org.kablink.teaming.gwt.server.util.GwtHtml5Helper;
@@ -679,6 +680,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			CreateUserActivityReportCmd cuarCmd = ((CreateUserActivityReportCmd) cmd);
 			StringRpcResponseData responseData = GwtReportsHelper.createUserActivityReport( this, req, cuarCmd.getBegin(), cuarCmd.getEnd(), cuarCmd.getUserIds(), cuarCmd.getReportType() );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case DELETE_CUSTOMIZED_EMAIL_TEMPLATES:  {
+			DeleteCustomizedEmailTemplatesCmd dcetCmd = ((DeleteCustomizedEmailTemplatesCmd) cmd);
+			DeleteCustomizedEmailTemplatesRpcResponseData responseData = GwtEmailTemplatesHelper.deleteCustomizedEmailTemplates(this, req, dcetCmd.getEntityIds());
+			response = new VibeRpcResponse(responseData);
 			return response;
 		}
 		
@@ -2253,6 +2261,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			ManageAdministratorsInfoRpcResponseData result = GwtServerHelper.getManageAdministratorsInfo( this, req );
 			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_MANAGE_EMAIL_TEMPLATES_INFO:  {
+			ManageEmailTemplatesInfoRpcResponseData result = GwtEmailTemplatesHelper.getManageEmailTemplatesInfo(this, req);
+			response = new VibeRpcResponse(result);
 			return response;
 		}
 		

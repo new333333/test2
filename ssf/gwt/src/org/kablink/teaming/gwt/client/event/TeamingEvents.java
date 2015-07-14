@@ -140,6 +140,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_LIMIT_USER_VISIBILITY_DLG,				// Invokes the Limit User Visibility dialog.
 	INVOKE_MANAGE_ADMINISTRATORS_DLG,				// Invokes the "Manage administrators" dialog.
 	INVOKE_MANAGE_DATABASE_PRUNE_DLG,				// Invokes the "Manage database prune" dialog.
+	INVOKE_MANAGE_EMAIL_TEMPLATES_DLG,				// Invokes the "Manage email templates" dialog.
 	INVOKE_MANAGE_GROUPS_DLG,						// Invokes the "Manage groups" dialog.
 	INVOKE_MANAGE_MOBILE_DEVICES_DLG,				// Invokes the "Manage mobile devices" dialog.
 	INVOKE_MANAGE_PROXY_IDENTITIES_DLG,				// Invokes the "Manage proxy identities" dialog.
@@ -304,6 +305,7 @@ public enum TeamingEvents implements IsSerializable {
 	CLEAR_SELECTED_USERS_WEBACCESS,					// Clears the web access setting for the Selected Users so they revert to the zone setting.
 	COPY_PUBLIC_LINK_SELECTED_ENTITIES,				// Copies the Public Link of the Selected Entities.
 	COPY_SELECTED_ENTITIES,							// Copies the Selected Entities.
+	DELETE_SELECTED_CUSTOMIZED_EMAIL_TEMPLATES,		// Deletes the Selected Customized Email Templates.
 	DELETE_SELECTED_ENTITIES,						// Deletes the Selected Entities.
 	DELETE_SELECTED_MOBILE_DEVICES,					// Deletes the Selected Mobile Devices.
 	DELETE_SELECTED_PROXY_IDENTITIES,				// Deletes the Selected Proxy Identities.

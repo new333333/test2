@@ -45,14 +45,16 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class EntityId implements IsSerializable {
-	private EntityIdType	m_entityType;		// The folder, folderEntry, mobileDevice, user, workspace, ... this EntityId represents.
-	private Long			m_binderId;			// The entity's binder ID.
-	private Long			m_entityId;			// The entity's ID.
-	private String			m_mobileDeviceId;	// If the entity is a mobile device, its ID as used by the mobile device applications.
+	private EntityIdType	m_entityType;			// The folder, folderEntry, mobileDevice, user, workspace, ... this EntityId represents.
+	private Long			m_binderId;				// The entity's binder ID.
+	private Long			m_entityId;				// The entity's ID.
+	private String			m_emailTemplateName;	// If the entity is an email template, its name.
+	private String			m_mobileDeviceId;		// If the entity is a  mobile device,  its ID as used by the mobile device applications.
 
 	// The string form of the various EntityIdType's.
 	public final static String APPLICATION			= EntityIdType.application.name();
 	public final static String APPLICATION_GROUP	= EntityIdType.applicationGroup.name();
+	public final static String EMAIL_TEMPLATE		= EntityIdType.emailTemplate.name();
 	public final static String FOLDER				= EntityIdType.folder.name();
 	public final static String FOLDER_ENTRY			= EntityIdType.folderEntry.name();
 	public final static String GROUP				= EntityIdType.group.name();
@@ -85,6 +87,7 @@ public class EntityId implements IsSerializable {
 	public enum EntityIdType implements IsSerializable {
 		application,
 		applicationGroup,
+		emailTemplate,	// Unique to the GWT code.  This doesn't exist in EntityIdentifier.EntityType!
 		folder,
 		folderEntry,
 		group,
@@ -103,6 +106,7 @@ public class EntityId implements IsSerializable {
 		 */
 		public boolean isApplication()      {return this.equals(application     );}
 		public boolean isApplicationGroup() {return this.equals(applicationGroup);}
+		public boolean isEmailTemplate()    {return this.equals(emailTemplate   );}
 		public boolean isEntry()            {return isFolderEntry();              }
 		public boolean isFolder()           {return this.equals(folder          );}
 		public boolean isFolderEntry()      {return this.equals(folderEntry     );}
@@ -148,18 +152,33 @@ public class EntityId implements IsSerializable {
 	 * @param entityId
 	 * @param entityType
 	 * @param mobileDeviceId
+	 * @param emailTemplateName
 	 */
-	public EntityId(Long binderId, Long entityId, EntityIdType entityType, String mobileDeviceId) {
+	public EntityId(Long binderId, Long entityId, EntityIdType entityType, String mobileDeviceId, String emailTemplateName) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
-		setBinderId(      binderId      );
-		setEntityId(      entityId      );
-		setEntityTypeEnum(entityType    );
-		setMobileDeviceId(mobileDeviceId);
+		setBinderId(         binderId         );
+		setEntityId(         entityId         );
+		setEntityTypeEnum(   entityType       );
+		setMobileDeviceId(   mobileDeviceId   );
+		setEmailTemplateName(emailTemplateName);
 	}
 
+	/**
+	 * Constructor method.
+	 * 
+	 * @param binderId
+	 * @param entityId
+	 * @param entityType
+	 * @param mobileDeviceId
+	 */
+	public EntityId(Long binderId, Long entityId, EntityIdType entityType, String mobileDeviceId) {
+		// Initialize this object.
+		this(binderId, entityId, entityType, mobileDeviceId, null);
+	}
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -169,7 +188,7 @@ public class EntityId implements IsSerializable {
 	 */
 	public EntityId(Long entityId, EntityIdType entityType, String mobileDeviceId) {
 		// Initialize this object.
-		this(null, entityId, entityType, mobileDeviceId);
+		this(null, entityId, entityType, mobileDeviceId, null);
 	}
 
 	/**
@@ -182,7 +201,7 @@ public class EntityId implements IsSerializable {
 	 */
 	public EntityId(Long binderId, Long entityId, String entityType, String mobileDeviceId) {
 		// Initialize this object.
-		this(binderId, entityId, EntityIdType.parseEntityIdType(entityType), mobileDeviceId);
+		this(binderId, entityId, EntityIdType.parseEntityIdType(entityType), mobileDeviceId, null);
 	}
 
 	/**
@@ -194,7 +213,7 @@ public class EntityId implements IsSerializable {
 	 */
 	public EntityId(Long entityId, String entityType, String mobileDeviceId) {
 		// Initialize this object.
-		this(null, entityId, EntityIdType.parseEntityIdType(entityType), mobileDeviceId);
+		this(null, entityId, EntityIdType.parseEntityIdType(entityType), mobileDeviceId, null);
 	}
 
 	/**
@@ -206,7 +225,7 @@ public class EntityId implements IsSerializable {
 	 */
 	public EntityId(Long binderId, Long entityId, String entityType) {
 		// Initialize this object.
-		this(binderId, entityId, entityType, null);
+		this(binderId, entityId, EntityIdType.parseEntityIdType(entityType), null, null);
 	}
 
 	/**
@@ -217,7 +236,18 @@ public class EntityId implements IsSerializable {
 	 */
 	public EntityId(Long entityId, String entityType) {
 		// Initialize this object.
-		this(null, entityId, entityType, null);
+		this(null, entityId, EntityIdType.parseEntityIdType(entityType), null, null);
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param entityType
+	 * @param emailTemplateName
+	 */
+	public EntityId(String entityType, String emailTemplateName) {
+		// Initialize this object.
+		this(null, null, EntityIdType.parseEntityIdType(entityType), null, emailTemplateName);
 	}
 
 	/**
@@ -225,35 +255,37 @@ public class EntityId implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean      isApplication()      {return ((null == m_entityType) ? false : m_entityType.isApplication());      }
-	public boolean      isApplicationGroup() {return ((null == m_entityType) ? false : m_entityType.isApplicationGroup()); }
-	public boolean      isBinder()           {return (isFolder() || isWorkspace() || isProfiles());                        }
-	public boolean      isEntry()            {return  isFolderEntry();                                                     }
-	public boolean      isFolder()           {return ((null == m_entityType) ? false : m_entityType.isFolder());           }
-	public boolean      isFolderEntry()      {return ((null == m_entityType) ? false : m_entityType.isFolderEntry());      }
-	public boolean      isGroup()            {return ((null == m_entityType) ? false : m_entityType.isGroup());            }
-	public boolean      isMobileDevice()     {return ((null == m_entityType) ? false : m_entityType.isMobileDevice());     }
-	public boolean      isNone()             {return ((null == m_entityType) ? false : m_entityType.isNone());             }
-	public boolean      isProfiles()         {return ((null == m_entityType) ? false : m_entityType.isProfiles());         }
-	public boolean      isShareWith()        {return ((null == m_entityType) ? false : m_entityType.isShareWith());        }
-	public boolean      isUser()             {return ((null == m_entityType) ? false : m_entityType.isUser());             }
-	public boolean      isWorkspace()        {return ((null == m_entityType) ? false : m_entityType.isWorkspace());        }
-	public EntityIdType getEntityTypeEnum()  {return m_entityType;                                                         }
-	public Long         getBinderId()        {return m_binderId;                                                           }
-	public Long         getEntityId()        {return m_entityId;                                                           }
-	public String       getEntityType()      {return ((null == m_entityType) ? null : m_entityType.name());                }
-	public String       getMobileDeviceId()  {return m_mobileDeviceId;                                                     }
+	public boolean      isApplication()        {return ((null == m_entityType) ? false : m_entityType.isApplication());      }
+	public boolean      isApplicationGroup()   {return ((null == m_entityType) ? false : m_entityType.isApplicationGroup()); }
+	public boolean      isBinder()             {return (isFolder() || isWorkspace() || isProfiles());                        }
+	public boolean      isEntry()              {return  isFolderEntry();                                                     }
+	public boolean      isFolder()             {return ((null == m_entityType) ? false : m_entityType.isFolder());           }
+	public boolean      isFolderEntry()        {return ((null == m_entityType) ? false : m_entityType.isFolderEntry());      }
+	public boolean      isGroup()              {return ((null == m_entityType) ? false : m_entityType.isGroup());            }
+	public boolean      isMobileDevice()       {return ((null == m_entityType) ? false : m_entityType.isMobileDevice());     }
+	public boolean      isNone()               {return ((null == m_entityType) ? false : m_entityType.isNone());             }
+	public boolean      isProfiles()           {return ((null == m_entityType) ? false : m_entityType.isProfiles());         }
+	public boolean      isShareWith()          {return ((null == m_entityType) ? false : m_entityType.isShareWith());        }
+	public boolean      isUser()               {return ((null == m_entityType) ? false : m_entityType.isUser());             }
+	public boolean      isWorkspace()          {return ((null == m_entityType) ? false : m_entityType.isWorkspace());        }
+	public EntityIdType getEntityTypeEnum()    {return m_entityType;                                                         }
+	public Long         getBinderId()          {return m_binderId;                                                           }
+	public Long         getEntityId()          {return m_entityId;                                                           }
+	public String       getEmailTemplateName() {return m_emailTemplateName;                                                  }
+	public String       getEntityType()        {return ((null == m_entityType) ? null : m_entityType.name());                }
+	public String       getMobileDeviceId()    {return m_mobileDeviceId;                                                     }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderId(      Long         binderId)       {m_binderId       = binderId;                                  }
-	public void setEntityId(      Long         entityId)       {m_entityId       = entityId;                                  }
-	public void setEntityTypeEnum(EntityIdType entityType)     {m_entityType     = entityType;                                }
-	public void setEntityType(    String       entityType)     {m_entityType     = EntityIdType.parseEntityIdType(entityType);}
-	public void setMobileDeviceId(String       mobileDeviceId) {m_mobileDeviceId = mobileDeviceId;                            }
+	public void setBinderId(         Long         binderId)          {m_binderId          = binderId;                                  }
+	public void setEntityId(         Long         entityId)          {m_entityId          = entityId;                                  }
+	public void setEntityTypeEnum(   EntityIdType entityType)        {m_entityType        = entityType;                                }
+	public void setEmailTemplateName(String       emailTemplateName) {m_emailTemplateName = emailTemplateName;                         }
+	public void setEntityType(       String       entityType)        {m_entityType        = EntityIdType.parseEntityIdType(entityType);}
+	public void setMobileDeviceId(   String       mobileDeviceId)    {m_mobileDeviceId    = mobileDeviceId;                            }
 	
 	/**
 	 * Returns true if a List<EntityId> contains any binder references

@@ -77,6 +77,8 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public final static String COLUMN_DOWNLOAD						= "download";
 	public final static String COLUMN_DUE_DATE						= "dueDate";
 	public final static String COLUMN_EMAIL_ADDRESS					= "emailAddress";
+	public final static String COLUMN_EMAIL_TEMPLATE_NAME			= "emailTemplateName";
+	public final static String COLUMN_EMAIL_TEMPLATE_TYPE			= "emailTemplateType";
 	public final static String COLUMN_FAMILY						= "family";
 	public final static String COLUMN_FULL_NAME						= "fullName";
 	public final static String COLUMN_GUEST							= "guest";
@@ -273,6 +275,8 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public static boolean isColumnDeviceWipeScheduled(  String       columnName) {return columnName.equals(FolderColumn.COLUMN_DEVICE_WIPE_SCHEDULED);  }
 	public static boolean isColumnDownload(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_DOWNLOAD);               }
 	public static boolean isColumnEmailAddress(         String       columnName) {return columnName.equals(FolderColumn.COLUMN_EMAIL_ADDRESS);          }
+	public static boolean isColumnEmailTemplateName(    String       columnName) {return columnName.equals(FolderColumn.COLUMN_EMAIL_TEMPLATE_NAME);    }
+	public static boolean isColumnEmailTemplateType(    String       columnName) {return columnName.equals(FolderColumn.COLUMN_EMAIL_TEMPLATE_TYPE);    }
 	public static boolean isColumnFamily(               String       columnName) {return columnName.equals(FolderColumn.COLUMN_FAMILY);                 }
 	public static boolean isColumnFullName(             String       columnName) {return columnName.equals(FolderColumn.COLUMN_FULL_NAME);              }
 	public static boolean isColumnGuest(                String       columnName) {return columnName.equals(FolderColumn.COLUMN_GUEST);                  }

@@ -43,6 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public enum WorkspaceType implements IsSerializable {
 	ADMINISTRATOR_MANAGEMENT,	// When used within          the administration console.
 	DISCUSSIONS,
+	EMAIL_TEMPLATES,
 	GLOBAL_ROOT,
 	LANDING_PAGE,
 	LIMIT_USER_VISIBILITY,		// When used within          the administration console.
@@ -72,6 +73,17 @@ public enum WorkspaceType implements IsSerializable {
 	 */
 	public boolean isAdministratorManagement() {
 		return this.equals(ADMINISTRATOR_MANAGEMENT);
+	}
+	
+	/**
+	 * Returns true if this WorkspaceType value represents an email
+	 * templates view, as used by the administration console and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isEmailTemplates() {
+		return this.equals(EMAIL_TEMPLATES);
 	}
 	
 	/**
