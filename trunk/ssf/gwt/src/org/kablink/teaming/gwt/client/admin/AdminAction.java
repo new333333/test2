@@ -45,6 +45,7 @@ public enum AdminAction implements IsSerializable {
 	ADD_USER("Add user"),
 	CONFIGURE_ADHOC_FOLDERS("Configure adhoc folder"),
 	CONFIGURE_EMAIL("Configure email"),
+	CONFIGURE_EMAIL_TEMPLATES("Configure email templates"),
 	CONFIGURE_FILE_SYNC_APP("Configure File Sync App"),
 	CONFIGURE_FILE_VERSION_AGING("Configure file version aging"),
 	CONFIGURE_FOLDER_INDEX("Configure folder index"),

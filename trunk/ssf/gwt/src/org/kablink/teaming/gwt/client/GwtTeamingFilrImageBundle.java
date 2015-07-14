@@ -60,6 +60,22 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource adminRoot_large();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/emailTemplates_72.png")
+	public ImageResource emailTemplates_transparent_72();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/emailTemplates_25.png")
+	public ImageResource emailTemplates();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/emailTemplates_36.png")
+	public ImageResource emailTemplates_medium();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/emailTemplates_48.png")
+	public ImageResource emailTemplates_large();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/file.png")
 	public ImageResource entry();
 	

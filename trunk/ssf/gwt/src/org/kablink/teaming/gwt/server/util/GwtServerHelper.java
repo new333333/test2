@@ -3492,6 +3492,22 @@ public class GwtServerHelper {
 				systemCategory.addAdminOption( adminAction );
 			}
 			
+			// Does the user have rights to 'Configure Email
+			// Templates'?
+			if (userHasAdminRights) {
+				// Yes!  Create an AdminAction for it...
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_EMAIL_TEMPLATES_CONFIGURE);
+				url = adaptedUrl.toString();
+				
+				title = NLT.get("administration.configure_mailTemplates");
+				adminAction = new GwtAdminAction();
+				adminAction.init(title, url, AdminAction.CONFIGURE_EMAIL_TEMPLATES);
+				
+				// ...and add it to the 'system' category.
+				systemCategory.addAdminOption(adminAction);
+			}
+			
 			// Are we running the Enterprise version of Teaming or Filr?
 			if ( ReleaseInfo.isLicenseRequiredEdition() == true || isFilr )
 			{
@@ -10308,6 +10324,7 @@ public class GwtServerHelper {
 		case CREATE_USER_ACCESS_REPORT:
 		case CREATE_USER_ACTIVITY_REPORT:
 		case CREATE_NET_FOLDER_ROOT:
+		case DELETE_CUSTOMIZED_EMAIL_TEMPLATES:
 		case DELETE_MOBILE_DEVICES:
 		case DELETE_NET_FOLDERS:
 		case DELETE_NET_FOLDER_ROOTS:
@@ -10436,6 +10453,7 @@ public class GwtServerHelper {
 		case GET_MAILTO_PUBLIC_LINKS:
 		case GET_MAIN_PAGE_INFO:
 		case GET_MANAGE_ADMINISTRATORS_INFO:
+		case GET_MANAGE_EMAIL_TEMPLATES_INFO:
 		case GET_MANAGE_MOBILE_DEVICES_INFO:
 		case GET_MANAGE_PROXY_IDENTITIES_INFO:
 		case GET_MANAGE_TEAMS_INFO:

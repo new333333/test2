@@ -3300,6 +3300,8 @@ public class GwtViewHelper {
 			else if (colName.equals("download"))              {fc.setColumnSearchKey(Constants.FILENAME_FIELD);                                                                                     }
 			else if (colName.equals("dueDate"))               {fc.setColumnSearchKey(Constants.DUE_DATE_FIELD);                                                                                     }
 			else if (colName.equals("emailAddress"))          {fc.setColumnSearchKey(Constants.EMAIL_FIELD);                                                                                        }
+			else if (colName.equals("emailTemplateName"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_EMAIL_TEMPLATE_NAME);                                                                      }
+			else if (colName.equals("emailTemplateType"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_EMAIL_TEMPLATE_TYPE);                                                                      }
 			else if (colName.equals("family"))                {fc.setColumnSearchKey(Constants.FAMILY_FIELD);                    fc.setColumnSortable(false);                                       }
 			else if (colName.equals("fullName"))              {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_TITLE_FIELD);                   }
 			else if (colName.equals("guest"))                 {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);           }
@@ -4440,6 +4442,7 @@ public class GwtViewHelper {
 			boolean        isManageAdmins        = folderInfo.isBinderAdministratorManagement();
 			boolean        isMobileDevicesView   = folderInfo.isBinderMobileDevices();
 			boolean        isProxyIdentitiesView = folderInfo.isBinderProxyIdentities();
+			boolean        isEmailTemplatesView  = folderInfo.isBinderEmailTemplates();
 			boolean        isFileFolder          = ((null != folder) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)));
 			boolean        isCollection          = folderInfo.isBinderCollection();
 			boolean        isTrash               = folderInfo.isBinderTrash();
@@ -4469,6 +4472,14 @@ public class GwtViewHelper {
 			}
 			
 			// No, we aren't showing a proxy identities view either!
+			// Are we looking at an email templates view? 
+			else if (isEmailTemplatesView) {
+				// Yes!
+				baseNameKey = "emailTemplates.column.";
+				columnNames = getColumnsLHMFromAS(new String[]{"emailTemplateName", "emailTemplateType"});
+			}
+			
+			// No, we aren't showing an email templates view either!
 			// Are we looking at the root binder in limit user
 			// visibility mode?
 			else if (isLimitUserVisibility) {
@@ -4838,6 +4849,12 @@ public class GwtViewHelper {
 				propSortDescend += cName;
 			}
 			
+			else if (folderInfo.isBinderEmailTemplates()) {
+				String cName     = ".emailTemplates";
+				propSortBy      += cName;
+				propSortDescend += cName;
+			}
+			
 			else if (folderInfo.isBinderAdministratorManagement()) {
 				String cName     = ".administrators.";
 				propSortBy      += cName;
@@ -4864,6 +4881,9 @@ public class GwtViewHelper {
 				}
 				else if (folderInfo.isBinderProxyIdentities()) {
 					sortBy = ObjectKeys.FIELD_PROXY_IDENTITY_TITLE;
+				}
+				else if (folderInfo.isBinderEmailTemplates()) {
+					sortBy = FolderColumn.COLUMN_EMAIL_TEMPLATE_NAME;
 				}
 				else {
 					switch (folderInfo.getFolderType()) {
@@ -5607,6 +5627,7 @@ public class GwtViewHelper {
 			boolean isMobileDevicesView     = folderInfo.isBinderMobileDevices();
 			boolean isProfilesRootWS        = folderInfo.isBinderProfilesRootWS();
 			boolean isProxyIdentitiesView   = folderInfo.isBinderProxyIdentities();
+			boolean isEmailTemplatesView    = folderInfo.isBinderEmailTemplates();
 			boolean isTeamsRootWS           = folderInfo.isBinderTeamsRootWS();
 			boolean isLimitUserVisibility   = folderInfo.isBinderLimitUserVisibility();
 			boolean isManageAdministrators  = folderInfo.isBinderAdministratorManagement();
@@ -5743,6 +5764,7 @@ public class GwtViewHelper {
 				Map searchResults;
 				if      (isMobileDevicesView)             return          GwtMobileDeviceHelper.getMobileDeviceRows(         bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
 				else if (isProxyIdentitiesView)           return          GwtProxyIdentityHelper.getProxyIdentityRows(       bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
+				else if (isEmailTemplatesView)            return          GwtEmailTemplatesHelper.getEmailTemplatesRows(     bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
 				else if (isLimitUserVisibility)           return          GwtUserVisibilityHelper.getLimitUserVisibilityRows(bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
 				else if (isManageAdministrators)          return          GwtAdministratorsHelper.getAdministratorsRows(     bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
 				else if (isTrash)                         searchResults = TrashHelper.getTrashEntities(                      bs,          binder,              options                               );

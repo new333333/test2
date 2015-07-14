@@ -103,6 +103,7 @@ public class EventHelper {
 		case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:	reply = new InvokeNetFolderGlobalSettingsDlgEvent();break;
 		case INVOKE_LDAP_SYNC_RESULTS_DLG:			reply = new InvokeLdapSyncResultsDlgEvent();	  break;
 		case INVOKE_MANAGE_DATABASE_PRUNE_DLG:		reply = new InvokeManageDatabasePruneDlgEvent();  break;
+		case INVOKE_MANAGE_EMAIL_TEMPLATES_DLG:		reply = new InvokeManageEmailTemplatesDlgEvent(); break;
 		case INVOKE_MANAGE_NET_FOLDERS_DLG:			reply = new InvokeManageNetFoldersDlgEvent();	  break;
 		case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	reply = new InvokeManageNetFolderRootsDlgEvent(); break;
 		case INVOKE_MANAGE_GROUPS_DLG:				reply = new InvokeManageGroupsDlgEvent();		  break;
@@ -667,6 +668,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case DELETE_SELECTED_CUSTOMIZED_EMAIL_TEMPLATES:
+				// A DeleteSelectedCustomizedEmailTemplatesEvent!  Can
+				// the event handler we were given handle that?
+				if (eventHandler instanceof DeleteSelectedCustomizedEmailTemplatesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = DeleteSelectedCustomizedEmailTemplatesEvent.registerEvent(eventBus, ((DeleteSelectedCustomizedEmailTemplatesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case DELETE_SELECTED_ENTITIES:
 				// A DeleteSelectedEntitiesEvent!  Can the event
 				// handler we were given handle that?
@@ -1431,6 +1441,15 @@ public class EventHelper {
 				{
 					handlerNotDefined = false;
 					registrationHandler = InvokeManageDatabasePruneDlgEvent.registerEvent( eventBus, ((InvokeManageDatabasePruneDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case INVOKE_MANAGE_EMAIL_TEMPLATES_DLG:
+				// An InvokeManageEmailTemplatesDlgEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof InvokeManageEmailTemplatesDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeManageEmailTemplatesDlgEvent.registerEvent(eventBus, ((InvokeManageEmailTemplatesDlgEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -3069,6 +3088,7 @@ public class EventHelper {
 			case INVOKE_LDAP_SYNC_RESULTS_DLG:			       hasHandler = (eventHandler instanceof InvokeLdapSyncResultsDlgEvent.Handler); 	           break;
 			case INVOKE_MANAGE_ADMINISTRATORS_DLG:			   hasHandler = (eventHandler instanceof InvokeManageAdministratorsDlgEvent.Handler);		   break;
 			case INVOKE_MANAGE_DATABASE_PRUNE_DLG:			   hasHandler = (eventHandler instanceof InvokeManageDatabasePruneDlgEvent.Handler); 	       break;
+			case INVOKE_MANAGE_EMAIL_TEMPLATES_DLG:			   hasHandler = (eventHandler instanceof InvokeManageEmailTemplatesDlgEvent.Handler);		   break;
 			case INVOKE_MANAGE_NET_FOLDERS_DLG:			       hasHandler = (eventHandler instanceof InvokeManageNetFoldersDlgEvent.Handler); 	           break;
 			case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	       hasHandler = (eventHandler instanceof InvokeManageNetFolderRootsDlgEvent.Handler);          break;
 			case INVOKE_MANAGE_GROUPS_DLG:				       hasHandler = (eventHandler instanceof InvokeManageGroupsDlgEvent.Handler);		           break;
@@ -3226,6 +3246,7 @@ public class EventHelper {
 			case CLEAR_SELECTED_USERS_WEBACCESS:               hasHandler = (eventHandler instanceof ClearSelectedUsersWebAccessEvent.Handler);            break;
 			case COPY_PUBLIC_LINK_SELECTED_ENTITIES:           hasHandler = (eventHandler instanceof CopyPublicLinkSelectedEntitiesEvent.Handler);         break;
 			case COPY_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof CopySelectedEntitiesEvent.Handler);                   break;
+			case DELETE_SELECTED_CUSTOMIZED_EMAIL_TEMPLATES:   hasHandler = (eventHandler instanceof DeleteSelectedCustomizedEmailTemplatesEvent.Handler); break;
 			case DELETE_SELECTED_ENTITIES:                     hasHandler = (eventHandler instanceof DeleteSelectedEntitiesEvent.Handler);                 break;
 			case DELETE_SELECTED_MOBILE_DEVICES:               hasHandler = (eventHandler instanceof DeleteSelectedMobileDevicesEvent.Handler);            break;
 			case DELETE_SELECTED_PROXY_IDENTITIES:             hasHandler = (eventHandler instanceof DeleteSelectedProxyIdentitiesEvent.Handler);          break;

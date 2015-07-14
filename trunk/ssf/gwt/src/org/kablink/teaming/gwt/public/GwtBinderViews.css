@@ -275,6 +275,11 @@
 		.vibe-discussionFolderFlowPanel {}
 	/* ...End:  Discussion folder view styles. */
 	
+	/* ...Start:  Email templates view styles. */
+		.vibe-emailTemplatesDataTable {}
+		.vibe-emailTemplatesFlowPanel {}
+	/* ...End:  Email templates view styles. */
+
 	/* ...Start:  File folder view styles. */
 		.vibe-fileFolderDataTable {}
 		.vibe-fileFolderFlowPanel {}

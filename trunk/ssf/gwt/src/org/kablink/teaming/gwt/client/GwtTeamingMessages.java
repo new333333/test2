@@ -343,6 +343,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_CreateLoginReport();
 	String rpcFailure_CreateUserAccessReport();
 	String rpcFailure_CreateUserActivityReport();
+	String rpcFailure_DeleteCustomizedEmailTemplates();
 	String rpcFailure_DeleteMobileDevices();
 	String rpcFailure_DeleteNetFolders();
 	String rpcFailure_DeleteNetFolderServers();
@@ -471,6 +472,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetMailToPublicLinks();
 	String rpcFailure_GetMainPageInfo();
 	String rpcFailure_GetManageAdministratorsInfo();
+	String rpcFailure_GetManageEmailTemplatesInfo();
 	String rpcFailure_GetManageMobileDevicesInfo();
 	String rpcFailure_GetManageProxyIdentitiesInfo();
 	String rpcFailure_GetManageTeamsInfo();
@@ -739,6 +741,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_EditZoneShareSettingsDlg();
 	String codeSplitFailure_EmailNotificationDlg();
 	String codeSplitFailure_EmailPublicLinkDlg();
+	String codeSplitFailure_EmailTemplatesView();
 	String codeSplitFailure_EntryMenuPanel();
 	String codeSplitFailure_ExtensionsConfig();
 	String codeSplitFailure_FilterPanel();
@@ -777,6 +780,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_ManageCommentsComposite();
 	String codeSplitFailure_ManageCommentsDlg();
 	String codeSplitFailure_ManageDatabasePruneDlg();
+	String codeSplitFailure_ManageEmailTemplatesDlg();
 	String codeSplitFailure_ManageGroupsDlg();
 	String codeSplitFailure_ManageMobileDevicesDlg();
 	String codeSplitFailure_ManageNetFoldersDlg();
@@ -2027,6 +2031,7 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
 	String vibeDataTable_Confirm_CantSubscribe();
 	String vibeDataTable_Download();
+	String vibeDataTable_EmailTemplates();
 	String vibeDataTable_Error_ForcingPasswordChange();
 	String vibeDataTable_Error_MirroredDriverNotConfigured();
 	String vibeDataTable_Error_SavingAdminRights();
@@ -3721,4 +3726,10 @@ public interface GwtTeamingMessages extends Messages {
 	String proxyIdentityDlgPassword();
 	String proxyIdentityDlgPasswordVerify();
 	String proxyIdentityDlgTitle();
+	
+	// Strings used in the Manage Email Templates dialog.
+	String manageEmailTemplatesDlg();
+	String manageEmailTemplatesDlgCaption();
+	String manageEmailTemplatesDlg_confirmDelete();
+	String manageEmailTemplatesDlg_failureDeletingEmailTemplates();
 }
