@@ -190,13 +190,14 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 @SuppressWarnings("unchecked")
 public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule, InitializingBean {	
-	protected static String INDEX_OPTIMIZATION_JOB = "index.optimization.job"; // properties in xml file need a unique name
-	protected static String FILE_VERSION_AGING_JOB = "file.version.aging.job"; // properties in xml file need a unique name
-	protected static String LOG_TABLE_PURGE_JOB = "log.table.purge.job"; // properties in xml file need a unique name
-	protected static String TEXT_CONVERSION_FILE_PURGE_JOB = "text.conversion.file.purge.job"; // properties in xml file need a unique name
-	protected static String TEMP_FILE_CLEANUP_JOB = "temp.file.cleanup.job"; // properties in xml file need a unique name
+	protected static String FILE_VERSION_AGING_JOB			= "file.version.aging.job";			// Properties in XML file need a unique name.
+	protected static String INDEX_OPTIMIZATION_JOB			= "index.optimization.job";			// Properties in XML file need a unique name.
+	protected static String LOG_TABLE_PURGE_JOB				= "log.table.purge.job";			// Properties in XML file need a unique name.
+	protected static String TEMP_FILE_CLEANUP_JOB			= "temp.file.cleanup.job";			// Properties in XML file need a unique name.
+	protected static String TEXT_CONVERSION_FILE_PURGE_JOB	= "text.conversion.file.purge.job";	// Properties in XML file need a unique name.
 	
 	protected MailModule mailModule;
+	
 	/**
 	 * Setup by spring
 	 * @param mailModule
@@ -2324,7 +2325,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	NotifyVisitor	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
 		    VelocityContext	ctx     = getShareVelocityContext(visitor, share, sharedEntity, false);
-			visitor.processTemplate(template, ctx);
+			processVelocityTemplate(visitor, ctx, template);
 			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
 			
 			// ...generate and add the TEXT variant...
@@ -2332,7 +2333,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
 		    ctx     = getShareVelocityContext(visitor, share, sharedEntity, false);
-			visitor.processTemplate(template, ctx);
+			processVelocityTemplate(visitor, ctx, template);
 			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
 
 			// ...create the mime helper... 
@@ -2500,7 +2501,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	NotifyVisitor	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
 		    VelocityContext	ctx     = getPublicLinkVelocityContext(visitor, share, sharedEntity, viewUrl, downloadUrl);
-			visitor.processTemplate(template, ctx);
+			processVelocityTemplate(visitor, ctx, template);
 			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
 			
 			// ...generate and add the TEXT variant...
@@ -2508,7 +2509,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
 		    ctx     = getPublicLinkVelocityContext(visitor, share, sharedEntity, viewUrl, downloadUrl);
-			visitor.processTemplate(template, ctx);
+			processVelocityTemplate(visitor, ctx, template);
 			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
 
 			// ...create the mime helper... 
@@ -2694,7 +2695,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	NotifyVisitor	visitor = new NotifyVisitor(null, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
 		    VelocityContext	ctx     = getUrlNotificationVelocityContext(visitor, url, purposeKey, urlTextKey );
-			visitor.processTemplate(template, ctx);
+			processVelocityTemplate(visitor, ctx, template);
 			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
 			
 			// ...generate and add the TEXT variant...
@@ -2702,7 +2703,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	visitor = new NotifyVisitor(null, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
 		    ctx     = getUrlNotificationVelocityContext(visitor, url, purposeKey, urlTextKey );
-			visitor.processTemplate(template, ctx);
+			processVelocityTemplate(visitor, ctx, template);
 			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
 
 			// ...create the mime helper... 
@@ -2856,7 +2857,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	NotifyVisitor	visitor = new NotifyVisitor(null, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
 		    VelocityContext	ctx     = getConfirmationVelocityContext(visitor, entityPermalinkUrl);
-			visitor.processTemplate("externalConfirmation.vm", ctx);
+			processVelocityTemplate(visitor, ctx, "externalConfirmation.vm");
 			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
 			
 			// ...generate and add the TEXT variant...
@@ -2864,7 +2865,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	visitor = new NotifyVisitor(null, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
 		    ctx     = getConfirmationVelocityContext(visitor, entityPermalinkUrl);
-			visitor.processTemplate("externalConfirmation.vm", ctx);
+			processVelocityTemplate(visitor, ctx, "externalConfirmation.vm");
 			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
 
 			// ...create the mime helper... 
@@ -3036,7 +3037,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	NotifyVisitor	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
 		    VelocityContext	ctx     = getShareVelocityContext(visitor, share, sharedEntity, encodedExternalUserId, true);
-			visitor.processTemplate(template, ctx);
+			processVelocityTemplate(visitor, ctx, template);
 			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
 			
 			// ...generate and add the TEXT variant...
@@ -3044,7 +3045,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
 		    ctx     = getShareVelocityContext(visitor, share, sharedEntity, encodedExternalUserId, true);
-			visitor.processTemplate(template, ctx);
+			processVelocityTemplate(visitor, ctx, template);
 			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
 
 			// ...create the mime helper... 
@@ -4174,5 +4175,15 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		if(indexNode == null)
 			return false;
 		return indexNode.isReindexingInProgress();
+    }
+    
+    /*
+     * Processes a Velocity template, including both a header and
+     * footer in the output.
+     */
+    private static void processVelocityTemplate(NotifyVisitor visitor, VelocityContext	ctx, String template) throws Exception {
+		visitor.processTemplate("header.vm",  ctx);
+		visitor.processTemplate(template,     ctx);
+		visitor.processTemplate("footer.vm",  ctx);
     }
 }

@@ -276,7 +276,9 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		ksKeys.load(keyStoreIS, keyktorePass);
 		 
 		// KeyManagers decide which key material to use.
-		KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+		String kmfAlgorithm = KeyManagerFactory.getDefaultAlgorithm();	// Was "SunX509" which only seems to work with an IBM JDK.
+		m_logger.debug("Inbound SMTP Server:  KeyManagerFactory Algorithm:  " + kmfAlgorithm);
+		KeyManagerFactory kmf = KeyManagerFactory.getInstance(kmfAlgorithm);
 		kmf.init(ksKeys, keyktorePass);
 		KeyManager[] keyManagers = kmf.getKeyManagers();
 		 

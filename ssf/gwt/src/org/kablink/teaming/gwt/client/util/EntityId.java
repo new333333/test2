@@ -258,6 +258,7 @@ public class EntityId implements IsSerializable {
 	public boolean      isApplication()        {return ((null == m_entityType) ? false : m_entityType.isApplication());      }
 	public boolean      isApplicationGroup()   {return ((null == m_entityType) ? false : m_entityType.isApplicationGroup()); }
 	public boolean      isBinder()             {return (isFolder() || isWorkspace() || isProfiles());                        }
+	public boolean      isEmailTemplate()      {return ((null == m_entityType) ? false : m_entityType.isEmailTemplate());    }
 	public boolean      isEntry()              {return  isFolderEntry();                                                     }
 	public boolean      isFolder()             {return ((null == m_entityType) ? false : m_entityType.isFolder());           }
 	public boolean      isFolderEntry()        {return ((null == m_entityType) ? false : m_entityType.isFolderEntry());      }

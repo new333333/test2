@@ -88,6 +88,7 @@ import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataTableConstants;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
+import org.kablink.teaming.gwt.client.event.ActivityStreamCommentDeletedEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersDownloadEvent;
@@ -160,10 +161,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.Total
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ForceUsersToChangePasswordCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCanAddEntitiesToBindersCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetCommentCountCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntityRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyFilesContainerInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderPinningStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderSortCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveSharedFilesStateCmd;
@@ -249,6 +252,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public abstract class DataTableFolderViewBase extends FolderViewBase
 	implements ApplyColumnWidths,
 		// Event handlers implemented by this class.
+		ActivityStreamCommentDeletedEvent.Handler,
 		ChangeEntryTypeSelectedEntitiesEvent.Handler,
 		ClearSelectedUsersAdHocFoldersEvent.Handler,
 		ClearSelectedUsersDownloadEvent.Handler,
@@ -359,6 +363,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private static final TeamingEvents[] dtfvb_REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.ACTIVITY_STREAM_COMMENT_DELETED,
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
 		TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD,
@@ -1311,10 +1316,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		return reply;
 	}
 	
-	/*
+	/**
 	 * Returns the FolderRow for the given entity ID.
+	 * 
+	 * @param entityId
 	 */
-	private FolderRow getRowByEntityId(EntityId entityId) {
+	final protected FolderRow getRowByEntityId(EntityId entityId) {
 		// Are there any rows in the table?
 		List<FolderRow> rows  = m_dataTable.getVisibleItems();
 		if (null != rows) {
@@ -1386,6 +1393,19 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		return reply;
 	}
 
+	/*
+	 * Scans the current columns looking for the comments column.  If
+	 * it is found, it's returned.  Otherwise, null is returned.
+	 */
+	private FolderColumn getCommentsColumn() {
+		for (FolderColumn fc:  m_folderColumnsList) {
+			if (FolderColumn.isColumnComments(fc.getColumnName())) {
+				return fc;
+			}
+		}
+		return null;
+	}
+	
 	/*
 	 * Scans the current columns looking for the full name column.  If
 	 * it is found, it's returned.  Otherwise, null is returned.
@@ -2087,6 +2107,41 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Let the widget attach and then register our event handlers.
 		super.onAttach();
 		registerEvents();
+	}
+	
+	/**
+	 * Handles ActivityStreamCommentDeletedEvent's received by this class.
+	 * 
+	 * Implements the ActivityStreamCommentDeletedEvent.Handler.onActivityStreamUIEntryDeleted() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onActivityStreamCommentDeleted(ActivityStreamCommentDeletedEvent event) {
+		// If this view isn't displaying a comments column...
+		FolderColumn commentsColumn = getCommentsColumn();
+		if (null == commentsColumn) {
+			// ...we don't need to do anything with this event.
+			return;
+		}
+		// Do we have a top level EntityId that's targeted to the
+		// binder this view is running against?
+		EntityId topLevelEID = event.getTopLevelEntityId();
+		if ((null != topLevelEID) && (getFolderInfo().isBinderCollection() || topLevelEID.getBinderId().equals(getFolderInfo().getBinderIdAsLong()))) {
+			// Yes!  Then we need to update the comment comment count
+			// in this entry's row, if it exists in the view.
+			List<FolderRow> rows = m_dataTable.getVisibleItems();
+			if (null != rows) {
+				int rowIndex = 0;
+				for (FolderRow row : rows) {
+					if (row.getEntityId().equalsEntityId(topLevelEID)) {
+						updateCommentCountAsync(commentsColumn, row, rowIndex);
+						break;
+					}
+					rowIndex += 1;
+				}
+			}
+		}
 	}
 	
 	/**
@@ -3679,9 +3734,15 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					m_cfaDlg.hide();
 				}
 				
+				// Did querying the folder's rows generate an errors?
+				FolderRowsRpcResponseData responseData = ((FolderRowsRpcResponseData) response.getResponseData());
+				if (responseData.hasErrors()) {
+					// Yes!  Display them.
+					GwtClientHelper.displayMultipleErrors(m_messages.vibeDataTable_Error_GetFolderRows(), responseData.getErrorList());
+				}
+				
 				// Does querying the folder's rows require the user
 				// to authenticate?
-				FolderRowsRpcResponseData responseData = ((FolderRowsRpcResponseData) response.getResponseData());
 				if (responseData.requiresCloudFolderAuthentication()) {
 					// Yes!  Are we currently processing an authentication request?
 					if (hasAuthenticationGuid) {
@@ -5175,6 +5236,42 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashRestoreSelectedEntities()"));
 	}
 	
+	/*
+	 * Asynchronously updates the comment count in the given row.
+	 */
+	private void updateCommentCountAsync(final FolderColumn commentsColumn, final FolderRow row, final int rowIndex) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				updateCommentCountNow(commentsColumn, row, rowIndex);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously updates the comment count in the given row.
+	 */
+	private void updateCommentCountNow(final FolderColumn commentsColumn, final FolderRow row, final int rowIndex) {
+		GetCommentCountCmd cmd = new GetCommentCountCmd(row.getEntityId());
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_GetCommentCount());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				int count = ((IntegerRpcResponseData) result.getResponseData()).getIntegerValue();
+				if (0 <= count) {
+					CommentsInfo ci = row.getColumnValueAsComments(commentsColumn);
+					ci.setCommentsCount(count);
+					m_dataTable.redrawRow(rowIndex);
+				}
+			}
+		});
+	}
 	/*
 	 * Returns a List<FolderRow> of the selected rows that the user
 	 * can't share the public link from.

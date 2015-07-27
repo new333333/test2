@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -121,6 +121,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 @SuppressWarnings("unused")
 public class LoginDlg extends DlgBox
 	implements
+		// Event handlers implemented by this class.
 		DialogClosedEvent.Handler,
 		WindowTitleSetEvent.Handler
 {
@@ -308,7 +309,7 @@ public class LoginDlg extends DlgBox
 			headerText = GwtTeaming.getMessages().loginDlgKablinkHeader();
 		
 		createAllDlgContent( headerText, null, null, properties ); 
-	}// end LoginDlg()
+	}
 	
 
 	/**
@@ -348,7 +349,7 @@ public class LoginDlg extends DlgBox
 	 */
 	public void clearContent()
 	{
-	}// end clearContent()
+	}
 	
 	
 	/**
@@ -367,7 +368,7 @@ public class LoginDlg extends DlgBox
 		init( props );
 
 		return m_mainPanel;
-	}// end createContent()
+	}
 	
 	
 	/*
@@ -377,7 +378,7 @@ public class LoginDlg extends DlgBox
 	public FlowPanel createFooter()
 	{
 		return null;
-	}// end createFooter()
+	}
 
 	/**
 	 * 
@@ -611,7 +612,7 @@ public class LoginDlg extends DlgBox
 		m_headerPanel = new FlowPanel();
 		
 		return m_headerPanel;
-	}// end createHeader()
+	}
 	
 	/**
 	 * Create the controls needed for OpenID authentication
@@ -708,7 +709,7 @@ public class LoginDlg extends DlgBox
 						if ( col == 2 )
 							++row;
 						
-					}// end for()
+					}
 				}
 			}
 		}
@@ -871,7 +872,7 @@ public class LoginDlg extends DlgBox
 	{
 		// Nothing to do.
 		return new Object();
-	}// end getDataFromDlg()
+	}
 	
 	/**
 	 * 
@@ -899,7 +900,7 @@ public class LoginDlg extends DlgBox
 	public FocusWidget getFocusWidget()
 	{
 		return m_userIdTxtBox;
-	}// end getFocusWidget()
+	}
 	
 	
 	/**
@@ -943,7 +944,7 @@ public class LoginDlg extends DlgBox
 					//	t,
 					//	GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
 					debugAlert( "In m_rpcGetLoginInfoCallback / onFailure()" );
-				}// end onFailure()
+				}
 		
 				/**
 				 * 
@@ -962,7 +963,7 @@ public class LoginDlg extends DlgBox
 						
 						danceDlg( loginInfo, loginStatus );
 					}
-				}// end onSuccess()
+				}
 			};
 			
 			// Issue an ajax request to get login information
@@ -1085,7 +1086,7 @@ public class LoginDlg extends DlgBox
 				//	t,
 				//	GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
 				debugAlert( "In CompleteExternalUserSelfRegistrationCmd / onFailure()" );
-			}// end onFailure()
+			}
 	
 			/**
 			 * 
@@ -1174,7 +1175,7 @@ public class LoginDlg extends DlgBox
 				//	t,
 				//	GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
 				debugAlert( "In ResetPwdCmd / onFailure()" );
-			}// end onFailure()
+			}
 	
 			/**
 			 * 
@@ -1228,6 +1229,8 @@ public class LoginDlg extends DlgBox
 							@Override
 							public void execute()
 							{
+								clearErrorPanel();
+								hideErrorPanel();
 								showExternalUserPasswordResetRequestedUI();
 							}
 						} );
@@ -1272,7 +1275,7 @@ public class LoginDlg extends DlgBox
 	{
 		if ( m_authenticatingMsg != null )
 			m_authenticatingMsg.setVisible( false );
-	}// end hideAuthenticatingMsg()
+	}
 
 	
 	/**
@@ -1282,7 +1285,7 @@ public class LoginDlg extends DlgBox
 	{
 		if ( m_loginFailedMsg != null )
 			m_loginFailedMsg.setVisible( false );
-	}// end hideLoginFailedMsg()
+	}
 	
 	
 	/**
@@ -1291,7 +1294,7 @@ public class LoginDlg extends DlgBox
 	 */
 	public void init( Object props )
 	{
-	}// end init()
+	}
 
 	
 	/**
@@ -1383,7 +1386,7 @@ public class LoginDlg extends DlgBox
 			hide();
 			return;
 		}
-	}// end onClick()
+	}
 	
 
 	/**
@@ -1393,7 +1396,7 @@ public class LoginDlg extends DlgBox
 	{
 		if ( m_cancelBtn != null )
 			m_cancelBtn.setVisible( allowCancel );
-	}// end setAllowCancel()
+	}
 	
 
 	/**
@@ -1462,7 +1465,7 @@ public class LoginDlg extends DlgBox
 	{
 		if ( m_authenticatingMsg != null )
 			m_authenticatingMsg.setVisible( true );
-	}// end showAuthenticatingMsg()
+	}
 
 	/**
 	 * Show the message when the external user has completed the registration
@@ -2036,7 +2039,7 @@ public class LoginDlg extends DlgBox
 							Window.open( url, "self_reg_create_new_account", "height=750,resizeable,scrollbars,width=750" );
 						}
 					} );
-				}//end onClick()
+				}
 			};
 			m_selfRegLink.addClickHandler( clickHandler );
 		}
@@ -2057,7 +2060,7 @@ public class LoginDlg extends DlgBox
 		}
 		m_loginFailedMsg.setText(    msg  );
 		m_loginFailedMsg.setVisible( true );
-	}// end hideLoginFailedMsg()
+	}
 
 
 	/*
@@ -2137,7 +2140,7 @@ public class LoginDlg extends DlgBox
 			// No, hide the self registration button.
 			m_selfRegLink.setVisible( false );
 		}
-	}// end updateSelfRegistrationControls()
+	}
 	
 	/**
 	 * Return whether we should use OpenID authentication 
@@ -2411,4 +2414,4 @@ public class LoginDlg extends DlgBox
 			}
 		});
 	}
-}// end LoginDlg
+}

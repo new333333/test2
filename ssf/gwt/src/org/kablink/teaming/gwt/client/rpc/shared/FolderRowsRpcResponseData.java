@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,9 +32,12 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.util.CloudFolderAuthentication;
 import org.kablink.teaming.gwt.client.util.CloudFolderType;
 
@@ -47,6 +50,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private ErrorListRpcResponseData	m_errorList;			// Contains any errors encountered while obtaining the folder rows that should be displayed to the user.
 	private CloudFolderAuthentication	m_cfAuthentication;		//
 	private int							m_startOffset;			//
 	private int							m_totalRows;			//
@@ -93,8 +97,9 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * @param totalRows
 	 * @param totalCountType
 	 * @param contributorIds
+	 * @param errorList
 	 */
-	public FolderRowsRpcResponseData(List<FolderRow> folderRows, int startOffset, int totalRows, TotalCountType totalCountType, List<Long> contributorIds) {
+	public FolderRowsRpcResponseData(List<FolderRow> folderRows, int startOffset, int totalRows, TotalCountType totalCountType, List<Long> contributorIds, List<ErrorInfo> errorList) {
 		// Initialize this object...
 		this();
 		
@@ -104,6 +109,21 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 		setTotalRows(     totalRows     );
 		setTotalCountType(totalCountType);
 		setContributorIds(contributorIds);
+		setErrorList(     errorList     );
+	}
+	
+	/**
+	 * Constructor method.
+	 *
+	 * @param folderRows
+	 * @param startOffset
+	 * @param totalRows
+	 * @param totalCountType
+	 * @param contributorIds
+	 */
+	public FolderRowsRpcResponseData(List<FolderRow> folderRows, int startOffset, int totalRows, TotalCountType totalCountType, List<Long> contributorIds) {
+		// Initialize this object.
+		this(folderRows, startOffset, totalRows, totalCountType, contributorIds, null);
 	}
 	
 	/**
@@ -160,6 +180,59 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	public void setTotalCountType(           TotalCountType            totalCountType)   {m_totalCountType   = totalCountType;  }
 
 	/**
+	 * Adds an error to the error list.
+	 * 
+	 * @param error
+	 */
+	public void addError(String error) {
+		validateErrorList();
+		m_errorList.addError(error);
+	}
+	
+	/**
+	 * Adds a warning to the error list.
+	 * 
+	 * @param warning
+	 */
+	public void addWarning(String warning) {
+		validateErrorList();
+		m_errorList.addWarning(warning);
+	}
+	
+	/**
+	 * Returns a List<ErrorInfo> of the errors that should be displayed
+	 * as part of get folder rows request.
+	 * 
+	 * @return
+	 */
+	public List<ErrorInfo> getErrorList() {
+		validateErrorList();
+		return m_errorList.getErrorList();
+	}
+
+	/**
+	 * Returns true if this FolderRowsRpcResponseData is referencing
+	 * any errors and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean hasErrors() {
+		validateErrorList();
+		return m_errorList.hasErrors();
+	}
+
+	/**
+	 * Returns a List<ErrorInfo> of the errors that should be displayed
+	 * as part of get folder rows request.
+	 * 
+	 * @return
+	 */
+	public void setErrorList(List<ErrorInfo> errorList) {
+		validateErrorList();
+		m_errorList.setErrorList((null == errorList) ? new ArrayList<ErrorInfo>() : errorList);
+	}
+
+	/**
 	 * Returns a count of the folder rows being tracked.
 	 * 
 	 * @return
@@ -176,5 +249,18 @@ public class FolderRowsRpcResponseData implements IsSerializable, VibeRpcRespons
 	 */
 	public boolean requiresCloudFolderAuthentication() {
 		return (null != m_cfAuthentication);
+	}
+
+	/*
+	 * Validates that we're referencing an ErrorListRpcRpcResponseData
+	 * object.
+	 */
+	private void validateErrorList() {
+		if (null == m_errorList) {
+			m_errorList = new ErrorListRpcResponseData();
+		}
+		if (null == m_errorList.getErrorList()) {
+			m_errorList.setErrorList(new ArrayList<ErrorInfo>());
+		}
 	}
 }

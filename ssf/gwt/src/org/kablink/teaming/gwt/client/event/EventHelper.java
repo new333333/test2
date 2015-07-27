@@ -335,6 +335,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case ACTIVITY_STREAM_COMMENT_DELETED:
+				// An ActivityStreamCommentDeletedEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof ActivityStreamCommentDeletedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ActivityStreamCommentDeletedEvent.registerEvent(eventBus, ((ActivityStreamCommentDeletedEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case ADD_PRINCIPAL_ADMIN_RIGHTS:
 				// An AddPrincipalAdminRightsEvent!  Can the event
 				// handler we were given handle that?
@@ -1810,6 +1819,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case RESET_VELOCITY_ENGINE:
+				// A ResetVelocityEngineEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof ResetVelocityEngineEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ResetVelocityEngineEvent.registerEvent(eventBus, ((ResetVelocityEngineEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case MAILTO_PUBLIC_LINK_ENTITY:
 				// A MailToPublicLinkEntityEvent!  Can the event
 				// handler we were given handle that?
@@ -2983,6 +3001,7 @@ public class EventHelper {
 			case ACTIVITY_STREAM:                   	       hasHandler = (eventHandler instanceof ActivityStreamEvent.Handler);                         break;
 			case ACTIVITY_STREAM_ENTER:             	       hasHandler = (eventHandler instanceof ActivityStreamEnterEvent.Handler);                    break;
 			case ACTIVITY_STREAM_EXIT:              	       hasHandler = (eventHandler instanceof ActivityStreamExitEvent.Handler);                     break;
+			case ACTIVITY_STREAM_COMMENT_DELETED:              hasHandler = (eventHandler instanceof ActivityStreamCommentDeletedEvent.Handler);           break;
 			
 			case ADMINISTRATION:                    	       hasHandler = (eventHandler instanceof AdministrationEvent.Handler);                         break;
 			case ADMINISTRATION_ACTION:                    	   hasHandler = (eventHandler instanceof AdministrationActionEvent.Handler);                   break;
@@ -3277,6 +3296,7 @@ public class EventHelper {
 			case MOBILE_DEVICE_WIPE_SCHEDULE_CHANGED:          hasHandler = (eventHandler instanceof MobileDeviceWipeScheduleStateChangedEvent.Handler);   break;
 			case MOVE_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof MoveSelectedEntitiesEvent.Handler);                   break;
 			case PUBLIC_COLLECTION_STATE_CHANGED:              hasHandler = (eventHandler instanceof PublicCollectionStateChangedEvent.Handler);           break;
+			case RESET_VELOCITY_ENGINE:                        hasHandler = (eventHandler instanceof ResetVelocityEngineEvent.Handler);                    break;
 			case SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES:        hasHandler = (eventHandler instanceof ScheduleWipeSelectedMobileDevicesEvent.Handler);      break;
 			case SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY:  hasHandler = (eventHandler instanceof SetDesktopDownloadAppControlVisibilityEvent.Handler); break;
 			case SET_FOLDER_SORT:                              hasHandler = (eventHandler instanceof SetFolderSortEvent.Handler);                          break;

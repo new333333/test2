@@ -457,6 +457,22 @@ public final class MiscUtil {
 					"folder.records.listed",
 					"25"));
 	}
+
+	/**
+	 * Validates and returns a String that's safe for inclusion in a
+	 * logging call.
+	 * 
+	 * @param s
+	 * 
+	 * @return
+	 */
+	public static String getSafeLogString(String s) {
+		String reply;
+		if      (null == s)          reply = "*null*";
+		else if (0    == s.length()) reply = "*empty*";
+		else                         reply = s;
+		return reply;
+	}
 	
 	@SuppressWarnings("unchecked")
 	public static String getUserProperty(UserProperties userProperties, String property, String defValue) {

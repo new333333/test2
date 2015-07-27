@@ -81,6 +81,7 @@ public enum TeamingEvents implements IsSerializable {
 	CONTRIBUTOR_IDS_REPLY,							// Fired with the current set of contributor IDs.
 	CONTRIBUTOR_IDS_REQUEST,						// Requests that the current contributor IDs be posted via a CONTRIBUTOR_IDS_REPLY event.
 	
+	ACTIVITY_STREAM_COMMENT_DELETED,				// Notification that an ActivityStreamUIEntry that's a comment has been deleted.
 	DELETE_ACTIVITY_STREAM_UI_ENTRY,				// Delete the given ActivityStreamUIEntry.
 	EDIT_ACTIVITY_STREAM_UI_ENTRY,					// Edit   the given ActivityStreamUIEntry.
 
@@ -340,6 +341,7 @@ public enum TeamingEvents implements IsSerializable {
 	PUBLIC_COLLECTION_STATE_CHANGED,				// The Visibility State of the Public Collection Changed.
 	RELOAD_DIALOG_CONTENT,							// Tells a dialog to reload its content.
 	RESET_ENTRY_MENU,								// Resets the Entry Menu on the Given Folder.
+	RESET_VELOCITY_ENGINE,							// Resets the VelocityEngine so that it's cache get's emptied, ...
 	SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES,			// Schedules the selected mobile devices to be wiped.
 	SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,	// Sets the visibility of the desktop application download control. 
 	SET_FOLDER_SORT,								// Sets a folder sort options.

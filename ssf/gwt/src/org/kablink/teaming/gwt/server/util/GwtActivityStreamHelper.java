@@ -65,6 +65,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
@@ -1912,8 +1913,9 @@ public class GwtActivityStreamHelper {
 		ActivityStreamEntry asEntry = new ActivityStreamEntry();
 		if (null != folderEntry) {
 			// Initialize the author information.
-			User			author     = ((User) folderEntry.getCreation().getPrincipal());
-			ASAuthorInfo	authorInfo = ASAuthorInfo.buildAuthorInfo(
+			UserPrincipal	authorPrincipal = folderEntry.getCreation().getPrincipal();
+			User			author          = ((authorPrincipal instanceof User) ? ((User) authorPrincipal) : GwtServerHelper.getResolvedUser(authorPrincipal.getId()));
+			ASAuthorInfo	authorInfo      = ASAuthorInfo.buildAuthorInfo(
 				request,
 				bs,
 				GwtServerHelper.isPresenceEnabled(),

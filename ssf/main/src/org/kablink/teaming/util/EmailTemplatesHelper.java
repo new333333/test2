@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.module.definition.notify.NotifyBuilderUtil;
 
 /**
  * Helper methods for the non-GWT UI server code in dealing with email
@@ -51,15 +52,15 @@ public class EmailTemplatesHelper {
 	// The file extension used for Velocity templates.
 	public static final String TEMPLATE_EXTENSION	= ".vm";
 	
-	// Relative path within the local file system where the default
-	// email template files can be found.
+	// Relative path to where the default email template files can be
+	// found.
 	private static final String EMAIL_TEMPLATES_DEFAULT			= "velocity";
 	private static final String EMAIL_TEMPLATES_DEFAULT_PATH	= (File.separator + "WEB-INF" + File.separator + EMAIL_TEMPLATES_DEFAULT);
 	
-	// Relative path within the local file system where the customized
-	// email template files can be found.
+	// Relative path to where the customized email template files can
+	// be found.
 	private static final String EMAIL_TEMPLATES_CUSTOMIZED		= "velocity-ext";
-	private static final String EMAIL_TEMPLATES_CUSTOMIZED_PATH = (File.separator + "WEB-INF" + File.separator + EMAIL_TEMPLATES_CUSTOMIZED);
+	private static final String EMAIL_TEMPLATES_CUSTOMIZED_PATH	= EMAIL_TEMPLATES_CUSTOMIZED;
 
 	/**
 	 * Returns a File reference to the default email templates
@@ -122,7 +123,7 @@ public class EmailTemplatesHelper {
 	 * @return
 	 */
 	public static String getEmailTemplatesCustomizedPath(boolean addTrailingSeparator) {
-		String reply = (SpringContextUtil.getServletContext().getRealPath(EMAIL_TEMPLATES_CUSTOMIZED_PATH) + File.separator + RequestContextHolder.getRequestContext().getZoneName());
+		String reply = (SPropsUtil.getDirPath("data.root.dir") + EMAIL_TEMPLATES_CUSTOMIZED_PATH + File.separator + RequestContextHolder.getRequestContext().getZoneName());
 		if (addTrailingSeparator) {
 			reply += File.separator;
 		}
@@ -132,5 +133,15 @@ public class EmailTemplatesHelper {
 	public static String getEmailTemplatesCustomizedPath() {
 		// Always use the initial form of the method.
 		return getEmailTemplatesCustomizedPath(false);	// false -> Don't include a trailing path separator.
+	}
+
+	/**
+	 * Forces the VelocityEngine in use for the current zone to be
+	 * reset (i.e., have its cache emptied, ...)
+	 */
+	public static void resetVelocityEngine() {
+		NotifyBuilderUtil.resetCachedZoneVelocityEngine(
+			getEmailTemplatesCustomizedPath(
+				false));
 	}
 }
