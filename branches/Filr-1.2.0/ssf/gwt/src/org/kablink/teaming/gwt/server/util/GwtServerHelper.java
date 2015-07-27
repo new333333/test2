@@ -11265,131 +11265,125 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Reset send the user an e-mail with a link they need to click on to verify their
-	 * password reset.
+	 * Reset send the user an e-mail with a link they need to click on
+	 * to verify their password reset.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userID
+	 * @param pwd
+	 * 
+	 * @return
 	 */
-	public static RequestResetPwdRpcResponseData requestResetPwd(
-		final AllModulesInjected ami,
-		final HttpServletRequest request,
-		final Long userId,
-		final String pwd )
-	{
-		final RequestResetPwdRpcResponseData responseData;
-		RunasCallback callback;
-
-		responseData = new RequestResetPwdRpcResponseData();
-		
-		if ( pwd == null || pwd.length() == 0 || userId == null )
-		{
-			responseData.addError( "Invalid parameters passed to GwtServerHelper.requestResetPwd()" );
+	public static RequestResetPwdRpcResponseData requestResetPwd(final AllModulesInjected bs, final HttpServletRequest request, final Long userId, final String pwd) {
+		final RequestResetPwdRpcResponseData responseData = new RequestResetPwdRpcResponseData();
+		if ((!(MiscUtil.hasString(pwd))) || (null == userId)) {
+			responseData.addError("Invalid parameters passed to GwtServerHelper.requestResetPwd()");
 			return responseData;
 		}
 
-		callback = new RunasCallback()
-		{
+		// Do the necessary work as the admin user.
+		RunasTemplate.runasAdmin(new RunasCallback() {
 			@Override
-			public Object doAs()
-			{
+			public Object doAs() {
 				User user = null;
-
-				try
-				{
-					user = ((User) ami.getProfileModule().getEntry( userId ));
-				}
-				catch ( AccessControlException acEx )
-				{
-					String error;
-					
-					error = NLT.get( "request.pwd.reset.cant.find.user", new String[]{userId.toString()} );
-					responseData.addError( error );
+				try {
+					user = ((User) bs.getProfileModule().getEntry(userId));
 				}
 				
-				if ( user != null &&
-					 user.getIdentityInfo().isInternal() == false &&
-					 user.getExtProvState() == ExtProvState.pwdResetRequested )
-				{
-					// Save the password to the user's properties.  We will read it from the user's properties
-					// when the user clicks on the url in the "reset password verification" e-mail.
-					{
-						ami.getProfileModule().setUserProperty(
-															user.getId(),
-															ObjectKeys.USER_PROPERTY_RESET_PWD,
-															pwd );
+				catch (AccessControlException acEx) {
+					String error = NLT.get("request.pwd.reset.cant.find.user", new String[]{userId.toString()});
+					responseData.addError(error);
+				}
+				
+				if ((null != user) &&
+						(!(user.getIdentityInfo().isInternal())) &&
+						(ExtProvState.pwdResetRequested == user.getExtProvState())) {
+					// Does the new password violate the system's password
+					// policy for that user?
+					List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(user, user, pwd);
+					if (MiscUtil.hasItems(ppViolations)) {
+						// Yes!  Copy the violations to the response.
+						for (String ppViolation:  ppViolations) {
+							responseData.addError(ppViolation);
+						}
 					}
-					
-					// Send the user an e-mail telling them that their password has been modified
-					// and they need to verify that they were the one who changed the password.
-					{
-						String token;
-						String url;
-						AdaptedPortletURL adapterUrl;
-						Map<String,Object> errorMap = null;
+
+					else {
+						// No, the new password doesn't violate the
+						// system's password policy for that user!
+						// Save the password to the user's properties.
+						// We will read it from the user's properties
+						// when the user clicks on the url in the
+						// 'reset password verification' e-mail.
+						bs.getProfileModule().setUserProperty(
+							user.getId(),
+							ObjectKeys.USER_PROPERTY_RESET_PWD,
+							pwd);
+						
+						// Send the user an e-mail telling them that
+						// their password has been modified and they
+						// need to verify that they were the one who
+						// changed the password.
 						
 						// Get a url to the user's workspace.
-						adapterUrl = new AdaptedPortletURL( request, "ss_forum", true, false );
-						adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK );
-						adapterUrl.setParameter( WebKeys.URL_ENTRY_ID, String.valueOf( userId ) );
-						adapterUrl.setParameter( WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name() );
+						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, false);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, String.valueOf(userId));
+						adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name());
 						
-						// If we are running Filr, take the user to "my files"
-						if ( Utils.checkIfFilr() )
+						// If we are running Filr, take the user to
+						// 'My Files'.
+						if (Utils.checkIfFilr()) {
 							adapterUrl.setParameter(WebKeys.URL_SHOW_COLLECTION, "0");	// 0 -> CollectionType.MY_FILES
-						
-						// Append the encoded user token to the url.
-						token = ExternalUserUtil.encodeUserTokenWithNewSeed( user );
-						adapterUrl.setParameter( ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN, token );
-						url = adapterUrl.toString();
-
-						try
-						{
-							errorMap = EmailHelper.sendUrlNotification(
-																	ami,
-																	url,
-																	UrlNotificationType.PASSWORD_RESET_REQUESTED,
-																	userId );
 						}
-						catch ( Exception ex )
-						{
-							String error;
-							
-							error = NLT.get( "request.pwd.reset.send.email.failed", new String[]{ex.toString()} );
-							responseData.addError( error );
+						
+						// Append the encoded user token to the URL.
+						String token = ExternalUserUtil.encodeUserTokenWithNewSeed(user);
+						adapterUrl.setParameter(ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN, token);
+						String url = adapterUrl.toString();
+
+						Map<String,Object> errorMap = null;
+						try {
+							errorMap = EmailHelper.sendUrlNotification(
+								bs,
+								url,
+								UrlNotificationType.PASSWORD_RESET_REQUESTED,
+								userId);
+						}
+						
+						catch (Exception ex) {
+							String error = NLT.get("request.pwd.reset.send.email.failed", new String[]{ex.toString()});
+							responseData.addError(error);
 							
 							GwtLogHelper.error(m_logger, "GwtServerHelper.requestResetPwd( EXCEPTION ):  ", ex);
 						}
 
-						if ( errorMap != null )
-						{
-							List<SendMailErrorWrapper> emailErrors;
+						if (null != errorMap) {
+							List<SendMailErrorWrapper> emailErrors = ((List<SendMailErrorWrapper>) errorMap.get(ObjectKeys.SENDMAIL_ERRORS));
+							if (MiscUtil.hasItems(emailErrors)) {
+								responseData.addErrors(SendMailErrorWrapper.getErrorMessages(emailErrors));
+							}
 							
-							emailErrors = ((List<SendMailErrorWrapper>) errorMap.get( ObjectKeys.SENDMAIL_ERRORS ));
-							if ( emailErrors != null && emailErrors.size() > 0 )
-								responseData.addErrors( SendMailErrorWrapper.getErrorMessages( emailErrors ) );
-							else
-							{
-								// Sending the e-mail worked.  Change the users "external user provisioned state" to
-								// "password reset waiting for verification"
-								ExternalUserUtil.markAsPwdResetWaitingForVerification( user );
+							else {
+								// Sending the e-mail worked.  Change
+								// the user's 'external user
+								// provisioned state' to 'password
+								// reset waiting for verification'.
+								ExternalUserUtil.markAsPwdResetWaitingForVerification(user);
 							}
 						}
 					}
 				}
-				else
-				{
-					String error;
-					
-					error = NLT.get( "request.pwd.reset.invalid.user.state" );
-					responseData.addError( error );
+				
+				else {
+					String error = NLT.get("request.pwd.reset.invalid.user.state");
+					responseData.addError(error);
 				}
 				
 				return null;
-			}
-		}; 
-
-		// Do the necessary work as the admin user.
-		RunasTemplate.runasAdmin(
-								callback,
-								RequestContextHolder.getRequestContext().getZoneName() );
+			}},
+			RequestContextHolder.getRequestContext().getZoneName());
 
 		return responseData;
 	}
