@@ -203,6 +203,7 @@ import org.kablink.teaming.gwt.server.util.GwtMobileApplicationsHelper;
 import org.kablink.teaming.gwt.server.util.GwtMobileDeviceHelper;
 import org.kablink.teaming.gwt.server.util.GwtNetFolderHelper;
 import org.kablink.teaming.gwt.server.util.GwtMenuHelper;
+import org.kablink.teaming.gwt.server.util.GwtPasswordHelper;
 import org.kablink.teaming.gwt.server.util.GwtPersonalWorkspaceHelper;
 import org.kablink.teaming.gwt.server.util.GwtPhotoAlbumHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
@@ -233,6 +234,7 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.EmailTemplatesHelper;
 import org.kablink.teaming.util.FileIconsHelper;
 import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
@@ -271,7 +273,7 @@ import com.google.gwt.util.tools.shared.StringUtils;
  * Collection of methods used to implement the various GWT RPC
  * commands.
  * 
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
 public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	implements GwtRpcService, XsrfTokenService
@@ -478,14 +480,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case CHANGE_PASSWORD:
-		{
-			ChangePasswordCmd cpCmd;
-			ErrorListRpcResponseData result;
-			
-			cpCmd = (ChangePasswordCmd) cmd;
-			result = GwtServerHelper.changePassword( this, req, cpCmd.getOldPassword(), cpCmd.getNewPassword(), cpCmd.getUserId() );
-			response = new VibeRpcResponse( result );
+		case CHANGE_PASSWORD:  {
+			ChangePasswordCmd cpCmd = ((ChangePasswordCmd) cmd);
+			ErrorListRpcResponseData result = GwtPasswordHelper.changePassword(this, req, cpCmd.getOldPassword(), cpCmd.getNewPassword(), cpCmd.getUserId());
+			response = new VibeRpcResponse(result);
 			return response;
 		}
 		
@@ -1410,11 +1408,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return new VibeRpcResponse( responseData );
 		}
 		
-		case GET_CAN_ADD_ENTITIES:
-		{
+		case GET_CAN_ADD_ENTITIES:  {
 			GetCanAddEntitiesCmd gcaeCmd = ((GetCanAddEntitiesCmd) cmd);
-			CanAddEntitiesRpcResponseData responseData = GwtViewHelper.getCanAddEntities( this, req, gcaeCmd.getBinderInfo() );
-			return new VibeRpcResponse( responseData );
+			CanAddEntitiesRpcResponseData responseData = GwtViewHelper.getCanAddEntities(this, req, gcaeCmd.getBinderInfo());
+			return new VibeRpcResponse(responseData);
 		}
 		
 		case GET_CAN_ADD_ENTITIES_TO_BINDERS:
@@ -1463,25 +1460,26 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_COLLECTION_POINT_DATA:
-		{
-			CollectionPointData collectionPointData;
-			
-			collectionPointData= GwtServerHelper.getCollectionPointData(
-																	this,
-																	req );
-			response = new VibeRpcResponse( collectionPointData );
+		case GET_COLLECTION_POINT_DATA:  {
+			CollectionPointData collectionPointData = GwtServerHelper.getCollectionPointData(this, req);
+			response = new VibeRpcResponse(collectionPointData);
 			return response;
 		}
 		
-		case GET_COLUMN_WIDTHS:
-		{
+		case GET_COLUMN_WIDTHS:  {
 			GetColumnWidthsCmd gcwCmd = ((GetColumnWidthsCmd) cmd);
 			ColumnWidthsRpcResponseData result = GwtViewHelper.getColumnWidths(
 				this,
 				req,
-				gcwCmd.getFolderInfo() );
-			response = new VibeRpcResponse( result );
+				gcwCmd.getFolderInfo());
+			response = new VibeRpcResponse(result);
+			return response;
+		}
+		
+		case GET_COMMENT_COUNT:  {
+			GetCommentCountCmd gccCmd = ((GetCommentCountCmd) cmd);
+			IntegerRpcResponseData result = GwtViewHelper.getCommentCount(this, req, gccCmd.getEntityId());
+			response = new VibeRpcResponse(result);
 			return response;
 		}
 		
@@ -1798,11 +1796,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 
 
-		case GET_FILE_CONFLICTS_INFO:
-		{
+		case GET_FILE_CONFLICTS_INFO:  {
 			GetFileConflictsInfoCmd gfciCmd = ((GetFileConflictsInfoCmd) cmd);
-			FileConflictsInfoRpcResponseData responseData = GwtViewHelper.getFileConflictsInfo( this, req, gfciCmd.getFolderInfo(), gfciCmd.getFileConflicts() );
-			response = new VibeRpcResponse( responseData );
+			FileConflictsInfoRpcResponseData responseData = GwtHtml5Helper.getFileConflictsInfo(this, req, gfciCmd.getFolderInfo(), gfciCmd.getFileConflicts());
+			response = new VibeRpcResponse(responseData);
 			return response;
 		}
 
@@ -2948,6 +2945,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_TOP_LEVEL_ENTRY_ID:  {
+			GetTopLevelEntryIdCmd gtleiCmd = ((GetTopLevelEntryIdCmd) cmd); 
+			GetTopLevelEntryIdRpcResponseData responseData = GwtServerHelper.getTopLevelEntryId(this, req, gtleiCmd.getEntityId());
+			response = new VibeRpcResponse(responseData);
+			return response;
+		}
+		
 		case GET_TOP_RANKED:
 		{
 			List<TopRankedInfo> result = GwtServerHelper.getTopRankedFromCache( this, req);
@@ -3464,14 +3468,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case REQUEST_RESET_PASSWORD:
-		{
-			RequestResetPwdCmd rpCmd;
-			RequestResetPwdRpcResponseData result;
-			
-			rpCmd = (RequestResetPwdCmd) cmd;
-			result = GwtServerHelper.requestResetPwd( this, req, rpCmd.getExtUserId(), rpCmd.getPwd() );
-			response = new VibeRpcResponse( result );
+		case REQUEST_RESET_PASSWORD:  {
+			RequestResetPwdCmd rpCmd = ((RequestResetPwdCmd) cmd);
+			RequestResetPwdRpcResponseData result = GwtPasswordHelper.requestResetPwd(this, req, rpCmd.getExtUserId(), rpCmd.getPwd());
+			response = new VibeRpcResponse(result);
+			return response;
+		}
+		
+		case RESET_VELOCITY_ENGINE:  {
+			EmailTemplatesHelper.resetVelocityEngine();
+			response = new VibeRpcResponse(new BooleanRpcResponseData(Boolean.TRUE));
 			return response;
 		}
 		
@@ -4405,14 +4411,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case VALIDATE_ENTRY_EVENTS:
-		{
+		case VALIDATE_ENTRY_EVENTS:  {
 			ValidateEntryEventsCmd veaCmd  = ((ValidateEntryEventsCmd) cmd);
-			String entryId = veaCmd.getEntryId();
-			List<EventValidation> eventValidations = veaCmd.getEventsToBeValidated();
-			List<EventValidation> results = validateEntryEvents( req, eventValidations, entryId );
-			EventValidationListRpcResponseData responseData = new EventValidationListRpcResponseData( results );
-			response = new VibeRpcResponse( responseData );
+			List<EventValidation> results = validateEntryEvents(req, veaCmd.getEventsToBeValidated(), veaCmd.getEntryId());
+			EventValidationListRpcResponseData responseData = new EventValidationListRpcResponseData(results);
+			response = new VibeRpcResponse(responseData);
 			return response;
 		}
 		
@@ -7245,11 +7248,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Validates the list of TeamingEvents to see if the user has rights to perform the events
 	 * for the given entry id.
 	 */
-	private List<EventValidation> validateEntryEvents( HttpServletRequest req, List<EventValidation> eventValidations, String entryId )
-	{
+	private List<EventValidation> validateEntryEvents(HttpServletRequest req, List<EventValidation> eventValidations, String entryId) {
 		// Validate the given events.
-		GwtServerHelper.validateEntryEvents( this, req, eventValidations, entryId );
-		
+		GwtServerHelper.validateEntryEvents(this, req, eventValidations, entryId);
 		return eventValidations;
 	}
 

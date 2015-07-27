@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -75,6 +75,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class FileConflictsDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
 	private BinderInfo							m_folderInfo;			// The folder the file conflicts dialog is running against.
 	private boolean								m_dialogReady;			// Set true once the dialog is ready for display.
+	private boolean								m_emailTemplates;		// Set true if the conflicts are while uploading customized email templates.
 	private boolean								m_isFilr;				// Set true if we're in Filr mode.
 	private ConfirmCallback						m_confirmCallback;		// Callback interface to let the caller know about the user's choices in this dialog.
 	private FileConflictsInfoRpcResponseData	m_fileConflictsInfo;	// In depth information about the file conflicts, once obtained from the server.
@@ -137,7 +138,7 @@ public class FileConflictsDlg extends DlgBox implements EditSuccessfulHandler, E
 		// Configure the OK and Cancel buttons appropriately for this
 		// dialog...
 		Button okBtn = getOkButton();
-		okBtn.setText(m_isFilr ? m_messages.fileConflictsDlgBtnOverwrite() : m_messages.fileConflictsDlgBtnVersion());
+		okBtn.setText((m_isFilr || m_emailTemplates) ? m_messages.fileConflictsDlgBtnOverwrite() : m_messages.fileConflictsDlgBtnVersion());
 		okBtn.addStyleName("vibe-fileConflictsDlg-ok");
 		getCancelButton().setText(m_messages.fileConflictsDlgBtnCancel());
 		
@@ -279,7 +280,17 @@ public class FileConflictsDlg extends DlgBox implements EditSuccessfulHandler, E
 		m_vp.clear();
 
 		// Add the banner label for the dialog.
-		Label l = new Label(m_isFilr ? m_messages.fileConflictsDlgConfirmOverwrite() : m_messages.fileConflictsDlgConfirmVersion());
+		String lText;
+		if (m_emailTemplates) {
+			lText = m_messages.fileConflictsDlgConfirmEmailTemplatesOverwrite();
+		}
+		else {
+			lText =
+				(m_isFilr                                         ?
+					m_messages.fileConflictsDlgConfirmOverwrite() :
+					m_messages.fileConflictsDlgConfirmVersion());
+		}
+		Label l = new Label(lText);
 		l.addStyleName("vibe-fileConflictsDlg-banner");
 		m_vp.add(l);
 
@@ -389,6 +400,9 @@ public class FileConflictsDlg extends DlgBox implements EditSuccessfulHandler, E
 		m_folderInfo      = fi;
 		m_fileConflicts   = fileConflicts;
 		m_confirmCallback = cCB;
+		
+		// ...initialize everything else that requires it...
+		m_emailTemplates = fi.isBinderEmailTemplates();
 		
 		// ...and populate the dialog.
 		populateDlgAsync();

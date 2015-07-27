@@ -94,7 +94,6 @@ import org.kablink.teaming.gwt.client.admin.AdminConsoleHomePage;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
-import org.kablink.teaming.gwt.client.binderviews.EmailTemplatesView;
 import org.kablink.teaming.gwt.client.binderviews.MobileDevicesView;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDatabasePruneConfigurationCmd;
@@ -520,7 +519,7 @@ public class AdminControl extends TeamingPopupPanel
 			if (null != actions) {
 				//! DRF:  Add controls here to limit things shown while
 				//!       they're being implemented.
-				boolean showEmailTemplates      = EmailTemplatesView.SHOW_EMAIL_TEMPLATES;
+				boolean showEmailTemplates      = GwtClientHelper.jsBrowserSupportsHtml5FileAPIs();
 				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
 				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
 				for (GwtAdminAction action:  actions) {

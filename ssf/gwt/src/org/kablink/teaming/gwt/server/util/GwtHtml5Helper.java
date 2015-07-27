@@ -68,10 +68,12 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob.ReadType;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.FileConflictsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.Html5SpecsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.FileConflictsInfoRpcResponseData.DisplayInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.UploadInfo;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -84,6 +86,8 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ExtendedMultipartFile;
+import org.kablink.teaming.util.FileIconsHelper;
+import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TempFileUtil;
@@ -218,6 +222,75 @@ public class GwtHtml5Helper {
 	 */
 	private static CoreDao getCoreDao() {
 		return ((CoreDao) SpringContextUtil.getBean("coreDao"));
+	}
+
+	/**
+	 * Returns a FileConflictsInfoRpcResponseData object containing
+	 * information for rendering conflicts information in a dialog.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderInfo
+	 * @param fileConflicts
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static FileConflictsInfoRpcResponseData getFileConflictsInfo(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<UploadInfo> fileConflicts) throws GwtTeamingException {
+		try {
+			// Allocate a FileConflictsInfoRpcResponseData to return
+			// the information in.
+			FileConflictsInfoRpcResponseData reply = new FileConflictsInfoRpcResponseData();
+			
+			if (folderInfo.isBinderEmailTemplates()) {
+				GwtEmailTemplatesHelper.getFileConflictsInfo(bs, request, folderInfo, fileConflicts,  reply);
+			}
+			
+			else {
+				// Add a DisplayInfo for the folder to the reply.
+				Folder folder = bs.getFolderModule().getFolder(folderInfo.getBinderIdAsLong());
+				String name = folder.getTitle();
+				DisplayInfo di = new DisplayInfo(
+					(MiscUtil.hasString(name) ? name : ("--" + NLT.get("entry.noTitle") + "--")),
+					folder.getPathName(),
+					folder.getIconName(IconSize.MEDIUM));
+				reply.setFolderDisplay(di);
+	
+				// If we have some file conflicts...
+				if (MiscUtil.hasItems(fileConflicts)) {
+					// ...scan them...
+					for (UploadInfo fileConflict:  fileConflicts) {
+						// ...for for those that represent a file...
+						if (fileConflict.isFile()) {
+							// ...add a DisplayInfo for them to the reply.
+							di = new DisplayInfo(
+								fileConflict.getName(),
+								"",	// Don't need a path for files.
+								FileIconsHelper.getFileIconFromFileName(
+									fileConflict.getName(),
+									IconSize.SMALL));
+							reply.addFileConflictDisplay(di);
+						}
+					}
+				}
+			}
+			
+			// If we get here, reply refers to the
+			// FileConflictsInfoRpcResponseData with the information
+			// for running the conflicts dialog.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtHtml5Helper.getFileConflictsInfo( SOURCE EXCEPTION ):  ");
+		}
 	}
 
 	/**
@@ -453,109 +526,145 @@ public class GwtHtml5Helper {
 			// to the temporary file we use to cache it while we stream
 			// it to the server?
 			if ((null == reply) && lastBlob) {
-				// Yes!  We need to create the entry for the file in
-				// the target folder.
-				FolderModule	fm       = bs.getFolderModule();
-				ProfileModule	pm       = bs.getProfileModule();
-				Long			folderId = folderInfo.getBinderIdAsLong();
-    	    	Folder			folder   = fm.getFolder(folderId);
-    	    	FileInputStream fi       = new FileInputStream(tempFile);
-    	    	try {
-    	    		// What do we know about the file?
-    				String	fileName  = fileBlob.getFileName();
-        	    	Date	modDate;
-        	    	Long	fileUTCMS = fileBlob.getFileUTCMS();
-        	    	if (null == fileUTCMS)
-        	    	     modDate = null;
-        	    	else modDate = new Date(fileUTCMS);
-
-        	    	// Are we creating an entry in a library folder?
-        	    	if (folder.isLibrary()) {
-            	    	// Yes!  If there's an existing entry...
-	        	    	FolderEntry existingEntry = fm.getLibraryFolderEntryByFileName(folder, fileName);
-	    	    		if (null != existingEntry) {
-	    	    			// ...we modify it...
-	        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, null, fi, null, modDate, null, true, null, null);
-	        				pm.setSeen(null, existingEntry);
-	        	    	}
+				// Yes!  Are we uploading a customized email template?
+				if (folderInfo.isBinderEmailTemplates()) {
+					// Yes!  Copy the temporary file to the appropriate
+					// place.
+					String          fileName = fileBlob.getFileName();
+			    	FileInputStream fi       = new FileInputStream(tempFile);
+					try {
+						GwtEmailTemplatesHelper.copyCustomizedEmailTemplate(fi, fileName);
+					}
+					
+	    	    	catch (Exception ex) {
+	    	    		String errMsg = NLT.get("entry.uploadError.emailTemplate", new String[]{fileName, ex.getLocalizedMessage()});
+	    				reply = new StringRpcResponseData();
+	    				reply.setStringValue(errMsg);
+	    				
+	    				// Log the error.
+						GwtLogHelper.error(m_logger, "GwtHtml5Helper.uploadFileBlob( File name:  '" + fileName + "', EXCEPTION:2 ):  ", ex);
+	    	    	}
+					
+					finally {
+						// Ensure we've closed the stream.
+	    	    		if (null != fi) {
+	    	    			fi.close();
+	    	    			fi = null;
+	    	    		}
 	    	    		
-	    	    		else {
-	    	    			// ...otherwise, we create a new one.
-	        	    		FolderEntry fe = FolderUtils.createLibraryEntry(folder, fileName, fi, modDate, null, true);
-	        				pm.setSeen(null, fe);
-	        	    	}
-        	    	}
-        	    	else {
-            	    	// No, we aren't creating an entry in a library
-        	    		// folder!  Setup an input data map using the
-        	    		// file's name as the title...
-						Map entryNameOnly = new HashMap();
-	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, fileName);
-	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
-
-            	    	// ...if there's an existing entry, we'll
-	        	    	// ...modify it, otherwise, we'll create a new
-	        	    	// ...one...
-	    				Long		zoneId   = RequestContextHolder.getRequestContext().getZoneId();
-	    				ZoneInfo	zi       = bs.getZoneModule().getZoneInfo(zoneId);
-	    				String		zoneUUID = zi.getId();
-						Set<FolderEntry> feSet = fm.getFolderEntryByNormalizedTitle(folderId, WebHelper.getNormalizedTitle(fileName), zoneUUID);
-						FolderEntry existingEntry;
-						if (MiscUtil.hasItems(feSet))
-						     existingEntry = feSet.iterator().next();
-						else existingEntry = null;
-						boolean useExisting = (null != existingEntry);
-						
-            	    	// ...get the definition to use for the
-						// ...entry and file...
-        	        	Definition fileDef;
-						if (useExisting)
-						     fileDef = DefinitionHelper.getDefinition(existingEntry.getEntryDefId());
-						else fileDef = folder.getDefaultFileEntryDef();
-        	        	String fileDefId = ((fileDef != null) ? fileDef.getId() : null);
-        	        	
-	        			// ...wrap the input stream in a data structure
-	        	    	// ...suitable for the business module...
-	        			MultipartFile mf          = new ExtendedMultipartFile(fileName, fi, modDate);
-	        			Map           oneFileMap  = new HashMap();
-	        			String        elementName = FolderUtils.getDefinitionElementNameForNonMirroredFile(fileDef);
-	        			oneFileMap.put(elementName, mf);
-
-	        			// ...modify or create the entry...
-						if (useExisting)
-						                     fm.modifyEntry(folderId, existingEntry.getId(), inputData, oneFileMap, null, null, null);
-						else existingEntry = fm.addEntry(   folderId, fileDefId,             inputData, oneFileMap,             null);
-
-						// ...and mark it read.
-	    				pm.setSeen(null, existingEntry);
-        	    	}
-    	    	}
-    	    	
-    	    	catch (Exception ex) {
-    	    		String errMsg;
-	    	    	if      (ex instanceof AccessControlException) errMsg = NLT.get("entry.duplicateFileInLibrary2"           );
-	    	    	else if (ex instanceof BinderQuotaException)   errMsg = NLT.get("entry.uploadError.binderQuotaException"  );
-	    	    	else if (ex instanceof DataQuotaException)     errMsg = NLT.get("entry.uploadError.dataQuotaException"    );
-	    	    	else if (ex instanceof FileSizeLimitException) errMsg = NLT.get("entry.uploadError.fileSizeLimitException");
-					else if (ex instanceof WriteFilesException)    errMsg = NLT.get("entry.uploadError.writeFilesException", new String[]{ex.getLocalizedMessage()});
-	    	    	else                                           errMsg = NLT.get("entry.uploadError.unknownError",        new String[]{ex.getLocalizedMessage()});
-    				reply = new StringRpcResponseData();
-    				reply.setStringValue(errMsg);
-    				
-    				// Log the error.
-					GwtLogHelper.error(m_logger, "GwtHtml5Helper.uploadFileBlob( File name:  '" + fileBlob.getFileName() + "', EXCEPTION:2 ):  ", ex);
-    	    	}
-    	    	
-    	    	finally {
-					// Ensure we've closed the stream.
-    	    		if (null != fi) {
-    	    			fi.close();
-    	    			fi = null;
-    	    		}
-    	    		
-    	    		// ...and delete the temporary file.
-					deleteTempFile(tempFile);
-    	    	}
+	    	    		// ...and delete the temporary file.
+						deleteTempFile(tempFile);
+					}
+				}
+				
+				else {
+					// No, we aren't uploading a customized email
+					// template!  We need to create the entry for the
+					// file in the target folder.
+					FolderModule	fm       = bs.getFolderModule();
+					ProfileModule	pm       = bs.getProfileModule();
+					Long			folderId = folderInfo.getBinderIdAsLong();
+			    	Folder			folder   = fm.getFolder(folderId);
+			    	FileInputStream fi       = new FileInputStream(tempFile);
+			    	try {
+			    		// What do we know about the file?
+						String	fileName  = fileBlob.getFileName();
+		    	    	Date	modDate;
+		    	    	Long	fileUTCMS = fileBlob.getFileUTCMS();
+		    	    	if (null == fileUTCMS)
+		    	    	     modDate = null;
+		    	    	else modDate = new Date(fileUTCMS);
+		
+		    	    	// Are we creating an entry in a library
+		    	    	// folder?
+		    	    	if (folder.isLibrary()) {
+		        	    	// Yes!  If there's an existing entry...
+		        	    	FolderEntry existingEntry = fm.getLibraryFolderEntryByFileName(folder, fileName);
+		    	    		if (null != existingEntry) {
+		    	    			// ...we modify it...
+		        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, null, fi, null, modDate, null, true, null, null);
+		        				pm.setSeen(null, existingEntry);
+		        	    	}
+		    	    		
+		    	    		else {
+		    	    			// ...otherwise, we create a new one.
+		        	    		FolderEntry fe = FolderUtils.createLibraryEntry(folder, fileName, fi, modDate, null, true);
+		        				pm.setSeen(null, fe);
+		        	    	}
+		    	    	}
+		    	    	else {
+		        	    	// No, we aren't creating an entry in a
+		    	    		// library folder!  Setup an input data map
+		    	    		// using the file's name as the title...
+							Map entryNameOnly = new HashMap();
+		        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, fileName);
+		        	    	MapInputData inputData = new MapInputData(entryNameOnly);
+		
+		        	    	// ...if there's an existing entry, we'll
+		        	    	// ...modify it, otherwise, we'll create a
+		        	    	// ...new one...
+		    				Long		zoneId   = RequestContextHolder.getRequestContext().getZoneId();
+		    				ZoneInfo	zi       = bs.getZoneModule().getZoneInfo(zoneId);
+		    				String		zoneUUID = zi.getId();
+							Set<FolderEntry> feSet = fm.getFolderEntryByNormalizedTitle(folderId, WebHelper.getNormalizedTitle(fileName), zoneUUID);
+							FolderEntry existingEntry;
+							if (MiscUtil.hasItems(feSet))
+							     existingEntry = feSet.iterator().next();
+							else existingEntry = null;
+							boolean useExisting = (null != existingEntry);
+							
+		        	    	// ...get the definition to use for the
+							// ...entry and file...
+		    	        	Definition fileDef;
+							if (useExisting)
+							     fileDef = DefinitionHelper.getDefinition(existingEntry.getEntryDefId());
+							else fileDef = folder.getDefaultFileEntryDef();
+		    	        	String fileDefId = ((fileDef != null) ? fileDef.getId() : null);
+		    	        	
+		        			// ...wrap the input stream in a data
+		    	        	// ...structure suitable for the business
+		    	        	// ...module...
+		        			MultipartFile mf          = new ExtendedMultipartFile(fileName, fi, modDate);
+		        			Map           oneFileMap  = new HashMap();
+		        			String        elementName = FolderUtils.getDefinitionElementNameForNonMirroredFile(fileDef);
+		        			oneFileMap.put(elementName, mf);
+		
+		        			// ...modify or create the entry...
+							if (useExisting)
+							                     fm.modifyEntry(folderId, existingEntry.getId(), inputData, oneFileMap, null, null, null);
+							else existingEntry = fm.addEntry(   folderId, fileDefId,             inputData, oneFileMap,             null);
+		
+							// ...and mark it read.
+		    				pm.setSeen(null, existingEntry);
+		    	    	}
+	    	    	}
+	    	    	
+	    	    	catch (Exception ex) {
+	    	    		String errMsg;
+		    	    	if      (ex instanceof AccessControlException) errMsg = NLT.get("entry.duplicateFileInLibrary2"           );
+		    	    	else if (ex instanceof BinderQuotaException)   errMsg = NLT.get("entry.uploadError.binderQuotaException"  );
+		    	    	else if (ex instanceof DataQuotaException)     errMsg = NLT.get("entry.uploadError.dataQuotaException"    );
+		    	    	else if (ex instanceof FileSizeLimitException) errMsg = NLT.get("entry.uploadError.fileSizeLimitException");
+						else if (ex instanceof WriteFilesException)    errMsg = NLT.get("entry.uploadError.writeFilesException", new String[]{ex.getLocalizedMessage()});
+		    	    	else                                           errMsg = NLT.get("entry.uploadError.unknownError",        new String[]{ex.getLocalizedMessage()});
+	    				reply = new StringRpcResponseData();
+	    				reply.setStringValue(errMsg);
+	    				
+	    				// Log the error.
+						GwtLogHelper.error(m_logger, "GwtHtml5Helper.uploadFileBlob( File name:  '" + fileBlob.getFileName() + "', EXCEPTION:3 ):  ", ex);
+	    	    	}
+	    	    	
+	    	    	finally {
+						// Ensure we've closed the stream.
+	    	    		if (null != fi) {
+	    	    			fi.close();
+	    	    			fi = null;
+	    	    		}
+	    	    		
+	    	    		// ...and delete the temporary file.
+						deleteTempFile(tempFile);
+	    	    	}
+				}
 			}
 
 			// If this is the last upload blob...
@@ -598,179 +707,194 @@ public class GwtHtml5Helper {
 		try {
 			// Allocate validation response we can return.
 			ValidateUploadsRpcResponseData reply = new ValidateUploadsRpcResponseData(new ArrayList<ErrorInfo>());
-
+			
 			// We're we given anything to validate?
 			if (MiscUtil.hasItems(uploads)) {
-				// Yes!  Access the objects we need to perform the
-				// analysis.
-				AdminModule		am                    = bs.getAdminModule();
-				BinderModule	bm                    = bs.getBinderModule();
-				FolderModule	fm                    = bs.getFolderModule();
-				Long			folderId			  = folderInfo.getBinderIdAsLong();
-				Folder			folder                = fm.getFolder(folderId);
-				Long			binderFileSizeLimit   = bm.getBinderMaxFileSize(folder);
-				Long			binderFileSizeLimitMB = null;
-				Long			userFileSizeLimit     = am.getUserFileSizeLimit();
-				Long			userFileSizeLimitMB   = null;
-				Long			zoneId                = RequestContextHolder.getRequestContext().getZoneId();
-				ZoneInfo		zi                    = bs.getZoneModule().getZoneInfo(zoneId);
-				String			zoneUUID              = zi.getId();
-				
-				// What do we need to check?
-				boolean	enforceQuotas            = ((!(folder.isMirrored())) && (!(folder.isAclExternallyControlled())));
-				boolean	checkBinderQuotas        = (enforceQuotas && bm.isBinderDiskQuotaEnabled());
-				boolean	checkUserQuotas          = (enforceQuotas && am.isQuotaEnabled());
-				boolean	checkBinderFileSizeLimit = ((null != binderFileSizeLimit) && (0 < binderFileSizeLimit));
-				boolean	checkUserFileSizeLimit   = ((null != userFileSizeLimit) && (0 < userFileSizeLimit));
-				if (checkBinderFileSizeLimit) {
-					binderFileSizeLimitMB = (binderFileSizeLimit * MEGABYTES);
-				}
-				if (checkUserFileSizeLimit) {
-					userFileSizeLimitMB = (userFileSizeLimit * MEGABYTES);
+				// Yes!  Are we validating uploads for email templates?
+				if (folderInfo.isBinderEmailTemplates()) {
+					// Yes!  Let the email templates helper do the
+					// validation.
+					GwtEmailTemplatesHelper.validateUploads(bs, request, folderInfo, uploads, reply);
 				}
 				
-				// Do we need to worry about quotas?
-				if (checkBinderQuotas || checkUserQuotas || checkBinderFileSizeLimit || checkUserFileSizeLimit) {
-					// Yes!  Scan the UploadInfo's.
-					long totalSize = 0l;
-					for (UploadInfo upload:  uploads) {
-						// Is this upload a file?
-						if (upload.isFile()) {
-							// Yes!  Does its size exceed the binder's
-							// file size limit?
-							long size = upload.getSize();
-							if (checkBinderFileSizeLimit && (size > binderFileSizeLimitMB)) {
-								// Yes!  Add an appropriate error the
-								// reply.
-								reply.addError(NLT.get("validateUploadError.quotaExceeded.binder", new String[]{upload.getName(), String.valueOf(binderFileSizeLimit)}));
-							}
-							
-							// Does its size exceed the user's file
-							// size limit?
-							if (checkUserFileSizeLimit && (size > userFileSizeLimitMB)) {
-								// Yes!  Add an appropriate error the
-								// reply.
-								reply.addError(NLT.get("validateUploadError.quotaExceeded.file", new String[]{upload.getName(), String.valueOf(userFileSizeLimit)}));
-							}
-							
-							// Add this file's size to the running
-							// total.
-							totalSize += size;
-						}
+				else {
+					// No, we aren't validating uploads for email
+					// templates!  Access the objects we need to
+					// perform the analysis.
+					AdminModule		am                    = bs.getAdminModule();
+					BinderModule	bm                    = bs.getBinderModule();
+					FolderModule	fm                    = bs.getFolderModule();
+					Long			folderId			  = folderInfo.getBinderIdAsLong();
+					Folder			folder                = fm.getFolder(folderId);
+					Long			binderFileSizeLimit   = bm.getBinderMaxFileSize(folder);
+					Long			binderFileSizeLimitMB = null;
+					Long			userFileSizeLimit     = am.getUserFileSizeLimit();
+					Long			userFileSizeLimitMB   = null;
+					Long			zoneId                = RequestContextHolder.getRequestContext().getZoneId();
+					ZoneInfo		zi                    = bs.getZoneModule().getZoneInfo(zoneId);
+					String			zoneUUID              = zi.getId();
+					
+					// What do we need to check?
+					boolean	enforceQuotas            = ((!(folder.isMirrored())) && (!(folder.isAclExternallyControlled())));
+					boolean	checkBinderQuotas        = (enforceQuotas && bm.isBinderDiskQuotaEnabled());
+					boolean	checkUserQuotas          = (enforceQuotas && am.isQuotaEnabled());
+					boolean	checkBinderFileSizeLimit = ((null != binderFileSizeLimit) && (0 < binderFileSizeLimit));
+					boolean	checkUserFileSizeLimit   = ((null != userFileSizeLimit) && (0 < userFileSizeLimit));
+					if (checkBinderFileSizeLimit) {
+						binderFileSizeLimitMB = (binderFileSizeLimit * MEGABYTES);
 					}
-
-					// Will the total size of all the files being
-					// uploaded exceed this binder's remaining quota?
-					if (checkBinderQuotas && (!(bm.isBinderDiskQuotaOk(folder, totalSize)))) {
-						// Yes!  Add an appropriate error the reply.
-						reply.addError(NLT.get("validateUploadError.quotaExceeded.folder", new String[]{String.valueOf(bm.getMinBinderQuotaLeft(folder) / MEGABYTES)}));
+					if (checkUserFileSizeLimit) {
+						userFileSizeLimitMB = (userFileSizeLimit * MEGABYTES);
+					}
+					
+					// Do we need to worry about quotas?
+					if (checkBinderQuotas || checkUserQuotas || checkBinderFileSizeLimit || checkUserFileSizeLimit) {
+						// Yes!  Scan the UploadInfo's.
+						long totalSize = 0l;
+						for (UploadInfo upload:  uploads) {
+							// Is this upload a file?
+							if (upload.isFile()) {
+								// Yes!  Does its size exceed the
+								// binder's file size limit?
+								long size = upload.getSize();
+								if (checkBinderFileSizeLimit && (size > binderFileSizeLimitMB)) {
+									// Yes!  Add an appropriate error the
+									// reply.
+									reply.addError(NLT.get("validateUploadError.quotaExceeded.binder", new String[]{upload.getName(), String.valueOf(binderFileSizeLimit)}));
+								}
+								
+								// Does its size exceed the user's file
+								// size limit?
+								if (checkUserFileSizeLimit && (size > userFileSizeLimitMB)) {
+									// Yes!  Add an appropriate error the
+									// reply.
+									reply.addError(NLT.get("validateUploadError.quotaExceeded.file", new String[]{upload.getName(), String.valueOf(userFileSizeLimit)}));
+								}
+								
+								// Add this file's size to the running
+								// total.
+								totalSize += size;
+							}
+						}
+	
+						// Will the total size of all the files being
+						// uploaded exceed this binder's remaining
+						// quota?
+						if (checkBinderQuotas && (!(bm.isBinderDiskQuotaOk(folder, totalSize)))) {
+							// Yes!  Add an appropriate error the
+							// reply.
+							reply.addError(NLT.get("validateUploadError.quotaExceeded.folder", new String[]{String.valueOf(bm.getMinBinderQuotaLeft(folder) / MEGABYTES)}));
+						}
+		
+						// Do we need to check quotas assigned to this
+						// user or their groups?
+						if (checkUserQuotas) {
+							// Yes!  Do we need to check the total
+							// upload size against this user's quota?
+							User user = GwtServerHelper.getCurrentUser();
+							long userQuota = user.getDiskQuota();
+							if (0 == userQuota) {
+								userQuota = user.getMaxGroupsQuota();
+								if (0 == userQuota) {
+									ZoneConfig zc = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+									userQuota = zc.getDiskQuotaUserDefault();
+								}
+							}
+							long userQuotaMB       = (userQuota * MEGABYTES);
+							Long userDiskSpaceUsed = user.getDiskSpaceUsed();
+							if ((0l < userQuota) && (null != userDiskSpaceUsed)) {
+								// Yes!  Does it exceed the user's
+								// quota?
+								if ((totalSize + userDiskSpaceUsed) > userQuotaMB) {
+									// Yes!  Add an appropriate error
+									// the reply.
+									reply.addError(NLT.get("validateUploadError.quotaExceeded.user", new String[]{String.valueOf(userQuota)}));
+								}
+							}
+						}
+	
+						// If we detected any quota errors...
+						if (reply.hasErrors()) {
+							// ...we'll stop with the analysis and
+							// ...return what we've got.
+							return reply;
+						}
 					}
 	
-					// Do we need to check quotas assigned to this user
-					// or their groups?
-					if (checkUserQuotas) {
-						// Yes!  Do we need to check the total upload
-						// size against this user's quota?
-						User user = GwtServerHelper.getCurrentUser();
-						long userQuota = user.getDiskQuota();
-						if (0 == userQuota) {
-							userQuota = user.getMaxGroupsQuota();
-							if (0 == userQuota) {
-								ZoneConfig zc = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-								userQuota = zc.getDiskQuotaUserDefault();
+					// Scan the UploadInfo's again.
+					for (UploadInfo upload:  uploads) {
+						// Is this a file upload?
+						String name = upload.getName();
+						if (upload.isFile()) {
+							// Yes!  Does it contain a valid name?
+							if (Validator.containsPathCharacters(name)) {
+								reply.addError(NLT.get("validateUploadError.invalidName.file", new String[]{name}));
 							}
 						}
-						long userQuotaMB       = (userQuota * MEGABYTES);
-						Long userDiskSpaceUsed = user.getDiskSpaceUsed();
-						if ((0l < userQuota) && (null != userDiskSpaceUsed)) {
-							// Yes!  Does it exceed the user's quota?
-							if ((totalSize + userDiskSpaceUsed) > userQuotaMB) {
-								// Yes!  Add an appropriate error the
-								// reply.
-								reply.addError(NLT.get("validateUploadError.quotaExceeded.user", new String[]{String.valueOf(userQuota)}));
+						
+						else {
+							// No, it must be a folder upload!  Does it
+							// contain a valid name?
+							if (!(BinderHelper.isBinderNameLegal(name))) {
+								reply.addError(NLT.get("validateUploadError.invalidName.folder", new String[]{name}));
 							}
 						}
 					}
-
-					// If we detected any quota errors...
-					if (reply.hasErrors()) {
-						// ...we'll stop with the analysis and return
-						// ...what we've got.
-						return reply;
-					}
-				}
-
-				// Scan the UploadInfo's again.
-				for (UploadInfo upload:  uploads) {
-					// Is this a file upload?
-					String name = upload.getName();
-					if (upload.isFile()) {
-						// Yes!  Does it contain a valid name?
-						if (Validator.containsPathCharacters(name)) {
-							reply.addError(NLT.get("validateUploadError.invalidName.file", new String[]{name}));
-						}
-					}
 					
-					else {
-						// No, it must be a folder upload!  Does it
-						// contain a valid name?
-						if (!(BinderHelper.isBinderNameLegal(name))) {
-							reply.addError(NLT.get("validateUploadError.invalidName.folder", new String[]{name}));
-						}
-					}
-				}
-				
-				// Scan the UploadInfo's again.
-				for (UploadInfo upload:  uploads) {
-					// Is this upload a file?
-					if (!(upload.isFile())) {
-						// No!  Skip it.
-						continue;
-					}
-					
-					// Does the folder contain an entry with this name?
-					String uploadFName = upload.getName();
-					
-					// Do we care about unique file names?
-					if (folder.isLibrary()) {
-						// Yes!  Does an entry with this file name
-						// already exist?
-						FolderEntry fe = fm.getLibraryFolderEntryByFileName(folder, uploadFName);
-						if (null != fe) {
-							// Yes!  Track it as a duplicate.
-							reply.addDuplicate(upload);
+					// Scan the UploadInfo's again.
+					for (UploadInfo upload:  uploads) {
+						// Is this upload a file?
+						if (!(upload.isFile())) {
+							// No!  Skip it.
 							continue;
 						}
 						
-						// Does a folder with this name exist?
-						Binder b = bm.getBinderByParentAndTitle(folderId, uploadFName);
-						if (null != b) {
-							// Yes!  Thats an error and the file can't
-							// be uploaded.
-							reply.addError(NLT.get("validateUploadError.nameExistsAsFolder", new String[]{uploadFName}));
-							continue;
+						// Does the folder contain an entry with this
+						// name?
+						String uploadFName = upload.getName();
+						
+						// Do we care about unique file names?
+						if (folder.isLibrary()) {
+							// Yes!  Does an entry with this file name
+							// already exist?
+							FolderEntry fe = fm.getLibraryFolderEntryByFileName(folder, uploadFName);
+							if (null != fe) {
+								// Yes!  Track it as a duplicate.
+								reply.addDuplicate(upload);
+								continue;
+							}
+							
+							// Does a folder with this name exist?
+							Binder b = bm.getBinderByParentAndTitle(folderId, uploadFName);
+							if (null != b) {
+								// Yes!  Thats an error and the file
+								// can't be uploaded.
+								reply.addError(NLT.get("validateUploadError.nameExistsAsFolder", new String[]{uploadFName}));
+								continue;
+							}
 						}
-					}
-					
-					// Do we care about unique titles?
-					if (folder.isUniqueTitles()) {
-						// Yes!  Does an entry with this title already
-						// exist?
-						Set<FolderEntry> feSet = fm.getFolderEntryByNormalizedTitle(folderId, WebHelper.getNormalizedTitle(uploadFName), zoneUUID);
-						if (MiscUtil.hasItems(feSet)) {
-							// Yes!  Track it as a duplicate.
-							reply.addDuplicate(upload);
-							continue;
+						
+						// Do we care about unique titles?
+						if (folder.isUniqueTitles()) {
+							// Yes!  Does an entry with this title
+							// already exist?
+							Set<FolderEntry> feSet = fm.getFolderEntryByNormalizedTitle(folderId, WebHelper.getNormalizedTitle(uploadFName), zoneUUID);
+							if (MiscUtil.hasItems(feSet)) {
+								// Yes!  Track it as a duplicate.
+								reply.addDuplicate(upload);
+								continue;
+							}
 						}
-					}
-					
-					// Scan the files attached to the folder.
-					for (FileAttachment fa:  folder.getFileAttachments()) {
-						// Does this attachment's file exist and is it a match?
-						if (fa.getFileExists() && fa.getFileItem().getName().equals(uploadFName)) {
-							// Yes!  Track it as a duplicate.
-							reply.addDuplicate(upload);
-							break;
+						
+						// Scan the files attached to the folder.
+						for (FileAttachment fa:  folder.getFileAttachments()) {
+							// Does this attachment's file exist and is
+							// it a match?
+							if (fa.getFileExists() && fa.getFileItem().getName().equals(uploadFName)) {
+								// Yes!  Track it as a duplicate.
+								reply.addDuplicate(upload);
+								break;
+							}
 						}
 					}
 				}

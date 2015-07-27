@@ -34,6 +34,10 @@ package org.kablink.teaming.gwt.server.util;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,20 +55,28 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteCustomizedEmailTemplatesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.FileConflictsInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageEmailTemplatesInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateUploadsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.FileConflictsInfoRpcResponseData.DisplayInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
+import org.kablink.teaming.gwt.client.util.UploadInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.EmailTemplatesHelper;
+import org.kablink.teaming.util.FileIconsHelper;
+import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.FileUtil;
 
 /**
  * Helper methods for the GWT UI server code in dealing with email
@@ -74,12 +86,107 @@ import org.kablink.teaming.web.util.WebUrlUtil;
  */
 public class GwtEmailTemplatesHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtEmailTemplatesHelper.class);
+
+	// The following templates are excluded from the default email
+	// template list when running as Filr.
+	private final static String[] EXCLUDED_FILR_DEFAULT_TEMPLATES = {
+		"attachments.vm",
+		"attributes.vm",
+		"box.vm",
+		"checkbox.vm",
+		"creationdate.vm",
+		"creator.vm",
+		"custom.vm",
+		"dataElement.vm",
+		"date_time.vm",
+		"date.vm",
+		"description.vm",
+		"digestTitle.vm",
+		"digestTOC.vm",
+		"divider.vm",
+		"entry.vm",
+		"event.vm",
+		"expandable_div.vm",
+		"externalConfirmation.vm",
+		"fieldset.vm",
+		"file.vm",
+		"folder.vm",
+//		"footer.vm",
+		"forgottenPasswordNotification.vm",
+//		"header.vm",
+		"html.vm",
+//		"passwordChangedNotification.vm",
+		"places.vm",
+		"principallist.vm",
+//		"publicLinkNotification.vm",
+		"radio.vm",
+		"selectbox.vm",
+//		"selfRegistrationRequired.vm",
+//		"sharedEntryInvite.vm",
+//		"sharedEntryNotification.vm",
+//		"sharedFolderInvite.vm",
+//		"sharedFolderNotification.vm",
+		"showAvatar.vm",
+		"signature.vm",
+//		"style.vm",
+		"survey.vm",
+		"table2.vm",
+		"table3.vm",
+//		"teaming.vm",
+		"title.vm",
+		"workflow_notification_footer.vm",
+		"workflow_notification_header.vm",
+		"workflow.vm",
+	};
+	
+	// The following templates are excluded from the default email
+	// template list when running as Filr.
+	private final static String[] EXCLUDED_VIBE_DEFAULT_TEMPLATES = {
+		// Currently, we don't exclude any of the templates in Vibe.
+	};
 	
 	/*
 	 * Inhibits this class from being instantiated. 
 	 */
 	private GwtEmailTemplatesHelper() {
 		// Nothing to do.
+	}
+
+	/**
+	 * Copies the FileInputStream to the customized email templates
+	 * directory as the given filename.
+	 * 
+	 * @param fis
+	 * @param fileName
+	 * 
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public static void copyCustomizedEmailTemplate(FileInputStream fis, String fileName) throws FileNotFoundException, IOException {
+		String filePath = (EmailTemplatesHelper.getEmailTemplatesCustomizedPath(true) + fileName);
+		File fo = new File(filePath);
+		FileOutputStream fos = null;
+		try {
+			// Copy the file...
+			fos = new FileOutputStream(fo, false);
+			FileUtil.copy(fis, fos);
+			
+			// ...and force the VelocityEngine for this zone to be
+			// ...recreated.  This is to ensure it's resource file
+			// ...cache is flushed and this file change gets picked
+			// ...up.
+			EmailTemplatesHelper.resetVelocityEngine();
+		}
+		
+		finally {
+			// Ensure the output stream we write the file to has been
+			// closed.
+			if (null != fos) {
+				try                 {fos.close(); }
+				catch (Exception e) {/* Ignore. */}
+				fos = null;
+			}
+		}
 	}
 	
 	/**
@@ -99,18 +206,62 @@ public class GwtEmailTemplatesHelper {
 		return reply;
 	}
 
-	@SuppressWarnings("unused")
 	private static void deleteCustomizedEmailTemplatesImpl(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, DeleteCustomizedEmailTemplatesRpcResponseData reply) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtEmailTemplatesHelper.deleteCustomizedEmailTemplatesImpl()");
 		try {
 			// Were we given any proxy identities to delete?
 			if (MiscUtil.hasItems(entityIds)) {
 				// Yes!  Scan them.
+				String customPath = EmailTemplatesHelper.getEmailTemplatesCustomizedPath(true);
 				List<EntityId> successfulDeletes = new ArrayList<EntityId>();
 				for (EntityId eid:  entityIds) {
-//!					...this needs to be implemented...
+					// Is this entity an email template?
+					if (eid.isEmailTemplate()) {
+						// Yes!  Does it exist in the customized email
+						// templates directory?
+						String name = eid.getEmailTemplateName();
+						String fullPath = (customPath + name);
+						File f = new File(fullPath);
+						if (!(f.exists())) {
+							// No!  Return an error for it.
+							reply.addError(NLT.get("emailTemplates.delete.doesntExist", new String[]{name}));
+							continue;
+						}
+						
+						// Is it a file?
+						if (!(f.isFile())) {
+							// No!  Return an error for it.
+							reply.addError(NLT.get("emailTemplates.delete.notAFile", new String[]{name}));
+							continue;
+						}
+						
+						try {
+							// Can we delete that file?
+							if (f.delete())
+							     successfulDeletes.add(eid);														// Yes!  Track it.
+							else reply.addError(NLT.get("emailTemplates.delete.deleteFailed", new String[]{name}));	// No!   Return an error for it.
+							
+						}
+						catch (Exception ex) {
+							// No!  Return an error for it.
+							reply.addError(NLT.get("emailTemplates.delete.deleteFailed.exception", new String[]{name, ex.toString()}));
+							m_logger.error("deleteCustomizedEmailTemplatesImpl():  Could not delete '" + fullPath + "'",  ex);
+						}
+					}
+					
+					else {
+						// No, this entity is not an email template!
+						// Return an error for it.
+						reply.addError(NLT.get("emailTemplates.delete.invalidEID", new String[]{eid.getEntityType()}));
+					}
 				}
 				reply.setSuccessfulDeletes(successfulDeletes);
+
+				// If we deleted any of the custom email templates...
+				if (!(successfulDeletes.isEmpty())) {
+					// ...the velocity engine will have to be reset.
+					EmailTemplatesHelper.resetVelocityEngine();
+				}
 			}
 		}
 		
@@ -131,7 +282,7 @@ public class GwtEmailTemplatesHelper {
 	 * adding a FolderRow to the List<FolderRow> for each email
 	 * template found.
 	 */
-	private static void enumerateEmailTemplateRows(HttpServletRequest request, List<FolderRow> rows, File emailTemplatesDir, List<FolderColumn> folderColumns, boolean defaultEmailTemplates) {
+	private static void enumerateEmailTemplateRows(HttpServletRequest request, final String[] exclusions, List<FolderRow> rows, File emailTemplatesDir, List<FolderColumn> folderColumns, boolean defaultEmailTemplates) {
 		// If we don't have a directory to enumerate through...
 		if ((null == emailTemplatesDir) || (!(emailTemplatesDir.exists())) || (!(emailTemplatesDir.isDirectory()))) {
 			// ...bail.
@@ -144,11 +295,14 @@ public class GwtEmailTemplatesHelper {
 			public boolean accept(File f) {
 				// Is this a file that really exists? 
 				if (f.exists() && f.isFile()) {
-					// Yes!  Is it an email template file?
+					// Yes!  Is this file supposed to be excluded?
 					String fName = f.getName();
-					if (MiscUtil.hasString(fName) && fName.endsWith(EmailTemplatesHelper.TEMPLATE_EXTENSION)) {
-						// Yes!  Return true so that we include it.
-						return true;
+					if (!(sInSA(fName, exclusions))) {
+						// No!  Is it an email template file?
+						if (MiscUtil.hasString(fName) && fName.endsWith(EmailTemplatesHelper.TEMPLATE_EXTENSION)) {
+							// Yes!  Return true so that we include it.
+							return true;
+						}
 					}
 				}
 
@@ -263,12 +417,13 @@ public class GwtEmailTemplatesHelper {
 			List<FolderRow> rows = new ArrayList<FolderRow>();
 			
 			// Add rows for the default email templates.
+			final String[] exclusions = (Utils.checkIfFilr() ? EXCLUDED_FILR_DEFAULT_TEMPLATES : EXCLUDED_VIBE_DEFAULT_TEMPLATES);
 			File emailTemplatesDir = EmailTemplatesHelper.getEmailTemplatesDefault();
-			enumerateEmailTemplateRows(request, rows, emailTemplatesDir, folderColumns, true);	// true -> These are the default email templates.
+			enumerateEmailTemplateRows(request, exclusions, rows, emailTemplatesDir, folderColumns, true);	// true -> These are the default email templates.
 			
 			// Add rows for the customized email templates.
 			emailTemplatesDir = EmailTemplatesHelper.getEmailTemplatesCustomized();
-			enumerateEmailTemplateRows(request, rows, emailTemplatesDir, folderColumns, false);	// false -> These are the customized email templates.
+			enumerateEmailTemplateRows(request, null, rows, emailTemplatesDir, folderColumns, false);	// false -> These are the customized email templates.
 
 			// Is there more than one row?
 			int totalRecords = rows.size();
@@ -312,6 +467,55 @@ public class GwtEmailTemplatesHelper {
 	}
 
 	/**
+	 * Returns a FileConflictsInfoRpcResponseData object containing
+	 * information for rendering conflicts information in a dialog.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderInfo
+	 * @param fileConflicts
+	 * @param reply
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static void getFileConflictsInfo(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<UploadInfo> fileConflicts, FileConflictsInfoRpcResponseData reply) throws GwtTeamingException {
+		try {
+			// Add the DisplayInfo for the customized email templates
+			// area.
+			Binder binder = bs.getBinderModule().getBinder(folderInfo.getBinderIdAsLong());
+			DisplayInfo di = new DisplayInfo(
+				NLT.get("emailTemplates.binderTitle.customized"),
+				EmailTemplatesHelper.getEmailTemplatesCustomizedPath(true),
+				binder.getIconName(IconSize.MEDIUM));
+			reply.setFolderDisplay(di);
+			
+			// If we have some file conflicts...
+			if (MiscUtil.hasItems(fileConflicts)) {
+				// ...scan them...
+				for (UploadInfo fileConflict:  fileConflicts) {
+					di = new DisplayInfo(
+						fileConflict.getName(),
+						"",	// Don't need a path for files.
+						FileIconsHelper.getFileIconFromFileName(
+							fileConflict.getName(),
+							IconSize.SMALL));
+					reply.addFileConflictDisplay(di);
+				}
+			}
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtEmailTemplatesHelper.getFileConflictsInfo( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
+	/**
 	 * Returns a ManageEmailTemplatesInfoRpcResponseData object
 	 * containing the information for managing email templates.
 	 * 
@@ -345,5 +549,80 @@ public class GwtEmailTemplatesHelper {
 				ex,
 				"GwtEmailTemplatesHelper.getManageEmailTemplatesInfo( SOURCE EXCEPTION ):  ");
 		}		
+	}
+	
+	/*
+	 * Returns true if a String is in a String[] and false otherwise.
+	 */
+	private static boolean sInSA(String s, String[] sa) {
+		if ((MiscUtil.hasString(s) && (null != sa) && (0 < sa.length))) {
+			for (String saString:  sa) {
+				if (s.equalsIgnoreCase(saString)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Validates that the user can upload the files/folders in
+	 * List<UploadInfo> of things pending upload.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderInfo
+	 * @param uploads
+	 * @param reply
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static void validateUploads(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<UploadInfo> uploads, ValidateUploadsRpcResponseData reply) throws GwtTeamingException {
+		try {
+			// If there aren't any upload items...
+			if (!(MiscUtil.hasItems(uploads))) {
+				// ...bail.
+				return;
+			}
+
+			// What the base path to the customized email templates?
+			String basePath = EmailTemplatesHelper.getEmailTemplatesCustomizedPath(true);
+			
+			// Scan the files to be uploaded.
+			for (UploadInfo upload:  uploads) {
+				// If this isn't a file...
+				String name = upload.getName();
+				if (!upload.isFile()) {
+					// ...it can't be uploaded.
+					reply.addError(NLT.get("validateUploadError.emailTemplate.notAFile", new String[]{name}));
+					continue;
+				}
+
+				// If this isn't an email template...
+				if (!(name.endsWith(EmailTemplatesHelper.TEMPLATE_EXTENSION))) {
+					// ...it can't be uploaded.
+					reply.addError(NLT.get("validateUploadError.emailTemplate.notAnEmailTemplate", new String[]{name, EmailTemplatesHelper.TEMPLATE_EXTENSION}));
+					continue;
+				}
+
+				// Does this file already exist as a customized template?
+				File uploadFile = new File(basePath + name);
+				if (uploadFile.exists()) {
+					// Yes!  Track it as a duplicate.
+					reply.addDuplicate(upload);
+					continue;
+				}
+			}
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtEmailTemplatesHelper.validateUploads( SOURCE EXCEPTION ):  ");
+		}
 	}
 }

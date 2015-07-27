@@ -99,6 +99,7 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.definition.notify.NotifyBuilderUtil;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
@@ -3970,12 +3971,23 @@ public class GwtMenuHelper {
 			// proxy identities view either!  Are we returning them for
 			// an email templates view?
 			else if (isBinderEmailTemplates) {
-				// Yes!  Construct the appropriate menu items for
-				// it.
+				// Yes!  Construct the delete menu item...
 				ToolbarItem etTBI = new ToolbarItem("1_deleteSelected");
 				markTBITitle(etTBI, "toolbar.emailTemplates.delete.multi");
 				markTBIEvent(etTBI, TeamingEvents.DELETE_SELECTED_CUSTOMIZED_EMAIL_TEMPLATES);
 				entryToolbar.addNestedItem(etTBI);
+				
+				// ...add the drag and drop files item...
+				constructEntryDropBoxItem(entryToolbar);
+				
+				// ...and if reseting the Velocity engine is enabled...
+				if (NotifyBuilderUtil.isVelocityEngineResetEnabled()) {
+					// ...add a reset velocity engine item.
+					etTBI = new ToolbarItem("1_resetVelocityEngine");
+					markTBITitle(etTBI, "toolbar.emailTemplates.resetVelocityEngine");
+					markTBIEvent(etTBI, TeamingEvents.RESET_VELOCITY_ENGINE);
+					entryToolbar.addNestedItem(etTBI);
+				}
 			}
 			
 			else {

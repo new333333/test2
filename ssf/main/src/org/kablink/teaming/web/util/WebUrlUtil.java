@@ -117,6 +117,15 @@ public class WebUrlUtil {
 	public static final int FILE_URL_CSVFOLDER_FOLDER_ID			= 5;
 	public static final int FILE_URL_CSVFOLDER_OPERATION			= 3;
 	
+	// Used the parse the URL returned by getFileEmailTemplateUrl().
+	public static final int    FILE_URL_EMAIL_TEMPLATE_ARG_LENGTH		= 5;
+	public static final int    FILE_URL_EMAIL_TEMPLATE_EMAIL_TEMPLATE	= 2;
+	public static final int    FILE_URL_EMAIL_TEMPLATE_TYPE				= 3;
+	public static final int    FILE_URL_EMAIL_TEMPLATE_FILENAME			= 4;
+	public static final String FILE_URL_EMAIL_TEMPLATE					= "emailTemplate";
+	public static final String FILE_URL_EMAIL_TEMPLATE_TYPE_CUSTOMIZED	= "customized";
+	public static final String FILE_URL_EMAIL_TEMPLATE_TYPE_DEFAULT		= "default";
+	
 	// Used the parse the URL returned by getSharedPublicFileUrl().
 	public static final int FILE_URL_SHARED_PUBLIC_FILE_ARG_LENGTH	= 7;
 	public static final int FILE_URL_SHARED_PUBLIC_FILE_SHARE_ID	= 3;
@@ -663,8 +672,8 @@ public class WebUrlUtil {
 
 	public static String getFileEmailTemplateUrl(String webPath, String action, String fileName, boolean defaultEmailTemplate) {
 		StringBuffer webUrl = new StringBuffer(webPath + action);
-		webUrl.append(Constants.SLASH + "emailTemplate"); 
-		webUrl.append(Constants.SLASH + (defaultEmailTemplate ? "default" : "customized")); 
+		webUrl.append(Constants.SLASH + FILE_URL_EMAIL_TEMPLATE); 
+		webUrl.append(Constants.SLASH + (defaultEmailTemplate ? FILE_URL_EMAIL_TEMPLATE_TYPE_DEFAULT : FILE_URL_EMAIL_TEMPLATE_TYPE_CUSTOMIZED)); 
 		webUrl.append(Constants.SLASH + urlEncodeFilename(fileName));
 		return webUrl.toString();
 	}

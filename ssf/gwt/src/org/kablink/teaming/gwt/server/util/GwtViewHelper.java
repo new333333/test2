@@ -139,14 +139,13 @@ import org.kablink.teaming.gwt.client.rpc.shared.ClickOnTitleActionRpcResponseDa
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData.EntryType;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.FileConflictsInfoRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.FileConflictsInfoRpcResponseData.DisplayInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
+import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SharedViewStateRpcResponseData;
@@ -202,7 +201,6 @@ import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
-import org.kablink.teaming.gwt.client.util.UploadInfo;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
@@ -728,7 +726,7 @@ public class GwtViewHelper {
 				0,							// Start index.
 				0,							// Total count.
 				TotalCountType.EXACT,		// How the total row count should be interpreted.
-				new ArrayList<Long>());		// Contributor IDs.
+				new ArrayList<Long>());		// Errors that occurred.
 		
 		if (GwtLogHelper.isDebugEnabled(m_logger)) {
 			dumpFolderRowsRpcResponseData(binder, reply);
@@ -2857,9 +2855,19 @@ public class GwtViewHelper {
 				break;
 				
 			case WORKSPACE:
-				// The binder's a workspace!  If they can add anything,
-				// it would only be folders.
-				canAddFolders = bm.testAccess(binder, BinderOperation.addFolder);
+				// The binder's a workspace!  Is it the email templates
+				// view?
+				if (binderInfo.isBinderEmailTemplates()) {
+					// Yes!  To enable the HTML5 uploader, we need to
+					// allow entries to be added.
+					canAddEntries = true;
+				}
+				
+				else {
+					// No, it's not the email templates view!  If they
+					// can add anything, it would only be folders.
+					canAddFolders = bm.testAccess(binder, BinderOperation.addFolder);
+				}
 				break;
 			}
 			
@@ -3971,6 +3979,42 @@ public class GwtViewHelper {
 		}
 	}
 
+	/**
+	 * Returns the comment count for the given entry.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entityId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static IntegerRpcResponseData getCommentCount(AllModulesInjected bs, HttpServletRequest request, EntityId entityId) throws GwtTeamingException {
+		try {
+			// Is the entity a folder entry?
+			int commentCount = (-1);
+			if ((null != entityId) && entityId.isFolderEntry()) {
+				// Yes!  Extract its comment count...
+				FolderEntry fe = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
+				commentCount = fe.getReplyCount();
+			}
+			
+			// ...and return it wrapped in an IntegerRpcResponseData.
+			return new IntegerRpcResponseData(commentCount);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getCommentCount( SOURCE EXCEPTION ):  ");
+		}
+	}
+
 	/*
 	 * Use Spring to access a CoreDao object. 
 	 */
@@ -4319,70 +4363,6 @@ public class GwtViewHelper {
 					e,
 					"GwtViewHelper.getEntryTypes( SOURCE EXCEPTION ):  ");
 		}
-	}
-
-	/**
-	 * Returns a FileConflictsInfoRpcResponseData object containing
-	 * information for rendering conflicts information in a dialog.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderInfo
-	 * @param fileConflicts
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static FileConflictsInfoRpcResponseData getFileConflictsInfo(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<UploadInfo> fileConflicts) throws GwtTeamingException {
-		try {
-			// Allocate a FileConflictsInfoRpcResponseData to return
-			// the information in.
-			FileConflictsInfoRpcResponseData reply = new FileConflictsInfoRpcResponseData();
-
-			// Add a DisplayInfo for the folder to the reply.
-			Folder folder = bs.getFolderModule().getFolder(folderInfo.getBinderIdAsLong());
-			String name = folder.getTitle();
-			DisplayInfo di = new DisplayInfo(
-				(MiscUtil.hasString(name) ? name : ("--" + NLT.get("entry.noTitle") + "--")),
-				folder.getPathName(),
-				folder.getIconName(IconSize.MEDIUM));
-			reply.setFolderDisplay(di);
-
-			// If we have some file conflicts...
-			if (MiscUtil.hasItems(fileConflicts)) {
-				// ...scan them...
-				for (UploadInfo fileConflict:  fileConflicts) {
-					// ...for for those that represent a file...
-					if (fileConflict.isFile()) {
-						// ...add a DisplayInfo for them to the reply.
-						di = new DisplayInfo(
-							fileConflict.getName(),
-							"",	// Don't need a path for files.
-							FileIconsHelper.getFileIconFromFileName(
-								fileConflict.getName(),
-								IconSize.SMALL));
-						reply.addFileConflictDisplay(di);
-					}
-				}
-			}
-			
-			// If we get here, reply refers to the
-			// FileConflictsInfoRpcResponseData with the information
-			// for running the conflicts dialog.  Return it.
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.getFileConflictsInfo( SOURCE EXCEPTION ):  ");
-		}
-		
 	}
 
 	/*
@@ -5856,6 +5836,7 @@ public class GwtViewHelper {
 			boolean         completeAIsRequired      = false;
 			boolean         completeCIsRequired      = false;
 			boolean         completeNFRightsRequired = false;
+			List<ErrorInfo> errorList                = new ArrayList<ErrorInfo>();
 			List<FolderRow> folderRows               = new ArrayList<FolderRow>();
 			List<Long>      contributorIds           = new ArrayList<Long>();
 			for (Map entryMap:  searchEntries) {
@@ -6154,7 +6135,7 @@ public class GwtViewHelper {
 									else if (csk.equals("tasks")) {
 										// Yes!  Create a List<TaskFolderInfo> from the IDs it
 										// contains and set that as the column value.
-										List<TaskFolderInfo> taskFolderList = GwtServerHelper.getTaskFolderInfoListFromEntryMap(bs, request, entryMap, csk);
+										List<TaskFolderInfo> taskFolderList = GwtServerHelper.getTaskFolderInfoListFromEntryMap(bs, request, entryMap, csk, errorList);
 										fr.setColumnValue_TaskFolderInfos(fc, taskFolderList);
 									}
 									
@@ -6522,7 +6503,8 @@ public class GwtViewHelper {
 					start,
 					totalRecords,
 					(totalIsApproximate ? TotalCountType.APPROXIMATE : TotalCountType.EXACT),
-					contributorIds);
+					contributorIds,
+					errorList);
 			
 			// If we get here, reply refers to a
 			// FolderRowsRpcResponseData containing the rows from the
@@ -9987,18 +9969,12 @@ public class GwtViewHelper {
 						}
 					}
 
-					catch (Exception e) {	// java.lang.IllegalStateException
+					catch (Exception e) {
 						// No!  Add an error to the error list...
 						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						NotSupportedException nse = null;
 						if (e instanceof WriteFilesException) {
-							// ...we can get a WriteFilesException in
-							// ...two scenarios - writing the target
-							// ...or deleting the source when the move
-							// ...degrades to a copy/delete as it does
-							// ...with mirrored folders - for the
-							// ...later...
 							messageKey = "moveEntryError.WriteFilesException";
 							WriteFilesException wfe = ((WriteFilesException) e);
 							FilesErrors errors = wfe.getErrors();
@@ -10006,15 +9982,37 @@ public class GwtViewHelper {
 								List<Problem> problems = errors.getProblems();
 								if (MiscUtil.hasItems(problems)) {
 									Problem problem = problems.get(0);
-									int problemType = problem.getType();
-									if (Problem.PROBLEM_DELETING_PRIMARY_FILE == problemType) {
-										// ...the WriteFilesException
-										// ...error is inappropriate in
-										// ...this case since it refers
-										// ...to not being able to
-										// ...write to the
-										// ...destination...
-										messageKey = "moveEntryError.UncheckedIOException";
+									switch (problem.getType()) {
+									default:
+									case Problem.OTHER_PROBLEM:
+									case Problem.PROBLEM_FILTERING:
+									case Problem.PROBLEM_STORING_PRIMARY_FILE:
+									case Problem.PROBLEM_CANCELING_LOCK:
+									case Problem.PROBLEM_ARCHIVING:
+									case Problem.PROBLEM_MIRRORED_FILE_IN_REGULAR_FOLDER:
+									case Problem.PROBLEM_MIRRORED_FILE_MULTIPLE:
+									case Problem.PROBLEM_REGULAR_FILE_IN_MIRRORED_FOLDER:
+									case Problem.PROBLEM_MIRRORED_FILE_READONLY_DRIVER:
+									case Problem.PROBLEM_ENCRYPTION_FAILED:
+									case Problem.PROBLEM_CHECKSUM_MISMATCH:
+							        case Problem.PROBLEM_ILLEGAL_CHARACTER:
+										// Use the default
+							        	// WriteFilesException message
+							        	// setup above.
+										break;
+										
+									case Problem.PROBLEM_FILE_EXISTS:
+										messageKey = "moveEntryError.TitleException";
+										break;
+										
+									case Problem.PROBLEM_DELETING_PRIMARY_FILE:
+										// The WriteFilesException
+										// error is inappropriate in
+										// this case since it refers
+										// to not being able to write
+										// to the destination.
+							        	messageKey = "moveEntryError.UncheckedIOException";
+							        	break;									
 									}
 								}
 							}

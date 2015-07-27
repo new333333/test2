@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,18 +44,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.util.EmailTemplatesHelper;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.cache.ClassInstanceCache;
 import org.kablink.util.Validator;
 
 import org.apache.velocity.tools.view.XMLToolboxManager;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -67,16 +72,24 @@ import org.springframework.beans.factory.InitializingBean;
 @SuppressWarnings("unchecked")
 public class NotifyBuilderUtil implements InitializingBean {
 	public static Log logger = LogFactory.getLog(NotifyBuilderUtil.class);
-	protected VelocityEngine velocityEngine;
+
+	protected VelocityEngine m_baseVelocityEngine;
+	protected Map<String, VelocityEngine> m_zoneVEMap;
 	protected  DefinitionConfigurationBuilder definitionConfigurationBuilder;
 	private static NotifyBuilderUtil instance;
 	protected ClassPathResource configFile;
 	protected Map toolbox;
+	
+	/**
+	 * Constructor method.
+	 */
 	public NotifyBuilderUtil() {
 		if(instance != null)
 			throw new SingletonViolationException(NotifyBuilderUtil.class);
 		
 		instance = this;
+		
+		m_zoneVEMap = new HashMap<String, VelocityEngine>();
 
 	}
 	public static DefinitionConfigurationBuilder getDefinitionBuilderConfig() {
@@ -87,14 +100,80 @@ public class NotifyBuilderUtil implements InitializingBean {
     }
 
 	public void setVelocityEngine(VelocityEngine velocityEngine) {
-	        this.velocityEngine = velocityEngine;
+        this.m_baseVelocityEngine = velocityEngine;
 	}
+	
 	public static VelocityEngine getVelocityEngine() {
-        return getInstance().velocityEngine;
+		VelocityEngine reply;
+		
+		// Do we have a VelocityEngine cached for this zone?
+		String customPath  = EmailTemplatesHelper.getEmailTemplatesCustomizedPath(false);
+		Map<String, VelocityEngine> zoneVEMap = getInstance().m_zoneVEMap;
+		reply = zoneVEMap.get(customPath);
+		if (null == reply) {
+			// No!  Get the base VelocityEngine we were instantiated
+			// with.
+			VelocityEngine ve = getInstance().m_baseVelocityEngine;
+	
+			// Create a VelocityEngine based on that one, but
+			// initialized with our zone specific settings...
+			VelocityEngine zoneVE = new VelocityEngine();
+			zoneVE.setProperty("input.encoding",                                 ve.getProperty("input.encoding")                                             );
+			zoneVE.setProperty("output.encoding",                                ve.getProperty("output.encoding")                                            );
+			zoneVE.setProperty("velocimacro.library",                            ve.getProperty("velocimacro.library")                                        );
+			zoneVE.setProperty("file.resource.loader.cache",                     ve.getProperty("file.resource.loader.cache")                                 );
+			zoneVE.setProperty("file.resource.loader.modificationCheckInterval", SPropsUtil.getString("velocity.engine.modification.check.interval", "60")    );
+			zoneVE.setProperty("file.resource.loader.path",                      (customPath + "," + EmailTemplatesHelper.getEmailTemplatesDefaultPath(false)));
+			try {
+				zoneVE.init();
+				
+				// ...and cache and return it.
+				zoneVEMap.put(customPath, zoneVE);
+				reply = zoneVE;
+				logger.info("New VelocityEngine cached for '" + customPath + "'.");
+			}
+			catch (Exception e) {
+				logger.error("Error initializing VelocityEngine for '" + customPath + "':  ", e);
+				reply = ve;
+			}
+		}
+	
+        return reply;
 	}
+	
 	public void setToolboxConfig(String configFile) {
 		this.configFile = new ClassPathResource(configFile);
  	}
+	
+	/**
+	 * Returns true if reseting the Velocity engine is enabled and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isVelocityEngineResetEnabled() {
+		return SPropsUtil.getBoolean("velocity.engine.reset.enabled", false);
+	}
+	
+	/**
+	 * If enabled, resets the Velocity engine for the customPath
+	 * (i.e., a specific zone.)
+	 * 
+	 * @param customPath
+	 */
+	public static void resetCachedZoneVelocityEngine(String customPath) {
+		// Is reseting the Velocity engine enabled?
+		if (isVelocityEngineResetEnabled()) {
+			// Yes!  If we're tracking a VelocityEngine for this custom
+			// path...
+			Map<String, VelocityEngine> zoneVEMap = getInstance().m_zoneVEMap;
+			if (zoneVEMap.containsKey(customPath)) {
+				// ...forget about it.
+				zoneVEMap.remove(customPath);
+				logger.info("Cached VelocityEngine for '" + customPath + "' has been reset.");
+			}
+		}
+	}
 	
 	@Override
 	public void afterPropertiesSet() {
@@ -125,6 +204,7 @@ public class NotifyBuilderUtil implements InitializingBean {
     	VelocityContext ctx = getVelocityContext(params);
  		ctx.put("ssEntity", entity);
  		NotifyVisitor visitor = new NotifyVisitor(entity, notifyDef, null, writer, writerType, params);
+		ctx.put("ssVisitor", visitor);
 		try {
 			visitor.processTemplate(template, ctx);
 		} catch (Exception ex) {
@@ -137,6 +217,7 @@ public class NotifyBuilderUtil implements InitializingBean {
     	VelocityContext ctx = getVelocityContext(params);
  		ctx.put("ssEntity", entity);
  		NotifyVisitor visitor = new NotifyVisitor(entity, null, null, writer, writerType, params);
+		ctx.put("ssVisitor", visitor);
 		try {
 			visitor.processTemplate(template, ctx);
 		} catch (Exception ex) {
