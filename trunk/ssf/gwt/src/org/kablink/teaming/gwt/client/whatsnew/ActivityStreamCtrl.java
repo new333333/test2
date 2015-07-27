@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamCommentDeletedEvent;
 import org.kablink.teaming.gwt.client.event.DeleteActivityStreamUIEntryEvent;
 import org.kablink.teaming.gwt.client.event.EditActivityStreamUIEntryEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -85,6 +86,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetActivityStreamDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetActivityStreamParamsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSendToFriendUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTopLevelEntryIdCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTopLevelEntryIdRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HasActivityStreamChangedCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveWhatsNewSettingsCmd;
@@ -867,6 +870,110 @@ public class ActivityStreamCtrl extends ResizeComposite
 		mainPanel.add( m_searchResultsPanel );
 	}
 	
+	/*
+	 * Asynchronously deletes the ActivityStreamUIEntry.
+	 */
+	private void doDeleteAsync(final ActivityStreamUIEntry uiEntry) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				doDeleteNow(uiEntry);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously deletes the ActivityStreamUIEntry.
+	 */
+	private void doDeleteNow(final ActivityStreamUIEntry uiEntry) {
+		// Are we deleting a folder entry?
+		final EntityId eid = uiEntry.getEntryEntityId();
+		if (eid.isFolderEntry()) {
+			// Yes!  Can we get its top level entry ID, if it's a
+			// comment?
+			GetTopLevelEntryIdCmd cmd = new GetTopLevelEntryIdCmd(eid);
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					// No!  Display the error...
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetTopLevelEntryId());
+					
+					// ...and perform the delete without the top level
+					// ...entry ID.  The worst that could happen would
+					// ...that the comment counts are off when deleting
+					// ...a comment.
+					doDeleteImplAsync(uiEntry, null);	// null -> No top level entry to notify about.
+				}
+
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Yes, we have its top level entry ID, if it was a
+					// comment!  Do the delete.
+					GetTopLevelEntryIdRpcResponseData reply = ((GetTopLevelEntryIdRpcResponseData) response.getResponseData());
+					doDeleteImplAsync(uiEntry, reply.getTopLevelEntityId());
+				}
+			});
+		}
+		
+		else {
+			// No, we aren't deleting a folder entry!  There can be no
+			// top level entry ID.
+			doDeleteImplNow(uiEntry, null);	// null -> No top level entry to notify about.
+		}
+	}
+
+	/*
+	 * Asynchronously performs the delete and sends a delete
+	 * notification about a top level entry having a comment deleted.
+	 */
+	private void doDeleteImplAsync(final ActivityStreamUIEntry uiEntry, final EntityId topLevelEid) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				doDeleteImplNow(uiEntry, topLevelEid);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously performs the delete and sends a delete
+	 * notification about a top level entry having a comment deleted.
+	 */
+	private void doDeleteImplNow(final ActivityStreamUIEntry uiEntry, final EntityId topLevelEid) {
+		// Perform the delete.
+		List<EntityId> delEIDs = new ArrayList<EntityId>();
+		delEIDs.add(uiEntry.getEntryEntityId());
+		BinderViewsHelper.deleteSelections(delEIDs, new DeleteEntitiesCallback() {
+			@Override
+			public void operationCanceled() {
+				// Nothing to do!
+			}
+
+			@Override
+			public void operationComplete() {
+				// Hide the ActivityStreamUIEntry...
+				uiEntry.setVisible(false);
+
+				// ...and if we have a top level entry ID...
+				if (null != topLevelEid) {
+					// ...send a notification that one of its comments
+					// ...was deleted.  This will allow comment counts,
+					// ...to be cleaned up to reflect the deletion.
+					GwtTeaming.fireEventAsync(new ActivityStreamCommentDeletedEvent(topLevelEid));
+				}
+			}
+			
+			@Override
+			public void operationFailed() {
+				// Nothing to do.  The delete call will have told
+				// the user about the failure.
+			}
+		});
+	}
+
 	/*
 	 */
 	private void executeSearch()
@@ -2003,29 +2110,17 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	@Override
 	public void onDeleteActivityStreamUIEntry(DeleteActivityStreamUIEntryEvent event) {
+		// If this activity stream control is not visible...
+		if (!(isVisible())) {
+			// ...ignore this request.
+			return;
+		}
+
 		// Can we find the entry to delete?
 		final ActivityStreamUIEntry uiEntry = event.getUIEntry();
 		if (null != uiEntry) {
 			// Yes!  Attempt to delete it.
-			List<EntityId> delEIDs = new ArrayList<EntityId>();
-			delEIDs.add(uiEntry.getEntryEntityId());
-			BinderViewsHelper.deleteSelections(delEIDs, new DeleteEntitiesCallback() {
-				@Override
-				public void operationCanceled() {
-					// Nothing to do!
-				}
-
-				@Override
-				public void operationComplete() {
-					uiEntry.setVisible(false);
-				}
-				
-				@Override
-				public void operationFailed() {
-					// Nothing to do.  The delete call will have told
-					// the user about the failure.
-				}
-			});
+			doDeleteAsync(uiEntry);
 		}
 	}
 
@@ -2038,6 +2133,12 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 */
 	@Override
 	public void onEditActivityStreamUIEntry(EditActivityStreamUIEntryEvent event) {
+		// If this activity stream control is not visible...
+		if (!(isVisible())) {
+			// ...ignore this request.
+			return;
+		}
+
 		// Can we find the UI entry to be edited?
 		final ActivityStreamUIEntry uiEntry = event.getUIEntry();
 		if (null != uiEntry) {

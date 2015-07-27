@@ -71,12 +71,15 @@ import javax.naming.ldap.PagedResultsResponseControl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+
 import org.hibernate.CacheMode;
 import org.hibernate.SessionFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -135,10 +138,12 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.BuiltInUsersHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -670,6 +675,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		if ( homeDirConfig != null )
 			creationOption = homeDirConfig.getCreationOption();
 		
+		logger.debug("In getHomeDirInfoFromConfig() for user: " + MiscUtil.getSafeLogString(userDn));
+		logger.debug("\tcreationOption:  " + creationOption.name()      );
+		
 		switch ( creationOption )
 		{
 		case DONT_CREATE_HOME_DIR_NET_FOLDER:
@@ -698,6 +706,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		default:
 			homeDirInfo = getHomeDirInfoFromHomeDirAttribute( ldapContext, dirType, userDn, logErrors );
 			break;
+		}
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("\thas homeDirInfo:  " + ((null == homeDirInfo) ? "no" : "yes"));
+			if (null != homeDirInfo) {
+				logger.debug("\t\thomeDirInfo.m_netFolderServerName:  " + MiscUtil.getSafeLogString(homeDirInfo.m_netFolderServerName));
+				logger.debug("\t\thomeDirInfo.m_serverHostName:  "      + MiscUtil.getSafeLogString(homeDirInfo.m_serverHostName)     );
+				logger.debug("\t\thomeDirInfo.m_serverAddr:  "          + MiscUtil.getSafeLogString(homeDirInfo.m_serverAddr)         );
+				logger.debug("\t\thomeDirInfo.m_volume:  "              + MiscUtil.getSafeLogString(homeDirInfo.m_volume)             );
+				logger.debug("\t\thomeDirInfo.m_path:  "                + MiscUtil.getSafeLogString(homeDirInfo.m_path)               );
+			}
 		}
 		
 		return homeDirInfo;

@@ -107,7 +107,6 @@ import org.dom4j.io.SAXReader;
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.UserExistsException;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.HttpSessionContext;
@@ -136,6 +135,7 @@ import org.kablink.teaming.domain.NameCompletionSettings;
 import org.kablink.teaming.domain.NameCompletionSettings.NCDisplayField;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
+import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.OpenIDProvider;
@@ -180,7 +180,6 @@ import org.kablink.teaming.gwt.client.GwtSchedule.TimeFrequency;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
@@ -215,6 +214,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetEntityIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.SystemBinderType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetTopLevelEntryIdRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
 import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupRpcResponseData;
@@ -358,7 +358,6 @@ import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.PasswordPolicyHelper;
-import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 import org.kablink.teaming.web.util.LandingPageProperties;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
@@ -1040,7 +1039,7 @@ public class GwtServerHelper {
 	 * of a task folder to construct a TaskFolderInfo to add to a
 	 * List<TaskFolderInfo>.
 	 */
-	private static void addTFIFromStringToList(AllModulesInjected bs, HttpServletRequest request, String s, List<TaskFolderInfo> tfiList) {
+	private static void addTFIFromStringToList(AllModulesInjected bs, HttpServletRequest request, String s, List<TaskFolderInfo> tfiList, List<ErrorInfo> errorList) {
 		try {
 			// Can we access the folder?
 			Long folderId = Long.parseLong(s);
@@ -1049,9 +1048,35 @@ public class GwtServerHelper {
 				folder = bs.getFolderModule().getFolder(folderId);
 			}
 			catch (Exception ex) {
-				GwtLogHelper.error(m_logger, "GwtServerHelper.addTFIFromStringToList( Can't Access Folder ): " + s, ex);
+				// No!  Log the error.
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.addTFIFromStringToList( Can't Access Folder ): " + s, ex);
+				
+				// Generate an error message for the user.
+				String key;
+				if (ex instanceof NoFolderByTheIdException)
+				     key = "errorcode.no.task.folder.missing";
+				else key = "errorcode.no.task.folder.access";
+				String error = NLT.get(key, new String[]{String.valueOf(folderId)});
+				
+				// If we're not already tracking this exact error
+				// message...
+				boolean errorIsDup = false;
+				for (ErrorInfo ei:  errorList) {
+					if (ei.getMessage().equals(error)) {
+						errorIsDup = true;
+						break;
+					}
+				}
+				if (!errorIsDup) {
+					// ...add it to the error list.
+					errorList.add(ErrorInfo.createError(error));
+				}
+				
+				// If we get here, we can't get the folder.
 				folder = null;
 			}
+			
+			// Do we obtain the folder we need?
 			if (null == folder) {
 				// No!  Bail.
 				return;
@@ -1744,97 +1769,6 @@ public class GwtServerHelper {
 		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
-	}
-	
-	/**
-	 * Change the current user's password.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param oldPwd
-	 * @param newPwd
-	 * @param userId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ErrorListRpcResponseData changePassword(final AllModulesInjected bs, final HttpServletRequest request, final String oldPwd, final String newPwd, final Long userId) throws GwtTeamingException {
-		// Allocate an ErrorListRpcResponseData we can return with
-		// any errors from the password change.
-		ErrorListRpcResponseData reply = new ErrorListRpcResponseData();
-		
-		try {
-			// Who we change the password for?
-			boolean isCurrentUser = (null == userId);
-			User    currentUser   = getCurrentUser();
-			User pwChangeUser;
-			if (isCurrentUser) {
-				pwChangeUser = currentUser;
-			}
-			else {
-				pwChangeUser  = ((User) bs.getProfileModule().getEntry(userId, false));	// false -> Don't do an access check.
-				isCurrentUser = ((null != currentUser) && userId.equals(currentUser.getId()));
-			}
-			
-			// Does the new password violate the system's password
-			// policy for that user?
-			List<String> ppViolations = PasswordPolicyHelper.getPasswordPolicyViolations(pwChangeUser, pwChangeUser, newPwd);
-			if (MiscUtil.hasItems(ppViolations)) {
-				// Yes!  Copy the violations to the response.
-				for (String ppViolation:  ppViolations) {
-					reply.addError(ppViolation);
-				}
-			}
-			
-			else {
-				// No, the new password doesn't violate the system's
-				// password policy!  Change the user's password.  Are
-				// the built-in admin or are we changing the password
-				// for the currently logged in user?
-				if (isCurrentUser || currentUser.isAdmin()) {
-					// Yes!  We can change it directly without worry of
-					// an access control violation.
-					changePasswordImpl(bs, oldPwd, newPwd, userId, false);	// false -> Don't validate password policy.  We took care of that above.
-				}
-				
-				else {
-					// Otherwise, we have to change it as the user
-					// whose password is being changed.
-					RunasTemplate.runas(
-						new RunasCallback() {
-							@Override
-							public Object doAs() {
-								changePasswordImpl(bs, oldPwd, newPwd, userId, false);	// false -> Don't validate password policy.  We took care of that above.
-								return null;
-							}
-						},
-						WebHelper.getRequiredZoneName(request),
-						userId);
-				}
-				
-				// Are we dealing with the built-in admin user?
-				if (pwChangeUser.isAdmin()) {
-					// Yes!  Is this the admin's first time logging in?
-					if (null == pwChangeUser.getFirstLoginDate()) {
-						// Yes!  Remember the login date.
-						bs.getProfileModule().setFirstLoginDate(pwChangeUser.getId());
-					}
-				}
-			}
-
-			return reply;
-		}
-		
-		catch (PasswordMismatchException ex) {
-			GwtTeamingException gwtEx = GwtLogHelper.getGwtClientException(m_logger, ex);
-			gwtEx.setAdditionalDetails(ex.getLocalizedMessage());
-			throw gwtEx;
-		}
-	}
-	
-	private static void changePasswordImpl(AllModulesInjected bs, String oldPwd, String newPwd, Long userId, boolean validatePolicy) {
-		bs.getProfileModule().changePassword(userId, oldPwd, newPwd, validatePolicy);
 	}
 	
 	/**
@@ -8247,10 +8181,11 @@ public class GwtServerHelper {
 	 * @param request
 	 * @param m
 	 * @param key
+	 * @param errorList
 	 * 
 	 * @return
 	 */
-	public static List<TaskFolderInfo> getTaskFolderInfoListFromEntryMap(AllModulesInjected bs, HttpServletRequest request, Map m, String key) {
+	public static List<TaskFolderInfo> getTaskFolderInfoListFromEntryMap(AllModulesInjected bs, HttpServletRequest request, Map m, String key, List<ErrorInfo> errorList) {
 		// Is there value for the key?
 		List<TaskFolderInfo> reply = new ArrayList<TaskFolderInfo>();
 		Object o = m.get(key);
@@ -8259,7 +8194,7 @@ public class GwtServerHelper {
 			if (o instanceof String) {
 				// Yes!  Use it as the folder ID to create a
 				// TaskFolderInfo to add to the List<TaskFolderInfo>. 
-				addTFIFromStringToList(bs, request, ((String) o), reply);
+				addTFIFromStringToList(bs, request, ((String) o), reply, errorList);
 			}
 
 			// No, the value isn't a String!  Is it a String[]?
@@ -8270,7 +8205,7 @@ public class GwtServerHelper {
 				String[] strLs = ((String[]) o);
 				int c = strLs.length;
 				for (int i = 0; i < c; i += 1) {
-					addTFIFromStringToList(bs, request, strLs[i], reply);
+					addTFIFromStringToList(bs, request, strLs[i], reply, errorList);
 				}
 			}
 
@@ -8283,7 +8218,7 @@ public class GwtServerHelper {
 				SearchFieldResult sfr = ((SearchFieldResult) m.get(key));
 				Set<String> strLs = ((Set<String>) sfr.getValueSet());
 				for (String strL:  strLs) {
-					addTFIFromStringToList(bs, request, strL, reply);
+					addTFIFromStringToList(bs, request, strL, reply, errorList);
 				}
 			}
 		}
@@ -8625,6 +8560,50 @@ public class GwtServerHelper {
 	
 	private static List<BinderData> getChildBinderData(AllModulesInjected bs, BucketInfo bi) {
 		return getChildBinderData(bs, null, bi);
+	}
+
+	/**
+	 * Returns a GetTopLevelEntryIdRpcResponseData object contain the
+	 * top level EntityId of a folder entry.  If the given EntityId is
+	 * not a folder or is not a comment, the top level EntityId
+	 * returned will be null.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param eid
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static GetTopLevelEntryIdRpcResponseData getTopLevelEntryId(AllModulesInjected bs, HttpServletRequest request, EntityId feEID) throws GwtTeamingException {
+		try {
+			// Is the given EntityId that of a folder entry?
+			EntityId reply = null;
+			if ((null != feEID) && feEID.isFolderEntry()) {
+				// Yes!  Is it a comment entry?
+				FolderEntry fe = bs.getFolderModule().getEntry(feEID.getBinderId(), feEID.getEntityId());
+				if (!(fe.isTop())) {
+					// Yes!  Return the EntityId of its top entry.
+					fe = fe.getTopEntry();
+					reply = new EntityId(fe.getParentBinder().getId(), fe.getId(), EntityId.FOLDER_ENTRY);
+				}
+			}
+			
+			// If we get here, reply refers to the EntityId of the
+			// given entry's top level entry if it was a comment and is
+			// false otherwise.  Wrap it in a
+			// GetTopLevelEntryIdRpcResponseData object and return
+			// that.
+			return new GetTopLevelEntryIdRpcResponseData(reply);
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(
+				m_logger,
+				ex,
+				"GwtServerHelper.getTopLevelEntryId( SOURCE EXCEPTION ):  ");
+			}
 	}
 	
 	/**
@@ -9375,7 +9354,7 @@ public class GwtServerHelper {
 							DefinitionHelper.getDefinitions(binder, model, null);		
 							Definition entityDef = ((Definition) model.get(WebKeys.DEFAULT_FOLDER_DEFINITION));
 							String family = BinderHelper.getFamilyNameFromDef(entityDef);
-							if (family.equals("landingpage")) {
+							if ((null != family) && family.equals("landingpage")) {
 								reply = WorkspaceType.LANDING_PAGE;
 							}
 						}
@@ -10380,6 +10359,7 @@ public class GwtServerHelper {
 		case GET_CLIPBOARD_USERS_FROM_LIST:
 		case GET_COLLECTION_POINT_DATA:
 		case GET_COLUMN_WIDTHS:
+		case GET_COMMENT_COUNT:
 		case GET_DATABASE_PRUNE_CONFIGURATION:
 		case GET_DATE_STR:
 		case GET_DATE_TIME_STR:
@@ -10519,6 +10499,7 @@ public class GwtServerHelper {
 		case GET_TASK_LIST:
 		case GET_TIME_ZONES:
 		case GET_TOOLBAR_ITEMS:
+		case GET_TOP_LEVEL_ENTRY_ID:
 		case GET_TOP_RANKED:
 		case GET_TRASH_URL:
 		case GET_UPDATE_LOGS_CONFIG:
@@ -10569,6 +10550,7 @@ public class GwtServerHelper {
 		case REMOVE_SAVED_SEARCH:
 		case RENAME_ENTITY:
 		case REQUEST_RESET_PASSWORD:
+		case RESET_VELOCITY_ENGINE:
 		case SAVE_ACCESSORY_STATUS:
 		case SAVE_ADHOC_FOLDER_SETTING:
 		case SAVE_BINDER_REGION_STATE:
@@ -10818,136 +10800,6 @@ public class GwtServerHelper {
 		
 		// ...and clearing the remove list.
 		removeList.clear();
-	}
-	
-	/**
-	 * Reset send the user an e-mail with a link they need to click on to verify their
-	 * password reset.
-	 */
-	public static RequestResetPwdRpcResponseData requestResetPwd(
-		final AllModulesInjected ami,
-		final HttpServletRequest request,
-		final Long userId,
-		final String pwd )
-	{
-		final RequestResetPwdRpcResponseData responseData;
-		RunasCallback callback;
-
-		responseData = new RequestResetPwdRpcResponseData();
-		
-		if ( pwd == null || pwd.length() == 0 || userId == null )
-		{
-			responseData.addError( "Invalid parameters passed to GwtServerHelper.requestResetPwd()" );
-			return responseData;
-		}
-
-		callback = new RunasCallback()
-		{
-			@Override
-			public Object doAs()
-			{
-				User user = null;
-
-				try
-				{
-					user = ((User) ami.getProfileModule().getEntry( userId ));
-				}
-				catch ( AccessControlException acEx )
-				{
-					String error;
-					
-					error = NLT.get( "request.pwd.reset.cant.find.user", new String[]{userId.toString()} );
-					responseData.addError( error );
-				}
-				
-				if ( user != null &&
-					 user.getIdentityInfo().isInternal() == false &&
-					 user.getExtProvState() == ExtProvState.pwdResetRequested )
-				{
-					// Save the password to the user's properties.  We will read it from the user's properties
-					// when the user clicks on the url in the "reset password verification" e-mail.
-					{
-						ami.getProfileModule().setUserProperty(
-															user.getId(),
-															ObjectKeys.USER_PROPERTY_RESET_PWD,
-															pwd );
-					}
-					
-					// Send the user an e-mail telling them that their password has been modified
-					// and they need to verify that they were the one who changed the password.
-					{
-						String token;
-						String url;
-						AdaptedPortletURL adapterUrl;
-						Map<String,Object> errorMap = null;
-						
-						// Get a url to the user's workspace.
-						adapterUrl = new AdaptedPortletURL( request, "ss_forum", true, false );
-						adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK );
-						adapterUrl.setParameter( WebKeys.URL_ENTRY_ID, String.valueOf( userId ) );
-						adapterUrl.setParameter( WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name() );
-						
-						// If we are running Filr, take the user to "my files"
-						if ( Utils.checkIfFilr() )
-							adapterUrl.setParameter(WebKeys.URL_SHOW_COLLECTION, "0");	// 0 -> CollectionType.MY_FILES
-						
-						// Append the encoded user token to the url.
-						token = ExternalUserUtil.encodeUserTokenWithNewSeed( user );
-						adapterUrl.setParameter( ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN, token );
-						url = adapterUrl.toString();
-
-						try
-						{
-							errorMap = EmailHelper.sendUrlNotification(
-																	ami,
-																	url,
-																	UrlNotificationType.PASSWORD_RESET_REQUESTED,
-																	userId );
-						}
-						catch ( Exception ex )
-						{
-							String error;
-							
-							error = NLT.get( "request.pwd.reset.send.email.failed", new String[]{ex.toString()} );
-							responseData.addError( error );
-							
-							GwtLogHelper.error(m_logger, "GwtServerHelper.requestResetPwd( EXCEPTION ):  ", ex);
-						}
-
-						if ( errorMap != null )
-						{
-							List<SendMailErrorWrapper> emailErrors;
-							
-							emailErrors = ((List<SendMailErrorWrapper>) errorMap.get( ObjectKeys.SENDMAIL_ERRORS ));
-							if ( emailErrors != null && emailErrors.size() > 0 )
-								responseData.addErrors( SendMailErrorWrapper.getErrorMessages( emailErrors ) );
-							else
-							{
-								// Sending the e-mail worked.  Change the users "external user provisioned state" to
-								// "password reset waiting for verification"
-								ExternalUserUtil.markAsPwdResetWaitingForVerification( user );
-							}
-						}
-					}
-				}
-				else
-				{
-					String error;
-					
-					error = NLT.get( "request.pwd.reset.invalid.user.state" );
-					responseData.addError( error );
-				}
-				
-				return null;
-			}
-		}; 
-
-		// Do the necessary work as the admin user.
-		RunasTemplate.runasAdmin(
-								callback,
-								RequestContextHolder.getRequestContext().getZoneName() );
-
-		return responseData;
 	}
 	
 	/**
@@ -12782,21 +12634,40 @@ public class GwtServerHelper {
 			FolderModule fm = bs.getFolderModule();
 			Long entryIdL = Long.parseLong(entryId);
 			FolderEntry fe = fm.getEntry(null, entryIdL);
+			boolean isGuest = getCurrentUser().isShared();
 			for (EventValidation nextValidation:  eventValidations) {
 				// Validate the next event.
 				try {
 					TeamingEvents teamingEvent = TeamingEvents.getEnum(nextValidation.getEventOrdinal());
 					switch (teamingEvent) {
 					case DELETE_ACTIVITY_STREAM_UI_ENTRY:
+						// The Guest user...
+						if (isGuest) {
+							// ...can't delete an entry here.
+							throw new AccessControlException();
+						}
+						
 						fm.checkAccess(fe, FolderOperation.deleteEntry);
 						break;
 					
 					case EDIT_ACTIVITY_STREAM_UI_ENTRY:
+						// The Guest user...
+						if (isGuest) {
+							// ...can't edit an entry here.
+							throw new AccessControlException();
+						}
+						
 						// If this isn't a reply...
 						if (fe.isTop()) {
 							// ...it can't be edited this way.
 							throw new AccessControlException();
 						}
+						
+						// When applying changes from an edit, we store
+						// both the title and description.  Because we
+						// store both, we need both rename and modify
+						// rights for it to work.
+						fm.checkAccess(fe, FolderOperation.renameEntry);
 						fm.checkAccess(fe, FolderOperation.modifyEntry);
 						break;
 					

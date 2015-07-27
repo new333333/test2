@@ -1514,7 +1514,7 @@ public class NetFolderHelper
     	boolean doTestConnection;
     	ConnectionTestStatus status;
     	
-		m_logger.info( "In testNetFolderConnectionForHomeDirCreation() rootPath: " + rootPath + " subPath: " + subPath );
+		m_logger.info("In testNetFolderConnectionForHomeDirCreation() rootPath: " + MiscUtil.getSafeLogString(rootPath) + " subPath: " + MiscUtil.getSafeLogString(subPath));
 		
 		doTestConnection = SPropsUtil.getBoolean( "test.connection.on.homedir.creation", true );
 		
@@ -1550,48 +1550,66 @@ public class NetFolderHelper
 		String proxyPwd )
     {
     	ConnectionTestStatus status = null;
-		String name;
-		ResourceDriverConfig rdConfig = null;
-		ResourceDriver resourceDriver;
-		ResourceDriverManager rdManager;
+    	try {
+			String name;
+			ResourceDriverConfig rdConfig = null;
+			ResourceDriver resourceDriver;
+			ResourceDriverManager rdManager;
+	    	
+			name = driverName;
+			if ( name != null )
+			     name = ("test-connection-" + name + "test-connection");
+			else name =  "test-connection-net-folder-root-test-connection";
+			
+			rdConfig = new ResourceDriverConfig();
+			rdConfig.setName( name );
+			rdConfig.setDriverType( driverType );
+			rdConfig.setZoneId( RequestContextHolder.getRequestContext().getZoneId() );
+			rdConfig.setRootPath( rootPath );
+	   		rdConfig.setReadOnly( false );
+	   		rdConfig.setSynchTopDelete( false );
+	   		rdConfig.setAccountName( proxyName );
+	   		rdConfig.setPassword( proxyPwd );
+			
+	   		rdManager = ResourceDriverManagerUtil.getResourceDriverManager();
+			// Do not call initialize() method on the driver when we create a temporary one
+			// just for the purpose of testing a connection. Specifically, if we call initialize()
+			// on a FAMT resource driver, it may trigger building a rights cache which can take
+			// significant time and system resources which we do not need for this test.
+			m_logger.debug("In testNetFolderConnection(), about to ccreate the resourceDriver.  name:  " + MiscUtil.getSafeLogString(name));
+	   		resourceDriver = rdManager.createResourceDriverWithoutInitialization( rdConfig );
+	   		if ( resourceDriver != null && resourceDriver instanceof AclResourceDriver )
+	   		{
+	   			AclResourceDriver aclDriver;
+	   			
+	   			aclDriver = (AclResourceDriver) resourceDriver;
+	   			subPath = aclDriver.normalizedResourcePath( subPath );
+	   			m_logger.debug("In testNetFolderConnection(), about to call AclResourceDriver.testConnection():  proxyName: " + MiscUtil.getSafeLogString(proxyName) + " subPath: " + MiscUtil.getSafeLogString(subPath));
+	   			try {
+		   			status = aclDriver.testConnection(
+				   								proxyName,
+				   								proxyPwd,
+				   								subPath );
+		   			m_logger.debug("In testNetFolderConnection(), AclResourceDriver.testConnection():  ConnectionTestStatus: " + ((null == status) ? "*null*" : status.toString()));
+	   			}
+	   			catch (Exception ex) {
+	   	   			m_logger.debug("In testNetFolderConnection(), AclResourceDriver.testConnection():  Exception:  " + ex.toString(), ex);
+	   				throw ex;
+	   			}
+	
+	   			// Do not call shutdown() on this temporary driver instance, since we don't call initialize() on it.
+	   			// Otherwise, the ref count FAMT maintains can go incorrect.
+	   		}
+	   		else {
+	   			m_logger.debug("In testNetFolderConnection(), skipped call AclResourceDriver.testConnection():  Reason:  " + ((null == resourceDriver) ? "Couldn't create resourceDriver" : "resourceDriver is not an AclResourceDriver"));
+	   		}
+	
+	   		return status;
+    	}
     	
-		name = driverName;
-		if ( name != null )
-			name = "test-connection-" + name + "test-connection";
-		else
-			name = "test-connection-net-folder-root-test-connection";
-		
-		rdConfig = new ResourceDriverConfig();
-		rdConfig.setName( name );
-		rdConfig.setDriverType( driverType );
-		rdConfig.setZoneId( RequestContextHolder.getRequestContext().getZoneId() );
-		rdConfig.setRootPath( rootPath );
-   		rdConfig.setReadOnly( false );
-   		rdConfig.setSynchTopDelete( false );
-   		rdConfig.setAccountName( proxyName );
-   		rdConfig.setPassword( proxyPwd );
-		
-   		rdManager = ResourceDriverManagerUtil.getResourceDriverManager();
-		// Do not call initialize() method on the driver when we create a temporary one
-		// just for the purpose of testing a connection. Specifically, if we call initialize()
-		// on a FAMT resource driver, it may trigger building a rights cache which can take
-		// significant time and system resources which we do not need for this test.
-   		resourceDriver = rdManager.createResourceDriverWithoutInitialization( rdConfig );
-   		if ( resourceDriver != null && resourceDriver instanceof AclResourceDriver )
-   		{
-   			AclResourceDriver aclDriver;
-   			
-   			aclDriver = (AclResourceDriver) resourceDriver;
-   			subPath = aclDriver.normalizedResourcePath( subPath );
-   			status = aclDriver.testConnection(
-		   								proxyName,
-		   								proxyPwd,
-		   								subPath );
-
-   			// Do not call shutdown() on this temporary driver instance, since we don't call initialize() on it.
-   			// Otherwise, the ref count FAMT maintains can go incorrect.
-   		}
-
-   		return status;
+    	catch (Exception ex) {
+   			m_logger.debug("In testNetFolderConnection():  Exception:  " + ex.toString(), ex);
+    		throw ex;
+    	}
     }
 }

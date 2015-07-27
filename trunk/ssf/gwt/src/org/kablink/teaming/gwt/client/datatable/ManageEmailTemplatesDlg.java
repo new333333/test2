@@ -46,11 +46,13 @@ import org.kablink.teaming.gwt.client.event.DeleteSelectedCustomizedEmailTemplat
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
+import org.kablink.teaming.gwt.client.event.ResetVelocityEngineEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteCustomizedEmailTemplatesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteCustomizedEmailTemplatesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetManageEmailTemplatesInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageEmailTemplatesInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ResetVelocityEngineCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.HelpData;
@@ -83,7 +85,8 @@ public class ManageEmailTemplatesDlg extends DlgBox
 		AdministrationExitEvent.Handler,
 		DeleteSelectedCustomizedEmailTemplatesEvent.Handler,
 		FullUIReloadEvent.Handler,
-		GetManageTitleEvent.Handler
+		GetManageTitleEvent.Handler,
+		ResetVelocityEngineEvent.Handler
 {
 	private boolean									m_dlgAttached;						// true when the dialog is attached to the document.       false otherwise.
 	private boolean									m_viewReady;						// true once the embedded email templates view is ready.  false otherwise.
@@ -114,6 +117,7 @@ public class ManageEmailTemplatesDlg extends DlgBox
 		TeamingEvents.DELETE_SELECTED_CUSTOMIZED_EMAIL_TEMPLATES,
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.GET_MANAGE_TITLE,
+		TeamingEvents.RESET_VELOCITY_ENGINE,
 	};
 	
 	/*
@@ -424,6 +428,32 @@ public class ManageEmailTemplatesDlg extends DlgBox
 		}
 	}
 
+	/**
+	 * Handles ResetVelocityEngineEvent's received by this class.
+	 * 
+	 * Implements the ResetVelocityEngineEvent.Handler.onResetVelocityEngine() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onResetVelocityEngine(ResetVelocityEngineEvent event) {
+		// Reset the velocity engine.
+		ResetVelocityEngineCmd cmd = new ResetVelocityEngineCmd();
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_ResetVelocityEngine());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Nothing to do.
+			}
+		});
+	}
+	
 	/**
 	 * Called when the email templates view reaches the ready state.
 	 * 

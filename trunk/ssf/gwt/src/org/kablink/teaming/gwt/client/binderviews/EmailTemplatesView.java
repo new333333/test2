@@ -49,8 +49,6 @@ import com.google.gwt.user.client.Window;
  * @author drfoster@novell.com
  */
 public class EmailTemplatesView extends DataTableFolderViewBase {
-	public final static boolean SHOW_EMAIL_TEMPLATES	= false;	//! DRF (20150713):  Leave false on checkin until it's all working.
-	
 	/*
 	 * Class constructor.
 	 * 
@@ -115,7 +113,7 @@ public class EmailTemplatesView extends DataTableFolderViewBase {
 			}
 		});
 	}
-	
+
 	/**
 	 * Returns the adjustment to used for a folder view's content so
 	 * that it doesn't get a vertical scroll bar.

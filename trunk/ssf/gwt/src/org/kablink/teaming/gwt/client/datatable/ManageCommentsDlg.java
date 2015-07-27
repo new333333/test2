@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,10 +32,20 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.datatable.ManageCommentsComposite.ManageCommentsCompositeClient;
+import org.kablink.teaming.gwt.client.event.ActivityStreamCommentDeletedEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.rpc.shared.GetCommentCountCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -44,24 +54,38 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Implements Vibe's 'Manage Comments' dialog.
  *  
  * @author drfoster@novell.com
  */
-public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback {
-	private CommentAddedCallback	m_addedCallback;			// Interface used to tell who is running the dialog that a a comment was added.
-	private CommentsInfo			m_commentsInfo;				// The CommentsInfo the ManageCommentsDlg is running against.
-	private Label					m_commentsCountLabel;		//
-	private ManageCommentsComposite	m_manageCommentsComposite;	// The composite containing the main content of the dialog. 
-	private UIObject				m_showRelativeTo;			// The UIObject to show the dialog relative to.
-	private VibeFlowPanel			m_fp;						// The panel that holds the dialog's contents.
+public class ManageCommentsDlg extends DlgBox
+	implements ManageCommentsCallback,
+		// Event handlers implemented by this class.
+		ActivityStreamCommentDeletedEvent.Handler
+{
+	private CommentAddedCallback		m_addedCallback;					// Interface used to tell who is running the dialog that a a comment was added.
+	private CommentsInfo				m_commentsInfo;						// The CommentsInfo the ManageCommentsDlg is running against.
+	private Label						m_commentsCountLabel;				//
+	private List<HandlerRegistration>	m_mcDlg_registeredEventHandlers;	// Event handlers that are currently registered.
+	private ManageCommentsComposite		m_manageCommentsComposite;			// The composite containing the main content of the dialog. 
+	private UIObject					m_showRelativeTo;					// The UIObject to show the dialog relative to.
+	private VibeFlowPanel				m_fp;								// The panel that holds the dialog's contents.
+	
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private static final TeamingEvents[] mcDlg_REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.ACTIVITY_STREAM_COMMENT_DELETED,
+	};
 
 	/*
 	 * Class constructor.
@@ -182,6 +206,52 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 				m_manageCommentsComposite.getFocusWidget());
 	}
 
+	/**
+	 * Handles ActivityStreamCommentDeletedEvent's received by this class.
+	 * 
+	 * Implements the ActivityStreamCommentDeletedEvent.Handler.onActivityStreamUIEntryDeleted() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onActivityStreamCommentDeleted(ActivityStreamCommentDeletedEvent event) {
+		// Do we have a top level EntityId that's targeted to the entry
+		// this dialog is running against?
+		EntityId topLevelEID = event.getTopLevelEntityId();
+		if ((null != topLevelEID) && topLevelEID.equalsEntityId(m_commentsInfo.getEntityId())) {
+			// Yes!  Then we need to update the dialog's banner to
+			// reflect the delete.  Note that we have to hit the
+			// server for the count since the comment deleted may
+			// have had comments deleted too.
+			updateCommentCountAsync(topLevelEID);
+		}
+	}
+	
+	/**
+	 * Called when the data table is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the data table is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
@@ -213,6 +283,28 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 			});
 	}
 	
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_mcDlg_registeredEventHandlers) {
+			// ...allocate one now.
+			m_mcDlg_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_mcDlg_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				mcDlg_REGISTERED_EVENTS,
+				this,
+				m_mcDlg_registeredEventHandlers);
+		}
+	}
+
 	/*
 	 * Asynchronously runs the given instance of the manage comments
 	 * dialog.
@@ -267,6 +359,53 @@ public class ManageCommentsDlg extends DlgBox implements ManageCommentsCallback 
 		
 		// ...and store the appropriate text into it.
 		m_commentsCountLabel.setText(GwtTeaming.getMessages().manageCommentsDlgComments(cCount));
+	}
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if (GwtClientHelper.hasItems(m_mcDlg_registeredEventHandlers)) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_mcDlg_registeredEventHandlers);
+		}
+	}
+
+	/*
+	 * Asynchronously updates the comment count in the dialog's header.
+	 */
+	private void updateCommentCountAsync(final EntityId topLevelEID) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				updateCommentCountNow(topLevelEID);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously updates the comment count in the dialog's header.
+	 */
+	private void updateCommentCountNow(final EntityId topLevelEID) {
+		GetCommentCountCmd cmd = new GetCommentCountCmd(topLevelEID);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_GetCommentCount());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				int count = ((IntegerRpcResponseData) result.getResponseData()).getIntegerValue();
+				if (0 <= count) {
+					setCaptionCommentsCount(count);
+				}
+			}
+		});
 	}
 	
 

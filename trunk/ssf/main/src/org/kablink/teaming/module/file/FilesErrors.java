@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,14 +38,19 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.util.NLT;
 import org.kablink.util.HttpStatusCodeSupport;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.api.ApiErrorCodeSupport;
 
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
 public class FilesErrors implements Serializable {
-	
 	private static final long serialVersionUID = 1L;
 	
 	private static final Log logger = LogFactory.getLog(FilesErrors.class);
@@ -64,6 +69,7 @@ public class FilesErrors implements Serializable {
 		return problems;
 	}
 	
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		for(int i = 0; i < problems.size(); i++) {
@@ -80,22 +86,23 @@ public class FilesErrors implements Serializable {
 		// Problem types
 		
 		// Special type that delegates to exception
-		public static int DELEGATED									= -1;
+		public static final int DELEGATED								= -1;
+		
 		// Regular types
-		public static int OTHER_PROBLEM								= 0;
-		public static int PROBLEM_FILTERING							= 1;
-		public static int PROBLEM_STORING_PRIMARY_FILE				= 2;
-		public static int PROBLEM_DELETING_PRIMARY_FILE				= 3;
-		public static int PROBLEM_CANCELING_LOCK					= 4;
-		public static int PROBLEM_FILE_EXISTS						= 5;
-		public static int PROBLEM_ARCHIVING							= 6;
-		public static int PROBLEM_MIRRORED_FILE_IN_REGULAR_FOLDER	= 7;
-		public static int PROBLEM_MIRRORED_FILE_MULTIPLE			= 8;
-		public static int PROBLEM_REGULAR_FILE_IN_MIRRORED_FOLDER   = 9;
-		public static int PROBLEM_MIRRORED_FILE_READONLY_DRIVER		= 10;
-		public static int PROBLEM_ENCRYPTION_FAILED					= 11;
-		public static int PROBLEM_CHECKSUM_MISMATCH                 = 12;
-        public static int PROBLEM_ILLEGAL_CHARACTER  				= 13;
+		public static final int OTHER_PROBLEM							= 0;
+		public static final int PROBLEM_FILTERING						= 1;
+		public static final int PROBLEM_STORING_PRIMARY_FILE			= 2;
+		public static final int PROBLEM_DELETING_PRIMARY_FILE			= 3;
+		public static final int PROBLEM_CANCELING_LOCK					= 4;
+		public static final int PROBLEM_FILE_EXISTS						= 5;
+		public static final int PROBLEM_ARCHIVING						= 6;
+		public static final int PROBLEM_MIRRORED_FILE_IN_REGULAR_FOLDER	= 7;
+		public static final int PROBLEM_MIRRORED_FILE_MULTIPLE			= 8;
+		public static final int PROBLEM_REGULAR_FILE_IN_MIRRORED_FOLDER = 9;
+		public static final int PROBLEM_MIRRORED_FILE_READONLY_DRIVER	= 10;
+		public static final int PROBLEM_ENCRYPTION_FAILED				= 11;
+		public static final int PROBLEM_CHECKSUM_MISMATCH               = 12;
+        public static final int PROBLEM_ILLEGAL_CHARACTER  				= 13;
 
 		// Message codes corresponding to each regular problem type.
 		public static String[] typeCodes = {
@@ -205,6 +212,7 @@ public class FilesErrors implements Serializable {
 			return repositoryName;
 		}
 		
+		@Override
 		public String toString() {
 			StringBuffer sb = new StringBuffer();
 			if (this.fileName == null && this.repositoryName == null && this.type == -1 && this.exception != null) {
@@ -264,5 +272,4 @@ public class FilesErrors implements Serializable {
 			}
 		}
 	}
-
 }

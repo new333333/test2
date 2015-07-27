@@ -2879,21 +2879,43 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		} else if (itemName.equals("profileManageGroups")) {
 			//Ignore this item. It gets handled after the Add or Modify is finished.
 		} else {
-			if (inputData.exists(nameValue)) {
-				if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
-					if (inputData.getValues(nameValue).length > 1) {
-						entryData.put(nameValue, StringCheckUtil.check(mapInputData(inputData.getValues(nameValue))));
-					} else {
-						entryData.put(nameValue, StringCheckUtil.check(mapInputData(inputData.getSingleValue(nameValue))));
+			try {
+				if (inputData.exists(nameValue)) {
+					if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
+						if (inputData.getValues(nameValue).length > 1) {
+							entryData.put(nameValue, StringCheckUtil.check(mapInputData(inputData.getValues(nameValue))));
+						} else {
+							entryData.put(nameValue, StringCheckUtil.check(mapInputData(inputData.getSingleValue(nameValue))));
+						}
+					}
+				}
+				if (userVersionAllowed && inputData.exists(nameValuePerUser)) 
+					entryData.put(nameValuePerUser, StringCheckUtil.check(inputData.getSingleValue(nameValuePerUser)));
+			}
+			
+			catch (Exception ex) {
+				logger.debug("processInputDataItem():  Exception processing default item:  ", ex);
+				logger.debug("...itemName:  " + itemName);
+				logger.debug("...nameValue:  " + nameValue);
+				logger.debug("...inputData.isFieldsOnly():  " + inputData.isFieldsOnly());
+				logger.debug("...fieldModificationAllowed:  " + fieldModificationAllowed);
+				Object o = inputData.getSingleObject(nameValue);
+				logger.debug("...inputData.get(" + nameValue + ") has value:  " + (null != o));
+				if (null != o) {
+					Class[] ocA = o.getClass().getClasses();
+					if (null == ocA) ocA = new Class[0];
+					logger.debug("...inputData.get(" + nameValue + ").class:  " + o.getClass().getName() + ", class count:  " + ocA.length);
+					for (int i = 0; i < ocA.length; i += 1) {
+						logger.debug("...inputData.get(" + nameValue + ").class[" + i + "]:  " + ocA[i].getName());
+						i += 1;
 					}
 				}
 			}
-			if (userVersionAllowed && inputData.exists(nameValuePerUser)) 
-				entryData.put(nameValuePerUser, StringCheckUtil.check(inputData.getSingleValue(nameValuePerUser)));
 		}    	
     }
     
-    public void tidyCheckText(Description description, EntryDataErrors entryDataErrors) {
+    @Override
+	public void tidyCheckText(Description description, EntryDataErrors entryDataErrors) {
 		String text = mapInputData(description.getText());
 		if (SPropsUtil.getBoolean("HTML.validate", true) && description.getFormat() == Description.FORMAT_HTML) {
 			ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
