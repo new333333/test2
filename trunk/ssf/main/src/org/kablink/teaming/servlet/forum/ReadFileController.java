@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.servlet.forum;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -55,6 +57,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
@@ -79,6 +82,7 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.Constants;
+import org.kablink.teaming.util.EmailTemplatesHelper;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -95,6 +99,7 @@ import org.kablink.util.search.Order;
 import static org.kablink.util.search.Restrictions.in;
 
 import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -696,6 +701,69 @@ public class ReadFileController extends AbstractReadFileController {
 				// Bad format of url; just return null.
 				logger.error("ReadFileController.handleRequestAfterValidation( Share File Downlaod ):  EXCEPTION:  ", e);
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
+			}
+		}
+		
+		else if ((args.length == WebUrlUtil.FILE_URL_EMAIL_TEMPLATE_ARG_LENGTH) &&
+				(args[WebUrlUtil.FILE_URL_EMAIL_TEMPLATE_EMAIL_TEMPLATE].equals(WebUrlUtil.FILE_URL_EMAIL_TEMPLATE))) {
+			// Email template!
+			//
+			// Do we have both a type and filename?
+			String type     = args[WebUrlUtil.FILE_URL_EMAIL_TEMPLATE_TYPE];
+			String fileName = args[WebUrlUtil.FILE_URL_EMAIL_TEMPLATE_FILENAME];
+			if (MiscUtil.hasString(type) && MiscUtil.hasString(fileName)) {
+				// Yes!  Construct a full path to the file.
+				boolean defaultEmailTemplate = (type.equals(WebUrlUtil.FILE_URL_EMAIL_TEMPLATE_TYPE_DEFAULT));
+				String filePath =
+					(defaultEmailTemplate                                       ?
+						EmailTemplatesHelper.getEmailTemplatesDefaultPath(true) :
+						EmailTemplatesHelper.getEmailTemplatesCustomizedPath(true));
+				filePath += fileName;
+
+				// Setup the appropriate content information in the
+				// response.
+				String contentType = FileUtils.getMimeContentType(getFileTypeMap(), fileName);
+				contentType = FileUtils.validateDownloadContentType(contentType);
+				if (!(contentType.toLowerCase().contains("charset"))) {
+					String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+					if (MiscUtil.hasString(encoding)) {
+						contentType += ("; charset=" + encoding);
+					}
+				}
+				response.setContentType(contentType);
+				boolean isHttps = request.getScheme().equalsIgnoreCase("https");
+				String cacheControl = "private, max-age=86400";
+				if (isHttps) {
+					response.setHeader("Pragma", "public");
+					cacheControl += ", proxy-revalidate, s-maxage=0";
+				}
+				response.setHeader("Cache-Control", cacheControl);
+				response.setHeader("Content-Disposition", ("attachment; filename=\"" + FileHelper.encodeFileName(request, fileName) + "\""));
+				
+				// Copy the file to the response.
+				InputStream is = null;
+				try {
+					File emailTemplate = new File(filePath);
+					is = new FileInputStream(emailTemplate);
+					FileCopyUtils.copy(is, response.getOutputStream());
+				}
+				
+				catch(Exception e) {
+					// If there's any exception, return an error in the
+					// response.
+					logger.error("Error reading '" + type + "' email template file '" + filePath + "'", e);
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.cantReadEmailTemplate", new String[]{type, filePath}));
+				}
+				
+				finally {
+					// Finally, ensure we don't leave a dangling input
+					// stream.
+					if (null != is) {
+						try                    {is.close();}
+						catch (IOException io) {/* Ignored. */}
+						is = null;
+					}
+				}		
 			}
 		}
 		

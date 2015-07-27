@@ -400,6 +400,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetClipboardUsers();
 	String rpcFailure_GetClipboardUsersFromList();
 	String rpcFailure_GetCollectionPointUrl();
+	String rpcFailure_GetCommentCount();
 	String rpcFailure_GetDateStr();
 	String rpcFailure_GetDesktopAppDownloadInfo();
 	String rpcFailure_GetDownloadFileUrl();
@@ -533,6 +534,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetTeams();
 	String rpcFailure_GetTimeZones();
 	String rpcFailure_GetToolbarItems();
+	String rpcFailure_GetTopLevelEntryId();
 	String rpcFailure_GetTopRanked();
 	String rpcFailure_GetTrackedPeople();
 	String rpcFailure_GetTrackedPlaces();
@@ -586,6 +588,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_RenameEntity_Unknown();
 	String rpcFailure_RenameEntity_Workspace();
 	String rpcFailure_ReplyToEntry();
+	String rpcFailure_ResetVelocityEngine();
 	String rpcFailure_SaveAccessoryStatus();
 	String rpcFailure_SaveAdhocFolderSetting();
 	String rpcFailure_SaveBinderRegionState();
@@ -2033,6 +2036,7 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeDataTable_Download();
 	String vibeDataTable_EmailTemplates();
 	String vibeDataTable_Error_ForcingPasswordChange();
+	String vibeDataTable_Error_GetFolderRows();
 	String vibeDataTable_Error_MirroredDriverNotConfigured();
 	String vibeDataTable_Error_SavingAdminRights();
 	String vibeDataTable_Error_SavingLimitedUserVisibility();
@@ -2238,6 +2242,7 @@ public interface GwtTeamingMessages extends Messages {
 	String binderViewsHelper_failureSettingDownload();
 	String binderViewsHelper_failureSettingPublicCollection();
 	String binderViewsHelper_failureSettingWebAccess();
+	String binderViewsHelper_internalErrorEmailTemplatesWithoutHtml5();
 	String binderViewsHelper_view();
 	
 	// Strings used by ChangeEntryTypesDlg.
@@ -3273,6 +3278,7 @@ public interface GwtTeamingMessages extends Messages {
 	String fileConflictsDlgBtnCancel();
 	String fileConflictsDlgBtnOverwrite();
 	String fileConflictsDlgBtnVersion();
+	String fileConflictsDlgConfirmEmailTemplatesOverwrite();
 	String fileConflictsDlgConfirmOverwrite();
 	String fileConflictsDlgConfirmVersion();
 	String fileConflictsDlgConflictingFiles();

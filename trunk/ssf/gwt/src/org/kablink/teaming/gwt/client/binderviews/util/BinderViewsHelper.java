@@ -1499,9 +1499,20 @@ public class BinderViewsHelper {
 	 * @param showRelativeWidget
 	 */
 	public static void invokeDropBox(final BinderInfo folderInfo, final UIObject showRelativeWidget) {
+		// Are we trying to upload a customized email template with a
+		// browser that doesn't support HTML5?
+		boolean emailTemplates       = folderInfo.isBinderEmailTemplates();
+		boolean browserSupportsHtml5 = GwtClientHelper.jsBrowserSupportsHtml5FileAPIs();
+		if (emailTemplates && (!(browserSupportsHtml5))) {
+			// Yes!  We should never have gotten here!  Tell the user
+			// about the problem and bail.
+			GwtClientHelper.deferredAlert(m_messages.binderViewsHelper_internalErrorEmailTemplatesWithoutHtml5());
+			return;
+		}
+		
 		// Are we running in a browser that support file uploads using
 		// HTML5 and is the user not overriding that by keystroke?
-		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs() && (!(keyForcedAppletUpload()))) {
+		if (browserSupportsHtml5 && (emailTemplates || (!(keyForcedAppletUpload())))) {
 			// Yes!  Have we instantiated an HTML5 add files popup yet?
 			if (null == m_addFilesHtml5Popup) {
 				// No!  Instantiate one now...
