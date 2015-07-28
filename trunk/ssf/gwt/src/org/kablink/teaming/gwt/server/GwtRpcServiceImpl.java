@@ -2173,17 +2173,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_LDAP_OBJECT_FROM_AD:
-		{
-			GetLdapObjectFromADCmd gloCmd;
-			GwtADLdapObject ldapObject;
-			
-			gloCmd = (GetLdapObjectFromADCmd) cmd;
-			ldapObject = GwtLdapHelper.getLdapObjectFromAD(
-														this,
-														gloCmd.getFQDN() );
-			response = new VibeRpcResponse( ldapObject );
-			
+		case GET_LDAP_OBJECT_FROM_AD:  {
+			GetLdapObjectFromADCmd gloCmd = ((GetLdapObjectFromADCmd) cmd);
+			GwtADLdapObject ldapObject = GwtLdapHelper.getLdapObjectFromAD(this, gloCmd.getFQDN());
+			response = new VibeRpcResponse(ldapObject);
 			return response;
 		}
 		

@@ -1498,11 +1498,14 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				String proxyName = fqdn;
 				if (result.getResponseData() != null) {
 					GwtADLdapObject ldapObject = ((GwtADLdapObject) result.getResponseData());
-					String domainName = ldapObject.getDomainName();
-					String samAccountName = ldapObject.getSamAccountName();
-					if (domainName != null && domainName.length() > 0 &&
-							samAccountName != null && samAccountName.length() > 0) {
-						proxyName = domainName + "\\" + samAccountName;
+					String headPart = ldapObject.getNetbiosName();
+					if (!(GwtClientHelper.hasString(headPart))) {
+						headPart = ldapObject.getDomainName();
+					}
+					String tailPart = ldapObject.getSamAccountName();
+					if (headPart != null && headPart.length() > 0 &&
+							tailPart != null && tailPart.length() > 0) {
+						proxyName = (headPart + "\\" + tailPart);
 					}
 				}
 				
