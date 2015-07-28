@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,84 +32,48 @@
  */
 package org.kablink.teaming.gwt.client;
 
-
-
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
- * Class used in GWT RPC calls to represent an ldap object from AD.
+ * Class used in GWT RPC calls to represent an LDAP object from AD.
  * 
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
-public class GwtADLdapObject
-	implements IsSerializable, VibeRpcResponseData
-{
-	private String m_domainName;
-	private String m_samAccountName;
-	private String m_fqdn;
+public class GwtADLdapObject implements IsSerializable, VibeRpcResponseData {
+	private String	m_domainName;		//
+	private String	m_fqdn;				//
+	private String	m_netbiosName;		//
+	private String	m_samAccountName;	//
 	
 	/**
 	 * Constructor method. 
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
-	public GwtADLdapObject()
-	{
-		// Nothing to do.
-		m_domainName = null;
-		m_samAccountName = null;
-		m_fqdn = null;
+	public GwtADLdapObject() {
+		// Initialize the super class.
+		super();
 	}	
 	
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public String getDomainName()
-	{
-		return m_domainName;
-	}
+	public String getDomainName()     {return m_domainName;    }
+	public String getFQDN()           {return m_fqdn;          }
+	public String getNetbiosName()    {return m_netbiosName;   }
+	public String getSamAccountName() {return m_samAccountName;}
 	
 	/**
+	 * Set'er methods.
 	 * 
+	 * @param
 	 */
-	public String getFQDN()
-	{
-		return m_fqdn;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getSamAccountName()
-	{
-		return m_samAccountName;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setDomainName( String domainName )
-	{
-		m_domainName = domainName;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setFQDN( String fqdn )
-	{
-		m_fqdn = fqdn;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setSamAccountName( String samAccountName )
-	{
-		m_samAccountName = samAccountName;
-	}
-	
+	public void setDomainName(    String domainName)     {m_domainName     = domainName;    }
+	public void setFQDN(          String fqdn)           {m_fqdn           = fqdn;          }
+	public void setNetbiosName(   String netbiosName)    {m_netbiosName    = netbiosName;   }
+	public void setSamAccountName(String samAccountName) {m_samAccountName = samAccountName;}
 }

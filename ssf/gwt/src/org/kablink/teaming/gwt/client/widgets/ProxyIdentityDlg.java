@@ -742,11 +742,14 @@ public class ProxyIdentityDlg extends DlgBox implements EditSuccessfulHandler {
 			@Override
 			public void onSuccess(VibeRpcResponse result) {
 				GwtADLdapObject ldapObject = ((GwtADLdapObject) result.getResponseData());
-				String domainName = ldapObject.getDomainName();
-				String samAccountName = ldapObject.getSamAccountName();
+				String headPart = ldapObject.getNetbiosName();
+				if (!(GwtClientHelper.hasString(headPart))) {
+					headPart = ldapObject.getDomainName();
+				}
+				String tailPart = ldapObject.getSamAccountName();
 				String finalLDAPName;
-				if (GwtClientHelper.hasString(domainName) && GwtClientHelper.hasString(samAccountName))
-				     finalLDAPName = (domainName + "\\" + samAccountName);
+				if (GwtClientHelper.hasString(headPart) && GwtClientHelper.hasString(tailPart))
+				     finalLDAPName = (headPart + "\\" + tailPart);
 				else finalLDAPName = initialLDAPName;
 				setLdapName(tb, finalLDAPName);
 			}						
