@@ -264,12 +264,15 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 		// Key store for key and signing certificates.
-		String ksTail = getKeystoreFile();
-		if (!(ksTail.startsWith(File.separator))) {
-			ksTail = (File.separator + ksTail); 
+		String ksPath = getKeystoreFile();
+		if (!(new File(ksPath).isAbsolute())) {
+			String ksTail = ksPath;
+			if (!(ksTail.startsWith(File.separator))) {
+				ksTail = (File.separator + ksTail); 
+			}
+			ksTail = (File.separator + ".." + File.separator + ".." + ksTail);
+			ksPath = SpringContextUtil.getServletContext().getRealPath(ksTail);
 		}
-		ksTail = (File.separator + ".." + File.separator + ".." + ksTail);
-		String ksPath = SpringContextUtil.getServletContext().getRealPath(ksTail);
 		InputStream keyStoreIS = new FileInputStream(ksPath);
 		char[] keyktorePass = getKeystorePass().toCharArray();
 		KeyStore ksKeys = KeyStore.getInstance("JKS");
