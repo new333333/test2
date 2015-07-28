@@ -213,7 +213,7 @@ public class LoginFilter  implements Filter {
 			throw e;
 		}
 		catch(Exception e) {
-			res.sendRedirect(getErrorUrl(req, e.getLocalizedMessage()));
+			res.sendRedirect(getErrorUrl(req, MiscUtil.exToString(e)));
 		}
 	}
 	
@@ -339,9 +339,10 @@ public class LoginFilter  implements Filter {
 							currentURL.contains("operation=mobile_login"))) {
 				// Request for login form. Let it proceed as normal.
 				String refererURL = req.getParameter("refererUrl");
-				refererURL = StringCheckUtil.checkForQuotes(refererURL, false);		//Prevent XSS attacks
-				if(Validator.isNotNull(refererURL))
+				if(Validator.isNotNull(refererURL)) {
+					refererURL = StringCheckUtil.checkForQuotes(refererURL, false);		//Prevent XSS attacks
 					req.setAttribute(WebKeys.REFERER_URL, refererURL);
+				}
 				chain.doFilter(req, res);										
 			}
 			else {
