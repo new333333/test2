@@ -1528,11 +1528,20 @@ public class NetFolderHelper
 											subPath,
 											proxyName,
 											proxyPwd );
+			
+			if(status != null && status.getCode() != ConnectionTestStatusCode.NORMAL) {
+				if(status.getException() != null) {
+					m_logger.warn("Test connection for home dir creation failed: " + status.toString(), status.getException());
+				}
+				else {
+					m_logger.warn("Test connection for home dir creation failed: " + status.toString());
+				}			
+			}			
 		}
 		else
 		{
 			// Pretend the connection was ok
-			status = new ConnectionTestStatus( ConnectionTestStatusCode.NORMAL, "artificial result" );
+			status = new ConnectionTestStatus( ConnectionTestStatusCode.NORMAL, "artificial result", null );
 		}
     	
 		return status;
