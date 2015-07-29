@@ -87,6 +87,7 @@ import org.kablink.teaming.module.definition.notify.NotifyVisitor;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.mail.EmailUtil;
 import org.kablink.teaming.module.mail.MailModule;
+import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.jbpm.CalloutHelper;
 import org.kablink.teaming.module.workflow.support.WorkflowAction;
@@ -630,7 +631,9 @@ public class EnterExitEvent extends AbstractActionHandler {
 			    				try {
 			    					Map options = new HashMap();
 			    					options.put(ObjectKeys.INPUT_OPTION_NO_DEFAULTS, Boolean.TRUE);
-			    					processor.modifyEntry(parent, entry, new MapInputData(updates), null, null, null, options);
+			    					InputDataAccessor inputData = new MapInputData(updates);
+			    					inputData.setFieldsOnly(true);
+			    					processor.modifyEntry(parent, entry, inputData, null, null, null, options);
 			    				} catch(Exception e) {
 			    					//The modify failed, log it on the console
 			    					logger.error("Error setting entry data from a workflow: (" +
