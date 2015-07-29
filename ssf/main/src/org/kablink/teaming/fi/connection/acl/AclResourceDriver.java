@@ -68,15 +68,21 @@ public interface AclResourceDriver extends ResourceDriver {
 		private ConnectionTestStatusCode code;
 		// (optional) detailed error message 
 		private String message;
-		public ConnectionTestStatus(ConnectionTestStatusCode code, String message) {
+		// (optional) exception object raised from test connection
+		private Exception exc;
+		public ConnectionTestStatus(ConnectionTestStatusCode code, String message, Exception exc) {
 			this.code = code;
 			this.message = message;
+			this.exc = exc;
 		}
 		public ConnectionTestStatusCode getCode() {
 			return code;
 		}
 		public String getMessage() {
 			return message;
+		}
+		public Exception getException() {
+			return exc;
 		}
 		public String toString() {
 			return "[" + code.name() + "]" + ((message != null) ? message : "");
