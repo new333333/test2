@@ -7,6 +7,10 @@
 	-webkit-border-radius: 5px;
 }
 
+.landingPageMainPanel a {
+  	text-decoration: none;
+}
+
 .landingPageViewPreviewHeight
 {
 	height: 600px;
@@ -132,6 +136,8 @@
 {
 	padding: 8px;
 }
+div.entryWidgetDesc      a:hover {text-decoration:underline; background: #cce9ee;}
+div.entryWidgetDesc_dark a:hover {text-decoration:underline; background: #cce9ee;}
 
 .entryWidgetMainPanel
 {
@@ -362,7 +368,7 @@
 .linkToBinderWidgetLink:hover, .linkToBinderWidgetLink_dark:hover
 {
 	cursor: pointer;
-	background: #eec9ee;
+	background: #cce9ee;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
 	-webkit-border-radius: 3px;

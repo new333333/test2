@@ -1354,7 +1354,8 @@ public class DefinitionHelper {
 							else
 								boolValue = new Boolean( value );
 							
-							lpProperties.setHideFooter( boolValue );
+							if ( boolValue != null )
+								lpProperties.setHideFooter( boolValue );
 						}
 						
 						// Get the value of "style"
