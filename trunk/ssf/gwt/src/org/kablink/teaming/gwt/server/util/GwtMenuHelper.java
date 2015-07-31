@@ -4243,7 +4243,7 @@ public class GwtMenuHelper {
 			StringRpcResponseData reply = new StringRpcResponseData();
 
 			// Can we find the definition of a guest book entry?
-			Definition def = DefinitionHelper.getDefinition(ObjectKeys.DEFAULT_ENTRY_GUESTBOOK_DEF);
+			Definition def = DefinitionHelper.getDefinitionByName(ObjectKeys.DEFAULT_ENTRY_GUESTBOOK_NAME);
 			if (null != def) {
 				// Yes!  Construct the add entry URL for it...
 				AdaptedPortletURL url = createActionUrl(request);

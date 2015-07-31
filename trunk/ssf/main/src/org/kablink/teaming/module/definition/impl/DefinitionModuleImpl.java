@@ -596,6 +596,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	return outDoc;
     }
     @Override
+	public Definition getDefinitionByName(String name) {
+		// Controllers need access to definitions.  Allow world read
+ 		return coreDao.loadDefinitionByName(null, name, RequestContextHolder.getRequestContext().getZoneId());
+	}
+    @Override
 	public Definition getDefinition(String id) {
 		// Controllers need access to definitions.  Allow world read
  		return coreDao.loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
