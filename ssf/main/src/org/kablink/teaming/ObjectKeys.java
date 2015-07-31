@@ -69,6 +69,8 @@ public interface ObjectKeys {
 	public static final String DEFAULT_TEMPLATE_NAME_LIBRARY = "_folder_library";
 	public static final String DEFAULT_TEMPLATE_NAME_MIRRORED_FILE = "_folder_mirrored_file";
 	public static final String DEFAULT_TEMPLATE_NAME_FILR_NETFOLDER_FILE = "_folder_filr_netfolder";
+	
+	public static final String DEFAULT_ENTRY_GUESTBOOK_NAME	= "_guestbookEntry";
 		
 	// reserved internalIds for Definitions (not necessarily databaseId cause of multi-zone support)
 	//Used only to locate a minimal set of definitions if something isn't configured correctly

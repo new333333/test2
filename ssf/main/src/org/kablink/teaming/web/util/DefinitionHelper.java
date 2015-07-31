@@ -205,6 +205,21 @@ public class DefinitionHelper {
 		}
 		return orderedDefinitions;
 	}
+	
+	/**
+	 * Helper to get definition for other helpers
+	 * @param name
+	 */
+	public static Definition getDefinitionByName(String name) {
+		try {
+			return getInstance().getDefinitionModule().getDefinitionByName(name);
+		} catch (NoDefinitionByTheIdException nd) {
+			logger.debug("DefinitionHelper.getDefinitionByName(NoDefinitionByTheIdException):  '" + ((null == name) ? "<null>" : name) + "':  :  Ignored");
+			return null;
+		}
+		
+	}
+	
 	/**
 	 * Helper to get definition for other helpers
 	 * @param id
