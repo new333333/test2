@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,67 +32,43 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
-
 import com.google.gwt.core.client.JavaScriptObject;
 
-
 /**
- * This class wraps a JavaScript object that holds the string that defines the landing page.
- * @author jwootton
- *
+ * This class wraps a JavaScript object that holds the string that
+ * defines the landing page.
+ * 
+ * @author drfoster@novell.com
  */
-public class LandingPageConfig extends JavaScriptObject
-{
+public class LandingPageConfig extends JavaScriptObject {
 	/**
-	 * Overlay types always have a protected, zero-arg constructors.
+	 * Constructor method.
+	 * 
+	 * Overlay types always have a protected, zero-argument
+	 * constructor.
 	 */
-	protected LandingPageConfig()
-	{
-	}// end LandingPageConfig()
-
-	
-	/**
-	 * Return the id of the binder we are editing.
-	 */
-	public final native String getBinderId() /*-{ return this.binderId; }-*/;
-	
+	protected LandingPageConfig() {
+		// Initialize the super class.
+		super();
+	}
 	
 	/**
-	 * Return the string that holds the landing page configuration.  This class is an
-	 * Overlay on the JavaScript object called m_landingPageConfig.
+	 * Get'er methods.
+	 * 
+	 * @return
 	 */
-	public final native String getConfigStr() /*-{ return this.configData; }-*/;
-	
+	public final native String getBinderId()            /*-{return this.binderId;          }-*/;
+	public final native String getConfigStr()           /*-{return this.configData;        }-*/;
+	public final native String getContentCss()          /*-{return this.contentCss;        }-*/;
+	public final native String getLanguage()            /*-{return this.language;          }-*/;
+	public final native String getMashupPropertyName()  /*-{return this.mashupPropertyName;}-*/;
+	public final native String getMashupPropertiesXML() /*-{return this.propertiesXML;     }-*/;
+	public final native String getTinyMCELanguage()     /*-{return this.tinyMCELang;       }-*/;
 	
 	/**
-	 * Return the url to the content css
+	 * Set'er methods.
+	 * 
+	 * @param binderId
 	 */
-	public final native String getContentCss() /*-{ return this.contentCss; }-*/;
-
-	
-	/**
-	 * Return the language we are running in.
-	 */
-	public final native String getLanguage() /*-{ return this.language; }-*/;
-	
-	
-	/**
-	 * Return the string that holds the landing page mashup property name.  This class is an
-	 * Overlay on the JavaScript object called m_landingPageConfig.
-	 */
-	public final native String getMashupPropertyName() /*-{ return this.mashupPropertyName; }-*/;
-	
-
-	/**
-	 * Return the xml string that holds the landing page properties such as background color, background image.
-	 */
-	public final native String getMashupPropertiesXML() /*-{ return this.propertiesXML; }-*/;
-	
-
-	/**
-	 * Return the language the tinyMCE editor should use
-	 */
-	public final native String getTinyMCELanguage() /*-{ return this.tinyMCELang; }-*/;
-	
-	
-}// end LandingPageConfig
+	public final native void setBinderId(String binderIdS) /*-{this.binderId = binderIdS;}-*/;
+}
