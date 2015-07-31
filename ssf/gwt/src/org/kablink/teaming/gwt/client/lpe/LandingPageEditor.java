@@ -530,11 +530,22 @@ public class LandingPageEditor extends Composite
 		return m_lpeConfig.getLanguage();
 	}
 	
+
+	/*
+	 */
+	private LandingPageConfig getLandingPageConfig() {
+		LandingPageConfig reply = getLandingPageConfigImpl();
+		if ((null != reply) && (!(GwtClientHelper.hasString(reply.getBinderId())))) {
+			reply.setBinderId(GwtClientHelper.getRequestInfo().getTopWSId());
+		}
+		return reply;
+		
+	}
 	
-	/**
+	/*
 	 * Use JSNI to grab the JavaScript object that holds the landing page configuration data.
 	 */
-	private native LandingPageConfig getLandingPageConfig() /*-{
+	private native LandingPageConfig getLandingPageConfigImpl() /*-{
 		// Return a reference to the JavaScript variable called, m_landingPageConfig.
 		return $wnd.m_landingPageConfig;
 	}-*/;
