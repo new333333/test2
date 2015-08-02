@@ -39,8 +39,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -1229,6 +1231,54 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		return resultTitles;
 	}
 	
+	public Map<String,Object> getNetFolderInfo(List<Long> netFolderTopFolderIds) throws LuceneException {
+		long startTime = System.nanoTime();
+		
+		List<Long> fileCounts = new ArrayList<Long>();
+		List<Long> folderCounts = new ArrayList<Long>();
+		
+		BooleanQuery bq1,bq2;
+		TopDocs topDocs1, topDocs2;
+		
+		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
+		
+		try {
+			for(Long topFolderId:netFolderTopFolderIds) {
+				// First, get the count of files in this net folder.
+				bq1 = new BooleanQuery();
+				bq1.add(new TermQuery(new Term(Constants.ENTRY_ANCESTRY, topFolderId.toString())), BooleanClause.Occur.MUST);
+				bq1.add(new TermQuery(new Term(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY)), BooleanClause.Occur.MUST);
+				bq1.add(new TermQuery(new Term(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY)), BooleanClause.Occur.MUST);
+				// All we care about is the total hit count and we don't need the actual matching docs. So just get top 1 doc.
+				topDocs1 =  getIndexSearcherHandle().getIndexSearcher().search(bq1, 1);
+				fileCounts.add(Long.valueOf(topDocs1.totalHits));
+				
+				// Next, get the count of folders in this net folder.
+				bq2 = new BooleanQuery();
+				bq2.add(new TermQuery(new Term(Constants.ENTRY_ANCESTRY, topFolderId.toString())), BooleanClause.Occur.MUST);
+				bq2.add(new TermQuery(new Term(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER)), BooleanClause.Occur.MUST);
+				bq2.add(new TermQuery(new Term(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER)), BooleanClause.Occur.MUST);
+				topDocs2 =  getIndexSearcherHandle().getIndexSearcher().search(bq2, 1);
+				folderCounts.add(Long.valueOf(topDocs2.totalHits));
+			}
+		} catch (IOException e) {
+			throw newLuceneException("Error searching index", e);
+		} catch (OutOfMemoryError e) {
+			getIndexingResource().closeOOM(e);
+			throw e;
+		} finally {
+			releaseIndexSearcherHandle(indexSearcherHandle);
+		}
+		
+		Map<String,Object> result = new HashMap<String,Object>();
+		result.put(Constants.NETFOLDER_INFO_FILE_COUNTS, fileCounts);
+		result.put(Constants.NETFOLDER_INFO_FOLDER_COUNTS, folderCounts);
+		
+		end(startTime, "getNetFolderInfo(List<Long>)", netFolderTopFolderIds, result);
+		
+		return result;
+	}
+	
 	public void commit() throws LuceneException {
 		long startTime = System.nanoTime();
 		getIndexingResource().commit();
@@ -1322,6 +1372,16 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 		else if(logger.isDebugEnabled()) {
 			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length);
+		}
+	}
+
+	private void end(long begin, String methodName, List input, Map output) {
+		endStat(begin, methodName);
+		if(logger.isTraceEnabled()) {
+			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", input=" + input + ", output=" + output);			
+		}
+		else if(logger.isDebugEnabled()) {
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName);
 		}
 	}
 

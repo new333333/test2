@@ -33,7 +33,9 @@
 package org.kablink.teaming.search.nil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
@@ -102,6 +104,12 @@ public class NilLuceneReadSession implements LuceneReadSession {
 			List<String> titles, Query query, Sort sort, int offset, int size)
 			throws LuceneException {
 		return new Hits(0);
+	}
+
+	@Override
+	public Map<String, Object> getNetFolderInfo(List<Long> netFolderTopFolderIds)
+			throws LuceneException {
+		return new HashMap<String,Object>();
 	}
 
 }

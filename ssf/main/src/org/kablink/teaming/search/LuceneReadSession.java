@@ -34,6 +34,7 @@ package org.kablink.teaming.search;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
@@ -192,4 +193,13 @@ public interface LuceneReadSession extends LuceneSession {
 	 */
 	public ArrayList getSortedTitles(Query query, String sortTitleFieldName, String start, String end, int skipsize)
 			throws LuceneException;
+	
+	/**
+	 * Get information about the net folders identified by the corresponding top folder IDs.
+	 * 
+	 * @param netFolderTopFolderIds
+	 * @return
+	 * @throws LuceneException
+	 */
+	public Map<String,Object> getNetFolderInfo(List<Long> netFolderTopFolderIds) throws LuceneException;
 }

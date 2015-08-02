@@ -1628,4 +1628,13 @@ text/calendar											  ics
 	<!-- ================= To make server/node address available to bean context declaratively during context initialization =============== -->
 	<bean id="nodeAddress" class="org.kablink.teaming.util.NetworkUtil"/>
 	
+	<!-- ================================ Telemetry Service =============================== -->
+	<bean id="telemetryService" class="org.kablink.teaming.telemetry.TelemetryService" depends-on="sPropsUtil">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref bean="coreDao"/></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="adminModule"><ref bean="adminModule"/></property>
+		<property name="luceneSessionFactory"><ref bean="luceneSessionFactory"/></property>
+	</bean>
+	
 </beans>

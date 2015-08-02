@@ -106,6 +106,19 @@ public class Restrictions {
 		protected String getComparator() { return "<>"; }
 	}
 	
+	static class EqOrNullCriterion extends EqCriterion
+	{
+		public EqOrNullCriterion(String name, Object value)
+		{
+			super(name, value);
+		}
+		@Override
+		public String toSQLString(String alias)
+		{
+			return "(" + getFieldName(alias) + " is null or " + super.toSQLString(alias) + ")";
+		}
+	}
+	
 	static class NotNullCriterion extends SingleFieldCriterion
 	{
 		public NotNullCriterion(String name)
@@ -140,6 +153,11 @@ public class Restrictions {
 	public static Criterion notEq(String name, Object value)
 	{
 		return new NotEqCriterion(name, value);
+	}
+
+	public static Criterion eqOrNull(String name, Object value)
+	{
+		return new EqOrNullCriterion(name, value);
 	}
 
 	public static Criterion notNull(String name)

@@ -76,7 +76,9 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.extension.ZoneClassManager;
 import org.kablink.teaming.jobs.AuditTrailMigration;
+import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.jobs.TelemetryProcess;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -301,6 +303,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	        		}
     			}
  			}
+			// Manage sitewide jobs that aren't tied to each zone.
+			manageSitewideJobs();
 		} finally {
 			if (closeSession) SessionUtil.sessionStop();
 		}
@@ -2523,6 +2527,30 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		if(migrationStatus == MigrationStatus.allCompleted) {
 			if(logger.isDebugEnabled())
 				logger.debug("Audit trail records migration is done or unneeded");
+		}
+	}
+	
+	protected void manageSitewideJobs() {
+		// At the moment, there's only one sitewide job that we manage through this routine 
+		// (We have another one called AuditTrailMigration, but that's an one-off job used
+		// for upgrade/migration purpose only).
+		String className = SPropsUtil.getString("job.telemetry.process.class", "org.kablink.teaming.jobs.DefaultTelemetryProcess");
+		TelemetryProcess telemetryProcess = (TelemetryProcess) ReflectHelper.getInstance(className);
+		boolean enabled = SPropsUtil.getBoolean("job.telemetry.process.enable", true);
+		if(enabled) {
+			ScheduleInfo info = telemetryProcess.getScheduleInfo();
+			String cronExpression = SPropsUtil.getString("job.telemetry.process.cronexpr", "0 45 3 ? * sun *"); // 3:45 AM Sunday GMT
+			info.setSchedule(new Schedule(cronExpression));   			
+   			info.setEnabled(true);
+   			if(logger.isDebugEnabled())
+   				logger.debug("Making sure to have telemetry process scheduled with cron expression [" + info.getSchedule().getQuartzSchedule() + "]");
+   			telemetryProcess.setScheduleInfo(info);
+		}
+		else {
+			// If this feature is not enabled, remove the job, if exists, from the system altogether, rather than just disabling it.
+			if(logger.isDebugEnabled())
+				logger.debug("Making sure that telemetry process doesn't exist");
+			telemetryProcess.remove();
 		}
 	}
 }

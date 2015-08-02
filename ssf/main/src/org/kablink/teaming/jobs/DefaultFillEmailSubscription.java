@@ -67,7 +67,7 @@ public class DefaultFillEmailSubscription extends SimpleTriggerJob implements Fi
 		if (!zoneId.toString().equals(context.getTrigger().getJobName())) {
 				deleteJob(context);
 		} else {			
-			if (!coreDao.loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
+			if (!getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
 				logger.debug("Sending mail is not enabled for zone " + RequestContextHolder.getRequestContext().getZoneName());
 				return;
 			}

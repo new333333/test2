@@ -28,6 +28,11 @@
     <property name="useInheritedIndexContent" access="field"/>
     <property name="useInheritedJitsSettings" access="field"/>
     <property name="useInheritedDesktopAppTriggerSetting" access="field" column="useInheritedDATriggerSetting"/>
+    <!-- This association is not exposed through the domain class. It is here only to allow for
+         convenient navigation of association using criteria API when querying the database. -->
+    <many-to-one class="org.kablink.teaming.domain.ResourceDriverConfig" name="resourceDriverConfig" access="field" insert="false" update="false">
+    	<column name="netFolderServerId"/>
+    </many-to-one>
   </class>
   	
 </hibernate-mapping>

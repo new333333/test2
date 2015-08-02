@@ -144,14 +144,6 @@ public class DefaultNetFolderServerSynchronization extends SSCronTriggerJob
 			deleteJob( context );
 		} 
     }
-
-	/**
-	 * 
-	 */
-	private CoreDao getCoreDao()
-	{
-		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
-	}
 	
     /**
      * 

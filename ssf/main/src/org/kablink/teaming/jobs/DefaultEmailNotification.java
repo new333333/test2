@@ -47,7 +47,7 @@ import org.quartz.JobExecutionException;
 public class DefaultEmailNotification extends SSCronTriggerJob implements EmailNotification {
 	 
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-		if (!coreDao.loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
+		if (!getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
 			logger.debug("Sending mail is not enabled for zone " + RequestContextHolder.getRequestContext().getZoneName());
 			return;
 		}

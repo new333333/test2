@@ -321,6 +321,18 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 	
 	protected abstract Hits invokeSearch(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort, int offset, int size) throws LuceneException;
 	
+	@Override
+	public Map<String,Object> getNetFolderInfo(List<Long> netFolderTopFolderIds) throws LuceneException {
+		SimpleProfiler.start("getNetFolderInfo()");
+		long begin = System.nanoTime();
+		Map<String,Object> results = invokeGetNetFolderInfo(netFolderTopFolderIds);
+		SimpleProfiler.stop("getNetFolderInfo()");
+		endRead(begin, "getNetFolderInfo", netFolderTopFolderIds, results);
+		return results;	
+	}
+	
+	protected abstract Map<String,Object> invokeGetNetFolderInfo(List<Long> netFolderTopFolderIds) throws LuceneException;
+
 	class SearchServiceIterator implements Iterator<Hit> {
 
 		private static final int BEFORE_START = 1;

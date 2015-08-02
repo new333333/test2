@@ -304,6 +304,14 @@
 
 	</target>
 	
+	<target name="deploy-log4j">
+		<copy todir="${app.server.dir}/conf" overwrite="true">
+			<fileset dir="${project.dir}/conf">
+				<include name="log4j.properties"/>
+			</fileset>
+		</copy>
+	</target>
+	
 	<target name="deploy-light">
 		<copy todir="${app.server.ssf.dir}" overwrite="true">
 			<fileset dir="${web.dir}">

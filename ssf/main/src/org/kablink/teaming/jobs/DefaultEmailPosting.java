@@ -41,7 +41,7 @@ import org.quartz.JobExecutionException;
 
 public class DefaultEmailPosting extends SSCronTriggerJob implements EmailPosting {
 	public void doExecute(final JobExecutionContext context) throws JobExecutionException {
-		if (!coreDao.loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isPostingEnabled()) {
+		if (!getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isPostingEnabled()) {
 			logger.debug("Posting is not enabled for zone " + RequestContextHolder.getRequestContext().getZoneName());
 	   		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
     		context.setResult("Success");

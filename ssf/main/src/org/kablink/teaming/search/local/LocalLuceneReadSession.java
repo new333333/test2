@@ -34,6 +34,7 @@ package org.kablink.teaming.search.local;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -117,4 +118,11 @@ public class LocalLuceneReadSession extends AbstractLuceneReadSession implements
 			throws LuceneException {
 			return luceneProvider.searchNetFolderOneLevel(contextUserId, baseAclQueryStr, extendedAclQueryStr, titles, query, sort, offset, size);
 	}
+	
+	@Override
+	protected Map<String,Object> invokeGetNetFolderInfo(List<Long> netFolderTopFolderIds)
+	throws LuceneException {
+		return luceneProvider.getNetFolderInfo(netFolderTopFolderIds);
+	}
+	
 }

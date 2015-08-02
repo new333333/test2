@@ -32,8 +32,13 @@
  */
 package org.kablink.teaming.util;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -220,8 +225,16 @@ public class FileHelper {
 		return result;
 	}
 	
-	public static String readFile(String path, Charset encoding) throws IOException {
-		byte[] encoded = Files.readAllBytes(Paths.get(path));
-		return new String(encoded, encoding);
+	public static String readString(String path, Charset charset) throws IOException {
+		byte[] bytes = Files.readAllBytes(Paths.get(path));
+		return new String(bytes, charset);
+	}
+	
+	public static void writeString(String path, Charset charset, String data) throws IOException  {
+		try(FileOutputStream fos = new FileOutputStream(path);
+				BufferedOutputStream bos = new BufferedOutputStream(fos);
+				OutputStreamWriter osw = new OutputStreamWriter(bos, "UTF-8")) {
+			osw.write(data);
+		}
 	}
 }

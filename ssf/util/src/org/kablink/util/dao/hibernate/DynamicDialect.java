@@ -64,9 +64,19 @@ public class DynamicDialect extends Dialect {
 	}
 	
 	private static DatabaseType databaseType;
+	private static String dbProductName = null;
+	private static String dbProductVersion = null;
 	
 	public static DatabaseType getDatabaseType() {
 		return databaseType;
+	}
+	
+	public static String getDatabaseProductName() {
+		return dbProductName;
+	}
+	
+	public static String getDatabaseProductVersion() {
+		return dbProductVersion;
 	}
 	
 	public DynamicDialect() {
@@ -75,7 +85,6 @@ public class DynamicDialect extends Dialect {
 
 		Connection con = null;
 		String datasource = "jdbc/SiteScapePool";
-		String dbName = null;
 		int dbMajorVersion = 0;
 
 		try {
@@ -83,23 +92,24 @@ public class DynamicDialect extends Dialect {
 
 			DatabaseMetaData metaData = con.getMetaData();
 
-			dbName = metaData.getDatabaseProductName();
+			dbProductName = metaData.getDatabaseProductName();
+			dbProductVersion = metaData.getDatabaseProductVersion();
 			dbMajorVersion = metaData.getDatabaseMajorVersion();
 			
-			_log.info("Database product name: " + dbName + ", Database major version: " + dbMajorVersion);
+			_log.info("Database product name: " + dbProductName + ", Database product version: " + dbProductVersion);
 			
 			//this needs to be tested??
-			if (dbName.equals("MySQL")) 
+			if (dbProductName.equals("MySQL")) 
 				_dialect = new MySQL5InnoDBDialect();
-			else if (dbName.equals("PostgreSQL")) 
+			else if (dbProductName.equals("PostgreSQL")) 
 				_dialect = new PostgreSQLDialectBytea();
-			else if (dbName.equalsIgnoreCase("frontbase"))
+			else if (dbProductName.equalsIgnoreCase("frontbase"))
 				_dialect = new FrontBase4Dialect();
 			else
 				_dialect = DialectFactory.buildDialect(new Properties(), con);
 		}
 		catch (Exception e) {
-			if (dbName != null && dbName.equalsIgnoreCase("Oracle") && (dbMajorVersion == 11 || dbMajorVersion == 12)) {
+			if (dbProductName != null && dbProductName.equalsIgnoreCase("Oracle") && (dbMajorVersion == 11 || dbMajorVersion == 12)) {
 				// No dialect support for Oracle 11g or 12c in Hibernate yet. Default it to 10g for now.
 				_dialect = new Oracle10gDialect();
 			}
