@@ -116,6 +116,10 @@ public class NetFolderConfig extends PersistentLongIdObject {
     protected Boolean useInheritedIndexContent = Boolean.TRUE;
     protected Boolean useInheritedJitsSettings = Boolean.TRUE;
     protected Boolean useInheritedDesktopAppTriggerSetting = Boolean.TRUE;
+    
+    // This association is not exposed through the domain class. It is here only to allow for
+    // convenient navigation of association using criteria API when querying the database.
+    private ResourceDriverConfig resourceDriverConfig;
 
     // Used by application
     public NetFolderConfig(Long netFolderServerId) {

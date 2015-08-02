@@ -140,7 +140,4 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
 		setScheduleInfo(new CronJobDescription(schedulerInfo.getZoneId(), schedulerInfo.getZoneId().toString(),LOG_TABLE_PURGE_GROUP, LOG_TABLE_PURGE_DESCRIPTION), schedulerInfo);
 	}
 
-	private CoreDao getCoreDao() {
-		return (CoreDao) SpringContextUtil.getBean("coreDao");
-	}
 }

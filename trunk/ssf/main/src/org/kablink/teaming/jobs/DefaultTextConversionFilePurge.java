@@ -100,7 +100,4 @@ public class DefaultTextConversionFilePurge extends SSCronTriggerJob implements 
 		setScheduleInfo(new CronJobDescription(schedulerInfo.getZoneId(), schedulerInfo.getZoneId().toString(),TEXT_CONVERSION_FILE_PURGE_GROUP, TEXT_CONVERSION_FILE_PURGE_DESCRIPTION), schedulerInfo);
 	}
 
-	private CoreDao getCoreDao() {
-		return (CoreDao) SpringContextUtil.getBean("coreDao");
-	}
 }

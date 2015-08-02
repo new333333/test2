@@ -101,7 +101,7 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
        		return;
        	}
        	//remove from cache in case execution takes long
-       	coreDao.evict(entry);
+       	getCoreDao().evict(entry);
        	String actionName = jobDataMap.getString("class");
 		try {
 			getZoneClassManager().execute(new ExtensionCallback() {

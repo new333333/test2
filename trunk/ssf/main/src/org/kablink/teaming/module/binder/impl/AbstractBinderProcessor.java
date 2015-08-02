@@ -3431,7 +3431,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    	File file = getLastCheckpointFile();
 	    	if(!file.exists()) 
 	    		return null;
-	    	String str = FileHelper.readFile(file.getPath(), Charset.forName("UTF-8"));
+	    	String str = FileHelper.readString(file.getPath(), Charset.forName("UTF-8"));
 	    	if(Validator.isNull(str))
 	    		return null;
 	    	return Long.valueOf(str);

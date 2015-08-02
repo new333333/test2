@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.search;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
@@ -115,6 +118,21 @@ public abstract class AbstractLuceneSession implements LuceneSession {
 		}
 	}
 
+	// Used for read
+	protected void endRead(long begin, String methodName, List input, Map output) {
+		init();
+		if(logger.isTraceEnabled()) {
+			double diff = (System.nanoTime() - begin)/1000000.0;
+			if(diff >= (double) readFloor)
+				logger.trace(diff + " ms, " + methodName + ", input=" + input + ", output=" + output);			
+		}
+		else if(logger.isDebugEnabled()) {
+			double diff = (System.nanoTime() - begin)/1000000.0;
+			if(diff >= (double) readFloor)
+				logger.debug(diff + " ms, " + methodName);
+		}
+	}
+	
 	// Used for read
 	protected void endRead(long begin, String methodName, Query query, String result) {
 		init();

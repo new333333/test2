@@ -35,6 +35,7 @@ package org.kablink.teaming.lucene;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
@@ -82,6 +83,8 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	
 	public String[] getSortedTitles(String indexName, Query query, String sortTitleFieldName, String start, String end,
 			int skipsize) throws RemoteException;
+	
+	public Map<String,Object> getNetFolderInfo(String indexName, List<Long> netFolderTopFolderIds) throws RemoteException;
 	
 	public void clearIndex(String indexname) throws RemoteException;
 	

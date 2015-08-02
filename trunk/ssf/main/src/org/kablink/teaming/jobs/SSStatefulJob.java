@@ -74,7 +74,6 @@ public abstract class SSStatefulJob implements StatefulJob {
 	protected JobDataMap jobDataMap;
 	protected FileModule fileModule;
 	protected ProfileDao profileDao;
-	protected CoreDao coreDao;
 	protected User user;
 	protected Long zoneId;
 	public static int DESCRIPTION_MAX = 120; 
@@ -85,9 +84,10 @@ public abstract class SSStatefulJob implements StatefulJob {
 		return description.substring(0, Math.min(description.length(), DESCRIPTION_MAX));
 	}
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
+		if(logger.isDebugEnabled())
+			logger.debug("Executing job [" + context + "]");
     	fileModule = (FileModule)SpringContextUtil.getBean("fileModule");
     	profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
-    	coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
     	jobDataMap = context.getJobDetail().getJobDataMap();
 		context.setResult("Success");
 		setupSession();
@@ -102,9 +102,7 @@ public abstract class SSStatefulJob implements StatefulJob {
            		// Because the runtime system can't execute anything when not tied to a specific zone, we will run this job
            		// under the context of default zone to begin with. However the job itself is free to do internally whatever
            		// it needs to do to any zones in the system.
-           		String defaultZoneName = SZoneConfig.getDefaultZoneName();
-           		Workspace defaultZoneTop = coreDao.findTopWorkspace(defaultZoneName);
-           		zoneId = defaultZoneTop.getId();
+           		zoneId = this.getDefaultZoneId();
            	}
            	//Validate user and zone are compatible
            	try {
@@ -117,7 +115,7 @@ public abstract class SSStatefulJob implements StatefulJob {
            	} catch (Exception ex) {
            		//see if zone is deleted and remove job gracefully
            		try {
-           			Workspace zone = (Workspace)coreDao.loadBinder(zoneId, zoneId);
+           			Workspace zone = (Workspace)getCoreDao().loadBinder(zoneId, zoneId);
            			if (zone.isDeleted()) {
            	   			deleteJob(context);
           				return;
@@ -160,11 +158,15 @@ public abstract class SSStatefulJob implements StatefulJob {
 
 	}  
 	protected void deleteJob(JobExecutionContext context) {
+		if(logger.isDebugEnabled())
+			logger.debug("About to delete job on success - [" + context + "]");
 		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
 		context.setResult("Success");
 		return;
 	}
 	protected void unscheduleJob(JobExecutionContext context) {
+		if(logger.isDebugEnabled())
+			logger.debug("About to unschedule job on success - [" + context + "]");
 		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.UnscheduleJob);
 		context.setResult("Success");
 		return;
@@ -186,6 +188,8 @@ public abstract class SSStatefulJob implements StatefulJob {
 	 * @throws JobExecutionException
 	 */
 	protected void deleteJobOnError(JobExecutionContext context, Exception e) throws JobExecutionException {
+		if(logger.isDebugEnabled())
+			logger.debug("About to delete job on error - [" + context + "]");
 		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJobOnError);
 		context.setResult("Failed");
 		throw new JobExecutionException(e);
@@ -198,6 +202,8 @@ public abstract class SSStatefulJob implements StatefulJob {
 	 * @throws JobExecutionException
 	 */
 	protected void unscheduleJobOnError(JobExecutionContext context, Exception e) throws JobExecutionException {
+		if(logger.isDebugEnabled())
+			logger.debug("About to unschedule job on error - [" + context + "]");
 		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.UnscheduleJobOnError);
 		context.setResult("Failed");
 		throw new JobExecutionException(e);
@@ -212,11 +218,13 @@ public abstract class SSStatefulJob implements StatefulJob {
 	 * @param jobGroup
 	 */
 	protected void unscheduleJob(String jobName, String jobGroup) {
+		if(logger.isDebugEnabled())
+			logger.debug("Unschedule job '" + jobName + "' of group '" + jobGroup + "'");
 		Scheduler scheduler = getScheduler();		
 		try {
 			scheduler.unscheduleJob(jobName, jobGroup);
 		} catch (SchedulerException se) {			
-			logger.error("Failed to unschedule job '" + jobName + "' of group '" + jobGroup + "': " + se.toString());
+			logger.error("Failed to unschedule job '" + jobName + "' of group '" + jobGroup + "'" + se);
 		}
 		
 	}
@@ -229,12 +237,14 @@ public abstract class SSStatefulJob implements StatefulJob {
 	 * @return
 	 */
 	protected boolean deleteJob(String jobName, String jobGroup) {
+		if(logger.isDebugEnabled())
+			logger.debug("Delete job '" + jobName + "' of group '" + jobGroup + "'");
 		Scheduler scheduler = getScheduler();
 		try {
 			scheduler.deleteJob(jobName, jobGroup);
 			return true;
 		} catch (SchedulerException se) {
-			logger.error("Failed to delete job '" + jobName + "' of group '" + jobGroup + "': " + se.toString());
+			logger.error("Failed to delete job '" + jobName + "' of group '" + jobGroup + "'" + se);
 			return false;
 		}
 	}
@@ -248,6 +258,13 @@ public abstract class SSStatefulJob implements StatefulJob {
 		return TimeZoneHelper.getDefault();
 	}
 
+	protected CoreDao getCoreDao() {
+		return (CoreDao)SpringContextUtil.getBean("coreDao");
+	}
 
-
+	protected Long getDefaultZoneId() {
+   		String defaultZoneName = SZoneConfig.getDefaultZoneName();
+   		Workspace defaultZoneTop = getCoreDao().findTopWorkspace(defaultZoneName);
+   		return defaultZoneTop.getId();
+	}
 }
