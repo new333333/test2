@@ -98,6 +98,9 @@ public class TelemetryService extends HibernateDaoSupport {
 			writeInstallationIdentifier(installationIdentifier);
 		}
 		
+		if(logger.isDebugEnabled())
+			logger.debug("Collecting telemetry data for '" + product + "' (opt-in=" + collectOptin + ", installation identifider=" + installationIdentifier + ")");
+
 		long currentTime = System.currentTimeMillis();
 		
 		TelemetryData data = new TelemetryData();
@@ -176,8 +179,7 @@ public class TelemetryService extends HibernateDaoSupport {
 					}
 				}
 				catch(Exception e) {
-					if(logger.isDebugEnabled())
-						logger.debug("Cannot read /opt/novell/base_config/buildformat", e);
+					logger.warn("Cannot read /opt/novell/base_config/buildformat", e);
 				}
 			}
 			optin.setHypervisorType(hypervisorType);
