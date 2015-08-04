@@ -223,4 +223,22 @@ update SS_Forums set binderType = LEFT(type, 1);
         </addColumn>
     </changeSet> 
 
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
+        <comment>Add telemetryEnabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="telemetryEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="19">
+        <comment>Add telemetryOptinEnabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="telemetryOptinEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

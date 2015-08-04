@@ -92,5 +92,7 @@
     </component>
     <property name="useDirectoryRights" access="field" />
     <property name="cachedRightsRefreshInterval" access="field" />
+    <property name="telemetryEnabled" access="field" />
+    <property name="telemetryOptinEnabled" access="field" />
    </class>
 </hibernate-mapping>

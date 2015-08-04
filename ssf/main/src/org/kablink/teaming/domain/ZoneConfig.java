@@ -100,6 +100,8 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     private NameCompletionSettings nameCompletionSettings;
 	private Boolean useDirectoryRights;
 	private Integer cachedRightsRefreshInterval;
+	private Boolean telemetryEnabled;
+	private Boolean telemetryOptinEnabled;
 
 	public ZoneConfig()
 	{
@@ -751,6 +753,26 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	}
 	public void setShareLists(ShareLists shareLists) {
 		setShareListsBlob(shareLists.getShareListsBlob());
+	}
+
+	public boolean getTelemetryEnabled() {
+		if(telemetryEnabled == null)
+			return true;
+		else
+			return telemetryEnabled.booleanValue();
+	}
+	public void setTelemetryEnabled(boolean enabled) {
+		this.telemetryEnabled = Boolean.valueOf(enabled);
+	}
+
+	public boolean getTelemetryOptinEnabled() {
+		if(telemetryOptinEnabled == null)
+			return false;
+		else
+			return telemetryOptinEnabled.booleanValue();
+	}
+	public void setTelemetryOptinEnabled(boolean enabled) {
+		this.telemetryOptinEnabled = Boolean.valueOf(enabled);
 	}
 
 }
