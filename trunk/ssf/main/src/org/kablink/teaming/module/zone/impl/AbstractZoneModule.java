@@ -2539,7 +2539,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		boolean enabled = SPropsUtil.getBoolean("job.telemetry.process.enable", true);
 		if(enabled) {
 			ScheduleInfo info = telemetryProcess.getScheduleInfo();
-			String cronExpression = SPropsUtil.getString("job.telemetry.process.cronexpr", "0 45 3 ? * sun *"); // 3:45 AM Sunday GMT
+			String cronExpression = SPropsUtil.getString("job.telemetry.process.cronexpr", "0 00 5 ? * sun *"); // 5:00 AM Sunday GMT
 			info.setSchedule(new Schedule(cronExpression));   			
    			info.setEnabled(true);
    			if(logger.isDebugEnabled())
