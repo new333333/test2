@@ -299,4 +299,22 @@ GO
 		</sql>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="19">
+        <comment>Add telemetryEnabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="telemetryEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="20">
+        <comment>Add telemetryOptinEnabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="telemetryOptinEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
 </databaseChangeLog>
