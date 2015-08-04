@@ -764,15 +764,12 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	public void setTelemetryEnabled(boolean enabled) {
 		this.telemetryEnabled = Boolean.valueOf(enabled);
 	}
-
-	public boolean getTelemetryOptinEnabled() {
-		if(telemetryOptinEnabled == null)
-			return false;
-		else
-			return telemetryOptinEnabled.booleanValue();
+	
+	public Boolean getTelemetryOptinEnabled() {
+		return telemetryOptinEnabled;
 	}
-	public void setTelemetryOptinEnabled(boolean enabled) {
-		this.telemetryOptinEnabled = Boolean.valueOf(enabled);
+	public void setTelemetryOptinEnabled(boolean telemetryOptinEnabled) {
+		this.telemetryOptinEnabled = Boolean.valueOf(telemetryOptinEnabled);
 	}
 
 }
