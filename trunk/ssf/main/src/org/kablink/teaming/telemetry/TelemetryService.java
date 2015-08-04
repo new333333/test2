@@ -52,6 +52,7 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.Restrictions;
 import org.kablink.teaming.domain.Attachment;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MobileDevice;
 import org.kablink.teaming.domain.NetFolderConfig;
@@ -207,8 +208,12 @@ public class TelemetryService extends HibernateDaoSupport {
 			group.setTeamGroupCount(teamGroupCount);
 			
 			// Number of files in personal storage
-			long personalStorageFileCount = countPersonalStorageFileCount(null);
+			long personalStorageFileCount = countFilesInPersonalStorage(null);
 			optin.setPersonalStorageFileCount(personalStorageFileCount);
+			
+			// Number of workspaces
+			long workspaceCount = countWorkspaces(null);
+			optin.setWorkspaceCount(workspaceCount);
 			
 			// Net folder
 			NetFolder netFolder = new NetFolder();
@@ -408,18 +413,26 @@ public class TelemetryService extends HibernateDaoSupport {
 	 	return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
 	}
 	
-	long countPersonalStorageFileCount(Long zoneId) {
-		FilterControls filterControls = new FilterControls();
-		filterControls.add(Restrictions.eq("type", 'F'));
-		filterControls.add(Restrictions.eq("owner.ownerType", "folderEntry"));
-		filterControls.add(Restrictions.notEq("repositoryName", "fiAdapter"));
-		if (zoneId == null)
-			filterControls.setZoneCheck(false);
-		return getCoreDao().countObjects(Attachment.class, filterControls,
-				zoneId);
-
-	}
-	
+		long countFilesInPersonalStorage(Long zoneId) {
+			FilterControls filterControls = new FilterControls();
+			filterControls.add(Restrictions.eq("type", 'F'));
+			filterControls.add(Restrictions.eq("owner.ownerType", "folderEntry"));
+			filterControls.add(Restrictions.notEq("repositoryName", "fiAdapter"));
+			if (zoneId == null)
+				filterControls.setZoneCheck(false);
+			return getCoreDao().countObjects(Attachment.class, filterControls,
+					zoneId);
+		}
+		
+		long countWorkspaces(Long zoneId) {
+			FilterControls filterControls = new FilterControls();
+			filterControls.add(Restrictions.eq("binderType", "w"));
+			filterControls.add(Restrictions.isNull("internalId")); // To filter out system workspaces
+			if (zoneId == null)
+				filterControls.setZoneCheck(false);
+			return getCoreDao().countObjects(Binder.class, filterControls, zoneId);
+		}
+		
 	Map<ResourceDriverConfig.DriverType,Long> countNetFoldersByNetFolderServerType(final boolean homeDir) {
 		Map<ResourceDriverConfig.DriverType,Long> result = new HashMap<ResourceDriverConfig.DriverType,Long>();
 		List data = (List)getHibernateTemplate().execute(new HibernateCallback<List>() {
@@ -622,6 +635,8 @@ public class TelemetryService extends HibernateDaoSupport {
 		Group group;	
 		@JsonProperty("personalStorageFileCount")
 		long personalStorageFileCount;
+		@JsonProperty("workspaceCount")
+		long workspaceCount;
 		@JsonProperty("hypervisorType")
 		String hypervisorType;
 		@JsonProperty("netFolder")
@@ -658,6 +673,12 @@ public class TelemetryService extends HibernateDaoSupport {
 		}
 		public void setPersonalStorageFileCount(long personalStorageFileCount) {
 			this.personalStorageFileCount = personalStorageFileCount;
+		}
+		public long getWorkspaceCount() {
+			return workspaceCount;
+		}
+		public void setWorkspaceCount(long workspaceCount) {
+			this.workspaceCount = workspaceCount;
 		}
 		public String getHypervisorType() {
 			return hypervisorType;
