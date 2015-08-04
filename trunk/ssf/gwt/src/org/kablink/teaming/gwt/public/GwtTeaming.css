@@ -5592,8 +5592,13 @@ td.datePickerMonth {
 	.vibe-selectCSVDelimiterDlg-hint2          {margin-top:  10px;}
 	.vibe-selectCSVDelimiterDlg-panel          {}
 	.vibe-selectCSVDelimiterDlg-radio          {margin-left: 5px;}
-	
 /* End:  SelectCSVDelimiter dialog styles. */
+
+/* Start:  Telemetry Optin dialog styles. */
+	.vibe-telemetryOptinDlg-checkbox {}
+	.vibe-telemetryOptinDlg-hint     {width: 400px; margin-top: 5px; color: #414648; /* dark grey */ line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 1em;}
+	.vibe-telemetryOptinDlg-panel    {padding: 10px;}
+/* End:  Telemetry Optin dialog styles. */
 
 /* Start:  User properties dialog styles. */
 	.vibe-userPropertiesDlg-aboutMe          {color: #353838; width: 330px;}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,10 +48,12 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	private boolean		m_showDesktopAppDownloader;	//
 	private boolean		m_useHomeForMyFiles;		// true -> As user's Home folder serves as their My Files repository.  false -> It doesn't.
 	private boolean		m_firstLogin;				// true if it is the user's first login
+	private boolean		m_isDefaultZone;			// true if we're running in the default zone.
 	private boolean		m_isSuperUser;				// true if we are dealing with the super user (admin)
+	private boolean		m_isTelemetryOptinSet;		// true if the built-in admin has set a telemetry option setting on the default zone.
 	private BinderInfo	m_binderInfo;				//
 	private String		m_userAvatarUrl;			//
-	
+
 	/**
 	 * Constructor method. 
 	 * 
@@ -61,7 +63,7 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 		// Initialize the super class.
 		super();
 	}
-	
+
 	/**
 	 * Constructor method.
 	 *
@@ -71,8 +73,12 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * @param desktopAppEnabled
 	 * @param showDesktopAppDownloader
 	 * @param useHomeAsMyFiles
+	 * @param firstLogin
+	 * @param superUser
+	 * @param defaultZone
+	 * @param telemetryOptinSet
 	 */
-	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean browserSupportsNPAPI, boolean desktopAppEnabled, boolean showDesktopAppDownloader, boolean useHomeAsMyFiles, boolean firstLogin, boolean superUser) {
+	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean browserSupportsNPAPI, boolean desktopAppEnabled, boolean showDesktopAppDownloader, boolean useHomeAsMyFiles, boolean firstLogin, boolean superUser, boolean defaultZone, boolean telemetryOptinSet) {
 		// Initialize this object...
 		this();
 
@@ -83,24 +89,28 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 		setDesktopAppEnabled(       desktopAppEnabled       );
 		setShowDesktopAppDownloader(showDesktopAppDownloader);
 		setUseHomeAsMyFiles(        useHomeAsMyFiles        );
-		setIsFirstLogin(			firstLogin				);
-		setIsSuperUser(				superUser				);
+		setIsFirstLogin(            firstLogin              );
+		setIsSuperUser(             superUser               );
+		setIsDefaultZone(           defaultZone             );
+		setIsTelemetryOptinSet(     telemetryOptinSet       );
 	}
-	
+
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
 	public boolean    browserSupportsNPAPI()       {return m_browserSupportsNPAPI;    }
+	public boolean    isDefaultZone()              {return m_isDefaultZone;           }
 	public boolean    isDesktopAppEnabled()        {return m_desktopAppEnabled;       }
-	public boolean	  isFirstLogin()			   {return m_firstLogin;			  }
+	public boolean    isFirstLogin()               {return m_firstLogin;              }
 	public boolean    isShowDesktopAppDownloader() {return m_showDesktopAppDownloader;}
-	public boolean	  isSuperUser()				   {return m_isSuperUser;			  }
+	public boolean    isSuperUser()                {return m_isSuperUser;             }
+	public boolean    isTelemetryOptinSet()        {return m_isTelemetryOptinSet;     }
 	public boolean    isUseHomeAsMyFiles()         {return m_useHomeForMyFiles;       }
 	public BinderInfo getBinderInfo()              {return m_binderInfo;              }
 	public String     getUserAvatarUrl()           {return m_userAvatarUrl;           }
-	
+
 	/**
 	 * Set'er methods.
 	 * 
@@ -108,8 +118,10 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 */
 	public void setBrowserSupportsNPAPI(    boolean    browserSupportsNPAPI)     {m_browserSupportsNPAPI     = browserSupportsNPAPI;    }
 	public void setDesktopAppEnabled(       boolean    desktopAppEnabled)        {m_desktopAppEnabled        = desktopAppEnabled;       }
-	public void setIsFirstLogin(			boolean	   firstLogin )				 {m_firstLogin				 = firstLogin;				}
-	public void setIsSuperUser(				boolean	   superUser )				 {m_isSuperUser				 = superUser;				}
+	public void setIsDefaultZone(           boolean    isDefaultZone)            {m_isDefaultZone            = isDefaultZone;           }
+	public void setIsFirstLogin(            boolean    firstLogin)               {m_firstLogin               = firstLogin;              }
+	public void setIsSuperUser(             boolean    superUser)                {m_isSuperUser              = superUser;               }
+	public void setIsTelemetryOptinSet(     boolean    isTelemetryOptinSet)      {m_isTelemetryOptinSet      = isTelemetryOptinSet;     }
 	public void setShowDesktopAppDownloader(boolean    showDesktopAppDownloader) {m_showDesktopAppDownloader = showDesktopAppDownloader;}
 	public void setUseHomeAsMyFiles(        boolean    useHomeAsMyFiles)         {m_useHomeForMyFiles        = useHomeAsMyFiles;        }
 	public void setBinderInfo(              BinderInfo binderInfo)               {m_binderInfo               = binderInfo;              }

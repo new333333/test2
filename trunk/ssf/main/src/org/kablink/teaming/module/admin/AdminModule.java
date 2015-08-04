@@ -565,4 +565,11 @@ public interface AdminModule {
      * @return
      */
     public IndexNode loadNonHAIndexNode();
+    
+    /**
+     * Stores telemetry optin enabled flag in the zone config.
+     * 
+     * @param telemetryOptinEnabled
+     */
+    public void setTelemetryOptinEnabled(boolean telemetryOptinEnabled);
  }
