@@ -2302,17 +2302,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_MAIN_PAGE_INFO:
-		{
+		case GET_MAIN_PAGE_INFO:  {
 			GetMainPageInfoCmd gcwCmd = ((GetMainPageInfoCmd) cmd);
-			MainPageInfoRpcResponseData result = GwtServerHelper.getMainPageInfo( this, req, gcwCmd.getBinderId() );
+			MainPageInfoRpcResponseData result = GwtServerHelper.getMainPageInfo(this, req, gcwCmd.getBinderId());
 			response = new VibeRpcResponse( result );
 			
-			// The GetMainPageInfoCmd should only be called once when we start up.  Set the user's
-			// timezone to the timezone being used by the browser
-			GwtServerHelper.setUserTimezone(
-											this,
-											gcwCmd.getTimeZoneOffset() );
+			// The GetMainPageInfoCmd should only be called once when
+			// we start up.  Set the user's timezone to the timezone
+			// being used by the browser
+			GwtServerHelper.setUserTimezone(this, gcwCmd.getTimeZoneOffset());
 			
 			return response;
 		}
@@ -4089,6 +4087,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			List<Long> entryIds = ((SetSeenCmd) cmd).getEntryIds();
 			Boolean result = setSeen( req, entryIds );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
+		case SET_TELEMETRY_OPTIN_ENABLED:  {
+			SetTelemetryOptinEnabledCmd stoeCmd = ((SetTelemetryOptinEnabledCmd) cmd);
+			GwtServerHelper.setTelemetryOptinEnabled(this, req, stoeCmd.isTelemetryOptinEnabled());
+			response = new VibeRpcResponse(new BooleanRpcResponseData(true));
 			return response;
 		}
 		

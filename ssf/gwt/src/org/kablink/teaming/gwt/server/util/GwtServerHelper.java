@@ -6681,8 +6681,9 @@ public class GwtServerHelper {
 			// ...deployed from the local server...
 			boolean desktopAppEnabled        = false;
 			boolean showDesktopAppDownloader = false;
+			ZoneModule zm = bs.getZoneModule();
 			if (!(GwtServerHelper.getCurrentUser().isShared())) {
-				ZoneConfig zc = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+				ZoneConfig zc = zm.getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
 				String baseUrl = zc.getFsaAutoUpdateUrl();
 				baseUrl = ((null == baseUrl) ? "" : baseUrl.trim());
 				if ((0 < baseUrl.length()) || zc.getFsaDeployLocalApps()) {
@@ -6727,6 +6728,14 @@ public class GwtServerHelper {
 				}
 			}
 			
+			// Is this the default zone?
+			Long defaultZoneId = zm.getZoneIdByVirtualHost(null);	// null -> Returns default zone ID.
+			boolean defaultZone = RequestContextHolder.getRequestContext().getZoneId().equals(defaultZoneId);
+			
+			// Has the telemetry optin been set on the default zone?
+			Boolean telemetryOptinEnabled = zm.getZoneConfig(defaultZoneId).getTelemetryOptinEnabled();
+			boolean telemetryOptinSet = (null != telemetryOptinEnabled);
+			
 			// ...and use this all to construct a
 			// ...MainPageInfoRpcResponseData to return.
 			return
@@ -6738,7 +6747,9 @@ public class GwtServerHelper {
 					showDesktopAppDownloader,
 					useHomeAsMyFiles,
 					firstLogin,
-					superUser);
+					superUser,
+					defaultZone,
+					telemetryOptinSet);
 		}
 		
 		catch (Exception ex) {
@@ -10610,6 +10621,7 @@ public class GwtServerHelper {
 		case SET_MOBILE_DEVICES_WIPE_SCHEDULED_STATE:
 		case SET_PRINCIPALS_ADMIN_RIGHTS:
 		case SET_SEEN:
+		case SET_TELEMETRY_OPTIN_ENABLED:
 		case SET_UNSEEN:
 		case SET_USER_SHARING_RIGHTS_INFO:
 		case SET_USER_VISIBILITY:
@@ -12154,6 +12166,26 @@ public class GwtServerHelper {
 		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}		
+	}
+	
+	/**
+	 * Stores the telemetryOptinEnabled setting ZoneConfig.
+	 *  
+	 * @param bs
+	 * @param request
+	 * @param telemetryOptinEnabled
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static void setTelemetryOptinEnabled(AllModulesInjected bs, HttpServletRequest request, boolean telemetryOptinEnabled) throws GwtTeamingException {
+		try {
+			bs.getAdminModule().setTelemetryOptinEnabled(telemetryOptinEnabled);
+		}
+		
+		catch(Exception ex) {
+			GwtLogHelper.error(m_logger, "GwtServerHelper.setTelemetryOptinEnabled():  Error saving telemetry optin.", ex);
+			throw GwtLogHelper.getGwtClientException(ex);				
+		}
 	}
 	
 	/**

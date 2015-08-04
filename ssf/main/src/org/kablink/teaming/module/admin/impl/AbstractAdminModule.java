@@ -4186,4 +4186,18 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		visitor.processTemplate(template,     ctx);
 		visitor.processTemplate("footer.vm",  ctx);
     }
+    
+    /**
+     * Stores telemetry optin enabled flag in the zone config.
+     * 
+     * @param telemetryOptinEnabled
+     */
+    @Override
+    public void setTelemetryOptinEnabled(boolean telemetryOptinEnabled) {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		Boolean currentTOE = zoneConfig.getTelemetryOptinEnabled();
+  		if ((null == currentTOE) || (telemetryOptinEnabled != currentTOE.booleanValue())) {
+  	  		zoneConfig.setTelemetryOptinEnabled(telemetryOptinEnabled);
+  		}
+    }
 }

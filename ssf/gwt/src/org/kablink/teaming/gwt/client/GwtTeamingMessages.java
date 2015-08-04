@@ -643,6 +643,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_SetPrincipalsLimitedUserVisibility();
 	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
+	String rpcFailure_SetTelemetryOptinEnabled();
 	String rpcFailure_SetUnseen();
 	String rpcFailure_ShareEntry();
 	String rpcFailure_ShowShares();
@@ -836,6 +837,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_TaskListing();
 	String codeSplitFailure_TeamWorkspacesView();
 	String codeSplitFailure_TeamWSView();
+	String codeSplitFailure_TelemetryOptinDlg();
 	String codeSplitFailure_TinyMCEDlg();
 	String codeSplitFailure_TrashView();
 	String codeSplitFailure_UserPropertiesDlg();
@@ -3738,4 +3740,10 @@ public interface GwtTeamingMessages extends Messages {
 	String manageEmailTemplatesDlgCaption();
 	String manageEmailTemplatesDlg_confirmDelete();
 	String manageEmailTemplatesDlg_failureDeletingEmailTemplates();
+	
+	// Strings used in the Telemetry Optin dialog.
+	String telemetryOptinDlg_InternalError_CantCancel();
+	String telemetryOptinDlgCheckBoxLabel();
+	String telemetryOptinDlgHeader();
+	String telemetryOptinDlgHint(String company, String product);
 }

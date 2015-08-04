@@ -168,6 +168,7 @@ import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControl.DesktopA
 import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadControlCookies.Cookie;
 import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadDlg;
 import org.kablink.teaming.gwt.client.widgets.DesktopAppDownloadDlg.DesktopAppDownloadDlgClient;
+import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.LoginDlg;
@@ -180,6 +181,8 @@ import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.PersonalPreferencesDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
+import org.kablink.teaming.gwt.client.widgets.TelemetryOptinDlg;
+import org.kablink.teaming.gwt.client.widgets.TelemetryOptinDlg.TelemetryOptinDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
@@ -225,6 +228,7 @@ public class GwtMainPage extends ResizeComposite
 		ContentChangedEvent.Handler,
 		ContextChangedEvent.Handler,
 		ContextChangingEvent.Handler,
+		DialogClosedEvent.Handler,
 		EditCurrentBinderBrandingEvent.Handler,
 		EditPersonalPreferencesEvent.Handler,
 		FullUIReloadEvent.Handler,
@@ -296,6 +300,7 @@ public class GwtMainPage extends ResizeComposite
 	private ActivityStreamCtrl m_activityStreamCtrl = null;
 	private CollectionPointData m_collectionPointData = null;
 	private MainPageInfoRpcResponseData m_mainPageInfo;
+	private TelemetryOptinDlg m_telemetryOptinDlg;
 
 	private com.google.gwt.dom.client.Element m_tagPanelElement;
 
@@ -317,6 +322,7 @@ public class GwtMainPage extends ResizeComposite
 		// Miscellaneous events.
 		TeamingEvents.BROWSE_HIERARCHY,
 		TeamingEvents.CHANGE_FAVORITE_STATE,
+		TeamingEvents.DIALOG_CLOSED,
 		TeamingEvents.FULL_UI_RELOAD,
 		TeamingEvents.INVOKE_SHARE_BINDER,
 
@@ -950,6 +956,7 @@ public class GwtMainPage extends ResizeComposite
 		}
 		
 		// Is this the first time the user logged in?
+		boolean changedAdminsPassword = false;
 		if ( m_mainPageInfo.isFirstLogin() )
 		{
 			// Yes
@@ -958,8 +965,17 @@ public class GwtMainPage extends ResizeComposite
 			{
 				// Yes
 				// Invoke the change password dialog.
+				changedAdminsPassword = true;
 				GwtTeaming.fireEvent( new InvokeChangePasswordDlgEvent() );
 			}
+		}
+
+		// If we didn't just change the admin user's password and we
+		// to prompt the admin about telemetry data optin...
+		if ((!changedAdminsPassword) && requiresTelemetryOptinPrompt()) {
+			// ...invoke the telemetry optin dialog.
+			m_mainPageInfo.setIsTelemetryOptinSet(true);
+			invokeTelemetryOptinDlgAsync(0);
 		}
 	}
 
@@ -2894,6 +2910,84 @@ public class GwtMainPage extends ResizeComposite
 	}
 	
 	/**
+	 * Handles DialogClosedEvent's received by this class.
+	 * 
+	 * Implements the DialogClosedEvent.Handler.onDialogClosed() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDialogClosed(final DialogClosedEvent event) {
+		DlgBox eventDlg = event.getDlgBox();
+		if ((null != eventDlg) && (null != m_changePwdDlg) && (eventDlg.equals(m_changePwdDlg) && requiresTelemetryOptinPrompt())) {
+			m_mainPageInfo.setIsTelemetryOptinSet(true);
+			invokeTelemetryOptinDlgAsync(2000);	// We'll wait 2 seconds after the change password dialog closes.
+		}
+	}
+
+	/*
+	 * Asynchronously invokes the telemetry optin dialog.
+	 */
+	private void invokeTelemetryOptinDlgAsync(final int delay) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				invokeTelemetryOptinDlgNow();
+			}
+		},
+		delay);
+	}
+	
+	/*
+	 * Synchronously invokes the telemetry optin dialog.
+	 */
+	private void invokeTelemetryOptinDlgNow() {
+		// Have we created the telemetry option dialog yet?
+		if (null == m_telemetryOptinDlg) {
+			// No!  Create it now...
+			TelemetryOptinDlg.createAsync(new TelemetryOptinDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(TelemetryOptinDlg toDlg) {
+					// ...and run it.
+					m_telemetryOptinDlg = toDlg;
+					showTelemetryOptinDlgAsync();
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've already created the telemetry option yet!
+			// Simply run it.
+			showTelemetryOptinDlgAsync();
+		}
+	}
+	
+	/*
+	 * Asynchronously shows the telemetry optin dialog.
+	 */
+	private void showTelemetryOptinDlgAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showTelemetryOptinDlgNow();
+			}
+		});
+	}
+
+	/*
+	 * Synchronously shows the telemetry optin dialog.
+	 */
+	private void showTelemetryOptinDlgNow() {
+		TelemetryOptinDlg.initAndShow(m_telemetryOptinDlg);
+	}
+	
+	/**
 	 * Handles EditCurrentBinderBrandingEvent's received by this class.
 	 * 
 	 * Implements the EditCurrentBinderBrandingEvent.Handler.onEditCurrentBinderBranding() method.
@@ -4635,5 +4729,17 @@ public class GwtMainPage extends ResizeComposite
 	{
 		// Always use the initial form of the method.
 		prefetch(null);
+	}
+	
+	/*
+	 * Returns true if we need prompt for telemetry optin enablement
+	 * and false otherwise.
+	 * 
+	 * The only time we prompt for it is for the built-in admin running
+	 * on the default zone and there's no record of it having been set
+	 * yet.
+	 */
+	private boolean requiresTelemetryOptinPrompt() {
+		return (m_mainPageInfo.isSuperUser() && m_mainPageInfo.isDefaultZone() && (!(m_mainPageInfo.isTelemetryOptinSet())));
 	}
 }
