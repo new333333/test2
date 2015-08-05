@@ -119,6 +119,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_CONFIGURE_MOBILE_APPS_DLG,				// Invokes the Configure Mobile Apps dialog.
 	INVOKE_CONFIGURE_PASSWORD_POLICY_DLG,			// Invokes the Configure Password Policy dialog.
 	INVOKE_CONFIGURE_SHARE_SETTINGS_DLG,			// Invokes the Configure Share Settings dialog.
+	INVOKE_CONFIGURE_TELEMETRY_DLG,					// Invokes the Configure Telemetry dialog.
 	INVOKE_CONFIGURE_UPDATE_LOGS_DLG,				// Invokes the Configure Update Logs dialog.
 	INVOKE_CONFIGURE_USER_ACCESS_DLG,				// Invokes the Configure User Access dialog.
 	INVOKE_COPY_FILTERS_DLG,						// Invokes the 'Copy Filters' dialog.

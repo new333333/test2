@@ -60,6 +60,7 @@ public enum AdminAction implements IsSerializable {
 	CONFIGURE_SCHEDULE("Configure weekend and holiday schedule"),
 	CONFIGURE_SEARCH_INDEX("Configure search index"),
 	CONFIGURE_SHARE_SETTINGS("Configure share settings"),
+	CONFIGURE_TELEMETRY("Configure telemetry settings"),
 	CONFIGURE_USER_ACCESS("Configure user access"),
 	FORM_VIEW_DESIGNER("Form/View Designer"),
 	IMPORT_PROFILES("Import profiles"),

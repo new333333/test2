@@ -532,6 +532,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetTeamManagement();
 	String rpcFailure_GetTeamMembership();
 	String rpcFailure_GetTeams();
+	String rpcFailure_GetTelemetrySettings();
 	String rpcFailure_GetTimeZones();
 	String rpcFailure_GetToolbarItems();
 	String rpcFailure_GetTopLevelEntryId();
@@ -712,6 +713,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_ConfigureFileSyncAppDlg();
 	String codeSplitFailure_ConfigureMobileAppsDlg();
 	String codeSplitFailure_ConfigurePasswordPolicyDlg();
+	String codeSplitFailure_ConfigureTelemetryDlg();
 	String codeSplitFailure_ConfigureUserAccessDlg();
 	String codeSplitFailure_ConfigureUpdateLogsDlg();
 	String codeSplitFailure_ConfigureUserFileSyncAppDlg();
@@ -3746,4 +3748,7 @@ public interface GwtTeamingMessages extends Messages {
 	String telemetryOptinDlgCheckBoxLabel();
 	String telemetryOptinDlgHeader();
 	String telemetryOptinDlgHint(String company, String product);
+	
+	// Strings used in the Configure Telemetry (admin console) dialog.
+	String configureTelemetryDlg_Header();
 }

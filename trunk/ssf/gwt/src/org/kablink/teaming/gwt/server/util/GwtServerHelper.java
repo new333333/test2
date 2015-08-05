@@ -237,6 +237,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveUserStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SetPrincipalsAdminRightsRpcResponseData.AdminRights;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TelemetrySettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UpdateLogsConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.UserAccessConfig;
 import org.kablink.teaming.gwt.client.rpc.shared.UserSharingRightsInfoRpcResponseData;
@@ -3174,6 +3175,27 @@ public class GwtServerHelper {
 					
 					// Add this action to the "management" category
 					managementCategory.addAdminOption( adminAction );
+				}
+			}
+
+			// Does the current user have admin rights?
+			if (userHasAdminRights) {
+				// Yes!  Is this the default zone?
+				Long defaultZoneId = zoneModule.getZoneIdByVirtualHost(null);	// null -> Returns default zone ID.
+				boolean defaultZone = RequestContextHolder.getRequestContext().getZoneId().equals(defaultZoneId);
+				if (defaultZone) {
+					// Yes!  Add a configure telemetry option.
+					adaptedUrl = new AdaptedPortletURL(request, "ss_forum", false);
+					adaptedUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_TELEMETRY);
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init(
+						NLT.get("administration.configure_cfg.telemetry"),
+						adaptedUrl.toString(),
+						AdminAction.CONFIGURE_TELEMETRY);
+					
+					// Add this action to the 'management' category.
+					managementCategory.addAdminOption(adminAction);
 				}
 			}
 		}
@@ -8443,6 +8465,33 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns a TelemetrySettingsRpcResponseData object with the
+	 * current telemetry settings.
+	 *  
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static TelemetrySettingsRpcResponseData getTelemetrySettings(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
+		try {
+			ZoneModule zm = bs.getZoneModule();
+			Long defaultZoneId = zm.getZoneIdByVirtualHost(null);	// null -> Returns default zone ID.
+			ZoneConfig zc = zm.getZoneConfig(defaultZoneId);
+			boolean telemetryEnabled      = zc.getTelemetryEnabled();
+			Boolean telemetryOptinEnabled = zc.getTelemetryOptinEnabled();
+			return new TelemetrySettingsRpcResponseData(telemetryEnabled, ((null == telemetryOptinEnabled) ? false : telemetryOptinEnabled.booleanValue()));
+		}
+		
+		catch(Exception ex) {
+			GwtLogHelper.error(m_logger, "GwtServerHelper.getTelemetrySettings( SOURCE EXCEPTION ):  ", ex);
+			throw GwtLogHelper.getGwtClientException(ex);				
+		}
+	}
+	
+	/**
 	 * Return a list of all the time zones
 	 */
 	public static GwtTimeZones getTimeZones( HttpServletRequest request )
@@ -10508,6 +10557,7 @@ public class GwtServerHelper {
 		case GET_TASK_DISPLAY_DATA:
 		case GET_TASK_LINKAGE:
 		case GET_TASK_LIST:
+		case GET_TELEMETRY_SETTINGS:
 		case GET_TIME_ZONES:
 		case GET_TOOLBAR_ITEMS:
 		case GET_TOP_LEVEL_ENTRY_ID:
