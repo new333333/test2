@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureMobileAppsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigurePasswordPolicyDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureShareSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeConfigureTelemetryDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUpdateLogsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditKeyShieldConfigDlgEvent;
@@ -117,6 +118,7 @@ import org.kablink.teaming.gwt.client.widgets.EditKeyShieldConfigDlg.EditKeyShie
 import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.EditLdapConfigDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditZoneShareSettingsDlg.EditZoneShareSettingsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigurePasswordPolicyDlg.ConfigurePasswordPolicyDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfigureTelemetryDlg.ConfigureTelemetryDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
@@ -184,6 +186,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigureMobileAppsDlgEvent.Handler,
 		InvokeConfigurePasswordPolicyDlgEvent.Handler,
 		InvokeConfigureShareSettingsDlgEvent.Handler,
+		InvokeConfigureTelemetryDlgEvent.Handler,
 		InvokeConfigureUserAccessDlgEvent.Handler,
 		InvokeConfigureUpdateLogsDlgEvent.Handler,
 		InvokeEditKeyShieldConfigDlgEvent.Handler,
@@ -225,6 +228,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ConfigureMobileAppsDlg m_configureMobileAppsDlg = null;
 	private ConfigureUserMobileAppsDlg m_configureUserMobileAppsDlg = null;
 	private ConfigureUserFileSyncAppDlg m_configureUserFileSyncAppDlg = null;
+	private ConfigureTelemetryDlg m_configureTelemetryDlg = null;
 	private ManageAdministratorsDlg m_manageAdministratorsDlg = null;
 	private ManageDatabasePruneDlg m_manageDatabasePruneDlg = null;
 	private ManageEmailTemplatesDlg m_manageEmailTemplatesDlg = null;
@@ -276,6 +280,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_MOBILE_APPS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_PASSWORD_POLICY_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_SHARE_SETTINGS_DLG,
+		TeamingEvents.INVOKE_CONFIGURE_TELEMETRY_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_UPDATE_LOGS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
 		TeamingEvents.INVOKE_EDIT_KEYSHIELD_CONFIG_DLG,
@@ -522,10 +527,12 @@ public class AdminControl extends TeamingPopupPanel
 				boolean showEmailTemplates      = GwtClientHelper.jsBrowserSupportsHtml5FileAPIs();
 				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
 				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
+				boolean showTelemetry           = ConfigureTelemetryDlg.SHOW_CONFIGURE_TELEMETRY;	//! DRF (20150805):
 				for (GwtAdminAction action:  actions) {
 					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices)) continue;
 					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))      continue;
 					else if (action.getActionType().equals(AdminAction.CONFIGURE_EMAIL_TEMPLATES) && (!showEmailTemplates))      continue;
+					else if (action.getActionType().equals(AdminAction.CONFIGURE_TELEMETRY)       && (!showTelemetry))           continue;
 					
 					// Add a UI widget for this administration action.
 					AdminActionControl adminActionControl = new AdminActionControl( action );
@@ -948,7 +955,11 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Fire the event to invoke the "Configure User Access" dialog
 			InvokeConfigureUserAccessDlgEvent.fireOne();
-			
+		}
+		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_TELEMETRY )
+		{
+			// Fire the event to invoke the 'Configure Telemetry' dialog.
+			InvokeConfigureTelemetryDlgEvent.fireOne();
 		}
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_ADMINISTRATORS )
 		{
@@ -2425,7 +2436,60 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}
 	
-
+	/**
+	 * Handles InvokeConfigureTelemetryDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeConfigureTelemetryDlgEvent.Handler.onInvokeConfigureTelemetryDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeConfigureTelemetryDlg(InvokeConfigureTelemetryDlgEvent event) {
+		// Get the position of the content control.
+		int x = m_contentControlX;
+		int y = m_contentControlY;
+		
+		// Have we already created a 'Configure Telemetry' dialog?
+		if (null == m_configureTelemetryDlg) {
+			// No!  Create one now.
+			int height = m_dlgHeight;
+			int width  = m_dlgWidth;
+			ConfigureTelemetryDlg.createDlg(
+				isActionAutoHide(AdminAction.CONFIGURE_TELEMETRY),
+				isActionModal(   AdminAction.CONFIGURE_TELEMETRY),
+				x, 
+				y,
+				width,
+				height,
+				new ConfigureTelemetryDlgClient()
+			{			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final ConfigureTelemetryDlg ctDlg) {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							m_configureTelemetryDlg = ctDlg;
+							ConfigureTelemetryDlg.initAndShow(m_configureTelemetryDlg);
+						}
+					});
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've already created the dialog!  Simply
+			// initialize and show it.
+			m_configureTelemetryDlg.setPixelSize(m_dlgWidth, m_dlgHeight);
+			m_configureTelemetryDlg.setPopupPosition(x, y);
+			ConfigureTelemetryDlg.initAndShow(m_configureTelemetryDlg);
+		}
+	}
+	
 	/**
 	 * Handles InvokeConfigureUpdateLogsDlgEvent received by this
 	 * class.
@@ -4094,6 +4158,7 @@ public class AdminControl extends TeamingPopupPanel
 				case CONFIGURE_PASSWORD_POLICY:
 				case CONFIGURE_SCHEDULE:
 				case CONFIGURE_SHARE_SETTINGS:
+				case CONFIGURE_TELEMETRY:
 				case CONFIGURE_USER_ACCESS:
 				case IMPORT_PROFILES:
 				case KEYSHIELD_CONFIG:

@@ -388,6 +388,7 @@ public class WebKeys {
 	public static final String ACTION_CONFIGURE_SHARE_SETTINGS = "configure_share_settings";
 	public static final String ACTION_CONFIGURE_USER_ACCESS="configure_user_access";
 	public static final String ACTION_CONFIGURE_PASSWORD_POLICY="configure_password_policy";
+	public static final String ACTION_CONFIGURE_TELEMETRY="configure_telemetry";
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
 	public static final String ACTION_EDIT_ELEMENT = "edit_element";

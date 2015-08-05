@@ -2917,6 +2917,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
+
+		case GET_TELEMETRY_SETTINGS:  {
+			TelemetrySettingsRpcResponseData responseData = GwtServerHelper.getTelemetrySettings(this, req);
+			response = new VibeRpcResponse(responseData);
+			return response;
+		}
 		
 		case GET_TIME_ZONES:
 		{
