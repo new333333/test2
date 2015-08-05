@@ -4103,6 +4103,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SET_TELEMETRY_SETTINGS:  {
+			SetTelemetrySettingsCmd stsCmd = ((SetTelemetrySettingsCmd) cmd);
+			GwtServerHelper.setTelemetrySettings(this, req, stsCmd.isTelemetryEnabled(), stsCmd.isTelemetryOptinEnabled());
+			response = new VibeRpcResponse(new BooleanRpcResponseData(true));
+			return response;
+		}
+		
 		case SET_UNSEEN:
 		{
 			List<Long> entryIds = ((SetUnseenCmd) cmd).getEntryIds();

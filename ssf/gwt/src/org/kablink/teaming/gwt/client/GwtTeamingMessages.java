@@ -645,6 +645,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
 	String rpcFailure_SetTelemetryOptinEnabled();
+	String rpcFailure_SetTelemetrySettings();
 	String rpcFailure_SetUnseen();
 	String rpcFailure_ShareEntry();
 	String rpcFailure_ShowShares();
@@ -3751,4 +3752,8 @@ public interface GwtTeamingMessages extends Messages {
 	
 	// Strings used in the Configure Telemetry (admin console) dialog.
 	String configureTelemetryDlg_Header();
+	String configureTelemetryDlgEnabledCheckBoxLabel();
+	String configureTelemetryDlgEnabledHint(String company, String product);
+	String configureTelemetryDlgOptinCheckBoxLabel();
+	String configureTelemetryDlgOptinHint(String company, String product);
 }

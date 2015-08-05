@@ -10672,6 +10672,7 @@ public class GwtServerHelper {
 		case SET_PRINCIPALS_ADMIN_RIGHTS:
 		case SET_SEEN:
 		case SET_TELEMETRY_OPTIN_ENABLED:
+		case SET_TELEMETRY_SETTINGS:
 		case SET_UNSEEN:
 		case SET_USER_SHARING_RIGHTS_INFO:
 		case SET_USER_VISIBILITY:
@@ -12219,7 +12220,7 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Stores the telemetryOptinEnabled setting ZoneConfig.
+	 * Stores the telemetryOptinEnabled setting in the ZoneConfig.
 	 *  
 	 * @param bs
 	 * @param request
@@ -12233,7 +12234,29 @@ public class GwtServerHelper {
 		}
 		
 		catch(Exception ex) {
-			GwtLogHelper.error(m_logger, "GwtServerHelper.setTelemetryOptinEnabled():  Error saving telemetry optin.", ex);
+			GwtLogHelper.error(m_logger, "GwtServerHelper.setTelemetryOptinEnabled( SOURCE EXCEPTION ):  Error saving telemetry optin.", ex);
+			throw GwtLogHelper.getGwtClientException(ex);				
+		}
+	}
+	
+	/**
+	 * Stores the telemetryEnabled and telemetryOptinEnabled settings
+	 * in the ZoneConfig.
+	 *  
+	 * @param bs
+	 * @param request
+	 * @param telemetryEnabled
+	 * @param telemetryOptinEnabled
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static void setTelemetrySettings(AllModulesInjected bs, HttpServletRequest request, boolean telemetryEnabled, boolean telemetryOptinEnabled) throws GwtTeamingException {
+		try {
+			bs.getAdminModule().setTelemetrySettings(telemetryEnabled, telemetryOptinEnabled);
+		}
+		
+		catch(Exception ex) {
+			GwtLogHelper.error(m_logger, "GwtServerHelper.setTelemetrySettings( SOURCE EXCEPTION ):  Error saving telemetry settings.", ex);
 			throw GwtLogHelper.getGwtClientException(ex);				
 		}
 	}

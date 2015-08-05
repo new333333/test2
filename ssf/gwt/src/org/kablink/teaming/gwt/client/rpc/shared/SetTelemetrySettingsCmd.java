@@ -32,41 +32,39 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
- * This class holds the response data for the RPCs that return
- * the current telemetry settings.
+ * This class holds all of the information necessary to execute the
+ * 'Set Telemetry Settings' command.
  * 
  * @author drfoster@novell.com
  */
-public class TelemetrySettingsRpcResponseData implements IsSerializable, VibeRpcResponseData {
+public class SetTelemetrySettingsCmd extends VibeRpcCmd {
 	private boolean	m_telemetryEnabled;			//
 	private boolean	m_telemetryOptinEnabled;	//
 	
 	/*
-	 * Constructor method. 
+	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	private TelemetrySettingsRpcResponseData() {
+	private SetTelemetrySettingsCmd() {
 		// Initialize the super class.
 		super();
 	}
 	
 	/**
-	 * Constructor method. 
+	 * Constructor method.
 	 * 
 	 * @param telemetryEnabled
 	 * @param telemetryOptinEnabled
 	 */
-	public TelemetrySettingsRpcResponseData(boolean telemetryEnabled, boolean telemetryOptinEnabled) {
+	public SetTelemetrySettingsCmd(boolean telemetryEnabled, boolean telemetryOptinEnabled) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameter.
-		setTelemetryEnabled(     telemetryEnabled      );
-		setTelemetryOptinEnabled( telemetryOptinEnabled);
+		setTelemetryEnabled(     telemetryEnabled     );
+		setTelemetryOptinEnabled(telemetryOptinEnabled);
 	}
 	
 	/**
@@ -84,4 +82,16 @@ public class TelemetrySettingsRpcResponseData implements IsSerializable, VibeRpc
 	 */
 	public void setTelemetryEnabled(     boolean telemetryEnabled)      {m_telemetryEnabled      = telemetryEnabled;     }
 	public void setTelemetryOptinEnabled(boolean telemetryOptinEnabled) {m_telemetryOptinEnabled = telemetryOptinEnabled;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SET_TELEMETRY_SETTINGS.ordinal();
+	}
 }

@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTelemetrySettingsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetTelemetrySettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TelemetrySettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -51,9 +52,11 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -64,9 +67,10 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandler {
 	public final static boolean	SHOW_CONFIGURE_TELEMETRY = false;	//! DRF (20150805):  Leave false on checkin until it's all working.
 	
+	private CheckBox							m_telemetryEnabledCB;		// The basic enablement checkbox.
+	private CheckBox							m_telemetryOptinEnabledCB;	// The optin enablement checkbox.
 	private GwtTeamingMessages					m_messages;					// Access to Filr's messages.
 	private List<HandlerRegistration>			m_registeredEventHandlers;	//
-	@SuppressWarnings("unused")
 	private TelemetrySettingsRpcResponseData	m_tsData;					// The current telemetry settings once they're read from the server.
 	
 	// The following defines the TeamingEvents that are handled by
@@ -109,12 +113,32 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 	 */
 	@Override
 	public Panel createContent(Object props) {
-		FlowPanel mainPanel = new FlowPanel();
-		mainPanel.setStyleName("teamingDlgBoxContent");
+		// Create a panel to hold the dialog's content...
+		VerticalPanel vp = new VibeVerticalPanel(null, null);
+		vp.addStyleName("vibe-configureTelemetryDlg-panel");
 
-//!		...this needs to be implemented...
+		// ...add a hint about the enable checkbox...
+		Label hint = new Label(m_messages.configureTelemetryDlgEnabledHint(m_messages.companyNovell(), GwtClientHelper.getProductName()));
+		hint.addStyleName("vibe-configureTelemetryDlg-hint marginTop5px");
+		vp.add(hint);
+
+		// ...add the checkbox for them to enable collection...
+		m_telemetryEnabledCB = new CheckBox(m_messages.configureTelemetryDlgEnabledCheckBoxLabel());
+		m_telemetryEnabledCB.addStyleName("vibe-configureTelemetryDlg-checkbox");
+		vp.add(m_telemetryEnabledCB);
 		
-		return mainPanel;
+		// ...add a hint about the optin checkbox...
+		hint = new Label(m_messages.configureTelemetryDlgOptinHint(m_messages.companyNovell(), GwtClientHelper.getProductName()));
+		hint.addStyleName("vibe-configureTelemetryDlg-hint marginTop20px");
+		vp.add(hint);
+
+		// ...add the checkbox for them to optin...
+		m_telemetryOptinEnabledCB = new CheckBox(m_messages.configureTelemetryDlgOptinCheckBoxLabel());
+		m_telemetryOptinEnabledCB.addStyleName("vibe-configureTelemetryDlg-checkbox");
+		vp.add(m_telemetryOptinEnabledCB);
+
+		// ...and return the panel.
+		return vp;
 	}
 
 	/**
@@ -127,16 +151,28 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 	 */
 	@Override
 	public boolean editSuccessful(Object obj) {
-		clearErrorPanel();
-		hideErrorPanel();
-
-		// Disable the OK button.
+		// Disable the OK button while we apply the settings...
 		setOkEnabled(false);
 
-//!		...this needs to be implemented...
+		// ...send a GWT RPC command to apply them...
+		SetTelemetrySettingsCmd cmd = new SetTelemetrySettingsCmd(m_telemetryEnabledCB.getValue(), m_telemetryOptinEnabledCB.getValue());
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_SetTelemetrySettings());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// ...and hide the dialog.
+				hide();
+			}
+		});
 		
 		// Return false to leave the dialog open.  It will be closed
-		// when the dialog's selections have been successfully saved.
+		// when the dialog's selections have been saved.
 		return false;
 	}
 	
@@ -161,7 +197,7 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 	 */
 	@Override
 	public FocusWidget getFocusWidget() {
-		return null;
+		return m_telemetryEnabledCB;
 	}
 	
 	/**
@@ -254,13 +290,14 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 	 * Synchronously populates the dialog.
 	 */
 	private void populateDlgNow() {
-		clearErrorPanel();
-		hideErrorPanel();
-		hideStatusMsg();
+		// Enable the OK push button...
 		setOkEnabled(true);
 
-//!		...this needs to be implemented...
+		// ...set the state of the checkboxes...
+		m_telemetryEnabledCB.setValue(     m_tsData.isTelemetryEnabled()     );
+		m_telemetryOptinEnabledCB.setValue(m_tsData.isTelemetryOptinEnabled());
 
+		// ...and show the dialog.
 		show();
 	}
 	

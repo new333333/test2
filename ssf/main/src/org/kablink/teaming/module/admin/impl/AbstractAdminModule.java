@@ -4200,4 +4200,17 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   	  		zoneConfig.setTelemetryOptinEnabled(telemetryOptinEnabled);
   		}
     }
+    
+    /**
+     * Stores telemetry settings flags in the zone config.
+     * 
+     * @param telemetryEnabled
+     * @param telemetryOptinEnabled
+     */
+    @Override
+    public void setTelemetrySettings(boolean telemetryEnabled, boolean telemetryOptinEnabled) {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setTelemetryEnabled(     telemetryEnabled     );
+  		zoneConfig.setTelemetryOptinEnabled(telemetryOptinEnabled);
+    }
 }
