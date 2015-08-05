@@ -1282,7 +1282,8 @@ body, table td, select
 .margintop3px    {margin-top:    3px;}
 .margintop3pxb   {margin-top:    3px !important;}
 .marginTop5px	 {margin-top: 	 5px;}
-.marginTop10px	 {margin-top: 10px;}
+.marginTop10px	 {margin-top:   10px;}
+.marginTop20px	 {margin-top:   20px;}
 
 .marginleft1     {margin-left:   1em;}
 .marginleft2     {margin-left:   2em;}
@@ -5599,6 +5600,12 @@ td.datePickerMonth {
 	.vibe-telemetryOptinDlg-hint     {width: 400px; margin-top: 5px; color: #414648; /* dark grey */ line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 1em;}
 	.vibe-telemetryOptinDlg-panel    {padding: 10px;}
 /* End:  Telemetry Optin dialog styles. */
+
+/* Start:  Configure Telemetry dialog styles. */
+	.vibe-configureTelemetryDlg-checkbox {}
+	.vibe-configureTelemetryDlg-hint     {width: 500px; color: #414648; /* dark grey */ line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 1em;}
+	.vibe-configureTelemetryDlg-panel    {padding: 10px;}
+/* End:  Configure Telemetry dialog styles. */
 
 /* Start:  User properties dialog styles. */
 	.vibe-userPropertiesDlg-aboutMe          {color: #353838; width: 330px;}
