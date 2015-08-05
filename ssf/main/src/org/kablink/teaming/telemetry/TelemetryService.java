@@ -260,17 +260,20 @@ public class TelemetryService extends HibernateDaoSupport {
 			device.setMobileDeviceCounts(mobileDeviceCountsByType);
 		}
 		
-		ObjectMapper mapper = new ObjectMapper();
-
-		if(logger.isTraceEnabled()) {
-			String telemetryStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
-			logger.trace(Constants.NEWLINE + telemetryStr);
-		}
-
 		String dirPath = SPropsUtil.getDirPath("data.root.dir") + "telemetry" + File.separator + "data";
 		FileHelper.mkdirsIfNecessary(dirPath);
 		String filePath = dirPath + File.separator + product + "$" + installationIdentifier + "$" + String.valueOf(currentTime) + ".json";
 		
+		ObjectMapper mapper = new ObjectMapper();
+
+		if(logger.isTraceEnabled()) {
+			String telemetryStr = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
+			logger.trace("Saving collected telemetry data in file '" + filePath + "'" + Constants.NEWLINE + telemetryStr);
+		} 
+		else if(logger.isDebugEnabled()) {
+			logger.trace("Saving collected telemetry data in file '" + filePath + "'");
+		}
+
 		mapper.writeValue(new File(filePath), data);
 	}
 	
