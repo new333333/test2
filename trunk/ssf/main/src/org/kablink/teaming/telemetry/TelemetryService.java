@@ -32,15 +32,24 @@
  */
 package org.kablink.teaming.telemetry;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.SocketException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.hibernate.Criteria;
@@ -87,11 +96,7 @@ public class TelemetryService extends HibernateDaoSupport {
 	public void collectAndSaveTelemetryData() throws IOException {
 		boolean collectOptin = SPropsUtil.getBoolean("telemetry.optin.enable", false);
 		
-		String product;
-		if(Utils.checkIfFilr())
-			product = "filr";
-		else
-			product = "vibe";
+		String product = getProduct();
 
 		String installationIdentifier = readInstallationIdentifier();
 		if(Validator.isNull(installationIdentifier)) {
@@ -180,7 +185,16 @@ public class TelemetryService extends HibernateDaoSupport {
 					}
 				}
 				catch(Exception e) {
-					logger.warn("Cannot read /opt/novell/base_config/buildformat", e);
+					if(e instanceof java.nio.file.NoSuchFileException && ReleaseInfo.getBuildNumber() == 0) {
+						// This means that the code is executing in a runtime environment that wasn't built
+						// or installed from a proper build system (e.g. hand-crafted development system).
+						// In this case, absence of this file isn't necessarily unexpected.
+						if(logger.isDebugEnabled())
+							logger.debug("Cannot read /opt/novell/base_config/buildformat: " + e.toString());						
+					}
+					else {
+						logger.warn("Cannot read /opt/novell/base_config/buildformat", e);
+					}
 				}
 			}
 			optin.setHypervisorType(hypervisorType);
@@ -278,8 +292,96 @@ public class TelemetryService extends HibernateDaoSupport {
 	}
 	
 	public  void uploadTelemetryData() throws IOException {
-		//$$$$$$$$$$$
-		// TODO TO BE IMPLEMENTED
+		String ftpHostname = SPropsUtil.getString("telemetry.ftp.hostname", "ftp.novell.com");
+		if(ftpHostname.isEmpty()) {
+			// User specified this property without value, which is an instruction to disable
+			// sending/uploading of telemetry data.
+			if(logger.isDebugEnabled())
+				logger.debug("telemetry.ftp.hostname is set to empty string. Will NOT send/upload collected telemetry data.");
+			return;
+		}
+		int ftpPort = SPropsUtil.getInt("telemetry.ftp.port", -1);
+		String product = getProduct();
+		String ftpDirPath = SPropsUtil.getString("telemetry.ftp.dirpath", (product.equals("filr")? "stats/filr" : "stats/vibe"));
+		if(ftpDirPath.length() > 0 && !ftpDirPath.endsWith("/"))
+			ftpDirPath += "/";
+		String ftpUsername = SPropsUtil.getString("telemetry.ftp.username", "anonymous");
+		String ftpPassword = SPropsUtil.getString("telemetry.ftp.password", "fake@fake.com");
+		
+		FTPClient ftpClient = new FTPClient();
+		try {
+			// Use 'local passive mode' in which a data connection is made by opening
+			// a port on the server for the client to connect, which is usually not
+			// blocked by firewall.
+			ftpClient.enterLocalPassiveMode();
+			if(ftpPort != -1) // port specified
+				ftpClient.connect(ftpHostname, ftpPort);
+			else // port unspecified, use the default
+				ftpClient.connect(ftpHostname);
+			ftpClient.login(ftpUsername, ftpPassword);
+			
+			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+			
+			String dirPath = SPropsUtil.getDirPath("data.root.dir") + "telemetry" + File.separator + "data";
+			File[] fileList = new File(dirPath).listFiles(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					if(name.toLowerCase().endsWith(".json"))
+						return true;
+					else
+						return false;
+				}
+			});
+			Arrays.sort(fileList, new Comparator<File>() {
+				@Override
+				public int compare(File f1, File f2) {
+					// sort in the ascending order of timestamp value in the file name.
+					try {
+						String n1 = f1.getName().toLowerCase();
+						String n2 = f2.getName().toLowerCase();
+						n1 = n1.substring(0, n1.lastIndexOf(".json"));
+						n2 = n2.substring(0, n2.lastIndexOf(".json"));
+						String s1 = n1.substring(n1.lastIndexOf("$")+1);
+						String s2 = n2.substring(n2.lastIndexOf("$")+1);
+						long t1 = Long.parseLong(s1);
+						long t2 = Long.parseLong(s2);
+						return Long.compare(t1,t2);
+					}
+					catch(Exception e) {
+						// If anything goes wrong during comparison, simply return 1 and treat
+						// the first one as a greater one.
+						return 1;
+					}
+				}			
+			});
+			for(File file:fileList) {
+				String remoteFile = ftpDirPath + file.getName();
+				boolean success = false;
+				try(InputStream is = new FileInputStream(file);
+						BufferedInputStream bis = new BufferedInputStream(is)) {
+					success = ftpClient.storeFile(remoteFile, bis);
+				}
+				if(success) {
+					// Now that the file has been uploaded successfully, delete the file.
+					file.delete();
+				}				
+			}
+		}
+		finally {
+			try {
+				if(ftpClient.isConnected()) {
+					ftpClient.logout();
+					ftpClient.disconnect();
+				}
+			}
+			catch(IOException e) {
+				// Log the error, but do not allow this error to treat the entire current telemetry cycle as a failure.
+				if(logger.isDebugEnabled())
+					logger.warn("Error disconnecting from the FTP server", e);
+				else 
+					logger.warn("Error disconnecting from the FTP server: " + e.toString());
+			}
+		}
 	}
 	
 	String readInstallationIdentifier() throws IOException {
@@ -545,6 +647,15 @@ public class TelemetryService extends HibernateDaoSupport {
 						.setProjection(Projections.property(ObjectKeys.FIELD_NET_FOLDER_CONFIG_TOP_FOLDER_ID));
 				return crit.list();
 			}});
+	}
+	
+	private String getProduct() {
+		String product;
+		if(Utils.checkIfFilr())
+			product = "filr";
+		else
+			product = "vibe";
+		return product;
 	}
 	
 	protected CoreDao getCoreDao() {
