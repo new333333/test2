@@ -177,7 +177,7 @@ public class TelemetryService extends HibernateDaoSupport {
 			String hypervisorType = "unknown";
 			if(org.kablink.teaming.util.Utils.checkIfFilr()) {
 				try {
-					String content = FileHelper.readString("/opt/novell/base_config/buildformat", Charset.forName("UTF-8"));
+					String content = FileHelper.readFirstLine("/opt/novell/base_config/buildformat", Charset.forName("UTF-8"));
 					if(content != null) {
 						int index = content.indexOf("=");
 						if(index >= 0)
