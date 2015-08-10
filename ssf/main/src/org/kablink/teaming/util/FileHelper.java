@@ -44,6 +44,7 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletRequest;
@@ -225,9 +226,27 @@ public class FileHelper {
 		return result;
 	}
 	
+	/*
+	 * Read the entire content of the file as a single string.
+	 */
 	public static String readString(String path, Charset charset) throws IOException {
 		byte[] bytes = Files.readAllBytes(Paths.get(path));
 		return new String(bytes, charset);
+	}
+	
+	/*
+	 * Read all lines from the file
+	 */
+	public static List<String> readLines(String path, Charset charset) throws IOException {
+		return Files.readAllLines(Paths.get(path), charset);
+	}
+	
+	public static String readFirstLine(String path, Charset charset) throws IOException {
+		List<String> lines = readLines(path, charset);
+		if(lines != null && lines.size() > 0)
+			return lines.get(0);
+		else
+			return null;
 	}
 	
 	public static void writeString(String path, Charset charset, String data) throws IOException  {
