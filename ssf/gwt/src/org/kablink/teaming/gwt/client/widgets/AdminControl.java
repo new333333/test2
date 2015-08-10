@@ -527,12 +527,10 @@ public class AdminControl extends TeamingPopupPanel
 				boolean showEmailTemplates      = GwtClientHelper.jsBrowserSupportsHtml5FileAPIs();
 				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
 				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
-				boolean showTelemetry           = ConfigureTelemetryDlg.SHOW_CONFIGURE_TELEMETRY;	//! DRF (20150805):
 				for (GwtAdminAction action:  actions) {
 					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices)) continue;
 					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))      continue;
 					else if (action.getActionType().equals(AdminAction.CONFIGURE_EMAIL_TEMPLATES) && (!showEmailTemplates))      continue;
-					else if (action.getActionType().equals(AdminAction.CONFIGURE_TELEMETRY)       && (!showTelemetry))           continue;
 					
 					// Add a UI widget for this administration action.
 					AdminActionControl adminActionControl = new AdminActionControl( action );
