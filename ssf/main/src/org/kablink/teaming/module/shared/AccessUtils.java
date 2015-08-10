@@ -776,6 +776,13 @@ public class AccessUtils  {
 	      	}
        	}
        	
+		// Bugzilla 939041:  Although the fix for this bug involved
+		//    coding changes in AccessControlManagerImpl (see the bug
+		//    related comments in that module), it's the following
+		//    try/catch block those changes necessary.  This try/catch
+		//    did NOT exist in Vibe 3 and and pending ace/ace2
+		//    exception would simply be thrown.
+		
        	//See if the entry was shared 
        	try {
 			//Start by trying to see if the entry allows access

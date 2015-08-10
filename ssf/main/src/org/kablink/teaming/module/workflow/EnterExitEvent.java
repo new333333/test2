@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -87,6 +87,7 @@ import org.kablink.teaming.module.definition.notify.NotifyVisitor;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.mail.EmailUtil;
 import org.kablink.teaming.module.mail.MailModule;
+import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.jbpm.CalloutHelper;
 import org.kablink.teaming.module.workflow.support.WorkflowAction;
@@ -111,11 +112,11 @@ import org.kablink.util.Html;
 import org.kablink.util.Validator;
 
 /**
- * Handle setting variables, starting/stoping threads and recording the state when
- * a new node is entered or cancelling timers when a node is exitted.
+ * Handle setting variables, starting/stopping threads and recording the state when
+ * a new node is entered or canceling timers when a node is exited.
  * This is done as part on one action so we can maintain the ordering
  * specified in the definition and reduce the amount of synchronization needed between the
- * JBPM definition and the Sitescape definition.
+ * JBPM definition and the SiteScape definition.
  * 
  * @author Janet McCann
  */
@@ -617,7 +618,9 @@ public class EnterExitEvent extends AbstractActionHandler {
 			    				try {
 			    					Map options = new HashMap();
 			    					options.put(ObjectKeys.INPUT_OPTION_NO_DEFAULTS, Boolean.TRUE);
-			    					processor.modifyEntry(parent, entry, new MapInputData(updates), null, null, null, options);
+			    					InputDataAccessor inputData = new MapInputData(updates);
+			    					inputData.setFieldsOnly(true);
+			    					processor.modifyEntry(parent, entry, inputData, null, null, null, options);
 			    				} catch(Exception e) {
 			    					//The modify failed, log it on the console
 			    					logger.error("Error setting entry data from a workflow: (" +

@@ -410,8 +410,41 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					}
 				}
 			}
-			//if current user is the workArea owner, add special Id to is membership
-			if (user.getId().equals(workAreaStart.getOwnerId())) userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
+			// If current user is the workArea or workAreaStart owner,
+			// add special ID to is membership.
+			Long userId = user.getId();
+			boolean addOwnerUserId = userId.equals(workArea.getOwnerId());
+			if (!addOwnerUserId) {
+				// Bugzilla 939041:  We don't want to expand the
+				//    members to lookup to include owner rights for
+				//    FolderEntry's.  To do so would allow extra
+				//    capabilities on it that would otherwise not be
+				//    allowed.
+				boolean widenEntryOwnerAccess = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ENTRY_OWNER_ACCESS, false);
+				addOwnerUserId = ((widenEntryOwnerAccess || (!(workAreaStart instanceof FolderEntry))) && userId.equals(workAreaStart.getOwnerId()));
+				if (logger.isDebugEnabled()) {
+					logger.debug("testOperationRecursive( 1:user:  '" + user.getTitle() + "' ):  addOwnerUserId:  " + addOwnerUserId);
+					logger.debug("\tworkAreaOperation:  " + workAreaOperation.getName());
+					logger.debug("\tworkArea ID:  " + workArea.getWorkAreaId());
+					logger.debug("\tworkAreaStart ID:  " + workAreaStart.getWorkAreaId());
+					logger.debug("\tworkAreaStart instanceof FolderEntry:  " + (workAreaStart instanceof FolderEntry));
+					logger.debug("\t\tuser is workArea's owner:  false");
+					logger.debug("\t\tuser is workAreaStart's owner:  " + userId.equals(workAreaStart.getOwnerId()));
+				}
+			}
+			else {
+				if (logger.isDebugEnabled()) {
+					logger.debug("testOperationRecursive( 2:user:  '" + user.getTitle() + "' ):  addOwnerUserId:  true");
+					logger.debug("\tworkAreaOperation:  " + workAreaOperation.getName());
+					logger.debug("\tworkArea ID:  " + workArea.getWorkAreaId());
+					logger.debug("\tworkAreaStart ID:  " + workAreaStart.getWorkAreaId());
+					logger.debug("\t\tuser is workArea's owner:  true");
+					logger.debug("\t\tuser is workAreaStart's owner:  " + userId.equals(workAreaStart.getOwnerId()));
+				}
+			}
+			if (addOwnerUserId) {
+				userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
+			}
 			Set<Long> teamMembers = null;
 			if (workAreaStart instanceof FolderEntry) {
 				teamMembers = getBinderModule().getTeamMemberIds( ((FolderEntry)workAreaStart).getParentBinder() );
