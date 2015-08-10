@@ -65,8 +65,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandler {
-	public final static boolean	SHOW_CONFIGURE_TELEMETRY = false;	//! DRF (20150805):  Leave false on checkin until it's all working.
-	
 	private CheckBox							m_telemetryEnabledCB;		// The basic enablement checkbox.
 	private CheckBox							m_telemetryOptinEnabledCB;	// The optin enablement checkbox.
 	private GwtTeamingMessages					m_messages;					// Access to Filr's messages.
