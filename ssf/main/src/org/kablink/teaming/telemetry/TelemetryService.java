@@ -104,7 +104,9 @@ public class TelemetryService extends HibernateDaoSupport {
 		}
 		
 		if(logger.isDebugEnabled())
-			logger.debug("Collecting telemetry data for '" + product + "' (opt-in=" + collectOptin + ", installation identifider=" + installationIdentifier + ")");
+			logger.info("Collecting anonymous telemetry data for '" + product + "' (opt-in=" + collectOptin + ", installation identifider=" + installationIdentifier + ")");
+		else
+			logger.info("Collecting anonymous telemetry data");
 
 		long currentTime = System.currentTimeMillis();
 		
@@ -284,7 +286,7 @@ public class TelemetryService extends HibernateDaoSupport {
 			logger.trace("Saving collected telemetry data in file '" + filePath + "'" + Constants.NEWLINE + telemetryStr);
 		} 
 		else if(logger.isDebugEnabled()) {
-			logger.trace("Saving collected telemetry data in file '" + filePath + "'");
+			logger.debug("Saving collected telemetry data in file '" + filePath + "'");
 		}
 
 		mapper.writeValue(new File(filePath), data);
@@ -299,6 +301,7 @@ public class TelemetryService extends HibernateDaoSupport {
 				logger.debug("telemetry.ftp.hostname is set to empty string. Will NOT send/upload collected telemetry data.");
 			return;
 		}
+		logger.info("Sending telemetry data anonymously...");
 		int ftpPort = SPropsUtil.getInt("telemetry.ftp.port", -1);
 		String product = getProduct();
 		String ftpDirPath = SPropsUtil.getString("telemetry.ftp.dirpath", (product.equals("filr")? "stats/filr" : "stats/vibe"));
@@ -361,9 +364,18 @@ public class TelemetryService extends HibernateDaoSupport {
 					success = ftpClient.storeFile(remoteFile, bis);
 				}
 				if(success) {
+					if(logger.isDebugEnabled())
+						logger.debug("Successfully sent the file '" + file.getAbsolutePath() + "'");
 					// Now that the file has been uploaded successfully, delete the file.
 					file.delete();
-				}				
+				}	
+				else {
+					if(logger.isDebugEnabled())
+						logger.warn("Failed to send the file '" + file.getAbsolutePath() + "'. Reply code=" + ftpClient.getReplyCode() + ". Aborting");
+					else
+						logger.warn("Failed to send telemetry data. Reply code=" + ftpClient.getReplyCode() + ". Aborting");
+					break; // If sending a file fails, don't bother trying the remaining files. Just abort this iteration.
+				}
 			}
 		}
 		finally {
