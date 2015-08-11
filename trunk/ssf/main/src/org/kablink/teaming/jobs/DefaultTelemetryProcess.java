@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.jobs;
 
+import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.module.zone.ZoneUtil;
 import org.kablink.teaming.telemetry.TelemetryService;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobExecutionContext;
@@ -51,7 +53,12 @@ public class DefaultTelemetryProcess extends SSCronTriggerJob implements Telemet
 			throws JobExecutionException {
 		// First, collect and save telemetry data for the current period.
 		try {
-			getTelemetryService().collectAndSaveTelemetryData();
+			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(ZoneUtil.getDefaultZoneId());
+			Boolean optinEnabled = zoneConfig.getTelemetryOptinEnabled();
+			// If optinEnabled flag is null, it means that the user has had no chance to respond to the system's
+			// question about whether to allow or deny the optin part yet. In that case, we should NOT collect
+			// and send any optin part.
+			getTelemetryService().collectAndSaveTelemetryData((optinEnabled != null)? optinEnabled.booleanValue() : false);
 		}
 		catch(Exception e) {
 			logger.error("Failed to collect and save telemetry data", e);
@@ -73,7 +80,7 @@ public class DefaultTelemetryProcess extends SSCronTriggerJob implements Telemet
 	 */
 	@Override
 	public void remove() {
-		Long zoneId = this.getDefaultZoneId();
+		Long zoneId = ZoneUtil.getDefaultZoneId();
 		unscheduleJob(zoneId.toString(), TELEMETRY_PROCESS_GROUP);
 	}
 
@@ -82,7 +89,7 @@ public class DefaultTelemetryProcess extends SSCronTriggerJob implements Telemet
 	 */
 	@Override
 	public ScheduleInfo getScheduleInfo() {
-		Long zoneId = this.getDefaultZoneId();
+		Long zoneId = ZoneUtil.getDefaultZoneId();
 		return getScheduleInfo(new CronJobDescription(zoneId, zoneId.toString(), 
 				TELEMETRY_PROCESS_GROUP, TELEMETRY_PROCESS_DESCRIPTION));
 	}
@@ -92,7 +99,7 @@ public class DefaultTelemetryProcess extends SSCronTriggerJob implements Telemet
 	 */
 	@Override
 	public void setScheduleInfo(ScheduleInfo scheduleInfo) {
-		scheduleInfo.setZoneId(getDefaultZoneId());
+		scheduleInfo.setZoneId(ZoneUtil.getDefaultZoneId());
 		setScheduleInfo(new CronJobDescription(scheduleInfo.getZoneId(), scheduleInfo.getZoneId().toString(), 
 				TELEMETRY_PROCESS_GROUP, TELEMETRY_PROCESS_DESCRIPTION), scheduleInfo);
 	}

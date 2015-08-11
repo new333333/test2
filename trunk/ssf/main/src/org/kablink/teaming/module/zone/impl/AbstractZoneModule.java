@@ -79,6 +79,7 @@ import org.kablink.teaming.jobs.AuditTrailMigration;
 import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.TelemetryProcess;
+import org.kablink.teaming.jobs.TelemetryProcessUtil;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -91,6 +92,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.zone.ZoneException;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.module.zone.ZoneUtil;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
@@ -2534,23 +2536,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		// At the moment, there's only one sitewide job that we manage through this routine 
 		// (We have another one called AuditTrailMigration, but that's an one-off job used
 		// for upgrade/migration purpose only).
-		String className = SPropsUtil.getString("job.telemetry.process.class", "org.kablink.teaming.jobs.DefaultTelemetryProcess");
-		TelemetryProcess telemetryProcess = (TelemetryProcess) ReflectHelper.getInstance(className);
-		boolean enabled = SPropsUtil.getBoolean("job.telemetry.process.enable", true);
-		if(enabled) {
-			ScheduleInfo info = telemetryProcess.getScheduleInfo();
-			String cronExpression = SPropsUtil.getString("job.telemetry.process.cronexpr", "0 00 5 ? * sun *"); // 5:00 AM Sunday GMT
-			info.setSchedule(new Schedule(cronExpression));   			
-   			info.setEnabled(true);
-   			if(logger.isDebugEnabled())
-   				logger.debug("Making sure to have telemetry process scheduled with cron expression [" + info.getSchedule().getQuartzSchedule() + "]");
-   			telemetryProcess.setScheduleInfo(info);
-		}
-		else {
-			// If this feature is not enabled, remove the job, if exists, from the system altogether, rather than just disabling it.
-			if(logger.isDebugEnabled())
-				logger.debug("Making sure that telemetry process doesn't exist");
-			telemetryProcess.remove();
-		}
+		Long defaultZoneId = ZoneUtil.getDefaultZoneId();
+		ZoneConfig defaultZoneConfig = getCoreDao().loadZoneConfig(defaultZoneId);
+		TelemetryProcessUtil.manageTelemetryProcess(defaultZoneConfig.getTelemetryEnabled());
 	}
 }
