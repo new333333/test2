@@ -38,7 +38,6 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,8 +66,10 @@ import org.kablink.teaming.domain.MobileDevice;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.module.zone.ZoneUtil;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.LuceneSessionFactory;
 import org.kablink.teaming.search.local.LocalLuceneSessionFactory;
@@ -93,9 +94,7 @@ public class TelemetryService extends HibernateDaoSupport {
 	private AdminModule adminModule;
 	private LuceneSessionFactory luceneSessionFactory;
 	
-	public void collectAndSaveTelemetryData() throws IOException {
-		boolean collectOptin = SPropsUtil.getBoolean("telemetry.optin.enable", false);
-		
+	public void collectAndSaveTelemetryData(boolean collectOptin) throws IOException {
 		String product = getProduct();
 
 		String installationIdentifier = readInstallationIdentifier();

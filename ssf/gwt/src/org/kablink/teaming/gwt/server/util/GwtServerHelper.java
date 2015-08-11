@@ -284,6 +284,7 @@ import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.jobs.TelemetryProcessUtil;
 import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.SendMailErrorWrapper;
@@ -12253,6 +12254,8 @@ public class GwtServerHelper {
 	public static void setTelemetrySettings(AllModulesInjected bs, HttpServletRequest request, boolean telemetryEnabled, boolean telemetryOptinEnabled) throws GwtTeamingException {
 		try {
 			bs.getAdminModule().setTelemetrySettings(telemetryEnabled, telemetryOptinEnabled);
+			
+			TelemetryProcessUtil.manageTelemetryProcess(telemetryEnabled);
 		}
 		
 		catch(Exception ex) {

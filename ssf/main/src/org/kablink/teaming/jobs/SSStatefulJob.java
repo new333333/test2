@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.module.zone.ZoneUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -102,7 +103,7 @@ public abstract class SSStatefulJob implements StatefulJob {
            		// Because the runtime system can't execute anything when not tied to a specific zone, we will run this job
            		// under the context of default zone to begin with. However the job itself is free to do internally whatever
            		// it needs to do to any zones in the system.
-           		zoneId = this.getDefaultZoneId();
+           		zoneId = ZoneUtil.getDefaultZoneId();
            	}
            	//Validate user and zone are compatible
            	try {
@@ -262,9 +263,4 @@ public abstract class SSStatefulJob implements StatefulJob {
 		return (CoreDao)SpringContextUtil.getBean("coreDao");
 	}
 
-	protected Long getDefaultZoneId() {
-   		String defaultZoneName = SZoneConfig.getDefaultZoneName();
-   		Workspace defaultZoneTop = getCoreDao().findTopWorkspace(defaultZoneName);
-   		return defaultZoneTop.getId();
-	}
 }

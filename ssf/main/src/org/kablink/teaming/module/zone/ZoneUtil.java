@@ -34,7 +34,9 @@ package org.kablink.teaming.module.zone;
 
 import org.kablink.teaming.cache.impl.HashMapCache;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 
 public class ZoneUtil {
@@ -50,6 +52,11 @@ public class ZoneUtil {
         return id;
 	}
 
+	public static Long getDefaultZoneId() {
+   		String defaultZoneName = SZoneConfig.getDefaultZoneName();
+   		return getZoneIdByZoneName(defaultZoneName);
+	}
+	
 	private static CoreDao getCoreDao() {
 		return (CoreDao) SpringContextUtil.getBean("coreDao");
 	}
