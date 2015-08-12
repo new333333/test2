@@ -593,7 +593,7 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private class AdminActionsTreeControl extends Composite
 	{
-		// m_rpcGetAdminActionsCallback is our callback that gets called when the ajax request to get the administration actions completes.
+		// m_rpcGetAdminActionsCallback is our callback that gets called when the AJAX request to get the administration actions completes.
 		private AsyncCallback<VibeRpcResponse> m_rpcGetAdminActionsCallback = null;
 		@SuppressWarnings("unused")
 		private AsyncCallback<VibeRpcResponse> m_rpcGetUpgradeInfoCallback2 = null;
@@ -667,7 +667,7 @@ public class AdminControl extends TeamingPopupPanel
 				m_mainTable.setWidget( 0, 0, table );
 			}
 			
-			// Create the callback that will be used when we issue an ajax call to get the administration actions.
+			// Create the callback that will be used when we issue an AJAX call to get the administration actions.
 			m_rpcGetAdminActionsCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
@@ -717,7 +717,7 @@ public class AdminControl extends TeamingPopupPanel
 				}
 			};
 
-			// Create the callback that will be used when we issue an ajax call to get upgrade information
+			// Create the callback that will be used when we issue an AJAX call to get upgrade information
 			m_rpcGetUpgradeInfoCallback2 = new AsyncCallback<VibeRpcResponse>()
 			{
 				/**
@@ -797,18 +797,13 @@ public class AdminControl extends TeamingPopupPanel
 		}// end addCategory()
 		
 		/**
-		 * Issue an ajax request to get the list of administration actions the user
+		 * Issue an AJAX request to get the list of administration actions the user
 		 * has rights to run.
 		 */
 		public void getAdminActionsFromServer()
 		{
-			String binderId;
-			GetAdminActionsCmd cmd;
-			
-			// Issue an ajax request to get the administration actions the user has rights to perform.
-			binderId = GwtMainPage.m_requestInfo.getBinderId();
-			cmd = new GetAdminActionsCmd( binderId );
-			GwtClientHelper.executeCommand( cmd, m_rpcGetAdminActionsCallback );
+			// Issue an AJAX request to get the administration actions the user has rights to perform.
+			GwtClientHelper.executeCommand( new GetAdminActionsCmd(), m_rpcGetAdminActionsCallback );
 		}
 	}// end AdminActionsTreeControl
 
@@ -1122,13 +1117,13 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 	/**
-	 * Issue an ajax request to get the upgrade information from the server.
+	 * Issue an AJAX request to get the upgrade information from the server.
 	 */
 	public static void getUpgradeInfoFromServer( AsyncCallback<VibeRpcResponse> callback )
 	{
 		GetUpgradeInfoCmd cmd;
 		
-		// Issue an ajax request to get the upgrade information
+		// Issue an AJAX request to get the upgrade information
 		cmd = new GetUpgradeInfoCmd();
 		GwtClientHelper.executeCommand( cmd, callback );
 	}
@@ -1275,7 +1270,7 @@ public class AdminControl extends TeamingPopupPanel
 			AsyncCallback<VibeRpcResponse> rpcCallback = null;
 
 			// Yes
-			// Create the callback that will be used when we issue an ajax call to get the net folder.
+			// Create the callback that will be used when we issue an AJAX call to get the net folder.
 			rpcCallback = new AsyncCallback<VibeRpcResponse>()
 			{
 				@Override
@@ -1308,7 +1303,7 @@ public class AdminControl extends TeamingPopupPanel
 				}
 			};
 
-			// Issue an ajax request to get the net folder.
+			// Issue an AJAX request to get the net folder.
 			cmd = new GetNetFolderCmd();
 			cmd.setId( id );
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
@@ -1397,7 +1392,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public boolean editSuccessful( Object obj )
 				{
-					// Create the callback that will be used when we issue an ajax request to save the branding data.
+					// Create the callback that will be used when we issue an AJAX request to save the branding data.
 					if ( rpcSaveCallback == null )
 					{
 						rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
@@ -1439,11 +1434,11 @@ public class AdminControl extends TeamingPopupPanel
 						};
 					}
 			
-					// Issue an ajax request to save the branding data.
+					// Issue an AJAX request to save the branding data.
 					{
 						SaveBrandingCmd cmd;
 						
-						// Issue an ajax request to save the branding data to the db.  rpcSaveCallback will
+						// Issue an AJAX request to save the branding data to the db.  rpcSaveCallback will
 						// be called when we get the response back.
 						savedBrandingData = (GwtBrandingData) obj;
 						cmd = new SaveBrandingCmd( savedBrandingData.getBinderId(), savedBrandingData );
@@ -1836,7 +1831,7 @@ public class AdminControl extends TeamingPopupPanel
 				}
 			} );
 	
-			// Issue an ajax request to get the upgrade information from the server.
+			// Issue an AJAX request to get the upgrade information from the server.
 			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
 				@Override
@@ -1970,7 +1965,7 @@ public class AdminControl extends TeamingPopupPanel
 				AsyncCallback<VibeRpcResponse> getSiteBrandingCallback;
 				GetSiteBrandingCmd cmd;
 
-				// Create the callback that will be used when we issue an ajax call to get the site branding
+				// Create the callback that will be used when we issue an AJAX call to get the site branding
 				getSiteBrandingCallback = new AsyncCallback<VibeRpcResponse>()
 				{
 					/**
@@ -2021,7 +2016,7 @@ public class AdminControl extends TeamingPopupPanel
 					}
 				};
 				
-				// Issue an ajax request to get the site branding data.
+				// Issue an AJAX request to get the site branding data.
 				cmd = new GetSiteBrandingCmd();
 				GwtClientHelper.executeCommand( cmd, getSiteBrandingCallback );
 			}
@@ -2209,12 +2204,12 @@ public class AdminControl extends TeamingPopupPanel
 			}
 		};
 
-		// Issue an ajax request to get the File Sync App configuration.  When we get the File Sync App configuration
+		// Issue an AJAX request to get the File Sync App configuration.  When we get the File Sync App configuration
 		// we will invoke the "Configure File Sync App" dialog.
 		{
 			GetFileSyncAppConfigurationCmd cmd;
 			
-			// Issue an ajax request to get the File Sync App configuration from the db.
+			// Issue an AJAX request to get the File Sync App configuration from the db.
 			cmd = new GetFileSyncAppConfigurationCmd();
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
@@ -2949,12 +2944,12 @@ public class AdminControl extends TeamingPopupPanel
 			}
 		};
 
-		// Issue an ajax request to get the Database Prune configuration.  When we get the Database Prune configuration
+		// Issue an AJAX request to get the Database Prune configuration.  When we get the Database Prune configuration
 		// we will invoke the "Manage database prune" dialog.
 		{
 			GetDatabasePruneConfigurationCmd cmd;
 			
-			// Issue an ajax request to get the Database Prune configuration from the db.
+			// Issue an AJAX request to get the Database Prune configuration from the db.
 			cmd = new GetDatabasePruneConfigurationCmd();
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
@@ -4001,7 +3996,7 @@ public class AdminControl extends TeamingPopupPanel
 	}
 
 	/**
-	 * Issue an ajax request to get information about the upgrade tasks that need to be performed.
+	 * Issue an AJAX request to get information about the upgrade tasks that need to be performed.
 	 * If there are upgrade tasks that need to be performed show the list of tasks.
 	 */
 	public static void showUpgradeTasks()
@@ -4019,7 +4014,7 @@ public class AdminControl extends TeamingPopupPanel
 			{
 				AsyncCallback<VibeRpcResponse> rpcGetUpgradeInfoCallback = null;
 
-				// Create the callback that will be used when we issue an ajax call to get upgrade information
+				// Create the callback that will be used when we issue an AJAX call to get upgrade information
 				rpcGetUpgradeInfoCallback = new AsyncCallback<VibeRpcResponse>()
 				{
 					/**
