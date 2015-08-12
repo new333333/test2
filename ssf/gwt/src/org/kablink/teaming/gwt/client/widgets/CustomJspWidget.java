@@ -44,7 +44,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTMLPanel;
 
 /**
  * Widget that renders a custom JSP in a landing page.
@@ -56,42 +55,6 @@ public class CustomJspWidget extends VibeWidget {
 	private String				m_lpBinderId;	// Landing page binder ID.
 	private VibeFlowPanel		m_mainPanel;
 
-	/*
-	 * Inner class that that will load HTML and then execute the
-	 * JavaScript contained within it.
-	 */
-	private static class HTMLWithJavaScript extends HTMLPanel {
-		/**
-		 * Constructor method.
-		 * 
-		 * @param html
-		 */
-		public HTMLWithJavaScript(String html) {
-			super(html);
-			addStyleName("customJspWidgetHtmlWithJavaScriptPanel");
-		}
-		
-		/**
-		 * Called when the HTMLPanel is attached to execute its
-		 * JavaScript.
-		 * 
-		 * Overrides the Widget.onAttach() method.
-		 */
-		@Override
-		public void onAttach() {
-			// Let the super class process the attach...
-			super.onAttach();
-			
-			// ...and execute the JavaScript contained within the JSP.
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					GwtClientHelper.jsExecutePhasedJavaScript(getElement());
-				}
-			});
-		}
-	}
-	
 	/**
 	 * Constructor method.
 	 * 

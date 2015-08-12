@@ -32,73 +32,45 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import org.kablink.teaming.gwt.client.GetterCallback;
-import org.kablink.teaming.gwt.client.lpe.HtmlConfig;
-import org.kablink.teaming.gwt.client.lpe.HtmlProperties;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.ui.HTMLPanel;
 
 /**
- * ?
+ * Class that that will load HTML and then execute the JavaScript
+ * contained within it.
  *  
- * @author jwootton
+ * @author drfoster@novell.com
  */
-public class HtmlWidget extends VibeWidget {
-	private HtmlProperties	m_properties;	//
-	private String			m_style;		//
-	private VibeFlowPanel	m_layoutPanel;	//
-
+public class HTMLWithJavaScript extends HTMLPanel {
 	/**
+	 * Constructor method.
+	 * 
+	 * @param html
 	 */
-	public HtmlWidget(HtmlConfig config) {
-		HtmlProperties properties = config.getProperties();
-		m_style = config.getLandingPageStyle();
-		
-		init(properties, config.getBinderId());
-		
-		// All composites must call initWidget() in their constructors.
-		initWidget(m_layoutPanel);
+	public HTMLWithJavaScript(String html) {
+		super(html);
+		addStyleName("customJspWidgetHtmlWithJavaScriptPanel");
 	}
-
-	/*
+	
+	/**
+	 * Called when the HTMLPanel is attached to execute its
+	 * JavaScript.
+	 * 
+	 * Overrides the Widget.onAttach() method.
 	 */
-	private void init(HtmlProperties properties, String binderId) {
-		m_layoutPanel = new VibeFlowPanel();
-		m_layoutPanel.addStyleName("landingPageWidgetMainPanel" + m_style);
-		m_layoutPanel.addStyleName("htmlWidgetMainPanel" + m_style);
+	@Override
+	public void onAttach() {
+		// Let the super class process the attach...
+		super.onAttach();
 		
-		m_properties = new HtmlProperties();
-		if (properties != null) {
-			m_properties.copy(properties);
-		}
-		
-		// Replace any markup that may be in the HTML.
-		m_properties.replaceMarkup( binderId, HtmlProperties.ContextType.VIEW, new GetterCallback<String>() {
+		// ...and execute the JavaScript contained within the JSP.
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void returnValue(String value) {
-				// Yes
-				GwtClientHelper.deferCommand(new ScheduledCommand() {
-					@Override
-					public void execute() {
-						// Update this widget with the folder information.
-						updateWidget();
-					}
-				});
+			public void execute() {
+				GwtClientHelper.jsExecutePhasedJavaScript(getElement());
 			}
 		});
-		
-		updateWidget();
-	}
-
-
-	/*
-	 */
-	private void updateWidget() {
-		// Update this widget with the given HTML.
-		if (m_layoutPanel != null) {
-			m_layoutPanel.clear();
-			m_layoutPanel.add(new HTMLWithJavaScript(m_properties.getHtml()));
-		}
 	}
 }
