@@ -1161,9 +1161,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			else if (mode.equalsIgnoreCase(AdminConsoleDialogMode.MODELESS.name())) acDlgMode = AdminConsoleDialogMode.MODELESS;
 			else                                                                    acDlgMode = AdminConsoleDialogMode.MODAL;
 			
+			ArrayList<GwtAdminCategory> adminActions = getAdminActions(req);
 			AdminConsoleInfo adminConsoleInfo = new AdminConsoleInfo(acDlgMode);
-			String binderId = ((GetAdminActionsCmd)cmd).getBinderId();
-			ArrayList<GwtAdminCategory> adminActions = getAdminActions(req, binderId);
 			adminConsoleInfo.setCategories(adminActions);
 			
 			// Get the url for the administration console "home page"
@@ -6426,10 +6425,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Return the administration options the user has rights to run.
 	 */
-	private ArrayList<GwtAdminCategory> getAdminActions(HttpServletRequest req, String binderId) throws GwtTeamingException {
+	private ArrayList<GwtAdminCategory> getAdminActions(HttpServletRequest req) throws GwtTeamingException {
 		try {
-			Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
-			ArrayList<GwtAdminCategory> adminActions = GwtServerHelper.getAdminActions(req, binder, this);
+			ArrayList<GwtAdminCategory> adminActions = GwtServerHelper.getAdminActions(req, this);
 			return adminActions;
 		}
 		

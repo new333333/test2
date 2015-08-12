@@ -2547,11 +2547,10 @@ public class GwtServerHelper {
 	 * perform.
 	 * 
 	 * @param request
-	 * @param binder
 	 * @param bs
 	 */
 	@SuppressWarnings("unused")
-	public static ArrayList<GwtAdminCategory> getAdminActions(HttpServletRequest request, Binder binder, AbstractAllModulesInjected bs) {
+	public static ArrayList<GwtAdminCategory> getAdminActions(HttpServletRequest request, AbstractAllModulesInjected bs) {
 		ArrayList<GwtAdminCategory> adminCategories;
 		GwtAdminCategory managementCategory;
 		GwtAdminCategory systemCategory;
