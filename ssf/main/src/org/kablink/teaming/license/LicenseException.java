@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,9 +34,13 @@ package org.kablink.teaming.license;
 
 import org.kablink.teaming.exception.CheckedCodedException;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public class LicenseException extends CheckedCodedException {
-	
-	public static final String BAD_VALUE = "license.exception.bad.date";
+	public static final String BAD_VALUE = "license.exception.bad.value";
 	public static final String NO_FILE = "license.exception.no.file";
 	public static final String FILE_FORMAT = "license.exception.file.format";
 	public static final String BAD_SIGNATURE = "license.exception.bad.signature";
@@ -50,5 +54,4 @@ public class LicenseException extends CheckedCodedException {
 	{
 		super(cause, new Object[] {field});
 	}
-	
 }
