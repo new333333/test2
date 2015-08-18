@@ -5607,6 +5607,17 @@ td.datePickerMonth {
 	.vibe-configureTelemetryDlg-panel    {padding: 10px;}
 /* End:  Configure Telemetry dialog styles. */
 
+/* Start:  Configure Anti Virus dialog styles. */
+	.vibe-configureAntiVirusDlg-checkbox      {}
+	.vibe-configureAntiVirusDlg-checkboxPanel {margin-bottom: 10px;}
+	.vibe-configureAntiVirusDlg-label         {margin-right: 3px;}
+	.vibe-configureAntiVirusDlg-panel         {padding: 10px;}
+	.vibe-configureAntiVirusDlg-passwordBox   {width: 250px;}
+	.vibe-configureAntiVirusDlg-table         {}
+	.vibe-configureAntiVirusDlg-testBtn       {margin-top: 10px !important;}
+	.vibe-configureAntiVirusDlg-textBox       {width: 250px;}
+/* End:  Configure Anti Virus dialog styles. */
+
 /* Start:  User properties dialog styles. */
 	.vibe-userPropertiesDlg-aboutMe          {color: #353838; width: 330px;}
 	.vibe-userPropertiesDlg-attrCaption      {color: #949494; padding-right: 3px; display: inline-block; padding-top: 2px;; padding-bottom: 3px;}

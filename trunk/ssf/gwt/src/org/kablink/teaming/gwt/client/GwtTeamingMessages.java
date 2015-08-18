@@ -383,6 +383,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetAllNetFolders();
 	String rpcFailure_GetAllNetFolderServers();
 	String rpcFailure_GetAllGroups();
+	String rpcFailure_GetAntiVirusSettings();
 	String rpcFailure_GetBinderDescription();
 	String rpcFailure_GetBinderFilters();
 	String rpcFailure_GetBinderOwnerAvatarUrl();
@@ -635,6 +636,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_Search();
 	String rpcFailure_SendForgottenPwdEmail();
 	String rpcFailure_SendNotificationEmail();
+	String rpcFailure_SetAntiVirusSettings();
 	String rpcFailure_SetBinderSharingRightsInfo();
 	String rpcFailure_SetDesktopAppDownloadVisibility();
 	String rpcFailure_SetEntriesPinState();
@@ -655,6 +657,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_SyncNetFolders();
 	String rpcFailure_SyncNetFolderServer();
 	String rpcFailure_SyncNetFolderRoots();
+	String rpcFailure_TestAntiVirusSettings();
 	String rpcFailure_TestGroupMembershipCriteria();
 	String rpcFailure_ErrorTestingKeyShieldConnection();
 	String rpcFailure_ErrorTestingNetFolderServerConnection();
@@ -711,6 +714,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_CloudFolderAuthenticationDlg();
 	String codeSplitFailure_CollectionView();
 	String codeSplitFailure_ConfigureAdhocFoldersDlg();
+	String codeSplitFailure_ConfigureAntiVirusDlg();
 	String codeSplitFailure_ConfigureFileSyncAppDlg();
 	String codeSplitFailure_ConfigureMobileAppsDlg();
 	String codeSplitFailure_ConfigurePasswordPolicyDlg();
@@ -3756,4 +3760,19 @@ public interface GwtTeamingMessages extends Messages {
 	String configureTelemetryDlgEnabledHint(String company, String product);
 	String configureTelemetryDlgOptinCheckBoxLabel();
 	String configureTelemetryDlgOptinHint(String company, String product);
+	
+	// Strings used in the Configure Anti Virus (admin console) dialog.
+	String configureAntiVirusDlg_Header();
+	String configureAntiVirusDlgEnabledCheckBoxLabel();
+	String configureAntiVirusDlgErrorDisabled();
+	String configureAntiVirusDlgErrorNoPassword();
+	String configureAntiVirusDlgErrorNoServerUrl();
+	String configureAntiVirusDlgErrorNoUserName();
+	String configureAntiVirusDlgPasswordLabel();
+	String configureAntiVirusDlgServerURLLabel();
+	String configureAntiVirusDlgTestErrorWithDetails(String details);
+	String configureAntiVirusDlgTestErrorWithoutDetails();
+	String configureAntiVirusDlgTestLabel();
+	String configureAntiVirusDlgTestSuccess();
+	String configureAntiVirusDlgUsernameLabel();
 }
