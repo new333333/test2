@@ -757,6 +757,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         return errors;
     }
 
+    /*
 	@Override
 	public FilesErrors filterFile(Binder binder, DefinableEntity entity, FileAttachment fa) 
 			throws FilterException {
@@ -781,7 +782,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 		return errors;
 	}
-
+	*/
 
 	@Override
 	public FilesErrors filterFiles(Binder binder, DefinableEntity entity, List fileUploadItems) 

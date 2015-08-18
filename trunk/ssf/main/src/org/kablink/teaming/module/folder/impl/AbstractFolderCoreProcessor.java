@@ -50,6 +50,7 @@ import org.hibernate.exception.LockAcquisitionException;
 
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.antivirus.VirusDetectedException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
@@ -93,6 +94,7 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.CollectionUtil;
+import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -164,6 +166,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         List allUploadItems = new ArrayList(fileData);
         FolderEntry newEntry = null;
         try {
+          	// Before doing ANYTHING else, make sure that the files are virus free if virus scanner is available.
+        	addReply_virusScanFiles(fileData);
+        	
          	final FolderEntry entry = addReply_create(def, ctx);
          	newEntry = entry;
         	// The following part requires update database transaction.
@@ -297,6 +302,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		Map entryData, List fileUploadItems, Map ctx) throws FilterException, TitleException {
     	return addEntry_filterFiles(binder, reply, entryData, fileUploadItems, ctx);
     }
+    
+    //no transaction
+    protected void addReply_virusScanFiles(List<FileUploadItem> fileUploadItems) throws VirusDetectedException {
+    	addEntry_virusScanFiles(fileUploadItems);
+    }
+    
     //no transaction
     protected FilesErrors addReply_processFiles(FolderEntry parent, FolderEntry entry, 
     		List fileData, FilesErrors filesErrors, Map ctx) {

@@ -681,6 +681,7 @@
 		<property name="templateModule"><ref bean="templateModule"/></property>
 		<property name="textConverterManager"><ref bean="textConverterManager"/></property>
 		<property name="textStreamConverterManager"><ref bean="textStreamConverterManager"/></property>
+		<property name="antiVirusManager"><ref bean="antiVirusManager"/></property>
 	</bean>
 	
 	<bean id="workspaceModule" parent="moduleTransactionProxy">

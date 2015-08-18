@@ -212,4 +212,7 @@ public enum ApiErrorCode {
     
     NET_FOLDER_CONFIG_NOT_FOUND, // No net folder configuration found with this name or id
     NET_FOLDER_SERVER_NOT_FOUND, // No net folder server found with this name or id
+    
+    // Anti-virus scanning errors
+    VIRUS_DETECTED, // Anti-virus scanning detected infected file
 }

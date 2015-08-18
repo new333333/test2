@@ -3,8 +3,8 @@
 
     <changeSet author="jong" context="schema" failOnError="true" id="1">
         <createTable  tableName="SS_NetFolderConfig">
-            <column autoIncrement="true" name="id" type="NUMBER(19,0)">
-                <constraints nullable="false" primaryKey="true"/>
+            <column name="id" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_NetFolderConfig"/>
             </column>           
             <column name="lockVersion" type="NUMBER(19,0)">
                 <constraints nullable="false"/>
@@ -159,8 +159,8 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
     <changeSet author="dennis" context="schema" failOnError="true" id="12">
         <comment>Manage Proxy Identities</comment>
         <createTable tableName="SS_ProxyIdentity">
-            <column autoIncrement="true" name="id" type="NUMBER(19,0)">
-                <constraints nullable="false" primaryKey="true"/>
+            <column name="id" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_ProxyIdentity"/>
             </column>           
             <column name="zoneId" type="NUMBER(19,0)">
                 <constraints nullable="false"/>
@@ -227,4 +227,45 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
         </addColumn>
 	</changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
+        <createSequence sequenceName="ss_netfolderconfig_id_sequence"/>
+    </changeSet>
+
+	<changeSet author="jong" context="schema" failOnError="true" id="19">
+        <createSequence sequenceName="ss_proxy_identity_id_sequence"/>
+    </changeSet>
+	
+	<changeSet author="jong" context="schema" failOnError="true" id="20">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<sequenceExists sequenceName="ss_resource_driver_id_sequence"/>
+            </not>
+        </preConditions>
+        <createSequence sequenceName="ss_resource_driver_id_sequence"/>
+    </changeSet>
+	
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <comment>Anti-virus service configuration</comment>
+        <createTable tableName="SS_AntiVirusConfig">
+            <column name="zoneId" type="NUMBER(19,0)">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_SS_AntiVirusConfig"/>
+            </column>
+            <column name="type" type="NUMBER(2,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="NUMBER(1,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="serverUrl" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="false" />
+            </column>
+            <column name="username" type="VARCHAR2(64 CHAR)">
+                <constraints nullable="false" />
+            </column>
+            <column name="password" type="VARCHAR2(64 CHAR)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+	</changeSet>
+	
 </databaseChangeLog>
