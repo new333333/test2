@@ -321,6 +321,24 @@ public class FileUploadItem {
 			return new SizeMd5Pair(mf.getSize(), md5);
 	}
 
+	/*
+	 * Return the backing file used to guarantee reentrancy. It is expected and required
+	 * that makeReentrant() was called prior to using this method.
+	 */
+	public File getReentrantBackingFile() {
+		if(file == null) {
+			if(mf instanceof SimpleMultipartFile) {
+				return ((SimpleMultipartFile)mf).getFile();
+			}
+			else {
+				return null; 
+			}
+		}
+		else {
+			return file;
+		}
+	}
+	
 	public String getExpectedMd5() {
 		if (mf instanceof FileExtendedSupport) {
 			return ((FileExtendedSupport) mf).getExpectedMd5();

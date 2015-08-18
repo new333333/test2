@@ -4,7 +4,7 @@
     <changeSet author="jong" context="schema" failOnError="true" id="1">
         <createTable schemaName="dbo" tableName="SS_NetFolderConfig">
             <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
-                <constraints nullable="false" primaryKey="true"/>
+                <constraints nullable="false" primaryKey="true", primaryKeyName="PK__SS_NetFolderConfig"/>
             </column>           
             <column name="lockVersion" type="NUMERIC(19,0)">
                 <constraints nullable="false"/>
@@ -160,7 +160,7 @@ update dbo.SS_Forums set binderType = LEFT(type, 1);
         <comment>Manage Proxy Identities</comment>
         <createTable tableName="SS_ProxyIdentity">
             <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
-                <constraints nullable="false" primaryKey="true"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_ProxyIdentity"/>
             </column>           
             <column name="zoneId" type="NUMERIC(19,0)">
                 <constraints nullable="false"/>
@@ -317,4 +317,28 @@ GO
         </addColumn>
 	</changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+        <comment>Anti-virus service configuration</comment>
+        <createTable tableName="SS_AntiVirusConfig">
+	        <column name="zoneId" type="NUMERIC(19,0)">
+	            <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_AntiVirusConfig"/>
+	        </column>
+            <column name="type" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+	        <column name="enabled" type="TINYINT">
+                <constraints nullable="false"/>
+	        </column>
+            <column name="serverUrl" type="NVARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="username" type="NVARCHAR(64)">
+                <constraints nullable="false" />
+            </column>
+            <column name="password" type="NVARCHAR(64)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+	</changeSet>
+	
 </databaseChangeLog>

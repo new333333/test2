@@ -69,6 +69,8 @@ import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.antivirus.AntiVirusManager;
+import org.kablink.teaming.antivirus.VirusDetectedException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.docconverter.ITextConverterManager;
 import org.kablink.teaming.docconverter.TextConverter;
@@ -283,7 +285,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     public void setTextStreamConverterManager(TextStreamConverterManager textStreamConverterManager) {
     	this.textStreamConverterManager = textStreamConverterManager;
     }
-
+    
+    private AntiVirusManager antiVirusManager;
+	protected AntiVirusManager getAntiVirusManager() {
+		return antiVirusManager;
+	}
+	public void setAntiVirusManager(AntiVirusManager antiVirusManager) {
+		this.antiVirusManager = antiVirusManager;
+	}
 	//***********************************************************************************************************	
     //no transaction    
     @Override
@@ -293,7 +302,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // This default implementation is coded after template pattern. 
       	if (parent.isZone())
       		throw new NotSupportedException("errorcode.notsupported.addbinder");
-               
+      	
       	SimpleProfiler.start("addBinder_toEntryData");
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
@@ -311,6 +320,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         }
        
     	try {
+          	// Before doing ANYTHING else, make sure that the files are virus free if virus scanner is available.
+          	SimpleProfiler.start("addBinder_virusScanFiles");
+            addBinder_virusScanFiles(fileUploadItems);
+            SimpleProfiler.stop("addBinder_virusScanFiles");
+                   
     		SimpleProfiler.start("addBinder_create");
 	        final Binder binder = addBinder_create(def, clazz, ctx);
 	        SimpleProfiler.stop("addBinder_create");
@@ -412,7 +426,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void addBinder_setCtx(Binder binder, Map ctx) {
     }
 
-    //inside write transaction    
+    //no transaction    
    protected FilesErrors addBinder_filterFiles(Binder binder, List fileUploadItems, Map ctx) throws FilterException {
   		FilesErrors nameErrors = new FilesErrors();
    		
@@ -425,11 +439,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	return filterErrors;
     }
 
-   //inside write transaction    
-    protected FilesErrors addBinder_processFiles(Binder binder, List fileUploadItems, FilesErrors filesErrors, Map ctx) {
-    	return getFileModule().writeFiles(binder, binder, fileUploadItems, filesErrors);
-    }
-    
+   //no transaction    
+   protected void addBinder_virusScanFiles(List<FileUploadItem> fileUploadItems) throws VirusDetectedException {
+	   getAntiVirusManager().scanFiles(fileUploadItems);
+   }
+   
+   //no transaction    
+   protected FilesErrors addBinder_processFiles(Binder binder, List fileUploadItems, FilesErrors filesErrors, Map ctx) {
+   	return getFileModule().writeFiles(binder, binder, fileUploadItems, filesErrors);
+   }
+   
     //inside write transaction    
     protected Map addBinder_toEntryData(Binder parent, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
         //Call the definition processor to get the entry data to be stored
@@ -960,6 +979,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         }
 
 	    try {
+          	// Before doing ANYTHING else, make sure that the files are virus free if virus scanner is available.
+          	SimpleProfiler.start("modifyBinder_virusScanFiles");
+          	modifyBinder_virusScanFiles(fileUploadItems);
+            SimpleProfiler.stop("modifyBinder_virusScanFiles");
 		    
 	    	SimpleProfiler.start("modifyBinder_filterFiles");
 		    FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems, ctx);
@@ -1049,6 +1072,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	return filterErrors;
     }
 
+    //no transaction
+    protected void modifyBinder_virusScanFiles(List<FileUploadItem> fileUploadItems) throws VirusDetectedException {
+    	getAntiVirusManager().scanFiles(fileUploadItems);
+    }
+    
     //no transaction    
     protected FilesErrors modifyBinder_processFiles(Binder binder, 
     		List fileUploadItems, FilesErrors filesErrors, Map ctx) {

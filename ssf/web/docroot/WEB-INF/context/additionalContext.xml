@@ -174,4 +174,9 @@
 	<!-- ============================= ProxyIdentity Support ============================ -->
 	<bean id="proxyIdentityModule" class="org.kablink.teaming.module.proxyidentity.impl.NullProxyIdentityModule"/>		
 	
+	<!-- =============================== Anti-virus scanning for files ============================== -->		
+	<bean id="antiVirusManager" class="org.kablink.teaming.antivirus.impl.NullAntiVirusManager"/>		
+	
+	<bean id="antiVirusModule" class="org.kablink.teaming.module.antivirus.impl.NullAntiVirusModule"/>	
+
 </beans>

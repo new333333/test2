@@ -49,6 +49,7 @@ import org.hibernate.exception.LockAcquisitionException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.antivirus.VirusDetectedException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
@@ -125,6 +126,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	//***********************************************************************************************************	
     
 	@Override
+	//no transaction
 	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems, Map options) 
     	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException {
@@ -151,6 +153,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
         Entry newEntry = null;
         try {
+          	// Before doing ANYTHING else, make sure that the files are virus free if virus scanner is available.
+          	SimpleProfiler.start("addEntry_virusScanFiles");
+            addEntry_virusScanFiles(fileUploadItems);
+            SimpleProfiler.stop("addEntry_virusScanFiles");
         	
         	SimpleProfiler.start("addEntry_create");
         	final Entry entry = addEntry_create(def, clazz, ctx);
@@ -297,6 +303,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             	}
            	}
             throw new DataIntegrityViolationException(e.getLocalizedMessage(), e);
+        } catch(VirusDetectedException e) {
+        	// Virus detection on files occurs before attempting to create a folder entry.
+        	// So there's nothing to clean up. Simply rethrow.
+        	throw e;
         } catch(Exception ex) {
         	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
         	if (newEntry != null && newEntry.getId()!=null) {
@@ -391,7 +401,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			}
 		}
     }
-    
+    //no transaction
     protected FilesErrors addEntry_filterFiles(Binder binder, Entry entry, 
     		Map entryData, List fileUploadItems, Map ctx) throws FilterException {
    		FilesErrors nameErrors = new FilesErrors();
@@ -428,6 +438,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	return filterErrors;
     }
 
+    //no transaction    
+    protected void addEntry_virusScanFiles(List<FileUploadItem> fileUploadItems) throws VirusDetectedException {
+    	getAntiVirusManager().scanFiles(fileUploadItems);
+    }
+
+    //no transaction
     protected FilesErrors addEntry_processFiles(Binder binder, 
     		Entry entry, List fileUploadItems, FilesErrors filesErrors, Map ctx) {
         boolean skipDbLog = false;
@@ -656,6 +672,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         checkRenameFileNames(fileRenamesTo);
 
         try {
+	    	SimpleProfiler.start("modifyEntry_virusScanFiles");
+	    	modifyEntry_virusScanFiles(fileUploadItems);
+	    	SimpleProfiler.stop("modifyEntry_virusScanFiles");
+
 	    	SimpleProfiler.start("modifyEntry_transactionExecute1");
 	    	// The following part requires update database transaction.
 	    	//ctx can be used by sub-classes to pass info
@@ -673,11 +693,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	SimpleProfiler.stop("modifyEntry_transactionExecute1");
 		    	
 	    	//handle outside main transaction so main changeLog doesn't reflect attachment changes
-	        SimpleProfiler.start("modifyBinder_removeAttachments");
+	        SimpleProfiler.start("modifyEntry_removeAttachments");
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
             modifyEntry_removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex, ctx);
-	        SimpleProfiler.stop("modifyBinder_removeAttachments");
+	        SimpleProfiler.stop("modifyEntry_removeAttachments");
 	    	
 	    	SimpleProfiler.start("modifyEntry_filterFiles");
 	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems, ctx);
@@ -788,6 +808,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	}	    	
         } catch(WriteFilesException ex) {
         	throw ex;
+        } catch(VirusDetectedException ex) {
+        	throw ex;
         } catch(Exception ex) {
         	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
         	throw new WriteEntryDataException(entryDataErrors);
@@ -845,6 +867,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		ctx.put(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE, entry.getNormalTitle());
 		ctx.put(ObjectKeys.FIELD_ENTITY_TITLE, entry.getTitle());
     }
+    
+    //no transaction
    protected FilesErrors modifyEntry_filterFiles(Binder binder, Entry entry,
     		Map entryData, List fileUploadItems, Map ctx) throws FilterException, TitleException {
    		FilesErrors nameErrors = new FilesErrors();
@@ -919,6 +943,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        filterErrors.getProblems().addAll(checkSumErrors.getProblems());
     	return filterErrors;
     }
+
+   //no transaction
+   protected void modifyEntry_virusScanFiles(List<FileUploadItem> fileUploadItems) throws VirusDetectedException {
+	   getAntiVirusManager().scanFiles(fileUploadItems);
+   }
 
     protected FilesErrors modifyEntry_processFiles(Binder binder, 
     		Entry entry, List fileUploadItems, FilesErrors filesErrors, Map ctx) {

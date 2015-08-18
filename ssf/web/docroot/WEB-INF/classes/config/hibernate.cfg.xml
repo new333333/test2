@@ -105,6 +105,7 @@
 	    <mapping resource="org/kablink/teaming/domain/KeyShieldConfig.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/NetFolderConfig.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/ProxyIdentity.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/AntiVirusConfig.hbm.xml"/>
 	    
 	    <!-- jbpms -->
 	    <mapping resource="org/jbpm/graph/action/Script.hbm.xml"/>
@@ -262,6 +263,7 @@
  		<class-cache class="org.kablink.teaming.domain.KeyShieldConfig" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.NetFolderConfig" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.ProxyIdentity" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.AntiVirusConfig" usage="read-write"/>
  		
  		<collection-cache collection="org.kablink.teaming.domain.FileAttachment.fileVersions" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.Binder.binders" usage="read-write"/>

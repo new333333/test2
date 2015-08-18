@@ -204,8 +204,11 @@ public interface FileModule {
      */
     public FilesErrors filterFiles(Binder binder, DefinableEntity entity, List<FileUploadItem> fileUploadItems) 
     	throws FilterException;
+    
+    /*
     public FilesErrors filterFile(Binder binder, DefinableEntity entity, FileAttachment fa) 
 		throws FilterException;
+	*/
     
     /**
      * Locks the file so that subsequent updates can be made to the file. 
