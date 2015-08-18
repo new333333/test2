@@ -59,7 +59,7 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 		}
 	}
 
-	private short type;
+	private Short type;
 	private boolean enabled = false;
 	private String serverUrl;
 	private String username;
@@ -116,10 +116,15 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 	}
 
 	public Type getType() {
-		return Type.valueOf(type);
+		if(type != null)
+			return Type.valueOf(type.shortValue());
+		else
+			return null;
 	}
 	
 	public void setType(Type type) {
+		if(type == null)
+			throw new IllegalArgumentException("Type must be specified");
 		this.type = type.getValue();
 	}
 	
