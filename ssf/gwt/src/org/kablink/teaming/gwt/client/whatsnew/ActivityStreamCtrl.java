@@ -150,6 +150,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		UNREAD_ENTRIES,
 		STANDALONE;
 		
+		public boolean isBlog()       {return    BLOG.equals(this);        }
 		public boolean isEmbedded()   {return (!(STANDALONE.equals(this)));}
 		public boolean isStandalone() {return    STANDALONE.equals(this);  }
 	}
@@ -1135,6 +1136,15 @@ public class ActivityStreamCtrl extends ResizeComposite
 		}
 		
 		return returnValue;
+	}
+	
+	/**
+	 * Returns how this ActivityStreamCtrl is being used.
+	 * 
+	 * @return
+	 */
+	public ActivityStreamCtrlUsage getUsage() {
+		return m_usage;
 	}
 	
 	/*

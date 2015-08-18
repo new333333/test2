@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
+import org.kablink.teaming.gwt.client.widgets.HTMLWithJavaScript;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
@@ -1167,7 +1168,10 @@ public abstract class ActivityStreamUIEntry extends Composite implements ClickHa
 		
 		// Set the description
 		m_description = getEntryDesc(entryItem);
-		m_descPanel.getElement().setInnerHTML(m_description);
+		m_descPanel.clear();
+		if (m_activityStreamCtrl.getUsage().isBlog())
+		     m_descPanel.add(new HTMLWithJavaScript(m_description));	// Bugzilla 941513:  Ensures that embedded YouTube videos get properly initialized.
+		else m_descPanel.getElement().setInnerHTML(m_description);
 		
 		// Do we have a description?
 		if (GwtClientHelper.hasString(m_description)) {
