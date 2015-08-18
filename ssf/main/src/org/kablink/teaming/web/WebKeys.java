@@ -382,6 +382,7 @@ public class WebKeys {
  	public static final String ACTION_ADD_FOLDER_ATTACHMENT = "add_folder_attachment";
 	public static final String ACTION_ACCESS_CONTROL = "configure_access_control";
 	public static final String ACTION_CLOSE_WINDOW="close_window"; 
+	public static final String ACTION_CONFIGURE_ANTIVIRUS="configure_antivirus";
 	public static final String ACTION_CONFIGURE_DEFINITIONS = "configure_definitions";
 	public static final String ACTION_CONFIGURE_HOME_PAGE="configure_home_page";
 	public static final String ACTION_CONFIGURE_MOBILE_ACCESS="configure_mobile_access";

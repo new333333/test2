@@ -3485,6 +3485,23 @@ public class GwtServerHelper {
 				}
 			}
 
+			// Does the current user have admin rights and is this a
+			// licensed product version?
+			if (userHasAdminRights && ReleaseInfo.isLicenseRequiredEdition()) {
+				// Yes!  Add a configure anti virus option.
+				adaptedUrl = new AdaptedPortletURL(request, "ss_forum", false);
+				adaptedUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_ANTIVIRUS);
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init(
+					NLT.get("administration.configure_cfg.antivirus"),
+					adaptedUrl.toString(),
+					AdminAction.CONFIGURE_ANTIVIRUS);
+				
+				// Add this action to the 'system' category.
+				systemCategory.addAdminOption(adminAction);
+			}
+			
 			// Does the user have the rights to "ldap configuration"?
 			if ( ldapModule.testAccess(LdapOperation.manageLdap ) )
 			{
@@ -10394,6 +10411,7 @@ public class GwtServerHelper {
 		case GET_ALL_NET_FOLDERS:
 		case GET_ALL_NET_FOLDER_ROOTS:
 		case GET_ALL_GROUPS:
+		case GET_ANTIVIRUS_SETTINGS:
 		case GET_BINDER_BRANDING:
 		case GET_BINDER_DESCRIPTION:
 		case GET_BINDER_FILTERS:
@@ -10664,6 +10682,7 @@ public class GwtServerHelper {
 		case SAVE_ZONE_SHARE_RIGHTS:
 		case SEND_FORGOTTEN_PWD_EMAIL:
 		case SEND_SHARE_NOTIFICATION_EMAIL:
+		case SET_ANTIVIRUS_SETTINGS:
 		case SET_BINDER_SHARING_RIGHTS_INFO:
 		case SET_DESKTOP_APP_DOWNLOAD_VISIBILITY:
 		case SET_ENTRIES_PIN_STATE:
@@ -10682,6 +10701,7 @@ public class GwtServerHelper {
 		case STOP_SYNC_NET_FOLDERS:
 		case SYNC_NET_FOLDERS:
 		case SYNC_NET_FOLDER_SERVER:
+		case TEST_ANTIVIRUS_SETTINGS:
 		case TEST_GROUP_MEMBERSHIP_LDAP_QUERY:
 		case TEST_KEYSHIELD_CONNECTION:
 		case TEST_NET_FOLDER_CONNECTION:

@@ -188,6 +188,7 @@ import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.whatsnew.EventValidation;
 import org.kablink.teaming.gwt.server.LdapBrowser.LdapBrowserHelper;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
+import org.kablink.teaming.gwt.server.util.GwtAntiVirusHelper;
 import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtDeleteHelper;
@@ -1236,6 +1237,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = GwtServerHelper.getAllGroups( this, gagCmd.getFilter() );
 			responseData = new GetGroupsRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_ANTIVIRUS_SETTINGS:  {
+			AntiVirusSettingsRpcResponseData responseData = GwtAntiVirusHelper.getAntiVirusSettings(this, req);
+			response = new VibeRpcResponse(responseData);
 			return response;
 		}
 		
@@ -4030,6 +4037,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case SET_ANTIVIRUS_SETTINGS:  {
+			SetAntiVirusSettingsCmd savsCmd = ((SetAntiVirusSettingsCmd) cmd);
+			GwtAntiVirusHelper.setAntiVirusSettings(this, req, savsCmd.getAntiVirusConfig());
+			response = new VibeRpcResponse(new BooleanRpcResponseData(true));
+			return response;
+		}
+		
 		case SET_BINDER_SHARING_RIGHTS_INFO:
 		{
 			SetBinderSharingRightsInfoCmd sbsrCmd = ((SetBinderSharingRightsInfoCmd) cmd);
@@ -4203,6 +4217,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			listOfNetFolderServers = GwtNetFolderHelper.syncNetFolderServers( this, req, snfsCmd.getNetFolderServers() );
 			responseData = new SyncNetFolderRootsRpcResponseData( listOfNetFolderServers );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case TEST_ANTIVIRUS_SETTINGS:  {
+			TestAntiVirusSettingsCmd tavsCmd = ((TestAntiVirusSettingsCmd) cmd);
+			TestAntiVirusSettingsRpcResponseData responseData = GwtAntiVirusHelper.testAntiVirusSettings(this, req, tavsCmd.getAntiVirusConfig());
+			response = new VibeRpcResponse(responseData);
 			return response;
 		}
 		

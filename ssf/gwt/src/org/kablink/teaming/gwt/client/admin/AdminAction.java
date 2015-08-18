@@ -44,6 +44,7 @@ public enum AdminAction implements IsSerializable {
 	ACCESS_CONTROL_FOR_ZONE_ADMIN_FUNCTIONS("Access control for zone administration functions"),
 	ADD_USER("Add user"),
 	CONFIGURE_ADHOC_FOLDERS("Configure adhoc folder"),
+	CONFIGURE_ANTIVIRUS("Configure anti virus settings"),
 	CONFIGURE_EMAIL("Configure email"),
 	CONFIGURE_EMAIL_TEMPLATES("Configure email templates"),
 	CONFIGURE_FILE_SYNC_APP("Configure File Sync App"),

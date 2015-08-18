@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.AdministrationActionEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureAdhocFoldersDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeConfigureAntiVirusDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureMobileAppsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigurePasswordPolicyDlgEvent;
@@ -110,6 +111,7 @@ import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfigureAntiVirusDlg.ConfigureAntiVirusDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUpdateLogsDlg.ConfigureUpdateLogsDlgClient;
@@ -182,6 +184,7 @@ public class AdminControl extends TeamingPopupPanel
 		AdministrationActionEvent.Handler,
 		EditSiteBrandingEvent.Handler,
 		InvokeConfigureAdhocFoldersDlgEvent.Handler,
+		InvokeConfigureAntiVirusDlgEvent.Handler,
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
 		InvokeConfigureMobileAppsDlgEvent.Handler,
 		InvokeConfigurePasswordPolicyDlgEvent.Handler,
@@ -224,6 +227,7 @@ public class AdminControl extends TeamingPopupPanel
 	private int m_dlgHeight;
 	private AdminControlGlassPanel m_glassPanel;
 	private AdminConsoleHomePage m_homePage = null;
+	private ConfigureAntiVirusDlg m_configureAntiVirusDlg = null;
 	private ConfigureFileSyncAppDlg m_configureFileSyncAppDlg = null;
 	private ConfigureMobileAppsDlg m_configureMobileAppsDlg = null;
 	private ConfigureUserMobileAppsDlg m_configureUserMobileAppsDlg = null;
@@ -276,6 +280,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.ADMINISTRATION_ACTION,
 		TeamingEvents.EDIT_SITE_BRANDING,
 		TeamingEvents.INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG,
+		TeamingEvents.INVOKE_CONFIGURE_ANTIVIRUS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_MOBILE_APPS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_PASSWORD_POLICY_DLG,
@@ -913,6 +918,12 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the "Configure Adhoc folders" dialog
 			InvokeConfigureAdhocFoldersDlgEvent.fireOne();
 			
+		}
+		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_ANTIVIRUS )
+		{
+			// Fire the event to invoke the 'Configure Anti Virus'
+			// dialog.
+			InvokeConfigureAntiVirusDlgEvent.fireOne();
 		}
 		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_EMAIL_TEMPLATES )
 		{
@@ -2106,6 +2117,60 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 
+	/**
+	 * Handles InvokeConfigureAntiVirusDlgEvent received by this class.
+	 * 
+	 * Implements the InvokeConfigureAntiVirusDlgEvent.Handler.onInvokeConfigureAntiVirusDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeConfigureAntiVirusDlg(InvokeConfigureAntiVirusDlgEvent event) {
+		// Get the position of the content control.
+		int x = m_contentControlX;
+		int y = m_contentControlY;
+		
+		// Have we already created a 'Configure AntiVirus' dialog?
+		if (null == m_configureAntiVirusDlg) {
+			// No!  Create one now.
+			int height = m_dlgHeight;
+			int width  = m_dlgWidth;
+			ConfigureAntiVirusDlg.createDlg(
+				isActionAutoHide(AdminAction.CONFIGURE_ANTIVIRUS),
+				isActionModal(   AdminAction.CONFIGURE_ANTIVIRUS),
+				x, 
+				y,
+				width,
+				height,
+				new ConfigureAntiVirusDlgClient()
+			{			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(final ConfigureAntiVirusDlg ctDlg) {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							m_configureAntiVirusDlg = ctDlg;
+							ConfigureAntiVirusDlg.initAndShow(m_configureAntiVirusDlg);
+						}
+					});
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've already created the dialog!  Simply
+			// initialize and show it.
+			m_configureAntiVirusDlg.setPixelSize(m_dlgWidth, m_dlgHeight);
+			m_configureAntiVirusDlg.setPopupPosition(x, y);
+			ConfigureAntiVirusDlg.initAndShow(m_configureAntiVirusDlg);
+		}
+	}
+	
 	/**
 	 * Handles InvokeConfigureFileSyncAppDlgEvent received by this class.
 	 * 
@@ -4138,6 +4203,7 @@ public class AdminControl extends TeamingPopupPanel
 				// Modal (i.e., Apply/OK/Cancel button) actions.
 				case ACCESS_CONTROL_FOR_ZONE_ADMIN_FUNCTIONS:
 				case CONFIGURE_ADHOC_FOLDERS:
+				case CONFIGURE_ANTIVIRUS:
 				case CONFIGURE_EMAIL:
 				case CONFIGURE_FILE_SYNC_APP:
 				case CONFIGURE_FILE_VERSION_AGING:
