@@ -13,8 +13,8 @@ Ant 1.6.2
 Ant Contrib 0.6
 Antlr 2.7.6 (needed by Hibernate)
 aopalliance 1.0 (needed and included by Spring)
-Apache HttpClient 4.3.5 (not to be confused with Apache Commons HttpClient) (used by openid4java, sharepoint driver)
-Apache HttpCore 4.3.2 (Used by HttpClient)
+Apache HttpClient 4.3.6 (not to be confused with Apache Commons HttpClient) (used by openid4java, sharepoint driver)
+Apache HttpCore 4.3.3 (Used by HttpClient)
 Apache HttpMime 4.3.6 (Used in conjunction with HttpClient)
 ASM 3.1.0 (from spring distribution, needed by cglib and jersey)
 Asm-attrs 1.5.3 (from spring distribution, needed by cglib)
