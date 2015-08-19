@@ -256,13 +256,16 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
             <column name="enabled" type="NUMBER(1,0)">
                 <constraints nullable="false"/>
             </column>
-            <column name="serverUrl" type="VARCHAR2(128 CHAR)">
+            <column name="serviceUrl" type="VARCHAR2(128 CHAR)">
                 <constraints nullable="false" />
             </column>
-            <column name="username" type="VARCHAR2(64 CHAR)">
+            <column name="interfaceId" type="VARCHAR2(32 CHAR)">
                 <constraints nullable="false" />
             </column>
-            <column name="password" type="VARCHAR2(64 CHAR)">
+            <column name="username" type="VARCHAR2(32 CHAR)">
+                <constraints nullable="false" />
+            </column>
+            <column name="password" type="VARCHAR2(32 CHAR)">
                 <constraints nullable="false" />
             </column>
         </createTable>

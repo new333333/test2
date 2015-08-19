@@ -7,10 +7,11 @@
     <id unsaved-value="null" name="zoneId" access="field">
       <generator class="assigned"/>
 	</id>
-	<property name="type"      not-null="true" access="field" type="short" />
-	<property name="enabled"   not-null="true" access="field"/>
-    <property name="serverUrl" not-null="true" access="field" length="128" />
-    <property name="username"  not-null="true" access="field" length="64" />
-    <property name="password"  not-null="true" access="field" length="64" />
+	<property name="type"        not-null="true" access="field" type="short" />
+	<property name="enabled"     not-null="true" access="field"/>
+    <property name="serviceUrl"  not-null="true" access="field" length="128" />
+    <property name="interfaceId" not-null="true" access="field" length="32" />
+    <property name="username"    not-null="true" access="field" length="32" />
+    <property name="password"    not-null="true" access="field" length="32" />
   </class>
 </hibernate-mapping>
