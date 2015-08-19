@@ -43,39 +43,57 @@ import java.io.Serializable;
  * <p>
  * This object must NOT be used to signal an environmental error such as inaccessible
  * or mis-configured virus scanner, network problem, I/O problem, timeout, etc.
- * The use of this object assumes that the virus scanner successfully ran to completion
- * on the file and it determined that the file was infected.
+ * The use of this object implies that the virus scanner successfully ran to completion
+ * on the file and it determined that the file should be rejected based on its policy
+ * (i.e., the file violates policy restrictions).
  * <p>
  * This class is used in conjunction with <code>VirusDetectedException</code>.
  */
 public class VirusDetectedError implements Serializable {
 
 	/**
+	 * Enum for error type
+	 *
+	 */
+	public enum Type {
+		/**
+		 * The file is infected with virus.
+		 */
+		Virus,
+		/**
+		 * The file violates some policy restrictions.
+		 */
+		PolicyRestrictionViolation
+	}
+	
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	// required
+	// name of file - required
 	private String fileName;
-	// optional
-	private String errorMessage;
-	// optional
-	private Exception exception;
 	
-	public VirusDetectedError(String fileName, String errorMessage, Exception exception) {
+	// error type - required
+	private Type type;
+	
+	// error message - optional
+	private String message;
+	
+	public VirusDetectedError(String fileName, Type type, String message) {
 		this.fileName = fileName;
-		this.errorMessage = errorMessage;
-		this.exception = exception;
+		this.type = type;
+		this.message = message;
 	}
 	
 	public String getFileName() {
 		return fileName;
 	}
-	public String getErrorMessage() {
-		return errorMessage;
+	public String getMessage() {
+		return message;
 	}
-	public Exception getException() {
-		return exception;
+	public Type getType() {
+		return type;
 	}
 
 	@Override
@@ -83,10 +101,10 @@ public class VirusDetectedError implements Serializable {
 		StringBuffer sb = new StringBuffer();
 		sb.append("filename=[")
 		.append(fileName)
-		.append("], errorMessage=[")
-		.append((errorMessage != null)? errorMessage:"")
-		.append("], exception=[")
-		.append((exception != null)? exception.toString():"")
+		.append("], type=[")
+		.append(type.name())
+		.append("], message=[")
+		.append((message != null)? message:"")
 		.append("]");
 		return sb.toString();
 	}

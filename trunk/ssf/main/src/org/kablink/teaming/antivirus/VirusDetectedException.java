@@ -46,9 +46,9 @@ import org.kablink.util.api.ApiErrorCode;
  * This object must NOT be used to signal an environmental error such as inaccessible
  * or mis-configured virus scanner, network problem, I/O problem, timeout, etc., which
  * should be reported via other exceptions.
- * The use of this exception assumes that the virus scanner successfully ran to 
- * completion on ALL input files and it determined that at least one of the files
- * was infected.
+ * The use of this object implies that the virus scanner successfully ran to completion
+ * on the file and it determined that the file should be rejected based on its policy
+ * (i.e., the file violates policy restrictions).
  * <p>
  * This class is used in conjunction with <code>VirusDetectedError</code>.
  */
@@ -73,7 +73,7 @@ public class VirusDetectedException extends VibeRuntimeException {
 	
 	@Override
 	public String getMessage() {
-		StringBuffer sb = new StringBuffer("Number of infected files is " + errors.size() + "\n");
+		StringBuffer sb = new StringBuffer("Number of input files that either are infected or violate policy restrictions is " + errors.size() + "\n");
 		for(int i = 0; i < errors.size(); i++) {
 			if(i > 0)
 				sb.append("\n");

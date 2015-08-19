@@ -43,9 +43,10 @@ import org.kablink.teaming.util.FileUploadItem;
  * It is required that implementing class be safe for use by multiple concurrent threads.
  */
 public interface AntiVirusScanner {
-	
-	public void init(Object... args);
-	
+
+	/**
+	 * Close and release all resources associated with this scanner.
+	 */
 	public void destroy();
 
 	/**
