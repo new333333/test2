@@ -3765,11 +3765,13 @@ public interface GwtTeamingMessages extends Messages {
 	String configureAntiVirusDlg_Header();
 	String configureAntiVirusDlgEnabledCheckBoxLabel();
 	String configureAntiVirusDlgErrorDisabled();
+	String configureAntiVirusDlgErrorNoInterfaceId();
 	String configureAntiVirusDlgErrorNoPassword();
-	String configureAntiVirusDlgErrorNoServerUrl();
+	String configureAntiVirusDlgErrorNoServiceUrl();
 	String configureAntiVirusDlgErrorNoUserName();
+	String configureAntiVirusDlgInterfaceIDLabel();
 	String configureAntiVirusDlgPasswordLabel();
-	String configureAntiVirusDlgServerURLLabel();
+	String configureAntiVirusDlgServiceURLLabel();
 	String configureAntiVirusDlgTestErrorWithDetails(String details);
 	String configureAntiVirusDlgTestErrorWithoutDetails();
 	String configureAntiVirusDlgTestLabel();

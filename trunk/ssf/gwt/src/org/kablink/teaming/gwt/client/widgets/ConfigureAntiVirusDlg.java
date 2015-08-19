@@ -80,9 +80,10 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 	private CheckBox							m_avEnabledCB;				// The basic enablement checkbox.
 	private GwtTeamingMessages					m_messages;					// Access to our localized messages.
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers, when they're registered.
-	private PasswordTextBox						m_password;					// The password   <INPUT> widget.
-	private TextBox								m_serverUrl;				// The server URL <INPUT> widget.
-	private TextBox								m_userName;					// The username   <INPUT> widget.
+	private PasswordTextBox						m_password;					// The password     <INPUT> widget.
+	private TextBox								m_interfaceId;				// The interface ID <INPUT> widget.
+	private TextBox								m_serviceUrl;				// The service URL  <INPUT> widget.
+	private TextBox								m_userName;					// The username     <INPUT> widget.
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -143,32 +144,45 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 		ft.setCellSpacing(2);
 		vp.add(ft);
 
-		// ...add the server URL widgets...
-		InlineLabel il = new InlineLabel(m_messages.configureAntiVirusDlgServerURLLabel());
+		// ...add the service URL widgets...
+		int row = 0;
+		InlineLabel il = new InlineLabel(m_messages.configureAntiVirusDlgServiceURLLabel());
 		il.addStyleName("vibe-configureAntiVirusDlg-label");
-		ft.setWidget(0, 0, il);
+		ft.setWidget(row, 0, il);
 		
-		m_serverUrl = new TextBox();
-		m_serverUrl.addStyleName("vibe-configureAntiVirusDlg-textBox");
-		ft.setWidget(0, 1, m_serverUrl);
+		m_serviceUrl = new TextBox();
+		m_serviceUrl.addStyleName("vibe-configureAntiVirusDlg-textBox");
+		ft.setWidget(row, 1, m_serviceUrl);
+		
+		// ...add the interface ID widgets...
+		row += 1;
+		il = new InlineLabel(m_messages.configureAntiVirusDlgInterfaceIDLabel());
+		il.addStyleName("vibe-configureAntiVirusDlg-label");
+		ft.setWidget(row, 0, il);
+		
+		m_interfaceId = new TextBox();
+		m_interfaceId.addStyleName("vibe-configureAntiVirusDlg-textBox");
+		ft.setWidget(row, 1, m_interfaceId);
 		
 		// ...add the username widgets...
+		row += 1;
 		il = new InlineLabel(m_messages.configureAntiVirusDlgUsernameLabel());
 		il.addStyleName("vibe-configureAntiVirusDlg-label");
-		ft.setWidget(1, 0, il);
+		ft.setWidget(row, 0, il);
 		
 		m_userName = new TextBox();
 		m_userName.addStyleName("vibe-configureAntiVirusDlg-textBox");
-		ft.setWidget(1, 1, m_userName);
+		ft.setWidget(row, 1, m_userName);
 		
 		// ...add the password widgets...
+		row += 1;
 		il = new InlineLabel(m_messages.configureAntiVirusDlgPasswordLabel());
 		il.addStyleName("vibe-configureAntiVirusDlg-label");
-		ft.setWidget(2, 0, il);
+		ft.setWidget(row, 0, il);
 		
 		m_password = new PasswordTextBox();
 		m_password.addStyleName("vibe-configureAntiVirusDlg-passwordBox");
-		ft.setWidget(2, 1, m_password);
+		ft.setWidget(row, 1, m_password);
 		
 		// ...add a test connection button...
 		Button testButton = new Button(m_messages.configureAntiVirusDlgTestLabel(), new ClickHandler() {
@@ -236,11 +250,12 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 	private GwtAntiVirusConfig getAntiVirusConfigFromWidgets() {
 		GwtAntiVirusConfig reply = new GwtAntiVirusConfig();
 		
-		reply.setType(     GwtAntiVirusType.gwava  );
-		reply.setEnabled(  m_avEnabledCB.getValue());
-		reply.setUsername( m_userName.getValue()   );
-		reply.setPassword( m_password.getValue()   );
-		reply.setServerUrl(m_serverUrl.getValue()  );
+		reply.setType(       GwtAntiVirusType.gwava  );
+		reply.setEnabled(    m_avEnabledCB.getValue());
+		reply.setUsername(   m_userName.getValue()   );
+		reply.setPassword(   m_password.getValue()   );
+		reply.setServiceUrl( m_serviceUrl.getValue() );
+		reply.setInterfaceId(m_interfaceId.getValue());
 
 		return reply;
 	}
@@ -266,7 +281,7 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 	 */
 	@Override
 	public FocusWidget getFocusWidget() {
-		return m_userName;	// Input focus starts in the username <INPUT>.
+		return m_serviceUrl;	// Input focus starts in the service URL <INPUT>.
 	}
 	
 	/**
@@ -294,25 +309,32 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 		
 		// Is anti virus scanning enabled?
 		if (avConfig.isEnabled()) {
-			// Yes!  Did the user supply a server URL?
-			if (!(GwtClientHelper.hasString(avConfig.getServerUrl()))) {
+			// Yes!  Did the user supply a service URL?
+			if (!(GwtClientHelper.hasString(avConfig.getServiceUrl()))) {
 				// No!  Tell the user about he problem.
-				error = m_messages.configureAntiVirusDlgErrorNoServerUrl();
-				fw = m_serverUrl;
+				error = m_messages.configureAntiVirusDlgErrorNoServiceUrl();
+				fw = m_serviceUrl;
+			}
+			
+			// Did the user supply an interface ID?
+			else if (!(GwtClientHelper.hasString(avConfig.getInterfaceId()))) {
+				// No!  Tell the user about he problem.
+				error = m_messages.configureAntiVirusDlgErrorNoInterfaceId();
+				fw = m_interfaceId;
 			}
 			
 			// Did the user supply a username?
 			else if (!(GwtClientHelper.hasString(avConfig.getUsername()))) {
 				// No!  Tell the user about he problem.
 				error = m_messages.configureAntiVirusDlgErrorNoUserName();
-				fw = m_serverUrl;
+				fw = m_userName;
 			}
 			
 			// Did the user supply a password?
 			else if (!(GwtClientHelper.hasString(avConfig.getPassword()))) {
 				// No!  Tell the user about he problem.
 				error = m_messages.configureAntiVirusDlgErrorNoPassword();
-				fw = m_serverUrl;
+				fw = m_password;
 			}
 		}
 		
@@ -412,10 +434,11 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 
 		// ...store the current settings in the dialog's widgets...
 		GwtAntiVirusConfig avConfig = m_avData.getAntiVirusConfig();
-		m_avEnabledCB.setValue(avConfig.isEnabled()   );
-		m_serverUrl.setValue(  avConfig.getServerUrl());
-		m_userName.setValue(   avConfig.getUsername() );
-		m_password.setValue(   avConfig.getPassword() );
+		m_avEnabledCB.setValue(avConfig.isEnabled()     );
+		m_serviceUrl.setValue( avConfig.getServiceUrl() );
+		m_interfaceId.setValue(avConfig.getInterfaceId());
+		m_userName.setValue(   avConfig.getUsername()   );
+		m_password.setValue(   avConfig.getPassword()   );
 		
 		// ...and show the dialog.
 		show();
