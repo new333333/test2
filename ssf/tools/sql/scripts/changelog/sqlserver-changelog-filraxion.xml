@@ -329,13 +329,16 @@ GO
 	        <column name="enabled" type="TINYINT">
                 <constraints nullable="false"/>
 	        </column>
-            <column name="serverUrl" type="NVARCHAR(128)">
+            <column name="serviceUrl" type="VARCHAR(128)">
                 <constraints nullable="false" />
             </column>
-            <column name="username" type="NVARCHAR(64)">
+            <column name="interfaceId" type="VARCHAR(32)">
                 <constraints nullable="false" />
             </column>
-            <column name="password" type="NVARCHAR(64)">
+            <column name="username" type="NVARCHAR(32)">
+                <constraints nullable="false" />
+            </column>
+            <column name="password" type="NVARCHAR(32)">
                 <constraints nullable="false" />
             </column>
         </createTable>

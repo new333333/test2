@@ -61,7 +61,8 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 
 	private Short type;
 	private boolean enabled = false;
-	private String serverUrl;
+	private String serviceUrl;
+	private String interfaceId;
 	private String username;
 	private String password;
 	
@@ -83,7 +84,8 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 		this.zoneId = config.zoneId;
 		this.type = config.type;
 		this.enabled = config.enabled;
-		this.serverUrl = config.serverUrl;
+		this.serviceUrl = config.serviceUrl;
+		this.interfaceId = config.interfaceId;
 		this.username = config.username;
 		this.password = config.password;
 
@@ -91,12 +93,20 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 		// by the framework whenever change is made to the database.
 	}
 	
-	public String getServerUrl() {
-		return serverUrl;
+	public String getServiceUrl() {
+		return serviceUrl;
 	}
 
-	public void setServerUrl(String serverUrl) {
-		this.serverUrl = serverUrl;
+	public void setServiceUrl(String serviceUrl) {
+		this.serviceUrl = serviceUrl;
+	}
+
+	public String getInterfaceId() {
+		return interfaceId;
+	}
+
+	public void setInterfaceId(String interfaceId) {
+		this.interfaceId = interfaceId;
 	}
 
 	public String getUsername() {
@@ -154,8 +164,10 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 		.append(type)
 		.append(",enabled=")
 		.append(enabled)
-		.append(",serverUrl=")
-		.append(serverUrl)
+		.append(",serviceUrl=")
+		.append(serviceUrl)
+		.append(",interfaceId=")
+		.append(interfaceId)
 		.append(",username=")
 		.append(username)
 		.append("}");

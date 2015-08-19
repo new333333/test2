@@ -253,16 +253,23 @@ update SS_Forums set binderType = LEFT(type, 1);
             <column name="enabled" type="BIT">
                 <constraints nullable="false"/>
             </column>
-            <column name="serverUrl" type="VARCHAR(128)">
+            <column name="username" type="VARCHAR(32)">
                 <constraints nullable="false" />
             </column>
-            <column name="username" type="VARCHAR(64)">
-                <constraints nullable="false" />
-            </column>
-            <column name="password" type="VARCHAR(64)">
+            <column name="password" type="VARCHAR(32)">
                 <constraints nullable="false" />
             </column>
         </createTable>
 	</changeSet>
 	
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+    	<comment>This column is created with explicit non-default charset and collate for efficiency reason</comment>
+    	<sql>ALTER TABLE SS_AntiVirusConfig ADD serviceUrl VARCHAR(128) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL;</sql>
+	</changeSet>
+	
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+    	<comment>This column is created with explicit non-default charset and collate for efficiency reason</comment>
+    	<sql>ALTER TABLE SS_AntiVirusConfig ADD interfaceId VARCHAR(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL;</sql>
+	</changeSet>
+
 </databaseChangeLog>

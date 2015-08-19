@@ -113,7 +113,7 @@ public class GwtAntiVirusHelper {
 		
 		reply.setEnabled(  gwtAVC.isEnabled()   );
 		reply.setPassword( gwtAVC.getPassword() );
-		reply.setServerUrl(gwtAVC.getServerUrl());
+		reply.setServiceUrl(gwtAVC.getServerUrl());
 		reply.setUsername( gwtAVC.getUsername() );
 		switch (           gwtAVC.getType()     ) {
 		default:
@@ -143,7 +143,7 @@ public class GwtAntiVirusHelper {
 		reply.setType(gavt);
 		
 		reply.setEnabled(  domainAVC.isEnabled()   );
-		reply.setServerUrl(domainAVC.getServerUrl());
+		reply.setServerUrl(domainAVC.getServiceUrl());
 		reply.setUsername( domainAVC.getUsername() );
 		reply.setPassword( domainAVC.getPassword() );
 		
@@ -157,7 +157,7 @@ public class GwtAntiVirusHelper {
 		AntiVirusConfig reply = new AntiVirusConfig(RequestContextHolder.getRequestContext().getZoneId());
 		reply.setType(     AntiVirusConfig.Type.gwava);
 		reply.setEnabled(  false                     );
-		reply.setServerUrl(""                        );
+		reply.setServiceUrl(""                        );
 		reply.setUsername( ""                        );
 		reply.setPassword( ""                        );
 		return reply;
