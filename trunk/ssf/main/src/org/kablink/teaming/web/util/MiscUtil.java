@@ -57,6 +57,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.antivirus.VirusDetectedError;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -1626,6 +1627,34 @@ public final class MiscUtil {
     	finally {
     		SimpleProfiler.stop("MiscUtil.resolveSubscriptionPrincipals()");
     	}
+	}
+
+	/**
+	 * Returns a localized String built from a VirusDetectedError for
+	 * displaying the error to the user.
+	 *  
+	 * @param error
+	 * 
+	 * @return
+	 */
+	public static String getLocalizedVirusDetectedErrorString(VirusDetectedError error) {
+		String   messageKey;
+		switch (error.getType()) {
+		default:
+		case Other:                       messageKey = "virus.error.other";             break;
+		case PolicyRestrictionViolation:  messageKey = "virus.error.policyRestriction"; break;
+		case Virus:                       messageKey = "virus.error.virus";             break;
+		}
+		
+		String message  = error.getMessage();
+		List<String> patches = new ArrayList<String>();
+		patches.add(error.getFileName());
+		boolean hasMessage = MiscUtil.hasString(message);
+		if (hasMessage) {
+			patches.add(message);
+			messageKey += ".message";
+		}
+		return NLT.get(messageKey, patches.toArray(new String[0]));
 	}
 	
 	/**

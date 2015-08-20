@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.UploadInfo;
+import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 
 import org.vectomatic.file.Blob;
@@ -215,6 +216,19 @@ public class Html5UploadHelper
 			sb.append(Integer.toHexString(v));
 		}
 		return sb.toString();
+	}
+
+	/*
+	 * Continues processing pending uploads.
+	 */
+	private void continueUploads(boolean hasUploadError) {
+		// If there are uploads pending (there won't be if the user
+		// aborted the current upload)...
+		if (uploadsPending()) {
+			// ...continue with the next file.
+			popCurrentFile();
+			uploadNextFileAsync(hasUploadError);
+		}
 	}
 	
 	/*
@@ -602,21 +616,25 @@ public class Html5UploadHelper
 			@Override
 			public void onSuccess(VibeRpcResponse result) {
 				// Are we done uploading this file?
-				String	uploadError    = ((StringRpcResponseData) result.getResponseData()).getStringValue();
-				boolean	hasUploadError = GwtClientHelper.hasString(uploadError); 
+				String			uploadError    = ((StringRpcResponseData) result.getResponseData()).getStringValue();
+				final boolean	hasUploadError = GwtClientHelper.hasString(uploadError); 
 				if (lastBlob || hasUploadError) {
 					// Yes!  If we stopped because of an error...
 					if (hasUploadError) {
 						// ...display the error...
-						GwtClientHelper.deferredAlert(uploadError);
+						GwtClientHelper.deferredAlert(uploadError, new AlertDlgCallback() {
+							@Override
+							public void closed() {
+								// ...and continue the uploads once the
+								// ...user has closed the error.
+								continueUploads(hasUploadError);
+							}
+						});
 					}
-
-					// ...and if there are uploads pending (there won't
-					// ...be if the use aborted the current upload)...
-					if (uploadsPending()) {
-						// ...continue with the next file.
-						popCurrentFile();
-						uploadNextFileAsync(hasUploadError);
+					
+					else {
+						// ...otherwise, simply continue the uploads.
+						continueUploads(hasUploadError);
 					}
 				}
 				

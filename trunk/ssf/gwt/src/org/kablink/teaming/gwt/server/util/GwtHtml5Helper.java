@@ -54,6 +54,8 @@ import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.FileSizeLimitException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.antivirus.VirusDetectedError;
+import org.kablink.teaming.antivirus.VirusDetectedException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
@@ -537,9 +539,8 @@ public class GwtHtml5Helper {
 					}
 					
 	    	    	catch (Exception ex) {
-	    	    		String errMsg = NLT.get("entry.uploadError.emailTemplate", new String[]{fileName, ex.getLocalizedMessage()});
 	    				reply = new StringRpcResponseData();
-	    				reply.setStringValue(errMsg);
+	    				reply.setStringValue(NLT.get("entry.uploadError.emailTemplate", new String[]{fileName, ex.getLocalizedMessage()}));
 	    				
 	    				// Log the error.
 						GwtLogHelper.error(m_logger, "GwtHtml5Helper.uploadFileBlob( File name:  '" + fileName + "', EXCEPTION:2 ):  ", ex);
@@ -646,7 +647,19 @@ public class GwtHtml5Helper {
 		    	    	else if (ex instanceof DataQuotaException)     errMsg = NLT.get("entry.uploadError.dataQuotaException"    );
 		    	    	else if (ex instanceof FileSizeLimitException) errMsg = NLT.get("entry.uploadError.fileSizeLimitException");
 						else if (ex instanceof WriteFilesException)    errMsg = NLT.get("entry.uploadError.writeFilesException", new String[]{ex.getLocalizedMessage()});
-		    	    	else                                           errMsg = NLT.get("entry.uploadError.unknownError",        new String[]{ex.getLocalizedMessage()});
+		    	    	
+		    	    	else {
+		    	    		errMsg = NLT.get("entry.uploadError.unknownError", new String[]{ex.getLocalizedMessage()});
+							if (ex instanceof VirusDetectedException) {
+								List<VirusDetectedError> errors = ((VirusDetectedException) ex).getErrors();
+								if (MiscUtil.hasItems(errors)) {
+									// Since we process one file at a time
+									// here, there can be at most one error.
+									errMsg = MiscUtil.getLocalizedVirusDetectedErrorString(errors.get(0));
+								}
+							}
+		    	    	}
+		    	    	
 	    				reply = new StringRpcResponseData();
 	    				reply.setStringValue(errMsg);
 	    				
