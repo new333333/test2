@@ -63,7 +63,11 @@ public class VirusDetectedError implements Serializable {
 		/**
 		 * The file violates some policy restrictions.
 		 */
-		PolicyRestrictionViolation
+		PolicyRestrictionViolation,
+		/**
+		 * Other error (catch-all), usually vendor specific error
+		 */
+		Other
 	}
 	
 	/**
