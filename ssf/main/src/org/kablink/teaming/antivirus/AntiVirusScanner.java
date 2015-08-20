@@ -60,6 +60,4 @@ public interface AntiVirusScanner {
 	 * @throws UncheckedIOException
 	 */
 	public List<VirusDetectedError> scan(List<FileUploadItem> files) throws UncheckedIOException;
-	
-	public void testConnection() throws Exception;
 }
