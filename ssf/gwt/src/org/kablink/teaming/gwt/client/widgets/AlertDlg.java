@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.EditCanceledHandler;
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -55,13 +57,22 @@ import com.google.gwt.user.client.ui.UIObject;
  *  
  * @author drfoster@novell.com
  */
-public class AlertDlg extends DlgBox {
+public class AlertDlg extends DlgBox implements EditCanceledHandler, EditSuccessfulHandler {
+	private AlertDlgCallback	m_callback;			//
 	private FlowPanel			m_dlgPanel;			// The panel holding the dialog's content.
 	private GwtTeamingMessages	m_messages;			// Access to Vibe's messages.
 	private String				m_alertText;		// The text to alert the user with.
 	private UIObject			m_showRelativeTo;	// UIObject to show the dialog relative to.  null -> Center it.
 	private Panel				m_alertContent;		// Additional content to be shown besides m_alertText
 
+	/**
+	 * Interface a caller can pass in to request notification when the
+	 * alert is closed.
+	 */
+	public interface AlertDlgCallback {
+		public void closed();
+	}
+	
 	/*
 	 * Class constructor.
 	 * 
@@ -79,11 +90,34 @@ public class AlertDlg extends DlgBox {
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			m_messages.alertDlgHeader(GwtClientHelper.getProductName()),
-			getSimpleSuccessfulHandler(),	// The dialog's EditSuccessfulHandler.
-			getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
-			null);							// Create callback data.  Unused. 
+			this,	// The dialog's EditSuccessfulHandler.
+			this,	// The dialog's EditCanceledHandler.
+			null);	// Create callback data.  Unused. 
 	}
 
+	/*
+	 * Asynchronously calls the closed callback, if one is defined.
+	 */
+	private void callbackClosedAsync() {
+		if (null != m_callback) {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					callbackClosedNow();
+				}
+			});
+		}
+	}
+	
+	/*
+	 * Synchronously calls the closed callback, if one is defined.
+	 */
+	private void callbackClosedNow() {
+		if (null != m_callback) {
+			m_callback.closed();
+		}
+	}
+	
 	/**
 	 * Creates all the controls that make up the dialog.
 	 * 
@@ -101,6 +135,30 @@ public class AlertDlg extends DlgBox {
 		return m_dlgPanel;
 	}
 
+	/**
+	 * Called when the dialog is closed for other than the OK button.
+	 *
+	 * Implements the EditCanceledHandler.editCanceled() method.
+	 */
+	@Override
+	public boolean editCanceled() {
+		callbackClosedAsync();
+		return true;	// Always return true to allow the dialog to be closed.
+	}
+	
+	/**
+	 * Called when the dialog's OK button is pressed.
+	 *
+	 * Implements the EditSuccessfulHandler.editSuccessful() method.
+	 * 
+	 * @param callbackData (unused)
+	 */
+	@Override
+	public boolean editSuccessful(Object callbackData) {
+		callbackClosedAsync();
+		return true;	// Always return true to allow the dialog to be closed.
+	}
+	
 	/**
 	 * Unused.
 	 * 
@@ -154,20 +212,18 @@ public class AlertDlg extends DlgBox {
 		m_dlgPanel.add(grid);
 		FlexCellFormatter gridCellFmt = grid.getFlexCellFormatter();
 
-		if ( m_alertText != null )
-		{
+		if (GwtClientHelper.hasString(m_alertText)) {
 			// ...and add the alert text.  The following will handle
 			// ...embedded \n characters and other escapes.
 			grid.setHTML(row, 0, new SafeHtmlBuilder().appendEscapedLines(m_alertText).toSafeHtml());
 			gridCellFmt.addStyleName(row, 0, "vibe-alertDlg_NameLabel");
 			gridCellFmt.setVerticalAlignment(row, 0, HasVerticalAlignment.ALIGN_MIDDLE);
-			++row;
+			row += 1;
 		}
 		
-		if ( m_alertContent != null )
-		{
-			grid.setWidget( row, 0, m_alertContent );
-			++row;
+		if (null != m_alertContent) {
+			grid.setWidget(row, 0, m_alertContent);
+			row += 1;
 		}
 
 		// Finally, show the dialog.
@@ -179,11 +235,11 @@ public class AlertDlg extends DlgBox {
 	/*
 	 * Asynchronously runs the given instance of the alert dialog.
 	 */
-	private static void runDlgAsync(final AlertDlg aDlg, final String alertText, final UIObject showRelativeTo, final Panel alertContent) {
+	private static void runDlgAsync(final AlertDlg aDlg, final String alertText, final UIObject showRelativeTo, final Panel alertContent, final AlertDlgCallback callback) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				aDlg.runDlgNow(alertText, showRelativeTo, alertContent );
+				aDlg.runDlgNow(alertText, showRelativeTo, alertContent, callback);
 			}
 		});
 	}
@@ -191,11 +247,12 @@ public class AlertDlg extends DlgBox {
 	/*
 	 * Synchronously runs the given instance of the alert dialog.
 	 */
-	private void runDlgNow(String alertText, final UIObject showRelativeTo, Panel alertContent ) {
+	private void runDlgNow(String alertText, final UIObject showRelativeTo, Panel alertContent, AlertDlgCallback callback) {
 		// Store the parameters...
 		m_alertText      = alertText;
 		m_showRelativeTo = showRelativeTo;
-		m_alertContent = alertContent;
+		m_alertContent   = alertContent;
+		m_callback       = callback;
 
 		// ...and start populating the dialog.
 		populateDlgAsync();
@@ -227,10 +284,11 @@ public class AlertDlg extends DlgBox {
 			final boolean			modal,
 			
 			// initAndShow() parameters,
-			final AlertDlg	aDlg,
-			final String	alertText,
-			final UIObject	showRelativeTo,
-			final Panel		alertContent ) {
+			final AlertDlg			aDlg,
+			final String			alertText,
+			final UIObject			showRelativeTo,
+			final Panel				alertContent,
+			final AlertDlgCallback	callback) {
 		GWT.runAsync(AlertDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -253,7 +311,7 @@ public class AlertDlg extends DlgBox {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(aDlg, alertText, showRelativeTo, alertContent );
+					runDlgAsync(aDlg, alertText, showRelativeTo, alertContent, callback);
 				}
 			}
 		});
@@ -268,7 +326,7 @@ public class AlertDlg extends DlgBox {
 	 * @param modal
 	 */
 	public static void createAsync(AlertDlgClient aDlgClient, boolean autoHide, boolean modal) {
-		doAsyncOperation(aDlgClient, autoHide, modal, null, null, null, null);
+		doAsyncOperation(aDlgClient, autoHide, modal, null, null, null, null, null);
 	}
 	
 	public static void createAsync(AlertDlgClient aDlgClient) {
@@ -282,29 +340,93 @@ public class AlertDlg extends DlgBox {
 	 * @param aDlg
 	 * @param alertText
 	 * @param showRelativeTo
+	 * @param alertContent
+	 * @param callback
 	 */
-	public static void initAndShow(AlertDlg aDlg, String alertText, UIObject showRelativeTo, Panel alertContent ) {
-		doAsyncOperation(null, false, false, aDlg, alertText, showRelativeTo, alertContent );
+	public static void initAndShow(AlertDlg aDlg, String alertText, UIObject showRelativeTo, Panel alertContent, AlertDlgCallback callback) {
+		doAsyncOperation(null, false, false, aDlg, alertText, showRelativeTo, alertContent, callback);
 	}
 	
 	/**
+	 * Initializes and shows the alert dialog.
 	 * 
+	 * @param aDlg
+	 * @param alertText
+	 * @param showRelativeTo
+	 * @param alertContent
 	 */
-	public static void initAndShow( AlertDlg aDlg, String alertText, UIObject showRelativeTo )
-	{
-		initAndShow( aDlg, alertText, showRelativeTo, null );
+	public static void initAndShow(AlertDlg aDlg, String alertText, UIObject showRelativeTo, Panel alertContent) {
+		// Always use the initial form of the method.
+		initAndShow(aDlg, alertText, showRelativeTo, alertContent, null);
 	}
 	
+	/**
+	 * Initializes and shows the alert dialog.
+	 * 
+	 * @param aDlg
+	 * @param alertText
+	 * @param showRelativeTo
+	 * @param callback
+	 */
+	public static void initAndShow(AlertDlg aDlg, String alertText, UIObject showRelativeTo, AlertDlgCallback callback) {
+		// Always use the initial form of the method.
+		initAndShow(aDlg, alertText, showRelativeTo, null, callback);
+	}
+	
+	/**
+	 * Initializes and shows the alert dialog.
+	 * 
+	 * @param aDlg
+	 * @param alertText
+	 * @param showRelativeTo
+	 */
+	public static void initAndShow(AlertDlg aDlg, String alertText, UIObject showRelativeTo) {
+		// Always use the initial form of the method.
+		initAndShow(aDlg, alertText, showRelativeTo, null, null);
+	}
+	
+	/**
+	 * Initializes and shows the alert dialog.
+	 * 
+	 * @param aDlg
+	 * @param alertText
+	 * @param callback
+	 */
+	public static void initAndShow(AlertDlg aDlg, String alertText, AlertDlgCallback callback) {
+		// Always use the initial form of the method.
+		initAndShow(aDlg, alertText, null, null, callback);
+	}
+	
+	/**
+	 * Initializes and shows the alert dialog.
+	 * 
+	 * @param aDlg
+	 * @param alertText
+	 */
 	public static void initAndShow(AlertDlg aDlg, String alertText) {
 		// Always use the initial form of the method.
-		initAndShow(aDlg, alertText, null, null );
+		initAndShow(aDlg, alertText, null, null, null);
+	}
+	
+	/**
+	 * Initializes and shows the alert dialog.
+	 * 
+	 * @param aDlg
+	 * @param alertContent
+	 * @param callback
+	 */
+	public static void initAndShow(AlertDlg aDlg, Panel alertContent, AlertDlgCallback callback) {
+		// Always use the initial form of the method.
+		initAndShow(aDlg, null, null, alertContent, callback);
 	}
 	
 	/**
 	 * 
+	 * @param aDlg
+	 * @param alertContent
 	 */
-	public static void initAndShow( AlertDlg aDlg, Panel alertContent )
-	{
-		initAndShow( aDlg, null, null, alertContent );
+	public static void initAndShow(AlertDlg aDlg, Panel alertContent) {
+		// Always use the initial form of the method.
+		initAndShow(aDlg, null, null, alertContent, null);
 	}
 }

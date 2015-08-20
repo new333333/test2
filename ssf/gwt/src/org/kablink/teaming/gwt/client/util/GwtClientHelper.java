@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.service.GetGwtRpcServiceCallback;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.widgets.AlertDlg;
+import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgCallback;
 import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.MultiErrorAlertDlg;
@@ -187,24 +188,30 @@ public class GwtClientHelper {
 	/**
 	 * Displays an alert using a GWT alert dialog.
 	 * 
-	 * @param
+	 * @param msg
+	 * @param callback
 	 */
-	public static void alertViaDlg(final String msg) {
+	public static void alertViaDlg(final String msg, final AlertDlgCallback callback) {
 		// Have we created an instance of an AlertDlg yet?
 		if (null == m_alertDlg) {
 			// No!  Create one now...
 			AlertDlg.createAsync(new AlertDlgClient() {
 				@Override
 				public void onUnavailable() {
-					// Nothing to do.  Error handled in asynchronous
-					// provider.
+					// Nothing to display.  Error display in
+					// asynchronous provider.  However, if we were
+					// given a callback interface...
+					if (null != callback) {
+						// ...tell the caller the dialog was closed.
+						callback.closed();
+					}
 				}
 				
 				@Override
 				public void onSuccess(AlertDlg aDlg) {
 					// ...save it and use it to display the message.
 					m_alertDlg = aDlg;
-					alertViaDlg(msg);
+					alertViaDlg(msg, callback);
 				}
 			});
 		}
@@ -215,10 +222,15 @@ public class GwtClientHelper {
 			deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
-					AlertDlg.initAndShow(m_alertDlg, msg);
+					AlertDlg.initAndShow(m_alertDlg, msg, callback);
 				}
 			});
 		}
+	}
+	
+	public static void alertViaDlg(final String msg) {
+		// Always use the initial form of the method.
+		alertViaDlg(msg, null);
 	}
 	
 	/**
@@ -226,22 +238,27 @@ public class GwtClientHelper {
 	 * 
 	 * @param
 	 */
-	public static void alertViaDlg(final Panel contentPanel) {
+	public static void alertViaDlg(final Panel contentPanel, final AlertDlgCallback callback) {
 		// Have we created an instance of an AlertDlg yet?
 		if (null == m_alertDlg) {
 			// No!  Create one now...
 			AlertDlg.createAsync(new AlertDlgClient() {
 				@Override
 				public void onUnavailable() {
-					// Nothing to do.  Error handled in asynchronous
-					// provider.
+					// Nothing to display.  Error display in
+					// asynchronous provider.  However, if we were
+					// given a callback interface...
+					if (null != callback) {
+						// ...tell the caller the dialog was closed.
+						callback.closed();
+					}
 				}
 				
 				@Override
 				public void onSuccess(AlertDlg aDlg) {
 					// ...save it and use it to display the message.
 					m_alertDlg = aDlg;
-					alertViaDlg(contentPanel);
+					alertViaDlg(contentPanel, callback);
 				}
 			});
 		}
@@ -252,10 +269,15 @@ public class GwtClientHelper {
 			deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
-					AlertDlg.initAndShow(m_alertDlg, contentPanel);
+					AlertDlg.initAndShow(m_alertDlg, contentPanel, callback);
 				}
 			});
 		}
+	}
+	
+	public static void alertViaDlg(final Panel contentPanel) {
+		// Always use the previous form of the method.
+		alertViaDlg(contentPanel, null);
 	}
 	
 	/**
@@ -500,7 +522,7 @@ public class GwtClientHelper {
 	 * @param msg
 	 * @param delay
 	 */
-	public static void deferredAlert(final String msg, int delay) {
+	public static void deferredAlert(final String msg, int delay, final AlertDlgCallback callback) {
 		// Were we given a message to display?
 		if (hasString(msg)) {
 			// Yes!  Display it when appropriate.
@@ -508,22 +530,31 @@ public class GwtClientHelper {
 				new ScheduledCommand() {
 					@Override
 					public void execute() {
-						deferredAlertImpl(msg);
+						deferredAlertImpl(msg, callback);
 					}
 				},
 				delay);
 		}
 	}
-	
-	public static void deferredAlert(final String msg) {
+	public static void deferredAlert(final String msg, int delay) {
 		// Always use the initial form of the method.
-		deferredAlert(msg, 0);
+		deferredAlert(msg, 0, null);
+	}
+	
+	public static void deferredAlert(final String msg, AlertDlgCallback callback) {
+		// Always use the initial form of the method.
+		deferredAlert(msg, 0, callback);
 	}
 
+	public static void deferredAlert(final String msg) {
+		// Always use the initial form of the method.
+		deferredAlert(msg, 0, null);
+	}
+	
 	/*
 	 * Implementation method for deferredAlert().
 	 */
-	private static void deferredAlertImpl(final String msg) {
+	private static void deferredAlertImpl(final String msg, AlertDlgCallback callback) {
 		// If we're supposed to use a JavaScript.alert()...
 		if (USE_JAVASCRIPT_ALERT) {
 			// ...use it and bail...
@@ -532,7 +563,7 @@ public class GwtClientHelper {
 		}
 
 		// ...otherwise use the GWT dialog for it.
-		alertViaDlg(msg);
+		alertViaDlg(msg, callback);
 	}
 
 	/**
