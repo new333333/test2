@@ -958,7 +958,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			
 			netFolderRoot = getNetFolderRootFromDlg();
 			
-			showStatusMsg(GwtTeaming.getMessages().modifyNetFolderServerDlg_CreatingNetFolderServer());
+			showStatusMsg(GwtTeaming.getMessages().modifyNetFolderServerDlg_CreatingNetFolderServer(), "dlgBox_statusPanel_relative");
 			
 			cmd = new CreateNetFolderRootCmd(netFolderRoot);
 			GwtClientHelper.executeCommand(cmd, rpcCallback);
@@ -2180,7 +2180,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			}						
 		};
 		
-		showStatusMsg(GwtTeaming.getMessages().modifyNetFolderServerDlg_ModifyingNetFolderServer());
+		showStatusMsg(GwtTeaming.getMessages().modifyNetFolderServerDlg_ModifyingNetFolderServer(), "dlgBox_statusPanel_relative");
 		
 		// Issue a GWT RPC request to update the net folder root.
 		cmd = new ModifyNetFolderRootCmd(newNetFolderRoot); 
