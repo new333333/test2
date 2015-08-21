@@ -271,4 +271,12 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
         </createTable>
 	</changeSet>
 	
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <addColumn tableName="SS_AntiVirusConfig">
+            <column name="lastUpdateTime" type="NUMBER(19,0)">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+	</changeSet>
+
 </databaseChangeLog>

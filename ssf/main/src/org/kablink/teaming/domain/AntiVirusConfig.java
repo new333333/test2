@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.domain;
 
+import org.kablink.teaming.util.encrypt.EncryptUtil;
+
 /**
  * @author Jong
  *
@@ -64,7 +66,10 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 	private String serviceUrl;
 	private String interfaceId;
 	private String username;
+	// Encrypted password value for storage/db
 	private String password;
+	// Cached password in clear text in memory
+	private String plainPassword;
 	
 	private Long lastUpdateTime;
 	
@@ -88,6 +93,7 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 		this.interfaceId = config.interfaceId;
 		this.username = config.username;
 		this.password = config.password;
+		this.plainPassword = config.plainPassword;
 
 		// Do not copy lastUpdateTime since it is automatically updated
 		// by the framework whenever change is made to the database.
@@ -117,12 +123,29 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 		this.username = username;
 	}
 
+	/*
+	 * Return password in clear text that the application can use directly.
+	 */
 	public String getPassword() {
-		return password;
+		if(plainPassword == null) {
+			if(password != null)
+				plainPassword = EncryptUtil.getStringEncryptor_second_gen().decrypt(password);
+		}
+		return plainPassword;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	/*
+	 * The input password to this method is in clear text.
+	 */
+	public void setPassword(String pwd) {
+		if(pwd == null) {
+			this.password = null;
+			this.plainPassword = null;
+		}
+		else {
+			this.password = EncryptUtil.getStringEncryptor_second_gen().encrypt(pwd);			
+			this.plainPassword = pwd;
+		}
 	}
 
 	public Type getType() {
