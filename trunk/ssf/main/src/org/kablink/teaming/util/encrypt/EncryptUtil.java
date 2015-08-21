@@ -286,7 +286,7 @@ public class EncryptUtil {
 		}
 	}
 	
-	static StringEncryptor getStringEncryptor_second_gen() {
+	public static StringEncryptor getStringEncryptor_second_gen() {
 		ExtendedPBEStringEncryptor encryptor = (ExtendedPBEStringEncryptor) SpringContextUtil.getBean("symmetricStringEncryptor");
 		if(encryptor.getGeneration() == 2)
 			return encryptor;

@@ -344,4 +344,12 @@ GO
         </createTable>
 	</changeSet>
 	
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <addColumn tableName="SS_AntiVirusConfig">
+            <column name="lastUpdateTime" type="NUMERIC(19,0)">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+	</changeSet>
+
 </databaseChangeLog>
