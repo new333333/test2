@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.util.GwtAntiVirusConfig;
 import org.kablink.teaming.gwt.client.util.GwtAntiVirusConfig.GwtAntiVirusType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
+import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgCallback;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -340,13 +341,18 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 		
 		// Do we have an error to display?
 		boolean hasError = (null != error);
+		final FocusWidget fwFinal = fw;
 		if (hasError) {
-			// Yes!  Put the focus in the widget in error...
-			if (null != fw) {
-				fw.setFocus(true);
-			}
-			// ...and display the error.
-			GwtClientHelper.deferredAlert(error);
+			// Yes!  Display the error...
+			GwtClientHelper.deferredAlert(error, new AlertDlgCallback() {
+				@Override
+				public void closed() {
+					// ...and put the focus in the widget in error.
+					if (null != fwFinal) {
+						GwtClientHelper.setFocusDelayed(fwFinal);
+					}
+				}
+			});
 		}
 		
 		// Return true if we didn't display an error and false
@@ -502,20 +508,16 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 	 * dialog.
 	 */
 	public void testConnectionNow() {
-		// If the anti virus configuration is disabled...
-		GwtAntiVirusConfig avConfig = getAntiVirusConfigFromWidgets();
-		if (!(avConfig.isEnabled())) {
-			// ..it can't be tested.
-			GwtClientHelper.deferredAlert(m_messages.configureAntiVirusDlgErrorDisabled());
-			return;
-		}
-		
 		// If the dialog's not in a valid state...
+		GwtAntiVirusConfig avConfig = getAntiVirusConfigFromWidgets();
+		boolean avEnabled = avConfig.isEnabled();
+		avConfig.setEnabled(true);
 		if (!(isValid(avConfig))) {
 			// ...simply bail.  isValid() will have told the user about
 			// ...the error(s).
 			return;
 		}
+		avConfig.setEnabled(avEnabled);
 		
 		// Disable the OK button while we test the settings...
 		setOkEnabled(false);
