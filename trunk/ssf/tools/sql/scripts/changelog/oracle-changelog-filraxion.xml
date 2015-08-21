@@ -265,18 +265,13 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
             <column name="username" type="VARCHAR2(32 CHAR)">
                 <constraints nullable="false" />
             </column>
-            <column name="password" type="VARCHAR2(32 CHAR)">
+            <column name="password" type="VARCHAR2(128 CHAR)">
                 <constraints nullable="false" />
             </column>
-        </createTable>
-	</changeSet>
-	
-    <changeSet author="jong" context="schema" failOnError="true" id="22">
-        <addColumn tableName="SS_AntiVirusConfig">
             <column name="lastUpdateTime" type="NUMBER(19,0)">
                 <constraints nullable="false" />
             </column>
-        </addColumn>
+        </createTable>
 	</changeSet>
 
 </databaseChangeLog>

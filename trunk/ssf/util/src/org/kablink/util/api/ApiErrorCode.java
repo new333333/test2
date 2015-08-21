@@ -214,5 +214,6 @@ public enum ApiErrorCode {
     NET_FOLDER_SERVER_NOT_FOUND, // No net folder server found with this name or id
     
     // Anti-virus scanning errors
-    VIRUS_DETECTED, // Anti-virus scanning detected infected file
+    ANTIVIRUS_DETECTED, // Anti-virus scanning rejected input file
+    ANTIVIRUS_SCANNER_ERROR  // Problem with the anti-virus scanner
 }

@@ -338,18 +338,13 @@ GO
             <column name="username" type="NVARCHAR(32)">
                 <constraints nullable="false" />
             </column>
-            <column name="password" type="NVARCHAR(32)">
+            <column name="password" type="VARCHAR(128)">
                 <constraints nullable="false" />
             </column>
-        </createTable>
-	</changeSet>
-	
-    <changeSet author="jong" context="schema" failOnError="true" id="22">
-        <addColumn tableName="SS_AntiVirusConfig">
             <column name="lastUpdateTime" type="NUMERIC(19,0)">
                 <constraints nullable="false" />
             </column>
-        </addColumn>
+        </createTable>
 	</changeSet>
 
 </databaseChangeLog>

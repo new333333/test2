@@ -37,15 +37,16 @@ import java.io.Serializable;
 /**
  * @author Jong
  * 
- * This class encapsulates information about a file that failed virus scanning,
- * and the details of the failure if such information is available from the
- * virus scanning software.
+ * This class encapsulates information about a file that failed one or more tests
+ * performed by the anti-virus scanning software.
  * <p>
- * This object must NOT be used to signal an environmental error such as inaccessible
- * or mis-configured virus scanner, network problem, I/O problem, timeout, etc.
+ * This object must NOT be used to signal an environmental or configuration/setup 
+ * error such as inaccessible or mis-configured virus scanner, network problem, 
+ * I/O problem, timeout, invalid credentials, etc.
  * The use of this object implies that the virus scanner successfully ran to completion
- * on the file and it determined that the file should be rejected based on its policy
- * (i.e., the file violates policy restrictions).
+ * and performed all tests on the file it was configured to do, and it determined 
+ * according to the test results and its policy restrictions that the file should
+ * be rejected.
  * <p>
  * This class is used in conjunction with <code>VirusDetectedException</code>.
  */

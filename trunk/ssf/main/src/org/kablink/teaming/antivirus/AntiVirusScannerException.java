@@ -32,32 +32,51 @@
  */
 package org.kablink.teaming.antivirus;
 
-import java.util.List;
-
-import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.util.FileUploadItem;
+import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
 
 /**
+ * This exception is thrown to indicate that the anti-virus scanner software
+ * didn't function properly.
+ * <p>
+ * There could be a number of reasons for such failure ranging from inaccessible
+ * or mis-configured scanner, network or I/O problem, to invalid access 
+ * credentials, etc.
+ * <p>
+ * This class should not be confused for <code>VirusDetectedException</code>
+ * which is used to convey the results of "successful" scanning of input file.
+ * 
  * @author Jong
  *
- * It is required that implementing class be safe for use by multiple concurrent threads.
  */
-public interface AntiVirusScanner {
+public class AntiVirusScannerException extends VibeRuntimeException {
 
-	/**
-	 * Close and release all resources associated with this scanner.
-	 */
-	public void destroy();
+	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Take a list of files as input, run virus scanning on them, and return the result.
-	 * The resulting list should contain an instance of <code>VirusDetectedError</code>
-	 * for each file that failed the scanning. The method should not return 
-	 * <code>VirusDetectedError</code> for uninfected files.
-	 * 
-	 * @param files
-	 * @return
-	 * @throws UncheckedIOException
+	public AntiVirusScannerException(String message) {
+		super(message);
+	}
+	
+	public AntiVirusScannerException(Throwable cause) {
+		super(cause);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.util.HttpStatusCodeSupport#getHttpStatusCode()
 	 */
-	public List<VirusDetectedError> scan(List<FileUploadItem> files) throws AntiVirusScannerException, UncheckedIOException;
+	@Override
+	public int getHttpStatusCode() {
+		// Since anti-virus scanner is part of the server component (at least
+		// from the clients point of view), it makes sense to return 500.
+		return 500;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.util.api.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.ANTIVIRUS_SCANNER_ERROR;
+	}
+
 }

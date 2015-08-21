@@ -256,7 +256,7 @@ update SS_Forums set binderType = LEFT(type, 1);
             <column name="username" type="VARCHAR(32)">
                 <constraints nullable="false" />
             </column>
-            <column name="password" type="VARCHAR(32)">
+            <column name="lastUpdateTime" type="BIGINT">
                 <constraints nullable="false" />
             </column>
         </createTable>
@@ -272,12 +272,9 @@ update SS_Forums set binderType = LEFT(type, 1);
     	<sql>ALTER TABLE SS_AntiVirusConfig ADD interfaceId VARCHAR(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL;</sql>
 	</changeSet>
 
-    <changeSet author="jong" context="schema" failOnError="true" id="23">
-        <addColumn tableName="SS_AntiVirusConfig">
-            <column name="lastUpdateTime" type="BIGINT">
-                <constraints nullable="false" />
-            </column>
-        </addColumn>
-    </changeSet>
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+    	<comment>This column is created with explicit non-default charset and collate for efficiency reason</comment>
+    	<sql>ALTER TABLE SS_AntiVirusConfig ADD password VARCHAR(128) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL;</sql>
+	</changeSet>
 
 </databaseChangeLog>
