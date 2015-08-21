@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.domain;
 
+import org.kablink.teaming.util.encrypt.EncryptUtil;
+
 /**
  * Domain object that models a proxy identity for Net Folder Server
  * authentication.
@@ -39,9 +41,10 @@ package org.kablink.teaming.domain;
  * @author drfoster@novell.com
  */
 public class ProxyIdentity extends PersistentLongIdObject {
-    protected String	password;	// Set by hibernate access='field' type='encrypted'.
-	protected String	proxyName;	//
-	protected String	title;		//
+	private   String	plainPassword;	// Cached password in clear text in memory.
+    protected String	password;		// Encrypted password value for storage/DB.
+	protected String	proxyName;		//
+	protected String	title;			//
 
 	/**
 	 * Constructor method.
@@ -75,27 +78,54 @@ public class ProxyIdentity extends PersistentLongIdObject {
 	 */
 	public void copy(ProxyIdentity pi) {
 		// Don't copy ID and zone ID. Copy just the data.
-		setPassword( pi.getPassword() );
-		setProxyName(pi.getProxyName());
-		setTitle(    pi.getTitle()    );
+		setPlainPassword(pi.getPlainPassword());
+		setPassword(     pi.getPassword()     );
+		setProxyName(    pi.getProxyName()    );
+		setTitle(        pi.getTitle()        );
+	}
+
+	/*
+	 * Returns the plain password.
+	 */
+	private String getPlainPassword() {
+		return plainPassword;
+	}
+
+	/*
+	 * Stores a plain password.
+	 */
+	private void setPlainPassword(String plainPassword) {
+		this.plainPassword = plainPassword;
 	}
 	
 	/**
-	 * Returns the proxy's encrypted password.
+	 * Returns the proxy's clear text password.
 	 * 
 	 * @return
 	 */
 	public String getPassword() {
-		return password;
+		if (null == plainPassword) {
+			if (null != password) {
+				plainPassword = EncryptUtil.getStringEncryptor_second_gen().decrypt(password);
+			}
+		}
+		return plainPassword;
 	}
 	
 	/**
-	 * Sets the proxy's password.
+	 * Sets the proxy's password from clear text.
 	 * 
 	 * @param password
 	 */
 	public void setPassword(String password) {
-		this.password = password;
+		if (null == password) {
+			this.password      =
+			this.plainPassword = null;
+		}
+		else {
+			this.password      = EncryptUtil.getStringEncryptor_second_gen().encrypt(password);			
+			this.plainPassword = password;
+		}
 	}
 
 	/**
