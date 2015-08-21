@@ -41,14 +41,15 @@ import org.kablink.util.api.ApiErrorCode;
  * @author Jong
  *
  * This exception is thrown to indicate that one or more of the input files is
- * infected by virus.
+ * rejected by the anti-virus scanner.
  * <p>
- * This object must NOT be used to signal an environmental error such as inaccessible
- * or mis-configured virus scanner, network problem, I/O problem, timeout, etc., which
- * should be reported via other exceptions.
+ * This object must NOT be used to signal an environmental or configuration/setup 
+ * error such as inaccessible or mis-configured virus scanner, network problem, 
+ * I/O problem, timeout, invalid credentials, etc.
  * The use of this object implies that the virus scanner successfully ran to completion
- * on the file and it determined that the file should be rejected based on its policy
- * (i.e., the file violates policy restrictions).
+ * and performed all tests on the file it was configured to do, and it determined 
+ * according to the test results and its policy restrictions that the file should
+ * be rejected.
  * <p>
  * This class is used in conjunction with <code>VirusDetectedError</code>.
  */
@@ -93,7 +94,7 @@ public class VirusDetectedException extends VibeRuntimeException {
 		// According to the latest RFC 7231, the HTTP status code 400 Bad Request
 		// is defined more broadly than before as:
 		// The 400 (Bad Request) status code indicates that the server cannot or
-		// will not process the request due to something that is preceived to be
+		// will not process the request due to something that is perceived to be
 		// a client error (e.g., malformed request syntax, invalid request
 		// message framing, or deceptive request routine).
 		// So, this is the right code to return under this circumstances.
@@ -105,7 +106,7 @@ public class VirusDetectedException extends VibeRuntimeException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.VIRUS_DETECTED;
+		return ApiErrorCode.ANTIVIRUS_DETECTED;
 	}
 
 }
