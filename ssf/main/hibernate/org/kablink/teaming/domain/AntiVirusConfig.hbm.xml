@@ -12,7 +12,7 @@
     <property name="serviceUrl"  	not-null="true" access="field" length="128" />
     <property name="interfaceId" 	not-null="true" access="field" length="32" />
     <property name="username"    	not-null="true" access="field" length="32" />
-    <property name="password"    	not-null="true" access="field" length="32" />
+    <property name="password"    	not-null="true" access="field" length="128" />
 	<property name="lastUpdateTime" not-null="true" access="field"/>
   </class>
 </hibernate-mapping>
