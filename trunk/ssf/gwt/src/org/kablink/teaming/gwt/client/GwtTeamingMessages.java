@@ -3764,7 +3764,6 @@ public interface GwtTeamingMessages extends Messages {
 	// Strings used in the Configure Anti Virus (admin console) dialog.
 	String configureAntiVirusDlg_Header();
 	String configureAntiVirusDlgEnabledCheckBoxLabel();
-	String configureAntiVirusDlgErrorDisabled();
 	String configureAntiVirusDlgErrorNoInterfaceId();
 	String configureAntiVirusDlgErrorNoPassword();
 	String configureAntiVirusDlgErrorNoServiceUrl();
