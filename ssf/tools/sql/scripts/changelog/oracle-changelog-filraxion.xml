@@ -274,4 +274,12 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
         </createTable>
 	</changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <addColumn tableName="SS_AntiVirusConfig">
+            <column name="connectTimeout" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	
 </databaseChangeLog>
