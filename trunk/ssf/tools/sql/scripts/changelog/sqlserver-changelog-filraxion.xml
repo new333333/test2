@@ -347,4 +347,12 @@ GO
         </createTable>
 	</changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+        <addColumn tableName="SS_AntiVirusConfig">
+            <column name="connectTimeout" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
 </databaseChangeLog>

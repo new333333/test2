@@ -277,4 +277,12 @@ update SS_Forums set binderType = LEFT(type, 1);
     	<sql>ALTER TABLE SS_AntiVirusConfig ADD password VARCHAR(128) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL;</sql>
 	</changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <addColumn tableName="SS_AntiVirusConfig">
+            <column name="connectTimeout" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

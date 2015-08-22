@@ -70,7 +70,11 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 	private String password;
 	// Cached password in clear text in memory
 	private String plainPassword;
+	// The timeout in milliseconds until a connection is established.
+	// Not to be confused for command execution timeout.
+	private Integer connectTimeout;
 	
+	// This value is updated automatically by the framework
 	private Long lastUpdateTime;
 	
 	/*
@@ -94,6 +98,7 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 		this.username = config.username;
 		this.password = config.password;
 		this.plainPassword = config.plainPassword;
+		this.connectTimeout = config.connectTimeout;
 
 		// Do not copy lastUpdateTime since it is automatically updated
 		// by the framework whenever change is made to the database.
@@ -121,6 +126,14 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public Integer getConnectTimeout() {
+		return connectTimeout;
+	}
+
+	public void setConnectTimeout(Integer connectTimeout) {
+		this.connectTimeout = connectTimeout;
 	}
 
 	/*
@@ -193,6 +206,8 @@ public class AntiVirusConfig extends ZonedObject implements LastUpdateTimeAware 
 		.append(interfaceId)
 		.append(",username=")
 		.append(username)
+		.append(",connectTimeout=")
+		.append(connectTimeout)
 		.append("}");
 		return sb.toString();
 	}
