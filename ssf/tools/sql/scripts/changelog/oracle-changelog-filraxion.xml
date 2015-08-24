@@ -218,15 +218,6 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
         </addColumn>
 	</changeSet>
 
-    <changeSet author="jong" context="schema" failOnError="true" id="17">
-        <comment>Add telemetryOptinEnabled field to SS_ZoneConfig table</comment>
-        <addColumn tableName="SS_ZoneConfig">
-            <column name="telemetryOptinEnabled" type="NUMBER(1,0)">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-	</changeSet>
-
     <changeSet author="jong" context="schema" failOnError="true" id="18">
         <createSequence sequenceName="ss_netfolderconfig_id_sequence"/>
     </changeSet>
@@ -282,4 +273,13 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
         </addColumn>
 	</changeSet>
 	
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <comment>Add telemetryTier2Enabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="telemetryTier2Enabled" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
 </databaseChangeLog>

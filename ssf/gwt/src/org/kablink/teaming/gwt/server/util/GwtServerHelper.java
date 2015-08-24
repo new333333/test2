@@ -6772,7 +6772,7 @@ public class GwtServerHelper {
 			boolean defaultZone = RequestContextHolder.getRequestContext().getZoneId().equals(defaultZoneId);
 			
 			// Has the telemetry optin been set on the default zone?
-			Boolean telemetryOptinEnabled = zm.getZoneConfig(defaultZoneId).getTelemetryOptinEnabled();
+			Boolean telemetryOptinEnabled = zm.getZoneConfig(defaultZoneId).getTelemetryTier2Enabled();
 			boolean telemetryOptinSet = (null != telemetryOptinEnabled);
 			
 			// ...and use this all to construct a
@@ -8498,7 +8498,7 @@ public class GwtServerHelper {
 			Long defaultZoneId = zm.getZoneIdByVirtualHost(null);	// null -> Returns default zone ID.
 			ZoneConfig zc = zm.getZoneConfig(defaultZoneId);
 			boolean telemetryEnabled      = zc.getTelemetryEnabled();
-			Boolean telemetryOptinEnabled = zc.getTelemetryOptinEnabled();
+			Boolean telemetryOptinEnabled = zc.getTelemetryTier2Enabled();
 			return new TelemetrySettingsRpcResponseData(telemetryEnabled, ((null == telemetryOptinEnabled) ? false : telemetryOptinEnabled.booleanValue()));
 		}
 		
@@ -12250,7 +12250,7 @@ public class GwtServerHelper {
 	 */
 	public static void setTelemetryOptinEnabled(AllModulesInjected bs, HttpServletRequest request, boolean telemetryOptinEnabled) throws GwtTeamingException {
 		try {
-			bs.getAdminModule().setTelemetryOptinEnabled(telemetryOptinEnabled);
+			bs.getAdminModule().setTelemetryTier2Enabled(telemetryOptinEnabled);
 		}
 		
 		catch(Exception ex) {

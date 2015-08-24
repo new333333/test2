@@ -308,15 +308,6 @@ GO
         </addColumn>
 	</changeSet>
 
-    <changeSet author="jong" context="schema" failOnError="true" id="20">
-        <comment>Add telemetryOptinEnabled field to SS_ZoneConfig table</comment>
-        <addColumn tableName="SS_ZoneConfig">
-            <column name="telemetryOptinEnabled" type="TINYINT">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-	</changeSet>
-
     <changeSet author="jong" context="schema" failOnError="true" id="21">
         <comment>Anti-virus service configuration</comment>
         <createTable tableName="SS_AntiVirusConfig">
@@ -350,6 +341,15 @@ GO
     <changeSet author="jong" context="schema" failOnError="true" id="22">
         <addColumn tableName="SS_AntiVirusConfig">
             <column name="connectTimeout" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+        <comment>Add telemetryTier2Enabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="telemetryTier2Enabled" type="TINYINT">
                 <constraints nullable="true" />
             </column>
         </addColumn>

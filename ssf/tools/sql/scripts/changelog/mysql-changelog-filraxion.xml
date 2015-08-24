@@ -232,15 +232,6 @@ update SS_Forums set binderType = LEFT(type, 1);
         </addColumn>
     </changeSet>
 
-    <changeSet author="jong" context="schema" failOnError="true" id="19">
-        <comment>Add telemetryOptinEnabled field to SS_ZoneConfig table</comment>
-        <addColumn tableName="SS_ZoneConfig">
-            <column name="telemetryOptinEnabled" type="BIT">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-    </changeSet>
-
     <changeSet author="jong" context="schema" failOnError="true" id="20">
         <comment>Anti-virus service configuration</comment>
         <createTable tableName="SS_AntiVirusConfig">
@@ -280,6 +271,15 @@ update SS_Forums set binderType = LEFT(type, 1);
     <changeSet author="jong" context="schema" failOnError="true" id="24">
         <addColumn tableName="SS_AntiVirusConfig">
             <column name="connectTimeout" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="25">
+        <comment>Add telemetryTier2Enabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="telemetryTier2Enabled" type="BIT">
                 <constraints nullable="true" />
             </column>
         </addColumn>

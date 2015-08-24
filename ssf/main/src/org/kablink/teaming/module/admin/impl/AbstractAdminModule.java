@@ -4190,14 +4190,14 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     /**
      * Stores telemetry optin enabled flag in the zone config.
      * 
-     * @param telemetryOptinEnabled
+     * @param telemetryTier2Enabled
      */
     @Override
-    public void setTelemetryOptinEnabled(boolean telemetryOptinEnabled) {
+    public void setTelemetryTier2Enabled(boolean telemetryTier2Enabled) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		Boolean currentTOE = zoneConfig.getTelemetryOptinEnabled();
-  		if ((null == currentTOE) || (telemetryOptinEnabled != currentTOE.booleanValue())) {
-  	  		zoneConfig.setTelemetryOptinEnabled(telemetryOptinEnabled);
+  		Boolean currentTOE = zoneConfig.getTelemetryTier2Enabled();
+  		if ((null == currentTOE) || (telemetryTier2Enabled != currentTOE.booleanValue())) {
+  	  		zoneConfig.setTelemetryTier2Enabled(telemetryTier2Enabled);
   		}
     }
     
@@ -4205,12 +4205,12 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
      * Stores telemetry settings flags in the zone config.
      * 
      * @param telemetryEnabled
-     * @param telemetryOptinEnabled
+     * @param telemetryTier2Enabled
      */
     @Override
-    public void setTelemetrySettings(boolean telemetryEnabled, boolean telemetryOptinEnabled) {
+    public void setTelemetrySettings(boolean telemetryEnabled, boolean telemetryTier2Enabled) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setTelemetryEnabled(     telemetryEnabled     );
-  		zoneConfig.setTelemetryOptinEnabled(telemetryOptinEnabled);
+  		zoneConfig.setTelemetryTier2Enabled(telemetryTier2Enabled);
     }
 }

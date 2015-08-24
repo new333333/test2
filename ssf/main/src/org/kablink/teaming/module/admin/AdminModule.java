@@ -569,15 +569,15 @@ public interface AdminModule {
     /**
      * Stores telemetry optin enabled flag in the zone config.
      * 
-     * @param telemetryOptinEnabled
+     * @param telemetryTier2Enabled
      */
-    public void setTelemetryOptinEnabled(boolean telemetryOptinEnabled);
+    public void setTelemetryTier2Enabled(boolean telemetryTier2Enabled);
     
     /**
      * Stores telemetry settings flags in the zone config.
      * 
      * @param telemetryEnabled
-     * @param telemetryOptinEnabled
+     * @param telemetryTier2Enabled
      */
-    public void setTelemetrySettings(boolean telemetryOptinEnabled, boolean telemetryEnabled);
+    public void setTelemetrySettings(boolean telemetryTier2Enabled, boolean telemetryEnabled);
  }
