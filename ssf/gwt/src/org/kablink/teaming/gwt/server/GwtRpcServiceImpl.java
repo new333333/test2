@@ -4109,16 +4109,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case SET_TELEMETRY_OPTIN_ENABLED:  {
-			SetTelemetryOptinEnabledCmd stoeCmd = ((SetTelemetryOptinEnabledCmd) cmd);
-			GwtServerHelper.setTelemetryOptinEnabled(this, req, stoeCmd.isTelemetryOptinEnabled());
+		case SET_TELEMETRY_SETTINGS:  {
+			SetTelemetrySettingsCmd stsCmd = ((SetTelemetrySettingsCmd) cmd);
+			GwtServerHelper.setTelemetrySettings(this, req, stsCmd.isTelemetryTier1Enabled(), stsCmd.isTelemetryTier2Enabled());
 			response = new VibeRpcResponse(new BooleanRpcResponseData(true));
 			return response;
 		}
 		
-		case SET_TELEMETRY_SETTINGS:  {
-			SetTelemetrySettingsCmd stsCmd = ((SetTelemetrySettingsCmd) cmd);
-			GwtServerHelper.setTelemetrySettings(this, req, stsCmd.isTelemetryEnabled(), stsCmd.isTelemetryOptinEnabled());
+		case SET_TELEMETRY_TIER2_ENABLED:  {
+			SetTelemetryTier2EnabledCmd stt2eCmd = ((SetTelemetryTier2EnabledCmd) cmd);
+			GwtServerHelper.setTelemetryTier2Enabled(this, req, stt2eCmd.isTelemetryTier2Enabled());
 			response = new VibeRpcResponse(new BooleanRpcResponseData(true));
 			return response;
 		}

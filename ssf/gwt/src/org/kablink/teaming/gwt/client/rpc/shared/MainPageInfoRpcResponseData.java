@@ -50,7 +50,7 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	private boolean		m_firstLogin;				// true if it is the user's first login
 	private boolean		m_isDefaultZone;			// true if we're running in the default zone.
 	private boolean		m_isSuperUser;				// true if we are dealing with the super user (admin)
-	private boolean		m_isTelemetryOptinSet;		// true if the built-in admin has set a telemetry option setting on the default zone.
+	private boolean		m_isTelemetryTier2Set;		// true if the built-in admin has set a telemetry tier 2 setting on the default zone.
 	private BinderInfo	m_binderInfo;				//
 	private String		m_userAvatarUrl;			//
 
@@ -76,9 +76,9 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * @param firstLogin
 	 * @param superUser
 	 * @param defaultZone
-	 * @param telemetryOptinSet
+	 * @param telemetryTier2Set
 	 */
-	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean browserSupportsNPAPI, boolean desktopAppEnabled, boolean showDesktopAppDownloader, boolean useHomeAsMyFiles, boolean firstLogin, boolean superUser, boolean defaultZone, boolean telemetryOptinSet) {
+	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean browserSupportsNPAPI, boolean desktopAppEnabled, boolean showDesktopAppDownloader, boolean useHomeAsMyFiles, boolean firstLogin, boolean superUser, boolean defaultZone, boolean telemetryTier2Set) {
 		// Initialize this object...
 		this();
 
@@ -92,7 +92,7 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 		setIsFirstLogin(            firstLogin              );
 		setIsSuperUser(             superUser               );
 		setIsDefaultZone(           defaultZone             );
-		setIsTelemetryOptinSet(     telemetryOptinSet       );
+		setIsTelemetryTier2Set(     telemetryTier2Set       );
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	public boolean    isFirstLogin()               {return m_firstLogin;              }
 	public boolean    isShowDesktopAppDownloader() {return m_showDesktopAppDownloader;}
 	public boolean    isSuperUser()                {return m_isSuperUser;             }
-	public boolean    isTelemetryOptinSet()        {return m_isTelemetryOptinSet;     }
+	public boolean    isTelemetryTier2Set()        {return m_isTelemetryTier2Set;     }
 	public boolean    isUseHomeAsMyFiles()         {return m_useHomeForMyFiles;       }
 	public BinderInfo getBinderInfo()              {return m_binderInfo;              }
 	public String     getUserAvatarUrl()           {return m_userAvatarUrl;           }
@@ -121,7 +121,7 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	public void setIsDefaultZone(           boolean    isDefaultZone)            {m_isDefaultZone            = isDefaultZone;           }
 	public void setIsFirstLogin(            boolean    firstLogin)               {m_firstLogin               = firstLogin;              }
 	public void setIsSuperUser(             boolean    superUser)                {m_isSuperUser              = superUser;               }
-	public void setIsTelemetryOptinSet(     boolean    isTelemetryOptinSet)      {m_isTelemetryOptinSet      = isTelemetryOptinSet;     }
+	public void setIsTelemetryTier2Set(     boolean    isTelemetryTier2Set)      {m_isTelemetryTier2Set      = isTelemetryTier2Set;     }
 	public void setShowDesktopAppDownloader(boolean    showDesktopAppDownloader) {m_showDesktopAppDownloader = showDesktopAppDownloader;}
 	public void setUseHomeAsMyFiles(        boolean    useHomeAsMyFiles)         {m_useHomeForMyFiles        = useHomeAsMyFiles;        }
 	public void setBinderInfo(              BinderInfo binderInfo)               {m_binderInfo               = binderInfo;              }

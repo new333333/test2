@@ -65,8 +65,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandler {
-	private CheckBox							m_telemetryEnabledCB;		// The basic enablement checkbox.
-	private CheckBox							m_telemetryOptinEnabledCB;	// The optin enablement checkbox.
+	private CheckBox							m_telemetryTier1EnabledCB;	// The tier 1 enablement checkbox.
+	private CheckBox							m_telemetryTier2EnabledCB;	// The tier 2 enablement checkbox.
 	private GwtTeamingMessages					m_messages;					// Access to Filr's messages.
 	private List<HandlerRegistration>			m_registeredEventHandlers;	//
 	private TelemetrySettingsRpcResponseData	m_tsData;					// The current telemetry settings once they're read from the server.
@@ -116,24 +116,24 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 		vp.addStyleName("vibe-configureTelemetryDlg-panel");
 
 		// ...add a hint about the enable checkbox...
-		Label hint = new Label(m_messages.configureTelemetryDlgEnabledHint(m_messages.companyNovell(), GwtClientHelper.getProductName()));
+		Label hint = new Label(m_messages.configureTelemetryDlgTier1EnabledHint(m_messages.companyNovell(), GwtClientHelper.getProductName()));
 		hint.addStyleName("vibe-configureTelemetryDlg-hint marginTop5px");
 		vp.add(hint);
 
 		// ...add the checkbox for them to enable collection...
-		m_telemetryEnabledCB = new CheckBox(m_messages.configureTelemetryDlgEnabledCheckBoxLabel());
-		m_telemetryEnabledCB.addStyleName("vibe-configureTelemetryDlg-checkbox");
-		vp.add(m_telemetryEnabledCB);
+		m_telemetryTier1EnabledCB = new CheckBox(m_messages.configureTelemetryDlgTier1EnabledCheckBoxLabel());
+		m_telemetryTier1EnabledCB.addStyleName("vibe-configureTelemetryDlg-checkbox");
+		vp.add(m_telemetryTier1EnabledCB);
 		
-		// ...add a hint about the optin checkbox...
-		hint = new Label(m_messages.configureTelemetryDlgOptinHint(m_messages.companyNovell(), GwtClientHelper.getProductName()));
+		// ...add a hint about the tier 2 checkbox...
+		hint = new Label(m_messages.configureTelemetryDlgTier2EnabledHint(m_messages.companyNovell(), GwtClientHelper.getProductName()));
 		hint.addStyleName("vibe-configureTelemetryDlg-hint marginTop20px");
 		vp.add(hint);
 
-		// ...add the checkbox for them to optin...
-		m_telemetryOptinEnabledCB = new CheckBox(m_messages.configureTelemetryDlgOptinCheckBoxLabel());
-		m_telemetryOptinEnabledCB.addStyleName("vibe-configureTelemetryDlg-checkbox");
-		vp.add(m_telemetryOptinEnabledCB);
+		// ...add the checkbox for them to tier 2...
+		m_telemetryTier2EnabledCB = new CheckBox(m_messages.configureTelemetryDlgTier2EnabledCheckBoxLabel());
+		m_telemetryTier2EnabledCB.addStyleName("vibe-configureTelemetryDlg-checkbox");
+		vp.add(m_telemetryTier2EnabledCB);
 
 		// ...and return the panel.
 		return vp;
@@ -153,7 +153,7 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 		setOkEnabled(false);
 
 		// ...send a GWT RPC command to apply them...
-		SetTelemetrySettingsCmd cmd = new SetTelemetrySettingsCmd(m_telemetryEnabledCB.getValue(), m_telemetryOptinEnabledCB.getValue());
+		SetTelemetrySettingsCmd cmd = new SetTelemetrySettingsCmd(m_telemetryTier1EnabledCB.getValue(), m_telemetryTier2EnabledCB.getValue());
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -195,7 +195,7 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 	 */
 	@Override
 	public FocusWidget getFocusWidget() {
-		return m_telemetryEnabledCB;
+		return m_telemetryTier1EnabledCB;
 	}
 	
 	/**
@@ -292,8 +292,8 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 		setOkEnabled(true);
 
 		// ...set the state of the checkboxes...
-		m_telemetryEnabledCB.setValue(     m_tsData.isTelemetryEnabled()     );
-		m_telemetryOptinEnabledCB.setValue(m_tsData.isTelemetryOptinEnabled());
+		m_telemetryTier1EnabledCB.setValue(m_tsData.isTelemetryTier1Enabled());
+		m_telemetryTier2EnabledCB.setValue(m_tsData.isTelemetryTier2Enabled());
 
 		// ...and show the dialog.
 		show();

@@ -5595,11 +5595,11 @@ td.datePickerMonth {
 	.vibe-selectCSVDelimiterDlg-radio          {margin-left: 5px;}
 /* End:  SelectCSVDelimiter dialog styles. */
 
-/* Start:  Telemetry Optin dialog styles. */
-	.vibe-telemetryOptinDlg-checkbox {}
-	.vibe-telemetryOptinDlg-hint     {width: 400px; margin-top: 5px; color: #414648; /* dark grey */ line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 1em;}
-	.vibe-telemetryOptinDlg-panel    {padding: 10px;}
-/* End:  Telemetry Optin dialog styles. */
+/* Start:  Telemetry Tier 2 dialog styles. */
+	.vibe-telemetryTier2Dlg-checkbox {}
+	.vibe-telemetryTier2Dlg-hint     {width: 400px; margin-top: 5px; color: #414648; /* dark grey */ line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 1em;}
+	.vibe-telemetryTier2Dlg-panel    {padding: 10px;}
+/* End:  Telemetry Tier 2 dialog styles. */
 
 /* Start:  Configure Telemetry dialog styles. */
 	.vibe-configureTelemetryDlg-checkbox {}

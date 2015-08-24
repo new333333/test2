@@ -41,8 +41,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class TelemetrySettingsRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private boolean	m_telemetryEnabled;			//
-	private boolean	m_telemetryOptinEnabled;	//
+	private boolean	m_telemetryTier1Enabled;	//
+	private boolean	m_telemetryTier2Enabled;	//
 	
 	/*
 	 * Constructor method. 
@@ -57,16 +57,16 @@ public class TelemetrySettingsRpcResponseData implements IsSerializable, VibeRpc
 	/**
 	 * Constructor method. 
 	 * 
-	 * @param telemetryEnabled
-	 * @param telemetryOptinEnabled
+	 * @param telemetryTier1Enabled
+	 * @param telemetryTier2Enabled
 	 */
-	public TelemetrySettingsRpcResponseData(boolean telemetryEnabled, boolean telemetryOptinEnabled) {
+	public TelemetrySettingsRpcResponseData(boolean telemetryTier1Enabled, boolean telemetryTier2Enabled) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameter.
-		setTelemetryEnabled(     telemetryEnabled      );
-		setTelemetryOptinEnabled( telemetryOptinEnabled);
+		setTelemetryTier1Enabled(telemetryTier1Enabled);
+		setTelemetryTier2Enabled(telemetryTier2Enabled);
 	}
 	
 	/**
@@ -74,14 +74,14 @@ public class TelemetrySettingsRpcResponseData implements IsSerializable, VibeRpc
 	 * 
 	 * @return
 	 */
-	public boolean isTelemetryEnabled()      {return m_telemetryEnabled;     }
-	public boolean isTelemetryOptinEnabled() {return m_telemetryOptinEnabled;}
+	public boolean isTelemetryTier1Enabled() {return m_telemetryTier1Enabled;}
+	public boolean isTelemetryTier2Enabled() {return m_telemetryTier2Enabled;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setTelemetryEnabled(     boolean telemetryEnabled)      {m_telemetryEnabled      = telemetryEnabled;     }
-	public void setTelemetryOptinEnabled(boolean telemetryOptinEnabled) {m_telemetryOptinEnabled = telemetryOptinEnabled;}
+	public void setTelemetryTier1Enabled(boolean telemetryTier1Enabled) {m_telemetryTier1Enabled = telemetryTier1Enabled;}
+	public void setTelemetryTier2Enabled(boolean telemetryTier2Enabled) {m_telemetryTier2Enabled = telemetryTier2Enabled;}
 }

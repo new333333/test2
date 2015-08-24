@@ -646,8 +646,8 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_SetPrincipalsLimitedUserVisibility();
 	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
-	String rpcFailure_SetTelemetryOptinEnabled();
 	String rpcFailure_SetTelemetrySettings();
+	String rpcFailure_SetTelemetryTier2Enabled();
 	String rpcFailure_SetUnseen();
 	String rpcFailure_ShareEntry();
 	String rpcFailure_ShowShares();
@@ -844,7 +844,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_TaskListing();
 	String codeSplitFailure_TeamWorkspacesView();
 	String codeSplitFailure_TeamWSView();
-	String codeSplitFailure_TelemetryOptinDlg();
+	String codeSplitFailure_TelemetryTier2Dlg();
 	String codeSplitFailure_TinyMCEDlg();
 	String codeSplitFailure_TrashView();
 	String codeSplitFailure_UserPropertiesDlg();
@@ -3748,18 +3748,18 @@ public interface GwtTeamingMessages extends Messages {
 	String manageEmailTemplatesDlg_confirmDelete();
 	String manageEmailTemplatesDlg_failureDeletingEmailTemplates();
 	
-	// Strings used in the Telemetry Optin dialog.
-	String telemetryOptinDlg_InternalError_CantCancel();
-	String telemetryOptinDlgCheckBoxLabel();
-	String telemetryOptinDlgHeader();
-	String telemetryOptinDlgHint(String company, String product);
+	// Strings used in the Telemetry Tier 2 dialog.
+	String telemetryTier2Dlg_InternalError_CantCancel();
+	String telemetryTier2DlgCheckBoxLabel();
+	String telemetryTier2DlgHeader();
+	String telemetryTier2DlgHint(String company, String product);
 	
 	// Strings used in the Configure Telemetry (admin console) dialog.
 	String configureTelemetryDlg_Header();
-	String configureTelemetryDlgEnabledCheckBoxLabel();
-	String configureTelemetryDlgEnabledHint(String company, String product);
-	String configureTelemetryDlgOptinCheckBoxLabel();
-	String configureTelemetryDlgOptinHint(String company, String product);
+	String configureTelemetryDlgTier1EnabledCheckBoxLabel();
+	String configureTelemetryDlgTier1EnabledHint(String company, String product);
+	String configureTelemetryDlgTier2EnabledCheckBoxLabel();
+	String configureTelemetryDlgTier2EnabledHint(String company, String product);
 	
 	// Strings used in the Configure Anti Virus (admin console) dialog.
 	String configureAntiVirusDlg_Header();

@@ -36,7 +36,7 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.rpc.shared.SetTelemetryOptinEnabledCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SetTelemetryTier2EnabledCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -53,12 +53,12 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * Implements the telemetry optin dialog.
+ * Implements the telemetry tier 2 dialog.
  *  
  * @author drfoster@novell.com
  */
-public class TelemetryOptinDlg extends DlgBox implements EditCanceledHandler, EditSuccessfulHandler {
-	private CheckBox			m_telemetryOptinEnabledCB;	// The optin checkbox.
+public class TelemetryTier2Dlg extends DlgBox implements EditCanceledHandler, EditSuccessfulHandler {
+	private CheckBox			m_telemetryTier2EnabledCB;	// The tier 2 enabled checkbox.
 	private GwtTeamingMessages	m_messages;					// Access to Vibe's messages.
 
 	/*
@@ -68,7 +68,7 @@ public class TelemetryOptinDlg extends DlgBox implements EditCanceledHandler, Ed
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private TelemetryOptinDlg() {
+	private TelemetryTier2Dlg() {
 		// Initialize the superclass...
 		super(false, true, DlgButtonMode.Ok);	// false -> Not auto hide, true -> Modal.
 
@@ -77,7 +77,7 @@ public class TelemetryOptinDlg extends DlgBox implements EditCanceledHandler, Ed
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
-			m_messages.telemetryOptinDlgHeader(),	// The dialog's caption.
+			m_messages.telemetryTier2DlgHeader(),	// The dialog's caption.
 			this,									// The dialog's EditSuccessfulHandler.
 			this,									// The dialog's EditCanceledHandler.
 			null);									// Create callback data.  Unused. 
@@ -96,18 +96,19 @@ public class TelemetryOptinDlg extends DlgBox implements EditCanceledHandler, Ed
 	public Panel createContent(Object callbackData) {
 		// Create a panel to hold the dialog's content...
 		VerticalPanel vp = new VibeVerticalPanel(null, null);
-		vp.addStyleName("vibe-telemetryOptinDlg-panel");
+		vp.addStyleName("vibe-telemetryTier2Dlg-panel");
 		
 		// ...add a hint about what's happening at the top of the
 		// ...dialog...
-		Label hint = new Label(m_messages.telemetryOptinDlgHint(m_messages.companyNovell(), GwtClientHelper.getProductName()));
-		hint.addStyleName("vibe-telemetryOptinDlg-hint");
+		Label hint = new Label(m_messages.telemetryTier2DlgHint(m_messages.companyNovell(), GwtClientHelper.getProductName()));
+		hint.addStyleName("vibe-telemetryTier2Dlg-hint");
 		vp.add(hint);
 
-		// ...add the checkbox for them to optin...
-		m_telemetryOptinEnabledCB = new CheckBox(m_messages.telemetryOptinDlgCheckBoxLabel());
-		m_telemetryOptinEnabledCB.addStyleName("vibe-telemetryOptinDlg-checkbox");
-		vp.add(m_telemetryOptinEnabledCB);
+		// ...add the checkbox for them to enable tier 2 data
+		// ...captures...
+		m_telemetryTier2EnabledCB = new CheckBox(m_messages.telemetryTier2DlgCheckBoxLabel());
+		m_telemetryTier2EnabledCB.addStyleName("vibe-telemetryTier2Dlg-checkbox");
+		vp.add(m_telemetryTier2EnabledCB);
 
 		// ...and return the panel.
 		return vp;
@@ -126,7 +127,7 @@ public class TelemetryOptinDlg extends DlgBox implements EditCanceledHandler, Ed
 	public boolean editCanceled() {
 		// Should never get here as there should be no way to simply
 		// close the dialog.
-		GwtClientHelper.deferredAlert(m_messages.telemetryOptinDlg_InternalError_CantCancel());
+		GwtClientHelper.deferredAlert(m_messages.telemetryTier2Dlg_InternalError_CantCancel());
 		
 		// Return false to leave the dialog open.
 		return false;
@@ -145,14 +146,14 @@ public class TelemetryOptinDlg extends DlgBox implements EditCanceledHandler, Ed
 	 */
 	@Override
 	public boolean editSuccessful(Object callbackData) {
-		// Save the state of the telemetry optin setting.
-		SetTelemetryOptinEnabledCmd cmd = new SetTelemetryOptinEnabledCmd(m_telemetryOptinEnabledCB.getValue());
+		// Save the state of the telemetry tier 2 setting.
+		SetTelemetryTier2EnabledCmd cmd = new SetTelemetryTier2EnabledCmd(m_telemetryTier2EnabledCB.getValue());
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					m_messages.rpcFailure_SetTelemetryOptinEnabled());
+					m_messages.rpcFailure_SetTelemetryTier2Enabled());
 			}
 
 			@Override
@@ -163,7 +164,7 @@ public class TelemetryOptinDlg extends DlgBox implements EditCanceledHandler, Ed
 		});
 		
 		// Return false to leave the dialog open.  It will get closed
-		// after we save the state of the optin.
+		// after we save the state of the tier 2 data capture.
 		return false;
 	}
 
@@ -189,7 +190,7 @@ public class TelemetryOptinDlg extends DlgBox implements EditCanceledHandler, Ed
 	 */
 	@Override
 	public FocusWidget getFocusWidget() {
-		return m_telemetryOptinEnabledCB;
+		return m_telemetryTier2EnabledCB;
 	}
 
 	/*
@@ -208,8 +209,8 @@ public class TelemetryOptinDlg extends DlgBox implements EditCanceledHandler, Ed
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgNow() {
-		// Clear the telemetry optin checkbox and show the dialog.
-		m_telemetryOptinEnabledCB.setValue(false);
+		// Set the telemetry tier 2 checkbox and show the dialog.
+		m_telemetryTier2EnabledCB.setValue(true);
 		center();
 	}
 	
@@ -217,11 +218,11 @@ public class TelemetryOptinDlg extends DlgBox implements EditCanceledHandler, Ed
 	 * Asynchronously runs the given instance of the select CSV
 	 * delimiter dialog.
 	 */
-	private static void runDlgAsync(final TelemetryOptinDlg toDlg) {
+	private static void runDlgAsync(final TelemetryTier2Dlg tt2Dlg) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				toDlg.runDlgNow();
+				tt2Dlg.runDlgNow();
 			}
 		});
 	}
@@ -241,72 +242,72 @@ public class TelemetryOptinDlg extends DlgBox implements EditCanceledHandler, Ed
 
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
-	/* the telemetry optin dialog and perform some operation on it.  */
+	/* the telemetry tier 2 dialog and perform some operation on it. */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
 	/**
-	 * Callback interface to interact with the telemetry optin
+	 * Callback interface to interact with the telemetry tier 2
 	 * dialog asynchronously after it loads. 
 	 */
-	public interface TelemetryOptinDlgClient {
-		void onSuccess(TelemetryOptinDlg toDlg);
+	public interface TelemetryTier2DlgClient {
+		void onSuccess(TelemetryTier2Dlg tt2Dlg);
 		void onUnavailable();
 	}
 
 	/*
-	 * Asynchronously loads the TelemetryOptinDlg and performs some
+	 * Asynchronously loads the TelemetryTier2Dlg and performs some
 	 * operation against the code.
 	 */
 	private static void doAsyncOperation(
 			// Parameters to create an instance of the dialog.
-			final TelemetryOptinDlgClient toDlgClient,
+			final TelemetryTier2DlgClient tt2DlgClient,
 			
 			// Parameters to initialize and show the dialog.
-			final TelemetryOptinDlg	toDlg) {
-		GWT.runAsync(TelemetryOptinDlg.class, new RunAsyncCallback() {
+			final TelemetryTier2Dlg	tt2Dlg) {
+		GWT.runAsync(TelemetryTier2Dlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_TelemetryOptinDlg());
-				if (null != toDlgClient) {
-					toDlgClient.onUnavailable();
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_TelemetryTier2Dlg());
+				if (null != tt2DlgClient) {
+					tt2DlgClient.onUnavailable();
 				}
 			}
 
 			@Override
 			public void onSuccess() {
 				// Is this a request to create a dialog?
-				if (null != toDlgClient) {
+				if (null != tt2DlgClient) {
 					// Yes!  Create it and return it via the callback.
-					TelemetryOptinDlg toDlg = new TelemetryOptinDlg();
-					toDlgClient.onSuccess(toDlg);
+					TelemetryTier2Dlg tt2Dlg = new TelemetryTier2Dlg();
+					tt2DlgClient.onSuccess(tt2Dlg);
 				}
 				
 				else {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(toDlg);
+					runDlgAsync(tt2Dlg);
 				}
 			}
 		});
 	}
 	
 	/**
-	 * Loads the TelemetryOptinDlg split point and returns an instance of it
+	 * Loads the TelemetryTier2Dlg split point and returns an instance of it
 	 * via the callback.
 	 * 
-	 * @param toDlgClient
+	 * @param tt2DlgClient
 	 */
-	public static void createAsync(TelemetryOptinDlgClient toDlgClient) {
-		doAsyncOperation(toDlgClient, null);
+	public static void createAsync(TelemetryTier2DlgClient tt2DlgClient) {
+		doAsyncOperation(tt2DlgClient, null);
 	}
 	
 	/**
-	 * Initializes and shows the telemetry optin dialog.
+	 * Initializes and shows the telemetry tier 2 dialog.
 	 * 
-	 * @param toDlg
+	 * @param tt2Dlg
 	 */
-	public static void initAndShow(TelemetryOptinDlg toDlg) {
-		doAsyncOperation(null, toDlg);
+	public static void initAndShow(TelemetryTier2Dlg tt2Dlg) {
+		doAsyncOperation(null, tt2Dlg);
 	}
 }
