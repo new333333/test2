@@ -3757,7 +3757,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   		Date now = new Date();
   		
   		if (zoneConfig.getAuditTrailKeepDays() > 0) {
-  			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getAuditTrailKeepDays()*1000*60*60*24);
+  			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getAuditTrailKeepDays()*1000L*60L*60L*24L);
   			if (SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.auditTrail", false)) {
 	  			List<BasicAudit> entriesToBeDeleted = getCoreDao().getBasicAuditEntries(zoneId, purgeBeforeDate);
 	  			if (writeAuditTrailLogFile(entriesToBeDeleted)) {
@@ -3773,7 +3773,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   		}
   		
   		if (zoneConfig.getChangeLogsKeepDays() > 0) {
-  			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getChangeLogsKeepDays()*1000*60*60*24);
+  			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getChangeLogsKeepDays()*1000L*60L*60L*24L);
   			if (SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.changeLog", false)) {
 	  			List<ChangeLog> entriesToBeDeleted = getCoreDao().getChangeLogEntries(zoneId, purgeBeforeDate);
 	  			if (writeChangeLogLogFile(entriesToBeDeleted)) {
