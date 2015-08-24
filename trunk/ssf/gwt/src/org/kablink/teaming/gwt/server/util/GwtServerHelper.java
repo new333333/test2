@@ -6771,9 +6771,9 @@ public class GwtServerHelper {
 			Long defaultZoneId = zm.getZoneIdByVirtualHost(null);	// null -> Returns default zone ID.
 			boolean defaultZone = RequestContextHolder.getRequestContext().getZoneId().equals(defaultZoneId);
 			
-			// Has the telemetry optin been set on the default zone?
-			Boolean telemetryOptinEnabled = zm.getZoneConfig(defaultZoneId).getTelemetryTier2Enabled();
-			boolean telemetryOptinSet = (null != telemetryOptinEnabled);
+			// Has the telemetry tier 2 been set on the default zone?
+			Boolean telemetryTier2Enabled = zm.getZoneConfig(defaultZoneId).getTelemetryTier2Enabled();
+			boolean telemetryTier2Set = (null != telemetryTier2Enabled);
 			
 			// ...and use this all to construct a
 			// ...MainPageInfoRpcResponseData to return.
@@ -6788,7 +6788,7 @@ public class GwtServerHelper {
 					firstLogin,
 					superUser,
 					defaultZone,
-					telemetryOptinSet);
+					telemetryTier2Set);
 		}
 		
 		catch (Exception ex) {
@@ -8497,9 +8497,9 @@ public class GwtServerHelper {
 			ZoneModule zm = bs.getZoneModule();
 			Long defaultZoneId = zm.getZoneIdByVirtualHost(null);	// null -> Returns default zone ID.
 			ZoneConfig zc = zm.getZoneConfig(defaultZoneId);
-			boolean telemetryEnabled      = zc.getTelemetryEnabled();
-			Boolean telemetryOptinEnabled = zc.getTelemetryTier2Enabled();
-			return new TelemetrySettingsRpcResponseData(telemetryEnabled, ((null == telemetryOptinEnabled) ? false : telemetryOptinEnabled.booleanValue()));
+			boolean telemetryTier1Enabled = zc.getTelemetryEnabled();
+			Boolean telemetryTier2Enabled = zc.getTelemetryTier2Enabled();
+			return new TelemetrySettingsRpcResponseData(telemetryTier1Enabled, ((null == telemetryTier2Enabled) ? true : telemetryTier2Enabled.booleanValue()));
 		}
 		
 		catch(Exception ex) {
@@ -10690,8 +10690,8 @@ public class GwtServerHelper {
 		case SET_MOBILE_DEVICES_WIPE_SCHEDULED_STATE:
 		case SET_PRINCIPALS_ADMIN_RIGHTS:
 		case SET_SEEN:
-		case SET_TELEMETRY_OPTIN_ENABLED:
 		case SET_TELEMETRY_SETTINGS:
+		case SET_TELEMETRY_TIER2_ENABLED:
 		case SET_UNSEEN:
 		case SET_USER_SHARING_RIGHTS_INFO:
 		case SET_USER_VISIBILITY:
@@ -12240,45 +12240,45 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Stores the telemetryOptinEnabled setting in the ZoneConfig.
+	 * Stores the telemetryTier1Enabled and telemetryTier2Enabled
+	 * settings in the ZoneConfig.
 	 *  
 	 * @param bs
 	 * @param request
-	 * @param telemetryOptinEnabled
+	 * @param telemetryTier1Enabled
+	 * @param telemetryTier2Enabled
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static void setTelemetryOptinEnabled(AllModulesInjected bs, HttpServletRequest request, boolean telemetryOptinEnabled) throws GwtTeamingException {
+	public static void setTelemetrySettings(AllModulesInjected bs, HttpServletRequest request, boolean telemetryTier1Enabled, boolean telemetryTier2Enabled) throws GwtTeamingException {
 		try {
-			bs.getAdminModule().setTelemetryTier2Enabled(telemetryOptinEnabled);
+			bs.getAdminModule().setTelemetrySettings(telemetryTier1Enabled, telemetryTier2Enabled);
+			
+			TelemetryProcessUtil.manageTelemetryProcess(telemetryTier1Enabled);
 		}
 		
 		catch(Exception ex) {
-			GwtLogHelper.error(m_logger, "GwtServerHelper.setTelemetryOptinEnabled( SOURCE EXCEPTION ):  Error saving telemetry optin.", ex);
+			GwtLogHelper.error(m_logger, "GwtServerHelper.setTelemetrySettings( SOURCE EXCEPTION ):  Error saving telemetry settings.", ex);
 			throw GwtLogHelper.getGwtClientException(ex);				
 		}
 	}
 	
 	/**
-	 * Stores the telemetryEnabled and telemetryOptinEnabled settings
-	 * in the ZoneConfig.
+	 * Stores the telemetryTier2Enabled setting in the ZoneConfig.
 	 *  
 	 * @param bs
 	 * @param request
-	 * @param telemetryEnabled
-	 * @param telemetryOptinEnabled
+	 * @param telemetryTier2Enabled
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static void setTelemetrySettings(AllModulesInjected bs, HttpServletRequest request, boolean telemetryEnabled, boolean telemetryOptinEnabled) throws GwtTeamingException {
+	public static void setTelemetryTier2Enabled(AllModulesInjected bs, HttpServletRequest request, boolean telemetryTier2Enabled) throws GwtTeamingException {
 		try {
-			bs.getAdminModule().setTelemetrySettings(telemetryEnabled, telemetryOptinEnabled);
-			
-			TelemetryProcessUtil.manageTelemetryProcess(telemetryEnabled);
+			bs.getAdminModule().setTelemetryTier2Enabled(telemetryTier2Enabled);
 		}
 		
 		catch(Exception ex) {
-			GwtLogHelper.error(m_logger, "GwtServerHelper.setTelemetrySettings( SOURCE EXCEPTION ):  Error saving telemetry settings.", ex);
+			GwtLogHelper.error(m_logger, "GwtServerHelper.setTelemetryTier2Enabled( SOURCE EXCEPTION ):  Error saving telemetry tier 2 enabled.", ex);
 			throw GwtLogHelper.getGwtClientException(ex);				
 		}
 	}

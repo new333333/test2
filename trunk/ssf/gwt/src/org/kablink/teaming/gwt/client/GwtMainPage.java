@@ -181,8 +181,8 @@ import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.PersonalPreferencesDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
-import org.kablink.teaming.gwt.client.widgets.TelemetryOptinDlg;
-import org.kablink.teaming.gwt.client.widgets.TelemetryOptinDlg.TelemetryOptinDlgClient;
+import org.kablink.teaming.gwt.client.widgets.TelemetryTier2Dlg;
+import org.kablink.teaming.gwt.client.widgets.TelemetryTier2Dlg.TelemetryTier2DlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
@@ -300,7 +300,7 @@ public class GwtMainPage extends ResizeComposite
 	private ActivityStreamCtrl m_activityStreamCtrl = null;
 	private CollectionPointData m_collectionPointData = null;
 	private MainPageInfoRpcResponseData m_mainPageInfo;
-	private TelemetryOptinDlg m_telemetryOptinDlg;
+	private TelemetryTier2Dlg m_telemetryTier2Dlg;
 
 	private com.google.gwt.dom.client.Element m_tagPanelElement;
 
@@ -971,11 +971,12 @@ public class GwtMainPage extends ResizeComposite
 		}
 
 		// If we didn't just change the admin user's password and we
-		// to prompt the admin about telemetry data optin...
-		if ((!changedAdminsPassword) && requiresTelemetryOptinPrompt()) {
-			// ...invoke the telemetry optin dialog.
-			m_mainPageInfo.setIsTelemetryOptinSet(true);
-			invokeTelemetryOptinDlgAsync(0);
+		// need to prompt the admin about telemetry tier 2 data
+		// collection...
+		if ((!changedAdminsPassword) && requiresTelemetryTier2Prompt()) {
+			// ...invoke the telemetry tier 2 dialog.
+			m_mainPageInfo.setIsTelemetryTier2Set(true);
+			invokeTelemetryTier2DlgAsync(0);
 		}
 	}
 
@@ -2919,33 +2920,33 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onDialogClosed(final DialogClosedEvent event) {
 		DlgBox eventDlg = event.getDlgBox();
-		if ((null != eventDlg) && (null != m_changePwdDlg) && (eventDlg.equals(m_changePwdDlg) && requiresTelemetryOptinPrompt())) {
-			m_mainPageInfo.setIsTelemetryOptinSet(true);
-			invokeTelemetryOptinDlgAsync(2000);	// We'll wait 2 seconds after the change password dialog closes.
+		if ((null != eventDlg) && (null != m_changePwdDlg) && (eventDlg.equals(m_changePwdDlg) && requiresTelemetryTier2Prompt())) {
+			m_mainPageInfo.setIsTelemetryTier2Set(true);
+			invokeTelemetryTier2DlgAsync(2000);	// We'll wait 2 seconds after the change password dialog closes.
 		}
 	}
 
 	/*
-	 * Asynchronously invokes the telemetry optin dialog.
+	 * Asynchronously invokes the telemetry tier 2 dialog.
 	 */
-	private void invokeTelemetryOptinDlgAsync(final int delay) {
+	private void invokeTelemetryTier2DlgAsync(final int delay) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				invokeTelemetryOptinDlgNow();
+				invokeTelemetryTier2DlgNow();
 			}
 		},
 		delay);
 	}
 	
 	/*
-	 * Synchronously invokes the telemetry optin dialog.
+	 * Synchronously invokes the telemetry tier 2 dialog.
 	 */
-	private void invokeTelemetryOptinDlgNow() {
+	private void invokeTelemetryTier2DlgNow() {
 		// Have we created the telemetry option dialog yet?
-		if (null == m_telemetryOptinDlg) {
+		if (null == m_telemetryTier2Dlg) {
 			// No!  Create it now...
-			TelemetryOptinDlg.createAsync(new TelemetryOptinDlgClient() {
+			TelemetryTier2Dlg.createAsync(new TelemetryTier2DlgClient() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in
@@ -2953,10 +2954,10 @@ public class GwtMainPage extends ResizeComposite
 				}
 				
 				@Override
-				public void onSuccess(TelemetryOptinDlg toDlg) {
+				public void onSuccess(TelemetryTier2Dlg toDlg) {
 					// ...and run it.
-					m_telemetryOptinDlg = toDlg;
-					showTelemetryOptinDlgAsync();
+					m_telemetryTier2Dlg = toDlg;
+					showTelemetryTier2DlgAsync();
 				}
 			});
 		}
@@ -2964,27 +2965,27 @@ public class GwtMainPage extends ResizeComposite
 		else {
 			// Yes, we've already created the telemetry option yet!
 			// Simply run it.
-			showTelemetryOptinDlgAsync();
+			showTelemetryTier2DlgAsync();
 		}
 	}
 	
 	/*
-	 * Asynchronously shows the telemetry optin dialog.
+	 * Asynchronously shows the telemetry tier 2 dialog.
 	 */
-	private void showTelemetryOptinDlgAsync() {
+	private void showTelemetryTier2DlgAsync() {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				showTelemetryOptinDlgNow();
+				showTelemetryTier2DlgNow();
 			}
 		});
 	}
 
 	/*
-	 * Synchronously shows the telemetry optin dialog.
+	 * Synchronously shows the telemetry tier 2 dialog.
 	 */
-	private void showTelemetryOptinDlgNow() {
-		TelemetryOptinDlg.initAndShow(m_telemetryOptinDlg);
+	private void showTelemetryTier2DlgNow() {
+		TelemetryTier2Dlg.initAndShow(m_telemetryTier2Dlg);
 	}
 	
 	/**
@@ -4732,14 +4733,14 @@ public class GwtMainPage extends ResizeComposite
 	}
 	
 	/*
-	 * Returns true if we need prompt for telemetry optin enablement
+	 * Returns true if we need prompt for telemetry tier 2 enablement
 	 * and false otherwise.
 	 * 
 	 * The only time we prompt for it is for the built-in admin running
 	 * on the default zone and there's no record of it having been set
 	 * yet.
 	 */
-	private boolean requiresTelemetryOptinPrompt() {
-		return (m_mainPageInfo.isSuperUser() && m_mainPageInfo.isDefaultZone() && (!(m_mainPageInfo.isTelemetryOptinSet())));
+	private boolean requiresTelemetryTier2Prompt() {
+		return (m_mainPageInfo.isSuperUser() && m_mainPageInfo.isDefaultZone() && (!(m_mainPageInfo.isTelemetryTier2Set())));
 	}
 }

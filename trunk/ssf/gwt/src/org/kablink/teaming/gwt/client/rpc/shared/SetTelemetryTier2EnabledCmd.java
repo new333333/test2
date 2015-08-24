@@ -34,19 +34,19 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 /**
  * This class holds all of the information necessary to execute the
- * 'Set Telemetry Optin Enabled' command.
+ * 'Set Telemetry Tier 2 Enabled' command.
  * 
  * @author drfoster@novell.com
  */
-public class SetTelemetryOptinEnabledCmd extends VibeRpcCmd {
-	private boolean	m_telemetryOptinEnabled;	//
+public class SetTelemetryTier2EnabledCmd extends VibeRpcCmd {
+	private boolean	m_telemetryTier2Enabled;	//
 	
 	/*
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	private SetTelemetryOptinEnabledCmd() {
+	private SetTelemetryTier2EnabledCmd() {
 		// Initialize the super class.
 		super();
 	}
@@ -54,14 +54,14 @@ public class SetTelemetryOptinEnabledCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param telemetryOptinEnabled
+	 * @param telemetryTier2Enabled
 	 */
-	public SetTelemetryOptinEnabledCmd(boolean telemetryOptinEnabled) {
+	public SetTelemetryTier2EnabledCmd(boolean telemetryTier2Enabled) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameter.
-		setTelemetryOptinEnabled(telemetryOptinEnabled);
+		setTelemetryTier2Enabled(telemetryTier2Enabled);
 	}
 	
 	/**
@@ -69,14 +69,14 @@ public class SetTelemetryOptinEnabledCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public boolean isTelemetryOptinEnabled() {return m_telemetryOptinEnabled;}
+	public boolean isTelemetryTier2Enabled() {return m_telemetryTier2Enabled;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setTelemetryOptinEnabled(boolean telemetryOptinEnabled) {m_telemetryOptinEnabled = telemetryOptinEnabled;}
+	public void setTelemetryTier2Enabled(boolean telemetryTier2Enabled) {m_telemetryTier2Enabled = telemetryTier2Enabled;}
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -87,6 +87,6 @@ public class SetTelemetryOptinEnabledCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.SET_TELEMETRY_OPTIN_ENABLED.ordinal();
+		return VibeRpcCmdType.SET_TELEMETRY_TIER2_ENABLED.ordinal();
 	}
 }
