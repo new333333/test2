@@ -55,12 +55,13 @@ public class GwtAntiVirusConfig implements IsSerializable {
 		public boolean isGWAVA() {return this.equals(gwava);}
 	}
 
-	private GwtAntiVirusType	m_type;			//
-	private boolean				m_enabled;		//
-	private String				m_interfaceId;	//
-	private String 				m_password;		//
-	private String				m_serviceUrl;	//
-	private String				m_username;		//
+	private boolean				m_enabled;			//
+	private GwtAntiVirusType	m_type;				//
+	private Integer				m_connectTimeout;	//
+	private String				m_interfaceId;		//
+	private String 				m_password;			//
+	private String				m_serviceUrl;		//
+	private String				m_username;			//
 	
 	/**
 	 * Constructor for Hibernate
@@ -76,12 +77,13 @@ public class GwtAntiVirusConfig implements IsSerializable {
 	 * @param config
 	 */
 	public void copy(GwtAntiVirusConfig config) {
-		m_type        = config.getType();
-		m_enabled     = config.isEnabled();
-		m_serviceUrl  = config.getServiceUrl();
-		m_interfaceId = config.getInterfaceId();
-		m_username    = config.getUsername();
-		m_password    = config.getPassword();
+		m_type           = config.getType();
+		m_enabled        = config.isEnabled();
+		m_serviceUrl     = config.getServiceUrl();
+		m_interfaceId    = config.getInterfaceId();
+		m_connectTimeout = config.getConnectTimeout();
+		m_username       = config.getUsername();
+		m_password       = config.getPassword();
 	}
 
 	/**
@@ -89,22 +91,24 @@ public class GwtAntiVirusConfig implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean          isEnabled()      {return m_enabled;    }
-	public GwtAntiVirusType getType()        {return m_type;       }
-	public String           getInterfaceId() {return m_interfaceId;}
-	public String           getPassword()    {return m_password;   }
-	public String           getServiceUrl()  {return m_serviceUrl; }
-	public String           getUsername()    {return m_username;   }
+	public boolean          isEnabled()         {return m_enabled;       }
+	public GwtAntiVirusType getType()           {return m_type;          }
+	public Integer          getConnectTimeout() {return m_connectTimeout;}
+	public String           getInterfaceId()    {return m_interfaceId;   }
+	public String           getPassword()       {return m_password;      }
+	public String           getServiceUrl()     {return m_serviceUrl;    }
+	public String           getUsername()       {return m_username;      }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setEnabled(    boolean          enabled)     {m_enabled     = enabled;    }
-	public void setType(       GwtAntiVirusType type)        {m_type        = type;       }
-	public void setInterfaceId(String           interfaceId) {m_interfaceId = interfaceId;}
-	public void setPassword(   String           password)    {m_password    = password;   }
-	public void setServiceUrl( String           serviceUrl)  {m_serviceUrl  = serviceUrl; }
-	public void setUsername(   String           username)    {m_username    = username;   }
+	public void setEnabled(       boolean          enabled)        {m_enabled        = enabled;       }
+	public void setType(          GwtAntiVirusType type)           {m_type           = type;          }
+	public void setConnectTimeout(Integer          connectTimeout) {m_connectTimeout = connectTimeout;}
+	public void setInterfaceId(   String           interfaceId)    {m_interfaceId    = interfaceId;   }
+	public void setPassword(      String           password)       {m_password       = password;      }
+	public void setServiceUrl(    String           serviceUrl)     {m_serviceUrl     = serviceUrl;    }
+	public void setUsername(      String           username)       {m_username       = username;      }
 }
