@@ -54,11 +54,10 @@ public class DefaultTelemetryProcess extends SSCronTriggerJob implements Telemet
 		// First, collect and save telemetry data for the current period.
 		try {
 			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(ZoneUtil.getDefaultZoneId());
-			Boolean optinEnabled = zoneConfig.getTelemetryOptinEnabled();
-			// If optinEnabled flag is null, it means that the user has had no chance to respond to the system's
-			// question about whether to allow or deny the optin part yet. In that case, we should NOT collect
-			// and send any optin part.
-			getTelemetryService().collectAndSaveTelemetryData((optinEnabled != null)? optinEnabled.booleanValue() : false);
+			Boolean tier2Enabled = zoneConfig.getTelemetryTier2Enabled();
+			// If tier2Enabled flag is null, it means that the user has had no chance to respond to the system's
+			// question about whether to allow or deny the tier2 part yet. In that case, we default to collecting them. 
+			getTelemetryService().collectAndSaveTelemetryData((tier2Enabled != null)? tier2Enabled.booleanValue() : true);
 		}
 		catch(Exception e) {
 			logger.error("Failed to collect and save telemetry data", e);

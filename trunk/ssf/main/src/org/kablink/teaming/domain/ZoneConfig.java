@@ -101,7 +101,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Boolean useDirectoryRights;
 	private Integer cachedRightsRefreshInterval;
 	private Boolean telemetryEnabled;
-	private Boolean telemetryOptinEnabled;
+	private Boolean telemetryTier2Enabled;
 
 	public ZoneConfig()
 	{
@@ -765,11 +765,11 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 		this.telemetryEnabled = Boolean.valueOf(enabled);
 	}
 	
-	public Boolean getTelemetryOptinEnabled() {
-		return telemetryOptinEnabled;
+	public Boolean getTelemetryTier2Enabled() {
+		return telemetryTier2Enabled;
 	}
-	public void setTelemetryOptinEnabled(boolean telemetryOptinEnabled) {
-		this.telemetryOptinEnabled = Boolean.valueOf(telemetryOptinEnabled);
+	public void setTelemetryTier2Enabled(boolean telemetryOptinEnabled) {
+		this.telemetryTier2Enabled = Boolean.valueOf(telemetryOptinEnabled);
 	}
 
 }
