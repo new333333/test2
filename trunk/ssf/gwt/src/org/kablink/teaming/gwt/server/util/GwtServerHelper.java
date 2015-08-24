@@ -329,6 +329,7 @@ import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper.FilterType;
+import org.kablink.teaming.telemetry.TelemetryService;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.FileLinkAction;
@@ -8499,7 +8500,21 @@ public class GwtServerHelper {
 			ZoneConfig zc = zm.getZoneConfig(defaultZoneId);
 			boolean telemetryTier1Enabled = zc.getTelemetryEnabled();
 			Boolean telemetryTier2Enabled = zc.getTelemetryTier2Enabled();
-			return new TelemetrySettingsRpcResponseData(telemetryTier1Enabled, ((null == telemetryTier2Enabled) ? true : telemetryTier2Enabled.booleanValue()));
+			
+			TelemetryService ts = ((TelemetryService) SpringContextUtil.getBean("telemetryService"));
+			byte[] telemetryData = ts.getLatestTelemetryData(true);
+			String telemetryDataUrl;
+			if (null == telemetryData)
+			     telemetryDataUrl = null;	// null -> Nothing to download.
+			else telemetryDataUrl = WebUrlUtil.getTelemetryDataUrl(request, WebKeys.ACTION_READ_FILE);
+			
+			return
+				new TelemetrySettingsRpcResponseData(
+					telemetryTier1Enabled,
+					((null == telemetryTier2Enabled) ?
+						true                         :
+						telemetryTier2Enabled.booleanValue()),
+					telemetryDataUrl);
 		}
 		
 		catch(Exception ex) {

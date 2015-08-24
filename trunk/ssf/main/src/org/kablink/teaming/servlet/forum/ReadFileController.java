@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.servlet.forum;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -71,6 +72,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.FileModule;
@@ -78,14 +80,17 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.FileUtils;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.telemetry.TelemetryService;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.EmailTemplatesHelper;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.EntryCsvHelper;
@@ -764,6 +769,64 @@ public class ReadFileController extends AbstractReadFileController {
 						is = null;
 					}
 				}		
+			}
+		}
+		
+		else if ((args.length == WebUrlUtil.FILE_URL_TELEMETRY_DATA_ARG_LENGTH) &&
+				(args[WebUrlUtil.FILE_URL_TELEMETRY_DATA_TELEMETRY_DATA].equals(WebUrlUtil.FILE_URL_TELEMETRY_DATA))) {
+			// Telemetry data!  Does the user have rights to download
+			// it?
+			if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
+				// Yes!  Setup the appropriate content information in
+				// the response.
+				String contentType = FileUtils.getMimeContentType(getFileTypeMap(), WebUrlUtil.FILE_URL_TELEMETRY_DATA_FILENAME_DEFAULT);
+				contentType = FileUtils.validateDownloadContentType(contentType);
+				if (!(contentType.toLowerCase().contains("charset"))) {
+					String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+					if (MiscUtil.hasString(encoding)) {
+						contentType += ("; charset=" + encoding);
+					}
+				}
+				response.setContentType(contentType);
+				boolean isHttps = request.getScheme().equalsIgnoreCase("https");
+				String cacheControl = "private, max-age=0";
+				if (isHttps) {
+					response.setHeader("Pragma", "public");
+					cacheControl += ", proxy-revalidate, s-maxage=0";
+				}
+				response.setHeader("Cache-Control", cacheControl);
+				response.setHeader("Content-Disposition", ("attachment; filename=\"" + FileHelper.encodeFileName(request, WebUrlUtil.FILE_URL_TELEMETRY_DATA_FILENAME_DEFAULT) + "\""));
+				
+				// Copy the data to the response.
+				InputStream is = null;
+				try {
+					TelemetryService ts = ((TelemetryService) SpringContextUtil.getBean("telemetryService"));
+					byte[] telemetryData = ts.getLatestTelemetryData(true);
+					is = new ByteArrayInputStream(telemetryData);
+					FileCopyUtils.copy(is, response.getOutputStream());
+				}
+				
+				catch(Exception e) {
+					// If there's any exception, return an error in the
+					// response.
+					logger.error("Error reading telemetry data:  ", e);
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.cantTelemetryData"));
+				}
+				
+				finally {
+					// Finally, ensure we don't leave a dangling input
+					// stream.
+					if (null != is) {
+						try                    {is.close();}
+						catch (IOException io) {/* Ignored. */}
+						is = null;
+					}
+				}
+			}
+			
+			else {
+				// No rights to do this operation.
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("error.noRightToDownloadTelemetryData"));
 			}
 		}
 		

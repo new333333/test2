@@ -133,6 +133,14 @@ public class WebUrlUtil {
 	public static final int FILE_URL_SHARED_PUBLIC_FILE_OPERATION	= 5;
 	public static final int FILE_URL_SHARED_PUBLIC_FILE_NAME		= 6;
 	
+	// Used the parse the URL returned by getTelemetryDataUrl().
+	public static final int    FILE_URL_TELEMETRY_DATA_ARG_LENGTH		= 5;
+	public static final int    FILE_URL_TELEMETRY_DATA_TELEMETRY_DATA	= 2;
+	public static final int    FILE_URL_TELEMETRY_DATA_FILENAME			= 3;
+	public static final int    FILE_URL_TELEMETRY_DATA_UNIQUIFIER		= 4;	// Current time/date stamp to force each URL to be unique.
+	public static final String FILE_URL_TELEMETRY_DATA					= "telemetryData";
+	public static final String FILE_URL_TELEMETRY_DATA_FILENAME_DEFAULT	= "telemetry.json";
+	
 	private static final Log logger = LogFactory.getLog(WebUrlUtil.class);
 
 	private static final int WEB_PROTOCOL_CONTEXT_HTTP	= 1;
@@ -482,6 +490,9 @@ public class WebUrlUtil {
 	public static String getFileEmailTemplateUrl(HttpServletRequest req, String action, String fName, boolean defaultEmailTemplate) {
 		return getFileEmailTemplateUrl(getServletRootURL(req), action, fName, defaultEmailTemplate);
 	}
+	public static String getTelemetryDataUrl(HttpServletRequest req, String action) {
+		return getTelemetryDataUrl(getServletRootURL(req), action);
+	}
 	public static String getFileHtmlUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileName) {
 		if (entity == null) return "";
 		FileAttachment fAtt = null;
@@ -675,6 +686,14 @@ public class WebUrlUtil {
 		webUrl.append(Constants.SLASH + FILE_URL_EMAIL_TEMPLATE); 
 		webUrl.append(Constants.SLASH + (defaultEmailTemplate ? FILE_URL_EMAIL_TEMPLATE_TYPE_DEFAULT : FILE_URL_EMAIL_TEMPLATE_TYPE_CUSTOMIZED)); 
 		webUrl.append(Constants.SLASH + urlEncodeFilename(fileName));
+		return webUrl.toString();
+	}
+
+	public static String getTelemetryDataUrl(String webPath, String action) {
+		StringBuffer webUrl = new StringBuffer(webPath + action);
+		webUrl.append(Constants.SLASH + FILE_URL_TELEMETRY_DATA); 
+		webUrl.append(Constants.SLASH + urlEncodeFilename(FILE_URL_TELEMETRY_DATA_FILENAME_DEFAULT));
+		webUrl.append(Constants.SLASH + String.valueOf(new Date().getTime()));	// Forces each URL to be unique.
 		return webUrl.toString();
 	}
 

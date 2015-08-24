@@ -5602,6 +5602,7 @@ td.datePickerMonth {
 /* End:  Telemetry Tier 2 dialog styles. */
 
 /* Start:  Configure Telemetry dialog styles. */
+	.vibe-configureTelemetryDlg-anchor   {}
 	.vibe-configureTelemetryDlg-checkbox {}
 	.vibe-configureTelemetryDlg-hint     {width: 500px; color: #414648; /* dark grey */ line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 1em;}
 	.vibe-configureTelemetryDlg-panel    {padding: 10px;}
