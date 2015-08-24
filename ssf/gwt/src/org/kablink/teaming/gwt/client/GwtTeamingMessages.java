@@ -3756,6 +3756,7 @@ public interface GwtTeamingMessages extends Messages {
 	
 	// Strings used in the Configure Telemetry (admin console) dialog.
 	String configureTelemetryDlg_Header();
+	String configureTelemetryDlgDownloadLabel();
 	String configureTelemetryDlgTier1EnabledCheckBoxLabel();
 	String configureTelemetryDlgTier1EnabledHint(String company, String product);
 	String configureTelemetryDlgTier2EnabledCheckBoxLabel();

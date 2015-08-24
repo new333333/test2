@@ -52,7 +52,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -65,8 +67,10 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandler {
+	private Anchor								m_telemetryDataUrl;			// Link to download the telemetry data.
 	private CheckBox							m_telemetryTier1EnabledCB;	// The tier 1 enablement checkbox.
 	private CheckBox							m_telemetryTier2EnabledCB;	// The tier 2 enablement checkbox.
+	private FlowPanel							m_telemetryDownloadPanel;	// The panel holding the download link.
 	private GwtTeamingMessages					m_messages;					// Access to Filr's messages.
 	private List<HandlerRegistration>			m_registeredEventHandlers;	//
 	private TelemetrySettingsRpcResponseData	m_tsData;					// The current telemetry settings once they're read from the server.
@@ -134,6 +138,15 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 		m_telemetryTier2EnabledCB = new CheckBox(m_messages.configureTelemetryDlgTier2EnabledCheckBoxLabel());
 		m_telemetryTier2EnabledCB.addStyleName("vibe-configureTelemetryDlg-checkbox");
 		vp.add(m_telemetryTier2EnabledCB);
+		
+		// ...add a link to download the telemetry data...
+		m_telemetryDataUrl = GwtClientHelper.buildAnchor("vibe-configureTelemetryDlg-anchor");
+		m_telemetryDataUrl.getElement().setInnerText(m_messages.configureTelemetryDlgDownloadLabel());
+		m_telemetryDataUrl.setTarget("_blank");
+		m_telemetryDownloadPanel = new FlowPanel();
+		m_telemetryDownloadPanel.addStyleName("marginTop20px");
+		m_telemetryDownloadPanel.add(m_telemetryDataUrl);
+		vp.add(m_telemetryDownloadPanel);
 
 		// ...and return the panel.
 		return vp;
@@ -294,6 +307,15 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 		// ...set the state of the checkboxes...
 		m_telemetryTier1EnabledCB.setValue(m_tsData.isTelemetryTier1Enabled());
 		m_telemetryTier2EnabledCB.setValue(m_tsData.isTelemetryTier2Enabled());
+
+		// ...if we have a telemetry download URL...
+		String telemetryDataUrl = m_tsData.getTelemetryDataUrl();
+		boolean hasUrl          = GwtClientHelper.hasString(telemetryDataUrl);
+		m_telemetryDownloadPanel.setVisible(hasUrl);	// ...hide the download link if there is no data...
+		if (hasUrl) {
+			// ...store it in the <ANCHOR>...
+			m_telemetryDataUrl.setHref(telemetryDataUrl);
+		}
 
 		// ...and show the dialog.
 		show();

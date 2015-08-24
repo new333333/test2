@@ -43,6 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class TelemetrySettingsRpcResponseData implements IsSerializable, VibeRpcResponseData {
 	private boolean	m_telemetryTier1Enabled;	//
 	private boolean	m_telemetryTier2Enabled;	//
+	private String	m_telemetryDataUrl;			//
 	
 	/*
 	 * Constructor method. 
@@ -59,14 +60,16 @@ public class TelemetrySettingsRpcResponseData implements IsSerializable, VibeRpc
 	 * 
 	 * @param telemetryTier1Enabled
 	 * @param telemetryTier2Enabled
+	 * @param telemetryDataUrl
 	 */
-	public TelemetrySettingsRpcResponseData(boolean telemetryTier1Enabled, boolean telemetryTier2Enabled) {
+	public TelemetrySettingsRpcResponseData(boolean telemetryTier1Enabled, boolean telemetryTier2Enabled, String telemetryDataUrl) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameter.
 		setTelemetryTier1Enabled(telemetryTier1Enabled);
 		setTelemetryTier2Enabled(telemetryTier2Enabled);
+		setTelemetryDataUrl(     telemetryDataUrl     );
 	}
 	
 	/**
@@ -76,6 +79,7 @@ public class TelemetrySettingsRpcResponseData implements IsSerializable, VibeRpc
 	 */
 	public boolean isTelemetryTier1Enabled() {return m_telemetryTier1Enabled;}
 	public boolean isTelemetryTier2Enabled() {return m_telemetryTier2Enabled;}
+	public String  getTelemetryDataUrl()     {return m_telemetryDataUrl;     }
 	
 	/**
 	 * Set'er methods.
@@ -84,4 +88,5 @@ public class TelemetrySettingsRpcResponseData implements IsSerializable, VibeRpc
 	 */
 	public void setTelemetryTier1Enabled(boolean telemetryTier1Enabled) {m_telemetryTier1Enabled = telemetryTier1Enabled;}
 	public void setTelemetryTier2Enabled(boolean telemetryTier2Enabled) {m_telemetryTier2Enabled = telemetryTier2Enabled;}
+	public void setTelemetryDataUrl(     String  telemetryDataUrl)      {m_telemetryDataUrl      = telemetryDataUrl;     }
 }
