@@ -92,7 +92,7 @@ public class TelemetryService extends HibernateDaoSupport {
 	private AdminModule adminModule;
 	private LuceneSessionFactory luceneSessionFactory;
 	
-	public void collectAndSaveTelemetryData(boolean collectOptin) throws IOException {
+	public void collectAndSaveTelemetryData(boolean collectTier2) throws IOException {
 		String product = getProduct();
 
 		String installationIdentifier = readInstallationIdentifier();
@@ -102,7 +102,7 @@ public class TelemetryService extends HibernateDaoSupport {
 		}
 		
 		if(logger.isDebugEnabled())
-			logger.info("Collecting anonymous telemetry data for '" + product + "' (opt-in=" + collectOptin + ", installation identifider=" + installationIdentifier + ")");
+			logger.info("Collecting anonymous telemetry data for '" + product + "' (opt-in=" + collectTier2 + ", installation identifider=" + installationIdentifier + ")");
 		else
 			logger.info("Collecting anonymous telemetry data");
 
@@ -111,27 +111,27 @@ public class TelemetryService extends HibernateDaoSupport {
 		TelemetryData data = new TelemetryData();
 		data.setInstallationIdentifier(installationIdentifier);
 		
-		// First, collect basic info
-		TelemetryDataBasic basic = new TelemetryDataBasic();
-		data.setBasic(basic);
-		basic.setProductName(ReleaseInfo.getName());
-		basic.setProductVersion(ReleaseInfo.getVersion());
-		basic.setBuildNumber(ReleaseInfo.getBuildNumber());	
+		// First, collect tier1 info
+		TelemetryDataTier1 tier1 = new TelemetryDataTier1();
+		data.setTier1(tier1);
+		tier1.setProductName(ReleaseInfo.getName());
+		tier1.setProductVersion(ReleaseInfo.getVersion());
+		tier1.setBuildNumber(ReleaseInfo.getBuildNumber());	
 		/*
 		Map<String,Long> internalLdapUserCounts = new HashMap<String,Long>();
 		List<ZoneInfo> zones = getZoneModule().getZoneInfos();
 		for(ZoneInfo zone:zones) {
 			internalLdapUserCounts.put(zone.getZoneName(), countActiveLdapUsers(zone.getZoneId()));
 		}
-		basic.setInternalLdapUserCounts(internalLdapUserCounts);
+		tier1.setInternalLdapUserCounts(internalLdapUserCounts);
 		*/
 		long internalLdapUserCount = countInternalLdapUsers(null);
-		basic.setInternalLdapUserCount(internalLdapUserCount);
+		tier1.setInternalLdapUserCount(internalLdapUserCount);
 		
 		// Next, collect opt-in info if permitted
-		if(collectOptin) {
-			TelemetryDataOptin optin = new TelemetryDataOptin();
-			data.setOptin(optin);
+		if(collectTier2) {
+			TelemetryDataTier2 tier2 = new TelemetryDataTier2();
+			data.setTier2(tier2);
 			
 			// Number of application servers (nodes) in the cluster.
 			// TODO No easy way to get this info today. We will support this in future release.
@@ -158,13 +158,13 @@ public class TelemetryService extends HibernateDaoSupport {
 				}
 			}
 			IndexService indexService = new IndexService();
-			optin.setIndexService(indexService);
+			tier2.setIndexService(indexService);
 			indexService.setType(indexServiceType);
 			indexService.setServerCount(indexServerCount);
 
 			// Information about database
 			Database database = new Database();
-			optin.setDatabase(database);
+			tier2.setDatabase(database);
 			String databaseProductName = DynamicDialect.getDatabaseProductName(); // product name given by the vendor
 			String databaseProductVersion = DynamicDialect.getDatabaseProductVersion(); // product version given by the vendor
 			String databaseType = DynamicDialect.getDatabaseType().name(); // database type as recognized by our system
@@ -196,11 +196,11 @@ public class TelemetryService extends HibernateDaoSupport {
 					}
 				}
 			}
-			optin.setHypervisorType(hypervisorType);
+			tier2.setHypervisorType(hypervisorType);
 			
 			// Number of users by type
 			User user = new User();
-			optin.setUser(user);
+			tier2.setUser(user);
 			long internalLocalUserCount = countInternalLocalUsers(null);
 			long externalLocalUserCount = countExternalLocalUsers(null);
 			user.setInternalLocalUserCount(internalLocalUserCount);
@@ -208,7 +208,7 @@ public class TelemetryService extends HibernateDaoSupport {
 			
 			// Number of groups by type
 			Group group = new Group();
-			optin.setGroup(group);
+			tier2.setGroup(group);
 			long dynamicGroupCount = countDynamicGroups(null);
 			long ldapGroupCount = countLdapGroups(null);
 			long containerGroupCount = countContainerGroups(null);
@@ -222,15 +222,15 @@ public class TelemetryService extends HibernateDaoSupport {
 			
 			// Number of files in personal storage
 			long personalStorageFileCount = countFilesInPersonalStorage(null);
-			optin.setPersonalStorageFileCount(personalStorageFileCount);
+			tier2.setPersonalStorageFileCount(personalStorageFileCount);
 			
 			// Number of workspaces
 			long workspaceCount = countWorkspaces(null);
-			optin.setWorkspaceCount(workspaceCount);
+			tier2.setWorkspaceCount(workspaceCount);
 			
 			// Net folder
 			NetFolder netFolder = new NetFolder();
-			optin.setNetFolder(netFolder);
+			tier2.setNetFolder(netFolder);
 			
 			// Number of home directories by net folder server type
 			Map<ResourceDriverConfig.DriverType,Long> homeDirectoryCounts = countNetFoldersByNetFolderServerType(true);
@@ -268,7 +268,7 @@ public class TelemetryService extends HibernateDaoSupport {
 			
 			// Device types connected (iOS mobile, Android mobile, Windows mobile, others)
 			Device device = new Device();
-			optin.setDevice(device);
+			tier2.setDevice(device);
 			Map<String,Long> mobileDeviceCountsByType = countMobileDevicesByType();
 			device.setMobileDeviceCounts(mobileDeviceCountsByType);
 		}
@@ -699,7 +699,7 @@ public class TelemetryService extends HibernateDaoSupport {
 		this.luceneSessionFactory = luceneSessionFactory;
 	}
 
-	static class TelemetryDataBasic {
+	static class TelemetryDataTier1 {
 		@JsonProperty("productName")
 		String productName;
 		@JsonProperty("productVersion")
@@ -747,7 +747,7 @@ public class TelemetryService extends HibernateDaoSupport {
 		}
 	}
 	
-	static class TelemetryDataOptin {
+	static class TelemetryDataTier2 {
 		@JsonProperty("indexService")
 		IndexService indexService;
 		@JsonProperty("database")
@@ -826,10 +826,10 @@ public class TelemetryService extends HibernateDaoSupport {
 	 static class TelemetryData {
 		@JsonProperty("installationIdentifier")
 		String installationIdentifier;
-		@JsonProperty("basic")
-		public TelemetryDataBasic basic;
-		@JsonProperty("optin")
-		public TelemetryDataOptin optin;
+		@JsonProperty("tier1")
+		public TelemetryDataTier1 tier1;
+		@JsonProperty("tier2")
+		public TelemetryDataTier2 tier2;
 		/*
 		@JsonProperty("fake")
 		List<Long> fake;
@@ -841,17 +841,17 @@ public class TelemetryService extends HibernateDaoSupport {
 		public void setInstallationIdentifier(String installationIdentifier) {
 			this.installationIdentifier = installationIdentifier;
 		}
-		public TelemetryDataBasic getBasic() {
-			return basic;
+		public TelemetryDataTier1 getTier1() {
+			return tier1;
 		}
-		public void setBasic(TelemetryDataBasic basic) {
-			this.basic = basic;
+		public void setTier1(TelemetryDataTier1 tier1) {
+			this.tier1 = tier1;
 		}
-		public TelemetryDataOptin getOptin() {
-			return optin;
+		public TelemetryDataTier2 getTier2() {
+			return tier2;
 		}
-		public void setOptin(TelemetryDataOptin optin) {
-			this.optin = optin;
+		public void setTier2(TelemetryDataTier2 tier2) {
+			this.tier2 = tier2;
 		}
 	}
 	 
@@ -1028,11 +1028,11 @@ public class TelemetryService extends HibernateDaoSupport {
 		data.fake = fakeData;
 		*/
 		
-		TelemetryDataBasic basic = new TelemetryDataBasic();
-		basic.setProductName("Jong Vibe");
-		basic.setProductVersion("5.0");
-		basic.setBuildNumber(999);
-		data.setBasic(basic);
+		TelemetryDataTier1 tier1 = new TelemetryDataTier1();
+		tier1.setProductName("Jong Vibe");
+		tier1.setProductVersion("5.0");
+		tier1.setBuildNumber(999);
+		data.setTier1(tier1);
 		/*
 		Map<String,Long> internalLdapUserCounts = new HashMap<String,Long>() {
 				{
@@ -1040,9 +1040,9 @@ public class TelemetryService extends HibernateDaoSupport {
 					put("myzone", 7L);
 				}
 		};
-		basic.setInternalLdapUserCounts(internalLdapUserCounts);
+		tier1.setInternalLdapUserCounts(internalLdapUserCounts);
 		*/
-		basic.setInternalLdapUserCount(123);
+		tier1.setInternalLdapUserCount(123);
 
 		ObjectMapper mapper = new ObjectMapper();
 		System.out.println(mapper.writeValueAsString(data));
