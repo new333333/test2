@@ -802,6 +802,9 @@ public class ReadFileController extends AbstractReadFileController {
 				try {
 					TelemetryService ts = ((TelemetryService) SpringContextUtil.getBean("telemetryService"));
 					byte[] telemetryData = ts.getLatestTelemetryData(true);
+					if (null == telemetryData) {
+						telemetryData = new byte[0];	// NPE protection.  Will simply download an empty file.
+					}
 					is = new ByteArrayInputStream(telemetryData);
 					FileCopyUtils.copy(is, response.getOutputStream());
 				}
