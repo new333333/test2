@@ -39,6 +39,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -51,6 +53,7 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -102,7 +105,7 @@ public class TelemetryService extends HibernateDaoSupport {
 		}
 		
 		if(logger.isDebugEnabled())
-			logger.info("Collecting anonymous telemetry data for '" + product + "' (opt-in=" + collectTier2 + ", installation identifider=" + installationIdentifier + ")");
+			logger.info("Collecting anonymous telemetry data for '" + product + "' (tier2=" + collectTier2 + ", installation identifider=" + installationIdentifier + ")");
 		else
 			logger.info("Collecting anonymous telemetry data");
 
@@ -128,7 +131,7 @@ public class TelemetryService extends HibernateDaoSupport {
 		long internalLdapUserCount = countInternalLdapUsers(null);
 		tier1.setInternalLdapUserCount(internalLdapUserCount);
 		
-		// Next, collect opt-in info if permitted
+		// Next, collect tier2 info if permitted
 		if(collectTier2) {
 			TelemetryDataTier2 tier2 = new TelemetryDataTier2();
 			data.setTier2(tier2);
@@ -273,7 +276,7 @@ public class TelemetryService extends HibernateDaoSupport {
 			device.setMobileDeviceCounts(mobileDeviceCountsByType);
 		}
 		
-		String dirPath = SPropsUtil.getDirPath("data.root.dir") + "telemetry" + File.separator + "data";
+		String dirPath = getTelemetryDataDirPath();
 		FileHelper.mkdirsIfNecessary(dirPath);
 		String filePath = dirPath + File.separator + product + "$" + installationIdentifier + "$" + String.valueOf(currentTime) + ".json";
 		
@@ -288,6 +291,18 @@ public class TelemetryService extends HibernateDaoSupport {
 		}
 
 		mapper.writeValue(new File(filePath), data);
+		
+		// Now that we've successfully written the latest data to a file to be uploaded, 
+		// update the sample file with the same latest data. The sample file is NEVER
+		// uploaded. Instead, it is there only to serve the admin UI (i.e. viewing by
+		// the admin through web interface).
+		String sampleFilePath = getSampleFilePath(dirPath);
+		mapper.writeValue(new File(sampleFilePath), data);
+		
+		// Now another sample file with pretty formatted output
+		mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
+		String prettySampleFilePath = getFormattedSampleFilePath(dirPath);
+		mapper.writeValue(new File(prettySampleFilePath), data);	
 	}
 	
 	public  void uploadTelemetryData() throws IOException {
@@ -326,7 +341,9 @@ public class TelemetryService extends HibernateDaoSupport {
 			File[] fileList = new File(dirPath).listFiles(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {
-					if(name.toLowerCase().endsWith(".json"))
+					name = name.toLowerCase();
+					// Skip over sample file containing latest collected data
+					if(name.endsWith(".json") && !name.endsWith("latest.json"))
 						return true;
 					else
 						return false;
@@ -390,6 +407,29 @@ public class TelemetryService extends HibernateDaoSupport {
 				else 
 					logger.warn("Error disconnecting from the FTP server: " + e.toString());
 			}
+		}
+	}
+	
+	/**
+	 * Return the latest collected telemetry data (which is a json document) as a byte array.
+	 * <p>
+	 * If no such data exists (meaning that the system hasn't collected any telemetry data until
+	 * now), it return <code>null</code>
+	 * 
+	 * @param formatted if true, it returns pretty-formatted JSON document.
+	 *                  otherwise, return a single line unformatted JSON document.
+	 * @return latest telemetry data as a byte array or <code>null</code>
+	 * @throws IOException 
+	 */
+	public byte[] getLatestTelemetryData(boolean formatted) throws IOException {
+		String dataDirPath = getTelemetryDataDirPath();
+		String sampleFilePath = formatted? getFormattedSampleFilePath(dataDirPath) : getSampleFilePath(dataDirPath);
+		if(new File(sampleFilePath).exists()) {
+			return Files.readAllBytes(Paths.get(sampleFilePath));
+		}
+		else {
+			// The file doesn't exist
+			return null;
 		}
 	}
 	
@@ -665,6 +705,18 @@ public class TelemetryService extends HibernateDaoSupport {
 		else
 			product = "vibe";
 		return product;
+	}
+	
+	private String getTelemetryDataDirPath() {
+		return SPropsUtil.getDirPath("data.root.dir") + "telemetry" + File.separator + "data";
+	}
+	
+	private String getSampleFilePath(String dataDirPath) {
+		return dataDirPath + File.separator + "latest.json";
+	}
+	
+	private String getFormattedSampleFilePath(String dataDirPath) {
+		return dataDirPath + File.separator + "formatted.latest.json";
 	}
 	
 	protected CoreDao getCoreDao() {
