@@ -111,12 +111,13 @@ public class GwtAntiVirusHelper {
 	private static AntiVirusConfig getDomainAVCFromGwtAVC(GwtAntiVirusConfig gwtAVC) {
 		AntiVirusConfig reply = new AntiVirusConfig(RequestContextHolder.getRequestContext().getZoneId());
 		
-		reply.setEnabled(    gwtAVC.isEnabled()     );
-		reply.setPassword(   gwtAVC.getPassword()   );
-		reply.setServiceUrl( gwtAVC.getServiceUrl() );
-		reply.setInterfaceId(gwtAVC.getInterfaceId());
-		reply.setUsername(   gwtAVC.getUsername()   );
-		switch (             gwtAVC.getType()       ) {
+		reply.setEnabled(       gwtAVC.isEnabled()        );
+		reply.setPassword(      gwtAVC.getPassword()      );
+		reply.setServiceUrl(    gwtAVC.getServiceUrl()    );
+		reply.setInterfaceId(   gwtAVC.getInterfaceId()   );
+		reply.setConnectTimeout(gwtAVC.getConnectTimeout());
+		reply.setUsername(      gwtAVC.getUsername()      );
+		switch (                gwtAVC.getType()          ) {
 		default:
 		case gwava:  reply.setType(AntiVirusConfig.Type.gwava); break;
 		}
@@ -143,11 +144,12 @@ public class GwtAntiVirusHelper {
 		}
 		reply.setType(gavt);
 		
-		reply.setEnabled(    domainAVC.isEnabled()     );
-		reply.setServiceUrl( domainAVC.getServiceUrl() );
-		reply.setInterfaceId(domainAVC.getInterfaceId());
-		reply.setUsername(   domainAVC.getUsername()   );
-		reply.setPassword(   domainAVC.getPassword()   );
+		reply.setEnabled(       domainAVC.isEnabled()        );
+		reply.setServiceUrl(    domainAVC.getServiceUrl()    );
+		reply.setInterfaceId(   domainAVC.getInterfaceId()   );
+		reply.setConnectTimeout(domainAVC.getConnectTimeout());
+		reply.setUsername(      domainAVC.getUsername()      );
+		reply.setPassword(      domainAVC.getPassword()      );
 		
 		return reply;
 	}
@@ -157,12 +159,13 @@ public class GwtAntiVirusHelper {
 	 */
 	private static AntiVirusConfig newDomainAntiVirusConfig() {
 		AntiVirusConfig reply = new AntiVirusConfig(RequestContextHolder.getRequestContext().getZoneId());
-		reply.setType(       AntiVirusConfig.Type.gwava);
-		reply.setEnabled(    false                     );
-		reply.setServiceUrl( ""                        );
-		reply.setInterfaceId(""                        );
-		reply.setUsername(   ""                        );
-		reply.setPassword(   ""                        );
+		reply.setType(          AntiVirusConfig.Type.gwava);
+		reply.setEnabled(       false                     );
+		reply.setServiceUrl(    ""                        );
+		reply.setInterfaceId(   ""                        );
+		reply.setConnectTimeout(null                      );
+		reply.setUsername(      ""                        );
+		reply.setPassword(      ""                        );
 		return reply;
 	}
 

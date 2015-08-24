@@ -58,6 +58,8 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -81,10 +83,11 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 	private CheckBox							m_avEnabledCB;				// The basic enablement checkbox.
 	private GwtTeamingMessages					m_messages;					// Access to our localized messages.
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers, when they're registered.
-	private PasswordTextBox						m_password;					// The password     <INPUT> widget.
-	private TextBox								m_interfaceId;				// The interface ID <INPUT> widget.
-	private TextBox								m_serviceUrl;				// The service URL  <INPUT> widget.
-	private TextBox								m_userName;					// The username     <INPUT> widget.
+	private PasswordTextBox						m_password;					// The password           <INPUT> widget.
+	private TextBox								m_connectTimeout;			// The connection timeout <INPUT> widget.
+	private TextBox								m_interfaceId;				// The interface ID       <INPUT> widget.
+	private TextBox								m_serviceUrl;				// The service URL        <INPUT> widget.
+	private TextBox								m_userName;					// The username           <INPUT> widget.
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -164,6 +167,32 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 		m_interfaceId = new TextBox();
 		m_interfaceId.addStyleName("vibe-configureAntiVirusDlg-textBox");
 		ft.setWidget(row, 1, m_interfaceId);
+		
+		// ...add the connect timeout widgets...
+		row += 1;
+		il = new InlineLabel(m_messages.configureAntiVirusDlgConnectTimeoutLabel());
+		il.addStyleName("vibe-configureAntiVirusDlg-label");
+		ft.setWidget(row, 0, il);
+		
+		m_connectTimeout = new TextBox();
+		m_connectTimeout.addStyleName("vibe-configureAntiVirusDlg-textBox");
+		m_connectTimeout.addKeyPressHandler(new KeyPressHandler() {
+			@Override
+			public void onKeyPress(KeyPressEvent event) {
+		        // If this is valid numeric keystroke...
+		        int keyCode = event.getNativeEvent().getKeyCode();
+		        if (!(GwtClientHelper.isKeyValidForNumericField(event.getCharCode(), keyCode))) {
+	        		// ...suppress it.
+	            	TextBox txtBox = ((TextBox) event.getSource());
+	        		txtBox.cancelKey();
+		        }
+			}
+		});
+		ft.setWidget(row, 1, m_connectTimeout);
+		
+		il = new InlineLabel(m_messages.configureAntiVirusDlgMillisecondsLabel());
+		il.addStyleName("vibe-configureAntiVirusDlg-label");
+		ft.setWidget(row, 2, il);
 		
 		// ...add the username widgets...
 		row += 1;
@@ -257,6 +286,13 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 		reply.setPassword(   m_password.getValue()   );
 		reply.setServiceUrl( m_serviceUrl.getValue() );
 		reply.setInterfaceId(m_interfaceId.getValue());
+		
+		String to = m_connectTimeout.getValue();
+		Integer cTO;
+		if (GwtClientHelper.hasString(to))
+		     cTO = Integer.parseInt(to);
+		else cTO = null;
+		reply.setConnectTimeout(cTO);
 
 		return reply;
 	}
@@ -323,6 +359,9 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 				error = m_messages.configureAntiVirusDlgErrorNoInterfaceId();
 				fw = m_interfaceId;
 			}
+			
+			// It's OK if there's nothing in the connect timeout
+			// <INPUT>.
 			
 			// Did the user supply a username?
 			else if (!(GwtClientHelper.hasString(avConfig.getUsername()))) {
@@ -445,6 +484,9 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 		m_interfaceId.setValue(avConfig.getInterfaceId());
 		m_userName.setValue(   avConfig.getUsername()   );
 		m_password.setValue(   avConfig.getPassword()   );
+		
+		Integer cTO = avConfig.getConnectTimeout();
+		m_connectTimeout.setValue((null == cTO) ? "5000" : String.valueOf(cTO.intValue()));
 		
 		// ...and show the dialog.
 		show();
