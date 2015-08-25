@@ -116,9 +116,13 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
 	    	nfc.setIndexContent(indexContent);
 	    	nfc.setUseInheritedIndexContent(inheritIndexContent);
 	    	nfc.setSyncScheduleOption(syncScheduleOption);
-	    	nfc.setFullSyncDirOnly(fullSyncDirOnly);	
-	    	nfc.setAllowDesktopAppToTriggerInitialHomeFolderSync(allowDesktopAppToTriggerSync);
-	    	nfc.setUseInheritedDesktopAppTriggerSetting(inheritAllowDesktopAppToTriggerSync);
+	    	nfc.setFullSyncDirOnly(fullSyncDirOnly);
+			if (allowDesktopAppToTriggerSync!=null) {
+				nfc.setAllowDesktopAppToTriggerInitialHomeFolderSync(allowDesktopAppToTriggerSync);
+			}
+ 			if (inheritAllowDesktopAppToTriggerSync!=null) {
+				nfc.setUseInheritedDesktopAppTriggerSetting(inheritAllowDesktopAppToTriggerSync);
+			}
 			if(logger.isDebugEnabled())
 				logger.debug("Creating new net folder config object " + nfc.toString());
 			netFolderConfig = (NetFolderConfig) getTransactionTemplate().execute(new TransactionCallback<Object>() {
