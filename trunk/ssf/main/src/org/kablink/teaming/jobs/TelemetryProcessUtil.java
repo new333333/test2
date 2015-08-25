@@ -50,13 +50,10 @@ public class TelemetryProcessUtil {
 		TelemetryProcess telemetryProcess = (TelemetryProcess) ReflectHelper.getInstance(className);
 		if(telemetryEnabled) {
 			// Telemetry is enabled
-			ScheduleInfo info = telemetryProcess.getScheduleInfo();
-			String cronExpression = SPropsUtil.getString("job.telemetry.process.cronexpr", "0 00 5 ? * sun *"); // 5:00 AM Sunday GMT
-			info.setSchedule(new Schedule(cronExpression));   			
-   			info.setEnabled(true);
+			int intervalInSeconds = SPropsUtil.getInt("job.telemetry.process.interval", 7*24*60*60); // default is 7 days (= once a week)
    			if(logger.isDebugEnabled())
-   				logger.debug("Making sure to have telemetry process scheduled with cron expression [" + info.getSchedule().getQuartzSchedule() + "]");
-   			telemetryProcess.setScheduleInfo(info);
+   				logger.debug("Making sure to have telemetry process scheduled with interval of " + intervalInSeconds + " seconds");
+			telemetryProcess.schedule(intervalInSeconds);
 		}
 		else {
 			// Telemetry is disabled

@@ -43,7 +43,7 @@ import org.quartz.JobExecutionException;
  * @author Jong
  *
  */
-public class DefaultTelemetryProcess extends SSCronTriggerJob implements TelemetryProcess {
+public class DefaultTelemetryProcess extends SimpleTriggerJob implements TelemetryProcess {
 
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
@@ -73,7 +73,6 @@ public class DefaultTelemetryProcess extends SSCronTriggerJob implements Telemet
 		
 	}
 	
-	
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.jobs.TelemetryProcess#remove()
 	 */
@@ -84,26 +83,16 @@ public class DefaultTelemetryProcess extends SSCronTriggerJob implements Telemet
 	}
 
 	/* (non-Javadoc)
-	 * @see org.kablink.teaming.jobs.TelemetryProcess#getScheduleInfo()
+	 * @see org.kablink.teaming.jobs.TelemetryProcess#schedule(int)
 	 */
 	@Override
-	public ScheduleInfo getScheduleInfo() {
+	public void schedule(int intervalInSeconds) {
 		Long zoneId = ZoneUtil.getDefaultZoneId();
-		return getScheduleInfo(new CronJobDescription(zoneId, zoneId.toString(), 
-				TELEMETRY_PROCESS_GROUP, TELEMETRY_PROCESS_DESCRIPTION));
+		schedule(new SimpleJobDescription(zoneId, zoneId.toString(), TELEMETRY_PROCESS_GROUP, TELEMETRY_PROCESS_DESCRIPTION, intervalInSeconds));
 	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.jobs.TelemetryProcess#setScheduleInfo(org.kablink.teaming.jobs.ScheduleInfo)
-	 */
-	@Override
-	public void setScheduleInfo(ScheduleInfo scheduleInfo) {
-		scheduleInfo.setZoneId(ZoneUtil.getDefaultZoneId());
-		setScheduleInfo(new CronJobDescription(scheduleInfo.getZoneId(), scheduleInfo.getZoneId().toString(), 
-				TELEMETRY_PROCESS_GROUP, TELEMETRY_PROCESS_DESCRIPTION), scheduleInfo);
-	}
-
+	
 	TelemetryService getTelemetryService() {
 		return (TelemetryService)SpringContextUtil.getBean("telemetryService");
 	}
+
 }
