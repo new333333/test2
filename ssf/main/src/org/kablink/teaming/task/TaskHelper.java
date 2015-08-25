@@ -464,6 +464,16 @@ public class TaskHelper {
 
 		options.put(ObjectKeys.FOLDER_MODE_TYPE, modeType);
 		options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, buildSearchFilter(filterType, modeType, model, binder).getFilter());
+
+		// If the caller hasn't specified...
+		if (!(options.containsKey(ObjectKeys.SEARCH_SORT_BY))) {
+			// ...sort by the ID...
+			options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORTNUMBER_FIELD);
+		}
+		if (!(options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND))) {
+			// ...ascending.
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+		}
        	
 		// Are we finding all assigned tasks?
 		if (modeType.equals(ModeType.VIRTUAL)) {
