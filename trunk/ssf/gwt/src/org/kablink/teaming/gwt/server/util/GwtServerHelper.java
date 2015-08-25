@@ -412,13 +412,13 @@ public class GwtServerHelper {
 	private static final String JSON_TAIL		= "version.json";
 	private static final String JSON_XP_TAIL	= "version-winxp.json";
 	private static final String MACOS_TAIL_FILR	= "novellfilr/osx/x64/";
-	private static final String MACOS_TAIL_VIBE	= "novellvibedesktop/osx/x64/";
+	private static final String MACOS_TAIL_VIBE	= "novellvibe/osx/x64/";
 	private static final String WIN32_TAIL_FILR	= "novellfilr/windows/x86/";
-	private static final String WIN32_TAIL_VIBE	= "novellvibedesktop/windows/x86/";
+	private static final String WIN32_TAIL_VIBE	= "novellvibe/windows/x86/";
 	private static final String WIN64_TAIL_FILR	= "novellfilr/windows/x64/";
-	private static final String WIN64_TAIL_VIBE	= "novellvibedesktop/windows/x64/";
+	private static final String WIN64_TAIL_VIBE	= "novellvibe/windows/x64/";
 	private static final String WINXP_TAIL_FILR	= "novellfilr/windows/x86/";
-	private static final String WINXP_TAIL_VIBE	= "novellvibedesktop/windows/x86/";
+	private static final String WINXP_TAIL_VIBE	= "novellvibe/windows/x86/";
 	
 	// Relative path within the local file system where the desktop
 	// applications can be found for downloading.
