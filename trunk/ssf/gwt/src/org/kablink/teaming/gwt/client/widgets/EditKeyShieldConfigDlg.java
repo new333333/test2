@@ -547,7 +547,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 			
 			m_enableKeyShieldCheckbox.setValue(false);
 			m_serverUrlTextBox.setValue("");
-			m_timeoutTextBox.setValue("");
+			m_timeoutTextBox.setValue("250");
 			m_apiAuthKeyTextBox.setValue("");
 			m_authConnectorNamesTextBox.setValue("");
 			m_usernameAttributeAliasTextBox.setValue(GwtClientHelper.isLicenseFilr() ? "x-filr" : "x-vibe");
