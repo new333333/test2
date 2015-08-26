@@ -4,7 +4,7 @@
     <changeSet author="jong" context="schema" failOnError="true" id="1">
         <createTable schemaName="dbo" tableName="SS_NetFolderConfig">
             <column autoIncrement="true" name="id" type="NUMERIC(19,0)">
-                <constraints nullable="false" primaryKey="true", primaryKeyName="PK__SS_NetFolderConfig"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK__SS_NetFolderConfig"/>
             </column>           
             <column name="lockVersion" type="NUMERIC(19,0)">
                 <constraints nullable="false"/>
