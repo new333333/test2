@@ -49,6 +49,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.antivirus.VirusDetectedException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.GroupPrincipal;
@@ -279,7 +280,18 @@ public class ModifyEntryController extends SAbstractController {
 			            }
 		            }
 		            
-					getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
+		            try {
+		            	getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
+		            }
+		            catch (VirusDetectedException ex) {
+		            	String profileMarker = inputData.getSingleValue(WebKeys.URL_PROFILE);
+		            	if ((null == profileMarker) || (!(profileMarker.equals("1")))) {
+							List<String> errorStrings = MiscUtil.getLocalizedVirusDetectedErrorStrings(ex.getErrors());
+			            	setupReloadPreviousPage(response, NLT.get("errorcode.user.rejectedAttachment"), errorStrings);
+				    		return null;
+		            	}
+		            	throw ex;
+		            }
 					if (passwordChanged) {
 						getProfileModule().setLastPasswordChange(entryId, changeDate);
 					}
