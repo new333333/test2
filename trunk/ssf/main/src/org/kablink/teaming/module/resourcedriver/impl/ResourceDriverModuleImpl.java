@@ -272,9 +272,18 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			throw new RDException(NLT.get(RDException.DUPLICATE_RESOURCE_DRIVER_NAME, new String[] {name}), name);
 		} catch(FIException fie) {}
 		
+		logger.info("Adding new resource driver configuration: name=" + name + ", driver type=" + type.name() + ", root path=" + rootPath + "]");
+		
 	   	//Create the new resource driver
     	SimpleProfiler.start("addResourceDriverConfig");
     	// 	The following part requires update database transaction.
+    	// NOTE: Despite of the "appearance" of the code where the original author perhaps intended to
+    	//       use programmatic transaction via transaction template, that's NOT how the code actually
+    	//       runs! It turns out the author also (most likely unknowingly) uses declarative transaction
+    	//       in the spring configuration file. Consequently, this whole method is invoked in an 
+    	//       update transaction and the use of transaction template has no effect. As a side effect
+    	//       of that, any exception thrown out of this entire method will abort the transaction, and
+    	//       the addition of new resource driver will abort cleanly.
     	getTransactionTemplate().execute(new TransactionCallback() {
     		@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -433,7 +442,8 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
     	});
     	SimpleProfiler.stop("addResourceDriverConfig");
 
-		//Add this new resource driver to the list of drivers
+    	//Add this new resource driver to the list of drivers
+    	logger.info("Inform the system of the resource driver configuration addition");
 		getResourceDriverManager().informResourceDriverChangeFromThisNode();
 		
 		ResourceDriverConfig rdc = getResourceDriverManager().getDriverConfig(name);
@@ -453,6 +463,8 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			throw new RDException(NLT.get(RDException.NO_SUCH_RESOURCE_DRIVER_NAME, new String[] {name}), name);
 		}
 		
+		logger.info("Modifying resource driver configuration: name=" + name + ", id=" + rdc.getId() + ", driver type=" + type.name() + ", root path=" + rootPath + "]");
+
 	   	//Modify this resource driver config
     	SimpleProfiler.start("modifyResourceDriverConfig");
     	// 	The following part requires update database transaction.
@@ -633,8 +645,8 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
     	});
     	SimpleProfiler.stop("addResourceDriverConfigAcl");
 		
-
 		//Add this new resource driver to the list of drivers
+       	logger.info("Inform the system of the resource driver configuration modification");
 		getResourceDriverManager().informResourceDriverChangeFromThisNode();
 		
 		return rdc;
@@ -664,6 +676,8 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	}
 
     private void _deleteResourceDriverConfig(final ResourceDriverConfig rdc) {
+		logger.info("Deleting resource driver configuration: name=" + rdc.getName() + ", id=" + rdc.getId() + ", driver type=" + ((rdc.getDriverType() == null)? null:rdc.getDriverType().name()) + ", root path=" + rdc.getRootPath() + "]");
+    	
         Long driverId = rdc.getId();
 
         //Modify this resource driver config
@@ -684,10 +698,10 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
         SimpleProfiler.stop("deleteResourceDriverConfig");
 
         //Remove this resource driver from the list of drivers
+    	logger.info("Inform the system of the resource driver configuration deletion");
         getResourceDriverManager().informResourceDriverChangeFromThisNode();
-
+        
         // Finally, delete the background job associated with this driver
-
         NetFolderServerSynchronization job = NetFolderHelper.getNetFolderServerSynchronizationScheduleObject();
         job.deleteJob(driverId);
     }
