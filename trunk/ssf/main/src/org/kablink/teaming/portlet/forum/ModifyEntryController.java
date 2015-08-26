@@ -49,6 +49,7 @@ import org.dom4j.Document;
 
 import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.antivirus.VirusDetectedException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -180,6 +181,10 @@ public class ModifyEntryController extends SAbstractController {
 				} catch(WriteFilesException e) {
 		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 		    		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+		    		return;
+				} catch (VirusDetectedException e) {
+					List<String> errorStrings = MiscUtil.getLocalizedVirusDetectedErrorStrings(e.getErrors());
+		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, MiscUtil.getSeparatedErrorList(errorStrings, "<br/>"));
 		    		return;
 				}
 				

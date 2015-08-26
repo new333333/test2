@@ -1658,6 +1658,45 @@ public final class MiscUtil {
 	}
 	
 	/**
+	 * Returns a list of localized String's built from a list of
+	 * VirusDetectedError's for displaying the error to the user.
+	 *  
+	 * @param errors
+	 * 
+	 * @return
+	 */
+	public static List<String> getLocalizedVirusDetectedErrorStrings(List<VirusDetectedError> errors) {
+		List<String> reply = new ArrayList<String>();
+		if (hasItems(errors)) {
+			for (VirusDetectedError error:  errors) {
+				reply.add(getLocalizedVirusDetectedErrorString(error));
+			}
+		}
+		return reply;
+	}
+	
+	/**
+	 * Returns a separated list of Strings from a list of them.
+	 * 
+	 * @param errors
+	 * @param separator
+	 * 
+	 * @return
+	 */
+	public static String getSeparatedErrorList(List<String> errors, String separator) {
+		StringBuffer errorBuf = new StringBuffer();
+		boolean first = true;
+		for (String error:  errors) {
+			if (!first) {
+				errorBuf.append(separator);
+			}
+			errorBuf.append(error);
+			first = false;
+		}
+		return errorBuf.toString();
+	}
+	
+	/**
 	 * Returns an instance of an AdminModule.
 	 * 
 	 * @return

@@ -442,6 +442,7 @@
 				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
 				<prop key="javax.portlet.UnavailableException">common/notAvailable</prop>
 				<prop key="com.novell.teaming.search.journal.JournalException">common/defCodedError</prop>
+				<prop key="org.kablink.teaming.antivirus.VirusDetectedException">common/defCodedError</prop>
 			</props>
 		</property>  
 	</bean>

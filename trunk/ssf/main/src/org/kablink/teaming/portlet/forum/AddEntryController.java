@@ -35,6 +35,7 @@ package org.kablink.teaming.portlet.forum;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.TimeZone;
@@ -46,12 +47,17 @@ import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+
 import org.kablink.teaming.web.util.BinderHelper;
+
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
+
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.antivirus.VirusDetectedException;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.exception.UncheckedCodedException;
@@ -152,7 +158,12 @@ public class AddEntryController extends SAbstractController {
 				} catch (WriteEntryDataException e) {
 		    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
 		    		return;
+				} catch (VirusDetectedException e) {
+					List<String> errorStrings = MiscUtil.getLocalizedVirusDetectedErrorStrings(e.getErrors());
+		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, MiscUtil.getSeparatedErrorList(errorStrings, "<br/>"));
+		    		return;
 				}
+
 				//Get the entry that was just created (Don't use the folderId since the entry may have moved to some place else.)
 				FolderEntry entry = getFolderModule().getEntry(null, entryId);
 				//Mark this entry as having been seen by the current user
@@ -360,7 +371,15 @@ public class AddEntryController extends SAbstractController {
 		        	    	}
 		        	    	intFileCount++;
 	        	    	} catch(Exception e) {
-	        	    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
+	        	    		String message;
+	        	    		if (e instanceof VirusDetectedException) {
+	        					List<String> errorStrings = MiscUtil.getLocalizedVirusDetectedErrorStrings(((VirusDetectedException) e).getErrors());
+	        		    		message = MiscUtil.getSeparatedErrorList(errorStrings, "\n");
+	        	    		}
+	        	    		else {
+	        	    			message = e.getMessage();
+	        	    		}
+        	    			response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, message);
 	        	    		blnCheckForAppletFile = false;
 	        	    		break;
 	        	    	}
@@ -655,14 +674,14 @@ public class AddEntryController extends SAbstractController {
 
 	protected FolderEntry addEntry(ActionRequest request, ActionResponse response,
 			Long folderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems, Map options) throws AccessControlException, WriteFilesException, WriteEntryDataException {
+    		Map fileItems, Map options) throws AccessControlException, WriteFilesException, WriteEntryDataException, VirusDetectedException {
 		return getFolderModule().addEntry(folderId, definitionId, inputData, fileItems, options);
 	}
 	
     protected FolderEntry addReply(ActionRequest request, ActionResponse response,
     		Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems, Map options) 
-    	throws AccessControlException, WriteFilesException, WriteEntryDataException {
+    	throws AccessControlException, WriteFilesException, WriteEntryDataException, VirusDetectedException {
     	return getFolderModule().addReply(folderId, parentId, definitionId, inputData, fileItems, options);
     }
 
@@ -681,7 +700,7 @@ public class AddEntryController extends SAbstractController {
      * created being returned.  If these conditions are not met, null
      * is returned.
      */
-	private Long createDebugTasks(ActionRequest request, ActionResponse response, Map formData, Long folderId, String entryType, Map fileMap) throws AccessControlException, WriteFilesException, WriteEntryDataException {
+	private Long createDebugTasks(ActionRequest request, ActionResponse response, Map formData, Long folderId, String entryType, Map fileMap) throws AccessControlException, WriteFilesException, WriteEntryDataException, VirusDetectedException {
 		// Is task debugging enabled?
 		Long reply = null; 
 		if (TaskHelper.TASK_DEBUG_ENABLED) {

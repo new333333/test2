@@ -34,6 +34,7 @@ package org.kablink.teaming.antivirus;
 
 import java.util.List;
 
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.VibeRuntimeException;
 import org.kablink.util.api.ApiErrorCode;
 
@@ -84,6 +85,12 @@ public class VirusDetectedException extends VibeRuntimeException {
 			sb.append(errors.get(i).toString());
 		}
 		return sb.toString();
+	}
+	
+	@Override
+	public String getLocalizedMessage() {
+		List<String> errorStrings = MiscUtil.getLocalizedVirusDetectedErrorStrings(this.errors);
+		return MiscUtil.getSeparatedErrorList(errorStrings, "\n");
 	}
 
 	/* (non-Javadoc)

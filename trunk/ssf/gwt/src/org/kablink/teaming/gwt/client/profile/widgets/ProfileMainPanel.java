@@ -400,6 +400,26 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 					String result = event.getResults();
 					if(GwtClientHelper.hasString(result)) {
 						if(result.contains("ss_error_msg")) {
+							// The html that we received should look like the following:
+							/*
+								<script type="text/javascript">
+									var ss_error_msg = "Some error message." ;
+									var ss_error_code = 1;
+								</script>
+								
+								<div class="ss_style ss_portlet">
+									<h1>Error</h1>
+								
+									<p>Some error message.<br></p>
+								
+									<br>
+									<input value="Back" class="ss_submit" onclick="setTimeout('self.window.history.back();', 2000);" type="button">
+								</div>
+							 */
+							// See defCodedError.jsp.  Note that
+							// exceptions must be mapped to this in
+							// applicationContext.xml for everything
+							// to work properly.
 							int beginIndex = result.indexOf("ss_error_msg");
 							int endIndex = result.indexOf("ss_error_code");
 

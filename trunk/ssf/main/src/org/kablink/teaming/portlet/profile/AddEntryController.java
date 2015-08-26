@@ -50,6 +50,7 @@ import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.UserExistsException;
 import org.kablink.teaming.UserNameMissingException;
+import org.kablink.teaming.antivirus.VirusDetectedException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
@@ -67,14 +68,17 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.ModelAndViewWithException;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.util.StringUtil;
 
 import org.springframework.web.portlet.ModelAndView;
 
@@ -223,7 +227,15 @@ public class AddEntryController extends SAbstractController {
 	    				}
 	    			}
 	
-	    			User newUser = addUser(request, response, entryType, inputData, fileMap, null);
+	    			User newUser;
+	    			try {
+	    				newUser = addUser(request, response, entryType, inputData, fileMap, null);
+		            }
+		            catch (VirusDetectedException ex) {
+						List<String> errorStrings = MiscUtil.getLocalizedVirusDetectedErrorStrings(ex.getErrors());
+		            	setupReloadPreviousPage(response, NLT.get("errorcode.user.rejectedAttachment"), errorStrings);
+			    		return null;
+		            }
 	
 	    			// Are we running the new GWT UI and doing a self registration?
 	    			if ( GwtUIHelper.isGwtUIActive( request ) && isGuestUser() )
@@ -287,6 +299,20 @@ public class AddEntryController extends SAbstractController {
 		//return to view entry
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+	}
+	
+	/*
+	 */
+	private void setupReloadPreviousPage(ActionResponse response, String errorMessage, List<String> messageDetails) {
+		//return to view previous page
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_PREVIOUS_PAGE);
+		response.setRenderParameter(WebKeys.ERROR_MESSAGE, errorMessage);
+		if (MiscUtil.hasItems(messageDetails)) {
+//!			...this needs to be implemented...
+			response.setRenderParameter(
+				WebKeys.ERROR_MESSAGE_PACKED_DETAILS,
+				StringUtil.pack(messageDetails.toArray(new String[0])));
+		}
 	}
 	
 	/**
