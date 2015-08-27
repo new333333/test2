@@ -125,6 +125,7 @@ import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.shared.AccessUtils;
+import org.kablink.teaming.module.shared.CommentAccessUtils;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
@@ -405,6 +406,17 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	
 	@Override
 	public void checkAccess(User user, FolderEntry entry, FolderOperation operation) throws AccessControlException {
+		// Special case handle those operations on a comment that
+		// require it.
+		switch (CommentAccessUtils.checkCommentAccess(entry, operation, user)) {
+		case ALLOWED:   return;
+		case REJECTED:  throw new AccessControlException(operation.toString(), new Object[] {});
+		
+		default:
+		case PROCESS_ACLS:
+			break;
+		}
+		
 		if (user.isShared()) {
 			//See if the user is only allowed "read only" rights
 			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());

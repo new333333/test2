@@ -65,6 +65,7 @@ import org.kablink.teaming.license.LicenseManager;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.shared.AccessUtils;
+import org.kablink.teaming.module.shared.CommentAccessUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
@@ -519,6 +520,21 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	public void checkOperation(User user, WorkArea workArea, 
 			WorkAreaOperation workAreaOperation) 
     	throws AccessControlException {
+
+		// Is the workArea a FolderEntry?
+		if (workArea instanceof FolderEntry) {
+			// Yes!  Special case handle those operations on a comment
+			// that require it.
+			switch (CommentAccessUtils.checkCommentAccess(((FolderEntry) workArea), workAreaOperation, user)) {
+			case ALLOWED:   return;
+			case REJECTED:  throw OperationAccessControlExceptionNoName.newInstance(user.getName(), workAreaOperation.toString(), workArea);
+			
+			default:
+			case PROCESS_ACLS:
+				break;
+			}
+		}
+		
 		if (WorkAreaOperation.ZONE_ADMINISTRATION.equals(workAreaOperation)) {
 			if (user.isDisabled() || user.isDeleted() || user.isShared() || !user.getIdentityInfo().isInternal()) {
    				//External users the guest user or disabled and deleted accounts are not allowed to do zone admistration functions
