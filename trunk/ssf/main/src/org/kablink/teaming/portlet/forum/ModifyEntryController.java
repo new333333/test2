@@ -183,8 +183,7 @@ public class ModifyEntryController extends SAbstractController {
 		    		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		    		return;
 				} catch (VirusDetectedException e) {
-					List<String> errorStrings = MiscUtil.getLocalizedVirusDetectedErrorStrings(e.getErrors());
-		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, MiscUtil.getSeparatedErrorList(errorStrings, "<br/>"));
+		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getLocalizedMessage("<br/>"));
 		    		return;
 				}
 				

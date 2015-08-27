@@ -284,12 +284,19 @@ public class ModifyEntryController extends SAbstractController {
 		            	getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
 		            }
 		            catch (VirusDetectedException ex) {
+		            	// Is this modify from the GWT profile view?
 		            	String profileMarker = inputData.getSingleValue(WebKeys.URL_PROFILE);
 		            	if ((null == profileMarker) || (!(profileMarker.equals("1")))) {
+							// No!  Return the error in the response.
 							List<String> errorStrings = MiscUtil.getLocalizedVirusDetectedErrorStrings(ex.getErrors());
 			            	setupReloadPreviousPage(response, NLT.get("errorcode.user.rejectedAttachment"), errorStrings);
 				    		return null;
 		            	}
+		            	
+						// Yes, this is from the GWT profile view!
+						// Re-throw the exception so that it gets
+		            	// handled in a format that the view can
+		            	// handle.
 		            	throw ex;
 		            }
 					if (passwordChanged) {

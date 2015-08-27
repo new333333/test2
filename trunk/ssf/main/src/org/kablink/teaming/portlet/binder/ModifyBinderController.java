@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,16 +46,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.antivirus.VirusDetectedException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
-import org.kablink.teaming.portletadapter.portlet.ActionRequestImpl;
-import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
@@ -63,17 +63,21 @@ import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
+
 import org.springframework.web.portlet.ModelAndView;
 
-
 /**
+ * ?
+ * 
  * @author Peter Hurley
- *
  */
+@SuppressWarnings("unchecked")
 public class ModifyBinderController extends AbstractBinderController {
+	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 
@@ -167,8 +171,23 @@ public class ModifyBinderController extends AbstractBinderController {
 		   				response.setRenderParameters( formData );
 		   		} catch (ConfigurationException cf) {
 		   			response.setRenderParameters(formData);
-		   			response.setRenderParameter(WebKeys.EXCEPTION, cf.getLocalizedMessage() != null ? cf.getLocalizedMessage() : cf.getMessage());
+		   			response.setRenderParameter(WebKeys.EXCEPTION, MiscUtil.exToString(cf));
 		   		}
+				catch (VirusDetectedException ex) {
+					// Is this a modify request from the GWT
+					// AddFileAttachmentDlg?
+					if (!(formData.containsKey("gwtAddFileAttachment"))) {
+						// No!  Return the error in the response.
+			   			response.setRenderParameters(formData);
+			    		response.setRenderParameter(WebKeys.EXCEPTION, ((VirusDetectedException) ex).getLocalizedMessage("\n"));
+			    		return;
+					}
+					
+					// Yes, this is from the GWT AddFileAttachmentDlg!
+					// Re-throw the exception so that it gets handled
+					// in a format that the dialog can handle.
+					throw ex;
+				}
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be a move
 				Long destinationId = TreeHelper.getSelectedId(formData);
@@ -229,6 +248,7 @@ public class ModifyBinderController extends AbstractBinderController {
 		}
 	}
 
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 		RenderResponse response) throws Exception {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
@@ -306,7 +326,4 @@ public class ModifyBinderController extends AbstractBinderController {
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		return new ModelAndView(path, model);
 	}
-
-	
 }
-

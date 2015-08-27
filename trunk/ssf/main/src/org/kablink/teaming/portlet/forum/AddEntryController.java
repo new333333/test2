@@ -35,7 +35,6 @@ package org.kablink.teaming.portlet.forum;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.TimeZone;
@@ -159,8 +158,7 @@ public class AddEntryController extends SAbstractController {
 		    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
 		    		return;
 				} catch (VirusDetectedException e) {
-					List<String> errorStrings = MiscUtil.getLocalizedVirusDetectedErrorStrings(e.getErrors());
-		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, MiscUtil.getSeparatedErrorList(errorStrings, "<br/>"));
+		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getLocalizedMessage("<br/>"));
 		    		return;
 				}
 
@@ -372,13 +370,9 @@ public class AddEntryController extends SAbstractController {
 		        	    	intFileCount++;
 	        	    	} catch(Exception e) {
 	        	    		String message;
-	        	    		if (e instanceof VirusDetectedException) {
-	        					List<String> errorStrings = MiscUtil.getLocalizedVirusDetectedErrorStrings(((VirusDetectedException) e).getErrors());
-	        		    		message = MiscUtil.getSeparatedErrorList(errorStrings, "\n");
-	        	    		}
-	        	    		else {
-	        	    			message = e.getMessage();
-	        	    		}
+	        	    		if (e instanceof VirusDetectedException)
+	        		    	     message = ((VirusDetectedException) e).getLocalizedMessage("\n");
+	        	    		else message = e.getMessage();
         	    			response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, message);
 	        	    		blnCheckForAppletFile = false;
 	        	    		break;
