@@ -650,6 +650,20 @@ public class AccessUtils  {
 	}
     private static void operationCheck(User user, Binder binder, Entry entry, WorkAreaOperation operation) {
         if (user.isSuper()) return;
+        
+        if (entry instanceof FolderEntry) {
+			// Yes!  Special case handle those operations on a comment
+			// that require it.
+			switch (CommentAccessUtils.checkCommentAccess(((FolderEntry) entry), operation, user)) {
+			case ALLOWED:   return;
+			case REJECTED:  throw new AccessControlException(operation.toString(), new Object[] {});
+			
+			default:
+			case PROCESS_ACLS:
+				break;
+			}
+        }
+        
     	boolean widen = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false);
     	AccessControlException ace = null;
     	OperationAccessControlExceptionNoName ace2 = null;
