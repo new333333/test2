@@ -32,7 +32,13 @@
  */
 package org.kablink.teaming.jobs;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.jobs.DefaultAuditTrailMigration.JobDescription;
+import org.kablink.teaming.jobs.SimpleTriggerJob.SimpleJobDescription;
 import org.kablink.teaming.module.zone.ZoneUtil;
 import org.kablink.teaming.telemetry.TelemetryService;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -86,13 +92,27 @@ public class DefaultTelemetryProcess extends SimpleTriggerJob implements Telemet
 	 * @see org.kablink.teaming.jobs.TelemetryProcess#schedule(int)
 	 */
 	@Override
-	public void schedule(int intervalInSeconds) {
+	public void schedule(int repeatIntervalInSeconds, int delayInSeconds) {
 		Long zoneId = ZoneUtil.getDefaultZoneId();
-		schedule(new SimpleJobDescription(zoneId, zoneId.toString(), TELEMETRY_PROCESS_GROUP, TELEMETRY_PROCESS_DESCRIPTION, intervalInSeconds));
+		GregorianCalendar start = new GregorianCalendar();
+		start.add(Calendar.SECOND, delayInSeconds);
+		schedule(new JobDescription(zoneId, start.getTime(), repeatIntervalInSeconds));
 	}
 	
 	TelemetryService getTelemetryService() {
 		return (TelemetryService)SpringContextUtil.getBean("telemetryService");
+	}
+
+	public class JobDescription extends SimpleJobDescription {
+		Date startDate;
+		JobDescription(Long zoneId, Date startDate, int repeatIntervalInSeconds) {
+			super(zoneId, zoneId.toString(), TELEMETRY_PROCESS_GROUP, TELEMETRY_PROCESS_DESCRIPTION, repeatIntervalInSeconds);
+			this.startDate = startDate;
+		}
+		@Override
+		protected Date getStartDate() {
+			return startDate;
+		}
 	}
 
 }

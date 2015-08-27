@@ -34,8 +34,13 @@ package org.kablink.teaming.jobs;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.module.zone.ZoneUtil;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
 
 /**
  * @author Jong
@@ -50,17 +55,44 @@ public class TelemetryProcessUtil {
 		TelemetryProcess telemetryProcess = (TelemetryProcess) ReflectHelper.getInstance(className);
 		if(telemetryEnabled) {
 			// Telemetry is enabled
-			int intervalInSeconds = SPropsUtil.getInt("job.telemetry.process.interval", 7*24*60*60); // default is 7 days (= once a week)
-   			if(logger.isDebugEnabled())
-   				logger.debug("Making sure to have telemetry process scheduled with interval of " + intervalInSeconds + " seconds");
-			telemetryProcess.schedule(intervalInSeconds);
+			Scheduler scheduler = getScheduler();
+			Long defaultZoneId = ZoneUtil.getDefaultZoneId();
+			Trigger trigger = null;
+			try {
+				trigger = scheduler.getTrigger(defaultZoneId.toString(), TelemetryProcess.TELEMETRY_PROCESS_GROUP);
+			} catch (SchedulerException e) {
+				logger.warn("Failed to get trigger information on the telemetry process");
+			}
+			if(trigger == null) {
+				// Telemetry process doesn't exist in the system. Set up one.
+				int repeatIntervalInSeconds = SPropsUtil.getInt("job.telemetry.process.interval", 7*24*60*60); // default is 7 days (= once a week)
+				// There are situations where we don't want telemetry process to start collecting
+				// and uploading data immediately after being enabled. For instance, kicking off
+				// telemetry process right after new install or upgrade may not only interfere
+				// with the work user is doing but also may not return meaningful data because
+				// the system is empty or something. For that reason, we give it one day of
+				// grace period each time telemetry process is (re)enabled.
+				int initialDelayInSeconds = SPropsUtil.getInt("job.telemetry.process.interval", 24*60*60); // default is 1 day
+	   			if(logger.isDebugEnabled())
+	   				logger.debug("Scheduling telemetry process with repeat interval of " + repeatIntervalInSeconds + " seconds and initial delay of " + initialDelayInSeconds);
+				telemetryProcess.schedule(repeatIntervalInSeconds, initialDelayInSeconds);
+			}
+			else {
+				// Telemetry process already exists in the system. No further work is necessary.
+				if(logger.isDebugEnabled())
+					logger.debug("Telemetry process is already present.");
+			}
 		}
 		else {
-			// Telemetry is disabled
+			// Telemetry is disabled.
 			// If this feature is not enabled, remove the job, if exists, from the system altogether, rather than just disabling it.
 			if(logger.isDebugEnabled())
 				logger.debug("Making sure that telemetry process doesn't exist");
 			telemetryProcess.remove();
 		}
+	}
+	
+	private static Scheduler getScheduler() {
+		return (Scheduler)SpringContextUtil.getBean("scheduler");
 	}
 }
