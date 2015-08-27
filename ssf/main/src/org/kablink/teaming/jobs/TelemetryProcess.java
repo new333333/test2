@@ -48,5 +48,5 @@ public interface TelemetryProcess {
 	public static final String TELEMETRY_PROCESS_DESCRIPTION="Telemetry process";
 	
 	public void remove();
-	public void schedule(int intervalInSeconds);
+	public void schedule(int repeatIntervalInSeconds, int delayInSeconds);
 }
