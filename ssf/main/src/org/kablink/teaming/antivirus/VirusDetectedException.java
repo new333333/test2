@@ -87,10 +87,14 @@ public class VirusDetectedException extends VibeRuntimeException {
 		return sb.toString();
 	}
 	
+	public String getLocalizedMessage(String separator) {
+		List<String> errorStrings = MiscUtil.getLocalizedVirusDetectedErrorStrings(this.errors);
+		return MiscUtil.getSeparatedErrorList(errorStrings, separator);
+	}
+
 	@Override
 	public String getLocalizedMessage() {
-		List<String> errorStrings = MiscUtil.getLocalizedVirusDetectedErrorStrings(this.errors);
-		return MiscUtil.getSeparatedErrorList(errorStrings, "\n");
+		return getLocalizedMessage("\n");	// Default to separating errors with a newline.
 	}
 
 	/* (non-Javadoc)
