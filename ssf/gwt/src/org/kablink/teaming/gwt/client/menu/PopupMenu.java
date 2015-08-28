@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,9 +40,9 @@ import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
@@ -53,139 +53,135 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
 /**
- * This is the menu that holds the actions that can be taken with an item in the
- * Activity Stream control.  ie, Reply, Share, Tag,...
+ * This is the menu that holds the actions that can be taken with an
+ * item in the Activity Stream control.  I.e., Reply, Share, Tag,...
  * 
- * @author jwootton
+ * @author drfoster@novell.com
  */
-public class PopupMenu extends TeamingPopupPanel
-{
-	private VibeMenuBar m_menu;
-	private boolean m_canHaveCheckedMenuItems;	// Can this pop-up menu have menu items that are checked?
+public class PopupMenu extends TeamingPopupPanel implements BlurHandler {
+	private boolean		m_canHaveCheckedMenuItems;	// Can this pop-up menu have menu items that are checked?
+	private VibeMenuBar	m_menu;						//
 
 	/**
+	 * Constructor method.
 	 * 
+	 * @param autoHide
+	 * @param modal
+	 * @param canHaveCheckedMenuItems
 	 */
-	public PopupMenu( boolean autoHide, boolean modal, boolean canHaveCheckedMenuItems )
-	{
-		super( autoHide, modal );
+	public PopupMenu(boolean autoHide, boolean modal, boolean canHaveCheckedMenuItems) {
+		// Initialize the super class...
+		super(autoHide, modal);
 		
+		// ...and store the parameters that need to be saved.
 		m_canHaveCheckedMenuItems = canHaveCheckedMenuItems;
 		
-		// We need to replace gwt-PopupPanel style name because it is causing an empty
-		// box to be displayed because initially this control's width and height are 0.
-		addStyleName( "vibe-popupMenu" );
-		
-		setMenu( new VibeMenuBar( true, "vibe-mainMenuPopup" ) );
+		// We need to replace gwt-PopupPanel style name because it is
+		// causing an empty box to be displayed because initially this
+		// control's width and height are 0.
+		addStyleName("vibe-popupMenu");
+
+		// Finally, add a blank menu so something is there.
+		setMenu(new VibeMenuBar(true, "vibe-mainMenuPopup"));
 	}
 	
 
 	/**
+	 * Adds a menu item to the menu. 
 	 * 
+	 * @param event
+	 * @param img
+	 * @param text
 	 */
-	public VibeMenuItem addMenuItem( final VibeEventBase<?> event, Image img, String text )
-	{
-		VibeMenuItem menuItem;
-		Command cmd;
-
-		cmd = new Command()
-		{
+	public VibeMenuItem addMenuItem(final VibeEventBase<?> event, Image img, String text) {
+		Command cmd = new Command() {
 			@Override
-			public void execute()
-			{
-				// Close this menu.
-				hide();
-				
-				GwtTeaming.fireEvent( event );
+			public void execute() {
+				// No longer need to hide the menu as that's now done
+				// in the onBlur() handler.
+				GwtTeaming.fireEvent(event);
 			}
 		};
 
-		menuItem = new VibeMenuItem( cmd, event, img, text, "vibe-mainMenuPopup_Item", m_canHaveCheckedMenuItems );
-		m_menu.addItem( menuItem );
+		VibeMenuItem reply = new VibeMenuItem(cmd, event, img, text, "vibe-mainMenuPopup_Item", m_canHaveCheckedMenuItems);
+		m_menu.addItem(reply);
 
-		return menuItem;
+		return reply;
 	}
 	
 	/**
+	 * Adds a menu item to the menu. 
 	 * 
+	 * @param cmd
+	 * @param img
+	 * @param text
 	 */
-	public VibeMenuItem addMenuItem( final Command cmd, Image img, String text )
-	{
-		VibeMenuItem menuItem;
-		Command cmd2;
-		
-		cmd2 = new Command()
-		{
+	public VibeMenuItem addMenuItem(final Command cmd, Image img, String text) {
+		Command miCmd = new Command() {
 			@Override
-			public void execute()
-			{
-				// Close this menu.
-				hide();
-				
+			public void execute() {
+				// No longer need to hide the menu as that's now done
+				// in the onBlur() handler.
 				cmd.execute();
 			};
 		};
 		
-		menuItem = new VibeMenuItem(
-								cmd2,
-								null,
-								img,
-								text,
-								"vibe-mainMenuPopup_Item",
-								m_canHaveCheckedMenuItems );
-		m_menu.addItem( menuItem );
+		VibeMenuItem reply = new VibeMenuItem(miCmd, null, img, text, "vibe-mainMenuPopup_Item", m_canHaveCheckedMenuItems);
+		m_menu.addItem(reply);
 		
-		return menuItem;
+		return reply;
 	}
 
 	/**
-	 * 
+	 * Adds a menu item to the menu. 
+	 *
+	 * @param mi
 	 */
-	public void addMenuItem( MenuItem menuItem )
-	{
-		final ScheduledCommand cmd = menuItem.getScheduledCommand();
-		menuItem.setScheduledCommand( new Command ()
-		{
-			@Override
-			public void execute()
-			{
-				// Close this menu.
-				hide();
-				
-				Scheduler.get().scheduleDeferred( cmd );
-			}// end execute()
-		} );
-		m_menu.addItem( menuItem );
+	public void addMenuItem(MenuItem mi) {
+		// No longer need to wrap the menu's Command in another Command
+		// to hide the menu.  That's now done in the onBlur() method.
+		m_menu.addItem(mi);
 	}
 
 	/**
+	 * Adds a list of MenuItem's to the menu.
 	 * 
+	 * @param miList
 	 */
-	public void addMenuItems( List<MenuItem> miList )
-	{
-		if ( ( null != miList ) && ( ! ( miList.isEmpty() ) ) )
-		{
-			for ( MenuItem mi:  miList)
-			{
-				addMenuItem( mi );
+	public void addMenuItems(List<MenuItem> miList) {
+		if (GwtClientHelper.hasItems(miList)) {
+			for (MenuItem mi:  miList) {
+				addMenuItem(mi);
 			}
 		}
 	}
 	
 	/**
-	 * 
+	 * Adds a separator to the menu. 
 	 */
-	public MenuItemSeparator addSeparator()
-	{
+	public MenuItemSeparator addSeparator() {
 		return m_menu.addSeparator();
 	}
 
 	/**
-	 * Remove the given menu item from the menu.
+	 * Called when the popup's menu looses the focus.  Typically, this
+	 * is when a command in the menu is activated.
+	 * 
+	 * Implements the BlurHandler.onBlur() method.
 	 */
-	public void removeMenuItem( MenuItem menuItem )
-	{
-		m_menu.removeItem( menuItem );
+	@Override
+	public void onBlur(BlurEvent event) {
+		// Simply hide the popup.
+		hide();
+	}
+	
+	/**
+	 * Remove the given menu item from the menu.
+	 * 
+	 * @param mi
+	 */
+	public void removeMenuItem(MenuItem mi) {
+		m_menu.removeItem(mi);
 	}
 
 	/**
@@ -193,63 +189,48 @@ public class PopupMenu extends TeamingPopupPanel
 	 * 
 	 * @param menu
 	 */
-	public void setMenu( VibeMenuBar menu )
-	{
+	public void setMenu(VibeMenuBar menu) {
+		// Replace the menu...
 		m_menu = menu;
-		setWidget( m_menu );
+		setWidget(m_menu);
 		
-		List<MenuItem> miList = ( ( null == m_menu ) ? null : m_menu.getItems() );
-		if ( ( null != miList ) && ( ! ( miList.isEmpty() ) ) )
-		{
-			for ( MenuItem mi:  miList )
-			{
-				final ScheduledCommand cmd = mi.getScheduledCommand();
-				mi.setScheduledCommand( new Command ()
-				{
-					@Override
-					public void execute()
-					{
-						// Close this menu.
-						hide();
-						
-						Scheduler.get().scheduleDeferred( cmd );
-					}// end execute()
-				} );
-			}
+		if (null != m_menu) {
+			m_menu.addDomHandler(this, BlurEvent.getType());
+			
+			// No longer need to wrap the MenuItem Command's in another
+			// Command to hide the menu.  That's now done in the
+			// onBlur() method.
 		}
 	}
 	
 	/*
 	 * Asynchronously gives the menu the focus.
 	 */
-	private void setMenuFocusAsync()
-	{
-		Command cmd = new Command()
-		{
+	private void setMenuFocusAsync() {
+		GwtClientHelper.deferCommand(new Command() {
 			@Override
-			public void execute()
-			{
+			public void execute() {
 				setMenuFocusNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-	}// end setMenuFocusAsync()
+		});
+	}
 	
 	/*
 	 * Synchronously gives the menu the focus.
 	 */
-	private void setMenuFocusNow()
-	{
+	private void setMenuFocusNow() {
 		// Give the menu bar the focus.
 		m_menu.focus();
-	}// end setMenuFocusNow()
+	}
 	
 	/**
+	 * Set's a menu item's checked state.
 	 * 
+	 * @param mi
+	 * @param checked
 	 */
-	public void setMenuItemCheckedState( VibeMenuItem menuItem, boolean checked )
-	{
-		menuItem.setCheckedState( checked );
+	public void setMenuItemCheckedState(VibeMenuItem mi, boolean checked) {
+		mi.setCheckedState(checked);
 	}
 
 	/**
@@ -266,47 +247,39 @@ public class PopupMenu extends TeamingPopupPanel
 	}	
 
 	/**
+	 * Shows the popup menu at the given location.
 	 * 
+	 * @param x
+	 * @param y
 	 */
-	public void showMenu( final int x, final int y )
-	{
-		PopupPanel.PositionCallback posCallback;
-
+	public void showMenu(final int x, final int y) {
 		// Create a callback that will be called when this menu is shown.
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
+		PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback() {
 			@Override
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-			    int windowTop;
-			    int windowBottom;
-			    int left;
-			    int top;
-				
-			    left = x;
-			    top = y;
-			    
-			    if ( top > Window.getClientHeight() )
+			public void setPosition(int offsetWidth, int offsetHeight) {
+			    int left = x;
+			    int top  = y;
+			    if (top > Window.getClientHeight()) {
 			    	top = Window.getClientHeight();
+			    }
 			    
-				if ( (left + offsetWidth) > Window.getClientWidth() )
-					left = Window.getClientWidth() - offsetWidth - 25;
+				if ((left + offsetWidth) > Window.getClientWidth()) {
+					left = (Window.getClientWidth() - offsetWidth - 25);
+				}
 				
-				windowTop = Window.getScrollTop();
-			    windowBottom = windowTop + Window.getClientHeight();
+			    int windowTop    = Window.getScrollTop();
+			    int windowBottom = (windowTop + Window.getClientHeight());
 
 			    // Calculate how far over the bottom 
-				if ( (top + offsetHeight) > windowBottom )
+				if ((top + offsetHeight) > windowBottom) {
 					top -= offsetHeight;
+				}
 				
-				setPopupPosition( left, top );
+				setPopupPosition(left, top);
 				setMenuFocusAsync();
 			}
 		};
-		setPopupPositionAndShow( posCallback );
+		setPopupPositionAndShow(posCallback);
 	}
 	
 	/**
@@ -314,15 +287,13 @@ public class PopupMenu extends TeamingPopupPanel
 	 * 
 	 * @param target
 	 */
-	public void showRelativeToTarget( final UIObject target )
-	{
-		showRelativeTo( target );
+	public void showRelativeToTarget(final UIObject target) {
+		showRelativeTo(target);
 		setMenuFocusAsync();
 	}
 	
-	public void showRelativeToTarget( final Element target )
-	{
+	public void showRelativeToTarget(final Element target) {
 		// Always use the initial form of the method.
-		showRelativeToTarget( GwtClientHelper.getUIObjectFromElement( target ) );
+		showRelativeToTarget(GwtClientHelper.getUIObjectFromElement(target));
 	}
 }
