@@ -65,14 +65,14 @@ public class TelemetryProcessUtil {
 			}
 			if(trigger == null) {
 				// Telemetry process doesn't exist in the system. Set up one.
-				int repeatIntervalInSeconds = SPropsUtil.getInt("job.telemetry.process.interval", 7*24*60*60); // default is 7 days (= once a week)
+				int repeatIntervalInSeconds = SPropsUtil.getInt("job.telemetry.process.repeat.interval", 7*24*60*60); // default is 7 days (= once a week)
 				// There are situations where we don't want telemetry process to start collecting
 				// and uploading data immediately after being enabled. For instance, kicking off
 				// telemetry process right after new install or upgrade may not only interfere
 				// with the work user is doing but also may not return meaningful data because
 				// the system is empty or something. For that reason, we give it one day of
 				// grace period each time telemetry process is (re)enabled.
-				int initialDelayInSeconds = SPropsUtil.getInt("job.telemetry.process.interval", 24*60*60); // default is 1 day
+				int initialDelayInSeconds = SPropsUtil.getInt("job.telemetry.process.initial.delay", 24*60*60); // default is 1 day
 	   			if(logger.isDebugEnabled())
 	   				logger.debug("Scheduling telemetry process with repeat interval of " + repeatIntervalInSeconds + " seconds and initial delay of " + initialDelayInSeconds);
 				telemetryProcess.schedule(repeatIntervalInSeconds, initialDelayInSeconds);

@@ -306,7 +306,7 @@ public class TelemetryService extends HibernateDaoSupport {
 	}
 	
 	public  void uploadTelemetryData() throws IOException {
-		String ftpHostname = SPropsUtil.getString("telemetry.ftp.hostname", "ftp.novell.com");
+		String ftpHostname = SPropsUtil.getString("telemetry.ftp.hostname", "productfeedback.novell.com");
 		if(ftpHostname.isEmpty()) {
 			// User specified this property without value, which is an instruction to disable
 			// sending/uploading of telemetry data.
