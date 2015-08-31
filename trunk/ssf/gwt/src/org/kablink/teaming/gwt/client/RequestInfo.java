@@ -187,17 +187,6 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
-	 * Return whether the UI should perform extra debug checking
-	 * on landing pages.
-	 * 
-	 * @return
-	 */
-	public final native boolean isDebugLP()
-	/*-{
-		return this.getBFromS( this.debugLP );
-	}-*/;
-	
-	/**
 	 * Return whether the UI should perform extra debug checking and
 	 * debug message displays. 
 	 * 
