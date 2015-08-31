@@ -865,8 +865,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 		
 		else {
-			// No, we aren't in activity stream mode!  Build a TreeInfo
-			// for the activity streams...
+			// No, we aren't in activity stream mode!  Clear any busy
+			// spinner that might be displayed from a previous
+			// context...
+			clearBusySpinner();
+			
+			// ...build a TreeInfo for the activity streams...
 			String[] binderIds = defaultASI.getBinderIds();
 			String bId;
 			if ((null != binderIds) && (0 < binderIds.length))
