@@ -198,7 +198,6 @@ public class ContentControl extends Composite
 {
 	private boolean			m_isAdminContent;							//
 	private boolean			m_isDebugUI;								//
-	private boolean			m_isDebugLP;								//
 	private FlowPanel		m_mainContentPanel;							//
 	private FolderEntryDlg	m_folderEntryDlg;							//
 	private GwtMainPage		m_mainPage;									//
@@ -285,7 +284,6 @@ public class ContentControl extends Composite
 		// Extract some commonly used flags from the RequestInfo.
 		RequestInfo ri = GwtClientHelper.getRequestInfo();
 		m_isDebugUI = ri.isDebugUI();
-		m_isDebugLP = ri.isDebugLP();
 
 		// Is this other than the admin control's content panel?
 		m_isAdminContent = ( name.equals( "adminContentControl" ));

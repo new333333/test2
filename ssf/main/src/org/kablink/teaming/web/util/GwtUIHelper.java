@@ -1285,16 +1285,6 @@ public class GwtUIHelper {
 	}
 
 	/**
-	 * Returns true if the Vibe UI is in landing page debug mode and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isVibeDebugLP() {
-		return SPropsUtil.getBoolean("ssf.lp.debug.enabled", false);
-	}
-	
-	/**
 	 * Returns true if the Vibe UI is in debug mode and false
 	 * otherwise.
 	 * 
@@ -1503,9 +1493,6 @@ public class GwtUIHelper {
 		// ...)
 		model.put(WebKeys.VIBE_UI_DEBUG, isVibeUiDebug());
 		
-		// Put out the flag indicating whether the landing page is in debug mode.
-		model.put(WebKeys.VIBE_LP_DEBUG, isVibeDebugLP());
-
 		// Put out the flag indicating which product we're running as.
 		// Note that we do this first as it has the side affect of
 		// setting the session captive flag products that require it.
