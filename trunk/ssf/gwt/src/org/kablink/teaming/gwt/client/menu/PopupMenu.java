@@ -172,7 +172,12 @@ public class PopupMenu extends TeamingPopupPanel implements BlurHandler {
 	@Override
 	public void onBlur(BlurEvent event) {
 		// Simply hide the popup.
-		hide();
+		GwtClientHelper.deferCommand(new Command() {
+			@Override
+			public void execute() {
+				hide();
+			}
+		});
 	}
 	
 	/**
