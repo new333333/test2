@@ -1283,6 +1283,7 @@ body, table td, select
 .margintop3pxb   {margin-top:    3px !important;}
 .marginTop5px	 {margin-top: 	 5px;}
 .marginTop10px	 {margin-top:   10px;}
+.marginTop15px	 {margin-top:   15px;}
 .marginTop20px	 {margin-top:   20px;}
 
 .marginleft1     {margin-left:   1em;}
@@ -5596,16 +5597,17 @@ td.datePickerMonth {
 /* End:  SelectCSVDelimiter dialog styles. */
 
 /* Start:  Telemetry Tier 2 dialog styles. */
-	.vibe-telemetryTier2Dlg-checkbox {}
-	.vibe-telemetryTier2Dlg-hint     {width: 400px; margin-top: 5px; color: #414648; /* dark grey */ line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 1em;}
-	.vibe-telemetryTier2Dlg-panel    {padding: 10px;}
+	.vibe-telemetryTier2Dlg-hint  {width: 400px; color: #414648; /* dark grey */ line-height: 1.1em; margin-right: 5px;}
+	.vibe-telemetryTier2Dlg-panel {padding: 10px;}
 /* End:  Telemetry Tier 2 dialog styles. */
 
 /* Start:  Configure Telemetry dialog styles. */
-	.vibe-configureTelemetryDlg-anchor   {}
-	.vibe-configureTelemetryDlg-checkbox {}
-	.vibe-configureTelemetryDlg-hint     {width: 500px; color: #414648; /* dark grey */ line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 1em;}
-	.vibe-configureTelemetryDlg-panel    {padding: 10px;}
+	.vibe-configureTelemetryDlg-anchor                          {}
+	.vibe-configureTelemetryDlg-checkbox input[type="checkbox"] {vertical-align: top; margin-top: 8px !important;}
+	.vibe-configureTelemetryDlg-checkbox label                  {width: 500px; white-space: normal;}
+	.vibe-configureTelemetryDlg-checkboxPanel                   {}
+	.vibe-configureTelemetryDlg-hint                            {width: 500px; color: #414648; /* dark grey */ line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 1em;}
+	.vibe-configureTelemetryDlg-panel                           {padding: 10px;}
 /* End:  Configure Telemetry dialog styles. */
 
 /* Start:  Configure Anti Virus dialog styles. */

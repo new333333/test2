@@ -51,6 +51,8 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -119,25 +121,40 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 		VerticalPanel vp = new VibeVerticalPanel(null, null);
 		vp.addStyleName("vibe-configureTelemetryDlg-panel");
 
-		// ...add a hint about the enable checkbox...
-		Label hint = new Label(m_messages.configureTelemetryDlgTier1EnabledHint(m_messages.companyNovell(), GwtClientHelper.getProductName()));
+		// ...add hints about the enable checkbox...
+		Label hint = new Label(m_messages.configureTelemetryDlgTier1EnabledHint1(m_messages.companyNovell()));
+		hint.addStyleName("vibe-configureTelemetryDlg-hint marginTop5px");
+		vp.add(hint);
+
+		hint = new Label(m_messages.configureTelemetryDlgTier1EnabledHint2());
 		hint.addStyleName("vibe-configureTelemetryDlg-hint marginTop5px");
 		vp.add(hint);
 
 		// ...add the checkbox for them to enable collection...
+		FlowPanel fp = new FlowPanel();
+		fp.addStyleName("vibe-configureTelemetryDlg-checkboxPanel marginTop5px");
 		m_telemetryTier1EnabledCB = new CheckBox(m_messages.configureTelemetryDlgTier1EnabledCheckBoxLabel());
 		m_telemetryTier1EnabledCB.addStyleName("vibe-configureTelemetryDlg-checkbox");
-		vp.add(m_telemetryTier1EnabledCB);
+		fp.add(m_telemetryTier1EnabledCB);
+		vp.add(fp);
 		
-		// ...add a hint about the tier 2 checkbox...
-		hint = new Label(m_messages.configureTelemetryDlgTier2EnabledHint(m_messages.companyNovell(), GwtClientHelper.getProductName()));
-		hint.addStyleName("vibe-configureTelemetryDlg-hint marginTop20px");
-		vp.add(hint);
-
 		// ...add the checkbox for them to tier 2...
+		fp = new FlowPanel();
+		fp.addStyleName("vibe-configureTelemetryDlg-checkboxPanel marginTop10px");
 		m_telemetryTier2EnabledCB = new CheckBox(m_messages.configureTelemetryDlgTier2EnabledCheckBoxLabel());
 		m_telemetryTier2EnabledCB.addStyleName("vibe-configureTelemetryDlg-checkbox");
-		vp.add(m_telemetryTier2EnabledCB);
+		fp.add(m_telemetryTier2EnabledCB);
+		vp.add(fp);
+		m_telemetryTier2EnabledCB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				boolean checked = event.getValue();
+				if (checked) {
+					m_telemetryTier1EnabledCB.setValue(true);
+				}
+				m_telemetryTier1EnabledCB.setEnabled(!checked);	// Tier1 checkbox is disabled when tier2 is checked as per direction from Kevin.
+			}
+		});
 		
 		// ...add a link to download the telemetry data...
 		m_telemetryDataUrl = GwtClientHelper.buildAnchor("vibe-configureTelemetryDlg-anchor");
@@ -305,8 +322,13 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 		setOkEnabled(true);
 
 		// ...set the state of the checkboxes...
-		m_telemetryTier1EnabledCB.setValue(m_tsData.isTelemetryTier1Enabled());
-		m_telemetryTier2EnabledCB.setValue(m_tsData.isTelemetryTier2Enabled());
+		boolean tier2Enabled =                  m_tsData.isTelemetryTier2Enabled();
+		boolean tier1Enabled = (tier2Enabled || m_tsData.isTelemetryTier1Enabled());
+		m_telemetryTier1EnabledCB.setValue(tier1Enabled);
+		if (tier2Enabled) {
+			m_telemetryTier1EnabledCB.setEnabled(false);	// Tier1 checkbox is disabled when tier2 is checked as per direction from Kevin.
+		}
+		m_telemetryTier2EnabledCB.setValue(tier2Enabled);
 
 		// ...if we have a telemetry download URL...
 		String telemetryDataUrl = m_tsData.getTelemetryDataUrl();

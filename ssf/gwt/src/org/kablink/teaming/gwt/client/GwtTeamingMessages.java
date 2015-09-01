@@ -3750,17 +3750,20 @@ public interface GwtTeamingMessages extends Messages {
 	
 	// Strings used in the Telemetry Tier 2 dialog.
 	String telemetryTier2Dlg_InternalError_CantCancel();
-	String telemetryTier2DlgCheckBoxLabel();
 	String telemetryTier2DlgHeader();
-	String telemetryTier2DlgHint(String company, String product);
+	String telemetryTier2DlgHint1(String product);
+	String telemetryTier2DlgHint2();
+	String telemetryTier2DlgHint3();
+	String telemetryTier2DlgHint4a(String product);
+	String telemetryTier2DlgHint4b();
 	
 	// Strings used in the Configure Telemetry (admin console) dialog.
 	String configureTelemetryDlg_Header();
 	String configureTelemetryDlgDownloadLabel();
 	String configureTelemetryDlgTier1EnabledCheckBoxLabel();
-	String configureTelemetryDlgTier1EnabledHint(String company, String product);
+	String configureTelemetryDlgTier1EnabledHint1(String company);
+	String configureTelemetryDlgTier1EnabledHint2();
 	String configureTelemetryDlgTier2EnabledCheckBoxLabel();
-	String configureTelemetryDlgTier2EnabledHint(String company, String product);
 	
 	// Strings used in the Configure Anti Virus (admin console) dialog.
 	String configureAntiVirusDlg_Header();
