@@ -177,7 +177,8 @@ public class PopupMenu extends TeamingPopupPanel implements BlurHandler {
 			public void execute() {
 				hide();
 			}
-		});
+		},
+		(GwtClientHelper.jsIsAnyIE() ? 250 : (-1)));	// Hides after 1/4 second in IE and immediately with all other browsers.
 	}
 	
 	/**
