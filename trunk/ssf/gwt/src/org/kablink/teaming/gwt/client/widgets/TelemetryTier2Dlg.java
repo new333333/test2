@@ -46,7 +46,6 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -58,8 +57,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author drfoster@novell.com
  */
 public class TelemetryTier2Dlg extends DlgBox implements EditCanceledHandler, EditSuccessfulHandler {
-	private CheckBox			m_telemetryTier2EnabledCB;	// The tier 2 enabled checkbox.
-	private GwtTeamingMessages	m_messages;					// Access to Vibe's messages.
+	private GwtTeamingMessages	m_messages;	// Access to localized strings.
 
 	/*
 	 * Class constructor.
@@ -98,17 +96,26 @@ public class TelemetryTier2Dlg extends DlgBox implements EditCanceledHandler, Ed
 		VerticalPanel vp = new VibeVerticalPanel(null, null);
 		vp.addStyleName("vibe-telemetryTier2Dlg-panel");
 		
-		// ...add a hint about what's happening at the top of the
-		// ...dialog...
-		Label hint = new Label(m_messages.telemetryTier2DlgHint(m_messages.companyNovell(), GwtClientHelper.getProductName()));
+		// ...add the hints about what's happening to the dialog...
+		Label hint = new Label(m_messages.telemetryTier2DlgHint1(GwtClientHelper.getProductName()));
 		hint.addStyleName("vibe-telemetryTier2Dlg-hint");
 		vp.add(hint);
 
-		// ...add the checkbox for them to enable tier 2 data
-		// ...captures...
-		m_telemetryTier2EnabledCB = new CheckBox(m_messages.telemetryTier2DlgCheckBoxLabel());
-		m_telemetryTier2EnabledCB.addStyleName("vibe-telemetryTier2Dlg-checkbox");
-		vp.add(m_telemetryTier2EnabledCB);
+		hint = new Label(m_messages.telemetryTier2DlgHint2());
+		hint.addStyleName("vibe-telemetryTier2Dlg-hint marginTop15px");
+		vp.add(hint);
+
+		hint = new Label(m_messages.telemetryTier2DlgHint3());
+		hint.addStyleName("vibe-telemetryTier2Dlg-hint marginTop15px");
+		vp.add(hint);
+
+		hint = new Label(m_messages.telemetryTier2DlgHint4a(GwtClientHelper.getProductName()));
+		hint.addStyleName("vibe-telemetryTier2Dlg-hint margintop3px");
+		vp.add(hint);
+
+		hint = new Label(m_messages.telemetryTier2DlgHint4b());
+		hint.addStyleName("vibe-telemetryTier2Dlg-hint");
+		vp.add(hint);
 
 		// ...and return the panel.
 		return vp;
@@ -147,7 +154,7 @@ public class TelemetryTier2Dlg extends DlgBox implements EditCanceledHandler, Ed
 	@Override
 	public boolean editSuccessful(Object callbackData) {
 		// Save the state of the telemetry tier 2 setting.
-		SetTelemetryTier2EnabledCmd cmd = new SetTelemetryTier2EnabledCmd(m_telemetryTier2EnabledCB.getValue());
+		SetTelemetryTier2EnabledCmd cmd = new SetTelemetryTier2EnabledCmd(true);	// true -> Tier 2 telemetry is ALWAYS enabled.
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
@@ -190,7 +197,7 @@ public class TelemetryTier2Dlg extends DlgBox implements EditCanceledHandler, Ed
 	 */
 	@Override
 	public FocusWidget getFocusWidget() {
-		return m_telemetryTier2EnabledCB;
+		return null;
 	}
 
 	/*
@@ -209,8 +216,7 @@ public class TelemetryTier2Dlg extends DlgBox implements EditCanceledHandler, Ed
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgNow() {
-		// Set the telemetry tier 2 checkbox and show the dialog.
-		m_telemetryTier2EnabledCB.setValue(true);
+		// Simply show the dialog.
 		center();
 	}
 	
