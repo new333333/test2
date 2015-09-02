@@ -727,17 +727,14 @@ public class LimitUserVisibilityDlg extends DlgBox
 				// Is this a request to create a dialog?
 				if (null != luvDlgClient) {
 					// Yes!  Create the dialog....
-					LimitUserVisibilityDlg luvDlg = new LimitUserVisibilityDlg(
-						luvDlgClient,
+					new LimitUserVisibilityDlg(
+						luvDlgClient,	// The client onSuccess()/onUnavailable() will be called from createContent().
 						autoHide,
 						modal,
 						createX,
 						createY,
 						createCX,
 						createCY);
-					
-					// ...and return it through the callback.
-					luvDlgClient.onSuccess(luvDlg);
 				}
 				
 				else {
