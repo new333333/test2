@@ -34,6 +34,9 @@ package org.kablink.teaming.antivirus;
 
 import java.io.Serializable;
 
+import org.kablink.util.api.ApiErrorCode;
+import org.kablink.util.api.ApiErrorCodeSupport;
+
 /**
  * @author Jong
  * 
@@ -50,7 +53,7 @@ import java.io.Serializable;
  * <p>
  * This class is used in conjunction with <code>VirusDetectedException</code>.
  */
-public class VirusDetectedError implements Serializable {
+public class VirusDetectedError implements ApiErrorCodeSupport, Serializable {
 
 	/**
 	 * Enum for error type
@@ -112,5 +115,21 @@ public class VirusDetectedError implements Serializable {
 		.append((message != null)? message:"")
 		.append("]");
 		return sb.toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.util.api.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		switch(this.type) {
+		case Virus:
+			return ApiErrorCode.FILE_AV_VIRUS;
+		case PolicyRestrictionViolation:
+			return ApiErrorCode.FILE_AV_POLICY_VIOLATION;
+		case Other:
+		default: // This should never happen
+			return ApiErrorCode.FILE_AV_OTHER;
+		}
 	}
 }

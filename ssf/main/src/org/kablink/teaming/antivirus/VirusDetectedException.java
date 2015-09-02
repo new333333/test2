@@ -117,7 +117,16 @@ public class VirusDetectedException extends VibeRuntimeException {
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.ANTIVIRUS_DETECTED;
+		// It is safe to grab and return the API code associated with the first error 
+		// because currently we don't have REST API that deals with more than one file
+		// at a time for upload. Once we have new REST API that deals with multiple
+		// input files at a time, we will need to augment this mechanism.
+		return errors.get(0).getApiErrorCode();
+	}
+
+	@Override
+	public boolean logException() {
+		return false;
 	}
 
 }
