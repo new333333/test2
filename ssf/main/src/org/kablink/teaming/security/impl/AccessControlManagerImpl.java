@@ -420,7 +420,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				//    FolderEntry's.  To do so would allow extra
 				//    capabilities on it that would otherwise not be
 				//    allowed.
-				boolean widenEntryOwnerAccess = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ENTRY_OWNER_ACCESS, false);
+				boolean widenEntryOwnerAccess = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ENTRY_OWNER_ACCESS, true);	// true -> Logic will work the way Vibe 4 shipped.  Need to set property to override it.
 				addOwnerUserId = ((widenEntryOwnerAccess || (!(workAreaStart instanceof FolderEntry))) && userId.equals(workAreaStart.getOwnerId()));
 				if (logger.isDebugEnabled()) {
 					logger.debug("testOperationRecursive( 1:user:  '" + user.getTitle() + "' ):  addOwnerUserId:  " + addOwnerUserId);

@@ -263,27 +263,40 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 		// handling below.
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-		// Key store for key and signing certificates.
-		String ksPath = getKeystoreFile();
-		if (!(new File(ksPath).isAbsolute())) {
-			String ksTail = ksPath;
-			if (!(ksTail.startsWith(File.separator))) {
-				ksTail = (File.separator + ksTail); 
+		KeyManager[] keyManagers = null;
+		try {
+			// Key store for key and signing certificates.
+			String ksPath = getKeystoreFile();
+			if (!(new File(ksPath).isAbsolute())) {
+				String ksTail = ksPath;
+				if (!(ksTail.startsWith(File.separator))) {
+					ksTail = (File.separator + ksTail); 
+				}
+				ksTail = (File.separator + ".." + File.separator + ".." + ksTail);
+				ksPath = SpringContextUtil.getServletContext().getRealPath(ksTail);
 			}
-			ksTail = (File.separator + ".." + File.separator + ".." + ksTail);
-			ksPath = SpringContextUtil.getServletContext().getRealPath(ksTail);
+			InputStream keyStoreIS = new FileInputStream(ksPath);
+			char[] keyktorePass = getKeystorePass().toCharArray();
+			KeyStore ksKeys = KeyStore.getInstance("JKS");
+			ksKeys.load(keyStoreIS, keyktorePass);
+			 
+			// KeyManagers decide which key material to use.
+			String kmfAlgorithm = KeyManagerFactory.getDefaultAlgorithm();	// Was "SunX509" which only seems to work with an IBM JDK.
+			m_logger.debug("KeyManagerFactory Algorithm:  " + kmfAlgorithm);
+			KeyManagerFactory kmf = KeyManagerFactory.getInstance(kmfAlgorithm);
+			kmf.init(ksKeys, keyktorePass);
+			keyManagers = kmf.getKeyManagers();
 		}
-		InputStream keyStoreIS = new FileInputStream(ksPath);
-		char[] keyktorePass = getKeystorePass().toCharArray();
-		KeyStore ksKeys = KeyStore.getInstance("JKS");
-		ksKeys.load(keyStoreIS, keyktorePass);
-		 
-		// KeyManagers decide which key material to use.
-		String kmfAlgorithm = KeyManagerFactory.getDefaultAlgorithm();	// Was "SunX509" which only seems to work with an IBM JDK.
-		m_logger.debug("KeyManagerFactory Algorithm:  " + kmfAlgorithm);
-		KeyManagerFactory kmf = KeyManagerFactory.getInstance(kmfAlgorithm);
-		kmf.init(ksKeys, keyktorePass);
-		KeyManager[] keyManagers = kmf.getKeyManagers();
+		catch (Exception e) {
+			setEnabled(false);
+			m_logger.error("Inbound SMTP Server:  Cannot access keystore file.  Inbound SMTP m_server will be disabled.", e);
+		}
+		
+		// If the keystore file couldn't be accessed...
+		if(!(isEnabled())) {
+			// ...bail.
+			return;
+		}
 		 
 		// SSLContext based on the Tomcat keystore and default trust
 		// managers.
