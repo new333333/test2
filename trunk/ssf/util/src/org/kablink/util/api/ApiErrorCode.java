@@ -80,6 +80,9 @@ public enum ApiErrorCode {
 	FILE_NOT_FOUND, // No file found with this name or id
 	FILE_VERSION_NOT_FOUND, // No file version found with this id
 	FILE_PATH_TOO_LONG, // File path too long
+	FILE_AV_VIRUS, // Anti-virus scanner detected that the file is infected with virus
+	FILE_AV_POLICY_VIOLATION, // Anti-virus scanner detected that the file violates some policy restrictions
+	FILE_AV_OTHER, // Anti-virus scanner detected some other error with the file
 
 	// Folder errors
 	FOLDER_NOT_FOUND, // No folder found with this name or id
@@ -213,7 +216,6 @@ public enum ApiErrorCode {
     NET_FOLDER_CONFIG_NOT_FOUND, // No net folder configuration found with this name or id
     NET_FOLDER_SERVER_NOT_FOUND, // No net folder server found with this name or id
     
-    // Anti-virus scanning errors
-    ANTIVIRUS_DETECTED, // Anti-virus scanning rejected input file
+    // Anti-virus scanner errors
     ANTIVIRUS_SCANNER_ERROR  // Problem with the anti-virus scanner
 }
