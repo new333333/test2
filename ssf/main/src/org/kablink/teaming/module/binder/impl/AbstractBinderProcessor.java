@@ -147,6 +147,7 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.servlet.listener.ContextListenerPostSpring;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
@@ -3178,7 +3179,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	public ChangeLog processChangeLog(Binder binder, String operation, boolean skipDbLog) {
 		ChangeLog changes = null;
 
-		if (!getAdminModule().isChangeLogEnabled()) {
+		// (bug #937273) 8/3/2015 JK - If this code is called during server startup
+		// (e.g. as part of system upgrade), do not create change log. 
+		if (ContextListenerPostSpring.isStartupInProgress() || !getAdminModule().isChangeLogEnabled()) {
 			//Don't build the ChangeLog object if it isn't going to be logged
 			return null;
 		}
