@@ -130,7 +130,23 @@ public class GwtClientHelper {
 	public enum ScrollType {
 		BOTH,
 		HORIZONTAL,
-		VERTICAL,
+		VERTICAL;
+		
+		/**
+		 * Returns the CSS style name to use for this ScrollType.
+		 * 
+		 * @return
+		 */
+		public String getScrollClass () {
+			String reply;
+			switch (this) {
+			default:
+			case VERTICAL:    reply = "gwtUI_ss_forceVerticalScroller";   break;
+			case BOTH:        reply = "gwtUI_ss_forceBothScrollers";      break;
+			case HORIZONTAL:  reply = "gwtUI_ss_forceHorizontalScroller"; break;
+			}
+			return reply;
+		}
 	}
 
 	/**
@@ -2568,42 +2584,56 @@ public class GwtClientHelper {
 	/**
 	 * Adds scroll bars to the main content panel for the duration of a
 	 * PopupPanel.
-	 *  
+	 * 
+	 * Returns CSS class name if one was added and null otherwise.
+	 * 
 	 * @param popup
 	 * @param scrollType
+	 * 
+	 * @return
 	 */	
-	public static void scrollUIForPopup(PopupPanel popup, ScrollType scrollType) {
+	public static String scrollUIForPopup(PopupPanel popup, ScrollType scrollType) {
 		// What class name do we use for the requested scroll type?
-		final String scrollClass;
-		switch (scrollType) {
-		default:
-		case VERTICAL:    scrollClass = "gwtUI_ss_forceVerticalScroller";   break;
-		case BOTH:        scrollClass = "gwtUI_ss_forceBothScrollers";      break;
-		case HORIZONTAL:  scrollClass = "gwtUI_ss_forceHorizontalScroller"; break;
-		}
+		String reply = null;
+		final String scrollClass = scrollType.getScrollClass();
 
 		// If the <body> doesn't currently have this class...
 		final Element bodyElement = RootPanel.getBodyElement();
 		String className = bodyElement.getClassName();
 		if ((!(hasString(className))) || (0 > className.indexOf(scrollClass))) {
 			// ...add it...
+			reply = scrollClass;
 			bodyElement.addClassName(scrollClass);
 
-			// ...and when the popup closes...
-			popup.addCloseHandler(new CloseHandler<PopupPanel>() {
-				@Override
-				public void onClose(CloseEvent<PopupPanel> event) {
-					// ...remove it.
-					bodyElement.removeClassName(scrollClass);
-				}
-			});
+			// ...and if we have a popup...
+			if (null != popup) {
+				// ...when the popup closes...
+				popup.addCloseHandler(new CloseHandler<PopupPanel>() {
+					@Override
+					public void onClose(CloseEvent<PopupPanel> event) {
+						// ...remove it.
+						bodyElement.removeClassName(scrollClass);
+					}
+				});
+			}
+			
+			// Otherwise, it's up to the caller to remove it.
 		}
+		
+		else {
+			// No scroll CSS was added!  Return null.
+			reply = null;
+		}
+
+		// If we get here, reply refers to the CSS class added or is
+		// null if one wasn't added.  Return it.
+		return reply;
 	}
 
-	public static void scrollUIForPopup(PopupPanel popup) {
+	public static String scrollUIForPopup(PopupPanel popup) {
 		// Always use the initial form of the method, defaulting to a
 		// vertical scroll bar only.
-		scrollUIForPopup(popup, ScrollType.VERTICAL);
+		return scrollUIForPopup(popup, ScrollType.VERTICAL);
 	}
 
 	/**

@@ -40,10 +40,12 @@ import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * Abstract base class used for a menu item popups.  
@@ -55,6 +57,7 @@ public abstract class MenuBarPopupBase {
 	protected GwtTeamingMainMenuImageBundle	m_images;			// Vibe's image  resource.
 	protected GwtTeamingMessages			m_messages;			// Vibe's string resources.
 	private   MenuBarBox					m_menuBox;			// The box wrapping the menu item that invokes this popup.
+	private   String						m_scrollCSSAdded;	// ScrollBar CSS class added to the main <BODY> while the menu is attached.
 	private   VibeMenuBar					m_menuBar;			// The menu bar containing this popup's menu items.
 	
 	/**
@@ -243,6 +246,10 @@ public abstract class MenuBarPopupBase {
 	public void onAttach() {
 		setCurrentBinder(m_binderProvider.getContextBinder());
 		populateMenu();
+		
+		// If needed, add CSS to the  main <BODY> so that it scrolls to
+		// handle long popups.
+		m_scrollCSSAdded = GwtClientHelper.scrollUIForPopup(null);	// null -> Styles are not automatically removed.  They are removed manually in MainMenuControl.
 	}
 	
 	/**
@@ -252,7 +259,12 @@ public abstract class MenuBarPopupBase {
 	 * they require.
 	 */
 	public void onDetach() {
-		// Noting to do generically.
+		// If we added ScrollBar CSS to the main <BODY>...
+		if (GwtClientHelper.hasString(m_scrollCSSAdded)) {
+			// ...remove it.
+			RootPanel.getBodyElement().removeClassName(m_scrollCSSAdded);
+			m_scrollCSSAdded = null;
+		}
 	}
 	
 	/**
