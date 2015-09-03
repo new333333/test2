@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,10 +41,12 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.ContextBinderProvider;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * Abstract base class used for a menu item popups.  
@@ -57,6 +59,7 @@ public abstract class MenuBarPopupBase {
 	protected GwtTeamingMessages			m_messages;			// Vibe's string resources.
 	protected GwtRpcServiceAsync			m_rpcService;		// Vibe's RPC service.
 	private   MenuBarBox					m_menuBox;			// The box wrapping the menu item that invokes this popup.
+	private   String						m_scrollCSSAdded;	// ScrollBar CSS class added to the main <BODY> while the menu is attached.
 	private   VibeMenuBar					m_menuBar;			// The menu bar containing this popup's menu items.
 	
 	/**
@@ -246,6 +249,10 @@ public abstract class MenuBarPopupBase {
 	public void onAttach() {
 		setCurrentBinder(m_binderProvider.getContextBinder());
 		populateMenu();
+		
+		// If needed, add CSS to the  main <BODY> so that it scrolls to
+		// handle long popups.
+		m_scrollCSSAdded = GwtClientHelper.scrollUIForPopup(null);	// null -> Styles are not automatically removed.  They are removed manually in MainMenuControl.
 	}
 	
 	/**
@@ -255,7 +262,12 @@ public abstract class MenuBarPopupBase {
 	 * they require.
 	 */
 	public void onDetach() {
-		// Noting to do generically.
+		// If we added ScrollBar CSS to the main <BODY>...
+		if (GwtClientHelper.hasString(m_scrollCSSAdded)) {
+			// ...remove it.
+			RootPanel.getBodyElement().removeClassName(m_scrollCSSAdded);
+			m_scrollCSSAdded = null;
+		}
 	}
 	
 	/**
