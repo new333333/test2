@@ -282,4 +282,8 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
         </addColumn>
 	</changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <addForeignKeyConstraint baseColumnNames="netFolderServerId" baseTableName="SS_NetFolderConfig" constraintName="FKCEAFD38EED036070" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="id" referencedTableName="SS_ResourceDriver" referencesUniqueColumn="false"/>
+    </changeSet>
+
 </databaseChangeLog>

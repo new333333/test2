@@ -355,4 +355,8 @@ GO
         </addColumn>
 	</changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <addForeignKeyConstraint baseColumnNames="netFolderServerId" baseTableName="SS_NetFolderConfig" baseTableSchemaName="dbo" constraintName="FKCEAFD38EED036070" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_ResourceDriver" referencedTableSchemaName="dbo" referencesUniqueColumn="false"/>
+    </changeSet>
+
 </databaseChangeLog>
