@@ -139,6 +139,10 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
         ResourceDriverConfig resourceDriverConfig = getResourceDriverModule().getResourceDriverConfig(id);
         NetFolderSelectSpec selectSpec = new NetFolderSelectSpec();
         selectSpec.setRootId(resourceDriverConfig.getId());
+        selectSpec.setIncludeHomeDirNetFolders(true);
+        selectSpec.setIncludeNonHomeDirNetFolders(true);
+        selectSpec.setPageSize(1);
+        selectSpec.setStartIndex(0);
         List<NetFolderConfig> nfcList = NetFolderHelper.getAllNetFolders2(getBinderModule(), getWorkspaceModule(), selectSpec);
         if (nfcList.size()>0) {
             throw new ForbiddenException(ApiErrorCode.NET_FOLDER_SERVER_IN_USE, "Cannot delete the net folder server because it is being referenced by one or more net folders.  You must delete the net folders before attempting to delete the net folder server.");
