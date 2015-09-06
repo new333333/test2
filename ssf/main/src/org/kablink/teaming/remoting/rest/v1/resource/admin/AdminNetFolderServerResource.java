@@ -167,7 +167,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
             selectSpec.setIncludeNonHomeDirNetFolders(false);
         } else {
             selectSpec.setIncludeHomeDirNetFolders(true);
-            selectSpec.setIncludeHomeDirNetFolders(true);
+            selectSpec.setIncludeNonHomeDirNetFolders(true);
         }
         List<NetFolderConfig> folderList = NetFolderHelper.getAllNetFolders2(getBinderModule(), getWorkspaceModule(), selectSpec);
 
