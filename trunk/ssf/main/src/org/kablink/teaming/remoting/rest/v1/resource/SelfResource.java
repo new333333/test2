@@ -134,7 +134,8 @@ public class SelfResource extends AbstractFileResource {
                         @QueryParam("include_mobile_devices") @DefaultValue("false") boolean includeMobileDevices,
                         @QueryParam("include_groups") @DefaultValue("false") boolean includeGroups,
                         @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        Principal entry = getLoggedInUser();
+        org.kablink.teaming.domain.User loggedInUser = getLoggedInUser();
+        Principal entry = loggedInUser;
 
         User user = ResourceUtil.buildUser((org.kablink.teaming.domain.User) entry, includeAttachments,
                 toDomainFormat(descriptionFormatStr));
@@ -153,7 +154,7 @@ public class SelfResource extends AbstractFileResource {
         } catch (Exception e) {
             logger.warn("An error occurred checking to see if the user's home folder needs to be updated", e);
         }
-        if (SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+        if (SearchUtils.userCanAccessMyFiles(this, loggedInUser)) {
             user.addAdditionalLink("my_files", "/self/my_files");
         }
         user.addAdditionalLink("net_folders", "/self/net_folders");
@@ -176,8 +177,9 @@ public class SelfResource extends AbstractFileResource {
         ZoneConfig zoneConfig = ResourceUtil.buildZoneConfig(
                 getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId()),
                 null,
-                AdminHelper.getEffectiveMobileAppsConfigOverride(this, getLoggedInUser()),
-                AdminHelper.getEffectiveDesktopAppsConfigOverride(this, getLoggedInUser()),
+                AdminHelper.getEffectiveMobileAppsConfigOverride(this, loggedInUser),
+                AdminHelper.getEffectiveDesktopAppsConfigOverride(this, loggedInUser),
+                loggedInUser,
                 this);
 
         user.setDesktopAppConfig(zoneConfig.getDesktopAppConfig());
