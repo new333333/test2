@@ -48,7 +48,7 @@ public class ZoneConfig extends BaseRestObject {
     private DiskQuotasConfig diskQuotasConfig;
     private DesktopAppConfig desktopAppConfig;
     private MobileAppConfig mobileAppConfig;
-   	private Long fileSizeLimitUserDefault;
+   	private Long fileUploadSizeLimit;
    	private Long fileVersionsMaxAge;
     private Boolean allowShareWithLdapGroups;
     private ExternalSharingRestrictions sharingRestrictions;
@@ -114,12 +114,13 @@ public class ZoneConfig extends BaseRestObject {
         this.mobileAppConfig = mobileAppConfig;
     }
 
-    public Long getFileSizeLimitUserDefault() {
-        return fileSizeLimitUserDefault;
+    public Long getFileUploadSizeLimit() {
+        return fileUploadSizeLimit;
     }
 
-    public void setFileSizeLimitUserDefault(Long fileSizeLimitUserDefault) {
-        this.fileSizeLimitUserDefault = fileSizeLimitUserDefault;
+    @XmlElement(name="file_upload_size_limit")
+    public void setFileUploadSizeLimit(Long fileUploadSizeLimit) {
+        this.fileUploadSizeLimit = fileUploadSizeLimit;
     }
 
     public Long getFileVersionsMaxAge() {

@@ -498,6 +498,7 @@ public class ResourceUtil {
 
     public static ZoneConfig buildZoneConfig(org.kablink.teaming.domain.ZoneConfig config, ZoneInfo zoneInfo,
                                              PrincipalMobileAppsConfig userMobileAppsConfig, PrincipalDesktopAppsConfig userDesktopAppsConfig,
+                                             org.kablink.teaming.domain.User loggedInUser,
                                              AllModulesInjected ami) {
         ZoneConfig modelConfig = new ZoneConfig();
         modelConfig.setId(config.getZoneId());
@@ -516,7 +517,17 @@ public class ResourceUtil {
         diskQuotasConfig.setUserDefault(config.getDiskQuotaUserDefault());
         modelConfig.setDiskQuotasConfig(diskQuotasConfig);
 
-        modelConfig.setFileSizeLimitUserDefault(config.getFileSizeLimitUserDefault());
+        Long fileSizeLimit = loggedInUser.getFileSizeLimit();
+        if (fileSizeLimit==null) {
+            fileSizeLimit = loggedInUser.getMaxGroupsFileSizeLimit();
+            if (fileSizeLimit==null) {
+                fileSizeLimit = config.getFileSizeLimitUserDefault();
+            }
+        }
+        if (fileSizeLimit!=null) {
+            fileSizeLimit = fileSizeLimit*1024*1024;
+        }
+        modelConfig.setFileUploadSizeLimit(fileSizeLimit);
         modelConfig.setFileVersionsMaxAge(config.getFileVersionsMaxAge());
         modelConfig.setAllowShareWithLdapGroups(ami.getAdminModule().isSharingWithLdapGroupsEnabled());
 

@@ -49,6 +49,7 @@ import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -132,9 +133,11 @@ public class MiscResource extends AbstractResource {
         org.kablink.teaming.domain.ZoneConfig zoneConfig =
       			getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
         ZoneInfo info = getZoneModule().getZoneInfo(zoneConfig.getZoneId());
+        User loggedInUser = getLoggedInUser();
         ZoneConfig result = ResourceUtil.buildZoneConfig(zoneConfig, info,
-                AdminHelper.getEffectiveMobileAppsConfigOverride(this, getLoggedInUser()),
-                AdminHelper.getEffectiveDesktopAppsConfigOverride(this, getLoggedInUser()),
+                AdminHelper.getEffectiveMobileAppsConfigOverride(this, loggedInUser),
+                AdminHelper.getEffectiveDesktopAppsConfigOverride(this, loggedInUser),
+                loggedInUser,
                 this);
         result.setSharingRestrictions(_getExternalSharingRestrictions());
         return result;
