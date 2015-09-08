@@ -404,7 +404,7 @@ public class LoginDlg extends DlgBox
 			public void onSubmit( SubmitEvent event )
 			{
 				// Do we need to check the captcha?
-				if ( m_captchaImg.isVisible() && m_captchaAlreadyChecked == false )
+				if ( (null != m_captchaImg) && m_captchaImg.isVisible() && (!m_captchaAlreadyChecked) )
 				{
 					AsyncCallback<VibeRpcResponse> rpcCallback;
 					ValidateCaptchaCmd cmd;
