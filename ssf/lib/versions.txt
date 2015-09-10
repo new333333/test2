@@ -121,7 +121,7 @@ log4jdbc4 1.2 (https://code.google.com/p/log4jdbc)
 Lucene 3.4.0
 Lucene contrib analyzers 3.4.0 (previous Lucene snowball library is removed because it is contained in this new library)
 Lucene contrib queries 3.4.0
-Milton 1.7.3 snapshot build (DRF:20150114 - plus SAXParser security fix)
+Milton 1.7.3 snapshot build (DRF:20150114 - plus SAXParser security fix; JK:20150910 - plus fix for bug #944988 and #944991)
 Mime Type Detection Utility 2.1.3 (mime-util-2.1.3.jar, http://sourceforge.net/projects/mime-util/files/mime-util) (used by Milton)
 MINA (Apache) mina-core.jar 1.1.6
 MINA (Apache) mina-filter-ssl.jar 1.1.6
