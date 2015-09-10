@@ -1930,7 +1930,11 @@ public class GwtClientHelper {
 	 * 
 	 * @return
 	 */
-	public static native boolean jsIsChrome() /*-{
+	public static boolean jsIsChrome() {
+		return (jsIsChromeImpl() && (!(jsIsEdge())));
+	}
+	
+	private static native boolean jsIsChromeImpl() /*-{
 		var agent = navigator.userAgent.toLowerCase();
 		if (agent.indexOf("chrome") != (-1)) {
 			return true;
@@ -1991,6 +1995,19 @@ public class GwtClientHelper {
 	public static native boolean jsIsIE() /*-{
 		var agent = navigator.userAgent.toLowerCase();
 		if (agent.indexOf("msie") != (-1)) {
+			return true;
+		}
+		return false;
+	}-*/;
+	
+	/**
+	 * Returns true if we're running in the Edge browser on Windows 10.
+	 * 
+	 * @return
+	 */
+	public static native boolean jsIsEdge() /*-{
+		var agent = navigator.userAgent.toLowerCase();
+		if ((agent.indexOf("like gecko") != -1) && (agent.indexOf(" edge/") != -1)) {
 			return true;
 		}
 		return false;
