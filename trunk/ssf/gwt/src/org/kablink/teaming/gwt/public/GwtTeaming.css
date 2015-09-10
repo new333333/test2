@@ -1286,14 +1286,15 @@ body, table td, select
 .marginTop15px	 {margin-top:   15px;}
 .marginTop20px	 {margin-top:   20px;}
 
-.marginleft1     {margin-left:   1em;}
-.marginleft2     {margin-left:   2em;}
-.marginleft2px   {margin-left:   2px;}
-.marginleft3     {margin-left:   3em !important;}
-.marginleft4     {margin-left:   4em;}
-.marginleft5px   {margin-left:   5px;}
-.marginleft8px   {margin-left:   8px;}
-.marginLeftPoint25em	{margin-left: .25em;}
+.marginleft1         {margin-left:   1em;}
+.marginleft2         {margin-left:   2em;}
+.marginleft2px       {margin-left:   2px;}
+.marginleft3         {margin-left:   3em !important;}
+.marginleft4         {margin-left:   4em;}
+.marginleft5px       {margin-left:   5px;}
+.marginleft8px       {margin-left:   8px;}
+.marginLeftPoint25em {margin-left: .25em;}
+.marginLeftCBWidth   {margin-left:  23px;}
 
 .marginbottom1   		{margin-bottom: 0.3em;}
 .marginbottom2   		{margin-bottom: 0.5em;}

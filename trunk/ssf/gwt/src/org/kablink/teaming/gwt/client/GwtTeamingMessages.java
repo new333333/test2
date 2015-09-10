@@ -3671,10 +3671,16 @@ public interface GwtTeamingMessages extends Messages {
 	String editKeyShieldConfigDlg_AuthConnectorNamesHint();
 	String editKeyShieldConfigDlg_ConnectorNamesLabel();
 	String editKeyShieldConfigDlg_EnableKeyShieldLabel();
-	String editKeyShieldConfigDlg_ErrorSavingConfig();
+	String editKeyShieldConfigDlg_Error_DefaultWeb();
+	String editKeyShieldConfigDlg_Error_DefaultWebDAV();
+	String editKeyShieldConfigDlg_Error_SavingConfig();
+	String editKeyShieldConfigDlg_Error_SsoErrorMessageForWeb();
+	String editKeyShieldConfigDlg_Error_SsoErrorMessageForWebdav();
+	String editKeyShieldConfigDlg_HardwareTokenRequiredLabel();
 	String editKeyShieldConfigDlg_Header();
 	String editKeyShieldConfigDlg_HttpConnectionTimeoutLabel();
 	String editKeyShieldConfigDlg_MilliSecondsLabel();
+	String editKeyShieldConfigDlg_NonSsoAllowedForLdapUserLabel();
 	String editKeyShieldConfigDlg_ReadingConfig();
 	String editKeyShieldConfigDlg_SavingConfig();
 	String editKeyShieldConfigDlg_ServerUrlLabel();

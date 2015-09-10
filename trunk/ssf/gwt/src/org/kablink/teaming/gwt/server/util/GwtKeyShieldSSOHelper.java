@@ -66,21 +66,25 @@ public class GwtKeyShieldSSOHelper {
 	 * Converts a domain based KeyShieldConfig object to a GWT based
 	 * GwtKeyShieldConfig object.
 	 */
-	private static GwtKeyShieldConfig getGwtKeyShieldConfigFromKeyShieldConfig(KeyShieldConfig keyShieldConfig) {
-		GwtKeyShieldConfig config = GwtKeyShieldConfig.getGwtKeyShieldConfig();
+	private static GwtKeyShieldConfig getGwtKSCFromKSC(KeyShieldConfig ksc) {
+		GwtKeyShieldConfig gwtKsc = GwtKeyShieldConfig.getGwtKeyShieldConfig();
 		
-		config.setApiAuthKey(        keyShieldConfig.getApiAuthKey()                );
-		config.setAuthConnectorNames(keyShieldConfig.getAuthConnectorNamesAsSet()   );
-		config.setUsernameAttributeAlias(keyShieldConfig.getUsernameAttributeAlias());
+		gwtKsc.setApiAuthKey(        ksc.getApiAuthKey()                );
+		gwtKsc.setAuthConnectorNames(ksc.getAuthConnectorNamesAsSet()   );
+		gwtKsc.setUsernameAttributeAlias(ksc.getUsernameAttributeAlias());
 		
-		Integer timeout = keyShieldConfig.getHttpTimeout();
-		if (null == timeout) config.setHttpConnectionTimeout(250    );
-		else                 config.setHttpConnectionTimeout(timeout);
+		Integer timeout = ksc.getHttpTimeout();
+		if (null == timeout) gwtKsc.setHttpConnectionTimeout(250    );
+		else                 gwtKsc.setHttpConnectionTimeout(timeout);
 		
-		config.setIsEnabled(keyShieldConfig.getEnabled()  );
-		config.setServerUrl(keyShieldConfig.getServerUrl());
+		gwtKsc.setIsEnabled(               ksc.getEnabled()                 );
+		gwtKsc.setServerUrl(               ksc.getServerUrl()               );
+		gwtKsc.setHardwareTokenRequired(   ksc.getHardwareTokenRequired()   );
+		gwtKsc.setNonSsoAllowedForLdapUser(ksc.getNonSsoAllowedForLdapUser());
+		gwtKsc.setSsoErrorMessageForWeb(   ksc.getSsoErrorMessageForWeb()   );
+		gwtKsc.setSsoErrorMessageForWebdav(ksc.getSsoErrorMessageForWebdav());
 		
-		return config;
+		return gwtKsc;
 	}
 	
 	/**
@@ -104,7 +108,7 @@ public class GwtKeyShieldSSOHelper {
 		}
 
 		if (null == keyShieldConfig) config = null;	// We return null as an indication that there was no value for this zone.
-		else                         config = getGwtKeyShieldConfigFromKeyShieldConfig( keyShieldConfig );
+		else                         config = getGwtKSCFromKSC( keyShieldConfig );
 		
 		return config;
 	}
@@ -113,17 +117,21 @@ public class GwtKeyShieldSSOHelper {
 	 * Converts a GWT based GwtKeyShieldConfig object to a domain based
 	 * KeyShieldConfig object.
 	 */
-	private static KeyShieldConfig getKeyShieldConfigFromGwtKeyShieldConfig(Long zoneId, GwtKeyShieldConfig config) {
-		KeyShieldConfig keyShieldConfig = new KeyShieldConfig(zoneId);
-		if (null != config) {
-			keyShieldConfig.setApiAuthKey(               config.getApiAuthKey()            );
-			keyShieldConfig.setAuthConnectorNamesFromSet(config.getAuthConnectorNames()    );
-			keyShieldConfig.setUsernameAttributeAlias(   config.getUsernameAttributeAlias());
-			keyShieldConfig.setEnabled(                  config.isEnabled()                );
-			keyShieldConfig.setHttpTimeout(              config.getHttpConnectionTimeout() );
-			keyShieldConfig.setServerUrl(                config.getServerUrl()             );
+	private static KeyShieldConfig getKSCFromGwtKSC(Long zoneId, GwtKeyShieldConfig gwtKsc) {
+		KeyShieldConfig ksc = new KeyShieldConfig(zoneId);
+		if (null != gwtKsc) {
+			ksc.setApiAuthKey(               gwtKsc.getApiAuthKey()              );
+			ksc.setAuthConnectorNamesFromSet(gwtKsc.getAuthConnectorNames()      );
+			ksc.setUsernameAttributeAlias(   gwtKsc.getUsernameAttributeAlias()  );
+			ksc.setEnabled(                  gwtKsc.isEnabled()                  );
+			ksc.setHttpTimeout(              gwtKsc.getHttpConnectionTimeout()   );
+			ksc.setServerUrl(                gwtKsc.getServerUrl()               );
+			ksc.setHardwareTokenRequired(    gwtKsc.isHardwareTokenRequired()    );
+			ksc.setNonSsoAllowedForLdapUser( gwtKsc.isNonSsoAllowedForLdapUser() );
+			ksc.setSsoErrorMessageForWeb(    gwtKsc.getSsoErrorMessageForWeb()   );
+			ksc.setSsoErrorMessageForWebdav( gwtKsc.getSsoErrorMessageForWebdav());
 		}
-		return keyShieldConfig;
+		return ksc;
 	}
 	
 	/**
@@ -140,7 +148,7 @@ public class GwtKeyShieldSSOHelper {
 
 		try {
 			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-			KeyShieldConfig keyShieldConfig = getKeyShieldConfigFromGwtKeyShieldConfig(zoneId, config);
+			KeyShieldConfig keyShieldConfig = getKSCFromGwtKSC(zoneId, config);
 			
 			bs.getKeyShieldModule().saveKeyShieldConfig(zoneId, keyShieldConfig);
 			responseData.setSaveSuccessfull(true);
@@ -165,7 +173,7 @@ public class GwtKeyShieldSSOHelper {
 		TestKeyShieldConnectionResponse response = new TestKeyShieldConnectionResponse();
 		
 		try {
-			KeyShieldConfig ksConfig = getKeyShieldConfigFromGwtKeyShieldConfig(
+			KeyShieldConfig ksConfig = getKSCFromGwtKSC(
 				RequestContextHolder.getRequestContext().getZoneId(),
 				gwtConfig );
 			

@@ -46,9 +46,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData {
 	private boolean			m_enabled;					//
+	private boolean			m_hardwareTokenRequired;	//
+	private boolean			m_nonSsoAllowedForLdapUser;	//
 	private int				m_httpConnectionTimeout;	// Timeout in milliseconds.
 	private String			m_apiAuthKey;				//
 	private String			m_serverUrl;				//
+	private String			m_ssoErrorMessageForWeb;	//
+	private String			m_ssoErrorMessageForWebdav;	//
 	private String			m_usernameAttributeAlias;	//
 	private TreeSet<String>	m_setOfAuthConnectorNames;	//
 	
@@ -79,12 +83,16 @@ public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public boolean                   isEnabled()                 {return m_enabled;                }
-	public int                       getHttpConnectionTimeout()  {return m_httpConnectionTimeout;  }
-	public String                    getApiAuthKey()             {return m_apiAuthKey;             }
-	public String                    getServerUrl()              {return m_serverUrl;              }
-	public String                    getUsernameAttributeAlias() {return m_usernameAttributeAlias; }
-	public TreeSet<String>           getAuthConnectorNames()     {return m_setOfAuthConnectorNames;}
+	public boolean                   isEnabled()                   {return m_enabled;                 }
+	public boolean                   isHardwareTokenRequired()     {return m_hardwareTokenRequired;   }
+	public boolean                   isNonSsoAllowedForLdapUser()  {return m_nonSsoAllowedForLdapUser;}
+	public int                       getHttpConnectionTimeout()    {return m_httpConnectionTimeout;   }
+	public String                    getApiAuthKey()               {return m_apiAuthKey;              }
+	public String                    getServerUrl()                {return m_serverUrl;               }
+	public String                    getSsoErrorMessageForWeb()    {return m_ssoErrorMessageForWeb;   }
+	public String                    getSsoErrorMessageForWebdav() {return m_ssoErrorMessageForWebdav;}
+	public String                    getUsernameAttributeAlias()   {return m_usernameAttributeAlias;  }
+	public TreeSet<String>           getAuthConnectorNames()       {return m_setOfAuthConnectorNames; }
 	
 	
 	/**
@@ -92,10 +100,14 @@ public class GwtKeyShieldConfig implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @param
 	 */
-	public void setIsEnabled(             boolean         enabled)                {m_enabled                 = enabled;               }
-	public void setHttpConnectionTimeout( int             timeout)                {m_httpConnectionTimeout   = timeout;               }
-	public void setApiAuthKey(            String          authKey)                {m_apiAuthKey              = authKey;               }
-	public void setServerUrl(             String          serverUrl)              {m_serverUrl               = serverUrl;             }
-	public void setUsernameAttributeAlias(String          usernameAttributeAlias) {m_usernameAttributeAlias  = usernameAttributeAlias;}
-	public void setAuthConnectorNames(    TreeSet<String> authConnectorNames)     {m_setOfAuthConnectorNames = authConnectorNames;    }
+	public void setIsEnabled(               boolean         enabled)                  {m_enabled                  = enabled;                 }
+	public void setHardwareTokenRequired(   boolean         hardwareTokenRequired)    {m_hardwareTokenRequired    = hardwareTokenRequired;   }
+	public void setNonSsoAllowedForLdapUser(boolean         nonSsoAllowedForLdapUser) {m_nonSsoAllowedForLdapUser = nonSsoAllowedForLdapUser;}
+	public void setHttpConnectionTimeout(   int             timeout)                  {m_httpConnectionTimeout    = timeout;                 }
+	public void setApiAuthKey(              String          authKey)                  {m_apiAuthKey               = authKey;                 }
+	public void setServerUrl(               String          serverUrl)                {m_serverUrl                = serverUrl;               }
+	public void setSsoErrorMessageForWeb(   String          ssoErrorMessageForWeb)    {m_ssoErrorMessageForWeb    = ssoErrorMessageForWeb;   }
+	public void setSsoErrorMessageForWebdav(String          ssoErrorMessageForWebdav) {m_ssoErrorMessageForWebdav = ssoErrorMessageForWebdav;}
+	public void setUsernameAttributeAlias(  String          usernameAttributeAlias)   {m_usernameAttributeAlias   = usernameAttributeAlias;  }
+	public void setAuthConnectorNames(      TreeSet<String> authConnectorNames)       {m_setOfAuthConnectorNames  = authConnectorNames;      }
 }
