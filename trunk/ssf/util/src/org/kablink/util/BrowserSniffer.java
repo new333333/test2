@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  *
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -52,6 +52,26 @@ public class BrowserSniffer {
 		if ((acceptEncoding != null) &&
 			(acceptEncoding.indexOf(_GZIP) != -1)) {
 
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public static boolean is_edge(HttpServletRequest req) {
+		if (req == null) {
+			return false;
+		}
+
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+
+		if (agent == null) {
+			return false;
+		}
+
+		agent = agent.toLowerCase();
+		if ((agent.indexOf("like gecko") != -1) && (agent.indexOf(" edge/") != -1)) {
 			return true;
 		}
 		else {
@@ -390,7 +410,7 @@ public class BrowserSniffer {
 
 		agent = agent.toLowerCase();
 
-		if (agent.indexOf("chrome") != -1) {
+		if ((agent.indexOf("chrome") != -1) && (!(is_edge(req)))) {
 			return true;
 		}
 		else {

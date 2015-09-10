@@ -1381,6 +1381,12 @@ public final class MiscUtil {
 			}
 		}
 		
+		else if (BrowserSniffer.is_edge(req)) {
+			// NPAPI is not supported using the Edge browser on Windows
+			// 10.
+			return false;
+		}
+		
 		// If we get here, we assume the NPAPIs are supported.  Return
 		// true.
 		return true;
