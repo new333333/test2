@@ -359,4 +359,36 @@ GO
         <addForeignKeyConstraint baseColumnNames="netFolderServerId" baseTableName="SS_NetFolderConfig" baseTableSchemaName="dbo" constraintName="FKCEAFD38EED036070" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_ResourceDriver" referencedTableSchemaName="dbo" referencesUniqueColumn="false"/>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="25">
+        <addColumn schemaName="dbo" tableName="SS_KeyShieldConfig">
+            <column name="hardwareTokenRequired" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="26">
+        <addColumn schemaName="dbo" tableName="SS_KeyShieldConfig">
+            <column name="nonSsoAllowedForLdapUser" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="27">
+        <addColumn schemaName="dbo" tableName="SS_KeyShieldConfig">
+            <column name="ssoErrorMessageForWeb" type="NVARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <addColumn schemaName="dbo" tableName="SS_KeyShieldConfig">
+            <column name="ssoErrorMessageForWebdav" type="NVARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

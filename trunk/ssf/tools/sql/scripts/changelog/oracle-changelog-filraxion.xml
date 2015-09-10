@@ -286,4 +286,36 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
         <addForeignKeyConstraint baseColumnNames="netFolderServerId" baseTableName="SS_NetFolderConfig" constraintName="FKCEAFD38EED036070" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" referencedColumnNames="id" referencedTableName="SS_ResourceDriver" referencesUniqueColumn="false"/>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="25">
+        <addColumn tableName="SS_KeyShieldConfig">
+            <column name="hardwareTokenRequired" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="26">
+        <addColumn tableName="SS_KeyShieldConfig">
+            <column name="nonSsoAllowedForLdapUser" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="27">
+        <addColumn tableName="SS_KeyShieldConfig">
+            <column name="ssoErrorMessageForWeb" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <addColumn tableName="SS_KeyShieldConfig">
+            <column name="ssoErrorMessageForWebdav" type="VARCHAR2(128 CHAR)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -14,5 +14,9 @@
 	<property name="authConnectorNames" access="field" length="128"/>
 	<property name="lastUpdateTime" access="field"/>
 	<property name="usernameAttributeAlias" access="field" length="16"/>
+	<property name="hardwareTokenRequired" access="field"/>
+	<property name="nonSsoAllowedForLdapUser" access="field"/>
+	<property name="ssoErrorMessageForWeb" access="field" length="128"/>
+	<property name="ssoErrorMessageForWebdav" access="field" length="128"/>
   </class>
 </hibernate-mapping>
