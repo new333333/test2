@@ -69,6 +69,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -89,14 +90,20 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		EditSuccessfulHandler,
 		EditCanceledHandler
 {
+	private final static boolean	HARD_CODE_SSO_ERROR_STRINGS	= false;	// Jong requested these be hard coded.  That felt wrong so we pull them out of the resources.  Changing this to true will use hard coded versions.
+	
 	private boolean						m_testConnectionInProgress;			//
 	private CheckBox					m_enableKeyShieldCheckbox;			//
+	private CheckBox					m_hardwareTokenRequiredCheckbox;	//
+	private CheckBox					m_nonSsoAllowedForLdapUserCheckbox;	//
 	private GwtKeyShieldConfig			m_config;							//
 	private GwtTeamingMessages			m_messages;							//
 	private Label						m_usernameAttributeAliasHint;		//
 	private TextBox						m_apiAuthKeyTextBox;				//
 	private TextBox						m_authConnectorNamesTextBox;		//
 	private TextBox						m_serverUrlTextBox;					//
+	private TextBox						m_ssoErrorMessageForWeb;			//
+	private TextBox						m_ssoErrorMessageForWebdav;			//
 	private TextBox						m_timeoutTextBox;					//
 	private TextBox						m_usernameAttributeAliasTextBox;	//
 	private FlowPanel					m_alertPanel;						//
@@ -246,6 +253,62 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		m_usernameAttributeAliasTextBox = new TextBox();
 		m_usernameAttributeAliasTextBox.setVisibleLength(40);
 		table.setWidget(row, 1, m_usernameAttributeAliasTextBox);
+		row += 1;
+		
+		// Add the controls for entering the two-factor authentication
+		// settings.  First, add a little space.
+		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName("editKeyShieldConfigDlg_ConnectorNamesSpacing");
+		table.setWidget(row, 0, tmpPanel);
+		row += 1;
+
+		// Add the non-SSO allowed for LDAP users checkbox.
+		m_nonSsoAllowedForLdapUserCheckbox = new CheckBox(m_messages.editKeyShieldConfigDlg_NonSsoAllowedForLdapUserLabel());
+		table.setWidget(row, 0, m_nonSsoAllowedForLdapUserCheckbox);
+		FlexCellFormatter fcf = table.getFlexCellFormatter();
+		fcf.setColSpan(row, 0, 2);
+		row += 1;
+
+		// Add the hardware token required checkbox.
+		m_hardwareTokenRequiredCheckbox = new CheckBox(m_messages.editKeyShieldConfigDlg_HardwareTokenRequiredLabel());
+		table.setWidget(row, 0, m_hardwareTokenRequiredCheckbox);
+		fcf.setColSpan(row, 0, 2);
+		m_hardwareTokenRequiredCheckbox.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				boolean checked = m_hardwareTokenRequiredCheckbox.getValue();
+				m_ssoErrorMessageForWeb.setEnabled(   checked);
+				m_ssoErrorMessageForWebdav.setEnabled(checked);
+			}
+		});
+		row += 1;
+		
+		// Add the prompt for error to display by the web client for
+		// SSO errors.
+		tmpPanel = new FlowPanel();
+		label = new Label(m_messages.editKeyShieldConfigDlg_Error_SsoErrorMessageForWeb());
+		label.addStyleName("marginLeftCBWidth");
+		tmpPanel.add(label);
+		table.setHTML(row, 0, tmpPanel.getElement().getInnerHTML());
+		
+		m_ssoErrorMessageForWeb = new TextBox();
+		m_ssoErrorMessageForWeb.setVisibleLength(60);
+		m_ssoErrorMessageForWeb.setMaxLength(128);
+		table.setWidget(row, 1, m_ssoErrorMessageForWeb);
+		row += 1;
+		
+		// Add the prompt for error to display by WebDAV clients for
+		// SSO errors.
+		tmpPanel = new FlowPanel();
+		label = new Label(m_messages.editKeyShieldConfigDlg_Error_SsoErrorMessageForWebdav());
+		label.addStyleName("marginLeftCBWidth");
+		tmpPanel.add(label);
+		table.setHTML(row, 0, tmpPanel.getElement().getInnerHTML());
+		
+		m_ssoErrorMessageForWebdav = new TextBox();
+		m_ssoErrorMessageForWebdav.setVisibleLength(60);
+		m_ssoErrorMessageForWebdav.setMaxLength(128);
+		table.setWidget(row, 1, m_ssoErrorMessageForWebdav);
 		row += 1;
 		
 		// Add a 'test connection' button.
@@ -443,6 +506,10 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		config.setServerUrl(getServerUrl());
 		config.setUsernameAttributeAlias(getUsernameAttributeAlias());
 		config.setAuthConnectorNames(getAuthConnectorNames());
+		config.setHardwareTokenRequired(getHardwareTokenRequired());
+		config.setNonSsoAllowedForLdapUser(getNonSsoAllowedForLdapUser());
+		config.setSsoErrorMessageForWeb(getSsoErrorMessageForWeb());
+		config.setSsoErrorMessageForWebdav(getSsoErrorMessageForWebdav());
 		
 		return config;
 	}
@@ -471,6 +538,12 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		helpData.setPageId("keyshield");
 		return helpData;
 	}
+
+	/*
+	 */
+	private boolean getHardwareTokenRequired() {
+		return m_hardwareTokenRequiredCheckbox.getValue();
+	}
 	
 	/*
 	 */
@@ -487,6 +560,24 @@ public class EditKeyShieldConfigDlg extends DlgBox
 	 */
 	private boolean getIsKeyShieldEnabled() {
 		return m_enableKeyShieldCheckbox.getValue();
+	}
+
+	/*
+	 */
+	private boolean getNonSsoAllowedForLdapUser() {
+		return m_nonSsoAllowedForLdapUserCheckbox.getValue();
+	}
+	
+	/*
+	 */
+	private String getSsoErrorMessageForWeb() {
+		return m_ssoErrorMessageForWeb.getValue();
+	}
+
+	/*
+	 */
+	private String getSsoErrorMessageForWebdav() {
+		return m_ssoErrorMessageForWebdav.getValue();
 	}
 
 	/*
@@ -531,6 +622,37 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		
 		return value;
 	}
+
+	/*
+	 */
+	private String getErrorMessage(GwtKeyShieldConfig gwtKsc, boolean webDAV) {
+		String reply = null;
+		
+		boolean hardCodeSSOErrorStrings = HARD_CODE_SSO_ERROR_STRINGS;
+		if (webDAV) {
+			if (null != gwtKsc) {
+				reply = gwtKsc.getSsoErrorMessageForWebdav();
+			}
+			if (!(GwtClientHelper.hasString(reply))) {
+				if (hardCodeSSOErrorStrings)
+				     reply = "Card presence is required for WebDAV interface access";
+				else reply = m_messages.editKeyShieldConfigDlg_Error_DefaultWebDAV();
+			}
+		}
+		
+		else {
+			if (null != gwtKsc) {
+				reply = gwtKsc.getSsoErrorMessageForWeb();
+			}
+			if (!(GwtClientHelper.hasString(reply))) {
+				if (hardCodeSSOErrorStrings)
+				     reply = "Card presence is required for Web interface access";
+				else reply = m_messages.editKeyShieldConfigDlg_Error_DefaultWeb();
+			}
+		}
+		
+		return reply;
+	}
 	
 	/*
 	 */
@@ -552,6 +674,12 @@ public class EditKeyShieldConfigDlg extends DlgBox
 			m_authConnectorNamesTextBox.setValue("");
 			m_usernameAttributeAliasTextBox.setValue(GwtClientHelper.isLicenseFilr() ? "x-filr" : "x-vibe");
 			m_usernameAttributeAliasHint.setVisible(true);
+			m_nonSsoAllowedForLdapUserCheckbox.setValue(true);
+			m_hardwareTokenRequiredCheckbox.setValue(false);
+			m_ssoErrorMessageForWeb.setValue(   getErrorMessage(null, false));
+			m_ssoErrorMessageForWeb.setEnabled(false);
+			m_ssoErrorMessageForWebdav.setValue(getErrorMessage(null, true));
+			m_ssoErrorMessageForWebdav.setEnabled(false);
 		}
 		
 		else {
@@ -568,6 +696,14 @@ public class EditKeyShieldConfigDlg extends DlgBox
 			String unaa = m_config.getUsernameAttributeAlias();
 			m_usernameAttributeAliasTextBox.setValue((null == unaa) ? "" : unaa);
 			m_usernameAttributeAliasHint.setVisible(false);
+			
+			m_nonSsoAllowedForLdapUserCheckbox.setValue(m_config.isNonSsoAllowedForLdapUser());
+			boolean hardwareTokenRequired = m_config.isHardwareTokenRequired();
+			m_hardwareTokenRequiredCheckbox.setValue(hardwareTokenRequired);
+			m_ssoErrorMessageForWeb.setValue(getErrorMessage(m_config, false));
+			m_ssoErrorMessageForWeb.setEnabled(m_config.isHardwareTokenRequired());
+			m_ssoErrorMessageForWebdav.setValue(getErrorMessage(m_config, true));
+			m_ssoErrorMessageForWebdav.setEnabled(m_config.isHardwareTokenRequired());
 		}
 	}
 	
@@ -717,7 +853,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 					
 					else {
 						FlowPanel errorPanel = getErrorPanel();
-						Label label = new Label(GwtTeaming.getMessages().editKeyShieldConfigDlg_ErrorSavingConfig());
+						Label label = new Label(GwtTeaming.getMessages().editKeyShieldConfigDlg_Error_SavingConfig());
 						label.addStyleName("dlgErrorLabel");
 						errorPanel.add(label);
 						

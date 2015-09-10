@@ -84,6 +84,10 @@ public class KeyShieldConfig extends ZonedObject implements LastUpdateTimeAware
 		setEnabled( config.getEnabled() );
 		setHttpTimeout( config.getHttpTimeout() );
 		setServerUrl( config.getServerUrl() );
+		setHardwareTokenRequired( config.getHardwareTokenRequired() );
+		setNonSsoAllowedForLdapUser( config.getNonSsoAllowedForLdapUser() );
+		setSsoErrorMessageForWeb( config.getSsoErrorMessageForWeb() );
+		setSsoErrorMessageForWebdav( config.getSsoErrorMessageForWebdav() );
 	}
 	
 	/**
