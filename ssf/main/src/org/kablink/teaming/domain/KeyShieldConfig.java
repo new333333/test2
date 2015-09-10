@@ -49,6 +49,10 @@ public class KeyShieldConfig extends ZonedObject implements LastUpdateTimeAware
 	private String authConnectorNames;	// Names are separated by a ','
 	private Long lastUpdateTime;
 	private String usernameAttributeAlias;
+	private Boolean hardwareTokenRequired;
+	private Boolean nonSsoAllowedForLdapUser;
+	private String ssoErrorMessageForWeb;
+	private String ssoErrorMessageForWebdav;
 
 	/**
 	 * 
@@ -243,4 +247,45 @@ public class KeyShieldConfig extends ZonedObject implements LastUpdateTimeAware
 	public Long getLastUpdateTime() {
 		return lastUpdateTime;
 	}
+
+	public boolean getHardwareTokenRequired() {
+		if(hardwareTokenRequired == null)
+			return false; // Default is not-required.
+		else
+			return hardwareTokenRequired.booleanValue();
+	}
+
+	public void setHardwareTokenRequired(boolean hardwareTokenRequired) {
+		this.hardwareTokenRequired = Boolean.valueOf(hardwareTokenRequired);
+	}
+
+	public boolean getNonSsoAllowedForLdapUser() {
+		if(nonSsoAllowedForLdapUser == null)
+			return true; // Default is true, primarily for backward compatibility
+		else
+			return nonSsoAllowedForLdapUser.booleanValue();
+	}
+
+	public void setNonSsoAllowedForLdapUser(
+			boolean nonSsoAllowedForLdapUser) {
+		this.nonSsoAllowedForLdapUser = Boolean.valueOf(nonSsoAllowedForLdapUser);
+	}
+
+	public String getSsoErrorMessageForWeb() {
+		return ssoErrorMessageForWeb;
+	}
+
+	public void setSsoErrorMessageForWeb(String ssoErrorMessageForWeb) {
+		this.ssoErrorMessageForWeb = ssoErrorMessageForWeb;
+	}
+
+	public String getSsoErrorMessageForWebdav() {
+		return ssoErrorMessageForWebdav;
+	}
+
+	public void setSsoErrorMessageForWebdav(String ssoErrorMessageForWebdav) {
+		this.ssoErrorMessageForWebdav = ssoErrorMessageForWebdav;
+	}
+	
+	
 }
