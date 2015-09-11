@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -62,7 +62,11 @@ import org.kablink.teaming.util.Utils;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public class AbstractMailPreparator implements MimeMessagePreparator {
 	protected Log logger;
 	protected String defaultFrom;
@@ -71,13 +75,20 @@ public class AbstractMailPreparator implements MimeMessagePreparator {
 	protected AbstractMailPreparator(Log logger) {
 		this.logger = logger;
 	}
+	
+	@Override
 	public void prepare(MimeMessage mimeMessage) throws MessagingException {};
+	
+	@Override
 	public void setDefaultFrom(String from) {
 		this.defaultFrom = from;
 	}
+	
+	@Override
 	public MimeMessage getMessage() {
 		return message;
 	}
+	
 	protected String getICalComponentType(Calendar iCal) {
 		if (!iCal.getComponents(Component.VTODO).isEmpty()) {
 			return Component.VTODO;
@@ -106,18 +117,32 @@ public class AbstractMailPreparator implements MimeMessagePreparator {
 				ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStream(iCal);				
 				String contentType = getCalendarContentType(componentType, ICalUtils.getMethod(iCal));
 				DataSource dataSource = createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
-				addAttachment(fileName, new DataHandler(dataSource), helper);			
+				addAttachment(
+					fileName,
+					new DataHandler(dataSource),
+					helper,
+					true);	// true -> We adding an iCal attachment.  Bugzilla 943599:  Disables adding of 'Content-disposition:  attachment; filename=...'.			
 			}
+			
 			else if (addAlternative) {
 				boolean asAttachmentDisposition = addAttachment;
 				ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStream(iCal);				
 				String contentType = getCalendarContentType(componentType, ICalUtils.getMethod(iCal));
 				DataSource dataSource = createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
-				addAlternativeBodyPart(fileName, asAttachmentDisposition, new DataHandler(dataSource), helper);
+				addAlternativeBodyPart(
+					fileName,
+					asAttachmentDisposition,
+					new DataHandler(dataSource),
+					helper,
+					true);	// true -> We adding an iCal body part.  Bugzilla 943599:  Disables adding of 'Content-disposition:  attachment; filename=...'.
 			}
-		} catch (IOException e) {
+		}
+		
+		catch (IOException e) {
 			logger.error(e);
-		} catch (ValidationException e) {
+		}
+		
+		catch (ValidationException e) {
 			logger.error("Invalid calendar", e);
 		}
 	}
@@ -201,31 +226,50 @@ public class AbstractMailPreparator implements MimeMessagePreparator {
 		}
 	}
 	
-	public void addAttachment(String fileName, DataHandler dataHandler, MimeMessageHelper helper) throws MessagingException {
-		try {
-			fileName = MimeUtility.encodeText(fileName);
-		} catch (java.io.UnsupportedEncodingException  ignore) {};
+	public void addAttachment(String fileName, DataHandler dataHandler, MimeMessageHelper helper, boolean attrIsICal) throws MessagingException {
 		MimeBodyPart attachmentPart = new MimeBodyPart();
-		attachmentPart.setDisposition(MimeBodyPart.ATTACHMENT);
-		attachmentPart.setFileName(fileName);
 		attachmentPart.setDataHandler(dataHandler);
+		if (!attrIsICal) {
+			// Bugzilla 943599:  We don't add 'Content-disposition:
+			// attachment; filename=...' for iCal attachments.
+			attachmentPart.setDisposition(MimeBodyPart.ATTACHMENT         );
+			attachmentPart.setFileName(   getMimeEncodedFileName(fileName));
+		}
 		helper.getMimeMultipart().addBodyPart(attachmentPart);	
 	}
+	
+	public void addAttachment(String fileName, DataHandler dataHandler, MimeMessageHelper helper) throws MessagingException {
+		// Always use the initial form of the method.
+		addAttachment(fileName, dataHandler, helper, false);	// false -> Not an iCal.
+	}
 
-	public void addAlternativeBodyPart(String fileName, boolean asAttachmentDisposition, DataHandler dataHandler, MimeMessageHelper helper) throws MessagingException, IOException {
+	public void addAlternativeBodyPart(String fileName, boolean asAttachmentDisposition, DataHandler dataHandler, MimeMessageHelper helper, boolean attrIsICal) throws MessagingException, IOException {
 		MimeBodyPart bodyPart = getMainPart(helper);
-		MimeMultipart bodyContent = (MimeMultipart)bodyPart.getContent();
+		MimeMultipart bodyContent = ((MimeMultipart) bodyPart.getContent());
 		
 		MimeBodyPart alternativePart = new MimeBodyPart();
 		alternativePart.setDataHandler(dataHandler);
 		if (asAttachmentDisposition && fileName != null) {
-			try {
-				fileName = MimeUtility.encodeText(fileName);
-			} catch (java.io.UnsupportedEncodingException  ignore) {};
-			alternativePart.setDisposition(MimeBodyPart.ATTACHMENT);
-			alternativePart.setFileName(fileName);
+			if (!attrIsICal) {
+				// Bugzilla 943599:  We don't add 'Content-disposition:
+				// attachment; filename=...' for iCal attachments.
+				alternativePart.setDisposition(MimeBodyPart.ATTACHMENT         );
+				alternativePart.setFileName(   getMimeEncodedFileName(fileName));
+			}
 		}
 		bodyContent.addBodyPart(alternativePart);
+	}
+	
+	public void addAlternativeBodyPart(String fileName, boolean asAttachmentDisposition, DataHandler dataHandler, MimeMessageHelper helper) throws MessagingException, IOException {
+		// Always use the initial form of the method.
+		addAlternativeBodyPart(fileName, asAttachmentDisposition, dataHandler, helper, false);	// false -> Not an iCal.
+	}
+	
+	private String getMimeEncodedFileName(String fileName) {
+		try {
+			fileName = MimeUtility.encodeText(fileName);
+		} catch (java.io.UnsupportedEncodingException  ignore) {};
+		return fileName;
 	}
 	
 	public String getCalendarContentType(String component, String method) {
@@ -240,15 +284,19 @@ public class AbstractMailPreparator implements MimeMessagePreparator {
 		    final InputStreamSource inputStreamSource, final String contentType, final String name) {
 
 		return new DataSource() {
+			@Override
 			public InputStream getInputStream() throws IOException {
 				return inputStreamSource.getInputStream();
 			}
+			@Override
 			public OutputStream getOutputStream() {
 				throw new UnsupportedOperationException("Read-only javax.activation.DataSource");
 			}
+			@Override
 			public String getContentType() {
 				return contentType;
 			}
+			@Override
 			public String getName() {
 				return name;
 			}

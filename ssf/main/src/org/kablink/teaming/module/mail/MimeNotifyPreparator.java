@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -320,8 +320,12 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	public void prepare(MimeMessage mimeMessage) throws MessagingException {
 		// Make sure nothing saved yet.
 		notify = new Notify(messageType, locale, timezone, startDate);
-		notify.setAttachmentsIncluded(sendAttachments);
 		notify.setRedacted(redacted);
+		
+		// This needs to be set true, initially if sendAttachments is
+		// true so that the call to processor.build() below properly
+		// sets up the attachments set in notify.
+		notify.setAttachmentsIncluded(sendAttachments);
 				
 		message = null;
 		Map result=null;
@@ -335,6 +339,13 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 			     result = processor.buildMessage(binder, entry,   notify);
 			else result = processor.buildMessage(binder, entries, notify);
 		}
+
+		// Now, set notify's attachments included flag false, even if
+		// sendAttachements is true if there are aren't any actual
+		// attachments.
+		Set<FileAttachment> faSet = notify.getAttachments();
+		boolean hasFAs = MiscUtil.hasItems(faSet);
+		notify.setAttachmentsIncluded(sendAttachments && hasFAs);
 		
 		// Set up events here.
 		int multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED;
@@ -453,11 +464,18 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 				((String) result.get(EmailFormatter.TEXT)),
 				((String) result.get(EmailFormatter.HTML)),
 				helper);
-			if (sendAttachments) {
-				prepareAttachments(notify.getAttachments(), helper);
-				logFileAttachments(notify.getAttachments());
+			
+			// Are we supposed to send attachments and are there any
+			// attachments to send?
+			if (sendAttachments && hasFAs) {
+				// Yes!  Prepare and log them.
+				prepareAttachments(faSet, helper);
+				logFileAttachments(faSet        );
 			}
 			notify.clearAttachments();
+			
+			// Prepare any iCal's required because the entry is
+			// an event.
 			prepareICalendars(helper);
 		}
 		
@@ -494,43 +512,54 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		int eventsSize = notify.getEvents().size();
 		Calendar margedCalendars = null;
 		for (Iterator entryEventsIt = notify.getEvents().entrySet().iterator(); entryEventsIt.hasNext();) { 
-				Map.Entry mapEntry = (Map.Entry)entryEventsIt.next();
-				DefinableEntity entry = (DefinableEntity)mapEntry.getKey();
-				Collection events = (Collection)mapEntry.getValue();
-				Calendar iCal = icalModule.generate(entry, events, notify.getTimeZone().getID());
-				
-				String fileName = entry.getTitle() + MailModule.ICAL_FILE_EXTENSION;
-				if (eventsSize > 1) {
-					fileName = entry.getTitle() + c + MailModule.ICAL_FILE_EXTENSION;
+			Map.Entry mapEntry = ((Map.Entry) entryEventsIt.next());
+			DefinableEntity entry = ((DefinableEntity) mapEntry.getKey());
+			Collection events = ((Collection) mapEntry.getValue());
+			Calendar iCal = icalModule.generate(entry, events, notify.getTimeZone().getID());
+			
+			String fileName = (entry.getTitle() + MailModule.ICAL_FILE_EXTENSION);
+			if (eventsSize > 1) {
+				fileName = (entry.getTitle() + c + MailModule.ICAL_FILE_EXTENSION);
+			}
+			
+			// If OK to send TODO or not a TODO build alternative.
+			String component = getICalComponentType(iCal);
+			if (sendVTODO || !Component.VTODO.equals(component)) {
+				// Attach alternative iCalendar content.
+				if (eventsSize == 1 && messageType.includeICalAsAlternative()) {
+					// Always send as attachment and alternative text.
+					prepareICalendar(iCal, fileName, component, true, true, helper);
 				}
 				
-				String component = getICalComponentType(iCal);
-				//If okay to send todo or not a todo build alternatative
-				if (sendVTODO || !Component.VTODO.equals(component)) {
-					// 	attach alternative iCalendar content
-					if (eventsSize == 1 && messageType.includeICalAsAlternative()) {
-						//always send as attachment and alternative text
-						prepareICalendar(iCal, fileName, component, true, true, helper);
-					} else  {
-						//always send as attachment, not alternative
-						prepareICalendar(iCal, fileName, component, true, false, helper);
-						if (eventsSize > 1) {
-							if (margedCalendars == null) {
-								margedCalendars = new Calendar();
-							}
-							margedCalendars = Calendars.merge(margedCalendars, iCal);
-						}
-					}
-				} else {
-					//always send as attachment, not alternative
+				else  {
+					// Always send as attachment, not alternative.
 					prepareICalendar(iCal, fileName, component, true, false, helper);
+					if (eventsSize > 1) {
+						if (margedCalendars == null) {
+							margedCalendars = new Calendar();
+						}
+						margedCalendars = Calendars.merge(margedCalendars, iCal);
+					}
 				}
-			c++;
+			}
+			
+			else {
+				// Always send as attachment, not alternative.
+				prepareICalendar(iCal, fileName, component, true, false, helper);
+			}
+			
+			c += 1;
 		}
 		
 		if (margedCalendars != null) {
-			//add to alternative text, attachments handled already
-			prepareICalendar(margedCalendars, binder.getTitle() + MailModule.ICAL_FILE_EXTENSION, getICalComponentType(margedCalendars), false, true, helper);
+			// Add to alternative text, attachments handled already.
+			prepareICalendar(
+				margedCalendars,
+				(binder.getTitle() + MailModule.ICAL_FILE_EXTENSION),
+				getICalComponentType(margedCalendars),
+				false,
+				true,
+				helper);
 		}
 		
 		notify.clearEvents();
