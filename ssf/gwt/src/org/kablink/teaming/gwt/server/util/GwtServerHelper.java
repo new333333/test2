@@ -161,6 +161,7 @@ import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
+import org.kablink.teaming.gwt.client.GwtKeyShieldConfig;
 import org.kablink.teaming.gwt.client.GwtNetFolderGlobalSettings;
 import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
@@ -299,6 +300,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.ical.AttendedEntries;
+import org.kablink.teaming.module.keyshield.KShieldHelper;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapModule.LdapOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
@@ -6695,6 +6697,14 @@ public class GwtServerHelper {
 					loginInfo.setListOfOpenIDAuthProviders(listOfProviders);
 				}
 			}
+		}
+
+		// Get the KeyShield SSO information.
+		boolean ksHardwareTokenMissing = KShieldHelper.isHardwareTokenMissing();
+		loginInfo.setKeyShieldHardwareTokenMissing(ksHardwareTokenMissing);
+		if (ksHardwareTokenMissing) {
+			GwtKeyShieldConfig gwtKSConfig = GwtKeyShieldSSOHelper.getKeyShieldConfig(bs);
+			loginInfo.setKeyShieldErrorMessagesForWeb(gwtKSConfig.getSsoErrorMessageForWeb());
 		}
 		
 		return loginInfo;

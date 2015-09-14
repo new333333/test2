@@ -1861,6 +1861,11 @@ body, table td, select
 	white-space: normal;
 }
 
+.loginDlgKeyShieldErrorMessage {}
+.loginDlgKeyShieldPanel        {}
+.loginDlgKeyShieldRefererLink  {}
+.loginDlgKeyShieldRefererPanel {}
+
 
 
 
