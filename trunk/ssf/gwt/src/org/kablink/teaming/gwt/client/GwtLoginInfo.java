@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,99 +32,56 @@
  */
 package org.kablink.teaming.gwt.client;
 
-
-
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
- * This class holds Login information
+ * This class holds Login information.
+ * 
+ * @author drfoster@novell.com
  */
-public class GwtLoginInfo
-	implements IsSerializable, VibeRpcResponseData
-{
-	private GwtSelfRegistrationInfo m_selfRegInfo;;
-	private ArrayList<GwtOpenIDAuthenticationProvider> m_openIDAuthProviders;
-	private boolean m_allowAutoComplete;
-	private boolean m_allowOpenIdAuthentication;
+public class GwtLoginInfo implements IsSerializable, VibeRpcResponseData {
+	private ArrayList<GwtOpenIDAuthenticationProvider>	m_openIDAuthProviders;				//
+	private boolean										m_allowAutoComplete;				//
+	@SuppressWarnings("unused")
+	private boolean										m_allowOpenIdAuthentication;		// Unused since we dropped support for OpenID authentication.
+	private boolean										m_keyShieldHardwareTokenMissing;	//
+	private GwtSelfRegistrationInfo						m_selfRegInfo;						//
+	private String										m_keyShieldErrorMessagesForWeb;		//
 	
 	/**
+	 * Constructor method.
+	 */
+	public GwtLoginInfo() {
+		// Initialize the super class.
+		super();
+	}
+	
+	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public GwtLoginInfo()
-	{
-	}
+	public boolean                                    getAllowAutoComplete()             {return m_allowAutoComplete;            }
+	public boolean                                    getAllowOpenIdAuthentication()     {return false;                          }
+	public boolean                                    getKeyShieldHardwareTokenMissing() {return m_keyShieldHardwareTokenMissing;}
+	public ArrayList<GwtOpenIDAuthenticationProvider> getOpenIDAuthenticationProviders() {return m_openIDAuthProviders;          }
+	public GwtSelfRegistrationInfo                    getSelfRegistrationInfo()          {return m_selfRegInfo;                  }
+	public String                                     getKeyShieldErrorMessagesForWeb()  {return m_keyShieldErrorMessagesForWeb; }
+	
 	
 	/**
+	 * Set'er methods.
 	 * 
+	 * @param
 	 */
-	public boolean getAllowAutoComplete()
-	{
-		return m_allowAutoComplete;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getAllowOpenIdAuthentication()
-	{
-		// We are dropping support for OpenID authentication
-		return false;
-		//return m_allowOpenIdAuthentication;
-	}
-	
-	/**
-	 * 
-	 */
-	public ArrayList<GwtOpenIDAuthenticationProvider> getOpenIDAuthenticationProviders()
-	{
-		return m_openIDAuthProviders;
-	}
-	
-	/**
-	 * 
-	 */
-	public GwtSelfRegistrationInfo getSelfRegistrationInfo()
-	{
-		return m_selfRegInfo;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public void setAllowAutoComplete( boolean allowAutoComplete )
-	{
-		m_allowAutoComplete = allowAutoComplete;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAllowOpenIdAuthentication( boolean allowOpenIdAuthentication )
-	{
-		m_allowOpenIdAuthentication = allowOpenIdAuthentication;
-	}
-	
-	
-	/**
-	 * Set the list of OpenID authentication providers.
-	 */
-	public void setListOfOpenIDAuthProviders( ArrayList<GwtOpenIDAuthenticationProvider> listOfProviders )
-	{
-		m_openIDAuthProviders = listOfProviders;
-	}
-
-	/**
-	 * 
-	 */
-	public void setSelfRegistrationInfo( GwtSelfRegistrationInfo selfRegInfo )
-	{
-		m_selfRegInfo = selfRegInfo;
-	}
+	public void setAllowAutoComplete(            boolean                                    allowAutoComplete)             {m_allowAutoComplete             = allowAutoComplete;            }
+	public void setAllowOpenIdAuthentication(    boolean                                    allowOpenIdAuthentication)     {m_allowOpenIdAuthentication     = allowOpenIdAuthentication;    }
+	public void setKeyShieldHardwareTokenMissing(boolean                                    keyShieldHardwareTokenMissing) {m_keyShieldHardwareTokenMissing = keyShieldHardwareTokenMissing;}
+	public void setListOfOpenIDAuthProviders(    ArrayList<GwtOpenIDAuthenticationProvider> listOfProviders)               {m_openIDAuthProviders           = listOfProviders;              }
+	public void setSelfRegistrationInfo(         GwtSelfRegistrationInfo                    selfRegInfo)                   {m_selfRegInfo                   = selfRegInfo;                  }
+	public void setKeyShieldErrorMessagesForWeb( String                                     keyShieldErrorMessagesForWeb)  {m_keyShieldErrorMessagesForWeb  = keyShieldErrorMessagesForWeb; }
 }
-

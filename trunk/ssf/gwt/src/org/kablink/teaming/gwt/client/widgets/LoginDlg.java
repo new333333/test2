@@ -92,6 +92,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -108,6 +109,7 @@ import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
@@ -154,6 +156,12 @@ public class LoginDlg extends DlgBox
 	private TextBox m_captchaResponseTxtBox;
 	private ForgottenPwdDlg m_forgottenPwdDlg = null;
 	private ChangePasswordDlg m_changePwdDlg = null;
+
+	// Elements related to the KeyShield two-stage authentication.
+	private Element m_keyShieldErrorMessage;
+	private Element m_keyShieldRefererLink;
+	private Element m_keyShieldRefererPanel;
+	private Element m_keyShieldTwoStageAuthPanel;
 
 	private String m_loginUrl = null;
 	private String m_springSecurityRedirect = null;	// This values tells Teaming what URL to go to after the user authenticates.
@@ -715,45 +723,48 @@ public class LoginDlg extends DlgBox
 		}
 	}
 
-	/**
-	 * Hide/show controls on the dialog based on the given login info
+	/*
+	 * Hide/show controls on the dialog based on the given login info.
 	 */
-	private void danceDlg( GwtLoginInfo loginInfo, LoginStatus loginStatus )
-	{
-		debugAlert( "in danceDlg" );
+	private void danceDlg(GwtLoginInfo loginInfo, LoginStatus loginStatus) {
+		debugAlert("in danceDlg");
 		m_selfRegInfo = loginInfo.getSelfRegistrationInfo();
 		
-		switch ( loginStatus )
-		{
+		switch (loginStatus) {
 		case AuthenticationFailed:
 		case PromptForLogin:
 		case PwdResetVerified:
 		case WebAccessRestricted:
 		case PasswordExpired:
 			// Hide or show the self registration controls.
-			updateSelfRegistrationControls( m_selfRegInfo );
+			updateSelfRegistrationControls(m_selfRegInfo);
 
 			// Turn auto complete on/off.
 			if ( loginInfo.getAllowAutoComplete() == true )
-				m_formPanel.getElement().removeAttribute( "autocomplete" );
-			else
-				m_formPanel.getElement().setAttribute( "autocomplete", "off" );
+			     m_formPanel.getElement().removeAttribute("autocomplete"       );
+			else m_formPanel.getElement().setAttribute(   "autocomplete", "off");
 			
 			// Is OpenID authentication available?
-			if ( loginInfo.getAllowOpenIdAuthentication() )
-			{
-				debugAlert( "openid auth is allowed" );
-				// Yes
-				// Create the controls needed for openid authentication.
-				createOpenIdControls( loginInfo.getOpenIDAuthenticationProviders() );
+			if (loginInfo.getAllowOpenIdAuthentication()) {
+				// Yes!  Create the controls needed for openID
+				// authentication.
+				debugAlert("openid auth is allowed");
+				createOpenIdControls(loginInfo.getOpenIDAuthenticationProviders());
 				
-				// Show/hide the openid controls
+				// Show/hide the openID controls
 				danceOpenIdControls();
 			}
+			
+			// Hide/show the KeyShield two-stage authentication
+			// controls. 
+			danceKeyShieldControls(
+				loginInfo.getKeyShieldHardwareTokenMissing(),
+				loginInfo.getKeyShieldErrorMessagesForWeb());
+			
 		    break;
 			
 		case RegistrationRequired:
-			danceExternalUserRegistrationControls( loginInfo.getAllowOpenIdAuthentication() );
+			danceExternalUserRegistrationControls(loginInfo.getAllowOpenIdAuthentication());
 			break;
 
 		case PromptForPwdReset:
@@ -762,12 +773,39 @@ public class LoginDlg extends DlgBox
 		}
 	}
 	
-	/**
-	 * 
+	/*
 	 */
-	private void danceExternalUserRegistrationControls( boolean openIdAuthAllowed )
-	{
+	private void danceExternalUserRegistrationControls(boolean openIdAuthAllowed) {
+		// Nothing to do.
 	}
+	
+	/*
+	 * Dances the dialog as necessary for KeyShield two-stage
+	 * authentication.
+	 */
+	private void danceKeyShieldControls(boolean isKeyShieldHardwareTokenMissing, String keyShieldErrorMessagesForWeb) {
+		// Show the KeyShield two-stage authentication panel if the
+		// hardware token is missing and hide it otherwise.
+		UIObject.setVisible(m_keyShieldTwoStageAuthPanel, isKeyShieldHardwareTokenMissing);
+		
+		// Was the token missing?
+		if (isKeyShieldHardwareTokenMissing) {
+			// Yes!  Display the appropriate error message...
+			if (!(GwtClientHelper.hasString(keyShieldErrorMessagesForWeb))) {
+				keyShieldErrorMessagesForWeb = GwtTeaming.getMessages().editKeyShieldConfigDlg_Error_DefaultWeb();
+			}
+			m_keyShieldErrorMessage.setInnerText(keyShieldErrorMessagesForWeb);
+
+			// ...and if we have the referrer URL...
+			boolean hasRefererUrl = GwtClientHelper.hasString(m_springSecurityRedirect);
+			UIObject.setVisible(m_keyShieldRefererPanel, hasRefererUrl);
+			if (hasRefererUrl) {
+				// ...display the link to it.
+				m_keyShieldRefererLink.setAttribute("href", m_springSecurityRedirect);
+			}
+		}
+	}
+
 	
 	/**
 	 * Show/hide the controls used with OpenId authentication
@@ -1931,6 +1969,12 @@ public class LoginDlg extends DlgBox
 			if ( captchaElement != null )
 				m_captchaResponseTxtBox = TextBox.wrap( captchaElement );
 		}
+		
+		// Add the controls for KeyShield two-stage authentication.
+		m_keyShieldTwoStageAuthPanel = Document.get().getElementById("loginDlgKeyShieldPanel"       );
+		m_keyShieldErrorMessage      = Document.get().getElementById("loginDlgKeyShieldErrorMessage");
+		m_keyShieldRefererPanel      = Document.get().getElementById("loginDlgKeyShieldRefererPanel");
+		m_keyShieldRefererLink       = Document.get().getElementById("loginDlgKeyShieldRefererLink" );
 		
 		// Add a "login failed" label to the dialog.
 		{
