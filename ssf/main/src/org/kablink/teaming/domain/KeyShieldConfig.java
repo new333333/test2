@@ -35,6 +35,8 @@ package org.kablink.teaming.domain;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import org.kablink.teaming.util.SPropsUtil;
+
 /**
  * ?
  *  
@@ -280,6 +282,9 @@ public class KeyShieldConfig extends ZonedObject implements LastUpdateTimeAware
 	}
 
 	public void setSsoErrorMessageForWeb(String ssoErrorMessageForWeb) {
+		int maxLength = SPropsUtil.getInt("keyshieldconfig.ssoerrormessageforweb,maxlength", 128);
+		if(ssoErrorMessageForWeb != null && ssoErrorMessageForWeb.length() > maxLength)
+			ssoErrorMessageForWeb = ssoErrorMessageForWeb.substring(0, maxLength);
 		this.ssoErrorMessageForWeb = ssoErrorMessageForWeb;
 	}
 
@@ -288,6 +293,9 @@ public class KeyShieldConfig extends ZonedObject implements LastUpdateTimeAware
 	}
 
 	public void setSsoErrorMessageForWebdav(String ssoErrorMessageForWebdav) {
+		int maxLength = SPropsUtil.getInt("keyshieldconfig.ssoerrormessageforwebdav,maxlength", 128);
+		if(ssoErrorMessageForWebdav != null && ssoErrorMessageForWebdav.length() > maxLength)
+			ssoErrorMessageForWebdav = ssoErrorMessageForWebdav.substring(0, maxLength);
 		this.ssoErrorMessageForWebdav = ssoErrorMessageForWebdav;
 	}
 	
