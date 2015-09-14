@@ -42,6 +42,8 @@ import javax.servlet.http.HttpSessionListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.asmodule.bridge.BridgeUtil;
+import org.kablink.teaming.module.keyshield.KShieldHelper;
+import org.kablink.teaming.module.keyshield.KShieldContextHolder;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
@@ -65,6 +67,10 @@ public class SessionListener implements HttpSessionListener {
 		se.getSession().setAttribute(activeSessionCounter.getClass().getName(), activeSessionCounter);
 		
 		ActiveSessionCounter.incrementWebSessionCount();
+		
+		// Transfer the state from the KeyShield request/thread context into the guest session
+		// so that we can consult the information across multiple requests within current session.
+		KShieldHelper.transferStateFromRequestContextToHttpSession(se.getSession());
 	}
 
 	public void sessionDestroyed(HttpSessionEvent se) {
