@@ -33,12 +33,16 @@
 package org.kablink.teaming.spring.security.ldap;
 
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
+import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.domain.KeyShieldConfig;
 import org.kablink.teaming.module.ldap.LdapModule;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.ldap.authentication.LdapAuthenticator;
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 
@@ -48,19 +52,22 @@ import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
  */
 public class LdapAuthenticationProvider extends org.springframework.security.ldap.authentication.LdapAuthenticationProvider {
 
+	private Long zoneId;
 	private String ldapConnectionConfigId;
 	
 	/**
 	 * @param authenticator
 	 */
-	public LdapAuthenticationProvider(String ldapConnectionConfigId, LdapAuthenticator authenticator) {
+	public LdapAuthenticationProvider(Long zoneId, String ldapConnectionConfigId, LdapAuthenticator authenticator) {
 		super(authenticator);
+		this.zoneId = zoneId;
 		this.setHideUserNotFoundExceptions(false);
 		this.ldapConnectionConfigId = ldapConnectionConfigId;
 	}
 
-    public LdapAuthenticationProvider(String ldapConnectionConfigId, LdapAuthenticator authenticator, LdapAuthoritiesPopulator authoritiesPopulator) {
+    public LdapAuthenticationProvider(Long zoneId, String ldapConnectionConfigId, LdapAuthenticator authenticator, LdapAuthoritiesPopulator authoritiesPopulator) {
     	super(authenticator, authoritiesPopulator);
+    	this.zoneId = zoneId;
     	this.setHideUserNotFoundExceptions(false);
     	this.ldapConnectionConfigId = ldapConnectionConfigId;
     }
@@ -68,6 +75,10 @@ public class LdapAuthenticationProvider extends org.springframework.security.lda
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     	try {
+    		KeyShieldConfig ksc = getCoreDao().loadKeyShieldConfig(zoneId);
+    		if(ksc != null && !ksc.getNonSsoAllowedForLdapUser())
+    			throw new UsernameNotFoundException("Username/password authentication not allowed for LDAP users");
+    			
     		LdapModule ldapModule;
 
     		ldapModule = WebHelper.getLdapModule();
@@ -87,11 +98,8 @@ public class LdapAuthenticationProvider extends org.springframework.security.lda
     		
     		return result;
     	}
-    	catch(AuthenticationException e) {
-    		if(e instanceof BadCredentialsException)
-    			throw new LdapBadCredentialsException((BadCredentialsException)e);
-    		else
-    			throw e;
+    	catch(BadCredentialsException e) {
+    		throw new LdapBadCredentialsException((BadCredentialsException)e);
     	}
     }
     
@@ -118,5 +126,9 @@ public class LdapAuthenticationProvider extends org.springframework.security.lda
 		public LdapBadCredentialsException(BadCredentialsException source) {
 			super("Bad credential for LDAP user", source);
 		}
+	}
+	
+	private CoreDao getCoreDao() {
+		return (CoreDao) SpringContextUtil.getBean("coreDao");
 	}
 }
