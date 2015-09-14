@@ -300,8 +300,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 
 				for (LdapConnectionConfig.SearchInfo us : config
 						.getUserSearches()) {
-					providers.add(createLdapAuthenticationProvider(contextSource, contextMapper, config.getId(), us, search));
-					providers.add(createPreAuthenticatedLdapAuthenticationProvider(contextSource, contextMapper, config.getId(), us, search));
+					providers.add(createLdapAuthenticationProvider(contextSource, contextMapper, zoneId, config.getId(), us, search));
+					providers.add(createPreAuthenticatedLdapAuthenticationProvider(contextSource, contextMapper, zoneId, config.getId(), us, search));
 				}
 			}
 		}
@@ -331,6 +331,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	protected AuthenticationProvider createLdapAuthenticationProvider
 		(DefaultSpringSecurityContextSource contextSource, 
 			SsfContextMapper contextMapper, 
+			Long zoneId,
 			String configId,
 			LdapConnectionConfig.SearchInfo us, 
 			String search) {
@@ -355,6 +356,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		}
 		authenticator.setUserSearch(userSearch);
 		LdapAuthenticationProvider ldap = new LdapAuthenticationProvider(
+				zoneId,
 				configId,
 				authenticator);
 		ldap.setUseAuthenticationRequestCredentials(true);
@@ -365,6 +367,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	protected AuthenticationProvider createPreAuthenticatedLdapAuthenticationProvider
 	(DefaultSpringSecurityContextSource contextSource,
 		SsfContextMapper contextMapper, 
+		Long zoneId,
 		String configId,
 		LdapConnectionConfig.SearchInfo us, 
 		String search) {
@@ -381,6 +384,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		}
 		authenticator.setUserSearch(userSearch);
 		PreAuthenticatedLdapAuthenticationProvider ldap = new PreAuthenticatedLdapAuthenticationProvider(
+				zoneId,
 				configId,
 				authenticator);
 		ldap.setUseAuthenticationRequestCredentials(true);
