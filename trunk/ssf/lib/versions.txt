@@ -35,7 +35,7 @@ Commons Fileupload 1.2.2 (from spring distribution)
 Commons HttpClient 3.1 (from spring distribution)
 Commons io 1.3.1 (from spring distribution)
 Commons Lang 2.4
-Commons Net 1.4.1 (for SendMail test program)
+Commons Net 3.3 (for SendMail test program; used by telemetry service)
 Commons Logging 1.1.3 (from Apache HttpClient 4.3.5 distribution)
 Commons Transaction 1.1.1pre1
 Commons XMLIO 0.1pre (for ssfs)

@@ -322,56 +322,58 @@ public class TelemetryService extends HibernateDaoSupport {
 			ftpDirPath += "/";
 		String ftpUsername = SPropsUtil.getString("telemetry.ftp.username", "anonymous");
 		String ftpPassword = SPropsUtil.getString("telemetry.ftp.password", "fake@fake.com");
-		
+			
+		String dirPath = SPropsUtil.getDirPath("data.root.dir") + "telemetry" + File.separator + "data";
+		File[] fileList = new File(dirPath).listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				name = name.toLowerCase();
+				// Skip over sample file containing latest collected data
+				if(name.endsWith(".json") && !name.endsWith("latest.json"))
+					return true;
+				else
+					return false;
+			}
+		});
+		Arrays.sort(fileList, new Comparator<File>() {
+			@Override
+			public int compare(File f1, File f2) {
+				// sort in the ascending order of timestamp value in the file name.
+				try {
+					String n1 = f1.getName().toLowerCase();
+					String n2 = f2.getName().toLowerCase();
+					n1 = n1.substring(0, n1.lastIndexOf(".json"));
+					n2 = n2.substring(0, n2.lastIndexOf(".json"));
+					String s1 = n1.substring(n1.lastIndexOf("$")+1);
+					String s2 = n2.substring(n2.lastIndexOf("$")+1);
+					long t1 = Long.parseLong(s1);
+					long t2 = Long.parseLong(s2);
+					return Long.compare(t1,t2);
+				}
+				catch(Exception e) {
+					// If anything goes wrong during comparison, simply return 1 and treat
+					// the first one as a greater one.
+					return 1;
+				}
+			}			
+		});
+
 		FTPClient ftpClient = new FTPClient();
 		try {
-			// Use 'local passive mode' in which a data connection is made by opening
-			// a port on the server for the client to connect, which is usually not
-			// blocked by firewall.
-			ftpClient.enterLocalPassiveMode();
 			if(ftpPort != -1) // port specified
 				ftpClient.connect(ftpHostname, ftpPort);
 			else // port unspecified, use the default
 				ftpClient.connect(ftpHostname);
-			ftpClient.login(ftpUsername, ftpPassword);
+			ftpClient.login(ftpUsername, ftpPassword);			
+			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);	
 			
-			ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-			
-			String dirPath = SPropsUtil.getDirPath("data.root.dir") + "telemetry" + File.separator + "data";
-			File[] fileList = new File(dirPath).listFiles(new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String name) {
-					name = name.toLowerCase();
-					// Skip over sample file containing latest collected data
-					if(name.endsWith(".json") && !name.endsWith("latest.json"))
-						return true;
-					else
-						return false;
-				}
-			});
-			Arrays.sort(fileList, new Comparator<File>() {
-				@Override
-				public int compare(File f1, File f2) {
-					// sort in the ascending order of timestamp value in the file name.
-					try {
-						String n1 = f1.getName().toLowerCase();
-						String n2 = f2.getName().toLowerCase();
-						n1 = n1.substring(0, n1.lastIndexOf(".json"));
-						n2 = n2.substring(0, n2.lastIndexOf(".json"));
-						String s1 = n1.substring(n1.lastIndexOf("$")+1);
-						String s2 = n2.substring(n2.lastIndexOf("$")+1);
-						long t1 = Long.parseLong(s1);
-						long t2 = Long.parseLong(s2);
-						return Long.compare(t1,t2);
-					}
-					catch(Exception e) {
-						// If anything goes wrong during comparison, simply return 1 and treat
-						// the first one as a greater one.
-						return 1;
-					}
-				}			
-			});
 			for(File file:fileList) {
+				// Use 'local passive mode' in which a data connection is made by opening
+				// a port on the server for the client to connect, which is usually not
+				// blocked by firewall.
+				ftpClient.enterLocalPassiveMode();
+				ftpClient.setUseEPSVwithIPv4(true);
+				
 				String remoteFile = ftpDirPath + file.getName();
 				boolean success = false;
 				try(InputStream is = new FileInputStream(file);
