@@ -41,6 +41,9 @@ import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
  *
  */
 public class KShieldHelper {
+	// WARNING: This variable exists solely for the purpose of testing/simulation.
+	// NOT to be used on production system.
+	public static volatile boolean pretendHardwareTokenIsPresent = false;
 
 	public static void transferStateFromRequestContextToHttpSession(HttpSession session) {
 		if(Boolean.TRUE.equals(KShieldContextHolder.get(KShieldContextHolder.HARDWARE_TOKEN_MISSING)))
