@@ -117,6 +117,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetCollectionPointDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMainPageInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.InvalidateSessionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
@@ -1322,6 +1323,10 @@ public class GwtMainPage extends ResizeComposite
 		// Initialize the JavaScript that will delete an entry that can
 		// be invoked from a JSP page.
 		initDeleteForumEntry( this );
+		
+		// Initialize the JavaScript that will perform a loin referral
+		// on a URL.
+		initDoLoginReferal( this );
 	}
 
 	/*
@@ -1399,6 +1404,16 @@ public class GwtMainPage extends ResizeComposite
 		$wnd.ss_deleteForumEntryGwt = function( folderId, entryId  )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::deleteForumEntry(Ljava/lang/String;Ljava/lang/String;)( folderId, entryId );
+		}
+	}-*/;
+
+	/*
+	 * Called to create a JavaScript method that can be called to
+	 * perform a login referral to the given URL.
+	 */
+	private native void initDoLoginReferal(GwtMainPage gwtMainPage) /*-{
+		$wnd.ss_doLoginReferal = function(referalUrl) {
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::doLoginReferal(Ljava/lang/String;)(referalUrl);
 		}
 	}-*/;
 
@@ -2379,6 +2394,30 @@ public class GwtMainPage extends ResizeComposite
 					Long.parseLong( folderId ),
 					Long.parseLong( entryId  ),
 					EntityId.FOLDER_ENTRY) ) );
+	}
+	
+	/*
+	 * Invalidates the session and navigates to the given referral URL.
+	 */
+	private void doLoginReferal(final String referalUrl) {
+		GwtClientHelper.executeCommand(new InvalidateSessionCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_InvalidateSession());
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						GwtClientHelper.jsLoadUrlInTopWindow(referalUrl);
+					}
+				});
+			}
+		});
 	}
 
 	/*

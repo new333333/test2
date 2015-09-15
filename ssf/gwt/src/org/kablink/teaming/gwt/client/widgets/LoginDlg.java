@@ -801,7 +801,8 @@ public class LoginDlg extends DlgBox
 			UIObject.setVisible(m_keyShieldRefererPanel, hasRefererUrl);
 			if (hasRefererUrl) {
 				// ...display the link to it.
-				m_keyShieldRefererLink.setAttribute("href", m_springSecurityRedirect);
+				String href = "javascript:window.top.ss_doLoginReferal('" + GwtClientHelper.jsEncodeURIComponent(m_springSecurityRedirect) + "');";
+				m_keyShieldRefererLink.setAttribute("href", href);
 			}
 		}
 	}

@@ -566,6 +566,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetZoneShareRights();
 	String rpcFailure_HideShares();
 	String rpcFailure_ImportIcalByUrl();
+	String rpcFailure_InvalidateSession();
 	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();
 	String rpcFailure_LdapGuidNotConfigured();
