@@ -46,6 +46,7 @@ import java.util.SortedSet;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.HttpSessionContext;
@@ -3191,6 +3192,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ImportIcalByUrlCmd iiUrlCmd = ((ImportIcalByUrlCmd) cmd);
 			ImportIcalByUrlRpcResponseData result = GwtServerHelper.importIcalByUrl( this, req, iiUrlCmd.getFolderId(), iiUrlCmd.getUrl() );
 			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case INVALIDATE_SESSION:  {
+			WebHelper.getRequiredSession(req).invalidate();
+			response = new VibeRpcResponse(new BooleanRpcResponseData(Boolean.TRUE));
 			return response;
 		}
 		
