@@ -3490,7 +3490,7 @@ public class GwtServerHelper {
 
 			// Does the current user have admin rights and is this a
 			// licensed product version?
-			if (userHasAdminRights && ReleaseInfo.isLicenseRequiredEdition()) {
+			if (userHasAdminRights && ReleaseInfo.isLicenseRequiredEdition() && SPropsUtil.getBoolean("show.anti.virus.in.admin.console", false)) {
 				// Yes!  Add a configure anti virus option.
 				adaptedUrl = new AdaptedPortletURL(request, "ss_forum", false);
 				adaptedUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_ANTIVIRUS);

@@ -262,16 +262,10 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		table.setWidget(row, 0, tmpPanel);
 		row += 1;
 
-		// Add the non-SSO allowed for LDAP users checkbox.
-		m_nonSsoAllowedForLdapUserCheckbox = new CheckBox(m_messages.editKeyShieldConfigDlg_NonSsoAllowedForLdapUserLabel());
-		table.setWidget(row, 0, m_nonSsoAllowedForLdapUserCheckbox);
-		FlexCellFormatter fcf = table.getFlexCellFormatter();
-		fcf.setColSpan(row, 0, 2);
-		row += 1;
-
 		// Add the hardware token required checkbox.
 		m_hardwareTokenRequiredCheckbox = new CheckBox(m_messages.editKeyShieldConfigDlg_HardwareTokenRequiredLabel());
 		table.setWidget(row, 0, m_hardwareTokenRequiredCheckbox);
+		FlexCellFormatter fcf = table.getFlexCellFormatter();
 		fcf.setColSpan(row, 0, 2);
 		m_hardwareTokenRequiredCheckbox.addClickHandler(new ClickHandler() {
 			@Override
@@ -311,6 +305,12 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		table.setWidget(row, 1, m_ssoErrorMessageForWebdav);
 		row += 1;
 		
+		// Add the non-SSO allowed for LDAP users checkbox.
+		m_nonSsoAllowedForLdapUserCheckbox = new CheckBox(m_messages.editKeyShieldConfigDlg_NonSsoAllowedForLdapUserLabel());
+		table.setWidget(row, 0, m_nonSsoAllowedForLdapUserCheckbox);
+		fcf.setColSpan(row, 0, 2);
+		row += 1;
+
 		// Add a 'test connection' button.
 		// Add a little space
 		tmpPanel = new FlowPanel();
