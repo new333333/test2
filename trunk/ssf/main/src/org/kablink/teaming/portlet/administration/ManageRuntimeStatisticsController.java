@@ -49,6 +49,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.keyshield.KShieldHelper;
 import org.kablink.teaming.remoting.ws.service.search.SearchService;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -119,6 +120,13 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 			long id = PortletRequestUtils.getLongParameter(request, "id", 0);
 			getFolderModule().requestNetFolderFullSyncStop(id);
 			reportSuccess(response);
+		}
+		else if(WebKeys.MRS_OPERATION_KSHIELD.equals(op)) {
+			String value = PortletRequestUtils.getStringParameter(request, "token", "off");
+			if(value.equalsIgnoreCase("on") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("1"))
+				KShieldHelper.pretendHardwareTokenIsPresent = true;
+			else
+				KShieldHelper.pretendHardwareTokenIsPresent = false;
 		}
 		else if(op.equals("")) {
 			reportNoop(response);
