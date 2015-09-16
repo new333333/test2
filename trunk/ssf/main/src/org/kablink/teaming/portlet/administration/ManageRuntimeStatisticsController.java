@@ -123,7 +123,7 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 		}
 		else if(WebKeys.MRS_OPERATION_KSHIELD.equals(op)) {
 			String value = PortletRequestUtils.getStringParameter(request, "token", "off");
-			if(value.equalsIgnoreCase("on") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("1"))
+			if(value.equalsIgnoreCase("on") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("1"))
 				KShieldHelper.pretendHardwareTokenIsPresent = true;
 			else
 				KShieldHelper.pretendHardwareTokenIsPresent = false;
