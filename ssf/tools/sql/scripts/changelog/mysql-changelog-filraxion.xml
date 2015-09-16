@@ -321,4 +321,12 @@ update SS_Forums set binderType = LEFT(type, 1);
         </addColumn>
     </changeSet>
 
+    <changeSet author="dennis" context="schema" failOnError="true" id="31">
+        <addColumn tableName="SS_LdapConnectionConfig">
+            <column name="importUsersAsExternalUsers" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

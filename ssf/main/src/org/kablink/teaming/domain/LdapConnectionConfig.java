@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,14 +35,20 @@ package org.kablink.teaming.domain;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public class LdapConnectionConfig extends ZonedObject {
 	protected static Log logger = LogFactory.getLog(LdapConnectionConfig.class);
 
+	private Boolean	importUsersAsExternalUsers;
+	
 	protected String id;
 
 	protected String url;
@@ -70,7 +76,8 @@ public class LdapConnectionConfig extends ZonedObject {
 	public LdapConnectionConfig(String url, String userIdAttribute,
 			Map<String, String> mappings, List<SearchInfo> userSearches,
 			List<SearchInfo> groupSearches, String principal, String credentials,
-			String ldapGuidAttribute) {
+			String ldapGuidAttribute,
+			Boolean importUsersAsExternalUsers) {
 		setUrl(url);
 		setUserIdAttribute(userIdAttribute);
 		setMappings(mappings);
@@ -78,9 +85,27 @@ public class LdapConnectionConfig extends ZonedObject {
 		setGroupSearches(groupSearches);
 		setPrincipal(principal);
 		setCredentials(credentials);
-		setLdapGuidAttribute( ldapGuidAttribute );
+		setLdapGuidAttribute(ldapGuidAttribute);
+		setImportUsersAsExternalUsers(importUsersAsExternalUsers);
+	}
+	
+	public LdapConnectionConfig(String url, String userIdAttribute,
+			Map<String, String> mappings, List<SearchInfo> userSearches,
+			List<SearchInfo> groupSearches, String principal, String credentials,
+			String ldapGuidAttribute) {
+		this(url, userIdAttribute, mappings, userSearches, groupSearches, principal, credentials, ldapGuidAttribute, null);
 	}
 
+	public boolean getImportUsersAsExternalUsers() {
+		if (null == importUsersAsExternalUsers)
+		     return false;
+		else return importUsersAsExternalUsers.booleanValue();
+	}
+	
+	public void setImportUsersAsExternalUsers(boolean importUsersAsExternalUsers) {
+		this.importUsersAsExternalUsers = Boolean.valueOf(importUsersAsExternalUsers);
+	}
+	
 	public String getId() {
 		return id;
 	}
@@ -373,5 +398,4 @@ public class LdapConnectionConfig extends ZonedObject {
 	public void setGroupSearches(List<SearchInfo> groupSearches) {
 		this.groupSearches = groupSearches;
 	}
-
 }

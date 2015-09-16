@@ -21,5 +21,6 @@
     <property name="credentials" type="encrypted"/>
     <property name="position"/>
     <property name="ldapGuidAttribute"/>
+	<property name="importUsersAsExternalUsers" access="field"/>
   </class>
 </hibernate-mapping>
