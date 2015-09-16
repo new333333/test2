@@ -268,6 +268,7 @@ public class GwtLdapHelper
     				gwtConfig.setLdapGuidAttribute( config.getLdapGuidAttribute() );
     				gwtConfig.setUserIdAttribute( config.getUserIdAttribute() );
     				gwtConfig.setUserAttributeMappings( config.getMappings() );
+    				gwtConfig.setImportUsersAsExternalUsers( config.getImportUsersAsExternalUsers() );
     				
     				// Add the user search info
     				{
@@ -659,7 +660,8 @@ public class GwtLdapHelper
 																groupQueries,
 																nextGwtLdapConnection.getProxyDn(),
 																nextGwtLdapConnection.getProxyPwd(),
-																nextGwtLdapConnection.getLdapGuidAttribute() );
+																nextGwtLdapConnection.getLdapGuidAttribute(),
+																nextGwtLdapConnection.isImportUsersAsExternalUsers() );
 						ldapConnection.setId( nextGwtLdapConnection.getId() );
 						listOfLdapConnections.add( ldapConnection );
 					}

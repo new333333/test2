@@ -391,4 +391,12 @@ GO
         </addColumn>
     </changeSet>
 
+    <changeSet author="dennis" context="schema" failOnError="true" id="29">
+        <addColumn schemaName="dbo" tableName="SS_LdapConnectionConfig">
+            <column name="importUsersAsExternalUsers" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

@@ -318,4 +318,12 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
         </addColumn>
     </changeSet>
 
+    <changeSet author="dennis" context="schema" failOnError="true" id="29">
+        <addColumn tableName="SS_LdapConnectionConfig">
+            <column name="importUsersAsExternalUsers" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
