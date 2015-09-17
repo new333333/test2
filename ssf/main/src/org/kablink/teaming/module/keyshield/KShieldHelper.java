@@ -34,7 +34,9 @@ package org.kablink.teaming.module.keyshield;
 
 import javax.servlet.http.HttpSession;
 
+import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
+import org.kablink.teaming.domain.LoginAudit;
 
 /**
  * @author Jong
@@ -45,13 +47,35 @@ public class KShieldHelper {
 	// NOT to be used on production system.
 	public static volatile boolean pretendHardwareTokenIsPresent = false;
 
+	/*
+	 * Transfer KeyShield SSO related state information from the request scope to session scope.
+	 */
 	public static void transferStateFromRequestContextToHttpSession(HttpSession session) {
 		if(Boolean.TRUE.equals(KShieldContextHolder.get(KShieldContextHolder.HARDWARE_TOKEN_MISSING)))
 			session.setAttribute(KShieldContextHolder.HARDWARE_TOKEN_MISSING, Boolean.TRUE);
 	}
 	
+	/*
+	 * Return whether KeyShield has expressed that the context user is missing a hardware token.
+	 */
 	public static boolean isHardwareTokenMissing() {
 		HttpSession session = ZoneContextHolder.getHttpSession();
 		return Boolean.TRUE.equals(session.getAttribute(KShieldContextHolder.HARDWARE_TOKEN_MISSING));
+	}
+	
+	/*
+	 * Return whether current authenticator supports KeyShield SSO or not.
+	 */
+	public static boolean isAuthenticatorSubjectToSso() {
+		String authenticator = AuthenticationContextHolder.getAuthenticator();
+		
+		if(authenticator != null) {
+			// Currently, only Web and WebDAV clients support KeyShield SSO.
+			if(LoginAudit.AUTHENTICATOR_WEB.equals(authenticator) ||
+					LoginAudit.AUTHENTICATOR_WEBDAV.equals(authenticator))
+				return true;
+		}
+		
+		return false;
 	}
 }
