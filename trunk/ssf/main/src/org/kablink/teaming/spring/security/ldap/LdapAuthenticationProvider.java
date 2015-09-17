@@ -35,6 +35,7 @@ package org.kablink.teaming.spring.security.ldap;
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.KeyShieldConfig;
+import org.kablink.teaming.module.keyshield.KShieldHelper;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.WebHelper;
@@ -75,9 +76,11 @@ public class LdapAuthenticationProvider extends org.springframework.security.lda
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     	try {
-    		KeyShieldConfig ksc = getCoreDao().loadKeyShieldConfig(zoneId);
-    		if(ksc != null && !ksc.getNonSsoAllowedForLdapUser())
-    			throw new UsernameNotFoundException("Username/password authentication not allowed for LDAP users");
+    		if(KShieldHelper.isAuthenticatorSubjectToSso()) {
+	    		KeyShieldConfig ksc = getCoreDao().loadKeyShieldConfig(zoneId);
+	    		if(ksc != null && !ksc.getNonSsoAllowedForLdapUser())
+	    			throw new UsernameNotFoundException("Username/password authentication not allowed for LDAP users");
+    		}
     			
     		LdapModule ldapModule;
 

@@ -127,6 +127,7 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 				KShieldHelper.pretendHardwareTokenIsPresent = true;
 			else
 				KShieldHelper.pretendHardwareTokenIsPresent = false;
+			reportData(response, String.valueOf(KShieldHelper.pretendHardwareTokenIsPresent));
 		}
 		else if(op.equals("")) {
 			reportNoop(response);
