@@ -1797,7 +1797,10 @@ public class EditLdapServerConfigDlg extends DlgBox
 		m_userAttribMappingsTextArea.setValue( "" );
 
 		selectUserType(UserType.INTERNAL);
-		m_userTypeLB.setEnabled( newConfig );	// Allowed to change with a new configuration.
+		if ( null != m_userTypeLB )
+		{
+			m_userTypeLB.setEnabled( newConfig );	// Allowed to change with a new configuration.
+		}
 		
 		if ( config == null )
 			return;
@@ -1820,7 +1823,10 @@ public class EditLdapServerConfigDlg extends DlgBox
 		addGroupSearches( config.getListOfGroupSearchCriteria() );
 		
 		selectUserType( createAsExternal ? UserType.EXTERNAL : UserType.INTERNAL);
-		m_userTypeLB.setEnabled( newConfig );	// We don't allow this to be changed with existing configs.
+		if ( null != m_userTypeLB )
+		{
+			m_userTypeLB.setEnabled( newConfig );	// We don't allow this to be changed with existing configs.
+		}
 
 		if ( m_serverConfig.isDirty() == false )
 			m_serverConfig.setIsDirtySearchInfo( false );
