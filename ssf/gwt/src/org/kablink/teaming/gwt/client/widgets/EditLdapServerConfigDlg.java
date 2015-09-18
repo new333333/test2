@@ -107,6 +107,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private static String EDIR_GUID_NAME = "GUID";
 	private static String AD_GUID_NAME = "objectGUID";
 	private static String OTHER_GUID_NAME = "other-guid";
+	private static String MAIL_ATTRIB = "mail";
 	
 	private GwtLdapConnectionConfig m_serverConfig;
 	private String m_defaultGroupFilter = null;
@@ -124,6 +125,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private ListBox m_dirTypeLB;
 	private ListBox m_guidLB;
 	private ListBox m_nameAttribLB;
+	private ListBox m_userTypeLB;
 
 	// Controls used in the Users tab
 	private CellTable<GwtLdapSearchInfo> m_userSearchesTable;
@@ -141,6 +143,22 @@ public class EditLdapServerConfigDlg extends DlgBox
 	
 	private EditLdapSearchDlg m_editLdapSearchDlg = null;
 	private LdapBrowserDlg m_ldapBrowserDlg;
+	
+	private boolean m_isFilr;
+	
+	private enum UserType
+	{
+		INTERNAL,
+		EXTERNAL;
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isInternal() {return this.equals(INTERNAL);}
+		public boolean isExternal() {return this.equals(EXTERNAL);}
+	}
 	
 	/**
 	 * Callback interface to interact with the "edit ldap server config" dialog
@@ -164,6 +182,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 		EditSuccessfulHandler editSuccessfulHandler )
 	{
 		super( autoHide, modal, xPos, yPos, DlgButtonMode.OkCancel );
+		
+		m_isFilr = GwtClientHelper.isLicenseFilr();
 		
 		// Create the header, content and footer of this dialog box.
 		createAllDlgContent(
@@ -496,7 +516,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private Panel createServerPanel( GwtTeamingMessages messages )
 	{
 		FlowPanel serverPanel;
-		FlexTable.FlexCellFormatter cellFormatter; 
+		FlexTable.FlexCellFormatter cellFormatter;
 		Label label;
 		FlowPanel tmpPanel;
 		int row = 0;
@@ -612,7 +632,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 				m_dirTypeLB.addItem( AD_NAME, DIR_TYPE_AD );
 				
 				// Filr only supports eDir and AD.  Add "Other" if we are not running Filr
-				if ( GwtClientHelper.isLicenseFilr() == false )
+				if ( ! m_isFilr  )
 					m_dirTypeLB.addItem( messages.editLdapServerConfigDlg_Other(), DIR_TYPE_OTHER );
 				
 				m_dirTypeLB.addChangeHandler( new ChangeHandler()
@@ -698,6 +718,57 @@ public class EditLdapServerConfigDlg extends DlgBox
 			tmpPanel.getElement().getStyle().setMarginTop( 5, Unit.PX );
 			m_serverPanelTable.setWidget( row, 0, tmpPanel );
 			++row;
+		}
+		
+		// If this isn't Filr, add user type import controls
+		if ( ! m_isFilr )
+		{
+			// Add a hint for the external user import
+			tmpPanel = new FlowPanel();
+			label = new Label( messages.editLdapServerConfigDlg_UserTypeHint() );
+			label.addStyleName( "editLdapServerConfigDlg_Hint" );
+			tmpPanel.add( label );
+			m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
+			cellFormatter.setColSpan( row, 0, 2 );
+			++row;
+			
+			tmpPanel = new FlowPanel();
+			label = new Label( messages.editLdapServerConfigDlg_UserTypeLabel() );
+			tmpPanel.add( label );
+			m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
+
+			// Add a listbox where the user can select the type of user
+			// that's to be created.
+			m_userTypeLB = new ListBox();
+			m_userTypeLB.setMultipleSelect( false );
+			m_userTypeLB.setVisibleItemCount( 1 );
+			m_userTypeLB.addItem( messages.editLdapServerConfigDlg_UserTypeInternal(), UserType.INTERNAL.name() );
+			m_userTypeLB.addItem( messages.editLdapServerConfigDlg_UserTypeExternal(), UserType.EXTERNAL.name() );
+			m_userTypeLB.addChangeHandler( new ChangeHandler()
+			{
+				@Override
+				public void onChange( ChangeEvent event )
+				{
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							handleUserTypeChanged();
+						}
+					} );
+				}
+			} );
+			m_serverPanelTable.setWidget( row, 1, m_userTypeLB );
+			++row;
+			
+			// Add a little space
+			{
+				tmpPanel = new FlowPanel();
+				tmpPanel.getElement().getStyle().setMarginTop( 5, Unit.PX );
+				m_serverPanelTable.setWidget( row, 0, tmpPanel );
+				++row;
+			}
 		}
 		
 		// Add the name attribute controls
@@ -1072,7 +1143,28 @@ public class EditLdapServerConfigDlg extends DlgBox
 		// Add or remove attribute names from the "account name attribute" listbox
 		// depending on the selected dir type
 		{
+			int mailIndex;
 			int index;
+			boolean createAsExternal;
+			
+			mailIndex = GwtClientHelper.doesListboxContainValue( m_nameAttribLB, MAIL_ATTRIB );
+			createAsExternal = isUserTypeExternal();
+			if ( createAsExternal )
+			{
+				if ( 0 > mailIndex )
+				{
+					m_nameAttribLB.insertItem( MAIL_ATTRIB, MAIL_ATTRIB, 0 );
+					mailIndex = 0;
+				}
+				m_nameAttribLB.setItemSelected( mailIndex, true );
+			}
+			
+			else if ( 0 <= mailIndex )
+			{
+				m_nameAttribLB.removeItem( mailIndex );
+				m_nameAttribLB.setItemSelected( 0, true );
+				mailIndex = (-1);
+			}
 			
 			// Is sAMAccountName in the listbox?
 			index = GwtClientHelper.doesListboxContainValue( m_nameAttribLB, SAM_ACCOUNT_NAME_ATTRIB );
@@ -1083,7 +1175,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 				if ( index == -1 )
 				{
 					// No, add it.
-					m_nameAttribLB.insertItem( SAM_ACCOUNT_NAME_ATTRIB, SAM_ACCOUNT_NAME_ATTRIB, 0 );
+					m_nameAttribLB.insertItem( SAM_ACCOUNT_NAME_ATTRIB, SAM_ACCOUNT_NAME_ATTRIB, (((-1) == mailIndex) ? 0 : 1) );
 				}
 			}
 			else if ( dirType.equalsIgnoreCase( DIR_TYPE_EDIR ) )
@@ -1242,6 +1334,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			String guidAttrib;
 			String userIdAttrib;
 			String userAttribMappings;
+			boolean createAsExternal;
 
 			// Validate what the admin entered
 			{
@@ -1255,6 +1348,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 				guidAttrib = getSelectedGuidAttrib();
 				userIdAttrib = getSelectedNameAttrib();
 				userAttribMappings = m_userAttribMappingsTextArea.getValue();
+				createAsExternal = isUserTypeExternal();
 
 				if ( isFieldValid( serverUrl, m_serverUrlTextBox, messages.editLdapServerConfigDlg_ErrorNoServerUrl() ) == false )
 					return null;
@@ -1321,6 +1415,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 					isDirty = true;
 				else if ( GwtClientHelper.areStringsEqual( userAttribMappings, m_serverConfig.getUserAttributeMappingsAsString() ) == false )
 					isDirty = true;
+				else if ( createAsExternal != m_serverConfig.isImportUsersAsExternalUsers() )
+					isDirty = true;
 				
 				m_serverConfig.setIsDirty( isDirty );
 			}
@@ -1330,6 +1426,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			m_serverConfig.setProxyPwd( pwd );
 			m_serverConfig.setLdapGuidAttribute( guidAttrib );
 			m_serverConfig.setUserIdAttribute( userIdAttrib );
+			m_serverConfig.setImportUsersAsExternalUsers( createAsExternal );
 			
 			// Get the user attribute mappings
 			{
@@ -1473,6 +1570,17 @@ public class EditLdapServerConfigDlg extends DlgBox
 		return name;
 	}
 	
+	private boolean isUserTypeExternal() {
+		boolean reply = false;
+		if ( null != m_userTypeLB )
+		{
+			String uTypeS = m_userTypeLB.getValue(m_userTypeLB.getSelectedIndex());
+			UserType uType = UserType.valueOf(uTypeS);
+			reply = uType.isExternal();
+		}
+		return reply;
+	}
+	
 	/**
 	 * Return a list of selected user searches.
 	 */
@@ -1521,10 +1629,12 @@ public class EditLdapServerConfigDlg extends DlgBox
 	 */
 	private void handleDirTypeChanged()
 	{
+		boolean createAsExternal;
 		String dirType;
 		
 		danceDlg();
 		
+		createAsExternal = isUserTypeExternal();
 		dirType = getSelectedDirType();
 
 		if ( DIR_TYPE_AD.equalsIgnoreCase( dirType ) )
@@ -1534,7 +1644,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			GwtClientHelper.selectListboxItemByValue( m_guidLB, AD_GUID_NAME );
 			
 			// Select sAMAccountName as the name attribute.
-			GwtClientHelper.selectListboxItemByValue( m_nameAttribLB, SAM_ACCOUNT_NAME_ATTRIB );
+			GwtClientHelper.selectListboxItemByValue( m_nameAttribLB, createAsExternal ? MAIL_ATTRIB : SAM_ACCOUNT_NAME_ATTRIB );
 		}
 		else if ( DIR_TYPE_EDIR.equalsIgnoreCase( dirType ) )
 		{
@@ -1543,7 +1653,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			GwtClientHelper.selectListboxItemByValue( m_guidLB, EDIR_GUID_NAME );
 			
 			// Select cn as the name attribute
-			GwtClientHelper.selectListboxItemByValue( m_nameAttribLB, CN_ATTRIB );
+			GwtClientHelper.selectListboxItemByValue( m_nameAttribLB, createAsExternal ? MAIL_ATTRIB : CN_ATTRIB );
 		}
 	}
 	
@@ -1625,6 +1735,14 @@ public class EditLdapServerConfigDlg extends DlgBox
 		}
 	}
 	
+	/*
+	 * This method gets called when the name attribute changes
+	 */
+	private void handleUserTypeChanged()
+	{
+		danceDlg();
+	}
+	
 	/**
 	 * See if the user provided a String value for the given field.
 	 */
@@ -1653,7 +1771,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init( GwtLdapConnectionConfig config, String defaultUserFilter, String defaultGroupFilter )
+	public void init( GwtLdapConnectionConfig config, boolean newConfig, String defaultUserFilter, String defaultGroupFilter )
 	{
 		String dirType;
 		
@@ -1677,9 +1795,14 @@ public class EditLdapServerConfigDlg extends DlgBox
 		m_proxyDnTextBox.setValue( "" );
 		m_proxyPwdTextBox.setValue( "" );
 		m_userAttribMappingsTextArea.setValue( "" );
+
+		selectUserType(UserType.INTERNAL);
+		m_userTypeLB.setEnabled( newConfig );	// Allowed to change with a new configuration.
 		
 		if ( config == null )
 			return;
+
+		boolean createAsExternal = config.isImportUsersAsExternalUsers();
 		
 		dirType = getDirTypeFromConfig( config );
 		danceDlg( dirType );
@@ -1695,9 +1818,31 @@ public class EditLdapServerConfigDlg extends DlgBox
 		addUserSearches( config.getListOfUserSearchCriteria() );
 		
 		addGroupSearches( config.getListOfGroupSearchCriteria() );
+		
+		selectUserType( createAsExternal ? UserType.EXTERNAL : UserType.INTERNAL);
+		m_userTypeLB.setEnabled( newConfig );	// We don't allow this to be changed with existing configs.
 
 		if ( m_serverConfig.isDirty() == false )
 			m_serverConfig.setIsDirtySearchInfo( false );
+	}
+	
+	/*
+	 * Selects uType in the UserType list box.
+	 */
+	private void selectUserType(UserType uType)
+	{
+		if ( null != m_userTypeLB )
+		{
+			for ( int i = 0; i < m_userTypeLB.getItemCount(); i += 1 )
+			{
+				UserType uTypeFromLB = UserType.valueOf( m_userTypeLB.getValue( i ) );
+				if ( uType.equals( uTypeFromLB ) )
+				{
+					m_userTypeLB.setSelectedIndex( i );
+					break;
+				}
+			}
+		}
 	}
 
 	/**
@@ -2011,6 +2156,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 	public static void initAndShow(
 		final EditLdapServerConfigDlg dlg,
 		final GwtLdapConnectionConfig config,
+		final boolean newConfig,
 		final String defaultUserFilter,
 		final String defaultGroupFilter,
 		final EditSuccessfulHandler editSuccessfulHandler,
@@ -2033,6 +2179,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			{
 				dlg.init(
 						config,
+						newConfig,
 						defaultUserFilter,
 						defaultGroupFilter );
 						

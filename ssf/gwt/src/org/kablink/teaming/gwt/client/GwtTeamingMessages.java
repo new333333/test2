@@ -3458,6 +3458,10 @@ public interface GwtTeamingMessages extends Messages {
 	String editLdapServerConfigDlg_ServerUrlLabel();
 	String editLdapServerConfigDlg_UserAttributeMappingHint();
 	String editLdapServerConfigDlg_UsersTab();
+	String editLdapServerConfigDlg_UserTypeExternal();
+	String editLdapServerConfigDlg_UserTypeHint();
+	String editLdapServerConfigDlg_UserTypeInternal();
+	String editLdapServerConfigDlg_UserTypeLabel();
 
 	// Strings used in the Edit Ldap Search dialog.
 	String editLdapSearchDlg_AttributeNameLabel();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,7 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.gwt.client.widgets;
-
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -102,11 +101,10 @@ import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
-
 /**
- * 
+ * ?
+ *  
  * @author jwootton
- *
  */
 public class EditLdapConfigDlg extends DlgBox
 	implements
@@ -711,7 +709,8 @@ public class EditLdapConfigDlg extends DlgBox
 			label.addStyleName( "margintop2 marginleft1" );
 			userPanel.add( label );
 			
-			m_timeZonesListbox = new ListBox( false );
+			m_timeZonesListbox = new ListBox();
+			m_timeZonesListbox.setMultipleSelect( false );
 			m_timeZonesListbox.setVisibleItemCount( 1 );
 			m_timeZonesListbox.addStyleName( "marginleft1" );
 			userPanel.add( m_timeZonesListbox );
@@ -723,7 +722,8 @@ public class EditLdapConfigDlg extends DlgBox
 			label.addStyleName( "margintop2 marginleft1" );
 			userPanel.add( label );
 			
-			m_localesListbox = new ListBox( false );
+			m_localesListbox = new ListBox();
+			m_localesListbox.setMultipleSelect( false );
 			m_localesListbox.setVisibleItemCount( 1 );
 			m_localesListbox.addStyleName( "marginleft1" );
 			userPanel.add( m_localesListbox );
@@ -1512,7 +1512,7 @@ public class EditLdapConfigDlg extends DlgBox
 			}
 		};
 		
-		invokeModifyLdapServerDlg( ldapServer, editSuccessfulHandler );
+		invokeModifyLdapServerDlg( ldapServer, true, editSuccessfulHandler );
 	}
 	
 	/**
@@ -1613,7 +1613,7 @@ public class EditLdapConfigDlg extends DlgBox
 			}
 		};
 		
-		invokeModifyLdapServerDlg( ldapServer, editSuccessfulHandler );
+		invokeModifyLdapServerDlg( ldapServer, false, editSuccessfulHandler );
 	}
 	
 	/**
@@ -1621,6 +1621,7 @@ public class EditLdapConfigDlg extends DlgBox
 	 */
 	private void invokeModifyLdapServerDlg(
 			final GwtLdapConnectionConfig ldapServer,
+			final boolean newConfig,
 			final EditSuccessfulHandler editSuccessfulHandler )
 	{
 		// Have we created the dialog yet?
@@ -1660,7 +1661,7 @@ public class EditLdapConfigDlg extends DlgBox
 						@Override
 						public void execute() 
 						{
-							invokeModifyLdapServerDlg( ldapServer, editSuccessfulHandler );
+							invokeModifyLdapServerDlg( ldapServer, newConfig, editSuccessfulHandler );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1673,6 +1674,7 @@ public class EditLdapConfigDlg extends DlgBox
 			EditLdapServerConfigDlg.initAndShow(
 											m_editLdapServerDlg,
 											ldapServer,
+											newConfig,
 											m_ldapConfig.getDefaultUserFilter(),
 											m_ldapConfig.getDefaultGroupFilter(),
 											editSuccessfulHandler,
