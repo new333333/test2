@@ -74,6 +74,7 @@ import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
 import org.kablink.teaming.module.ldap.LdapSyncThread;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.Utils;
 
 
 /**
@@ -255,11 +256,17 @@ public class GwtLdapHelper
     		listOfLdapServers = ami.getAuthenticationModule().getLdapConnectionConfigs();
     		if ( listOfLdapServers != null )
     		{
+    			boolean isFilr = Utils.checkIfFilr();
     			for ( LdapConnectionConfig config : listOfLdapServers )
     			{
-    				GwtLdapConnectionConfig gwtConfig;
+    				// If this is Filr and we've got a external user
+    				// configuration...
+    				if (isFilr && config.getImportUsersAsExternalUsers()) {
+    					// ...ignore it.
+    					continue;
+    				}
     				
-    				gwtConfig = new GwtLdapConnectionConfig();
+    				GwtLdapConnectionConfig gwtConfig = new GwtLdapConnectionConfig();
     				gwtConfig.setId( config.getId() );
     				gwtConfig.setServerUrl( config.getUrl() );
     				gwtConfig.setProxyDn( config.getPrincipal() );
