@@ -151,7 +151,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 /**
  * This implementing class utilizes transactional demarcation strategies that 
  * are finer granularity than typical module implementations, in an effort to
- * avoid lengthy transaction duration that could have occured if the ldap
+ * avoid lengthy transaction duration that could have occurred if the LDAP
  * database is large and many updates are made during the transaction. To support that,
  * the public methods exposed by this implementation are not transaction 
  * demarcated. Instead, this implementation uses helper methods 
@@ -161,7 +161,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * support around those methods hence reducing individual transaction duration.
  * Of course, this finer granularity transactional control will be of no effect
  * if the caller of this service was already transactional (i.e., it controls
- * transaction boundary that is more coarse). Whenever possible, this practise 
+ * transaction boundary that is more coarse). Whenever possible, this practice 
  * is discouraged for obvious performance/scalability reasons.  
  *   
  * @author Janet McCann
@@ -214,7 +214,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected String [] principalAttrs = new String[]{
 												ObjectKeys.FIELD_PRINCIPAL_NAME,
 												ObjectKeys.FIELD_ID,
-												ObjectKeys.FIELD_PRINCIPAL_DISABLED, 
+												ObjectKeys.FIELD_PRINCIPAL_DISABLED,
+												ObjectKeys.FIELD_INTERNAL,
 												ObjectKeys.FIELD_INTERNALID,
 												ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME,
 												ObjectKeys.FIELD_PRINCIPAL_LDAPGUID};
@@ -223,6 +224,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 												ObjectKeys.FIELD_PRINCIPAL_NAME,
 												ObjectKeys.FIELD_ID,
 												ObjectKeys.FIELD_PRINCIPAL_DISABLED, 
+												ObjectKeys.FIELD_INTERNAL,
 												ObjectKeys.FIELD_INTERNALID,
 												ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME,
 												ObjectKeys.FIELD_PRINCIPAL_LDAPGUID,
@@ -234,10 +236,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final int PRINCIPAL_NAME = 0;
 	private static final int PRINCIPAL_ID = 1;
 	private static final int PRINCIPAL_DISABLED = 2;
-	private static final int PRINCIPAL_INTERNALID = 3;
-	private static final int PRINCIPAL_FOREIGN_NAME = 4;
-	private static final int PRINCIPAL_LDAP_GUID = 5;
-	private static final int GROUP_LDAP_CONTAINER = 6;
+	private static final int PRINCIPAL_INTERNAL = 3;
+	private static final int PRINCIPAL_INTERNALID = 4;
+	private static final int PRINCIPAL_FOREIGN_NAME = 5;
+	private static final int PRINCIPAL_LDAP_GUID = 6;
+	private static final int GROUP_LDAP_CONTAINER = 7;
 	
 	// An ldap sync for a zone should not be started while another ldap sync is running.
 	private static Hashtable<Long, Boolean> m_zoneSyncInProgressMap = new Hashtable(); 
@@ -1735,7 +1738,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * For all users, sync the ldap attribute that holds the guid.  The name of the ldap
      * attribute that holds the guid is found in the ldap configuration data.  You can get the
      * name of the attribute by calling config.getGuidAttribute().  For eDirectory, the name of
-     * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
+     * the attribute is GUID and for Active Directory, the name of the attribute is objectGUID.
      * This method should be called whenever the user changes the the name of the ldap attribute
      * that holds the guid (in the ldap configuration).
      */
@@ -1748,7 +1751,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Workspace zone;
 		Long zoneId;
 		Map<Long, Map> usersToUpdate;
-		ProfileDao profileDao;
 		PartialLdapSyncResults modifiedUsersSyncResults;
 		String[] ldapAttributesToRead;
 		String ldapGuidAttribute;
@@ -1758,8 +1760,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// The key is the user's id and the value is the map of attributes.
 		usersToUpdate = new HashMap();
 
-		profileDao = getProfileDao();
-		
 		zone = RequestContextHolder.getRequestContext().getZone();
 		zoneId = zone.getId();
 
@@ -1903,7 +1903,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * For all groups, sync the ldap attribute that holds the guid.  The name of the ldap
      * attribute that holds the guid is found in the ldap configuration data.  You can get the
      * name of the attribute by calling config.getGuidAttribute().  For eDirectory, the name of
-     * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
+     * the attribute is GUID and for Active Directory, the name of the attribute is objectGUID.
      * This method should be called whenever the user changes the the name of the ldap attribute
      * that holds the guid (in the ldap configuration).
      */
@@ -2013,7 +2013,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * For all users and groups, sync the ldap attribute that holds the guid.  The name of the ldap
      * attribute that holds the guid is found in the ldap configuration data.  You can get the
      * name of the attribute by calling config.getGuidAttribute().  For eDirectory, the name of
-     * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
+     * the attribute is GUID and for Active Directory, the name of the attribute is objectGUID.
      * This method should be called whenever the user changes the the name of the ldap attribute
      * that holds the guid (in the ldap configuration).
      */
@@ -2475,7 +2475,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					String search;
 					String filter;
 					NamingEnumeration ctxSearch;
-					LdapDirType dirType;
 					
 					scope = (searchInfo.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE);
 					sch = new SearchControls( scope, 1, 0, userAttributeNames, false, false );
@@ -3057,24 +3056,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 				if ( Utils.checkIfFilr() )
 				{
-					LdapDirType dirType;
-					
 					// Get the home directory info for this user
-					dirType = getLdapDirType( config.getLdapGuidAttribute() );
-					homeDirInfo = getHomeDirInfoFromConfig(
-														ctx,
-														dirType,
-														dn,
-														searchInfo.getHomeDirConfig(),
-														false );
+					LdapDirType dirType = getLdapDirType( config.getLdapGuidAttribute() );
+					boolean createAsExternal = config.getImportUsersAsExternalUsers();
+					if ( ! createAsExternal )
+					{
+						homeDirInfo = getHomeDirInfoFromConfig(
+															ctx,
+															dirType,
+															dn,
+															searchInfo.getHomeDirConfig(),
+															false );
+					}
 
 					m_containerCoordinator.clear();
 					// Read the list of all containers from the db.
 					m_containerCoordinator.getListOfAllContainers();
 					m_containerCoordinator.setLdapDirType( dirType );
 					m_containerCoordinator.setLdapSyncMode( LdapSyncMode.PERFORM_SYNC );
-					m_containerCoordinator.record( dn );
-					m_containerCoordinator.wrapUp( false );
+					m_containerCoordinator.record( dn,    createAsExternal );
+					m_containerCoordinator.wrapUp( false, createAsExternal );
 				}
 
 				updateUser( zone, teamingUserName, mods, homeDirInfo );
@@ -3167,7 +3168,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		for( LdapConnectionConfig config : this.getConfigsReadOnlyCache(zone.getZoneId()) )
 		{
 			LdapContext ctx;
-			String domainName = null, netbiosName = null;
 			LdapDirType dirType;
 
 			ctx = getUserContext( zone.getId(), config );
@@ -3185,7 +3185,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				int scope;
 				SearchControls sch;
 				String search;
-				String filter;
 				NamingEnumeration ctxSearch;
 				Binding bd;
 				Attribute att;
@@ -3281,15 +3280,29 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}// end syncUser()
 	
 	/**
-	 * This routine alters group membership without updating the local caches.
-	 * Need to flush cache after use
+	 * This routine alters group membership without updating the local
+	 * caches.  Need to flush cache after use
+	 * 
+	 * @param syncUsersAndGroups
+	 * @param listOfLdapConfigsToSyncGuid
+	 * @param syncMode
+	 * @param syncResults
+	 * 
+	 * @throws LdapSyncException
 	 */
 	@Override
-	public void syncAll(
-		boolean syncUsersAndGroups,
-		String[] listOfLdapConfigsToSyncGuid,
-		LdapSyncMode syncMode,
-		LdapSyncResults syncResults ) throws LdapSyncException
+	public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncMode syncMode, LdapSyncResults syncResults ) throws LdapSyncException {
+		syncAllImpl( syncUsersAndGroups, listOfLdapConfigsToSyncGuid, syncMode, syncResults, false );
+		if ( ! ( Utils.checkIfFilr() ) )
+		{
+			syncAllImpl( syncUsersAndGroups, listOfLdapConfigsToSyncGuid, syncMode, syncResults, true );
+		}
+	}
+
+	/*
+	 * Main implementation method for syncAll().
+	 */
+	private void syncAllImpl( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncMode syncMode, LdapSyncResults syncResults, boolean externalUserSync ) throws LdapSyncException
 	{
 		Workspace zone = RequestContextHolder.getRequestContext().getZone();
 		Boolean syncInProgress;
@@ -3373,8 +3386,23 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   														info.isUserDelete(),
 	   														info.isUserWorkspaceDelete(),
 	   														syncMode,
-	   														syncResults );
+	   														syncResults,
+	   														externalUserSync );
+	    	
+	    	int userConfigs       = 0;
+	    	int userConfigsSynced = 0;
 			for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
+				userConfigs += 1;
+				
+				// Is this configuration the right internal vs.
+				// external type?
+				if ( config.getImportUsersAsExternalUsers() != externalUserSync )
+				{
+					// No!  Skip it.
+					continue;
+				}
+				userConfigsSynced += 1;
+				
 		   		LdapContext ctx=null;
 
 		   		// Tell the ContainerCoordinator the type of ldap directory we are working with.
@@ -3385,7 +3413,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					ctx = getUserContext(zone.getId(), config);
 
 					logger.info( "ldap url used to search for users: " + config.getUrl() );
-					syncUsers(zone, ctx, config, userCoordinator);
+					syncUsers( zone, ctx, config, userCoordinator, externalUserSync );
 					logger.info( "back from call to syncUsers()" );
 		  		}
 		  		catch ( Exception ex )
@@ -3453,6 +3481,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 			}// end for()
 
+	   		logger.info("ldap sync (externalUserSync:  " + externalUserSync + "):  userConfigs (Total):  " + userConfigs + ", userConfigs (Sync'ed):  " + userConfigsSynced);
+	   		
+	   		if ( ( 0 == userConfigsSynced ) && externalUserSync )
+	   		{
+		   		logger.info("ldap sync (externalUserSync):  Finished.  With no LDAP configurations to processes, there are no further sync actions required for external user syncs.");
+	   			return;
+	   		}
+	   		
 			try
 			{
 				logger.info( "Starting userCoordinator.wrapUp()" );
@@ -3466,7 +3502,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					if ( userCoordinator.sync != false || userCoordinator.create != false )
 						doUserCleanup = true;
 				}
-				userCoordinator.wrapUp( doUserCleanup );
+				userCoordinator.wrapUp( doUserCleanup, externalUserSync );
 				logger.info( "Finished userCoordinator.wrapUp()" );
 
 				if ( m_showTiming )
@@ -3530,9 +3566,23 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   															info.isGroupRegister(),
 	   															info.isGroupDelete(),
 	   															syncMode,
-	   															syncResults );
+	   															syncResults,
+	   															externalUserSync );
+	   		int groupConfigs       = 0;
+	   		int groupConfigsSynced = 0;
 	   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId()))
 	   		{
+	   			groupConfigs += 1;
+	   			
+				// Is this configuration the right internal vs.
+				// external type?
+				if ( config.getImportUsersAsExternalUsers() != externalUserSync )
+				{
+					// No!  Skip it.
+					continue;
+				}
+				groupConfigsSynced += 1;
+
 		   		LdapContext ctx=null;
 		  		try {
 
@@ -3542,7 +3592,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  			ctx = getGroupContext(zone.getId(), config);
 				
 		  			logger.info( "ldap url used to search for groups: " + config.getUrl() );
-					syncGroups(zone, ctx, config, groupCoordinator, info.isMembershipSync());
+					syncGroups( zone, ctx, config, groupCoordinator, info.isMembershipSync(), externalUserSync );
 			   		logger.info( "Finished syncGroups()" );
 				}
 		  		catch (Exception ex)
@@ -3609,6 +3659,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 		  		}
 			}// end for()
+	   		
+	   		logger.info("ldap sync (externalUserSync:  " + externalUserSync + "):  groupConfigs (Total):  " + groupConfigs + ", groupConfigs (Sync'ed):  " + groupConfigsSynced);
 	   		
 			if ( m_showTiming )
 			{
@@ -3705,7 +3757,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   		delContainers = false;
 		   		if ( errorSyncingUsers == false && errorSyncingGroups == false )
 		   			delContainers = true;
-		   		m_containerCoordinator.wrapUp( delContainers );
+		   		m_containerCoordinator.wrapUp( delContainers, externalUserSync );
 	   			logger.info( "Back from call to m_containerCoordinator.wrapUp();" );
 	   		}
 	   		catch ( Exception ex )
@@ -4263,7 +4315,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			m_existingContainers.clear();
 		}
 		
-		/**
+		/*
 		 * Create a new "container group" with the given dn.
 		 */
 		private Group createContainerGroup( String dn )
@@ -4468,10 +4520,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		/**
 		 * 
 		 */
-		public void record( String principalDn )
+		public void record( String principalDn, boolean createAsExternal )
 		{
 			// We only provision containers for eDirectory
-			if ( Utils.checkIfFilr() == true && m_dirType == LdapDirType.EDIR )
+			if ( Utils.checkIfFilr() && ( m_dirType == LdapDirType.EDIR ) && ( ! createAsExternal ))
 			{
 				principalDn = principalDn.toLowerCase();
 				addContainersForPrincipal( principalDn );
@@ -4554,9 +4606,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		/**
 		 * Create any new containers and delete any obsolete container.
 		 */
-		public void wrapUp( boolean deleteObsoleteContainers )
+		public void wrapUp( boolean deleteObsoleteContainers, boolean createAsExternal )
 		{
-			if ( Utils.checkIfFilr() )
+			if ( Utils.checkIfFilr() && ( ! createAsExternal ) )
 			{
 				// Delete obsolete containers.
 				if ( deleteObsoleteContainers )
@@ -4654,7 +4706,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			boolean delete,
 			boolean deleteWorkspace,
 			LdapSyncMode syncMode,
-			LdapSyncResults syncResults )
+			LdapSyncResults syncResults,
+			boolean externalUserSync )
 		{
 			ObjectControls objCtrls;
 			FilterControls filterCtrls;
@@ -4699,7 +4752,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				//initialize all users as not found unless they are a reserved user.
 				if ( Validator.isNull((String)attributeValues[PRINCIPAL_INTERNALID]) )
 				{
-					notInLdap.put((Long)attributeValues[PRINCIPAL_ID], ssName);
+					boolean rowInternal = ((Boolean) attributeValues[PRINCIPAL_INTERNAL]);
+					if (rowInternal != externalUserSync)
+					{
+						notInLdap.put((Long)attributeValues[PRINCIPAL_ID], ssName);
+					}
 				}
 			}			
 		}
@@ -4716,11 +4773,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 
 		/**
+		 * ?
 		 * 
 		 * @param dn
 		 * @param ssName
 		 * @param lAttrs
 		 * @param ldapGuidAttribute
+		 * @param createAsExternal
+		 * 
 		 * @throws NamingException
 		 */
 		public void record(
@@ -4729,8 +4789,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Attributes lAttrs,
 			String ldapGuidAttribute,
 			String domainName,
-                        String netbiosName,
-			HomeDirInfo homeDirInfo ) throws NamingException
+            String netbiosName,
+			HomeDirInfo homeDirInfo,
+			boolean createAsExternal ) throws NamingException
 		{
 			boolean foundLdapGuid = false;
 			Object[] row = null; 
@@ -4743,7 +4804,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				logger.debug("\t\tRecording user: '" + dn + "'");
 
 			// Add the necessary containers for this user.
-			m_containerCoordinator.record( dn );
+			m_containerCoordinator.record( dn, createAsExternal );
 			
 			// Get the typeless dn
 			typelessDN = getTypelessDN( dn );
@@ -4925,7 +4986,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					ldap_new.put(ssName, userMods); 
-					dnUsers.put(dn, new Object[]{ssName, null, Boolean.FALSE, null, dn, ldapGuid});
+					dnUsers.put(dn, new Object[]{ssName, null, Boolean.FALSE, Boolean.valueOf( createAsExternal ), null, dn, ldapGuid});
 					
 					// Create a HomeDirInfo object for this new user
 					if ( Utils.checkIfFilr() )
@@ -4964,7 +5025,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					syncResults = m_ldapSyncResults.getAddedUsers();
 				}
-				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, m_syncMode, syncResults );
+				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, m_syncMode, syncResults, createAsExternal );
 				ldap_new.clear();
 				ldap_new_homeDirInfo.clear();
 				
@@ -4986,7 +5047,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			m_ldapConfig = config;
 		}
 		
-		public Map wrapUp( boolean doCleanup )
+		public Map wrapUp( boolean doCleanup, boolean createAsExternal )
 		{
 			if (!ldap_existing.isEmpty()) {
 				//doLog("Updating users:", ldap_existing);
@@ -5010,7 +5071,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					syncResults = m_ldapSyncResults.getAddedUsers();
 				}
-				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, m_syncMode, syncResults );
+				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, m_syncMode, syncResults, createAsExternal );
 				for (int i=0; i<results.size(); ++i) {
 					User user = (User)results.get(i);
 					Object[] row = (Object[])dnUsers.get(user.getForeignName());
@@ -5331,8 +5392,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    return true;
 	}
 	
-            protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
-		throws NamingException
+	protected void syncUsers( Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator, boolean createAsExternal ) throws NamingException
 	{
 		String ssName;
 		String[] attributesToRead;
@@ -5535,7 +5595,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						
 						HomeDirInfo homeDirInfo = null;
 						
-						if ( Utils.checkIfFilr() && ldapContextForReadingHomeDirInfo != null )
+						if ( Utils.checkIfFilr() && ldapContextForReadingHomeDirInfo != null && ( ! createAsExternal ) )
 						{
 							homeDirInfo = getHomeDirInfoFromConfig(
 																ldapContextForReadingHomeDirInfo,
@@ -5559,8 +5619,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 											lAttrs,
 											ldapGuidAttribute,
 											domainName,
-                                                                                        netbiosName,
-											homeDirInfo);
+                                            netbiosName,
+											homeDirInfo,
+											createAsExternal );
 						
 						if ( m_showTiming )
 						{
@@ -5686,7 +5747,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			boolean create,
 			boolean delete,
 			LdapSyncMode syncMode,
-			LdapSyncResults syncResults )
+			LdapSyncResults syncResults,
+			boolean externalUserSync )
 		{
 			ObjectControls objControls;
 			FilterControls filterControls;
@@ -5742,7 +5804,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				//initialize all groups as not found unless they are a reserved group
 				if ( Validator.isNull((String)row[PRINCIPAL_INTERNALID]) )
 				{
-					m_groupsNotInLdap.put((Long)row[PRINCIPAL_ID], ssName);
+					boolean rowInternal = ((Boolean) row[PRINCIPAL_INTERNAL]);
+					if (rowInternal != externalUserSync)
+					{
+						m_groupsNotInLdap.put((Long)row[PRINCIPAL_ID], ssName);
+					}
 				}
 			}
 		}
@@ -5784,7 +5850,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Attributes lAttrs,
 			String ldapGuidAttribute,
 			String domainName,
-                        String netbiosName) throws NamingException
+            String netbiosName,
+            boolean createAsExternal ) throws NamingException
 		{
 			boolean isSSGroup = false;
 			boolean foundLdapGuid = false;
@@ -5797,7 +5864,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				logger.debug("\t\tRecording group: '" + dn + "'");
 			
 			// Add the necessary containers for this group.
-			m_containerCoordinator.record( dn );
+			m_containerCoordinator.record( dn, createAsExternal );
 			
 			// Get the typeless dn
 			typelessDN = getTypelessDN( dn );
@@ -5872,12 +5939,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if (logger.isDebugEnabled())
 							logger.debug("Creating group:" + ssName);
 						
-						Group group = createGroup(zoneId, ssName, userMods); 
-						if(group != null)
+						Group group = createGroup( zoneId, ssName, userMods, createAsExternal ); 
+						if ( group != null )
 						{
 							Object[] groupInfo;
 							
-							groupInfo = new Object[]{ssName, group.getId(), Boolean.FALSE, null, dn, ldapGuid};
+							groupInfo = new Object[]{ssName, group.getId(), Boolean.FALSE, Boolean.valueOf( createAsExternal ), null, dn, ldapGuid};
 							dnGroups.put(dn, groupInfo );
 							
 							if ( ssGroups.get( ssName ) == null )
@@ -6011,11 +6078,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 	    /**
 	     * Create groups.
+	     * 
 	     * @param zoneName
 	     * @param groups - Map keyed by user id, value is map of attributes
+	     * @param createAsExternal
+	     * 
 	     * @return
 	     */
-	    protected Group createGroup(Long zoneId, String ssName, Map groupData ) {
+	    protected Group createGroup(Long zoneId, String ssName, Map groupData, boolean createAsExternal ) {
 	    	logger.info( "--> Creating group: " + ssName );
 	    	
 	    	MapInputData groupMods = new MapInputData(StringCheckUtil.check(groupData));
@@ -6039,7 +6109,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		    	
 		    	if ( m_syncMode == LdapSyncMode.PERFORM_SYNC )
 		    	{
-			    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null, syncResults, new IdentityInfo(true, true, false, false) );
+			    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null, syncResults, new IdentityInfo( ( ! createAsExternal ), true, false, false ) );
 			    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
 
 			    	return (Group) newGroups.get(0);
@@ -6162,7 +6232,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapContext ctx,
 		LdapConnectionConfig config,
 		GroupCoordinator groupCoordinator,
-		boolean syncMembership ) throws NamingException
+		boolean syncMembership,
+		boolean createAsExternal ) throws NamingException
 	{
 		boolean workingWithAD = false;
 		String ldapGuidAttribute;
@@ -6338,7 +6409,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
                                                 }
 						//doing this one at a time is going to be slow for lots of groups
 						//not sure why it was changed for v2
-						if ( groupCoordinator.record( dn, teamingName, lAttrs, ldapGuidAttribute, domainName, netbiosName ) && syncMembership )
+						if ( groupCoordinator.record( dn, teamingName, lAttrs, ldapGuidAttribute, domainName, netbiosName, createAsExternal ) && syncMembership )
 						{ 
 							//Get map indexed by id
 							Object[] gRow = groupCoordinator.getGroup(dn);
@@ -6478,7 +6549,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			SearchControls searchCtls;
 			String search;
 			String filter;
-			NamingEnumeration ctxSearch;
 			StringBuffer ldapFilterGuid;
 			
 			ctx = getGroupContext( zone.getId(), ldapConfig );
@@ -8581,7 +8651,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	Map<String, Map> users,
     	Map<String, HomeDirInfo> homeDirInfoMap,
     	LdapSyncMode syncMode,
-    	PartialLdapSyncResults syncResults ) 
+    	PartialLdapSyncResults syncResults,
+    	boolean createAsExternal ) 
     {
 		//SimpleProfiler.setProfiler(new SimpleProfiler(false));
 		ProfileCoreProcessor processor;
@@ -8625,7 +8696,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		try 
 		{
 			// Try to create all of the users at once.
-			newUsers = processor.syncNewEntries(pf, userDef, User.class, newUsers, null, syncResults, new IdentityInfo(true, true, false, false));    
+			newUsers = processor.syncNewEntries( pf, userDef, User.class, newUsers, null, syncResults, new IdentityInfo( ( ! createAsExternal ), true, false, false ) );    
 
 			// Are we running Filr?
 			if ( newUsers != null && Utils.checkIfFilr() )
@@ -8698,7 +8769,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					logger.info( "2nd attempt to create the user: " + userName );
 					nextUser.clear();
 					nextUser.add( new MapInputData(StringCheckUtil.check( attrs ) ) );
-					nextUser = processor.syncNewEntries( pf, userDef, User.class, nextUser, null, syncResults, new IdentityInfo(true, true, false, false) );    
+					nextUser = processor.syncNewEntries( pf, userDef, User.class, nextUser, null, syncResults, new IdentityInfo( ( ! createAsExternal ), true, false, false ) );    
 					
 					if ( nextUser != null && nextUser.size() == 1 )
 					{
@@ -8727,11 +8798,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
     /**
      * Create groups.
+     * 
      * @param zoneName
      * @param groups - Map keyed by user id, value is map of attributes
+     * @param createAsExternal
+     * 
      * @return
      */
-    protected List<Group> createGroups(Binder zone, Map<String, Map> groups, PartialLdapSyncResults syncResults) {
+    protected List<Group> createGroups( Binder zone, Map<String, Map> groups, PartialLdapSyncResults syncResults, boolean createAsExternal )
+    {
 		ProfileBinder pf = getProfileDao().getProfileBinder(zone.getZoneId());
 		List newGroups = new ArrayList();
 		for (Iterator i=groups.values().iterator(); i.hasNext();) {
@@ -8745,7 +8820,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    try {
 	    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-	    	newGroups = processor.syncNewEntries(pf, groupDef, Group.class, newGroups, null, syncResults, new IdentityInfo(true, true, false, false) );
+	    	newGroups = processor.syncNewEntries( pf, groupDef, Group.class, newGroups, null, syncResults, new IdentityInfo( ( ! createAsExternal ), true, false, false ) );
 	    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
 		} catch (Exception ex) {
 			logError("Error adding groups", ex);
