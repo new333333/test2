@@ -2194,6 +2194,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_LDAP_SUPPORTS_EXTERNAL_USER_IMPORT:  {
+			BooleanRpcResponseData result = GwtLdapHelper.getLdapSupportsExternalUserImport(this, req);
+			response = new VibeRpcResponse(result);
+			return response;
+		}
+		
 		case GET_LDAP_SYNC_RESULTS:
 		{
 			GetLdapSyncResultsCmd glsrCmd;

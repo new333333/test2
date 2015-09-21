@@ -3293,7 +3293,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	@Override
 	public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncMode syncMode, LdapSyncResults syncResults ) throws LdapSyncException {
 		syncAllImpl( syncUsersAndGroups, listOfLdapConfigsToSyncGuid, syncMode, syncResults, false );
-		if ( ! ( Utils.checkIfFilr() ) )
+		if (getLdapSupportsExternalUserImport())
 		{
 			syncAllImpl( syncUsersAndGroups, listOfLdapConfigsToSyncGuid, syncMode, syncResults, true );
 		}
@@ -8956,5 +8956,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         WorkspaceModule workspaceModule;
         workspaceModule = (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
         return workspaceModule;
+    }
+
+    /**
+     * Returns true if LDAP supports importing of external users and
+     * false otherwise.
+     * 
+     * @return
+     */
+    @Override
+    public boolean getLdapSupportsExternalUserImport() {
+    	return SPropsUtil.getBoolean("ldap.sync.supports.external.users", (!(Utils.checkIfFilr())));
     }
 }

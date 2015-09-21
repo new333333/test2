@@ -60,6 +60,8 @@ import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResults.GwtLdapSyncError;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResults.GwtLdapSyncStatus;
 import org.kablink.teaming.gwt.client.GwtSchedule;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveLdapConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StartLdapSyncRpcResponseData;
 import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.GwtLdapSyncMode;
@@ -74,7 +76,6 @@ import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
 import org.kablink.teaming.module.ldap.LdapSyncThread;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.teaming.util.Utils;
 
 
 /**
@@ -256,12 +257,12 @@ public class GwtLdapHelper
     		listOfLdapServers = ami.getAuthenticationModule().getLdapConnectionConfigs();
     		if ( listOfLdapServers != null )
     		{
-    			boolean isFilr = Utils.checkIfFilr();
+    			boolean supportsExternalUsers = ami.getLdapModule().getLdapSupportsExternalUserImport();
     			for ( LdapConnectionConfig config : listOfLdapServers )
     			{
-    				// If this is Filr and we've got a external user
-    				// configuration...
-    				if (isFilr && config.getImportUsersAsExternalUsers()) {
+    				// If don't support external user imports and we've
+    				// got an external user configuration...
+    				if ((!supportsExternalUsers) && config.getImportUsersAsExternalUsers()) {
     					// ...ignore it.
     					continue;
     				}
@@ -433,6 +434,30 @@ public class GwtLdapHelper
 		gwtLdapObj.setSamAccountName( ldapObj.getSamAccountName() );
 
 		return gwtLdapObj;
+	}
+	
+	/**
+	 * Return true if importing users as external users is supported
+	 * and false otherwise.
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData getLdapSupportsExternalUserImport(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
+		try {
+			BooleanRpcResponseData reply = new BooleanRpcResponseData();
+			reply.setBooleanValue(Boolean.valueOf(bs.getLdapModule().getLdapSupportsExternalUserImport()));
+			return reply;
+		}
+		
+		catch (Exception e) {
+			GwtLogHelper.error(m_logger, "GwtLdapHelper.getLdapSupportsExternalUserImport( SOURCE EXCEPTION ):  ", e);
+			throw GwtLogHelper.getGwtClientException(m_logger, e);
+		}
 	}
 	
 	/**
