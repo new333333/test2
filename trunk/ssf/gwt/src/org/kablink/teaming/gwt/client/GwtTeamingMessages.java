@@ -3693,6 +3693,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editKeyShieldConfigDlg_ServerUrlLabel();
 	String editKeyShieldConfigDlg_StackTraceLabel();
 	String editKeyShieldConfigDlg_TestConnectionLabel();
+	String editKeyShieldConfigDlg_TwoFactorAuthHeader();
 	String editKeyShieldConfigDlg_UsernameAttributeAliasHint();
 	String editKeyShieldConfigDlg_UsernameAttributeAliasLabel();
 	

@@ -178,7 +178,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		table.setHTML(row, 0, tmpPanel.getElement().getInnerHTML());
 	
 		m_serverUrlTextBox = new TextBox();
-		m_serverUrlTextBox.setVisibleLength(40);
+		m_serverUrlTextBox.setVisibleLength(60);
 		table.setWidget(row, 1, m_serverUrlTextBox);
 		row += 1;
 		
@@ -189,7 +189,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		table.setHTML(row, 0, tmpPanel.getElement().getInnerHTML());
 		
 		m_apiAuthKeyTextBox = new TextBox();
-		m_apiAuthKeyTextBox.setVisibleLength(30);
+		m_apiAuthKeyTextBox.setVisibleLength(60);
 		table.setWidget(row, 1, m_apiAuthKeyTextBox);
 		row += 1;
 		
@@ -262,10 +262,20 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		table.setWidget(row, 0, tmpPanel);
 		row += 1;
 
+		// Add a header for the two factor authentication fields.
+		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName("editKeyShieldConfigDlg_HeaderPanel");
+		label = new Label(m_messages.editKeyShieldConfigDlg_TwoFactorAuthHeader());
+		label.addStyleName("editKeyShieldConfigDlg_Header");
+		tmpPanel.add(label);
+		table.setWidget(row, 0, tmpPanel);
+		FlexCellFormatter fcf = table.getFlexCellFormatter();
+		fcf.setColSpan(row, 0, 2);
+		row += 1;
+
 		// Add the hardware token required checkbox.
 		m_hardwareTokenRequiredCheckbox = new CheckBox(m_messages.editKeyShieldConfigDlg_HardwareTokenRequiredLabel());
 		table.setWidget(row, 0, m_hardwareTokenRequiredCheckbox);
-		FlexCellFormatter fcf = table.getFlexCellFormatter();
 		fcf.setColSpan(row, 0, 2);
 		m_hardwareTokenRequiredCheckbox.addClickHandler(new ClickHandler() {
 			@Override
@@ -286,7 +296,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		table.setHTML(row, 0, tmpPanel.getElement().getInnerHTML());
 		
 		m_ssoErrorMessageForWeb = new TextBox();
-		m_ssoErrorMessageForWeb.setVisibleLength(60);
+		m_ssoErrorMessageForWeb.setVisibleLength(80);
 		m_ssoErrorMessageForWeb.setMaxLength(128);
 		table.setWidget(row, 1, m_ssoErrorMessageForWeb);
 		row += 1;
@@ -300,7 +310,7 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		table.setHTML(row, 0, tmpPanel.getElement().getInnerHTML());
 		
 		m_ssoErrorMessageForWebdav = new TextBox();
-		m_ssoErrorMessageForWebdav.setVisibleLength(60);
+		m_ssoErrorMessageForWebdav.setVisibleLength(80);
 		m_ssoErrorMessageForWebdav.setMaxLength(128);
 		table.setWidget(row, 1, m_ssoErrorMessageForWebdav);
 		row += 1;
