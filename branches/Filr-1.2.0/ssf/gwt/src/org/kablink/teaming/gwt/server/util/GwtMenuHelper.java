@@ -42,11 +42,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.portlet.PortletURL;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -1572,7 +1572,13 @@ public class GwtMenuHelper {
 		}
 
 		// ...if the current user is the built-in admin user...
-		if (GwtServerHelper.getCurrentUser().isAdmin()) {
+		boolean isAdmin = GwtServerHelper.getCurrentUser().isAdmin();
+		if (isAdmin) {
+			// ...handles admin override for the admin console...
+			User parentUser = RequestContextHolder.getRequestContext().getParentUser();
+			isAdmin = ((null == parentUser) || parentUser.isAdmin());
+		}
+		if (isAdmin) {
 			// ...and add the set/clear admin rights.
 			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
 			tbi = new ToolbarItem("1_setAdminRights");
@@ -1920,6 +1926,7 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for the root team workspace view.
 	 */
+	@SuppressWarnings("unchecked")
 	private static void constructEntryRootWSItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, WorkspaceType wt) {
 		// If the user can add entries...
 		BinderModule bm = bs.getBinderModule();
