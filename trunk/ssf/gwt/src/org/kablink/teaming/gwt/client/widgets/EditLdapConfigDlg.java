@@ -339,7 +339,7 @@ public class EditLdapConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private Panel createLdapServersPanel( GwtTeamingMessages messages )
+	private Panel createLdapServersPanel( final GwtTeamingMessages messages )
 	{
 		VerticalPanel serversPanel;
 		CellTable.Resources cellTableResources;
@@ -549,6 +549,29 @@ public class EditLdapConfigDlg extends DlgBox
 			m_ldapServersTable.addColumn( serverUrlCol, messages.editLdapConfigDlg_ServerUrlCol() );
 		}
 
+		// If we're not running with a Filr license...
+		if ( ! ( GwtClientHelper.isLicenseFilr() ) )
+		{
+			// ...add the "User Type" column
+			{
+				TextColumn<GwtLdapConnectionConfig> userTypeCol;
+
+				userTypeCol = new TextColumn<GwtLdapConnectionConfig>()
+				{
+					@Override
+					public String getValue( GwtLdapConnectionConfig ldapServer )
+					{
+						String userType;
+						if ( ldapServer.isImportUsersAsExternalUsers() )
+						     userType = messages.editLdapServerConfigDlg_UserTypeExternal();
+						else userType = messages.editLdapServerConfigDlg_UserTypeInternal();
+						return userType;
+					}
+				};
+				m_ldapServersTable.addColumn( userTypeCol, messages.editLdapConfigDlg_UserTypeCol() );
+			}
+		}
+		
 		// Add the "User DN" column
 		{
 			TextColumn<GwtLdapConnectionConfig> userDNCol;
