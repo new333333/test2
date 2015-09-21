@@ -434,4 +434,9 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/external_user_96.png")
 	public ImageResource filrExternalUser96();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/Vibe_bg.png")
+	public ImageResource vibeBackground();
+	
 }

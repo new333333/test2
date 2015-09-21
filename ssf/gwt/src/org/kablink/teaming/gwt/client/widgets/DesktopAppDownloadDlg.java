@@ -204,7 +204,11 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		m_rootPanel.add(mhPanel);
 
 		// ...and image.
-		Image i = GwtClientHelper.buildImage(m_filrImages.filrBackground().getSafeUri().asString());
+		ImageResource ir;
+		if (m_isFilr)
+		     ir = m_filrImages.filrBackground();
+		else ir = m_filrImages.vibeBackground();
+		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString());
 		i.addStyleName("head_bg");
 		mhPanel.add(i);
 	}
