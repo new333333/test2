@@ -6494,6 +6494,16 @@ td.datePickerMonth {
 	margin-top: 2px;
 }
 
+.editKeyShieldConfigDlg_Header
+{
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+.editKeyShieldConfigDlg_HeaderPanel
+{
+}
+
 .editKeyShieldConfigDlg_Hint
 {
 	color: #4D6D8B;
