@@ -32,36 +32,19 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
- * This class holds the response data for the for any command that
- * expects a Boolean response.
+ * This class holds all of the information necessary to execute the
+ * 'Get LDAP Supports External User Import' command.
  * 
  * @author drfoster@novell.com
  */
-public class BooleanRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private Boolean	m_value;	//
-	
-	/**
-	 * Constructor method. 
-	 */
-	public BooleanRpcResponseData() {
-		// Initialize the super class.
-		super();
-	}
-	
+public class GetLdapSupportsExternalUserImportCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
-	 * 
-	 * @param value
 	 */
-	public BooleanRpcResponseData(Boolean value) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the parameter.
-		setBooleanValue(value);
+	public GetLdapSupportsExternalUserImportCmd() {
+		// Initialize the super class.
+		super();
 	}
 	
 	/**
@@ -69,12 +52,22 @@ public class BooleanRpcResponseData implements IsSerializable, VibeRpcResponseDa
 	 * 
 	 * @return
 	 */
-	public Boolean getBooleanValue() {return m_value;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBooleanValue(Boolean value) {m_value = value;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_LDAP_SUPPORTS_EXTERNAL_USER_IMPORT.ordinal();
+	}
 }

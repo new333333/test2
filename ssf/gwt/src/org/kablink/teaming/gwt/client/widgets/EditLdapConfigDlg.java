@@ -55,7 +55,9 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeLdapSyncResultsDlgEvent;
 import org.kablink.teaming.gwt.client.event.LdapSyncStatusEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLdapConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetLdapSupportsExternalUserImportCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLocalesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetTimeZonesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveLdapConfigCmd;
@@ -113,6 +115,8 @@ public class EditLdapConfigDlg extends DlgBox
 		LdapSyncStatusEvent.Handler,
 		InvokeLdapSyncResultsDlgEvent.Handler
 {
+	private boolean m_supportsExternalUserImport;
+	
 	private GwtLdapConfig m_ldapConfig;
 	
 	private CellTable<GwtLdapConnectionConfig> m_ldapServersTable;
@@ -120,6 +124,7 @@ public class EditLdapConfigDlg extends DlgBox
 	private ListDataProvider<GwtLdapConnectionConfig> m_dataProvider;
 	private VibeSimplePager m_pager;
 	private List<GwtLdapConnectionConfig> m_listOfLdapServers;
+	private TabPanel m_serversTabPanel;
 
 	private CheckBox m_syncUserProfilesCheckBox;
 	private CheckBox m_registerUserProfilesAutomaticallyCheckBox;
@@ -146,6 +151,8 @@ public class EditLdapConfigDlg extends DlgBox
 	private GwtLdapSyncStatus m_ldapSyncStatus;
 	private GwtLdapSyncMode m_lastSyncMode;
 
+	private GwtTeamingMessages m_messages;
+	
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
 	// The following defines the TeamingEvents that are handled by
@@ -187,12 +194,15 @@ public class EditLdapConfigDlg extends DlgBox
 		int xPos,
 		int yPos,
 		int width,
-		int height )
+		int height,
+		EditLdapConfigDlgClient elcDlgClient )
 	{
 		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
 		
+		m_messages = GwtTeaming.getMessages();
+		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().editLdapConfigDlg_Header(), this, this, null );
+		createAllDlgContent( m_messages.editLdapConfigDlg_Header(), this, this, elcDlgClient );
 		
 		m_lastSyncMode = GwtLdapSyncMode.PERFORM_SYNC;
 	}
@@ -244,69 +254,110 @@ public class EditLdapConfigDlg extends DlgBox
 	@Override
 	public Panel createContent( Object props )
 	{
-		GwtTeamingMessages messages;
-		FlowPanel mainPanel = null;
-		TabPanel tabPanel;
+		final EditLdapConfigDlgClient elcDlgClient = ((EditLdapConfigDlgClient) props);
 		
-		messages = GwtTeaming.getMessages();
+		FlowPanel mainPanel = null;
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		tabPanel = new TabPanel();
-		tabPanel.addStyleName( "vibe-tabPanel" );
+		m_serversTabPanel = new TabPanel();
+		m_serversTabPanel.addStyleName( "vibe-tabPanel" );
+		
+		GwtClientHelper.executeCommand( new GetLdapSupportsExternalUserImportCmd(), new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_GetLdapSupportsExternalUserImport() );
+				
+				m_supportsExternalUserImport = false;
+				createTabPanelsAsync( elcDlgClient );
+			}
 
-		mainPanel.add( tabPanel );
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				BooleanRpcResponseData reply = ((BooleanRpcResponseData) result.getResponseData());
+				m_supportsExternalUserImport = reply.getBooleanValue();
+				createTabPanelsAsync( elcDlgClient );
+			}
+		} );
 
+
+		mainPanel.add( m_serversTabPanel );
+		
+		return mainPanel;
+	}
+	
+	private void createTabPanelsAsync( final EditLdapConfigDlgClient elcDlgClient )
+	{
+		GwtClientHelper.deferCommand(new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				createTabPanelsNow( elcDlgClient );
+			}
+		} );
+	}
+	
+	private void createTabPanelsNow( final EditLdapConfigDlgClient elcDlgClient )
+	{
 		// Create a panel to hold the list of ldap servers
 		{
 			Panel serversPanel;
 			
-			serversPanel = createLdapServersPanel( messages );
-			tabPanel.add( serversPanel, messages.editLdapConfigDlg_LdapServersTab() );
+			serversPanel = createLdapServersPanel();
+			m_serversTabPanel.add( serversPanel, m_messages.editLdapConfigDlg_LdapServersTab() );
 		}
 		
 		// Create a panel to hold the user configuration
 		{
 			Panel userPanel;
 			
-			userPanel = createUserConfigPanel( messages );
-			tabPanel.add( userPanel, messages.editLdapConfigDlg_UsersTab() );
+			userPanel = createUserConfigPanel();
+			m_serversTabPanel.add( userPanel, m_messages.editLdapConfigDlg_UsersTab() );
 		}
 		
 		// Create a panel to hold the group configuration
 		{
 			Panel groupPanel;
 			
-			groupPanel = createGroupConfigPanel( messages );
-			tabPanel.add( groupPanel, messages.editLdapConfigDlg_GroupsTab() );
+			groupPanel = createGroupConfigPanel();
+			m_serversTabPanel.add( groupPanel, m_messages.editLdapConfigDlg_GroupsTab() );
 		}
 
 		// Add controls dealing with sync schedule
 		{
 			Panel schedulePanel;
 			
-			schedulePanel = createSchedulePanel( messages );
-			tabPanel.add( schedulePanel, messages.editLdapConfigDlg_ScheduleTab() );
+			schedulePanel = createSchedulePanel();
+			m_serversTabPanel.add( schedulePanel, m_messages.editLdapConfigDlg_ScheduleTab() );
 		}
 		
 		// Add controls dealing with local user accounts
 		{
 			Panel localPanel;
 			
-			localPanel = createLocalAccountsPanel( messages );
-			tabPanel.add( localPanel, messages.editLdapConfigDlg_LocalUserAccountsTab() );
+			localPanel = createLocalAccountsPanel();
+			m_serversTabPanel.add( localPanel, m_messages.editLdapConfigDlg_LocalUserAccountsTab() );
 		}
 		
-		tabPanel.selectTab( 0 );
+		m_serversTabPanel.selectTab( 0 );
 		
-		return mainPanel;
+		if ( null != elcDlgClient )
+		{
+			elcDlgClient.onSuccess( this );
+		}
 	}
 
 	/**
 	 * 
 	 */
-	private Panel createGroupConfigPanel( GwtTeamingMessages messages )
+	private Panel createGroupConfigPanel()
 	{
 		FlowPanel groupPanel;
 		FlowPanel tmpPanel;
@@ -314,22 +365,22 @@ public class EditLdapConfigDlg extends DlgBox
 		groupPanel = new FlowPanel();
 		
 		tmpPanel = new FlowPanel();
-		m_registerGroupProfilesAutomaticallyCheckBox = new CheckBox( messages.editLdapConfigDlg_RegisterGroupProfilesAutomatically() );
+		m_registerGroupProfilesAutomaticallyCheckBox = new CheckBox( m_messages.editLdapConfigDlg_RegisterGroupProfilesAutomatically() );
 		tmpPanel.add( m_registerGroupProfilesAutomaticallyCheckBox );
 		groupPanel.add( tmpPanel );
 		
 		tmpPanel = new FlowPanel();
-		m_syncGroupProfilesCheckBox = new CheckBox( messages.editLdapConfigDlg_SyncGroupProfiles() );
+		m_syncGroupProfilesCheckBox = new CheckBox( m_messages.editLdapConfigDlg_SyncGroupProfiles() );
 		tmpPanel.add( m_syncGroupProfilesCheckBox );
 		groupPanel.add( tmpPanel );
 		
 		tmpPanel = new FlowPanel();
-		m_syncGroupMembershipCheckBox = new CheckBox( messages.editLdapConfigDlg_SyncGroupMembership() );
+		m_syncGroupMembershipCheckBox = new CheckBox( m_messages.editLdapConfigDlg_SyncGroupMembership() );
 		tmpPanel.add( m_syncGroupMembershipCheckBox );
 		groupPanel.add( tmpPanel );
 		
 		tmpPanel = new FlowPanel();
-		m_deleteGroupsCheckBox = new CheckBox( messages.editLdapConfigDlg_DeleteGroupsLabel() );
+		m_deleteGroupsCheckBox = new CheckBox( m_messages.editLdapConfigDlg_DeleteGroupsLabel() );
 		tmpPanel.add( m_deleteGroupsCheckBox );
 		groupPanel.add( tmpPanel );
 		
@@ -339,7 +390,7 @@ public class EditLdapConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private Panel createLdapServersPanel( final GwtTeamingMessages messages )
+	private Panel createLdapServersPanel()
 	{
 		VerticalPanel serversPanel;
 		CellTable.Resources cellTableResources;
@@ -355,7 +406,7 @@ public class EditLdapConfigDlg extends DlgBox
 			menuPanel.addStyleName( "editLdapConfigDlg_MenuPanel" );
 			
 			// Add an "Add" button.
-			label = new InlineLabel( messages.editLdapConfigDlg_AddLdapServerLabel() );
+			label = new InlineLabel( m_messages.editLdapConfigDlg_AddLdapServerLabel() );
 			label.addStyleName( "editLdapConfigDlg_Btn" );
 			label.addClickHandler( new ClickHandler()
 			{
@@ -378,7 +429,7 @@ public class EditLdapConfigDlg extends DlgBox
 			menuPanel.add( label );
 			
 			// Add a "Delete" button.
-			label = new InlineLabel( messages.editLdapConfigDlg_DeleteLdapServerLabel() );
+			label = new InlineLabel( m_messages.editLdapConfigDlg_DeleteLdapServerLabel() );
 			label.addStyleName( "editLdapConfigDlg_Btn" );
 			label.addClickHandler( new ClickHandler()
 			{
@@ -401,7 +452,7 @@ public class EditLdapConfigDlg extends DlgBox
 			menuPanel.add( label );
 			
 			// Add a "Sync all" button.
-			label = new InlineLabel( messages.editLdapConfigDlg_SyncLdapServerLabel() );
+			label = new InlineLabel( m_messages.editLdapConfigDlg_SyncLdapServerLabel() );
 			label.addStyleName( "editLdapConfigDlg_Btn" );
 			label.addClickHandler( new ClickHandler()
 			{
@@ -424,7 +475,7 @@ public class EditLdapConfigDlg extends DlgBox
 			menuPanel.add( label );
 
 			// Add a "Preview sync" button.
-			label = new InlineLabel( messages.editLdapConfigDlg_PreviewLdapSyncLabel() );
+			label = new InlineLabel( m_messages.editLdapConfigDlg_PreviewLdapSyncLabel() );
 			label.addStyleName( "editLdapConfigDlg_Btn" );
 			label.addClickHandler( new ClickHandler()
 			{
@@ -447,7 +498,7 @@ public class EditLdapConfigDlg extends DlgBox
 			menuPanel.add( label );
 
 			// Add a "Show sync results" button.
-			label = new InlineLabel( messages.editLdapConfigDlg_ShowSyncResultsLabel() );
+			label = new InlineLabel( m_messages.editLdapConfigDlg_ShowSyncResultsLabel() );
 			label.addStyleName( "editLdapConfigDlg_Btn" );
 			label.addClickHandler( new ClickHandler()
 			{
@@ -481,7 +532,7 @@ public class EditLdapConfigDlg extends DlgBox
 			
 			flowPanel = new FlowPanel();
 			flowPanel.addStyleName( "noObjectsFound" );
-			noServersLabel = new InlineLabel( messages.editLdapConfigDlg_NoLdapServersLabel() );
+			noServersLabel = new InlineLabel( m_messages.editLdapConfigDlg_NoLdapServersLabel() );
 			flowPanel.add( noServersLabel );
 			
 			m_ldapServersTable.setEmptyTableWidget( flowPanel );
@@ -546,11 +597,11 @@ public class EditLdapConfigDlg extends DlgBox
 					Scheduler.get().scheduleDeferred( cmd );
 				}
 			} );
-			m_ldapServersTable.addColumn( serverUrlCol, messages.editLdapConfigDlg_ServerUrlCol() );
+			m_ldapServersTable.addColumn( serverUrlCol, m_messages.editLdapConfigDlg_ServerUrlCol() );
 		}
 
-		// If we're not running with a Filr license...
-		if ( ! ( GwtClientHelper.isLicenseFilr() ) )
+		// If we support importing as external users...
+		if ( m_supportsExternalUserImport )
 		{
 			// ...add the "User Type" column
 			{
@@ -563,12 +614,12 @@ public class EditLdapConfigDlg extends DlgBox
 					{
 						String userType;
 						if ( ldapServer.isImportUsersAsExternalUsers() )
-						     userType = messages.editLdapServerConfigDlg_UserTypeExternal();
-						else userType = messages.editLdapServerConfigDlg_UserTypeInternal();
+						     userType = m_messages.editLdapServerConfigDlg_UserTypeExternal();
+						else userType = m_messages.editLdapServerConfigDlg_UserTypeInternal();
 						return userType;
 					}
 				};
-				m_ldapServersTable.addColumn( userTypeCol, messages.editLdapConfigDlg_UserTypeCol() );
+				m_ldapServersTable.addColumn( userTypeCol, m_messages.editLdapConfigDlg_UserTypeCol() );
 			}
 		}
 		
@@ -590,7 +641,7 @@ public class EditLdapConfigDlg extends DlgBox
 					return userDN;
 				}
 			};
-			m_ldapServersTable.addColumn( userDNCol, messages.editLdapConfigDlg_UserDNCol() );
+			m_ldapServersTable.addColumn( userDNCol, m_messages.editLdapConfigDlg_UserDNCol() );
 		}
 
 		// Create a pager
@@ -611,7 +662,7 @@ public class EditLdapConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private Panel createLocalAccountsPanel( GwtTeamingMessages messages )
+	private Panel createLocalAccountsPanel()
 	{
 		FlowPanel localPanel;
 		FlowPanel tmpPanel;
@@ -619,7 +670,7 @@ public class EditLdapConfigDlg extends DlgBox
 		localPanel = new FlowPanel();
 		
 		tmpPanel = new FlowPanel();
-		m_allowLocalLoginCheckBox = new CheckBox( messages.editLdapConfigDlg_AllowLocalLoginLabel() );
+		m_allowLocalLoginCheckBox = new CheckBox( m_messages.editLdapConfigDlg_AllowLocalLoginLabel() );
 		tmpPanel.add( m_allowLocalLoginCheckBox );
 		localPanel.add( tmpPanel );
 		
@@ -629,13 +680,13 @@ public class EditLdapConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private Panel createSchedulePanel( GwtTeamingMessages messages )
+	private Panel createSchedulePanel()
 	{
 		FlowPanel schedulePanel;
 		
 		schedulePanel = new FlowPanel();
 		
-		m_scheduleWidget = new ScheduleWidget( messages.editLdapConfigDlg_EnableSyncScheduleLabel() );
+		m_scheduleWidget = new ScheduleWidget( m_messages.editLdapConfigDlg_EnableSyncScheduleLabel() );
 		schedulePanel.add( m_scheduleWidget );
 		
 		return schedulePanel;
@@ -644,7 +695,7 @@ public class EditLdapConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private Panel createUserConfigPanel( GwtTeamingMessages messages )
+	private Panel createUserConfigPanel()
 	{
 		FlowPanel userPanel;
 		Label label;
@@ -656,12 +707,12 @@ public class EditLdapConfigDlg extends DlgBox
 			FlowPanel tmpPanel;
 
 			tmpPanel = new FlowPanel();
-			m_registerUserProfilesAutomaticallyCheckBox = new CheckBox( messages.editLdapConfigDlg_RegisterUserProfilesAutomatically() );
+			m_registerUserProfilesAutomaticallyCheckBox = new CheckBox( m_messages.editLdapConfigDlg_RegisterUserProfilesAutomatically() );
 			tmpPanel.add( m_registerUserProfilesAutomaticallyCheckBox );
 			userPanel.add( tmpPanel );
 	
 			tmpPanel = new FlowPanel();
-			m_syncUserProfilesCheckBox = new CheckBox( messages.editLdapConfigDlg_SyncUserProfiles() );
+			m_syncUserProfilesCheckBox = new CheckBox( m_messages.editLdapConfigDlg_SyncUserProfiles() );
 			tmpPanel.add( m_syncUserProfilesCheckBox );
 			userPanel.add( tmpPanel );
 		}
@@ -686,7 +737,7 @@ public class EditLdapConfigDlg extends DlgBox
 							if ( m_deleteUsersRB.getValue() == true )
 							{
 								// Warn the admin about deleting users
-								Window.alert( GwtTeaming.getMessages().editLdapConfigDlg_DeleteUsersWarning() );
+								Window.alert( m_messages.editLdapConfigDlg_DeleteUsersWarning() );
 							}
 							
 							danceDlg();
@@ -697,38 +748,38 @@ public class EditLdapConfigDlg extends DlgBox
 				}
 			};
 
-			label = new Label( messages.editLdapConfigDlg_DisableUserLabel() );
+			label = new Label( m_messages.editLdapConfigDlg_DisableUserLabel() );
 			label.addStyleName( "margintop3 fontSize16px" );
 			userPanel.add( label );
 
 			tmpPanel = new FlowPanel();
 			tmpPanel.addStyleName( "margintop2 marginleft1" );
-			m_disableUsersRB = new RadioButton( "notInLdap", messages.editLdapConfigDlg_DisableUserLabel2() );
+			m_disableUsersRB = new RadioButton( "notInLdap", m_messages.editLdapConfigDlg_DisableUserLabel2() );
 			m_disableUsersRB.addClickHandler( clickHandler );
 			tmpPanel.add( m_disableUsersRB );
 			userPanel.add( tmpPanel );
 			
 			tmpPanel = new FlowPanel();
 			tmpPanel.addStyleName( "margintop1 marginleft1" );
-			m_deleteUsersRB = new RadioButton( "notInLdap", messages.editLdapConfigDlg_DeleteUserLabel() );
+			m_deleteUsersRB = new RadioButton( "notInLdap", m_messages.editLdapConfigDlg_DeleteUserLabel() );
 			m_deleteUsersRB.addClickHandler( clickHandler );
 			tmpPanel.add( m_deleteUsersRB );
 			userPanel.add( tmpPanel );
 			
 			tmpPanel = new FlowPanel();
 			tmpPanel.addStyleName( "marginleft2" );
-			m_deleteWorkspaceCheckBox = new CheckBox( messages.editLdapConfigDlg_DeleteWorkspaceLabel() );
+			m_deleteWorkspaceCheckBox = new CheckBox( m_messages.editLdapConfigDlg_DeleteWorkspaceLabel() );
 			tmpPanel.add( m_deleteWorkspaceCheckBox );
 			userPanel.add( tmpPanel );
 		}
 		
 		// Add the controls dealing time zone
 		{
-			label = new Label( messages.editLdapConfigDlg_CreatingUsersLabel() );
+			label = new Label( m_messages.editLdapConfigDlg_CreatingUsersLabel() );
 			label.addStyleName( "margintop3 fontSize16px" );
 			userPanel.add( label );
 
-			label = new Label( messages.editLdapConfigDlg_DefaultTimeZoneLabel() );
+			label = new Label( m_messages.editLdapConfigDlg_DefaultTimeZoneLabel() );
 			label.addStyleName( "margintop2 marginleft1" );
 			userPanel.add( label );
 			
@@ -741,7 +792,7 @@ public class EditLdapConfigDlg extends DlgBox
 		
 		// Add the controls dealing with locale
 		{
-			label = new Label( messages.editLdapConfigDlg_DefaultLocaleLabel() );
+			label = new Label( m_messages.editLdapConfigDlg_DefaultLocaleLabel() );
 			label.addStyleName( "margintop2 marginleft1" );
 			userPanel.add( label );
 			
@@ -803,7 +854,7 @@ public class EditLdapConfigDlg extends DlgBox
 			String msg;
 			
 			// Yes, ask the user if they want to delete the selected ldap servers?
-			msg = GwtTeaming.getMessages().editLdapConfigDlg_ConfirmDelete( serverUrls );
+			msg = m_messages.editLdapConfigDlg_ConfirmDelete( serverUrls );
 			if ( Window.confirm( msg ) )
 			{
 				m_isDirty = true;
@@ -826,7 +877,7 @@ public class EditLdapConfigDlg extends DlgBox
 		}
 		else
 		{
-			Window.alert( GwtTeaming.getMessages().editLdapConfigDlg_SelectLdapServersToDelete() );
+			Window.alert( m_messages.editLdapConfigDlg_SelectLdapServersToDelete() );
 		}
 	}
 	
@@ -847,7 +898,7 @@ public class EditLdapConfigDlg extends DlgBox
 		isDirty = isDirty();
 		if ( isDirty )
 		{
-			if ( Window.confirm( GwtTeaming.getMessages().confirmChangesWillBeLost() ) )
+			if ( Window.confirm( m_messages.confirmChangesWillBeLost() ) )
 				return true;
 			
 			return false;
@@ -884,7 +935,7 @@ public class EditLdapConfigDlg extends DlgBox
 				if ( listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length > 0 )
 				{
 					// Yes, tell the user we need to sync the guids for all users and groups.
-					Window.alert( GwtTeaming.getMessages().editLdapConfigDlg_LdapGuidAttribChanged() );
+					Window.alert( m_messages.editLdapConfigDlg_LdapGuidAttribChanged() );
 
 					doSync = true;
 				}
@@ -1052,7 +1103,7 @@ public class EditLdapConfigDlg extends DlgBox
 		GetLdapConfigCmd cmd;
 		AsyncCallback<VibeRpcResponse> callback;
 
-		showStatusMsg( GwtTeaming.getMessages().editLdapConfigDlg_ReadingLdapConfig() );
+		showStatusMsg( m_messages.editLdapConfigDlg_ReadingLdapConfig() );
 		
 		callback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -1062,7 +1113,7 @@ public class EditLdapConfigDlg extends DlgBox
 				hideStatusMsg();
 				GwtClientHelper.handleGwtRPCFailure(
 											t,
-											GwtTeaming.getMessages().rpcFailure_GetLdapConfig() );
+											m_messages.rpcFailure_GetLdapConfig() );
 			}
 			
 			@Override
@@ -1126,7 +1177,7 @@ public class EditLdapConfigDlg extends DlgBox
 				hideStatusMsg();
 				GwtClientHelper.handleGwtRPCFailure(
 											t,
-											GwtTeaming.getMessages().rpcFailure_GetLocales() );
+											m_messages.rpcFailure_GetLocales() );
 			}
 			
 			@Override
@@ -1222,7 +1273,7 @@ public class EditLdapConfigDlg extends DlgBox
 				hideStatusMsg();
 				GwtClientHelper.handleGwtRPCFailure(
 											t,
-											GwtTeaming.getMessages().rpcFailure_GetTimeZones() );
+											m_messages.rpcFailure_GetTimeZones() );
 			}
 			
 			@Override
@@ -1259,7 +1310,6 @@ public class EditLdapConfigDlg extends DlgBox
 	private void handleClickOnPreviewSyncButton()
 	{
 		Object obj;
-		GwtTeamingMessages messages;
 		boolean startPreview = false;
 		GwtLdapConfig ldapConfig;
 		
@@ -1269,12 +1319,10 @@ public class EditLdapConfigDlg extends DlgBox
 		
 		ldapConfig = (GwtLdapConfig) obj;
 		
-		messages = GwtTeaming.getMessages();
-		
 		if ( isDirty() )
 		{
 			// The ldap config is dirty, tell the user the ldap configuration must be saved first.
-			if ( Window.confirm( messages.editLdapConfigDlg_LdapConfigMustBeSavedBeforePreviewCanBeStarted() ) )
+			if ( Window.confirm( m_messages.editLdapConfigDlg_LdapConfigMustBeSavedBeforePreviewCanBeStarted() ) )
 			{
 				Scheduler.ScheduledCommand cmd;
 				final String[] listOfLdapConfigsToSyncGuid;
@@ -1309,7 +1357,6 @@ public class EditLdapConfigDlg extends DlgBox
 	private void handleClickOnSyncAllButton()
 	{
 		Object obj;
-		GwtTeamingMessages messages;
 		boolean startSync = false;
 		GwtLdapConfig ldapConfig;
 		
@@ -1319,12 +1366,10 @@ public class EditLdapConfigDlg extends DlgBox
 		
 		ldapConfig = (GwtLdapConfig) obj;
 		
-		messages = GwtTeaming.getMessages();
-		
 		if ( isDirty() )
 		{
 			// The ldap config is dirty, tell the user the ldap configuration must be saved first.
-			if ( Window.confirm( messages.editLdapConfigDlg_LdapConfigMustBeSaved() ) )
+			if ( Window.confirm( m_messages.editLdapConfigDlg_LdapConfigMustBeSaved() ) )
 			{
 				Scheduler.ScheduledCommand cmd;
 				final String[] listOfLdapConfigsToSyncGuid;
@@ -1895,7 +1940,7 @@ public class EditLdapConfigDlg extends DlgBox
 		AsyncCallback<VibeRpcResponse> callback;
 		SaveLdapConfigCmd cmd;
 
-		showStatusMsg( GwtTeaming.getMessages().editLdapConfigDlg_SavingLdapConfig() );
+		showStatusMsg( m_messages.editLdapConfigDlg_SavingLdapConfig() );
 
 		callback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -1904,7 +1949,7 @@ public class EditLdapConfigDlg extends DlgBox
 			{
 				GwtClientHelper.handleGwtRPCFailure(
 											t,
-											GwtTeaming.getMessages().rpcFailure_SaveLdapConfig() );
+											m_messages.rpcFailure_SaveLdapConfig() );
 				
 				hideStatusMsg();
 			}
@@ -1969,18 +2014,16 @@ public class EditLdapConfigDlg extends DlgBox
 		String[] listOfLdapConfigsToSyncGuid,
 		GwtLdapSyncMode syncMode )
 	{
-		GwtTeamingMessages messages;
 		AsyncCallback<VibeRpcResponse> callback;
 		StartLdapSyncCmd cmd;
 
 		m_lastSyncMode = syncMode;
-		messages = GwtTeaming.getMessages();
 		
 		// Is an ldap sync currently in progress?
 		if ( isLdapSyncInProgress() )
 		{
 			// Yes, tell the user they can't start another.
-			Window.alert( messages.editLdapConfigDlg_LdapSyncInProgressCantStartAnother() );
+			Window.alert( m_messages.editLdapConfigDlg_LdapSyncInProgressCantStartAnother() );
 			
 			// Invoke the LDAP Sync Results dialog
 			invokeLdapSyncResultsDlg( false, syncMode );
@@ -1995,7 +2038,7 @@ public class EditLdapConfigDlg extends DlgBox
 			{
 				GwtClientHelper.handleGwtRPCFailure(
 											t,
-											GwtTeaming.getMessages().rpcFailure_StartLdapSync() );
+											m_messages.rpcFailure_StartLdapSync() );
 				
 				m_ldapSyncId = null;
 				hideStatusMsg();
@@ -2123,18 +2166,14 @@ public class EditLdapConfigDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				EditLdapConfigDlg elcDlg;
-				
-				elcDlg = new EditLdapConfigDlg(
-											autoHide,
-											modal,
-											left,
-											top,
-											width,
-											height );
-				
-				if ( elcDlgClient != null )
-					elcDlgClient.onSuccess( elcDlg );
+				new EditLdapConfigDlg(
+					autoHide,
+					modal,
+					left,
+					top,
+					width,
+					height,
+					elcDlgClient );
 			}
 		} );
 	}
