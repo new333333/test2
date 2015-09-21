@@ -1598,7 +1598,13 @@ public class GwtMenuHelper {
 		}
 
 		// ...if the current user is the built-in admin user...
-		if (GwtServerHelper.getCurrentUser().isAdmin()) {
+		boolean isAdmin = GwtServerHelper.getCurrentUser().isAdmin();
+		if (isAdmin) {
+			// ...handles admin override for the admin console...
+			User parentUser = RequestContextHolder.getRequestContext().getParentUser();
+			isAdmin = ((null == parentUser) || parentUser.isAdmin());
+		}
+		if (isAdmin) {
 			// ...and add the set/clear admin rights.
 			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
 			tbi = new ToolbarItem("1_setAdminRights");
