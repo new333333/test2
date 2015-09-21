@@ -3425,6 +3425,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editLdapConfigDlg_SyncUserProfiles();
 	String editLdapConfigDlg_UserDNCol();
 	String editLdapConfigDlg_UsersTab();
+	String editLdapConfigDlg_UserTypeCol();
 
 	// Strings used in the Edit ldap server configuration dialog.
 	String editLdapServerConfigDlg_AddSearchLabel();
