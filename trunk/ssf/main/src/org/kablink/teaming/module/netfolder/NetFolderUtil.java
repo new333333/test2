@@ -35,6 +35,7 @@ package org.kablink.teaming.module.netfolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.FolderDao;
+import org.kablink.teaming.domain.AppNetFolderSyncSettings;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NetFolderConfig;
@@ -49,6 +50,10 @@ import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.util.SpringContextUtil;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author jong
@@ -129,6 +134,15 @@ public class NetFolderUtil {
 	
 	public static AclResourceDriver getResourceDriverByNetFolderServerName(String netFolderServerName) throws NoNetFolderConfigByTheIdException, FIException {
 		return (AclResourceDriver)ResourceDriverManagerUtil.findResourceDriver(netFolderServerName);
+	}
+
+	public static Map<Long, AppNetFolderSyncSettings> getAppNetFolderSyncSettings(List<Long> netFolderIds) {
+		List<AppNetFolderSyncSettings> appNetFolderSyncSettings = getCoreDao().getAppNetFolderSyncSettings(netFolderIds);
+		Map<Long, AppNetFolderSyncSettings> map = new HashMap<>();
+		for (AppNetFolderSyncSettings settings : appNetFolderSyncSettings) {
+			map.put(settings.getId(), settings);
+		}
+		return map;
 	}
 	
 	private static CoreDao getCoreDao() {
