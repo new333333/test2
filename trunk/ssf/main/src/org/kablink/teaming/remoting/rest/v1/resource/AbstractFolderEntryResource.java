@@ -33,10 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
-import org.kablink.teaming.domain.NoTagByTheIdException;
+import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FileUtils;
@@ -49,6 +46,8 @@ import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchResultTree;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.Tag;
+import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.api.ApiErrorCode;
 
@@ -149,6 +148,10 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
         if (entry.getDescription().getText()==null || entry.getDescription().getText().length()==0) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'description.text' value");
         }
+        if (entry.getTitle()==null) {
+            String title = NLT.get("reply.re.title", new String[]{getFolderEntryTitle(parent)});
+            entry.setTitle(title);
+        }
         String defId = null;
         if (entry.getDefinition()!=null) {
             defId = entry.getDefinition().getId();
@@ -225,4 +228,24 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
     EntityIdentifier.EntityType _getEntityType() {
         return EntityIdentifier.EntityType.folderEntry;
     }
+
+    /**
+     * Returns the string to use as the title of a folder entry.
+     *
+     * @param fe
+     *
+     * @return
+     */
+    public static String getFolderEntryTitle(FolderEntry fe) {
+        String reply = fe.getTitle();
+        if (!(MiscUtil.hasString(reply))) {
+            FolderEntry feParent = fe.getParentEntry();
+            if (null == feParent)
+                reply = ("--" + NLT.get("entry.noTitle") + "--");
+            else reply = NLT.get("reply.re.title", new String[]{getFolderEntryTitle(feParent)});
+        }
+        return reply;
+    }
+
+
 }
