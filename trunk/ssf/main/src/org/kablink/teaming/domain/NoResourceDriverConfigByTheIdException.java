@@ -41,7 +41,7 @@ import org.kablink.util.api.ApiErrorCode;
  *
  */
 public class NoResourceDriverConfigByTheIdException extends NoObjectByTheIdException {
-    private static final String NoFolderByTheIdException_ErrorCode = "errorcode.no.resource.driver.config.by.the.id";
+    private static final String NoFolderByTheIdException_ErrorCode = "errorcode.no.net.folder.server.by.the.id";
 
     public NoResourceDriverConfigByTheIdException(Long folderId) {
         super(NoFolderByTheIdException_ErrorCode, folderId);
@@ -60,6 +60,6 @@ public class NoResourceDriverConfigByTheIdException extends NoObjectByTheIdExcep
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.NET_FOLDER_NOT_FOUND;
+		return ApiErrorCode.NET_FOLDER_SERVER_NOT_FOUND;
 	}
 }
