@@ -58,6 +58,7 @@ import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.KeyShieldConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
+import org.kablink.teaming.domain.AppNetFolderSyncSettings;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoNetFolderConfigByTheIdException;
 import org.kablink.teaming.domain.NoNetFolderConfigByTheNameException;
@@ -345,4 +346,6 @@ public interface CoreDao {
 	
 	public  ResourceDriverConfig loadNetFolderServer(Long netFolderServerId) throws NoNetFolderServerByTheIdException;
 	public  ResourceDriverConfig loadNetFolderServerByName(String netFolderServerName) throws NoNetFolderServerByTheNameException;
+
+	public List<AppNetFolderSyncSettings> getAppNetFolderSyncSettings(List<Long> netFolderIds);
 }

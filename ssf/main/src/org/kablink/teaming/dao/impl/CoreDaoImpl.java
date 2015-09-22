@@ -82,6 +82,7 @@ import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.ProxyIdentitySelectSpec;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AnyOwner;
+import org.kablink.teaming.domain.AppNetFolderSyncSettings;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.domain.BasicAudit;
@@ -4110,4 +4111,35 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 
     }
+
+	@Override
+	public List<AppNetFolderSyncSettings> getAppNetFolderSyncSettings(final List<Long> netFolderIds) {
+		long begin = System.nanoTime();
+		try {
+			return (List<AppNetFolderSyncSettings>)getHibernateTemplate().execute(
+					new HibernateCallback<List<AppNetFolderSyncSettings>>() {
+						@Override
+						public List<AppNetFolderSyncSettings> doInHibernate(Session session) throws HibernateException {
+							List rows = session.createCriteria(NetFolderConfig.class)
+									.add(Restrictions.in("topFolderId", netFolderIds))
+									.setProjection(Projections.projectionList()
+										.add(Projections.property("topFolderId"))
+										.add(Projections.property("allowDesktopAppToSyncData"))
+										.add(Projections.property("allowMobileAppsToSyncData"))
+										)
+									.list();
+							List<AppNetFolderSyncSettings> settings = new ArrayList<AppNetFolderSyncSettings>();
+							for (Object row : rows) {
+								Object [] values = (Object[]) row;
+							    settings.add(new AppNetFolderSyncSettings((Long) values[0], (Boolean) values[1], (Boolean) values[2]));
+							}
+							return settings;
+						}
+					}
+			);
+		}
+		finally {
+			end(begin, "loadNetFolderServerByName(String)");
+		}
+	}
 }

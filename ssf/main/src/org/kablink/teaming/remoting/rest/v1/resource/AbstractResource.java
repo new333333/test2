@@ -63,6 +63,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
@@ -90,6 +91,7 @@ import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.EmailHelper;
+import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.HttpHeaders;
 import org.kablink.util.Pair;
@@ -2409,7 +2411,19 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         } else {
             SearchResultBuilderUtil.buildSearchResults(results, builder, map, nextUrl, nextParams, offset);
         }
+        List<Long> ids = new ArrayList<>(results.getCount());
         for (NetFolderBrief binder : results.getResults()) {
+            ids.add(binder.getId());
+        }
+
+        Map<Long, AppNetFolderSyncSettings> syncSettings = NetFolderUtil.getAppNetFolderSyncSettings(ids);
+
+        for (NetFolderBrief binder : results.getResults()) {
+            AppNetFolderSyncSettings settings = syncSettings.get(binder.getId());
+            if (settings!=null) {
+                binder.setAllowDesktopSync(settings.getAllowDesktopAppToSyncData());
+                binder.setAllowMobileSync(settings.getAllowMobileAppsToSyncData());
+            }
             binder.setParentBinder(new ParentBinder(ObjectKeys.NET_FOLDERS_ID, "/self/net_folders"));
         }
         return results;
