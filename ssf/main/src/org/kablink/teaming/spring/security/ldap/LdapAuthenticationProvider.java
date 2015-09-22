@@ -76,7 +76,8 @@ public class LdapAuthenticationProvider extends org.springframework.security.lda
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     	try {
-    		if(KShieldHelper.isAuthenticatorSubjectToSso()) {
+    		if(KShieldHelper.isAuthenticatorSubjectToSso() && 
+    				!KShieldHelper.shouldLdapLoginBeForced()) {
 	    		KeyShieldConfig ksc = getCoreDao().loadKeyShieldConfig(zoneId);
 	    		if(ksc != null && !ksc.getNonSsoAllowedForLdapUser())
 	    			throw new UsernameNotFoundException("Username/password authentication not allowed for LDAP users");

@@ -53,6 +53,9 @@ public class KShieldHelper {
 	public static void transferStateFromRequestContextToHttpSession(HttpSession session) {
 		if(Boolean.TRUE.equals(KShieldContextHolder.get(KShieldContextHolder.HARDWARE_TOKEN_MISSING)))
 			session.setAttribute(KShieldContextHolder.HARDWARE_TOKEN_MISSING, Boolean.TRUE);
+		
+		if(Boolean.TRUE.equals(KShieldContextHolder.get(KShieldContextHolder.FORCE_LDAP_LOGIN)))
+			session.setAttribute(KShieldContextHolder.FORCE_LDAP_LOGIN, Boolean.TRUE);
 	}
 	
 	/*
@@ -61,6 +64,15 @@ public class KShieldHelper {
 	public static boolean isHardwareTokenMissing() {
 		HttpSession session = ZoneContextHolder.getHttpSession();
 		return Boolean.TRUE.equals(session.getAttribute(KShieldContextHolder.HARDWARE_TOKEN_MISSING));
+	}
+	
+	/*
+	 * Return whether the user should be forced to do LDAP login using username and password, 
+	 * regardless of other SSO settings.
+	 */
+	public static boolean shouldLdapLoginBeForced() {
+		HttpSession session = ZoneContextHolder.getHttpSession();
+		return Boolean.TRUE.equals(session.getAttribute(KShieldContextHolder.FORCE_LDAP_LOGIN));
 	}
 	
 	/*

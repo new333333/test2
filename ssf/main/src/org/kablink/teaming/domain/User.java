@@ -509,8 +509,14 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 * @param clearTextPassword clear text password
 	 */
 	public void setPassword(String clearTextPassword) {
-		this.password = EncryptUtil.encryptPasswordForStorage(clearTextPassword, this);
-		this.pwdenc = EncryptUtil.passwordEncryptionAlgorithmForStorage(this);
+		if(clearTextPassword != null) {
+			this.password = EncryptUtil.encryptPasswordForStorage(clearTextPassword, this);
+			this.pwdenc = EncryptUtil.passwordEncryptionAlgorithmForStorage(this);
+		}
+		else {
+			this.password = null;
+			this.pwdenc = null;
+		}
 	}
 	
 	public String getPwdenc() {
