@@ -24,7 +24,21 @@ public class KShieldContextHolder {
 
 	private static final ThreadLocal<Map<String,Object>> context = new ThreadLocal<Map<String,Object>>();
 	
+	/*
+	 * The user is recognized by KeyShield but is missing hardware token while
+	 * hardware token is required by system configuration.
+	 */
 	public static final String HARDWARE_TOKEN_MISSING = "kshield.hardware.token.missing";
+	/*
+	 * We need to force the user a regular LDAP login using username and password,
+	 * REGARDLESS of whether the system is configured to allow non-SSO authentication
+	 * for LDAP users. This is because the system needs the user's working password
+	 * cached in the database.
+	 */
+	public static final String FORCE_LDAP_LOGIN = "kshield.force.ldap.login";
+	/*
+	 * Type of KeyShield client - Web or WebDAV
+	 */
 	public static final String CLIENT_TYPE = "kshield.client.type";
 	
 	public static final String CLIENT_TYPE_WEB = "Web";
