@@ -203,7 +203,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'synchronize' form parameter (true/false) is required");
         }
         if (Boolean.TRUE.equals(sync)) {
-            org.kablink.teaming.domain.FolderEntry retEntry = synchronizeFolderEntry(entry);
+            org.kablink.teaming.domain.FolderEntry retEntry = synchronizeFolderEntry(entry, false);
             return ResourceUtil.buildFolderEntry(retEntry, true, toDomainFormat(descriptionFormatStr));
         }
         return null;

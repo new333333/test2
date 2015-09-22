@@ -83,7 +83,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
         org.kablink.teaming.domain.FolderEntry folderEntry = _getFolderEntry(id);
         if (lastVersionNumber!=null) {
             FileAttachment fa = folderEntry.getPrimaryFileAttachment();
-            if (fa!=null && !FileUtils.matchesTopMostVersion(fa, lastVersionNumber, null, null)) {
+            if (fa!=null && !isFileVersionCorrect(fa, lastVersionNumber, null, null)) {
                 throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file",
                         ResourceUtil.buildFileProperties(fa));
             }
