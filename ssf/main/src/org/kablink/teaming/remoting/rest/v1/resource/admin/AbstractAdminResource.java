@@ -39,7 +39,6 @@ import java.util.Random;
 public class AbstractAdminResource extends AbstractResource {
     protected NetFolder _createNetFolder(NetFolder netFolder, ResourceDriverConfig resourceDriverConfig) throws WriteFilesException, WriteEntryDataException {
         validateMandatoryField(netFolder, "getName");
-        validateMandatoryField(netFolder, "getRelativePath");
         NetFolderConfig.SyncScheduleOption syncScheduleOption = netFolder.getInheritSyncSchedule() ?
         		NetFolderConfig.SyncScheduleOption.useNetFolderServerSchedule : NetFolderConfig.SyncScheduleOption.useNetFolderSchedule;
         List<AssignedRole> roles = toNetFolderRoles(netFolder.getAssignedRights());
@@ -64,7 +63,6 @@ public class AbstractAdminResource extends AbstractResource {
 
     protected NetFolder _modifyNetFolder(NetFolder netFolder, ResourceDriverConfig resourceDriverConfig) throws WriteFilesException, WriteEntryDataException {
         validateMandatoryField(netFolder, "getName");
-        validateMandatoryField(netFolder, "getRelativePath");
         NetFolderConfig.SyncScheduleOption syncScheduleOption = netFolder.getInheritSyncSchedule() ?
         		NetFolderConfig.SyncScheduleOption.useNetFolderServerSchedule : NetFolderConfig.SyncScheduleOption.useNetFolderSchedule;
         List<AssignedRole> roles = toNetFolderRoles(netFolder.getAssignedRights());

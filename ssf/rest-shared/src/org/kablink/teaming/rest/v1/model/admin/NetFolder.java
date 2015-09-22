@@ -99,7 +99,11 @@ public class NetFolder extends BaseRestObject {
 
     @XmlElement(name="relative_path")
     public String getRelativePath() {
-        return relativePath;
+        if (relativePath==null) {
+            return "";
+        } else {
+            return relativePath;
+        }
     }
 
     public void setRelativePath(String relativePath) {
