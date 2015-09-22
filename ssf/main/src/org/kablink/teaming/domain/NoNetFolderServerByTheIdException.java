@@ -63,6 +63,6 @@ public class NoNetFolderServerByTheIdException extends NoObjectByTheIdException 
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.NET_FOLDER_NOT_FOUND;
+		return ApiErrorCode.NET_FOLDER_SERVER_NOT_FOUND;
 	}
 }
