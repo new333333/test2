@@ -1411,13 +1411,13 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Junction and = Restrictions.conjunction();
         or.add(and);
         and.add(SearchUtils.buildLibraryCriterion(Boolean.TRUE, Boolean.FALSE));
-        or = Restrictions.disjunction();
-        or.add(SearchUtils.buildFoldersCriterion());
-        or.add(SearchUtils.buildEntriesCriterion());
+        Junction or2 = Restrictions.disjunction();
+        or2.add(SearchUtils.buildFoldersCriterion());
+        or2.add(SearchUtils.buildEntriesCriterion());
         if (includeAttachments) {
-            or.add(SearchUtils.buildAttachmentsCriterion());
+            or2.add(SearchUtils.buildAttachmentsCriterion());
         }
-        and.add(or);
+        and.add(or2);
         return or;
     }
 
