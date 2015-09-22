@@ -16,7 +16,6 @@ import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
-import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.exc.RestExceptionWrapper;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
@@ -25,18 +24,15 @@ import org.kablink.teaming.rest.v1.model.UserQuota;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.util.HttpHeaders;
 import org.kablink.util.Validator;
 import org.kablink.util.api.ApiErrorCode;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -143,7 +139,7 @@ abstract public class AbstractFileResource extends AbstractResource {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "You must specify one of: lastVersionNumber, lastMajorVersionNumber and lastMinorVersionNumber, or forceOverwrite.");
             }
         }
-        if (forceOverwrite || FileUtils.matchesTopMostVersion(attachment, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber)) {
+        if (forceOverwrite || isFileVersionCorrect(attachment, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber)) {
             modifyDefinableEntityWithFile(entity, dataName, attachment.getFileItem().getName(), is, modDate, expectedMd5);
         } else {
             throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file",
@@ -172,7 +168,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             if (update!=null && !update) {
                 throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType.name() + ".", ResourceUtil.buildFileProperties(fa));
             }
-            if (FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber)) {
+            if (isFileVersionCorrect(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber)) {
                 modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate, expectedMd5);
             } else {
                 throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file",
@@ -393,7 +389,7 @@ abstract public class AbstractFileResource extends AbstractResource {
         return list;
     }
 
-    protected org.kablink.teaming.domain.FolderEntry synchronizeFolderEntry(final org.kablink.teaming.domain.FolderEntry entry) {
+    protected org.kablink.teaming.domain.FolderEntry synchronizeFolderEntry(final org.kablink.teaming.domain.FolderEntry entry, boolean mirroredOnly) {
         org.kablink.teaming.domain.FolderEntry retEntry;
         Folder folder = entry.getParentFolder();
         if (folder.isMirrored()) {
@@ -403,7 +399,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             } else {
                 retEntry = _getFolderEntry(entry.getId());
             }
-        } else {
+        } else if (!mirroredOnly) {
             RunasCallback callback = new RunasCallback()
             {
                 @Override
@@ -416,6 +412,8 @@ abstract public class AbstractFileResource extends AbstractResource {
             retEntry = (FolderEntry) RunasTemplate.runasAdmin(
                     callback,
                     RequestContextHolder.getRequestContext().getZoneName());
+        } else {
+            retEntry = _getFolderEntry(entry.getId());
         }
         return retEntry;
     }
@@ -427,4 +425,14 @@ abstract public class AbstractFileResource extends AbstractResource {
         }
         return hEntry;
     }
+
+    protected boolean isFileVersionCorrect(FileAttachment attachment, Integer lastVersionNumber, Integer lastMajorVersionNumber, Integer lastMinorVersionNumber) {
+        AnyOwner owner = attachment.getOwner();
+        if (lastVersionNumber!=null && owner.getEntity() instanceof FolderEntry) {
+            FolderEntry entry = synchronizeFolderEntry((FolderEntry) owner.getEntity(), true);
+            attachment = entry.getPrimaryFileAttachment();
+        }
+        return FileUtils.matchesTopMostVersion(attachment, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber);
+    }
+
 }

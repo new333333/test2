@@ -154,6 +154,11 @@ public class FileResource extends AbstractFileResource {
    			return updateExistingFileContent(entity, fa, dataName, modDateISO8601, expectedMd5, forceOverwrite,
                        lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, is);
    		}
+        catch (NoFolderEntryByTheIdException e) {
+            // updateExistingFileContent triggers JITS which could result in a NoFolderEntryByTheIdException.  Translate
+            // that into a NoFileByTheIdException.
+            throw new NoFileByTheIdException(fileId);
+        }
    		finally {
    			try {
    				is.close();
@@ -183,6 +188,11 @@ public class FileResource extends AbstractFileResource {
             return updateExistingFileContent(entity, fa, dataName, modDateISO8601, expectedMd5, forceOverwrite,
                     lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber, is);
    		}
+        catch (NoFolderEntryByTheIdException e) {
+            // updateExistingFileContent triggers JITS which could result in a NoFolderEntryByTheIdException.  Translate
+            // that into a NoFileByTheIdException.
+            throw new NoFileByTheIdException(fileId);
+        }
    		finally {
    			try {
    				is.close();
@@ -231,7 +241,7 @@ public class FileResource extends AbstractFileResource {
                                   @QueryParam("purge") @DefaultValue("false") boolean purge,
                                   @QueryParam("version") Integer lastVersionNumber) throws WriteFilesException, WriteEntryDataException {
         FileAttachment fa = findFileAttachment(fileId);
-        if (lastVersionNumber!=null && !FileUtils.matchesTopMostVersion(fa, lastVersionNumber, null, null)) {
+        if (lastVersionNumber!=null && !isFileVersionCorrect(fa, lastVersionNumber, null, null)) {
             throw new ConflictException(ApiErrorCode.FILE_VERSION_CONFLICT, "Specified version number does not reflect the current state of the file",
                     ResourceUtil.buildFileProperties(fa));
         }
@@ -355,7 +365,7 @@ public class FileResource extends AbstractFileResource {
         DefinableEntity entity = fa.getOwner().getEntity();
         if (Boolean.TRUE.equals(sync)) {
             if (entity instanceof FolderEntry) {
-                FolderEntry entry = synchronizeFolderEntry((FolderEntry) entity);
+                FolderEntry entry = synchronizeFolderEntry((FolderEntry) entity, false);
                 fa = (FileAttachment) entry.getAttachment(fileId);
                 return ResourceUtil.buildFileProperties(fa);
             }
