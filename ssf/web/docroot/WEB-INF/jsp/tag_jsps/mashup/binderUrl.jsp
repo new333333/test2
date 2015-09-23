@@ -67,7 +67,7 @@
 		</ssf:url></c:set>
     <a <c:if test="${!empty mashup_attributes['popup']}"> target="_blank" </c:if>
       href="${anchorPermalink}"
-      <c:if test="${empty mashup_attributes['popup']}">onclick="javascript:ss_setContentLocation('${anchorPermalink}');"</c:if>
+      <c:if test="${empty mashup_attributes['popup']}">onclick="ss_setContentLocation('${anchorPermalink}'); return false;"</c:if>
       >
 	  <c:if test="${empty mashup_attributes['title']}">
 	    <span>${mashupBinder.title}</span>
