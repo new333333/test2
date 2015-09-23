@@ -79,7 +79,7 @@ public class LdapAuthenticationProvider extends org.springframework.security.lda
     		if(KShieldHelper.isAuthenticatorSubjectToSso() && 
     				!KShieldHelper.shouldLdapLoginBeForced()) {
 	    		KeyShieldConfig ksc = getCoreDao().loadKeyShieldConfig(zoneId);
-	    		if(ksc != null && !ksc.getNonSsoAllowedForLdapUser())
+	    		if(ksc != null && ksc.getEnabled() && !ksc.getNonSsoAllowedForLdapUser())
 	    			throw new UsernameNotFoundException("Username/password authentication not allowed for LDAP users");
     		}
     			

@@ -87,6 +87,7 @@ import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStampBrief;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.IndividualPrincipal;
+import org.kablink.teaming.domain.KeyShieldConfig;
 import org.kablink.teaming.domain.LimitedUserView;
 import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.domain.NoApplicationByTheNameException;
@@ -2682,10 +2683,20 @@ public SortedSet<User> getUsersByEmail(String emailAddress, String emailType) {
   }
   
   @Override
-public String[] getUsernameAndDecryptedPassword(String username) {
+public String[] getUsernameAndDecryptedPasswordForAuth(String username) {
 	  String[] result = new String[2];
 	  try {
 		  User user = findUserByName(username);
+		  if(user.getIdentityInfo().isFromLdap()) { // LDAP user  
+			  // WARNING: Currently, this method is used only during Digest authentication
+			  // and Digest authentication is used only by WebDAV which supports KeyShield
+			  // SSO. So we're simply assuming that we don't have to check for the 
+			  // authenticator, which is tricky to do in this case because the authenticator
+			  // information isn't avaialble in the caller at the time of invoking this method.
+			  KeyShieldConfig ksc = getCoreDao().loadKeyShieldConfig(user.getZoneId());
+			  if(ksc != null && ksc.getEnabled() && !ksc.getNonSsoAllowedForLdapUser())
+				  return null;
+		  }
 		  result[0] = user.getName();
 		  result[1] = EncryptUtil.decryptPasswordForMatching(user);
 	  }
