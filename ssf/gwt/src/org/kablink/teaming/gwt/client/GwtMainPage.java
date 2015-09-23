@@ -1151,11 +1151,6 @@ public class GwtMainPage extends ResizeComposite
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::relayoutPage()();
 		}
-		
-		$wnd.ss_gotoContentUrl = function( url )
-		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireGotoContentUrl(Ljava/lang/String;)( url );
-		}
 	}-*/;
 
 	/*
