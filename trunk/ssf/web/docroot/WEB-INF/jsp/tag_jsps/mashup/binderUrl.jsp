@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -59,13 +59,16 @@
 <c:if test="${ssConfigJspStyle != 'form'}">
 <div class="ss_mashup_url_content">
   <c:if test="${!empty mashupBinder}">
+  	<c:set var="anchorPermalink"><ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+		action="view_permalink" 
+		binderId="${mashupBinder.id}">
+		<ssf:param name="entityType" value="${mashupBinder.entityType}"/>
+		<c:if test="${empty mashup_attributes['popup']}"><ssf:param name="seen_by_gwt" value="1" /></c:if>
+		</ssf:url></c:set>
     <a <c:if test="${!empty mashup_attributes['popup']}"> target="_blank" </c:if>
-      href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-		  action="view_permalink" 
-		  binderId="${mashupBinder.id}">
-		  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
-		  <c:if test="${empty mashup_attributes['popup']}"><ssf:param name="seen_by_gwt" value="1" /></c:if>
-		  </ssf:url>">
+      href="${anchorPermalink}"
+      <c:if test="${empty mashup_attributes['popup']}">onclick="javascript:ss_setContentLocation('${anchorPermalink}');"</c:if>
+      >
 	  <c:if test="${empty mashup_attributes['title']}">
 	    <span>${mashupBinder.title}</span>
 	  </c:if>
