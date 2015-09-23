@@ -439,7 +439,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				break;
 			case manageTeamMembers:
 				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.CHANGE_ACCESS_CONTROL);
+						WorkAreaOperation.BINDER_ADMINISTRATION);	// Bugzilla 947029:  Was CHANGE_ACCESS_CONTROL before this fix as per bug#763739.
 				break;
 			case manageTag:
 				getAccessControlManager().checkOperation(user, binder,
