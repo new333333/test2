@@ -858,17 +858,23 @@ public interface ProfileModule {
     
     /**
      * Returns a string array of size two where the first element is the user's
-     * name and the second element the user's decrypted password.
+     * name and the second element the user's decrypted password. The returned
+     * information is used for authentication purpose.
      * <p> 
      * The username element will be <code>null</code> if the specified user
      * is not found in the system. The password element will be <code>null</code>
      * if the user has no password or the user's password is stored using 
      * asymmetric (i.e., irreversible) encryption algorithm.
+     * The entire return value (array) will be null if (a) the specified user
+     * is found in the system, and (b) the user is a LDAP provisioned user,
+     * and (c) the system doesn't allow LDAP authentication for certain
+     * authenticator types and the current authenticator type happens to be
+     * one of them.
      * 
      * @param username
      * @return
      */
-    public String[] getUsernameAndDecryptedPassword(String username);
+    public String[] getUsernameAndDecryptedPasswordForAuth(String username);
     
     /**
      * Returns a list of Groups that the user is a member of, either directly or indirectly.

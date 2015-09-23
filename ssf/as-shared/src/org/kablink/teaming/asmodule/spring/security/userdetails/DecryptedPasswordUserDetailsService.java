@@ -42,7 +42,7 @@ public class DecryptedPasswordUserDetailsService implements UserDetailsService {
 
 	private static final String SERVICE_BEAN_NAME = "profileModule";
 	
-	private static final String SERVICE_METHOD_NAME = "getUsernameAndDecryptedPassword";
+	private static final String SERVICE_METHOD_NAME = "getUsernameAndDecryptedPasswordForAuth";
 	private static final Class[] SERVICE_METHOD_ARG_TYPES = new Class[] {String.class};
 	
 	public UserDetails loadUserByUsername(String username)
@@ -52,7 +52,9 @@ public class DecryptedPasswordUserDetailsService implements UserDetailsService {
 					SERVICE_METHOD_NAME,
 					SERVICE_METHOD_ARG_TYPES,
 					new Object[] {username});
-			if(val[0] == null)
+			if(val == null)
+				throw new UsernameNotFoundException("Username & password authentication not allowed for LDAP users");
+			else if(val[0] == null)
 				throw new UsernameNotFoundException("User not found: " + username, username);
 			return new DecryptedPasswordUserDetails(username, val[1]);
 		} catch (Exception e) {
