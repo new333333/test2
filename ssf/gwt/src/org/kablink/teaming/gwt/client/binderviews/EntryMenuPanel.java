@@ -137,6 +137,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
@@ -147,6 +148,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -1154,8 +1156,19 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
 	private VibeMenuItem renderSimpleTBI(VibeMenuBar menuBar, PopupMenu popupMenu, final ToolbarItem simpleTBI, boolean contentsSelectable) {
-		final String        simpleTitle = simpleTBI.getTitle();
-		final TeamingEvents simpleEvent = simpleTBI.getTeamingEvent();
+		final String        simpleTitle  = simpleTBI.getTitle();
+		final String        simpleUrl    = simpleTBI.getUrl();
+		final boolean       hasSimpleUrl = GwtClientHelper.hasString(simpleUrl);
+		final TeamingEvents simpleEvent  = simpleTBI.getTeamingEvent();
+		
+		// Simply URL menu items can be forced to render as an <A> so
+		// that their URL can be copied and pasted.  Does this fall
+		// into that category?
+		boolean forcedAnchor = (((null == simpleEvent) || simpleEvent.equals(TeamingEvents.UNDEFINED)) && hasSimpleUrl);
+		if (forcedAnchor) {
+			String forcedAnchorS = simpleTBI.getQualifierValue("forcedAnchor");
+			forcedAnchor = (GwtClientHelper.hasString(forcedAnchorS) && forcedAnchorS.equals("true"));
+		}
 
 		// Is this a menu item to view pinned entries?
 		boolean menuTextIsHTML;
@@ -1233,6 +1246,25 @@ public class EntryMenuPanel extends ToolPanelBase
 				menuText       = html.getElement().getInnerHTML();
 				menuTextIsHTML = true;
 			}
+			
+			else if (forcedAnchor) {
+				// Create the anchor..
+				Anchor a = new Anchor();
+				a.addStyleName("gwt-MenuItem-anchor");
+				a.setHref(simpleUrl);
+				Label l = new Label(simpleTitle);
+				Element aE = a.getElement();
+				aE.appendChild(l.getElement());
+				aE.setAttribute("onclick", "return false;");
+
+				// ...and use it to create an HTML only menu item.
+				VibeFlowPanel html = new VibeFlowPanel();
+				html.add(a);
+				
+				menuText       = html.getElement().getInnerHTML();
+				menuTextIsHTML = true;
+			}
+			
 			else {
 				menuText       = simpleTitle;
 				menuTextIsHTML = false;
@@ -1245,8 +1277,7 @@ public class EntryMenuPanel extends ToolPanelBase
 			public void execute() {
 				// Does the simple toolbar item contain a URL to
 				// launch?
-				final String simpleUrl = simpleTBI.getUrl();
-				if (GwtClientHelper.hasString(simpleUrl)) {
+				if (hasSimpleUrl) {
 					// Yes!  Should we launch it in a popup window?
 					String	popupS = simpleTBI.getQualifierValue("popup");
 					boolean	popup  = (GwtClientHelper.hasString(popupS) && Boolean.parseBoolean(popupS));

@@ -776,13 +776,13 @@ public class GwtMenuHelper {
 					}
 					
 					ToolbarItem entriesTBI = new ToolbarItem("entries");
-					markTBITitleRes(entriesTBI, title);
-					// markTBIPopup(entriesTBI       );
-					markTBIUrl(     entriesTBI, url  );
+					markTBITitleRes(         entriesTBI, title);
+					// markTBIPopup(         entriesTBI       );
+					markTBIUrlAsForcedAnchor(entriesTBI, url  );
 					if (i == defaultEntryDefIndex) {
-						markTBIDefault(entriesTBI);
+						markTBIDefault(      entriesTBI);
 					}
-					addTBI.addNestedItem(entriesTBI);
+					addTBI.addNestedItem(    entriesTBI);
 				}
 			}
 		}
@@ -5128,5 +5128,19 @@ public class GwtMenuHelper {
 	private static void markTBIUrlAsTargetedAnchor(ToolbarItem tbi, AdaptedPortletURL url) {
 		// Always use the initial form of the method.
 		markTBIUrlAsTargetedAnchor(tbi, url.toString(), null);
+	}
+	
+	/*
+	 * Marks a ToolbarItem's URL based on an AdaptedPortletURL using an
+	 * anchor with a target clause.
+	 */
+	private static void markTBIUrlAsForcedAnchor(ToolbarItem tbi, String url) {
+		markTBIUrl(tbi, url);
+		tbi.addQualifier("forcedAnchor", "true");
+	}
+	
+	private static void markTBIUrlAsForcedAnchor(ToolbarItem tbi, AdaptedPortletURL url) {
+		// Always use the initial form of the method.
+		markTBIUrlAsForcedAnchor(tbi, url.toString());
 	}
 }
