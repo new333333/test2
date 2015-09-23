@@ -38,6 +38,12 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+/**
+ * Used for Digest authentication
+ * 
+ * @author Jong
+ *
+ */
 public class DecryptedPasswordUserDetails implements UserDetails {
 
 	private static final long serialVersionUID = 1L;

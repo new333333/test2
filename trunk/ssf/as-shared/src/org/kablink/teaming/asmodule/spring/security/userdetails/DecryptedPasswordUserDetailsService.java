@@ -38,6 +38,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+/**
+ * Used for Digest authentication
+ * 
+ * @author Jong
+ *
+ */
 public class DecryptedPasswordUserDetailsService implements UserDetailsService {
 
 	private static final String SERVICE_BEAN_NAME = "profileModule";
