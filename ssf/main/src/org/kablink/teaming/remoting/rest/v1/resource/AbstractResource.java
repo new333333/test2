@@ -2411,7 +2411,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         } else {
             SearchResultBuilderUtil.buildSearchResults(results, builder, map, nextUrl, nextParams, offset);
         }
-        List<Long> ids = new ArrayList<>(results.getCount());
+        List<Long> ids = new ArrayList<Long>(results.getCount());
         for (NetFolderBrief binder : results.getResults()) {
             ids.add(binder.getId());
         }
