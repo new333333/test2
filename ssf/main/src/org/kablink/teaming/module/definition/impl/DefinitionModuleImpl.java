@@ -35,7 +35,6 @@ package org.kablink.teaming.module.definition.impl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.StringBufferInputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -145,7 +144,7 @@ import org.w3c.tidy.TidyMessage;
  * 
  * @author hurley
  */
-@SuppressWarnings({"deprecation", "unchecked", "unused"})
+@SuppressWarnings({"unchecked", "unused"})
 public class DefinitionModuleImpl extends CommonDependencyInjection implements DefinitionModule, InitializingBean  {
 	private static String[] entryInputDataMap;
 	private static int      entryInputDataMapCount = (-1);
@@ -2196,14 +2195,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				String nameValue = "_zoneUUID";
 				//Process this special value
 				processInputDataItem(itemName, nameValue, inputData, entryData,
-			    		fileItems, fileData, entryDataErrors, null, titleGenerated, titleSource);
+			    		fileItems, fileData, entryDataErrors, null, titleGenerated, titleSource, options);
 				
 				//By convention, we assume the element called "branding" is the folder branding
 				itemName = "folderBranding";
 				nameValue = "branding";
 				//Process this special value
 				processInputDataItem(itemName, nameValue, inputData, entryData,
-			    		fileItems, fileData, entryDataErrors, null, titleGenerated, titleSource);
+			    		fileItems, fileData, entryDataErrors, null, titleGenerated, titleSource, options);
 				
 				//While going through the entry's elements, keep track of the current form name (needed to process date elements)
 				List<Element> itItems = entryFormItem.selectNodes(".//item[@type='data']");
@@ -2218,7 +2217,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					
 					//Process the data item depending on its item name
 					processInputDataItem(itemName, nameValue, inputData, entryData,
-				    		fileItems, fileData, entryDataErrors, nextItem, titleGenerated, titleSource);
+				    		fileItems, fileData, entryDataErrors, nextItem, titleGenerated, titleSource, options);
 				}
 				//After processing the definition items, process any attributes that were missed
 				if (!attachFilesSeen) {
@@ -2227,7 +2226,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					nameValue = "ss_attachFile";
 					//Process this special value
 					processInputDataItem(itemName, nameValue, inputData, entryData,
-				    		fileItems, fileData, entryDataErrors, null, titleGenerated, titleSource);
+				    		fileItems, fileData, entryDataErrors, null, titleGenerated, titleSource, options);
 				}
 				if (options == null || !Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_DEFAULTS))) {
 					//See if there are any default settings for select boxes that were missed
@@ -2271,7 +2270,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     
     //Routine to process entry data depending on the type of data it is
     private void processInputDataItem(String itemName, String nameValue, InputDataAccessor inputData, Map entryData,
-    		Map fileItems, List fileData, EntryDataErrors entryDataErrors, Element nextItem, boolean titleGenerated, String titleSource) {
+    		Map fileItems, List fileData, EntryDataErrors entryDataErrors, Element nextItem, boolean titleGenerated, String titleSource, Map options) {
         User user = RequestContextHolder.getRequestContext().getUser();
 		String nameValuePerUser = nameValue + "." + user.getName();
 		String s_userVersionAllowed = "false";
@@ -2738,10 +2737,29 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		    		repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
 		    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
 		    	FileUploadItem fui;
-		    	if (titleGenerated && nameValue.equals(titleSource) &&
-		    			(itemName.equals("file") || itemName.equals("graphic")))
+		    	if (titleGenerated && nameValue.equals(titleSource) && (itemName.equals("file") || itemName.equals("graphic"))) {
 		    		fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryName);
-		    	else fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryName);
+		    	}
+		    	else {
+		    		// If we don't have an options Map, we always
+		    		// upload using TYPE_ATTACHMENT.  Do we have an
+		    		// options Map?
+		    		boolean uploadAsAttachment = (options == null);
+		    		if (!uploadAsAttachment) {
+		    			// Yes!  Use any upload as attachment override
+		    			// that's been set.  If one hasn't been set,
+		    			// default to TYPE_ATTACHEMNT.
+		    			Boolean optionValue = ((Boolean) options.get(ObjectKeys.INPUT_OPTION_UPLOAD_AS_ATTACHMENT));
+		    			uploadAsAttachment  = ((null == optionValue)|| optionValue);
+		    		}
+		    		fui = new FileUploadItem(
+		    			(uploadAsAttachment                ?
+		    				FileUploadItem.TYPE_ATTACHMENT :
+		    				FileUploadItem.TYPE_FILE),
+		    			nameValue,
+		    			myFile,
+		    			repositoryName);
+		    	}
 			    	//See if there is a scaling request for this graphic file. If yes, pass along the height and width
 		    	Description fileDescription = new Description();
 		    	if (inputData.exists(nameValue + ".description")) {
