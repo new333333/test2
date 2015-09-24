@@ -152,9 +152,12 @@ public class ModifyEntryController extends SAbstractController {
 				//See if the add entry form was submitted
 				//The form was submitted. Go process it
 				Map fileMap=null;
+				Map options=null;
 				if (request instanceof MultipartFileSupport) {
 					fileMap = ((MultipartFileSupport) request).getFileMap();
 					formData = MiscUtil.defaultTitleToFilename(fileMap, formData);
+					options = new HashMap();
+					options.put(ObjectKeys.INPUT_OPTION_UPLOAD_AS_ATTACHMENT, Boolean.FALSE);
 				} else {
 					fileMap = new HashMap();
 				}
@@ -173,7 +176,7 @@ public class ModifyEntryController extends SAbstractController {
 			
 				try {
 					getFolderModule().modifyEntry(folderId, entryId, 
-						new MapInputData(formData), fileMap, deleteAtts, null, null);
+						new MapInputData(formData), fileMap, deleteAtts, null, options);
 				} catch(WriteEntryDataException e) {
 		    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
 		    		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());

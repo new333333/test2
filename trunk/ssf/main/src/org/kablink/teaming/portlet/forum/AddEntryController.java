@@ -111,9 +111,12 @@ public class AddEntryController extends SAbstractController {
 			//The form was submitted. Go process it
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 			Map fileMap=null;
+			Map options=null;
 			if (request instanceof MultipartFileSupport) {
 				fileMap = ((MultipartFileSupport) request).getFileMap();
 				formData = MiscUtil.defaultTitleToFilename(fileMap, formData);
+				options = new HashMap();
+				options.put(ObjectKeys.INPUT_OPTION_UPLOAD_AS_ATTACHMENT, Boolean.FALSE);
 			} else {
 				fileMap = new HashMap();
 			}
@@ -145,11 +148,11 @@ public class AddEntryController extends SAbstractController {
 
 					boolean createTestTasks = TaskHelper.TASK_DEBUG_ENABLED;
 					if (createTestTasks) {
-						entryId = createDebugTasks(request, response, formData, folderId, entryType, fileMap);						
+						entryId = createDebugTasks(request, response, formData, folderId, entryType, fileMap, options);						
 						createTestTasks = (null != entryId);
 					}
 					if (!createTestTasks){
-						entryId = addEntry(request, response, folderId, entryType, inputData, fileMap, null).getId();
+						entryId = addEntry(request, response, folderId, entryType, inputData, fileMap, options).getId();
 					}
 				} catch(WriteFilesException e) {
 		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
@@ -694,7 +697,7 @@ public class AddEntryController extends SAbstractController {
      * created being returned.  If these conditions are not met, null
      * is returned.
      */
-	private Long createDebugTasks(ActionRequest request, ActionResponse response, Map formData, Long folderId, String entryType, Map fileMap) throws AccessControlException, WriteFilesException, WriteEntryDataException, VirusDetectedException {
+	private Long createDebugTasks(ActionRequest request, ActionResponse response, Map formData, Long folderId, String entryType, Map fileMap, Map options) throws AccessControlException, WriteFilesException, WriteEntryDataException, VirusDetectedException {
 		// Is task debugging enabled?
 		Long reply = null; 
 		if (TaskHelper.TASK_DEBUG_ENABLED) {
@@ -725,7 +728,7 @@ public class AddEntryController extends SAbstractController {
 						logger.info("...creating task " + i + " of " + count);
 						clonedFormData.put(WebKeys.URL_ENTRY_TITLE, new String[]{"task." + i});
 						MapInputData inputData = new MapInputData(clonedFormData);
-						reply = addEntry(request, response, folderId, entryType, inputData, fileMap, null).getId();
+						reply = addEntry(request, response, folderId, entryType, inputData, fileMap, options).getId();
 					}
 				}
 			}
