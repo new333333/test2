@@ -6255,7 +6255,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Workspace binderWS;
 			if (findBrowser)
 			     binderWS = getWorkspaceModule().getTopWorkspace();
-			else binderWS = BinderHelper.getBinderWorkspace( binder );
+			else binderWS = BinderHelper.getBinderWorkspaceWithAccess(binder);
 	
 			// ...note that the Workspace should always be expanded...
 			Long binderWSId = binderWS.getId();
