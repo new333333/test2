@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.util.EntryEventInfo;
 import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.LimitedUserVisibilityInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalAdminType;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
@@ -358,9 +359,16 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 			reply = ((null == pat) ? "" : pat.getPrincipalType().name());
 		}
 		
+		// No, this column isn't principal type either!  Is it a
+		// user visibility limitation column?
+		else if (FolderColumn.isColumnCanOnlySeeMembers(cName)) {
+			LimitedUserVisibilityInfo luvi = fr.getColumnValueAsLimitedUserVisibility(fc);
+			reply = ((null == luvi) ? "" : luvi.getDisplay());
+		}
+		
 		else {
-			// No, this column isn't a principal type either!  Simply
-			// return its string value.
+			// No, this column isn't a user visibility limitation
+			// column either!  Simply return its string value.
 			reply = fr.getColumnValueAsString(fc);
 		}
 

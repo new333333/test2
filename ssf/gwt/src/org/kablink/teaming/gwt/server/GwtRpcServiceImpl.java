@@ -2218,6 +2218,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_LIMITED_USER_VISIBILITY_DISPLAY:  {
+			GetLimitedUserVisibilityDisplayCmd gluvdCmd = ((GetLimitedUserVisibilityDisplayCmd) cmd);
+			StringRpcResponseData result = GwtUserVisibilityHelper.getLimitedUserVisibilityDisplay(this, req, gluvdCmd.isLimited(), gluvdCmd.isOverride());
+			response = new VibeRpcResponse(result);
+			return response;
+		}
+		
 		case GET_LIST_OF_CHILD_BINDERS:
 		{
 			GetListOfChildBindersCmd glocbCmd;
