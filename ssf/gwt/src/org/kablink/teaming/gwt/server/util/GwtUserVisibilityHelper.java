@@ -101,7 +101,7 @@ public class GwtUserVisibilityHelper {
 	 * Visibility' rows.  A List<FolderRow> of the the FolderRow's from
 	 * the input list that matches the filter is returned.
 	 */
-	public static List<FolderRow> filterLimitedUserVisibilityRows(List<FolderColumn> folderColumns, List<FolderRow> luvRows, String quickFilter) {
+	private static List<FolderRow> filterLimitedUserVisibilityRows(List<FolderColumn> folderColumns, List<FolderRow> luvRows, String quickFilter) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtUserVisibilityHelper.filterLimitedUserVisibilityRows()");
 		try {
 			// Do we have a string to filter with and some FolderRow's
@@ -134,11 +134,11 @@ public class GwtUserVisibilityHelper {
 							// filtering on that.
 						}
 						
-						else {
-							// The remaining columns all contain simple
-							// strings!  If the filter is in the
-							// string...
-							String sv = fr.getColumnValueAsString(fc);
+						else if (FolderColumn.isColumnLimitedVisibilityUser(cName)) {
+							// A limitation column!  If the filter is
+							// in the string...
+							LimitedUserVisibilityInfo luvi = fr.getColumnValueAsLimitedUserVisibility(fc);
+							String sv = ((null == luvi) ? "" : luvi.getDisplay());
 							if (GwtViewHelper.valueContainsQuickFilter(sv, quickFilter)) {
 								// ...add the row to the reply list.
 								reply.add(fr);
