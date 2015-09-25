@@ -1580,7 +1580,7 @@ public class BinderHelper {
 	 * 
 	 * @return The nearest Workspace containing binder.
 	 */
-	static public Workspace getBinderWorkspace(Binder binder) {
+	public static Workspace getBinderWorkspace(Binder binder) {
        	Workspace binderWs;
 		if (binder instanceof Workspace) {
 			binderWs = ((Workspace) binder);   				
@@ -1590,6 +1590,23 @@ public class BinderHelper {
 			binderWs = ((Workspace) topFolder.getParentBinder());
 		}
 		return binderWs;
+	}
+
+	/**
+	 * Finds the nearest containing Binder of binder that's a workspace
+	 * that the logged in user has at least read acccess to.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static Workspace getBinderWorkspaceWithAccess(Binder binder) {
+		Workspace reply = getBinderWorkspace(binder);
+		BinderModule bm = getBinderModule();
+		while ((null != reply) && (!(bm.testAccess(reply, BinderOperation.readEntries)))) {
+			reply = ((Workspace) reply.getParentBinder());
+		}
+		return reply;
 	}
 
 	/**

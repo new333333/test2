@@ -473,8 +473,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						WorkAreaOperation.ZONE_ADMINISTRATION);
 				break;
 			case readEntries:
-				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.READ_ENTRIES);
+				try {
+					getAccessControlManager().checkOperation(user, binder,
+							WorkAreaOperation.READ_ENTRIES);
+				} catch(AccessControlException e) {
+					// If they can't read entries, can they read their
+					// own entries?
+					getAccessControlManager().checkOperation(user, binder,
+							WorkAreaOperation.CREATOR_READ);
+				}
 				break;
 			case viewBinderTitle:
 				try {
