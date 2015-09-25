@@ -48,6 +48,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -60,6 +61,7 @@ public class ActivityStreamReply extends Composite {
 	private EditSuccessfulHandler	m_onSuccessHandler;	//
 	private FlowPanel				m_addACommentPanel;	//
 	private GwtTeamingMessages		m_messages;			//
+	private HTML					m_descHTMLRenderer;	//
 	private TextArea				m_descTextArea;		//
 	private TextBox					m_titleTextBox;		//
 	
@@ -102,6 +104,13 @@ public class ActivityStreamReply extends Composite {
 		m_addACommentPanel.getElement().setInnerText(m_messages.addAComment());
 		inputPanel.add(m_addACommentPanel);
 		m_addACommentPanel.setVisible(showAddACommentHint);
+
+		// Create a hidden HTML widget we can use to clean the
+		// HTML'isms from descriptions we loading into the description
+		// <TEXTAREA>
+		m_descHTMLRenderer = new HTML();
+		inputPanel.add(m_descHTMLRenderer);
+		m_descHTMLRenderer.setVisible(false);
 		
 		// Create a text box.
 		m_descTextArea = new TextArea();
@@ -216,14 +225,18 @@ public class ActivityStreamReply extends Composite {
 		
 		close();
 	}
-	
+
 	/*
 	 */
 	private void init(String title, String description) {
 		if (null != m_titleTextBox) {
 			m_titleTextBox.setText(title);
 		}
-		m_descTextArea.setText(description);
+		
+		// Bugzilla 947249:  Clean any HTML'isms in the description so
+		// that it can be properly handled by the <TEXTAREA>.
+		m_descHTMLRenderer.setHTML(description);
+		m_descTextArea.setText(m_descHTMLRenderer.getText());
 	}
 
 	/*

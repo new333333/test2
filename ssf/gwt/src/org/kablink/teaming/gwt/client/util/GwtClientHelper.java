@@ -1652,6 +1652,25 @@ public class GwtClientHelper {
 	}-*/;
 	
 	/**
+	 * Replace <BR> forms in a string with newlines.
+	 * 
+	 * @param s
+	 * 
+	 * @return
+	 */
+	public static native String jsCleanBRs(String s) /*-{
+		var n = s;
+		
+    	n = n.replace(/<br>\n/gi,   "\n");
+    	n = n.replace(/<br\/>\n/gi, "\n");
+    	
+    	n = n.replace(/<br>/gi,     "\n");
+    	n = n.replace(/<br\/>/gi,   "\n");
+    	
+		return n;
+	}-*/;
+	
+	/**
 	 * Simulates a click on an HTML Element.
 	 * 
 	 * @param htmlElement
