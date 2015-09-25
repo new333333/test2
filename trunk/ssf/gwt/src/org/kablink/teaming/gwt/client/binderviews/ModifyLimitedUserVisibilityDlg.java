@@ -36,8 +36,10 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.GetLimitedUserVisibilityDisplayCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPrincipalInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PrincipalInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -144,37 +146,66 @@ public class ModifyLimitedUserVisibilityDlg extends DlgBox implements EditCancel
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				// Did the user change anything?
-				boolean limited  = m_limitedRB.getValue();
-				boolean override = m_overrideRB.getValue();
-				if ((limited == m_luvInfo.isLimited()) && (override == m_luvInfo.isOverride())) {
-					// No!  Simply close the dialog as though the user
-					// canceled it.
-					m_mluvCallback.onEditCanceled();
-					hide();
-					return;
-				}
-				
-				// Construct a LimitedUserVisibilityInfo with the
-				// current settings...
-				LimitedUserVisibilityInfo luvApply = new LimitedUserVisibilityInfo(
-					limited,
-					override,
-					m_luvInfo.getPrincipalId());
-
-				// ...use it to tell the caller the dialog was OK'ed...
-				if (m_mluvCallback.onEditSuccessful(m_principalInfo.getEntityid(), luvApply)) {
-					// ...and put it into effect and close the dialog
-					// ...if the caller says we're done.
-					m_luvInfo = luvApply;
-					hide();
-				}
+				editSuccessfulImpl();
 			}
 		});
 		
 		// Return false.  Well close the dialog after we tell the
 		// caller about the OK.
 		return false;
+	}
+	
+	/*
+	 * Called when the user presses the dialog's OK button.
+	 */
+	private void editSuccessfulImpl() {
+		// Did the user change anything?
+		final boolean limited  = m_limitedRB.getValue();
+		final boolean override = m_overrideRB.getValue();
+		if ((limited == m_luvInfo.isLimited()) && (override == m_luvInfo.isOverride())) {
+			// No!  Simply close the dialog as though the user canceled
+			// it.
+			m_mluvCallback.onEditCanceled();
+			hide();
+			return;
+		}
+		
+		GetLimitedUserVisibilityDisplayCmd cmd = new GetLimitedUserVisibilityDisplayCmd(limited, override);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				// No!  Tell the user about the problem.
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetLimitedUserVisibilityDisplay());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// Construct a LimitedUserVisibilityInfo with the
+				// current settings...
+				StringRpcResponseData pInfo = ((StringRpcResponseData) result.getResponseData());
+				final LimitedUserVisibilityInfo luvApply = new LimitedUserVisibilityInfo(
+					limited,
+					override,
+					m_luvInfo.getPrincipalId(),
+					pInfo.getStringValue());
+				
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						// ...use it to tell the caller the dialog was
+						// ...OK'ed...
+						if (m_mluvCallback.onEditSuccessful(m_principalInfo.getEntityid(), luvApply)) {
+							// ...and put it into effect and close the
+							// ...dialog if the caller says we're done.
+							m_luvInfo = luvApply;
+							hide();
+						}
+					}
+				});
+			}
+		});
 	}
 	
 	/**

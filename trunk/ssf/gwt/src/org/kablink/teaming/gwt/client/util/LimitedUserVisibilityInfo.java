@@ -44,6 +44,7 @@ public class LimitedUserVisibilityInfo implements IsSerializable {
 	private boolean		m_limited;		// Tracks the 'Can only Seem Members of Group That I am In' settings.
 	private boolean		m_override;		// Tracks the override for that setting.
 	private	Long		m_principalId;	//
+	private String		m_display;		//
 	
 	/*
 	 * Constructor method.
@@ -62,7 +63,7 @@ public class LimitedUserVisibilityInfo implements IsSerializable {
 	 * @param override
 	 * @param principalId
 	 */
-	public LimitedUserVisibilityInfo(boolean limited, boolean override, Long principalId) {
+	public LimitedUserVisibilityInfo(boolean limited, boolean override, Long principalId, String display) {
 		// Initialize this object...
 		this();
 		
@@ -70,6 +71,7 @@ public class LimitedUserVisibilityInfo implements IsSerializable {
 		setLimited(    limited    );
 		setOverride(   override   );
 		setPrincipalId(principalId);
+		setDisplay(    display    );
 	}
 	
 	/**
@@ -80,6 +82,7 @@ public class LimitedUserVisibilityInfo implements IsSerializable {
 	public boolean isLimited()      {return m_limited;    }
 	public boolean isOverride()     {return m_override;   }
 	public Long    getPrincipalId() {return m_principalId;}
+	public String  getDisplay()     {return m_display;    }
 	
 	/**
 	 * Set'er methods.
@@ -89,4 +92,5 @@ public class LimitedUserVisibilityInfo implements IsSerializable {
 	public void setLimited(    boolean limited)     {m_limited     = limited;    }
 	public void setOverride(   boolean override)    {m_override    = override;   }
 	public void setPrincipalId(Long    principalId) {m_principalId = principalId;}
+	public void setDisplay(    String  display)     {m_display     = display;    }
 }

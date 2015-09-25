@@ -469,6 +469,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetInheritedLandingPageProperties();
 	String rpcFailure_GetIsDynamicGroupMembershipAllowed();
 	String rpcFailure_GetLdapSyncResults();
+	String rpcFailure_GetLimitedUserVisibilityDisplay();
 	String rpcFailure_GetLimitUserVisibilityInfo();
 	String rpcFailure_GetListOfChildBinders();
 	String rpcFailure_GetLocale();
@@ -2064,9 +2065,6 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeDataTable_InternalError_UnsupportedStructuredToolbar();
 	String vibeDataTable_LimitedUserVisibility();
 	String vibeDataTable_LimitedUserVisibility_Alt();
-	String vibeDataTable_LimitedUserVisibility_Limited();
-	String vibeDataTable_LimitedUserVisibility_None();
-	String vibeDataTable_LimitedUserVisibility_Override();
 	String vibeDataTable_MemberCount(String count);
 	String vibeDataTable_MobileDevices();
 	String vibeDataTable_People();

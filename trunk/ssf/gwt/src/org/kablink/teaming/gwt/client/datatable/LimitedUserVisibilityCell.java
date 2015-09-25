@@ -268,11 +268,7 @@ public class LimitedUserVisibilityCell extends AbstractCell<LimitedUserVisibilit
 
 		// Add the user visibility information link...
 		VibeFlowPanel fp = new VibeFlowPanel();
-		String luvText;
-		if      (luvi.isOverride()) luvText = m_messages.vibeDataTable_LimitedUserVisibility_Override();
-		else if (luvi.isLimited())  luvText = m_messages.vibeDataTable_LimitedUserVisibility_Limited();
-		else                        luvText = m_messages.vibeDataTable_LimitedUserVisibility_None();
-		InlineLabel luvLabel = new InlineLabel(luvText);
+		InlineLabel luvLabel = new InlineLabel(luvi.getDisplay());
 		luvLabel.addStyleName("vibe-dataTableLUV-title");
 		luvLabel.setTitle(m_messages.vibeDataTable_LimitedUserVisibility_Alt());
 		Element luvE = luvLabel.getElement(); 

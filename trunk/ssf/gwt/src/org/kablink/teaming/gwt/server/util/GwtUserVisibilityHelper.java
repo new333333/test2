@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.LimitUserVisibilityInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SetLimitedUserVisibilityRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -256,12 +257,15 @@ public class GwtUserVisibilityHelper {
 					else if (FolderColumn.isColumnCanOnlySeeMembers(cName)) {
 						// The 'Can Only Seem Members of Group I'm In'
 						// column!  Generate a value for it.
+						boolean setLimited  = luvLimited.contains( luvId);
+						boolean setOverride = luvOverride.contains(luvId);
 						fr.setColumnValue(
 							fc,
 							new LimitedUserVisibilityInfo(
-								luvLimited.contains( luvId),
-								luvOverride.contains(luvId),
-								luvId));
+								setLimited,
+								setOverride,
+								luvId,
+								getLimitedUserVisibilityDisplay(bs, request, setLimited, setOverride).getStringValue()));
 					}
 				}
 			}
@@ -355,6 +359,25 @@ public class GwtUserVisibilityHelper {
 				luvList.addAll(pList);
 			}
 		}
+	}
+
+	/**
+	 * Given the limited and override values, returns an appropriate
+	 * localized display string.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param limited
+	 * @param override
+	 * 
+	 * @return
+	 */
+	public static StringRpcResponseData getLimitedUserVisibilityDisplay(AllModulesInjected bs, HttpServletRequest request, boolean limited, boolean override) {
+		String reply;
+		if      (override) reply = NLT.get("administration.manage.limitUserVisibility_Override");
+		else if (limited)  reply = NLT.get("administration.manage.limitUserVisibility_Limited" );
+		else               reply = NLT.get("administration.manage.limitUserVisibility_None"    );
+		return new StringRpcResponseData(reply);
 	}
 	
 	/**
@@ -519,7 +542,8 @@ public class GwtUserVisibilityHelper {
 					    					new LimitedUserVisibilityInfo(
 					    						setLimited,
 					    						setOverride,
-					    						id));
+					    						id,
+					    						getLimitedUserVisibilityDisplay(bs, request, setLimited, setOverride).getStringValue()));
 					    				break;
 					    			}
 					    		}
