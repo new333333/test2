@@ -116,7 +116,7 @@ public class AddEntryController extends SAbstractController {
 				fileMap = ((MultipartFileSupport) request).getFileMap();
 				formData = MiscUtil.defaultTitleToFilename(fileMap, formData);
 				options = new HashMap();
-				options.put(ObjectKeys.INPUT_OPTION_UPLOAD_AS_ATTACHMENT, Boolean.FALSE);
+				options.put(ObjectKeys.INPUT_OPTION_FORCE_PRIMARY_FILE, Boolean.TRUE);
 			} else {
 				fileMap = new HashMap();
 			}

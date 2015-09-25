@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,11 +35,9 @@ package org.kablink.teaming.module.file.impl;
 import static org.kablink.util.search.Restrictions.conjunction;
 import static org.kablink.util.search.Restrictions.eq;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -177,7 +175,7 @@ import org.springframework.util.FileCopyUtils;
 /**
  * This implementing class utilizes transactional demarcation strategies that 
  * are finer granularity than typical module implementations, in an effort to
- * avoid lengthy transaction duration that could have occured if the actual
+ * avoid lengthy transaction duration that could have occurred if the actual
  * file update operation was made during the transaction. To support that,
  * the public methods exposed by this implementation are not transaction 
  * demarcated. Instead, this implementation uses helper methods (defined in
@@ -187,14 +185,13 @@ import org.springframework.util.FileCopyUtils;
  * support around those methods hence reducing individual transaction duration.
  * Of course, this finer granularity transactional control will be of no effect
  * if the caller of this service was already transactional (i.e., it controls
- * transaction bounrary that is more coarse). Whenever possible, this practise 
+ * transaction boundary that is more coarse). Whenever possible, this practice 
  * is discouraged for obvious performance/scalability reasons.  
  * 
  * @author jong
  */
 @SuppressWarnings({"unchecked", "unused"})
 public class FileModuleImpl extends CommonDependencyInjection implements FileModule, InitializingBean {
-
 	private static final String FAILED_FILTER_FILE_DELETE 			= "delete";
 	private static final String FAILED_FILTER_FILE_MOVE 			= "move";
 	private static final String FAILED_FILTER_FILE_DEFAULT			= FAILED_FILTER_FILE_DELETE;
@@ -2022,10 +2019,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		getCoreDao().save(fAtt);    		
 		}
     	if (fui.getType() == FileUploadItem.TYPE_FILE) {
-    		setCustomAttribute(entry, fui, fAtt, true);
+    		setCustomAttribute(entry, fui, fAtt);
 		} else if (fui.getType() == FileUploadItem.TYPE_ATTACHMENT) {
 			// Add the file attachment to the entry only if new file. 
-    		setCustomAttribute(entry, fui, fAtt, false);
+    		setCustomAttribute(entry, fui, fAtt);
 			if(isNew) {
 				entry.addAttachment(fAtt);
 			}
@@ -3270,7 +3267,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	return fa;
     }
 
-    public SizeMd5Pair getFileInfoFromRepository(Binder binder, DefinableEntity entry, FileAttachment fa) {
+    @Override
+	public SizeMd5Pair getFileInfoFromRepository(Binder binder, DefinableEntity entry, FileAttachment fa) {
         if (binder==null) {
             binder = entry.getParentBinder();
         }
@@ -3309,7 +3307,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         }
     }
     
-	private void setCustomAttribute(DefinableEntity entry, FileUploadItem fui, FileAttachment fAtt, boolean addToFront) {
+	private void setCustomAttribute(DefinableEntity entry, FileUploadItem fui, FileAttachment fAtt) {
     	// Is the FileUploadItem named?
 		Set fAtts = null;
 		String fuiName = fui.getName();
@@ -3342,7 +3340,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		// not mean that it is known through this particular data
 		// element (i.e., custom attribute). So we need to make
 		// sure that it is made visible through this element.
-		if (!addToFront || fAtts.isEmpty() || !(fAtts instanceof LinkedHashSet)) {
+		boolean forcePrimary = fui.isForcePrimary();
+		if (!forcePrimary || fAtts.isEmpty() || !(fAtts instanceof LinkedHashSet)) {
 			//Just add this item. It will be put at the back of the set
 			fAtts.add(fAtt); // If it is already in the set, this will have no effect.
 		} else {
