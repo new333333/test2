@@ -707,7 +707,7 @@ public interface ObjectKeys {
     public static final String INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE="org.kablink.teaming.options.skip.parent.modtime.update";
     public static final String INPUT_OPTION_SKIP_DB_LOG="org.kablink.teaming.options.skip_db_log";
     public static final String INPUT_OPTION_SKIP_NOTIFY_STATUS="org.kablink.teaming.options.skip_notify_status";
-    public static final String INPUT_OPTION_UPLOAD_AS_ATTACHMENT="org.kablink.teaming.options.upload_as_attachment";
+    public static final String INPUT_OPTION_FORCE_PRIMARY_FILE="org.kablink.teaming.options.force_primary_file";
     
  	//Reserved data field names
     public static final String FIELD_ID="id";

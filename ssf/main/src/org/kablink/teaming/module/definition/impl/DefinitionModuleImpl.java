@@ -2741,24 +2741,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		    		fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryName);
 		    	}
 		    	else {
-		    		// If we don't have an options Map, we always
-		    		// upload using TYPE_ATTACHMENT.  Do we have an
-		    		// options Map?
-		    		boolean uploadAsAttachment = (options == null);
-		    		if (!uploadAsAttachment) {
-		    			// Yes!  Use any upload as attachment override
-		    			// that's been set.  If one hasn't been set,
-		    			// default to TYPE_ATTACHEMNT.
-		    			Boolean optionValue = ((Boolean) options.get(ObjectKeys.INPUT_OPTION_UPLOAD_AS_ATTACHMENT));
-		    			uploadAsAttachment  = ((null == optionValue)|| optionValue);
-		    		}
-		    		fui = new FileUploadItem(
-		    			(uploadAsAttachment                ?
-		    				FileUploadItem.TYPE_ATTACHMENT :
-		    				FileUploadItem.TYPE_FILE),
-		    			nameValue,
-		    			myFile,
-		    			repositoryName);
+		    		fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryName);
+	    			Boolean forcePrimary = ((null == options) ? null : ((Boolean) options.get(ObjectKeys.INPUT_OPTION_FORCE_PRIMARY_FILE)));
+	    			if (null != forcePrimary) {
+	    				fui.setForcePrimary(forcePrimary.booleanValue());
+	    			}
 		    	}
 			    	//See if there is a scaling request for this graphic file. If yes, pass along the height and width
 		    	Description fileDescription = new Description();
