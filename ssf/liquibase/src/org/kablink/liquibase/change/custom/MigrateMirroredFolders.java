@@ -171,8 +171,9 @@ public class MigrateMirroredFolders {
 	private void loadAndCacheNetFolderConfigs() throws SQLException, MigrateNetFolderConfigException {
 		logInfo("Loading and caching all net folder configs");
 		int count = 0;
+		// First, load up net folder config objects
 		try(Statement stmt = conn.createStatement()) {
-			String sqlQuery = "SELECT id,zoneId,netFolderServerId,resourcePath FROM SS_NetFolderConfig";
+			String sqlQuery = "SELECT id,zoneId,netFolderServerId,resourcePath,topFolderId FROM SS_NetFolderConfig";
 			try(ResultSet rs = stmt.executeQuery(sqlQuery)) {
 				NetFolderConfig nfc;
 				while(rs.next()) {
@@ -182,19 +183,35 @@ public class MigrateMirroredFolders {
 					String resourcePath = rs.getString(4);
 					if("/".equals(resourcePath))
 						resourcePath = "";
+					long topFolderId = rs.getLong(5);
 					NetFolderServer nfs = findNetFolderServerById(netFolderServerId);
 					if(nfs == null)
 						throw new MigrateNetFolderConfigException("Cannot find net folder server by id [" + netFolderServerId + "]");
 					if(zoneId != nfs.zoneId) {
 						throw new MigrateNetFolderConfigException("Bad integrity - The zoneId doesn't match between net folder server " + nfs + " and net folder config with id '" + id + "' whose zoneId is " + zoneId);
 					}
-					nfc = new NetFolderConfig(id, resourcePath);
+					nfc = new NetFolderConfig(id, resourcePath, topFolderId);
 					nfs.netFolderConfigList.add(nfc);
 					logInfo("Loaded and cached net folder config " + nfc);
 					count++;
 				}
 			}
 		}
+		// Second, fill in the sort key values for each net folder config objects
+		try(PreparedStatement stmt = conn.prepareStatement("SELECT binder_sortKey FROM SS_Forums where id=?")) {
+			for(NetFolderServer nfs:netFolderServerList) {
+				for(NetFolderConfig nfc:nfs.netFolderConfigList) {
+					stmt.setLong(1, nfc.topFolderId);
+					try(ResultSet rs = stmt.executeQuery()) {
+						String sortKey = null;
+						if(rs.next()) {
+							sortKey = rs.getString(1);
+						}
+						nfc.setSortKey(sortKey);
+					}
+				}
+			}
+		}		
 		logInfo(count + " net folder configs loaded and cached");
 	}
 	
@@ -258,7 +275,7 @@ public class MigrateMirroredFolders {
 	
 	private String getQueryForRetrievingMirroredTopFoldersOneBatch() throws SQLException {
 		String sqlQueryCommonPart =
-				" id,zoneId,name,title,resourceDriverName,resourcePath,"
+				" id,zoneId,name,title,resourceDriverName,resourcePath,binder_sortKey,"
 				+ columnsToCopyCommaSeparated
 				+ " FROM SS_Forums" 
 				+ " WHERE netFolderConfigId is null AND resourceDriverName is not null AND topFolder is null";
@@ -291,7 +308,7 @@ public class MigrateMirroredFolders {
 	
 	private String getQueryForRetrievingMirroredNonTopFoldersOneBatch() throws SQLException {
 		String sqlQueryCommonPart =
-				" id,zoneId,resourceDriverName,resourcePath,"
+				" id,zoneId,resourceDriverName,resourcePath,binder_sortKey,"
 				+ columnsToCopyCommaSeparated
 				+ " FROM SS_Forums" 
 				+ " WHERE netFolderConfigId is null AND resourceDriverName is not null AND topFolder is not null";
@@ -399,6 +416,7 @@ public class MigrateMirroredFolders {
 			throw new MigrateNetFolderConfigException("Top folder " + folderId + " is missing zoneId");
 		String resourceDriverName = (String) mirroredTopFolder.get("resourceDriverName");
 		String resourcePath = (String) mirroredTopFolder.get("resourcePath");
+		String sortKey = (String) mirroredTopFolder.get("binder_sortKey");
 		
 		NetFolderServer nfs = findNetFolderServerByName(resourceDriverName, zoneId);
 		if(nfs != null) { // This top folder is a net folder.
@@ -429,7 +447,8 @@ public class MigrateMirroredFolders {
 	        }
 	        logInfo("Created/inserted a new net folder config. The ID is " + nfcId);
 	        // Add the new net folder config object into the cache.
-			NetFolderConfig nfc = new NetFolderConfig(nfcId, (String) mirroredTopFolder.get("resourcePath"));
+			NetFolderConfig nfc = new NetFolderConfig(nfcId, (String) mirroredTopFolder.get("resourcePath"), folderId);
+			nfc.setSortKey(sortKey);
 			nfs.netFolderConfigList.add(nfc);
 			
 	   		String folderName = "_NFT_" + mirroredTopFolder.get("name");
@@ -462,9 +481,11 @@ public class MigrateMirroredFolders {
 		if(nfs != null) { // This non top folder is a net folder.
 			// Determine which net folder config this net folder belongs to.
 			String resourcePath = (String) mirroredNonTopFolder.get("resourcePath");
+			String sortKey = (String) mirroredNonTopFolder.get("binder_sortKey");
 			NetFolderConfig netFolderConfig = null;
 			for(NetFolderConfig nfc : nfs.netFolderConfigList) {
-				if(resourcePath.startsWith(nfc.resourcePath)) {
+				if(sortKey.startsWith(nfc.sortKey) && // actually this first condition is sufficient...
+						resourcePath.startsWith(nfc.resourcePath)) {
 					netFolderConfig = nfc;
 					break;
 				}
@@ -661,9 +682,16 @@ public class MigrateMirroredFolders {
 		//long zoneId;
 		//long netFolderServerId;
 		String resourcePath;
-		public NetFolderConfig(long id, String resourcePath) {
+		Long topFolderId;
+		// Cached sort key of the associated top folder
+		String sortKey;
+		public NetFolderConfig(long id, String resourcePath, Long topFolderId) {
 			this.id = id;
 			this.resourcePath = resourcePath;
+			this.topFolderId = topFolderId;
+		}
+		public void setSortKey(String sortKey) {
+			this.sortKey = sortKey;
 		}
 		@Override
 		public String toString() {
@@ -672,6 +700,8 @@ public class MigrateMirroredFolders {
 			.append(id)
 			.append(",resourcePath=")
 			.append(resourcePath)
+			.append(",topFolderId=")
+			.append(topFolderId)
 			.append("}");
 			return sb.toString();
 		}

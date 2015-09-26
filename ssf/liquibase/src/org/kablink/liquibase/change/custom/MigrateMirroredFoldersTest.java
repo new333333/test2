@@ -43,12 +43,12 @@ public class MigrateMirroredFoldersTest {
 
 	public static void main(String[] args) throws Exception {
 		String jdbcDriver = "com.mysql.jdbc.Driver";
-		String url = "jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;characterEncoding=UTF-8";
+		String url = "jdbc:mysql://172.17.2.48:3306/filr?useUnicode=true&amp;characterEncoding=UTF-8";
 		String username = "root";
 		String password = "root";
 		String dbType = "mysql";
-		int batchSize = 4;
-		int transactionSize = 2;
+		int batchSize = 1000;
+		int transactionSize = 100;
 		String logFileName = "C:\\temp\\migrate-mirrored-folders.log";
 		
 		// Register JDBC driver
