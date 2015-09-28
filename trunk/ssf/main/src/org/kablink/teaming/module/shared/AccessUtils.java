@@ -301,6 +301,19 @@ public class AccessUtils  {
         return readEntries;
 	} 
 	
+	/**
+	 * Returns the IDs that have CREATOR_READ access to the binder.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static Set<String> getReadOwnedEntriesIds(Binder binder) {
+		//Build a list of all ids that can read the their own entries (including function conditions)
+        Set<String> readOwnedEntries = getReadIds(binder, WorkAreaOperation.CREATOR_READ);
+        return readOwnedEntries;
+	}     	
+	
 	//Routine to get the expanded list of ids who can read an entity (including function conditions)
 	private static Set<String> getReadIds(DefinableEntity entity, WorkAreaOperation operation) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();

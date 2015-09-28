@@ -70,6 +70,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -91,6 +92,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
@@ -695,6 +697,20 @@ public class EntityIndexUtils {
     }
     public static String getFolderAclString(Binder binder, boolean includeTitleAcl) {
 		Set<String> binderIds = AccessUtils.getReadAccessIds(binder, includeTitleAcl);
+		
+/*
+//!		...doesn't work as I'd hoped...  Gives too wide of access.
+		// Bugzilla 944231:  If the binder is inheriting its ACLs,
+		// add in any CREATOR_READ rights as READ_ENTRIES.
+		if (((WorkArea) binder).isFunctionMembershipInherited()) {
+			Set<String> roBinderIds = AccessUtils.getReadOwnedEntriesIds(binder);
+			if (MiscUtil.hasItems(roBinderIds)) {
+				if (null == binderIds) binderIds = new HashSet<String>();
+				binderIds.addAll(roBinderIds);
+			}
+		}
+*/
+
    		String ids = LongIdUtil.getIdsAsString(binderIds);
         return ids.trim();
     }
@@ -1137,8 +1153,18 @@ public class EntityIndexUtils {
 			       			}
 			    		} else {
 			    			// The entry has neither workflow ACL nor its own ACL.
-			    			//The entry is using the folder's ACL
-			    			markEntryAsInheritingAcls(doc, binder, e, rss);
+			    			// The entry is using the folder's ACL
+			    			//
+			    			// Bugzilla 944231:  If the owner has
+			    			// inherited CREATOR_READ rights to the
+			    			// entry, add a separate ACL to give them
+			    			// access.
+			    	        Set<String> readOwnedEntries = AccessUtils.getReadOwnedEntriesIds(binder);
+			    	        Long ownerId = ((WorkflowSupport) entry).getOwnerId();
+		    	        	if (ownerHasReadOwnedEntriesRights(ownerId, readOwnedEntries, entry.getZoneId())) {
+		    	        		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, String.valueOf(ownerId)));
+		    	        	}
+	    	        		markEntryAsInheritingAcls(doc, binder, e, rss);
 			    		}
 	       			}
 	       		}
@@ -1162,6 +1188,73 @@ public class EntityIndexUtils {
        		addRootAcl(doc, binder);
     	}
 	}
+    
+    /*
+     * Returns true if ownerId is a member of readOwnedEntries.
+     * 
+     * ownerId can be a member directly of readOwnedEntries or any
+     * groups that it may resolve to.
+     */
+	private static boolean ownerHasReadOwnedEntriesRights(Long ownerId, Set<String> readOwnedEntries, Long zoneId) {
+		// If we don't have an owner ID or any readOwnedEntries...
+		if ((null == ownerId) || (!(MiscUtil.hasItems(readOwnedEntries)))) {
+			// ...return false.
+			return false;
+		}
+
+		// Scan the readOwnedEntries.
+		List<Long> roIDs = new ArrayList<Long>();
+		for (String roE:  readOwnedEntries) {
+			// Is this readOwnedEntry the owner?
+			Long roEId = Long.parseLong(roE);
+			if (ownerId.equals(roEId)) {
+				// Yes!  That's all we need to check, return true.
+				return true;
+			}
+			
+			// No, it's not the owner.  Track the ID.
+			roIDs.add(roEId);
+		}
+		
+		// Can we resolve the IDs we have to any Principal's?
+		List<Principal> roPrincipals  = ResolveIds.getPrincipals(roIDs, false);
+		if (!(MiscUtil.hasItems(roPrincipals))) {
+			// No!  Return false.
+			return false;
+		}
+
+		// Scan the Principal's.
+		List<Long> memberGroupIds = new ArrayList<Long>();
+		for (Principal member:  roPrincipals) {
+			// Is this Principal a Group?
+			if (member instanceof GroupPrincipal) {
+				// Yes!  Track its ID.
+				memberGroupIds.add(member.getId());
+			}
+			
+			// At this point, we don't care about users because
+			// we would have matched it in an earlier check and
+			// would have already returned.
+		}
+		
+		// Are we tracking any group IDs?
+		if (memberGroupIds.isEmpty()) {
+			// No!  Return false.
+			return false;
+		}
+
+		// Can we explode the group into any constituent members?
+		Set<Long> groupMemberIds = ((ProfileDao) SpringContextUtil.getBean("profileDao")).explodeGroups(memberGroupIds, zoneId);
+		if (!(MiscUtil.hasItems(groupMemberIds))) {
+			// No!  Return false.
+			return false;
+		}
+		
+		// Return true if the group member IDs contain the owner and
+		// false otherwise.
+		return groupMemberIds.contains(ownerId);
+	}
+
     //This is used to store the "read" acls in a document that is not a search document
     public static void addReadAccess(org.dom4j.Element parent, Binder binder, DefinableEntity entry, boolean fieldsOnly) {
 		// Add ACL field. We only need to index ACLs for read access.

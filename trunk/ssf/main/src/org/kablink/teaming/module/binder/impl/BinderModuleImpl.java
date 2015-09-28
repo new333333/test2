@@ -477,8 +477,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					getAccessControlManager().checkOperation(user, binder,
 							WorkAreaOperation.READ_ENTRIES);
 				} catch(AccessControlException e) {
-					// If they can't read entries, can they read their
-					// own entries?
+					// Bugzilla 944231:  If they can't read entries,
+					// can they read their own entries?
 					getAccessControlManager().checkOperation(user, binder,
 							WorkAreaOperation.CREATOR_READ);
 				}
