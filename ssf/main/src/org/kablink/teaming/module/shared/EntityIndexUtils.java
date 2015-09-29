@@ -1206,7 +1206,9 @@ public class EntityIndexUtils {
 		List<Long> roIDs = new ArrayList<Long>();
 		for (String roE:  readOwnedEntries) {
 			// Is this readOwnedEntry the owner?
-			Long roEId = Long.parseLong(roE);
+			Long roEId;
+			try                 {roEId = Long.parseLong(roE);}
+			catch (Exception e) {continue;                   }	// May be 'own', 'team', ...  Simply skip it if it can't be parsed.
 			if (ownerId.equals(roEId)) {
 				// Yes!  That's all we need to check, return true.
 				return true;
@@ -1214,6 +1216,12 @@ public class EntityIndexUtils {
 			
 			// No, it's not the owner.  Track the ID.
 			roIDs.add(roEId);
+		}
+		
+		// Do we have an readOwnedEntries IDs?
+		if (!(MiscUtil.hasItems(roIDs))) {
+			// No!  Return false.
+			return false;
 		}
 		
 		// Can we resolve the IDs we have to any Principal's?
