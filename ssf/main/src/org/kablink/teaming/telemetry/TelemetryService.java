@@ -204,8 +204,10 @@ public class TelemetryService extends HibernateDaoSupport {
 			// Number of users by type
 			User user = new User();
 			tier2.setUser(user);
+			long externalLdapUserCount = countExternalLdapUsers(null);
 			long internalLocalUserCount = countInternalLocalUsers(null);
 			long externalLocalUserCount = countExternalLocalUsers(null);
+			user.setExternalLdapUserCount(externalLdapUserCount);
 			user.setInternalLocalUserCount(internalLocalUserCount);
 			user.setExternalLocalUserCount(externalLocalUserCount);
 			
@@ -213,12 +215,14 @@ public class TelemetryService extends HibernateDaoSupport {
 			Group group = new Group();
 			tier2.setGroup(group);
 			long dynamicGroupCount = countDynamicGroups(null);
-			long ldapGroupCount = countLdapGroups(null);
+			long internalLdapGroupCount = countInternalLdapGroups(null);
+			long externalLdapGroupCount = countExternalLdapGroups(null);
 			long containerGroupCount = countContainerGroups(null);
 			long localGroupCount = countLocalGroups(null);
 			long teamGroupCount = countTeamGroups(null);
 			group.setDynamicGroupCount(dynamicGroupCount);
-			group.setLdapGroupCount(ldapGroupCount);
+			group.setInternalLdapGroupCount(internalLdapGroupCount);
+			group.setExternalLdapGroupCount(externalLdapGroupCount);
 			group.setContainerGroupCount(containerGroupCount);
 			group.setLocalGroupCount(localGroupCount);
 			group.setTeamGroupCount(teamGroupCount);
@@ -274,6 +278,19 @@ public class TelemetryService extends HibernateDaoSupport {
 			tier2.setDevice(device);
 			Map<String,Long> mobileDeviceCountsByType = countMobileDevicesByType();
 			device.setMobileDeviceCounts(mobileDeviceCountsByType);
+			
+			// OS info
+			Os os = new Os();
+			tier2.setOs(os);
+			os.setName(System.getProperty("os.name"));
+			os.setVersion(System.getProperty("os.version"));
+			os.setArch(System.getProperty("os.arch"));
+			
+			// Java info
+			Java java = new Java();
+			tier2.setJava(java);
+			java.setVersion(System.getProperty("java.version"));
+			java.setVmVendor(System.getProperty("java.vm.vendor"));
 		}
 		
 		String dirPath = getTelemetryDataDirPath();
@@ -457,12 +474,26 @@ public class TelemetryService extends HibernateDaoSupport {
 	}
 	
 	// Find all internal users synchronized from LDAP that are not disabled and not deleted.
-	 long countInternalLdapUsers( Long zoneId ) {
+	long countInternalLdapUsers( Long zoneId ) {
 		FilterControls filterControls = new FilterControls();
 	 	filterControls.add( Restrictions.eq( "type", "user" ) );
 	 	filterControls.add( Restrictions.eq( "disabled", Boolean.FALSE ) );
 	 	filterControls.add( Restrictions.eq( "deleted", Boolean.FALSE ) );
 		filterControls.add(Restrictions.eq("identityInfo.internal", Boolean.TRUE));
+		filterControls.add(Restrictions.eq("identityInfo.fromLdap", Boolean.TRUE));
+		if(zoneId == null)
+			filterControls.setZoneCheck(false);
+
+	 	return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
+	}
+	
+	// Find all external users synchronized from LDAP that are not disabled and not deleted.
+	long countExternalLdapUsers( Long zoneId ) {
+		FilterControls filterControls = new FilterControls();
+	 	filterControls.add( Restrictions.eq( "type", "user" ) );
+	 	filterControls.add( Restrictions.eq( "disabled", Boolean.FALSE ) );
+	 	filterControls.add( Restrictions.eq( "deleted", Boolean.FALSE ) );
+		filterControls.add(Restrictions.eq("identityInfo.internal", Boolean.FALSE));
 		filterControls.add(Restrictions.eq("identityInfo.fromLdap", Boolean.TRUE));
 		if(zoneId == null)
 			filterControls.setZoneCheck(false);
@@ -519,10 +550,24 @@ public class TelemetryService extends HibernateDaoSupport {
 	 	return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
 	}
 	
-	// Find all LDAP groups that are not container
-	 long countLdapGroups( Long zoneId ) {
+	// Find all internal LDAP groups that are not container
+	long countInternalLdapGroups( Long zoneId ) {
 		FilterControls filterControls = getBasicControlForGroup();
 	 	filterControls.add(Restrictions.isNull("groupType"));
+		filterControls.add(Restrictions.eq("identityInfo.internal", Boolean.TRUE));
+		filterControls.add(Restrictions.eq("identityInfo.fromLdap", Boolean.TRUE));
+	 	filterControls.add( Restrictions.eqOrNull( "ldapContainer", Boolean.FALSE ) );
+	 	filterControls.add( Restrictions.eqOrNull( "dynamic", Boolean.FALSE ) );
+		if(zoneId == null)
+			filterControls.setZoneCheck(false);
+	 	return getCoreDao().countObjects(Principal.class, filterControls, zoneId);
+	}
+	
+	// Find all external LDAP groups that are not container
+	long countExternalLdapGroups( Long zoneId ) {
+		FilterControls filterControls = getBasicControlForGroup();
+	 	filterControls.add(Restrictions.isNull("groupType"));
+		filterControls.add(Restrictions.eq("identityInfo.internal", Boolean.FALSE));
 		filterControls.add(Restrictions.eq("identityInfo.fromLdap", Boolean.TRUE));
 	 	filterControls.add( Restrictions.eqOrNull( "ldapContainer", Boolean.FALSE ) );
 	 	filterControls.add( Restrictions.eqOrNull( "dynamic", Boolean.FALSE ) );
@@ -802,6 +847,12 @@ public class TelemetryService extends HibernateDaoSupport {
 	}
 	
 	static class TelemetryDataTier2 {
+		@JsonProperty("hypervisorType")
+		String hypervisorType;
+		@JsonProperty("os")
+		Os os;
+		@JsonProperty("java")
+		Java java;
 		@JsonProperty("indexService")
 		IndexService indexService;
 		@JsonProperty("database")
@@ -814,8 +865,6 @@ public class TelemetryService extends HibernateDaoSupport {
 		long personalStorageFileCount;
 		@JsonProperty("workspaceCount")
 		long workspaceCount;
-		@JsonProperty("hypervisorType")
-		String hypervisorType;
 		@JsonProperty("netFolder")
 		NetFolder netFolder;
 		@JsonProperty("device")
@@ -875,6 +924,18 @@ public class TelemetryService extends HibernateDaoSupport {
 		public void setDevice(Device device) {
 			this.device = device;
 		}
+		public Os getOs() {
+			return os;
+		}
+		public void setOs(Os os) {
+			this.os = os;
+		}
+		public Java getJava() {
+			return java;
+		}
+		public void setJava(Java java) {
+			this.java = java;
+		}
 	}
 	
 	 static class TelemetryData {
@@ -909,6 +970,52 @@ public class TelemetryService extends HibernateDaoSupport {
 		}
 	}
 	 
+	static class Os {
+		@JsonProperty("name")
+		String name;
+		@JsonProperty("version")
+		String version;
+		@JsonProperty("arch")
+		String arch;
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getVersion() {
+			return version;
+		}
+		public void setVersion(String version) {
+			this.version = version;
+		}
+		public String getArch() {
+			return arch;
+		}
+		public void setArch(String arch) {
+			this.arch = arch;
+		}
+	}
+	
+	static class Java {
+		@JsonProperty("version")
+		String version;
+		@JsonProperty("vmVendor")
+		String vmVendor;
+		public String getVersion() {
+			return version;
+		}
+		public void setVersion(String version) {
+			this.version = version;
+		}
+		public String getVmVendor() {
+			return vmVendor;
+		}
+		public void setVmVendor(String vmVendor) {
+			this.vmVendor = vmVendor;
+		}
+	}
+	
 	static class IndexService {
 		@JsonProperty("type")
 		String type;
@@ -956,10 +1063,18 @@ public class TelemetryService extends HibernateDaoSupport {
 	}
 	
 	static class User {
+		@JsonProperty("externalLdapUserCount")
+		long externalLdapUserCount;
 		@JsonProperty("internalLocalUserCount")
 		long internalLocalUserCount;
 		@JsonProperty("externalLocalUserCount")
 		long externalLocalUserCount;
+		public long getExternalLdapUserCount() {
+			return externalLdapUserCount;
+		}
+		public void setExternalLdapUserCount(long externalLdapUserCount) {
+			this.externalLdapUserCount = externalLdapUserCount;
+		}
 		public long getInternalLocalUserCount() {
 			return internalLocalUserCount;
 		}
@@ -977,8 +1092,10 @@ public class TelemetryService extends HibernateDaoSupport {
 	static class Group {
 		@JsonProperty("dynamicGroupCount")
 		long dynamicGroupCount;
-		@JsonProperty("ldapGroupCount")
-		long ldapGroupCount;
+		@JsonProperty("internalLdapGroupCount")
+		long internalLdapGroupCount;
+		@JsonProperty("externalLdapGroupCount")
+		long externalLdapGroupCount;
 		@JsonProperty("containerGroupCount")
 		long containerGroupCount;
 		@JsonProperty("localGroupCount")
@@ -991,11 +1108,17 @@ public class TelemetryService extends HibernateDaoSupport {
 		public void setDynamicGroupCount(long dynamicGroupCount) {
 			this.dynamicGroupCount = dynamicGroupCount;
 		}
-		public long getLdapGroupCount() {
-			return ldapGroupCount;
+		public long getInternalLdapGroupCount() {
+			return internalLdapGroupCount;
 		}
-		public void setLdapGroupCount(long ldapGroupCount) {
-			this.ldapGroupCount = ldapGroupCount;
+		public void setInternalLdapGroupCount(long internalLdapGroupCount) {
+			this.internalLdapGroupCount = internalLdapGroupCount;
+		}
+		public long getExternalLdapGroupCount() {
+			return externalLdapGroupCount;
+		}
+		public void setExternalLdapGroupCount(long externalLdapGroupCount) {
+			this.externalLdapGroupCount = externalLdapGroupCount;
 		}
 		public long getContainerGroupCount() {
 			return containerGroupCount;
