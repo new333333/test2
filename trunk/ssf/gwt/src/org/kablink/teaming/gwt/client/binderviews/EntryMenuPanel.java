@@ -675,7 +675,7 @@ public class EntryMenuPanel extends ToolPanelBase
 				List<ToolbarItem> nestedTBI = perEntryTBI.getNestedItemsList();
 				if (GwtClientHelper.hasItems(nestedTBI)) {
 					if (nestedTBI.size() == 1) {
-						VibeMenuItem simpleTBI = renderSimpleTBI(m_entryMenu, null, nestedTBI.get(0), false);
+						VibeMenuItem simpleTBI = renderSimpleTBI(m_entryMenu, true, null, nestedTBI.get(0), false);
 						String tbiName = perEntryTBI.getName();
 						if (null != tbiName) {
 							if      (tbiName.equals(TBI_MORE_NAME))  m_moreSingleItem  = simpleTBI;
@@ -693,7 +693,7 @@ public class EntryMenuPanel extends ToolPanelBase
 				}
 				
 				else {
-					renderSimpleTBI(m_entryMenu, null, perEntryTBI, false);
+					renderSimpleTBI(m_entryMenu, true, null, perEntryTBI, false);
 				}
 			}
 		}
@@ -862,7 +862,7 @@ public class EntryMenuPanel extends ToolPanelBase
 				configureDropdownMenu.addSeparator();
 			}
 			else {
-				renderSimpleTBI(null, configureDropdownMenu, configureTBI, false);
+				renderSimpleTBI(null, false, configureDropdownMenu, configureTBI, false);
 			}
 		}
 	}
@@ -1155,7 +1155,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	/*
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
-	private VibeMenuItem renderSimpleTBI(VibeMenuBar menuBar, PopupMenu popupMenu, final ToolbarItem simpleTBI, boolean contentsSelectable) {
+	private VibeMenuItem renderSimpleTBI(VibeMenuBar menuBar, boolean menuBarIsTopMenu, PopupMenu popupMenu, final ToolbarItem simpleTBI, boolean contentsSelectable) {
 		final String        simpleTitle  = simpleTBI.getTitle();
 		final String        simpleUrl    = simpleTBI.getUrl();
 		final boolean       hasSimpleUrl = GwtClientHelper.hasString(simpleUrl);
@@ -1250,17 +1250,21 @@ public class EntryMenuPanel extends ToolPanelBase
 			else if (forcedAnchor) {
 				// Create the anchor..
 				Anchor a = new Anchor();
-				a.addStyleName("gwt-MenuItem-anchor");
+				if (menuBarIsTopMenu) {
+					a.removeStyleName("gwt-Anchor"             );
+					a.addStyleName(   "gwt-MenuItem-anchorMain");
+				}
+				else {
+					a.addStyleName(   "gwt-MenuItem-anchor"    );
+				}
 				a.setHref(simpleUrl);
-				Label l = new Label(simpleTitle);
 				Element aE = a.getElement();
-				aE.appendChild(l.getElement());
+				aE.setInnerText(simpleTitle);
 				aE.setAttribute("onclick", "return false;");
 
 				// ...and use it to create an HTML only menu item.
 				VibeFlowPanel html = new VibeFlowPanel();
 				html.add(a);
-				
 				menuText       = html.getElement().getInnerHTML();
 				menuTextIsHTML = true;
 			}
@@ -1550,7 +1554,7 @@ public class EntryMenuPanel extends ToolPanelBase
 				structuredMenuBar.addSeparator();
 			}
 			else {
-				renderSimpleTBI(structuredMenuBar, null, nestedTBI, contentsSelectable);
+				renderSimpleTBI(structuredMenuBar, false, null, nestedTBI, contentsSelectable);
 			}
 		}
 	}
