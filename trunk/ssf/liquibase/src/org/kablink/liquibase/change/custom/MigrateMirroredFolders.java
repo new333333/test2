@@ -410,8 +410,8 @@ public class MigrateMirroredFolders {
 	}
 	
 	private void migrateMirroredTopFolder(Map<String,Object> mirroredTopFolder, PreparedStatement nfcInsertStmt, PreparedStatement netFolderTopUpdateStmt, PreparedStatement legacyMirroredFolderUpdateStmt) throws SQLException, MigrateNetFolderConfigException {
-		Long folderId = (Long) mirroredTopFolder.get("id");
-		Long zoneId = (Long) mirroredTopFolder.get("zoneId");
+		Long folderId = toLong(mirroredTopFolder.get("id"));
+		Long zoneId = toLong(mirroredTopFolder.get("zoneId"));
 		if(zoneId == null)
 			throw new MigrateNetFolderConfigException("Top folder " + folderId + " is missing zoneId");
 		String resourceDriverName = (String) mirroredTopFolder.get("resourceDriverName");
@@ -471,8 +471,8 @@ public class MigrateMirroredFolders {
 	}
 	
 	private void migrateMirroredNonTopFolder(Map<String,Object> mirroredNonTopFolder, PreparedStatement netFolderNonTopUpdateStmt, PreparedStatement legacyMirroredFolderUpdateStmt) throws SQLException, MigrateNetFolderConfigException {
-		Long folderId = (Long) mirroredNonTopFolder.get("id");
-		Long zoneId = (Long) mirroredNonTopFolder.get("zoneId");
+		Long folderId = toLong(mirroredNonTopFolder.get("id"));
+		Long zoneId = toLong(mirroredNonTopFolder.get("zoneId"));
 		if(zoneId == null)
 			throw new MigrateNetFolderConfigException("Non-top folder " + folderId + " is missing zoneId");
 		String resourceDriverName = (String) mirroredNonTopFolder.get("resourceDriverName");
@@ -517,12 +517,12 @@ public class MigrateMirroredFolders {
 	}
 	
 	private void migrateLegacyMirroredFolder(Map<String,Object> mirroredFolder, PreparedStatement legacyMirroredFolderUpdateStmt) throws SQLException, MigrateNetFolderConfigException {
-		Long folderId = (Long) mirroredFolder.get("id");
+		Long folderId = toLong(mirroredFolder.get("id"));
 		String resourceDriverName = (String) mirroredFolder.get("resourceDriverName");
 		legacyMirroredFolderUpdateStmt.setLong(1, toStorageHashAsLong(resourceDriverName)); // legacyMirroredDriverNameHash
 		String resourcePath = (String) mirroredFolder.get("resourcePath");
 		legacyMirroredFolderUpdateStmt.setString(2, ("".equals(resourcePath))? "/" : resourcePath ); // relRscPath - Carry over old resource path as is
-		legacyMirroredFolderUpdateStmt.setLong(3, (Long) mirroredFolder.get("id")); // id
+		legacyMirroredFolderUpdateStmt.setLong(3, folderId); // id
 		int status = legacyMirroredFolderUpdateStmt.executeUpdate();
 		if(status == 0)
 			throw new MigrateNetFolderConfigException("Updating failed for the legacy mirrored folder " + folderId);
@@ -647,6 +647,15 @@ public class MigrateMirroredFolders {
 			// This shouldn't happen.
 			throw new RuntimeException(e);
 		}
+	}
+	
+	private Long toLong(Object obj) {
+		if(obj instanceof Long)
+			return (Long) obj;
+		else if(obj instanceof Number)
+			return ((Number)obj).longValue();
+		else
+			throw new IllegalArgumentException("An object of type [" + obj.getClass().getName() + "] can not be had as Long");
 	}
 
 	static class NetFolderServer {
