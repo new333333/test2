@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -62,7 +62,8 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
- * This composite is used to set the zone share rights, ie who can share internal/external/public etc
+ * This composite is used to set the zone share rights, i.e., who can
+ * share internal/external/public etc...
  * 
  * @author jwootton
  */
@@ -154,7 +155,12 @@ public class EditZoneShareRightsTab extends EditZoneShareTabBase
 			tmpPanel.getElement().getStyle().setMarginTop( 4, Unit.PX );
 			tmpPanel.getElement().getStyle().setMarginBottom( 24, Unit.PX );
 
-			m_allowShareWithLdapGroupsCB = new CheckBox( messages.editZoneShareRightsTab_AllowShareWithLdapGroups() );
+			String cbText;
+			if ( m_shareDlg.isSupportsExternalUserImport() )
+			     cbText = messages.editZoneShareRightsTab_AllowShareWithLdapGroups_WithExternal();
+			else cbText = messages.editZoneShareRightsTab_AllowShareWithLdapGroups_NoExternal();
+			
+			m_allowShareWithLdapGroupsCB = new CheckBox( cbText );
 			tmpPanel.add( m_allowShareWithLdapGroupsCB );
 			mainPanel.add( tmpPanel );
 		}
