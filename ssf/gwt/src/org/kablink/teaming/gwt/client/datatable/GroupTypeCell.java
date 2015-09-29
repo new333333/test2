@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,15 +48,13 @@ import com.google.gwt.user.client.ui.Image;
 /**
  * Data table cell that represents a type of group.
  * 
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
-public class GroupTypeCell extends AbstractCell<GroupType>
-{
+public class GroupTypeCell extends AbstractCell<GroupType> {
 	/**
 	 * Constructor method.
 	 */
-	public GroupTypeCell()
-	{
+	public GroupTypeCell() {
 		// Initialize the super class.
 		super();
 	}
@@ -68,34 +66,27 @@ public class GroupTypeCell extends AbstractCell<GroupType>
 	 * 
 	 * @return
 	 */
-	public static String getGroupTypeAlt( GroupType groupType )
-	{
-		GwtTeamingMessages messages;
+	public static String getGroupTypeAlt(GroupType groupType) {
 		String reply;
-
-		messages = GwtTeaming.getMessages();
-
-		if ( groupType.isAdmin() )
-		{
-			switch ( groupType.getGroupClass() )
-			{
+		GwtTeamingMessages messages = GwtTeaming.getMessages();
+		if (groupType.isAdmin()) {
+			switch (groupType.getGroupClass()) {
 			case INTERNAL_LDAP:    reply = messages.vibeDataTable_Alt_Ldap_GroupAdmin();  break;
 			case INTERNAL_SYSTEM:  reply = messages.vibeDataTable_Alt_System_Group();     break;
 			case INTERNAL_LOCAL:   reply = messages.vibeDataTable_Alt_Local_GroupAdmin(); break;
 			default:               reply = messages.vibeDataTable_Alt_UnknownGroupType(); break;
 			}
 		}
-		else
-		{
-			switch ( groupType.getGroupClass() )
-			{
-			case INTERNAL_LDAP:    reply = messages.vibeDataTable_Alt_Ldap_Group();       break;
-			case INTERNAL_SYSTEM:  reply = messages.vibeDataTable_Alt_System_Group();     break;
-			case INTERNAL_LOCAL:   reply = messages.vibeDataTable_Alt_Local_Group();      break;
-			default:               reply = messages.vibeDataTable_Alt_UnknownGroupType(); break;
+		else {
+			switch (groupType.getGroupClass()) {
+			case EXTERNAL_LDAP:    reply = messages.vibeDataTable_Alt_Ldap_ExternalGroup();  break;
+			case EXTERNAL_LOCAL:   reply = messages.vibeDataTable_Alt_Local_ExternalGroup(); break;
+			case INTERNAL_LDAP:    reply = messages.vibeDataTable_Alt_Ldap_Group();          break;
+			case INTERNAL_SYSTEM:  reply = messages.vibeDataTable_Alt_System_Group();        break;
+			case INTERNAL_LOCAL:   reply = messages.vibeDataTable_Alt_Local_Group();         break;
+			default:               reply = messages.vibeDataTable_Alt_UnknownGroupType();    break;
 			}
 		}
-		
 		return reply;
 	}
 	
@@ -109,36 +100,28 @@ public class GroupTypeCell extends AbstractCell<GroupType>
 	 * Overrides AbstractCell.render()
 	 */
 	@Override
-	public void render( Context context, GroupType groupType, SafeHtmlBuilder sb )
-	{
-		ImageResource ir;
-		Image i;
-		VibeFlowPanel groupTypePanel;
-		VibeFlowPanel html;
-		SafeHtml rendered;
-
+	public void render(Context context, GroupType groupType, SafeHtmlBuilder sb) {
 		// If we weren't given a GroupType...
-		if ( groupType == null )
-		{
+		if (null == groupType) {
 			// ...bail.  Cell widgets can pass null to cells if the
 			// ...underlying data contains a null, or if the data
 			// ...arrives out of order.
-			GwtClientHelper.renderEmptyHtml( sb );
+			GwtClientHelper.renderEmptyHtml(sb);
 			return;
 		}
 
 		// Create the HTML for the group type image...
-		ir = GwtClientHelper.getGroupTypeImage( groupType );
-		i = GwtClientHelper.buildImage( ir.getSafeUri().asString(), getGroupTypeAlt( groupType ) );
-		i.addStyleName( "vibe-dataTableGroupType-image" );
-		groupTypePanel = new VibeFlowPanel();
-		groupTypePanel.addStyleName( "vibe-dataTableGroupType-panel" );
-		groupTypePanel.add( i );
-		html = new VibeFlowPanel();
-		html.add( groupTypePanel );
+		ImageResource ir = GwtClientHelper.getGroupTypeImage(groupType);
+		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString(), getGroupTypeAlt(groupType));
+		i.addStyleName("vibe-dataTableGroupType-image");
+		VibeFlowPanel groupTypePanel = new VibeFlowPanel();
+		groupTypePanel.addStyleName("vibe-dataTableGroupType-panel");
+		groupTypePanel.add(i);
+		VibeFlowPanel html = new VibeFlowPanel();
+		html.add(groupTypePanel);
 		
 		// ...and render that into the cell.
-		rendered = SafeHtmlUtils.fromTrustedString( html.getElement().getInnerHTML() );
-		sb.append( rendered );
+		SafeHtml rendered = SafeHtmlUtils.fromTrustedString(html.getElement().getInnerHTML());
+		sb.append(rendered);
 	}
 }

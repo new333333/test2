@@ -775,18 +775,20 @@ public class GwtClientHelper {
 		else {
 			if (groupType.isAdmin()) {
 				switch (groupType.getGroupClass()) {
-				case INTERNAL_LDAP:    reply = images.groupType_LDAPAdmin();   break;
-				case INTERNAL_SYSTEM:  reply = images.groupType_SystemAdmin(); break;
-				case INTERNAL_LOCAL:   reply = images.groupType_LocalAdmin();  break;
-				default:               reply = images.groupType_Unknown();     break;
+				case INTERNAL_LDAP:    reply = images.groupType_LDAPAdmin();     break;
+				case INTERNAL_SYSTEM:  reply = images.groupType_SystemAdmin();   break;
+				case INTERNAL_LOCAL:   reply = images.groupType_LocalAdmin();    break;
+				default:               reply = images.groupType_Unknown();       break;
 				}
 			}
 			else {
 				switch (groupType.getGroupClass()) {
-				case INTERNAL_LDAP:    reply = images.groupType_LDAP();        break;
-				case INTERNAL_SYSTEM:  reply = images.groupType_System();      break;
-				case INTERNAL_LOCAL:   reply = images.groupType_Local();       break;
-				default:               reply = images.groupType_Unknown();     break;
+				case EXTERNAL_LDAP:    reply = images.groupType_LDAPExternal();  break;
+				case EXTERNAL_LOCAL:   reply = images.groupType_LocalExternal(); break;
+				case INTERNAL_LDAP:    reply = images.groupType_LDAP();          break;
+				case INTERNAL_SYSTEM:  reply = images.groupType_System();        break;
+				case INTERNAL_LOCAL:   reply = images.groupType_Local();         break;
+				default:               reply = images.groupType_Unknown();       break;
 				}
 			}
 		}

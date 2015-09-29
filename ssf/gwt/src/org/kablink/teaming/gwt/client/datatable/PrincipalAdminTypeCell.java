@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -73,6 +73,7 @@ public class PrincipalAdminTypeCell extends AbstractCell<PrincipalAdminType> {
 		switch (pat.getPrincipalType()) {
 		// External users.
 		case EXTERNAL_GUEST:                  reply = messages.vibeDataTable_Alt_ExternalUser_Guest();             break;
+		case EXTERNAL_LDAP:                   reply = messages.vibeDataTable_Alt_ExternalUser_LDAP();              break;
 		case EXTERNAL_OPEN_ID:
 		case EXTERNAL_OTHERS:                 reply = messages.vibeDataTable_Alt_ExternalUser_Others();            break;
 		
@@ -101,20 +102,22 @@ public class PrincipalAdminTypeCell extends AbstractCell<PrincipalAdminType> {
 		}
 		
 		// Groups.
-		case LOCAL_GROUP:
-		case LDAP_GROUP:
+		case EXTERNAL_LDAP_GROUP:             reply = messages.vibeDataTable_Alt_Ldap_ExternalGroup();             break;
+		case EXTERNAL_LOCAL_GROUP:            reply = messages.vibeDataTable_Alt_Local_ExternalGroup();            break;
+		case INTERNAL_LDAP_GROUP:
+		case INTERNAL_LOCAL_GROUP:
 		case SYSTEM_GROUP:  {
 			if (pat.isAdmin()) {
 				switch (pat.getPrincipalType()) {
-				case LOCAL_GROUP:             reply = messages.vibeDataTable_Alt_Local_GroupAdmin();               break;
-				case LDAP_GROUP:              reply = messages.vibeDataTable_Alt_Ldap_GroupAdmin();                break;
+				case INTERNAL_LDAP_GROUP:     reply = messages.vibeDataTable_Alt_Ldap_GroupAdmin();                break;
+				case INTERNAL_LOCAL_GROUP:    reply = messages.vibeDataTable_Alt_Local_GroupAdmin();               break;
 				case SYSTEM_GROUP:            reply = messages.vibeDataTable_Alt_System_GroupAdmin();              break;
 				}
 			}
 			else {
 				switch (pat.getPrincipalType()) {
-				case LOCAL_GROUP:             reply = messages.vibeDataTable_Alt_Local_Group();                    break;
-				case LDAP_GROUP:              reply = messages.vibeDataTable_Alt_Ldap_Group();                     break;
+				case INTERNAL_LDAP_GROUP:     reply = messages.vibeDataTable_Alt_Ldap_Group();                     break;
+				case INTERNAL_LOCAL_GROUP:    reply = messages.vibeDataTable_Alt_Local_Group();                    break;
 				case SYSTEM_GROUP:            reply = messages.vibeDataTable_Alt_System_Group();                   break;
 				}
 			}
@@ -140,6 +143,7 @@ public class PrincipalAdminTypeCell extends AbstractCell<PrincipalAdminType> {
 		switch (pat.getPrincipalType()) {
 		// External users.
 		case EXTERNAL_GUEST:                  reply = images.externalUser_Guest();              break;
+		case EXTERNAL_LDAP:                   reply = images.externalUser_LDAP();               break;
 		case EXTERNAL_OPEN_ID:
 		case EXTERNAL_OTHERS:                 reply = images.externalUser_Others();             break;
 		
@@ -168,20 +172,22 @@ public class PrincipalAdminTypeCell extends AbstractCell<PrincipalAdminType> {
 		}
 
 		// Groups.
-		case LOCAL_GROUP:
-		case LDAP_GROUP:
+		case EXTERNAL_LDAP_GROUP:             reply = images.groupType_LDAPExternal();          break;
+		case EXTERNAL_LOCAL_GROUP:            reply = images.groupType_LocalExternal();         break;
+		case INTERNAL_LDAP_GROUP:
+		case INTERNAL_LOCAL_GROUP:
 		case SYSTEM_GROUP:  {
 			if (pat.isAdmin()) {
 				switch (pat.getPrincipalType()) {
-				case LOCAL_GROUP:             reply = images.groupType_LocalAdmin();            break;
-				case LDAP_GROUP:              reply = images.groupType_LDAPAdmin();             break;
+				case INTERNAL_LDAP_GROUP:     reply = images.groupType_LDAPAdmin();             break;
+				case INTERNAL_LOCAL_GROUP:    reply = images.groupType_LocalAdmin();            break;
 				case SYSTEM_GROUP:            reply = images.groupType_SystemAdmin();           break;
 				}
 			}
 			else {
 				switch (pat.getPrincipalType()) {
-				case LOCAL_GROUP:             reply = images.groupType_Local();                 break;
-				case LDAP_GROUP:              reply = images.groupType_LDAP();                  break;
+				case INTERNAL_LDAP_GROUP:     reply = images.groupType_LDAP();                  break;
+				case INTERNAL_LOCAL_GROUP:    reply = images.groupType_Local();                 break;
 				case SYSTEM_GROUP:            reply = images.groupType_System();                break;
 				}
 			}

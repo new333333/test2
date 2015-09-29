@@ -445,19 +445,22 @@ public class ManageGroupsDlg extends DlgBox implements
 			GroupTypeCell groupTypeCell;
 
 			groupTypeCell = new GroupTypeCell();
-			typeCol = new Column<GroupInfoPlus, GroupType>( groupTypeCell )
-			{
+			typeCol = new Column<GroupInfoPlus, GroupType>(groupTypeCell) {
 				@Override
-				public GroupType getValue( GroupInfoPlus groupInfoPlus )
+				public GroupType getValue(GroupInfoPlus groupInfoPlus)
 				{
-					GroupInfo groupInfo;
+					GroupInfo groupInfo = groupInfoPlus.getGroupInfo();
+					if (groupInfo.getIsFromLdap()) {
+						if (groupInfo.getIsExternalAllowed()) {
+							return new GroupType(GroupClass.EXTERNAL_LDAP, groupInfo.isAdmin());
+						}
+						return new GroupType(GroupClass.INTERNAL_LDAP, groupInfo.isAdmin());
+					}
 
-					groupInfo = groupInfoPlus.getGroupInfo();
-
-					if ( groupInfo.getIsFromLdap() )
-						return new GroupType( GroupClass.INTERNAL_LDAP, groupInfo.isAdmin() );
-
-					return new GroupType( GroupClass.INTERNAL_LOCAL, groupInfo.isAdmin() );
+					if (groupInfo.getIsExternalAllowed()) {
+						return new GroupType(GroupClass.EXTERNAL_LOCAL, groupInfo.isAdmin());
+					}
+					return new GroupType(GroupClass.INTERNAL_LOCAL, groupInfo.isAdmin());
 				}
 			};
 			m_groupsTable.addColumn(typeCol, m_messages.manageGroupsDlgTypeCol());

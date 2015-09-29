@@ -3801,6 +3801,7 @@ public class GwtServerHelper {
 				groupInfo.setIsFromLdap(nextGroup.getIdentityInfo().isFromLdap());
 				groupInfo.setDn(nextGroup.getForeignName());
 				groupInfo.setAdmin(AdminHelper.isSiteAdminMember(groupId));
+				groupInfo.setMembershipInfo(nextGroup.isDynamic(), (!nextGroup.getIdentityInfo().isInternal()));
 				
 				reply.add(groupInfo);
 			}
@@ -7706,16 +7707,20 @@ public class GwtServerHelper {
 		
 		else {
 			IdentityInfo identityInfo = group.getIdentityInfo();
-			if ( identityInfo == null ) {
+			if (identityInfo == null) {
 				gc = GroupClass.UNKNOWN;
 			}
 			
-			else if ( identityInfo.isFromLdap() ) {
-				gc = GroupClass.INTERNAL_LDAP;
+			else if (identityInfo.isFromLdap()) {
+				if (identityInfo.isInternal())
+				     gc = GroupClass.INTERNAL_LDAP;
+				else gc = GroupClass.EXTERNAL_LDAP;
 			}
 			
 			else {
-				gc= GroupClass.INTERNAL_LOCAL;
+				if (identityInfo.isInternal())
+				     gc= GroupClass.INTERNAL_LOCAL;
+				else gc= GroupClass.EXTERNAL_LOCAL;
 			}
 		}
 		
