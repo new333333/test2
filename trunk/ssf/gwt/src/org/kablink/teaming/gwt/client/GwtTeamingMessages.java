@@ -3236,7 +3236,8 @@ public interface GwtTeamingMessages extends Messages {
 	String editZoneShareSettingsDlg_Rights();
 	
 	// Strings used in the 'Edit Zone Share Rights' tab.
-	String editZoneShareRightsTab_AllowShareWithLdapGroups();
+	String editZoneShareRightsTab_AllowShareWithLdapGroups_NoExternal();
+	String editZoneShareRightsTab_AllowShareWithLdapGroups_WithExternal();
 	String editZoneShareRightsTab_ReadingRights();
 	String editZoneShareRightsTab_SavingRights();
 	String editZoneShareRightsTab_SelectPrincipalsHint();

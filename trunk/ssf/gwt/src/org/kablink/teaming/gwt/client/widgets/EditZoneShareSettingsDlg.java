@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,15 +37,21 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetLdapSupportsExternalUserImportCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
@@ -61,8 +67,11 @@ public class EditZoneShareSettingsDlg extends DlgBox
 	implements
 		EditSuccessfulHandler
 {
+	private boolean						m_supportsExternalUserImport;
 	private EditZoneShareTabBase		m_listsTab;
 	private EditZoneShareTabBase		m_rightsTab;
+	private FlowPanel					m_mainPanel;
+	private GwtTeamingMessages			m_messages;
 	private List<HandlerRegistration>	m_registeredEventHandlers;
 	private TabPanel					m_tabs;
 	
@@ -93,12 +102,15 @@ public class EditZoneShareSettingsDlg extends DlgBox
 		int xPos,
 		int yPos,
 		int width,
-		int height )
+		int height,
+		EditZoneShareSettingsDlgClient ezsrDlgClient)
 	{
 		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
+		
+		m_messages = GwtTeaming.getMessages();
 
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().editZoneShareSettingsDlg_Header(), this, null, null ); 
+		createAllDlgContent( m_messages.editZoneShareSettingsDlg_Header(), this, null, ezsrDlgClient ); 
 	}
 
 	
@@ -108,21 +120,83 @@ public class EditZoneShareSettingsDlg extends DlgBox
 	@Override
 	public Panel createContent( Object props )
 	{
+		m_mainPanel = new FlowPanel();
+		m_mainPanel.setStyleName( "teamingDlgBoxContent" );
+		
+		loadPart1Async(((EditZoneShareSettingsDlgClient) props));
+		
+		return m_mainPanel;
+	}
+
+	/*
+	 * Asynchronously determines if external user LDAP imports are
+	 * supported and then continues constructing the dialog.
+	 */
+	private void loadPart1Async(final EditZoneShareSettingsDlgClient ezsrDlgClient) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now(ezsrDlgClient);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously determines if external user LDAP imports are
+	 * supported and then continues constructing the dialog.
+	 */
+	private void loadPart1Now(final EditZoneShareSettingsDlgClient ezsrDlgClient) {
+		GwtClientHelper.executeCommand( new GetLdapSupportsExternalUserImportCmd(), new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_GetLdapSupportsExternalUserImport() );
+				
+				m_supportsExternalUserImport = false;
+				createTabs( ezsrDlgClient );
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				BooleanRpcResponseData reply = ((BooleanRpcResponseData) result.getResponseData());
+				m_supportsExternalUserImport = reply.getBooleanValue();
+				createTabs( ezsrDlgClient );
+			}
+		} );
+	}
+	
+	/*
+	 * Creates the dialog's tab panel, populates the tabs and tells the
+	 * caller the dialog is ready to go.
+	 */
+	private void createTabs(EditZoneShareSettingsDlgClient ezsrDlgClient) {
 		m_tabs = new TabPanel();
 		m_tabs.addStyleName( "vibe-tabPanel" );
 		
 		m_rightsTab = new EditZoneShareRightsTab(this);
-		m_tabs.add( m_rightsTab, GwtTeaming.getMessages().editZoneShareSettingsDlg_Rights() );
+		m_tabs.add( m_rightsTab, m_messages.editZoneShareSettingsDlg_Rights() );
 		
 		m_listsTab = new EditZoneShareListsTab(this);
-		m_tabs.add( m_listsTab, GwtTeaming.getMessages().editZoneShareSettingsDlg_Lists() );
+		m_tabs.add( m_listsTab, m_messages.editZoneShareSettingsDlg_Lists() );
 		
-		FlowPanel mainPanel = new FlowPanel();
-		mainPanel.setStyleName( "teamingDlgBoxContent" );
-		mainPanel.add( m_tabs );
+		m_mainPanel.add( m_tabs );
 		
 		m_tabs.selectTab(0);
-		return mainPanel;
+		
+		ezsrDlgClient.onSuccess( this );
+	}
+	
+	/**
+	 * Returns whether or not external user imports are supported.
+	 * 
+	 * @return
+	 */
+	public boolean isSupportsExternalUserImport() {
+		return m_supportsExternalUserImport;
 	}
 
 	/*
@@ -378,16 +452,14 @@ public class EditZoneShareSettingsDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				EditZoneShareSettingsDlg cssDlg;
-				
-				cssDlg = new EditZoneShareSettingsDlg(
+				new EditZoneShareSettingsDlg(
 													autoHide,
 													modal,
 													left,
 													top,
 													width,
-													height );
-				ezsrDlgClient.onSuccess( cssDlg );
+													height,
+													ezsrDlgClient );
 			}
 		});
 	}
