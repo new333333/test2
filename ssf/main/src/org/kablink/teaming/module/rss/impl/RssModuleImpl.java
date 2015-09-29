@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -66,9 +66,11 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.domain.Binder;
@@ -97,27 +99,31 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
-import org.kablink.util.FileUtil;
 import org.kablink.util.LockFile;
 import org.kablink.util.PropertyNotFoundException;
+
 import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
+
 import org.w3c.tidy.Tidy;
 import org.w3c.tidy.TidyMessage;
 
-public class RssModuleImpl extends CommonDependencyInjection implements
-		RssModule, RssModuleImplMBean {
-
-	private static QueryParser qp = new QueryParser(Version.LUCENE_34, "guid",
-			new SsfQueryAnalyzer());
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"deprecation", "unused"})
+public class RssModuleImpl extends CommonDependencyInjection implements RssModule, RssModuleImplMBean {
+	private static QueryParser qp = new QueryParser(Version.LUCENE_34, "guid", new SsfQueryAnalyzer());
 
 	private final String ALL_FIELD = "allField";
 	private final String ALL = "all";
 	private final String AGE = "age";
-	
 
 	private final long DAYMILLIS = 24L * 60L * 60L * 1000L;
 
@@ -170,6 +176,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	public ProfileModule getProfileModule() {
 		return this.profileModule;
 	}
+	@Override
 	public String getRssRootDir() {
 		return rssRootDir;
 	}
@@ -218,6 +225,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		return new File(getRssPath(binder), "timestampfile");
 	}
 	
+	@Override
 	public synchronized void deleteRssFeed(Binder binder) {
 		File indexPath = getRssIndexPath(binder);		
 		if (!indexPath.exists()) return;
@@ -254,6 +262,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		} catch (Exception e) {}; //just ignore the error, the feed is gone
 	}
 
+	@Override
 	public synchronized void deleteRssFeed(Binder binder, Collection<Entry> entries) {
 		File indexPath = getRssIndexPath(binder);
 
@@ -383,6 +392,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 * 
 	 * @param entry
 	 */
+	@Override
 	public synchronized void updateRssFeed(Entry entry) {
 
 		SimpleProfiler.start("RssModule.updateRssFeed");
@@ -474,6 +484,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 * @param binder
 	 * @param user
 	 */
+	@Override
 	public synchronized void filterRss(HttpServletRequest request,
 			HttpServletResponse response, Binder binder) {
 
@@ -591,7 +602,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	
 	    	}
 	    	//output the remainder of the text
-	    	out.print(text);
+	    	out.write(text.getBytes(XmlFileUtil.FILE_ENCODING));	// Bugzilla 938060:  Handle all UTF-8 characters. 
 	    	
 		} catch (IOException e) {
 			logger.info("filterRss: " + e.toString());
@@ -616,6 +627,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 * @param binder
 	 * @param user
 	 */
+	@Override
 	public synchronized void filterAtom(HttpServletRequest request,
 			HttpServletResponse response, Binder binder) {
 		
@@ -747,12 +759,14 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 *  @param request
 	 *  @param response
 	 */
+	@Override
 	public String AuthError(HttpServletRequest request,
 			HttpServletResponse response) {
 		Document doc = createEmptyRssDoc(NLT.get("rss.auth.failure"));
 		return doc.asXML();
 	}
 	
+	@Override
 	public String BinderExistenceError(HttpServletRequest request,
 			HttpServletResponse response) {
 		Document doc = createEmptyRssDoc(NLT.get("binder.deleted"));
@@ -965,7 +979,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	
     private String tidyGetXHTML(Description description) {
 		String text = description.getText();
-		if (description.getFormat() == description.FORMAT_HTML) {
+		if (description.getFormat() == Description.FORMAT_HTML) {
 			ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
 			ByteArrayOutputStream sw = new ByteArrayOutputStream();
 			TidyMessageListener tml = new TidyMessageListener();
@@ -1021,6 +1035,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 	private class TidyMessageListener implements org.w3c.tidy.TidyMessageListener {
 		private int errorCount = 0;
+		@Override
 		public void messageReceived(TidyMessage message) {
 			message.toString();
 			errorCount++;
@@ -1045,5 +1060,4 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			so.setLuceneQuery(top);
 		}
 	}
-
 }
