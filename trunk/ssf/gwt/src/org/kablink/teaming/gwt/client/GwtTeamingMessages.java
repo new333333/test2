@@ -1991,6 +1991,7 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeDataTable_Alt_EntryActions();
 	String vibeDataTable_Alt_ExpandDescription();
 	String vibeDataTable_Alt_ExternalUser_Guest();
+	String vibeDataTable_Alt_ExternalUser_LDAP();
 	String vibeDataTable_Alt_ExternalUser_Others();
 	String vibeDataTable_Alt_InternalUser_LDAP();
 	String vibeDataTable_Alt_InternalUser_LDAPAdmin();
@@ -1999,8 +2000,10 @@ public interface GwtTeamingMessages extends Messages {
 	String vibeDataTable_Alt_InternalUser_PersonOthersAdmin();
 	String vibeDataTable_Alt_InternalUser_System();
 	String vibeDataTable_Alt_InternalUser_SystemAdmin();
+	String vibeDataTable_Alt_Ldap_ExternalGroup();
 	String vibeDataTable_Alt_Ldap_Group();
 	String vibeDataTable_Alt_Ldap_GroupAdmin();
+	String vibeDataTable_Alt_Local_ExternalGroup();
 	String vibeDataTable_Alt_Local_Group();
 	String vibeDataTable_Alt_Local_GroupAdmin();
 	String vibeDataTable_Alt_MobileDevices();

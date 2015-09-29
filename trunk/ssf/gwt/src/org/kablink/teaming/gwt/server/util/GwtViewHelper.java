@@ -8381,6 +8381,7 @@ public class GwtViewHelper {
 				// No, it's not an internal user!  Is it the Guest user?
 				if      (user.isShared())                            reply = PrincipalType.EXTERNAL_GUEST;
 				else if (ui.isFromOpenid() && (!(ui.isFromLocal()))) reply = PrincipalType.EXTERNAL_OPEN_ID;
+				else if (ui.isFromLdap())                            reply = PrincipalType.EXTERNAL_LDAP;
 				else                                                 reply = PrincipalType.EXTERNAL_OTHERS;
 			}
 		}
@@ -8390,14 +8391,21 @@ public class GwtViewHelper {
 			// LDAP?
 			if (ui.isFromLdap()) {
 				// Yes!
-				reply = PrincipalType.LDAP_GROUP;
+				if (ui.isInternal())
+				     reply = PrincipalType.INTERNAL_LDAP_GROUP;
+				else reply = PrincipalType.EXTERNAL_LDAP_GROUP;
 			}
 			else {
 				// No, it's not from LDAP!  Is it a system or local
 				// group.
-				if (principal.isReserved())
+				if (principal.isReserved()) {
 				     reply = PrincipalType.SYSTEM_GROUP;
-				else reply = PrincipalType.LOCAL_GROUP;
+				}
+				else {
+					if (ui.isInternal())
+					     reply = PrincipalType.INTERNAL_LOCAL_GROUP;
+					else reply = PrincipalType.EXTERNAL_LOCAL_GROUP;
+				}
 			}
 		}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,19 +44,16 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * GwtRpcServiceImpl.getMyGroups().)
  * 
  * @author drfoster@novell.com
- *
  */
-public class GroupInfo
-	implements IsSerializable, VibeRpcResponseData
-{
-	private Long m_id;			// The group's id.
-	private boolean m_admin;	// true -> The group has admin rights.  false -> It doesn't.
-	private String m_title;		// The group's title.
-	private String m_name;		// The group's name
-	private String m_desc;		// The group's description
-	private String m_fqdn;		// If the group came from ldap, the group's fully qualified dn
-	private boolean m_fromLdap;
-	private GroupMembershipInfo m_membershipInfo;
+public class GroupInfo implements IsSerializable, VibeRpcResponseData {
+	private boolean				m_admin;			// true -> The group has admin rights.  false -> It doesn't.
+	private boolean				m_fromLdap;			//
+	private GroupMembershipInfo	m_membershipInfo;	//
+	private Long				m_id;				// The group's id.
+	private String				m_desc;				// The group's description
+	private String				m_fqdn;				// If the group came from ldap, the group's fully qualified dn
+	private String				m_name;				// The group's name
+	private String				m_title;			// The group's title.
 	
 
 	/**
@@ -65,166 +62,68 @@ public class GroupInfo
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public GroupInfo() {
-		// Nothing to do.
+		super();
+		
 		m_membershipInfo = new GroupMembershipInfo();
-		m_membershipInfo.setMembershipInfo( false, true );
+		m_membershipInfo.setMembershipInfo(false, false);
 		
-		m_fromLdap = false;
+		setIsFromLdap(false);
 	}
 
 	/**
-	 * 
-	 */
-	public boolean isAdmin()
-	{
-		return m_admin;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAdmin( boolean admin )
-	{
-		m_admin = admin;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getDesc()
-	{
-		return m_desc;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setDesc( String desc )
-	{
-		m_desc = desc;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getDn()
-	{
-		return m_fqdn;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setDn( String dn )
-	{
-		m_fqdn = dn;
-	}
-	
-	/**
-	 * Returns the group's id.
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public Long getId() {
-		return m_id;
-	}
-
-	/**
-	 * Stores the id to the group.
-	 *  
-	 * @param id
-	 */
-	public void setId(Long id) {
-		m_id = id;
-	}
+	public boolean isAdmin()                {return m_admin;                                  }
+	public boolean getIsExternalAllowed()   {return m_membershipInfo.getIsExternalAllowed();  }
+	public boolean getIsFromLdap()          {return m_fromLdap;                               }
+	public boolean getIsMembershipDynamic() {return m_membershipInfo.getIsMembershipDynamic();}
+	public Long    getId()                  {return m_id;                                     }
+	public String  getDesc()                {return m_desc;                                   }
+	public String  getDn()                  {return m_fqdn;                                   }
+	public String  getName()                {return m_name;                                   }
+	public String  getTitle()               {return m_title;                                  }
 	
 	/**
-	 * Return the secondary display text for this group.  The value returned is generally used as the text
-	 * displayed on a mouse over.
+	 * Set'er methods.
+	 * 
+	 * @param
 	 */
-	public String getSecondaryDisplayText()
-	{
-		if ( m_fqdn != null && m_fqdn.length() > 0 )
+	public void setAdmin(     boolean admin)    {m_admin    = admin;   }
+	public void setIsFromLdap(boolean fromLdap) {m_fromLdap = fromLdap;}
+	public void setId(        Long    id)       {m_id       = id;      }
+	public void setDesc(      String  desc)     {m_desc     = desc;    }
+	public void setDn(        String  dn)       {m_fqdn     = dn;      }
+	public void setName(      String  name)     {m_name     = name;    }
+	public void setTitle(     String  title)    {m_title    = title   ;}
+	
+	/**
+	 * Return the secondary display text for this group.  The value
+	 * returned is generally used as the text displayed on a mouse
+	 * over.
+	 * 
+	 * @return
+	 */
+	public String getSecondaryDisplayText() {
+		if ((null != m_fqdn) && (0 < m_fqdn.length())) {
 			return m_fqdn;
+		}
 		
-		if ( m_desc != null && m_desc.length() > 0 )
+		if ((null != m_desc) && (0 < m_desc.length())) {
 			return m_desc;
+		}
 		
 		return m_name;
 	}
 
 	/**
-	 * 
-	 */
-	public String getName()
-	{
-		return m_name;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setName( String name )
-	{
-		m_name = name;
-	}
-	
-	/**
-	 * Returns the group's title.
-	 * 
-	 * @return
-	 */
-	public String getTitle() {
-		return m_title;
-	}
-
-	/**
-	 * Stores the title to the group.
+	 * ?
 	 *  
-	 * @param title
+	 * @param dynamic
+	 * @param externalAllowed
 	 */
-	public void setTitle(String title) {
-		m_title = title;
-	}
-
-	
-	/**
-	 * Are external users/groups allowed?
-	 */
-	public boolean getIsExternalAllowed()
-	{
-		return m_membershipInfo.getIsExternalAllowed();
-	}
-	
-	/**
-	 * Is this group from ldap?
-	 */
-	public boolean getIsFromLdap()
-	{
-		return m_fromLdap;
-	}
-	
-	/**
-	 * Return the flag that tells us whether the group membership is dynamic 
-	 */
-	public boolean getIsMembershipDynamic()
-	{
-		return m_membershipInfo.getIsMembershipDynamic();
-	}
-	
-	/**
-	 * 
-	 */
-	public void setIsFromLdap( boolean fromLdap )
-	{
-		m_fromLdap = fromLdap;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setMembershipInfo( boolean dynamic, boolean externalAllowed )
-	{
-		m_membershipInfo.setMembershipInfo( dynamic, externalAllowed );
+	public void setMembershipInfo(boolean dynamic, boolean externalAllowed) {
+		m_membershipInfo.setMembershipInfo(dynamic, externalAllowed);
 	}
 }
