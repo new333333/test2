@@ -73,6 +73,7 @@ public class FolderRow implements IsSerializable {
 	private boolean									m_homeDir;					// true -> The row is a user's Home             directory folder.  false -> It's not.
 	private boolean									m_myFilesDir;				// true -> The row is a user's My Files Storage directory folder.  false -> It's not.
 	private boolean									m_pinned;					// true -> The row is pinned.                          false -> It's not.
+	private boolean									m_selectionDisabled;			// true -> Selecting the row should be disabled.                   false -> It should be enabled.
 	private EntityId								m_entityId;					// The entity ID of the FolderEntry this FolderRow corresponds to.
 	private List<FolderColumn>						m_columns;					// The FolderColumns that contribute to this FolderRow.
 	private Map<String, Boolean>					m_rowOverdueDates;			// A map of column names to Boolean indicators of an overdue date possibly stored for a column.
@@ -184,6 +185,7 @@ public class FolderRow implements IsSerializable {
 	public boolean								  isHomeDir()                            {                                    return m_homeDir;                 }
 	public boolean								  isMyFilesDir()                         {                                    return m_myFilesDir;              }
 	public boolean								  isPinned()                             {                                    return m_pinned;                  }
+	public boolean								  isSelectionDisabled()                  {                                    return m_selectionDisabled;       }
 	public EntityId								  getEntityId()                          {                                    return m_entityId;                }
 	public List<FolderColumn>					  getColumns()                           {                                    return m_columns;                 }
 	public Map<String, Boolean>					  getRowOverdueDates()                   {validateMapOverdueDates();          return m_rowOverdueDates;         }
@@ -220,6 +222,7 @@ public class FolderRow implements IsSerializable {
 	public void setHomeDir(           boolean            homeDir)                             {m_homeDir            = homeDir;                   }
 	public void setMyFilesDir(        boolean            myFilesDir)                          {m_myFilesDir         = myFilesDir;                }
 	public void setPinned(            boolean            pinned)                              {m_pinned             = pinned;                    }
+	public void setSelectionDisabled( boolean            selectionDisabled)                   {m_selectionDisabled  = selectionDisabled;         }
 	public void setClientEntryPinInfo(Object             clientEntryPinInfo)                  {m_clientEntryPinInfo = clientEntryPinInfo;        }
 	public void setServerMobileDevice(Object             serverMobileDevice)                  {m_serverMobileDevice = serverMobileDevice;        }
 	public void setBinderIcon(        String             binderIcon, BinderIconSize iconSize) {m_binderIcons.setBinderIcon(binderIcon, iconSize);}

@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.datatable.ShareCellTable;
 import org.kablink.teaming.gwt.client.datatable.ShareItemCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
+import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell.VibeCheckboxData;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -956,7 +957,7 @@ public class ShareThisDlg2 extends DlgBox
 
 			// Add a checkbox in the first column
 			{
-				Column<GwtShareItem, Boolean> ckboxColumn;
+				Column<GwtShareItem, VibeCheckboxData> ckboxColumn;
 				VibeCheckboxCell ckboxCell;
 				
 				// Create a checkbox that will be in the column header and will be used to select/deselect
@@ -1001,24 +1002,25 @@ public class ShareThisDlg2 extends DlgBox
 				}
 				
 	            ckboxCell = new VibeCheckboxCell();
-			    ckboxColumn = new Column<GwtShareItem, Boolean>( ckboxCell )
+			    ckboxColumn = new Column<GwtShareItem, VibeCheckboxData>( ckboxCell )
 	            {
 	            	@Override
-			        public Boolean getValue( GwtShareItem shareItem )
+			        public VibeCheckboxData getValue( GwtShareItem shareItem )
 			        {
 	            		// Get the value from the selection model.
-			            return m_selectionModel.isSelected( shareItem );
+			            return new VibeCheckboxData( m_selectionModel.isSelected( shareItem ), false );
 			        }
 			    };
 			    
 			    // Add a field updater so when the user checks/unchecks the checkbox next to a
 			    // share item we will uncheck the "select all" checkbox that is in the header.
 			    {
-			    	ckboxColumn.setFieldUpdater( new FieldUpdater<GwtShareItem,Boolean>()
+			    	ckboxColumn.setFieldUpdater( new FieldUpdater<GwtShareItem,VibeCheckboxData>()
 			    	{
 			    		@Override
-			    		public void update( int index, GwtShareItem shareItem, Boolean checked )
+			    		public void update( int index, GwtShareItem shareItem, VibeCheckboxData data)
 			    		{
+			    			Boolean checked = data.getValue();
 			    			m_selectionModel.setSelected( shareItem,  checked );
 			    			
 			    			if ( checked == false )
@@ -1255,7 +1257,8 @@ public class ShareThisDlg2 extends DlgBox
 				
 				// Create a listbox that will hold the options of how to find share items.
 				{
-					m_findByListbox = new ListBox( false );
+					m_findByListbox = new ListBox();
+					m_findByListbox.setMultipleSelect( false );
 					m_findByListbox.setVisibleItemCount( 1 );
 					
 					m_findByListbox.addItem( messages.shareDlg_findSharesByHint(), FIND_SHARES_BY_HINT );

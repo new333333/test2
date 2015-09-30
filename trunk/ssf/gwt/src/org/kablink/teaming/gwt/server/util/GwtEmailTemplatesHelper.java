@@ -358,6 +358,7 @@ public class GwtEmailTemplatesHelper {
 				}
 				
 				else if (FolderColumn.isColumnEmailTemplateType(cn)) {
+					row.setSelectionDisabled(defaultEmailTemplates);
 					row.setColumnValue(fc, templateType);
 				}
 			}
