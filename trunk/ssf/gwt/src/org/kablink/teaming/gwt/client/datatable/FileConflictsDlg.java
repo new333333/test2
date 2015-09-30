@@ -280,15 +280,18 @@ public class FileConflictsDlg extends DlgBox implements EditSuccessfulHandler, E
 		m_vp.clear();
 
 		// Add the banner label for the dialog.
+		boolean oneConflict = (1 == m_fileConflictsInfo.getConflictCount());
 		String lText;
 		if (m_emailTemplates) {
-			lText = m_messages.fileConflictsDlgConfirmEmailTemplatesOverwrite();
+			lText =
+				(oneConflict                                                     ?
+					m_messages.fileConflictsDlgConfirmEmailTemplatesOverwrite1() :
+					m_messages.fileConflictsDlgConfirmEmailTemplatesOverwrite2());
 		}
 		else {
-			lText =
-				(m_isFilr                                         ?
-					m_messages.fileConflictsDlgConfirmOverwrite() :
-					m_messages.fileConflictsDlgConfirmVersion());
+			if (m_isFilr)
+			     lText = (oneConflict ? m_messages.fileConflictsDlgConfirmOverwrite1() : m_messages.fileConflictsDlgConfirmOverwrite2());
+			else lText = (oneConflict ? m_messages.fileConflictsDlgConfirmVersion1()   : m_messages.fileConflictsDlgConfirmVersion2()  );
 		}
 		Label l = new Label(lText);
 		l.addStyleName("vibe-fileConflictsDlg-banner");

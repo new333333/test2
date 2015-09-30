@@ -3291,9 +3291,12 @@ public interface GwtTeamingMessages extends Messages {
 	String fileConflictsDlgBtnCancel();
 	String fileConflictsDlgBtnOverwrite();
 	String fileConflictsDlgBtnVersion();
-	String fileConflictsDlgConfirmEmailTemplatesOverwrite();
-	String fileConflictsDlgConfirmOverwrite();
-	String fileConflictsDlgConfirmVersion();
+	String fileConflictsDlgConfirmEmailTemplatesOverwrite1();
+	String fileConflictsDlgConfirmEmailTemplatesOverwrite2();
+	String fileConflictsDlgConfirmOverwrite1();
+	String fileConflictsDlgConfirmOverwrite2();
+	String fileConflictsDlgConfirmVersion1();
+	String fileConflictsDlgConfirmVersion2();
 	String fileConflictsDlgConflictingFiles();
 	String fileConflictsDlgHeader();
 
@@ -3761,8 +3764,12 @@ public interface GwtTeamingMessages extends Messages {
 	// Strings used in the Manage Email Templates dialog.
 	String manageEmailTemplatesDlg();
 	String manageEmailTemplatesDlgCaption();
-	String manageEmailTemplatesDlg_confirmDelete();
-	String manageEmailTemplatesDlg_failureDeletingEmailTemplates();
+	String manageEmailTemplatesDlg_confirmDelete1();
+	String manageEmailTemplatesDlg_confirmDelete2();
+	String manageEmailTemplatesDlg_failureDeletingEmailTemplates11();
+	String manageEmailTemplatesDlg_failureDeletingEmailTemplates12();
+	String manageEmailTemplatesDlg_failureDeletingEmailTemplates21();
+	String manageEmailTemplatesDlg_failureDeletingEmailTemplates22();
 	
 	// Strings used in the Telemetry Tier 2 dialog.
 	String telemetryTier2Dlg_InternalError_CantCancel();
