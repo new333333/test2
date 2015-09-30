@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.event.ResetVelocityEngineEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteCustomizedEmailTemplatesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteCustomizedEmailTemplatesRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetManageEmailTemplatesInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageEmailTemplatesInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ResetVelocityEngineCmd;
@@ -236,9 +237,25 @@ public class ManageEmailTemplatesDlg extends DlgBox
 				DeleteCustomizedEmailTemplatesRpcResponseData erList = ((DeleteCustomizedEmailTemplatesRpcResponseData) response.getResponseData());
 				if (erList.hasErrors()) {
 					// ...display them...
-					GwtClientHelper.displayMultipleErrors(
-						m_messages.manageEmailTemplatesDlg_failureDeletingEmailTemplates(),
-						erList.getErrorList());
+					String errorMsg;
+					List<ErrorInfo> errors     = erList.getErrorList();
+					int             errorCount = errors.size();
+					switch (selectedEmailTemplates.size()) {
+					case 1:
+						switch (errorCount) {
+						case 1:   errorMsg = m_messages.manageEmailTemplatesDlg_failureDeletingEmailTemplates11(); break;	//  1 error, 1 template.
+						default:  errorMsg = m_messages.manageEmailTemplatesDlg_failureDeletingEmailTemplates21(); break;	// >1 error, 1 template.
+						}
+						break;
+						
+					default:
+						switch (errorCount) {
+						case 1:   errorMsg = m_messages.manageEmailTemplatesDlg_failureDeletingEmailTemplates12(); break;	//  1 error, >1 template.
+						default:  errorMsg = m_messages.manageEmailTemplatesDlg_failureDeletingEmailTemplates22(); break;	// >1 error, >1 template.
+						}
+						break;
+					}
+					GwtClientHelper.displayMultipleErrors(errorMsg, errors);
 				}
 
 				// ...and hide the busy spinner.
@@ -356,6 +373,11 @@ public class ManageEmailTemplatesDlg extends DlgBox
 			
 			@Override
 			public void onSuccess(ConfirmDlg cDlg) {
+				String confirmQuestion =
+					((1 == selectedEntityIds.size()) ?
+						m_messages.manageEmailTemplatesDlg_confirmDelete1():
+						m_messages.manageEmailTemplatesDlg_confirmDelete2());
+
 				ConfirmDlg.initAndShow(
 					cDlg,
 					new ConfirmCallback() {
@@ -377,7 +399,7 @@ public class ManageEmailTemplatesDlg extends DlgBox
 							// No, they're not sure!
 						}
 					},
-					m_messages.manageEmailTemplatesDlg_confirmDelete());
+					confirmQuestion);
 			}
 		});
 		
