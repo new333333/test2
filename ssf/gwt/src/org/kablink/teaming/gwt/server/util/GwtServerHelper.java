@@ -6197,15 +6197,18 @@ public class GwtServerHelper {
 			userFolderProperties = pm.getUserProperties( userId, binderId );
 			properties = userFolderProperties.getProperties();
 			
-			if ( properties.containsKey( ObjectKeys.SEARCH_SORT_BY ) )
-				folderSortSetting.setSortKey( (String)properties.get( ObjectKeys.SEARCH_SORT_BY ) );
-			
-			if ( properties.containsKey( ObjectKeys.SEARCH_SORT_DESCEND ) )
+			if ( null != properties )
 			{
-				String value;
+				if ( properties.containsKey( ObjectKeys.SEARCH_SORT_BY ) )
+					folderSortSetting.setSortKey( (String)properties.get( ObjectKeys.SEARCH_SORT_BY ) );
 				
-				value = (String) properties.get( ObjectKeys.SEARCH_SORT_DESCEND );
-				folderSortSetting.setSortDescending( Boolean.valueOf( value ).booleanValue() );
+				if ( properties.containsKey( ObjectKeys.SEARCH_SORT_DESCEND ) )
+				{
+					String value;
+					
+					value = (String) properties.get( ObjectKeys.SEARCH_SORT_DESCEND );
+					folderSortSetting.setSortDescending( Boolean.valueOf( value ).booleanValue() );
+				}
 			}
 			
 			if ( GwtLogHelper.isDebugEnabled(m_logger) )
