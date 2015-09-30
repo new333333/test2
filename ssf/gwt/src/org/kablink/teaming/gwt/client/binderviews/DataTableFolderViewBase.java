@@ -84,6 +84,7 @@ import org.kablink.teaming.gwt.client.datatable.SizeColumnsDlg.SizeColumnsDlgCli
 import org.kablink.teaming.gwt.client.datatable.StringColumn;
 import org.kablink.teaming.gwt.client.datatable.TaskFolderColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
+import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell.VibeCheckboxData;
 import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeDataTableConstants;
@@ -311,23 +312,23 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ZipAndDownloadFolderEvent.Handler,
 		ZipAndDownloadSelectedFilesEvent.Handler
 {
-	private BinderShareRightsDlg			m_binderShareRightsDlg;				// A BinderShareRightsDlg, once one is created.
-	private boolean							m_fixedLayout;						//
-	private CloudFolderAuthenticationDlg	m_cfaDlg;							//
-	private Column<FolderRow, Boolean>		m_selectColumn;						//
-	private ColumnWidth						m_actionMenuColumnWidth;			//
-	private ColumnWidth						m_100PctColumnWidth;				//
-	private ColumnWidth						m_defaultColumnWidth;				//
-	private List<FolderColumn>				m_folderColumnsList;				// The List<FolderColumn>' of the columns to be displayed.
-	private List<HandlerRegistration>		m_dtfvb_registeredEventHandlers;	// Event handlers that are currently registered.
-	private List<Long>						m_contributorIds;					//
-	private Map<String, ColumnWidth>		m_defaultColumnWidths;				// Map of column names -> Default ColumnWidth objects.
-	private Map<String, ColumnWidth>		m_columnWidths;						// Map of column names -> Current ColumnWidth objects.
-	private SizeColumnsDlg					m_sizeColumnsDlg;					//
-	private String							m_folderStyles;						// Specific style(s) for the for the folders that extend this.
-	private String							m_quickFilter;						// Any quick filter that's active.
-	private VibeDataGrid<FolderRow>			m_dataTable;						// The actual data table holding the view's information.
-	private VibeSimplePager 				m_dataTablePager;					// Pager widgets at the bottom of the data table.
+	private BinderShareRightsDlg				m_binderShareRightsDlg;				// A BinderShareRightsDlg, once one is created.
+	private boolean								m_fixedLayout;						//
+	private CloudFolderAuthenticationDlg		m_cfaDlg;							//
+	private Column<FolderRow, VibeCheckboxData>	m_selectColumn;						//
+	private ColumnWidth							m_actionMenuColumnWidth;			//
+	private ColumnWidth							m_100PctColumnWidth;				//
+	private ColumnWidth							m_defaultColumnWidth;				//
+	private List<FolderColumn>					m_folderColumnsList;				// The List<FolderColumn>' of the columns to be displayed.
+	private List<HandlerRegistration>			m_dtfvb_registeredEventHandlers;	// Event handlers that are currently registered.
+	private List<Long>							m_contributorIds;					//
+	private Map<String, ColumnWidth>			m_defaultColumnWidths;				// Map of column names -> Default ColumnWidth objects.
+	private Map<String, ColumnWidth>			m_columnWidths;						// Map of column names -> Current ColumnWidth objects.
+	private SizeColumnsDlg						m_sizeColumnsDlg;					//
+	private String								m_folderStyles;						// Specific style(s) for the for the folders that extend this.
+	private String								m_quickFilter;						// Any quick filter that's active.
+	private VibeDataGrid<FolderRow>				m_dataTable;						// The actual data table holding the view's information.
+	private VibeSimplePager 					m_dataTablePager;					// Pager widgets at the bottom of the data table.
 	
 	protected GwtTeamingDataTableImageBundle	m_images;		//
 	protected GwtTeamingFilrImageBundle			m_filrImages;	//
@@ -671,7 +672,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				List<FolderRow> rows = m_dataTable.getVisibleItems();
 				if (null != rows) {
 					for (FolderRow row : rows) {
-						selectionModel.setSelected(row, checked);
+						if (!(row.isSelectionDisabled())) {
+							selectionModel.setSelected(row, checked);
+						}
 					}
 				}
 				
@@ -689,18 +692,22 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 		// ...define a column for it...
 		VibeCheckboxCell cbRowCell = new VibeCheckboxCell();
-		m_selectColumn = new Column<FolderRow, Boolean>(cbRowCell) {
+		m_selectColumn = new Column<FolderRow, VibeCheckboxData>(cbRowCell) {
 			@Override
-			public Boolean getValue(FolderRow row) {
-				return selectionModel.isSelected(row);
+			public VibeCheckboxData getValue(FolderRow row) {
+				return
+					new VibeCheckboxData(
+						selectionModel.isSelected(row),
+						row.isSelectionDisabled());
 			}
 		};
 
 		// ...connect updating the contents of the table when the
 		// ...check box is checked or unchecked...
-		m_selectColumn.setFieldUpdater(new FieldUpdater<FolderRow, Boolean>() {
+		m_selectColumn.setFieldUpdater(new FieldUpdater<FolderRow, VibeCheckboxData>() {
 			@Override
-			public void update(int index, FolderRow row, Boolean checked) {
+			public void update(int index, FolderRow row, VibeCheckboxData data) {
+				Boolean checked = data.getValue();
 				selectionModel.setSelected(row, checked);
 				if (!checked) {
 					saHeader.setValue(checked);

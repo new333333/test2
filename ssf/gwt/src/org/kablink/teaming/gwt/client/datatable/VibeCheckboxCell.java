@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -65,22 +65,62 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
  * 20120418 (DRF):
  *   I created this from the GWT CheckboxCell.java class.  It includes
  *   multiple changes to that to fix checkbox click issue with IE.
+ *   
+ * 20150930 (DRF):
+ *   I added the VibeCheckboxData stuff to allow the creation of check
+ *   boxes that are disabled.
  */
-public class VibeCheckboxCell extends AbstractEditableCell<Boolean, Boolean> {
+public class VibeCheckboxCell extends AbstractEditableCell<VibeCheckboxCell.VibeCheckboxData, VibeCheckboxCell.VibeCheckboxData> {
+  // An HTML string representation of a checked input box.
+  private static final SafeHtml INPUT_CHECKED          = SafeHtmlUtils.fromSafeConstant("<input type=\"checkbox\" tabindex=\"-1\" checked/>"                      );
+  private static final SafeHtml INPUT_CHECKED_DISABLED = SafeHtmlUtils.fromSafeConstant("<input type=\"checkbox\" tabindex=\"-1\" checked disabled=\"disabled\"/>");
 
-  /**
-   * An html string representation of a checked input box.
-   */
-  private static final SafeHtml INPUT_CHECKED = SafeHtmlUtils.fromSafeConstant("<input type=\"checkbox\" tabindex=\"-1\" checked/>");
-
-  /**
-   * An html string representation of an unchecked input box.
-   */
-  private static final SafeHtml INPUT_UNCHECKED = SafeHtmlUtils.fromSafeConstant("<input type=\"checkbox\" tabindex=\"-1\"/>");
+  // An HTML string representation of an unchecked input box.
+  private static final SafeHtml INPUT_UNCHECKED          = SafeHtmlUtils.fromSafeConstant("<input type=\"checkbox\" tabindex=\"-1\"/>"                      );
+  private static final SafeHtml INPUT_UNCHECKED_DISABLED = SafeHtmlUtils.fromSafeConstant("<input type=\"checkbox\" tabindex=\"-1\" disabled=\"disabled\"/>");
 
   private final boolean dependsOnSelection;
   private final boolean handlesSelection;
 
+  /**
+   * Inner class used to represent how the render and/or interact with
+   * the check box.
+   */
+  public static class VibeCheckboxData {
+	  private Boolean	m_disabled;	//
+	  private Boolean	m_value;	//
+
+	  /**
+	   * Constructor method.
+	   * 
+	   * @param value
+	   * @param disabled
+	   */
+	  public VibeCheckboxData(Boolean value, Boolean disabled) {
+		  // Initialize the super class...
+		  super();
+		  
+		  // ...and store the parameters.
+		  setValue(   value   );
+		  setDisabled(disabled);
+	  }
+
+	  /**
+	   * Get'er methods.
+	   * 
+	   * @return
+	   */
+	  public Boolean getDisabled() {return m_disabled;}
+	  public Boolean getValue()    {return m_value;   }
+	  
+	  /**
+	   * Set'er methods.
+	   * 
+	   * @param
+	   */
+	  public void setDisabled(Boolean disabled) {m_disabled = disabled;}
+	  public void setValue(   Boolean value)    {m_value    = value;   }
+  }
   /**
    * Construct a new {@link VibeCheckboxCell}.
    */
@@ -122,15 +162,15 @@ public class VibeCheckboxCell extends AbstractEditableCell<Boolean, Boolean> {
   }
 
   @Override
-  public boolean isEditing(Context context, Element parent, Boolean value) {
+  public boolean isEditing(Context context, Element parent, VibeCheckboxData data) {
     // A checkbox is never in "edit mode". There is no intermediate state
     // between checked and unchecked.
     return false;
   }
 
   @Override
-  public void onBrowserEvent(Context context, Element parent, Boolean value, 
-      NativeEvent event, ValueUpdater<Boolean> valueUpdater) {
+  public void onBrowserEvent(Context context, Element parent, VibeCheckboxData data, 
+      NativeEvent event, ValueUpdater<VibeCheckboxData> valueUpdater) {
     String type = event.getType();
 
     boolean cbClicked = "click".equals(type);
@@ -156,32 +196,33 @@ public class VibeCheckboxCell extends AbstractEditableCell<Boolean, Boolean> {
        * Save the new value. However, if the cell depends on the selection, then
        * do not save the value because we can get into an inconsistent state.
        */
+      Boolean value = data.getValue();
       if (value != isChecked && !dependsOnSelection()) {
-        setViewData(context.getKey(), isChecked);
+        setViewData(context.getKey(), data);
       } else {
         clearViewData(context.getKey());
       }
 
       if (valueUpdater != null) {
-        valueUpdater.update(isChecked);
+        valueUpdater.update(data);
       }
     }
   }
 
   @Override
-  public void render(Context context, Boolean value, SafeHtmlBuilder sb) {
+  public void render(Context context, VibeCheckboxData data, SafeHtmlBuilder sb) {
     // Get the view data.
     Object key = context.getKey();
-    Boolean viewData = getViewData(key);
-    if (viewData != null && viewData.equals(value)) {
+    VibeCheckboxData viewData = getViewData(key);
+    if (viewData != null && viewData.equals(data)) {
       clearViewData(key);
       viewData = null;
     }
 
-    if (value != null && ((viewData != null) ? viewData : value)) {
-      sb.append(INPUT_CHECKED);
-    } else {
-      sb.append(INPUT_UNCHECKED);
-    }
+    Boolean value    = data.getValue();
+    boolean disabled = ((null == data) ? false : data.getDisabled());
+    if (value != null && ((viewData != null) ? viewData.getValue() : value))
+         sb.append(disabled ? INPUT_CHECKED_DISABLED   : INPUT_CHECKED  );
+    else sb.append(disabled ? INPUT_UNCHECKED_DISABLED : INPUT_UNCHECKED);
   }
 }
