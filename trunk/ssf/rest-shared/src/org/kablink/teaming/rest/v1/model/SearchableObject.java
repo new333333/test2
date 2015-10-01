@@ -36,6 +36,8 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * User: david
@@ -68,7 +70,12 @@ public abstract class SearchableObject extends BaseRestObject {
     }
 
     @XmlTransient
+    abstract public Calendar getCreateDate();
+
+    @XmlTransient
     abstract public String getDisplayName();
+
+    abstract public void setDisplayName(String name);
 
     @Override
     abstract public Object clone() throws CloneNotSupportedException;

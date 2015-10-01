@@ -27,7 +27,7 @@ import java.util.List;
  * Time: 2:00 PM
  */
 @XmlRootElement(name="shared_folder_entry_brief")
-public class SharedFolderEntryBrief extends FolderEntryBrief {
+public class SharedFolderEntryBrief extends FolderEntryBrief implements SharedSearchableObject {
     private List<Share> shares;
 
     public SharedFolderEntryBrief() {

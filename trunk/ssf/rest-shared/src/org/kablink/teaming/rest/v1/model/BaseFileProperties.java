@@ -37,7 +37,9 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * @author jong
@@ -161,5 +163,15 @@ public abstract class BaseFileProperties extends SearchableObject {
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	@Override
+	public Calendar getCreateDate() {
+		HistoryStamp stamp = getCreation();
+		if (stamp!=null) {
+			return stamp.getDate();
+		} else {
+			return new GregorianCalendar(1970, 0, 0);
+		}
 	}
 }

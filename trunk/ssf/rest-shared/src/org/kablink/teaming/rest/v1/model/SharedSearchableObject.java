@@ -26,38 +26,6 @@ import java.util.List;
  * Date: 7/25/12
  * Time: 2:00 PM
  */
-@XmlRootElement(name="shared_file")
-public class SharedFileProperties extends FileProperties implements SharedSearchableObject {
-    private List<Share> shares;
-
-    public SharedFileProperties() {
-        super();
-    }
-
-    protected SharedFileProperties(SharedFileProperties orig) {
-        super(orig);
-        this.shares = orig.shares;
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new SharedFileProperties(this);
-    }
-
-    @XmlElementWrapper(name="shares")
-    @XmlElement(name="share")
-    public List<Share> getShares() {
-        return shares;
-    }
-
-    public void setShares(List<Share> shares) {
-        this.shares = shares;
-    }
-
-    public void addShare(Share share) {
-        if (this.shares==null) {
-            this.shares = new ArrayList<Share>();
-        }
-        this.shares.add(share);
-    }
+public interface SharedSearchableObject {
+    public List<Share> getShares();
 }

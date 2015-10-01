@@ -35,6 +35,7 @@ package org.kablink.teaming.rest.v1.model;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -152,5 +153,20 @@ public class FileProperties extends BaseFileProperties {
     @XmlTransient
     public String getDisplayName() {
         return getName();
+    }
+
+    @Override
+    public void setDisplayName(String name) {
+        setName(name);
+    }
+
+    @Override
+    public Calendar getCreateDate() {
+        HistoryStamp stamp = getCreation();
+        if (stamp!=null) {
+            return stamp.getDate();
+        } else {
+            return new GregorianCalendar(1970, 0, 0);
+        }
     }
 }

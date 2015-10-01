@@ -27,7 +27,7 @@ import java.util.List;
  * Time: 2:00 PM
  */
 @XmlRootElement(name="shared_binder_brief")
-public class SharedBinderBrief extends BinderBrief {
+public class SharedBinderBrief extends BinderBrief implements SharedSearchableObject {
     private List<Share> shares;
 
     public SharedBinderBrief() {
