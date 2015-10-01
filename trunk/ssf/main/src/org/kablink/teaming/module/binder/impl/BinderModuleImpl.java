@@ -2498,6 +2498,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
     @Override
 	public Binder getBinderByParentAndTitle(Long parentBinderId, String title) throws AccessControlException {
+		return getBinderByParentAndTitle(parentBinderId, title, false);
+	}
+
+	@Override
+	public Binder getBinderByParentAndTitle(Long parentBinderId, String title, boolean returnLimitedBinderIfInferredAccess) throws AccessControlException {
         Binder binder = getCoreDao().loadBinderByParentAndName(parentBinderId, title,
                 RequestContextHolder.getRequestContext().getZoneId());
         if (binder!=null) {
@@ -2508,11 +2513,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
                 try {
                     getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
                 } catch(AccessControlException ace) {
-                    try {
-                        getAccessControlManager().checkOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
-                    } catch(AccessControlException ace2) {
-                        throw ace;
-                    }
+					try {
+						boolean fullAccess = _checkAccess(null, binder, BinderOperation.viewBinderTitle, false);
+						if (!fullAccess && returnLimitedBinderIfInferredAccess) {
+							binder = binder.asLimitedBinder(true);
+						} else {
+							//If the caller does not want a limited binder, return the full one
+							return binder;
+						}
+					} catch(AccessControlException ace2) {
+						throw ace;
+					}
                 }
             }
         }
