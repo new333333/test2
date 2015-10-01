@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,6 +44,8 @@ import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
+import org.kablink.teaming.gwt.client.event.MenuHideEvent;
+import org.kablink.teaming.gwt.client.event.MenuShowEvent;
 import org.kablink.teaming.gwt.client.event.MenuLoadedEvent;
 import org.kablink.teaming.gwt.client.event.RefreshSidebarTreeEvent;
 import org.kablink.teaming.gwt.client.event.RerootSidebarTreeEvent;
@@ -95,6 +97,8 @@ public class WorkspaceTreeControl extends ResizeComposite
 		ChangeContextEvent.Handler,
 		ContextChangedEvent.Handler,
 		GetSidebarCollectionEvent.Handler,
+		MenuHideEvent.Handler,
+		MenuShowEvent.Handler,
 		MenuLoadedEvent.Handler,
 		RefreshSidebarTreeEvent.Handler,
 		RerootSidebarTreeEvent.Handler,
@@ -135,6 +139,8 @@ public class WorkspaceTreeControl extends ResizeComposite
 		TeamingEvents.SIDEBAR_SHOW,
 		
 		// Menu events.
+		TeamingEvents.MENU_HIDE,
+		TeamingEvents.MENU_SHOW,
 		TeamingEvents.MENU_LOADED,
 	};
 	
@@ -320,6 +326,15 @@ public class WorkspaceTreeControl extends ResizeComposite
 	}
 
 	/**
+	 * Returns true if the main menu is visible and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isMainMenuVisible() {
+		return ((null != m_mainPage) && m_mainPage.isMainMenuVisible());
+	}
+	
+	/**
 	 * Returns true if the WorkspaceTreeControl is a sidebar tree and
 	 * false otherwise.
 	 * 
@@ -494,6 +509,38 @@ public class WorkspaceTreeControl extends ResizeComposite
 			if (null == m_treeDisplay)
 			     cb.collection(CollectionType.NOT_A_COLLECTION);
 			else m_treeDisplay.getSidebarCollection(cb);
+		}
+	}
+	
+	/**
+	 * Handles MenuHideEvent's received by this class.
+	 * 
+	 * Implements the MenuHideEvent.Handler.onMenuHide() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMenuHide(MenuHideEvent event) {
+		// If we have a tree display...
+		if (null != m_treeDisplay) {
+			// ...simply tell it the menu was hidden.
+			m_treeDisplay.menuHide();
+		}
+	}
+	
+	/**
+	 * Handles MenuShowEvent's received by this class.
+	 * 
+	 * Implements the MenuShowEvent.Handler.onMenuShow() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMenuShow(MenuShowEvent event) {
+		// If we have a tree display...
+		if (null != m_treeDisplay) {
+			// ...simply tell it the menu was shown.
+			m_treeDisplay.menuShow();
 		}
 	}
 	
