@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -89,6 +89,8 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  * @author drfoster@novell.com
  */
 public class TreeDisplayHorizontal extends TreeDisplayBase {
+	private Anchor			m_selectorConfigA;		//
+	private Boolean			m_mainMenuVisible;		//
 	private FlowPanel		m_rootPanel;			// The top level FlowPanel containing the tree's contents.
 	private ManageMenuPopup	m_selectorConfigPopup;	//
 	
@@ -347,24 +349,27 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			// ...we don't show the binder configuration menu.
 			return;
 		}
-		
-		// Create an anchor to run the configuration menu on this
-		// binder.
-		final Anchor  selectorConfigA  = new Anchor();
-		final Element selectorConfigAE = selectorConfigA.getElement();
-		selectorConfigA.setTitle(ti.getBinderInfo().isBinderFolder() ? getMessages().treeAltConfigureFolder() : getMessages().treeAltConfigureWorkspace());
-		Image selectorConfigImg = GwtClientHelper.buildImage(getImages().configOptions());
-		selectorConfigImg.addStyleName("breadCrumb_ContentTail_configureImg");
-		selectorConfigAE.appendChild(selectorConfigImg.getElement());
-		selectorConfigA.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				if (null == m_selectorConfigPopup)
-				     buildAndRunSelectorConfigMenuAsync(selectorConfigA);
-				else runSelectorConfigMenuAsync(        selectorConfigA);
-			}
-		});
-		fp.add(selectorConfigA);
+
+		// If the main menu is visible...
+		if (isMainMenuVisible()) {
+			// ...create an anchor to run the configuration menu on
+			// ...this binder...
+			m_selectorConfigA  = new Anchor();
+			final Element selectorConfigAE = m_selectorConfigA.getElement();
+			m_selectorConfigA.setTitle(ti.getBinderInfo().isBinderFolder() ? getMessages().treeAltConfigureFolder() : getMessages().treeAltConfigureWorkspace());
+			Image selectorConfigImg = GwtClientHelper.buildImage(getImages().configOptions());
+			selectorConfigImg.addStyleName("breadCrumb_ContentTail_configureImg");
+			selectorConfigAE.appendChild(selectorConfigImg.getElement());
+			m_selectorConfigA.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					if (null == m_selectorConfigPopup)
+					     buildAndRunSelectorConfigMenuAsync(m_selectorConfigA);
+					else runSelectorConfigMenuAsync(        m_selectorConfigA);
+				}
+			});
+			fp.add(m_selectorConfigA);
+		}
 		
 		// ...and hide the manage menu in the main menu bar.
 		HideManageMenuEvent.fireOneAsync();
@@ -491,7 +496,13 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	 * Clears an previous binder configuration panel and menu.
 	 */
 	private void clearSelectorConfig() {
-		// Clear the previous menu.
+		// Clear the previous binder configuration panel...
+		if (null != m_selectorConfigA) {
+			m_selectorConfigA.removeFromParent();
+			m_selectorConfigA = null;
+		}
+		
+		// ...and menu.
 		if (null != m_selectorConfigPopup) {
 			m_selectorConfigPopup.clearItems();
 			m_selectorConfigPopup = null;
@@ -656,6 +667,18 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		return false;
 	}
 	
+	/*
+	 * Returns true if the main menu is visible and false otherwise.
+	 */
+	@Override
+	boolean isMainMenuVisible() {
+		boolean reply;
+		if (null == m_mainMenuVisible)
+		     reply = super.isMainMenuVisible();
+		else reply = m_mainMenuVisible.booleanValue();
+		return reply;
+	}
+	
 	/**
 	 * Called when a particular menu item is loaded.  If an extender of
 	 * this class is interested in these, it should overwrite this
@@ -675,6 +698,27 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		}
 	}
 
+	/**
+	 * Called when the main menu is hidden.
+	 * 
+	 * Implements the TreeDisplayBase.menuHide() abstract method.
+	 */
+	@Override
+	public void menuHide() {
+		m_mainMenuVisible = Boolean.FALSE;
+		clearSelectorConfig();
+	}
+	
+	/**
+	 * Called when the main menu is shown.
+	 * 
+	 * Implements the TreeDisplayBase.menuShow() abstract method.
+	 */
+	@Override
+	public void menuShow() {
+		m_mainMenuVisible = Boolean.TRUE;
+	}
+	
 	/**
 	 * Tells a sidebar tree implementation to refresh itself
 	 * maintaining its current context and selected binder.

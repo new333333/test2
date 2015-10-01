@@ -112,6 +112,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class TreeDisplayVertical extends TreeDisplayBase {
 	private ActivityStreamInfo			m_selectedActivityStream;	// When displaying activity streams, the ActivityStream info of the selected activity stream.  null if no activity stream is currently selected.
 	private BinderInfo					m_selectedBinderInfo;		// The currently selected binder.
+	private Boolean						m_mainMenuVisible;			//
 	private BusyInfo					m_busyInfo;					// Stores a BusyInfo while we're busy switching contexts.
 	private FlowPanel					m_rootPanel;				// The top level FlowPanel containing the tree's contents.
 	private FlowPanel					m_selectorConfig;			//
@@ -1216,6 +1217,41 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		return reply;
 	}
 
+	/*
+	 * Returns true if the main menu is visible and false otherwise.
+	 */
+	@Override
+	boolean isMainMenuVisible() {
+		boolean reply;
+		if (null == m_mainMenuVisible)
+		     reply = super.isMainMenuVisible();
+		else reply = m_mainMenuVisible.booleanValue();
+		return reply;
+	}
+	
+	/**
+	 * Called when the main menu is hidden.
+	 * 
+	 * Implements the TreeDisplayBase.menuHide() abstract method.
+	 */
+	@Override
+	public void menuHide() {
+		// If the main menu gets hidden, we want to hide an manage
+		// menu that's been displayed.
+		m_mainMenuVisible = Boolean.FALSE;
+		clearSelectorConfig();
+	}
+	
+	/**
+	 * Called when the main menu is shown.
+	 * 
+	 * Implements the TreeDisplayBase.menuShow() abstract method.
+	 */
+	@Override
+	public void menuShow() {
+		m_mainMenuVisible = Boolean.TRUE;
+	}
+	
 	/**
 	 * Called when a particular menu item is loaded.  If an extender of
 	 * this class is interested in these, it should overwrite this
@@ -2123,6 +2159,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			
 			// Clear the previous binder configuration panel...
 			clearSelectorConfig();
+		}
+		
+		// If the main menu is not visible...
+		if (!(isMainMenuVisible())) {
+			// ...we don't show the binder config menu.
+			return;
 		}
 		
 		// Can we find the selector grid for a configurable binder?

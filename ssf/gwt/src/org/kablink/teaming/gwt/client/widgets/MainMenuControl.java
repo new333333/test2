@@ -783,8 +783,12 @@ public class MainMenuControl extends Composite
 	 */
 	@Override
 	public void onGetManageMenuPopup(final GetManageMenuPopupEvent event) {
-		// Build a ManageMenuPopup and return it through the callback.
-		buildManageMenuPopup(event.getManageMenuPopupCallback());
+		// If the menu control isn't visible, we don't want to return
+		// anything.  Otherwise, return a newly constructed popup.
+		ManageMenuPopupCallback mmpCallback = event.getManageMenuPopupCallback();
+		if (!(isVisible()))
+		     mmpCallback.manageMenuPopup(null       );
+		else buildManageMenuPopup(       mmpCallback);
 	}
 	
 	/**

@@ -4417,6 +4417,15 @@ public class GwtMainPage extends ResizeComposite
 	public boolean isShiftKeyDown()   { return ((null != m_keyDownSet) && m_keyDownSet.isShiftKeyDown());   }
 	
 	/**
+	 * Returns true if the main menu is visible and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isMainMenuVisible() {
+		return ((null != m_mainMenuCtrl) && m_mainMenuCtrl.isVisible());
+	}
+	
+	/**
 	 * Returns true if we currently processing search results and false
 	 * otherwise.
 	 * 

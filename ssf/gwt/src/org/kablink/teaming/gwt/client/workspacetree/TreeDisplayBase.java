@@ -197,6 +197,8 @@ public abstract class TreeDisplayBase {
 	abstract void selectBinder(TreeInfo ti);
 	public abstract boolean isInActivityStreamMode();
 	public abstract void    getSidebarCollection(CollectionCallback collectionCallback);
+	public abstract void    menuHide();
+	public abstract void    menuShow();
 	public abstract void    menuLoaded(MenuItem menuItem);
 	public abstract void    refreshSidebarTree();
 	public abstract void    rerootSidebarTree();
@@ -389,6 +391,15 @@ public abstract class TreeDisplayBase {
 	 */
 	final public boolean isTreeHiddenByEmptySidebar() {
 		return m_wsTree.isTreeHiddenByEmptySidebar();
+	}
+	
+	/**
+	 * Returns true if the main menu is visible and false otherwise.
+	 * 
+	 * @return
+	 */
+	boolean isMainMenuVisible() {
+		return ((null != m_wsTree) && m_wsTree.isMainMenuVisible());
 	}
 	
 	/**
