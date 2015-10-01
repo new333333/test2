@@ -79,13 +79,19 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     public FolderEntry() {
         super();
     }
-    public FolderEntry(FolderEntry entry) {
+    /**
+     * Copy constructor.
+     * @param entry must be specified
+     * @param entryDef optional
+     */
+    public FolderEntry(FolderEntry entry, Definition entryDef) {
     	super(entry);
     	//DO not copy reservation, replies, docHKey, replyCount, nextDescendant, topReplyCount
     	// topEntry, parentEntry, owningBinderKey, lockedFileCount, subscribed
     	lastActivity = entry.lastActivity;
     	postedBy = entry.postedBy;
-    	
+    	if(entryDef != null)
+    		this.setEntryDef(entryDef);
     }
  	@Override
 	public EntityIdentifier.EntityType getEntityType() {

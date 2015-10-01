@@ -629,7 +629,7 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
        String newTitle = (options==null)?null:(String) options.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE);
 	   //get ordered list of entries
 	   for (FolderEntry child:children) {
-		   FolderEntry entry = new FolderEntry(child);		
+		   FolderEntry entry = new FolderEntry(child, destination.getDefaultEntryDef());		
 		   if(child.equals(source) && Validator.isNotNull(newTitle)) { 
 			   // If the caller specified new title for the new entry, then we must set the title 
 			   // of the top-level entry in the copied hierarchy to this title. The titles of the 
@@ -1100,7 +1100,7 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 		       				//Callers of this routine should validate the whole binder before calling this routine
 		       				//  if it is not desirable to have an incomplete copy.
 		       				if (okToCopy) {
-			       				FolderEntry dEntry = new FolderEntry(sEntry);
+			       				FolderEntry dEntry = new FolderEntry(sEntry, folder.getDefaultEntryDef());
 			       				
 			       				if (sEntry.isTop()) {
 			       					sourceMap.clear();
