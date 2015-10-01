@@ -53,6 +53,10 @@ public class FileVersionProperties extends BaseFileProperties {
     }
 
     @Override
+    public void setDisplayName(String name) {
+    }
+
+    @Override
     public Object clone() throws CloneNotSupportedException {
         return new FileVersionProperties(this);
     }

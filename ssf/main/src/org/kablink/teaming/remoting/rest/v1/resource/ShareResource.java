@@ -908,13 +908,13 @@ public class ShareResource extends AbstractResource {
 
     protected SharedBinderBrief [] getSharedByBinders(List<Pair<ShareItem, DefinableEntity>> shareItems, String name, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedBinders(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", name, onlyLibrary, showHidden, showUnhidden);
+            return _getSharedBinders(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", name, onlyLibrary, showHidden, showUnhidden, false);
         }
-        return _getSharedBinders(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden);
+        return _getSharedBinders(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden, false);
     }
 
     protected SharedFileProperties[] getSharedByFiles(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
-        return _getSharedFiles(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", onlyLibrary, showHidden, showUnhidden);
+        return _getSharedFiles(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", onlyLibrary, showHidden, showUnhidden, false);
     }
 
     protected BinderChanges getSharedByChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, boolean recursive, String descriptionFormatStr, Integer maxCount, String nextUrl,
@@ -925,13 +925,13 @@ public class ShareResource extends AbstractResource {
 
     protected SharedBinderBrief [] getSharedWithBinders(List<Pair<ShareItem, DefinableEntity>> shareItems, String name, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedBinders(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", name, onlyLibrary, showHidden, showUnhidden);
+            return _getSharedBinders(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", name, onlyLibrary, showHidden, showUnhidden, true);
         }
-        return _getSharedBinders(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden);
+        return _getSharedBinders(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden, true);
     }
 
     protected SharedFileProperties [] getSharedWithFiles(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
-        return _getSharedFiles(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", onlyLibrary, showHidden, showUnhidden);
+        return _getSharedFiles(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", onlyLibrary, showHidden, showUnhidden, true);
     }
 
     protected BinderChanges getSharedWithChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, boolean recursive, String descriptionFormatStr, Integer maxCount, String nextUrl,
@@ -942,13 +942,13 @@ public class ShareResource extends AbstractResource {
 
     protected SharedBinderBrief [] getPublicBinders(List<Pair<ShareItem, DefinableEntity>> shareItems, String name, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedBinders(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", name, onlyLibrary, showHidden, showUnhidden);
+            return _getSharedBinders(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", name, onlyLibrary, showHidden, showUnhidden, true);
         }
-        return _getSharedBinders(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden);
+        return _getSharedBinders(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden, true);
     }
 
     protected SharedFileProperties [] getPublicFiles(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
-        return _getSharedFiles(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", onlyLibrary, showHidden, showUnhidden);
+        return _getSharedFiles(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", onlyLibrary, showHidden, showUnhidden, true);
     }
 
     protected BinderChanges getPublicChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, boolean recursive, String descriptionFormatStr, Integer maxCount, String nextUrl,
@@ -1030,9 +1030,9 @@ public class ShareResource extends AbstractResource {
 
     protected SharedBinderBrief [] _getSharedBinders(List<Pair<ShareItem, DefinableEntity>> shareItems, Long topId, String topHref,
                                                      String name, boolean onlyLibrary,
-                                                     boolean showHidden, boolean showUnhidden)  {
+                                                     boolean showHidden, boolean showUnhidden, boolean resolveDuplicateNames)  {
         List<SearchableObject> _results = _getSharedEntities(shareItems, topId, topHref, name, onlyLibrary, showHidden,
-                showUnhidden, true, false, false);
+                showUnhidden, resolveDuplicateNames, true, false, false);
         List<SharedBinderBrief> results = new ArrayList<SharedBinderBrief>();
         for (SearchableObject obj : _results) {
             if (obj instanceof SharedBinderBrief) {
@@ -1043,9 +1043,9 @@ public class ShareResource extends AbstractResource {
     }
 
     protected SharedFileProperties [] _getSharedFiles(List<Pair<ShareItem, DefinableEntity>> shareItems, Long topId, String topHref, boolean onlyLibrary,
-                                                      boolean showHidden, boolean showUnhidden)  {
+                                                      boolean showHidden, boolean showUnhidden, boolean resolveDuplicateNames)  {
         List<SearchableObject> _results = _getSharedEntities(shareItems, topId, topHref, null, onlyLibrary, showHidden,
-                showUnhidden, false, false, true);
+                showUnhidden, resolveDuplicateNames, false, false, true);
         List<SharedFileProperties> results = new ArrayList<SharedFileProperties>();
         for (SearchableObject obj : _results) {
             if (obj instanceof SharedFileProperties) {

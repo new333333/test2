@@ -36,6 +36,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -272,5 +275,20 @@ public abstract class DefinableEntity extends SearchableObject {
     @XmlTransient
     public String getDisplayName() {
         return getTitle();
+    }
+
+    @Override
+    public void setDisplayName(String name) {
+        setTitle(name);
+    }
+
+    @Override
+    public Calendar getCreateDate() {
+        HistoryStamp stamp = getCreation();
+        if (stamp!=null) {
+            return stamp.getDate();
+        } else {
+            return new GregorianCalendar(1970, 0, 0);
+        }
     }
 }

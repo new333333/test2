@@ -32,11 +32,13 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
+import net.sf.ehcache.config.Searchable;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,6 +77,7 @@ import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
+import org.kablink.teaming.rest.v1.model.SharedSearchableObject;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -91,7 +94,6 @@ import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.EmailHelper;
-import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.HttpHeaders;
 import org.kablink.util.Pair;
@@ -2178,30 +2180,30 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                                                          boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
             return _getSharedEntities(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", name, onlyLibrary, showHidden,
-                    showUnhidden, true, false, true);
+                    showUnhidden, false, true, false, true);
         }
-        return _getSharedEntities(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden, true, false, true);
+        return _getSharedEntities(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden, false, true, false, true);
     }
 
     protected List<SearchableObject> getSharedWithChildren(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, String name, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
             return _getSharedEntities(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", name, onlyLibrary, showHidden,
-                    showUnhidden, true, false, true);
+                    showUnhidden, true, true, false, true);
         }
-        return _getSharedEntities(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden, true, false, true);
+        return _getSharedEntities(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden, true, true, false, true);
     }
 
     protected List<SearchableObject> getPublicChildren(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, String name, boolean onlyLibrary, boolean replaceParent,
                                                        boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedEntities(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", name, onlyLibrary, showHidden, showUnhidden, true, false, true);
+            return _getSharedEntities(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", name, onlyLibrary, showHidden, showUnhidden, true, true, false, true);
         }
-        return _getSharedEntities(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden, true, false, true);
+        return _getSharedEntities(shareItems, null, null, name, onlyLibrary, showHidden, showUnhidden, true, true, false, true);
     }
 
     protected List<SearchableObject> _getSharedEntities(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems,
                                                         Long topId, String topHref, String name, boolean onlyLibrary,
-                                                        boolean showHidden, boolean showUnhidden,
+                                                        boolean showHidden, boolean showUnhidden, boolean resolveDuplicateNames,
                                                         boolean folders, boolean entries, boolean files)  {
         boolean guestEnabled = isGuestAccessEnabled();
 
@@ -2263,6 +2265,11 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + entityShares.getA().getEntityTypedId());
             }
         }
+
+        if (resolveDuplicateNames) {
+            findAndResolveDuplicateNames(results);
+        }
+
         Collections.sort(results, new Comparator<SearchableObject>() {
             @Override
             public int compare(SearchableObject o1, SearchableObject o2) {
@@ -2280,8 +2287,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems, Long topId, String name,
             boolean onlyLibrary, boolean showHidden, boolean showUnhidden, boolean showExpired, boolean showDeleted,
             boolean folders, boolean entries)  {
-        Map<Object, Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> resultMap =
-                new LinkedHashMap<Object, Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>>();
+        Map<String, Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> resultMap =
+                new LinkedHashMap<String, Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>>();
 
         for (Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity> pair : shareItems) {
             ShareItem shareItem = pair.getA();
@@ -2290,7 +2297,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             } else if (shareItem.isExpired() && !showExpired) {
                 // Ignore this share
             } else {
-                Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>> sharesByEntity = resultMap.get(shareItem.getSharedEntityIdentifier().getEntityId());
+                Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>> sharesByEntity = resultMap.get(shareItem.getSharedEntityIdentifier().toString());
                 try {
                     if (entries && shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                         FolderEntry entry;
@@ -2302,7 +2309,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                         if (showEntryToUser(entry, topId, name, showHidden, showUnhidden, showDeleted)) {
                             if (sharesByEntity==null) {
                                 sharesByEntity = new Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>(entry, new ArrayList<ShareItem>());
-                                resultMap.put(entry.getId(), sharesByEntity);
+                                resultMap.put(entry.getEntityIdentifier().toString(), sharesByEntity);
                             }
                             sharesByEntity.getB().add(shareItem);
                         }
@@ -2316,7 +2323,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                         if (showBinderToUser(binder, name, onlyLibrary, topId, showHidden, showUnhidden, showDeleted)) {
                             if (sharesByEntity==null) {
                                 sharesByEntity = new Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>(binder, new ArrayList<ShareItem>());
-                                resultMap.put(binder.getId(), sharesByEntity);
+                                resultMap.put(binder.getEntityIdentifier().toString(), sharesByEntity);
                             }
                             sharesByEntity.getB().add(shareItem);
                         }
@@ -2439,5 +2446,110 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             throw new IllegalStateException("Could not find public shares corresponding to share with id: " + item.getId());
         }
         return allShareItems;
+    }
+
+    private void findAndResolveDuplicateNames(List<SearchableObject> results) {
+        Map<String, SearchableObject> uniqueMap = new HashMap<String, SearchableObject>();
+        Map<String, List<SearchableObject>> duplicateMap = new HashMap<String, List<SearchableObject>>();
+
+        for (SearchableObject result : results) {
+            addResult(result, uniqueMap, duplicateMap);
+        }
+
+        Set<String> uniqueNames = new HashSet<String>();
+        uniqueNames.addAll(uniqueMap.keySet());
+        for (List<SearchableObject> duplicates : duplicateMap.values()) {
+            resolveDuplicateNames(duplicates, uniqueNames);
+        }
+    }
+
+    private void resolveDuplicateNames(List<SearchableObject> duplicates, Set<String> uniqueNames) {
+        Map<String, SearchableObject> uniqueMap = new HashMap<String, SearchableObject>();
+        Map<String, List<SearchableObject>> duplicateMap = new HashMap<String, List<SearchableObject>>();
+
+        // First pass...add the sharer to the name of the file or folder
+        for (SearchableObject result : duplicates) {
+            if (result instanceof SharedSearchableObject) {
+                List<Share> shares = ((SharedSearchableObject)result).getShares();
+                result.setDisplayName(buildName(result, shares));
+            }
+            addResult(result, uniqueMap, duplicateMap);
+        }
+
+        uniqueNames.addAll(uniqueMap.keySet());
+
+        for (List<SearchableObject> finalDuplicates : duplicateMap.values()) {
+            Collections.sort(finalDuplicates, new Comparator<SearchableObject>() {
+                @Override
+                public int compare(SearchableObject o1, SearchableObject o2) {
+                    return o1.getCreateDate().compareTo(o2.getCreateDate());
+                }
+            });
+
+            int i=1;
+            for (SearchableObject duplicate : finalDuplicates) {
+                Pair<String, String> parts = splitFileName(duplicate);
+                String uniqueName = parts.getA() + " (" + i + ")" + parts.getB();
+                while (uniqueNames.contains(uniqueName)) {
+                    i++;
+                    uniqueName = parts.getA() + " (" + i + ")" + parts.getB();
+                }
+                duplicate.setDisplayName(uniqueName);
+                uniqueNames.add(uniqueName);
+            }
+        }
+    }
+
+    private void addResult(SearchableObject result,  Map<String, SearchableObject> uniqueMap,Map<String, List<SearchableObject>> duplicateMap) {
+        String name = result.getDisplayName().toLowerCase();
+        if (duplicateMap.containsKey(name)) {
+            duplicateMap.get(name).add(result);
+        } else if (uniqueMap.containsKey(name)) {
+            List<SearchableObject> duplicates = new ArrayList<SearchableObject>();
+            duplicates.add(uniqueMap.remove(name));
+            duplicates.add(result);
+            duplicateMap.put(name, duplicates);
+        } else {
+            uniqueMap.put(name, result);
+        }
+
+    }
+
+    private String buildName(SearchableObject obj, List<Share> shares) {
+        Collections.sort(shares, new Comparator<Share>() {
+            @Override
+            public int compare(Share o1, Share o2) {
+                return o1.getStartDate().compareTo(o2.getStartDate());
+            }
+        });
+
+        return buildName(obj, shares.get(0));
+    }
+
+    private String buildName(SearchableObject obj, Share share) {
+        Pair<String, String> parts = splitFileName(obj);
+        Principal sharer = getProfileModule().getEntry(share.getSharer().getId());
+        return parts.getA() + " (" + sharer.getTitle() + ")" + parts.getB();
+    }
+
+    private Pair<String, String> splitFileName(SearchableObject obj) {
+        String basename = "";
+        String ext = "";
+        if (obj instanceof FileProperties) {
+            String filename = ((FileProperties) obj).getName();
+            basename = FilenameUtils.getBaseName(filename);
+            ext = FilenameUtils.getExtension(filename);
+            if (!ext.isEmpty()) {
+                ext = "." + ext;
+            }
+        } else if (obj instanceof DefinableEntityBrief) {
+            basename = ((DefinableEntityBrief) obj).getTitle();
+        } else if (obj instanceof DefinableEntity) {
+            basename = ((DefinableEntity) obj).getTitle();
+        } else {
+            basename = obj.getDisplayName();
+        }
+
+        return new Pair<String, String>(basename, ext);
     }
 }
