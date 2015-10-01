@@ -427,6 +427,16 @@ public interface BinderModule {
     public Binder getBinderByParentAndTitle(Long parentBinderId, String title) throws AccessControlException;
 
     /**
+     * Finds a binder by parent binder id and title. If no binder exists,
+     * it returns <code>null</code>. If a matching binder exists but the
+     * user has no access to it, it throws <code>AccessControlException</code>.
+     * @param parentBinderId
+     * @param title
+     * @return
+     */
+    public Binder getBinderByParentAndTitle(Long parentBinderId, String title, boolean returnLimitedBinderIfInferredAccess) throws AccessControlException;
+
+    /**
      * Traverse the binder tree returing a DOM structure containing workspaces and
      * folders
      * @param binderId

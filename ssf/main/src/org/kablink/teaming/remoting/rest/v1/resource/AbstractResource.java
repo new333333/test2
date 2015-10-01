@@ -2011,7 +2011,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     private void addChildFolderByName(SearchResultList<SearchableObject> results, Long parentBinderId, String name) {
-        Binder child = getBinderModule().getBinderByParentAndTitle(parentBinderId, name);
+        Binder child = getBinderModule().getBinderByParentAndTitle(parentBinderId, name, true);
         if (child != null) {
             results.append(ResourceUtil.buildBinderBrief(child));
         }
