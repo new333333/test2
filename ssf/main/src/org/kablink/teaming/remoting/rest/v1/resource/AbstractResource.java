@@ -2207,7 +2207,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                                                         boolean folders, boolean entries, boolean files)  {
         boolean guestEnabled = isGuestAccessEnabled();
 
-        List<Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> resultList = _getSharedItems(shareItems, topId, name, onlyLibrary,
+        List<Pair<org.kablink.teaming.domain.DefinableEntity, List<ShareItem>>> resultList = _getSharedItems(shareItems, topId, null, onlyLibrary,
                 showHidden, showUnhidden, topId==ObjectKeys.SHARED_BY_ME_ID, false, folders, entries || files);
 
         List<SearchableObject> results = new ArrayList<SearchableObject>();
@@ -2268,6 +2268,16 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
         if (resolveDuplicateNames) {
             findAndResolveDuplicateNames(results);
+        }
+
+        if (name!=null) {
+            List<SearchableObject> newResults = new ArrayList<SearchableObject>();
+            for (SearchableObject result : results) {
+                if (result.getDisplayName().equalsIgnoreCase(name)) {
+                    newResults.add(result);
+                }
+            }
+            results = newResults;
         }
 
         Collections.sort(results, new Comparator<SearchableObject>() {
@@ -2463,22 +2473,38 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
     }
 
-    private void resolveDuplicateNames(List<SearchableObject> duplicates, Set<String> uniqueNames) {
-        Map<String, SearchableObject> uniqueMap = new HashMap<String, SearchableObject>();
-        Map<String, List<SearchableObject>> duplicateMap = new HashMap<String, List<SearchableObject>>();
-
+    private void resolveDuplicateNames(List<SearchableObject> initialDuplicates, Set<String> uniqueNames) {
         // First pass...add the sharer to the name of the file or folder
-        for (SearchableObject result : duplicates) {
+        Map<String, SearchableObject> uniqueMap = new HashMap<String, SearchableObject>();
+        Map<String, List<SearchableObject>> intermediateDuplicateMap1 = new HashMap<String, List<SearchableObject>>();
+
+        for (SearchableObject result : initialDuplicates) {
             if (result instanceof SharedSearchableObject) {
                 List<Share> shares = ((SharedSearchableObject)result).getShares();
                 result.setDisplayName(buildName(result, shares));
             }
-            addResult(result, uniqueMap, duplicateMap);
+            addResult(result, uniqueMap, intermediateDuplicateMap1);
         }
 
         uniqueNames.addAll(uniqueMap.keySet());
 
-        for (List<SearchableObject> finalDuplicates : duplicateMap.values()) {
+        // Second pass...add the share date to the name of the file or folder
+        uniqueMap = new HashMap<String, SearchableObject>();
+        Map<String, List<SearchableObject>> intermediateDuplicateMap2 = new HashMap<String, List<SearchableObject>>();
+        for (List<SearchableObject> intermediateDuplicates : intermediateDuplicateMap1.values()) {
+            for (SearchableObject result : intermediateDuplicates) {
+                if (result instanceof SharedSearchableObject) {
+                    List<Share> shares = ((SharedSearchableObject) result).getShares();
+                    result.setDisplayName(insertShareDate(result, shares));
+                }
+                addResult(result, uniqueMap, intermediateDuplicateMap2);
+            }
+        }
+
+        uniqueNames.addAll(uniqueMap.keySet());
+
+
+        for (List<SearchableObject> finalDuplicates : intermediateDuplicateMap2.values()) {
             Collections.sort(finalDuplicates, new Comparator<SearchableObject>() {
                 @Override
                 public int compare(SearchableObject o1, SearchableObject o2) {
@@ -2530,6 +2556,31 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Pair<String, String> parts = splitFileName(obj);
         Principal sharer = getProfileModule().getEntry(share.getSharer().getId());
         return parts.getA() + " (" + sharer.getTitle() + ")" + parts.getB();
+    }
+
+    private String insertShareDate(SearchableObject obj, List<Share> shares) {
+        Collections.sort(shares, new Comparator<Share>() {
+            @Override
+            public int compare(Share o1, Share o2) {
+                return o1.getStartDate().compareTo(o2.getStartDate());
+            }
+        });
+
+        return insertShareDate(obj, shares.get(0));
+    }
+
+    private String insertShareDate(SearchableObject obj, Share share) {
+        Pair<String, String> parts = splitFileName(obj);
+
+        Date startDate = share.getStartDate();
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String base = parts.getA();
+        if (base.endsWith(")")) {
+            base = base.substring(0, base.length() - 1) + " " + formatter.format(startDate) + ")";
+        } else {
+            base = base + " " + formatter.format(startDate);
+        }
+        return base + parts.getB();
     }
 
     private Pair<String, String> splitFileName(SearchableObject obj) {
