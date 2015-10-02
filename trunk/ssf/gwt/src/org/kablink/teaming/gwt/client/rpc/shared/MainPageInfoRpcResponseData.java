@@ -43,23 +43,24 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private boolean		m_browserSupportsNPAPI;		//
-	private boolean		m_desktopAppEnabled;		//
-	private boolean		m_showDesktopAppDownloader;	//
-	private boolean		m_useHomeForMyFiles;		// true -> As user's Home folder serves as their My Files repository.  false -> It doesn't.
-	private boolean		m_firstLogin;				// true if it is the user's first login
-	private boolean		m_isDefaultZone;			// true if we're running in the default zone.
-	private boolean		m_isSuperUser;				// true if we are dealing with the super user (admin)
-	private boolean		m_isTelemetryTier2Set;		// true if the built-in admin has set a telemetry tier 2 setting on the default zone.
-	private BinderInfo	m_binderInfo;				//
-	private String		m_userAvatarUrl;			//
+	private boolean		m_browserSupportsNPAPI;				//
+	private boolean		m_closeActivityStreamOnViewDetails;	//
+	private boolean		m_desktopAppEnabled;				//
+	private boolean		m_showDesktopAppDownloader;			//
+	private boolean		m_useHomeForMyFiles;				// true -> As user's Home folder serves as their My Files repository.  false -> It doesn't.
+	private boolean		m_firstLogin;						// true if it is the user's first login
+	private boolean		m_isDefaultZone;					// true if we're running in the default zone.
+	private boolean		m_isSuperUser;						// true if we are dealing with the super user (admin)
+	private boolean		m_isTelemetryTier2Set;				// true if the built-in admin has set a telemetry tier 2 setting on the default zone.
+	private BinderInfo	m_binderInfo;						//
+	private String		m_userAvatarUrl;					//
 
-	/**
+	/*
 	 * Constructor method. 
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public MainPageInfoRpcResponseData() {
+	private MainPageInfoRpcResponseData() {
 		// Initialize the super class.
 		super();
 	}
@@ -78,21 +79,22 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * @param defaultZone
 	 * @param telemetryTier2Set
 	 */
-	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean browserSupportsNPAPI, boolean desktopAppEnabled, boolean showDesktopAppDownloader, boolean useHomeAsMyFiles, boolean firstLogin, boolean superUser, boolean defaultZone, boolean telemetryTier2Set) {
+	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean browserSupportsNPAPI, boolean desktopAppEnabled, boolean showDesktopAppDownloader, boolean useHomeAsMyFiles, boolean firstLogin, boolean superUser, boolean defaultZone, boolean telemetryTier2Set, boolean closeActivityStreamOnViewDetails) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
-		setBinderInfo(              binderInfo              );
-		setUserAvatarUrl(           userAvatarUrl           );
-		setBrowserSupportsNPAPI(    browserSupportsNPAPI    );
-		setDesktopAppEnabled(       desktopAppEnabled       );
-		setShowDesktopAppDownloader(showDesktopAppDownloader);
-		setUseHomeAsMyFiles(        useHomeAsMyFiles        );
-		setIsFirstLogin(            firstLogin              );
-		setIsSuperUser(             superUser               );
-		setIsDefaultZone(           defaultZone             );
-		setIsTelemetryTier2Set(     telemetryTier2Set       );
+		setBinderInfo(                      binderInfo                      );
+		setUserAvatarUrl(                   userAvatarUrl                   );
+		setBrowserSupportsNPAPI(            browserSupportsNPAPI            );
+		setDesktopAppEnabled(               desktopAppEnabled               );
+		setShowDesktopAppDownloader(        showDesktopAppDownloader        );
+		setUseHomeAsMyFiles(                useHomeAsMyFiles                );
+		setIsFirstLogin(                    firstLogin                      );
+		setIsSuperUser(                     superUser                       );
+		setIsDefaultZone(                   defaultZone                     );
+		setIsTelemetryTier2Set(             telemetryTier2Set               );
+		setCloseActivityStreamOnViewDetails(closeActivityStreamOnViewDetails);
 	}
 
 	/**
@@ -100,30 +102,32 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * 
 	 * @return
 	 */
-	public boolean    browserSupportsNPAPI()       {return m_browserSupportsNPAPI;    }
-	public boolean    isDefaultZone()              {return m_isDefaultZone;           }
-	public boolean    isDesktopAppEnabled()        {return m_desktopAppEnabled;       }
-	public boolean    isFirstLogin()               {return m_firstLogin;              }
-	public boolean    isShowDesktopAppDownloader() {return m_showDesktopAppDownloader;}
-	public boolean    isSuperUser()                {return m_isSuperUser;             }
-	public boolean    isTelemetryTier2Set()        {return m_isTelemetryTier2Set;     }
-	public boolean    isUseHomeAsMyFiles()         {return m_useHomeForMyFiles;       }
-	public BinderInfo getBinderInfo()              {return m_binderInfo;              }
-	public String     getUserAvatarUrl()           {return m_userAvatarUrl;           }
+	public boolean    browserSupportsNPAPI()               {return m_browserSupportsNPAPI;            }
+	public boolean    isCloseActivityStreamOnViewDetails() {return m_closeActivityStreamOnViewDetails;}
+	public boolean    isDefaultZone()                      {return m_isDefaultZone;                   }
+	public boolean    isDesktopAppEnabled()                {return m_desktopAppEnabled;               }
+	public boolean    isFirstLogin()                       {return m_firstLogin;                      }
+	public boolean    isShowDesktopAppDownloader()         {return m_showDesktopAppDownloader;        }
+	public boolean    isSuperUser()                        {return m_isSuperUser;                     }
+	public boolean    isTelemetryTier2Set()                {return m_isTelemetryTier2Set;             }
+	public boolean    isUseHomeAsMyFiles()                 {return m_useHomeForMyFiles;               }
+	public BinderInfo getBinderInfo()                      {return m_binderInfo;                      }
+	public String     getUserAvatarUrl()                   {return m_userAvatarUrl;                   }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBrowserSupportsNPAPI(    boolean    browserSupportsNPAPI)     {m_browserSupportsNPAPI     = browserSupportsNPAPI;    }
-	public void setDesktopAppEnabled(       boolean    desktopAppEnabled)        {m_desktopAppEnabled        = desktopAppEnabled;       }
-	public void setIsDefaultZone(           boolean    isDefaultZone)            {m_isDefaultZone            = isDefaultZone;           }
-	public void setIsFirstLogin(            boolean    firstLogin)               {m_firstLogin               = firstLogin;              }
-	public void setIsSuperUser(             boolean    superUser)                {m_isSuperUser              = superUser;               }
-	public void setIsTelemetryTier2Set(     boolean    isTelemetryTier2Set)      {m_isTelemetryTier2Set      = isTelemetryTier2Set;     }
-	public void setShowDesktopAppDownloader(boolean    showDesktopAppDownloader) {m_showDesktopAppDownloader = showDesktopAppDownloader;}
-	public void setUseHomeAsMyFiles(        boolean    useHomeAsMyFiles)         {m_useHomeForMyFiles        = useHomeAsMyFiles;        }
-	public void setBinderInfo(              BinderInfo binderInfo)               {m_binderInfo               = binderInfo;              }
-	public void setUserAvatarUrl(           String     userAvatarUrl)            {m_userAvatarUrl            = userAvatarUrl;           }
+	public void setBrowserSupportsNPAPI(            boolean    browserSupportsNPAPI)             {m_browserSupportsNPAPI             = browserSupportsNPAPI;            }
+	public void setCloseActivityStreamOnViewDetails(boolean    closeActivityStreamOnViewDetails) {m_closeActivityStreamOnViewDetails = closeActivityStreamOnViewDetails;}
+	public void setDesktopAppEnabled(               boolean    desktopAppEnabled)                {m_desktopAppEnabled                = desktopAppEnabled;               }
+	public void setIsDefaultZone(                   boolean    isDefaultZone)                    {m_isDefaultZone                    = isDefaultZone;                   }
+	public void setIsFirstLogin(                    boolean    firstLogin)                       {m_firstLogin                       = firstLogin;                      }
+	public void setIsSuperUser(                     boolean    superUser)                        {m_isSuperUser                      = superUser;                       }
+	public void setIsTelemetryTier2Set(             boolean    isTelemetryTier2Set)              {m_isTelemetryTier2Set              = isTelemetryTier2Set;             }
+	public void setShowDesktopAppDownloader(        boolean    showDesktopAppDownloader)         {m_showDesktopAppDownloader         = showDesktopAppDownloader;        }
+	public void setUseHomeAsMyFiles(                boolean    useHomeAsMyFiles)                 {m_useHomeForMyFiles                = useHomeAsMyFiles;                }
+	public void setBinderInfo(                      BinderInfo binderInfo)                       {m_binderInfo                       = binderInfo;                      }
+	public void setUserAvatarUrl(                   String     userAvatarUrl)                    {m_userAvatarUrl                    = userAvatarUrl;                   }
 }

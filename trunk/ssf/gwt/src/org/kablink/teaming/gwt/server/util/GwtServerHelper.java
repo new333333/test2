@@ -6792,6 +6792,13 @@ public class GwtServerHelper {
 			// Has the telemetry tier 2 been set on the default zone?
 			Boolean telemetryTier2Enabled = zm.getZoneConfig(defaultZoneId).getTelemetryTier2Enabled();
 			boolean telemetryTier2Set = (null != telemetryTier2Enabled);
+
+			// Should we close activity stream mode when running a view
+			// details on an entry?
+			boolean closeActivityStreamOnViewDetails = Utils.checkIfFilr();
+			if (!closeActivityStreamOnViewDetails) {
+				closeActivityStreamOnViewDetails = SPropsUtil.getBoolean("vibe.close.activity.stream.on.view.details", false);
+			}
 			
 			// ...and use this all to construct a
 			// ...MainPageInfoRpcResponseData to return.
@@ -6806,7 +6813,8 @@ public class GwtServerHelper {
 					firstLogin,
 					superUser,
 					defaultZone,
-					telemetryTier2Set);
+					telemetryTier2Set,
+					closeActivityStreamOnViewDetails);
 		}
 		
 		catch (Exception ex) {

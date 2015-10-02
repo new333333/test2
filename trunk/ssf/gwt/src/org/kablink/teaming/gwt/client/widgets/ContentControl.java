@@ -2667,8 +2667,12 @@ public class ContentControl extends Composite
 	@Override
 	public void onViewForumEntry( final ViewForumEntryEvent event )
 	{
-		// Close the "what's new" page if it is up.
-		ActivityStreamExitEvent.fireOne( ExitMode.EXIT_FOR_CONTEXT_SWITCH );
+		// If we're supposed to close activity stream mode on a view
+		// details...
+		if (m_mainPage.getMainPageInfo().isCloseActivityStreamOnViewDetails()) {
+			// ...fire the appropriate event.
+			ActivityStreamExitEvent.fireOne( ExitMode.EXIT_FOR_CONTEXT_SWITCH );
+		}
 		
 		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
