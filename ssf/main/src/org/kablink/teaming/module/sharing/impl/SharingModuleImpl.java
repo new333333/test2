@@ -825,7 +825,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 
 						getCoreDao().update(previousShareItem);
 
-						latestShareItem.setStartDate(previousShareItem.getStartDate());
+						//latestShareItem.setStartDate(previousShareItem.getStartDate());
 					}
 					catch(NoShareItemByTheIdException e) {
 						// The previous snapshot isn't found.
@@ -850,6 +850,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 						// The only things that can be modified are the comments and end date.
 						previousShareItem.setComment( latestShareItem.getComment() );
 						previousShareItem.setDaysToExpire( latestShareItem.getDaysToExpire() );
+						previousShareItem.setStartDate( latestShareItem.getStartDate() );
 						previousShareItem.setEndDate( latestShareItem.getEndDate() );
 
 						getCoreDao().update( previousShareItem );
