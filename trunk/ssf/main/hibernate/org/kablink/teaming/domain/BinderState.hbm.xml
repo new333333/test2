@@ -11,8 +11,8 @@
     <property name="lastFullSyncCompletionTime"/>
     <property name="fullSyncStopRequested"/>
     <component name="fullSyncStats" class="org.kablink.teaming.domain.BinderState$FullSyncStats">
-      <property name="statusStr" column="fullSync_status" length="16"/>
-      <property name="statusDate" column="fullSync_statusDate" index="statusDate_binderState"/>
+      <property name="statusStr" column="fullSync_status" length="16" index="statusAndDate_binderState"/>
+      <property name="statusDate" column="fullSync_statusDate" index="statusAndDate_binderState"/>
       <property name="statusIpv4Address" column="fullSync_statusIpv4Address" length="16"/>
       <property name="startDate" column="fullSync_startDate"/>
       <property name="endDate" column="fullSync_endDate"/>
