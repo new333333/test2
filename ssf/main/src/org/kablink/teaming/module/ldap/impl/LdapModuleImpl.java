@@ -6712,7 +6712,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			logger.info( "ldap sync timing: ----------> Time to read group membership " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
 		}
 
-		return listOfMembers.keys();
+		return ((null == listOfMembers) ? null : listOfMembers.keys());
 	}
 	
 	/**
