@@ -263,7 +263,8 @@ public class ForgottenPwdDlg extends DlgBox
 
 									extUserProvState = gwtUser.getExtUserProvState();
 									if ( extUserProvState == ExtUserProvState.VERIFIED ||
-										 extUserProvState == ExtUserProvState.PWD_RESET_REQUESTED )
+										 extUserProvState == ExtUserProvState.PWD_RESET_REQUESTED ||
+										 extUserProvState == ExtUserProvState.PWD_RESET_WAITING_FOR_VERIFICATION )
 									{
 										sendEmail = true;
 									}
