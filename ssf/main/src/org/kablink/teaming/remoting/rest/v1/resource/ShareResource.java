@@ -660,7 +660,7 @@ public class ShareResource extends AbstractResource {
             @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                       @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(Boolean.FALSE);
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
@@ -674,7 +674,7 @@ public class ShareResource extends AbstractResource {
                                                 @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(Boolean.FALSE);
         SharedBinderBrief [] sharedBinders = getPublicBinders(shareItems, null, false, false, showHidden, showUnhidden);
@@ -687,7 +687,7 @@ public class ShareResource extends AbstractResource {
                                                 @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(Boolean.FALSE);
         SharedBinderBrief [] sharedBinders = getPublicBinders(shareItems, null, true, false, showHidden, showUnhidden);
@@ -701,7 +701,7 @@ public class ShareResource extends AbstractResource {
                                                    @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                    @Context HttpServletRequest request) {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
@@ -726,7 +726,7 @@ public class ShareResource extends AbstractResource {
                                                                              @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                              @Context HttpServletRequest request) {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
@@ -749,7 +749,7 @@ public class ShareResource extends AbstractResource {
                                                                            @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(Boolean.FALSE);
         return _getSharedEntries(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", includeParentPaths, showHidden, showUnhidden);
@@ -764,7 +764,7 @@ public class ShareResource extends AbstractResource {
                                                                  @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                  @Context HttpServletRequest request) {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
@@ -796,7 +796,7 @@ public class ShareResource extends AbstractResource {
                                                                  @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                  @Context HttpServletRequest request) {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
@@ -834,7 +834,7 @@ public class ShareResource extends AbstractResource {
                                                                              @QueryParam("first") @DefaultValue("0") Integer offset,
                                                                              @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         ShareItemSelectSpec spec = getPublicSpec();
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.PUBLIC_SHARES_ID, null, recursive,
@@ -853,7 +853,7 @@ public class ShareResource extends AbstractResource {
                                                   @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                   @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         return getPublicChanges(shareItems, since, recursive, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
@@ -870,7 +870,7 @@ public class ShareResource extends AbstractResource {
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("20") Integer maxCount) {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));

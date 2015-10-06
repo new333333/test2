@@ -288,7 +288,7 @@ public class SelfResource extends AbstractFileResource {
     public BinderBrief getPublicShares() {
         BinderBrief fakePublicShares = getFakePublicShares(true);
         if (fakePublicShares==null) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         return fakePublicShares;
     }
@@ -299,7 +299,7 @@ public class SelfResource extends AbstractFileResource {
     public LibraryInfo getPublicLibraryInfo() {
         BinderBrief fakePublicShares = getFakePublicShares(true);
         if (fakePublicShares==null) {
-            throw new AccessControlException("Access to the public collection is not allowed.", null);
+            throw new AccessControlException();
         }
         return getPublicSharesLibraryInfo();
     }
