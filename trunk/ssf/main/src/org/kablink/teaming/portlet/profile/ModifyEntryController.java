@@ -57,6 +57,8 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.User.ExtProvState;
+import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -301,6 +303,15 @@ public class ModifyEntryController extends SAbstractController {
 		            }
 					if (passwordChanged) {
 						getProfileModule().setLastPasswordChange(entryId, changeDate);
+						
+						// Bugzilla 880226:  If we're changing an
+						//    external user's password, mark the
+						//    account as having been verified.
+						if ((null != pwdUser) && (!(pwdUser.isShared())) && (!(pwdUser.getIdentityInfo().isInternal()))) {
+							if (ExtProvState.verified != pwdUser.getExtProvState()) {
+								ExternalUserUtil.markAsVerified(pwdUser);
+							}
+						}
 					}
 					
 					//Now look to see if there were groups specified (but only if allowed to manage these
