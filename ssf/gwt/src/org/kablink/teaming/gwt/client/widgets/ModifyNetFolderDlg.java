@@ -107,9 +107,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author jwootton@novell.com
  */
 public class ModifyNetFolderDlg extends DlgBox
-	implements
-		EditSuccessfulHandler,
-		KeyPressHandler,
+	implements EditSuccessfulHandler, KeyPressHandler,
+		// Event handlers implemented by this class.
 		NetFolderRootCreatedEvent.Handler
 {
 	private TabPanel m_tabPanel;
@@ -140,6 +139,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	private RadioButton m_useNFAllowDesktopAppToTriggerSyncRB;
 	private CheckBox m_allowDesktopAppToTriggerSyncCB;
 	private Panel m_rightsPanel;
+	private Panel m_syncPanel;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
 	private List<HandlerRegistration> m_registeredEventHandlers;
@@ -266,10 +266,8 @@ public class ModifyNetFolderDlg extends DlgBox
 		
 		// Create the panel that will hold the controls for allowing data sync
 		{
-			Panel syncPanel;
-			
-			syncPanel = createDataSyncPanel();
-			m_tabPanel.add( syncPanel, messages.modifyNetFolderDlg_DataSyncTab() );
+			m_syncPanel = createDataSyncPanel();
+			m_tabPanel.add( m_syncPanel, messages.modifyNetFolderDlg_DataSyncTab() );
 		}
 
 		return mainPanel;
@@ -1339,6 +1337,10 @@ public class ModifyNetFolderDlg extends DlgBox
 		if ( m_tabPanel.getWidgetIndex( m_rightsPanel ) == -1 )
 			m_tabPanel.insert( m_rightsPanel, GwtTeaming.getMessages().modifyNetFolderDlg_RightsTab(), 1 );
 		
+		// Make sure the "Data Synchronization" tab has been added.
+		if ( m_tabPanel.getWidgetIndex( m_syncPanel ) == -1 )
+			m_tabPanel.add( m_syncPanel, GwtTeaming.getMessages().modifyNetFolderDlg_DataSyncTab());
+		
 		// Initialize the sync schedule controls
 		initSyncSchedule();
 		
@@ -1378,8 +1380,11 @@ public class ModifyNetFolderDlg extends DlgBox
 			// Are we dealing with a home net folder?
 			if ( netFolder.getIsHomeDir() )
 			{
-				// Yes, remove the "Rights" panel.
+				// Yes, remove the "Rights" panel...
 				m_tabPanel.remove( m_tabPanel.getWidgetIndex( m_rightsPanel ) );
+				
+				// ...and remove the "Data Synchronization" panel.
+				m_tabPanel.remove( m_tabPanel.getWidgetIndex( m_syncPanel ) );
 			}
 		}
 		else
