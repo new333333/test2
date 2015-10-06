@@ -664,30 +664,15 @@ public class SearchUtils {
 			// 3. The user should not see this net folder listed under his "Net Folders" collection view just 
 			//    because some other user shared with him this net folder or anything within that net folder
 			//    (i.e., sub-folder or file within).
-			// Bug #947363 - To implement the recommended changes in behavior described in the comment #14,
-			//               we're passing in the entire base ACL (as opposed to just net folder root ACL)
-			//               to the search routine and short circuit the post filtering process by modifying
-			//               the preFilter method accordingly. This way, ALL necessary ACL checking will be
-			//               performed inside the search engine without consulting the back-end. The only
-			//               downside is that the result may be stale if the ACL information cached in the
-			//               index is far behind the source. But that's minor price we have to pay for this
-			//               change.
-			return luceneSession.search(contextUserId, so.getBaseAclQueryStr(), null, mode, query, null, sort, offset, size,
+			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), null, mode, query, null, sort, offset, size,
 					new PostFilterCallback() {
 				@Override
 				public Boolean preFilter(Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
 					// This filter implementation ignores the second arg.
 					String resourceDriverName = (String) doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
-					if(resourceDriverName == null) {
-						// No resource driver. For "whatever" reason, this folder can no longer be checked
-						// against the back-end since it no longer has resource driver associated with it.
-						return Boolean.FALSE; // Filtering should fail on this folder
-					}
-					else {
-						// Since we performed full ACL checking inside the search engine, skip post-search
-						// filtering on this folder.
-						return Boolean.TRUE;
-					}
+					if(resourceDriverName == null) 
+						return Boolean.FALSE; // no resource driver
+					return null;
 				}
 				
 				@Override
