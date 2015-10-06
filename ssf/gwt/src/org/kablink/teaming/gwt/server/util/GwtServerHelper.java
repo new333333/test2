@@ -7296,7 +7296,9 @@ public class GwtServerHelper {
 							// Has this external user already
 							// self-registered?
 							UrlNotificationType notificationType;
-							if (user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested) {
+							if (user.getExtProvState() == ExtProvState.verified          ||
+								user.getExtProvState() == ExtProvState.pwdResetRequested ||
+								user.getExtProvState() == ExtProvState.pwdResetWaitingForVerification) {
 								// Yes
 								notificationType = UrlNotificationType.FORGOTTEN_PASSWORD;
 							}
@@ -7326,7 +7328,9 @@ public class GwtServerHelper {
 									// Change the users 'external user
 									// provisioned state' to 'password
 									// reset requested'.
-									if (user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested) {
+									if (user.getExtProvState() == ExtProvState.verified ||
+										user.getExtProvState() == ExtProvState.pwdResetRequested ||
+										user.getExtProvState() == ExtProvState.pwdResetWaitingForVerification) {
 										ExternalUserUtil.markAsPwdResetRequested(user);
 									}
 								}
