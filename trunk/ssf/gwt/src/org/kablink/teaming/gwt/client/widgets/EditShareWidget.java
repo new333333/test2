@@ -346,7 +346,8 @@ public class EditShareWidget extends Composite
 				}
 			}
 
-			m_accessRightsListbox = new ListBox( false );
+			m_accessRightsListbox = new ListBox();
+			m_accessRightsListbox.setMultipleSelect( false );
 			m_accessRightsListbox.setVisibleItemCount( 1 );
 			hPanel.add( m_accessRightsListbox );
 			panel.add( hPanel );
@@ -374,7 +375,8 @@ public class EditShareWidget extends Composite
 			hPanel.addStyleName( "marginleft1" );
 			m_canReshareInternalLabel = new Label( messages.editShareDlg_canReshareInternalLabel() );
 			hPanel.add( m_canReshareInternalLabel );
-			m_canReshareInternalListbox = new ListBox( false );
+			m_canReshareInternalListbox = new ListBox();
+			m_canReshareInternalListbox.setMultipleSelect( false );
 			m_canReshareInternalListbox.setVisibleItemCount( 1 );
 			m_canReshareInternalListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
 			m_canReshareInternalListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
@@ -389,7 +391,8 @@ public class EditShareWidget extends Composite
 			hPanel.addStyleName( "marginleft1" );
 			m_canReshareExternalLabel = new Label( messages.editShareDlg_canReshareExternalLabel() );
 			hPanel.add( m_canReshareExternalLabel );
-			m_canReshareExternalListbox = new ListBox( false );
+			m_canReshareExternalListbox = new ListBox();
+			m_canReshareExternalListbox.setMultipleSelect( false );
 			m_canReshareExternalListbox.setVisibleItemCount( 1 );
 			m_canReshareExternalListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
 			m_canReshareExternalListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
@@ -404,7 +407,8 @@ public class EditShareWidget extends Composite
 			hPanel.addStyleName( "marginleft1" );
 			m_canResharePublicLabel = new Label( messages.editShareDlg_canResharePublicLabel() );
 			hPanel.add( m_canResharePublicLabel );
-			m_canResharePublicListbox = new ListBox( false );
+			m_canResharePublicListbox = new ListBox();
+			m_canResharePublicListbox.setMultipleSelect( false );
 			m_canResharePublicListbox.setVisibleItemCount( 1 );
 			m_canResharePublicListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
 			m_canResharePublicListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
@@ -458,7 +462,8 @@ public class EditShareWidget extends Composite
 			hPanel.addStyleName( "marginleft1" );
 			m_canResharePublicLinkLabel = new Label( messages.editShareDlg_canResharePublicLinkLabel() );
 			hPanel.add( m_canResharePublicLinkLabel );
-			m_canResharePublicLinkListbox = new ListBox( false );
+			m_canResharePublicLinkListbox = new ListBox();
+			m_canResharePublicLinkListbox.setMultipleSelect( false );
 			m_canResharePublicLinkListbox.setVisibleItemCount( 1 );
 			m_canResharePublicLinkListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
 			m_canResharePublicLinkListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
@@ -688,19 +693,22 @@ public class EditShareWidget extends Composite
 	@Override
 	public boolean editSuccessful( Object obj )
 	{
-		if ( m_expirationWidget.validateExpirationValue() == false )
-			return false;
-
 		// Do we have a share item we are working with?
 		if ( m_listOfShareItems != null )
 		{
 			// Yes
+			boolean anyDirty = false;
 			for ( GwtShareItem nextShareItem : m_listOfShareItems )
 			{
 				saveShareRights( nextShareItem );
 				saveExpirationValue( nextShareItem );
 				saveNote( nextShareItem );
+				anyDirty |= nextShareItem.isDirty();
 			}
+			
+			boolean validateExpiration = (anyDirty && ((null == obj) ? true : ((Boolean) obj)));
+			if (validateExpiration && ( ! ( m_expirationWidget.validateExpirationValue() ) ) )
+				return false;
 			
 			// Do we have a handler we should call?
 			if ( m_editSuccessfulHandler != null )
@@ -1283,9 +1291,9 @@ public class EditShareWidget extends Composite
 	/**
 	 * 
 	 */
-	public boolean saveSettings()
+	public boolean saveSettings( boolean validateExpiration )
 	{
-		return editSuccessful( Boolean.TRUE );
+		return editSuccessful( new Boolean( validateExpiration ) );
 	}
 	
 	/**
