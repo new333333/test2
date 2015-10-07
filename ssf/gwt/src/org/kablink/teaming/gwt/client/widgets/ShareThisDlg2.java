@@ -1095,7 +1095,7 @@ public class ShareThisDlg2 extends DlgBox
 								{
 									// Yes
 									// Tell the Edit Share widget to save its settings.
-									saveEditShareWidgetSettings();
+									saveEditShareWidgetSettings( true );
 									
 									// Because there are selected share items we won't invoke the
 									// Edit Share widget on this share item.
@@ -1498,7 +1498,7 @@ public class ShareThisDlg2 extends DlgBox
 			return;
 
 		// Tell the Edit Share widget to save its settings.
-		saveEditShareWidgetSettings();
+		saveEditShareWidgetSettings( true );
 
 		// Unselect any share items that are currently selected
 		unselectSelectedShareItems();
@@ -1669,7 +1669,7 @@ public class ShareThisDlg2 extends DlgBox
 		}
 
 		// Tell the "edit share" widget to save its changes
-		if ( saveEditShareWidgetSettings() == false )
+		if ( saveEditShareWidgetSettings( true ) == false )
 			return false;
 		
 		// Disable the Ok button.
@@ -2665,7 +2665,7 @@ public class ShareThisDlg2 extends DlgBox
 		}
 
 		// Tell the "edit share" widget to save its changes
-		if ( saveEditShareWidgetSettings() == false )
+		if ( saveEditShareWidgetSettings( false ) == false )
 			return;
 		
 		ShareRights highestRightsPossible;
@@ -2831,14 +2831,14 @@ public class ShareThisDlg2 extends DlgBox
 	/**
 	 * If the EditShareWidget is visible, tell it to save its settings
 	 */
-	private boolean saveEditShareWidgetSettings()
+	private boolean saveEditShareWidgetSettings( boolean validateExpiration )
 	{
 		// Is the EditShareWidget visible?
 		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
 		{
 			// Yes
 			// Tell the "edit share" widget to save its changes
-			if ( m_editShareWidget.saveSettings() == false )
+			if ( m_editShareWidget.saveSettings( validateExpiration ) == false )
 				return false;
 		}
 		
