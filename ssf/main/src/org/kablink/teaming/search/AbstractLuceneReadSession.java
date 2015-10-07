@@ -219,6 +219,12 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 			public int getPredictedSuccessRatePercentage() {
 				return SPropsUtil.getInt("search.post.filtering.predicted.success.rate.percentage", 80);
 			}
+
+			@Override
+			public boolean shouldFailFast() {
+				// Bug #869900, #949093, #865093 - By default, abort entire operation upon first error.
+				return true;
+			}
 		};
 	}
 	
@@ -311,6 +317,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		if(result.size() > 0 && (adjustedTotalHits < offset + result.size()))
 			adjustedTotalHits = offset + result.size();
 		hits.setTotalHits(adjustedTotalHits);
+		hits.setPartialListDueToError(searchServiceIterator.isPartialListDueToError());
 		
 		stats.sucessCount = filterSuccessCount;
 		stats.failureCount = filterFailureCount;
@@ -362,6 +369,10 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		
 		private int serviceCallCount;
 		
+	    // Indicate that the result is only partial because one or more error was encountered 
+	    // during the processing. This field is not meaningful if the search operation was
+	    // set up to fail fast which is the default mode.
+	    private boolean partialListDueToError = false;
 		
 		SearchServiceIterator(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort,
 				int offset, int size, int filterPredictedSuccessPercentage, PostFilterCallback callback) {
@@ -496,13 +507,19 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 						aclCheckingResultsForOneResourceDriver = session.areVisible(resourcesToCheckForOneResourceDriver, AccessUtils.getFileSystemGroupIds(driverName));
 						aclCheckingResultsForAllResourceDrivers.put(driverName, aclCheckingResultsForOneResourceDriver);
 					} catch (Exception e) {
-						/*
-						logger.error("Error checking visibility on resources " + resourcesToCheckForOneResourceDriver + " against resource driver '" + driverName + "'", e);
-						*/
-						// (Bug 869900 & 865093) If there's an error during interaction with the back-end file server through FAMT (whatever
-						// the reason might be), propagate the error up the call stack instead of eating it up here. Otherwise, Filr clients
-						// may get incorrect interpretation of the result returned and end up mis-behaving.
-						throw e;
+						if(this.callback.shouldFailFast()) {
+							logger.error("Error checking visibility on resources " + resourcesToCheckForOneResourceDriver + " against resource driver '" + driverName + "': Aborting");
+							
+							// (Bug 869900 & 865093) If there's an error during interaction with the back-end file server through FAMT (whatever
+							// the reason might be), propagate the error up the call stack instead of eating it up here. Otherwise, Filr clients
+							// may get incorrect interpretation of the result returned and end up mis-behaving.
+							throw e;							
+						}
+						else {
+							logger.error("Error checking visibility on resources " + resourcesToCheckForOneResourceDriver + " against resource driver '" + driverName + "': Continuing", e);
+							this.setPartialListDueToError(true);
+							continue; // Continue to the next driver
+						}
 					}
 				}
 				finally {
@@ -566,7 +583,14 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 			return totalHits;
 		}
 		
-		
+		public boolean isPartialListDueToError() {
+			return partialListDueToError;
+		}
+
+		public void setPartialListDueToError(boolean partialListDueToError) {
+			this.partialListDueToError = partialListDueToError;
+		}
+
 		public int getServiceCallCount() {
 			return serviceCallCount;
 		}

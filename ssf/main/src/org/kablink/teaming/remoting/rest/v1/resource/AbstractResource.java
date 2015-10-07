@@ -2413,6 +2413,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected SearchResultList<NetFolderBrief> _getNetFolders(String name, int descriptionFormat, int offset, int maxCount, String nextUrl, Map<String, Object> nextParams) {
         Map map = SearchUtils.searchForNetFolders(this, null, new HashMap());
+        Boolean partialListDueToError = (Boolean) map.get(ObjectKeys.SEARCH_PARTIAL_LIST_DUE_TO_ERROR);
         SearchResultList<NetFolderBrief> results = new SearchResultList<NetFolderBrief>();
         NetFolderBriefBuilder builder = new NetFolderBriefBuilder(descriptionFormat);
         if (name!=null) {

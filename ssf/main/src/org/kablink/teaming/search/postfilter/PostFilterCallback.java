@@ -58,4 +58,14 @@ public interface PostFilterCallback {
 	 * @return
 	 */
 	public int getPredictedSuccessRatePercentage();
+	
+	/**
+	 * Return whether the search operation should fail fast upon any error encountered during filtering process.
+	 * If true, the search operation will abort immediately and throw an exception to the caller.
+	 * If false, the search operation will continue collecting the results, flag the result
+	 * indicating that the result is only partial and return to the caller normally.
+	 * 
+	 * @return
+	 */
+	public boolean shouldFailFast();
 }
