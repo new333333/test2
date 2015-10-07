@@ -679,6 +679,12 @@ public class SearchUtils {
 				public int getPredictedSuccessRatePercentage() {
 					return SPropsUtil.getInt("netfolders.search.post.filtering.predicted.success.rate.percentage", 25);
 				}
+
+				@Override
+				public boolean shouldFailFast() {
+					// But #947363 - In this case, keep collecting the data.
+					return false;
+				}
 			});
 			
 			//return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());

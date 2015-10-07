@@ -2348,7 +2348,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
         retMap.put(ObjectKeys.SEARCH_COUNT_TOTAL_APPROXIMATE, new Boolean(hits.isTotalHitsApproximate()));
         retMap.put(ObjectKeys.SEARCH_THERE_IS_MORE,           new Boolean(hits.getThereIsMore()        ));
-		
+        
+        retMap.put(ObjectKeys.SEARCH_PARTIAL_LIST_DUE_TO_ERROR, new Boolean(hits.isPartialListDueToError()));
+        	
 		return retMap;
 	}
 

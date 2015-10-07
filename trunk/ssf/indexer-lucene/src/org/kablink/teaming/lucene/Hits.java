@@ -91,7 +91,12 @@ public class Hits implements Serializable {
     // Indicates whether or not the user has access to each document in this object.
     // This information is finalized after combining the information from the search
     // index and the result of dynamic ACL checking if any.
-    private boolean[] aclCheckResult;      
+    private boolean[] aclCheckResult;     
+    
+    // Indicate that the result is only partial because one or more error was encountered 
+    // during the processing. This field is not meaningful if the search operation was
+    // set up to fail fast which is the default mode.
+    private boolean partialListDueToError = false;
     
     public Hits(int length) {
         this.size = length;
@@ -139,7 +144,15 @@ public class Hits implements Serializable {
     	return aclCheckResult[n];
     }
     
-    public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
+    public boolean isPartialListDueToError() {
+		return partialListDueToError;
+	}
+
+	public void setPartialListDueToError(boolean partialListDueToError) {
+		this.partialListDueToError = partialListDueToError;
+	}
+
+	public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
             int offset, 
             int maxSize, 
             List<String> fieldNames,
