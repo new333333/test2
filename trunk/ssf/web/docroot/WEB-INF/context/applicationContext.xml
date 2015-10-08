@@ -633,7 +633,18 @@
 		</property>
 		<property name="transactionAttributes">
 			<props>
-				<prop key="destroy*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			    <!-- This method must use not REQUIRED but REQUIRES_NEW. This method is usually
+			         invoked when a session times out or invalidated, at which point the executing
+			         thread may be in a read-only transaction. If so, the REQUIRED setting will
+			         cause the destroy method to fail with the following error:
+org.springframework.dao.InvalidDataAccessApiUsageException: Write operations are not allowed in read-only mode (FlushMode.MANUAL): Turn your Session into FlushMode.COMMIT/AUTO or remove 'readOnly' marker from transaction definition.
+                     Once this error occurs, it marks the transaction as "rollback only", which 
+                     then causes the primary commit attempt higher up in the call chain to fail with 
+                     the following errors:
+org.springframework.transaction.UnexpectedRollbackException: Transaction rolled back because it has been marked as rollback-only
+Application exception overridden by commit exception
+			    -->
+				<prop key="destroy*">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
 				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
