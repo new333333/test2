@@ -3954,18 +3954,23 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	
 	@Override
 	public void nullifyUserPassword(final Long userId) {
-		// Work with a new short-lived session so that it won't interfere with the pre-bound (thread-bound) session.
-		getHibernateTemplate().executeWithNewSession(
-				new HibernateCallback() {
-					@Override
-					public Object doInHibernate(Session session) throws HibernateException {
-						User user = (User) session.get(User.class, userId);
-						user.setPassword(null);
-						session.flush();
-						return null;
-					}
-				}
-		);    		             		 
+		// Work with a new short-lived session on its own connection so that it won't interfere 
+		// with the pre-bound (thread-bound) session and its associated connection/transaction.
+		
+		// IMPORTANT: Do NOT use executeWithNewSession() method on HibernateTemplate object
+		// for this purpose. While it creates a new session, it still reuses the same connection
+		// sharing the same transaction already in progress on that connection. That approach
+		// fails if the current transaction happens to be read-only. We need not only a new
+		// session but also a new connection/transaction for this.
+      	SessionFactory sf = getSessionFactory();
+    	Session session = sf.openSession();
+    	try {
+			User user = (User) session.get(User.class, userId);
+			user.setPassword(null);
+    		session.flush();
+    	} finally {
+    		session.close();
+    	}    	    		             		 
 	}
 	
 	@Override
