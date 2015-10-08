@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtFolder;
@@ -45,11 +44,11 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-
 /**
- * This class holds all of the properties needed to define a "Custom jsp" widget in a landing page.
+ * This class holds all of the properties needed to define a
+ * 'Custom jsp' widget in a landing page.
+ * 
  * @author jwootton
- *
  */
 public class CustomJspProperties
 	implements PropertiesObj
@@ -67,6 +66,7 @@ public class CustomJspProperties
 	private String m_entryId;
 	private String m_entryName;
 	private String m_parentBinderName;	// Name of the binder the folder or entry is found in.
+	private String m_pathType;
 	private AsyncCallback<VibeRpcResponse> m_folderEntryCallback;
 	
 	// The following data members are relevant when the user has opted to associate either an entry or a folder with the custom jsp.
@@ -93,6 +93,7 @@ public class CustomJspProperties
 		m_entryId = null;
 		m_entryName = null;
 		m_parentBinderName = null;
+		m_pathType = null;
 		m_zoneUUID = null;
 		m_rpcInProgress = false;
 
@@ -106,9 +107,7 @@ public class CustomJspProperties
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<VibeRpcResponse>()
 		{
-			/**
-			 * 
-			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -119,10 +118,7 @@ public class CustomJspProperties
 				m_rpcInProgress = false;
 			}// end onFailure()
 	
-			/**
-			 * 
-			 * @param result
-			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolder gwtFolder;
@@ -142,9 +138,7 @@ public class CustomJspProperties
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolderEntry object.
 		m_folderEntryCallback = new AsyncCallback<VibeRpcResponse>()
 		{
-			/**
-			 * 
-			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -155,10 +149,7 @@ public class CustomJspProperties
 				m_rpcInProgress = false;
 			}// end onFailure()
 	
-			/**
-			 * 
-			 * @param result
-			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolderEntry gwtFolderEntry;
@@ -180,6 +171,7 @@ public class CustomJspProperties
 	/**
 	 * 
 	 */
+	@Override
 	public void copy( PropertiesObj props )
 	{
 		if ( props instanceof CustomJspProperties )
@@ -212,6 +204,7 @@ public class CustomJspProperties
 			m_folderId = newFolderId;
 			m_folderName = customJspProps.getFolderName();
 			m_parentBinderName = customJspProps.getParentBinderName();
+			m_pathType = customJspProps.getPathType();
 			m_showTitle = customJspProps.getShowTitleValue();
 			m_numEntriesToBeShown = customJspProps.getNumEntriesToBeShownValue();
 			m_width = customJspProps.getWidth();
@@ -226,6 +219,7 @@ public class CustomJspProperties
 	/**
 	 * Return the properties as a string that can be stored in the db.
 	 */
+	@Override
 	public String createConfigString()
 	{
 		String str;
@@ -410,6 +404,15 @@ public class CustomJspProperties
 	
 	
 	/**
+	 * Return the path type.
+	 */
+	public String getPathType()
+	{
+		return m_pathType;
+	}// end getPathType()
+	
+	
+	/**
 	 * Return the "show title" property.
 	 */
 	public boolean getShowTitleValue()
@@ -547,6 +550,15 @@ public class CustomJspProperties
 	{
 		m_parentBinderName = parentBinderName;
 	}// end setParentBinderName()
+	
+	
+	/**
+	 * 
+	 */
+	public void setPathType( String pathType )
+	{
+		m_pathType = pathType;
+	}// end setPathType()
 	
 	
 	/**

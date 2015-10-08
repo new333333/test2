@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,26 +30,25 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-
 /**
- * This class holds all of the information necessary to execute the "execute landing page custom jsp" command.
+ * This class holds all of the information necessary to execute the
+ * 'execute landing page custom jsp' command.
  * 
  * @author jwootton
- *
  */
 public class ExecuteLandingPageCustomJspCmd extends VibeRpcCmd
 {
 	private String m_binderId;
 	private String m_jspName;
 	private String m_configStr;	// This is the configuration string for this custom jsp.
+	private String m_pathType;
 	
-	/**
-	 * For GWT serialization, must have a zero param contructor
+	/*
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public ExecuteLandingPageCustomJspCmd()
+	private ExecuteLandingPageCustomJspCmd()
 	{
 		super();
 	}
@@ -57,12 +56,13 @@ public class ExecuteLandingPageCustomJspCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public ExecuteLandingPageCustomJspCmd( String binderId, String jspName, String configStr )
+	public ExecuteLandingPageCustomJspCmd( String binderId, String jspName, String configStr, String pathType )
 	{
 		this();
 		m_binderId = binderId;
 		m_jspName = jspName;
 		m_configStr = configStr;
+		m_pathType = pathType;
 	}
 	
 	/**
@@ -100,5 +100,12 @@ public class ExecuteLandingPageCustomJspCmd extends VibeRpcCmd
 	public String getJspName()
 	{
 		return m_jspName;
+	}
+	
+	/**
+	 * Returns the path type of the jsp.
+	 */
+	public String getPathType() {
+		return m_pathType;
 	}
 }

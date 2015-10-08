@@ -94,7 +94,7 @@ public class CustomJspWidget extends VibeWidget {
 	 */
 	private void executeJspNow() {
 		GwtClientHelper.executeCommand(
-			new ExecuteLandingPageCustomJspCmd(m_lpBinderId, m_properties.getJspName(), m_properties.createConfigString()),
+			new ExecuteLandingPageCustomJspCmd(m_lpBinderId, m_properties.getJspName(), m_properties.createConfigString(), m_properties.getPathType()),
 			new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {

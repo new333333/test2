@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.CustomJspWidget;
@@ -41,10 +40,11 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.http.client.URL;
 
 /**
- * This class represents the configuration data for a Custom Jsp
+ * This class represents the configuration data for a Custom Jsp.
+ * 
  * @author jwootton
- *
  */
+@SuppressWarnings("deprecation")
 public class CustomJspConfig extends ConfigItem
 {
 	private String m_lpBinderId;	// landing page binder id
@@ -78,6 +78,8 @@ public class CustomJspConfig extends ConfigItem
 					{
 						if ( results2[0].equalsIgnoreCase( "customJsp" ) )
 							m_properties.setJspName( URL.decodeComponent( results2[1] ) );
+						else if ( results2[0].equalsIgnoreCase( "pathType" ) )
+							m_properties.setPathType( results2[1] );
 						else if ( results2[0].equalsIgnoreCase( "folderId" ) )
 							m_properties.setFolderId( results2[1] );
 						else if ( results2[0].equalsIgnoreCase( "entryId" ) )
@@ -229,6 +231,7 @@ public class CustomJspConfig extends ConfigItem
 	/**
 	 * 
 	 */
+	@Override
 	public void addChild( ConfigItem configItem )
 	{
 		// Nothing to do.
@@ -238,6 +241,7 @@ public class CustomJspConfig extends ConfigItem
 	/**
 	 * Create a composite that can be used on any page.
 	 */
+	@Override
 	public VibeWidget createWidget( WidgetStyles widgetStyles )
 	{
 		return new CustomJspWidget( this, m_lpBinderId );
@@ -246,6 +250,7 @@ public class CustomJspConfig extends ConfigItem
 	/**
 	 * Create a DropWidget that can be used in the landing page editor.
 	 */
+	@Override
 	public CustomJspDropWidget createDropWidget( LandingPageEditor lpe )
 	{
 		return new CustomJspDropWidget( lpe, this );
