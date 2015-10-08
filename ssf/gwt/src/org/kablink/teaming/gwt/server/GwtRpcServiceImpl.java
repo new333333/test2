@@ -852,8 +852,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			// directory.  If the user entered "./../../logs/ssf.log" for the custom jsp
 			// name we don't want to allow them to do that.
 			{
+				// Is the custom JSP part of an extension?
+				String pathType = elpjCmd.getPathType();
+				if (null == pathType) pathType = "";
+				boolean extensionJsp = pathType.equalsIgnoreCase("extension");
+				
 				// Construct the full path to the jsp
-				jspPath =  "/WEB-INF/jsp/custom_jsps/" + elpjCmd.getJspName();
+				if (extensionJsp)
+				     jspPath =  ("/WEB-INF/ext/" + Utils.getZoneKey() + "/" + elpjCmd.getJspName());
+				else jspPath =  ("/WEB-INF/jsp/custom_jsps/"                + elpjCmd.getJspName());
 				
 				// Is the path trying to go above the custom_jsps directory?
 				if ( jspPath.contains( "./" ) || jspPath.contains( ".\\" ) || jspPath.contains( "~" ) )
