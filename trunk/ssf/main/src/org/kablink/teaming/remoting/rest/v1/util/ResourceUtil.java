@@ -161,7 +161,7 @@ public class ResourceUtil {
                 }
             }
         }
-        model.setLastModified(model.getResults().get(model.getCount()-1).getDate());
+        model.setLastModified(model.getResults().get(model.getCount() - 1).getDate());
         model.setLastChange(model.getLastModified());
         return model;
     }
@@ -551,7 +551,11 @@ public class ResourceUtil {
         }
         desktopAppConfig.setEnabled(config.getFsaEnabled());
         desktopAppConfig.setSyncInterval(config.getFsaSynchInterval());
-        desktopAppConfig.setMaxFileSize(((long)config.getFsaMaxFileSize()) * 1024 * 1024);
+        if (config.getFsaMaxFileSize()>0) {
+            desktopAppConfig.setMaxFileSize(((long)config.getFsaMaxFileSize()) * 1024 * 1024);
+        } else {
+            desktopAppConfig.setMaxFileSize(50L * 1024 * 1024);
+        }
         desktopAppConfig.setAllowCachedPassword(config.getFsaAllowCachePwd());
         return desktopAppConfig;
     }
