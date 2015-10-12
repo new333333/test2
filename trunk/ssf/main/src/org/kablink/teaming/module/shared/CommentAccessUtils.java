@@ -102,7 +102,10 @@ public class CommentAccessUtils  {
 		// No, this isn't the built-in admin!  Is it  Guest?
 		else if (user.isShared()) {
 			// Yes!  They're not allowed to do anything.
-			reply = CommentAccess.REJECTED;
+			reply =
+				(wao.equals(WorkAreaOperation.READ_ENTRIES) ?
+					CommentAccess.PROCESS_ACLS              :
+					CommentAccess.REJECTED);
 		}
 			
 		else {

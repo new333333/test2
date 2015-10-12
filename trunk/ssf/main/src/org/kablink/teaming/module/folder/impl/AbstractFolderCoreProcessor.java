@@ -79,6 +79,9 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.AbstractEntryProcessor;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -98,6 +101,7 @@ import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.util.Validator;
 
@@ -153,7 +157,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //no transaction    
     @Override
 	public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems, Map options) 
-   		throws AccessControlException, WriteFilesException {
+   		throws AccessControlException, WriteEntryDataException, WriteFilesException {
         // This default implementation is coded after template pattern. 
                
     	final Map ctx = new HashMap();
@@ -161,6 +165,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         ctx.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, Boolean.TRUE);
 
     	Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems, ctx);
+    	EntryDataErrors edErrors = ((EntryDataErrors) entryDataAll.get(ObjectKeys.DEFINITION_ERRORS));
+    	List<Problem> edProblems = ((null == edErrors) ? null : edErrors.getProblems());
+    	if (MiscUtil.hasItems(edProblems)) {
+    		throw new WriteEntryDataException(edErrors);
+    	}
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileData = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
         List allUploadItems = new ArrayList(fileData);
