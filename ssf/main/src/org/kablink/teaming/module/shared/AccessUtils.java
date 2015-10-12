@@ -669,7 +669,7 @@ public class AccessUtils  {
 			// that require it.
 			switch (CommentAccessUtils.checkCommentAccess(((FolderEntry) entry), operation, user)) {
 			case ALLOWED:   return;
-			case REJECTED:  throw new AccessControlException(operation.toString(), new Object[] {});
+			case REJECTED:  throw new AccessControlException();
 			
 			default:
 			case PROCESS_ACLS:
