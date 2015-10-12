@@ -69,7 +69,10 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
         purgeBeforeDate = new Date(System.currentTimeMillis() - shareItemKeepDays*1000L*60L*60L*24L);
         try {
 	  		int shareItemsPurgeCount = getCoreDao().purgeShareItems(zoneId, purgeBeforeDate);
-	  		logger.info("Purged " + shareItemsPurgeCount + " records from the SS_ShareItem table");
+	  		if(shareItemsPurgeCount > 0)
+	  			logger.info("Purged " + shareItemsPurgeCount + " records from the SS_ShareItem table");
+	  		else if(logger.isDebugEnabled())
+	  			logger.debug("Purged " + shareItemsPurgeCount + " records from the SS_ShareItem table");
         }
         catch(Exception e) {
         	logger.error("Error purging SS_ShareItem table", e);
@@ -81,7 +84,10 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
   			// a) Prune basic audit table
   			try {
 		  		int basicAuditPurgeCount = getCoreDao().purgeBasicAudit(zoneId, purgeBeforeDate);
-		  		logger.info("Purged " + basicAuditPurgeCount + " records from the SS_BasicAudit table");
+		  		if(basicAuditPurgeCount > 0)
+		  			logger.info("Purged " + basicAuditPurgeCount + " records from the SS_BasicAudit table");
+		  		else if(logger.isDebugEnabled())
+		  			logger.debug("Purged " + basicAuditPurgeCount + " records from the SS_BasicAudit table");
   			}
   			catch(Exception e) {
   				logger.error("Error purging SS_BasicAudit table");
@@ -89,7 +95,10 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
 	  		// b) Prune login audit table
   			try {
 		  		int loginAuditPurgeCount = getCoreDao().purgeLoginAudit(zoneId, purgeBeforeDate);
-		  		logger.info("Purged " + loginAuditPurgeCount + " records from the SS_LoginAudit table");
+		  		if(loginAuditPurgeCount > 0)
+		  			logger.info("Purged " + loginAuditPurgeCount + " records from the SS_LoginAudit table");
+		  		else if(logger.isDebugEnabled())
+		  			logger.debug("Purged " + loginAuditPurgeCount + " records from the SS_LoginAudit table");
   			}
   			catch(Exception e) {
   				logger.error("Error purging SS_LoginAudit table");
@@ -97,7 +106,10 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
 	  		// c) Prune sharing audit table
   			try {
 		  		int sharingAuditPurgeCount = getCoreDao().purgeSharingAudit(zoneId, purgeBeforeDate);
-		  		logger.info("Purged " + sharingAuditPurgeCount + " records from the SS_SharingAudit table");
+		  		if(sharingAuditPurgeCount > 0)
+		  			logger.info("Purged " + sharingAuditPurgeCount + " records from the SS_SharingAudit table");
+		  		else if(logger.isDebugEnabled())
+		  			logger.debug("Purged " + sharingAuditPurgeCount + " records from the SS_SharingAudit table");
   			}
   			catch(Exception e) {
   				logger.error("Error purging SS_SHaringAudit table");
@@ -105,7 +117,10 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
 	  		// d) Prune deleted binder table - This table provides complementary information to auditing.
   			try {
 		  		int deletedBinderPurgeCount = getCoreDao().purgeDeletedBinder(zoneId, purgeBeforeDate);
-		  		logger.info("Purged " + deletedBinderPurgeCount + " records from the SS_DeletedBinder table");
+		  		if(deletedBinderPurgeCount > 0)
+		  			logger.info("Purged " + deletedBinderPurgeCount + " records from the SS_DeletedBinder table");
+		  		else if(logger.isDebugEnabled())
+		  			logger.debug("Purged " + deletedBinderPurgeCount + " records from the SS_DeletedBinder table");
   			}
   			catch(Exception e) {
   				logger.error("Error purging SS_DeletedBinder table");
@@ -117,7 +132,10 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
   			purgeBeforeDate = new Date(now.getTime() - ((long)zoneConfig.getChangeLogsKeepDays())*1000L*60L*60L*24L);
   			try {
 				int changeLogsPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
-				logger.info("Purged " + changeLogsPurgeCount + " records from the SS_ChangeLogs table");
+				if(changeLogsPurgeCount > 0)
+					logger.info("Purged " + changeLogsPurgeCount + " records from the SS_ChangeLogs table");
+				else if(logger.isDebugEnabled())
+					logger.debug("Purged " + changeLogsPurgeCount + " records from the SS_ChangeLogs table");
   			}
   			catch(Exception e) {
   				logger.error("Error purging SS_ChangeLogs table");
