@@ -49,8 +49,12 @@ import org.kablink.teaming.domain.MobileDevice;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
+import org.kablink.teaming.fi.InvalidPasswordException;
+import org.kablink.teaming.fi.InvalidUsernameException;
+import org.kablink.teaming.fi.LogonFailureException;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
+import org.kablink.teaming.gwt.client.GwtTeamingException.NotLoggedInSubtype;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow.PrincipalInfoId;
@@ -1232,25 +1236,30 @@ public class GwtLogHelper {
 			// Otherwise, construct an appropriate GwtTeamingException.
 			reply = new GwtTeamingException();
 			if (null != ex) {
-				ExceptionType exType;
+				ExceptionType      exType;
+				NotLoggedInSubtype subType = null;
 				
-				if      (ex instanceof AccessControlException               ) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
-				else if (ex instanceof ApplicationExistsException           ) exType = ExceptionType.APPLICATION_EXISTS_EXCEPTION;
-				else if (ex instanceof ApplicationGroupExistsException      ) exType = ExceptionType.APPLICATION_GROUP_EXISTS_EXCEPTION;
-				else if (ex instanceof ExtensionDefinitionInUseException    ) exType = ExceptionType.EXTENSION_DEFINITION_IN_USE;
-				else if (ex instanceof FavoritesLimitExceededException      ) exType = ExceptionType.FAVORITES_LIMIT_EXCEEDED;
-				else if (ex instanceof NoBinderByTheIdException             ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
-				else if (ex instanceof NoFolderEntryByTheIdException        ) exType = ExceptionType.NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION;
-				else if (ex instanceof NoUserByTheIdException               ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
-				else if (ex instanceof OperationAccessControlExceptionNoName) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
-				else if (ex instanceof GroupExistsException                 ) exType = ExceptionType.GROUP_ALREADY_EXISTS;
-				else if (ex instanceof RDException                          ) exType = ExceptionType.NET_FOLDER_ROOT_ALREADY_EXISTS;
-				else if (ex instanceof PasswordMismatchException            ) exType = ExceptionType.CHANGE_PASSWORD_EXCEPTION;
-				else if (ex instanceof UserExistsException                  ) exType = ExceptionType.USER_ALREADY_EXISTS;
-				else                                                          exType = ExceptionType.UNKNOWN;
+				if      (ex instanceof AccessControlException               )  exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
+				else if (ex instanceof ApplicationExistsException           )  exType = ExceptionType.APPLICATION_EXISTS_EXCEPTION;
+				else if (ex instanceof ApplicationGroupExistsException      )  exType = ExceptionType.APPLICATION_GROUP_EXISTS_EXCEPTION;
+				else if (ex instanceof ExtensionDefinitionInUseException    )  exType = ExceptionType.EXTENSION_DEFINITION_IN_USE;
+				else if (ex instanceof FavoritesLimitExceededException      )  exType = ExceptionType.FAVORITES_LIMIT_EXCEEDED;
+				else if (ex instanceof InvalidPasswordException             ) {exType = ExceptionType.USER_NOT_LOGGED_IN; subType = NotLoggedInSubtype.INVALID_PASSWORD;}
+				else if (ex instanceof InvalidUsernameException             ) {exType = ExceptionType.USER_NOT_LOGGED_IN; subType = NotLoggedInSubtype.INVALID_USERNAME;}
+				else if (ex instanceof LogonFailureException                ) {exType = ExceptionType.USER_NOT_LOGGED_IN; subType = NotLoggedInSubtype.LOGON_FAILED;    }
+				else if (ex instanceof NoBinderByTheIdException             )  exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
+				else if (ex instanceof NoFolderEntryByTheIdException        )  exType = ExceptionType.NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION;
+				else if (ex instanceof NoUserByTheIdException               )  exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
+				else if (ex instanceof OperationAccessControlExceptionNoName)  exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
+				else if (ex instanceof GroupExistsException                 )  exType = ExceptionType.GROUP_ALREADY_EXISTS;
+				else if (ex instanceof RDException                          )  exType = ExceptionType.NET_FOLDER_ROOT_ALREADY_EXISTS;
+				else if (ex instanceof PasswordMismatchException            )  exType = ExceptionType.CHANGE_PASSWORD_EXCEPTION;
+				else if (ex instanceof UserExistsException                  )  exType = ExceptionType.USER_ALREADY_EXISTS;
+				else                                                           exType = ExceptionType.UNKNOWN;
 				
-				reply.setExceptionType(exType);
-				reply.setWrapped(      true  );
+				reply.setExceptionType(     exType );
+				reply.setNotLoggedInSubtype(subType);
+				reply.setWrapped(           true   );
 			}
 		}
 

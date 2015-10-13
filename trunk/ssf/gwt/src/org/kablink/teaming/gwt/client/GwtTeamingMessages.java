@@ -683,6 +683,9 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_UpdateCalendarEventTask();
 	String rpcFailure_UpdateFavorites();
 	String rpcFailure_UploadFileBlob();
+	String rpcFailure_UserNotLoggedIn_InvalidPassword();
+	String rpcFailure_UserNotLoggedIn_InvalidUsername();
+	String rpcFailure_UserNotLoggedIn_LogonFailed();
 	String rpcFailure_SetUserSharingRightsInfo();
 	String rpcFailure_ValidateEmailAddress();
 	String rpcFailure_ValidateEntryEvents();
