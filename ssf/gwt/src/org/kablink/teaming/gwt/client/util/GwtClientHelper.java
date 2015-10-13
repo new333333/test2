@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingException.NotLoggedInSubtype;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -1062,7 +1063,8 @@ public class GwtClientHelper {
 			GwtTeamingMessages messages = GwtTeaming.getMessages();
 			String cause;
 			if (t instanceof GwtTeamingException) {
-				switch (((GwtTeamingException) t).getExceptionType()) {
+				GwtTeamingException gwtT = ((GwtTeamingException) t);
+				switch (gwtT.getExceptionType()) {
 				case ACCESS_CONTROL_EXCEPTION:
 					displayAlert = true;
 					cause = patchMessage(messages.rpcFailure_AccessToFolderDenied(), patches);
@@ -1106,7 +1108,33 @@ public class GwtClientHelper {
 					
 				case USER_NOT_LOGGED_IN:
 					cause = null;
-					GwtTeaming.getMainPage().handleSessionExpired();
+					NotLoggedInSubtype subtype = gwtT.getNotLoggedInSubtype();
+					if ((null != subtype) && (!(NotLoggedInSubtype.UNKNOWN.equals(subtype)))) {
+						// We're going to ignore the error message we
+						// were given and display one specific to this
+						// exception/sub type.
+						errorMessage = null;
+
+						// Display the error...
+						String userNotLoggedInError;
+						switch (subtype) {
+						default:
+						case LOGON_FAILED:      userNotLoggedInError = messages.rpcFailure_UserNotLoggedIn_LogonFailed();     break;
+						case INVALID_PASSWORD:  userNotLoggedInError = messages.rpcFailure_UserNotLoggedIn_InvalidPassword(); break;
+						case INVALID_USERNAME:  userNotLoggedInError = messages.rpcFailure_UserNotLoggedIn_InvalidUsername(); break;
+						}
+						deferredAlert(userNotLoggedInError, new AlertDlgCallback() {
+							@Override
+							public void closed() {
+								// ...and when the user closes it,
+								// ...redirect to the login page.
+								GwtTeaming.getMainPage().handleSessionExpired();
+							}
+						});
+					}
+					else {
+						GwtTeaming.getMainPage().handleSessionExpired();
+					}
 					break;
 					
 				default:
