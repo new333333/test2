@@ -3569,6 +3569,9 @@ a.ss_new_thread {
 	padding-left:115px;
 	padding-top: 5px;
 	display:inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 300px;	/* This is based on the 'width: 460px;' seting in qViewDlg. */
 }
 .qViewPresence {
 	display:inline;
