@@ -8993,7 +8993,11 @@ public class GwtServerHelper {
 					eId   = new EntityId(principalId, EntityId.GROUP);
 				}
 				else {
-					pName = Utils.getUserTitle((User) p);
+					User pUser = ((User) p);
+					pName = Utils.getUserTitle(pUser);
+					if (!(MiscUtil.hasString(pName))) {
+						pName = pUser.getName(); 
+					}
 					eId   = new EntityId(principalId, EntityId.USER);
 				}
 				reply = new PrincipalInfoRpcResponseData(pName, eId);
