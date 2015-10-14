@@ -126,21 +126,25 @@ public class CommentAccessUtils  {
 				
 				else {
 					// No, the user doesn't own the comment!  Do
-					// they own the top level entry the comment is
-					// attached to?
-					FolderEntry topEntry = fe.getTopEntry();
-					if (topEntry.getOwner().getId().equals(userId)) {
-						// Yes!  They're allowed to delete somebody
-						// else's comment but not to edit or rename
-						// it.
-						if (delete) reply = CommentAccess.ALLOWED;
-						else        reply = CommentAccess.REJECTED;
+					// they own any of the comment's parentage the
+					// comment is attached to?
+					FolderEntry parentEntry = fe.getParentEntry();
+					while (null != parentEntry) {
+						if (parentEntry.getOwner().getId().equals(userId)) {
+							// Yes!  They're allowed to delete somebody
+							// else's comment but not to edit or rename
+							// it.
+							if (delete) reply = CommentAccess.ALLOWED;
+							else        reply = CommentAccess.REJECTED;
+							break;
+						}
+						parentEntry = parentEntry.getParentEntry();
 					}
 					
-					else {
-						// No, the user doesn't own the top level
-						// entry either!  The operation is
-						// rejected.
+					// If the user doesn't own any of the comment's
+					// parentage...
+					if (null == parentEntry) {
+						// ...reject the request.
 						reply = CommentAccess.REJECTED;
 					}
 				}
