@@ -85,6 +85,7 @@ if (typeof ss_common_loaded == "undefined" ) {
 	var ss_onResizeRoutineLoaded;
 	var ss_savedOnLoadRoutine = null;
 	var ss_onLoadRoutineLoaded;
+	var ss_onLoadRoutine2Loaded;
 
 	var ss_mouseX = 0;
 	var ss_mouseY = 0;
@@ -192,9 +193,15 @@ function ss_onLoadInit() {
         	ss_onLoadList[i].initRoutine();
         }
     }
+    
+    // Empty the on load list so that these don't get called again if
+    // this method gets called again.
+	ss_onLoadList = new Array();
+	
     if (ss_savedOnLoadRoutine != null) {
     	window.onload = ss_savedOnLoadRoutine;
     	if (window.onload != null) window.onload();
+    	ss_savedOnLoadRoutine = null;
     }
     
 	// Add the onResize routine to the onresize event
