@@ -85,7 +85,6 @@ if (typeof ss_common_loaded == "undefined" ) {
 	var ss_onResizeRoutineLoaded;
 	var ss_savedOnLoadRoutine = null;
 	var ss_onLoadRoutineLoaded;
-	var ss_onLoadRoutine2Loaded;
 
 	var ss_mouseX = 0;
 	var ss_mouseY = 0;
