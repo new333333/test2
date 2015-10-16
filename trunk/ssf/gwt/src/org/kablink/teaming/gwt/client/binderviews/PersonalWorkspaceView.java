@@ -67,6 +67,7 @@ public class PersonalWorkspaceView extends WorkspaceViewBase implements ToolPane
 	private VibeFlowPanel								m_dashboardPanel;				//
 	private VibeFlowPanel								m_footerPanel;					//
 	private VibeFlowPanel								m_headerPanel;					//
+	private VibeFlowPanel								m_htmlElementPanel;				//
 	private VibeFlowPanel								m_mainPanel;					//
 	
 	/*
@@ -114,6 +115,23 @@ public class PersonalWorkspaceView extends WorkspaceViewBase implements ToolPane
 			@Override
 			public void onSuccess(ToolPanelBase accessories) {
 				m_accessoriesPanel.add(accessories);
+			}
+		});
+		
+		// Add an HTML element.
+		m_htmlElementPanel = new VibeFlowPanel();
+		m_htmlElementPanel.addStyleName("vibe-personalWorkspaceView_HtmlElementPanel");
+		m_mainPanel.add(m_htmlElementPanel);
+		HtmlElementPanel.createAsync(this, getBinderInfo(), this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase htmlElement) {
+				m_htmlElementPanel.add(htmlElement);
 			}
 		});
 		

@@ -102,6 +102,11 @@
 		.vibe-filtersPanel                 {padding-left: 10px; font-size: 11px !important;}
 	/* ...End:  Filter panel styles. */
 	
+	/* ...Start:  HTML element panel styles. */
+		.vibe-htmlElementPanel           {padding-left: 10px;}
+		.vibe-htmlElementPerElementPanel {display:  block; margin: 0px; font-style: normal !important;}
+	/* ...End:  HTML element panel styles. */
+	
 	/* ...Start:  Limit User Visibility view styles. */
 		.vibe-limitUserVisibilityDataTable {}
 		.vibe-limitUserVisibilityFlowPanel {}
@@ -383,6 +388,10 @@
 
 /* Start:  GWT workspace view styles. */
 	.vibe-discussionWSView_AccessoriesPanel, .vibe-teamWSView_AccessoriesPanel, .vibe-genericWSView_AccessoriesPanel, .vibe-projectManagementWSView_AccessoriesPanel, .vibe-personalWorkspacesView_AccessoriesPanel, .vibe-netFoldersWSView_AccessoriesPanel
+	{
+	}
+	
+	.vibe-discussionWSView_HtmlElementPanel, .vibe-teamWSView_HtmlElementPanel, .vibe-genericWSView_HtmlElementPanel, .vibe-projectManagementWSView_HtmlElementPanel, .vibe-personalWorkspacesView_HtmlElementPanel, .vibe-netFoldersWSView_HtmlElementPanel
 	{
 	}
 	

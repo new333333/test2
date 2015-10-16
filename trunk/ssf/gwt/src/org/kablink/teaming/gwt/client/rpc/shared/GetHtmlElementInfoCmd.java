@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,21 +34,20 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
-
 /**
  * This class holds all of the information necessary to execute the
- * 'get folder has user list' command.
+ * 'get HTML element info' command.
  * 
  * @author drfoster@novell.com
  */
-public class GetFolderHasUserListCmd extends VibeRpcCmd {
-	private BinderInfo	m_folderInfo;	//
+public class GetHtmlElementInfoCmd extends VibeRpcCmd {
+	private BinderInfo	m_binderInfo;	//
 	
 	/*
 	 * For GWT serialization, must have a zero parameter constructor
 	 * method.
 	 */
-	private GetFolderHasUserListCmd() {
+	private GetHtmlElementInfoCmd() {
 		// Initialize the super class.
 		super();
 	}
@@ -56,14 +55,14 @@ public class GetFolderHasUserListCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param folderInfo
+	 * @param binderInfo
 	 */
-	public GetFolderHasUserListCmd(BinderInfo folderInfo) {
+	public GetHtmlElementInfoCmd(BinderInfo binderInfo) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameter.
-		m_folderInfo = folderInfo;
+		m_binderInfo = binderInfo;
 	}
 	
 	/**
@@ -71,14 +70,14 @@ public class GetFolderHasUserListCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public BinderInfo getFolderInfo() {return m_folderInfo;}
+	public BinderInfo getBinderInfo() {return m_binderInfo;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
+	public void setBinderInfo(BinderInfo binderInfo) {m_binderInfo = binderInfo;}
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -89,6 +88,6 @@ public class GetFolderHasUserListCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.GET_FOLDER_HAS_USER_LIST.ordinal();
+		return VibeRpcCmdType.GET_HTML_ELEMENT_INFO.ordinal();
 	}
 }

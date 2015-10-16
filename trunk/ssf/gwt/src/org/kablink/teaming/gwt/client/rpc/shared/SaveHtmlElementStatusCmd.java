@@ -30,43 +30,68 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
- * This enumeration defines the places where JSPs get executed in the
- * GWT code to produce HTML.
+ * This class holds all of the information necessary to execute the
+ * 'Save HTML Element Status' command.
  * 
  * @author drfoster@novell.com
  */
-public enum VibeJspHtmlType implements IsSerializable {
-	ACCESSORY_PANEL,
-	ACCESSORY,
-
-	ADMIN_REPORT_CHANGELOG,
-	ADMIN_REPORT_CREDITS,
-	ADMIN_REPORT_DATA_QUOTA_EXCEEDED,
-	ADMIN_REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED,
-	ADMIN_REPORT_DISK_USAGE,
-	ADMIN_REPORT_XSS,
+public class SaveHtmlElementStatusCmd extends VibeRpcCmd {
+	private Long	m_binderId;				//
+	private boolean	m_showHtmlElementPanel;	//
 	
-	CUSTOM_JSP,
-	
-	UNDEFINED;
-
-	/**
-	 * ?
+	/*
+	 * Constructor method.
 	 * 
-	 * @param jspType
+	 * For GWT serialization, must have a zero parameter constructor.
+	 */
+	private SaveHtmlElementStatusCmd() {
+		// Initialize the super class.
+		super();
+	}
+	
+	/**
+	 * Constructor method
+	 * 
+	 * @param binderId
+	 * @param showHtmlElementPanel
+	 */
+	public SaveHtmlElementStatusCmd(Long binderId, boolean showHtmlElementPanel) {
+		// Initialize this object...
+		this();
+
+		// ...and save the parameters.
+		setBinderId(            binderId            );
+		setShowHtmlElementPanel(showHtmlElementPanel);
+	}
+	
+	/**
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public static VibeJspHtmlType getEnum(int jspType) {
-		VibeJspHtmlType cmd;
-		try                                      {cmd = VibeJspHtmlType.values()[jspType];}
-		catch (ArrayIndexOutOfBoundsException e) {cmd = VibeJspHtmlType.UNDEFINED;        }
-		return cmd;
+	public Long    getBinderId()             {return m_binderId;            }
+	public boolean getShowHtmlElementPanel() {return m_showHtmlElementPanel;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setBinderId(            Long    binderId)             {m_binderId             = binderId;            }
+	public void setShowHtmlElementPanel(boolean showHtmlElementPanel) {m_showHtmlElementPanel = showHtmlElementPanel;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.SAVE_HTML_ELEMENT_STATUS.ordinal();
 	}
 }

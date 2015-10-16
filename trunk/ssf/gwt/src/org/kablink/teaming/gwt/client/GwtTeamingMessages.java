@@ -386,6 +386,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetAntiVirusSettings();
 	String rpcFailure_GetBinderDescription();
 	String rpcFailure_GetBinderFilters();
+	String rpcFailure_GetBinderHasOtherComponents();
 	String rpcFailure_GetBinderOwnerAvatarUrl();
 	String rpcFailure_GetBinderSharingRightsInfo();
 	String rpcFailure_GetBinderStats();
@@ -465,9 +466,11 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GwtGroups();
 	String rpcFailure_GetGwtUIInfo();
 	String rpcFailure_GetHelpUrl();
+	String rpcFailure_GetHtmlElementInfo();
 	String rpcFailure_GetImUrl();
 	String rpcFailure_GetInheritedLandingPageProperties();
 	String rpcFailure_GetIsDynamicGroupMembershipAllowed();
+	String rpcFailure_GetJspHtml();
 	String rpcFailure_GetLdapSyncResults();
 	String rpcFailure_GetLimitedUserVisibilityDisplay();
 	String rpcFailure_GetLimitUserVisibilityInfo();
@@ -610,6 +613,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_SaveFolderFilters();
 	String rpcFailure_SaveFolderPinningState();
 	String rpcFailure_SaveFolderSort();
+	String rpcFailure_SaveHtmlElementStatus();
 	String rpcFailure_SaveKeyShieldConfig();
 	String rpcFailure_SaveLdapConfig();
 	String rpcFailure_SaveManageUsersState();
@@ -776,6 +780,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_GlobalWorkspacesView();
 	String codeSplitFailure_GuestbookFolderView();
 	String codeSplitFailure_HomeWSView();
+	String codeSplitFailure_HtmlElementPanel();
 	String codeSplitFailure_Html5UploadHelper();
 	String codeSplitFailure_ImportIcalByFileDlg();
 	String codeSplitFailure_ImportIcalByUrlDlg();
@@ -1722,7 +1727,7 @@ public interface GwtTeamingMessages extends Messages {
 	String taskAltMoveLeft();
 	String taskAltMoveRight();
 	String taskAltMoveUp();
-	String taskAltParentWithDurationError();;
+	String taskAltParentWithDurationError();
 	String taskAltPurge();
 	String taskAltTaskActions();
 	String taskAltTaskClosed();

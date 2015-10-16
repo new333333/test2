@@ -222,7 +222,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		fAnchor.setVisible(showFollowButton());
 		followPanel.add(fAnchor);
 		
-		fAnchor.addClickHandler(new ActionClickHandler("FollowId"));;
+		fAnchor.addClickHandler(new ActionClickHandler("FollowId"));
 		
 		return fAnchor;
 	}

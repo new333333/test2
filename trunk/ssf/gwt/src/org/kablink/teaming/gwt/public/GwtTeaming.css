@@ -5632,9 +5632,9 @@ td.datePickerMonth {
 
 /* Start:  User properties dialog styles. */
 	.vibe-userPropertiesDlg-aboutMe          {color: #353838; width: 330px;}
-	.vibe-userPropertiesDlg-attrCaption      {color: #949494; padding-right: 3px; display: inline-block; padding-top: 2px;; padding-bottom: 3px;}
+	.vibe-userPropertiesDlg-attrCaption      {color: #949494; padding-right: 3px; display: inline-block; padding-top: 2px; padding-bottom: 3px;}
 	.vibe-userPropertiesDlg-attrImage        {}	
-	.vibe-userPropertiesDlg-attrValue        {color: #353838; font-size: 14px; display: inline-block; padding-top: 2px;; padding-bottom: 3px;}
+	.vibe-userPropertiesDlg-attrValue        {color: #353838; font-size: 14px; display: inline-block; padding-top: 2px; padding-bottom: 3px;}
 	.vibe-userPropertiesDlg-avatar           {border-width: 1px; border-style: solid; border-color: #ccc; width: 75px; height: 75px; margin-right: 5px; margin-bottom: 10px; margin-left: 35px;}
 	.vibe-userPropertiesDlg-buttonLook       {
 		border: 1px solid #B8B8B8;

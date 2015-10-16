@@ -1292,7 +1292,7 @@ public class TaskTable extends Composite
 	 * that are currently checked.
 	 */
 	private List<EntityId> getTaskIdsChecked() {
-		List<EntityId> reply = new ArrayList<EntityId>();;
+		List<EntityId> reply = new ArrayList<EntityId>();
 		getTaskIdsCheckedImpl(m_taskBundle.getTasks(), reply);
 		return reply;
 	}
@@ -1346,7 +1346,7 @@ public class TaskTable extends Composite
 	 * are currently checked.
 	 */
 	private List<TaskListItem> getTasksChecked() {
-		List<TaskListItem> reply = new ArrayList<TaskListItem>();;
+		List<TaskListItem> reply = new ArrayList<TaskListItem>();
 		getTasksCheckedImpl(m_taskBundle.getTasks(), reply);
 		return reply;
 	}
@@ -3373,7 +3373,7 @@ public class TaskTable extends Composite
 
 		// Scan the individual assignees...
 		TaskInfo ti = task.getTask();
-		boolean isCancelled = ti.getStatus().equals(TaskInfo.STATUS_CANCELED);;
+		boolean isCancelled = ti.getStatus().equals(TaskInfo.STATUS_CANCELED);
 		int assignments = 0;
 		for (final AssignmentInfo ai:  ti.getAssignments()) {
 			// ...adding a PresenceControl for each.

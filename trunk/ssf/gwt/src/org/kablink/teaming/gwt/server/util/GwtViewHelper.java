@@ -70,7 +70,6 @@ import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.Node;
 
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
@@ -145,13 +144,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.BinderFiltersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
+import org.kablink.teaming.gwt.client.rpc.shared.HasOtherComponentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SharedViewStateRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.UserListInfoRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.UserListInfoRpcResponseData.UserListInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.AccountInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.HomeInfo;
@@ -466,10 +464,10 @@ public class GwtViewHelper {
 		public void setEntryTargetId(                 Long    entryTargetId)                  {m_entryTargetId                  = entryTargetId;                 }
 	}
 
-	/*
+	/**
 	 * Inner class that encapsulated a User with their Workspace.
 	 */
-	private static class UserWorkspacePair {
+	public static class UserWorkspacePair {
 		private Long		m_wsId;	//
 		private User		m_user;	//
 		private Workspace	m_ws;	//
@@ -700,6 +698,20 @@ public class GwtViewHelper {
 				crit.add(like(Constants.TITLE_FIELD, quickFilter));
 			}
 		}
+	}
+	
+	/*
+	 * Builds a model Map for running a custom JSP.
+	 */
+	private static Map<String, Object> buildCustomJspModelMap(Map<String, Object> baseModel) {
+		// Construct the base Map...
+		Map<String, Object> reply = new HashMap<String, Object>();
+		if (null != baseModel) {
+			reply.putAll(baseModel);
+		}
+
+		// ...and return it.
+		return reply;
 	}
 	
 	/*
@@ -3079,50 +3091,6 @@ public class GwtViewHelper {
 		return days;
 	}
 	
-	/**
-	 * Return true of the user list panel should be visible on the
-	 * given binder and false otherwise.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Boolean getUserListStatus(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
-		try {
-			User			user                 = GwtServerHelper.getCurrentUser();
-			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
-			
-			// Has the user saved the status of the user list panel
-			// on this binder?
-			Boolean userListStatus = ((Boolean) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_BINDER_SHOW_USER_LIST));
-			if (null == userListStatus) {
-				// No!  Then we default to show it.  Save this status
-				// in the user's properties for this binder.
-				userListStatus = Boolean.TRUE;
-				saveUserListStatus(bs, request, binderId, userListStatus);
-			}
-			
-			// If we get here, userListStatus contains true if we
-			// should show the user list panel and false otherwise.
-			// Return it.
-			return userListStatus;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.getUserListStatus( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
 	/*
 	 * Fixes up the group assignees in an List<AssignmentInfo>'s.
 	 */
@@ -3683,6 +3651,38 @@ public class GwtViewHelper {
 		}
 	}
 
+	/**
+	 * Collects information about other components in a binder view and
+	 * returns it in an HasOtherComponentsRpcResponseData object.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderInfo
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static HasOtherComponentsRpcResponseData getBinderHasOtherComponents(AllModulesInjected bs, HttpServletRequest request, BinderInfo binderInfo) throws GwtTeamingException {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getBinderHasOtherComponents()");
+		try {
+			Binder binder = bs.getBinderModule().getBinder(binderInfo.getBinderIdAsLong());
+			boolean showUserList    = ((binder instanceof Folder) ? GwtUserListHelper.getFolderHasUserList((Folder) binder) : false);
+			boolean showHtmlElement = GwtHtmlElementHelper.getBinderHasHtmlElement(binder);
+			return new HasOtherComponentsRpcResponseData(showUserList, showHtmlElement);
+		}
+		
+		catch (Exception e) {
+			// Log the error and assume there are no user_list's.
+			GwtLogHelper.error(m_logger, "GwtViewHelper.getBinderHasOtherComponents( SOURCE EXCEPTION ):  ", e);
+			return new HasOtherComponentsRpcResponseData(false, false);
+		}
+		
+		finally {
+			gsp.stop();
+		}
+	}
+	
 	/**
 	 * Returns an AvatarInfoRpcResponseData object containing the
 	 * information about a binder owner's avatar.
@@ -4925,13 +4925,18 @@ public class GwtViewHelper {
 			boolean showUserList;
 			boolean folderIsMyFilesStorage;
 			if ((null != binder) && (binder instanceof Folder)) {
-				showUserList           = (getFolderHasUserList((Folder) binder) && getUserListStatus(bs, request, folderId));
+				showUserList           = (GwtUserListHelper.getFolderHasUserList((Folder) binder) && GwtUserListHelper.getUserListStatus(bs, request, folderId));
 				folderIsMyFilesStorage = BinderHelper.isBinderMyFilesStorage(binder);
 			}
 			else {
 				showUserList           =
 				folderIsMyFilesStorage = false;
 			}
+
+			// Does the Binder have any HTML elements? 
+			boolean showHtmlElement = (
+				GwtHtmlElementHelper.getBinderHasHtmlElement(binder) &&
+				GwtHtmlElementHelper.getHtmlElementStatus(bs, request, folderId));
 
 			// Finally, use the data we obtained to create a
 			// FolderDisplayDataRpcResponseData and return that. 
@@ -4944,6 +4949,7 @@ public class GwtViewHelper {
 					cwData.getColumnWidths(),
 					folderSupportsPinning,
 					showUserList,
+					showHtmlElement,
 					viewPinnedEntries,
 					viewSharedFiles,
 					folderOwnedByCurrentUser,
@@ -5404,158 +5410,6 @@ public class GwtViewHelper {
 		}
 	}
 
-	/**
-	 * Returns true if a folder's view definition has user_list
-	 * <item>'s and false otherwise.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderInfo
-	 * 
-	 * @return
-	 */
-	public static boolean getFolderHasUserList(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderHasUserList(1)");
-		try {
-			// Does the folder have any user_list <item>'s?
-			Folder folder = bs.getFolderModule().getFolder(folderInfo.getBinderIdAsLong());
-			return getFolderHasUserList(folder);
-		}
-		
-		catch (Exception e) {
-			// Log the error and assume there are no user_list's.
-			GwtLogHelper.error(m_logger, "GwtViewHelper.getFolderHasUserList( 1: SOURCE EXCEPTION ):  ", e);
-			return false;
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-	
-	public static boolean getFolderHasUserList(Folder folder) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderHasUserList(2)");
-		try {
-			// Does the folder have any user_list <item>'s?
-			List<Node> userListNodes = getFolderUserListNodes(folder);
-			return MiscUtil.hasItems(userListNodes);
-		}
-		
-		catch (Exception e) {
-			// Log the error and assume there are no user_list's.
-			GwtLogHelper.error(m_logger, "GwtViewHelper.getFolderHasUserList( 2: SOURCE EXCEPTION ):  ", e);
-			return false;
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-	
-	/**
-	 * Returns a UserListInfoRpcResponseData corresponding to the
-	 * user_list <item>'s from a folder view definition.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderInfo
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static UserListInfoRpcResponseData getFolderUserListInfo(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderUserListInfo()");
-		try {
-			// Allocate a UserListInfoRpcResponseData we can fill in
-			// and return.
-			UserListInfoRpcResponseData reply = new UserListInfoRpcResponseData();
-
-			// Does the folder have any user_list <item>'s?
-			Folder folder = bs.getFolderModule().getFolder(folderInfo.getBinderIdAsLong());
-			List<Node> userListNodes = getFolderUserListNodes(folder);
-			int userListCount = ((null == userListNodes) ? 0 : userListNodes.size());
-			if (0 < userListCount) {
-				// Yes!  Scan them.
-				for (Node userListNode:  userListNodes) {
-					// Determine this <item>'s caption.
-					Node captionNode = userListNode.selectSingleNode("properties/property[@name='caption']");
-					String caption;
-					if (null == captionNode) {
-						caption = NLT.get("__user_list");
-						int count = reply.getUserListInfoListCount();
-						if (0 < count) {
-							caption += ("_" + (count + 1));
-						}
-					}
-					else {
-						caption = ((Element) captionNode).attributeValue("value");
-					}
-
-					// Does this <item> have a data name?
-					Node dataNameNode = userListNode.selectSingleNode("properties/property[@name='name']");;
-					if (null != dataNameNode) {
-						// Yes!  Create a UserListInfo for it...
-						String dataName = ((Element) dataNameNode).attributeValue("value");
-						UserListInfo userListInfo = new UserListInfo(caption, dataName);
-						reply.addUserListInfo(userListInfo);
-						
-						// ...look for this <item>'s user IDs...
-						CustomAttribute ca = folder.getCustomAttribute(dataName);
-						Set<Long> userIds = ((null == ca) ? null : LongIdUtil.getIdsAsLongSet(ca.getValue().toString(), ","));
-						
-						// ...and if we find any...
-						if (MiscUtil.hasItems(userIds)) {
-							// ...add PrincipalInfo's for them to the
-							// ...UserListInfo.
-							List<UserWorkspacePair> uwsPairs = getUserWorkspacePairs(userIds, null, false);
-							getUserInfoFromPIds(bs, request, userListInfo.getUsers(), null ,uwsPairs);
-						}
-					}
-				}
-			}
-			
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.getFolderUserListInfo( SOURCE EXCEPTION ):  ");
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-	
-	/*
-	 * Returns a List<Node> of the user_list <item>'s from a folder's
-	 * view definition.
-	 */
-	@SuppressWarnings("unchecked")
-	private static List<Node> getFolderUserListNodes(Folder folder) {
-		// Do we have a Folder?
-		List<Node> reply = null;
-		if (null != folder) {
-			// Yes!  Can we access it's view definition document?
-			Definition viewDef    = folder.getDefaultViewDef();
-			Document   viewDefDoc = ((null == viewDef) ? null : viewDef.getDefinition());
-			if (null != viewDefDoc) {
-				// Yes!  Does it contain any user_list <item>'s?
-		  		reply = viewDefDoc.selectNodes("//item[@type='form']//item[@name='user_list']");
-			}
-		}
-		
-		// If we get here, reply refers to a List<Node> of the folder's
-		// user_list <item>'s or is null.  Return it.
-		return reply;
-	}
-	
 	/**
 	 * Reads the row data from a folder and returns it as a
 	 * FolderRowsRpcResponseData.
@@ -6808,6 +6662,33 @@ public class GwtViewHelper {
 				break;
 			}
 			
+			case CUSTOM_JSP:  {
+				// Create a model Map for the custom JSP...
+				Map<String, Object> htmlElementModel = buildCustomJspModelMap(model);
+	    		
+				jspPath = ("/WEB-INF/jsp/custom_jsps/" + buildJspName((String) model.get("customJsp")));
+				try {
+		    		// ...and run the JSP to produce the target HTML.
+					html = GwtServerHelper.executeJsp(
+						bs,
+						request,
+						response,
+						servletContext,
+						null,		// null -> Not the JSP name...
+						jspPath,	// ...just it's path.
+						htmlElementModel);
+				}
+				
+				catch (Exception e) {
+					// ...simply log any errors and assuming there
+					// ...wasn't a custom JSP.
+					GwtLogHelper.error(m_logger, "GwtViewHelper.getJspHtml( " + jspType.name() + ":" + jspPath + ", EXCEPTION ):  ", e);
+					html = "";
+				}
+				
+				break;
+			}
+			
 			default: 
 				// Log an error that we encountered an unhandled command.
 				m_logger.error("JspHtmlRpcResponseData( Unknown jsp type ):  " + jspType.name());
@@ -7050,11 +6931,17 @@ public class GwtViewHelper {
 		}
 	}
 
-	/*
+	/**
 	 * Given a List<Long> of principal IDs read from entry maps,
 	 * returns an equivalent List<PrincipalInfo> object.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param piList
+	 * @param mdList
+	 * @param uwsPairs
 	 */
-	private static void getUserInfoFromPIds(AllModulesInjected bs, HttpServletRequest request, List<PrincipalInfo> piList, List<MobileDevicesInfo> mdList, List<UserWorkspacePair> uwsPairs) {
+	public static void getUserInfoFromPIds(AllModulesInjected bs, HttpServletRequest request, List<PrincipalInfo> piList, List<MobileDevicesInfo> mdList, List<UserWorkspacePair> uwsPairs) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserInfoFromPIds()");
 		try {
 			// Can we map the List<Long> of principal IDs to any
@@ -8474,12 +8361,18 @@ public class GwtViewHelper {
 		return reply;
 	}
 
-	/*
+	/**
 	 * Given a List<Long> of userIds, returns the corresponding
 	 * List<UserWorkspacePair> of the User/Workspace pairs for the IDs.
+	 * 
+	 * @param principalIds
+	 * @param principals
+	 * @param resolveWorkspaces
+	 * 
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<UserWorkspacePair> getUserWorkspacePairs(Collection <Long> principalIds, List<Principal> principals, boolean resolveWorkspaces) {
+	public static List<UserWorkspacePair> getUserWorkspacePairs(Collection <Long> principalIds, List<Principal> principals, boolean resolveWorkspaces) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserWorkspacePairs()");
 		try {
 			SimpleProfiler.start("GwtViewHelper.getUserWorkspacePairs(Resolve users)");
@@ -9323,7 +9216,7 @@ public class GwtViewHelper {
 					int folderDownloads = folderSet.size();
 					if ((1 == fileDownloads) && (0 == folderDownloads)) {
 						// Yes!  Generate a URL to download just that file.
-						FolderEntry fe = feAttachmentMap.keySet().iterator().next();;
+						FolderEntry fe = feAttachmentMap.keySet().iterator().next();
 						url = WebUrlUtil.getFileZipUrl(
 							request,
 							WebKeys.ACTION_READ_FILE,
@@ -10589,43 +10482,6 @@ public class GwtViewHelper {
 		}
 	}
 
-	/**
-	 * Saves whether the user list panel should be visible on the
-	 * given binder.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param binderId
-	 * @param showUserListPanel
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Boolean saveUserListStatus(AllModulesInjected bs, HttpServletRequest request, Long binderId, boolean showUserListPanel) throws GwtTeamingException {
-		try {
-			// Save the user list status...
-			bs.getProfileModule().setUserProperty(
-				GwtServerHelper.getCurrentUserId(),
-				binderId,
-				ObjectKeys.USER_PROPERTY_BINDER_SHOW_USER_LIST,
-				new Boolean(showUserListPanel));
-			
-			// ...and return true.
-			return Boolean.TRUE;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.saveUserListStatus( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
 	/*
 	 * Generates a value for a custom column in a row.
 	 * 

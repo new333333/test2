@@ -68,6 +68,7 @@ import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent.ViewInfoCall
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
+import org.kablink.teaming.gwt.client.event.HideHtmlElementEvent;
 import org.kablink.teaming.gwt.client.event.HideUserListEvent;
 import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeChangePasswordDlgEvent;
@@ -92,6 +93,7 @@ import org.kablink.teaming.gwt.client.event.SearchTagEvent;
 import org.kablink.teaming.gwt.client.event.SetDesktopDownloadAppControlVisibilityEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
+import org.kablink.teaming.gwt.client.event.ShowHtmlElementEvent;
 import org.kablink.teaming.gwt.client.event.ShowUserListEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -121,6 +123,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.InvalidateSessionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveHtmlElementStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveUserListStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -236,6 +239,7 @@ public class GwtMainPage extends ResizeComposite
 		GotoContentUrlEvent.Handler,
 		GotoMyWorkspaceEvent.Handler,
 		GotoPermalinkUrlEvent.Handler,
+		HideHtmlElementEvent.Handler,
 		HideUserListEvent.Handler,
 		InvokeAddNewFolderEvent.Handler,
 		InvokeChangePasswordDlgEvent.Handler,
@@ -258,6 +262,7 @@ public class GwtMainPage extends ResizeComposite
 		SetDesktopDownloadAppControlVisibilityEvent.Handler,
 		ShowCollectionEvent.Handler,
 		ShowContentControlEvent.Handler,
+		ShowHtmlElementEvent.Handler,
 		ShowUserListEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler,
@@ -270,7 +275,7 @@ public class GwtMainPage extends ResizeComposite
 		ViewTeamingFeedEvent.Handler
 {
 	public static boolean m_novellTeaming = true;
-	public static RequestInfo m_requestInfo = jsGetRequestInfo();;
+	public static RequestInfo m_requestInfo = jsGetRequestInfo();
 	public static ContentControl m_contentCtrl;
 
 	private AddNewFolderDlg m_addNewFolderDlg = null;
@@ -342,6 +347,7 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.EDIT_PERSONAL_PREFERENCES,
 
 		// Hide events.
+		TeamingEvents.HIDE_HTML_ELEMENT,
 		TeamingEvents.HIDE_USER_LIST,
 		
 		// Invoke events.
@@ -374,6 +380,7 @@ public class GwtMainPage extends ResizeComposite
 		// Show events.
 		TeamingEvents.SHOW_COLLECTION,
 		TeamingEvents.SHOW_CONTENT_CONTROL,
+		TeamingEvents.SHOW_HTML_ELEMENT,
 		TeamingEvents.SHOW_USER_LIST,
 		
 		// Sidebar events.
@@ -3342,6 +3349,18 @@ public class GwtMainPage extends ResizeComposite
 	}
 	
 	/**
+	 * Handles HideHtmlElementEvent's received by this class.
+	 * 
+	 * Implements the HideHtmlElementEvent.Handler.onHideHtmlElement() method.
+	 * 
+	 */
+	@Override
+	public void onHideHtmlElement( HideHtmlElementEvent event )
+	{
+		saveHtmlElementStatus( event.getBinderId(), false );
+	}
+
+	/**
 	 * Handles HideUserListEvent's received by this class.
 	 * 
 	 * Implements the HideUserListEvent.Handler.onHideUserList() method.
@@ -3995,6 +4014,18 @@ public class GwtMainPage extends ResizeComposite
 	}
 	
 	/**
+	 * Handles ShowHtmlElementEvent's received by this class.
+	 * 
+	 * Implements the ShowHtmlElementEvent.Handler.onShowHtmlElement() method.
+	 * 
+	 */
+	@Override
+	public void onShowHtmlElement( ShowHtmlElementEvent event )
+	{
+		saveHtmlElementStatus( event.getBinderId(), true );
+	}
+
+	/**
 	 * Handles ShowUserListEvent's received by this class.
 	 * 
 	 * Implements the ShowUserListEvent.Handler.onShowUserList() method.
@@ -4504,6 +4535,31 @@ public class GwtMainPage extends ResizeComposite
 		}
 	}
 
+	/*
+	 * Saves the status of the HTML element display on the given binder.
+	 */
+	private void saveHtmlElementStatus( final Long binderId, final boolean showHtmlElement )
+	{
+		SaveHtmlElementStatusCmd cmd = new SaveHtmlElementStatusCmd( binderId, showHtmlElement );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_SaveHtmlElementStatus(),
+					binderId );
+			}
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				FullUIReloadEvent.fireOneAsync();
+			}
+		});
+	}
+	
 	/*
 	 * Saves the status of the user list display on the given binder.
 	 */

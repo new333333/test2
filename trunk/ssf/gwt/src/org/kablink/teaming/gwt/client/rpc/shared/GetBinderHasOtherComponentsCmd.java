@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,43 +30,65 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
+
 
 /**
- * This enumeration defines the places where JSPs get executed in the
- * GWT code to produce HTML.
+ * This class holds all of the information necessary to execute the
+ * 'get binder has other components' command.
  * 
  * @author drfoster@novell.com
  */
-public enum VibeJspHtmlType implements IsSerializable {
-	ACCESSORY_PANEL,
-	ACCESSORY,
-
-	ADMIN_REPORT_CHANGELOG,
-	ADMIN_REPORT_CREDITS,
-	ADMIN_REPORT_DATA_QUOTA_EXCEEDED,
-	ADMIN_REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED,
-	ADMIN_REPORT_DISK_USAGE,
-	ADMIN_REPORT_XSS,
+public class GetBinderHasOtherComponentsCmd extends VibeRpcCmd {
+	private BinderInfo	m_binderInfo;	//
 	
-	CUSTOM_JSP,
+	/*
+	 * For GWT serialization, must have a zero parameter constructor
+	 * method.
+	 */
+	private GetBinderHasOtherComponentsCmd() {
+		// Initialize the super class.
+		super();
+	}
 	
-	UNDEFINED;
-
 	/**
-	 * ?
+	 * Constructor method.
 	 * 
-	 * @param jspType
+	 * @param binderInfo
+	 */
+	public GetBinderHasOtherComponentsCmd(BinderInfo binderInfo) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameter.
+		m_binderInfo = binderInfo;
+	}
+	
+	/**
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public static VibeJspHtmlType getEnum(int jspType) {
-		VibeJspHtmlType cmd;
-		try                                      {cmd = VibeJspHtmlType.values()[jspType];}
-		catch (ArrayIndexOutOfBoundsException e) {cmd = VibeJspHtmlType.UNDEFINED;        }
-		return cmd;
+	public BinderInfo getBinderInfo() {return m_binderInfo;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setBinderInfo(BinderInfo binderInfo) {m_binderInfo = binderInfo;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_BINDER_HAS_OTHER_COMPONENTS.ordinal();
 	}
 }

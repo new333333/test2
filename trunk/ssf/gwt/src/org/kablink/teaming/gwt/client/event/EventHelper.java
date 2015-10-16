@@ -1096,6 +1096,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case HIDE_HTML_ELEMENT:
+				// A HideHtmlElementEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof HideHtmlElementEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = HideHtmlElementEvent.registerEvent(eventBus, ((HideHtmlElementEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case HIDE_MANAGE_MENU:
 				// A HideManageMenuEvent!  Can the event handler we
 				// were given handle that?
@@ -2348,6 +2357,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_HTML_ELEMENT:
+				// A ShowHtmlElementEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowHtmlElementEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowHtmlElementEvent.registerEvent(eventBus, ((ShowHtmlElementEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case SHOW_LANDING_PAGE:
 				// A ShowLandingPageEvent!  Can the event handler we
 				// were given handle that?
@@ -3224,8 +3242,10 @@ public class EventHelper {
 			case SHOW_WIKI_FOLDER:					           hasHandler = (eventHandler instanceof ShowWikiFolderEvent.Handler);		                   break;
 			
 			case HIDE_ACCESSORIES:						       hasHandler = (eventHandler instanceof HideAccessoriesEvent.Handler);		   	               break;
+			case HIDE_HTML_ELEMENT:						       hasHandler = (eventHandler instanceof HideHtmlElementEvent.Handler);		   	               break;
 			case HIDE_USER_LIST:						       hasHandler = (eventHandler instanceof HideUserListEvent.Handler);		   	               break;
 			case SHOW_ACCESSORIES:						       hasHandler = (eventHandler instanceof ShowAccessoriesEvent.Handler);		   	               break;
+			case SHOW_HTML_ELEMENT:						       hasHandler = (eventHandler instanceof ShowHtmlElementEvent.Handler);		   	               break;
 			case SHOW_USER_LIST:						       hasHandler = (eventHandler instanceof ShowUserListEvent.Handler);		   	               break;
 			
 			case GET_CURRENT_VIEW_INFO:                        hasHandler = (eventHandler instanceof GetCurrentViewInfoEvent.Handler);                     break;
