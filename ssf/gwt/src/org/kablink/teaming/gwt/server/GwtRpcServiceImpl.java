@@ -197,6 +197,7 @@ import org.kablink.teaming.gwt.server.util.GwtEmailTemplatesHelper;
 import org.kablink.teaming.gwt.server.util.GwtFolderEntryTypeHelper;
 import org.kablink.teaming.gwt.server.util.GwtHistoryHelper;
 import org.kablink.teaming.gwt.server.util.GwtHtml5Helper;
+import org.kablink.teaming.gwt.server.util.GwtHtmlElementHelper;
 import org.kablink.teaming.gwt.server.util.GwtKeyShieldSSOHelper;
 import org.kablink.teaming.gwt.server.util.GwtLdapHelper;
 import org.kablink.teaming.gwt.server.util.GwtLogHelper;
@@ -214,6 +215,7 @@ import org.kablink.teaming.gwt.server.util.GwtSearchHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.gwt.server.util.GwtShareHelper;
 import org.kablink.teaming.gwt.server.util.GwtTaskHelper;
+import org.kablink.teaming.gwt.server.util.GwtUserListHelper;
 import org.kablink.teaming.gwt.server.util.GwtUserVisibilityHelper;
 import org.kablink.teaming.gwt.server.util.GwtViewHelper;
 import org.kablink.teaming.gwt.server.util.GwtWikiHelper;
@@ -1290,6 +1292,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return new VibeRpcResponse( responseData );
 		}
 		
+		case GET_BINDER_HAS_OTHER_COMPONENTS:  {
+			GetBinderHasOtherComponentsCmd gfhulCmd = ((GetBinderHasOtherComponentsCmd) cmd);
+			HasOtherComponentsRpcResponseData result = GwtViewHelper.getBinderHasOtherComponents(this, req , gfhulCmd.getBinderInfo());
+			response = new VibeRpcResponse(result);
+			return response;
+		}
+		
 		case GET_BINDER_INFO:
 		{
 			BinderInfo binderInfo;
@@ -1920,14 +1929,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_FOLDER_HAS_USER_LIST:
-		{
-			GetFolderHasUserListCmd gfhulCmd = ((GetFolderHasUserListCmd) cmd);
-			boolean result = GwtViewHelper.getFolderHasUserList( this, req , gfhulCmd.getFolderInfo() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
-			return response;
-		}
-		
 		case GET_FOLDER_ROWS:
 		{
 			GetFolderRowsCmd gfrCmd = ((GetFolderRowsCmd) cmd);
@@ -2077,6 +2078,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetHistoryInfoCmd ghiCmd = ((GetHistoryInfoCmd) cmd);
 			HistoryInfo responseData = GwtHistoryHelper.getHistoryInfo( req, ghiCmd.getHistoryToken() );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_HTML_ELEMENT_INFO:  {
+			GetHtmlElementInfoCmd gheiCmd = ((GetHtmlElementInfoCmd) cmd);
+			HtmlElementInfoRpcResponseData result = GwtHtmlElementHelper.getBinderHtmlElementInfo(this, req , getResponse(ri), getServletContext(ri), gheiCmd.getBinderInfo());
+			response = new VibeRpcResponse(result);
 			return response;
 		}
 		
@@ -3043,7 +3051,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_USER_LIST_INFO:
 		{
 			GetUserListInfoCmd guliCmd = ((GetUserListInfoCmd) cmd);
-			UserListInfoRpcResponseData result = GwtViewHelper.getFolderUserListInfo( this, req , guliCmd.getFolderInfo() );
+			UserListInfoRpcResponseData result = GwtUserListHelper.getFolderUserListInfo( this, req , guliCmd.getFolderInfo() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3704,6 +3712,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_HTML_ELEMENT_STATUS:  {
+			SaveHtmlElementStatusCmd shesCmd = ((SaveHtmlElementStatusCmd) cmd);
+			Boolean responseData = GwtHtmlElementHelper.saveHtmlElementStatus(
+				this,
+				req,
+				shesCmd.getBinderId(),
+				shesCmd.getShowHtmlElementPanel());
+			response = new VibeRpcResponse(new BooleanRpcResponseData(responseData));
+			return response;
+		}
+		
 		case SAVE_KEYSHIELD_CONFIG:
 		{
 			SaveKeyShieldConfigCmd skcCmd = ((SaveKeyShieldConfigCmd) cmd);
@@ -3984,7 +4003,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_USER_LIST_STATUS:
 		{
 			SaveUserListStatusCmd sulsCmd = ((SaveUserListStatusCmd) cmd);
-			Boolean responseData = GwtViewHelper.saveUserListStatus(
+			Boolean responseData = GwtUserListHelper.saveUserListStatus(
 				this,
 				req,
 				sulsCmd.getBinderId(),

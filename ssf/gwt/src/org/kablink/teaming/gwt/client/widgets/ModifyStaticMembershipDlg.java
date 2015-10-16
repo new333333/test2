@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -1036,7 +1036,7 @@ public class ModifyStaticMembershipDlg extends DlgBox
 			// Is this user already in our list?
 			if ( isUserInGroup( user ) == false )
 			{
-				boolean doAdd = true;;
+				boolean doAdd = true;
 				
 				// No
 				// Is this an external user
@@ -1076,7 +1076,7 @@ public class ModifyStaticMembershipDlg extends DlgBox
 			// Is this group already in our list?
 			if ( isGroupInGroup( group ) == false ) 
 			{
-				boolean doAdd = true;;
+				boolean doAdd = true;
 				
 				// No
 				// Does this group hold external users?

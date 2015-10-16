@@ -279,7 +279,7 @@ public class GwtMobileDeviceHelper {
 			Long mdTotal = ((Long) mdMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 
 			// Resolve the user's we have devices for...
-			List<Long> userIds = new ArrayList<Long>();;
+			List<Long> userIds = new ArrayList<Long>();
 			for (MobileDevice md:  mdList) {
 				ListUtil.addLongToListLongIfUnique(userIds, md.getUserId());
 			}

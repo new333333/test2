@@ -2243,23 +2243,39 @@ public class GwtServerHelper {
 	
 	
 	/**
-	 * Execute the given enhanced view jsp and return the resulting
-	 * HTML.
+	 * Execute the given JSP and return the resultant HTML.
 	 * 
 	 * @param bs
 	 * @param request
 	 * @param response
 	 * @param servletContext
 	 * @param jspName
+	 * @param jspPath
 	 * @param model
 	 * 
 	 * @return
 	 */
-	public static String executeJsp(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String jspName, Map<String,Object> model) {
-		// Construct the full path to the jsp
-		String path = ("/WEB-INF/jsp/" + jspName);
+	public static String executeJsp(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String jspName, String jspPath, Map<String,Object> model) {
+		// If we weren't given the full path to the JSP...
+		if (!(MiscUtil.hasString(jspPath))) {
+			// ...construct it using the JSP's name...
+			jspPath = ("/WEB-INF/jsp/" + jspName);
+		}
 		
-		RequestDispatcher     reqDispatcher = request.getRequestDispatcher(path);
+		// ...and pass the request to the implementation method.
+		return executeJspImpl(bs, request, response, servletContext, jspPath, model);
+	}
+	
+	public static String executeJsp(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String jspName, Map<String,Object> model) {
+		// Always use the initial form of the method.
+		return executeJsp(bs, request, response, servletContext, jspName, null, model);
+	}
+
+	/*
+	 * Implements executing the given JSP and returning the resultant HTML.
+	 */
+	private static String executeJspImpl(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String jspPath, Map<String,Object> model) {
+		RequestDispatcher     reqDispatcher = request.getRequestDispatcher(jspPath);
 		StringServletResponse ssResponse    = new StringServletResponse(response);
 
 		String results;
@@ -5391,7 +5407,7 @@ public class GwtServerHelper {
 		String reply;
 		if (entityId.isBinder())
 		     reply = getBinderTitle(bs,                         entityId.getEntityId());
-		else reply = getEntryTitle( bs, entityId.getBinderId(), entityId.getEntityId());;
+		else reply = getEntryTitle( bs, entityId.getBinderId(), entityId.getEntityId());
 		return reply;
 	}
 
@@ -9483,8 +9499,12 @@ public class GwtServerHelper {
 							DefinitionHelper.getDefinitions(binder, model, null);		
 							Definition entityDef = ((Definition) model.get(WebKeys.DEFAULT_FOLDER_DEFINITION));
 							String family = BinderHelper.getFamilyNameFromDef(entityDef);
-							if ((null != family) && family.equals("landingpage")) {
-								reply = WorkspaceType.LANDING_PAGE;
+							if (null != family) {
+								if      (family.equals("discussion"))  reply = WorkspaceType.DISCUSSIONS;
+								else if (family.equals("landingpage")) reply = WorkspaceType.LANDING_PAGE;
+								else if (family.equals("project"))     reply = WorkspaceType.PROJECT_MANAGEMENT;
+								else if (family.equals("team"))        reply = WorkspaceType.TEAM;
+								else if (family.equals("workspace"))   reply = WorkspaceType.WORKSPACE;
 							}
 						}
 					}					
@@ -10467,6 +10487,7 @@ public class GwtServerHelper {
 		case GET_BINDER_BRANDING:
 		case GET_BINDER_DESCRIPTION:
 		case GET_BINDER_FILTERS:
+		case GET_BINDER_HAS_OTHER_COMPONENTS:
 		case GET_BINDER_INFO:
 		case GET_BINDER_OWNER_AVATAR_INFO:
 		case GET_BINDER_PERMALINK:
@@ -10528,7 +10549,6 @@ public class GwtServerHelper {
 		case GET_FOLDER_ENTRY_DETAILS:
 		case GET_FOLDER_ENTRY_TYPE:
 		case GET_FOLDER_FILTERS:
-		case GET_FOLDER_HAS_USER_LIST:
 		case GET_FOLDER_ROWS:
 		case GET_FOLDER_SORT_SETTING:
 		case GET_FOLDER_TOOLBAR_ITEMS:
@@ -10542,6 +10562,7 @@ public class GwtServerHelper {
 		case GET_HISTORY_INFO:
 		case GET_HORIZONTAL_NODE:
 		case GET_HORIZONTAL_TREE:
+		case GET_HTML_ELEMENT_INFO:
 		case GET_HTML5_SPECS:
 		case GET_IM_URL:
 		case GET_INHERITED_LANDING_PAGE_PROPERTIES:
@@ -10702,6 +10723,7 @@ public class GwtServerHelper {
 		case SAVE_FOLDER_FILTERS:
 		case SAVE_FOLDER_PINNING_STATE:
 		case SAVE_FOLDER_SORT:
+		case SAVE_HTML_ELEMENT_STATUS:
 		case SAVE_KEYSHIELD_CONFIG:
 		case SAVE_NET_FOLDER_GLOBAL_SETTINGS:
 		case SAVE_LDAP_CONFIG:

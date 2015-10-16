@@ -605,6 +605,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_FOLDER_ENTRY_DLG_POSITION = "userFolderEntryDlgPosition";
     public static final String USER_PROPERTY_BINDER_SHOW_ACCESSORIES = "userBinderShowAccessories";
     public static final String USER_PROPERTY_BINDER_SHOW_USER_LIST = "userBinderShowUserList";
+    public static final String USER_PROPERTY_BINDER_SHOW_HTML_ELEMENT = "userBinderShowHtmlElement";
     public static final String USER_PROPERTY_DESKTOP_APP_ACCESS_FILR = "userDesktopApp_AccessFilr";
     public static final String USER_PROPERTY_DESKTOP_APP_CACHE_PWD = "userDesktopApp_CachePwd";
     public static final String USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER_LIST = "userFolderColumnSortOrderList";

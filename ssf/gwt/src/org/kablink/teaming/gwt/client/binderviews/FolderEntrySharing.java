@@ -458,7 +458,7 @@ public class FolderEntrySharing extends VibeFlowPanel
 		// If the content that changed is sharing...
 		if (Change.SHARING.equals( event.getChange())) {
 			// ...force the share list to reload.
-			refreshShareListAsync();;
+			refreshShareListAsync();
 		}
 	}
 	

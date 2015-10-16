@@ -245,8 +245,10 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_WIKI_FOLDER,								// Shows a wiki folder.
 	
 	HIDE_ACCESSORIES,								// Hides the accessories panel on the given binder.
+	HIDE_HTML_ELEMENT,								// Hides the HTML element panel on the given binder.
 	HIDE_USER_LIST,									// Hides the user list panel on the given binder.
 	SHOW_ACCESSORIES,								// Shows the accessories panel on the given binder.
+	SHOW_HTML_ELEMENT,								// Shows the HTML element panel on the given binder.
 	SHOW_USER_LIST,									// Shows the user list panel on the given binder.
 	
 	GET_CURRENT_VIEW_INFO,							// Returns the current ViewInfo loaded in the content control.

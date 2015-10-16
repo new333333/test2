@@ -194,7 +194,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 					textAmount.setText("0");
 
 					limitExceeded.setVisible(false);
-	        		limitExceeded.setText("");;
+	        		limitExceeded.setText("");
 				} else if(totalChar > MAX_CHARS) {
 	        		limitExceeded.setVisible(true);
 	        		limitExceeded.setText(""+(MAX_CHARS - totalChar));
@@ -206,7 +206,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 					textAmount.setText(""+(MAX_CHARS - totalChar));
 	        		
 	        		limitExceeded.setVisible(false);
-	        		limitExceeded.setText("");;
+	        		limitExceeded.setText("");
 	        	}
 			}});
 		

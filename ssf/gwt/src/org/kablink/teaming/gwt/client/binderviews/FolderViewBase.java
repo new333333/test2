@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,14 +50,14 @@ import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
-import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCanAddEntitiesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderDisplayDataCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFolderHasUserListCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetBinderHasOtherComponentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyFilesContainerInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.HasOtherComponentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
@@ -117,9 +117,10 @@ public abstract class FolderViewBase extends ViewBase
 	private BinderInfo							m_folderInfo;					// A BinderInfo object that describes the folder being viewed.
 	private boolean								m_allowColumnSizing;			// true -> Add the column sizing entry menu item.  false -> Don't.
 	private boolean								m_viewReady;					// Set true once the view and all its components are ready.
-	private boolean								m_pinning;						// true -> We're showing pinned items.                   false -> We're not.
-	private boolean								m_sharedFiles;					// true -> We're showing shared only shared files.       false -> We're not.
-	private boolean								m_showUserList;					// true -> We're showing the UserListPanel in the view.  false -> We're not.
+	private boolean								m_pinning;						// true -> We're showing pinned items.                      false -> We're not.
+	private boolean								m_sharedFiles;					// true -> We're showing shared only shared files.          false -> We're not.
+	private boolean								m_showHtmlElement;				// true -> We're showing the HtmlElementPanel in the view.  false -> We're not.
+	private boolean								m_showUserList;					// true -> We're showing the UserListPanel in the view.     false -> We're not.
 	private CalendarDisplayDataProvider			m_calendarDisplayDataProvider;	// A CalendarDisplayDataProvider to use to obtain a CalendarDisplayDataRpcResponseData object.
 	private CanAddEntitiesRpcResponseData		m_canAddEntities;				// Contains information about the user's rights to add entities to the current folder.
 	private DropPanel							m_dndPanel;						// A DropPanel used for HTML5 based file uploads.
@@ -166,9 +167,10 @@ public abstract class FolderViewBase extends ViewBase
 	public final static int FILTER_PANEL_INDEX				=  6;
 	public final static int BINDER_OWNER_AVATAR_PANEL_INDEX	=  7;
 	public final static int USER_LIST_PANEL_INDEX			=  8;
-	public final static int ENTRY_MENU_PANEL_INDEX			=  9;
-	public final static int CALENDAR_NAVIGATION_PANEL_INDEX	= 10;
-	public final static int VIEW_CONTENT_PANEL_INDEX		= 11;
+	public final static int HTML_ELEMENT_PANEL_INDEX		=  9;
+	public final static int ENTRY_MENU_PANEL_INDEX			= 10;
+	public final static int CALENDAR_NAVIGATION_PANEL_INDEX	= 11;
+	public final static int VIEW_CONTENT_PANEL_INDEX		= 12;
 	public final static int FOOTER_PANEL_INDEX				= 13;
 
 	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
@@ -188,6 +190,7 @@ public abstract class FolderViewBase extends ViewBase
 		FILTER,
 		BINDER_OWNER_AVATAR,
 		USER_LIST,
+		HTML_ELEMENT,
 		ENTRY_MENU,
 		CALENDAR_NAVIGATION,
 		FOOTER,
@@ -651,9 +654,10 @@ public abstract class FolderViewBase extends ViewBase
 		case MAILTO:
 		case BINDER_OWNER_AVATAR:
 		case CALENDAR_NAVIGATION:
-		case TASK_GRAPHS:  reply = false;          break;
-		case USER_LIST:    reply = m_showUserList; break;
-		default:           reply = true;           break;
+		case TASK_GRAPHS:   reply = false;             break;
+		case USER_LIST:     reply = m_showUserList;    break;
+		case HTML_ELEMENT:  reply = m_showHtmlElement; break;
+		default:            reply = true;              break;
 		}
 		return reply;
 	}
@@ -793,13 +797,13 @@ public abstract class FolderViewBase extends ViewBase
 			// however, need to know if we should show the
 			// UserListPanel in the view.
 			GwtClientHelper.executeCommand(
-					new GetFolderHasUserListCmd(m_folderInfo),
+					new GetBinderHasOtherComponentsCmd(m_folderInfo),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
-						m_messages.rpcFailure_GetFolderDisplayData(),
+						m_messages.rpcFailure_GetBinderHasOtherComponents(),
 						m_folderInfo.getBinderIdAsLong());
 				}
 				
@@ -807,7 +811,9 @@ public abstract class FolderViewBase extends ViewBase
 				public void onSuccess(VibeRpcResponse response) {
 					// Store the show user list flag and tell the view
 					// to construct itself.
-					m_showUserList = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
+					HasOtherComponentsRpcResponseData reply = ((HasOtherComponentsRpcResponseData) response.getResponseData());
+					m_showUserList    = reply.getShowUserList();
+					m_showHtmlElement = reply.getShowHtmlElement();
 					loadPart4Async();
 				}
 			});
@@ -834,6 +840,7 @@ public abstract class FolderViewBase extends ViewBase
 					m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
 					m_pinning           = m_folderDisplayData.getViewPinnedEntries();
 					m_sharedFiles       = m_folderDisplayData.getViewSharedFiles();
+					m_showHtmlElement   = m_folderDisplayData.getShowHtmlElement();
 					m_showUserList      = m_folderDisplayData.getShowUserList();
 					loadPart4Async();
 				}
@@ -1321,10 +1328,10 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	private void loadPart15Async() {
 		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.CALENDAR_NAVIGATION))) {
+		if (!(includePanel(FolderPanels.HTML_ELEMENT))) {
 			// ...we don't show the calendar navigation panel.
-			insertToolPanelPlaceholder(CALENDAR_NAVIGATION_PANEL_INDEX);
-			constructViewAsync();
+			insertToolPanelPlaceholder(HTML_ELEMENT_PANEL_INDEX);
+			loadPart16Async();
 			return;
 		}
 		
@@ -1340,6 +1347,45 @@ public abstract class FolderViewBase extends ViewBase
 	 * Synchronously loads the next part of the view.
 	 */
 	private void loadPart15Now() {
+		HtmlElementPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, FolderViewBase.HTML_ELEMENT_PANEL_INDEX);
+				loadPart16Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 */
+	private void loadPart16Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.CALENDAR_NAVIGATION))) {
+			// ...we don't show the calendar navigation panel.
+			insertToolPanelPlaceholder(CALENDAR_NAVIGATION_PANEL_INDEX);
+			constructViewAsync();
+			return;
+		}
+		
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart16Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the next part of the view.
+	 */
+	private void loadPart16Now() {
 		CalendarNavigationPanel.createAsync(this, m_calendarDisplayDataProvider, getFolderInfo(), this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {

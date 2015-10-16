@@ -162,6 +162,7 @@ public class GwtMenuHelper {
 	private final static String CONFIGURE_COLUMNS		= "configureColumns";
 	private final static String CONFIGURE_DEFINITIONS	= "configureDefinitions";
 	private final static String CONFIGURE_EMAIL			= "configEmail";
+	private final static String CONFIGURE_HTML_ELEMENT	= "configureHtmlElement";
 	private final static String CONFIGURE_USER_LIST		= "configureUserList";
 	private final static String COPY					= "copy";
 	private final static String COPY_PUBLIC_LINK		= "copyPublicLink";
@@ -877,15 +878,42 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem to configure the HTML element panel.
+	 */
+	private static void constructEntryConfigureHtmlElement(AllModulesInjected bs, HttpServletRequest request, Binder binder, List<ToolbarItem> configureToolbarItems) {
+		// Does the binder have an HTML element in its definition?
+		if (GwtHtmlElementHelper.getBinderHasHtmlElement(binder)) {
+			// Yes!  Create a configure HTML element ToolbarItem.
+			boolean hideHtmlElement;
+			try                 {hideHtmlElement = GwtHtmlElementHelper.getHtmlElementStatus(bs, request, binder.getId());}
+			catch (Exception e) {hideHtmlElement = false;}
+			String titleKey;
+			TeamingEvents event;
+			if (hideHtmlElement) {
+				titleKey = "misc.hideHtmlElement";
+				event    = TeamingEvents.HIDE_HTML_ELEMENT;
+			}
+			else {
+				titleKey = "misc.showHtmlElement";
+				event    = TeamingEvents.SHOW_HTML_ELEMENT;
+			}
+			ToolbarItem heTBI = new ToolbarItem(CONFIGURE_HTML_ELEMENT);
+			markTBITitle(heTBI, titleKey);
+			markTBIEvent(heTBI, event   );
+			configureToolbarItems.add(heTBI);
+		}
+	}
+	
+	/*
 	 * Constructs a ToolbarItem to configure the user list panel.
 	 */
 	private static void constructEntryConfigureUserList(AllModulesInjected bs, HttpServletRequest request, Binder binder, List<ToolbarItem> configureToolbarItems) {
 		// Is the binder a Folder that has user_list items in its
 		// definition?
-		if ((binder instanceof Folder) && GwtViewHelper.getFolderHasUserList((Folder) binder)) {
+		if ((binder instanceof Folder) && GwtUserListHelper.getFolderHasUserList((Folder) binder)) {
 			// Yes!  Create a configure user list ToolbarItem.
 			boolean hideUserList;
-			try                 {hideUserList = GwtViewHelper.getUserListStatus(bs, request, binder.getId());}
+			try                 {hideUserList = GwtUserListHelper.getUserListStatus(bs, request, binder.getId());}
 			catch (Exception e) {hideUserList = false;}
 			String titleKey;
 			TeamingEvents event;
@@ -3839,9 +3867,17 @@ public class GwtMenuHelper {
 					binder,
 					configureToolbarItems);
 				
-				// ...and add the configure user list item to the
-				// ...toolbar.
+				// ...add the configure user list item to the
+				// ...toolbar...
 				constructEntryConfigureUserList(
+					bs,
+					request,
+					binder,
+					configureToolbarItems);
+				
+				// ...and add the configure HTML element item to the
+				// ...toolbar.
+				constructEntryConfigureHtmlElement(
 					bs,
 					request,
 					binder,

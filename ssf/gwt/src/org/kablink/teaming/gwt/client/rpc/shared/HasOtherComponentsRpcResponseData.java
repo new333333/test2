@@ -30,43 +30,58 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This enumeration defines the places where JSPs get executed in the
- * GWT code to produce HTML.
+ * This class holds the response data for the for any command that
+ * queries whether a binder has other components response.
  * 
  * @author drfoster@novell.com
  */
-public enum VibeJspHtmlType implements IsSerializable {
-	ACCESSORY_PANEL,
-	ACCESSORY,
-
-	ADMIN_REPORT_CHANGELOG,
-	ADMIN_REPORT_CREDITS,
-	ADMIN_REPORT_DATA_QUOTA_EXCEEDED,
-	ADMIN_REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED,
-	ADMIN_REPORT_DISK_USAGE,
-	ADMIN_REPORT_XSS,
+public class HasOtherComponentsRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private boolean	m_showHtmlElement;	//
+	private boolean	m_showUserList;		//
 	
-	CUSTOM_JSP,
-	
-	UNDEFINED;
-
-	/**
-	 * ?
+	/*
+	 * Constructor method.
 	 * 
-	 * @param jspType
+	 * Zero parameter constructor for GWT serialization.
+	 */
+	private HasOtherComponentsRpcResponseData() {
+		// Initialize the super class.
+		super();
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param showUserList
+	 * @param showHtmlElement
+	 */
+	public HasOtherComponentsRpcResponseData(boolean showUserList, boolean showHtmlElement) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameters.
+		setShowUserList(   showUserList   );
+		setShowHtmlElement(showHtmlElement);
+	}
+	
+	/**
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public static VibeJspHtmlType getEnum(int jspType) {
-		VibeJspHtmlType cmd;
-		try                                      {cmd = VibeJspHtmlType.values()[jspType];}
-		catch (ArrayIndexOutOfBoundsException e) {cmd = VibeJspHtmlType.UNDEFINED;        }
-		return cmd;
-	}
+	public boolean getShowHtmlElement() {return m_showHtmlElement;}
+	public boolean getShowUserList()    {return m_showUserList;   }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setShowHtmlElement(boolean showHtmlElement) {m_showHtmlElement = showHtmlElement;}
+	public void setShowUserList(   boolean showUserList)    {m_showUserList    = showUserList;   }
 }

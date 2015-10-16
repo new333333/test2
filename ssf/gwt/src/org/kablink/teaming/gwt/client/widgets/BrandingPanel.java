@@ -484,7 +484,7 @@ public class BrandingPanel extends Composite
 				String bgColor;
 				Style bgPanelStyle;
 				Element bgPanelElement;
-				boolean useDefaultBgImg = true;;
+				boolean useDefaultBgImg = true;
 
 				// Remove any background image that may currently be set on the branding panel
 				if ( m_bgImg != null )
