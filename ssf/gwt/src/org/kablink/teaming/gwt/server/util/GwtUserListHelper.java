@@ -263,7 +263,7 @@ public class GwtUserListHelper {
 			Document   viewDefDoc = ((null == viewDef) ? null : viewDef.getDefinition());
 			if (null != viewDefDoc) {
 				// Yes!  Does it contain any user_list <item>'s?
-		  		reply = viewDefDoc.selectNodes("//item[@type='form']//item[@name='user_list']");
+		  		reply = viewDefDoc.selectNodes("//item[@name='forumView']//item[@formItem='user_list']");
 			}
 		}
 		
