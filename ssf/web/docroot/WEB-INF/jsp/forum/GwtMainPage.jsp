@@ -379,7 +379,7 @@
 				<tr>
 					<td align="right"></td>
 					<td>
-						<div class="gwt-Label margintop3 loginDlgKeyShieldPanel" style="display: none;" id="loginDlgKeyShieldPanel">
+						<div class="gwt-Label margintop3 loginDlgKeyShieldPanel" style="display: none; width: 300px; white-space: normal !important;" id="loginDlgKeyShieldPanel">
 							<span class="gwt-InlineLabel loginDlgKeyShieldErrorMessage" id="loginDlgKeyShieldErrorMessage"></span>
 							<div class="gwt-Label loginDlgKeyShieldRefererPanel" id="loginDlgKeyShieldRefererPanel">
 								<a class="gwt-Anchor loginDlgKeyShieldRefererLink" href="#" target="_top" id="loginDlgKeyShieldRefererLink"><ssf:nlt tag="loginDlg.keyShieldRefererLink"/></a>
