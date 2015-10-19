@@ -2635,8 +2635,24 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			} else {
 				if ("true".equals(multiple)) {
 					//There are no selections set, and multiple is allowed. See if the user might be trying to clear the selections
-					if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-		    			entryData.put(nameValue, null);
+					if (!inputData.isFieldsOnly() || fieldModificationAllowed) { 
+						// Bugzilla 938579:
+						//    *** Commented out the following put. ***
+						//
+						//    I have no clue what the above comment
+						//    means by 'See if the user might be trying
+						//    to clear the selections.'  The following
+						//    code doesn't do that, it simply blows
+						//    away any existing value for the
+						//    attribute.  It would seem we should be
+						//    storing null for the nameValue and have
+						//    it cleared in the if-branch above to do
+						//    what the comment suggests.
+						//
+						// See ssf revision 21724 for when this put was
+						// added to the code.
+//		    			entryData.put(nameValue, null);
+					}
 				}
 			}
 			if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
