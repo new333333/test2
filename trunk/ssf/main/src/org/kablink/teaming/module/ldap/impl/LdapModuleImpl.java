@@ -2399,15 +2399,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					{
 						dn = bd.getNameInNamespace();
 					}
-
-					// Get the home directory info for this user
+					
+					// For Filr, get the home directory info for this user.
 					dirType = getLdapDirType( config.getLdapGuidAttribute() );
-					homeDirInfo = getHomeDirInfoFromConfig(
-														ctx,
-														dirType,
-														dn,
-														searchInfo.getHomeDirConfig(),
-														logErrors );
+					if ( Utils.checkIfFilr() )
+					     homeDirInfo = getHomeDirInfoFromConfig(ctx, dirType, dn, searchInfo.getHomeDirConfig(), logErrors);
+					else homeDirInfo = null;
 				}
 				finally
 				{
