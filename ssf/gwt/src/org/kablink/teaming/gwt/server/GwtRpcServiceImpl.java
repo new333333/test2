@@ -612,7 +612,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				groupInfo.setId( group.getId() );
 				groupInfo.setName( group.getName() );
 				groupInfo.setTitle( group.getTitle() );
-				allowExternal = true;	// JW:  Get the group the group object?
+				allowExternal = (!(group.getIdentityInfo().isInternal()));
 				groupInfo.setMembershipInfo( group.isDynamic(), allowExternal );
 
 				groupInfo.setDn( group.getForeignName() );
