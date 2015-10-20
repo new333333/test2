@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -92,8 +92,8 @@ import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * This dialog can be used to add a group or modify a group.
+ * 
  * @author jwootton
- *
  */
 public class ModifyGroupDlg extends DlgBox
 	implements EditSuccessfulHandler
@@ -195,7 +195,7 @@ public class ModifyGroupDlg extends DlgBox
 			++nextRow;
 			
 			m_descTextArea = new TextArea();
-			m_descTextArea.setCharacterWidth( 50 );
+			m_descTextArea.setWidth( "97%" );
 			m_descTextArea.setVisibleLines( 5 );
 			table.setWidget( nextRow, 0, m_descTextArea );
 			cellFormatter.setColSpan( nextRow, 0, 2 );
@@ -223,6 +223,7 @@ public class ModifyGroupDlg extends DlgBox
 				m_editMembershipBtn = new Button( messages.modifyGroupDlgEditGroupMembershipLabel() );
 				m_editMembershipBtn.addStyleName( "teamingButton" );
 				m_editMembershipBtn.getElement().getStyle().setMarginLeft( 10, Unit.PX );
+				m_editMembershipBtn.getElement().getStyle().setMarginRight( 0, Unit.PX );
 				m_rbTable.setWidget( 0, 1, m_editMembershipBtn );
 				cellFormatter2.setRowSpan( 0, 1, 2 );
 				
@@ -262,6 +263,7 @@ public class ModifyGroupDlg extends DlgBox
 				m_viewMembershipBtn = new Button( messages.modifyGroupDlgViewGroupMembershipLabel() );
 				m_viewMembershipBtn.addStyleName( "teamingButton" );
 				m_viewMembershipBtn.getElement().getStyle().setMarginLeft( 10, Unit.PX );
+				m_viewMembershipBtn.getElement().getStyle().setMarginRight( 0, Unit.PX );
 				m_rbTable.setWidget( 0, 1, m_viewMembershipBtn );
 				cellFormatter2.setRowSpan( 0, 1, 2 );
 				
