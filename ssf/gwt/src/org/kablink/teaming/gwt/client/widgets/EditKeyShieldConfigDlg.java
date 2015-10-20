@@ -92,6 +92,9 @@ public class EditKeyShieldConfigDlg extends DlgBox
 {
 	private final static boolean	HARD_CODE_SSO_ERROR_STRINGS	= false;	// Jong requested these be hard coded.  That felt wrong so we pull them out of the resources.  Changing this to true will use hard coded versions.
 	
+	private final static int	ERROR_MESSAGE_MAXIMUM_LENGTH	= 128;
+	private final static int	ERROR_MESSAGE_VISIBLE_LENGTH	=  90;
+	
 	private boolean						m_testConnectionInProgress;			//
 	private CheckBox					m_enableKeyShieldCheckbox;			//
 	private CheckBox					m_hardwareTokenRequiredCheckbox;	//
@@ -109,7 +112,6 @@ public class EditKeyShieldConfigDlg extends DlgBox
 	private FlowPanel					m_alertPanel;						//
 	private FlowPanel					m_stackTracePanel;					//
 	private List<HandlerRegistration>	m_registeredEventHandlers;			//
-
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -296,8 +298,8 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		table.setHTML(row, 0, tmpPanel.getElement().getInnerHTML());
 		
 		m_ssoErrorMessageForWeb = new TextBox();
-		m_ssoErrorMessageForWeb.setVisibleLength(80);
-		m_ssoErrorMessageForWeb.setMaxLength(128);
+		m_ssoErrorMessageForWeb.setVisibleLength(ERROR_MESSAGE_VISIBLE_LENGTH);
+		m_ssoErrorMessageForWeb.setMaxLength(    ERROR_MESSAGE_MAXIMUM_LENGTH);
 		table.setWidget(row, 1, m_ssoErrorMessageForWeb);
 		row += 1;
 		
@@ -310,8 +312,8 @@ public class EditKeyShieldConfigDlg extends DlgBox
 		table.setHTML(row, 0, tmpPanel.getElement().getInnerHTML());
 		
 		m_ssoErrorMessageForWebdav = new TextBox();
-		m_ssoErrorMessageForWebdav.setVisibleLength(80);
-		m_ssoErrorMessageForWebdav.setMaxLength(128);
+		m_ssoErrorMessageForWebdav.setVisibleLength(ERROR_MESSAGE_VISIBLE_LENGTH);
+		m_ssoErrorMessageForWebdav.setMaxLength(    ERROR_MESSAGE_MAXIMUM_LENGTH);
 		table.setWidget(row, 1, m_ssoErrorMessageForWebdav);
 		row += 1;
 		
