@@ -786,7 +786,7 @@ public class MainMenuControl extends Composite
 		// If the menu control isn't visible, we don't want to return
 		// anything.  Otherwise, return a newly constructed popup.
 		ManageMenuPopupCallback mmpCallback = event.getManageMenuPopupCallback();
-		if (!(isVisible()))
+		if ((!(GwtClientHelper.isLicenseFilr())) && (!(isVisible())))
 		     mmpCallback.manageMenuPopup(null       );
 		else buildManageMenuPopup(       mmpCallback);
 	}
