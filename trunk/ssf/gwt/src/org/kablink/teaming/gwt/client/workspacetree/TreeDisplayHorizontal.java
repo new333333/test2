@@ -673,9 +673,14 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	@Override
 	boolean isMainMenuVisible() {
 		boolean reply;
-		if (null == m_mainMenuVisible)
-		     reply = super.isMainMenuVisible();
-		else reply = m_mainMenuVisible.booleanValue();
+		if (GwtClientHelper.isLicenseFilr()) {
+			reply = true;
+		}
+		else {
+			if (null == m_mainMenuVisible)
+			     reply = super.isMainMenuVisible();
+			else reply = m_mainMenuVisible.booleanValue();
+		}
 		return reply;
 	}
 	
