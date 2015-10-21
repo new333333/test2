@@ -329,4 +329,12 @@ update SS_Forums set binderType = LEFT(type, 1);
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="32">
+        <comment>Increase clientAddr column size from 16 to 40 characters to accommodate ipv6</comment>
+        <modifyDataType tableName="SS_LoginAudit" columnName="clientAddr" newDataType="VARCHAR(40)"/>
+        <modifySql dbms="mysql">
+            <append value=" character set latin1 collate latin1_bin not null"/>
+        </modifySql>
+    </changeSet>
+    
 </databaseChangeLog>

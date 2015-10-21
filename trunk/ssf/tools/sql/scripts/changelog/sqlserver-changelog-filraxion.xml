@@ -399,4 +399,12 @@ GO
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="30">
+        <comment>Increase clientAddr column size from 16 to 40 characters to accommodate ipv6</comment>
+        <modifyDataType schemaName="dbo" tableName="SS_LoginAudit" columnName="clientAddr" newDataType="VARCHAR(40)"/>
+        <modifySql dbms="mssql">
+            <append value=" NOT NULL"/>
+        </modifySql>
+    </changeSet>
+
 </databaseChangeLog>

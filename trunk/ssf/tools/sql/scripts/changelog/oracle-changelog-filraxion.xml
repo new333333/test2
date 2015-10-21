@@ -326,4 +326,11 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="30">
+        <comment>Increase clientAddr column size from 16 to 40 characters to accommodate ipv6</comment>
+        <!-- For Oracle, this column needs to be nullable, but we don't have to specify
+             it explicitly, since nullable is the default any way. -->
+        <modifyDataType tableName="SS_LoginAudit" columnName="clientAddr" newDataType="VARCHAR2(40 CHAR)"/>
+    </changeSet>
+
 </databaseChangeLog>
