@@ -40,8 +40,8 @@ dojo.date.locale.addCustomFormats("ssf.cldr","custom");
 
 // Bugzilla 512176:
 //    Rewrote to use dojo's locale based date formatter to construct
-//    the correct format.  The following is used to which format is
-//    used.
+//    the correct format.  The following is used to control which
+//    format is used.
 var calendarNav_DateFormat = "medium";
 
 // Width used for the popup DIV containing the list of events when
@@ -327,10 +327,23 @@ function ss_calendarEngine(
 	}
 	
 	this.refreshEntryEvents = function(entryId) {
-		setTimeout(function(){
-				ss_cal_Events.removeEntryEvents(entryId);
-				that.loadEntryEvents(entryId);
-			}, 2000);
+		// Bugzilla 951401:
+		//    Depending on how we get here, an entryId may NOT be
+		//    supplied.  E.g., If you create a new workspace inside a
+		//    workspace with a visible calendar accessory, when the
+		//    reload transits through ReloadOpenerControl through
+		//    forum/reload_opener.jsp, no entryId is supplied.  If that
+		//    request were to go through here, it would generate an
+		//    ss_not_logged_in error;
+		if (entryId) {
+			setTimeout(function(){
+					ss_cal_Events.removeEntryEvents(entryId);
+					that.loadEntryEvents(entryId);
+				}, 2000);
+		}
+		else {
+//			alert("ss_calendar.refreshEntryEvents():  entryId is missing, request ignored!");
+		}
 	}
 	
 	this.switchView =  function(/* String: "daydelta", "3daydelta", "week", "fortnight", "workweek", "month", "daydirect", "monthdirect", "datedirect", "prev", "next" */ 
