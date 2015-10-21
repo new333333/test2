@@ -235,7 +235,7 @@ public class AdminResourceUtil {
             model = new Schedule();
             model.setEnabled(scheduleInfo.isEnabled());
             org.kablink.teaming.jobs.Schedule sch = scheduleInfo.getSchedule();
-            if (sch.isDaily()) {
+            if (sch.isDaily() || sch.areAllDaysDisabled()) {
                 model.setDayFrequency(Schedule.DayFrequency.daily.name());
             } else {
                 model.setDayFrequency(Schedule.DayFrequency.selected_days.name());

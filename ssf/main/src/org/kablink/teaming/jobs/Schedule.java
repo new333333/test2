@@ -210,7 +210,7 @@ public class Schedule {
 	 */
 	public String getQuartzSchedule() {
 		StringBuffer schedule = new StringBuffer("0 " + minutes + " " + hours + " ? * ");
-		if (isDaily()) {
+		if (isDaily() || areAllDaysDisabled()) {
 			schedule.append("* *");
 		} else {
 			if (isOnSunday()) schedule.append("sun,");
@@ -231,5 +231,9 @@ public class Schedule {
 	}
 	public void setDetails(Map jobDetails) {
 		this.jobDetails = jobDetails;
+	}
+
+	public boolean areAllDaysDisabled() {
+		return !onSunday && !onMonday && !onTuesday && !onWednesday && !onThursday && !onFriday && !onSaturday;
 	}
 }
