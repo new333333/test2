@@ -516,7 +516,7 @@ public void delete(final Folder folder) {
 	 		   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and sharedEntity_id in " + 
 	 			   				"(select p.id from org.kablink.teaming.domain.FolderEntry p where " +
 			   			  			" p.parentBinder=:folder) and sharedEntity_type=:sharedEntityType")
-			   			  	.setDate("deletedDate", new Date())
+			   			  	.setTimestamp("deletedDate", new Date())
 			   			  	.setEntity("folder", folder)
 			   			  	.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.getValue())
 			   				.executeUpdate(); 		   			
@@ -614,7 +614,7 @@ public void delete(final Folder folder) {
 	    		   				.executeUpdate();
 	       		   			//mark share items as deleted whose shared entities are these entries
 	     		   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and sharedEntity_id in (:pList) and sharedEntity_type=:sharedEntityType")
-	     		   				.setDate("deletedDate", new Date())
+	     		   				.setTimestamp("deletedDate", new Date())
 	         	   				.setParameterList("pList", ids)
 	    		   			  	.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.getValue())
 	    		   				.executeUpdate();

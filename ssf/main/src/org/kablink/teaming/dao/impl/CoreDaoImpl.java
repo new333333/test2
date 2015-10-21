@@ -544,13 +544,13 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		   				.executeUpdate();
 			   			//Mark share items as deleted where shared entity is this binder
 			   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
-			   			.setDate("deletedDate", now)
+			   			.setTimestamp("deletedDate", now)
                     	.setInteger("sharedEntityType", binder.getEntityType().getValue())
                     	.setLong("sharedEntityId", binder.getId())
 		   				.executeUpdate();
 			   			//Mark share items as deleted where recipient is this team
 			   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and recipient_type=:recipientType AND recipient_id=:recipientId")
-			   			.setDate("deletedDate", now)
+			   			.setTimestamp("deletedDate", now)
                     	.setShort("recipientType", ShareItem.RecipientType.team.getValue())
                     	.setLong("recipientId", binder.getId())
 		   				.executeUpdate();
@@ -3586,14 +3586,14 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		    			Date now = new Date();
 			   			//delete share items where shared entity is this binder
 			   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId")
-			   			.setDate("deletedDate", now)
+			   			.setTimestamp("deletedDate", now)
                     	.setInteger("sharedEntityType", binder.getEntityType().getValue())
                     	.setLong("sharedEntityId", binder.getId())
 		   				.executeUpdate();
 			   			
 			   			//delete share items where recipient is this team
 			   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and recipient_type=:recipientType AND recipient_id=:recipientId")
-			   			.setDate("deletedDate", now)
+			   			.setTimestamp("deletedDate", now)
                     	.setShort("recipientType", ShareItem.RecipientType.team.getValue())
                     	.setLong("recipientId", binder.getId())
 		   				.executeUpdate();
@@ -3611,7 +3611,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	    	   				for(int i = 0; i < folderEntryIds.size(); i += inClauseLimit) {
 	    	   					idList = folderEntryIds.subList(i, Math.min(folderEntryIds.size(), i + inClauseLimit));
 			 		   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and sharedEntity_type=:sharedEntityType and sharedEntity_id in (:idList)")
-			 		   			.setDate("deletedDate", now)
+			 		   			.setTimestamp("deletedDate", now)
 			 		   			.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.getValue())
 			 		   			.setParameterList("idList", idList)
 			 		   			.executeUpdate();

@@ -420,7 +420,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			   			accessTypes.add(ShareItem.RecipientType.user.getValue());
 			   			accessTypes.add(ShareItem.RecipientType.group.getValue());		   			
 			   			session.createQuery("Update org.kablink.teaming.domain.ShareItem set deletedDate=:deletedDate where deletedDate is null and recipientId in (:pList) and recipientType in (:aList)")
-			   			.setDate("deletedDate", new Date())
+			   			.setTimestamp("deletedDate", new Date())
 	   					.setParameterList("pList", ids)
 	   					.setParameterList("aList", accessTypes)
 	   					.executeUpdate();
