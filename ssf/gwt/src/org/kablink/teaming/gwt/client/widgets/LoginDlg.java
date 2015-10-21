@@ -76,6 +76,8 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Touch;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
@@ -85,10 +87,19 @@ import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.event.dom.client.TouchCancelEvent;
+import com.google.gwt.event.dom.client.TouchCancelHandler;
+import com.google.gwt.event.dom.client.TouchEndEvent;
+import com.google.gwt.event.dom.client.TouchEndHandler;
+import com.google.gwt.event.dom.client.TouchMoveEvent;
+import com.google.gwt.event.dom.client.TouchMoveHandler;
+import com.google.gwt.event.dom.client.TouchStartEvent;
+import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -135,7 +146,9 @@ public class LoginDlg extends DlgBox
 	private Element m_pwdLabelElement = null;
 	private PasswordTextBox m_pwdTxtBox = null;
 	private Button m_okBtn;
+	private TouchButton m_okTouchBtn;
 	private Button m_cancelBtn = null;
+	private TouchButton m_cancelTouchBtn = null;
 	private Label m_loginFailedMsg = null;
 	private Label m_authenticatingMsg = null;
 	private InlineLabel m_forgotPwdLink = null;
@@ -149,7 +162,9 @@ public class LoginDlg extends DlgBox
 	private PasswordTextBox m_pwd2TxtBox;
 	private FlowPanel m_selfRegPanel;
 	private Button m_registerBtn;
+	private TouchButton m_registerTouchBtn;
 	private Button m_pwdResetBtn;
+	private TouchButton m_pwdResetTouchBtn;
 	private Image m_captchaImg;
 	private TextBox m_captchaResponseTxtBox;
 	private ForgottenPwdDlg m_forgottenPwdDlg = null;
@@ -166,7 +181,6 @@ public class LoginDlg extends DlgBox
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private String m_preLoginTitle;
 	private boolean m_captchaAlreadyChecked = false;
-	
 	
 	/**
 	 * 
@@ -272,7 +286,7 @@ public class LoginDlg extends DlgBox
 			return m_provider;
 		}
 	}
-	
+
 	/*
 	 * Class constructor.
 	 * 
@@ -1529,22 +1543,23 @@ public class LoginDlg extends DlgBox
 			okElement = Document.get().getElementById( "loginOkBtn" );
 			m_okBtn = Button.wrap( okElement );
 			m_okBtn.setVisible( false );
+			m_okTouchBtn = new TouchButton( m_okBtn );
 			
 			cancelElement = Document.get().getElementById( "loginCancelBtn" );
 			m_cancelBtn = Button.wrap( cancelElement );
 			m_cancelBtn.setText( messages.loginDlg_EnterAsGuest() );
 			m_cancelBtn.addClickHandler( this );
 			m_cancelBtn.setVisible( false );
+			m_cancelTouchBtn = new TouchButton( m_cancelBtn );
 		}
 
 		// Show the Register button
 		{
-			Element element;
-			
-			element = Document.get().getElementById( "loginRegisterBtn" );
+			final Element element = Document.get().getElementById( "loginRegisterBtn" );
 			m_registerBtn = Button.wrap( element );
 			m_registerBtn.setText( messages.loginDlg_Register() );
 			m_registerBtn.setVisible( true );
+			m_registerTouchBtn = new TouchButton( m_registerBtn );
 			
 			m_registerBtn.addClickHandler( new ClickHandler()
 			{
@@ -1712,12 +1727,14 @@ public class LoginDlg extends DlgBox
 			okElement = Document.get().getElementById( "loginOkBtn" );
 			m_okBtn = Button.wrap( okElement );
 			m_okBtn.setVisible( false );
+			m_okTouchBtn = new TouchButton( m_okBtn );
 			
 			cancelElement = Document.get().getElementById( "loginCancelBtn" );
 			m_cancelBtn = Button.wrap( cancelElement );
 			m_cancelBtn.setText( messages.loginDlg_EnterAsGuest() );
 			m_cancelBtn.addClickHandler( this );
 			m_cancelBtn.setVisible( false );
+			m_cancelTouchBtn = new TouchButton( m_cancelBtn );
 		}
 
 		// Show the "Reset password" button
@@ -1728,6 +1745,7 @@ public class LoginDlg extends DlgBox
 			m_pwdResetBtn = Button.wrap( element );
 			m_pwdResetBtn.setText( messages.loginDlg_ResetPwd() );
 			m_pwdResetBtn.setVisible( true );
+			m_pwdResetTouchBtn = new TouchButton( m_pwdResetBtn );
 			
 			m_pwdResetBtn.addClickHandler( new ClickHandler()
 			{
@@ -1960,12 +1978,14 @@ public class LoginDlg extends DlgBox
 			okElement = Document.get().getElementById( "loginOkBtn" );
 			m_okBtn = Button.wrap( okElement );
 			m_okBtn.setText( GwtTeaming.getMessages().login() );
+			m_okTouchBtn = new TouchButton( m_okBtn );
 			
 			cancelElement = Document.get().getElementById( "loginCancelBtn" );
 			m_cancelBtn = Button.wrap( cancelElement );
 			m_cancelBtn.setText( GwtTeaming.getMessages().loginDlg_EnterAsGuest() );
 			m_cancelBtn.addClickHandler( this );
 			m_cancelBtn.setVisible( false );
+			m_cancelTouchBtn = new TouchButton( m_cancelBtn );
 		}
 		
 		// Create a "Forgot Your Password?" link.
