@@ -7793,10 +7793,7 @@ public class GwtServerHelper {
 				gwtSchedule.setOnSaturday( schedule.isOnSaturday() );
 				gwtSchedule.setOnSunday( schedule.isOnSunday() );
 				
-				if ( schedule.isOnMonday() == false && schedule.isOnTuesday() == false &&
-					 schedule.isOnWednesday() == false && schedule.isOnThursday() == false &&
-					 schedule.isOnFriday() == false && schedule.isOnSaturday() == false &&
-					 schedule.isOnSunday() == false )
+				if ( schedule.areAllDaysDisabled() )
 				{
 					gwtSchedule.setDayFrequency( DayFrequency.EVERY_DAY );
 				}
