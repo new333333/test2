@@ -356,6 +356,24 @@ public abstract class TreeDisplayBase {
 	}
 
 	/**
+	 * Returns the horizontal scroll position of the workspace tree.
+	 * 
+	 * @return
+	 */
+	final int getScrollLeft() {
+		return ((null == m_wsTree) ? 0 : m_wsTree.getElement().getScrollLeft());
+	}
+	
+	/**
+	 * Returns the vertical scroll position of the workspace tree.
+	 * 
+	 * @return
+	 */
+	final int getScrollTop() {
+		return ((null == m_wsTree) ? 0 : m_wsTree.getElement().getScrollTop());
+	}
+	
+	/**
 	 * Returns the binder this tree control was built from.
 	 * 
 	 * @return
@@ -503,6 +521,28 @@ public abstract class TreeDisplayBase {
 		m_rootTIList = rootTIList;
 	}
 
+	/**
+	 * Set the horizontal scroll position of the workspace tree.
+	 * 
+	 * @param scrollLeft
+	 */
+	final void setScrollLeft(int scrollLeft) {
+		if (null != m_wsTree) {
+			m_wsTree.getElement().setScrollLeft(scrollLeft);
+		}
+	}
+	
+	/**
+	 * Sets the vertical scroll position of the workspace tree.
+	 * 
+	 * @param scrollTop
+	 */
+	final void setScrollTop(int scrollTop) {
+		if (null != m_wsTree) {
+			m_wsTree.getElement().setScrollTop(scrollTop);
+		}
+	}
+	
 	/**
 	 * Sets the hover text on a widget, guarding against exceptions.
 	 * 
