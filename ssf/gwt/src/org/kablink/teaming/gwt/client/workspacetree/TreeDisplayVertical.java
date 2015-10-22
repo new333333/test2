@@ -1834,7 +1834,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// ...ensure the newly selected item is scrolled into
 			// ...view...
 			if (null != selectorPanel_New) {
+				// ...maintaining the current horizontal position.
+				int scrollLeft = getScrollLeft();
 				selectorPanel_New.scrollIntoView();
+				setScrollLeft(scrollLeft);
 			}
 			
 			// ...and store the new ID as having been selected.
