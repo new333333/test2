@@ -39,11 +39,14 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -61,7 +64,7 @@ public class DefaultExpiredShareHandler extends SimpleTriggerJob implements Expi
 		if(logger.isDebugEnabled())
 			logger.debug("doExecute() invoked on " +  getClass().getSimpleName());
 		
-		List<ShareItem> expiredSharesToHandle = getProfileDao().findExpiredAndNotYetHandledShareItems();
+		List<ShareItem> expiredSharesToHandle = getProfileDao().findExpiredAndNotYetHandledShareItems(RequestContextHolder.getRequestContext().getZoneId());
 		
 		SharingModule sharingModule = getSharingModule();
 		sharingModule.validateShareItems(expiredSharesToHandle);	// Drops any shares that may have expired.
