@@ -79,6 +79,7 @@ import org.kablink.util.search.Constants;
 @SuppressWarnings({"unchecked", "unused"})
 public class EntryCsvHelper {
 	public static String DEFAULT_CSV_DELIMITER	= ",";
+	public static String DEFAULT_CSV_FILENAME	= "folderCsv.csv";	// Must be a simple, ASCII filename.
 	
 	public static void folderToCsv(AllModulesInjected bs, Folder folder, Map options, OutputStream out) {
 		if (options == null) options = new HashMap();

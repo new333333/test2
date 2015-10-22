@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,11 +34,9 @@ package org.kablink.teaming.util;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -52,21 +50,22 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.util.BrowserSniffer;
+
 import org.springframework.util.FileCopyUtils;
 
-
 /**
+ * ?
+ * 
  * @author Jong Kim
- *
  */
 public class FileHelper {
-	
 	private static Log logger = LogFactory.getLog(FileHelper.class);
 
     /**
@@ -200,7 +199,7 @@ public class FileHelper {
 	}
 	
 	public static String encodeFileName(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
-		if(BrowserSniffer.is_ie(request)) {
+		if(BrowserSniffer.is_ie(request) || BrowserSniffer.is_edge(request)) {
 			String file = URLEncoder.encode(fileName, "UTF8");
 			file = StringUtils.replace(file, "+", "%20");
 			file = StringUtils.replace(file, "%2B", "+");
@@ -255,5 +254,30 @@ public class FileHelper {
 				OutputStreamWriter osw = new OutputStreamWriter(bos, "UTF-8")) {
 			osw.write(data);
 		}
+	}
+
+	/**
+	 * Returns the appropriate string to use for the
+	 * Content-Disposition in an HTTP response header based on the
+	 * given filename.
+	 * 
+	 * @param request
+	 * @param defaultFileName
+	 * @param actualFileName
+	 * 
+	 * @return
+	 * 
+	 * @throws UnsupportedEncodingException
+	 */
+	public static String getHttpContentDispositionForFilename(HttpServletRequest request, String defaultFileName, String actualFileName) throws UnsupportedEncodingException {
+		String reply = ("attachment; filename=\"" + defaultFileName + "\"; filename*=" + utf8EncodeFileNameForHttpContentDisposition(request, actualFileName));
+		return reply;
+	}
+	
+	private static String utf8EncodeFileNameForHttpContentDisposition(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
+		String file = URLEncoder.encode(fileName, "UTF8");
+		file = StringUtils.replace(file, "+", "%20");
+		file = StringUtils.replace(file, "%2B", "+");
+		return ("UTF-8''" + file);
 	}
 }

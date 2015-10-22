@@ -510,8 +510,8 @@ public class ReadFileController extends AbstractReadFileController {
 							cacheControl += ", proxy-revalidate, s-maxage=0";
 						}
 						response.setHeader("Cache-Control", cacheControl);
-						response.setHeader("Content-Disposition",
-							("attachment; filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\""));
+						String contentDisposition = FileHelper.getHttpContentDispositionForFilename(request, EntryCsvHelper.DEFAULT_CSV_FILENAME, shortFileName);
+						response.setHeader("Content-Disposition", contentDisposition);
 						//Write out the BOM so Excel knows how to handle double byte characters properly.
 						OutputStream outputStream = response.getOutputStream();
 						outputStream.write(0xEF);   // 1st byte of BOM
