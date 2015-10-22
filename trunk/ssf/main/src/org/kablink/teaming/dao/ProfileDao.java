@@ -372,7 +372,7 @@ public interface ProfileDao {
  	 * 
  	 * @return
  	 */
- 	public List<ShareItem> findExpiredAndNotYetHandledShareItems();
+ 	public List<ShareItem> findExpiredAndNotYetHandledShareItems(final Long zoneId);
  	
  	/**
  	 * Get a list of LDAP users and groups that are members of the specified LDAP container group.

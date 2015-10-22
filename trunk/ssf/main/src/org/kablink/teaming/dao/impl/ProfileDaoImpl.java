@@ -3345,7 +3345,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  	}
 
  	@Override
- 	public List<ShareItem> findExpiredAndNotYetHandledShareItems() {
+ 	public List<ShareItem> findExpiredAndNotYetHandledShareItems(final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	      	List<ShareItem> result = (List<ShareItem>)getHibernateTemplate().execute(
@@ -3353,11 +3353,13 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    @Override
 						public Object doInHibernate(Session session) throws HibernateException {
 	                   		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();                    		
-                    		disjunction.add(Restrictions.isNull("expirationHandled"))
-	                    	.add(Restrictions.eq("expirationHandled", false));
+                    		disjunction.add(Restrictions.isNull("expirationHandled"))		// The share's expiration has...
+	                    	.add(Restrictions.eq("expirationHandled", false));				// ...not been handled yet.
 	                    	Criteria crit = session.createCriteria(ShareItem.class)
-	                    			.add(Restrictions.eq("latest", Boolean.TRUE))
-	                    			.add(Restrictions.lt("endDate", new Date()))
+	                    			.add(Restrictions.eq("latest", Boolean.TRUE))			// It's the latest version of the share...
+	                    			.add(Restrictions.lt("endDate", new Date()))			// ...and it expired before now...
+	                    			.add(Restrictions.isNull("deletedDate"))				// ...and it's not marked deleted...
+	                    			.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))	// ...and it's from the specified zone.
 	                    			.add(disjunction);
 	                    	return crit.list();
 	                    }
