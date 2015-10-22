@@ -33,7 +33,10 @@
 package org.kablink.teaming.client.rest.v1;
 
 import junit.framework.TestCase;
+import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.User;
+
+import java.util.Date;
 
 /**
  * User: David
@@ -59,4 +62,41 @@ public class SharedWithMeTest extends TestCase {
         }
         binding.thenSharedWithMeCountIs(200);
     }
+
+    public void testWhenNoChangesThenSharedWithMeLibraryChildrenNotChanged() throws InterruptedException {
+        User user = binding.clientApiAsLdapUser.getSelf();
+        binding.whenNoSharesWithUser(user);
+        FileProperties props = binding.whenFileExistsInAdminMyFiles(1);
+        binding.whenSharedWithUser(props, user);
+
+        Date date = binding.givenSharedWithMeLibraryChildrenLastModifiedTime();
+        Thread.sleep(2000);
+        binding.thenSharedWithMeLibraryChildrenNotChanged(date);
+    }
+
+    public void testWhenDeleteSharedFileThenSharedWithMeLibraryChildrenChanged() throws InterruptedException {
+        User user = binding.clientApiAsLdapUser.getSelf();
+        binding.whenNoSharesWithUser(user);
+        FileProperties props = binding.whenFileExistsInAdminMyFiles(1);
+        binding.whenSharedWithUser(props, user);
+
+        Date date = binding.givenSharedWithMeLibraryChildrenLastModifiedTime();
+        Thread.sleep(2000);
+        binding.whenFileDeleted(props);
+        binding.thenSharedWithMeLibraryChildrenChanged(date);
+    }
+
+    public void testWhenRevokeSharedFileThenSharedWithMeLibraryChildrenChanged() throws InterruptedException {
+        User user = binding.clientApiAsLdapUser.getSelf();
+        binding.whenNoSharesWithUser(user);
+        FileProperties props = binding.whenFileExistsInAdminMyFiles(1);
+        binding.whenSharedWithUser(props, user);
+
+        Date date = binding.givenSharedWithMeLibraryChildrenLastModifiedTime();
+        Thread.sleep(2000);
+        binding.whenNoSharesWithUser(user);
+        binding.thenSharedWithMeLibraryChildrenChanged(date);
+    }
+
+
 }

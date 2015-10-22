@@ -34,9 +34,9 @@ public class ApiTestBinding {
     public Api clientApiAsLdapUser;
 
     public ApiTestBinding() {
-        ApiClient homelessClient = ApiClient.create("https://amethyst.cam.novell.com:8443", "nohome", "novell");
-        ApiClient ldapClient = ApiClient.create("https://amethyst.cam.novell.com:8443", "dlewis2", "novell");
-        ApiClient adminClient = ApiClient.create("https://amethyst.cam.novell.com:8443", "admin", "novell");
+        ApiClient homelessClient = ApiClient.create("https://amethyst.provo.novell.com:8443", "nohome", "novell");
+        ApiClient ldapClient = ApiClient.create("https://amethyst.provo.novell.com:8443", "dlewis2", "novell");
+        ApiClient adminClient = ApiClient.create("https://amethyst.provo.novell.com:8443", "admin", "novell");
         clientApiAsHomelessUser = new ApiImpl(homelessClient);
         clientApiAsLdapUser = new ApiImpl(ldapClient);
         clientApiAsAdmin = new ApiImpl(adminClient);
@@ -141,6 +141,28 @@ public class ApiTestBinding {
         Binder myFiles = clientApiAsLdapUser.getMyFiles();
         try {
             SearchResultList<SearchableObject> searchableObjectSearchResultList = clientApiAsLdapUser.listChildren(myFiles, origModTime);
+            Assert.fail();
+        } catch (NotModifiedException e) {
+            // Expected
+        }
+    }
+
+    public void thenSharedWithMeLibraryChildrenChanged(Date origModTime) {
+        Binder swm = clientApiAsLdapUser.getSharedWithMe();
+        try {
+            SearchResultList<SearchableObject> searchableObjectSearchResultList = clientApiAsLdapUser.listChildren(swm, origModTime);
+            Date newModTime = searchableObjectSearchResultList.getLastModified();
+            Assert.assertTrue(origModTime.before(newModTime));
+        } catch (NotModifiedException e) {
+            Assert.fail();
+        }
+    }
+
+    public void thenSharedWithMeLibraryChildrenNotChanged(Date origModTime) {
+        Binder swm = clientApiAsLdapUser.getSharedWithMe();
+        try {
+            SearchResultList<SearchableObject> searchableObjectSearchResultList = clientApiAsLdapUser.listChildren(swm, origModTime);
+            Date newModTime = searchableObjectSearchResultList.getLastModified();
             Assert.fail();
         } catch (NotModifiedException e) {
             // Expected

@@ -265,7 +265,7 @@ public class ApiImpl extends BaseApiImpl implements Api {
 
     @Override
     public void delete(FileProperties file, boolean purge) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("purge", purge);
         WebResource.Builder builder = getJSONResourceBuilder(file.getOwningEntity().getLink(), params);
         delete(builder);
@@ -273,7 +273,7 @@ public class ApiImpl extends BaseApiImpl implements Api {
 
     @Override
     public void delete(Binder folder, boolean purge) {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<String, Object>();
         params.put("purge", purge);
         WebResource.Builder builder = getJSONResourceBuilder(folder.getLink(), params);
         delete(builder);
