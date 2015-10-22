@@ -1291,17 +1291,25 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		RunasCallback callback = new RunasCallback() {
 			@Override
 			public Object doAs() {
-				DefinableEntity entity = getSharedEntity(shareItem);
-				if (entity.getEntityType() == EntityType.folderEntry) {
-					folderModule.indexEntry((FolderEntry) entity, Boolean.TRUE);
+				DefinableEntity entity;
+				try {
+					entity = getSharedEntity(shareItem);
 				}
-				else if (entity.getEntityType() == EntityIdentifier.EntityType.folder || 
-						entity.getEntityType() == EntityIdentifier.EntityType.workspace) {
-					// Sharing a binder can give the recipient access not only to the binder being explicitly
-					// shared but also to the sub-binders as long as those sub-binders inherit ACLs from
-					// their parents. 
-					Binder binder = (Binder) entity;
-					loadBinderProcessor(binder).indexFunctionMembership(binder, true, Boolean.FALSE, false);
+				catch (NoFolderEntryByTheIdException ex) {entity = null;}
+				catch (NoBinderByTheIdException      ex) {entity = null;}
+				catch (Exception                     ex) {throw ex;     }
+				if (null != entity) {
+					if (entity.getEntityType() == EntityType.folderEntry) {
+						folderModule.indexEntry((FolderEntry) entity, Boolean.TRUE);
+					}
+					else if (entity.getEntityType() == EntityIdentifier.EntityType.folder || 
+							entity.getEntityType() == EntityIdentifier.EntityType.workspace) {
+						// Sharing a binder can give the recipient access not only to the binder being explicitly
+						// shared but also to the sub-binders as long as those sub-binders inherit ACLs from
+						// their parents. 
+						Binder binder = (Binder) entity;
+						loadBinderProcessor(binder).indexFunctionMembership(binder, true, Boolean.FALSE, false);
+					}
 				}
 				return null;
 			}
@@ -1361,10 +1369,17 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	private void addShareItemLogEntry(ShareItem shareItem, SharingAudit.ActionType actionType) {	
 		EntityIdentifier entityIdentifier = shareItem.getSharedEntityIdentifier();
 		if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
-			FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
-			SharingAudit sharingAudit = new SharingAudit(shareItem, fe.getParentBinder().getId(), actionType);
-			sharingAudit.setEntryTitle(fe.getTitle());
-			getCoreDao().save(sharingAudit);
+			FolderEntry fe;
+			try {
+				fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
+			}
+			catch (NoFolderEntryByTheIdException ex) {fe = null;}
+			catch (Exception                     ex) {throw ex; }
+			if (null != fe) {
+				SharingAudit sharingAudit = new SharingAudit(shareItem, fe.getParentBinder().getId(), actionType);
+				sharingAudit.setEntryTitle(fe.getTitle());
+				getCoreDao().save(sharingAudit);
+			}
 		} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
 				entityIdentifier.getEntityType().equals(EntityType.workspace)) {
 			SharingAudit sharingAudit = new SharingAudit(shareItem, entityIdentifier.getEntityId(), actionType);

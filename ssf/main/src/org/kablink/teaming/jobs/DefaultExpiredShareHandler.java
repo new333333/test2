@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,11 +48,11 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 /**
+ * Default job that processes expired shares.
+ * 
  * @author jong
- *
  */
 public class DefaultExpiredShareHandler extends SimpleTriggerJob implements ExpiredShareHandler {
-
 	private static final Log logger = LogFactory.getLog(DefaultExpiredShareHandler.class);
 	
 	@Override
@@ -64,6 +64,8 @@ public class DefaultExpiredShareHandler extends SimpleTriggerJob implements Expi
 		List<ShareItem> expiredSharesToHandle = getProfileDao().findExpiredAndNotYetHandledShareItems();
 		
 		SharingModule sharingModule = getSharingModule();
+		sharingModule.validateShareItems(expiredSharesToHandle);	// Drops any shares that may have expired.
+		
 		for(ShareItem shareItem:expiredSharesToHandle) {
 			try {
 				logger.info("Handling expired share item '" + shareItem.getId() + "'");
@@ -91,6 +93,7 @@ public class DefaultExpiredShareHandler extends SimpleTriggerJob implements Expi
 			super(zoneId, zoneId.toString(), EXPIRED_SHARE_HANDLER_GROUP, EXPIRED_SHARE_HANDLER_DESCRIPTION, intervalInMinutes*60);
 			this.startDate = startDate;
 		}
+		@Override
 		protected Date getStartDate() {
 			return startDate;
 		}
