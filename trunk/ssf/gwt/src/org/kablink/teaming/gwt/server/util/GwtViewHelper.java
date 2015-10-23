@@ -108,6 +108,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.FileNotFoundException;
 import org.kablink.teaming.fi.PathTooLongException;
 import org.kablink.teaming.fi.auth.AuthException;
@@ -512,10 +513,8 @@ public class GwtViewHelper {
 		 * 
 		 * @return
 		 */
-		@SuppressWarnings("unused")
 		public Long      getWorkspaceId() {return m_wsId;}
 		public User      getUser()        {return m_user;}
-		@SuppressWarnings("unused")
 		public Workspace getWorkspace()   {return m_ws;  }
 		
 		/**
@@ -8157,38 +8156,74 @@ public class GwtViewHelper {
 		
 								SimpleProfiler.start("GwtViewHelper.getUserProperties(Get per net folder information)");
 								try {
-									Map			nfSearch = getCollectionEntries(bs, request, null, null, new HashMap(), CollectionType.NET_FOLDERS, null);
-									List<Map>	nfList   = ((List<Map>) nfSearch.get(ObjectKeys.SEARCH_ENTRIES));
-									if (MiscUtil.hasItems(nfList)) {
-										Long nfBinderId = SearchUtils.getNetFoldersRootBinder().getId();
-										for (Map nfMap:  nfList) {
-											// ...adding an EntryTitleInfo
-											// ...for each to the reply.
-											Long   docId = Long.parseLong(GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DOCID_FIELD));
-											String title = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.TITLE_FIELD);
-											SimpleProfiler.start("GwtViewHelper.getUserProperties(Get per net folder " + title + " information)");
-											try {
-												EntryTitleInfo	eti = new EntryTitleInfo();
-												eti.setSeen(true);
-												eti.setTitle(MiscUtil.hasString(title) ? title : ("--" + NLT.get("entry.noTitle") + "--"));
-												eti.setEntityId(new EntityId(nfBinderId, docId, EntityId.FOLDER));
-												String description = getEntryDescriptionFromMap(request, nfMap);
-												if (MiscUtil.hasString(description)) {
-													eti.setDescription(description);
-													String descriptionFormat = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DESC_FORMAT_FIELD);
-													eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
-												}
-												else {
-													description = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.ENTITY_PATH);
-													if (MiscUtil.hasString(description)) {
-														eti.setDescription(      description);
-														eti.setDescriptionIsHtml(false      );
-													}
-												}
-												nfi.addNetFolder(eti);
+									Map	nfSearch;
+									try {
+										// Can we search for this
+										// user's Net Folders?
+										nfSearch = getCollectionEntries(
+											bs,
+											request,
+											null,
+											null,
+											new
+											HashMap(),
+											CollectionType.NET_FOLDERS,
+											null);
+									}
+									catch (Exception ex) {
+										// No!  Log the exception...
+										GwtLogHelper.error(m_logger, "GwtViewHelper.getUserProperties( Error querying Net Folders - SOURCE EXCEPTION ):  ", ex);
+										
+										// ...and return why we
+										// ...coulnd't.
+										nfSearch = null;
+										String nfAccessError = null;
+										if (ex instanceof FIException) {
+											String ec = ((FIException) ex).getErrorCode();
+											if ((null != ec) && ec.equals(FIException.CREDENTIAL_UNAVAILABLE_FOR_USER)) {
+												nfAccessError = NLT.get("userProperties.error.credentialUnavailble");
 											}
-											finally {
-												SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get per net folder " + title + " information)");
+										}
+										if (null == nfAccessError) {
+											nfAccessError = NLT.get("userProperties.error.other", new String[]{MiscUtil.exToString(ex)});
+										}
+										nfi.setNetFolderAccessError(nfAccessError);
+									}
+									if (null != nfSearch ) {
+										// Yes, we have results from
+										// the Net Folder search!
+										List<Map>	nfList = ((List<Map>) nfSearch.get(ObjectKeys.SEARCH_ENTRIES));
+										if (MiscUtil.hasItems(nfList)) {
+											Long nfBinderId = SearchUtils.getNetFoldersRootBinder().getId();
+											for (Map nfMap:  nfList) {
+												// ...adding an EntryTitleInfo
+												// ...for each to the reply.
+												Long   docId = Long.parseLong(GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DOCID_FIELD));
+												String title = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.TITLE_FIELD);
+												SimpleProfiler.start("GwtViewHelper.getUserProperties(Get per net folder " + title + " information)");
+												try {
+													EntryTitleInfo	eti = new EntryTitleInfo();
+													eti.setSeen(true);
+													eti.setTitle(MiscUtil.hasString(title) ? title : ("--" + NLT.get("entry.noTitle") + "--"));
+													eti.setEntityId(new EntityId(nfBinderId, docId, EntityId.FOLDER));
+													String description = getEntryDescriptionFromMap(request, nfMap);
+													if (MiscUtil.hasString(description)) {
+														eti.setDescription(description);
+														String descriptionFormat = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DESC_FORMAT_FIELD);
+														eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
+													}
+													else {
+														description = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.ENTITY_PATH);
+														if (MiscUtil.hasString(description)) {
+															eti.setDescription(      description);
+															eti.setDescriptionIsHtml(false      );
+														}
+													}
+													nfi.addNetFolder(eti);
+												}
+												finally {
+													SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get per net folder " + title + " information)");
+												}
 											}
 										}
 									}

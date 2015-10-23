@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -156,7 +156,7 @@ public class UserPropertiesDlg extends DlgBox
 	private void addAccountInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo account, boolean addSectionHeader) {
 		// Add the user's login ID...
 		int row = getSectionRow(grid, rf, addSectionHeader);
-		addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_UserId(), account.getLoginId());
+		addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_UserId(), account.getLoginId(), false);
 		
 		// ...if we supposed to show the last login...
 		if (account.isShowLastLogin()) {
@@ -184,7 +184,8 @@ public class UserPropertiesDlg extends DlgBox
 				m_messages.userPropertiesDlgLabel_Source(),
 				(ldap                                        ?
 					m_messages.userPropertiesDlgSourceLDAP() :
-					m_messages.userPropertiesDlgSourceLocal()));
+					m_messages.userPropertiesDlgSourceLocal()),
+				false);
 
 			// ...and if from LDAP...
 			if (ldap) {
@@ -192,12 +193,12 @@ public class UserPropertiesDlg extends DlgBox
 				String ldapAttr = account.getLdapDN();
 				if (GwtClientHelper.hasString(ldapAttr)) {
 					row = grid.getRowCount();
-					addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LdapDN(), ldapAttr);
+					addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LdapDN(), ldapAttr, false);
 				}
 				ldapAttr = account.getLdapContainer();
 				if (GwtClientHelper.hasString(ldapAttr)) {
 					row = grid.getRowCount();
-					addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LdapContainer(), ldapAttr);
+					addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LdapContainer(), ldapAttr, false);
 				}
 			}
 		}
@@ -222,7 +223,8 @@ public class UserPropertiesDlg extends DlgBox
 				grid,
 				row,
 				m_messages.userPropertiesDlgLabel_Home(),
-				m_messages.userPropertiesDlgLabel_NeverLoggedIn());
+				m_messages.userPropertiesDlgLabel_NeverLoggedIn(),
+				false);
 			il.setWordWrap(true);
 			il.addStyleName("width300px");
 			return;
@@ -236,7 +238,8 @@ public class UserPropertiesDlg extends DlgBox
 			m_messages.userPropertiesDlgLabel_Home(),
 			(hasHome                              ?
 				m_messages.userPropertiesDlgYes() :
-				m_messages.userPropertiesDlgNo()));
+				m_messages.userPropertiesDlgNo()),
+			false);
 		
 		// Does the user doesn't have a Home folder?
 		if (hasHome) {
@@ -279,7 +282,8 @@ public class UserPropertiesDlg extends DlgBox
 				grid,
 				row,
 				m_messages.userPropertiesDlgLabel_HomePath(),
-				homeDisplay);
+				homeDisplay,
+				false);
 
 			// Do we have a net folder ID for the home directory?
 			final Long netFolderId = home.getId();
@@ -361,7 +365,7 @@ public class UserPropertiesDlg extends DlgBox
 	/*
 	 * Adds a labeled item to the grid.
 	 */
-	private InlineLabel addLabeledText(FlexTable grid, int row, String label, String text, boolean showUnknown) {
+	private InlineLabel addLabeledText(FlexTable grid, int row, String label, String text, boolean showUnknown, boolean wordWrap) {
 		// Validate the text...
 		if (null == text) {
 			text = "";
@@ -373,22 +377,22 @@ public class UserPropertiesDlg extends DlgBox
 		// ...create a widget for it...
 		InlineLabel il = new InlineLabel(text);
 		il.addStyleName("vibe-userPropertiesDlg-attrValue");
-		il.setWordWrap(false);
+		il.setWordWrap(wordWrap);
 
 		// ...and add the labeled widget to the grid.
-		addLabeledWidget(grid, row, label, il);
+		addLabeledWidget(grid, row, label, il, (wordWrap ? "500px" : null));
 		return il;
 	}
 	
-	private InlineLabel addLabeledText(FlexTable grid, int row, String label, String value) {
+	private InlineLabel addLabeledText(FlexTable grid, int row, String label, String value, boolean showUnknown) {
 		// Always use the initial form of the method.
-		return addLabeledText(grid, row, label, value, false);
+		return addLabeledText(grid, row, label, value, showUnknown, false);
 	}
 
 	/*
 	 * Adds a labeled widget to the grid.
 	 */
-	private void addLabeledWidget(FlexTable grid, int row, String label, Widget w) {
+	private void addLabeledWidget(FlexTable grid, int row, String label, Widget w, String cellWidth) {
 		// Add the items label...
 		if (GwtClientHelper.hasString(label)) {
 			InlineLabel il = new InlineLabel(label);
@@ -399,6 +403,14 @@ public class UserPropertiesDlg extends DlgBox
 		
 		// ...and widget.
 		grid.setWidget(row, 2, w );
+		if (GwtClientHelper.hasString(cellWidth)) {
+			grid.getCellFormatter().setWidth(row, 2, cellWidth);
+		}
+	}
+	
+	private void addLabeledWidget(FlexTable grid, int row, String label, Widget w) {
+		// Always use the initial form of the method.
+		addLabeledWidget(grid, row, label, w, null);
 	}
 
 	/*
@@ -420,7 +432,8 @@ public class UserPropertiesDlg extends DlgBox
 				grid,
 				row,
 				m_messages.userPropertiesDlgLabel_NetFolders(),
-				m_messages.userPropertiesDlgLabel_NeverLoggedIn());
+				m_messages.userPropertiesDlgLabel_NeverLoggedIn(),
+				false);
 			il.setWordWrap( true        );
 			il.addStyleName("width300px");
 			return;
@@ -459,11 +472,18 @@ public class UserPropertiesDlg extends DlgBox
 		int nfCount = ((null == netFoldersList) ? 0 : netFoldersList.size());
 		if (0 == nfCount) {
 			// No!  Add information to that affect to the grid.
+			String  why    = netFolders.getNetFolderAccessError();
+			boolean hasWhy = GwtClientHelper.hasString(why);
+			if (!hasWhy) {
+				why = m_messages.userPropertiesDlgNoNF();
+			}
 			addLabeledText(
 				grid,
 				row,
 				m_messages.userPropertiesDlgLabel_NetFolders(),
-				m_messages.userPropertiesDlgNoNF());
+				why,
+				false,		// false -> Don't need unknown processing.
+				hasWhy);	// Word wrap if we're displaying an error from the server since it might be quite long.
 		}
 		else {
 			// Yes, the user has net folders!  Create a ScrollPanel to
@@ -616,7 +636,8 @@ public class UserPropertiesDlg extends DlgBox
 				m_messages.userPropertiesDlgLabel_PersonalStorage(),
 				(account.hasAdHocFolders() ?
 					(perUserAdHoc ? m_messages.userPropertiesDlgPersonalStorage_YesPerUser() : m_messages.userPropertiesDlgPersonalStorage_YesGlobal()) :
-					(perUserAdHoc ? m_messages.userPropertiesDlgPersonalStorage_NoPerUser()  : m_messages.userPropertiesDlgPersonalStorage_NoGlobal())));
+					(perUserAdHoc ? m_messages.userPropertiesDlgPersonalStorage_NoPerUser()  : m_messages.userPropertiesDlgPersonalStorage_NoGlobal())),
+				false);
 		}
 		else {
 			boolean isExternal = account.getPrincipalType().isExternal();
@@ -627,7 +648,8 @@ public class UserPropertiesDlg extends DlgBox
 				m_messages.userPropertiesDlgLabel_PersonalStorage(),
 				(isExternal  ?
 					(isGuest ? m_messages.userPropertiesDlgPersonalStorage_NoGuest() : m_messages.userPropertiesDlgPersonalStorage_NoExternal()) :
-					m_messages.userPropertiesDlgPersonalStorage_YesLocal()));
+					m_messages.userPropertiesDlgPersonalStorage_YesLocal()),
+				false);
 		}
 	}
 	
@@ -679,7 +701,8 @@ public class UserPropertiesDlg extends DlgBox
 				grid,
 				row,
 				labelizeCaption(pa.getAttributeCaption()),
-				pa.getAttributeValue());
+				pa.getAttributeValue(),
+				false);
 			row = grid.getRowCount();
 		}
 	}
@@ -700,7 +723,8 @@ public class UserPropertiesDlg extends DlgBox
 				grid,
 				row,
 				m_messages.userPropertiesDlgLabel_Quota(),
-				m_messages.userPropertiesDlgQuotasDisabled());
+				m_messages.userPropertiesDlgQuotasDisabled(),
+				false);
 			return;
 		}
 
@@ -745,7 +769,8 @@ public class UserPropertiesDlg extends DlgBox
 			grid,
 			row,
 			m_messages.userPropertiesDlgLabel_Quota(),
-			quotaDisplay);
+			quotaDisplay,
+			false);
 	}
 	
 	/*
@@ -814,7 +839,8 @@ public class UserPropertiesDlg extends DlgBox
 				grid,
 				row,
 				m_messages.userPropertiesDlgLabel_Sharing(),
-				rights);
+				rights,
+				false);
 		}
 		
 		else {
@@ -828,7 +854,8 @@ public class UserPropertiesDlg extends DlgBox
 				grid,
 				row,
 				m_messages.userPropertiesDlgLabel_Sharing(),
-				m_messages.userPropertiesDlgNoWS());
+				m_messages.userPropertiesDlgNoWS(),
+				false);
 		}
 	}
 	
