@@ -66,7 +66,7 @@
     </component>
     <property name="title" access="field" length="255"/>
     <property name="normalTitle" length="255"/>
-    <property name="iconName" length="64"/>    
+    <property name="iconName" access="field" length="64"/>    
     <property name="definitionType"/>
  	<property name="entryDefId" access="field" index="entryDef_principal">
  		<column name="entryDef" sql-type="char(32)"/>
