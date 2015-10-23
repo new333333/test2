@@ -10,6 +10,6 @@
     </id>
     <property name="zoneId" unique="true" not-null="true"/>
     <property name="zoneName" length="128" unique="true" not-null="true"/>
-    <property name="virtualHost" length="255" unique="true"/>
+    <property name="virtualHost" access="field" length="255" unique="true"/>
   </class>
 </hibernate-mapping>

@@ -104,7 +104,7 @@
 	<property name="brandingExt" length="2000000" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
     <property name="title" length="255" access="field"/>
     <property name="normalTitle" length="255"/>
-    <property name="iconName" length="64"/>    
+    <property name="iconName" access="field" length="64"/>    
     <property name="internalId" length="32" index="internalId_Binder"/>
     <property name="nextBinderNumber" />
     <component name="binderKey" class="org.kablink.teaming.domain.HKey">
