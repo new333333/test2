@@ -164,4 +164,18 @@ public class NullLicenseManager implements LicenseManager {
 	public boolean licenseRequiredEdition() {
 		return false;
 	}
+	
+	/**
+	 * Licensing information required for telemetry.
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean isEntitled()     {return false;}
+	@Override
+	public boolean isNotForResale() {return false;}
+	@Override
+	public boolean isTrial()        {return false;}
+	@Override
+	public int     getTrialDays()   {return (-1); }
 }

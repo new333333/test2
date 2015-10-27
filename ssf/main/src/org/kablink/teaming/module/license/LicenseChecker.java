@@ -185,4 +185,44 @@ public class LicenseChecker {
 	public static boolean licenseRequiredEdition() {
 		return getInstance().getLicenseManager().licenseRequiredEdition();
 	}
+	
+	/**
+	 * Returns true if an entitled license is being used and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isEntitled() {
+		return getInstance().getLicenseManager().isEntitled();
+	}
+	
+	/**
+	 * Returns true if a not-for-resale license is being used and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isNotForResale() {
+		return getInstance().getLicenseManager().isNotForResale();
+	}
+	
+	/**
+	 * Returns true if a trial license is being used and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isTrial() {
+		return getInstance().getLicenseManager().isTrial();
+	}
+
+	/**
+	 * If a trial license is being used, returns the number of days it
+	 * was defined for.  Otherwise, returns -1.
+	 * 
+	 * @return
+	 */
+	public static int getTrialDays() {
+		return getInstance().getLicenseManager().getTrialDays();
+	}
 }

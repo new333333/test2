@@ -160,4 +160,14 @@ public interface LicenseManager {
 	 * @return
 	 */
 	public boolean licenseRequiredEdition();
+
+	/**
+	 * Licensing information required for telemetry.
+	 * 
+	 * @return
+	 */
+	public boolean isEntitled();
+	public boolean isNotForResale();
+	public boolean isTrial();
+	public int     getTrialDays();
 }
