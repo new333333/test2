@@ -69,6 +69,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.FolderConfigHelper;
+import org.kablink.teaming.web.tree.SearchTreeHelper;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -419,7 +420,7 @@ public class ModifyEntryController extends SAbstractController {
 			
 			try {
 				Workspace ws = getWorkspaceModule().getTopWorkspace();
-				model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
+				model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new SearchTreeHelper()),1));
 			} catch(AccessControlException e) {}
 
 			model.put(WebKeys.ENTRY, entry);
