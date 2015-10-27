@@ -1095,16 +1095,7 @@ public class EntityIndexUtils {
        		if (wEntry.hasAclSet() && !e.isAclExternallyControlled()) {
        			//There is a workflow in play, and this is not a Net Folder file
        			//Workflow access settings are currently not valid for net folder files.
-       			String[] acls = StringUtil.split(getWfEntryAccess(wEntry), " ");
-	       		for(String acl:acls) {
-	       			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
-	       		}
-	       		//add binder access if "folder default" is specified
-       			if (wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
-       				// In addition to entry-level ACL, this entry is also inheriting ACLs from its parent folder.
-	    			markEntryAsInheritingAcls(doc, binder, e, rss);
-       			}
-
+       			addReadAccessForWorkflow(doc, binder, e, wEntry, rss);
        		} else {
 	       		//add entry access. 
 	       		if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
@@ -1117,16 +1108,7 @@ public class EntityIndexUtils {
 	       		//As above, Note that workflow access settings are currently not valid for net folder files.
 	       		if (wEntry.hasAclSet() && !e.isAclExternallyControlled()) {
 	       			//This must have been a reply not running a workflow, so check the top entry workflow ACL
-	       			String[] acls = StringUtil.split(getWfEntryAccess(wEntry), " ");
-	       			for(String acl:acls) {
-	       				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
-	       			}
-	           		//add binder access if "folder default" is specified
-	       			if (wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
-	       				// In addition to entry-level ACL, this entry is also inheriting ACLs from its parent folder.
-		    			markEntryAsInheritingAcls(doc, binder, e, rss);
-	       			}
-
+	       			addReadAccessForWorkflow(doc, binder, e, wEntry, rss);
 		       	} else {
 	       			if (e.isAclExternallyControlled()) {
 	       				// Since the "all important" read right comes from external ACL in this case, 
@@ -1188,6 +1170,34 @@ public class EntityIndexUtils {
        		addRootAcl(doc, binder);
     	}
 	}
+    
+    private static void addReadAccessForWorkflow(Document doc, Binder binder, Entry entry, WorkflowSupport wEntry, boolean rss) {
+		String[] acls = StringUtil.split(getWfEntryAccess(wEntry), " ");
+		boolean includeTeam = false;
+		for (String acl : acls) {
+			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(
+					Constants.ENTRY_ACL_FIELD, acl));
+			if(Constants.READ_ACL_TEAM.equals(acl))
+				includeTeam = true;
+		}
+		// add binder access if "folder default" is specified
+		if (wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
+			// In addition to entry-level ACL, this entry is also inheriting
+			// ACLs from its parent folder.
+			// Since ACLs for team membership are indexed at the team binder (and their inheriting 
+			// descendant binders), there is no need to index them at the entry level when the entry
+			// also honors the ACLs associated with its parent.
+			markEntryAsInheritingAcls(doc, binder, entry, rss);
+		}
+		else {
+			if(includeTeam) {
+				// Bug 948857 - We need to index the team ACLs with this entry.
+		    	acls = StringUtil.split(getFolderTeamAclString(binder), " ");
+		    	for(String acl:acls)
+		    		doc.add(new Field(Constants.TEAM_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
+			}
+		}
+    }
     
     /*
      * Returns true if ownerId is a member of readOwnedEntries.
