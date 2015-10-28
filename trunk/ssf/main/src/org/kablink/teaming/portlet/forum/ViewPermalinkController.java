@@ -61,6 +61,7 @@ import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -706,6 +707,16 @@ public class ViewPermalinkController  extends SAbstractController {
 				{
 					String myWSUrl = PermaLinkUtil.getPermalink( request, user );
 					model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1") );
+					
+					Long userWSId = user.getWorkspaceId();
+					Workspace userWS;
+					try                  {userWS = getWorkspaceModule().getWorkspace(userWSId);}
+					catch (Exception ex) {userWS = null;                                       }
+					boolean userHasWSAccess = (null != userWS);
+					if (userHasWSAccess) {
+						userHasWSAccess = getBinderModule().testAccess(user, userWS, BinderOperation.readEntries, true);
+					}
+					model.put( "myWorkspaceAccessible", String.valueOf(userHasWSAccess));
 				}
 
 				// Get the flag that tells us if the user has rights to this permalink.

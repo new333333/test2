@@ -1057,7 +1057,7 @@ public class GwtProfileHelper {
 		
 		List<String> trackedIds = getTrackedPersonsIds(bs, userId);
 		for(String trackedId: trackedIds) {
-				Principal principal = bs.getProfileModule().getEntry(Long.parseLong(trackedId));
+				Principal principal = bs.getProfileModule().getUserDeadOrAlive(Long.parseLong(trackedId));
 				if ((null != principal) && (!(principal.isDeleted()))) {
 					Binder binder;
 					

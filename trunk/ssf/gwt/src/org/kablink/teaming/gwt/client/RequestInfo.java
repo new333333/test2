@@ -553,6 +553,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Returns whether the user has access to their own workspace.
+	 * 
+	 * @return
+	 */
+	public final native boolean getMyWorkspaceAccessible()
+	/*-{
+		return this.getBFromS( this.myWSAccessible );
+	}-*/;
+	
+	/**
 	 * Return whether the UI should initially show the workspace tree control
 	 */
 	public final native boolean getShouldShowWSTreeControl()

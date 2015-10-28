@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -55,6 +55,7 @@ import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.extuser.ExternalUserRespondingToInvitationException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetVerificationException;
@@ -63,6 +64,7 @@ import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.authentication.FailedAuthenticationMonitor;
 import org.kablink.teaming.module.authentication.UserIdNotActiveException;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.runas.RunasCallback;
@@ -81,6 +83,7 @@ import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.api.ApiErrorCode;
+
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.portlet.ModelAndView;
@@ -453,6 +456,16 @@ public class LoginController  extends SAbstractControllerRetry {
 			{
 				String myWSUrl = PermaLinkUtil.getPermalink( request, user );
 				model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1") );
+				
+				Long userWSId = user.getWorkspaceId();
+				Workspace userWS;
+				try                  {userWS = getWorkspaceModule().getWorkspace(userWSId);}
+				catch (Exception ex) {userWS = null;                                       }
+				boolean userHasWSAccess = (null != userWS);
+				if (userHasWSAccess) {
+					userHasWSAccess = getBinderModule().testAccess(user, userWS, BinderOperation.readEntries, true);
+				}
+				model.put( "myWorkspaceAccessible", String.valueOf(userHasWSAccess));
 			}
 			
 			return new ModelAndView( "forum/GwtMainPage", model );

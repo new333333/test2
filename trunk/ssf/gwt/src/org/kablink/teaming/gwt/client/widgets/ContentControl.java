@@ -1147,18 +1147,24 @@ public class ContentControl extends Composite
 					
 					case OTHER:
 					default:
-						// If we're navigating to a binder that's not accessible...
-						boolean binderInaccessible = ( ! ( bi.isBinderAccessible() ) );
-						if ( ViewType.BINDER.equals( vt ) && binderInaccessible )
-						{
-							// ...tell the user and navigate to their
-							// ...workspace instead.
-							// We don't want to prompt the user if the login dialog is going to be visible
+						// If we're navigating to a binder that's not
+						// accessible...
+						boolean binderInaccessible = (!(bi.isBinderAccessible()));
+						if (ViewType.BINDER.equals(vt) && binderInaccessible) {
+							// ...and we're not going to run the login
+							// ...dialog...
 							RequestInfo ri = GwtClientHelper.getRequestInfo();
-							if ( ri.isUserLoggedIn() || ri.promptForLogin() == false )
-							{
-								GwtClientHelper.alertViaDlg( GwtTeaming.getMessages().cantAccessFolder() );
-								GwtTeaming.fireEventAsync(  new GotoMyWorkspaceEvent() );
+							if (ri.isUserLoggedIn() || (!(ri.promptForLogin()))) {
+								// ...tell the user about the
+								// ...inaccessible binder...
+								GwtClientHelper.alertViaDlg(GwtTeaming.getMessages().cantAccessFolder());
+								
+								// ...and if they have access to their
+								// ...own personal workspace...
+								if (ri.getMyWorkspaceAccessible()) {
+									// ...navigate to it.
+									GotoMyWorkspaceEvent.fireOneAsync();
+								}
 							}
 							return;
 						}
