@@ -407,4 +407,52 @@ GO
         </modifySql>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="31">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="varchar">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_Forums' and COLUMN_NAME = 'internalId'</sqlCheck>
+        </preConditions>
+        <comment>Change data type from VARCHAR(32) to NVARCHAR(32) for internalId column in SS_Forums table</comment>
+		<sql>
+IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_Forums]') AND name = N'internalId_Binder')
+DROP INDEX [internalId_Binder] ON [dbo].[SS_Forums]
+GO
+ALTER TABLE dbo.SS_Forums ALTER COLUMN internalId nvarchar(32) NULL
+GO
+CREATE NONCLUSTERED INDEX [internalId_Binder] ON [dbo].[SS_Forums] ([internalId])
+GO
+		</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="32">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="varchar">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_BinderState' and COLUMN_NAME = 'fullSync_status'</sqlCheck>
+        </preConditions>
+        <comment>Change data type from VARCHAR(16) to NVARCHAR(16) for fullSync_status column in SS_Forums table</comment>
+		<sql>
+IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_BinderState]') AND name = N'statusAndDate_binderState')
+DROP INDEX [statusAndDate_binderState] ON [dbo].[SS_BinderState]
+GO
+ALTER TABLE dbo.SS_BinderState ALTER COLUMN fullSync_status nvarchar(16) NULL
+GO
+CREATE NONCLUSTERED INDEX [statusAndDate_binderState] ON [dbo].[SS_BinderState] (fullSync_status,fullSync_statusDate)
+GO
+		</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="33">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="varchar">select DATA_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SS_CustomAttributes' and COLUMN_NAME = 'ownerType'</sqlCheck>
+        </preConditions>
+        <comment>Change data type from VARCHAR(16) to NVARCHAR(16) for ownerType column in SS_CustomAttributes table</comment>
+		<sql>
+IF  EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[SS_CustomAttributes]') AND name = N'entityOwner_cAtt')
+DROP INDEX [entityOwner_cAtt] ON [dbo].[SS_CustomAttributes]
+GO
+ALTER TABLE dbo.SS_CustomAttributes ALTER COLUMN ownerType nvarchar(16) NULL
+GO
+CREATE NONCLUSTERED INDEX [entityOwner_cAtt] ON [dbo].[SS_CustomAttributes] (ownerType,ownerId)
+GO
+		</sql>
+    </changeSet>
+
 </databaseChangeLog>
