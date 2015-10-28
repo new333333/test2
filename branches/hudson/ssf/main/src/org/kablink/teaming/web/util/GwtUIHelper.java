@@ -697,7 +697,11 @@ public class GwtUIHelper {
 	public static Binder getBinderSafely2(BinderModule bm, Long binderId) throws AccessControlException, NoBinderByTheIdException {
 		Binder reply;
 		try {
-			reply = bm.getBinder(binderId);
+			// Bugzilla 951781:  In Vibe, we only allow access if the
+			// user has direct access to the binder.  In Filr, we allow
+			// access if they have direct or inferred access.
+			boolean thisLevelOnly = (!(Utils.checkIfFilr()));	// true for Vibe, false for Filr.
+			reply = bm.getBinder(binderId, thisLevelOnly);
 			if ((null != reply) && (reply.isDeleted() || isBinderPreDeleted(reply))) {
 				reply = null;
 			}
