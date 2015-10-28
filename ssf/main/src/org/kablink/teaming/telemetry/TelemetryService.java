@@ -70,6 +70,7 @@ import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.LuceneSessionFactory;
@@ -120,6 +121,7 @@ public class TelemetryService extends HibernateDaoSupport {
 		tier1.setProductName(ReleaseInfo.getName());
 		tier1.setProductVersion(ReleaseInfo.getVersion());
 		tier1.setBuildNumber(ReleaseInfo.getBuildNumber());	
+		tier1.setLicenseType(getLicenseType());
 		/*
 		Map<String,Long> internalLdapUserCounts = new HashMap<String,Long>();
 		List<ZoneInfo> zones = getZoneModule().getZoneInfos();
@@ -754,6 +756,16 @@ public class TelemetryService extends HibernateDaoSupport {
 		return product;
 	}
 	
+	private String getLicenseType() {
+		if(LicenseChecker.isEntitled())
+			return "Entitled";
+		if(LicenseChecker.isNotForResale())
+			return "NotForResale";
+		if(LicenseChecker.isTrial())
+			return "Trial" + String.valueOf(LicenseChecker.getTrialDays());
+		return "Full";
+	}
+	
 	private String getTelemetryDataDirPath() {
 		return SPropsUtil.getDirPath("data.root.dir") + "telemetry" + File.separator + "data";
 	}
@@ -805,6 +817,8 @@ public class TelemetryService extends HibernateDaoSupport {
 		String productVersion;
 		@JsonProperty("buildNumber")
 		int buildNumber;
+		@JsonProperty("licenseType")
+		String licenseType;
 		/*
 		@JsonProperty("internalLdapUserCounts")
 		Map<String,Long> internalLdapUserCounts;
@@ -829,6 +843,12 @@ public class TelemetryService extends HibernateDaoSupport {
 		}
 		public void setBuildNumber(int buildNumber) {
 			this.buildNumber = buildNumber;
+		}
+		public String getLicenseType() {
+			return licenseType;
+		}
+		public void setLicenseType(String licenseType) {
+			this.licenseType = licenseType;
 		}
 		/*
 		public Map<String, Long> getInternalLdapUserCounts() {
