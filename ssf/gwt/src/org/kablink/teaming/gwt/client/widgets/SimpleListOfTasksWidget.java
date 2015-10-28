@@ -60,6 +60,10 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -67,6 +71,7 @@ import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This class is used to display simple list of tasks.
@@ -721,23 +726,33 @@ public class SimpleListOfTasksWidget extends VibeWidget
 			GwtClientHelper.setElementTextColor( label.getElement(), m_widgetStyles.getContentTextColor() );
 			clickHandler = new TaskClickHandler( taskInfo );
 			label.addClickHandler( clickHandler );
-			
-			titlePanel.add( label );
-			
-			// Does the task have a description?
 			desc = taskInfo.getDesc();
 			if ( GwtClientHelper.hasString( desc ) )
 			{
-				VibeFlowPanel descPanel;
-				
-				// Yes
-				descPanel = new VibeFlowPanel();
-				descPanel.addStyleName( "taskFolderWidgetTaskDescPanel" + m_style );
-				descPanel.getElement().setInnerHTML( desc );
-				
-				titlePanel.add( descPanel );
+				// Bugzilla 938047:  Display the description as hover
+				//    text instead of a separate panel.
+				final HoverHintPopup hoverHintPopup = new HoverHintPopup();
+				final Widget hoverWidget = label;
+				hoverHintPopup.setHoverText( desc, true );
+				label.addMouseOverHandler( new MouseOverHandler()
+				{
+					@Override
+					public void onMouseOver( MouseOverEvent event )
+					{
+						hoverHintPopup.showHintRelativeTo( hoverWidget );
+					}
+				} );
+				label.addMouseOutHandler( new MouseOutHandler()
+				{
+					@Override
+					public void onMouseOut( MouseOutEvent event )
+					{
+						hoverHintPopup.hide();
+					}
+				} );
 			}
-			
+			titlePanel.add( label );
+
 			m_tasksTable.setWidget( row, col, titlePanel );
 			++col;
 		}
