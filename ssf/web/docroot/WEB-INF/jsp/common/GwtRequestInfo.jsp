@@ -156,6 +156,7 @@
 			adaptedUrl:						'${adaptedUrl}',
 			binderId:						'${binderId}',
 			myWSUrl:						'${myWorkspaceUrl}',
+			myWSAccessible:					'${myWorkspaceAccessible}',
 			userName:						'<ssf:escapeJavaScript>${userFullName}</ssf:escapeJavaScript>',
 		</c:if>
 			
@@ -163,6 +164,7 @@
 			adaptedUrl:						'<ssf:url crawlable="true" adapter="true" portletName="ss_forum" folderId="${ssBinder.id}"        action="view_ws_listing" ><ssf:param name="profile" value="0" /></ssf:url>',
 			binderId:						'${ssBinder.id}',
 			myWSUrl:						'<ssf:url crawlable="true" adapter="true" portletName="ss_forum" folderId="${ssUser.workspaceId}" action="view_ws_listing" ><ssf:param name="profile" value="1" /></ssf:url>',			
+			myWSAccessible:					'true',
 			userName:						'<ssf:escapeJavaScript><ssf:userTitle user="${ssProfileConfigEntry}"/></ssf:escapeJavaScript>',
 		</c:if>
 			
@@ -170,6 +172,7 @@
 			adaptedUrl:						'<ssf:url folderId="${ssBinder.id}" action="${action}"><ssf:param name="binderId" value="${ssBinder.id}"/><ssf:param name="xxx_operand_xxx" value="xxx_option_xxx"/></ssf:url>',
 			binderId:						'${ssBinder.id}',
 			myWSUrl:						'',
+			myWSAccessible:					'false',
 			userName:						'',
 		</c:if>
 		
