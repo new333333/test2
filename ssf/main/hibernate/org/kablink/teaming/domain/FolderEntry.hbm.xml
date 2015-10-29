@@ -88,7 +88,7 @@
     </component>
     <property name="title" length="255" access="field"/>
     <property name="normalTitle" length="255"/>
-    <property name="iconName" length="64"/>
+    <property name="iconName" access="field" length="64"/>
  	<property name="entryDefId" access="field" index="entryDef_fEntry">
  		<column name="entryDef" sql-type="char(32)"/>
  	</property>
