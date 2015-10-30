@@ -918,7 +918,8 @@ public final class MiscUtil {
 		String product = ("/" + SPropsUtil.getString("release.product", "vibe"));
 		
 		// Are we running Filr?
-		if (Utils.checkIfFilr()) {
+		boolean isFilr = Utils.checkIfFilr();
+		if (isFilr) {
 			// Yes
 			url    += ("/" + SPropsUtil.getString("filr.release.product.novell", "novell-filr"));
 			product = ("/" + SPropsUtil.getString("filr.release.product",        "filr"       ));
@@ -928,23 +929,24 @@ public final class MiscUtil {
 		     url += ("/" + SPropsUtil.getString("release.product",         "vibe"       ));
 		else url += ("/" + SPropsUtil.getString("release.product.kablink", "kablinkvibe"));
 		
+		String guideSeparator = (isFilr ? "-" : "_");
 		String guideComponent = null;
 		if (hasString(guideName)) {
 			if (guideName.equalsIgnoreCase(USER_GUIDE)) {
 				// Get the url to the user guide.
-				guideComponent = product + "-user/data/";
+				guideComponent = product + guideSeparator + "user/data/";
 			}
 			else if (guideName.equalsIgnoreCase(ADV_USER_GUIDE)) {
 				// Get the url to the advanced user guide.
-				guideComponent = product + "-useradv/data/";
+				guideComponent = product + guideSeparator + "useradv/data/";
 			}
 			else if (guideName.equalsIgnoreCase(ADMIN_GUIDE)) {
 				// Get the url to the administration guide.
-				guideComponent = product + "-admin/data/";
+				guideComponent = product + guideSeparator + "admin/data/";
 			}
 			else if (guideName.equalsIgnoreCase(INSTALLATION_GUIDE)) {
 				// Get the url to the installation guide.
-				guideComponent = product + "-inst/data/";
+				guideComponent = product + guideSeparator + "inst/data/";
 			}
 			else {
 				guideComponent = null;

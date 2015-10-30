@@ -199,7 +199,8 @@ public class HelpData
 		product = "/vibe4";
 		
 		// Are we running Filr?
-		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+		boolean isFilr = GwtTeaming.m_requestInfo.isLicenseFilr();
+		if ( isFilr )
 		{
 			// Yes
 			url += "/novell-filr-2";
@@ -214,22 +215,23 @@ public class HelpData
 		else
 			url += "/kablinkvibe4";
 		
+		String guideSeparator = (isFilr ? "-" : "_");
 		if ( m_guideName != null && m_guideName.length() > 0 )
 		{
 			if ( m_guideName.equalsIgnoreCase( USER_GUIDE ) )
 			{
 				// Get the url to the user guide.
-				guideComponent = product + "-user/data/";
+				guideComponent = product + guideSeparator + "user/data/";
 			}
 			else if ( m_guideName.equalsIgnoreCase( ADV_USER_GUIDE ) )
 			{
 				// Get the url to the advanced user guide.
-				guideComponent = product + "-useradv/data/";
+				guideComponent = product + guideSeparator + "useradv/data/";
 			}
 			else if ( m_guideName.equalsIgnoreCase( ADMIN_GUIDE ) )
 			{
 				// Get the url to the administration guide.
-				guideComponent = product + "-admin/data/";
+				guideComponent = product + guideSeparator + "admin/data/";
 			}
 			else
 				guideComponent = null;
