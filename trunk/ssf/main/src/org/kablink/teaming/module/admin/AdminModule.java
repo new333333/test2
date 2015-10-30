@@ -71,6 +71,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.DesktopApplicationsLists;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 
@@ -488,7 +489,7 @@ public interface AdminModule {
 	
 	public void disableFileSyncStats();
 	
-	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean deployLocalApps, Boolean allowCachePwd, Integer maxFileSize );
+	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean deployLocalApps, Boolean allowCachePwd, Integer maxFileSize, DesktopApplicationsLists daLists );
 	
 	public void addOpenIDProvider(OpenIDProvider openIDProvider);
 	
