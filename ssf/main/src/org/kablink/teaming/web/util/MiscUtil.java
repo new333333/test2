@@ -932,19 +932,19 @@ public final class MiscUtil {
 		if (hasString(guideName)) {
 			if (guideName.equalsIgnoreCase(USER_GUIDE)) {
 				// Get the url to the user guide.
-				guideComponent = product + "_user/data/";
+				guideComponent = product + "-user/data/";
 			}
 			else if (guideName.equalsIgnoreCase(ADV_USER_GUIDE)) {
 				// Get the url to the advanced user guide.
-				guideComponent = product + "_useradv/data/";
+				guideComponent = product + "-useradv/data/";
 			}
 			else if (guideName.equalsIgnoreCase(ADMIN_GUIDE)) {
 				// Get the url to the administration guide.
-				guideComponent = product + "_admin/data/";
+				guideComponent = product + "-admin/data/";
 			}
 			else if (guideName.equalsIgnoreCase(INSTALLATION_GUIDE)) {
 				// Get the url to the installation guide.
-				guideComponent = product + "_inst/data/";
+				guideComponent = product + "-inst/data/";
 			}
 			else {
 				guideComponent = null;

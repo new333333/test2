@@ -202,8 +202,8 @@ public class HelpData
 		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
 		{
 			// Yes
-			url += "/novell-filr-2-0";
-			product = "/filr-2-0";
+			url += "/novell-filr-2";
+			product = "/filr-2";
 		}
 		// Are we running Novell Teaming?
 		else if ( GwtMainPage.m_requestInfo.isNovellTeaming() )
@@ -219,17 +219,17 @@ public class HelpData
 			if ( m_guideName.equalsIgnoreCase( USER_GUIDE ) )
 			{
 				// Get the url to the user guide.
-				guideComponent = product + "_user/data/";
+				guideComponent = product + "-user/data/";
 			}
 			else if ( m_guideName.equalsIgnoreCase( ADV_USER_GUIDE ) )
 			{
 				// Get the url to the advanced user guide.
-				guideComponent = product + "_useradv/data/";
+				guideComponent = product + "-useradv/data/";
 			}
 			else if ( m_guideName.equalsIgnoreCase( ADMIN_GUIDE ) )
 			{
 				// Get the url to the administration guide.
-				guideComponent = product + "_admin/data/";
+				guideComponent = product + "-admin/data/";
 			}
 			else
 				guideComponent = null;

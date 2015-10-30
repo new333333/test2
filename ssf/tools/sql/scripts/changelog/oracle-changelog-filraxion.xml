@@ -333,4 +333,11 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
         <modifyDataType tableName="SS_LoginAudit" columnName="clientAddr" newDataType="VARCHAR2(40 CHAR)"/>
     </changeSet>
 
+	<changeSet author="dennis" context="schema" failOnError="true" id="31">
+		<comment>Desktop Configuration - Applications Whitelist/Blacklist</comment>
+		<addColumn tableName="SS_ZoneConfig">
+			<column name="fsaApplicationsBlob" type="CLOB" />
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>

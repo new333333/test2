@@ -455,4 +455,11 @@ GO
 		</sql>
     </changeSet>
 
+	<changeSet author="dennis" context="schema" failOnError="true" id="34">
+		<comment>Desktop Configuration - Applications Whitelist/Blacklist</comment>
+		<addColumn tableName="SS_ZoneConfig">
+			<column name="fsaApplicationsBlob" type="ntext" />
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
