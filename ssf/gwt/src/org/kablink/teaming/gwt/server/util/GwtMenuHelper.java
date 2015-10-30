@@ -1043,7 +1043,7 @@ public class GwtMenuHelper {
 		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
 		if (canDownload && (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true))) {
 			String downloadFileUrl;
-			try                  {downloadFileUrl = GwtServerHelper.getDownloadFileUrl(request, bs, fe.getId(), fe.getId(), true);}	// true -> Return a permalink URL.
+			try                  {downloadFileUrl = GwtDesktopApplicationsHelper.getDownloadFileUrl(request, bs, fe.getId(), fe.getId(), true);}	// true -> Return a permalink URL.
 			catch (Exception ex) {downloadFileUrl = null;}
 			if (MiscUtil.hasString(downloadFileUrl)) {
 				ToolbarItem downloadFileTBI = new ToolbarItem(FILE_DOWNLOAD  );
@@ -2868,7 +2868,7 @@ public class GwtMenuHelper {
 					if (GwtServerHelper.isFamilyFile(family)) {
 						// ...and we can get it's download permalink...
 						String downloadPermalink;
-						try                  {downloadPermalink = GwtServerHelper.getDownloadFileUrl(request, bs, feBinder.getId(), fe.getId(), true);}	// true -> Return a permalink URL.
+						try                  {downloadPermalink = GwtDesktopApplicationsHelper.getDownloadFileUrl(request, bs, feBinder.getId(), fe.getId(), true);}	// true -> Return a permalink URL.
 						catch (Exception ex) {downloadPermalink = null;}
 						if (MiscUtil.hasString(downloadPermalink)) {
 							//...add a toolbar item for that.

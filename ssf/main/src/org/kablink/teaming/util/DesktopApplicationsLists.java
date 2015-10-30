@@ -150,7 +150,7 @@ public class DesktopApplicationsLists {
 				reply = AppListMode.valueOf(modeName);
 			}
 			catch (Exception ex) {
-				m_logger.error("AppListMod.getMode( PARSE ERROR ):  ", ex);
+				m_logger.error("AppListMode.getMode( PARSE ERROR ):  ", ex);
 				reply = AppListMode.DISABLED;
 			}
 			return reply;
@@ -210,14 +210,10 @@ public class DesktopApplicationsLists {
 	/**
 	 * Get'er helper methods (Public.)
 	 */
-	public List<AppInfo> getBlacklist(AppPlatform platform) {return (isBlacklist() ? getApplications(platform) : new ArrayList<AppInfo>());}
-	public List<AppInfo> getDisabled( AppPlatform platform) {return (isDisabled()  ? getApplications(platform) : new ArrayList<AppInfo>());}
-	public List<AppInfo> getWhitelist(AppPlatform platform) {return (isWhitelist() ? getApplications(platform) : new ArrayList<AppInfo>());}
-	
-	/*
-	 * Get'er helper methods (Private.)
-	 */
-	private List<AppInfo> getApplications(AppPlatform platform) {return m_applicationsMap.get(platform);                                       }
+	public List<AppInfo> getApplications(AppPlatform platform) {return m_applicationsMap.get(platform);                                       }
+	public List<AppInfo> getBlacklist(   AppPlatform platform) {return (isBlacklist() ? getApplications(platform) : new ArrayList<AppInfo>());}
+	public List<AppInfo> getDisabled(    AppPlatform platform) {return (isDisabled()  ? getApplications(platform) : new ArrayList<AppInfo>());}
+	public List<AppInfo> getWhitelist(   AppPlatform platform) {return (isWhitelist() ? getApplications(platform) : new ArrayList<AppInfo>());}
 	
 	/**
 	 * Set'er methods.
@@ -417,9 +413,44 @@ public class DesktopApplicationsLists {
 				}
 			}
 		}
+		
+		// No, we don't have a string from the blob!  Is the blob null
+		// and are we running Filr?
+		else if ((null == fsaApplicationsBlob) && Utils.checkIfFilr()) {
+			// Yes!  Then we construct default lists using values from
+			// the ssf*.properties file.
+			String modeS = SPropsUtil.getString("filr.default.desktop.applications.lists.type", "disabled");
+			if (null == modeS) {
+				modeS = "disabled";
+			}
+			AppListMode mode;
+			if      (modeS.toUpperCase().equals(AppListMode.BLACKLIST.name())) mode = AppListMode.BLACKLIST;
+			else if (modeS.toUpperCase().equals(AppListMode.DISABLED.name()))  mode = AppListMode.DISABLED;
+			else if (modeS.toUpperCase().equals(AppListMode.WHITELIST.name())) mode = AppListMode.WHITELIST;
+			else                                                               mode = AppListMode.DISABLED;
+			reply.setAppListMode(mode);
+			
+			setAppListsFromProperties(reply.getApplications(AppPlatform.MAC),     "filr.default.desktop.applications.lists.mac"    );
+			setAppListsFromProperties(reply.getApplications(AppPlatform.WINDOWS), "filr.default.desktop.applications.lists.windows");
+		}
 
 		// If we get here, reply refers to the DesktopApplicationsLists
 		// object for the given fsaApplicationsBlob string.  Return it.
 		return reply;
+	}
+
+	/*
+	 * Populates the given List<AppInfo> with the applications read
+	 * from the ssf*.properites file.
+	 */
+	private static void setAppListsFromProperties(List<AppInfo> appList, String propKey) {
+		String		appsS = SPropsUtil.getString(propKey, "");;
+		String[]	apps  = (MiscUtil.hasString(appsS) ? appsS.split(",") : new String[0]);
+		for (String app:  apps) {
+			app = app.trim();
+			if (MiscUtil.hasString(app)) {
+				appList.add(new AppInfo(app, app));
+			}
+		}
 	}
 }

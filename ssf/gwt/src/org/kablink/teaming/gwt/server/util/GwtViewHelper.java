@@ -3043,7 +3043,7 @@ public class GwtViewHelper {
 				// ...otherwise, if we need to download the file...
 				else if (doDownload) {
 					// ...generate the appropriate response.
-					String url = GwtServerHelper.getDownloadFileUrl(request, bs, binderId, entryId);
+					String url = GwtDesktopApplicationsHelper.getDownloadFileUrl(request, bs, binderId, entryId);
 					reply = new ClickOnTitleActionRpcResponseData(ClickAction.DOWNLOAD_FILE, url);
 				}
 			}
@@ -5165,7 +5165,7 @@ public class GwtViewHelper {
 				if (AdminHelper.getEffectiveDownloadSetting(bs, user)) {
 					// ...add a download URL...
 					reply.setDownloadUrl(
-						GwtServerHelper.getDownloadFileUrl(
+							GwtDesktopApplicationsHelper.getDownloadFileUrl(
 							request,
 							bs,
 							fe.getParentBinder().getId(),
@@ -6110,7 +6110,7 @@ public class GwtViewHelper {
 														vfi.setFileTime(fTime);
 														eti.setFileViewAsHtmlUrl(GwtServerHelper.getViewFileUrl(request, vfi));
 										    		}
-													eti.setFileDownloadUrl(GwtServerHelper.getDownloadFileUrl(request, entryMap));
+													eti.setFileDownloadUrl(GwtDesktopApplicationsHelper.getDownloadFileUrl(request, entryMap));
 													eti.setFileIcon(FileIconsHelper.getFileIconFromFileName(fName, mapBISToIS(BinderIconSize.getListViewIconSize())));
 												}
 											}

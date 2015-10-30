@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,171 +37,62 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class is used to hold the File Sync App Configuration data.
+ * This class is used to hold the Desktop Application Configuration
+ * data.
  * 
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
-public class GwtFileSyncAppConfiguration
-	implements IsSerializable, VibeRpcResponseData
-{
-	private boolean m_isFileSyncAppEnabled = false;
-	private boolean m_deploymentEnabled = false;
-	private boolean m_allowCachePwd = false;
-	private boolean m_useLocalApps = false;
-	private boolean m_useRemoteApps = true;
-	private boolean m_localAppsExist = false;
-	private int m_syncInterval = 15;
-	private int m_maxFileSize = 0;
-	private String m_autoUpdateUrl = null;
+public class GwtFileSyncAppConfiguration implements IsSerializable, VibeRpcResponseData {
+	private boolean						m_isFileSyncAppEnabled;		//
+	private boolean						m_deploymentEnabled;		//
+	private boolean						m_allowCachePwd;			//
+	private boolean						m_useLocalApps;				//
+	private boolean						m_useRemoteApps = true;		//
+	private boolean						m_localAppsExist;			//
+	private GwtDesktopApplicationsLists	m_desktopApplicationsLists;	//
+	private int							m_maxFileSize;				//
+	private int							m_syncInterval = 15;		//
+	private String						m_autoUpdateUrl;			//
 	
 	/**
+	 * Constructor method.
 	 * 
+	 * Zero parameter constructor required for GWT serialization.
 	 */
-	public GwtFileSyncAppConfiguration()
-	{
+	public GwtFileSyncAppConfiguration() {
+		// Initialize the super class.
+		super();
 	}
 	
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public String getAutoUpdateUrl()
-	{
-		return m_autoUpdateUrl;
-	}
+	public boolean                     getIsFileSyncAppEnabled()        {return m_isFileSyncAppEnabled;    }
+	public boolean                     getIsDeploymentEnabled()         {return m_deploymentEnabled;       }
+	public boolean                     getAllowCachePwd()               {return m_allowCachePwd;           }
+	public boolean                     getUseLocalApps()                {return m_useLocalApps;            }
+	public boolean                     getUseRemoteApps()               {return m_useRemoteApps;           }
+	public boolean                     getLocalAppsExist()              {return m_localAppsExist;          }
+	public GwtDesktopApplicationsLists getGwtDesktopApplicationsLists() {return m_desktopApplicationsLists;}
+	public int                         getMaxFileSize()                 {return m_maxFileSize;             }
+	public int                         getSyncInterval()                {return m_syncInterval;            }
+	public String                      getAutoUpdateUrl()               {return m_autoUpdateUrl;           }
 	
 	/**
+	 * Set'er methods.
 	 * 
+	 * @param
 	 */
-	public boolean getAllowCachePwd()
-	{
-		return m_allowCachePwd;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getIsDeploymentEnabled()
-	{
-		return m_deploymentEnabled;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getIsFileSyncAppEnabled()
-	{
-		return m_isFileSyncAppEnabled;
-	}
-
-	/**
-	 * 
-	 */
-	public int getMaxFileSize()
-	{
-		return m_maxFileSize;
-	}
-	
-	/**
-	 * The sync interval is in minutes.
-	 */
-	public int getSyncInterval()
-	{
-		return m_syncInterval;
-	}
-
-	/**
-	 * Whether to use desktop applications local to the system.
-	 */
-	public boolean getUseLocalApps()
-	{
-		return m_useLocalApps;
-	}
-	
-	/**
-	 * Whether to use desktop applications from a remote location.
-	 */
-	public boolean getUseRemoteApps()
-	{
-		return m_useRemoteApps;
-	}
-	
-	/**
-	 * Whether desktop applications exist on the server.
-	 */
-	public boolean getLocalAppsExist()
-	{
-		return m_localAppsExist;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAllowCachePwd( boolean allow )
-	{
-		m_allowCachePwd = allow;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAutoUpdateUrl( String url )
-	{
-		m_autoUpdateUrl = url;
-	}
-
-	/**
-	 * 
-	 */
-	public void setIsDeploymentEnabled( boolean enabled )
-	{
-		m_deploymentEnabled = enabled;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setIsFileSyncAppEnabled( boolean enabled )
-	{
-		m_isFileSyncAppEnabled = enabled;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setMaxFileSize( int size )
-	{
-		m_maxFileSize = size;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setSyncInterval( int intervalInMinutes )
-	{
-		m_syncInterval = intervalInMinutes;
-	}
-	
-	/**
-	 *
-	 */
-	public void setUseLocalApps( boolean useLocalApps )
-	{
-		m_useLocalApps = useLocalApps;
-	}
-	
-	/**
-	 *
-	 */
-	public void setUseRemoteApps( boolean useRemoteApps)
-	{
-		m_useRemoteApps = useRemoteApps;
-	}
-	
-	/**
-	 *
-	 */
-	public void setLocalAppsExist( boolean localAppsExist )
-	{
-		m_localAppsExist = localAppsExist;
-	}
+	public void setIsFileSyncAppEnabled(       boolean                     enabled)                  {m_isFileSyncAppEnabled     = enabled;                 }
+	public void setIsDeploymentEnabled(        boolean                     enabled)                  {m_deploymentEnabled        = enabled;                 }
+	public void setAllowCachePwd(              boolean                     allow)                    {m_allowCachePwd            = allow;                   }
+	public void setUseLocalApps(               boolean                     useLocalApps)             {m_useLocalApps             = useLocalApps;            }
+	public void setUseRemoteApps(              boolean                     useRemoteApps)            {m_useRemoteApps            = useRemoteApps;           }
+	public void setLocalAppsExist(             boolean                     localAppsExist)           {m_localAppsExist           = localAppsExist;          }
+	public void setGwtDesktopApplicationsLists(GwtDesktopApplicationsLists desktopApplicationsLists) {m_desktopApplicationsLists = desktopApplicationsLists;}
+	public void setMaxFileSize(                int                         size)                     {m_maxFileSize              = size;                    }
+	public void setSyncInterval(               int                         intervalInMinutes)        {m_syncInterval             = intervalInMinutes;       }
+	public void setAutoUpdateUrl(              String                      url)                      {m_autoUpdateUrl            = url;                     }
 }

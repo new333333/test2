@@ -192,6 +192,7 @@ import org.kablink.teaming.gwt.server.util.GwtAntiVirusHelper;
 import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtDeleteHelper;
+import org.kablink.teaming.gwt.server.util.GwtDesktopApplicationsHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailTemplatesHelper;
 import org.kablink.teaming.gwt.server.util.GwtFolderEntryTypeHelper;
@@ -1594,7 +1595,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_DESKTOP_APP_DOWNLOAD_INFO:
 		{
-			DesktopAppDownloadInfoRpcResponseData result = GwtServerHelper.getDesktopAppDownloadInformation( this, req );
+			DesktopAppDownloadInfoRpcResponseData result = GwtDesktopApplicationsHelper.getDesktopAppDownloadInformation( this, req );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -1621,7 +1622,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_DOWNLOAD_FILE_URL:
 		{
 			GetDownloadFileUrlCmd gdfuCmd = ((GetDownloadFileUrlCmd) cmd);
-			String result = GwtServerHelper.getDownloadFileUrl( req, this, gdfuCmd.getBinderId(), gdfuCmd.getEntryId() );
+			String result = GwtDesktopApplicationsHelper.getDownloadFileUrl( req, this, gdfuCmd.getBinderId(), gdfuCmd.getEntryId() );
 			StringRpcResponseData responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
@@ -1839,7 +1840,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GwtFileSyncAppConfiguration fileSyncAppConfiguration; 
 
-			fileSyncAppConfiguration = GwtServerHelper.getFileSyncAppConfiguration( this );
+			fileSyncAppConfiguration = GwtDesktopApplicationsHelper.getFileSyncAppConfiguration( this );
 			response = new VibeRpcResponse( fileSyncAppConfiguration );
 			return response;
 		}
@@ -3667,7 +3668,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Boolean result;
 			
 			sfsacCmd = ((SaveFileSyncAppConfigurationCmd) cmd);
-			result = GwtServerHelper.saveFileSyncAppConfiguration( this, sfsacCmd.getFileSyncAppConfiguration() );
+			result = GwtDesktopApplicationsHelper.saveFileSyncAppConfiguration( this, sfsacCmd.getFileSyncAppConfiguration() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
