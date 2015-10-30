@@ -34,7 +34,6 @@ package org.kablink.teaming.module.shared;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.Set;
 
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Event;
@@ -54,14 +53,28 @@ public class MapInputData implements InputDataAccessor {
 	
 	public String getSingleValue(String key) {
 		Object result = source.get(key);
-		if(result == null)
+		if(result == null) {
 			return null;
-		else if (result instanceof String) 
+		}
+		else if (result instanceof String) {
 			return (String)result;
-		else if (result instanceof String[]) 
-			return ((String[]) result)[0];
-		else
+		}
+		else if (result instanceof String[]) {
+			if(((String[])result).length > 0)
+				return ((String[]) result)[0];
+			else
+				return null;
+		}
+		else if(result instanceof byte[]) {
+			try {
+				return new String((byte[])result, "UTF-8");
+			} catch (Exception e) {
+				return null;
+			}
+		}
+		else {
 			return null;
+		}
 	}
 	
 	public Date getDateValue(String key) {
@@ -104,12 +117,22 @@ public class MapInputData implements InputDataAccessor {
 
 	public String[] getValues(String key) {
 		Object result = source.get(key);
-		if(result == null)
+		if(result == null) {
 			return null;
-		else if (result instanceof String[]) 
+		}
+		else if (result instanceof String[]) {
 			return (String[])result;
-		else if(result instanceof String)
+		}
+		else if(result instanceof String) {
 			return new String[] { (String) result };
+		}
+		else if(result instanceof byte[]) {
+			try {
+				return new String[] { new String((byte[])result, "UTF-8") };
+			} catch (Exception e) {
+				return null;
+			}
+		}
 		else {
 			return null;		
 		}
