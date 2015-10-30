@@ -337,4 +337,11 @@ update SS_Forums set binderType = LEFT(type, 1);
         </modifySql>
     </changeSet>
     
+	<changeSet author="dennis" context="schema" failOnError="true" id="33">
+		<comment>Desktop Configuration - Applications Whitelist/Blacklist</comment>
+		<addColumn tableName="SS_ZoneConfig">
+			<column name="fsaApplicationsBlob" type="LONGTEXT" />
+		</addColumn>
+	</changeSet>
+
 </databaseChangeLog>
