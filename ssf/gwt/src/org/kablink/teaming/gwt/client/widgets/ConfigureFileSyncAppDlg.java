@@ -32,7 +32,14 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtDesktopApplicationsLists;
+import org.kablink.teaming.gwt.client.GwtDesktopApplicationsLists.GwtAppInfo;
+import org.kablink.teaming.gwt.client.GwtDesktopApplicationsLists.GwtAppListMode;
+import org.kablink.teaming.gwt.client.GwtDesktopApplicationsLists.GwtAppPlatform;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -43,388 +50,577 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.MultiPromptDlg.MultiPromptDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * ?
  * 
- * @author jwootton@novell.com
+ * @author drfoster@novell.com
  */
-public class ConfigureFileSyncAppDlg extends DlgBox
-	implements KeyPressHandler, EditSuccessfulHandler
-{
-	private CheckBox	m_enableFileSyncAccessCB;
-	private CheckBox	m_enableDeployCB;
-	private CheckBox	m_allowPwdCacheCB;
-	private FlexTable	m_autoUpdateChoiceTable;
-	private FlexTable	m_autoUpdateUrlOnlyTable;
-	private RadioButton m_useLocalApps;
-	private RadioButton m_useRemoteApps;
-	private TextBox		m_syncIntervalTextBox;
-	private TextBox		m_autoUpdateUrlTextBox_Choice;
-	private TextBox		m_autoUpdateUrlTextBox_UrlOnly;
-	private TextBox		m_autoUpdateUrlTextBox;
-	private TextBox		m_maxFileSizeTextBox;
+public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, EditSuccessfulHandler {
+	private boolean				m_isFilr;						//
+	private CheckBox			m_allowPwdCacheCB;				//
+	private CheckBox			m_enableDeployCB;				//
+	private CheckBox			m_enableFileSyncAccessCB;		//
+	private FlexTable			m_autoUpdateChoiceTable;		//
+	private FlexTable			m_autoUpdateUrlOnlyTable;		//
+	private FlowPanel			m_appListPanel;					//
+	private GwtTeamingMessages	m_messages;						//
+	private MultiPromptDlg		m_mpDlg;						// The dialog used to prompt the user for information about an application.
+	private ListBox				m_macLB;						// The list of Mac     applications.
+	private ListBox				m_windowsLB;					// The list of Windows applications.
+	private RadioButton			m_blacklistRB;					// The radio button specifying the lists are part of a blacklist.
+	private RadioButton			m_disabledRB;					// The radio button specifying the lists are to be ignored.
+	private RadioButton 		m_useLocalApps;					//
+	private RadioButton 		m_useRemoteApps;				//
+	private RadioButton			m_whitelistRB;					// The radio button specifying the lists are part of a whitelist.
+	private TextBox				m_autoUpdateUrlTextBox;			//
+	private TextBox				m_autoUpdateUrlTextBox_Choice;	//
+	private TextBox				m_autoUpdateUrlTextBox_UrlOnly;	//
+	private TextBox				m_maxFileSizeTextBox;			//
+	private TextBox				m_syncIntervalTextBox;			//
 	
-	/**
-	 * Callback interface to interact with the "configure file sync app" dialog
-	 * asynchronously after it loads. 
-	 */
-	public interface ConfigureFileSyncAppDlgClient
-	{
-		void onSuccess( ConfigureFileSyncAppDlg cfsaDlg );
-		void onUnavailable();
-	}
-
+	private final static int	DESCRIPTION_INDEX	= 1;
+	private final static int	PROCESS_NAME_INDEX	= 0;
 	
-
-	/**
+	/*
+	 * Class constructor.
 	 * 
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
-	private ConfigureFileSyncAppDlg(
-		boolean autoHide,
-		boolean modal,
-		int xPos,
-		int yPos,
-		int width,
-		int height )
-	{
-		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
+	private ConfigureFileSyncAppDlg(boolean autoHide, boolean modal, int xPos, int yPos, int width, int height, ConfigureFileSyncAppDlgClient cfsaDlgClient) {
+		// Initialize the super class...
+		super(
+			autoHide,
+			modal,
+			xPos,
+			yPos,
+			width,
+			height,
+			DlgButtonMode.OkCancel);
+		
+		// ...initialize everything else that requires it...
+		m_isFilr   = GwtClientHelper.isLicenseFilr();
+		m_messages = GwtTeaming.getMessages();
 
-		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().fileSyncAppDlgHeader(), this, null, null ); 
+		// ...and create the dialog's content.
+		createAllDlgContent(
+			m_messages.fileSyncAppDlgHeader(),
+			this,	// EditSuccessful handler.
+			null,	// null -> No EditCanceled handler.
+			cfsaDlgClient); 
+	}
+
+	/*
+	 * Constructs the string to use as the display value in an
+	 * application whitelist / blacklist listbox.
+	 */
+	private static String buildAppListDisplayValue(String description, String processName) {
+		return (processName + " (" + description + ")");
 	}
 	
+	/*
+	 * Creates the dialog content for the application
+	 * whitelist / blacklist.
+	 */
+	private void createAppListContent(FlowPanel mainPanel) {
+		// Create a panel for the application whitelist / blacklist.
+		m_appListPanel = new FlowPanel();
+		mainPanel.add(m_appListPanel);
 
+		// Create a header for this section of the dialog.
+		Label label = new Label(m_messages.fileSyncAppHeader4());
+		label.addStyleName("margintop3");
+		m_appListPanel.add(label);
+
+		// Add the widgets for the lists.
+		m_appListPanel.add(createModeWidgets());
+		m_appListPanel.add(createMacList()    );
+		m_appListPanel.add(createWindowsList());
+		
+		// If this isn't Filr...
+		if (!(m_isFilr)) {
+			// ...hide the application list panel.  It's only used in Filr.
+			m_appListPanel.setVisible(false);
+		}
+	}
+	
 	/**
 	 * Create all the controls that make up the dialog box.
+	 * 
+	 * Implements the DlgBox.createContent() abstract method.
+	 * 
+	 * @param props
+	 * 
+	 * @return
 	 */
 	@Override
-	public Panel createContent( Object props )
-	{
-		GwtTeamingMessages messages;
-		FlowPanel mainPanel = null;
-		FlowPanel tmpPanel;
-		FlowPanel ckboxPanel;
-		Label label;
+	public Panel createContent(Object props) {
+		FlowPanel mainPanel = new FlowPanel();
+		mainPanel.setStyleName("teamingDlgBoxContent");
 
-		messages = GwtTeaming.getMessages();
+		Label label = new Label(m_messages.fileSyncAppHeader2());
+		mainPanel.add(label);
 		
-		mainPanel = new FlowPanel();
-		mainPanel.setStyleName( "teamingDlgBoxContent" );
-
-		label = new Label( messages.fileSyncAppHeader2() );
-		mainPanel.add( label );
+		FlowPanel ckboxPanel = new FlowPanel();
+		ckboxPanel.addStyleName("marginleft1 margintop2");
+		mainPanel.add(ckboxPanel);
 		
-		ckboxPanel = new FlowPanel();
-		ckboxPanel.addStyleName( "marginleft1 margintop2" );
-		mainPanel.add( ckboxPanel );
-		
-		// Add the controls for enable/disable File Sync App
-		{
-			String productName;
-			
-			productName = "Vibe";
-			if ( GwtClientHelper.isLicenseFilr() )
-				productName = "Filr";
-			
-			m_enableFileSyncAccessCB = new CheckBox( messages.fileSyncAppAllowAccess( productName ) );
-			tmpPanel = new FlowPanel();
-			tmpPanel.add( m_enableFileSyncAccessCB );
-			ckboxPanel.add( tmpPanel );
-		}
+		// Add the controls for enable/disable File Sync Application.
+		m_enableFileSyncAccessCB = new CheckBox(m_messages.fileSyncAppAllowAccess(GwtClientHelper.getProductName()));
+		FlowPanel tmpPanel = new FlowPanel();
+		tmpPanel.add(m_enableFileSyncAccessCB);
+		ckboxPanel.add(tmpPanel);
 		
 		// Create the "Allow desktop application to cache password"
-		m_allowPwdCacheCB = new CheckBox( messages.fileSyncAppAllowCachePwd() );
+		m_allowPwdCacheCB = new CheckBox(m_messages.fileSyncAppAllowCachePwd());
 		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_allowPwdCacheCB );
-		ckboxPanel.add( tmpPanel );
+		tmpPanel.add(m_allowPwdCacheCB);
+		ckboxPanel.add(tmpPanel);
 		
 		// Create the "Allow deployment of Desktop application" checkbox
-		m_enableDeployCB = new CheckBox( messages.fileSyncAppEnableDeployLabel() );
+		m_enableDeployCB = new CheckBox(m_messages.fileSyncAppEnableDeployLabel());
 		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_enableDeployCB );
-		ckboxPanel.add( tmpPanel );
+		tmpPanel.add(m_enableDeployCB);
+		ckboxPanel.add(tmpPanel);
 		
-		// Create the controls for auto-update url.
-		{
-			m_autoUpdateChoiceTable = new FlexTable();
-			m_autoUpdateChoiceTable.addStyleName( "marginleft1" );
-			m_autoUpdateChoiceTable.setCellSpacing( 0 );
-			m_autoUpdateChoiceTable.setCellPadding( 0 );
+		// Create the controls for auto-update URL.
+		m_autoUpdateChoiceTable = new FlexTable();
+		m_autoUpdateChoiceTable.addStyleName("marginleft1");
+		m_autoUpdateChoiceTable.setCellSpacing(0);
+		m_autoUpdateChoiceTable.setCellPadding(0);
 
-			{
-				m_useLocalApps = new RadioButton( "fileSyncAppLocation" );
-				m_useLocalApps.addStyleName( "filrSyncAppDlg_Radio" );
-				m_useLocalApps.setValue( true );
-				m_autoUpdateChoiceTable.setWidget( 0, 0, m_useLocalApps );
-				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel_UseLocal() );
-				label.addStyleName("gwtUI_nowrap");
-				m_autoUpdateChoiceTable.setWidget( 0, 1, label );
+		m_useLocalApps = new RadioButton("fileSyncAppDlg_Location");
+		m_useLocalApps.addStyleName(     "fileSyncAppDlg_Radio"   );
+		m_useLocalApps.setValue(true);
+		m_autoUpdateChoiceTable.setWidget(0, 0, m_useLocalApps);
+		label = new InlineLabel(m_messages.fileSyncAppAutoUpdateUrlLabel_UseLocal());
+		label.addStyleName("gwtUI_nowrap");
+		m_autoUpdateChoiceTable.setWidget(0, 1, label);
 
-				m_useRemoteApps = new RadioButton( "fileSyncAppLocation" );
-				m_useRemoteApps.addStyleName( "filrSyncAppDlg_Radio" );
-				m_useRemoteApps.setValue( false );
-				m_autoUpdateChoiceTable.setWidget( 1, 0, m_useRemoteApps );
-				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel_UseRemote() );
-				label.addStyleName("gwtUI_nowrap");
-				m_autoUpdateChoiceTable.setWidget( 1, 1, label );
-				
-				// Create a textbox for the user to enter the auto-update url.
-				m_autoUpdateUrlTextBox_Choice = new TextBox();
-				m_autoUpdateUrlTextBox_Choice.setVisibleLength( 40 );
-				m_autoUpdateChoiceTable.setWidget( 2, 1, m_autoUpdateUrlTextBox_Choice );
-				
-				mainPanel.add( m_autoUpdateChoiceTable );
-			}
-			
-			{
-				m_autoUpdateUrlOnlyTable = new FlexTable();
-				m_autoUpdateUrlOnlyTable.addStyleName( "marginleft1" );
-				m_autoUpdateUrlOnlyTable.setCellSpacing( 4 );
-				
-				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel() );
-				label.addStyleName("gwtUI_nowrap");
-				m_autoUpdateUrlOnlyTable.setWidget( 0, 0, label );
-				
-				// Create a textbox for the user to enter the auto-update url.
-				m_autoUpdateUrlTextBox_UrlOnly = new TextBox();
-				m_autoUpdateUrlTextBox_UrlOnly.setVisibleLength( 40 );
-				m_autoUpdateUrlOnlyTable.setWidget( 0, 1, m_autoUpdateUrlTextBox_UrlOnly );
-				
-				mainPanel.add( m_autoUpdateUrlOnlyTable );
-			}
-
-		}
+		m_useRemoteApps = new RadioButton("fileSyncAppDlg_Location");
+		m_useRemoteApps.addStyleName(     "fileSyncAppDlg_Radio"   );
+		m_useRemoteApps.setValue(false);
+		m_autoUpdateChoiceTable.setWidget(1, 0, m_useRemoteApps);
+		label = new InlineLabel(m_messages.fileSyncAppAutoUpdateUrlLabel_UseRemote());
+		label.addStyleName("gwtUI_nowrap");
+		m_autoUpdateChoiceTable.setWidget(1, 1, label);
+		
+		// Create a text box for the user to enter the auto-update URL.
+		m_autoUpdateUrlTextBox_Choice = new TextBox();
+		m_autoUpdateUrlTextBox_Choice.setVisibleLength(40);
+		m_autoUpdateChoiceTable.setWidget(2, 1, m_autoUpdateUrlTextBox_Choice);
+		
+		mainPanel.add(m_autoUpdateChoiceTable);
+		
+		m_autoUpdateUrlOnlyTable = new FlexTable();
+		m_autoUpdateUrlOnlyTable.addStyleName("marginleft1");
+		m_autoUpdateUrlOnlyTable.setCellSpacing(4);
+		
+		label = new InlineLabel(m_messages.fileSyncAppAutoUpdateUrlLabel());
+		label.addStyleName("gwtUI_nowrap");
+		m_autoUpdateUrlOnlyTable.setWidget(0, 0, label);
+		
+		// Create a text box for the user to enter the auto-update URL.
+		m_autoUpdateUrlTextBox_UrlOnly = new TextBox();
+		m_autoUpdateUrlTextBox_UrlOnly.setVisibleLength(40);
+		m_autoUpdateUrlOnlyTable.setWidget(0, 1, m_autoUpdateUrlTextBox_UrlOnly);
+		
+		mainPanel.add(m_autoUpdateUrlOnlyTable);
 		
 		// Create the controls for File Sync interval
-		{
-			label = new Label( messages.fileSyncAppHeader3() );
-			label.addStyleName( "margintop3" );
-			mainPanel.add( label );
+		label = new Label(m_messages.fileSyncAppHeader3());
+		label.addStyleName("margintop3");
+		mainPanel.add(label);
 
-			HorizontalPanel hPanel;
-			Label intervalLabel;
-			
-			hPanel = new HorizontalPanel();
-			hPanel.addStyleName( "marginleft1" );
-			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
-			hPanel.setSpacing( 4 );
-			
-			intervalLabel = new Label( messages.fileSyncAppIntervalLabel() );
-			hPanel.add( intervalLabel );
-			
-			m_syncIntervalTextBox = new TextBox();
-			m_syncIntervalTextBox.addKeyPressHandler( this );
-			m_syncIntervalTextBox.setVisibleLength( 3 );
-			hPanel.add( m_syncIntervalTextBox );
-			
-			intervalLabel = new Label( messages.fileSyncAppMinutesLabel() );
-			intervalLabel.addStyleName( "gray3" );
-			hPanel.add( intervalLabel );
+		HorizontalPanel hPanel = new HorizontalPanel();
+		hPanel.addStyleName("marginleft1");
+		hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		hPanel.setSpacing(4);
+		
+		Label intervalLabel = new Label(m_messages.fileSyncAppIntervalLabel());
+		hPanel.add(intervalLabel);
+		
+		m_syncIntervalTextBox = new TextBox();
+		m_syncIntervalTextBox.addKeyPressHandler(this);
+		m_syncIntervalTextBox.setVisibleLength(3);
+		hPanel.add(m_syncIntervalTextBox);
+		
+		intervalLabel = new Label(m_messages.fileSyncAppMinutesLabel());
+		intervalLabel.addStyleName("gray3");
+		hPanel.add(intervalLabel);
 
-			mainPanel.add( hPanel );
-		}
+		mainPanel.add(hPanel);
 		
 		// Create the controls for the max file size
-		{
-			FlexTable tmpTable;
-			
-			tmpTable = new FlexTable();
-			tmpTable.addStyleName( "marginleft1" );
-			tmpTable.setCellSpacing( 4 );
-			
-			label = new InlineLabel( messages.fileSyncAppMaxFileSizeLabel() );
-			tmpTable.setWidget( 0, 0, label );
-			
-			m_maxFileSizeTextBox = new TextBox();
-			m_maxFileSizeTextBox.addKeyPressHandler( this );
-			m_maxFileSizeTextBox.setVisibleLength( 3 );
-			tmpTable.setWidget( 0, 1, m_maxFileSizeTextBox );
-			
-			label = new InlineLabel( messages.fileSyncAppMBLabel() );
-			label.addStyleName( "gray3" );
-			tmpTable.setWidget( 0, 2, label );
-
-			mainPanel.add( tmpTable );
-		}
+		FlexTable tmpTable = new FlexTable();
+		tmpTable.addStyleName("marginleft1");
+		tmpTable.setCellSpacing(4);
 		
+		label = new InlineLabel(m_messages.fileSyncAppMaxFileSizeLabel());
+		tmpTable.setWidget(0, 0, label);
+		
+		m_maxFileSizeTextBox = new TextBox();
+		m_maxFileSizeTextBox.addKeyPressHandler(this);
+		m_maxFileSizeTextBox.setVisibleLength(3);
+		tmpTable.setWidget(0, 1, m_maxFileSizeTextBox);
+		
+		label = new InlineLabel(m_messages.fileSyncAppMBLabel());
+		label.addStyleName("gray3");
+		tmpTable.setWidget(0, 2, label);
+
+		mainPanel.add(tmpTable);
+
+		// Create the application whitelist / blacklist widgets.
+		createAppListContent(mainPanel);
+
+		// Create a MultipPromptDlg for use in editing the application
+		// whitelist / blacklist.
+		loadPart1Async(((ConfigureFileSyncAppDlgClient) props));
+
+		// Finally, return the dialog's main panel.
 		return mainPanel;
 	}
 	
+	/*
+	 * Creates the widgets for entering applications.
+	 */
+	private ListBox createList(final FlowPanel contentPanel, final String listLabel, final List<String> addPrompts) {
+		// Add a label for the list widgets.
+		InlineLabel il = new InlineLabel(listLabel);
+		il.addStyleName("fileSyncAppDlg_SectionHeader fileSyncAppDlg_ListHeader");
+		contentPanel.add(il);
+
+		// Create a HorizontalPanel to hold the list widgets.
+		HorizontalPanel horizontalListPanel = new HorizontalPanel();
+		horizontalListPanel.addStyleName("fileSyncAppDlg_ListPanel");
+		horizontalListPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_TOP);
+
+		// Create the ListBox itself.
+		final ListBox listBox = new ListBox();
+		listBox.setMultipleSelect(true);	// true -> Multi-select ListBox.
+		listBox.setVisibleItemCount(5);
+		listBox.addStyleName("fileSyncAppDlg_List");
+
+		// Create a VerticalPanel to hold buttons for adding to and
+		// removing from the list.
+		VerticalPanel verticalButtonPanel = new VerticalPanel();
+		verticalButtonPanel.addStyleName("fileSyncAppDlg_ListButtons");
+		verticalButtonPanel.setVerticalAlignment(  HasVerticalAlignment.ALIGN_TOP   );
+		verticalButtonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
+
+		// Create a button for adding to the list.
+		Button b = new Button(m_messages.fileSyncApp_Add(), new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				List<String> addValues = new ArrayList<String>();
+				int c = addPrompts.size();
+				for (int i = 0; i < c; i += 1) {
+					addValues.add("");
+				}
+				promptForDataAsync(listBox, addPrompts, addValues);
+			}
+		});
+		b.addStyleName("fileSyncAppDlg_ListButton");
+		verticalButtonPanel.add(b);
+
+		// Create button for removing from the list.
+		b = new Button(m_messages.fileSyncApp_Delete(), new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						// Scan the list...
+						int c = listBox.getItemCount();
+						for (int i = (c - 1); i >= 0; i -= 1) {
+							if (listBox.isItemSelected(i)) {
+								// ...and remove the selected items.
+								listBox.removeItem(i);
+							}
+						}
+					}
+				});
+			}
+		});
+		b.addStyleName("margintop3pxb fileSyncApp_ListButton");
+		verticalButtonPanel.add(b);
+		
+		// Connect the panels together.
+		horizontalListPanel.add(listBox            );
+		horizontalListPanel.add(verticalButtonPanel);
+		contentPanel.add(       horizontalListPanel);
+
+		// If we get here, reply refers to the ListBox widget we
+		// created.  Return it.
+		return listBox;
+	}
+	
+	/*
+	 * Creates the widgets for entering Mac applications.
+	 */
+	private Widget createMacList() {
+		FlowPanel fp = new FlowPanel();
+		fp.addStyleName("fileSyncAppDlg_MacListPanel marginleft1");
+		
+		// Note that the list will be added to the FlowPanel by
+		// createList().
+		List<String> prompts = new ArrayList<String>();
+		prompts.add(m_messages.fileSyncApp_MacApps_AddPrompt());
+		prompts.add(m_messages.fileSyncApp_Description()      );
+		m_macLB = createList(
+			fp,
+			m_messages.fileSyncApp_MacApps(),
+			prompts);
+		
+		return fp;
+	}
+
+	/*
+	 * Creates the widgets used for determining whether the lists are a
+	 * whitelist or blacklist.
+	 */
+	private Widget createModeWidgets() {
+		VerticalPanel vt = new VerticalPanel();
+		vt.addStyleName("fileSyncAppDlg_ModePanel marginleft1");
+		
+		InlineLabel il = new InlineLabel(m_messages.fileSyncApp_Mode());
+		il.addStyleName("fileSyncAppDlg_SectionHeader fileSyncApp_ModeHeader");
+		vt.add(il);
+		
+		m_disabledRB = new RadioButton("modeGroup", m_messages.fileSyncApp_ModeDisabled());
+		m_disabledRB.addStyleName("fileSyncAppDlg_ModeRadio");
+		m_disabledRB.removeStyleName("gwt-RadioButton");
+		vt.add(m_disabledRB);
+		
+		m_whitelistRB = new RadioButton("modeGroup", m_messages.fileSyncApp_ModeWhitelist());
+		m_whitelistRB.addStyleName("fileSyncAppDlg_ModeRadio");
+		m_whitelistRB.removeStyleName("gwt-RadioButton");
+		vt.add(m_whitelistRB);
+		
+		m_blacklistRB = new RadioButton("modeGroup", m_messages.fileSyncApp_ModeBlacklist());
+		m_blacklistRB.addStyleName("fileSyncAppDlg_ModeRadio");
+		m_blacklistRB.removeStyleName("gwt-RadioButton");
+		vt.add(m_blacklistRB);
+		
+		return vt;
+	}
+
+	/*
+	 * Creates the widgets for entering Windows applications.
+	 */
+	private Widget createWindowsList() {
+		FlowPanel fp = new FlowPanel();
+		fp.addStyleName("fileSyncAppDlg_WindowsListPanel marginleft1");
+		
+		// Note that the list will be added to the FlowPanel by
+		// createList().
+		List<String> prompts = new ArrayList<String>();
+		prompts.add(m_messages.fileSyncApp_WindowsApps_AddPrompt());
+		prompts.add(m_messages.fileSyncApp_Description()          );
+		m_windowsLB = createList(
+			fp,
+			m_messages.fileSyncApp_WindowsApps(),
+			prompts);
+		
+		return fp;
+	}
+
 	/**
-	 * This method gets called when user user presses ok.
+	 * This method gets called when user user presses OK.
+	 * 
+	 * Implements the EditSuccessful.editSuccessful() method.
+	 * 
+	 * @param obj
+	 * 
+	 * @return
 	 */
 	@Override
-	public boolean editSuccessful( Object obj )
-	{
-		AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
-		GwtFileSyncAppConfiguration fileSyncAppConfig;
-		SaveFileSyncAppConfigurationCmd cmd;
-
-		fileSyncAppConfig = (GwtFileSyncAppConfiguration) obj;
-		
-		// Create the callback that will be used when we issue an ajax request to save the file sync app configuration.
-		rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
+	public boolean editSuccessful(Object obj) {
+		// Issue a GWT RPC request to save the File Sync Applications
+		// configuration to the database.  rpcSaveCallback will be
+		// called when we get the response back.
+		SaveFileSyncAppConfigurationCmd cmd = new SaveFileSyncAppConfigurationCmd(((GwtFileSyncAppConfiguration) obj));
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure( Throwable caught )
-			{
-				FlowPanel errorPanel;
-				Label label;
-				String errMsg = null;
-				
+			public void onFailure(Throwable caught) {
 				// Get the panel that holds the errors.
-				errorPanel = getErrorPanel();
+				FlowPanel errorPanel = getErrorPanel();
 				errorPanel.clear();
 				
-				if ( caught instanceof GwtTeamingException )
-				{
-					GwtTeamingException ex;
-					
-					ex = (GwtTeamingException) caught;
-					if ( ex.getExceptionType() == ExceptionType.INVALID_AUTO_UPDATE_URL )
-					{
-						errMsg = GwtTeaming.getMessages().fileSyncApp_InvalidAutoUpdateUrlText();
+				String errMsg = null;
+				if (caught instanceof GwtTeamingException) {
+					GwtTeamingException ex = ((GwtTeamingException) caught);
+					if (ex.getExceptionType().equals(ExceptionType.INVALID_AUTO_UPDATE_URL)) {
+						errMsg = m_messages.fileSyncApp_InvalidAutoUpdateUrlText();
 					}
 				}
 				
-				if ( errMsg == null )
-				{
-					errMsg = GwtTeaming.getMessages().fileSyncApp_OnSaveUnknownException( caught.toString() );
+				if (null == errMsg) {
+					errMsg = m_messages.fileSyncApp_OnSaveUnknownException(caught.toString());
 				}
 				
-				label = new Label( errMsg );
-				label.addStyleName( "dlgErrorLabel" );
-				errorPanel.add( label );
+				Label label = new Label(errMsg);
+				label.addStyleName("dlgErrorLabel");
+				errorPanel.add(label);
 				
 				showErrorPanel();
-				m_autoUpdateUrlTextBox.setFocus( true );
+				m_autoUpdateUrlTextBox.setFocus(true);
 			}
 	
-			/**
-			 * 
-			 * @param result
-			 */
 			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
+			public void onSuccess(VibeRpcResponse response) {
 				// Close this dialog.
 				hide();
 			}
-		};
-
-		// Issue an ajax request to save the File Sync App configuration to the db.  rpcSaveCallback will
-		// be called when we get the response back.
-		cmd = new SaveFileSyncAppConfigurationCmd( fileSyncAppConfig );
-		GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
+		});
 		
-		// Returning false will prevent the dialog from closing.  We will close the dialog
-		// after we successfully save the configuration.
+		// Returning false will prevent the dialog from closing.  We
+		// will close the dialog after we successfully save the
+		// configuration.
 		return false;
 	}
 
-	/**
-	 * Return whether the value entered by the user for allowing the file sync app to cache passwords
+	/*
+	 * Return whether the value entered by the user for allowing the
+	 * file sync application to cache passwords
 	 */
-	private boolean getAllowCachePwd()
-	{
+	private boolean getAllowCachePwd() {
 		return m_allowPwdCacheCB.getValue();
 	}
-	
-	/**
-	 * Return the string entered by the user for the auto-update url
+
+	/*
+	 * Fills in a List<GwtAppInfo> corresponding to the given ListBox's
+	 * contents.
 	 */
-	private String getAutoUpdateUrl()
-	{
+	private void getAppList(ListBox lb, List<GwtAppInfo> appList) {
+		appList.clear();
+		int c = lb.getItemCount();
+		for (int i = 0; i < c; i += 1) {
+			String pn   = lb.getValue(i);
+			String desc = lb.getItemText(i);
+			
+			int pPos = desc.indexOf("(", pn.length());
+			desc = desc.substring(pPos + 1);				// Strip off the processName through the '('...
+			desc = desc.substring(0, (desc.length() - 1));	// ...and Strip off the trailing ')'.
+			
+			appList.add(new GwtAppInfo(desc, pn));
+		}
+	}
+	
+	/*
+	 * Return the string entered by the user for the auto-update URL.
+	 */
+	private String getAutoUpdateUrl() {
 		return m_autoUpdateUrlTextBox.getText();
 	}
 	
-	/**
+	/*
 	 * Returns whether to use the desktop applications that are local
 	 * to the system.
 	 */
-	private boolean getUseLocalApps()
-	{
-		return ( m_autoUpdateChoiceTable.isVisible() ? m_useLocalApps.getValue() : false );
+	private boolean getUseLocalApps() {
+		return (m_autoUpdateChoiceTable.isVisible() ? m_useLocalApps.getValue() : false);
 	}
 	
-	/**
+	/*
 	 * Returns whether to use desktop applications from a remote
 	 * location.
 	 */
-	private boolean getUseRemoteApps()
-	{
-		return ( m_autoUpdateChoiceTable.isVisible() ? m_useRemoteApps.getValue() : true );
+	private boolean getUseRemoteApps() {
+		return (m_autoUpdateChoiceTable.isVisible() ? m_useRemoteApps.getValue() : true);
 	}
 	
 	/**
-	 * Get the data from the controls in the dialog box and store the data in a GwtFileSyncAppConfiguration object.
+	 * Get the data from the controls in the dialog box and store the
+	 * data in a GwtFileSyncAppConfiguration object.
+	 * 
+	 * Implements the DlgBox.getDataFromDlg() abstract method.
+	 * 
+	 * @return
 	 */
 	@Override
-	public Object getDataFromDlg()
-	{
-		GwtFileSyncAppConfiguration fileSyncAppConfig;
-		String autoUpdateUrl;
-		boolean deployEnabled;
-		boolean useLocalApps;
-		boolean useRemoteApps;
-		
-		fileSyncAppConfig = new GwtFileSyncAppConfiguration();
+	public Object getDataFromDlg() {
+		GwtFileSyncAppConfiguration fileSyncAppConfig = new GwtFileSyncAppConfiguration();
 
-		useLocalApps  = getUseLocalApps();
-		useRemoteApps = getUseRemoteApps();
-		autoUpdateUrl = getAutoUpdateUrl();
-		deployEnabled = getIsFileSyncAppDeployEnabled();
+		boolean useLocalApps  = getUseLocalApps();
+		boolean useRemoteApps = getUseRemoteApps();
+		String  autoUpdateUrl = getAutoUpdateUrl();
+		boolean deployEnabled = getIsFileSyncAppDeployEnabled();
 
-		// Get whether the File Sync App is enabled.
-		fileSyncAppConfig.setIsFileSyncAppEnabled( getIsFileSyncAppEnabled() );
+		// Get whether the File Sync Application is enabled.
+		fileSyncAppConfig.setIsFileSyncAppEnabled(getIsFileSyncAppEnabled());
 		
 		// Get the sync interval from the dialog.
-		fileSyncAppConfig.setSyncInterval( getIntervalInt() );
+		fileSyncAppConfig.setSyncInterval(getIntervalInt());
 		
-		// Get the auto-update url from the dialog.
-		fileSyncAppConfig.setAutoUpdateUrl( autoUpdateUrl );
+		// Get the auto-update URL from the dialog.
+		fileSyncAppConfig.setAutoUpdateUrl(autoUpdateUrl);
 		
 		// Get the location of the desktop applications from the dialog.
-		fileSyncAppConfig.setUseLocalApps(  useLocalApps  );
-		fileSyncAppConfig.setUseRemoteApps( useRemoteApps );
+		fileSyncAppConfig.setUseLocalApps( useLocalApps );
+		fileSyncAppConfig.setUseRemoteApps(useRemoteApps);
 		
-		// Get whether the file sync app can be deployed
-		fileSyncAppConfig.setIsDeploymentEnabled( deployEnabled );
+		// Get whether the file sync application can be deployed.
+		fileSyncAppConfig.setIsDeploymentEnabled(deployEnabled);
 		
-		// Get whether the file sync app can cache the user's password
-		fileSyncAppConfig.setAllowCachePwd( getAllowCachePwd() );
+		// Get whether the file sync application can cache the user's
+		// password.
+		fileSyncAppConfig.setAllowCachePwd(getAllowCachePwd());
 		
-		// Get the max file size the file sync app can sync
-		fileSyncAppConfig.setMaxFileSize( getMaxFileSize() );
+		// Get the max file size the file sync application can sync.
+		fileSyncAppConfig.setMaxFileSize(getMaxFileSize());
 
-		// If the "allow deployment..." checkbox is checked the user must have an auto-update url
-		if ( deployEnabled && getUseRemoteApps() && ( ! ( GwtClientHelper.hasString( autoUpdateUrl ) ) ) )
-		{
-			Window.alert( GwtTeaming.getMessages().fileSyncAppAutoUpdateUrlRequiredPrompt() );
-			m_autoUpdateUrlTextBox.setFocus( true );
+		// If the 'allow deployment...' checkbox is checked the user
+		// must have an auto-update URL.
+		if (deployEnabled && getUseRemoteApps() && (!(GwtClientHelper.hasString(autoUpdateUrl)))) {
+			GwtClientHelper.deferredAlert(m_messages.fileSyncAppAutoUpdateUrlRequiredPrompt());
+			m_autoUpdateUrlTextBox.setFocus(true);
 			return null;
+		}
+		
+		// Are we running in Filr?
+		if (m_isFilr) {
+			// Yes!  Store a GwtDesktopApplicationsLists object
+			// corresponding to the current selections.
+			GwtAppListMode mode;
+			if      (m_blacklistRB.getValue()) mode = GwtAppListMode.BLACKLIST;
+			else if (m_whitelistRB.getValue()) mode = GwtAppListMode.WHITELIST;
+			else                               mode = GwtAppListMode.DISABLED;
+			
+			GwtDesktopApplicationsLists appLists = new GwtDesktopApplicationsLists();
+			appLists.setAppListMode(mode);
+			getAppList(m_macLB,     appLists.getApplications(GwtAppPlatform.MAC)    );
+			getAppList(m_windowsLB, appLists.getApplications(GwtAppPlatform.WINDOWS));
+
+			fileSyncAppConfig.setGwtDesktopApplicationsLists(appLists);
 		}
 		
 		return fileSyncAppConfig;
@@ -432,170 +628,329 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	
 	
 	/**
-	 * Return the widget that should get the focus when the dialog is shown. 
+	 * Return the widget that should get the focus when the dialog is
+	 * shown.
+	 * 
+	 * Implements the DlgBog.getFocusWidget() abstract method.
+	 * 
+	 * @return
 	 */
 	@Override
-	public FocusWidget getFocusWidget()
-	{
+	public FocusWidget getFocusWidget() {
 		return m_syncIntervalTextBox;
 	}
 	
 	/**
+	 * Returns information for running the dialog's help page.
 	 * 
+	 * Implements the DlgBox.getHelpData() method.
+	 * 
+	 * @return 
 	 */
 	@Override
-	public HelpData getHelpData()
-	{
-		HelpData helpData;
-		
-		helpData = new HelpData();
-		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "desktopapp" );
-		
+	public HelpData getHelpData() {
+		HelpData helpData = new HelpData();
+		helpData.setGuideName(HelpData.ADMIN_GUIDE);
+		helpData.setPageId("desktopapp");
 		return helpData;
 	}
 
-	/**
+	/*
 	 * Return the interval entered by the user.
 	 */
-	private int getIntervalInt()
-	{
-		String intervalStr;
-		int interval = 0;
-		
-		intervalStr = m_syncIntervalTextBox.getText();
-		if ( intervalStr != null && intervalStr.length() > 0 )
-			interval = Integer.parseInt( intervalStr );
-		
+	private int getIntervalInt() {
+		String intervalStr = m_syncIntervalTextBox.getText();
+		int interval;
+		if (GwtClientHelper.hasString(intervalStr))
+		     interval = Integer.parseInt( intervalStr );
+		else interval = 0;
 		return interval;
 	}
 	
-	/**
-	 * Return whether the File Sync App is enabled.
+	/*
+	 * Return whether the File Sync Application is enabled.
 	 */
-	private boolean getIsFileSyncAppEnabled()
-	{
-		if ( m_enableFileSyncAccessCB.getValue() == Boolean.TRUE )
-			return true;
-
-		return false;
+	private boolean getIsFileSyncAppEnabled() {
+		return m_enableFileSyncAccessCB.getValue();
 	}
 	
-	/**
-	 * Return whether deployment of the file sync app is enabled.
+	/*
+	 * Return whether deployment of the file sync application is
+	 * enabled.
 	 */
-	private boolean getIsFileSyncAppDeployEnabled()
-	{
-		if ( m_enableDeployCB.getValue() == Boolean.TRUE )
-			return true;
-		
-		return false;
+	private boolean getIsFileSyncAppDeployEnabled() {
+		return m_enableDeployCB.getValue();
 	}
 	
-	/**
-	 * Get the max file size entered by the user
+	/*
+	 * Get the max file size entered by the user.
 	 */
-	private int getMaxFileSize()
-	{
-		String maxStr;
-		int max = -1;
-		
-		maxStr = m_maxFileSizeTextBox.getValue();
-		if ( maxStr != null && maxStr.length() > 0 )
-			max = Integer.parseInt( maxStr );
-		
+	private int getMaxFileSize() {
+		String maxStr = m_maxFileSizeTextBox.getValue();
+		int max;
+		if (GwtClientHelper.hasString(maxStr))
+		     max = Integer.parseInt(maxStr);
+		else max = (-1);
 		return max;
 	}
 	
 	/**
-	 * Initialize the controls in the dialog with the values from the given values.
+	 * Initialize the controls in the dialog with the values from the
+	 * given values.
+	 * 
+	 * @param
 	 */
-	public void init( GwtFileSyncAppConfiguration fileSyncAppConfiguration )
-	{
-		int interval;
-		int size;
-		String value;
-		
+	public void init(GwtFileSyncAppConfiguration fileSyncAppConfiguration) {
 		// If local desktop applications are available for download...
-		if ( fileSyncAppConfiguration.getLocalAppsExist() )
-		{
+		if (fileSyncAppConfiguration.getLocalAppsExist()) {
 			// ...we give the user the choice to use them...
-			m_autoUpdateChoiceTable.setVisible(  true  );
-			m_autoUpdateUrlOnlyTable.setVisible( false );
+			m_autoUpdateChoiceTable.setVisible( true );
+			m_autoUpdateUrlOnlyTable.setVisible(false);
 			m_autoUpdateUrlTextBox = m_autoUpdateUrlTextBox_Choice;
-			m_useLocalApps.setValue(  fileSyncAppConfiguration.getUseLocalApps()  );
-			m_useRemoteApps.setValue( fileSyncAppConfiguration.getUseRemoteApps() );
+			m_useLocalApps.setValue( fileSyncAppConfiguration.getUseLocalApps() );
+			m_useRemoteApps.setValue(fileSyncAppConfiguration.getUseRemoteApps());
 		}
 		
-		else
-		{
+		else {
 			// ...otherwise, we only allow a URL to be specified.
-			m_autoUpdateChoiceTable.setVisible(  false );
-			m_autoUpdateUrlOnlyTable.setVisible( true  );
+			m_autoUpdateChoiceTable.setVisible( false);
+			m_autoUpdateUrlOnlyTable.setVisible(true );
 			m_autoUpdateUrlTextBox = m_autoUpdateUrlTextBox_UrlOnly;
-			m_useLocalApps.setValue(  false );
-			m_useRemoteApps.setValue( true  );
+			m_useLocalApps.setValue( false);
+			m_useRemoteApps.setValue(true );
 		}
 		
 		// Initialize the on/off radio buttons.
-		m_enableFileSyncAccessCB.setValue( fileSyncAppConfiguration.getIsFileSyncAppEnabled() );
+		m_enableFileSyncAccessCB.setValue(fileSyncAppConfiguration.getIsFileSyncAppEnabled());
 			
-		// Initialize the deployment enabled checkbox
-		m_enableDeployCB.setValue( fileSyncAppConfiguration.getIsDeploymentEnabled() );
+		// Initialize the deployment enabled checkbox.
+		m_enableDeployCB.setValue(fileSyncAppConfiguration.getIsDeploymentEnabled());
 
-		// Initialize the allow pwd  cache checkbox
-		m_allowPwdCacheCB.setValue( fileSyncAppConfiguration.getAllowCachePwd() );
+		// Initialize the allow password cache checkbox.
+		m_allowPwdCacheCB.setValue(fileSyncAppConfiguration.getAllowCachePwd());
 		
-		// Initialize the interval textbox
-		interval = fileSyncAppConfiguration.getSyncInterval();
-		m_syncIntervalTextBox.setText( String.valueOf( interval ) );
+		// Initialize the interval text box.
+		int interval = fileSyncAppConfiguration.getSyncInterval();
+		m_syncIntervalTextBox.setText(String.valueOf(interval));
 		
-		// Initialize the auto-update url.
-		m_autoUpdateUrlTextBox.setText( fileSyncAppConfiguration.getAutoUpdateUrl() );
+		// Initialize the auto-update URL.
+		m_autoUpdateUrlTextBox.setText(fileSyncAppConfiguration.getAutoUpdateUrl());
 		
 		// Initialize the max file size
-		size = fileSyncAppConfiguration.getMaxFileSize();
-		if ( size < 0 )
-			value = "";
-		else
-			value = String.valueOf( size );
-		m_maxFileSizeTextBox.setText( value );
-		
+		int size = fileSyncAppConfiguration.getMaxFileSize();
+		String value;
+		if (size < 0)
+		     value = "";
+		else value = String.valueOf(size);
+		m_maxFileSizeTextBox.setText(value);
+
+		// Initialize the application list widgets.
+		initAppLists(fileSyncAppConfiguration.getGwtDesktopApplicationsLists());
+
+		// Finally, ensure the error panel is hidden in the dialog when
+		// it's shown.
 		hideErrorPanel();
 	}
 	
+	private void initAppLists(GwtDesktopApplicationsLists appLists) {
+		// Are we running in Filr?
+		m_appListPanel.setVisible(m_isFilr);
+		if (m_isFilr) {
+			// Yes!  Check the appropriate radio button...
+			RadioButton rb;
+			switch (appLists.getAppListMode()) {
+			default:
+			case DISABLED:   rb = m_disabledRB;  break;
+			case BLACKLIST:  rb = m_blacklistRB; break;
+			case WHITELIST:  rb = m_whitelistRB; break;
+			}
+			rb.setValue(true);
+
+			// ...and populate the platform list boxes.
+			populateAppList(m_macLB,     appLists.getApplications(GwtAppPlatform.MAC)    );
+			populateAppList(m_windowsLB, appLists.getApplications(GwtAppPlatform.WINDOWS));
+		}
+		
+		else {
+			// No, we are not running in Filr!  Initialize the
+			// widgets accordingly.
+			m_disabledRB.setValue(true);
+			m_macLB.clear();
+			m_windowsLB.clear();
+		}
+	}
+	
+	/*
+	 * Returns true if a ListBox contains a value and false otherwise.
+	 */
+	private static boolean listContains(ListBox lb, String value) {
+		if (null != value) {
+			if (0 < value.length()) {
+				value = value.toLowerCase();
+				for (int i = 0; i < lb.getItemCount(); i += 1) {
+					String v = lb.getValue(i);
+					if (v.toLowerCase().equals(value)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	/*
+	 * Asynchronously loads the next part of the dialog.
+	 */
+	private void loadPart1Async(final ConfigureFileSyncAppDlgClient csfaDlgClient) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart1Now(csfaDlgClient);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the next part of the dialog.
+	 * 
+	 * Creates a MultiPromptDlg. 
+	 */
+	private void loadPart1Now(final ConfigureFileSyncAppDlgClient csfaDlgClient) {
+		final ConfigureFileSyncAppDlg thisDlg = this;
+		MultiPromptDlg.createAsync(new MultiPromptDlgClient() {
+			@Override
+			public void onSuccess(MultiPromptDlg mpDlg) {
+				m_mpDlg = mpDlg;
+				if (null != csfaDlgClient) {
+					csfaDlgClient.onSuccess(thisDlg);
+				}
+			}
+
+			@Override
+			public void onUnavailable() {
+				if (null != csfaDlgClient) {
+					csfaDlgClient.onUnavailable();
+				}
+			}
+		});
+	}
 	
 	/**
-	 * This method gets called when the user types in the "number of entries to show" text box.
+	 * This method gets called when the user types in the 'number of
+	 * entries to show' text box.
+	 * 
 	 * We only allow the user to enter numbers.
+	 * 
+	 * Implement the KeyPressHandler.onKeyPress() abstract method.
+	 * 
+	 * @param event
 	 */
 	@Override
-	public void onKeyPress( KeyPressEvent event )
-	{
-        int keyCode;
-
+	public void onKeyPress(KeyPressEvent event) {
         // Get the key the user pressed
-        keyCode = event.getNativeEvent().getKeyCode();
-        
-        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
-        {
-        	TextBox txtBox;
-        	Object source;
-        	
+        int keyCode = event.getNativeEvent().getKeyCode();
+        if (!(GwtClientHelper.isKeyValidForNumericField(event.getCharCode(), keyCode))) {
         	// Make sure we are dealing with a text box.
-        	source = event.getSource();
-        	if ( source instanceof TextBox )
-        	{
+        	Object source = event.getSource();
+        	if (source instanceof TextBox) {
         		// Suppress the current keyboard event.
-        		txtBox = (TextBox) source;
+            	TextBox txtBox = ((TextBox) source);
         		txtBox.cancelKey();
         	}
         }
 	}
 
+	/*
+	 * Populates the given ListBox with the applications in the given
+	 * List<GwtAppInfo>.
+	 */
+	private void populateAppList(ListBox lb, List<GwtAppInfo> apps) {
+		lb.clear();
+		if (GwtClientHelper.hasItems(apps)) {
+			for (GwtAppInfo app:  apps) {
+				String pn = app.getProcessName();
+				lb.addItem(buildAppListDisplayValue(app.getDescription(), pn), pn);
+			}
+		}
+	}
+
+	/*
+	 * Asynchronously prompts for an entry for a ListBox.
+	 */
+	private void promptForDataAsync(final ListBox listBox, final List<String> addPrompts, final List<String> addValues) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				promptForDataNow(listBox, addPrompts, addValues);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously prompts for an entry for a ListBox.
+	 */
+	private void promptForDataNow(final ListBox listBox, final List<String> addPrompts, final List<String> addValues) {
+		// Prompt the user for something to add.
+		MultiPromptDlg.initAndShow(
+			m_mpDlg,
+			new MultiPromptCallback() {
+				@Override
+				public int applied(List<String> addValues) {
+					// Did they enter a process name?
+					String processName = addValues.get(PROCESS_NAME_INDEX).trim();
+					if (!(GwtClientHelper.hasString(processName))) {
+						// No!  Tell the user about the problem and
+						// bail.
+						GwtClientHelper.deferredAlert(m_messages.fileSyncApp_Error_NoProcessName());
+						return PROCESS_NAME_INDEX;	// Put's the focus in the process name <INPUT>.
+					}
+					
+					// Did they enter a description?
+					String description = addValues.get(DESCRIPTION_INDEX).trim();
+					if (!(GwtClientHelper.hasString(description))) {
+						// No!  Just use the process name.
+						description = processName;
+					}
+					
+					// Yes!  If this isn't already in the list...
+					String listDisplay = buildAppListDisplayValue(description, processName);
+					if (!(listContains(listBox, processName))) {
+						// ...add it...
+						listBox.addItem(listDisplay, processName);
+					}
+					
+					// ...and bail.  We're done with the add.
+					return MultiPromptCallback.NO_ERROR;
+				}
+
+				@Override
+				public void canceled() {
+					// Nothing to do.
+				}
+			},
+			addPrompts,
+			addValues);
+	}
+
+
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	/* The following code is used to load the split point containing */
+	/* the configure file sync application dialog and perform some   */
+	/* operation on it.                                              */
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
 	/**
-	 * Executes code through the GWT.runAsync() method to ensure that all of the
-	 * executing code is in this split point.
+	 * Callback interface to interact with the 'configure file sync
+	 * application' dialog asynchronously after it loads. 
+	 */
+	public interface ConfigureFileSyncAppDlgClient {
+		void onSuccess(ConfigureFileSyncAppDlg cfsaDlg);
+		void onUnavailable();
+	}
+	
+	/**
+	 * Executes code through the GWT.runAsync() method to ensure that
+	 * all of the executing code is in this split point.
 	 */
 	public static void createDlg(
 		final Boolean autoHide,
@@ -604,42 +959,34 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		final Integer top,
 		final Integer width,
 		final Integer height,
-		final ConfigureFileSyncAppDlgClient cfsaDlgClient )
+		final ConfigureFileSyncAppDlgClient cfsaDlgClient)
 	{
-		GWT.runAsync( ConfigureFileSyncAppDlg.class, new RunAsyncCallback()
-		{
+		GWT.runAsync(ConfigureFileSyncAppDlg.class, new RunAsyncCallback() {
 			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ConfigureFileSyncAppDlg() );
-				if ( cfsaDlgClient != null )
-				{
+			public void onFailure(Throwable reason) {
+				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_ConfigureFileSyncAppDlg());
+				if (null != cfsaDlgClient) {
 					cfsaDlgClient.onUnavailable();
 				}
 			}
 
 			@Override
-			public void onSuccess()
-			{
-				ConfigureFileSyncAppDlg cfsaDlg;
-				
-				cfsaDlg = new ConfigureFileSyncAppDlg(
-											autoHide,
-											modal,
-											left,
-											top,
-											width,
-											height );
-				
-				if ( cfsaDlgClient != null )
-					cfsaDlgClient.onSuccess( cfsaDlg );
+			public void onSuccess() {
+				new ConfigureFileSyncAppDlg(
+					autoHide,
+					modal,
+					left,
+					top,
+					width,
+					height,
+					cfsaDlgClient);
 			}
-		} );
+		});
 	}
 
 	/**
-	 * Executes code through the GWT.runAsync() method to ensure that all of the
-	 * executing code is in this split point.
+	 * Executes code through the GWT.runAsync() method to ensure that
+	 * all of the executing code is in this split point.
 	 */
 	public static void initAndShow(
 		final ConfigureFileSyncAppDlg dlg,
@@ -648,33 +995,30 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		final Integer top,
 		final Integer width,
 		final Integer height,
-		final ConfigureFileSyncAppDlgClient cfsaDlgClient )
+		final ConfigureFileSyncAppDlgClient cfsaDlgClient)
 	{
-		GWT.runAsync( ConfigureFileSyncAppDlg.class, new RunAsyncCallback()
-		{
+		GWT.runAsync(ConfigureFileSyncAppDlg.class, new RunAsyncCallback() {
 			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ConfigureFileSyncAppDlg() );
-				if ( cfsaDlgClient != null )
-				{
+			public void onFailure(Throwable reason) {
+				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_ConfigureFileSyncAppDlg());
+				if (null != cfsaDlgClient) {
 					cfsaDlgClient.onUnavailable();
 				}
 			}
 
 			@Override
-			public void onSuccess()
-			{
-				if ( width != null && height != null )
-					dlg.setPixelSize( width, height );
+			public void onSuccess() {
+				if ((null != width) && (null != height)) {
+					dlg.setPixelSize(width, height);
+				}
 				
-				dlg.init( config );
-				
-				if ( left != null && top != null )
-					dlg.setPopupPosition( left, top );
+				dlg.init(config);
+				if ((null != left) && (null != top)) {
+					dlg.setPopupPosition(left, top);
+				}
 
 				dlg.show();
 			}
-		} );
+		});
 	}
 }
