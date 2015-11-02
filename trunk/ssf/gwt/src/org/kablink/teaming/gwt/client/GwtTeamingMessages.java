@@ -821,6 +821,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_ModifyNetFolderDlg();
 	String codeSplitFailure_ModifyNetFolderServerDlg();
 	String codeSplitFailure_MultiErrorAlertDlg();
+	String codeSplitFailure_MultiPromptDlg();
 	String codeSplitFailure_NetFolderSelectPrincipalsWidget();
 	String codeSplitFailure_NetFoldersWSView();
 	String codeSplitFailure_NetFolderSyncStatisticsDlg();
@@ -1848,8 +1849,7 @@ public interface GwtTeamingMessages extends Messages {
 	String landingPagePropertiesDlg_PageStyleDark();
 	String landingPagePropertiesDlg_PageStyleLight();
 
-	// Strings used in the Novell Desktop Application dialog (File
-	// Sync.)
+	// Strings used in the Novell Desktop Application (File Sync.)
 	String fileSyncAppAllowAccess(String productName);
 	String fileSyncAppAllowCachePwd();
 	String fileSyncAppAutoUpdateUrlLabel();
@@ -1860,12 +1860,25 @@ public interface GwtTeamingMessages extends Messages {
 	String fileSyncAppEnableDeployLabel();
 	String fileSyncAppHeader2();
 	String fileSyncAppHeader3();
+	String fileSyncAppHeader4();
 	String fileSyncAppIntervalLabel();
 	String fileSyncApp_InvalidAutoUpdateUrlText();
 	String fileSyncAppMaxFileSizeLabel();
 	String fileSyncAppMBLabel();
 	String fileSyncAppMinutesLabel();
+	String fileSyncApp_Add();
+	String fileSyncApp_Delete();
+	String fileSyncApp_Description();
+	String fileSyncApp_Error_NoProcessName();
+	String fileSyncApp_MacApps();
+	String fileSyncApp_MacApps_AddPrompt();
+	String fileSyncApp_Mode();
+	String fileSyncApp_ModeBlacklist();
+	String fileSyncApp_ModeDisabled();
+	String fileSyncApp_ModeWhitelist();
 	String fileSyncApp_OnSaveUnknownException(String desc);
+	String fileSyncApp_WindowsApps();
+	String fileSyncApp_WindowsApps_AddPrompt();
 	String fileSyncAppUseGlobalSettings();
 	String fileSyncAppUseGroupSettings();
 	String fileSyncAppUseUserSettings();
