@@ -259,6 +259,10 @@ public class HelpData
 				{
 					// No, take the user to the start of the guide.
 					url += "bookinfo.html";
+					if ( isFilr )
+					{
+						url = GwtClientHelper.replace(url, "user/data", "user-web/data");
+					}
 				}
 			}
 		}
