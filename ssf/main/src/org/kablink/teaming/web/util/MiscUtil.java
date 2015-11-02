@@ -75,6 +75,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -971,6 +972,9 @@ public final class MiscUtil {
 				else {
 					// No, take the user to the start of the guide.
 					url += "bookinfo.html";
+					if (isFilr) {
+						url = replace(url, "user/data", "user-web/data");
+					}
 				}
 			}
 		}
