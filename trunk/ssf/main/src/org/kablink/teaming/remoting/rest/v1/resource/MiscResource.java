@@ -61,6 +61,7 @@ import org.kablink.teaming.rest.v1.model.RootRestObject;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
+import org.kablink.teaming.util.DesktopApplicationsLists;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.util.search.Constants;
@@ -129,15 +130,23 @@ public class MiscResource extends AbstractResource {
 	@GET
 	@Path("zone_config")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public ZoneConfig getZoneConfig() {
+	public ZoneConfig getZoneConfig(@QueryParam("include_desktop_process_config") @DefaultValue("false") boolean includeProcessConfig,
+                                    @Context HttpServletRequest request) {
         org.kablink.teaming.domain.ZoneConfig zoneConfig =
       			getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
         ZoneInfo info = getZoneModule().getZoneInfo(zoneConfig.getZoneId());
         User loggedInUser = getLoggedInUser();
+        DesktopApplicationsLists.AppPlatform platform = DesktopApplicationsLists.AppPlatform.WINDOWS;
+        String userAgent = request.getHeader("User-Agent");
+        if (userAgent!=null && (userAgent.contains("Darwin") || userAgent.contains("OSX"))) {
+            platform = DesktopApplicationsLists.AppPlatform.MAC;
+        }
         ZoneConfig result = ResourceUtil.buildZoneConfig(zoneConfig, info,
                 AdminHelper.getEffectiveMobileAppsConfigOverride(this, loggedInUser),
                 AdminHelper.getEffectiveDesktopAppsConfigOverride(this, loggedInUser),
                 loggedInUser,
+                includeProcessConfig,
+                platform,
                 this);
         result.setSharingRestrictions(_getExternalSharingRestrictions());
         return result;

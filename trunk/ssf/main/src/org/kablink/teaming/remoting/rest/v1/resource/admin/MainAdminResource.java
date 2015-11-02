@@ -37,12 +37,11 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
+import org.kablink.teaming.rest.v1.model.DesktopAppConfig;
 import org.kablink.teaming.rest.v1.model.RootRestObject;
-import org.kablink.teaming.rest.v1.model.admin.AssignedSharingPermission;
+import org.kablink.teaming.rest.v1.model.admin.*;
 import org.kablink.teaming.rest.v1.model.ExternalSharingRestrictions;
-import org.kablink.teaming.rest.v1.model.admin.PersonalStorage;
-import org.kablink.teaming.rest.v1.model.admin.ShareSettings;
-import org.kablink.teaming.rest.v1.model.admin.WebAppConfig;
+import org.kablink.teaming.util.DesktopApplicationsLists;
 import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.AssignedRole;
@@ -67,6 +66,7 @@ public class MainAdminResource extends AbstractAdminResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	public RootRestObject getRootObject() {
         RootRestObject obj = new RootRestObject();
+        obj.addAdditionalLink("desktop_application", "/admin/desktop_application");
         obj.addAdditionalLink("net_folder_servers", "/admin/net_folder_servers");
         obj.addAdditionalLink("net_folders", "/admin/net_folders");
         obj.addAdditionalLink("personal_storage", "/admin/personal_storage");
@@ -114,6 +114,111 @@ public class MainAdminResource extends AbstractAdminResource {
         OpenIDConfig openIdConfig = zoneConfig.getOpenIDConfig();
         settings.setAllowOpenId(zoneConfig.isExternalUserEnabled() && openIdConfig.isAuthenticationEnabled());
         return settings;
+    }
+
+    @PUT
+    @Path("/desktop_application")
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public DesktopAppAdminConfig updateDesktopAppSettings(DesktopAppAdminConfig settings) {
+        getAdminModule().setFileSynchAppSettings(settings.getEnabled(), settings.getSyncFrequencyInMinutes(), null, null,
+                null, settings.getAllowCachedPassword(), settings.getMaxSyncSizeInMBs(), null);
+
+        return getDesktopApplicationSettings();
+    }
+
+    @GET
+    @Path("/desktop_application")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public DesktopAppAdminConfig getDesktopApplicationSettings() {
+        DesktopAppAdminConfig settings = new  DesktopAppAdminConfig();
+        settings.setLink("/admin/desktop_application");
+        settings.addAdditionalLink("process_config", "/admin/desktop_application/process_config");
+        org.kablink.teaming.domain.ZoneConfig zoneConfig = getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+        settings.setEnabled(zoneConfig.getFsaEnabled());
+        settings.setAllowCachedPassword(zoneConfig.getFsaAllowCachePwd());
+        settings.setSyncFrequencyInMinutes(zoneConfig.getFsaSynchInterval());
+        settings.setMaxSyncSizeInMBs(zoneConfig.getFsaMaxFileSize());
+        settings.setProcessConfig(getDesktopProcessConfig());
+        return settings;
+    }
+
+    @GET
+    @Path("/desktop_application/process_config")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public DesktopProcessConfig getDesktopProcessConfig() {
+        DesktopProcessConfig processConfig = new DesktopProcessConfig();
+        org.kablink.teaming.domain.ZoneConfig zoneConfig = getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+        DesktopApplicationsLists appLists = zoneConfig.getDesktopApplicationsLists();
+        processConfig.setAllowUnlistedProcesses(!appLists.isWhitelist());
+        if (!appLists.isDisabled()) {
+            processConfig.setMacProcesses(toProcessLists(appLists.getMacWhitelist(), appLists.getMacBlacklist()));
+            processConfig.setWindowsProcesses(toProcessLists(appLists.getWindowsWhitelist(), appLists.getWindowsBlacklist()));
+        }
+        return processConfig;
+    }
+
+    @PUT
+    @Path("/desktop_application/process_config")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public DesktopProcessConfig updateDesktopProcessConfig(DesktopProcessConfig config) {
+        org.kablink.teaming.domain.ZoneConfig zoneConfig = getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+        DesktopApplicationsLists appLists = zoneConfig.getDesktopApplicationsLists();
+
+        if (config.getAllowUnlistedProcesses()==Boolean.TRUE) {
+            appLists.setAppListMode(DesktopApplicationsLists.AppListMode.BLACKLIST);
+        } else if (config.getAllowUnlistedProcesses()==Boolean.FALSE) {
+            appLists.setAppListMode(DesktopApplicationsLists.AppListMode.WHITELIST);
+        }
+
+        ProcessLists mac = config.getMacProcesses();
+        if (mac!=null) {
+            populateAppList(appLists.getMacWhitelist(), mac.getAllowedProcesses());
+            populateAppList(appLists.getMacBlacklist(), mac.getBlockedProcesses());
+        }
+        ProcessLists win = config.getWindowsProcesses();
+        if (win != null) {
+            populateAppList(appLists.getWindowsWhitelist(), win.getAllowedProcesses());
+            populateAppList(appLists.getWindowsBlacklist(), win.getBlockedProcesses());
+        }
+        getAdminModule().setFileSynchAppSettings(null, null, null, null, null, null, null, appLists);
+        return getDesktopProcessConfig();
+    }
+
+    private void populateAppList(List<DesktopApplicationsLists.AppInfo> appList, List<ProcessInfo> procList) {
+        if (appList!=null && procList!=null) {
+            appList.clear();
+            for (ProcessInfo proc : procList) {
+                appList.add(new DesktopApplicationsLists.AppInfo(proc.getDescription(), proc.getName()));
+            }
+        }
+    }
+
+    private List<DesktopApplicationsLists.AppInfo> toAppInfoList(List<ProcessInfo> processList) {
+        List<DesktopApplicationsLists.AppInfo> appList = new ArrayList<DesktopApplicationsLists.AppInfo>();
+        for (ProcessInfo proc : processList) {
+            DesktopApplicationsLists.AppInfo appInfo = new DesktopApplicationsLists.AppInfo(proc.getDescription(), proc.getName());
+            appList.add(appInfo);
+        }
+        return appList;
+
+    }
+
+    private ProcessLists toProcessLists(List<DesktopApplicationsLists.AppInfo> whiteList, List<DesktopApplicationsLists.AppInfo> blackList) {
+        ProcessLists lists = new ProcessLists();
+        lists.setAllowedProcesses(toProcessInfoList(whiteList));
+        lists.setBlockedProcesses(toProcessInfoList(blackList));
+        return lists;
+    }
+
+    private List<ProcessInfo> toProcessInfoList(List<DesktopApplicationsLists.AppInfo> appList) {
+        List<ProcessInfo> procList = new ArrayList<ProcessInfo>();
+        for (DesktopApplicationsLists.AppInfo appinfo : appList) {
+            ProcessInfo proc = new ProcessInfo();
+            proc.setName(appinfo.getProcessName());
+            proc.setDescription(proc.getDescription());
+            procList.add(proc);
+        }
+        return procList;
     }
 
     @PUT

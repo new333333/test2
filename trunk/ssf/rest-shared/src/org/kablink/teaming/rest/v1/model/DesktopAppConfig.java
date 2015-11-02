@@ -47,6 +47,7 @@ public class DesktopAppConfig {
    	private Integer syncInterval;
    	private String autoUpdateUrl;
    	private Long maxFileSize;
+    private DesktopAppProcessConfig processConfig;
 
     @XmlElement(name="auto_update_url")
     public String getAutoUpdateUrl() {
@@ -91,5 +92,14 @@ public class DesktopAppConfig {
 
     public void setSyncInterval(Integer syncInterval) {
         this.syncInterval = syncInterval;
+    }
+
+    @XmlElement(name="process_config")
+    public DesktopAppProcessConfig getProcessConfig() {
+        return processConfig;
+    }
+
+    public void setProcessConfig(DesktopAppProcessConfig processConfig) {
+        this.processConfig = processConfig;
     }
 }

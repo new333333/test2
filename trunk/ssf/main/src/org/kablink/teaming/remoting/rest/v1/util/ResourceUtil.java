@@ -57,12 +57,7 @@ import org.kablink.teaming.rest.v1.model.Workspace;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
-import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.InvokeUtil;
-import org.kablink.teaming.util.ObjectPropertyNotFoundException;
-import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
-import org.kablink.teaming.util.PrincipalMobileAppsConfig;
-import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.*;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -499,6 +494,8 @@ public class ResourceUtil {
     public static ZoneConfig buildZoneConfig(org.kablink.teaming.domain.ZoneConfig config, ZoneInfo zoneInfo,
                                              PrincipalMobileAppsConfig userMobileAppsConfig, PrincipalDesktopAppsConfig userDesktopAppsConfig,
                                              org.kablink.teaming.domain.User loggedInUser,
+                                             boolean includeProcessConfig,
+                                             DesktopApplicationsLists.AppPlatform processPlatform,
                                              AllModulesInjected ami) {
         ZoneConfig modelConfig = new ZoneConfig();
         modelConfig.setId(config.getZoneId());
@@ -533,6 +530,31 @@ public class ResourceUtil {
 
         DesktopAppConfig desktopAppConfig = buildDesktopAppConfig(config);
         overrideDesktopAppConfig(desktopAppConfig, userDesktopAppsConfig);
+        if (includeProcessConfig) {
+            DesktopApplicationsLists appLists = config.getDesktopApplicationsLists();
+            DesktopAppProcessConfig procConfig = new DesktopAppProcessConfig();
+            procConfig.setAllowUnlistedProcesses(!appLists.isWhitelist());
+            if (appLists.isWhitelist()) {
+                List<DesktopApplicationsLists.AppInfo> appList = appLists.getWhitelist(processPlatform);
+                List<String> procList = new ArrayList<String>();
+                if (appList!=null) {
+                    for (DesktopApplicationsLists.AppInfo appInfo : appList) {
+                        procList.add(appInfo.getProcessName());
+                    }
+                }
+                procConfig.setAllowedProcesses(procList);
+            } else {
+                List<DesktopApplicationsLists.AppInfo> appList = appLists.getBlacklist(processPlatform);
+                List<String> procList = new ArrayList<String>();
+                if (appList!=null) {
+                    for (DesktopApplicationsLists.AppInfo appInfo : appList) {
+                        procList.add(appInfo.getProcessName());
+                    }
+                }
+                procConfig.setBlockedProcesses(procList);
+            }
+            desktopAppConfig.setProcessConfig(procConfig);
+        }
         modelConfig.setDesktopAppConfig(desktopAppConfig);
 
         MobileAppConfig mobileAppConfig = buildMobileAppConfig(config.getMobileAppsConfig());

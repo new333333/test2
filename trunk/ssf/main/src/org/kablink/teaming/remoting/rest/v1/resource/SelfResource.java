@@ -180,6 +180,8 @@ public class SelfResource extends AbstractFileResource {
                 AdminHelper.getEffectiveMobileAppsConfigOverride(this, loggedInUser),
                 AdminHelper.getEffectiveDesktopAppsConfigOverride(this, loggedInUser),
                 loggedInUser,
+                false,
+                null,
                 this);
 
         user.setDesktopAppConfig(zoneConfig.getDesktopAppConfig());
