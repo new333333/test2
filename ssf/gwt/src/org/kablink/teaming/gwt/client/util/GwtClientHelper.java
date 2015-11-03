@@ -1643,6 +1643,31 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Returns true if s can be parsed as an integer and false
+	 * otherwise.
+	 * 
+	 * @param s
+	 * @param validIfEmpty
+	 * 
+	 * @return
+	 */
+	public static boolean isValidInt(String s, boolean validIfEmpty) {
+		if (!(hasString(s))) {
+			return validIfEmpty;
+		}
+		
+		boolean reply;
+		try {
+			Integer.parseInt(s);
+			reply = true;
+		}
+		catch (Exception ex) {
+			reply = false;
+		}
+		return reply;
+	}
+	
+	/**
 	 * Returns true if the browser supports the HTML5 file APIs and false
 	 * otherwise.
 	 */
