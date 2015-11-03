@@ -303,6 +303,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	public void addDocuments(ArrayList docs) throws LuceneException {
 		long startTime = System.nanoTime();
 
+		String context = "docs.size=" + ((docs != null)? docs.size() : "null");
+		
 		try {
 			for (Iterator iter = docs.iterator(); iter.hasNext();) {
 				Document doc = (Document) iter.next();
@@ -320,7 +322,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		} catch (IOException e) {
 			throw newLuceneException("Could not add document to the index", e);
 		} catch (OutOfMemoryError e) {
-			getIndexingResource().closeOOM(e);
+			getIndexingResource().closeOOM(e, context);
 			throw e;
 		}
 
@@ -334,6 +336,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	public void deleteDocuments(Term term) throws LuceneException {
 		long startTime = System.nanoTime();
 
+		String context = "term=" + term;
+		
 		try {
 			getIndexingResource().getIndexWriter().deleteDocuments(term);
 			if(logger.isTraceEnabled())
@@ -342,7 +346,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			throw newLuceneException(
 					"Could not delete documents from the index", e);
 		} catch (OutOfMemoryError e) {
-			getIndexingResource().closeOOM(e);
+			getIndexingResource().closeOOM(e, context);
 			throw e;
 		}
 
@@ -354,6 +358,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 
 	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
 		long startTime = System.nanoTime();
+		
+		String context = "docsToAddOrDelete.size=" + ((docsToAddOrDelete != null)? docsToAddOrDelete.size() : "null");
 		
 		if(PropsUtil.getBoolean("lucene.log.effective.deletes", false)) {
 			List effectiveDeletes = LuceneSearchUtil.getEffectiveDeletes(docsToAddOrDelete);
@@ -376,7 +382,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				} catch (IOException e) {
 					throw newLuceneException("Could not add document to the index", e);					
 				} catch (OutOfMemoryError e) {
-					getIndexingResource().closeOOM(e);
+					getIndexingResource().closeOOM(e, context);
 					throw e;
 				}						
 				if(logger.isTraceEnabled())
@@ -390,7 +396,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					throw newLuceneException(
 							"Could not delete documents from the index", e);
 				} catch (OutOfMemoryError e) {
-					getIndexingResource().closeOOM(e);
+					getIndexingResource().closeOOM(e, "docsToAddOrDelete.size=" + docsToAddOrDelete.size());
 					throw e;
 				}
 				if(logger.isTraceEnabled())
@@ -587,6 +593,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	public boolean testInferredAccessToNonNetFolder(Long contextUserId,  String aclQueryStr, String binderPath) throws LuceneException {
 		long startTime = System.nanoTime();
 
+		String context = "contextUserId=" + contextUserId + ",binderPath=" + binderPath;
+		
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
 		try {
@@ -610,7 +618,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		} catch (IOException e) {
 			throw newLuceneException("Error searching index", e);
 		} catch (OutOfMemoryError e) {
-			getIndexingResource().closeOOM(e);
+			getIndexingResource().closeOOM(e, context);
 			throw e;
 		} catch (ParseException e) {
 			throw newLuceneException("Error parsing query", e);
@@ -629,6 +637,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	 */
 	public org.kablink.teaming.lucene.Hits searchNonNetFolderOneLevelWithInferredAccess(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
 			Long parentBinderId, String parentBinderPath) throws LuceneException {
+		String context = "contextUserId=" + contextUserId + ",mode=" + mode + ",offset=" + offset + ",size=" + size + ",query=[" + query + "],sort=[" + sort + "]";
+		
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
 		Filter implicitlyAccessibleSubFoldersFilter = null;		
@@ -660,7 +670,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		} catch (IOException e) {
 			throw newLuceneException("Error searching index", e);
 		} catch (OutOfMemoryError e) {
-			getIndexingResource().closeOOM(e);
+			getIndexingResource().closeOOM(e, context);
 			throw e;
 		} catch (ParseException e) {
 			throw newLuceneException("Error parsing query", e);
@@ -683,6 +693,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			throw new IllegalArgumentException("Size must be specified");
 
 		long startTime = System.nanoTime();
+		
+		String context = "contextUserId=" + contextUserId + ",titles.size=" + ((titles != null)? titles.size():"null") + ",offset=" + offset + ",size=" + size + ",query=[" + query + "],sort=[" + sort + "]";
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
@@ -736,7 +748,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		} catch (IOException e) {
 			throw newLuceneException("Error searching index", e);
 		} catch (OutOfMemoryError e) {
-			getIndexingResource().closeOOM(e);
+			getIndexingResource().closeOOM(e, context);
 			throw e;
 		} catch (ParseException e) {
 			throw newLuceneException("Error parsing query", e);
@@ -784,6 +796,9 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			throw new IllegalArgumentException("Size must be specified");
 		
 		long startTime = System.nanoTime();
+		
+		String context = "contextUserId=" + contextUserId + ",mode=" + mode + ",offset=" + offset + ",size=" + size + ",totalHitsApproximate=" + totalHitsApproximate + 
+				"fieldNames.size=" + ((fieldNames != null)? fieldNames.size() : "null") + ",query=[" + query + "],sort=[" + sort + "]";
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
@@ -920,7 +935,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		} catch (IOException e) {
 			throw newLuceneException("Error searching index", e);
 		} catch (OutOfMemoryError e) {
-			getIndexingResource().closeOOM(e);
+			getIndexingResource().closeOOM(e, context);
 			throw e;
 		} catch (ParseException e) {
 			throw newLuceneException("Error parsing query", e);
@@ -959,6 +974,9 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	public ArrayList getTagsWithFrequency(String aclQueryStr, String tag, String type, String userId, boolean isSuper)
 			throws LuceneException {
 		long startTime = System.nanoTime();
+		
+		String context = "userId=" + userId + ",isSuper=" + isSuper + ",tag=[" + tag + "],type=" + type;
+		
 		String tagOrig = tag;
 		int prefixLength = 0;
 		tag = tag.toLowerCase();
@@ -1039,7 +1057,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			// logic as is, since that's the way it was previously written.
 			logError("Error getting tags", e);
 		} catch (OutOfMemoryError e) {
-			getIndexingResource().closeOOM(e);
+			getIndexingResource().closeOOM(e, context);
 			throw e;
 		} finally {
 			releaseIndexSearcherHandle(indexSearcherHandle);
@@ -1070,6 +1088,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	public String[] getSortedTitles(Query query, String sortTitleFieldName, String start, String end, int skipsize)
 			throws LuceneException {
 		long startTime = System.nanoTime();
+		
+		String context = "start=" + start + ",end=" + end + ",skipsize=" + skipsize + ",query=[" + query + "],sortTitleFieldName=" + sortTitleFieldName;
 
 		boolean debugLogging = logger.isDebugEnabled();
 		if (debugLogging) {
@@ -1170,7 +1190,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			// logic as is, since that's the way it was previously written.
 			logError("Error getting titles", e);
 		} catch (OutOfMemoryError e) {
-			getIndexingResource().closeOOM(e);
+			getIndexingResource().closeOOM(e, context);
 			throw e;
 		} finally {
 			releaseIndexSearcherHandle(indexSearcherHandle);
@@ -1234,6 +1254,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	public Map<String,Object> getNetFolderInfo(List<Long> netFolderTopFolderIds) throws LuceneException {
 		long startTime = System.nanoTime();
 		
+		String context = "netFolderTopFolderIds.size=" + ((netFolderTopFolderIds != null)? netFolderTopFolderIds.size() : "null");
+		
 		List<Long> fileCounts = new ArrayList<Long>();
 		List<Long> folderCounts = new ArrayList<Long>();
 		
@@ -1264,7 +1286,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		} catch (IOException e) {
 			throw newLuceneException("Error searching index", e);
 		} catch (OutOfMemoryError e) {
-			getIndexingResource().closeOOM(e);
+			getIndexingResource().closeOOM(e, context);
 			throw e;
 		} finally {
 			releaseIndexSearcherHandle(indexSearcherHandle);
@@ -1560,6 +1582,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			long firstOpTimeSinceLastCommit = this.getCommitStat().getFirstOpTimeSinceLastCommit();
 			int numberOfOpsSinceLastCommit = this.getCommitStat().getNumberOfOpsSinceLastCommit();
 			
+			String context = "firstOpTimeSinceLastCommit=" + firstOpTimeSinceLastCommit + ",numberOfOpsSinceLastCommit=" + numberOfOpsSinceLastCommit;
+			
 			this.getCommitStat().reset();
 			
 			try {
@@ -1568,7 +1592,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			} catch (IOException e) {
 				throw newLuceneException("Error committing index writer", e);		
 			} catch (OutOfMemoryError e) {
-				getIndexingResource().closeOOM(e);
+				getIndexingResource().closeOOM(e, context);
 				throw e;
 			}
 			
@@ -1605,7 +1629,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			} catch (IOException e) {
 				throw new LuceneException("Could not optimize the index", e);
 			} catch (OutOfMemoryError e) {
-				getIndexingResource().closeOOM(e);
+				getIndexingResource().closeOOM(e, null);
 				throw e;
 			} 
 			
@@ -1616,6 +1640,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			// optimize and commit are independent of each other.
 			
 			long startTime = System.nanoTime();
+			String context = "maxNumSegments=" + maxNumSegments;
 			logInfo("Optimize(" + maxNumSegments + ") started...");
 
 			try {
@@ -1625,7 +1650,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			} catch (IOException e) {
 				throw new LuceneException("Could not optimize the index", e);
 			} catch (OutOfMemoryError e) {
-				getIndexingResource().closeOOM(e);
+				getIndexingResource().closeOOM(e, context);
 				throw e;
 			} 
 			
@@ -1643,7 +1668,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			} catch (IOException e) {
 				throw new LuceneException("Could not expunge deletes from the index", e);
 			} catch (OutOfMemoryError e) {
-				getIndexingResource().closeOOM(e);
+				getIndexingResource().closeOOM(e, null);
 				throw e;
 			} 
 			
@@ -1669,7 +1694,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			this.getCommitStat().reset();
 		}
 		
-		void closeOOM(OutOfMemoryError e) {
+		void closeOOM(OutOfMemoryError e, String context) {
 			// Close the writer immediately so that we can prevent index corruption.
 			// Should only be used for emergency closing upon OOM error.
 			try {
@@ -1681,7 +1706,10 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				catch(Throwable ignore) {}
 			}
 			try {
-				logError("Fatal OOM error occurred", e);
+				if(context != null)
+					logError("Fatal OOM error occurred\nContext: " + context, e);
+				else
+					logError("Fatal OOM error occurred", e);
 			}
 			catch(Throwable ignore) {}
 		}
