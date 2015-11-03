@@ -1903,7 +1903,9 @@ public interface GwtTeamingMessages extends Messages {
 	String databasePruneDlgCautionFileArchiving_Both();
 	String databasePruneDlgCautionFileArchiving_Filr();
 	String databasePruneDlgCautionFileArchiving_Vibe();
+	String databasePruneDlg_Error_AuditLogInvalid();
 	String databasePruneDlg_Error_AuditLogTooSmall( int pruneAge);
+	String databasePruneDlg_Error_ChangeLogInvalid();
 	String databasePruneDlg_Error_ChangeLogTooSmall(int pruneAge);
 	
 	// Strings used in the Configure User File Sync Application dialog.
