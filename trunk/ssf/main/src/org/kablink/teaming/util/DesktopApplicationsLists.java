@@ -33,6 +33,8 @@
 package org.kablink.teaming.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +85,61 @@ public class DesktopApplicationsLists {
 	private final static String ATTRIBUTE_VERSION					= "version";
 	private final static String	ELEMENT_APP							= "App";
 	private final static String ELEMENT_DESKTOP_APPLICATIONS_LISTS	= "DesktopApplicationsLists";
+
+	/*
+	 * Inner class used to compare two AppInfo's.
+	 */
+	private static class AppInfoComparator implements Comparator<AppInfo> {
+		private boolean m_ascending;	//
+		
+		private final static int EQUAL = 0;
+
+		/**
+		 * Class constructor.
+		 * 
+		 * @param ascending
+		 */
+		public AppInfoComparator(boolean ascending) {
+			m_ascending = ascending;
+		}
+
+		/**
+		 * Compares two AppInfo's by their process names and
+		 * descriptions.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 * 
+		 * @param ai1
+		 * @param ai2
+		 * 
+		 * @return
+		 */
+		@Override
+		public int compare(AppInfo ai1, AppInfo ai2) {
+			int reply = EQUAL;
+
+			// Compare the process names...
+			String s1 = ai1.getProcessName();
+			String s2 = ai2.getProcessName();
+			if (m_ascending)
+			     reply = MiscUtil.safeSColatedCompare(s1, s2);
+			else reply = MiscUtil.safeSColatedCompare(s2, s1);
+
+			// ...and if they're equal...
+			if (reply == EQUAL) {
+				// ...compare the descriptions.
+				s1 = ai1.getDescription();
+				s2 = ai2.getDescription();
+				if (m_ascending)
+				     reply = MiscUtil.safeSColatedCompare(s1, s2);
+				else reply = MiscUtil.safeSColatedCompare(s2, s1);
+			}
+
+			// If we get here, reply contains the appropriate value for
+			// the compare.  Return it.
+			return reply;
+		}
+	}
 
 	/**
 	 * Inner class used to track application information. 
@@ -305,6 +362,9 @@ public class DesktopApplicationsLists {
 
 	    	// ...scan this platform's applications...
 	    	List<AppInfo> platformApps = m_applicationsMap.get(platform);
+	    	if (1 < platformApps.size()) {
+				Collections.sort(platformApps, new AppInfoComparator(true));
+	    	}
 	    	for (AppInfo platformApp:  platformApps) {
 	    		// ...adding an <App> element for each...
 		    	Element appElement = modeElement.addElement(ELEMENT_APP);
@@ -449,8 +509,28 @@ public class DesktopApplicationsLists {
 		for (String app:  apps) {
 			app = app.trim();
 			if (MiscUtil.hasString(app)) {
-				appList.add(new AppInfo(app, app));
+				String description;
+				String processName;
+				int pPos = app.indexOf("(");
+				if (0 > pPos) {
+					description = app;
+					processName = app;
+				}
+				else {
+					processName = app.substring(0, pPos).trim();									// Extract the processName...
+					description = app.substring(pPos + 1).trim();									// ...and the description.
+					if (description.endsWith(")")) {												// If the description ends with a ')'...
+						description = description.substring(0, (description.length() - 1)).trim();	// ...strip that off.
+					}
+				}
+				appList.add(new AppInfo(description, processName));
 			}
+		}
+
+		// If there's more than one item in the list...
+		if (1 < appList.size()) {
+			// ...sort them.
+			Collections.sort(appList, new AppInfoComparator(true));
 		}
 	}
 }
