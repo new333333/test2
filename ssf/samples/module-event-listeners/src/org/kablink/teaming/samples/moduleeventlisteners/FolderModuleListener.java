@@ -32,17 +32,26 @@
  */
 package org.kablink.teaming.samples.moduleeventlisteners;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.FolderDao;
+import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BuiltInUsersHelper;
+import org.kablink.teaming.web.util.DefinitionHelper;
 
 /**
  * ?
@@ -93,7 +102,15 @@ public class FolderModuleListener {
 	 */
 	public void preAddEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Map options) throws WriteFilesException, WriteEntryDataException {
-		logger.info("preAddEntry: About to add an entry to the folder " + folderId + " with definition " + definitionId);
+		logger.info("preAddEntry: About to add an entry to the folder " + folderId + " with definition " + definitionId + ". Here's textual input data -");
+		if(definitionId == null) {
+			Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneId());
+			definitionId = folder.getDefaultEntryDef().getId();
+		}
+		Set<String> textualInputDataKeys = DefinitionHelper.getTextualInputDataKeys(definitionId, inputData);
+		for(String key:textualInputDataKeys) {
+			logger.info(key + " : " + inputData.getSingleValue(key));
+		}
 	}
 		
 	/**
@@ -190,7 +207,20 @@ public class FolderModuleListener {
 		logger.info("afterCompletionAddEntry: " + ((ex==null)? "Successful" : ex.toString()));		
 	}
 	
-	
+	/******************* Listener for modifyEntry method ********************/
+
+    public void preModifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
+    	throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException {
+		logger.info("preModifyEntry: About to modify the entry (id=" + entryId + ") in the folder (id=" + folderId + "). Here's textual input data -");
+		FolderEntry entry = getFolderDao().loadFolderEntry(entryId, RequestContextHolder.getRequestContext().getZoneId());
+		String definitionId = entry.getEntryDefId();
+		Set<String> textualInputDataKeys = DefinitionHelper.getTextualInputDataKeys(definitionId, inputData);
+		for(String key:textualInputDataKeys) {
+			logger.info(key + " : " + inputData.getSingleValue(key));
+		}
+    }
+
 	/******************* Listener for ReserveEntry method ********************/
 	
 	/**
@@ -255,5 +285,9 @@ public class FolderModuleListener {
 	 */
 	public void afterCompletionReserveEntry(Long folderId, Long entryId, Throwable ex) {
 		logger.info("afterCompletionReserveEntry");
+	}
+	
+	private FolderDao getFolderDao() {
+		return (FolderDao) SpringContextUtil.getBean("folderDao");
 	}
 }
