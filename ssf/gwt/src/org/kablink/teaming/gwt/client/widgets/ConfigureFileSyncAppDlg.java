@@ -915,8 +915,9 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 					// Yes!  If this isn't already in the list...
 					String listDisplay = buildAppListDisplayValue(description, processName);
 					if (!(listContains(listBox, processName))) {
-						// ...add it...
+						// ...add and select it...
 						listBox.addItem(listDisplay, processName);
+						listBox.setSelectedIndex(listBox.getItemCount() - 1);
 					}
 					
 					// ...and bail.  We're done with the add.
