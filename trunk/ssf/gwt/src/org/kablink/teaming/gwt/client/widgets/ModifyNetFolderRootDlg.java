@@ -1011,7 +1011,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					
 					switch(type) {
 					case OES:
-					case OES2015:
 					case NETWARE:
 						label = new Label(m_messages.modifyNetFolderServerDlg_ServerPathHint1());
 						m_serverPathHintPanel.add(label);
@@ -1068,6 +1067,66 @@ public class ModifyNetFolderRootDlg extends DlgBox
 									m_messages.modifyNetFolderServerDlg_AuthType_NMAS(),
 									GwtAuthenticationType.NMAS.name(),
 									1);
+							}
+						}
+						break;
+						
+					case OES2015:
+						label = new Label(m_messages.modifyNetFolderServerDlg_ServerPathHint1());
+						m_serverPathHintPanel.add(label);
+
+						label = new Label(m_messages.modifyNetFolderServerDlg_ServerPathOESHint());
+						m_serverPathHintPanel.add(label);
+						
+						m_windowsProxyNameHint.setVisible(false);
+						m_oesProxyNameHint1.setVisible(true);
+						m_oesProxyNameHint.setVisible(true);
+						
+						m_authTypeLabel.setVisible(true);
+						m_authTypeListbox.setVisible(true);
+						
+						// Remove NTLM, Kerberos and NMAS and add 'auto
+						// detect' to the authentication type ListBox.
+						{
+							int index;
+							
+							// Is NTLM in the ListBox?
+							index = GwtClientHelper.doesListboxContainValue(
+																		m_authTypeListbox,
+																		GwtAuthenticationType.NTLM.name());
+							if (index != (-1)) {
+								// Yes, remove it.
+								m_authTypeListbox.removeItem(index);
+							}
+							
+							// Is Kerberos in the ListBox?
+							index = GwtClientHelper.doesListboxContainValue(
+																		m_authTypeListbox,
+																		GwtAuthenticationType.KERBEROS.name());
+							if (index != (-1)) {
+								// Yes, remove it.
+								m_authTypeListbox.removeItem(index);
+							}
+							
+							// Is 'auto detect' in the ListBox?
+							index = GwtClientHelper.doesListboxContainValue(
+																		m_authTypeListbox,
+																		GwtAuthenticationType.KERBEROS_THEN_NTLM.name());
+							if (index == (-1)) {
+								// No, add it.
+								m_authTypeListbox.insertItem(
+									m_messages.modifyNetFolderServerDlg_AuthType_KerberosThenNtlm(),
+									GwtAuthenticationType.KERBEROS_THEN_NTLM.name(),
+									1);
+							}
+							
+							// Is 'NMAS' in the ListBox?
+							index = GwtClientHelper.doesListboxContainValue(
+																		m_authTypeListbox,
+																		GwtAuthenticationType.NMAS.name());
+							if (index != (-1)) {
+								// Yes, remove it
+								m_authTypeListbox.removeItem(index);
 							}
 						}
 						break;
