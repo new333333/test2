@@ -1862,7 +1862,7 @@ public interface GwtTeamingMessages extends Messages {
 	String fileSyncAppHeader3();
 	String fileSyncAppHeader4();
 	String fileSyncAppIntervalLabel();
-	String fileSyncApp_InvalidAutoUpdateUrlText();
+	String fileSyncAppListHint(String product);
 	String fileSyncAppMaxFileSizeLabel();
 	String fileSyncAppMBLabel();
 	String fileSyncAppMinutesLabel();
@@ -1870,12 +1870,14 @@ public interface GwtTeamingMessages extends Messages {
 	String fileSyncApp_Delete();
 	String fileSyncApp_Description();
 	String fileSyncApp_Error_NoProcessName();
+	String fileSyncApp_InvalidAutoUpdateUrlText();
 	String fileSyncApp_MacApps();
 	String fileSyncApp_MacApps_AddPrompt();
 	String fileSyncApp_Mode();
 	String fileSyncApp_ModeBlacklist();
 	String fileSyncApp_ModeDisabled();
 	String fileSyncApp_ModeWhitelist();
+	String fileSyncApp_PromptHeader();
 	String fileSyncApp_OnSaveUnknownException(String desc);
 	String fileSyncApp_WindowsApps();
 	String fileSyncApp_WindowsApps_AddPrompt();

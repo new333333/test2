@@ -6062,6 +6062,7 @@ td.datePickerMonth {
 .fileSyncAppDlg_ListButton        {min-width: 60px;}
 .fileSyncAppDlg_ListButtons       {margin-left: 5px;}
 .fileSyncAppDlg_ListHeader        {}
+.fileSyncAppDlg_ListHintPanel     {padding-top: 10px; width: 400px; white-space: normal; color: #4D6D8B}
 .fileSyncAppDlg_ListPanel         {padding-top: 3px;}
 .fileSyncAppDlg_Location          {}
 .fileSyncAppDlg_MacListPanel      {padding-top: 10px;}
