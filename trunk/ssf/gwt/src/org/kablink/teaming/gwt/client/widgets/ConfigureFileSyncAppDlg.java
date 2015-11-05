@@ -99,6 +99,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	private RadioButton 		m_useLocalApps;					//
 	private RadioButton 		m_useRemoteApps;				//
 	private RadioButton			m_whitelistRB;					// The radio button specifying the lists are part of a whitelist.
+	private String				m_productName;					//
 	private TextBox				m_autoUpdateUrlTextBox;			//
 	private TextBox				m_autoUpdateUrlTextBox_Choice;	//
 	private TextBox				m_autoUpdateUrlTextBox_UrlOnly;	//
@@ -127,8 +128,9 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 			DlgButtonMode.OkCancel);
 		
 		// ...initialize everything else that requires it...
-		m_isFilr   = GwtClientHelper.isLicenseFilr();
-		m_messages = GwtTeaming.getMessages();
+		m_isFilr      = GwtClientHelper.isLicenseFilr();
+		m_messages    = GwtTeaming.getMessages();
+		m_productName = GwtClientHelper.getProductName();
 
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -161,9 +163,10 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		m_appListPanel.add(label);
 
 		// Add the widgets for the lists.
+		m_appListPanel.add(createListHint()   );
 		m_appListPanel.add(createModeWidgets());
-		m_appListPanel.add(createMacList()    );
 		m_appListPanel.add(createWindowsList());
+		m_appListPanel.add(createMacList()    );
 		
 		// If this isn't Filr...
 		if (!(m_isFilr)) {
@@ -194,7 +197,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		mainPanel.add(ckboxPanel);
 		
 		// Add the controls for enable/disable File Sync Application.
-		m_enableFileSyncAccessCB = new CheckBox(m_messages.fileSyncAppAllowAccess(GwtClientHelper.getProductName()));
+		m_enableFileSyncAccessCB = new CheckBox(m_messages.fileSyncAppAllowAccess(m_productName));
 		FlowPanel tmpPanel = new FlowPanel();
 		tmpPanel.add(m_enableFileSyncAccessCB);
 		ckboxPanel.add(tmpPanel);
@@ -383,6 +386,15 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		return listBox;
 	}
 	
+	/*
+	 * Creates the widgets for hint about the application lists.
+	 */
+	private Widget createListHint() {
+		Label hintLabel = new Label(m_messages.fileSyncAppListHint(m_productName));
+		hintLabel.addStyleName("fileSyncAppDlg_ListHintPanel marginleft1");
+		return hintLabel;
+	}
+
 	/*
 	 * Creates the widgets for entering Mac applications.
 	 */
@@ -821,6 +833,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 			@Override
 			public void onSuccess(MultiPromptDlg mpDlg) {
 				m_mpDlg = mpDlg;
+				m_mpDlg.setCaption(m_messages.fileSyncApp_PromptHeader());
 				if (null != csfaDlgClient) {
 					csfaDlgClient.onSuccess(thisDlg);
 				}
