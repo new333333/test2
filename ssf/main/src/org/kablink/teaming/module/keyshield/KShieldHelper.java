@@ -63,7 +63,7 @@ public class KShieldHelper {
 	 */
 	public static boolean isHardwareTokenMissing() {
 		HttpSession session = ZoneContextHolder.getHttpSession();
-		return Boolean.TRUE.equals(session.getAttribute(KShieldContextHolder.HARDWARE_TOKEN_MISSING));
+		return Boolean.TRUE.equals((session != null)? session.getAttribute(KShieldContextHolder.HARDWARE_TOKEN_MISSING) : null);
 	}
 	
 	/*
@@ -72,7 +72,7 @@ public class KShieldHelper {
 	 */
 	public static boolean shouldLdapLoginBeForced() {
 		HttpSession session = ZoneContextHolder.getHttpSession();
-		return Boolean.TRUE.equals(session.getAttribute(KShieldContextHolder.FORCE_LDAP_LOGIN));
+		return Boolean.TRUE.equals((session != null)? session.getAttribute(KShieldContextHolder.FORCE_LDAP_LOGIN) : null);
 	}
 	
 	/*
