@@ -404,6 +404,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetCollectionPointUrl();
 	String rpcFailure_GetCommentCount();
 	String rpcFailure_GetDateStr();
+	String rpcFailure_GetDefaultUserSettings();
 	String rpcFailure_GetDesktopAppDownloadInfo();
 	String rpcFailure_GetDownloadFileUrl();
 	String rpcFailure_GetDownloadFolderAsCSVFileUrl();
@@ -645,6 +646,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_SendNotificationEmail();
 	String rpcFailure_SetAntiVirusSettings();
 	String rpcFailure_SetBinderSharingRightsInfo();
+	String rpcFailure_SetDefaultUserSettings();
 	String rpcFailure_SetDesktopAppDownloadVisibility();
 	String rpcFailure_SetEntriesPinState();
 	String rpcFailure_SetHasSeenOesWarning();
@@ -739,6 +741,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_CreateBlogPageDlg();
 	String codeSplitFailure_CopyMoveEntriesDlg();
 	String codeSplitFailure_CopyPublicLinkDlg();
+	String codeSplitFailure_DefaultUserSettingsDlg();
 	String codeSplitFailure_DeleteSelectedUsersDlg();
 	String codeSplitFailure_DeleteSelectionsDlg();
 	String codeSplitFailure_DescriptionPanel();
@@ -3830,4 +3833,12 @@ public interface GwtTeamingMessages extends Messages {
 	String configureAntiVirusDlgTestLabel();
 	String configureAntiVirusDlgTestSuccess();
 	String configureAntiVirusDlgUsernameLabel();
+	
+	// Strings used by the 'Default User Settings' dialog.
+	String defaultUserSettingsDlg_ExternalUsers_Filr();
+	String defaultUserSettingsDlg_ExternalUsers_Vibe();
+	String defaultUserSettingsDlg_Header();
+	String defaultUserSettingsDlg_InternalUsers();
+	String defaultUserSettingsDlg_Locale();
+	String defaultUserSettingsDlg_TimeZone();
 }

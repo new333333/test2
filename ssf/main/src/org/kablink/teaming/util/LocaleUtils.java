@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,18 +32,23 @@
  */
 package org.kablink.teaming.util;
 
+import java.util.Locale;
+import java.util.TimeZone;
+
+import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.NoZoneByTheIdException;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 
 /**
+ * ?
+ * 
  * @author jong
- *
  */
 public class LocaleUtils {
-
 	public static String getLocaleLanguage() {
 		ZoneConfig zoneConfig = getZoneConfig();
 		if(zoneConfig != null)		
@@ -82,5 +87,160 @@ public class LocaleUtils {
 	
 	private static CoreDao getCoreDao() {
 		return (CoreDao) SpringContextUtil.getBean("coreDao");
+	}
+
+	/**
+	 * Returns the ID of the default timezone to use for new users.
+	 * 
+	 * @return
+	 */
+	public static String getDefaultTimeZoneId() {
+		return getTimeZoneIdImpl(getZoneConfig().getTimeZone());
+	}
+	
+	/**
+	 * Returns the default timezone to use for new users.
+	 * 
+	 * @return
+	 */
+	public static TimeZone getDefaultTimeZone() {
+		return getTimeZoneImpl(getZoneConfig().getTimeZone());
+	}
+	
+	/**
+	 * Returns the ID of the default timezone to use for new external
+	 * users.
+	 * 
+	 * @return
+	 */
+	public static String getDefaultTimeZoneIdExt() {
+		return getTimeZoneIdImpl(getZoneConfig().getTimeZoneExt());
+	}
+	
+	/**
+	 * Returns the default timezone to use for new external users.
+	 * 
+	 * @return
+	 */
+	public static TimeZone getDefaultTimeZoneExt() {
+		return getTimeZoneImpl(getZoneConfig().getTimeZoneExt());
+	}
+
+	/*
+	 * Returns the normalized timezone ID for the given timezone ID.
+	 */
+	private static String getTimeZoneIdImpl(String tz) {
+		String reply;
+		if (MiscUtil.hasString(tz))
+		     reply = TimeZoneHelper.fixTimeZoneId(tz);
+		else reply = TimeZoneHelper.getDefault().getID();
+		return reply;
+	}
+	
+	/*
+	 * Returns the TimeZone for the given timezone ID.
+	 */
+	private static TimeZone getTimeZoneImpl(String tzId) {
+		TimeZone reply;
+		if (MiscUtil.hasString(tzId))
+		     reply = TimeZoneHelper.getTimeZone(tzId);
+		else reply = TimeZoneHelper.getDefault();
+		return reply;
+	}
+	
+	/**
+	 * Returns the language of the default locale to use for new users.
+	 * 
+	 * @return
+	 */
+	public static String getDefaultLocaleLanguage() {
+		return getLocaleLanguage();
+	}
+	
+	/**
+	 * Returns the country of the default locale to use for new users.
+	 * 
+	 * @return
+	 */
+	public static String getDefaultLocaleCountry() {
+		return getLocaleCountry();
+	}
+	
+	/**
+	 * Returns the default locale to use for new users.
+	 * 
+	 * @param defaultLocaleId
+	 * 
+	 * @return
+	 */
+	public static Locale getDefaultLocale(String defaultLocaleId) {
+		return
+			getLocaleImpl(
+				getDefaultLocaleLanguage(),
+				getDefaultLocaleCountry(),
+				defaultLocaleId);
+	}
+	
+	public static Locale getDefaultLocale() {
+		// Always use the initial form of the method.
+		return getDefaultLocale(null);
+	}
+	
+	/**
+	 * Returns the language of the default locale to use for new
+	 * external users.
+	 * 
+	 * @return
+	 */
+	public static String getDefaultLocaleLanguageExt() {
+		return getZoneConfig().getLocaleLanguageExt();
+	}
+	
+	/**
+	 * Returns the country of the default locale to use for new
+	 * external users.
+	 * 
+	 * @return
+	 */
+	public static String getDefaultLocaleCountryExt() {
+		return getZoneConfig().getLocaleCountryExt();
+	}
+	
+	/**
+	 * Returns the default locale to use for new external users.
+	 * 
+	 * @param defaultLocaleId
+	 * 
+	 * @return
+	 */
+	public static Locale getDefaultLocaleExt(String defaultLocaleId) {
+		return
+			getLocaleImpl(
+				getDefaultLocaleLanguageExt(),
+				getDefaultLocaleCountryExt(),
+				defaultLocaleId);
+	}
+	
+	public static Locale getDefaultLocaleExt() {
+		// Always use the initial form of the method.
+		return getDefaultLocaleExt(null);
+	}
+
+	/*
+	 * Constructs a Locale from a language and country.
+	 */
+	private static Locale getLocaleImpl(String language, String country, String defaultLocaleId) {
+		Locale reply = null;
+		if (MiscUtil.hasString(language)) {
+			if (MiscUtil.hasString(country))
+			     reply = new Locale(language, country);
+			else reply = new Locale(language         );
+		}
+		if (null == reply) {
+			if (MiscUtil.hasString(defaultLocaleId))
+			     reply = new Locale(defaultLocaleId);
+			else reply =  NLT.getTeamingLocale();
+		}
+		return reply;
 	}
 }

@@ -97,6 +97,7 @@ public class EventHelper {
 		case INVOKE_CONFIGURE_TELEMETRY_DLG:		reply = new InvokeConfigureTelemetryDlgEvent();   break;
 		case INVOKE_CONFIGURE_UPDATE_LOGS_DLG:	    reply = new InvokeConfigureUpdateLogsDlgEvent();  break;
 		case INVOKE_CONFIGURE_USER_ACCESS_DLG:		reply = new InvokeConfigureUserAccessDlgEvent();  break;
+		case INVOKE_DEFAULT_USER_SETTINGS_DLG:		reply = new InvokeDefaultUserSettingsDlgEvent();  break;
 		case INVOKE_DOWNLOAD_DESKTOP_APP:           reply = new InvokeDownloadDesktopAppEvent();      break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
@@ -117,6 +118,7 @@ public class EventHelper {
 		case LOGIN:                             	reply = new LoginEvent();                         break;
 		case PRE_LOGOUT:                        	reply = new PreLogoutEvent();                     break;
 		case PREVIEW_LANDING_PAGE:					reply = new PreviewLandingPageEvent();			  break;
+		case MANAGE_DEFAULT_USER_SETTINGS:          reply = new ManageDefaultUserSettingsEvent();     break;
 		case MANAGE_USER_VISIBILITY:                reply = new ManageUserVisibilityEvent();          break;
 		case MASTHEAD_HIDE:                     	reply = new MastheadHideEvent();                  break;
 		case MASTHEAD_SHOW:                     	reply = new MastheadShowEvent();                  break;
@@ -1294,6 +1296,16 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_DEFAULT_USER_SETTINGS_DLG:
+				// An InvokeDefaultUserSettingsDlgEvent!  Can the event
+				// handler we were given handle that?
+				if ( eventHandler instanceof InvokeDefaultUserSettingsDlgEvent.Handler)
+				{
+					handlerNotDefined = false;
+					registrationHandler = InvokeDefaultUserSettingsDlgEvent.registerEvent( eventBus, ((InvokeDefaultUserSettingsDlgEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case INVOKE_DOWNLOAD_DESKTOP_APP:
 				// An InvokeDownloadDesktopAppEvent!  Can the event
 				// handler we were given handle that?
@@ -1866,6 +1878,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case MANAGE_DEFAULT_USER_SETTINGS:
+				// An ManageDefaultUserSettingsEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof ManageDefaultUserSettingsEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ManageDefaultUserSettingsEvent.registerEvent(eventBus, ((ManageDefaultUserSettingsEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case MANAGE_SHARES_SELECTED_ENTITIES:
 				// A ManageSharesSelectedEntitiesEvent!  Can the event
 				// handler we were given handle that?
@@ -3128,6 +3149,7 @@ public class EventHelper {
 			case INVOKE_CONFIGURE_UPDATE_LOGS_DLG:		       hasHandler = (eventHandler instanceof InvokeConfigureUpdateLogsDlgEvent.Handler);           break;
 			case INVOKE_CONFIGURE_USER_ACCESS_DLG:		       hasHandler = (eventHandler instanceof InvokeConfigureUserAccessDlgEvent.Handler);           break;
 			case INVOKE_COPY_FILTERS_DLG:                      hasHandler = (eventHandler instanceof InvokeCopyFiltersDlgEvent.Handler);                   break;
+			case INVOKE_DEFAULT_USER_SETTINGS_DLG:		       hasHandler = (eventHandler instanceof InvokeDefaultUserSettingsDlgEvent.Handler);           break;
 			case INVOKE_DOWNLOAD_DESKTOP_APP:                  hasHandler = (eventHandler instanceof InvokeDownloadDesktopAppEvent.Handler);               break;
 			case INVOKE_DROPBOX:						       hasHandler = (eventHandler instanceof InvokeDropBoxEvent.Handler);                          break;
 			case INVOKE_EDIT_IN_PLACE:					       hasHandler = (eventHandler instanceof InvokeEditInPlaceEvent.Handler);                      break;
@@ -3183,6 +3205,7 @@ public class EventHelper {
 
 			case PREVIEW_LANDING_PAGE:      			       hasHandler = (eventHandler instanceof PreviewLandingPageEvent.Handler);     	               break;
 
+			case MANAGE_DEFAULT_USER_SETTINGS:                 hasHandler = (eventHandler instanceof ManageDefaultUserSettingsEvent.Handler);              break;
 			case MANAGE_SHARES_SELECTED_ENTITIES:              hasHandler = (eventHandler instanceof ManageSharesSelectedEntitiesEvent.Handler);           break;
 			case MANAGE_USER_VISIBILITY:                       hasHandler = (eventHandler instanceof ManageUserVisibilityEvent.Handler);                   break;
 			case MARK_ENTRY_READ:                   	       hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                          break;

@@ -124,6 +124,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_CONFIGURE_UPDATE_LOGS_DLG,				// Invokes the Configure Update Logs dialog.
 	INVOKE_CONFIGURE_USER_ACCESS_DLG,				// Invokes the Configure User Access dialog.
 	INVOKE_COPY_FILTERS_DLG,						// Invokes the 'Copy Filters' dialog.
+	INVOKE_DEFAULT_USER_SETTINGS_DLG,				// Invokes the Default User Settings dialog.
 	INVOKE_DOWNLOAD_DESKTOP_APP,					// Invokes the desktop application download page.
 	INVOKE_DROPBOX,									// Invokes the files drop box (i.e., the file drag&drop applet.)
 	INVOKE_EDIT_IN_PLACE,							// Invokes the edit-in-place on the specified file.
@@ -336,6 +337,7 @@ public enum TeamingEvents implements IsSerializable {
 	HIDE_SELECTED_SHARES,							// Marks the selected shares as being hidden.
 	LOCK_SELECTED_ENTITIES,							// Locks the Selected Entities.
 	MAILTO_PUBLIC_LINK_ENTITY,						// Mails the Public Link of the Entity Using a 'mailto://...' URL.
+	MANAGE_DEFAULT_USER_SETTINGS,					// Invokes the default user settings dialog.
 	MANAGE_SHARES_SELECTED_ENTITIES,				// Invokes the Share dialog in administrative mode.
 	MANAGE_USER_VISIBILITY,							// Invokes the limit user visibility dialog.
 	MARK_READ_SELECTED_ENTITIES,					// Marks the Selected Entities as     Having Been Read.
