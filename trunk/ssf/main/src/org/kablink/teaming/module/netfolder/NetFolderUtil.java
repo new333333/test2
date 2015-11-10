@@ -51,6 +51,7 @@ import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.util.SpringContextUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -137,7 +138,11 @@ public class NetFolderUtil {
 	}
 
 	public static Map<Long, AppNetFolderSyncSettings> getAppNetFolderSyncSettings(List<Long> netFolderIds) {
-		List<AppNetFolderSyncSettings> appNetFolderSyncSettings = getCoreDao().getAppNetFolderSyncSettings(netFolderIds);
+		List<AppNetFolderSyncSettings> appNetFolderSyncSettings;
+		if(netFolderIds != null && netFolderIds.size() > 0)
+			appNetFolderSyncSettings = getCoreDao().getAppNetFolderSyncSettings(netFolderIds);
+		else
+			appNetFolderSyncSettings = new ArrayList<AppNetFolderSyncSettings>();
 		Map<Long, AppNetFolderSyncSettings> map = new HashMap<>();
 		for (AppNetFolderSyncSettings settings : appNetFolderSyncSettings) {
 			map.put(settings.getId(), settings);
