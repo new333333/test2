@@ -462,4 +462,29 @@ GO
 		</addColumn>
 	</changeSet>
 
+    <changeSet author="dennis" context="schema" failOnError="true" id="35">
+		<comment>Default Locale Language for New External Users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="localeLanguageExt" type="VARCHAR(16)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="dennis" context="schema" failOnError="true" id="36">
+		<comment>Default Locale Country for New External Users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="localeCountryExt" type="VARCHAR(16)"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="37">
+		<comment>Default TimeZone for New Users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="timeZone" type="VARCHAR(80)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="dennis" context="schema" failOnError="true" id="38">
+		<comment>Default TimeZone for New External Users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="timeZoneExt" type="VARCHAR(80)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

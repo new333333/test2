@@ -340,4 +340,29 @@ update SS_Forums set binderType = SUBSTR(type, 1, 1);
 		</addColumn>
 	</changeSet>
 
+    <changeSet author="dennis" context="schema" failOnError="true" id="32">
+		<comment>Default Locale Language for New External Users</comment>
+		<addColumn tableName="SS_ZoneConfig">
+			<column name="localeLanguageExt" type="VARCHAR2(16 CHAR)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="dennis" context="schema" failOnError="true" id="33">
+		<comment>Default Locale Country for New External Users</comment>
+		<addColumn tableName="SS_ZoneConfig">
+			<column name="localeCountryExt" type="VARCHAR2(16 CHAR)"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="34">
+		<comment>Default TimeZone for New Users</comment>
+		<addColumn tableName="SS_ZoneConfig">
+			<column name="timeZone" type="VARCHAR2(80 CHAR)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="dennis" context="schema" failOnError="true" id="35">
+		<comment>Default TimeZone for New External Users</comment>
+		<addColumn tableName="SS_ZoneConfig">
+			<column name="timeZoneExt" type="VARCHAR2(80 CHAR)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
