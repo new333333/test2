@@ -1009,4 +1009,17 @@ public interface ProfileModule {
 	public void setDefaultUserTimeZone(   String tz             );	// Default -> Current zone.
 	public void setDefaultUserTimeZoneExt(String tz, Long zoneId);
 	public void setDefaultUserTimeZoneExt(String tz             );	// Default -> Current zone.
+
+	/**
+	 * Sets the default timezone and locale for new internal and
+	 * external users.
+	 * 
+	 * @param timeZone
+	 * @param locale
+	 * @param timeZoneExt
+	 * @param localeExt
+	 * @param zoneId
+	 */
+	public void setDefaultUserSettings(String timeZone, String locale, String timeZoneExt, String localeExt, Long zoneId);
+	public void setDefaultUserSettings(String timeZone, String locale, String timeZoneExt, String localeExt             );	// Default -> Current zone.
 }

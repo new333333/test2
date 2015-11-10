@@ -2550,6 +2550,28 @@ public class GwtServerHelper {
 			}
 			catch(AccessControlException e) {}
 
+			// Does the user have rights to manage default user
+			// settings?
+			try
+			{
+				if ( userHasAdminRights )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.defaultUserSettings" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFAULT_USER_SETTINGS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_DEFAULT_USER_SETTINGS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch(AccessControlException e) {}
+
 			// Does the user have rights to "Manage shares"?
 			try
 			{
@@ -10003,6 +10025,7 @@ public class GwtServerHelper {
 		case GET_DEFAULT_ACTIVITY_STREAM:
 		case GET_DEFAULT_FOLDER_DEFINITION_ID:
 		case GET_DEFAULT_STORAGE_ID:
+		case GET_DEFAULT_USER_SETTINGS_INFO:
 		case GET_DESKTOP_APP_DOWNLOAD_INFO:
 		case GET_DOCUMENT_BASE_URL:
 		case GET_DOWNLOAD_FILE_URL:
@@ -10247,6 +10270,7 @@ public class GwtServerHelper {
 		case SEND_SHARE_NOTIFICATION_EMAIL:
 		case SET_ANTIVIRUS_SETTINGS:
 		case SET_BINDER_SHARING_RIGHTS_INFO:
+		case SET_DEFAULT_USER_SETTINGS:
 		case SET_DESKTOP_APP_DOWNLOAD_VISIBILITY:
 		case SET_ENTRIES_PIN_STATE:
 		case SET_HAS_SEEN_OES_WARNING:

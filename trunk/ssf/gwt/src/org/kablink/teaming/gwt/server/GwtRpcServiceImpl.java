@@ -191,6 +191,7 @@ import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtAntiVirusHelper;
 import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
+import org.kablink.teaming.gwt.server.util.GwtDefaultUserSettingsHelper;
 import org.kablink.teaming.gwt.server.util.GwtDeleteHelper;
 import org.kablink.teaming.gwt.server.util.GwtDesktopApplicationsHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
@@ -1590,6 +1591,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			String result = getDefaultStorageId();
 			StringRpcResponseData responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_DEFAULT_USER_SETTINGS_INFO:  {
+			DefaultUserSettingsInfoRpcResponseData result = GwtDefaultUserSettingsHelper.getDefaultUserSettingsInfo(this, req);
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -4083,6 +4090,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 
+		case SET_DEFAULT_USER_SETTINGS:  {
+			SetDefaultUserSettingsCmd sdusCmd = ((SetDefaultUserSettingsCmd) cmd);
+			BooleanRpcResponseData result = GwtDefaultUserSettingsHelper.setDefaultUserSettings(this, req, sdusCmd.getTimeZone(), sdusCmd.getLocale(), sdusCmd.getTimeZoneExt(), sdusCmd.getLocaleExt());
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case SET_ANTIVIRUS_SETTINGS:  {
 			SetAntiVirusSettingsCmd savsCmd = ((SetAntiVirusSettingsCmd) cmd);
 			GwtAntiVirusHelper.setAntiVirusSettings(this, req, savsCmd.getAntiVirusConfig());

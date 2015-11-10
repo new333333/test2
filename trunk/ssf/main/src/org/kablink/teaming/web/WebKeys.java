@@ -440,6 +440,7 @@ public class WebKeys {
 	public static final String ACTION_DEFINITION_EXPORT="export_definition";
 	public static final String ACTION_CONFIGURATION="configure_configuration";
 	public static final String ACTION_MANAGE_ADMINISTRATORS="manage_administrators";
+	public static final String ACTION_MANAGE_DEFAULT_USER_SETTINGS = "manage_default_user_settings";
 	public static final String ACTION_MANAGE_EXTENSIONS="manage_extensions";
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
 	public static final String ACTION_MANAGE_TEAMS="manage_teams";

@@ -5595,6 +5595,11 @@ td.datePickerMonth {
 	.vibe-limitUserVisibilityDlg-rootPanel  {background-color: white;}
 /* End:  Limit user visibility dialog styles. */
 
+/* Start:  Defualt user settings dialog styles. */
+	.vibe-defaultUserSettingsDlg            {}
+	.vibe-defaultUserSettingsDlg-rootPanel  {background-color: white; margin: 10px;}
+/* End:  Defult user settings dialog styles. */
+
 /* Start:  Select CSV delimiter dialog styles. */
 	.vibe-selectCSVDelimiterDlg-content        {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
 	.vibe-selectCSVDelimiterDlg_customCSVInput {width: 100px;}

@@ -58,6 +58,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditKeyShieldConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditLdapConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeDefaultUserSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeLimitUserVisibilityDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageAdministratorsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeNetFolderGlobalSettingsDlgEvent;
@@ -74,6 +75,7 @@ import org.kablink.teaming.gwt.client.event.InvokeNameCompletionSettingsDlgEvent
 import org.kablink.teaming.gwt.client.event.InvokePrincipalDesktopSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokePrincipalMobileSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeRunAReportDlgEvent;
+import org.kablink.teaming.gwt.client.event.ManageDefaultUserSettingsEvent;
 import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ManageUserVisibilityEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
@@ -125,6 +127,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUs
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
+import org.kablink.teaming.gwt.client.widgets.DefaultUserSettingsDlg.DefaultUserSettingsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.LimitUserVisibilityDlg.LimitUserVisibilityDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageAdministratorsDlg.ManageAdministratorsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.NetFolderGlobalSettingsDlg.NetFolderGlobalSettingsDlgClient;
@@ -192,6 +195,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigureTelemetryDlgEvent.Handler,
 		InvokeConfigureUserAccessDlgEvent.Handler,
 		InvokeConfigureUpdateLogsDlgEvent.Handler,
+		InvokeDefaultUserSettingsDlgEvent.Handler,
 		InvokeEditKeyShieldConfigDlgEvent.Handler,
 		InvokeEditLdapConfigDlgEvent.Handler,
 		InvokeEditNetFolderDlgEvent.Handler,
@@ -211,6 +215,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokePrincipalDesktopSettingsDlgEvent.Handler,
 		InvokePrincipalMobileSettingsDlgEvent.Handler,
 		InvokeRunAReportDlgEvent.Handler,
+		ManageDefaultUserSettingsEvent.Handler,
 		ManageSharesSelectedEntitiesEvent.Handler,
 		ManageUserVisibilityEvent.Handler,
 		PreLogoutEvent.Handler,
@@ -248,6 +253,7 @@ public class AdminControl extends TeamingPopupPanel
 	private ConfigureUpdateLogsDlg m_configureUpdateLogsDlg = null;
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
 	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
+	private DefaultUserSettingsDlg m_defaultUserSettingsDlg = null;
 	private EditZoneShareSettingsDlg m_editZoneShareSettingsDlg = null;
 	private LimitUserVisibilityDlg m_limitUserVisibilityDlg = null;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg = null;
@@ -288,6 +294,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_TELEMETRY_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_UPDATE_LOGS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
+		TeamingEvents.INVOKE_DEFAULT_USER_SETTINGS_DLG,
 		TeamingEvents.INVOKE_EDIT_KEYSHIELD_CONFIG_DLG,
 		TeamingEvents.INVOKE_EDIT_LDAP_CONFIG_DLG,
 		TeamingEvents.INVOKE_EDIT_NET_FOLDER_DLG,
@@ -309,6 +316,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_RUN_A_REPORT_DLG,
 		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
 		TeamingEvents.MANAGE_USER_VISIBILITY,
+		TeamingEvents.MANAGE_DEFAULT_USER_SETTINGS,
 		
 		// Login/out events.
 		TeamingEvents.PRE_LOGOUT,
@@ -529,13 +537,15 @@ public class AdminControl extends TeamingPopupPanel
 			if (null != actions) {
 				//! DRF:  Add controls here to limit things shown while
 				//!       they're being implemented.
-				boolean showEmailTemplates      = GwtClientHelper.jsBrowserSupportsHtml5FileAPIs();
-				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
-				boolean showPasswordPolicy      = GwtClientHelper.isPasswordPolicyEnabled();
+				boolean showEmailTemplates            = GwtClientHelper.jsBrowserSupportsHtml5FileAPIs();
+				boolean showManageDefaultUserSettings = DefaultUserSettingsDlg.SHOW_DEFAULT_USER_SETTINGS;
+				boolean showManageMobileDevices       = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
+				boolean showPasswordPolicy            = GwtClientHelper.isPasswordPolicyEnabled();
 				for (GwtAdminAction action:  actions) {
-					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices)) continue;
-					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))      continue;
-					else if (action.getActionType().equals(AdminAction.CONFIGURE_EMAIL_TEMPLATES) && (!showEmailTemplates))      continue;
+					if      (action.getActionType().equals(AdminAction.MANAGE_DEFAULT_USER_SETTINGS) && (!showManageDefaultUserSettings)) continue;
+					else if (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)        && (!showManageMobileDevices))       continue;
+					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY)    && (!showPasswordPolicy))            continue;
+					else if (action.getActionType().equals(AdminAction.CONFIGURE_EMAIL_TEMPLATES)    && (!showEmailTemplates))            continue;
 					
 					// Add a UI widget for this administration action.
 					AdminActionControl adminActionControl = new AdminActionControl( action );
@@ -996,6 +1006,13 @@ public class AdminControl extends TeamingPopupPanel
 			// Fire the event to invoke the limit user visibility
 			// dialog.
 			ManageUserVisibilityEvent.fireOne();
+		}
+				
+		else if ( adminAction.getActionType() == AdminAction.MANAGE_DEFAULT_USER_SETTINGS )
+		{
+			// Fire the event to invoke the manage user default
+			// settings dialog.
+			ManageDefaultUserSettingsEvent.fireOne();
 		}
 				
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_SHARE_ITEMS )
@@ -2742,6 +2759,58 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Handles InvokeDefaultUserSettingsDlgEvent received by this
+	 * class.
+	 * 
+	 * Implements the InvokeDefaultUserSettingsDlgEvent.Handler.onInvokeDefaultUserSettingsDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeDefaultUserSettingsDlg(InvokeDefaultUserSettingsDlgEvent event) {
+		// Get the position of the content control.
+		final int x = m_contentControlX;
+		final int y = m_contentControlY;
+		
+		// Have we already created a 'Default User Settings' dialog?
+		if (null == m_defaultUserSettingsDlg) {
+			// No!  Create one now.
+			DefaultUserSettingsDlg.createAsync(new DefaultUserSettingsDlgClient() {			
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(final DefaultUserSettingsDlg dusDlg) {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
+						@Override
+						public void execute() {
+							m_defaultUserSettingsDlg = dusDlg;
+							DefaultUserSettingsDlg.initAndShow(m_defaultUserSettingsDlg, x, y, m_dlgWidth, m_dlgHeight);
+						}
+					} );
+				}
+			},
+			isActionAutoHide(AdminAction.MANAGE_DEFAULT_USER_SETTINGS),
+			isActionModal(   AdminAction.MANAGE_DEFAULT_USER_SETTINGS),
+			x, 
+			y,
+			m_dlgWidth,
+			m_dlgHeight );
+		}
+		
+		else
+		{
+			// Yes, we've already created a 'Default User Settings'
+			// dialog!  Simply initialize and show it.
+			m_defaultUserSettingsDlg.setPixelSize(m_dlgWidth, m_dlgHeight);
+			DefaultUserSettingsDlg.initAndShow(m_defaultUserSettingsDlg, x, y, m_dlgWidth, m_dlgHeight);
+		}
+	}
+	
+	/**
 	 * Handles InvokeLimitUserVisibilityDlgEvent received by this
 	 * class.
 	 * 
@@ -3744,6 +3813,19 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Handles ManageDefaultUserSettingsEvent's received by this class.
+	 * 
+	 * Implements the ManageDefaultUserSettingsEvent.Handler.onManageDefaultUserSettings() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onManageDefaultUserSettings(ManageDefaultUserSettingsEvent event) {
+		// Fire the event to invoke the 'Default User Settings' dialog.
+		InvokeDefaultUserSettingsDlgEvent.fireOneAsync();
+	}
+	
+	/**
 	 * Handles ManageUserVisibilityEvent's received by this class.
 	 * 
 	 * Implements the ManageUserVisibilityEvent.Handler.onManageUserVisibility() method.
@@ -4176,6 +4258,7 @@ public class AdminControl extends TeamingPopupPanel
 				case MANAGE_ADMINISTRATORS:
 				case MANAGE_APPLICATIONS:
 				case MANAGE_APPLICATION_GROUPS:
+				case MANAGE_DEFAULT_USER_SETTINGS:
 				case MANAGE_EXTENSIONS:
 				case MANAGE_GROUPS:
 				case MANAGE_LICENSE:

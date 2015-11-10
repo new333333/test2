@@ -72,6 +72,7 @@ public enum AdminAction implements IsSerializable {
 	MANAGE_APPLICATIONS("Manage applications"),
 	MANAGE_APPLICATION_GROUPS("Manage application groups"),
 	MANAGE_DATABASE_PRUNE("Manage database prune"),
+	MANAGE_DEFAULT_USER_SETTINGS("Manage default user settings"),
 	MANAGE_EXTENSIONS("Manage extensions"),
 	MANAGE_GROUPS("Manage groups"),
 	MANAGE_LICENSE("Manage license"),

@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -3551,6 +3552,7 @@ public String[] getUsernameAndDecryptedPasswordForAuth(String username) {
     @Override
 	public void setDefaultUserLocale(String language, String country, Long zoneId) {
 		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION);
 		zoneConfig.setLocaleLanguage(language);
 		zoneConfig.setLocaleCountry( country );
 	}
@@ -3578,6 +3580,7 @@ public String[] getUsernameAndDecryptedPasswordForAuth(String username) {
     @Override
 	public void setDefaultUserLocaleExt(String language, String country, Long zoneId) {
 		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION);
 		zoneConfig.setLocaleLanguageExt(language);
 		zoneConfig.setLocaleCountryExt( country );
 	}
@@ -3604,6 +3607,7 @@ public String[] getUsernameAndDecryptedPasswordForAuth(String username) {
     @Override
 	public void setDefaultUserTimeZone(String tz, Long zoneId) {
 		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION);
 		zoneConfig.setTimeZone(tz);
 	}
 	
@@ -3627,6 +3631,7 @@ public String[] getUsernameAndDecryptedPasswordForAuth(String username) {
     @Override
 	public void setDefaultUserTimeZoneExt(String tz, Long zoneId) {
 		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION);
 		zoneConfig.setTimeZoneExt(tz);
 	}
     
@@ -3639,5 +3644,49 @@ public String[] getUsernameAndDecryptedPasswordForAuth(String username) {
 	public void setDefaultUserTimeZoneExt(String tz) {
     	// Always use the initial form of the method.
 		setDefaultUserTimeZoneExt(tz, RequestContextHolder.getRequestContext().getZoneId());
+	}
+    
+	/**
+	 * Sets the default timezone and locale for new internal and
+	 * external users.
+	 * 
+	 * @param timeZone
+	 * @param locale
+	 * @param timeZoneExt
+	 * @param localeExt
+	 * @param zoneId
+	 */
+    @Override
+	public void setDefaultUserSettings(String timeZone, String locale, String timeZoneExt, String localeExt, Long zoneId) {
+    	// Access the ZoneConfig object for updating...
+		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION);
+
+		// ...store the internal user settings...
+		String[] localeParts = locale.split("_");
+		int localeCount = localeParts.length;
+		Locale l;
+		if      (2 == localeCount) l = new Locale(localeParts[0], localeParts[1]                );
+		else if (3 <= localeCount) l = new Locale(localeParts[0], localeParts[1], localeParts[2]);
+		else                       l = new Locale(locale                                        );
+		zoneConfig.setTimeZone(timeZone);
+		zoneConfig.setLocaleLanguage(l.getLanguage());
+		zoneConfig.setLocaleCountry( l.getCountry() );
+		
+		// ...and store the external user settings.
+		localeParts = localeExt.split("_");
+		localeCount = localeParts.length;
+		if      (2 == localeCount) l = new Locale(localeParts[0], localeParts[1]                );
+		else if (3 <= localeCount) l = new Locale(localeParts[0], localeParts[1], localeParts[2]);
+		else                       l = new Locale(localeExt                                     );
+		zoneConfig.setTimeZoneExt(timeZoneExt);
+		zoneConfig.setLocaleLanguageExt(l.getLanguage());
+		zoneConfig.setLocaleCountryExt( l.getCountry() );
+	}
+	
+    @Override
+	public void setDefaultUserSettings(String timeZone, String locale, String timeZoneExt, String localeExt) {
+    	// Always use the initial form of the method.
+		setDefaultUserSettings(timeZone, locale, timeZoneExt, localeExt, RequestContextHolder.getRequestContext().getZoneId());
 	}
 }
