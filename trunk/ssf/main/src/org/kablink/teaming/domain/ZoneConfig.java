@@ -44,6 +44,7 @@ import org.kablink.teaming.util.DesktopApplicationsLists;
 import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.MiscUtil;
 
 /**
  * ?
@@ -80,7 +81,11 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private OpenIDConfig openIDConfig;
 	private Boolean externalUserEnabled;
 	private String localeLanguage;
+	private String localeLanguageExt;
 	private String localeCountry;
+	private String localeCountryExt;
+	private String timeZone;
+	private String timeZoneExt;
 	private Boolean adHocFoldersEnabled;
 	private Boolean autoApplyDeferredUpdateLogs;
     private Date adHocFoldersLastModified;
@@ -516,6 +521,21 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 		this.localeLanguage = localeLanguage;
 	}
 	
+	public String getLocaleLanguageExt() {
+		if(localeLanguageExt != null)
+			return localeLanguageExt;
+		else {
+			String lang = SPropsUtil.getString("i18n.default.locale.language.external", "");
+			if (!(MiscUtil.hasString(lang))) {
+				lang = SPropsUtil.getString("i18n.default.locale.language", "");
+			}
+			return lang;
+		}
+	}
+	public void setLocaleLanguageExt(String localeLanguageExt) {
+		this.localeLanguageExt = localeLanguageExt;
+	}
+	
 	public String getLocaleCountry() {
 		if(localeCountry != null)
 			return localeCountry;
@@ -524,6 +544,46 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	}
 	public void setLocaleCountry(String localeCountry) {
 		this.localeCountry = localeCountry;
+	}
+	
+	public String getLocaleCountryExt() {
+		if(localeCountryExt != null)
+			return localeCountryExt;
+		else {
+			String country = SPropsUtil.getString("i18n.default.locale.country.external", "");
+			if (!(MiscUtil.hasString(country))) {
+				country = SPropsUtil.getString("i18n.default.locale.country", "");
+			}
+			return country;
+		}
+	}
+	public void setLocaleCountryExt(String localeCountryExt) {
+		this.localeCountryExt = localeCountryExt;
+	}
+	
+	public String getTimeZone() {
+		if(timeZone != null)
+			return timeZone;
+		else
+			return SPropsUtil.getString("i18n.default.timezone", "");
+	}
+	public void setTimeZone(String timeZone) {
+		this.timeZone = timeZone;
+	}
+	
+	public String getTimeZoneExt() {
+		if(timeZoneExt != null)
+			return timeZoneExt;
+		else {
+			String tz = SPropsUtil.getString("i18n.default.timezone.external", "");
+			if (!(MiscUtil.hasString(tz))) {
+				tz = SPropsUtil.getString("i18n.default.timezone", "");
+			}
+			return tz;
+		}
+	}
+	public void setTimeZoneExt(String timeZoneExt) {
+		this.timeZoneExt = timeZoneExt;
 	}
 	
 	/**

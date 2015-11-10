@@ -27,7 +27,11 @@
     <property name="fsaApplicationsBlob" length="2000000" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
 	<property name="externalUserEnabled" access="field"/>
 	<property name="localeLanguage" access="field" length="16"/>
+	<property name="localeLanguageExt" access="field" length="16"/>
 	<property name="localeCountry" access="field" length="16"/>
+	<property name="localeCountryExt" access="field" length="16"/>
+	<property name="timeZone" access="field" length="80"/>
+	<property name="timeZoneExt" access="field" length="80"/>
 	<property name="adHocFoldersEnabled" access="field"/>
     <property name="adHocFoldersLastModified"/>
 	<property name="autoApplyDeferredUpdateLogs" access="field"/>

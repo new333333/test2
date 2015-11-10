@@ -53,6 +53,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ApplicationExistsException;
 import org.kablink.teaming.ApplicationGroupExistsException;
 import org.kablink.teaming.GroupExistsException;
@@ -153,6 +154,7 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -3538,4 +3540,104 @@ public String[] getUsernameAndDecryptedPasswordForAuth(String username) {
 
 		modifyEntry( group.getId(), inputData );
     }
+    
+	/**
+	 * Sets the default locale language and country for new users.
+	 * 
+	 * @param language
+	 * @param country
+	 * @param zoneId
+	 */
+    @Override
+	public void setDefaultUserLocale(String language, String country, Long zoneId) {
+		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		zoneConfig.setLocaleLanguage(language);
+		zoneConfig.setLocaleCountry( country );
+	}
+	
+	/**
+	 * Sets the default locale language and country for new users.
+	 * 
+	 * @param language
+	 * @param country
+	 */
+    @Override
+	public void setDefaultUserLocale(String language, String country) {
+    	// Always use the initial form of the method.
+		setDefaultUserLocale(language, country, RequestContextHolder.getRequestContext().getZoneId());
+	}
+	
+	/**
+	 * Sets the default locale language and country for new external
+	 * users.
+	 * 
+	 * @param language
+	 * @param country
+	 * @param zoneId
+	 */
+    @Override
+	public void setDefaultUserLocaleExt(String language, String country, Long zoneId) {
+		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		zoneConfig.setLocaleLanguageExt(language);
+		zoneConfig.setLocaleCountryExt( country );
+	}
+	
+	/**
+	 * Sets the default locale language and country for new external
+	 * users.
+	 * 
+	 * @param language
+	 * @param country
+	 */
+    @Override
+	public void setDefaultUserLocaleExt(String language, String country) {
+    	// Always use the initial form of the method.
+		setDefaultUserLocaleExt(language, country, RequestContextHolder.getRequestContext().getZoneId());
+	}
+	
+	/**
+	 * Sets the default timezone for new users.
+	 * 
+	 * @param tz
+	 * @param zoneId
+	 */
+    @Override
+	public void setDefaultUserTimeZone(String tz, Long zoneId) {
+		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		zoneConfig.setTimeZone(tz);
+	}
+	
+	/**
+	 * Sets the default timezone for new users.
+	 * 
+	 * @param tz
+	 */
+    @Override
+	public void setDefaultUserTimeZone(String tz) {
+    	// Always use the initial form of the method.
+		setDefaultUserTimeZone(tz, RequestContextHolder.getRequestContext().getZoneId());
+	}
+	
+	/**
+	 * Sets the default timezone for new external users.
+	 * 
+	 * @param tz
+	 * @param zoneId
+	 */
+    @Override
+	public void setDefaultUserTimeZoneExt(String tz, Long zoneId) {
+		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		zoneConfig.setTimeZoneExt(tz);
+	}
+    
+	/**
+	 * Sets the default timezone for new external users.
+	 * 
+	 * @param tz
+	 */
+    @Override
+	public void setDefaultUserTimeZoneExt(String tz) {
+    	// Always use the initial form of the method.
+		setDefaultUserTimeZoneExt(tz, RequestContextHolder.getRequestContext().getZoneId());
+	}
 }
