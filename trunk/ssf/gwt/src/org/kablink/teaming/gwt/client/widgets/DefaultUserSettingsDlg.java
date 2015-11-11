@@ -69,8 +69,6 @@ import com.google.gwt.user.client.ui.Panel;
  * @author drfoster@novell.com
  */
 public class DefaultUserSettingsDlg extends DlgBox implements EditSuccessfulHandler {
-	public final static boolean	SHOW_DEFAULT_USER_SETTINGS	= false;	//! DRF (20151110):  Leave false on checkin until it's all working.
-	
 	private DefaultUserSettingsInfoRpcResponseData	m_defaultUserSettingsInfo;	// Information necessary to run the default user settings dialog.
 	private GwtLocales								m_locales;					//
 	private GwtTeamingMessages						m_messages;					//
@@ -179,7 +177,7 @@ public class DefaultUserSettingsDlg extends DlgBox implements EditSuccessfulHand
 		mainPanel.add(label);
 
 		label = new Label(m_messages.defaultUserSettingsDlg_TimeZone());
-		label.addStyleName("margintop2 marginleft1");
+		label.addStyleName("margintop2 marginleft1 fontSize13px");
 		mainPanel.add(label);
 		
 		m_timeZonesLB = new ListBox();
@@ -189,7 +187,7 @@ public class DefaultUserSettingsDlg extends DlgBox implements EditSuccessfulHand
 		mainPanel.add(m_timeZonesLB);
 		
 		label = new Label(m_messages.defaultUserSettingsDlg_Locale());
-		label.addStyleName("margintop2 marginleft1");
+		label.addStyleName("margintop2 marginleft1 fontSize13px");
 		mainPanel.add(label);
 		
 		m_localesLB = new ListBox();
@@ -209,7 +207,7 @@ public class DefaultUserSettingsDlg extends DlgBox implements EditSuccessfulHand
 		mainPanel.add(label);
 
 		label = new Label(m_messages.defaultUserSettingsDlg_TimeZone());
-		label.addStyleName("margintop2 marginleft1");
+		label.addStyleName("margintop2 marginleft1 fontSize13px");
 		mainPanel.add(label);
 		
 		m_timeZonesExtLB = new ListBox();
@@ -219,7 +217,7 @@ public class DefaultUserSettingsDlg extends DlgBox implements EditSuccessfulHand
 		mainPanel.add(m_timeZonesExtLB);
 		
 		label = new Label(m_messages.defaultUserSettingsDlg_Locale());
-		label.addStyleName("margintop2 marginleft1");
+		label.addStyleName("margintop2 marginleft1 fontSize13px");
 		mainPanel.add(label);
 		
 		m_localesExtLB = new ListBox();

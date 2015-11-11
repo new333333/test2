@@ -537,15 +537,13 @@ public class AdminControl extends TeamingPopupPanel
 			if (null != actions) {
 				//! DRF:  Add controls here to limit things shown while
 				//!       they're being implemented.
-				boolean showEmailTemplates            = GwtClientHelper.jsBrowserSupportsHtml5FileAPIs();
-				boolean showManageDefaultUserSettings = DefaultUserSettingsDlg.SHOW_DEFAULT_USER_SETTINGS;
-				boolean showManageMobileDevices       = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
-				boolean showPasswordPolicy            = GwtClientHelper.isPasswordPolicyEnabled();
+				boolean showEmailTemplates		= GwtClientHelper.jsBrowserSupportsHtml5FileAPIs();
+				boolean showManageMobileDevices	= MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
+				boolean showPasswordPolicy		= GwtClientHelper.isPasswordPolicyEnabled();
 				for (GwtAdminAction action:  actions) {
-					if      (action.getActionType().equals(AdminAction.MANAGE_DEFAULT_USER_SETTINGS) && (!showManageDefaultUserSettings)) continue;
-					else if (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)        && (!showManageMobileDevices))       continue;
-					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY)    && (!showPasswordPolicy))            continue;
-					else if (action.getActionType().equals(AdminAction.CONFIGURE_EMAIL_TEMPLATES)    && (!showEmailTemplates))            continue;
+					if      (action.getActionType().equals(AdminAction.MANAGE_MOBILE_DEVICES)     && (!showManageMobileDevices)) continue;
+					else if (action.getActionType().equals(AdminAction.CONFIGURE_PASSWORD_POLICY) && (!showPasswordPolicy))      continue;
+					else if (action.getActionType().equals(AdminAction.CONFIGURE_EMAIL_TEMPLATES) && (!showEmailTemplates))      continue;
 					
 					// Add a UI widget for this administration action.
 					AdminActionControl adminActionControl = new AdminActionControl( action );
@@ -4258,7 +4256,6 @@ public class AdminControl extends TeamingPopupPanel
 				case MANAGE_ADMINISTRATORS:
 				case MANAGE_APPLICATIONS:
 				case MANAGE_APPLICATION_GROUPS:
-				case MANAGE_DEFAULT_USER_SETTINGS:
 				case MANAGE_EXTENSIONS:
 				case MANAGE_GROUPS:
 				case MANAGE_LICENSE:
@@ -4307,6 +4304,7 @@ public class AdminControl extends TeamingPopupPanel
 				case LDAP_CONFIG:
 				case NET_FOLDER_GLOBAL_SETTINGS:
 				case MANAGE_DATABASE_PRUNE:
+				case MANAGE_DEFAULT_USER_SETTINGS:
 				case MANAGE_QUOTAS:
 				case MANAGE_FILE_UPLOAD_LIMITS:
 				case MANAGE_SHARE_ITEMS:
