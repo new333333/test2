@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,6 +39,7 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
@@ -46,7 +47,6 @@ import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LoginAudit;
@@ -61,7 +61,6 @@ import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ldap.LdapModule;
-import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.report.ReportModule;
@@ -72,13 +71,13 @@ import org.kablink.teaming.module.zone.ZoneException;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.module.zone.ZoneUtil;
 import org.kablink.teaming.runasync.RunAsyncManager;
-import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.authentication.AuthenticationManager;
 import org.kablink.teaming.security.authentication.DigestDoesNotMatchException;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.security.authentication.UserMismatchException;
+import org.kablink.teaming.util.LocaleUtils;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SessionUtil;
@@ -88,11 +87,11 @@ import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BuiltInUsersHelper;
-import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.teaming.web.util.PasswordPolicyHelper;
 import org.kablink.teaming.web.util.PasswordPolicyHelper.PasswordStatus;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
+
 import org.springframework.beans.factory.InitializingBean;
 
 import com.liferay.util.Validator;
@@ -422,6 +421,9 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  					// For external users, there's no need for separate step for synchronizing profile info
  					// because all the information is already ready and presented to the method that creates the user.
  					syncUser = false;
+ 					// Initialize time zone and locale as the default for external users.
+                    updates.put(ObjectKeys.FIELD_USER_TIMEZONE, LocaleUtils.getDefaultTimeZoneIdExt());
+                    updates.put(ObjectKeys.FIELD_USER_LOCALE, LocaleUtils.getDefaultLocaleExt().toString());
  					// Note: This code never gets executed, because we do not allow self provisioning for OpenID user.
  					// That is createUser will never be set to true under this situation.
  	 				user=getProfileModule().addUserFromPortal(

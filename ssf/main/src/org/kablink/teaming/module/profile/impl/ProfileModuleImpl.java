@@ -135,6 +135,7 @@ import org.kablink.teaming.search.IndexSynchronizationManager;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.survey.Survey;
+import org.kablink.teaming.util.LocaleUtils;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
 import org.kablink.teaming.util.PrincipalMobileAppsConfig;
@@ -2089,6 +2090,8 @@ public Map getUsers() {
                     updates.put( ObjectKeys.FIELD_USER_EMAIL, emailAddress );
                     updates.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, emailAddress );
                     updates.put( ObjectKeys.FIELD_USER_EXT_ACCOUNT_STATE, User.ExtProvState.initial );
+                    updates.put( ObjectKeys.FIELD_USER_TIMEZONE, LocaleUtils.getDefaultTimeZoneIdExt() );
+                    updates.put( ObjectKeys.FIELD_USER_LOCALE, LocaleUtils.getDefaultLocaleExt().toString() );
                     // Do NOT set the "fromOpenid" bit on initially. We will set it when the user actually
                     // logs in and binds a valid OpenID account with the email address specified during sharing.
                     user = addUserFromPortal(
