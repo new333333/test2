@@ -71,7 +71,7 @@
       <property name="encrypted" column="encrypted"/>
       <property name="encryptionKey" length="256" />
 
-      <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="fileVersions">
+      <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="false" batch-size="4" name="fileVersions">
         <!--<cache usage="read-write"/>-->
         <key column="parentAttachment"/>
         <one-to-many class="org.kablink.teaming.domain.VersionAttachment"/>
