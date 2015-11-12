@@ -9973,6 +9973,17 @@ function ss_ensureAnchorsTargetTopFrame() {
 				continue;
 			}
 			
+			// If it's a change vote URL...
+			if ((0 < href.indexOf("operation=changeVote")) || (0 < href.indexOf("operation=viewResults"))) {
+				// ...skip it.
+				//
+				// DRF (20151112):  This is a special case to address
+				//    bug#939975.  Without this fix, changing votes or
+				//    viewing how others voted in a survey did not
+				//    work.
+				continue;
+			}
+			
 			// Add a 'target="_top"' to it.
 			patched += 1;
 			anchor.setAttribute("target", "_top");
