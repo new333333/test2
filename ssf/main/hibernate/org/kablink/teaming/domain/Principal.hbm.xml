@@ -11,13 +11,13 @@
     </id>
     <discriminator type="string" column="type" length="16"/>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
-    <map inverse="true" access="field" cascade="all,delete-orphan" batch-size="4" lazy="true" name="customAttributes">
+    <map inverse="true" access="field" cascade="all,delete-orphan" batch-size="4" lazy="false" name="customAttributes">
       <!--<cache usage="read-write"/>-->
       <key column="principal"/>
       <map-key type="string" column="name"/>
       <one-to-many class="org.kablink.teaming.domain.CustomAttribute"/>
     </map>
-    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
+    <set inverse="true" access="field" cascade="all,delete-orphan" lazy="false" batch-size="4" name="attachments">
       <!--<cache usage="read-write"/>-->
       <key column="principal"/>
       <one-to-many class="org.kablink.teaming.domain.Attachment"/>
@@ -35,7 +35,7 @@
     <property name="disabled"/>
 	<property name="logVersion"/>
 	<property name="emailAddress" length="24" access="field"/>
-    <map lazy="true" inverse="true" access="field" cascade="all,delete-orphan" batch-size="4" name="emailAddresses">
+    <map lazy="false" inverse="true" access="field" cascade="all,delete-orphan" batch-size="4" name="emailAddresses">
       <!--<cache usage="read-write"/>-->
       <key column="principal" on-delete="cascade"/>
       <map-key type="string" column="type"/>
@@ -97,7 +97,7 @@
 	  	<property name="adHocFoldersEnabled" access="field"/>
         <property name="adHocFoldersLastModified" access="field"/>
         <property name="memberOfLastModified" access="field"/>
-	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
+	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="false" table="SS_PrincipalMembership" name="memberOf">
 	      <!--<cache usage="read-write"/>-->
 	      <key column="userId"/>
 	      <many-to-many fetch="join" node="Group" class="org.kablink.teaming.domain.Group" column="groupId" embed-xml="false"/>
