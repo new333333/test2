@@ -655,8 +655,19 @@ public class CustomAttribute extends ZonedObject {
             return false;
         
         CustomAttribute o = (CustomAttribute) obj;
-        if (getName().equals(o.getName()) && getValue().equals(o.getValue()))
+        
+        if (getName().equals(o.getName())) {
+        	if(getValue() == null) {
+        		if(o.getValue() == null)
+        			return true;
+        	}
+        	else {
+        		if(getValue().equals(o.getValue()))
+        			return true;
+        	}
             return true;
+        }
+
         return false;
     }	
     /**
