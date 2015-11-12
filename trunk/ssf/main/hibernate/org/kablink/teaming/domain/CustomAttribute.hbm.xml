@@ -44,7 +44,7 @@
 <!-- use length to force medium text in mysql -->
     <property name="xmlValue" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
     <property name="booleanValue" />
-    <set inverse="true" cascade="all,delete-orphan" lazy="false" batch-size="4" name="values" order-by="position asc">
+    <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="values" order-by="position asc">
       <!--<cache usage="read-write"/>-->
       <key column="parent"/>
       <one-to-many class="org.kablink.teaming.domain.CustomAttributeListElement"/>
