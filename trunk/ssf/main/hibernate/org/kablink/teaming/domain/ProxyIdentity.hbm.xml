@@ -2,9 +2,6 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-	<typedef name="encrypted" class="org.jasypt.hibernate.type.EncryptedStringType">
-		<param name="encryptorRegisteredName">hibernateStringEncryptor</param>
-	</typedef>
 	<class table="SS_ProxyIdentity" dynamic-update="true" lazy="false" dynamic-insert="false" name="org.kablink.teaming.domain.ProxyIdentity">
 		<!--<cache usage="read-write"/>-->
 		<id unsaved-value="null" name="id" type="long">
