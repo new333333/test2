@@ -489,6 +489,7 @@ public class FolderWidget extends VibeWidget
 		// Create a panel where everything except the title will live
 		{
 			contentPanel = new VibeFlowPanel();
+			contentPanel.addStyleName( "landingPageWidgetContentPanel" + m_style );
 			mainPanel.add( contentPanel );
 
 			// If the height is not a percentage, set the height of the contentPanel.
