@@ -78,9 +78,17 @@ public class TeamingBasicDataSourceFactory extends BasicDataSourceFactory {
 					loadProperties(props, ssfFilePath);
 					loadProperties(props, ssfExtFilePath);
 					
-					String key = props.getProperty("kablink.encryption.key");
+					String key = null;
+					if("true".equalsIgnoreCase(props.getProperty("kablink.encryption.key.sitescape"))) {
+						key = "SiteScape";
+					}
+					else {
+						String encodedKey = props.getProperty("kablink.encryption.key");
+						if(encodedKey != null && !encodedKey.equals("")) {
+							key = new String(Base64.decodeBase64(encodedKey.getBytes()), "UTF-8");
+						}
+					}
 					if(key != null && !key.equals("")) {
-						key = new String(Base64.decodeBase64(key.getBytes()), "UTF-8");
 						ExtendedPBEStringEncryptor encryptor = ExtendedPBEStringEncryptor.create(props.getProperty(ExtendedPBEStringEncryptor.SYMMETRIC_ENCRYPTION_ALGORITHM_PROPERTY_NAME), key);
 						ExtendedPBEStringEncryptor encryptor_first_gen = ExtendedPBEStringEncryptor.createFirstGen(key);
 						props = new PropertyEncrypt(props, encryptor, encryptor_first_gen);

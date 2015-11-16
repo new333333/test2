@@ -151,6 +151,10 @@
 	</bean>
 	
 	<bean id="springContextUtil" class="org.kablink.teaming.util.SpringContextUtil" />
+	
+	<bean id="migrate34EncryptionKey" class="org.kablink.teaming.util.Migrate34EncryptionKey" depends-on="springContextUtil">
+		<property name="jdbcDao"><ref bean="jdbcDao"/></property>
+	</bean>
 
 	<bean id="dataSource" class="org.kablink.teaming.spring.jndi.JndiObjectFactoryBean">
 		<property name="jndiName"><value>java:comp/env/jdbc/SiteScapePool</value></property>
@@ -333,7 +337,7 @@
  	 <!-- This bean deals with the ssf properties files at the base raw level and doesn't know or care
  	      anything about how to encrypt or decrypt values. If called, it will return raw value that
  	      may be encrypted and hence unusable by the caller. -->
- 	 <bean id="rawSsfProperties" class="org.kablink.teaming.util.PropertiesClassPathConfigFiles">
+ 	 <bean id="rawSsfProperties" class="org.kablink.teaming.util.PropertiesClassPathConfigFiles" depends-on="migrate34EncryptionKey">
 		<property name="configFiles">
 			<list>
 				<value>config/ssf.properties</value>
@@ -1198,6 +1202,8 @@ text/calendar											  ics
 
 	<bean id="jdbcDao" class="org.kablink.teaming.dao.impl.JdbcDaoImpl">
 		<property name="dataSource"><ref bean="dataSource"/></property>
+		<property name="lobHandler"><ref bean="lobHandler"/></property>
+		<property name="transactionTemplate"><ref bean="jdbcTransactionTemplate"/></property>
 	</bean>
 	
 	<bean id="statelessSessionTemplate" class="org.kablink.teaming.dao.StatelessSessionTemplate">

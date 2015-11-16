@@ -140,4 +140,12 @@ public class ExtendedPBEStringEncryptor implements PBEStringEncryptor {
 		encryptor.initialize();
 		return encryptor;
 	}
+	
+	public static ExtendedPBEStringEncryptor createSecondGen(String encryptorPassword) {
+		ExtendedPBEStringEncryptor encryptor = new ExtendedPBEStringEncryptor();
+		encryptor.setAlgorithm(SYMMETRIC_ENCRYPTION_ALGORITHM_SECOND_GEN);
+		encryptor.setPassword(encryptorPassword);
+		encryptor.initialize();
+		return encryptor;
+	}
 }

@@ -22,9 +22,16 @@
 
 package org.kablink.util;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -81,5 +88,49 @@ public class PropertiesUtil {
 
 		p.load(new ByteArrayInputStream(s.getBytes()));
 	}
+
+	public static void loadProperties(Properties props, String filePath) {
+		try {
+			InputStream is = new FileInputStream(filePath);
+			try {
+				props.load(is);
+			}
+			finally {
+				try {
+					is.close();
+				}
+				catch(IOException ignore) {}
+			}
+		}
+		catch(IOException ignore) {}
+	}
+
+    /**
+     * Write all of the key/values pairs found in the given Properties object to the given file.
+     * We don't call Properties.store() because that call escapes certain characters found in the value.
+     * See bug 477366
+     */
+    public static void writePropertiesToFile(
+    	String		content,
+    	File		file )
+    		throws IOException
+    {
+	    BufferedWriter aWriter;
+	    
+	    aWriter = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( file ), "8859_1" ) );
+
+	    try {
+		    // Write the date and time to the file.
+	        aWriter.write( "#" + new Date().toString() );
+	        aWriter.newLine();
+	
+	        aWriter.write(content);
+	        
+		    aWriter.flush();
+	    }
+	    finally {
+	    	aWriter.close();
+	    }
+    }// end writePropertiesToFile()
 
 }

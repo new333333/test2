@@ -32,9 +32,6 @@
  */
 package org.kablink.teaming.tomcat.jdbc.pool;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -45,8 +42,7 @@ import javax.naming.Reference;
 import javax.sql.DataSource;
 
 import org.apache.commons.codec.binary.Base64;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.kablink.util.PropertiesUtil;
 import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
 import org.kablink.util.encrypt.PropertyEncrypt;
 
@@ -73,37 +69,45 @@ public class DataSourceFactory extends org.apache.tomcat.jdbc.pool.DataSourceFac
 			String ssfFilePath = catalinaBase + "/webapps/ssf/WEB-INF/classes/config/ssf.properties";
 			String ssfExtFilePath = catalinaBase + "/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties";
 			Properties props = new Properties();
-			loadProperties(props, ssfFilePath);
-			loadProperties(props, ssfExtFilePath);
+			PropertiesUtil.loadProperties(props, ssfFilePath);
+			PropertiesUtil.loadProperties(props, ssfExtFilePath);
 			
-			String key = props.getProperty("kablink.encryption.key");
+			// Bugzilla 945714 - When upgrading from Vibe 3.x to 4.0.1, we change not only the
+			// encryption algorithm (from PBEWithMD5AndDES to PBEWITHSHA256AND128BITAES-CBC-BC)
+			// but also the encryption key (from hard-coded constant to randomly generated
+			// site-specific key). When upgrading from Vibe 4.0.0 to 4.0.1, the encryption
+			// algorithm remains the same but the encryption key changes (again, from hard-coded
+			// constant to randomly generated cluster-wide and site-specific key).
+			// Since encrypted passwords encode a hint about the algorithm used into the values,
+			// migrating passwords across different algorithms over different product versions
+			// is relatively systematic. In comparison, migrating passwords for different keys
+			// is more tricky and less robust. Generally speaking, that's a situation we should
+			// try to avoid at all cost. Unfortunately, Vibe 3.x to 4.0.0 upgrade introduced one
+			// such incident.
+			String key = null;
+			if("true".equalsIgnoreCase(props.getProperty("kablink.encryption.key.sitescape"))) {
+				// This represents an upgrade situation where the system was using hard-coded
+				// key value prior to upgrade and the upgrade process assigned a newly generated
+				// random key which is yet to be used for password encryption.
+				key = "SiteScape";
+			}
+			else {
+				String encodedKey = props.getProperty("kablink.encryption.key");
+				if(encodedKey != null && !encodedKey.equals("")) {
+					key = new String(Base64.decodeBase64(encodedKey.getBytes()), "UTF-8");
+				}
+			}
 			if(key != null && !key.equals("")) {
-				key = new String(Base64.decodeBase64(key.getBytes()), "UTF-8");
 				ExtendedPBEStringEncryptor encryptor = ExtendedPBEStringEncryptor.create(props.getProperty(ExtendedPBEStringEncryptor.SYMMETRIC_ENCRYPTION_ALGORITHM_PROPERTY_NAME), key);
 				ExtendedPBEStringEncryptor encryptor_first_gen = ExtendedPBEStringEncryptor.createFirstGen(key);
 				props = new PropertyEncrypt(props, encryptor, encryptor_first_gen);
 				decryptedPassword = props.getProperty("database.password");
 			}
-	
+
 			if(decryptedPassword != null)
 				properties.setProperty(PROP_PASSWORD, decryptedPassword);
 		}
 		
 		return super.createDataSource(properties, context, XA);
     }
-	private void loadProperties(Properties props, String filePath) {
-		try {
-			InputStream is = new FileInputStream(filePath);
-			try {
-				props.load(is);
-			}
-			finally {
-				try {
-					is.close();
-				}
-				catch(IOException ignore) {}
-			}
-		}
-		catch(IOException ignore) {}
-	}
 }
