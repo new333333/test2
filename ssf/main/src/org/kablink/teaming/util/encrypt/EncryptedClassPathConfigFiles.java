@@ -32,21 +32,17 @@
  */
 package org.kablink.teaming.util.encrypt;
 
-import java.util.Date;
 import java.util.Properties;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.lang.invoke.MethodHandles;
 
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.kablink.util.FileUtil;
+import org.kablink.util.PropertiesUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
 import org.kablink.util.encrypt.PropertyEncrypt;
@@ -185,7 +181,7 @@ public class EncryptedClassPathConfigFiles
 	        		if (needUpdate) {
 	        			// We call writePropertiesToFile() instead of calling Properties.store()
 	        			// because Properties.store() will escape certain characters.  See bug 477366
-	        			writePropertiesToFile( origStr, eResource.getFile() );
+	        			PropertiesUtil.writePropertiesToFile( origStr, eResource.getFile() );
 	        		}
 	        	}
     	   	}
@@ -219,32 +215,4 @@ public class EncryptedClassPathConfigFiles
    		
     }
      
-    /**
-     * Write all of the key/values pairs found in the given Properties object to the given file.
-     * We don't call Properties.store() because that call escapes certain characters found in the value.
-     * See bug 477366
-     */
-    private void writePropertiesToFile(
-    	String		content,
-    	File		file )
-    		throws IOException
-    {
-	    BufferedWriter aWriter;
-	    
-	    aWriter = new BufferedWriter( new OutputStreamWriter( new FileOutputStream( file ), "8859_1" ) );
-
-	    try {
-		    // Write the date and time to the file.
-	        aWriter.write( "#" + new Date().toString() );
-	        aWriter.newLine();
-	
-	        aWriter.write(content);
-	        
-		    aWriter.flush();
-	    }
-	    finally {
-	    	aWriter.close();
-	    }
-    }// end writePropertiesToFile()
- 
 }
