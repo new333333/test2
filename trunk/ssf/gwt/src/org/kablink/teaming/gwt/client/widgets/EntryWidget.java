@@ -167,6 +167,7 @@ public class EntryWidget extends VibeWidget {
 		
 		// Create a content panel that will hold everything else
 		VibeFlowPanel contentPanel = new VibeFlowPanel();
+		contentPanel.addStyleName( "landingPageWidgetContentPanel" + m_style );
 		mainPanel.add(contentPanel);
 		
 		// If the height is not a percentage, set the height of the contentPanel.

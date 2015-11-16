@@ -67,6 +67,11 @@
   -webkit-border-radius: 6px;
 }
 
+.landingPageWidgetContentPanel, .landingPageWidgetContentPanel_dark
+{
+	background: #ededed;
+}
+
 .landingPageWidgetNoBorder
 {
 	border-width: 0px;

@@ -257,6 +257,7 @@ public class ListWidget extends VibeWidget
 		{
 			m_contentPanel = new VibeFlowPanel();
 			m_contentPanel.addStyleName( "listWidgetContentPanel" + m_style );
+			m_contentPanel.addStyleName( "landingPageWidgetContentPanel" + m_style );
 			m_layoutPanel.add( m_contentPanel );
 
 			// If the height is not a percentage, set the height of the contentPanel.
