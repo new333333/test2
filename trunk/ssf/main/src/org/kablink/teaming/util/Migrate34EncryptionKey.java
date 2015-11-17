@@ -91,9 +91,12 @@ public class Migrate34EncryptionKey implements InitializingBean {
 
 		int migratedFirstGenPropertiesCount = 0;
 		int migratedSecondGenPropertiesCount = 0;
+		int noChangePropertiesCount = 0;
 		int candidatePropertiesCount = 0;
 		
 		if("true".equalsIgnoreCase(ssfExtProps.getProperty("kablink.encryption.key.sitescape"))) {
+			// This indicates that the upgraded system was using the hard-coded constant key value
+			// for encryption, and now it should be using a brand new key value specific to the site.
 			// All we have to do is to decrypt the items from ssf-ext.properties using the old
 			// encryption key and write them back out in plain text into ssf-ext.properties file.
 			// Then, when the file is subsequently loaded and processed a bit later during this
@@ -104,11 +107,11 @@ public class Migrate34EncryptionKey implements InitializingBean {
 			PropertiesUtil.loadProperties(props, ssfFilePath);
 			PropertiesUtil.loadProperties(props, ssfExtFilePath);			
         	String ePropNames = props.getProperty("kablink.encryption.key.names");
+			String origStr = FileUtil.readAsString(ssfExtFile, "8859_1");
         	if (Validator.isNotNull(ePropNames)) {
     			String oldKey = "SiteScape";
     			ExtendedPBEStringEncryptor encryptor_second_gen = ExtendedPBEStringEncryptor.createSecondGen(oldKey);
     			ExtendedPBEStringEncryptor encryptor_first_gen = ExtendedPBEStringEncryptor.createFirstGen(oldKey);
-    			String origStr = FileUtil.readAsString(ssfExtFile, "8859_1");
         		String[] eProps = ePropNames.split(",");
         		candidatePropertiesCount = eProps.length;
         		//see if any properties need to be encrypted
@@ -156,18 +159,34 @@ public class Migrate34EncryptionKey implements InitializingBean {
         			}
         			else {
         				// This property is not encrypted at all. No update needed for this property.
+        				noChangePropertiesCount++;
         			}
         		}
-        		// Now that we successfully turned all encrypted items into plain ones, remove
-        		// the marker to indicate that we're done with this special processing.
-        		origStr.replace("kablink.encryption.key.sitescape=true", "");
-    			// Bugzilla 477366 - We call writePropertiesToFile() instead of calling 
-    			// Properties.store() because Properties.store() will escape certain characters.
-        		PropertiesUtil.writePropertiesToFile(origStr, ssfExtFile);
         	}
-        	logger.info("Number of candidate properties = " + candidatePropertiesCount + 
-        			", Number of migrated properties (first gen) = " + migratedFirstGenPropertiesCount + 
-        			", Number of migrated properties (second gen) = " + migratedSecondGenPropertiesCount);
+        	
+    		// Now that we successfully turned all encrypted items into plain ones, remove
+    		// the marker to indicate that we're done with this special processing.
+    		origStr = origStr.replace("kablink.encryption.key.sitescape=true", "");
+    		// When upgrade path is Vibe 3.4 -> 4.0.0 -> 4.0.1, the upgraded system must have
+    		// kablink.encryption.key.initial property where its value is the same as the
+    		// hard-coded constant key value that we're trying to move away from. If we leave
+    		// this property in the file, this startup process will fail shortly in the
+    		// afterPropertiesSet() method in EncryptedClassPathConfigFiles class because
+    		// it will find the value of this property being different from the value of
+    		// the kablink.encryption.key property. Therefore, we need to remove this 
+    		// property as well right here, if exists, to prevent a trouble later on.
+    		String initialValue = ssfExtProps.getProperty("kablink.encryption.key.initial");
+    		if(Validator.isNotNull(initialValue)) {
+    			origStr = origStr.replace("kablink.encryption.key.initial=" + initialValue, "");
+    		}
+			// Bugzilla 477366 - We call writePropertiesToFile() instead of calling 
+			// Properties.store() because Properties.store() will escape certain characters.
+    		PropertiesUtil.writePropertiesToFile(origStr, ssfExtFile);        	
+        	
+        	logger.info("Candidate properties=" + candidatePropertiesCount + 
+        			", Migrated properties(first gen)=" + migratedFirstGenPropertiesCount + 
+        			", Migrated properties(second gen)=" + migratedSecondGenPropertiesCount +
+        			", No change properties=" + noChangePropertiesCount);
 		}	
 		else {
 			if(logger.isDebugEnabled())
