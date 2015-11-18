@@ -1308,7 +1308,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	if (doCheckAccess) {
     		checkAccess(workArea, AdminOperation.manageFunctionMembership);
     	}
-		checkAccess(workArea, AdminOperation.manageFunctionMembership);
 		final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 			
 		//get list of current readers to compare for indexing
