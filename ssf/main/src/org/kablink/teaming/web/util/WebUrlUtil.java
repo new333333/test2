@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -222,12 +223,19 @@ public class WebUrlUtil {
 		return sb.toString();
 	}
 	
-	public static String getSimpleURLContextBaseURL(HttpServletRequest req) {
+	public static String getSimpleURLContextBaseURL(HttpServletRequest req, boolean appendSlash) {
 		StringBuffer sb = getHostAndPort(WebApp.SIMPLE_URL, req, req.isSecure(), getSimpleURLWebProtocol(), UrlType.simpleurl, false);
 		
-		sb.append("/");
+		if (appendSlash) {
+			sb.append("/");
+		}
 		
 		return sb.toString();
+	}
+	
+	public static String getSimpleURLContextBaseURL(HttpServletRequest req) {
+		// Always use the initial form of the method.
+		return getSimpleURLContextBaseURL(req, true);	// true -> Append a '/' to the URL returned.
 	}
 	
 	public static StringBuffer getMobileURLContextRootURL(HttpServletRequest req) {
@@ -1494,5 +1502,28 @@ public class WebUrlUtil {
     	}
     	
     	return baseUrl;
+    }
+
+    /**
+     * Returns true if the given URL references the current instance of
+     * Filr or Vibe and false otherwise.
+     * 
+     * @param url
+     * @param request
+     * 
+     * @return
+     */
+    public static boolean doesUrlReferenceThisInstance(String url, HttpServletRequest request) {
+		String baseUrl = getSimpleURLContextBaseURL(request, false);
+		boolean reply = ((null != url) && (null != baseUrl));
+		if (reply) {
+			reply = (0 == url.toLowerCase().indexOf(baseUrl.toLowerCase()));
+		}
+		return reply;
+    }
+    
+    public static boolean doesUrlReferenceThisInstance(String url, RenderRequest request) {
+    	// Always use the initial instance of this method.
+    	return doesUrlReferenceThisInstance(url, WebHelper.getHttpServletRequest(request));
     }
 }

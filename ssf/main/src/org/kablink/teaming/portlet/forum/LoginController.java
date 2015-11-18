@@ -51,7 +51,6 @@ import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.LoginAudit;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -61,8 +60,6 @@ import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToPwdResetVerificationException;
 import org.kablink.teaming.extuser.ExternalUserRespondingToVerificationException;
 import org.kablink.teaming.extuser.ExternalUserUtil;
-import org.kablink.teaming.module.authentication.AuthenticationModule;
-import org.kablink.teaming.module.authentication.FailedAuthenticationMonitor;
 import org.kablink.teaming.module.authentication.UserIdNotActiveException;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
@@ -81,6 +78,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.api.ApiErrorCode;
 
@@ -414,10 +412,13 @@ public class LoginController  extends SAbstractControllerRetry {
 		if(Validator.isNull(refererUrl))
 			refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 		
-		if ( Validator.isNotNull( refererUrl ) )
-		{
-			model.put(WebKeys.URL, refererUrl);
-			model.put( "loginRefererUrl", refererUrl );
+		if (Validator.isNotNull(refererUrl)) {
+			// Bugzilla 955017:  Only allow a refererUrl that
+			// references this instance of Filr or Vibe.
+			if (WebUrlUtil.doesUrlReferenceThisInstance(refererUrl, request)) {
+				model.put(WebKeys.URL, refererUrl);
+				model.put("loginRefererUrl", refererUrl);
+			}
 		}
 		
 		boolean durangoUI = GwtUIHelper.isGwtUIActive(request);
