@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,14 +32,23 @@
  */
 package org.kablink.teaming.taglib;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.SortedMap;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 
@@ -47,13 +56,13 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -78,34 +87,17 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.servlet.DynamicServletRequest;
 import org.kablink.util.servlet.StringServletResponse;
 
-
-
-
-
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.SortedMap;
-import java.util.Map.Entry;
-
-
 /**
+ * ?
+ * 
  * @author Peter Hurley
- *
  */
+@SuppressWarnings({"unchecked", "unused"})
 public class BuildDefinitionDivs extends TagSupport {
     private String title;
     private Document configDocument;
     private Document sourceDocument;
-    private Map divNames;
+	private Map divNames;
 //    private Map entryDefinitions;
     private String option = "";
     private String itemId = "";
@@ -125,6 +117,7 @@ public class BuildDefinitionDivs extends TagSupport {
     private ProfileModule profileModule;
     private DefinitionModule definitionModule;
     
+	@Override
 	public int doStartTag() throws JspException {
 		profileModule = (ProfileModule)SpringContextUtil.getBean("profileModule");
 		definitionModule = (DefinitionModule)SpringContextUtil.getBean("definitionModule");
@@ -2002,7 +1995,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								endDivText = "</ul>\n</div>\n";
 							}
 							sb.append("<li>");
-							sb.append("<span class='ss_infoDivName'>"+name+":</span> <span class='ss_infoDivValue'>" + NLT.getDef(value) + "</span>");
+							sb.append("<span class='ss_infoDivName'>"+name+":</span> <span class='ss_infoDivValue'>" + buildValueString(value) + "</span>");
 							sb.append("</li>");
 						} else if (!name.equals("") && type.equals("workflowSetEntryDataValue")) {
 							Element setEntryDataValueEle = (Element)item.selectSingleNode("./properties/property[@name='dataValue']");
@@ -2020,7 +2013,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									name = NLT.get("definition.operation_"+name);
 								}
 								value = workflowSetEntryDataValueEle.attributeValue("elementName", "?");
-								sb.append("<span class='ss_infoDivName'>"+name+":</span> <span class='ss_infoDivValue'>" + NLT.getDef(value) + "</span>");
+								sb.append("<span class='ss_infoDivName'>"+name+":</span> <span class='ss_infoDivValue'>" + buildValueString(value) + "</span>");
 								sb.append("</li>");
 							}
 						}
@@ -2032,6 +2025,7 @@ public class BuildDefinitionDivs extends TagSupport {
 		ListIterator itItems = root.selectNodes("./item").listIterator();
 		while (itItems.hasNext()) buildPropertyInfoDivs((Element)itItems.next(), sb, hb);
 	}
+	@Override
 	public int doEndTag() throws JspException {
 		return EVAL_PAGE;
 	}
@@ -2071,6 +2065,17 @@ public class BuildDefinitionDivs extends TagSupport {
 	public void setOwningBinderId(Long binderId) {
 	    this.binderId = binderId;
 	}
+	
+	private String buildValueString(String value) {
+		String reply;
+		if ((null == value) || (0 == value.length())) {
+			reply = value;
+		}
+		else {
+			if (value.startsWith("__"))
+			     reply = NLT.getDef(value);
+			else reply = Html.formatTo(value);
+		}
+		return reply;
+	}
 }
-
-
