@@ -50,10 +50,12 @@ import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.Constants;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.Html;
 import org.kablink.util.Validator;
 
 /**
@@ -128,7 +130,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			if (!Validator.isNull(url)) {
 				//Yes, a url was explicitly specified. Just add the portal context and return
 				String fullUrl = ctxPath + Constants.SLASH + this.url;
-				pageContext.getOut().print(fullUrl);
+				pageContext.getOut().print(escapeUrl(fullUrl));
 
 				return SKIP_BODY;				
 			}
@@ -181,10 +183,10 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 						separator = Constants.ESCAPED_AMPERSAND;
 					}
 				}
-				pageContext.getOut().print(webUrl);
+				pageContext.getOut().print(escapeUrl(webUrl));
 			
 			} else if (!Validator.isNull(rootPath)) {
-				pageContext.getOut().print(WebUrlUtil.getSSFContextRootURL(req) + MiscUtil.getStaticPath());
+				pageContext.getOut().print(escapeUrl(WebUrlUtil.getSSFContextRootURL(req) + MiscUtil.getStaticPath()));
 			
 			} else if (this.adapter) {
 				if (!Validator.isNull(action)) {
@@ -206,7 +208,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 						adapterUrl.setParameter((String) me.getKey(), (String[])me.getValue());
 					}
 				}
-				pageContext.getOut().print(adapterUrl.toString());
+				pageContext.getOut().print(escapeUrl(adapterUrl.toString()));
 				
 			} else {
 				PortletURL portletURL = null;
@@ -244,7 +246,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 
 				String portletURLToString = portletURL.toString();
 
-				pageContext.getOut().print(portletURLToString);
+				pageContext.getOut().print(escapeUrl(portletURLToString));
 			}
 
 			return SKIP_BODY;
@@ -358,5 +360,19 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 
 	protected String getWebUrl(HttpServletRequest req) {
 		return WebUrlUtil.getServletRootURL(req) + webPath;
+	}
+	
+	/*
+	 * Escapes any JavaScript embedded in the URL for output to the
+	 * page.
+	 * 
+	 * Implements the fix for Bugzilla 956081.
+	 */
+	private String escapeUrl(String urlIn) {
+		String urlOut;
+		if ((null == urlIn) || (0 == urlIn.length()))
+		     urlOut = urlIn;
+		else urlOut = Html.formatTo(urlIn);	// Escapes any embedded JavaScript.
+		return urlOut;
 	}
 }
