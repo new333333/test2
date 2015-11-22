@@ -797,13 +797,22 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		
 		long startTime = System.nanoTime();
 		
-		String context = "contextUserId=" + contextUserId + ",mode=" + mode + ",offset=" + offset + ",size=" + size + ",totalHitsApproximate=" + totalHitsApproximate + 
-				"fieldNames.size=" + ((fieldNames != null)? fieldNames.size() : "null") + ",query=[" + query + "],sort=[" + sort + "]";
+		String context = new StringBuilder()
+		.append("contextUserId=").append(contextUserId) 
+				.append(", mode=").append(mode)
+						.append(", offset=").append(offset) 
+								.append(", size=").append(size) 
+										.append(", totalHitsApproximate=").append(totalHitsApproximate)
+												.append(", baseAclQueryStr=[").append(baseAclQueryStr) 
+														.append("], extendedAclQueryStr=[").append(extendedAclQueryStr) 
+																.append("], query=[").append(query)
+																		.append("], sort=[").append(sort) 
+																				.append("], fieldNames=").append(fieldNames)
+																						.append(", alternateAclFilter=[").append(alternateAclFilter).append("]")
+																						.toString();
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
-		TopDocs topDocs = null;
-		
 		Filter aclFilter = null;
 		
 		
@@ -876,10 +885,37 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			
 			int searchMaxSize = getSearchMaxSize(offset, size);
 			
+			TopDocs topDocs = null;
+			org.kablink.teaming.lucene.Hits tempHits = null;
+			
 			if (sort == null) {
-				topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);
+				if(offset == 0 && size == Integer.MAX_VALUE && 
+						fieldNames != null && fieldNames.size() == 1 && Constants.ENTITY_ID_FIELD.equals(fieldNames.get(0))) {
+					// This is the only unbounded search that we currently recognize and permit without suspicion.
+					EntityIdCollector entityIdCollector = new EntityIdCollector();
+					indexSearcherHandle.getIndexSearcher().search(query, aclFilter, entityIdCollector);
+					List<Long> entityIds = entityIdCollector.getCollectedEntityIds();					
+					tempHits = org.kablink.teaming.lucene.Hits.transfer(entityIds, totalHitsApproximate);
+				}
+				else {
+					if(size == Integer.MAX_VALUE) {
+						String msg = "UNBOUNDED SEARCH REQUEST: " + context;
+			        	logger.warn(msg);
+			        	if(PropsUtil.getBoolean("lucene.disallow.unrecognized.unbounded.search", false)) {
+			        		throw new LuceneException(msg);
+			        	}						
+					}
+					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);				
+				}			
 			}
 			else {
+				if(size == Integer.MAX_VALUE) {
+					String msg = "UNBOUNDED SEARCH REQUEST: " + context;
+		        	logger.warn(msg);
+		        	if(PropsUtil.getBoolean("lucene.disallow.unrecognized.unbounded.search", false)) {
+		        		throw new LuceneException(msg);
+		        	}					
+				}
 				try {
 					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize, sort);
 				} catch (Exception ex) {
@@ -887,47 +923,49 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				}
 			}
 			
-			/// BEGIN: Debug
-			int hitsThreshold = PropsUtil.getInt("lucene.hits.threshold", 100000);
-	    	int length = topDocs.totalHits;
-	        length = Math.min(length - offset, size);
-	        Long hitsTransferBegin = null;
-	        if(length > hitsThreshold) {
-	        	hitsTransferBegin = System.nanoTime();
-	        	String log = "TOO LARGE HITS: transferred hits=" + length +
-	        			", hits threshold=" + hitsThreshold +
-	        			", total hits=" + topDocs.totalHits +
-	        			", contextUserId=" + contextUserId + 
-						", aclQueryStr=[" + ((aclQueryStr==null)? "" : aclQueryStr) + 
-						"], mode=" + mode + 
-						", query=[" + ((query==null)? "" : query.toString()) + 
-						"], sort=[" + ((sort==null)? "" : sort.toString()) + 
-						"], offset=" + offset +
-						", size=" + size +
-						", alternateAclFilter=[" + ((alternateAclFilter==null)? "" : alternateAclFilter.toString()) +
-						"]";
-	        	logger.warn(log);
-	        	if(PropsUtil.getBoolean("lucene.hits.threshold.exceeded.is.error", false)) {
-	        		throw new LuceneException(log);
-	        	}
-	        }
-	        /// END: Debug			
-				        
-			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(indexSearcherHandle.getIndexSearcher(), 
-							topDocs, 
-							offset, 
-							size, 
-							fieldNames,
-							(extendeAclQueryFilter == null)? null: extendeAclQueryFilter.getNoIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds(),
-							(aclInheritingAccessibleEntriesFilter == null)? null : aclInheritingAccessibleEntriesFilter.getNoIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds(),
-							totalHitsApproximate);
-			
-			/// BEGIN: Debug
-			if(hitsTransferBegin != null) {
-				logger.warn("TOO LARGE HITS: took " + (elapsedTimeInMs(hitsTransferBegin) / 1000.0) + " seconds");
+			if(tempHits == null) {
+				/// BEGIN: Debug
+				int hitsThreshold = PropsUtil.getInt("lucene.hits.threshold", 100000);
+		    	int length = topDocs.totalHits;
+		        length = Math.min(length - offset, size);
+		        Long hitsTransferBegin = null;
+		        if(length > hitsThreshold) {
+		        	hitsTransferBegin = System.nanoTime();
+		        	String log = "TOO LARGE HITS: transferred hits=" + length +
+		        			", hits threshold=" + hitsThreshold +
+		        			", total hits=" + topDocs.totalHits +
+		        			", contextUserId=" + contextUserId + 
+							", aclQueryStr=[" + ((aclQueryStr==null)? "" : aclQueryStr) + 
+							"], mode=" + mode + 
+							", query=[" + ((query==null)? "" : query.toString()) + 
+							"], sort=[" + ((sort==null)? "" : sort.toString()) + 
+							"], offset=" + offset +
+							", size=" + size +
+							", alternateAclFilter=[" + ((alternateAclFilter==null)? "" : alternateAclFilter.toString()) +
+							"]";
+		        	logger.warn(log);
+		        	if(PropsUtil.getBoolean("lucene.hits.threshold.exceeded.is.error", false)) {
+		        		throw new LuceneException(log);
+		        	}
+		        }
+		        /// END: Debug			
+					        
+				tempHits = org.kablink.teaming.lucene.Hits
+						.transfer(indexSearcherHandle.getIndexSearcher(), 
+								topDocs, 
+								offset, 
+								size, 
+								fieldNames,
+								(extendeAclQueryFilter == null)? null: extendeAclQueryFilter.getNoIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds(),
+								(aclInheritingAccessibleEntriesFilter == null)? null : aclInheritingAccessibleEntriesFilter.getNoIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds(),
+								totalHitsApproximate);
+				
+				/// BEGIN: Debug
+				if(hitsTransferBegin != null) {
+					logger.warn("TOO LARGE HITS: took " + (elapsedTimeInMs(hitsTransferBegin) / 1000.0) + " seconds for hits transfer");
+				}
+				/// END: Debug
 			}
-			/// END: Debug
 
 			end(startTime, "searchInternal", contextUserId, aclQueryStr, mode, query, sort, offset, size, tempHits);
 			

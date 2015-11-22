@@ -1412,9 +1412,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     // This method indexes a binder and it's entries by deleting and reindexing each entry one at a time.
     public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
     	IndexErrors errors = super.indexBinder(binder, includeEntries, deleteIndex, tags);
-    	if (includeEntries == false) return errors;
-    	IndexErrors entryErrors = indexEntries(binder, deleteIndex, true, skipFileContentIndexing);
-    	errors.add(entryErrors);
+    	if(includeEntries) {
+        	IndexErrors entryErrors = indexEntries(binder, deleteIndex, true, skipFileContentIndexing);
+        	errors.add(entryErrors);    		
+    	}
     	IndexSynchronizationManager.applyChanges(0);
     	return errors;
     }
