@@ -65,7 +65,7 @@ public interface BinderProcessor {
   	public Map getBinders(Binder binder, Map options);
   	public Map getBinders(Binder binder, List binderIds, Map options);
     public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries);
-    public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing);
+    public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing, Boolean dealingWithExternalAcl);
     public void indexTeamMembership(Binder binder, boolean cascade);
     public void indexOwner(Collection<Binder>binders, Long ownerId);
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries);	
