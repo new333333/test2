@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,7 +52,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package org.kablink.util;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -61,17 +60,14 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 /**
  * <a href="Html.java.html"><b><i>View Source</i></b></a>
  *
  * @author  Brian Wing Shun Chan
  * @author  Clarence Shen
  * @version $Revision: 1.10 $
- *
  */
 public class Html {
-
 	private final static String scriptObjs = "script|embed|object|applet|html|head|body|meta|xml|blink|link|iframe|frame|frameset|ilayer|layer|base";
 	private final static Pattern scriptsPattern1 = Pattern.compile("(<[\\s]*(" + scriptObjs + ")(?:[\\s]+[^>]*/>|[\\s]*/>))", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private final static Pattern scriptsPattern2 = 
@@ -95,7 +91,7 @@ public class Html {
 		return text;
 	}
 
-	public static String formatTo(String text) {
+	public static String formatTo(String text, boolean textIsUrl) {
 		if (text == null) {
 			return null;
 		}
@@ -108,7 +104,9 @@ public class Html {
 
 			switch (c) {
 				case '&':
-					sb.append("&amp;");
+					if (textIsUrl)
+					     sb.append("&"    );
+					else sb.append("&amp;");
 					break;
 	
 				case '<':
@@ -138,6 +136,10 @@ public class Html {
 		}
 
 		return sb.toString();
+	}
+	
+	public static String formatTo(String text) {
+		return formatTo(text, false);
 	}
 
 	public static String stripComments(String text) {
@@ -435,5 +437,4 @@ public class Html {
 		s = s.replaceAll( ">", "&gt;" );
 		return s;
 	}
-
 }
