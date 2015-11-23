@@ -891,7 +891,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			if (sort == null) {
 				if(offset == 0 && size == Integer.MAX_VALUE && 
 						fieldNames != null && fieldNames.size() == 1 && Constants.ENTITY_ID_FIELD.equals(fieldNames.get(0))) {
-					// This is the only unbounded search that we currently recognize and permit without suspicion.
+					// This is the only unsorted unbounded search that we currently recognize and permit without suspicion.
 					EntityIdCollector entityIdCollector = new EntityIdCollector();
 					indexSearcherHandle.getIndexSearcher().search(query, aclFilter, entityIdCollector);
 					List<Long> entityIds = entityIdCollector.getCollectedEntityIds();					
@@ -899,9 +899,12 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				}
 				else {
 					if(size == Integer.MAX_VALUE) {
-						String msg = "UNBOUNDED SEARCH REQUEST: " + context;
+		        		// Going into unbounded search has the potential of triggering a critical OOM error.
+			        	// So we want to know about it via warning log.
+						String msg = "UNBOUNDED UNSORTED SEARCH REQUEST: " + context;
 			        	logger.warn(msg);
-			        	if(PropsUtil.getBoolean("lucene.disallow.unrecognized.unbounded.search", false)) {
+			        	// By default, we still permit this query. But reject it outright if so configured.
+			        	if(PropsUtil.getBoolean("lucene.disallow.unbounded.unsorted.search", false)) {
 			        		throw new LuceneException(msg);
 			        	}						
 					}
@@ -910,11 +913,11 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			}
 			else {
 				if(size == Integer.MAX_VALUE) {
-					String msg = "UNBOUNDED SEARCH REQUEST: " + context;
-		        	logger.warn(msg);
-		        	if(PropsUtil.getBoolean("lucene.disallow.unrecognized.unbounded.search", false)) {
-		        		throw new LuceneException(msg);
-		        	}					
+					// By default we (reluctantly) permit unbounded search when sort is specified. 
+		        	if(logger.isTraceEnabled()) {
+						String msg = "UNBOUNDED SORTED SEARCH REQUEST: " + context;
+			        	logger.trace(msg);	
+					}	
 				}
 				try {
 					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize, sort);
