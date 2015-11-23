@@ -155,7 +155,7 @@
 		<c:if test="${gwtPage == 'main'}">
 			adaptedUrl:						'${adaptedUrl}',
 			binderId:						'${binderId}',
-			myWSUrl:						'${myWorkspaceUrl}',
+			myWSUrl:						'<ssf:escapeJavaScript>${myWorkspaceUrl}</ssf:escapeJavaScript>',
 			myWSAccessible:					'${myWorkspaceAccessible}',
 			userName:						'<ssf:escapeJavaScript>${userFullName}</ssf:escapeJavaScript>',
 		</c:if>
