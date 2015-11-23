@@ -91,7 +91,7 @@ public class Html {
 		return text;
 	}
 
-	public static String formatTo(String text, boolean textIsUrl) {
+	private static String formatToImpl(String text, boolean textIsUrl) {
 		if (text == null) {
 			return null;
 		}
@@ -139,7 +139,13 @@ public class Html {
 	}
 	
 	public static String formatTo(String text) {
-		return formatTo(text, false);
+		// Always use the implementation form of the method.
+		return formatToImpl(text, false);	// false -> text is not a URL.
+	}
+
+	public static String formatUrl(String text) {
+		// Always use the implementation form of the method.
+		return formatToImpl(text, true);	// true -> text is a URL.
 	}
 
 	public static String stripComments(String text) {

@@ -252,7 +252,7 @@
 			var x = '<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
 			if(x == null || x == "") {
 				var logoutForm;
-				var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
+				var y = '<ssf:escapeJavaScript><%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %></ssf:escapeJavaScript>';
 
 				//~JW:  (y);
 				// Get the logout form.  We use a form so the logout request can be made with
@@ -270,7 +270,7 @@
 				}
 			} else {
 				//alert (x);
-				var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
+				var y = '<ssf:escapeJavaScript><%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %></ssf:escapeJavaScript>';
 				ss_logoff_from_teaming_then_sso(y);
 			}
 		}
@@ -358,7 +358,7 @@
 	</form> 
 	
 	<!--  This form is used for logging in. -->
-	<form name="loginFormName" id="loginFormId" method="post" action="${ss_loginPostUrl}" style="display: none;" accept-charset="UTF-8">
+	<form name="loginFormName" id="loginFormId" method="post" action="<c:out value="${ss_loginPostUrl}" escapeXml="true"/>" style="display: none;" accept-charset="UTF-8">
 		<table cellspacing="4" class="dlgContent" style="margin: 10px;">
 			<colgroup>
 				<col>

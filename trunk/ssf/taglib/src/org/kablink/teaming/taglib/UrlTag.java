@@ -372,7 +372,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 		String urlOut;
 		if ((null == urlIn) || (0 == urlIn.length()))
 		     urlOut = urlIn;
-		else urlOut = Html.formatTo(urlIn, true);	// Escapes any embedded JavaScript.
+		else urlOut = Html.formatUrl(urlIn);	// Escapes any embedded JavaScript.
 		return urlOut;
 	}
 }
