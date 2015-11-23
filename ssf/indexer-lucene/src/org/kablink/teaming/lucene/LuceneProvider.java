@@ -900,11 +900,17 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				else {
 					if(size == Integer.MAX_VALUE) {
 		        		// Going into unbounded search has the potential of triggering a critical OOM error.
-			        	// So we want to know about it via warning log.
+			        	// So we want to know about it via logging.
 						String msg = "UNBOUNDED UNSORTED SEARCH REQUEST: " + context;
-			        	logger.warn(msg);
+						if(PropsUtil.getBoolean("lucene.unbounded.unsorted.search.warn", true)) {
+				        	logger.warn(msg);
+						}
+						else {
+							if(logger.isDebugEnabled())
+								logger.debug(msg);
+						}
 			        	// By default, we still permit this query. But reject it outright if so configured.
-			        	if(PropsUtil.getBoolean("lucene.disallow.unbounded.unsorted.search", false)) {
+			        	if(PropsUtil.getBoolean("lucene.unbounded.unsorted.search.disallow", false)) {
 			        		throw new LuceneException(msg);
 			        	}						
 					}
@@ -912,11 +918,10 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				}			
 			}
 			else {
+				// By default we (reluctantly) permit unbounded search when sort is specified. 
 				if(size == Integer.MAX_VALUE) {
-					// By default we (reluctantly) permit unbounded search when sort is specified. 
-		        	if(logger.isTraceEnabled()) {
-						String msg = "UNBOUNDED SORTED SEARCH REQUEST: " + context;
-			        	logger.trace(msg);	
+		        	if(PropsUtil.getBoolean("lucene.unbounded.sorted.search.trace", false) && logger.isTraceEnabled()) {
+			        	logger.trace("UNBOUNDED SORTED SEARCH REQUEST: " + context);
 					}	
 				}
 				try {
