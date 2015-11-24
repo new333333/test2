@@ -45,20 +45,25 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.MultiPromptDlg.MultiPromptDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -165,10 +170,11 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		m_appListPanel.add(label);
 
 		// Add the widgets for the lists.
-		m_appListPanel.add(createListHint()   );
-		m_appListPanel.add(createModeWidgets());
-		m_appListPanel.add(createWindowsList());
-		m_appListPanel.add(createMacList()    );
+		m_appListPanel.add(createListHint()            );
+		m_appListPanel.add(createRestoreDefaultButton());
+		m_appListPanel.add(createModeWidgets()         );
+		m_appListPanel.add(createWindowsList()         );
+		m_appListPanel.add(createMacList()             );
 		
 		// If this isn't Filr...
 		if (!(m_isFilr)) {
@@ -359,7 +365,8 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		// Create button for removing from the list.
 		final Button deleteButton = new Button(m_messages.fileSyncApp_Delete(), new ClickHandler() {
 			@Override
-			public void onClick(ClickEvent event) {
+			public void onClick(final ClickEvent event) {
+				final Button eventButton = ((Button) event.getSource());
 				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					@Override
 					public void execute() {
@@ -371,6 +378,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 								listBox.removeItem(i);
 							}
 						}
+						eventButton.setEnabled(false);
 					}
 				});
 			}
@@ -456,6 +464,21 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		vt.add(m_blacklistRB);
 		
 		return vt;
+	}
+
+	/*
+	 * Creates the 'Restore Default...' button.
+	 */
+	private Widget createRestoreDefaultButton() {
+		Button reply = new Button(m_messages.fileSyncApp_RestoreDefaults(), new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				restoreDefaultsConfirmAsync();
+			}
+		});
+		reply.addStyleName("fileSyncAppDlg_RestoreDefaults");
+		reply.setTitle(m_messages.fileSyncApp_RestoreDefaults_Alt());
+		return reply;
 	}
 
 	/*
@@ -957,6 +980,105 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 			},
 			addPrompts,
 			addValues);
+	}
+	
+	/*
+	 * Asynchronously restores the default settings.
+	 */
+	private void restoreDefaultsAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				restoreDefaultsNow();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously restores the default settings.
+	 */
+	private void restoreDefaultsNow() {
+		// Issue a GWT RPC request to get the File Sync Application
+		// configuration with the default application list settings
+		// from the server.
+		GetFileSyncAppConfigurationCmd cmd = new GetFileSyncAppConfigurationCmd(true);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetFileSyncAppConfiguration() );
+			}
+	
+			@Override
+			public void onSuccess(final VibeRpcResponse response) {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						// Clear the current list contents...
+						m_macLB.clear();     DomEvent.fireNativeEvent(Document.get().createChangeEvent(), m_macLB    );
+						m_windowsLB.clear(); DomEvent.fireNativeEvent(Document.get().createChangeEvent(), m_windowsLB);
+						
+						// ...and reinitialize them with the default
+						// ...settings.
+						GwtFileSyncAppConfiguration fsaConfig = ((GwtFileSyncAppConfiguration) response.getResponseData());
+						initAppLists(fsaConfig.getGwtDesktopApplicationsLists());
+					}
+				});
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously asks the user to confirm they want to restore
+	 * the default settings.
+	 */
+	private void restoreDefaultsConfirmAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				restoreDefaultsConfirmNow();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously asks the user to confirm they want to restore
+	 * the default settings.
+	 */
+	private void restoreDefaultsConfirmNow() {
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!
+							restoreDefaultsAsync();
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.fileSyncApp_RestoreDefaults_Confirm());
+			}
+		});
 	}
 
 

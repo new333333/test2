@@ -6077,6 +6077,7 @@ td.datePickerMonth {
 .fileSyncAppDlg_ModeRadio         {margin-left: 10px;}
 .fileSyncAppDlg_ModeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
 .fileSyncAppDlg_Radio             {}
+.fileSyncAppDlg_RestoreDefaults   {margin-top: 10px; margin-left: 10px;}
 .fileSyncAppDlg_SectionHeader     {font-size: 13px; font-weight: normal;}
 .fileSyncAppDlg_WindowsListPanel  {padding-top: 10px;}
 

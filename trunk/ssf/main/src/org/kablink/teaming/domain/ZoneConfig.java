@@ -429,8 +429,11 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 		this.fsaApplicationsBlob = fsaApplicationsBlob;
 	}
 
+	public DesktopApplicationsLists getDesktopApplicationsLists(boolean defaultAppLists) {
+		return DesktopApplicationsLists.parseFsaApplicationsBlob(defaultAppLists ? null : getFsaApplicationsBlob());
+	}
 	public DesktopApplicationsLists getDesktopApplicationsLists() {
-		return DesktopApplicationsLists.parseFsaApplicationsBlob(getFsaApplicationsBlob());
+		return getDesktopApplicationsLists(false);
 	}
 	public void setDesktopApplicationsLists(DesktopApplicationsLists desktopApplicationsLists) {
 		setFsaApplicationsBlob(
