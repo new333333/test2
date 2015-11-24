@@ -2,7 +2,7 @@
  * $Id: editor_template_src.js 1045 2009-03-04 20:03:18Z spocke $
  *
  * @author Moxiecode
- * @copyright Copyright © 2004-2008, Moxiecode Systems AB, All rights reserved.
+ * @copyright Copyright ï¿½ 2004-2008, Moxiecode Systems AB, All rights reserved.
  */
 
 (function(tinymce) {
@@ -682,16 +682,25 @@
 			DOM.setHTML(n, h.join(''));
 		},
 
+		// Bugzilla 955774:
+		//    Restore status bar construction to the same code as in
+		//    the tineMCE distribution.
 		_addStatusBar : function(tb, o) {
 			var n, t = this, ed = t.editor, s = t.settings, r, mf, me, td;
 
 			n = DOM.add(tb, 'tr');
 			n = td = DOM.add(n, 'td', {'class' : 'mceStatusbar'});
-			n = DOM.add(n, 'div', {id : ed.id + '_path_row'}, s.theme_advanced_path ? ed.translate('advanced.path') + ': ' : '&#160;');
-			DOM.add(n, 'a', {href : '#', accesskey : 'x'});
+			n = DOM.add(n, 'div', {id : ed.id + '_path_row', 'role': 'group', 'aria-labelledby': ed.id + '_path_voice'});
+			if (s.theme_advanced_path) {
+				DOM.add(n, 'span', {id: ed.id + '_path_voice'}, ed.translate('advanced.path'));
+				DOM.add(n, 'span', {}, ': ');
+			} else {
+				DOM.add(n, 'span', {}, '&#160;');
+			}
+
 
 			if (s.theme_advanced_resizing) {
-				DOM.add(td, 'a', {id : ed.id + '_resize', href : 'javascript:;', onclick : "return false;", 'class' : 'mceResize'});
+				DOM.add(td, 'a', {id : ed.id + '_resize', href : 'javascript:;', onclick : "return false;", 'class' : 'mceResize', tabIndex:"-1"});
 
 				if (s.theme_advanced_resizing_use_cookie) {
 					ed.onPostRender.add(function() {
@@ -700,102 +709,57 @@
 						if (!o)
 							return;
 
-						if (s.theme_advanced_resize_horizontal)
-							c.style.width = Math.max(100, o.cw) + 'px';
-
-						var newHeight = Math.max(100, o.ch);
-						//Never go so small there is no room to add text
-						if (newHeight < 100) newHeight = 100;
-						c.style.height = parseInt(newHeight) + 'px';
-						DOM.get(ed.id + '_ifr').style.height = parseInt(newHeight + t.deltaHeight) + 'px';
+						t.resizeTo(o.cw, o.ch);
 					});
 				}
 
 				ed.onPostRender.add(function() {
+					Event.add(ed.id + '_resize', 'click', function(e) {
+						e.preventDefault();
+					});
+
 					Event.add(ed.id + '_resize', 'mousedown', function(e) {
-						var c, p, w, h, n, pa;
+						var mouseMoveHandler1, mouseMoveHandler2,
+							mouseUpHandler1, mouseUpHandler2,
+							startX, startY, startWidth, startHeight, width, height, ifrElm;
 
-						// Measure container
-						c = DOM.get(ed.id + '_tbl');
-						w = c.clientWidth;
-						h = c.clientHeight;
+						function resizeOnMove(e) {
+							e.preventDefault();
 
-						miw = s.theme_advanced_resizing_min_width || 100;
-						mih = s.theme_advanced_resizing_min_height || 100;
-						maw = s.theme_advanced_resizing_max_width || 0xFFFF;
-						mah = s.theme_advanced_resizing_max_height || 0xFFFF;
+							width = startWidth + (e.screenX - startX);
+							height = startHeight + (e.screenY - startY);
 
-						// Setup placeholder
-						p = DOM.add(DOM.get(ed.id + '_parent'), 'div', {'class' : 'mcePlaceHolder'});
-						DOM.setStyles(p, {width : w, height : h});
-
-						// Replace with placeholder
-						DOM.hide(c);
-						DOM.show(p);
-
-						// Create internal resize obj
-						r = {
-							x : e.screenX,
-							y : e.screenY,
-							w : w,
-							h : h,
-							dx : null,
-							dy : null
+							t.resizeTo(width, height);
 						};
 
-						// Start listening
-						mf = Event.add(DOM.doc, 'mousemove', function(e) {
-							var w, h;
-
-							// Calc delta values
-							r.dx = e.screenX - r.x;
-							r.dy = e.screenY - r.y;
-
-							// Boundery fix box
-							w = Math.max(miw, r.w + r.dx);
-							h = Math.max(mih, r.h + r.dy);
-							w = Math.min(maw, w);
-							h = Math.min(mah, h);
-
-							// Resize placeholder
-							if (s.theme_advanced_resize_horizontal)
-								p.style.width = Math.max(w, 100) + 'px';
-
-							p.style.height = Math.max(h, 100) + 'px';
-
-							return Event.cancel(e);
-						});
-
-						me = Event.add(DOM.doc, 'mouseup', function(e) {
-							var ifr;
-
+						function endResize(e) {
 							// Stop listening
-							Event.remove(DOM.doc, 'mousemove', mf);
-							Event.remove(DOM.doc, 'mouseup', me);
+							Event.remove(DOM.doc, 'mousemove', mouseMoveHandler1);
+							Event.remove(ed.getDoc(), 'mousemove', mouseMoveHandler2);
+							Event.remove(DOM.doc, 'mouseup', mouseUpHandler1);
+							Event.remove(ed.getDoc(), 'mouseup', mouseUpHandler2);
 
-							c.style.display = '';
-							DOM.remove(p);
+							width = startWidth + (e.screenX - startX);
+							height = startHeight + (e.screenY - startY);
+							t.resizeTo(width, height, true);
 
-							if (r.dx === null)
-								return;
+							ed.nodeChanged();
+						};
 
-							ifr = DOM.get(ed.id + '_ifr');
+						e.preventDefault();
 
-							if (s.theme_advanced_resize_horizontal)
-								c.style.width = Math.max(100, r.w + r.dx) + 'px';
+						// Get the current rect size
+						startX = e.screenX;
+						startY = e.screenY;
+						ifrElm = DOM.get(t.editor.id + '_ifr');
+						startWidth = width = ifrElm.clientWidth;
+						startHeight = height = ifrElm.clientHeight;
 
-							c.style.height = Math.max(100, r.h + r.dy) + 'px';
-							ifr.style.height = Math.max(100, ifr.clientHeight + r.dy) + 'px';
-
-							if (s.theme_advanced_resizing_use_cookie) {
-								Cookie.setHash("TinyMCE_" + ed.id + "_size", {
-									cw : Math.max(r.w + r.dx, 100),
-									ch : Math.max(r.h + r.dy, 100)
-								});
-							}
-						});
-
-						return Event.cancel(e);
+						// Register envent handlers
+						mouseMoveHandler1 = Event.add(DOM.doc, 'mousemove', resizeOnMove);
+						mouseMoveHandler2 = Event.add(ed.getDoc(), 'mousemove', resizeOnMove);
+						mouseUpHandler1 = Event.add(DOM.doc, 'mouseup', endResize);
+						mouseUpHandler2 = Event.add(ed.getDoc(), 'mouseup', endResize);
 					});
 				});
 			}
