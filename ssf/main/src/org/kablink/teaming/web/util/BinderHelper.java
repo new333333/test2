@@ -156,6 +156,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.DomTreeHelper;
@@ -642,7 +643,7 @@ public class BinderHelper {
 				String searchFilterStr = (String)searchFilters.get(searchFilterName);
 				if (Validator.isNotNull(searchFilterStr)) {
 					try {
-						searchFilter = DocumentHelper.parseText(searchFilterStr);
+						searchFilter = XmlUtil.parseText(searchFilterStr);
 					} catch (Exception ignore) {
 						//get rid of it
 						logger.debug("BinderHelper.getSearchFilter(Exception:  '" + MiscUtil.exToString(ignore) + "')");
@@ -3925,7 +3926,7 @@ public class BinderHelper {
 			if (q == null) return null;
 			if (q instanceof String) {
 				try {
-					return DocumentHelper.parseText((String)q);
+					return XmlUtil.parseText((String)q);
 				} catch (Exception ex) {
 					logger.debug("BinderHelper.getSearchFilter(Exception:  '" + MiscUtil.exToString(ex) + "'):  Removed query");
 					queries.remove(queryName);
@@ -5010,7 +5011,7 @@ public class BinderHelper {
 					try {
 						// Yes!  Parse it and append it to the search
 						// filter.
-						searchFilterDoc = DocumentHelper.parseText(searchFilterXml);
+						searchFilterDoc = XmlUtil.parseText(searchFilterXml);
 						searchFilter.appendFilter(searchFilterDoc);
 					}
 					

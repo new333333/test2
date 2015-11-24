@@ -91,6 +91,7 @@ import org.kablink.teaming.remoting.ws.model.FileVersions.FileVersion;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -114,7 +115,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	protected Document getDocument(String xml) {
 		// Parse XML string into a document tree.
 		try {
-			return DocumentHelper.parseText(xml);
+			return XmlUtil.parseText(xml);
 		} catch (DocumentException e) {
 			logger.error(e);
 			throw new IllegalArgumentException(e.toString());

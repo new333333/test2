@@ -54,6 +54,7 @@ import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.search.filter.SearchFilterToMapConverter;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -234,7 +235,7 @@ public class FilterController extends AbstractBinderController {
 				model.put(WebKeys.FILTER_SEARCH_FILTER_IS_GLOBAL, "true");
 			}
 			if (filter != null) {
-				Document searchQuery = DocumentHelper.parseText(filter);
+				Document searchQuery = XmlUtil.parseText(filter);
 				SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(this, searchQuery);
 				model.putAll(searchFilterConverter.convertAndPrepareFormData());
 				Element filterTerm = (Element)searchQuery.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='text' and @caseSensitive='true']");

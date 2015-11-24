@@ -185,7 +185,7 @@ public class XmlFileUtil {
 		if (fileContent == null || fileContent.equals("")) return generatedDocument;
 		try {
 			//the fileContent must contain a valid tag at the start of the text
-			generatedDocument = DocumentHelper.parseText(fileContent);
+			generatedDocument = XmlUtil.parseText(fileContent);
 	    } catch (Exception ex) {
 	    	logger.error("Can't create XML file " + fileContent + ":error is: " + ex.getLocalizedMessage());
 	    	throw(ex);

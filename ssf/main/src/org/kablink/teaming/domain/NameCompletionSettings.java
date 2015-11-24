@@ -37,6 +37,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
+import org.kablink.teaming.util.XmlUtil;
 
 
 /**
@@ -172,7 +173,7 @@ public class NameCompletionSettings
 			Node node;
 			String value;
 			
-			doc = DocumentHelper.parseText( xmlString );
+			doc = XmlUtil.parseText( xmlString );
 			
 			rootNode = doc.getRootElement();
 			

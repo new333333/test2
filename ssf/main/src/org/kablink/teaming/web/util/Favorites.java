@@ -46,6 +46,7 @@ import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 
 import net.sf.json.*;
@@ -72,7 +73,7 @@ public class Favorites {
 	public Favorites(String xmlEncoding) {
 		if (xmlEncoding == null) return;
 		try {
-			favorites = DocumentHelper.parseText(xmlEncoding);
+			favorites = XmlUtil.parseText(xmlEncoding);
 		} catch (Exception ex) {};
 	}
 

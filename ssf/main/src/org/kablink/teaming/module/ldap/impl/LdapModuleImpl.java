@@ -136,6 +136,7 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.BuiltInUsersHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -3973,7 +3974,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    			String value;
 					
 					// Parse the xml string into an xml document.
-					doc = DocumentHelper.parseText( ldapQueryXml );
+					doc = XmlUtil.parseText( ldapQueryXml );
 	    			
 	    			// Get the root element.
 	    			node = doc.getRootElement();

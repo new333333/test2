@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
-import net.sf.ehcache.config.Searchable;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
@@ -77,7 +76,6 @@ import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
-import org.kablink.teaming.rest.v1.model.SharedSearchableObject;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -90,6 +88,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.DateHelper;
@@ -464,7 +463,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             if (xml==null || xml.length()==0) {
                 return DocumentHelper.createDocument(DocumentHelper.createElement("QUERY"));
             }
-   			return DocumentHelper.parseText(xml);
+   			return XmlUtil.parseText(xml);
    		} catch (DocumentException e) {
    			throw new BadRequestException(ApiErrorCode.BAD_INPUT, "POST body did not contain valid XML: " + e.getLocalizedMessage());
    		}

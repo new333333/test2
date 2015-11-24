@@ -84,6 +84,7 @@ import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.FolderConfigHelper;
@@ -1037,7 +1038,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			// Retrieve and parse the saved search query.  If it fails for some
 			// reason failover with a empty search query.
 			try {
-				searchQuery = DocumentHelper.parseText((String)data.get(DashboardHelper.SearchFormSavedSearchQuery));
+				searchQuery = XmlUtil.parseText((String)data.get(DashboardHelper.SearchFormSavedSearchQuery));
 			} catch (Exception e) {
 				logger.debug("DashboardHelper.getSearchResultsBean(Exception:  '" + MiscUtil.exToString(e) + "'):  Parse error, failover with empty search query");
 				searchQuery = DocumentHelper.createDocument();

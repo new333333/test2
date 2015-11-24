@@ -3839,7 +3839,7 @@ public class GwtServerHelper {
 				if (MiscUtil.hasString(xmlStr)) {
 					try {
 						// Parse the XML string into an XML document.
-		    			Document doc = DocumentHelper.parseText(xmlStr);
+		    			Document doc = XmlUtil.parseText(xmlStr);
 		    			
 		    			// Get the root element.
 		    			Node node = doc.getRootElement();
@@ -4682,7 +4682,7 @@ public class GwtServerHelper {
 			if (MiscUtil.hasString(ldapQueryXml)) {
 				try {
 					// Parse the XML string into an XML document.
-	    			Document doc = DocumentHelper.parseText(ldapQueryXml);
+	    			Document doc = XmlUtil.parseText(ldapQueryXml);
 	    			
 	    			// Get the root element.
 	    			Node node = doc.getRootElement();

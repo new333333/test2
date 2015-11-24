@@ -57,6 +57,7 @@ import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -97,7 +98,7 @@ public class ConfigureLdapController extends  SAbstractController {
 
 				LinkedList<LdapConnectionConfig> configList = new LinkedList<LdapConnectionConfig>();
 				try {
-					Document doc = DocumentHelper.parseText(PortletRequestUtils.getStringParameter(request, "ldapConfigDoc", "<doc/>", false));
+					Document doc = XmlUtil.parseText(PortletRequestUtils.getStringParameter(request, "ldapConfigDoc", "<doc/>", false));
 					for(Object o : doc.selectNodes("//ldapConfig")) {
 						Node cNode = (Node) o;
 						String ldapGuidAttribute = null;

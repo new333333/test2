@@ -133,6 +133,7 @@ import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlFileUtil;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.util.ZipEntryStream;
 import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.teaming.web.util.ServerTaskLinkage.ServerTaskLink;
@@ -2031,7 +2032,7 @@ public class ExportHelper {
 	private static Document getDocument(String xml, Map nameCache) {
 		// Parse XML string into a document tree.
 		try {
-			Document doc = DocumentHelper.parseText(xml);
+			Document doc = XmlUtil.parseText(xml);
 			buildNameCache(doc, nameCache);
 			//Check to see if this file format is legal
 			Element rootEle = doc.getRootElement();

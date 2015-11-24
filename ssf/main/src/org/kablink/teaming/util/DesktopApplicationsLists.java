@@ -407,7 +407,7 @@ public class DesktopApplicationsLists {
 			// Yes!  Parse it as XML.
 			Document doc;
 			try {
-				doc = DocumentHelper.parseText(fsaApplicationsBlob);
+				doc = XmlUtil.parseText(fsaApplicationsBlob);
 			}
 			catch (DocumentException ex) {
 				m_logger.error("parseFsaApplicationsBlob( XML Parese Error ):  ", ex);
