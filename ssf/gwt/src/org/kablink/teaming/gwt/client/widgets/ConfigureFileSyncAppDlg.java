@@ -55,6 +55,8 @@ import org.kablink.teaming.gwt.client.widgets.MultiPromptDlg.MultiPromptDlgClien
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -340,7 +342,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		verticalButtonPanel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_LEFT);
 
 		// Create a button for adding to the list.
-		Button b = new Button(m_messages.fileSyncApp_Add(), new ClickHandler() {
+		Button addButton = new Button(m_messages.fileSyncApp_Add(), new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				List<String> addValues = new ArrayList<String>();
@@ -351,11 +353,11 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 				promptForDataAsync(listBox, addPrompts, addValues);
 			}
 		});
-		b.addStyleName("fileSyncAppDlg_ListButton");
-		verticalButtonPanel.add(b);
+		addButton.addStyleName("fileSyncAppDlg_ListButton");
+		verticalButtonPanel.add(addButton);
 
 		// Create button for removing from the list.
-		b = new Button(m_messages.fileSyncApp_Delete(), new ClickHandler() {
+		final Button deleteButton = new Button(m_messages.fileSyncApp_Delete(), new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				GwtClientHelper.deferCommand(new ScheduledCommand() {
@@ -373,8 +375,19 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 				});
 			}
 		});
-		b.addStyleName("margintop3pxb fileSyncApp_ListButton");
-		verticalButtonPanel.add(b);
+		deleteButton.addStyleName("margintop3pxb fileSyncApp_ListButton");
+		deleteButton.setEnabled(false);
+		verticalButtonPanel.add(deleteButton);
+		
+		// Add a handler to enable/disable the delete based on the
+		// selections.
+		listBox.addChangeHandler(new ChangeHandler() {
+			@Override
+			public void onChange(ChangeEvent event) {
+				boolean enabled = ((-1) != listBox.getSelectedIndex());
+				deleteButton.setEnabled(enabled);
+			}
+		});
 		
 		// Connect the panels together.
 		horizontalListPanel.add(listBox            );
