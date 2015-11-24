@@ -45,6 +45,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 import org.hibernate.HibernateException;
 import org.kablink.teaming.domain.LdapConnectionConfig.HomeDirCreationOption;
+import org.kablink.teaming.util.XmlUtil;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.orm.hibernate3.support.ClobStringType;
@@ -76,7 +77,7 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
         if (!resultSet.wasNull()) {
 			String searches = lobHandler.getClobAsString(resultSet,names[0]);
     		try {
-    			Document doc = DocumentHelper.parseText(searches);
+    			Document doc = XmlUtil.parseText(searches);
     			for(Object o : doc.selectNodes("//search")) {
     				LdapConnectionConfig.SearchInfo searchInfo;
     				Node homeDirConfigNode;

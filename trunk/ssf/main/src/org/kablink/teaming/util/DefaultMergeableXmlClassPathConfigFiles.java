@@ -75,7 +75,7 @@ public class DefaultMergeableXmlClassPathConfigFiles extends MergeableXmlClassPa
     			StreamResult result = new StreamResult(new StringWriter());
     			trans.transform(new DocumentSource(getAsDom4jDocument(0)), result);
     			Document document = null;
-   		    	document = DocumentHelper.parseText(result.getWriter().toString());	   		    	
+   		    	document = XmlUtil.parseText(result.getWriter().toString());	   		    	
    		    	if(logger.isDebugEnabled()) {
    		    		logger.debug("Merging " + size() + " files into a single document. The combined document is shown below.");
    		    		logger.debug(toPrettyString(document));

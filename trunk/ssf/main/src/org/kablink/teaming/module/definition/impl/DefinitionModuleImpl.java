@@ -784,7 +784,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		if (inputData.exists("xmlData") && def != null) {
 			Document appletDef;
 			try {
-				appletDef = DocumentHelper.parseText(inputData.getSingleValue("xmlData"));
+				appletDef = XmlUtil.parseText(inputData.getSingleValue("xmlData"));
 			} catch(Exception e) {
 				return;
 			}
@@ -2847,7 +2847,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				
 					try
 					{
-						propertiesDoc = DocumentHelper.parseText( propertiesXML );
+						propertiesDoc = XmlUtil.parseText( propertiesXML );
 					}
 		    		catch(Exception e)
 		    		{

@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.XmlUtil;
 
 /**
  * A Tab bar object contains a list of tabs to be shown at the top of the page. 
@@ -476,7 +477,7 @@ public class Tabs {
 		 */
 		public Document getQueryDoc() {
 			try {
-				if (query != null) return DocumentHelper.parseText(query);
+				if (query != null) return XmlUtil.parseText(query);
 			}
 			catch (Exception de) {}
 			return DocumentHelper.createDocument();

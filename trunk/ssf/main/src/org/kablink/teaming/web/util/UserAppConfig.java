@@ -42,6 +42,7 @@ import net.sf.json.JSONArray;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.util.StringUtil;
 
 /**
@@ -63,7 +64,7 @@ public class UserAppConfig {
 	public UserAppConfig(String xmlEncoding) {
 		if (xmlEncoding == null) return;
 		try {
-			m_appConfig = DocumentHelper.parseText(xmlEncoding);
+			m_appConfig = XmlUtil.parseText(xmlEncoding);
 		} catch (Exception ex) {};
 	}
 

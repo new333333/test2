@@ -39,6 +39,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.kablink.teaming.util.XmlUtil;
 
 /**
  * Used to encapsulate mobile 'Open In' white lists.  A component of
@@ -160,7 +161,7 @@ public class MobileOpenInWhiteLists {
 		m_iosApplications     = new ArrayList<String>();
 		
 		try {
-			Document doc               = DocumentHelper.parseText(xmlString);
+			Document doc               = XmlUtil.parseText(xmlString);
 			Element  whiteListsElement = doc.getRootElement();
 			
 			Element androidElement = whiteListsElement.element("android");

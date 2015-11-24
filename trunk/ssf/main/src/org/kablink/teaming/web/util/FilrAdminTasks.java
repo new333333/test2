@@ -41,6 +41,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.kablink.teaming.util.XmlUtil;
 
 /**
  * A FilrAdminTasks object contains a list of tasks that the Filr administrator needs to do.
@@ -94,7 +95,7 @@ public class FilrAdminTasks {
 		
 		try
 		{
-			m_adminTasksDoc = DocumentHelper.parseText( xmlEncoding );
+			m_adminTasksDoc = XmlUtil.parseText( xmlEncoding );
 		}
 		catch ( Exception ex )
 		{

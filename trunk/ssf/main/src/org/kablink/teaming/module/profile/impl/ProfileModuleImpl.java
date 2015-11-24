@@ -145,6 +145,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
@@ -2732,7 +2733,7 @@ public String[] getUsernameAndDecryptedPasswordForAuth(String username) {
                 favorites = (Document)obj;
             } else {
                 try {
-                    favorites = DocumentHelper.parseText((String) obj);
+                    favorites = XmlUtil.parseText((String) obj);
                 } catch (DocumentException e) {}
             }
         }

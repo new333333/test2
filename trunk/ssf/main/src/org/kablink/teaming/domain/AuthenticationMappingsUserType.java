@@ -44,6 +44,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 import org.hibernate.HibernateException;
+import org.kablink.teaming.util.XmlUtil;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.orm.hibernate3.support.ClobStringType;
@@ -60,7 +61,7 @@ public class AuthenticationMappingsUserType extends ClobStringType {
         if (!resultSet.wasNull()) {
 			String mappings = lobHandler.getClobAsString(resultSet,names[0]);
     		try {
-    			Document doc = DocumentHelper.parseText(mappings);
+    			Document doc = XmlUtil.parseText(mappings);
     			for(Object o : doc.selectNodes("//mapping")) {
     				Node node = (Node) o;
     				String attr = node.selectSingleNode("@from").getText();

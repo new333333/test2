@@ -53,6 +53,7 @@ import org.kablink.teaming.module.keyshield.KShieldHelper;
 import org.kablink.teaming.remoting.ws.service.search.SearchService;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -200,7 +201,7 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 	protected Document getDocument(String xml) {
 		// Parse XML string into a document tree.
 		try {
-			return DocumentHelper.parseText(xml);
+			return XmlUtil.parseText(xml);
 		} catch (DocumentException e) {
 			logger.error(e);
 			throw new IllegalArgumentException(e.toString());
