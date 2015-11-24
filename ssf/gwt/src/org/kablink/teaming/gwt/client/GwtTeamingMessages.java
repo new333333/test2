@@ -1881,6 +1881,9 @@ public interface GwtTeamingMessages extends Messages {
 	String fileSyncApp_ModeDisabled();
 	String fileSyncApp_ModeWhitelist();
 	String fileSyncApp_PromptHeader();
+	String fileSyncApp_RestoreDefaults();
+	String fileSyncApp_RestoreDefaults_Alt();
+	String fileSyncApp_RestoreDefaults_Confirm();
 	String fileSyncApp_OnSaveUnknownException(String desc);
 	String fileSyncApp_WindowsApps();
 	String fileSyncApp_WindowsApps_AddPrompt();

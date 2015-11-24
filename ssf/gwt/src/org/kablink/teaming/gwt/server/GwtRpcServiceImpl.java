@@ -1843,12 +1843,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		
 
-		case GET_FILE_SYNC_APP_CONFIGURATION:
-		{
-			GwtFileSyncAppConfiguration fileSyncAppConfiguration; 
-
-			fileSyncAppConfiguration = GwtDesktopApplicationsHelper.getFileSyncAppConfiguration( this );
-			response = new VibeRpcResponse( fileSyncAppConfiguration );
+		case GET_FILE_SYNC_APP_CONFIGURATION:  {
+			GetFileSyncAppConfigurationCmd gfsacCmd = ((GetFileSyncAppConfigurationCmd) cmd);
+			GwtFileSyncAppConfiguration fsaConf = GwtDesktopApplicationsHelper.getFileSyncAppConfiguration(this, true, gfsacCmd.getDefaultApplicationsLists());
+			response = new VibeRpcResponse(fsaConf);
 			return response;
 		}
 		

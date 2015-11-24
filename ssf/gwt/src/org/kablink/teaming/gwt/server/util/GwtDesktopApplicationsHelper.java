@@ -472,10 +472,12 @@ public class GwtDesktopApplicationsHelper {
 	 * Sync Application configuration data.
 	 * 
 	 * @param bs
+	 * @param requireAppLists
+	 * @param defaultAppLists
 	 * 
 	 * @return
 	 */
-	public static GwtFileSyncAppConfiguration getFileSyncAppConfiguration(AllModulesInjected bs, boolean requireAppLists) {
+	public static GwtFileSyncAppConfiguration getFileSyncAppConfiguration(AllModulesInjected bs, boolean requireAppLists, boolean defaultAppLists) {
 		ZoneModule zoneModule = bs.getZoneModule();
 		ZoneConfig zoneConfig = zoneModule.getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
 		
@@ -519,14 +521,18 @@ public class GwtDesktopApplicationsHelper {
 			// ...the domain DesktopApplicationsLists.
 			fileSyncAppConfiguration.setGwtDesktopApplicationsLists(
 				getGwtDALFromDomainDAL(
-					zoneConfig.getDesktopApplicationsLists()));
+					zoneConfig.getDesktopApplicationsLists(defaultAppLists)));
 		}
 		
 		return fileSyncAppConfiguration;
 	}
 	
 	public static GwtFileSyncAppConfiguration getFileSyncAppConfiguration(AllModulesInjected bs) {
-		return getFileSyncAppConfiguration(bs, true);
+		return getFileSyncAppConfiguration(bs, true, false);
+	}
+
+	public static GwtFileSyncAppConfiguration getFileSyncAppConfiguration(AllModulesInjected bs, boolean requireAppLists) {
+		return getFileSyncAppConfiguration(bs, requireAppLists, false);
 	}
 
 	/*
