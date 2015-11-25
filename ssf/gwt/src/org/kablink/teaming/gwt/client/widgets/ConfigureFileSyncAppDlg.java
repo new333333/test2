@@ -411,7 +411,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	 * Creates the widgets for hint about the application lists.
 	 */
 	private Widget createListHint() {
-		Label hintLabel = new Label(m_messages.fileSyncAppListHint(m_productName));
+		Label hintLabel = new Label(m_messages.fileSyncAppListHint());
 		hintLabel.addStyleName("fileSyncAppDlg_ListHintPanel marginleft1");
 		return hintLabel;
 	}
