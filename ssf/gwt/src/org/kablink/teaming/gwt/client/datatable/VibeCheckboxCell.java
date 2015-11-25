@@ -189,6 +189,7 @@ public class VibeCheckboxCell extends AbstractEditableCell<VibeCheckboxCell.Vibe
        */
       if ((cbClicked || enterPressed) && (handlesSelection() || !dependsOnSelection())) {
         isChecked = !isChecked;
+        data.setValue(isChecked);
         input.setChecked(isChecked);
       }
 
