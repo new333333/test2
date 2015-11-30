@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -53,12 +52,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.InlineLabel;
 
-
-
 /**
- * 
+ * ?
+ *  
  * @author jwootton
- *
  */
 public class UtilityElementWidget extends VibeWidget
 {
@@ -90,9 +87,7 @@ public class UtilityElementWidget extends VibeWidget
 
 		rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
-			/**
-			 * 
-			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				// Note:  We don't pass a string here such as
@@ -109,10 +104,7 @@ public class UtilityElementWidget extends VibeWidget
 				m_link = null;
 			}
 	
-			/**
-			 * 
-			 * @param result
-			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				String url;
@@ -182,8 +174,15 @@ public class UtilityElementWidget extends VibeWidget
 		}
 		else if ( type == UtilityElement.SIGNIN_FORM )
 		{
-			// Invoke the login dialog.
-			LoginEvent.fireOne();
+			// Bugzilla 956854:
+			//    Invoke the login dialog, sending the user to the base
+			//    URL.  Prior to this fix, it simply fired a LoginEvent
+			//    without a refererUrl.  I copied doing it this way
+			//    from the 'Sign In' link provided by MastHead.java.
+			LoginEvent loginEvent = new LoginEvent();
+			String refererUrl = (Window.Location.getProtocol() + "//" + Window.Location.getHost());
+			loginEvent.setRefererUrl(refererUrl);
+			GwtTeaming.fireEvent(loginEvent);
 		}
 	}
 
@@ -259,9 +258,7 @@ public class UtilityElementWidget extends VibeWidget
 			
 			m_link.addClickHandler( new ClickHandler()
 			{
-				/**
-				 * 
-				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					handleClickOnLink();
