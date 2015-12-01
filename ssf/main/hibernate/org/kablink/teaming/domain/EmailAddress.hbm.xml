@@ -5,16 +5,7 @@
   <class dynamic-update="true" table="SS_EmailAddresses" lazy="false" name="org.kablink.teaming.domain.EmailAddress">
     <!--<cache usage="read-write"/>-->
     <composite-id >
-     <!-- 
-     Bug 900745 Eagerly load and initialize associated principal to avoid the problem. 
-     A better way to address this would be to avoid the problem altogether by turning
-     many-to-one association into a simple property of ID value. But that would require
-     more changes to the overall system including the need for the application to 
-     ensure that the referenced principal object is persisted before creating the
-     association, etc. So, we're taking a less involved approach at the expense of
-     some lost in efficiency.
-     -->
-     <key-many-to-one name="principal" lazy="false"/>
+     <key-many-to-one name="principal"/>
      <key-property name="type" length="64"/>
     </composite-id>
     <property name="zoneId" access="field" not-null="true"/>
