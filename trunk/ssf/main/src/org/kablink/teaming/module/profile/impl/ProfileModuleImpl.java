@@ -847,6 +847,8 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 		// iterate through the members of a group - set each members max group quota to the 
 	    // maximum value of all the groups they're a member of.
 	   final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+	   final GroupCache gc = new GroupCache(zoneId, getProfileDao());
+	   int transactionSize = SPropsUtil.getInt("adjustgroupfilesizelimits.transaction.size", 100);
 	   Collection<GroupPrincipal> groupPrincipals = getProfileDao().loadGroupPrincipals(groupIds, zoneId, false);
 		for (GroupPrincipal gp : groupPrincipals) {
 			if (gp instanceof Group) {
@@ -859,11 +861,13 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 					gIds.add(group.getId());
 					Set<Long> memberIds = getProfileDao().explodeGroups(gIds, zoneId);
 					int totalSize = memberIds.size();
+					int processedSize = 0;
 					while (!memberIds.isEmpty()) {
 						List<Long> memberIdsToLoad = new ArrayList<Long>();
 						for (Long id : memberIds) {
 							memberIdsToLoad.add(id);
-							if (memberIdsToLoad.size() >= 1000) break;
+							if (memberIdsToLoad.size() >= transactionSize) 
+								break;
 						}
 						memberIds.removeAll(memberIdsToLoad);
 						final List memberList = getProfileDao().loadUserPrincipals(memberIdsToLoad, zoneId, false);						
@@ -888,7 +892,7 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 												} else if (currentUserMaxGroupQuota <= originalGroupQuota &&
 														newQuotaMegabytes < originalGroupQuota) {
 													Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), zoneId);
-													List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
+													List<Group> groups = gc.getGroups(userGroupIds);
 													Long maxGroupQuota = 0L;
 													for (Group g : groups) {
 														if (g.getDiskQuota() > maxGroupQuota) maxGroupQuota = g.getDiskQuota();
@@ -900,7 +904,8 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 										return null;
 									}
 								});
-						logger.info("Adjusting disk quotas for group " + group.getId() + ": processed " + memberList.size() + " members out of " + totalSize + "...");
+						processedSize += memberList.size();
+						logger.info("Adjusting disk quotas for group '" + group.getTitle() + "'(id=" + group.getId() + "): processed " + processedSize + " members out of " + totalSize + "...");
 						getCoreDao().evict(memberList);
 					}
 				}
@@ -984,6 +989,8 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
 		// iterate through the members of a group - set each member's max file size limit to the 
 	    // maximum value of all the groups they're a member of.
 	   final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+	   final GroupCache gc = new GroupCache(zoneId, getProfileDao());
+	   int transactionSize = SPropsUtil.getInt("adjustgroupfilesizelimits.transaction.size", 100);
 	   Collection<GroupPrincipal> groupPrincipals = getProfileDao().loadGroupPrincipals(groupIds, zoneId, false);
 		for (GroupPrincipal gp : groupPrincipals) {
 			if (gp instanceof Group) {
@@ -995,11 +1002,13 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
 				gIds.add(group.getId());
 				Set<Long> memberIds = getProfileDao().explodeGroups(gIds, zoneId);
 				int totalSize = memberIds.size();
+				int processedSize = 0;
 				while (!memberIds.isEmpty()) {
 					List<Long> memberIdsToLoad = new ArrayList<Long>();
 					for (Long id : memberIds) {
 						memberIdsToLoad.add(id);
-						if (memberIdsToLoad.size() >= 1000) break;
+						if (memberIdsToLoad.size() >= transactionSize) 
+							break;
 					}
 					memberIds.removeAll(memberIdsToLoad);
 					final List memberList = getProfileDao().loadUserPrincipals(memberIdsToLoad, zoneId, false);
@@ -1027,7 +1036,7 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
 													currentUserMaxGroupFileSizeLimit <= originalFileSizeLimit &&
 													(newFileSizeLimit == null || newFileSizeLimit < originalFileSizeLimit)) {
 												Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), zoneId);
-												List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
+												List<Group> groups = gc.getGroups(userGroupIds);
 												Long maxGroupFileSizeLimit = 0L;
 												for (Group g : groups) {
 													if (g.getFileSizeLimit() == null) {
@@ -1045,7 +1054,8 @@ public void setUserFileSizeLimits(Collection<Long> userIds, Long fileSizeLimit) 
 									return null;
 								}
 							});
-					logger.info("Adjusting file size limits for group " + group.getId() + ": processed " + memberList.size() + " members out of " + totalSize + "...");
+					processedSize += memberList.size();
+					logger.info("Adjusting file size limits for group '" + group.getTitle() + "'(id=" + group.getId() + "): processed " + processedSize + " members out of " + totalSize + "...");
 					getCoreDao().evict(memberList);
 				}
 			}
@@ -3720,4 +3730,39 @@ public String[] getUsernameAndDecryptedPasswordForAuth(String username) {
     	// Always use the initial form of the method.
 		setDefaultUserSettings(timeZone, locale, timeZoneExt, localeExt, RequestContextHolder.getRequestContext().getZoneId());
 	}
+    
+    private static class GroupCache {
+    	Long zoneId;
+    	Map<Long,Group> cache;
+    	ProfileDao profileDao;
+    	
+    	GroupCache(Long zoneId, ProfileDao profileDao) {
+    		this.zoneId = zoneId;
+    		this.profileDao = profileDao;
+    		this.cache = new HashMap<Long,Group>();   	
+    	}
+    	
+    	// This method doesn't care about the order of groups in the result list.
+    	List<Group> getGroups(Collection<Long> groupIds) {
+    		List<Group> result = new ArrayList<Group>();
+    		Set<Long> groupIdsNotInCache = new HashSet<Long>();
+    		Group groupFromCache;
+    		for(Long groupId:groupIds) {
+    			groupFromCache = cache.get(groupId);
+    			if(groupFromCache != null) {
+    				result.add(groupFromCache);
+    			}
+    			else {
+    				groupIdsNotInCache.add(groupId);    				
+    			}
+    		}
+    		if(!groupIdsNotInCache.isEmpty()) {
+    			List<Group> groupsFromDb = profileDao.loadGroups(groupIdsNotInCache, zoneId);
+    			result.addAll(groupsFromDb);
+    			for(Group groupFromDb:groupsFromDb)
+    				cache.put(groupFromDb.getId(), groupFromDb);
+    		}
+    		return result;
+    	}
+    }
 }
