@@ -66,6 +66,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -99,9 +101,12 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	private FlowPanel			m_appListPanel;					//
 	private GwtTeamingMessages	m_messages;						//
 	private MultiPromptDlg		m_mpDlg;						// The dialog used to prompt the user for information about an application.
-	private ListBox				m_macLB;						// The list of Mac     applications.
-	private ListBox				m_windowsLB;					// The list of Windows applications.
+	private ListBox				m_macBlackLB;					// The list of Mac     blacklist applications.
+	private ListBox				m_macWhiteLB;					// The list of Mac     whitelist applications.
+	private ListBox				m_windowsBlackLB;				// The list of Windows blacklist applications.
+	private ListBox				m_windowsWhiteLB;				// The list of Windows whitelist applications.
 	private RadioButton			m_blacklistRB;					// The radio button specifying the lists are part of a blacklist.
+	private RadioButton			m_bothRB;						// The radio button specifying both blacklist and whitelist.
 	private RadioButton			m_disabledRB;					// The radio button specifying the lists are to be ignored.
 	private RadioButton 		m_useLocalApps;					//
 	private RadioButton 		m_useRemoteApps;				//
@@ -148,6 +153,39 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	}
 
 	/*
+	 * Adds the Whitelist/Blacklist headers above the lists.
+	 */
+	private void addListHeaders(FlexTable ft) {
+		int row = ft.getRowCount();
+		
+		Label l = new Label(m_messages.fileSyncDlg_LabelWhitelist());
+		l.addStyleName("fileSyncAppDlg_ListTableHeader margintop3");
+		ft.setWidget(row, 0, l);
+		
+		l = new Label(m_messages.fileSyncDlg_LabelBlacklist());
+		l.addStyleName("fileSyncAppDlg_ListTableHeader margintop3 marginleft2");
+		ft.setWidget(row, 1, l);
+	}
+	
+	/*
+	 * Adds the Mac list boxes.
+	 */
+	private void addMacLists(FlexTable ft) {
+		int row = ft.getRowCount();
+		ft.setWidget(row, 0, createMacWhiteList());
+		ft.setWidget(row, 1, createMacBlackList());
+	}
+	
+	/*
+	 * Adds the Windows list boxes.
+	 */
+	private void addWindowsLists(FlexTable ft) {
+		int row = ft.getRowCount();
+		ft.setWidget(row, 0, createWindowsWhiteList());
+		ft.setWidget(row, 1, createWindowsBlackList());
+	}
+	
+	/*
 	 * Constructs the string to use as the display value in an
 	 * application whitelist / blacklist listbox.
 	 */
@@ -173,8 +211,12 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		m_appListPanel.add(createListHint()            );
 		m_appListPanel.add(createRestoreDefaultButton());
 		m_appListPanel.add(createModeWidgets()         );
-		m_appListPanel.add(createWindowsList()         );
-		m_appListPanel.add(createMacList()             );
+		FlexTable ft = new VibeFlexTable();
+		ft.addStyleName("fileSyncAppDlg_ListTable marginleft1");
+		m_appListPanel.add(ft);
+		addListHeaders( ft);
+		addWindowsLists(ft);
+		addMacLists(    ft);
 		
 		// If this isn't Filr...
 		if (!(m_isFilr)) {
@@ -417,18 +459,38 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	}
 
 	/*
-	 * Creates the widgets for entering Mac applications.
+	 * Creates the widgets for entering Mac blacklist applications.
 	 */
-	private Widget createMacList() {
+	private Widget createMacBlackList() {
 		FlowPanel fp = new FlowPanel();
-		fp.addStyleName("fileSyncAppDlg_MacListPanel marginleft1");
+		fp.addStyleName("fileSyncAppDlg_MacListPanel marginleft2");
 		
 		// Note that the list will be added to the FlowPanel by
 		// createList().
 		List<String> prompts = new ArrayList<String>();
 		prompts.add(m_messages.fileSyncApp_MacApps_AddPrompt());
 		prompts.add(m_messages.fileSyncApp_Description()      );
-		m_macLB = createList(
+		m_macBlackLB = createList(
+			fp,
+			m_messages.fileSyncApp_MacApps(),
+			prompts);
+		
+		return fp;
+	}
+
+	/*
+	 * Creates the widgets for entering Mac whitelist applications.
+	 */
+	private Widget createMacWhiteList() {
+		FlowPanel fp = new FlowPanel();
+		fp.addStyleName("fileSyncAppDlg_MacListPanel");
+		
+		// Note that the list will be added to the FlowPanel by
+		// createList().
+		List<String> prompts = new ArrayList<String>();
+		prompts.add(m_messages.fileSyncApp_MacApps_AddPrompt());
+		prompts.add(m_messages.fileSyncApp_Description()      );
+		m_macWhiteLB = createList(
 			fp,
 			m_messages.fileSyncApp_MacApps(),
 			prompts);
@@ -452,16 +514,45 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		m_disabledRB.addStyleName("fileSyncAppDlg_ModeRadio");
 		m_disabledRB.removeStyleName("gwt-RadioButton");
 		vt.add(m_disabledRB);
+		m_disabledRB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				danceDialogAppListAsync(GwtAppListMode.DISABLED);
+			}
+		});
 		
 		m_whitelistRB = new RadioButton("modeGroup", m_messages.fileSyncApp_ModeWhitelist());
 		m_whitelistRB.addStyleName("fileSyncAppDlg_ModeRadio");
 		m_whitelistRB.removeStyleName("gwt-RadioButton");
 		vt.add(m_whitelistRB);
+		m_whitelistRB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				danceDialogAppListAsync(GwtAppListMode.WHITELIST);
+			}
+		});
 		
 		m_blacklistRB = new RadioButton("modeGroup", m_messages.fileSyncApp_ModeBlacklist());
 		m_blacklistRB.addStyleName("fileSyncAppDlg_ModeRadio");
 		m_blacklistRB.removeStyleName("gwt-RadioButton");
 		vt.add(m_blacklistRB);
+		m_blacklistRB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				danceDialogAppListAsync(GwtAppListMode.BLACKLIST);
+			}
+		});
+		
+		m_bothRB = new RadioButton("modeGroup", m_messages.fileSyncApp_ModeBoth());
+		m_bothRB.addStyleName("fileSyncAppDlg_ModeRadio");
+		m_bothRB.removeStyleName("gwt-RadioButton");
+		vt.add(m_bothRB);
+		m_bothRB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				danceDialogAppListAsync(GwtAppListMode.BOTH);
+			}
+		});
 		
 		return vt;
 	}
@@ -482,18 +573,18 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	}
 
 	/*
-	 * Creates the widgets for entering Windows applications.
+	 * Creates the widgets for entering Windows black applications.
 	 */
-	private Widget createWindowsList() {
+	private Widget createWindowsBlackList() {
 		FlowPanel fp = new FlowPanel();
-		fp.addStyleName("fileSyncAppDlg_WindowsListPanel marginleft1");
+		fp.addStyleName("fileSyncAppDlg_WindowsListPanel marginleft2");
 		
 		// Note that the list will be added to the FlowPanel by
 		// createList().
 		List<String> prompts = new ArrayList<String>();
 		prompts.add(m_messages.fileSyncApp_WindowsApps_AddPrompt());
 		prompts.add(m_messages.fileSyncApp_Description()          );
-		m_windowsLB = createList(
+		m_windowsBlackLB = createList(
 			fp,
 			m_messages.fileSyncApp_WindowsApps(),
 			prompts);
@@ -501,6 +592,48 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		return fp;
 	}
 
+	/*
+	 * Creates the widgets for entering Windows white applications.
+	 */
+	private Widget createWindowsWhiteList() {
+		FlowPanel fp = new FlowPanel();
+		fp.addStyleName("fileSyncAppDlg_WindowsListPanel");
+		
+		// Note that the list will be added to the FlowPanel by
+		// createList().
+		List<String> prompts = new ArrayList<String>();
+		prompts.add(m_messages.fileSyncApp_WindowsApps_AddPrompt());
+		prompts.add(m_messages.fileSyncApp_Description()          );
+		m_windowsWhiteLB = createList(
+			fp,
+			m_messages.fileSyncApp_WindowsApps(),
+			prompts);
+		
+		return fp;
+	}
+
+	/*
+	 * Asynchronously dances the application list portion of the dialog
+	 * to reflect the given AppListMode.
+	 */
+	private void danceDialogAppListAsync(final GwtAppListMode mode) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				danceDialogAppListNow(mode);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously dances the application list portion of the dialog
+	 * to reflect the given AppListMode.
+	 */
+	private void danceDialogAppListNow(final GwtAppListMode mode) {
+//!		...this needs to be implemented...
+//!		GwtClientHelper.debugAlert("GwtAppListMode." + mode.name() + ":  ...this needs to be implemented...");
+	}
+	
 	/**
 	 * This method gets called when user user presses OK.
 	 * 
@@ -554,6 +687,13 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		// will close the dialog after we successfully save the
 		// configuration.
 		return false;
+	}
+
+	/*
+	 * Fires an ChangeEvent to the specified widget.
+	 */
+	private static void fireChangeEvent(Widget target) {
+		DomEvent.fireNativeEvent(Document.get().createChangeEvent(), target);
 	}
 
 	/*
@@ -660,13 +800,16 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 			// corresponding to the current selections.
 			GwtAppListMode mode;
 			if      (m_blacklistRB.getValue()) mode = GwtAppListMode.BLACKLIST;
+			else if (m_bothRB.getValue())      mode = GwtAppListMode.BOTH;
 			else if (m_whitelistRB.getValue()) mode = GwtAppListMode.WHITELIST;
 			else                               mode = GwtAppListMode.DISABLED;
 			
 			GwtDesktopApplicationsLists appLists = new GwtDesktopApplicationsLists();
 			appLists.setAppListMode(mode);
-			getAppList(m_macLB,     appLists.getApplications(GwtAppPlatform.MAC)    );
-			getAppList(m_windowsLB, appLists.getApplications(GwtAppPlatform.WINDOWS));
+			getAppList(m_macBlackLB,     appLists.getBlackApplications(GwtAppPlatform.MAC)    );
+			getAppList(m_macWhiteLB,     appLists.getWhiteApplications(GwtAppPlatform.MAC)    );
+			getAppList(m_windowsBlackLB, appLists.getBlackApplications(GwtAppPlatform.WINDOWS));
+			getAppList(m_windowsWhiteLB, appLists.getWhiteApplications(GwtAppPlatform.WINDOWS));
 
 			fileSyncAppConfig.setGwtDesktopApplicationsLists(appLists);
 		}
@@ -810,21 +953,26 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 			default:
 			case DISABLED:   rb = m_disabledRB;  break;
 			case BLACKLIST:  rb = m_blacklistRB; break;
+			case BOTH:       rb = m_bothRB;      break;
 			case WHITELIST:  rb = m_whitelistRB; break;
 			}
-			rb.setValue(true);
+			rb.setValue(true, true);
 
 			// ...and populate the platform list boxes.
-			populateAppList(m_macLB,     appLists.getApplications(GwtAppPlatform.MAC)    );
-			populateAppList(m_windowsLB, appLists.getApplications(GwtAppPlatform.WINDOWS));
+			populateAppList(m_macBlackLB,     appLists.getBlackApplications(GwtAppPlatform.MAC)    );
+			populateAppList(m_macWhiteLB,     appLists.getWhiteApplications(GwtAppPlatform.MAC)    );
+			populateAppList(m_windowsBlackLB, appLists.getBlackApplications(GwtAppPlatform.WINDOWS));
+			populateAppList(m_windowsWhiteLB, appLists.getWhiteApplications(GwtAppPlatform.WINDOWS));
 		}
 		
 		else {
 			// No, we are not running in Filr!  Initialize the
 			// widgets accordingly.
 			m_disabledRB.setValue(true);
-			m_macLB.clear();
-			m_windowsLB.clear();
+			m_macBlackLB.clear();
+			m_macWhiteLB.clear();
+			m_windowsBlackLB.clear();
+			m_windowsWhiteLB.clear();
 		}
 	}
 	
@@ -967,6 +1115,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 						// ...add and select it...
 						listBox.addItem(listDisplay, processName);
 						listBox.setSelectedIndex(listBox.getItemCount() - 1);
+						fireChangeEvent(listBox);
 					}
 					
 					// ...and bail.  We're done with the add.
@@ -1016,8 +1165,10 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 					@Override
 					public void execute() {
 						// Clear the current list contents...
-						m_macLB.clear();     DomEvent.fireNativeEvent(Document.get().createChangeEvent(), m_macLB    );
-						m_windowsLB.clear(); DomEvent.fireNativeEvent(Document.get().createChangeEvent(), m_windowsLB);
+						m_macBlackLB.clear();     fireChangeEvent(m_macBlackLB    );
+						m_macWhiteLB.clear();     fireChangeEvent(m_macWhiteLB    );
+						m_windowsBlackLB.clear(); fireChangeEvent(m_windowsBlackLB);
+						m_windowsWhiteLB.clear(); fireChangeEvent(m_windowsWhiteLB);
 						
 						// ...and reinitialize them with the default
 						// ...settings.

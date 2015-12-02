@@ -48,8 +48,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class GwtDesktopApplicationsLists implements IsSerializable, VibeRpcResponseData {
-	private GwtAppListMode							m_mode;				// The mode of         the desktop application list.
-	private Map<GwtAppPlatform, List<GwtAppInfo>>	m_applicationsMap;	// The applications in the desktop application list.
+	private GwtAppListMode							m_mode;					// The mode of                   the desktop application list.
+	private Map<GwtAppPlatform, List<GwtAppInfo>>	m_blackApplicationsMap;	// The blacklist applications in the desktop application list.
+	private Map<GwtAppPlatform, List<GwtAppInfo>>	m_whiteApplicationsMap;	// The whitelist applications in the desktop application list.
 	
 	/**
 	 * Inner class used to track application information. 
@@ -107,7 +108,8 @@ public class GwtDesktopApplicationsLists implements IsSerializable, VibeRpcRespo
 	public enum GwtAppListMode implements IsSerializable {
 		BLACKLIST,
 		DISABLED,
-		WHITELIST;
+		WHITELIST,
+		BOTH;
 		
 		/**
 		 * Get'er methods.
@@ -115,6 +117,7 @@ public class GwtDesktopApplicationsLists implements IsSerializable, VibeRpcRespo
 		 * @return
 		 */
 		public boolean isBlacklist() {return BLACKLIST.equals(this);}
+		public boolean isBoth()      {return BOTH.equals(     this);}
 		public boolean isDisabled()  {return DISABLED.equals( this);}
 		public boolean isWhitelist() {return WHITELIST.equals(this);}
 		
@@ -167,9 +170,14 @@ public class GwtDesktopApplicationsLists implements IsSerializable, VibeRpcRespo
 		// ...initialization.
 		setAppListMode(GwtAppListMode.DISABLED);
 
-		m_applicationsMap = new HashMap<GwtAppPlatform, List<GwtAppInfo>>();
+		m_blackApplicationsMap = new HashMap<GwtAppPlatform, List<GwtAppInfo>>();
 		for (GwtAppPlatform platform:  GwtAppPlatform.values()) {
-			m_applicationsMap.put(platform, new ArrayList<GwtAppInfo>());
+			m_blackApplicationsMap.put(platform, new ArrayList<GwtAppInfo>());
+		}
+		
+		m_whiteApplicationsMap = new HashMap<GwtAppPlatform, List<GwtAppInfo>>();
+		for (GwtAppPlatform platform:  GwtAppPlatform.values()) {
+			m_whiteApplicationsMap.put(platform, new ArrayList<GwtAppInfo>());
 		}
 	}
 	
@@ -178,24 +186,32 @@ public class GwtDesktopApplicationsLists implements IsSerializable, VibeRpcRespo
 	 * 
 	 * @return
 	 */
-	public boolean          isBlacklist()         {return m_mode.isBlacklist();                }
-	public boolean          isDisabled()          {return m_mode.isDisabled();                 }
-	public boolean          isWhitelist()         {return m_mode.isWhitelist();                }
-	public GwtAppListMode   getAppListMode()      {return m_mode;                              }
-	public List<GwtAppInfo> getMacBlacklist()     {return getBlacklist(GwtAppPlatform.MAC);    }
-	public List<GwtAppInfo> getMacDisabled()      {return getDisabled( GwtAppPlatform.MAC);    }
-	public List<GwtAppInfo> getMacWhitelist()     {return getWhitelist(GwtAppPlatform.MAC);    }
-	public List<GwtAppInfo> getWindowsBlacklist() {return getBlacklist(GwtAppPlatform.WINDOWS);}
-	public List<GwtAppInfo> getWindowsDisabled()  {return getDisabled( GwtAppPlatform.WINDOWS);}
-	public List<GwtAppInfo> getWindowsWhitelist() {return getWhitelist(GwtAppPlatform.WINDOWS);}
+	public boolean          isBlacklist()                  {return m_mode.isBlacklist();                        }
+	public boolean          isBoth()                       {return m_mode.isBoth();                             }
+	public boolean          isDisabled()                   {return m_mode.isDisabled();                         }
+	public boolean          isWhitelist()                  {return m_mode.isWhitelist();                        }
+	public GwtAppListMode   getAppListMode()               {return m_mode;                                      }
+	public List<GwtAppInfo> getMacBlacklist()              {return getBlacklist(        GwtAppPlatform.MAC);    }
+	public List<GwtAppInfo> getMacDisabledBlacklist()      {return getDisabledBlacklist(GwtAppPlatform.MAC);    }
+	public List<GwtAppInfo> getMacDisabledWhitelist()      {return getDisabledWhitelist(GwtAppPlatform.MAC);    }
+	public List<GwtAppInfo> getMacWhitelist()              {return getWhitelist(        GwtAppPlatform.MAC);    }
+	public List<GwtAppInfo> getWindowsBlacklist()          {return getBlacklist(        GwtAppPlatform.WINDOWS);}
+	public List<GwtAppInfo> getWindowsDisabledBlacklist()  {return getDisabledBlacklist(GwtAppPlatform.WINDOWS);}
+	public List<GwtAppInfo> getWindowsDisabledWhitelist()  {return getDisabledWhitelist(GwtAppPlatform.WINDOWS);}
+	public List<GwtAppInfo> getWindowsWhitelist()          {return getWhitelist(        GwtAppPlatform.WINDOWS);}
 
 	/**
-	 * Get'er helper methods (Public.)
+	 * Get'er helper methods
+	 * 
+	 * @return
 	 */
-	public List<GwtAppInfo> getApplications(GwtAppPlatform platform) {return m_applicationsMap.get(platform);                                          }
-	public List<GwtAppInfo> getBlacklist(   GwtAppPlatform platform) {return (isBlacklist() ? getApplications(platform) : new ArrayList<GwtAppInfo>());}
-	public List<GwtAppInfo> getDisabled(    GwtAppPlatform platform) {return (isDisabled()  ? getApplications(platform) : new ArrayList<GwtAppInfo>());}
-	public List<GwtAppInfo> getWhitelist(   GwtAppPlatform platform) {return (isWhitelist() ? getApplications(platform) : new ArrayList<GwtAppInfo>());}
+	public List<GwtAppInfo> getBlacklist(        GwtAppPlatform platform) {return ((isBlacklist() || isBoth()) ? getBlackApplications(platform) : new ArrayList<GwtAppInfo>());}
+	public List<GwtAppInfo> getDisabledBlacklist(GwtAppPlatform platform) {return ( isDisabled()               ? getBlackApplications(platform) : new ArrayList<GwtAppInfo>());}
+	public List<GwtAppInfo> getDisabledWhitelist(GwtAppPlatform platform) {return ( isDisabled()               ? getWhiteApplications(platform) : new ArrayList<GwtAppInfo>());}
+	public List<GwtAppInfo> getWhitelist(        GwtAppPlatform platform) {return ((isWhitelist() || isBoth()) ? getWhiteApplications(platform) : new ArrayList<GwtAppInfo>());}
+	
+	public List<GwtAppInfo> getBlackApplications(GwtAppPlatform platform) {return m_blackApplicationsMap.get(platform);                                          }
+	public List<GwtAppInfo> getWhiteApplications(GwtAppPlatform platform) {return m_whiteApplicationsMap.get(platform);                                          }
 	
 	/**
 	 * Set'er methods.
@@ -204,15 +220,11 @@ public class GwtDesktopApplicationsLists implements IsSerializable, VibeRpcRespo
 	 */
 	public void setAppListMode(GwtAppListMode mode) {m_mode = mode;}
 
-	/**
+	/*
 	 * Adds an application to a platform's desktop application list.
-	 * 
-	 * @param platform
-	 * @param appInfo
 	 */
-	public void addApplication(GwtAppPlatform platform, GwtAppInfo appInfo) {
+	private void addApplicationImpl(List<GwtAppInfo> appList, GwtAppInfo appInfo) {
 		// Scan the applications for this platform.
-		List<GwtAppInfo> appList = m_applicationsMap.get(platform);
 		for (GwtAppInfo app:  appList) {
 			// Is the application to be added for the same process?
 			if (app.getProcessName().equalsIgnoreCase(appInfo.getProcessName())) {
@@ -226,9 +238,9 @@ public class GwtDesktopApplicationsLists implements IsSerializable, VibeRpcRespo
 		appList.add(appInfo);
 	}
 	
-	public void addApplication(GwtAppPlatform platform, String description, String processName) {
-		// If we don't have a platform or process name...
-		if ((null == platform) || (null == processName)) {
+	private void addApplicationImpl(List<GwtAppInfo> appList, String description, String processName) {
+		// If we don't have a process name...
+		if (null == processName) {
 			// ...bail.
 			return;
 		}
@@ -239,8 +251,8 @@ public class GwtDesktopApplicationsLists implements IsSerializable, VibeRpcRespo
 		}
 
 		// Always use the initial form of the method.
-		addApplication(
-			platform,
+		addApplicationImpl(
+			appList,
 			new GwtAppInfo(
 				((null == description) ?
 					""                 :
@@ -249,11 +261,43 @@ public class GwtDesktopApplicationsLists implements IsSerializable, VibeRpcRespo
 	}
 
 	/**
+	 * Adds an application to a platform's desktop application
+	 * blacklist.
+	 * 
+	 * @param platform
+	 * @param appInfo
+	 */
+	public void addBlackApplication(GwtAppPlatform platform, GwtAppInfo appInfo) {
+		addApplicationImpl(m_blackApplicationsMap.get(platform), appInfo);
+	}
+	
+	public void addBlackApplication(GwtAppPlatform platform, String description, String processName) {
+		addApplicationImpl(m_blackApplicationsMap.get(platform), description, processName);
+	}
+
+	/**
+	 * Adds an application to a platform's desktop application
+	 * whitelist.
+	 * 
+	 * @param platform
+	 * @param appInfo
+	 */
+	public void addWhiteApplication(GwtAppPlatform platform, GwtAppInfo appInfo) {
+		addApplicationImpl(m_whiteApplicationsMap.get(platform), appInfo);
+	}
+	
+	public void addWhiteApplication(GwtAppPlatform platform, String description, String processName) {
+		addApplicationImpl(m_whiteApplicationsMap.get(platform), description, processName);
+	}
+
+	/**
 	 * Adds an application to a platform's desktop application list.
 	 * 
 	 * @param description
 	 * @param platformName
 	 */
-	public void addMacApplication(    String description, String platformName) {addApplication(GwtAppPlatform.MAC,     description, platformName);}
-	public void addWindowsApplication(String description, String platformName) {addApplication(GwtAppPlatform.WINDOWS, description, platformName);}
+	public void addMacBlackApplication(    String description, String platformName) {addBlackApplication(GwtAppPlatform.MAC,     description, platformName);}
+	public void addMacWhiteApplication(    String description, String platformName) {addWhiteApplication(GwtAppPlatform.MAC,     description, platformName);}
+	public void addWindowsBlackApplication(String description, String platformName) {addBlackApplication(GwtAppPlatform.WINDOWS, description, platformName);}
+	public void addWindowsWhiteApplication(String description, String platformName) {addWhiteApplication(GwtAppPlatform.WINDOWS, description, platformName);}
 }

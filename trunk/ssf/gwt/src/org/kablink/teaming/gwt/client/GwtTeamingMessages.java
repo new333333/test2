@@ -1874,10 +1874,13 @@ public interface GwtTeamingMessages extends Messages {
 	String fileSyncApp_Description();
 	String fileSyncApp_Error_NoProcessName();
 	String fileSyncApp_InvalidAutoUpdateUrlText();
+	String fileSyncDlg_LabelBlacklist();
+	String fileSyncDlg_LabelWhitelist();
 	String fileSyncApp_MacApps();
 	String fileSyncApp_MacApps_AddPrompt();
 	String fileSyncApp_Mode();
 	String fileSyncApp_ModeBlacklist();
+	String fileSyncApp_ModeBoth();
 	String fileSyncApp_ModeDisabled();
 	String fileSyncApp_ModeWhitelist();
 	String fileSyncApp_PromptHeader();
