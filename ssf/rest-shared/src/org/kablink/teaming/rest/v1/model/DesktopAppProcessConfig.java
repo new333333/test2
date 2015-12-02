@@ -30,6 +30,7 @@ import java.util.List;
 @XmlRootElement(name="desktop_process_config")
 public class DesktopAppProcessConfig extends BaseRestObject {
     private Boolean allowUnlistedProcesses;
+    private Boolean allowUnlistedProcessOverride;
     private List<String> allowedProcesses;
     private List<String> blockedProcesses;
 
@@ -43,6 +44,15 @@ public class DesktopAppProcessConfig extends BaseRestObject {
 
     public void setAllowUnlistedProcesses(Boolean allowUnlistedProcesses) {
         this.allowUnlistedProcesses = allowUnlistedProcesses;
+    }
+
+    @XmlElement(name="allow_unlisted_process_override")
+    public Boolean getAllowUnlistedProcessOverride() {
+        return allowUnlistedProcessOverride;
+    }
+
+    public void setAllowUnlistedProcessOverride(Boolean allowUnlistedProcessOverride) {
+        this.allowUnlistedProcessOverride = allowUnlistedProcessOverride;
     }
 
     @XmlElementWrapper(name="allowed_processes")
