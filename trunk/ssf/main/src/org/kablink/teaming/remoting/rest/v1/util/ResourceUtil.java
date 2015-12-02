@@ -533,17 +533,20 @@ public class ResourceUtil {
         if (includeProcessConfig) {
             DesktopApplicationsLists appLists = config.getDesktopApplicationsLists();
             DesktopAppProcessConfig procConfig = new DesktopAppProcessConfig();
-            procConfig.setAllowUnlistedProcesses(!appLists.isWhitelist());
-            if (appLists.isWhitelist()) {
+            procConfig.setAllowUnlistedProcesses(appLists.isBlacklist() || appLists.isDisabled());
+            procConfig.setAllowUnlistedProcessOverride(appLists.isBoth());
+
+            if (appLists.isWhitelist() || appLists.isBoth()) {
                 List<DesktopApplicationsLists.AppInfo> appList = appLists.getWhitelist(processPlatform);
                 List<String> procList = new ArrayList<String>();
-                if (appList!=null) {
+                if (appList != null) {
                     for (DesktopApplicationsLists.AppInfo appInfo : appList) {
                         procList.add(appInfo.getProcessName());
                     }
                 }
                 procConfig.setAllowedProcesses(procList);
-            } else {
+            }
+            if (appLists.isBlacklist() || appLists.isBoth()) {
                 List<DesktopApplicationsLists.AppInfo> appList = appLists.getBlacklist(processPlatform);
                 List<String> procList = new ArrayList<String>();
                 if (appList!=null) {
@@ -553,6 +556,7 @@ public class ResourceUtil {
                 }
                 procConfig.setBlockedProcesses(procList);
             }
+
             desktopAppConfig.setProcessConfig(procConfig);
         }
         modelConfig.setDesktopAppConfig(desktopAppConfig);
