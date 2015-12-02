@@ -127,8 +127,8 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 	       		List<Long> gIdList = new ArrayList();
 	       		gIdList.add(groupId);
 	       		Principal g = getProfileModule().getEntry(groupId);
-	       		getProfileModule().setGroupDiskQuotas(gIdList, ((Group)g).getDiskQuota());
-	       		getProfileModule().setGroupFileSizeLimits(gIdList, ((Group)g).getFileSizeLimit());
+	       		getProfileModule().adjustGroupDiskQuotas(gIdList, ((Group)g).getDiskQuota());
+	       		getProfileModule().adjustGroupFileSizeLimits(gIdList, ((Group)g).getFileSizeLimit());
 				
 				//Now deal with everyone who was affected
 				ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
@@ -173,8 +173,8 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 			//  This will fix up all of the user quotas that may have been influenced by this group
        		List gIds = new ArrayList();
        		gIds.add(groupId);
-       		getProfileModule().setGroupDiskQuotas(gIds, new Long(0L));
-       		getProfileModule().setGroupFileSizeLimits(gIds, null);
+       		getProfileModule().adjustGroupDiskQuotas(gIds, new Long(0L));
+       		getProfileModule().adjustGroupFileSizeLimits(gIds, null);
 	       		
 			//Now, delete the group
        		getProfileModule().deleteEntry(groupId, null);

@@ -150,7 +150,7 @@ public class ManageQuotasController extends SAbstractController {
 					try {
 						Long groupQuota = Long.valueOf(s_groupQuota);
 						if (!groupIds.isEmpty() && groupQuota != null) {
-							getProfileModule().setGroupDiskQuotas(groupIds, groupQuota);
+							getProfileModule().adjustGroupDiskQuotas(groupIds, groupQuota);
 						}
 					} catch(Exception e) {}
 				}
@@ -193,7 +193,7 @@ public class ManageQuotasController extends SAbstractController {
 					List ids = new ArrayList();
 					ids.add(id);
 					if (id != null && quotaValues.get(id.toString()) != null) 
-						getProfileModule().setGroupDiskQuotas(ids, quotaValues.get(id.toString()));
+						getProfileModule().adjustGroupDiskQuotas(ids, quotaValues.get(id.toString()));
 				}
 				for (Long id : userIds) {
 					List ids = new ArrayList();
