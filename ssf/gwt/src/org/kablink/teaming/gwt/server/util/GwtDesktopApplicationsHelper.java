@@ -411,8 +411,14 @@ public class GwtDesktopApplicationsHelper {
 			reply.setAppListMode(getDomainALMFromGwtALM(daLists.getAppListMode()));
 			for (GwtAppPlatform gwtPlatform:  GwtAppPlatform.values()) {
 				AppPlatform domainPlatform = getDomainAPFromGwtAP(gwtPlatform);
-				List<AppInfo>		domainAppList = reply.getApplications(  domainPlatform);
-				List<GwtAppInfo>	gwtAppList    = daLists.getApplications(gwtPlatform   );
+				List<AppInfo>		domainAppList = reply.getBlackApplications(  domainPlatform);
+				List<GwtAppInfo>	gwtAppList    = daLists.getBlackApplications(gwtPlatform   );
+				for (GwtAppInfo gwtApp:  gwtAppList) {
+					domainAppList.add(getDomainAIFromGwtAI(gwtApp));
+				}
+				
+				domainAppList = reply.getWhiteApplications(  domainPlatform);
+				gwtAppList    = daLists.getWhiteApplications(gwtPlatform   );
 				for (GwtAppInfo gwtApp:  gwtAppList) {
 					domainAppList.add(getDomainAIFromGwtAI(gwtApp));
 				}
@@ -650,8 +656,14 @@ public class GwtDesktopApplicationsHelper {
 			reply.setAppListMode(getGwtALMFromDomainALM(daLists.getAppListMode()));
 			for (AppPlatform domainPlatform:  AppPlatform.values()) {
 				GwtAppPlatform gwtPlatform = getGwtAPFromDomainAP(domainPlatform);
-				List<GwtAppInfo>	gwtAppList    = reply.getApplications(  gwtPlatform   );
-				List<AppInfo>		domainAppList = daLists.getApplications(domainPlatform);
+				List<GwtAppInfo>	gwtAppList    = reply.getBlackApplications(  gwtPlatform   );
+				List<AppInfo>		domainAppList = daLists.getBlackApplications(domainPlatform);
+				for (AppInfo domainApp:  domainAppList) {
+					gwtAppList.add(getGwtAIFromDomainAI(domainApp));
+				}
+				
+				gwtAppList    = reply.getWhiteApplications(  gwtPlatform   );
+				domainAppList = daLists.getWhiteApplications(domainPlatform);
 				for (AppInfo domainApp:  domainAppList) {
 					gwtAppList.add(getGwtAIFromDomainAI(domainApp));
 				}

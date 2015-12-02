@@ -6070,6 +6070,8 @@ td.datePickerMonth {
 .fileSyncAppDlg_ListHeader        {}
 .fileSyncAppDlg_ListHintPanel     {padding-top: 10px; width: 400px; white-space: normal; color: #4D6D8B}
 .fileSyncAppDlg_ListPanel         {padding-top: 3px;}
+.fileSyncAppDlg_ListTable         {}
+.fileSyncAppDlg_ListTableHeader   {font-weight: bold; font-size: 14px;}
 .fileSyncAppDlg_Location          {}
 .fileSyncAppDlg_MacListPanel      {padding-top: 10px;}
 .fileSyncAppDlg_ModeHeader        {}
@@ -6079,7 +6081,7 @@ td.datePickerMonth {
 .fileSyncAppDlg_Radio             {}
 .fileSyncAppDlg_RestoreDefaults   {margin-top: 10px; margin-left: 10px;}
 .fileSyncAppDlg_SectionHeader     {font-size: 13px; font-weight: normal;}
-.fileSyncAppDlg_WindowsListPanel  {padding-top: 10px;}
+.fileSyncAppDlg_WindowsListPanel  {padding-top: 0px;}
 
 /**
  * Styles used in the Edit Ldap Server Config dialog
