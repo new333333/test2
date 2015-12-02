@@ -120,7 +120,7 @@ public class ManageFileUploadLimitsController extends SAbstractController {
 						groupFileSizeLimit = Long.valueOf(s_groupFileSizeLimit);
 					}
 					if (!groupFSLIds.isEmpty()) {
-						getProfileModule().setGroupFileSizeLimits(groupFSLIds, groupFileSizeLimit);
+						getProfileModule().adjustGroupFileSizeLimits(groupFSLIds, groupFileSizeLimit);
 					}
 				} catch(Exception e) {}
 				
@@ -172,7 +172,7 @@ public class ManageFileUploadLimitsController extends SAbstractController {
 					List ids = new ArrayList();
 					ids.add(id);
 					if (id != null && fileSizeLimitValues.containsKey(id.toString())) 
-						getProfileModule().setGroupFileSizeLimits(ids, fileSizeLimitValues.get(id.toString()));
+						getProfileModule().adjustGroupFileSizeLimits(ids, fileSizeLimitValues.get(id.toString()));
 				}
 				for (Long id : userFSLIds) {
 					List ids = new ArrayList();

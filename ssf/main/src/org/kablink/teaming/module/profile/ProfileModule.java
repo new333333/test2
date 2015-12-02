@@ -645,7 +645,7 @@ public interface ProfileModule {
 	 * @param entryIds
 	 * @param megabytes
      */
-    public void setGroupDiskQuotas(Collection<Long> groupIds, long megabytes);
+    public void adjustGroupDiskQuotas(Collection<Long> groupIds, long megabytes);
     public void setUserGroupDiskQuotas(Collection<Long> userIds, Group group);
     public void deleteUserGroupDiskQuotas(Collection<Long> userIds, Group group);
     
@@ -660,7 +660,7 @@ public interface ProfileModule {
 	 * @param entryIds
 	 * @param megabytes
      */
-    public void setGroupFileSizeLimits(Collection<Long> groupIds, Long fileSizeLimit);
+    public void adjustGroupFileSizeLimits(Collection<Long> groupIds, Long fileSizeLimit);
     public void setUserGroupFileSizeLimits(Collection<Long> userIds, Group group);
     public void deleteUserGroupFileSizeLimits(Collection<Long> userIds, Group group);
     

@@ -152,8 +152,8 @@ public class GwtDeleteHelper {
        		// Remove each group's quota (by setting it to 0) before
 	   		// deleting it.  This will fix up all of the user quotas
 	   		// that may have been influenced by this group.
-	   		bs.getProfileModule().setGroupDiskQuotas(grpIds, 0L);
-	   		bs.getProfileModule().setGroupFileSizeLimits(grpIds, null);
+	   		bs.getProfileModule().adjustGroupDiskQuotas(grpIds, 0L);
+	   		bs.getProfileModule().adjustGroupFileSizeLimits(grpIds, null);
 	       		
 			// Delete each groups
 	   		for (Long nextGroupId:  grpIds) {
