@@ -900,19 +900,13 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				else {
 					if(size == Integer.MAX_VALUE) {
 		        		// Going into unbounded search has the potential of triggering a critical OOM error.
-			        	// So we want to know about it via logging.
-						String msg = "UNBOUNDED UNSORTED SEARCH REQUEST: " + context;
-						if(PropsUtil.getBoolean("lucene.unbounded.unsorted.search.warn", true)) {
-				        	logger.warn(msg);
-						}
-						else {
-							if(logger.isDebugEnabled())
-								logger.debug(msg);
-						}
-			        	// By default, we still permit this query. But reject it outright if so configured.
-			        	if(PropsUtil.getBoolean("lucene.unbounded.unsorted.search.disallow", false)) {
-			        		throw new LuceneException(msg);
-			        	}						
+			        	// So we want to know about it via debug/trace logging even though we (reluctantly) permit it.
+			        	if(PropsUtil.getBoolean("lucene.unbounded.unsorted.search.debug", false) && logger.isDebugEnabled()) {
+				        	logger.debug("UNBOUNDED UNSORTED SEARCH REQUEST: " + context);
+						}	
+			        	else if(PropsUtil.getBoolean("lucene.unbounded.unsorted.search.trace", false) && logger.isTraceEnabled()) {
+				        	logger.trace("UNBOUNDED UNSORTED SEARCH REQUEST: " + context);
+						}	
 					}
 					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);				
 				}			
@@ -920,7 +914,10 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			else {
 				// By default we (reluctantly) permit unbounded search when sort is specified. 
 				if(size == Integer.MAX_VALUE) {
-		        	if(PropsUtil.getBoolean("lucene.unbounded.sorted.search.trace", false) && logger.isTraceEnabled()) {
+		        	if(PropsUtil.getBoolean("lucene.unbounded.sorted.search.debug", false) && logger.isDebugEnabled()) {
+			        	logger.debug("UNBOUNDED SORTED SEARCH REQUEST: " + context);
+					}	
+		        	else if(PropsUtil.getBoolean("lucene.unbounded.sorted.search.trace", false) && logger.isTraceEnabled()) {
 			        	logger.trace("UNBOUNDED SORTED SEARCH REQUEST: " + context);
 					}	
 				}
