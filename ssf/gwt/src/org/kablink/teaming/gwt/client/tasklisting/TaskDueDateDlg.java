@@ -215,9 +215,9 @@ public class TaskDueDateDlg extends DlgBox
 		boolean allDayChecked = m_allDayCB.getValue();
 		if (allDayChecked) {
 			// Yes!  Do we have both a start and end date?
-			if (    (!hasStartDate) && (!hasEndDate)) GwtClientHelper.deferredAlert(m_messages.taskDueDateDlgError_NoStartNoEnd());
-			else if (!hasStartDate)                   GwtClientHelper.deferredAlert(m_messages.taskDueDateDlgError_NoStart()     );
-			else if                    (!hasEndDate)  GwtClientHelper.deferredAlert(m_messages.taskDueDateDlgError_NoEnd()       );
+			if (    (!hasStartDate) && (!hasEndDate)) {GwtClientHelper.deferredAlert(m_messages.taskDueDateDlgError_NoStartNoEnd()); setOkEnabled(true);}
+			else if (!hasStartDate)                   {GwtClientHelper.deferredAlert(m_messages.taskDueDateDlgError_NoStart()     ); setOkEnabled(true);}
+			else if                    (!hasEndDate)  {GwtClientHelper.deferredAlert(m_messages.taskDueDateDlgError_NoEnd()       ); setOkEnabled(true);}
 			else {
 				// Yes!  Construct an appropriate TaskEvent to and
 				// apply it.
@@ -326,6 +326,7 @@ public class TaskDueDateDlg extends DlgBox
 							else {
 								// One of the conditions has not been met.
 								GwtClientHelper.deferredAlert(m_messages.taskDueDateDlgError_DurationInvalidCombination());
+								setOkEnabled(true);
 							}
 						}
 					}
@@ -358,6 +359,12 @@ public class TaskDueDateDlg extends DlgBox
 			// ...and close the dialog.
 			setOkEnabled(true);
 			hide();
+		}
+		
+		else {
+			// May be null in the case of an error in which case we
+			// still need the OK enabled.
+			setOkEnabled(true);
 		}
 	}
 
