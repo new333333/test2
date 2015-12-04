@@ -300,7 +300,7 @@ public class LimitUserVisibilityDlg extends DlgBox
 	public HelpData getHelpData() {
 		HelpData helpData = new HelpData();
 		helpData.setGuideName(HelpData.ADMIN_GUIDE);
-		helpData.setPageId("userVisibility");
+		helpData.setPageId("uservisibility");
 		return helpData;
 	}
 

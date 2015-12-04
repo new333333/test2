@@ -239,7 +239,7 @@ public class ConfigureTelemetryDlg extends DlgBox implements EditSuccessfulHandl
 	public HelpData getHelpData() {
 		HelpData helpData = new HelpData();
 		helpData.setGuideName(HelpData.ADMIN_GUIDE);
-		helpData.setPageId("configueTelemetry");
+		helpData.setPageId("configuretelemetry");
 		return helpData;
 	}
 

@@ -332,7 +332,7 @@ public class ConfigureAntiVirusDlg extends DlgBox implements EditSuccessfulHandl
 	public HelpData getHelpData() {
 		HelpData helpData = new HelpData();
 		helpData.setGuideName(HelpData.ADMIN_GUIDE);
-		helpData.setPageId("configueAntiVirus");
+		helpData.setPageId("configureantivirus");
 		return helpData;
 	}
 	
