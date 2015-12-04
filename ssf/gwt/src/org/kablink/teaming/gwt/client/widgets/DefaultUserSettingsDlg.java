@@ -272,7 +272,7 @@ public class DefaultUserSettingsDlg extends DlgBox implements EditSuccessfulHand
 	public HelpData getHelpData() {
 		HelpData helpData = new HelpData();
 		helpData.setGuideName(HelpData.ADMIN_GUIDE);
-		helpData.setPageId("defaultUserSettings");
+		helpData.setPageId("defaultusersettings");
 		return helpData;
 	}
 
