@@ -3581,22 +3581,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case SAVE_DESKTOP_SITE_BRANDING:  {
-			SaveDesktopSiteBrandingCmd sdsbCmd = ((SaveDesktopSiteBrandingCmd) cmd); 
-			Boolean result = GwtBrandingHelper.saveDesktopSiteBrandingData(this, req, sdsbCmd.getDesktopBrandingData());
-			BooleanRpcResponseData responseData = new BooleanRpcResponseData(result);
-			response = new VibeRpcResponse(responseData);
-			return response;
-		}
-		
-		case SAVE_MOBILE_SITE_BRANDING:  {
-			SaveMobileSiteBrandingCmd smsbCmd = ((SaveMobileSiteBrandingCmd) cmd); 
-			Boolean result = GwtBrandingHelper.saveMobileSiteBrandingData(this, req, smsbCmd.getMobileBrandingData());
-			BooleanRpcResponseData responseData = new BooleanRpcResponseData(result);
-			response = new VibeRpcResponse(responseData);
-			return response;
-		}
-		
 		case SAVE_CALENDAR_DAY_VIEW:
 		{
 			SaveCalendarDayViewCmd scdvCmd = ((SaveCalendarDayViewCmd) cmd);

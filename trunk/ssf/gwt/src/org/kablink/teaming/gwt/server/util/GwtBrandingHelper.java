@@ -240,36 +240,4 @@ public class GwtBrandingHelper {
 		
 		return Boolean.TRUE;
 	}
-
-	/**
-	 * Saves the specified desktop application site branding data.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param desktopBrandingData
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Boolean saveDesktopSiteBrandingData(AllModulesInjected bs, HttpServletRequest request, GwtDesktopBrandingRpcResponseData desktopBrandingData) throws GwtTeamingException {
-//!		...this needs to be implemented...
-		return Boolean.TRUE;
-	}
-
-	/**
-	 * Saves the specified mobile application site branding data.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param mobileBrandingData
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Boolean saveMobileSiteBrandingData(AllModulesInjected bs, HttpServletRequest request, GwtMobileBrandingRpcResponseData mobileBrandingData) throws GwtTeamingException {
-//!		...this needs to be implemented...
-		return Boolean.TRUE;
-	}
 }
