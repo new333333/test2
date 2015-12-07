@@ -43,6 +43,8 @@ import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg;
 import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg.ManageMobileDevicesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.ManageProxyIdentitiesDlg;
 import org.kablink.teaming.gwt.client.datatable.ManageProxyIdentitiesDlg.ManageProxyIdentitiesDlgClient;
+import org.kablink.teaming.gwt.client.event.EditDesktopSiteBrandingEvent;
+import org.kablink.teaming.gwt.client.event.EditMobileSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.AdministrationActionEvent;
@@ -104,7 +106,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetDatabasePruneConfigurationCm
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMobileSiteBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDesktopSiteBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GwtDesktopBrandingRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GwtMobileBrandingRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -118,8 +124,10 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureF
 import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUpdateLogsDlg.ConfigureUpdateLogsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
+import org.kablink.teaming.gwt.client.widgets.EditDesktopBrandingDlg.EditDesktopBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditKeyShieldConfigDlg.EditKeyShieldConfigDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.EditLdapConfigDlgClient;
+import org.kablink.teaming.gwt.client.widgets.EditMobileBrandingDlg.EditMobileBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditZoneShareSettingsDlg.EditZoneShareSettingsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigurePasswordPolicyDlg.ConfigurePasswordPolicyDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureTelemetryDlg.ConfigureTelemetryDlgClient;
@@ -144,7 +152,6 @@ import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
@@ -185,6 +192,8 @@ public class AdminControl extends TeamingPopupPanel
 	implements 
 		// Event handlers implemented by this class.
 		AdministrationActionEvent.Handler,
+		EditDesktopSiteBrandingEvent.Handler,
+		EditMobileSiteBrandingEvent.Handler,
 		EditSiteBrandingEvent.Handler,
 		InvokeConfigureAdhocFoldersDlgEvent.Handler,
 		InvokeConfigureAntiVirusDlgEvent.Handler,
@@ -259,6 +268,8 @@ public class AdminControl extends TeamingPopupPanel
 	private ModifyNetFolderDlg m_modifyNetFolderDlg = null;
 	private ShareThisDlg2 m_shareDlg = null;
 	private NetFolderGlobalSettingsDlg m_nfGlobalSettingsDlg = null;
+	private EditDesktopBrandingDlg m_editDesktopBrandingDlg = null;
+	private EditMobileBrandingDlg m_editMobileSiteBrandingDlg = null;
 	private EditBrandingDlg m_editSiteBrandingDlg = null;
 	private EditLdapConfigDlg m_editLdapConfigDlg = null;
 	private NameCompletionSettingsDlg m_nameCompletionSettingsDlg = null;
@@ -284,6 +295,8 @@ public class AdminControl extends TeamingPopupPanel
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
 		TeamingEvents.ADMINISTRATION_ACTION,
+		TeamingEvents.EDIT_DESKTOP_SITE_BRANDING,
+		TeamingEvents.EDIT_MOBILE_SITE_BRANDING,
 		TeamingEvents.EDIT_SITE_BRANDING,
 		TeamingEvents.INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_ANTIVIRUS_DLG,
@@ -907,19 +920,20 @@ public class AdminControl extends TeamingPopupPanel
 	private void adminActionSelected( final GwtAdminAction adminAction )
 	{
 		// Are we dealing with the "Site Branding" action?
-		if ( adminAction.getActionType() == AdminAction.SITE_BRANDING )
-		{
-			EditSiteBrandingEvent esbEvent;
-			int x;
-			int y;
-
-			// Position the Edit Branding dialog at the top, left corner of the content control.
-			x = m_contentControlX;
-			y = m_contentControlY;
-			
+		if (adminAction.getActionType() == AdminAction.SITE_BRANDING) {
 			// Yes, inform all registered action handlers that the user wants to edit the site branding.
-			esbEvent = new EditSiteBrandingEvent( x, y );
+			EditSiteBrandingEvent esbEvent = new EditSiteBrandingEvent(m_contentControlX, m_contentControlY);
 			GwtTeaming.fireEvent( esbEvent );
+		}
+		else if (adminAction.getActionType() == AdminAction.MOBILE_SITE_BRANDING) {
+			// Fire the event to invoke the 'Edit Mobile Applications
+			// Site Branding' dialog.
+			EditMobileSiteBrandingEvent.fireOne();
+		}
+		else if (adminAction.getActionType() == AdminAction.DESKTOP_SITE_BRANDING) {
+			// Fire the event to invoke the 'Edit Desktop Applications
+			// Site Branding' dialog.
+			EditDesktopSiteBrandingEvent.fireOne();
 		}
 		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_ADHOC_FOLDERS )
 		{
@@ -1393,149 +1407,221 @@ public class AdminControl extends TeamingPopupPanel
 	}
 
 	/*
-	 * Invoke the "Edit Branding" dialog.
+	 * Invoke the 'Edit Branding' dialog to edit the site branding.
 	 */
-	private void invokeEditSiteBrandingDlg( GwtBrandingData brandingDataIn )
-	{
-		final int x;
-		final int y;
-		
+	private void invokeEditSiteBrandingDlg(final GwtBrandingData brandingData) {
 		// Get the position of the content control.
-		x = m_contentControlX;
-		y = m_contentControlY;
+		final int x = m_contentControlX;
+		final int y = m_contentControlY;
 		
 		// Create a handler that will be called when the user presses the ok button in the dialog.
-		if ( m_editBrandingSuccessHandler == null )
-		{
-			m_editBrandingSuccessHandler = new EditSuccessfulHandler()
-			{
+		if (null == m_editBrandingSuccessHandler) {
+			m_editBrandingSuccessHandler = new EditSuccessfulHandler() {
 				private AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
 				private GwtBrandingData savedBrandingData = null;
 				
 				/**
-				 * This method gets called when user user presses ok in the "Edit Branding" dialog.
+				 * This method gets called when user user presses OK in
+				 * the 'Edit Branding' dialog.
 				 */
 				@Override
-				public boolean editSuccessful( Object obj )
-				{
+				public boolean editSuccessful(Object obj) {
 					// Create the callback that will be used when we issue an AJAX request to save the branding data.
-					if ( rpcSaveCallback == null )
-					{
-						rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
-						{
-							/**
-							 * 
-							 */
+					if (null == rpcSaveCallback) {
+						rpcSaveCallback = new AsyncCallback<VibeRpcResponse>() {
 							@Override
-							public void onFailure( Throwable t )
-							{
+							public void onFailure(Throwable t) {
 								GwtClientHelper.handleGwtRPCFailure(
-																t,
-																GwtTeaming.getMessages().rpcFailure_GetBranding(),
-																GwtTeaming.getMainPage().getMastHead().getBinderId() );
+									t,
+									GwtTeaming.getMessages().rpcFailure_GetBranding(),
+									GwtTeaming.getMainPage().getMastHead().getBinderId());
 							}
 					
-							/**
-							 * 
-							 * @param result
-							 */
 							@Override
-							public void onSuccess( VibeRpcResponse response )
-							{
-								GwtClientHelper.deferCommand( new ScheduledCommand()
-								{
+							public void onSuccess(VibeRpcResponse response) {
+								GwtClientHelper.deferCommand( new ScheduledCommand() {
 									@Override
-									public void execute()
-									{
-										MastHead mastHead;
-										
-										mastHead = GwtTeaming.getMainPage().getMastHead();
-										
-										// Tell the masthead to go get the new site branding.
-										if ( mastHead != null )
+									public void execute() {
+										// Tell the masthead to go get
+										// the new site branding.
+										MastHead mastHead = GwtTeaming.getMainPage().getMastHead();
+										if (null != mastHead) {
 											mastHead.refreshBranding();
+										}
 									}
-								} );
+								});
 							}
 						};
 					}
 			
-					// Issue an AJAX request to save the branding data.
-					{
-						SaveBrandingCmd cmd;
-						
-						// Issue an AJAX request to save the branding data to the db.  rpcSaveCallback will
-						// be called when we get the response back.
-						savedBrandingData = (GwtBrandingData) obj;
-						cmd = new SaveBrandingCmd( savedBrandingData.getBinderId(), savedBrandingData );
-						GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
-					}
+					// Issue an AJAX request to save the branding data to the db.  rpcSaveCallback will
+					// be called when we get the response back.
+					savedBrandingData = ((GwtBrandingData) obj);
+					SaveBrandingCmd cmd = new SaveBrandingCmd(savedBrandingData.getBinderId(), savedBrandingData);
+					GwtClientHelper.executeCommand(cmd, rpcSaveCallback);
 
 					return true;
 				}
 			};
 		}
 
-		final GwtBrandingData brandingData = brandingDataIn;
-
 		// Have we already created an "Edit branding" dialog?
-		if ( m_editSiteBrandingDlg == null )
-		{
+		if (null == m_editSiteBrandingDlg) {
 			// No, create it.
 			EditBrandingDlg.createDlg(
-									isActionAutoHide( AdminAction.SITE_BRANDING ),
-									isActionModal(    AdminAction.SITE_BRANDING ),
-									x,
-									y,
-									m_dlgWidth,
-									m_dlgHeight,
-									m_editBrandingSuccessHandler,
-									null,
-									new EditBrandingDlgClient()
+				isActionAutoHide(AdminAction.SITE_BRANDING),
+				isActionModal(   AdminAction.SITE_BRANDING),
+				x,
+				y,
+				m_dlgWidth,
+				m_dlgHeight,
+				m_editBrandingSuccessHandler,
+				null,
+				new EditBrandingDlgClient()
 			{				
 				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
 				}
 				
 				@Override
-				public void onSuccess( EditBrandingDlg ebDlg )
-				{
+				public void onSuccess(EditBrandingDlg ebDlg) {
 					m_editSiteBrandingDlg = ebDlg;
-					
-					GwtClientHelper.deferCommand( new ScheduledCommand()
-					{
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
-						public void execute()
-						{
-							invokeEditSiteBrandingDlgImpl( brandingData, x, y );
+						public void execute() {
+							invokeEditSiteBrandingDlgImpl(brandingData, x, y);
 						}
-					} );
+					});
 				}
-			} );
-		}
-		else
-		{
-			invokeEditSiteBrandingDlgImpl( brandingData, x, y );
+			});
 		}
 		
+		else {
+			invokeEditSiteBrandingDlgImpl(brandingData, x, y);
+		}
 	}
 
-	/**
-	 * 
+	/*
 	 */
-	private void invokeEditSiteBrandingDlgImpl( GwtBrandingData brandingData, int x, int y )
-	{
-		// Run an async cmd to show the dialog.
+	private void invokeEditSiteBrandingDlgImpl(GwtBrandingData brandingData, int x, int y) {
+		// Initialize and show the dialog.
 		EditBrandingDlg.initAndShow(
-								m_editSiteBrandingDlg,
-								brandingData,
-								new Integer( m_contentControlX ),
-								new Integer( m_contentControlY ),
-								new Integer( m_dlgWidth ),
-								new Integer( m_dlgHeight ),
-								null );
+			m_editSiteBrandingDlg,
+			brandingData,
+			m_contentControlX,
+			m_contentControlY,
+			m_dlgWidth,
+			m_dlgHeight,
+			null);
+	}
+
+	/*
+	 * Invoke the 'Edit Mobile Application Site Branding' dialog to
+	 * edit the branding.
+	 */
+	private void invokeEditMobileSiteBrandingDlg(final GwtMobileBrandingRpcResponseData mobileBrandingData) {
+		// Have we already created an "Edit branding" dialog?
+		if (null == m_editMobileSiteBrandingDlg) {
+			// No, create it.
+			EditMobileBrandingDlg.createAsync(
+				new EditMobileBrandingDlgClient()
+				{				
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in asynchronous
+						// provider.
+					}
+					
+					@Override
+					public void onSuccess(EditMobileBrandingDlg embDlg) {
+						m_editMobileSiteBrandingDlg = embDlg;
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
+							@Override
+							public void execute() {
+								invokeEditMobileSiteBrandingDlgImpl(mobileBrandingData);
+							}
+						});
+					}
+				},
+				isActionAutoHide(AdminAction.MOBILE_SITE_BRANDING),
+				isActionModal(   AdminAction.MOBILE_SITE_BRANDING),
+				m_contentControlX,
+				m_contentControlY,
+				m_dlgWidth,
+				m_dlgHeight);
+		}
+		
+		else {
+			invokeEditMobileSiteBrandingDlgImpl(mobileBrandingData);
+		}
+	}
+
+	/*
+	 */
+	private void invokeEditMobileSiteBrandingDlgImpl(GwtMobileBrandingRpcResponseData mobileBrandingData) {
+		// Initialize and show the dialog.
+		EditMobileBrandingDlg.initAndShow(
+			m_editMobileSiteBrandingDlg,
+			mobileBrandingData,
+			m_contentControlX,
+			m_contentControlY,
+			m_dlgWidth,
+			m_dlgHeight);
+	}
+
+	/*
+	 * Invoke the 'Edit Desktop Application Site Branding' dialog to
+	 * edit the branding.
+	 */
+	private void invokeEditDesktopSiteBrandingDlg(final GwtDesktopBrandingRpcResponseData desktopBrandingData) {
+		// Have we already created an "Edit branding" dialog?
+		if (null == m_editDesktopBrandingDlg) {
+			// No, create it.
+			EditDesktopBrandingDlg.createAsync(
+				new EditDesktopBrandingDlgClient() {				
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in asynchronous
+						// provider.
+					}
+					
+					@Override
+					public void onSuccess(EditDesktopBrandingDlg embDlg) {
+						m_editDesktopBrandingDlg = embDlg;
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
+							@Override
+							public void execute() {
+								invokeEditDesktopSiteBrandingDlgImpl(desktopBrandingData);
+							}
+						});
+					}
+				},
+				isActionAutoHide(AdminAction.MOBILE_SITE_BRANDING),
+				isActionModal(   AdminAction.MOBILE_SITE_BRANDING),
+				m_contentControlX,
+				m_contentControlY,
+				m_dlgWidth,
+				m_dlgHeight);
+		}
+		
+		else {
+			invokeEditDesktopSiteBrandingDlgImpl(desktopBrandingData);
+		}
+	}
+
+	/*
+	 */
+	private void invokeEditDesktopSiteBrandingDlgImpl(GwtDesktopBrandingRpcResponseData desktopBrandingData) {
+		// Initialize and show the dialog.
+		EditDesktopBrandingDlg.initAndShow(
+			m_editDesktopBrandingDlg,
+			desktopBrandingData,
+			m_contentControlX,
+			m_contentControlY,
+			m_dlgWidth,
+			m_dlgHeight);
 	}
 
 	/*
@@ -1981,72 +2067,125 @@ public class AdminControl extends TeamingPopupPanel
 	 * @param event
 	 */
 	@Override
-	public void onEditSiteBranding( EditSiteBrandingEvent event )
-	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
+	public void onEditSiteBranding(EditSiteBrandingEvent event) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
-				AsyncCallback<VibeRpcResponse> getSiteBrandingCallback;
-				GetSiteBrandingCmd cmd;
-
-				// Create the callback that will be used when we issue an AJAX call to get the site branding
-				getSiteBrandingCallback = new AsyncCallback<VibeRpcResponse>()
-				{
-					/**
-					 * 
-					 */
+			public void execute() {
+				// Issue a GWT RPC request to get the site branding
+				// data.
+				GwtClientHelper.executeCommand(new GetSiteBrandingCmd(), new AsyncCallback<VibeRpcResponse>() {
 					@Override
-					public void onFailure( final Throwable t )
-					{
-						Scheduler.ScheduledCommand cmd;
-
-						cmd = new Scheduler.ScheduledCommand()
-						{
+					public void onFailure(final Throwable t) {
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
 							@Override
-							public void execute()
-							{
-								String[] patches = null;
-
+							public void execute() {
 								GwtClientHelper.handleGwtRPCFailure(
-										t,
-										GwtTeaming.getMessages().rpcFailure_GetBranding(),
-										patches );
+									t,
+									GwtTeaming.getMessages().rpcFailure_GetBranding(),
+									((String[]) null));
 							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						});
 					}
 			
-					/**
-					 * 
-					 * @param result
-					 */
 					@Override
-					public void onSuccess( VibeRpcResponse response )
-					{
-						final GwtBrandingData siteBrandingData;
-						Scheduler.ScheduledCommand cmd;
-						
-						siteBrandingData = (GwtBrandingData) response.getResponseData();
-
-						cmd = new Scheduler.ScheduledCommand()
-						{
+					public void onSuccess(VibeRpcResponse response) {
+						final GwtBrandingData siteBrandingData = ((GwtBrandingData) response.getResponseData());
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
 							@Override
-							public void execute()
-							{
-								invokeEditSiteBrandingDlg( siteBrandingData );
+							public void execute() {
+								invokeEditSiteBrandingDlg(siteBrandingData);
 							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						});
 					}
-				};
-				
-				// Issue an AJAX request to get the site branding data.
-				cmd = new GetSiteBrandingCmd();
-				GwtClientHelper.executeCommand( cmd, getSiteBrandingCallback );
+				});
 			}
-		} );
+		});
+	}
+	
+	/**
+	 * Handles EditMobileSiteBrandingEvent's received by this class.
+	 * 
+	 * Implements the EditMobileSiteBrandingEvent.Handler.onEditMobileSiteBranding() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEditMobileSiteBranding(EditMobileSiteBrandingEvent event) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				// Issue a GWT RPC request to get the site branding
+				// data.
+				GwtClientHelper.executeCommand(new GetMobileSiteBrandingCmd(), new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(final Throwable t) {
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
+							@Override
+							public void execute() {
+								GwtClientHelper.handleGwtRPCFailure(
+									t,
+									GwtTeaming.getMessages().rpcFailure_GetMobileBranding(),
+									((String[]) null));
+							}
+						});
+					}
+			
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						final GwtMobileBrandingRpcResponseData mobileBrandingData = ((GwtMobileBrandingRpcResponseData) response.getResponseData());
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
+							@Override
+							public void execute() {
+								invokeEditMobileSiteBrandingDlg(mobileBrandingData);
+							}
+						});
+					}
+				});
+			}
+		});
+	}
+	
+	/**
+	 * Handles EditDesktopSiteBrandingEvent's received by this class.
+	 * 
+	 * Implements the EditDesktopSiteBrandingEvent.Handler.onEditDesktopSiteBranding() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEditDesktopSiteBranding(EditDesktopSiteBrandingEvent event) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				// Issue a GWT RPC request to get the site branding
+				// data.
+				GwtClientHelper.executeCommand(new GetDesktopSiteBrandingCmd(), new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(final Throwable t) {
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
+							@Override
+							public void execute() {
+								GwtClientHelper.handleGwtRPCFailure(
+									t,
+									GwtTeaming.getMessages().rpcFailure_GetDesktopBranding(),
+									((String[]) null));
+							}
+						});
+					}
+			
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						final GwtDesktopBrandingRpcResponseData desktopBrandingData = ((GwtDesktopBrandingRpcResponseData) response.getResponseData());
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
+							@Override
+							public void execute() {
+								invokeEditDesktopSiteBrandingDlg(desktopBrandingData);
+							}
+						});
+					}
+				});
+			}
+		});
 	}
 	
 	/**
@@ -4268,6 +4407,8 @@ public class AdminControl extends TeamingPopupPanel
 				case MANAGE_WORKSPACE_AND_FOLDER_TEMPLATES:
 				case MANAGE_ZONES:
 				case RUN_A_REPORT:
+				case DESKTOP_SITE_BRANDING:
+				case MOBILE_SITE_BRANDING:
 					// These are modeless unless all dialogs are being
 					// forced to be modal.
 					m_modalActionMap.put(aa, new Boolean(m_acDlgMode.isModal()));

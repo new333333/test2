@@ -190,6 +190,7 @@ import org.kablink.teaming.gwt.server.LdapBrowser.LdapBrowserHelper;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtAntiVirusHelper;
 import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
+import org.kablink.teaming.gwt.server.util.GwtBrandingHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtDefaultUserSettingsHelper;
 import org.kablink.teaming.gwt.server.util.GwtDeleteHelper;
@@ -2819,9 +2820,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_SITE_BRANDING:
-		{
-			GwtBrandingData brandingData = getSiteBrandingData(req, getServletContext(ri));
+		case GET_SITE_BRANDING:  {
+			GwtBrandingData brandingData = GwtBrandingHelper.getSiteBrandingData(this, req, getServletContext(ri));
+			response = new VibeRpcResponse(brandingData);
+			return response;
+		}
+		
+		case GET_MOBILE_SITE_BRANDING:  {
+			GwtMobileBrandingRpcResponseData brandingData = GwtBrandingHelper.getMobileSiteBrandingData(this, req);
+			response = new VibeRpcResponse(brandingData);
+			return response;
+		}
+		
+		case GET_DESKTOP_SITE_BRANDING:  {
+			GwtDesktopBrandingRpcResponseData brandingData = GwtBrandingHelper.getDesktopSiteBrandingData(this, req);
 			response = new VibeRpcResponse(brandingData);
 			return response;
 		}
@@ -3561,16 +3573,27 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return new VibeRpcResponse( responseData );
 		}
 		
-		case SAVE_BRANDING:
-		{
-			BooleanRpcResponseData responseData;
-			Boolean result;
-			SaveBrandingCmd cmd2;
-			
-			cmd2 = (SaveBrandingCmd) cmd; 
-			result = saveBrandingData( req, cmd2.getBinderId(), cmd2.getBrandingData() );
-			responseData = new BooleanRpcResponseData( result );
-			response = new VibeRpcResponse( responseData );
+		case SAVE_BRANDING:  {
+			SaveBrandingCmd sbCmd = ((SaveBrandingCmd) cmd); 
+			Boolean result = GwtBrandingHelper.saveBrandingData(this, req, sbCmd.getBinderId(), sbCmd.getBrandingData());
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData(result);
+			response = new VibeRpcResponse(responseData);
+			return response;
+		}
+		
+		case SAVE_DESKTOP_SITE_BRANDING:  {
+			SaveDesktopSiteBrandingCmd sdsbCmd = ((SaveDesktopSiteBrandingCmd) cmd); 
+			Boolean result = GwtBrandingHelper.saveDesktopSiteBrandingData(this, req, sdsbCmd.getDesktopBrandingData());
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData(result);
+			response = new VibeRpcResponse(responseData);
+			return response;
+		}
+		
+		case SAVE_MOBILE_SITE_BRANDING:  {
+			SaveMobileSiteBrandingCmd smsbCmd = ((SaveMobileSiteBrandingCmd) cmd); 
+			Boolean result = GwtBrandingHelper.saveMobileSiteBrandingData(this, req, smsbCmd.getMobileBrandingData());
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData(result);
+			response = new VibeRpcResponse(responseData);
 			return response;
 		}
 		
@@ -5404,59 +5427,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 	
 	/*
-	 * Return a GwtBrandingData object for the home workspace.
-	 */
-	private GwtBrandingData getSiteBrandingData(final HttpServletRequest req, final ServletContext ctx) throws GwtTeamingException
-	{
-		GwtBrandingData brandingData;
-		final AbstractAllModulesInjected allModules;
-		RunasCallback callback;
-		
-		allModules = this;
-		
-		// We need to read the site branding as admin.
-		callback = new RunasCallback()
-		{
-			@Override
-			public Object doAs()
-			{
-				Binder topWorkspace;
-				GwtBrandingData siteBrandingData;
-
-				try
-				{
-					String binderId;
-					
-					// Get the top workspace.
-					topWorkspace = getWorkspaceModule().getTopWorkspace();				
-				
-					// Get the branding data from the top workspace.
-					binderId = topWorkspace.getId().toString();
-					siteBrandingData = GwtServerHelper.getBinderBrandingData(
-																			allModules,
-																			binderId,
-																			false,
-																			req,
-																			ctx);
-				}
-				catch (Exception e)
-				{
-					siteBrandingData = new GwtBrandingData();
-				}
-
-				return siteBrandingData;
-			}
-		};
-		brandingData = (GwtBrandingData) RunasTemplate.runasAdmin(
-																callback,
-																WebHelper.getRequiredZoneName( req ) ); 
-		
-		brandingData.setIsSiteBranding( true );
-
-		return brandingData;
-	}
-
-	/*
 	 * Reads the task information from the specified binder.
 	 */
 	private List<TaskListItem> getTaskList( HttpServletRequest req, boolean applyUsersFilter, String zoneUUID, Long binderId, String filterType, String modeType ) throws GwtTeamingException
@@ -6953,53 +6923,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return asEntry;
 	}
 	
-	/*
-	 * Save the given branding data to the given binder.
-	 */
-	private Boolean saveBrandingData(HttpServletRequest req, String binderId, GwtBrandingData brandingData) throws GwtTeamingException {
-		try {
-			// Get the binder object.
-			BinderModule binderModule = getBinderModule();
-			Long binderIdL = new Long( binderId );
-			if (binderIdL != null) {
-				// Create a Map that holds the branding and extended branding.
-				HashMap<String, Object> hashMap = new HashMap<String, Object>();
-				
-				// Add the old-style branding to the map.
-				// JW:  Do we need to do something with the HTML found
-				//      in the branding?
-				String branding = brandingData.getBranding();
-				if (branding == null) {
-					branding = "";
-				}
-				
-				// Remove mce_src as an attribute from all <img> tags.  See bug 766415.
-				// There was a bug that caused the mce_src attribute to be included in the <img>
-				// tag and written to the db.  We want to remove it.
-				branding = MarkupUtil.removeMceSrc( branding );
-
-				hashMap.put( "branding", branding );
-
-				// Add the extended branding data to the map.
-				branding = brandingData.getBrandingAsXmlString();
-				if ( branding == null )
-					branding = "";
-
-				hashMap.put( "brandingExt", branding );
-				
-				// Update the binder with the new branding data.
-				MapInputData dataMap = new MapInputData( hashMap );
-				binderModule.modifyBinder( binderIdL, dataMap, null, null, null );
-			}
-		}
-		
-		catch (Exception e) {
-			throw GwtLogHelper.getGwtClientException(e);
-		}
-		
-		return Boolean.TRUE;
-	}
-
 	/*
 	 * Save the given personal preferences for the logged in user.
 	 */

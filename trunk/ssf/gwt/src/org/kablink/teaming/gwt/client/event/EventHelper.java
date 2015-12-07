@@ -81,6 +81,8 @@ public class EventHelper {
 		case EDIT_LANDING_PAGE_PROPERTIES:			reply = new EditLandingPagePropertiesEvent();	  break;
 		case EDIT_PERSONAL_PREFERENCES:         	reply = new EditPersonalPreferencesEvent();       break;
 		case EDIT_SITE_BRANDING:                	reply = new EditSiteBrandingEvent();              break;
+		case EDIT_MOBILE_SITE_BRANDING:             reply = new EditMobileSiteBrandingEvent();        break;
+		case EDIT_DESKTOP_SITE_BRANDING:            reply = new EditDesktopSiteBrandingEvent();       break;
 		case FULL_UI_RELOAD:                    	reply = new FullUIReloadEvent();                  break;
 		case GOTO_MY_WORKSPACE:                 	reply = new GotoMyWorkspaceEvent();               break;
 		case HIDE_MANAGE_MENU:                 	    reply = new HideManageMenuEvent();                break;
@@ -831,6 +833,24 @@ public class EventHelper {
 				if (eventHandler instanceof EditSiteBrandingEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = EditSiteBrandingEvent.registerEvent(eventBus, ((EditSiteBrandingEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case EDIT_MOBILE_SITE_BRANDING:
+				// A EditMobileSiteBrandingEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof EditMobileSiteBrandingEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = EditMobileSiteBrandingEvent.registerEvent(eventBus, ((EditMobileSiteBrandingEvent.Handler) eventHandler));
+				}
+				break;
+			
+			case EDIT_DESKTOP_SITE_BRANDING:
+				// A EditDesktopSiteBrandingEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof EditDesktopSiteBrandingEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = EditDesktopSiteBrandingEvent.registerEvent(eventBus, ((EditDesktopSiteBrandingEvent.Handler) eventHandler));
 				}
 				break;
 			
@@ -3100,6 +3120,8 @@ public class EventHelper {
 			case EDIT_CURRENT_BINDER_BRANDING:      	       hasHandler = (eventHandler instanceof EditCurrentBinderBrandingEvent.Handler);              break;
 			case EDIT_PERSONAL_PREFERENCES:         	       hasHandler = (eventHandler instanceof EditPersonalPreferencesEvent.Handler);                break;
 			case EDIT_SITE_BRANDING:                	       hasHandler = (eventHandler instanceof EditSiteBrandingEvent.Handler);                       break;
+			case EDIT_MOBILE_SITE_BRANDING:                	   hasHandler = (eventHandler instanceof EditMobileSiteBrandingEvent.Handler);                 break;
+			case EDIT_DESKTOP_SITE_BRANDING:                   hasHandler = (eventHandler instanceof EditDesktopSiteBrandingEvent.Handler);                break;
 			
 			case EDIT_LANDING_PAGE_PROPERTIES:      	       hasHandler = (eventHandler instanceof EditLandingPagePropertiesEvent.Handler);              break;
 			

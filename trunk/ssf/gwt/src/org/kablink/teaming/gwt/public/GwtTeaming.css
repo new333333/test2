@@ -6585,4 +6585,14 @@ td.datePickerMonth {
 
 /* End: Access Rights Info dialog */
 
+/* Start:  Edit desktop branding dialog styles. */
+	.vibe-editDesktopBrandingDlg           {}
+	.vibe-editDesktopBrandingDlg-rootPanel {background-color: white; padding: 10px;}
+/* End:  Edit desktop branding dialog styles. */
+
+/* Start:  Edit mobile branding dialog styles. */
+	.vibe-editMobileBrandingDlg           {}
+	.vibe-editMobileBrandingDlg-rootPanel {background-color: white; padding: 10px;}
+/* End:  Edit mobile branding dialog styles. */
+
 /* End Of File */
