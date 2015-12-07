@@ -80,7 +80,6 @@ import org.apache.lucene.document.DateTools;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
@@ -3389,6 +3388,31 @@ public class GwtServerHelper {
 				systemCategory.addAdminOption( adminAction );
 			}
 
+			// Is this Filr and does the user have system admin rights
+			// and should we show the Mobile Site Branding option?
+			if (isFilr && userHasAdminRights && SPropsUtil.getBoolean("show.filr.mobile.site.branding", false)) {
+				// Yes!  Create the Mobile Site branding option...
+				title = NLT.get("administration.modifySiteBranding.mobile");
+
+				adminAction = new GwtAdminAction();
+				adminAction.init(title, "", AdminAction.MOBILE_SITE_BRANDING);
+				
+				// ...and add it to the 'system' category
+				systemCategory.addAdminOption(adminAction);
+			}
+			
+			// Is this Filr and does the user have system admin rights
+			// and should we show the Desktop Site Branding option?
+			if (isFilr && userHasAdminRights && SPropsUtil.getBoolean("show.filr.desktop.site.branding", false)) {
+				// Yes!  Create the Desktop Site branding option...
+				title = NLT.get("administration.modifySiteBranding.desktop");
+
+				adminAction = new GwtAdminAction();
+				adminAction.init(title, "", AdminAction.DESKTOP_SITE_BRANDING);
+				
+				// ...and add it to the 'system' category
+				systemCategory.addAdminOption(adminAction);
+			}
 		}
 		
 		// Create a "Reports" category
@@ -10146,6 +10170,8 @@ public class GwtServerHelper {
 		case GET_SIGN_GUESTBOOK_URL:
 		case GET_SITE_ADMIN_URL:
 		case GET_SITE_BRANDING:
+		case GET_MOBILE_SITE_BRANDING:
+		case GET_DESKTOP_SITE_BRANDING:
 		case GET_SUBSCRIPTION_DATA:
 		case GET_SYSTEM_BINDER_PERMALINK:
 		case GET_SYSTEM_ERROR_LOG_URL:
@@ -10225,6 +10251,7 @@ public class GwtServerHelper {
 		case SAVE_CLIPBOARD_USERS:
 		case SAVE_COLUMN_WIDTHS:
 		case SAVE_DATABASE_PRUNE_CONFIGURATION:
+		case SAVE_DESKTOP_SITE_BRANDING:
 		case SAVE_DOWNLOAD_SETTING:
 		case SAVE_EMAIL_NOTIFICATION_INFORMATION:
 		case SAVE_FILE_SYNC_APP_CONFIGURATION:
@@ -10238,6 +10265,7 @@ public class GwtServerHelper {
 		case SAVE_LDAP_CONFIG:
 		case SAVE_MANAGE_USERS_STATE:
 		case SAVE_MOBILE_APPS_CONFIGURATION:
+		case SAVE_MOBILE_SITE_BRANDING:
 		case SAVE_MULTIPLE_ADHOC_FOLDER_SETTINGS:
 		case SAVE_MULTIPLE_DOWNLOAD_SETTINGS:
 		case SAVE_MULTIPLE_WEBACCESS_SETTINGS:

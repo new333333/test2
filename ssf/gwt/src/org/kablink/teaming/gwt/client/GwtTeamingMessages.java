@@ -452,6 +452,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetDataQuotaHighwaterExceededHtml();
 	String rpcFailure_GetDefaultActivityStream();
 	String rpcFailure_GetDefaultStorageId();
+	String rpcFailure_GetDesktopBranding();
 	String rpcFailure_GetDiskUsageHtml();
 	String rpcFailure_GetDiskUsageInfo();
 	String rpcFailure_GetFileSyncAppConfiguration();
@@ -488,6 +489,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetManageUsersInfo();
 	String rpcFailure_GetManageUsersState();
 	String rpcFailure_GetMobileAppsConfiguration();
+	String rpcFailure_GetMobileBranding();
 	String rpcFailure_GetMyFilesContainerInfo();
 	String rpcFailure_GetMyTeams();
 	String rpcFailure_GetNameCompletionSettings();
@@ -751,10 +753,12 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_DiscussionWSView();
 	String codeSplitFailure_DownloadPanel();
 	String codeSplitFailure_EditBrandingDlg();
+	String codeSplitFailure_EditDesktopBrandingDlg();
 	String codeSplitFailure_EditKeyShieldConfigDlg();
 	String codeSplitFailure_EditLdapConfigDlg();
 	String codeSplitFailure_EditLdapSearchDlg();
 	String codeSplitFailure_EditLdapServerConfigDlg();
+	String codeSplitFailure_EditMobileBrandingDlg();
 	String codeSplitFailure_EditNetFolderRightsDlg();
 	String codeSplitFailure_EditPasswordPolicyComposite();
 	String codeSplitFailure_EditPublicLinkDlg();
@@ -3847,4 +3851,10 @@ public interface GwtTeamingMessages extends Messages {
 	String defaultUserSettingsDlg_InternalUsers();
 	String defaultUserSettingsDlg_Locale();
 	String defaultUserSettingsDlg_TimeZone();
+	
+	// Strings used by the 'Edit Desktop Branding' dialog.
+	String editDesktopBrandingDlgCaption();
+	
+	// Strings used by the 'Edit Mobile Branding' dialog.
+	String editMobileBrandingDlgCaption();
 }

@@ -103,6 +103,8 @@ public enum AdminAction implements IsSerializable {
 	REPORT_VIEW_SYSTEM_ERROR_LOG("Report: view system error log"),
 	RUN_A_REPORT("Reports: select a report to run"),
 	SITE_BRANDING("Site branding"),
+	DESKTOP_SITE_BRANDING("Site branding for Desktop Applications"),
+	MOBILE_SITE_BRANDING("Site branding for Mobile Applications"),
 
 	// This is used as a default case to store a AdminAction when
 	// there isn't a real value to store.
