@@ -44,12 +44,15 @@ import org.kablink.teaming.gwt.client.rpc.shared.GwtDesktopBrandingRpcResponseDa
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.UploadSiteBrandingFile;
+import org.kablink.teaming.gwt.client.widgets.UploadSiteBrandingFile.SiteBrandingDescriptor;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -72,6 +75,8 @@ public class EditDesktopBrandingDlg extends DlgBox
 	private int									m_showX;					// The x and...
 	private int									m_showY;					// ...y position to show the dialog.
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private UploadSiteBrandingFile				m_macUploader;				//
+	private UploadSiteBrandingFile				m_windowsUploader;			//
 	private VibeFlowPanel						m_rootPanel;				// The panel that holds the dialog's contents.
 
 	// The following defines the TeamingEvents that are handled by
@@ -130,8 +135,6 @@ public class EditDesktopBrandingDlg extends DlgBox
 		m_rootPanel = new VibeFlowPanel();
 		m_rootPanel.addStyleName("vibe-editDesktopBrandingDlg-rootPanel");
 		
-//!		...this needs to be implemented...
-
 		// ...and return it.  Note that it will get populated during
 		// ...the initAndShow() call.
 		return m_rootPanel;
@@ -238,8 +241,61 @@ public class EditDesktopBrandingDlg extends DlgBox
 		// usage, ...)
 		m_rootPanel.clear();
 
-//!		...this needs to be implemented...
-		
+		// ...create a FlexTable for the upload widgets...
+		FlexTable ft = new VibeFlexTable();
+		ft.addStyleName("vibe-editDesktopBrandingDlg-uploadTable");
+		ft.setCellPadding(3);
+		ft.setCellSpacing(3);
+		m_rootPanel.add(ft);
+
+		// ...add the widgets for uploading Mac branding...
+		SiteBrandingDescriptor sbDescriptor = new SiteBrandingDescriptor();
+		boolean hasExistingFile = GwtClientHelper.hasString(m_desktopBrandingData.getMacFileName());
+		String overwriteConfirmationMsg;
+		String overwriteHint;
+		if (hasExistingFile) {
+			overwriteConfirmationMsg = m_messages.editDesktopBrandingDlg_Comfirm_MacOverwrite(m_desktopBrandingData.getMacFileName());
+			overwriteHint            = m_messages.editDesktopBrandingDlg_Hint_MacOverwrite(   m_desktopBrandingData.getMacFileName());
+		}
+		else {
+			overwriteConfirmationMsg =
+			overwriteHint            = null;
+		}
+		sbDescriptor.setHasExistingFile(         hasExistingFile);
+		sbDescriptor.setGrid(                    ft);
+		sbDescriptor.setMessages(                m_messages);
+		sbDescriptor.setWidgetLabel(             m_messages.editDesktopBrandingDlg_MacCaption());
+		sbDescriptor.setUploadAlt(               m_messages.editDesktopBrandingDlg_Alt_MacUpload());
+		sbDescriptor.setNoFileError(             m_messages.editDesktopBrandingDlg_Error_NoMacFile());
+		sbDescriptor.setOverwriteConfirmationMsg(overwriteConfirmationMsg);
+		sbDescriptor.setOverwriteHint(           overwriteHint);
+		sbDescriptor.setUploadId(                "MacBranding");
+		sbDescriptor.setUploadOperation(         "uploadDesktopBranding_Mac");
+		m_macUploader = new UploadSiteBrandingFile(sbDescriptor);
+
+		// ...add the widgets for uploading Windows branding...
+		sbDescriptor = new SiteBrandingDescriptor();
+		hasExistingFile = GwtClientHelper.hasString(m_desktopBrandingData.getWindowsFileName());
+		if (hasExistingFile) {
+			overwriteConfirmationMsg = m_messages.editDesktopBrandingDlg_Comfirm_WindowsOverwrite(m_desktopBrandingData.getWindowsFileName());
+			overwriteHint            = m_messages.editDesktopBrandingDlg_Hint_WindowsOverwrite(   m_desktopBrandingData.getWindowsFileName());
+		}
+		else {
+			overwriteConfirmationMsg =
+			overwriteHint            = null;
+		}
+		sbDescriptor.setHasExistingFile(         hasExistingFile);
+		sbDescriptor.setGrid(                    ft);
+		sbDescriptor.setMessages(                m_messages);
+		sbDescriptor.setWidgetLabel(             m_messages.editDesktopBrandingDlg_WindowsCaption());
+		sbDescriptor.setUploadAlt(               m_messages.editDesktopBrandingDlg_Alt_WindowsUpload());
+		sbDescriptor.setNoFileError(             m_messages.editDesktopBrandingDlg_Error_NoWindowsFile());
+		sbDescriptor.setOverwriteConfirmationMsg(overwriteConfirmationMsg);
+		sbDescriptor.setOverwriteHint(           overwriteHint);
+		sbDescriptor.setUploadId(                "WindowsBranding");
+		sbDescriptor.setUploadOperation(         "uploadDesktopBranding_Windows");
+		m_windowsUploader = new UploadSiteBrandingFile(sbDescriptor);
+
 		// ...and position and show the dialog.
 		setPixelSize(    m_showCX, m_showCY);
 		setPopupPosition(m_showX,  m_showY );

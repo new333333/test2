@@ -130,8 +130,6 @@ public class EditMobileBrandingDlg extends DlgBox
 		m_rootPanel = new VibeFlowPanel();
 		m_rootPanel.addStyleName("vibe-editMobileBrandingDlg-rootPanel");
 		
-//!		...this needs to be implemented...
-
 		// ...and return it.  Note that it will get populated during
 		// ...the initAndShow() call.
 		return m_rootPanel;

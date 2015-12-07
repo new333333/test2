@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -236,6 +236,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 				if (WebHelper.isMethodPost(request)) ajaxUploadICalendarFile(request, response, false);
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE_GWT)) {
 				if (WebHelper.isMethodPost(request)) ajaxUploadICalendarFile(request, response, true);
+			} else if (op.equals(WebKeys.OPERATION_UPLOAD_DESKTOP_BRANDING_MAC)) {
+				if (WebHelper.isMethodPost(request)) ajaxDesktopBrandingMac(request, response);
+			} else if (op.equals(WebKeys.OPERATION_UPLOAD_DESKTOP_BRANDING_WINDOWS)) {
+				if (WebHelper.isMethodPost(request)) ajaxDesktopBrandingWindows(request, response);
+			} else if (op.equals(WebKeys.OPERATION_UPLOAD_MOBILE_BRANDING_ANDROID)) {
+				if (WebHelper.isMethodPost(request)) ajaxMobileBrandingAndroid(request, response);
+			} else if (op.equals(WebKeys.OPERATION_UPLOAD_MOBILE_BRANDING_IOS)) {
+				if (WebHelper.isMethodPost(request)) ajaxMobileBrandingIos(request, response);
+			} else if (op.equals(WebKeys.OPERATION_UPLOAD_MOBILE_BRANDING_WINDOWS)) {
+				if (WebHelper.isMethodPost(request)) ajaxMobileBrandingWindows(request, response);
 			} else if (op.equals(WebKeys.OPERATION_LOAD_ICALENDAR_BY_URL)) {
 				ajaxLoadICalendarByURL(request, response);				
 			} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_CONFIGURATION)) {
@@ -1842,6 +1852,51 @@ public class AjaxController  extends SAbstractControllerRetry {
 		ids = (String[])modifiedEntriesIdsAsStrings.toArray(ids);
 		response.setRenderParameter("ssICalendarModifiedEntryIds", ids);
 		
+	}
+	
+	private void ajaxDesktopBrandingMac(ActionRequest request, ActionResponse response) throws Exception {
+		String fileHandle = WebHelper.getFileHandleOnUploadedSiteBrandingFile(request);
+		if (fileHandle != null) {
+			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
+//!			...this needs to be implemented...
+			WebHelper.releaseFileHandle(fileHandle);
+		}
+	}
+	
+	private void ajaxDesktopBrandingWindows(ActionRequest request, ActionResponse response) throws Exception {
+		String fileHandle = WebHelper.getFileHandleOnUploadedSiteBrandingFile(request);
+		if (fileHandle != null) {
+			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
+//!			...this needs to be implemented...
+			WebHelper.releaseFileHandle(fileHandle);
+		}
+	}
+	
+	private void ajaxMobileBrandingAndroid(ActionRequest request, ActionResponse response) throws Exception {
+		String fileHandle = WebHelper.getFileHandleOnUploadedSiteBrandingFile(request);
+		if (fileHandle != null) {
+			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
+//!			...this needs to be implemented...
+			WebHelper.releaseFileHandle(fileHandle);
+		}
+	}
+	
+	private void ajaxMobileBrandingIos(ActionRequest request, ActionResponse response) throws Exception {
+		String fileHandle = WebHelper.getFileHandleOnUploadedSiteBrandingFile(request);
+		if (fileHandle != null) {
+			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
+//!			...this needs to be implemented...
+			WebHelper.releaseFileHandle(fileHandle);
+		}
+	}
+	
+	private void ajaxMobileBrandingWindows(ActionRequest request, ActionResponse response) throws Exception {
+		String fileHandle = WebHelper.getFileHandleOnUploadedSiteBrandingFile(request);
+		if (fileHandle != null) {
+			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
+//!			...this needs to be implemented...
+			WebHelper.releaseFileHandle(fileHandle);
+		}
 	}
 	
 	private void ajaxLoadICalendarByURL(ActionRequest request, 

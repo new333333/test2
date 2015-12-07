@@ -3854,7 +3854,20 @@ public interface GwtTeamingMessages extends Messages {
 	
 	// Strings used by the 'Edit Desktop Branding' dialog.
 	String editDesktopBrandingDlgCaption();
+	String editDesktopBrandingDlg_Alt_MacUpload();
+	String editDesktopBrandingDlg_Alt_WindowsUpload();
+	String editDesktopBrandingDlg_Comfirm_MacOverwrite(String fName);
+	String editDesktopBrandingDlg_Comfirm_WindowsOverwrite(String fName);
+	String editDesktopBrandingDlg_Hint_MacOverwrite(String fName);
+	String editDesktopBrandingDlg_Hint_WindowsOverwrite(String fName);
+	String editDesktopBrandingDlg_MacCaption();
+	String editDesktopBrandingDlg_WindowsCaption();
+	String editDesktopBrandingDlg_Error_NoMacFile();
+	String editDesktopBrandingDlg_Error_NoWindowsFile();
 	
 	// Strings used by the 'Edit Mobile Branding' dialog.
 	String editMobileBrandingDlgCaption();
+	
+	// Strings used by the 'Upload Site Branding' composite.
+	String uploadSiteBranding_Upload();
 }

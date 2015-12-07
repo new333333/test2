@@ -640,6 +640,11 @@ public class WebKeys {
 	public static final String OPERATION_UPLOAD_IMAGE_FILE = "upload_image_file";
 	public static final String OPERATION_UPLOAD_ICALENDAR_FILE = "uploadICalendarFile";
 	public static final String OPERATION_UPLOAD_ICALENDAR_FILE_GWT = "uploadICalendarFileGWT";
+	public static final String OPERATION_UPLOAD_DESKTOP_BRANDING_MAC = "uploadDesktopBranding_Mac";
+	public static final String OPERATION_UPLOAD_DESKTOP_BRANDING_WINDOWS = "uploadDesktopBranding_Windows";
+	public static final String OPERATION_UPLOAD_MOBILE_BRANDING_ANDROID = "uploadMobileBranding_Android";
+	public static final String OPERATION_UPLOAD_MOBILE_BRANDING_IOS = "uploadMobileBranding_IOS";
+	public static final String OPERATION_UPLOAD_MOBILE_BRANDING_WINDOWS = "uploadMobileBranding_Windows";
 	public static final String OPERATION_LOAD_ICALENDAR_BY_URL = "loadICalendarByURL";
 	public static final String OPERATION_SAVE_CALENDAR_CONFIGURATION = "saveCalendarConfiguration";
 	public static final String OPERATION_USER_LIST_SEARCH = "user_list_search";

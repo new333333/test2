@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -426,6 +426,66 @@ public class WebHelper {
 	 * @return
 	 */
 	public static String getFileHandleOnUploadedCalendarFile(ActionRequest request)
+		throws IOException {
+		Map fileMap = null;
+		if (request instanceof MultipartFileSupport)
+			fileMap = ((MultipartFileSupport) request).getFileMap();
+		if(fileMap == null || fileMap.size() == 0)
+			return null;
+		MultipartFile mpfile = (MultipartFile) fileMap.values().iterator().next();
+		String fileName = mpfile.getOriginalFilename();
+		if(!validateFilenameForSafeLeaf(fileName))
+			throw new UncheckedIOException(new IOException("Illegal file name [" + fileName + "]"));
+		BufferedReader breader = new BufferedReader(new InputStreamReader (mpfile.getInputStream()));
+		
+		try {
+			// Encode the original file name into the prefix.
+			String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
+			
+			File destFile = TempFileUtil.createTempFile(prefix);
+			
+			BufferedWriter bwriter = new BufferedWriter(new FileWriter (destFile));
+			
+			try {
+				while(breader.ready()) {
+					String line = breader.readLine();
+					
+					if(line.endsWith("=")) {
+						while(line.endsWith("=") && breader.ready()) {
+							String temp = line.substring(0, line.length() - 1);
+							bwriter.write(temp);
+							
+							line = breader.readLine();
+						}
+						bwriter.write(line);
+					}
+					else {	
+						bwriter.write(line);
+					}
+					bwriter.newLine();
+				}
+			}
+			finally {
+				bwriter.close();
+			}
+						
+			return destFile.getName();
+		}
+		finally {
+			breader.close();
+		}
+	}
+	
+	/**
+	 * Returns a handle on the uploaded site branding file. This handle is guaranteed to be
+	 * valid only during the current server session. In other words, the handle
+	 * is not persistent and will be lost once the server shuts down.
+	 * It returns <code>null</code> if there is no uploaded file.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static String getFileHandleOnUploadedSiteBrandingFile(ActionRequest request)
 		throws IOException {
 		Map fileMap = null;
 		if (request instanceof MultipartFileSupport)

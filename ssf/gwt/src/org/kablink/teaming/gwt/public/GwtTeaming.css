@@ -6586,13 +6586,22 @@ td.datePickerMonth {
 /* End: Access Rights Info dialog */
 
 /* Start:  Edit desktop branding dialog styles. */
-	.vibe-editDesktopBrandingDlg           {}
-	.vibe-editDesktopBrandingDlg-rootPanel {background-color: white; padding: 10px;}
+	.vibe-editDesktopBrandingDlg             {}
+	.vibe-editDesktopBrandingDlg-uploadTable {}
+	.vibe-editDesktopBrandingDlg-rootPanel   {background-color: white; padding: 10px;}
 /* End:  Edit desktop branding dialog styles. */
 
 /* Start:  Edit mobile branding dialog styles. */
-	.vibe-editMobileBrandingDlg           {}
-	.vibe-editMobileBrandingDlg-rootPanel {background-color: white; padding: 10px;}
+	.vibe-editMobileBrandingDlg             {}
+	.vibe-editMobileBrandingDlg-uploadTable {}
+	.vibe-editMobileBrandingDlg-rootPanel   {background-color: white; padding: 10px;}
 /* End:  Edit mobile branding dialog styles. */
 
+/* Start:  Upload site branding composite styles. */
+	.vibe-uploadSiteBranding-label         {white-space: nowrap;}
+	.vibe-uploadSiteBranding-input         {width: 300px;}
+	.vibe-uploadSiteBranding-overwriteHint {font-size: 11px !important; color: #cccccc; padding-below: 5px;}
+	.vibe-uploadSiteBranding-uploadPanel   {}
+/* End:  Upload site branding composite styles. */
+	
 /* End Of File */
