@@ -591,11 +591,14 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_PinEntry();
 	String rpcFailure_PurgeTasks();
 	String rpcFailure_QViewMicroBlog();
+	String rpcFailure_RemoveAndroidMobileBranding();
 	String rpcFailure_RemoveBinderTag();
 	String rpcFailure_RemoveFavorite();
+	String rpcFailure_RemoveIosMobileBranding();
 	String rpcFailure_RemoveMacDesktopBranding();
 	String rpcFailure_RemoveSavedSearch();
 	String rpcFailure_RemoveWindowsDesktopBranding();
+	String rpcFailure_RemoveWindowsMobileBranding();
 	String rpcFailure_RenameEntity_File();
 	String rpcFailure_RenameEntity_Folder();
 	String rpcFailure_RenameEntity_Unknown();
