@@ -74,12 +74,16 @@ import org.apache.commons.httpclient.HttpsURL;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
 import org.kablink.teaming.web.util.BinderHelper;
+
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
@@ -155,6 +159,7 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SiteBrandingHelper;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
@@ -1858,8 +1863,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String fileHandle = WebHelper.getFileHandleOnUploadedSiteBrandingFile(request);
 		if (fileHandle != null) {
 			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
-//!			...this needs to be implemented...
+			String fName = file.getOriginalFilename();
+			SiteBrandingHelper.setMacDesktopApplicationBranding(fName, file.getInputStream());
 			WebHelper.releaseFileHandle(fileHandle);
+			response.setRenderParameter("ssBrandingFile", fName);
 		}
 	}
 	
@@ -1867,8 +1874,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String fileHandle = WebHelper.getFileHandleOnUploadedSiteBrandingFile(request);
 		if (fileHandle != null) {
 			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
-//!			...this needs to be implemented...
+			String fName = file.getOriginalFilename();
+			SiteBrandingHelper.setWindowsDesktopApplicationBranding(fName, file.getInputStream());
 			WebHelper.releaseFileHandle(fileHandle);
+			response.setRenderParameter("ssBrandingFile", fName);
 		}
 	}
 	
@@ -1876,8 +1885,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String fileHandle = WebHelper.getFileHandleOnUploadedSiteBrandingFile(request);
 		if (fileHandle != null) {
 			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
-//!			...this needs to be implemented...
+			String fName = file.getOriginalFilename();
+			SiteBrandingHelper.setAndroidMobileApplicationBranding(fName, file.getInputStream());
 			WebHelper.releaseFileHandle(fileHandle);
+			response.setRenderParameter("ssBrandingFile", fName);
 		}
 	}
 	
@@ -1885,8 +1896,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String fileHandle = WebHelper.getFileHandleOnUploadedSiteBrandingFile(request);
 		if (fileHandle != null) {
 			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
-//!			...this needs to be implemented...
+			String fName = file.getOriginalFilename();
+			SiteBrandingHelper.setIosMobileApplicationBranding(fName, file.getInputStream());
 			WebHelper.releaseFileHandle(fileHandle);
+			response.setRenderParameter("ssBrandingFile", fName);
 		}
 	}
 	
@@ -1894,8 +1907,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String fileHandle = WebHelper.getFileHandleOnUploadedSiteBrandingFile(request);
 		if (fileHandle != null) {
 			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
-//!			...this needs to be implemented...
+			String fName = file.getOriginalFilename();
+			SiteBrandingHelper.setWindowsMobileApplicationBranding(fName, file.getInputStream());
 			WebHelper.releaseFileHandle(fileHandle);
+			response.setRenderParameter("ssBrandingFile", fName);
 		}
 	}
 	

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,6 +37,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -47,6 +49,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
@@ -57,66 +60,35 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
  * 
  * @author drfoster@novell.com
  */
-public class UploadSiteBrandingFile implements ConfirmDlgClient {
-	private FileUpload				m_fileInput;	//
-	private FormPanel				m_uploadForm;	//
-	private	SiteBrandingDescriptor	m_descriptor;	//
+public class UploadSiteBrandingFile {
+	private Button					m_removeButton;		//
+	private Button					m_uploadButton;		//
+	private FileUpload				m_fileUpload;		//
+	private FormPanel				m_uploadForm;		//
+	private Label					m_overwriteHint;	//
+	private	SiteBrandingDescriptor	m_descriptor;		//
+	private String					m_fileUploadId;		//
 
 	/**
-	 * Inner class used to tell the composite about what it's uploading
-	 * and how to upload it.
+	 * Interface used to interact with the container about site
+	 * branding file uploads.
 	 */
-	public static class SiteBrandingDescriptor {
-		private boolean                 m_hasExistingFile;			// true -> Uploading will overwrite an existing file.  false -> It won't.
-		private FlexTable               m_grid;                // The table to contain the widgets that are created.
-		private GwtTeamingMessages		m_messages;					// Access to Vibe's messages.
-		private String					m_noFileError;				// Error to display if the user clicks the upload button without selecting a file.
-		private String					m_overwriteConfirmationMsg;	// Confirmation message to display asking the user to verify the want to overwrite an existing file.
-		private String					m_overwriteHint;			// Hint to display saying that the file will be overwritten.
-		private String					m_uploadAlt;				// ALT text for the 'Upload File' button.
-		private String					m_uploadId;					// The ID to use for this upload composite so that all of them in a dialog are unique.
-		private String					m_uploadOperation;			// The operation to submit with the upload form's URL. 
-		private String					m_widgetLabel;				// Caption for this upload composite.
-
-		/**
-		 * Constructor method.
-		 */
-		public SiteBrandingDescriptor() {
-			// Simply initialize the super class.
-			super();
-		}
-		
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public boolean            hasExistingFile()             {return m_hasExistingFile;         }
-		public FlexTable          getGrid()                     {return m_grid;                    }
-		public GwtTeamingMessages getMessages()                 {return m_messages;                }
-		public String             getNoFileError()              {return m_noFileError;             }
-		public String             getOverwriteConfirmationMsg() {return m_overwriteConfirmationMsg;}
-		public String             getOverwriteHint()            {return m_overwriteHint;           }
-		public String             getUploadAlt()                {return m_uploadAlt;               }
-		public String             getUploadId()                 {return m_uploadId;                }
-		public String             getUploadOperation()          {return m_uploadOperation;         }
-		public String             getWidgetLabel()              {return m_widgetLabel;             }
-		
-		/**
-		 * Set'er methods.
-		 * 
-		 * @param
-		 */
-		public void setHasExistingFile(         boolean            hasExistingFile)          {m_hasExistingFile          = hasExistingFile;         }
-		public void setGrid(                    FlexTable          grid)                     {m_grid                     = grid;                    }
-		public void setMessages(                GwtTeamingMessages messages)                 {m_messages                 = messages;                }
-		public void setNoFileError(             String             noFileError)              {m_noFileError              = noFileError;             }
-		public void setOverwriteConfirmationMsg(String             overwriteConfirmationMsg) {m_overwriteConfirmationMsg = overwriteConfirmationMsg;}
-		public void setOverwriteHint(           String             overwriteHint)            {m_overwriteHint            = overwriteHint;           }
-		public void setUploadAlt(               String             uploadAlt)                {m_uploadAlt                = uploadAlt;               }
-		public void setUploadId(                String             uploadId)                 {m_uploadId                 = uploadId;                }
-		public void setUploadOperation(         String             uploadOperation)          {m_uploadOperation          = uploadOperation;         }
-		public void setWidgetLabel(             String             widgetLabel)              {m_widgetLabel              = widgetLabel;             }
+	public interface SiteBrandingDescriptor {
+		public boolean            hasExistingFile();
+		public FlexTable          getGrid();
+		public GwtTeamingMessages getMessages();
+		public String             getFileName();
+		public String             getNoFileError();
+		public String             getOverwriteConfirmationMsg(String fName);
+		public String             getOverwriteHint(           String fName);
+		public String             getRemoveAlt();
+		public String             getRemoveConfirmationMsg();
+		public String             getUploadAlt();
+		public String             getUploadId();
+		public String             getUploadOperation();
+		public String             getWidgetLabel();
+		public void               removeFile();
+		public void               setFileName(String fName);
 	}
 	
 	/**
@@ -150,13 +122,11 @@ public class UploadSiteBrandingFile implements ConfirmDlgClient {
 		return reply;
 	}
 	
-	@SuppressWarnings("unused")
 	private InlineLabel buildInlineLabel(String data) {
 		// Always use the initial form of the method.
 		return buildInlineLabel(data, (-1), null);
 	}
 
-	@SuppressWarnings("unused")
 	private InlineLabel buildInlineLabel(String data, int length) {
 		// Always use the initial form of the method.
 		return buildInlineLabel(data, length, null);
@@ -183,7 +153,7 @@ public class UploadSiteBrandingFile implements ConfirmDlgClient {
 
 		// ...create the <FORM> for the upload widgets...
 		m_uploadForm = new FormPanel();
-		m_uploadForm.getElement().setId("siteBrandingUpload_form_" + m_descriptor.getUploadId());
+		m_uploadForm.getElement().setId("uploadSiteBranding_form_" + m_descriptor.getUploadId());
 		m_uploadForm.setAction(  GwtClientHelper.getRequestInfo().getBaseVibeUrl());
 		m_uploadForm.setEncoding(FormPanel.ENCODING_MULTIPART                     );
 		m_uploadForm.setMethod(  FormPanel.METHOD_POST                            );
@@ -211,7 +181,17 @@ public class UploadSiteBrandingFile implements ConfirmDlgClient {
 			 */
 			@Override
 			public void onSubmitComplete(SubmitCompleteEvent event) {
-				// Nothing to do.
+				// Store the name of the file we just uploaded in the
+				// descriptor...
+				String fName = jsGetBaseUploadFileName(m_fileUploadId);
+				m_descriptor.setFileName(fName);
+				
+				// ...show the hint with the new name...
+				m_overwriteHint.getElement().setInnerText(m_descriptor.getOverwriteHint(fName));
+				m_overwriteHint.setVisible(true);
+				
+				// ...and enable the 'Remove' button.
+				m_removeButton.setEnabled(true);
 			}
 		});
 		
@@ -227,17 +207,25 @@ public class UploadSiteBrandingFile implements ConfirmDlgClient {
 		hi = new Hidden(); hi.setName("operation"); hi.setValue(m_descriptor.getUploadOperation()); uploadPanel.add(hi);
 		
 		// ...create the file <INPUT> widget...
-		m_fileInput = new FileUpload();
-		m_fileInput.setName("siteBrandingUpload_input_" + m_descriptor.getUploadId());
-		m_fileInput.addStyleName("vibe-uploadSiteBranding-input");
-		uploadPanel.add(m_fileInput);
+		m_fileUpload = new FileUpload();
+		m_fileUploadId = ("uploadSiteBranding_input_" + m_descriptor.getUploadId());
+		m_fileUpload.setName(m_fileUploadId);
+		m_fileUpload.getElement().setId(m_fileUploadId);
+		m_fileUpload.addStyleName("vibe-uploadSiteBranding-input");
+		uploadPanel.add(m_fileUpload);
+		m_fileUpload.addChangeHandler(new ChangeHandler() {
+			@Override
+			public void onChange(ChangeEvent event) {
+				m_uploadButton.setEnabled(GwtClientHelper.hasString(m_fileUpload.getFilename())); 
+			}
+		});
 
 		// ...and create the 'Upload File' <INPUT>.
-		Button uploadButton = new Button(m_descriptor.getMessages().uploadSiteBranding_Upload(), new ClickHandler() {
+		m_uploadButton = new Button(m_descriptor.getMessages().uploadSiteBranding_Upload(), new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				// If the user hasn't selected a file...
-				if (!(GwtClientHelper.hasString(m_fileInput.getFilename()))) {
+				if (!(GwtClientHelper.hasString(m_fileUpload.getFilename()))) {
 					// ...tell them about the problem and don't submit
 					// ...the form.
 					GwtClientHelper.deferredAlert(m_descriptor.getNoFileError());
@@ -246,64 +234,139 @@ public class UploadSiteBrandingFile implements ConfirmDlgClient {
 				
 				// If there's an existing file, confirm the user wants
 				// to overwrite it, otherwise, simply submit the form.
-				if (m_descriptor.hasExistingFile())
-				     ConfirmDlg.createAsync(UploadSiteBrandingFile.this);
-				else submitFormAsync();
-			}
-		});
-		uploadButton.setTitle(m_descriptor.getUploadAlt());
-		ft.setWidget(row, 2, uploadButton);
-		
-		// Will this overwrite an existing file? 
-		if (m_descriptor.hasExistingFile()) {
-			// Yes!  Add a hint to the table telling the user.
-			row += 1;
-			fcf.setColSpan(row, 1, 2);
-			InlineLabel hint = new InlineLabel(m_descriptor.getOverwriteHint());
-			hint.addStyleName("vibe-uploadSiteBranding-overwriteHint");
-			ft.setWidget(row, 1, hint);
-		}
-	}
+				if (m_descriptor.hasExistingFile()) {
+					ConfirmDlg.createAsync(new ConfirmDlgClient() {
+						@Override
+						public void onUnavailable() {
+							// Nothing to do.  Error handled in
+							// asynchronous provider.
+						}
+						
+						@Override
+						public void onSuccess(ConfirmDlg cDlg) {
+							ConfirmDlg.initAndShow(
+								cDlg,
+								new ConfirmCallback() {
+									@Override
+									public void dialogReady() {
+										// Ignored.  We don't really care when the dialog
+										// is ready.
+									}
 
-	/**
-	 * Called if the ConfirmDlg cannot be instantiated.
-	 * 
-	 * Implements the ConfirmDlgCallback.onUnavailable method.
-	 */
-	@Override
-	public void onUnavailable() {
-		// Nothing to do.  Error handled in
-		// asynchronous provider.
-	}
-	
-	/**
-	 * Called when the ConfirmDlg is instantiated.
-	 * 
-	 * Implements the ConfirmDlgCallback.onSuccess() method.
-	 */
-	@Override
-	public void onSuccess(ConfirmDlg cDlg) {
-		ConfirmDlg.initAndShow(
-			cDlg,
-			new ConfirmCallback() {
-				@Override
-				public void dialogReady() {
-					// Ignored.  We don't really care when the dialog
-					// is ready.
+									@Override
+									public void accepted() {
+										// Yes, they're sure!  Overwrite it.
+										submitFormAsync();
+									}
+
+									@Override
+									public void rejected() {
+										// No, they're not sure!
+									}
+								},
+								m_descriptor.getOverwriteConfirmationMsg(m_descriptor.getFileName()));
+						}
+					});
 				}
-
-				@Override
-				public void accepted() {
-					// Yes, they're sure!  Overwrite it.
+				else {
 					submitFormAsync();
 				}
+			}
+		});
+		m_uploadButton.setTitle(m_descriptor.getUploadAlt());
+		ft.setWidget(row, 2, m_uploadButton);
+		m_uploadButton.setEnabled(false); 
+		
+		m_removeButton = new Button(m_descriptor.getMessages().uploadSiteBranding_Remove(), new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				// If the user hasn't selected a file...
+				if (m_descriptor.hasExistingFile()) {
+					// If there's an existing file, confirm the user wants
+					// to overwrite it, otherwise, simply submit the form.
+					if (m_descriptor.hasExistingFile()) {
+					     ConfirmDlg.createAsync(new ConfirmDlgClient() {
+							@Override
+							public void onUnavailable() {
+								// Nothing to do.  Error handled in
+								// asynchronous provider.
+							}
+							
+							@Override
+							public void onSuccess(ConfirmDlg cDlg) {
+								ConfirmDlg.initAndShow(
+									cDlg,
+									new ConfirmCallback() {
+										@Override
+										public void dialogReady() {
+											// Ignored.  We don't really care when the dialog
+											// is ready.
+										}
 
-				@Override
-				public void rejected() {
-					// No, they're not sure!
+										@Override
+										public void accepted() {
+											// Yes, they're sure!  Remove it.
+											removeFileAsync();
+										}
+
+										@Override
+										public void rejected() {
+											// No, they're not sure!
+										}
+									},
+									m_descriptor.getRemoveConfirmationMsg());
+							}
+						});
+					}
+					else {
+						removeFileAsync();
+					}
 				}
-			},
-			m_descriptor.getOverwriteConfirmationMsg());
+			}
+		});
+		m_removeButton.setTitle(m_descriptor.getRemoveAlt());
+		ft.setWidget(row, 3, m_removeButton);
+		m_removeButton.setEnabled(m_descriptor.hasExistingFile());
+		
+		// Add a hint to the table telling the user what happens if
+		// they upload a new file.
+		row += 1;
+		fcf.setColSpan(row, 1, 3);
+		m_overwriteHint = new Label(m_descriptor.getOverwriteHint(m_descriptor.getFileName()));
+		m_overwriteHint.addStyleName("vibe-uploadSiteBranding-overwriteHint");
+		ft.setWidget(row, 1, m_overwriteHint);
+		m_overwriteHint.setVisible(m_descriptor.hasExistingFile());
+	}
+
+	/*
+	 * Returns the base file name from the file <INPUT> widget with the
+	 * specified ID.
+	 * 
+	 * We can't just use FileUpload.getFilename() here because WebKit
+	 * (e.g., Chrome) browser return something like
+	 * 'C:\fakepath\filename.ext' where all we want is 'filename.ext'.
+	 */
+	private static native String jsGetBaseUploadFileName(String id) /*-{
+		return $wnd.top.document.getElementById(id).files[0].name;
+	}-*/;
+
+	/*
+	 * Asynchronously removes the current file.
+	 */
+	private void removeFileAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				removeFileNow();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously removes the current file.
+	 */
+	private void removeFileNow() {
+		m_descriptor.removeFile();
 	}
 	
 	/*
