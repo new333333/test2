@@ -32,10 +32,17 @@
  */
 package org.kablink.teaming.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.util.FileUtil;
 
 /**
  * Class for manipulating the Desktop and Mobile Applications Site
@@ -44,8 +51,21 @@ import org.apache.commons.logging.LogFactory;
  * @author drfoster@novell.com
  */
 public class SiteBrandingHelper {
-	@SuppressWarnings("unused")
 	private static Log m_logger = LogFactory.getLog(SiteBrandingHelper.class);
+
+	// Strings that supply an application's type.
+	private final static String	DESKTOP	= "desktop";
+	private final static String	MOBILE	= "mobile";
+	
+	// Strings that supply an application's platform.
+	private final static String ANDROID	= "android";
+	private final static String IOS		= "ios";
+	private final static String MAC		= "mac";
+	private final static String WINDOWS	= "windows";
+	
+	// String that supplies the base path name for application site
+	// branding.
+	private final static String SITE_BRANDING_BASE	= "siteBranding";
 	
 	/*
 	 * Class constructor that prevents this class from being
@@ -62,10 +82,56 @@ public class SiteBrandingHelper {
 	 * @return
 	 */
 	public static String getAndroidMobileApplicationBranding() {
-//!		...this needs to be implemented...		
-		return null;
+		return getApplicationBrandingImpl(getAppNode(ANDROID, MOBILE));
 	}
 
+	/*
+	 * Returns the directory File object to use for the appNode. 
+	 */
+	private static File getAppDir(String appNode, boolean addTrailingSeparator) {
+		File appDir = new File(getSiteBrandingPath(appNode, addTrailingSeparator));
+		int tries = 0;
+		while (appDir.exists() && (!(appDir.isDirectory()))) {
+			appDir = new File(getSiteBrandingPath(appNode + "_" + ++tries)); 
+		}
+		if (!(appDir.exists())) {
+			appDir.mkdirs();
+		}
+		return appDir;
+	}
+	
+	private static File getAppDir(String appNode) {
+		// Always use the initial form of the method.
+		return getAppDir(appNode, false);	// false -> Don't include a trailing path separator. 
+	}
+	
+	/*
+	 * Returns the name of the current Application Site Branding file
+	 * from the specified application node.
+	 */
+	private static String getApplicationBrandingImpl(String appNode) {
+		File   appDir = getAppDir(appNode);
+		File[] files  = appDir.listFiles();
+		String reply = null;
+		if ((null != files) && (0 < files.length)) {
+			for (File file:  files) {
+				if (file.isFile()) {
+					reply = file.getName();
+					break;
+				}
+			}
+		}
+		return reply;
+	}
+
+	/*
+	 * Returns the path node that corresponds to a platform
+	 * and application type.
+	 */
+	private static String getAppNode(String platform, String type) {
+		return (type + File.separator + platform);
+	}
+	
 	/**
 	 * Returns the name of the current IOS Mobile Application Site
 	 * Branding file.
@@ -73,8 +139,7 @@ public class SiteBrandingHelper {
 	 * @return
 	 */
 	public static String getIosMobileApplicationBranding() {
-//!		...this needs to be implemented...		
-		return null;
+		return getApplicationBrandingImpl(getAppNode(IOS, MOBILE));
 	}
 
 	/**
@@ -84,8 +149,27 @@ public class SiteBrandingHelper {
 	 * @return
 	 */
 	public static String getMacDesktopApplicationBranding() {
-//!		...this needs to be implemented...		
-		return null;
+		return getApplicationBrandingImpl(getAppNode(MAC, DESKTOP));
+	}
+
+	/*
+	 * Returns the path to where the desktop and mobile application
+	 * site branding files are stored.
+	 * 
+	 * Example:
+	 *    data/siteBranding/kablink/mac/desktop
+	 */
+	private static String getSiteBrandingPath(String appNode, boolean addTrailingSeparator) {
+		String reply = (SPropsUtil.getDirPath("data.root.dir") + SITE_BRANDING_BASE + File.separator + RequestContextHolder.getRequestContext().getZoneName() + File.separator + appNode + File.separator);
+		if (addTrailingSeparator) {
+			reply += File.separator;
+		}
+		return reply;
+	}
+	
+	private static String getSiteBrandingPath(String appNode) {
+		// Always use the initial form of the method.
+		return getSiteBrandingPath(appNode, false);	// false -> Don't include a trailing path separator.
 	}
 
 	/**
@@ -95,8 +179,7 @@ public class SiteBrandingHelper {
 	 * @return
 	 */
 	public static String getWindowsDesktopApplicationBranding() {
-//!		...this needs to be implemented...		
-		return null;
+		return getApplicationBrandingImpl(getAppNode(WINDOWS, DESKTOP));
 	}
 
 	/**
@@ -106,8 +189,7 @@ public class SiteBrandingHelper {
 	 * @return
 	 */
 	public static String getWindowsMobileApplicationBranding() {
-//!		...this needs to be implemented...		
-		return null;
+		return getApplicationBrandingImpl(getAppNode(WINDOWS, MOBILE));
 	}
 
 	/**
@@ -117,9 +199,54 @@ public class SiteBrandingHelper {
 	 * @param is
 	 */
 	public static void setAndroidMobileApplicationBranding(String fileName, InputStream is) {
-//!		...this needs to be implemented...		
+		setApplicationBrandingImpl(getAppNode(ANDROID, MOBILE), fileName, is);
 	}
 	
+	/*
+	 * Sets the Application Site Branding file using the given
+	 * InputStream into the specified application node using the given
+	 * file name.
+	 */
+	private static void setApplicationBrandingImpl(String appNode, String fileName, InputStream is) {
+		// Do we have the name of the file to set?
+		if (MiscUtil.hasString(fileName)) {
+			// Yes!  Does the target directory contain any File's?
+			File   appDir = getAppDir(appNode);
+			File[] files  = appDir.listFiles();
+			if ((null != files) && (0 < files.length)) {
+				// Yes!  Scan them?
+				for (File file:  files) {
+					// Is this a file (vs. a directory)?
+					if (file.isFile()) {
+						// Yes!  Delete it.
+						file.delete();
+					}
+				}
+			}
+			
+			// Create the new file...
+			File fo = new File(appDir, fileName);
+			FileOutputStream fos = null;
+			try {
+				// ...and copy its contents from the InputStream.
+				fos = new FileOutputStream(fo, false);
+				FileUtil.copy(is, fos);
+			}
+			catch (IOException e) {
+				m_logger.error("setApplicationBrandingImpl( EXCEPTION ):  Could not write '" + appNode + "' site branding file '" + fileName + "'", e);
+			}
+			finally {
+				// Ensure the output stream we write the file to has been
+				// closed.
+				if (null != fos) {
+					try                 {fos.close(); }
+					catch (Exception e) {/* Ignore. */}
+					fos = null;
+				}
+			}
+		}
+	}
+
 	/**
 	 * Sets the IOS Mobile Application Site Branding file.
 	 * 
@@ -127,7 +254,7 @@ public class SiteBrandingHelper {
 	 * @param is
 	 */
 	public static void setIosMobileApplicationBranding(String fileName, InputStream is) {
-//!		...this needs to be implemented...		
+		setApplicationBrandingImpl(getAppNode(IOS, MOBILE), fileName, is);
 	}
 	
 	/**
@@ -137,7 +264,7 @@ public class SiteBrandingHelper {
 	 * @param is
 	 */
 	public static void setMacDesktopApplicationBranding(String fileName, InputStream is) {
-//!		...this needs to be implemented...		
+		setApplicationBrandingImpl(getAppNode(MAC, DESKTOP), fileName, is);
 	}
 	
 	/**
@@ -147,7 +274,7 @@ public class SiteBrandingHelper {
 	 * @param is
 	 */
 	public static void setWindowsDesktopApplicationBranding(String fileName, InputStream is) {
-//!		...this needs to be implemented...		
+		setApplicationBrandingImpl(getAppNode(WINDOWS, DESKTOP), fileName, is);
 	}
 	
 	/**
@@ -157,56 +284,75 @@ public class SiteBrandingHelper {
 	 * @param is
 	 */
 	public static void setWindowsMobileApplicationBranding(String fileName, InputStream is) {
-//!		...this needs to be implemented...		
+		setApplicationBrandingImpl(getAppNode(WINDOWS, MOBILE), fileName, is);
 	}
 	
 	/**
-	 * Removes the the Android Mobile Application Site Branding file of
-	 * the given name.
+	 * Removes the Android Mobile Application Site Branding file of the
+	 * given name.
 	 * 
 	 * @return
 	 */
-	public static void removeAndroidMobileApplicationBranding(String fName) {
-//!		...this needs to be implemented...		
+	public static void removeAndroidMobileApplicationBranding(String fileName) {
+		removeApplicationBrandingImpl(getAppNode(ANDROID, MOBILE), fileName);
+	}
+	
+	/*
+	 * Removes the Application Site Branding file from the specified
+	 * application node with the given name.
+	 */
+	private static void removeApplicationBrandingImpl(String appNode, String fileName) {
+		if (MiscUtil.hasString(fileName)) {
+			File   appDir = getAppDir(appNode);
+			File[] files  = appDir.listFiles();
+			if ((null != files) && (0 < files.length)) {
+				for (File file:  files) {
+					if (file.isFile() && file.getName().equals(fileName)) {
+						file.delete();
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	/**
-	 * Removes the the IOS Mobile Application Site Branding file of
-	 * the given name.
+	 * Removes the IOS Mobile Application Site Branding file of the
+	 * given name.
 	 * 
 	 * @return
 	 */
-	public static void removeIosMobileApplicationBranding(String fName) {
-//!		...this needs to be implemented...		
+	public static void removeIosMobileApplicationBranding(String fileName) {
+		removeApplicationBrandingImpl(getAppNode(IOS, MOBILE), fileName);
 	}
 
 	/**
-	 * Removes the the Mac Desktop Application Site Branding file of
-	 * the given name.
+	 * Removes the Mac Desktop Application Site Branding file of the
+	 * given name.
 	 * 
 	 * @return
 	 */
-	public static void removeMacDesktopApplicationBranding(String fName) {
-//!		...this needs to be implemented...		
+	public static void removeMacDesktopApplicationBranding(String fileName) {
+		removeApplicationBrandingImpl(getAppNode(MAC, DESKTOP), fileName);
 	}
 
 	/**
-	 * Removes the the Windows Desktop Application Site Branding file of
+	 * Removes the Windows Desktop Application Site Branding file of
 	 * the given name.
 	 * 
 	 * @return
 	 */
-	public static void removeWindowsDesktopApplicationBranding(String fName) {
-//!		...this needs to be implemented...		
+	public static void removeWindowsDesktopApplicationBranding(String fileName) {
+		removeApplicationBrandingImpl(getAppNode(WINDOWS, DESKTOP), fileName);
 	}
 
 	/**
-	 * Removes the the Windows Mobile Application Site Branding file of
-	 * the given name.
+	 * Removes the Windows Mobile Application Site Branding file of the
+	 * given name.
 	 * 
 	 * @return
 	 */
-	public static void removeWindowsMobileApplicationBranding(String fName) {
-//!		...this needs to be implemented...		
+	public static void removeWindowsMobileApplicationBranding(String fileName) {
+		removeApplicationBrandingImpl(getAppNode(WINDOWS, MOBILE), fileName);
 	}
 }

@@ -41,15 +41,20 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GwtMobileBrandingRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.RemoveMobileSiteBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.UploadSiteBrandingFile.SiteBrandingDescriptor;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -59,7 +64,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class EditMobileBrandingDlg extends DlgBox
 	implements
 		// Event handlers implemented by this class.
@@ -72,6 +76,12 @@ public class EditMobileBrandingDlg extends DlgBox
 	private int									m_showX;					// The x and...
 	private int									m_showY;					// ...y position to show the dialog.
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
+	@SuppressWarnings("unused")
+	private UploadSiteBrandingFile				m_androidUploader;			// Manages uploading Android mobile application site branding files. 
+	@SuppressWarnings("unused")
+	private UploadSiteBrandingFile				m_iosUploader;				// Manages uploading IOS     mobile application site branding files. 
+	@SuppressWarnings("unused")
+	private UploadSiteBrandingFile				m_windowsUploader;			// Manages uploading Windows mobile application site branding files.
 	private VibeFlowPanel						m_rootPanel;				// The panel that holds the dialog's contents.
 
 	// The following defines the TeamingEvents that are handled by
@@ -236,8 +246,307 @@ public class EditMobileBrandingDlg extends DlgBox
 		// usage, ...)
 		m_rootPanel.clear();
 
-//!		...this needs to be implemented...
-		
+		// ...create a FlexTable for the upload widgets...
+		final FlexTable ft = new VibeFlexTable();
+		ft.addStyleName("vibe-editDesktopBrandingDlg-uploadTable");
+		ft.setCellPadding(3);
+		ft.setCellSpacing(3);
+		m_rootPanel.add(ft);
+
+		// ...add the widgets for uploading Android branding...
+		m_androidUploader = new UploadSiteBrandingFile(new SiteBrandingDescriptor() {
+			@Override
+			public boolean hasExistingFile() {
+				return GwtClientHelper.hasString(getFileName());
+			}
+
+			@Override
+			public FlexTable getGrid() {
+				return ft;
+			}
+
+			@Override
+			public GwtTeamingMessages getMessages() {
+				return m_messages;
+			}
+
+			@Override
+			public String getFileName() {
+				return m_mobileBrandingData.getAndroidFileName();
+			}
+
+			@Override
+			public String getNoFileError() {
+				return m_messages.editMobileBrandingDlg_Error_NoAndroidFile();
+			}
+
+			@Override
+			public String getOverwriteConfirmationMsg(String fName) {
+				return m_messages.editMobileBrandingDlg_Comfirm_AndroidOverwrite(fName);
+			}
+
+			@Override
+			public String getOverwriteHint(String fName) {
+				return m_messages.editMobileBrandingDlg_Hint_AndroidOverwrite(fName);
+			}
+
+			@Override
+			public String getRemoveAlt() {
+				return m_messages.editMobileBrandingDlg_Alt_AndroidRemove();
+			}
+			
+			@Override
+			public String getRemoveConfirmationMsg() {
+				return m_messages.editMobileBrandingDlg_Comfirm_AndroidRemove(getFileName());
+			}
+
+			@Override
+			public String getUploadAlt() {
+				return m_messages.editMobileBrandingDlg_Alt_AndroidUpload();
+			}
+
+			@Override
+			public String getUploadId() {
+				return "AndroidBranding";
+			}
+
+			@Override
+			public String getUploadOperation() {
+				return "uploadMobileBranding_Android";
+			}
+
+			@Override
+			public String getWidgetLabel() {
+				return m_messages.editMobileBrandingDlg_AndroidCaption();
+			}
+			
+			@Override
+			public void removeFile() {
+				RemoveMobileSiteBrandingCmd cmd = new RemoveMobileSiteBrandingCmd();
+				cmd.setAndroidFileName(getFileName());
+				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(final Throwable t) {
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
+							@Override
+							public void execute() {
+								GwtClientHelper.handleGwtRPCFailure(
+									t,
+									GwtTeaming.getMessages().rpcFailure_RemoveAndroidMobileBranding());
+							}
+						});
+					}
+			
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						setFileName(null);
+						populateDlgAsync();
+					}
+				});
+			}
+			
+			@Override
+			public void setFileName(String fName) {
+				m_mobileBrandingData.setAndroidFileName(fName);
+			}
+		});
+
+		// ...add the widgets for uploading Ios branding...
+		m_iosUploader = new UploadSiteBrandingFile(new SiteBrandingDescriptor() {
+			@Override
+			public boolean hasExistingFile() {
+				return GwtClientHelper.hasString(getFileName());
+			}
+
+			@Override
+			public FlexTable getGrid() {
+				return ft;
+			}
+
+			@Override
+			public GwtTeamingMessages getMessages() {
+				return m_messages;
+			}
+
+			@Override
+			public String getFileName() {
+				return m_mobileBrandingData.getIOSFileName();
+			}
+
+			@Override
+			public String getNoFileError() {
+				return m_messages.editMobileBrandingDlg_Error_NoIosFile();
+			}
+
+			@Override
+			public String getOverwriteConfirmationMsg(String fName) {
+				return m_messages.editMobileBrandingDlg_Comfirm_IosOverwrite(fName);
+			}
+
+			@Override
+			public String getOverwriteHint(String fName) {
+				return m_messages.editMobileBrandingDlg_Hint_IosOverwrite(fName);
+			}
+
+			@Override
+			public String getRemoveAlt() {
+				return m_messages.editMobileBrandingDlg_Alt_IosRemove();
+			}
+			
+			@Override
+			public String getRemoveConfirmationMsg() {
+				return m_messages.editMobileBrandingDlg_Comfirm_IosRemove(getFileName());
+			}
+
+			@Override
+			public String getUploadAlt() {
+				return m_messages.editMobileBrandingDlg_Alt_IosUpload();
+			}
+
+			@Override
+			public String getUploadId() {
+				return "IosBranding";
+			}
+
+			@Override
+			public String getUploadOperation() {
+				return "uploadMobileBranding_IOS";
+			}
+
+			@Override
+			public String getWidgetLabel() {
+				return m_messages.editMobileBrandingDlg_IosCaption();
+			}
+			
+			@Override
+			public void removeFile() {
+				RemoveMobileSiteBrandingCmd cmd = new RemoveMobileSiteBrandingCmd();
+				cmd.setIOSFileName(getFileName());
+				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(final Throwable t) {
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
+							@Override
+							public void execute() {
+								GwtClientHelper.handleGwtRPCFailure(
+									t,
+									GwtTeaming.getMessages().rpcFailure_RemoveIosMobileBranding());
+							}
+						});
+					}
+			
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						setFileName(null);
+						populateDlgAsync();
+					}
+				});
+			}
+			
+			@Override
+			public void setFileName(String fName) {
+				m_mobileBrandingData.setIOSFileName(fName);
+			}
+		});
+
+		// ...add the widgets for uploading Windows branding...
+		m_windowsUploader = new UploadSiteBrandingFile(new SiteBrandingDescriptor() {
+			@Override
+			public boolean hasExistingFile() {
+				return GwtClientHelper.hasString(getFileName());
+			}
+
+			@Override
+			public FlexTable getGrid() {
+				return ft;
+			}
+
+			@Override
+			public GwtTeamingMessages getMessages() {
+				return m_messages;
+			}
+
+			@Override
+			public String getFileName() {
+				return m_mobileBrandingData.getWindowsFileName();
+			}
+
+			@Override
+			public String getNoFileError() {
+				return m_messages.editMobileBrandingDlg_Error_NoWindowsFile();
+			}
+
+			@Override
+			public String getOverwriteConfirmationMsg(String fName) {
+				return m_messages.editMobileBrandingDlg_Comfirm_WindowsOverwrite(fName);
+			}
+
+			@Override
+			public String getOverwriteHint(String fName) {
+				return m_messages.editMobileBrandingDlg_Hint_WindowsOverwrite(fName);
+			}
+
+			@Override
+			public String getRemoveAlt() {
+				return m_messages.editMobileBrandingDlg_Alt_WindowsRemove();
+			}
+
+			@Override
+			public String getRemoveConfirmationMsg() {
+				return m_messages.editMobileBrandingDlg_Comfirm_WindowsRemove(getFileName());
+			}
+
+			@Override
+			public String getUploadAlt() {
+				return m_messages.editMobileBrandingDlg_Alt_WindowsUpload();
+			}
+
+			@Override
+			public String getUploadId() {
+				return "WindowsBranding";
+			}
+
+			@Override
+			public String getUploadOperation() {
+				return "uploadMobileBranding_Windows";
+			}
+
+			@Override
+			public String getWidgetLabel() {
+				return m_messages.editMobileBrandingDlg_WindowsCaption();
+			}
+			
+			@Override
+			public void removeFile() {
+				RemoveMobileSiteBrandingCmd cmd = new RemoveMobileSiteBrandingCmd();
+				cmd.setWindowsFileName(getFileName());
+				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(final Throwable t) {
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
+							@Override
+							public void execute() {
+								GwtClientHelper.handleGwtRPCFailure(
+									t,
+									GwtTeaming.getMessages().rpcFailure_RemoveWindowsMobileBranding());
+							}
+						});
+					}
+			
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						setFileName(null);
+						populateDlgAsync();
+					}
+				});
+			}
+			
+			@Override
+			public void setFileName(String fName) {
+				m_mobileBrandingData.setWindowsFileName(fName);
+			}
+		});
+
 		// ...and position and show the dialog.
 		setPixelSize(    m_showCX, m_showCY);
 		setPopupPosition(m_showX,  m_showY );
