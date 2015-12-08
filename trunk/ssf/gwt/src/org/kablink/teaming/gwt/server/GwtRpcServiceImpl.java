@@ -248,6 +248,7 @@ import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SiteBrandingHelper;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -3445,6 +3446,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case REMOVE_DESKTOP_SITE_BRANDING:  {
+			RemoveDesktopSiteBrandingCmd rdsbCmd = ((RemoveDesktopSiteBrandingCmd) cmd);
+			String s = rdsbCmd.getMacFileName();
+			if (MiscUtil.hasString(s)) {
+				SiteBrandingHelper.removeMacDesktopApplicationBranding(s);
+			}
+			s = rdsbCmd.getWindowsFileName();
+			if (MiscUtil.hasString(s)) {
+				SiteBrandingHelper.removeWindowsDesktopApplicationBranding(s);
+			}
+			response = new VibeRpcResponse(new BooleanRpcResponseData(true));
+			return response;
+		}
+		
 		case REMOVE_EXTENSION:
 		{
 			RemoveExtensionCmd reCmd;
@@ -3479,6 +3494,24 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = GwtServerHelper.removeFavorite( this, req, rfCmd.getFavoriteId() );
 			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case REMOVE_MOBILE_SITE_BRANDING:  {
+			RemoveMobileSiteBrandingCmd rmsbCmd = ((RemoveMobileSiteBrandingCmd) cmd);
+			String s = rmsbCmd.getAndroidFileName();
+			if (MiscUtil.hasString(s)) {
+				SiteBrandingHelper.removeAndroidMobileApplicationBranding(s);
+			}
+			s = rmsbCmd.getIOSFileName();
+			if (MiscUtil.hasString(s)) {
+				SiteBrandingHelper.removeIosMobileApplicationBranding(s);
+			}
+			s = rmsbCmd.getWindowsFileName();
+			if (MiscUtil.hasString(s)) {
+				SiteBrandingHelper.removeWindowsMobileApplicationBranding(s);
+			}
+			response = new VibeRpcResponse(new BooleanRpcResponseData(true));
 			return response;
 		}
 		

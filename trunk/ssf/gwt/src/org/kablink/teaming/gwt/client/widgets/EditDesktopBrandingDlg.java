@@ -41,6 +41,8 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.GwtDesktopBrandingRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.RemoveDesktopSiteBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -52,6 +54,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
@@ -62,21 +65,22 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class EditDesktopBrandingDlg extends DlgBox
 	implements
 		// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler
 {
-	private GwtDesktopBrandingRpcResponseData	m_desktopBrandingData;		//
+	private GwtDesktopBrandingRpcResponseData	m_desktopBrandingData;		// The current desktop application site branding information. 
 	private GwtTeamingMessages					m_messages;					// Access to Vibe's messages.
-	private int									m_showCX;					// The cx and...
-	private int									m_showCY;					// ...cy size the dialog.
+	private int									m_showCX;					// The width and...
+	private int									m_showCY;					// ...height of the dialog.
 	private int									m_showX;					// The x and...
 	private int									m_showY;					// ...y position to show the dialog.
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private UploadSiteBrandingFile				m_macUploader;				//
-	private UploadSiteBrandingFile				m_windowsUploader;			//
+	@SuppressWarnings("unused")
+	private UploadSiteBrandingFile				m_macUploader;				// Manages uploading Mac     desktop application site branding files. 
+	@SuppressWarnings("unused")
+	private UploadSiteBrandingFile				m_windowsUploader;			// Manages uploading Windows desktop application site branding files.
 	private VibeFlowPanel						m_rootPanel;				// The panel that holds the dialog's contents.
 
 	// The following defines the TeamingEvents that are handled by
@@ -242,59 +246,207 @@ public class EditDesktopBrandingDlg extends DlgBox
 		m_rootPanel.clear();
 
 		// ...create a FlexTable for the upload widgets...
-		FlexTable ft = new VibeFlexTable();
+		final FlexTable ft = new VibeFlexTable();
 		ft.addStyleName("vibe-editDesktopBrandingDlg-uploadTable");
 		ft.setCellPadding(3);
 		ft.setCellSpacing(3);
 		m_rootPanel.add(ft);
 
 		// ...add the widgets for uploading Mac branding...
-		SiteBrandingDescriptor sbDescriptor = new SiteBrandingDescriptor();
-		boolean hasExistingFile = GwtClientHelper.hasString(m_desktopBrandingData.getMacFileName());
-		String overwriteConfirmationMsg;
-		String overwriteHint;
-		if (hasExistingFile) {
-			overwriteConfirmationMsg = m_messages.editDesktopBrandingDlg_Comfirm_MacOverwrite(m_desktopBrandingData.getMacFileName());
-			overwriteHint            = m_messages.editDesktopBrandingDlg_Hint_MacOverwrite(   m_desktopBrandingData.getMacFileName());
-		}
-		else {
-			overwriteConfirmationMsg =
-			overwriteHint            = null;
-		}
-		sbDescriptor.setHasExistingFile(         hasExistingFile);
-		sbDescriptor.setGrid(                    ft);
-		sbDescriptor.setMessages(                m_messages);
-		sbDescriptor.setWidgetLabel(             m_messages.editDesktopBrandingDlg_MacCaption());
-		sbDescriptor.setUploadAlt(               m_messages.editDesktopBrandingDlg_Alt_MacUpload());
-		sbDescriptor.setNoFileError(             m_messages.editDesktopBrandingDlg_Error_NoMacFile());
-		sbDescriptor.setOverwriteConfirmationMsg(overwriteConfirmationMsg);
-		sbDescriptor.setOverwriteHint(           overwriteHint);
-		sbDescriptor.setUploadId(                "MacBranding");
-		sbDescriptor.setUploadOperation(         "uploadDesktopBranding_Mac");
-		m_macUploader = new UploadSiteBrandingFile(sbDescriptor);
+		m_macUploader = new UploadSiteBrandingFile(new SiteBrandingDescriptor() {
+			@Override
+			public boolean hasExistingFile() {
+				return GwtClientHelper.hasString(getFileName());
+			}
+
+			@Override
+			public FlexTable getGrid() {
+				return ft;
+			}
+
+			@Override
+			public GwtTeamingMessages getMessages() {
+				return m_messages;
+			}
+
+			@Override
+			public String getFileName() {
+				return m_desktopBrandingData.getMacFileName();
+			}
+
+			@Override
+			public String getNoFileError() {
+				return m_messages.editDesktopBrandingDlg_Error_NoMacFile();
+			}
+
+			@Override
+			public String getOverwriteConfirmationMsg(String fName) {
+				return m_messages.editDesktopBrandingDlg_Comfirm_MacOverwrite(fName);
+			}
+
+			@Override
+			public String getOverwriteHint(String fName) {
+				return m_messages.editDesktopBrandingDlg_Hint_MacOverwrite(fName);
+			}
+
+			@Override
+			public String getRemoveAlt() {
+				return m_messages.editDesktopBrandingDlg_Alt_MacRemove();
+			}
+			
+			@Override
+			public String getRemoveConfirmationMsg() {
+				return m_messages.editDesktopBrandingDlg_Comfirm_MacRemove(getFileName());
+			}
+
+			@Override
+			public String getUploadAlt() {
+				return m_messages.editDesktopBrandingDlg_Alt_MacUpload();
+			}
+
+			@Override
+			public String getUploadId() {
+				return "MacBranding";
+			}
+
+			@Override
+			public String getUploadOperation() {
+				return "uploadDesktopBranding_Mac";
+			}
+
+			@Override
+			public String getWidgetLabel() {
+				return m_messages.editDesktopBrandingDlg_MacCaption();
+			}
+			
+			@Override
+			public void removeFile() {
+				RemoveDesktopSiteBrandingCmd cmd = new RemoveDesktopSiteBrandingCmd();
+				cmd.setMacFileName(getFileName());
+				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(final Throwable t) {
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
+							@Override
+							public void execute() {
+								GwtClientHelper.handleGwtRPCFailure(
+									t,
+									GwtTeaming.getMessages().rpcFailure_RemoveMacDesktopBranding());
+							}
+						});
+					}
+			
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						setFileName(null);
+						populateDlgAsync();
+					}
+				});
+			}
+			
+			@Override
+			public void setFileName(String fName) {
+				m_desktopBrandingData.setMacFileName(fName);
+			}
+		});
 
 		// ...add the widgets for uploading Windows branding...
-		sbDescriptor = new SiteBrandingDescriptor();
-		hasExistingFile = GwtClientHelper.hasString(m_desktopBrandingData.getWindowsFileName());
-		if (hasExistingFile) {
-			overwriteConfirmationMsg = m_messages.editDesktopBrandingDlg_Comfirm_WindowsOverwrite(m_desktopBrandingData.getWindowsFileName());
-			overwriteHint            = m_messages.editDesktopBrandingDlg_Hint_WindowsOverwrite(   m_desktopBrandingData.getWindowsFileName());
-		}
-		else {
-			overwriteConfirmationMsg =
-			overwriteHint            = null;
-		}
-		sbDescriptor.setHasExistingFile(         hasExistingFile);
-		sbDescriptor.setGrid(                    ft);
-		sbDescriptor.setMessages(                m_messages);
-		sbDescriptor.setWidgetLabel(             m_messages.editDesktopBrandingDlg_WindowsCaption());
-		sbDescriptor.setUploadAlt(               m_messages.editDesktopBrandingDlg_Alt_WindowsUpload());
-		sbDescriptor.setNoFileError(             m_messages.editDesktopBrandingDlg_Error_NoWindowsFile());
-		sbDescriptor.setOverwriteConfirmationMsg(overwriteConfirmationMsg);
-		sbDescriptor.setOverwriteHint(           overwriteHint);
-		sbDescriptor.setUploadId(                "WindowsBranding");
-		sbDescriptor.setUploadOperation(         "uploadDesktopBranding_Windows");
-		m_windowsUploader = new UploadSiteBrandingFile(sbDescriptor);
+		m_windowsUploader = new UploadSiteBrandingFile(new SiteBrandingDescriptor() {
+			@Override
+			public boolean hasExistingFile() {
+				return GwtClientHelper.hasString(getFileName());
+			}
+
+			@Override
+			public FlexTable getGrid() {
+				return ft;
+			}
+
+			@Override
+			public GwtTeamingMessages getMessages() {
+				return m_messages;
+			}
+
+			@Override
+			public String getFileName() {
+				return m_desktopBrandingData.getWindowsFileName();
+			}
+
+			@Override
+			public String getNoFileError() {
+				return m_messages.editDesktopBrandingDlg_Error_NoWindowsFile();
+			}
+
+			@Override
+			public String getOverwriteConfirmationMsg(String fName) {
+				return m_messages.editDesktopBrandingDlg_Comfirm_WindowsOverwrite(fName);
+			}
+
+			@Override
+			public String getOverwriteHint(String fName) {
+				return m_messages.editDesktopBrandingDlg_Hint_WindowsOverwrite(fName);
+			}
+
+			@Override
+			public String getRemoveAlt() {
+				return m_messages.editDesktopBrandingDlg_Alt_WindowsRemove();
+			}
+
+			@Override
+			public String getRemoveConfirmationMsg() {
+				return m_messages.editDesktopBrandingDlg_Comfirm_WindowsRemove(getFileName());
+			}
+
+			@Override
+			public String getUploadAlt() {
+				return m_messages.editDesktopBrandingDlg_Alt_WindowsUpload();
+			}
+
+			@Override
+			public String getUploadId() {
+				return "WindowsBranding";
+			}
+
+			@Override
+			public String getUploadOperation() {
+				return "uploadDesktopBranding_Windows";
+			}
+
+			@Override
+			public String getWidgetLabel() {
+				return m_messages.editDesktopBrandingDlg_WindowsCaption();
+			}
+			
+			@Override
+			public void removeFile() {
+				RemoveDesktopSiteBrandingCmd cmd = new RemoveDesktopSiteBrandingCmd();
+				cmd.setWindowsFileName(getFileName());
+				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(final Throwable t) {
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
+							@Override
+							public void execute() {
+								GwtClientHelper.handleGwtRPCFailure(
+									t,
+									GwtTeaming.getMessages().rpcFailure_RemoveWindowsDesktopBranding());
+							}
+						});
+					}
+			
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						setFileName(null);
+						populateDlgAsync();
+					}
+				});
+			}
+			
+			@Override
+			public void setFileName(String fName) {
+				m_desktopBrandingData.setWindowsFileName(fName);
+			}
+		});
 
 		// ...and position and show the dialog.
 		setPixelSize(    m_showCX, m_showCY);

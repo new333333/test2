@@ -65,10 +65,10 @@ public class EditMobileBrandingDlg extends DlgBox
 		// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler
 {
-	private GwtMobileBrandingRpcResponseData	m_mobileBrandingData;		//
+	private GwtMobileBrandingRpcResponseData	m_mobileBrandingData;		// The current mobile application site branding information.
 	private GwtTeamingMessages					m_messages;					// Access to Vibe's messages.
-	private int									m_showCX;					// The cx and...
-	private int									m_showCY;					// ...cy size the dialog.
+	private int									m_showCX;					// The width and...
+	private int									m_showCY;					// ...height of the dialog.
 	private int									m_showX;					// The x and...
 	private int									m_showY;					// ...y position to show the dialog.
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.

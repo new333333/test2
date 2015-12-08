@@ -51,6 +51,7 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.SiteBrandingHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.WebHelper;
 
@@ -125,17 +126,10 @@ public class GwtBrandingHelper {
 	public static GwtDesktopBrandingRpcResponseData getDesktopSiteBrandingData(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtBrandingHelper.getDesktopSiteBrandingData()");
 		try {
-			String macFileName;
-			String windowsFileName;
-			
-//!			...this needs to be implemented...
-			macFileName     =
-			windowsFileName = null;
-			
 			return
 				new GwtDesktopBrandingRpcResponseData(
-					macFileName,
-					windowsFileName);
+					SiteBrandingHelper.getMacDesktopApplicationBranding(),
+					SiteBrandingHelper.getWindowsDesktopApplicationBranding());
 		}
 		
 		catch (Exception ex) {
@@ -161,20 +155,11 @@ public class GwtBrandingHelper {
 	public static GwtMobileBrandingRpcResponseData getMobileSiteBrandingData(AllModulesInjected bs, HttpServletRequest request) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtBrandingHelper.getMobileSiteBrandingData()");
 		try {
-			String androidFileName;
-			String iosFileName;
-			String windowsFileName;
-			
-//!			...this needs to be implemented...
-			androidFileName =
-			iosFileName     =
-			windowsFileName = null;
-			
 			return
 				new GwtMobileBrandingRpcResponseData(
-					androidFileName,
-					iosFileName,
-					windowsFileName);
+					SiteBrandingHelper.getAndroidMobileApplicationBranding(),
+					SiteBrandingHelper.getIosMobileApplicationBranding(),
+					SiteBrandingHelper.getWindowsMobileApplicationBranding());
 		}
 		
 		catch (Exception ex) {

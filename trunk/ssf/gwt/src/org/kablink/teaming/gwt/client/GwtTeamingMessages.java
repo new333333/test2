@@ -593,7 +593,9 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_QViewMicroBlog();
 	String rpcFailure_RemoveBinderTag();
 	String rpcFailure_RemoveFavorite();
+	String rpcFailure_RemoveMacDesktopBranding();
 	String rpcFailure_RemoveSavedSearch();
+	String rpcFailure_RemoveWindowsDesktopBranding();
 	String rpcFailure_RenameEntity_File();
 	String rpcFailure_RenameEntity_Folder();
 	String rpcFailure_RenameEntity_Unknown();
@@ -3854,12 +3856,16 @@ public interface GwtTeamingMessages extends Messages {
 	
 	// Strings used by the 'Edit Desktop Branding' dialog.
 	String editDesktopBrandingDlgCaption();
+	String editDesktopBrandingDlg_Alt_MacRemove();
 	String editDesktopBrandingDlg_Alt_MacUpload();
+	String editDesktopBrandingDlg_Alt_WindowsRemove();
 	String editDesktopBrandingDlg_Alt_WindowsUpload();
-	String editDesktopBrandingDlg_Comfirm_MacOverwrite(String fName);
+	String editDesktopBrandingDlg_Comfirm_MacOverwrite(    String fName);
+	String editDesktopBrandingDlg_Comfirm_MacRemove(       String fName);
 	String editDesktopBrandingDlg_Comfirm_WindowsOverwrite(String fName);
-	String editDesktopBrandingDlg_Hint_MacOverwrite(String fName);
-	String editDesktopBrandingDlg_Hint_WindowsOverwrite(String fName);
+	String editDesktopBrandingDlg_Comfirm_WindowsRemove(   String fName);
+	String editDesktopBrandingDlg_Hint_MacOverwrite(       String fName);
+	String editDesktopBrandingDlg_Hint_WindowsOverwrite(   String fName);
 	String editDesktopBrandingDlg_MacCaption();
 	String editDesktopBrandingDlg_WindowsCaption();
 	String editDesktopBrandingDlg_Error_NoMacFile();
@@ -3867,7 +3873,29 @@ public interface GwtTeamingMessages extends Messages {
 	
 	// Strings used by the 'Edit Mobile Branding' dialog.
 	String editMobileBrandingDlgCaption();
+	String editMobileBrandingDlg_Alt_AndroidRemove();
+	String editMobileBrandingDlg_Alt_AndroidUpload();
+	String editMobileBrandingDlg_Alt_IosRemove();
+	String editMobileBrandingDlg_Alt_IosUpload();
+	String editMobileBrandingDlg_Alt_WindowsRemove();
+	String editMobileBrandingDlg_Alt_WindowsUpload();
+	String editMobileBrandingDlg_Comfirm_AndroidOverwrite(String fName);
+	String editMobileBrandingDlg_Comfirm_AndroidRemove(   String fName);
+	String editMobileBrandingDlg_Comfirm_IosOverwrite(    String fName);
+	String editMobileBrandingDlg_Comfirm_IosRemove(       String fName);
+	String editMobileBrandingDlg_Comfirm_WindowsOverwrite(String fName);
+	String editMobileBrandingDlg_Comfirm_WindowsRemove(   String fName);
+	String editMobileBrandingDlg_Hint_AndroidOverwrite(   String fName);
+	String editMobileBrandingDlg_Hint_IosOverwrite(       String fName);
+	String editMobileBrandingDlg_Hint_WindowsOverwrite(   String fName);
+	String editMobileBrandingDlg_AndroidCaption();
+	String editMobileBrandingDlg_IosCaption();
+	String editMobileBrandingDlg_WindowsCaption();
+	String editMobileBrandingDlg_Error_NoAndroidFile();
+	String editMobileBrandingDlg_Error_NoIosFile();
+	String editMobileBrandingDlg_Error_NoWindowsFile();
 	
 	// Strings used by the 'Upload Site Branding' composite.
+	String uploadSiteBranding_Remove();
 	String uploadSiteBranding_Upload();
 }
