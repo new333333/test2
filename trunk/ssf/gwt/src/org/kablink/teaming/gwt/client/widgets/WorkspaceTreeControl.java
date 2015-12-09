@@ -636,6 +636,12 @@ public class WorkspaceTreeControl extends ResizeComposite
 		if (isSidebarTree() && (!(m_mainPage.isAdminActive()))) {
 			setVisible(true);
 			m_hiddenByEmptySidebar = false;
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					m_treeDisplay.repositionBinderConfig();
+				}
+			});
 		}
 	}
 	

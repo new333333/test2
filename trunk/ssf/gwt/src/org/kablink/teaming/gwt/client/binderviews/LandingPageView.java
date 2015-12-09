@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -143,8 +143,10 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 		
 		m_mainPanel.clear();
 		
-		if ( configData == null )
+		if ( configData == null ) {
+			doViewReady();
 			return;
+		}
 		
 		if ( configData.isPreviewMode() )
 			m_mainPanel.addStyleName( "landingPageViewPreviewHeight" );
@@ -153,8 +155,7 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 		
 		// Tell the base class that we're done constructing the landing
 		// page view.
-		if ( configData.isPreviewMode() == false )
-			super.viewReady();
+		doViewReady();
 
 		binderInfo = getBinderInfo();
 		String binderId = ((null == binderInfo) ? null : binderInfo.getBinderId());
@@ -227,8 +228,7 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 
 		// Tell the base class that we're done constructing the landing
 		// page view.
-		if ( configData.isPreviewMode() == false )
-			super.viewReady();
+		doViewReady();
 	}
 	
 	/**
@@ -323,8 +323,10 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 		GetLandingPageDataCmd cmd;
 
 		final String binderId = getBinderIdAsString();
-		if ( binderId == null )
+		if ( binderId == null ) {
+			doViewReady();
 			return;
+		}
 		
 		// Issue an ajax request to get the landing page configuration data.
 		cmd = new GetLandingPageDataCmd( binderId );
@@ -340,6 +342,7 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetLandingPageData(),
 					binderId );
+				doViewReady();
 			}
 	
 			/**
@@ -376,5 +379,12 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 	public void toolPanelReady( ToolPanelBase toolPanel )
 	{
 		// Nothing to do.  We don't need to know when tool panels are ready.
+	}
+	
+	/*
+	 * Tells the super class that the view is ready to go.
+	 */
+	private void doViewReady() {
+		super.viewReady();
 	}
 }
