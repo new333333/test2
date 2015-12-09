@@ -441,6 +441,21 @@ public abstract class TreeDisplayBase {
 	}
 
 	/**
+	 * Does what's necessary to ensure the binder config selector
+	 * is still positioned correctly.
+	 * 
+	 * This is typically necessary when a an entry containing the one
+	 * with the configuration is expanded or collapsed or when one
+	 * above the one with the configuration is expanded or collapsed.
+	 * 
+	 * Provided as a no-op convenience so implementors can override it
+	 * if they want.
+	 */
+	public void repositionBinderConfig() {
+		// By default, we ignore this.
+	}
+	
+	/**
 	 * Called to reset the main menu context to that previously loaded.
 	 */
 	void resetMenuContext() {

@@ -1671,7 +1671,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		renderRow(grid, row, ti, renderDepth, false);	// false -> Not in process of collapsing a row.
 	}
 
-	/*
+	/**
 	 * Does what's necessary to ensure the binder config selector
 	 * is still positioned correctly.
 	 * 
@@ -1679,7 +1679,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * with the configuration is expanded or collapsed or when one
 	 * above the one with the configuration is expanded or collapsed.
 	 */
-	private void repositionBinderConfig() {
+	@Override
+	public void repositionBinderConfig() {
 		// Clear the existing configuration item...
 		clearSelectorConfig();
 		
