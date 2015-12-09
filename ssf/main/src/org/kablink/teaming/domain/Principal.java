@@ -90,7 +90,7 @@ public abstract class Principal extends Entry implements IPrincipal {
     private Set principalIds; // set of Long; this field is computed 
     protected Map<String,EmailAddress> emailAddresses;//initialized by hibernate access=field
     // these collections are loaded for quicker indexing, hibernate will not persist them
-    protected Map iEmailAddresses;
+    protected Map<String,EmailAddress> iEmailAddresses;
 	protected IdentityInfo identityInfo;
 
     public EntityIdentifier.EntityType getEntityType() {
@@ -182,13 +182,16 @@ public abstract class Principal extends Entry implements IPrincipal {
      * @return
      */
     public Map<String, EmailAddress> getEmailAddresses() {
-    	if (iEmailAddresses != null) return iEmailAddresses; //must be indexing
+    	if (iEmailAddresses != null) 
+    		return iEmailAddresses; //must be indexing
     	return emailAddresses;
     }
  
     public String getEmailAddress(String type) {
-       	if (emailAddresses == null) return null;
-       	EmailAddress a = emailAddresses.get(type);
+    	Map<String, EmailAddress> eAddresses = this.getEmailAddresses();
+       	if (eAddresses == null) 
+       		return null;
+       	EmailAddress a = eAddresses.get(type);
        	return (a==null ? "":a.getAddress());
     }
     public void setEmailAddress(String type, String address) {

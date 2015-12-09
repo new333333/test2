@@ -61,6 +61,7 @@ import org.hibernate.engine.SessionFactoryImplementor;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
+import org.kablink.teaming.cache.impl.ThreadBoundLRUCache;
 import org.kablink.teaming.comparator.LongIdComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -1947,7 +1948,13 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     @Override
 	public Set<Long> getApplicationLevelPrincipalIds(Principal p) {
 		long begin = System.nanoTime();
+		
+		Set<Long> cachedValue = ThreadBoundLRUCache.get(Set.class, "getApplicationLevelPrincipalIds", p.getId());
+		if(cachedValue != null)
+			return cachedValue;
+		
 		try {
+			Set<Long> result = null;
 	    	if (p instanceof IndividualPrincipal) {
 		    	if(((IndividualPrincipal)p).isAllIndividualMember()) {
 		        	GroupPrincipal gp;
@@ -1963,14 +1970,16 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		        		throw new IllegalArgumentException(p.getClass().getName());
 		        	}
 		        	
-		    		return new HashSet(p.computePrincipalIds(gp));
+		    		result = new HashSet(p.computePrincipalIds(gp));
 		    	}
 		    	else {
-		    		return new HashSet(p.computePrincipalIds(null));
+		    		result = new HashSet(p.computePrincipalIds(null));
 		    	}
 	    	} else {
-	    		return new HashSet(p.computePrincipalIds(null));
+	    		result = new HashSet(p.computePrincipalIds(null));
 	    	}
+	    	ThreadBoundLRUCache.put(result, "getApplicationLevelPrincipalIds", p.getId());
+	    	return result;
     	}
     	finally {
     		end(begin, "getApplicationLevelPrincipalIds(Principal)");
@@ -2142,6 +2151,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	@Override
 	public Set<Long> getApplicationLevelGroupMembership(final Long principalId, Long zoneId) {
 		long begin = System.nanoTime();
+		
 		try {
 			if (principalId == null)  return new TreeSet();
 			return (Set)getHibernateTemplate().execute(
@@ -2156,6 +2166,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    while (!currentIds.isEmpty()) {
 	                    	List mems = session.createCriteria(Membership.class)
 	                    					.add(Expression.in("userId", currentIds))
+	                    					.setCacheable(isMembershipQueryCacheable())
 											.list();
 	                       	currentIds.clear();
 							for (int i=0; i<mems.size(); ++i) {
@@ -3132,6 +3143,15 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		if(sharedEntityIdentifiers == null || sharedEntityIdentifiers.isEmpty())
 			throw new IllegalArgumentException("shared entity identifiers must be specified");
 		long begin = System.nanoTime();
+		
+		boolean cacheable = false;
+		if(sharedEntityIdentifiers.size() == 1 && rightNames != null && rightNames.length == 1) { // cacheable
+			cacheable = true;
+			Map<ShareItem.RecipientType, Set<Long>> cachedValue = ThreadBoundLRUCache.get(Map.class, "getRecipientIdsWithGrantedRightsToSharedEntities", sharedEntityIdentifiers.iterator().next(), rightNames[0]);
+			if(cachedValue != null)
+				return cachedValue;
+		}
+				
 		try {
 	      	List<Object[]> list = (List<Object[]>)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -3166,7 +3186,10 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                }
 	            );
 	      	
-	      	return recipientResultListToMap(list);
+			Map<ShareItem.RecipientType, Set<Long>> result = recipientResultListToMap(list);
+			if(cacheable)
+				ThreadBoundLRUCache.put(result, "getRecipientIdsWithGrantedRightsToSharedEntities", sharedEntityIdentifiers.iterator().next(), rightNames[0]);
+			return result;
     	}
     	finally {
     		end(begin, "getRecipientIdsWithGrantedRightsToSharedEntities(Collection<EntityIdentifier>,String[])");
@@ -3178,6 +3201,15 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		if(sharedEntityIdentifiers == null || sharedEntityIdentifiers.isEmpty())
 			throw new IllegalArgumentException("shared entity identifiers must be specified");
 		long begin = System.nanoTime();
+		
+		boolean cacheable = false;
+		if(sharedEntityIdentifiers.size() == 1) { // cacheable
+			cacheable = true;
+			Set<Long> cachedValue = ThreadBoundLRUCache.get(Set.class, "getSharerIdsToSharedEntities", sharedEntityIdentifiers.iterator().next());
+			if(cachedValue != null)
+				return cachedValue;
+		}
+		
 		try {
 	      	List<Long> list = (List<Long>)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -3205,7 +3237,10 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                }
 	            );
 	      	
-	      	return sharerResultListToList(list);
+	      	Set<Long> result = sharerResultListToList(list);
+	      	if(cacheable)
+	      		ThreadBoundLRUCache.put(result, "getSharerIdsToSharedEntities", sharedEntityIdentifiers.iterator().next());
+	      	return result;
     	}
     	finally {
     		end(begin, "getSharerIdsToSharedEntities(Collection<EntityIdentifier>)");
@@ -3411,23 +3446,42 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		            		final String[] foreignNames = principal.getLdapContainerForeignNames();
 		            		if(foreignNames.length == 0)
 		            			return new ArrayList<Long>();
-	                    	Criteria crit = session.createCriteria(UserPrincipal.class)
-	                    			.setProjection(Projections.property("id"))
-	                    			.add(Restrictions.eq("zoneId", zoneId))
-	                    			.add(Restrictions.eq("ldapContainer", Boolean.TRUE))
-	                    			.add(Restrictions.in("foreignName", foreignNames))
-	                    			.add(Restrictions.ne("deleted", Boolean.TRUE))
-	                    			.add(Restrictions.ne("disabled", Boolean.TRUE))
-	                    			.setCacheable(isPrincipalQueryCacheable());
-	                    	return crit.list();
+		            		return getMemberOfLdapContainerGroupIds(session, foreignNames, zoneId);
 	                    }
 	                }
 	            );
 	      	return result;
     	}
     	finally {
-    		end(begin, "loadLDAPContainerGroups()");
+    		end(begin, "getMemberOfLdapContainerGroupIds()");
     	}	              	
+ 	}
+
+ 	private List<Long> getMemberOfLdapContainerGroupIds(Session session, final String[] foreignNames, final Long zoneId) {
+ 		String[] cacheKey = new String[foreignNames.length+2];
+ 		cacheKey[0] = "getMemberOfLdapContainerGroupIds";
+ 		cacheKey[1] = zoneId.toString();
+ 		for(int i = 2; i < cacheKey.length; i++)
+ 			cacheKey[i] = foreignNames[i-2];
+ 		
+ 		List<Long> cachedValue = ThreadBoundLRUCache.get(List.class, cacheKey);
+ 		if(cachedValue != null)
+ 			return cachedValue;
+ 		
+    	Criteria crit = session.createCriteria(UserPrincipal.class)
+    			.setProjection(Projections.property("id"))
+    			.add(Restrictions.eq("zoneId", zoneId))
+    			.add(Restrictions.eq("ldapContainer", Boolean.TRUE))
+    			.add(Restrictions.in("foreignName", foreignNames))
+    			.add(Restrictions.ne("deleted", Boolean.TRUE))
+    			.add(Restrictions.ne("disabled", Boolean.TRUE))
+    			.setCacheable(isPrincipalQueryCacheable());
+    	
+    	List<Long> result = crit.list();
+    	
+    	ThreadBoundLRUCache.put(result,  cacheKey);
+    	
+    	return result;
  	}
 
     @Override
