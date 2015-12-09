@@ -1161,7 +1161,8 @@ public class EntityIndexUtils {
     			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
            	//add binder access
         	addBinderAcls(doc, binder);
-        	addRootAcl(doc, binder);
+        	//Don't need this because addBinderAcls already includes it.
+        	//addRootAcl(doc, binder);
 
     	} else {
     		addReadAccess(doc, binder, fieldsOnly);
