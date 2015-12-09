@@ -70,6 +70,7 @@ import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
+import org.kablink.teaming.cache.impl.ThreadBoundLRUCache;
 import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContext;
@@ -791,17 +792,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
 			String[] nodeNames) {
 		IndexErrors errors = new IndexErrors();
-		return indexTree(binderIds, statusTicket, nodeNames, errors, false, false);
+		return indexTree(binderIds, statusTicket, nodeNames, errors, false, false, null);
 	}
 
 	@Override
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
-			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads, boolean skipFileContentIndexing) {
-		return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads, skipFileContentIndexing);				
+			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads, boolean skipFileContentIndexing, Integer cacheSizeLimit) {
+		return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads, skipFileContentIndexing, cacheSizeLimit);				
 	}
 
 	private Set<Long> indexTreeWithHelper(Collection binderIds, StatusTicket statusTicket,
-			String[] nodeNames, IndexErrors errors, boolean canUseHelperThreads, boolean skipFileContentIndexing) {
+			String[] nodeNames, IndexErrors errors, boolean canUseHelperThreads, boolean skipFileContentIndexing, Integer cacheSizeLimit) {
 		long startTime = System.nanoTime();
 		getCoreDao().flush(); // just incase
 		if(statusTicket != null && canUseHelperThreads) {
@@ -912,7 +913,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 			  		// If there are branches that we can process in parallel, try executing them as concurrently as we can.
 					if(!concurrentBinderIds.isEmpty()) {
-						done.addAll(indexTreeConcurrent(concurrentBinderIds, done, (ConcurrentStatusTicket) statusTicket, nodeNames, errors, skipFileContentIndexing));
+						done.addAll(indexTreeConcurrent(concurrentBinderIds, done, (ConcurrentStatusTicket) statusTicket, nodeNames, errors, skipFileContentIndexing, cacheSizeLimit));
 					}
 					
 					// The rest of the binders must be processed synchronously and sequentially.
@@ -1107,7 +1108,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return binderIds;
 	}
 	
-	private Collection<Long> indexTreeConcurrent(List<Long> binderIds, Collection<Long> done, ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean skipFileContentIndexing) {
+	private Collection<Long> indexTreeConcurrent(List<Long> binderIds, Collection<Long> done, ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean skipFileContentIndexing, Integer cacheSizeLimit) {
 		int threadsSize = SPropsUtil.getInt("index.tree.helper.threads.size", 5);
 		
 		// Set up a queue and pre-populate it fully.
@@ -1132,7 +1133,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if(logger.isDebugEnabled())
 			logger.debug("Creating a queue with size " + queue.getPutCount() + " and " + threadsSize + " helper threads");
 		for(int i = 0; i < threadsSize; i++) {
-			helperThread = new Thread(new IndexHelper(statusTicket, nodeNames, errors, queue, RequestContextHolder.getRequestContext(), done, skipFileContentIndexing),
+			helperThread = new Thread(new IndexHelper(statusTicket, nodeNames, errors, queue, RequestContextHolder.getRequestContext(), done, skipFileContentIndexing, cacheSizeLimit),
 					Thread.currentThread().getName() + "-(" + (i+1) + "-" + now + ")");
 			helperThreads[i] = helperThread;
 			helperThread.start();
@@ -5004,8 +5005,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// This must be guarded by itself.
 		private Collection<Long> done;
 		private boolean skipFileContentIndexing;
+		Integer cacheSizeLimit;
 		
-		IndexHelper(ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext, Collection<Long> done, boolean skipFileContentIndexing) {
+		IndexHelper(ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext, Collection<Long> done, boolean skipFileContentIndexing, Integer cacheSizeLimit) {
 			this.statusTicket = statusTicket;
 			this.nodeNames = nodeNames;
 			this.errors = errors;
@@ -5013,6 +5015,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			this.parentRequestContext = parentRequestContext;
 			this.done = done;
 			this.skipFileContentIndexing = skipFileContentIndexing;
+			this.cacheSizeLimit = cacheSizeLimit;
 		}
 
 		@Override
@@ -5032,72 +5035,80 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}	
 		
 		private void doRun() {
-			if(logger.isTraceEnabled())
-				logger.trace("Setting up Hibernate session");
-			SessionUtil.sessionStartup();	// Set up Hibernate session (for database)
+			if(cacheSizeLimit != null)
+				ThreadBoundLRUCache.initialize(cacheSizeLimit.intValue());
 			try {
-				// Copy parent/calling thread's request context
 				if(logger.isTraceEnabled())
-					logger.trace("Setting up request context");
-				RequestContextHolder.setRequestContext(parentRequestContext);
+					logger.trace("Setting up Hibernate session");
+				SessionUtil.sessionStartup();	// Set up Hibernate session (for database)
 				try {
-					int indexFlushThreshold = SPropsUtil.getInt("lucene.flush.threshold", 100);
+					// Copy parent/calling thread's request context
 					if(logger.isTraceEnabled())
-						logger.trace("Setting index flush threshold to " + indexFlushThreshold + " with IndexSynchronizationManagerInterceptor");
-					IndexSynchronizationManagerInterceptor.setThreshold(indexFlushThreshold);
+						logger.trace("Setting up request context");
+					RequestContextHolder.setRequestContext(parentRequestContext);
 					try {
-						if(logger.isDebugEnabled())
-							logger.debug("Setting indexers to " + StringUtil.toString(nodeNames));
-						IndexSynchronizationManager.setNodeNames(nodeNames);
+						int indexFlushThreshold = SPropsUtil.getInt("lucene.flush.threshold", 100);
+						if(logger.isTraceEnabled())
+							logger.trace("Setting index flush threshold to " + indexFlushThreshold + " with IndexSynchronizationManagerInterceptor");
+						IndexSynchronizationManagerInterceptor.setThreshold(indexFlushThreshold);
 						try {
-							Long binderId;
-							Binder binder;
-							Collection result;
-							while(true) {
-								try {
-									binderId = queue.take();
-									if(binderId.longValue() != -1L) {
-										binder = loadBinder(binderId);
-										result = loadBinderProcessor(binder).indexTree(binder, done, statusTicket, errors, skipFileContentIndexing);
-										synchronized(done) {
-											done.addAll(result);
-										}
-									}
-									else {
-										// Poison pill encountered
-										break;
-									}
-								} catch(NoBinderByTheIdException e) {
-									logger.warn(e.toString());
-								} catch (InterruptedException e1) {
-									Thread.currentThread().interrupt(); // Restore the interrupt
-								}
-							}
-	
 							if(logger.isDebugEnabled())
-								logger.debug("Applying remaining changes to index if any");
-							IndexSynchronizationManager.applyChanges();
+								logger.debug("Setting indexers to " + StringUtil.toString(nodeNames));
+							IndexSynchronizationManager.setNodeNames(nodeNames);
+							try {
+								Long binderId;
+								Binder binder;
+								Collection result;
+								while(true) {
+									try {
+										binderId = queue.take();
+										if(binderId.longValue() != -1L) {
+											binder = loadBinder(binderId);
+											result = loadBinderProcessor(binder).indexTree(binder, done, statusTicket, errors, skipFileContentIndexing);
+											synchronized(done) {
+												done.addAll(result);
+											}
+										}
+										else {
+											// Poison pill encountered
+											break;
+										}
+									} catch(NoBinderByTheIdException e) {
+										logger.warn(e.toString());
+									} catch (InterruptedException e1) {
+										Thread.currentThread().interrupt(); // Restore the interrupt
+									}
+								}
+		
+								if(logger.isDebugEnabled())
+									logger.debug("Applying remaining changes to index if any");
+								IndexSynchronizationManager.applyChanges();
+							}
+							finally {
+								if(logger.isDebugEnabled())
+									logger.debug("Unsetting indexers");
+								IndexSynchronizationManager.clearNodeNames();
+							}
 						}
 						finally {
-							if(logger.isDebugEnabled())
-								logger.debug("Unsetting indexers");
-							IndexSynchronizationManager.clearNodeNames();
+							IndexSynchronizationManagerInterceptor.clearThreshold();	
 						}
 					}
 					finally {
-						IndexSynchronizationManagerInterceptor.clearThreshold();	
+						if(logger.isTraceEnabled())
+							logger.trace("Clearing request context");
+						RequestContextHolder.clear();
 					}
 				}
 				finally {
 					if(logger.isTraceEnabled())
-						logger.trace("Clearing request context");
-					RequestContextHolder.clear();
+						logger.trace("Tearing down Hibernate session");
+					SessionUtil.sessionStop();
 				}
 			}
 			finally {
-				if(logger.isTraceEnabled())
-					logger.trace("Tearing down Hibernate session");
-				SessionUtil.sessionStop();
+				if(cacheSizeLimit != null)
+					ThreadBoundLRUCache.destroy();
 			}
 		}	
 	}
