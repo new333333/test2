@@ -311,6 +311,7 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.telemetry.TelemetryService;
+import org.kablink.teaming.util.*;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.FileLinkAction;
@@ -2390,9 +2391,9 @@ public class GwtServerHelper {
 		
 		user = getCurrentUser();
 		userHasAdminRights = adminModule.testAccess(AdminOperation.manageFunction);
-		
+
 		isFilr = LicenseChecker.showFilrFeatures();
-		
+
  		try
  		{
 			top = workspaceModule.getTopWorkspace();
@@ -3390,7 +3391,7 @@ public class GwtServerHelper {
 
 			// Is this Filr and does the user have system admin rights
 			// and should we show the Mobile Site Branding option?
-			if (isFilr && userHasAdminRights && SPropsUtil.getBoolean("show.filr.mobile.site.branding", false)) {
+			if (userHasAdminRights && org.kablink.teaming.util.SiteBrandingHelper.isMobileBrandingSupported()) {
 				// Yes!  Create the Mobile Site branding option...
 				title = NLT.get("administration.modifySiteBranding.mobile");
 
@@ -3403,7 +3404,7 @@ public class GwtServerHelper {
 			
 			// Is this Filr and does the user have system admin rights
 			// and should we show the Desktop Site Branding option?
-			if (isFilr && userHasAdminRights && SPropsUtil.getBoolean("show.filr.desktop.site.branding", false)) {
+			if (userHasAdminRights && org.kablink.teaming.util.SiteBrandingHelper.isDesktopBrandingSupported()) {
 				// Yes!  Create the Desktop Site branding option...
 				title = NLT.get("administration.modifySiteBranding.desktop");
 

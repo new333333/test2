@@ -96,15 +96,6 @@ public class ZoneConfig extends BaseRestObject {
         this.desktopAppConfig = desktopAppConfig;
     }
 
-    @XmlElement(name="fsa")
-    public DesktopAppConfig getFsaConfig() {
-        return desktopAppConfig;
-    }
-
-    public void setFsaConfig(DesktopAppConfig desktopAppConfig) {
-        this.desktopAppConfig = desktopAppConfig;
-    }
-
     @XmlElement(name="mobile_app_config")
     public MobileAppConfig getMobileAppConfig() {
         return mobileAppConfig;

@@ -41,6 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.FileUtil;
 
@@ -58,10 +59,10 @@ public class SiteBrandingHelper {
 	private final static String	MOBILE	= "mobile";
 	
 	// Strings that supply an application's platform.
-	private final static String ANDROID	= "android";
-	private final static String IOS		= "ios";
-	private final static String MAC		= "mac";
-	private final static String WINDOWS	= "windows";
+	public final static String ANDROID	= "android";
+	public final static String IOS		= "ios";
+	public final static String MAC		= "mac";
+	public final static String WINDOWS	= "windows";
 	
 	// String that supplies the base path name for application site
 	// branding.
@@ -83,6 +84,10 @@ public class SiteBrandingHelper {
 	 */
 	public static String getAndroidMobileApplicationBranding() {
 		return getApplicationBrandingImpl(getAppNode(ANDROID, MOBILE));
+	}
+
+	public static File getAndroidMobileApplicationBrandingFile() {
+		return getApplicationBrandingFile(getAppNode(ANDROID, MOBILE));
 	}
 
 	/*
@@ -125,6 +130,33 @@ public class SiteBrandingHelper {
 	}
 
 	/*
+	 * Returns the name of the current Application Site Branding file
+	 * from the specified application node.
+	 */
+	private static File getApplicationBrandingFile(String appNode) {
+		File   appDir = getAppDir(appNode);
+		File[] files  = appDir.listFiles();
+		File reply = null;
+		if ((null != files) && (0 < files.length)) {
+			for (File file:  files) {
+				if (file.isFile()) {
+					reply = file;
+					break;
+				}
+			}
+		}
+		return reply;
+	}
+
+	public static File getMobileApplicationBrandingFile(String platform) {
+		return getApplicationBrandingFile(getAppNode(platform, MOBILE));
+	}
+
+	public static File getDesktopApplicationBrandingFile(String platform) {
+		return getApplicationBrandingFile(getAppNode(platform, DESKTOP));
+	}
+
+	/*
 	 * Returns the path node that corresponds to a platform
 	 * and application type.
 	 */
@@ -142,6 +174,10 @@ public class SiteBrandingHelper {
 		return getApplicationBrandingImpl(getAppNode(IOS, MOBILE));
 	}
 
+	public static File getIosMobileApplicationBrandingFile() {
+		return getApplicationBrandingFile(getAppNode(IOS, MOBILE));
+	}
+
 	/**
 	 * Returns the name of the current Mac Desktop Application Site
 	 * Branding file.
@@ -150,6 +186,10 @@ public class SiteBrandingHelper {
 	 */
 	public static String getMacDesktopApplicationBranding() {
 		return getApplicationBrandingImpl(getAppNode(MAC, DESKTOP));
+	}
+
+	public static File getMacMobileApplicationBrandingFile() {
+		return getApplicationBrandingFile(getAppNode(MAC, DESKTOP));
 	}
 
 	/*
@@ -182,6 +222,10 @@ public class SiteBrandingHelper {
 		return getApplicationBrandingImpl(getAppNode(WINDOWS, DESKTOP));
 	}
 
+	public static File getWindowsDesktopApplicationBrandingFile() {
+		return getApplicationBrandingFile(getAppNode(WINDOWS, DESKTOP));
+	}
+
 	/**
 	 * Returns the name of the current Windows Mobile Application Site
 	 * Branding file.
@@ -190,6 +234,10 @@ public class SiteBrandingHelper {
 	 */
 	public static String getWindowsMobileApplicationBranding() {
 		return getApplicationBrandingImpl(getAppNode(WINDOWS, MOBILE));
+	}
+
+	public static File getWindowsMobileApplicationBrandingFile() {
+		return getApplicationBrandingFile(getAppNode(WINDOWS, MOBILE));
 	}
 
 	/**
@@ -354,5 +402,21 @@ public class SiteBrandingHelper {
 	 */
 	public static void removeWindowsMobileApplicationBranding(String fileName) {
 		removeApplicationBrandingImpl(getAppNode(WINDOWS, MOBILE), fileName);
+	}
+
+	/**
+	 * Is mobile branding supported
+	 *
+	 */
+	public static boolean isMobileBrandingSupported() {
+		return LicenseChecker.showFilrFeatures() && SPropsUtil.getBoolean("show.filr.mobile.site.branding", false);
+	}
+
+	/**
+	 * Is desktop branding supported
+	 *
+	 */
+	public static boolean isDesktopBrandingSupported() {
+		return LicenseChecker.showFilrFeatures() && SPropsUtil.getBoolean("show.filr.desktop.site.branding", false);
 	}
 }

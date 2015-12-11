@@ -46,6 +46,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.sun.jersey.spi.resource.Singleton;
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.util.URIUtil;
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -53,6 +55,8 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
@@ -63,10 +67,16 @@ import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.util.DesktopApplicationsLists;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SiteBrandingHelper;
 import org.kablink.teaming.web.util.AdminHelper;
+import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -150,6 +160,46 @@ public class MiscResource extends AbstractResource {
                 this);
         result.setSharingRestrictions(_getExternalSharingRestrictions());
         return result;
+	}
+
+	@GET
+	@Path("zone_config/branding/mobile/{platform}")
+	public Response getMobileBranding(@PathParam("platform") String platformStr,
+                                    @Context HttpServletRequest request) throws FileNotFoundException, URIException {
+        ResourceUtil.MobilePlatform platform = toEnum(ResourceUtil.MobilePlatform.class, "platform", platformStr);
+
+        File brandingZipFile = SiteBrandingHelper.getMobileApplicationBrandingFile(platform.getBrandingKey());
+        return getBrandingResponse(brandingZipFile, request);
+	}
+
+	@GET
+	@Path("zone_config/branding/desktop/{platform}")
+	public Response getDesktopBranding(@PathParam("platform") String platformStr,
+                                    @Context HttpServletRequest request) throws FileNotFoundException, URIException {
+        ResourceUtil.DesktopPlatform platform = toEnum(ResourceUtil.DesktopPlatform.class, "platform", platformStr);
+
+        File brandingZipFile = SiteBrandingHelper.getDesktopApplicationBrandingFile(platform.getBrandingKey());
+        return getBrandingResponse(brandingZipFile, request);
+	}
+
+	private Response getBrandingResponse(File brandingZipFile, HttpServletRequest request) throws FileNotFoundException, URIException {
+        if (brandingZipFile==null || !brandingZipFile.isFile()) {
+            throw new NotFoundException(ApiErrorCode.NOT_FOUND, "Platform branding not configured");
+        }
+
+        Date ifModSince = getIfModifiedSinceDate(request);
+        Date lastMod = new Date(brandingZipFile.lastModified());
+        if (ifModSince!=null && lastMod.after(ifModSince)) {
+            throw new NotModifiedException();
+        }
+        String encodedFileName = URIUtil.encodeQuery(brandingZipFile.getName(), "utf-8");
+        long length = 0;
+        if (request.getMethod().equalsIgnoreCase("GET")) {
+            length = brandingZipFile.length();
+        }
+        return Response.ok(new FileInputStream(brandingZipFile), MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                .lastModified(lastMod).header("Content-Disposition", "attachment; filename=" + encodedFileName)
+                .header("Content-Length", length).build();
 	}
 
     @GET

@@ -33,7 +33,10 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: david
@@ -47,6 +50,7 @@ public class DesktopAppConfig {
    	private Integer syncInterval;
    	private String autoUpdateUrl;
    	private Long maxFileSize;
+    private List<NameHrefPair> branding;
     private DesktopAppProcessConfig processConfig;
 
     @XmlElement(name="auto_update_url")
@@ -92,6 +96,25 @@ public class DesktopAppConfig {
 
     public void setSyncInterval(Integer syncInterval) {
         this.syncInterval = syncInterval;
+    }
+
+    @XmlElementWrapper(name="branding")
+    @XmlElement(name="platform")
+    public List<NameHrefPair> getBranding() {
+        return branding;
+    }
+
+    public void setBranding(List<NameHrefPair> branding) {
+        this.branding = branding;
+    }
+
+    public void addBrandingHref(NameHrefPair link) {
+        if (link!=null) {
+            if (branding == null) {
+                branding = new ArrayList<NameHrefPair>();
+            }
+            branding.add(link);
+        }
     }
 
     @XmlElement(name="process_config")
