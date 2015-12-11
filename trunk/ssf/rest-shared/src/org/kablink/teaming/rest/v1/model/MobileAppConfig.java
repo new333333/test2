@@ -35,6 +35,7 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,6 +62,7 @@ public class MobileAppConfig {
     private Boolean	allowScreenCapture;
     private Boolean	allowRootedDevices;
     private String allowedOpenInApps;
+    private List<NameHrefPair> branding;
     private List<String> androidAppWhiteList;
     private List<String> iOSAppWhiteList;
 
@@ -162,6 +164,25 @@ public class MobileAppConfig {
 
     public void setAndroidAppWhiteList(List<String> androidAppWhiteList) {
         this.androidAppWhiteList = androidAppWhiteList;
+    }
+
+    @XmlElementWrapper(name="branding")
+    @XmlElement(name="platform")
+    public List<NameHrefPair> getBranding() {
+        return branding;
+    }
+
+    public void setBranding(List<NameHrefPair> branding) {
+        this.branding = branding;
+    }
+
+    public void addBrandingHref(NameHrefPair link) {
+        if (link!=null) {
+            if (branding == null) {
+                branding = new ArrayList<NameHrefPair>();
+            }
+            branding.add(link);
+        }
     }
 
     @XmlElementWrapper(name="ios_app_whitelist")

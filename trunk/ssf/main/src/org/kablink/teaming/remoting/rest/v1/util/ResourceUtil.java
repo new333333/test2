@@ -66,6 +66,7 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -89,6 +90,37 @@ import java.util.SortedSet;
  */
 @SuppressWarnings({"unchecked", "unused"})
 public class ResourceUtil {
+    public enum MobilePlatform {
+        ios (SiteBrandingHelper.IOS),
+        android (SiteBrandingHelper.ANDROID),
+        windows (SiteBrandingHelper.WINDOWS);
+
+        private String brandingKey;
+
+        MobilePlatform(String brandingKey) {
+            this.brandingKey = brandingKey;
+        }
+
+        public String getBrandingKey() {
+            return brandingKey;
+        }
+    }
+
+    public enum DesktopPlatform {
+        mac (SiteBrandingHelper.MAC),
+        windows (SiteBrandingHelper.WINDOWS);
+
+        private String brandingKey;
+
+        DesktopPlatform(String brandingKey) {
+            this.brandingKey = brandingKey;
+        }
+
+        public String getBrandingKey() {
+            return brandingKey;
+        }
+    }
+
     private static DefinitionModule definitionModule;
     private static Set<String> ignoredCustomFields = new HashSet<String>() {
         {
@@ -583,6 +615,10 @@ public class ResourceUtil {
             desktopAppConfig.setMaxFileSize(50L * 1024 * 1024);
         }
         desktopAppConfig.setAllowCachedPassword(config.getFsaAllowCachePwd());
+        if (SiteBrandingHelper.isDesktopBrandingSupported()) {
+            desktopAppConfig.addBrandingHref(getDesktopBrandingHref(DesktopPlatform.mac));
+            desktopAppConfig.addBrandingHref(getDesktopBrandingHref(DesktopPlatform.windows));
+        }
         return desktopAppConfig;
     }
 
@@ -620,7 +656,28 @@ public class ResourceUtil {
                 mobileAppConfig.setiOSAppWhiteList(new ArrayList<String>(0));
             }
         }
+        if (SiteBrandingHelper.isMobileBrandingSupported()) {
+            mobileAppConfig.addBrandingHref(getMobileBrandingHref(MobilePlatform.android));
+            mobileAppConfig.addBrandingHref(getMobileBrandingHref(MobilePlatform.ios));
+            mobileAppConfig.addBrandingHref(getMobileBrandingHref(MobilePlatform.windows));
+        }
         return mobileAppConfig;
+    }
+
+    private static NameHrefPair getMobileBrandingHref(MobilePlatform platform) {
+        File f = SiteBrandingHelper.getMobileApplicationBrandingFile(platform.getBrandingKey());
+        if (f!=null) {
+            return new NameHrefPair(platform.toString(), "/zone_config/branding/mobile/" + platform.toString());
+        }
+        return null;
+    }
+
+    private static NameHrefPair getDesktopBrandingHref(DesktopPlatform platform) {
+        File f = SiteBrandingHelper.getDesktopApplicationBrandingFile(platform.getBrandingKey());
+        if (f!=null) {
+            return new NameHrefPair(platform.toString(), "/zone_config/branding/desktop/" + platform.toString());
+        }
+        return null;
     }
 
     private static void overrideMobileAppConfig(MobileAppConfig mobileAppConfig, PrincipalMobileAppsConfig mac) {
