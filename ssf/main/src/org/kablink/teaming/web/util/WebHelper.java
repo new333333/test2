@@ -32,15 +32,7 @@
  */
 package org.kablink.teaming.web.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,6 +44,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -496,30 +489,37 @@ public class WebHelper {
 		String fileName = mpfile.getOriginalFilename();
 		if(!validateFilenameForSafeLeaf(fileName))
 			throw new UncheckedIOException(new IOException("Illegal file name [" + fileName + "]"));
+
+		// Encode the original file name into the prefix.
+		String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
+
+		File destFile = TempFileUtil.createTempFile(prefix);
+
+		storeFile1(mpfile, destFile);
+
+		return destFile.getName();
+	}
+
+	private static void storeFile1(MultipartFile mpfile, File destFile) throws IOException {
 		BufferedReader breader = new BufferedReader(new InputStreamReader (mpfile.getInputStream()));
-		
+
 		try {
-			// Encode the original file name into the prefix.
-			String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
-			
-			File destFile = TempFileUtil.createTempFile(prefix);
-			
 			BufferedWriter bwriter = new BufferedWriter(new FileWriter (destFile));
-			
+
 			try {
 				while(breader.ready()) {
 					String line = breader.readLine();
-					
+
 					if(line.endsWith("=")) {
 						while(line.endsWith("=") && breader.ready()) {
 							String temp = line.substring(0, line.length() - 1);
 							bwriter.write(temp);
-							
+
 							line = breader.readLine();
 						}
 						bwriter.write(line);
 					}
-					else {	
+					else {
 						bwriter.write(line);
 					}
 					bwriter.newLine();
@@ -528,14 +528,28 @@ public class WebHelper {
 			finally {
 				bwriter.close();
 			}
-						
-			return destFile.getName();
 		}
 		finally {
 			breader.close();
 		}
 	}
 	
+	private static void storeFile2(MultipartFile mpfile, File destFile) throws IOException {
+		InputStream is = mpfile.getInputStream();
+		try {
+			OutputStream os = new FileOutputStream(destFile);
+			try {
+				IOUtils.copy(is, os);
+			}
+			finally {
+				os.close();
+			}
+		}
+		finally {
+			is.close();
+		}
+	}
+
 	/**
 	 * Wraps the file handle in a MultipartFile datastructure. This is used
 	 * primarily to put the data in an argument format compatible with some
