@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_KeyShieldConfig" name="org.kablink.teaming.domain.KeyShieldConfig">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="zoneId">
+      <generator class="assigned"/>
+	</id>
+	<property name="enabled" access="field"/>
+	<property name="serverUrl" access="field" length="128"/>
+	<property name="httpTimeout" access="field"/>
+	<property name="apiAuthKey" access="field" length="128"/>
+	<property name="authConnectorNames" access="field" length="128"/>
+	<property name="lastUpdateTime" access="field"/>
+	<property name="usernameAttributeAlias" access="field" length="16"/>
+	<property name="hardwareTokenRequired" access="field"/>
+	<property name="nonSsoAllowedForLdapUser" access="field"/>
+	<property name="ssoErrorMessageForWeb" access="field" length="128"/>
+	<property name="ssoErrorMessageForWebdav" access="field" length="128"/>
+  </class>
+</hibernate-mapping>

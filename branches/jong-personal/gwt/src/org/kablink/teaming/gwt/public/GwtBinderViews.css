@@ -1,0 +1,758 @@
+/* */
+
+/* ########################################################################################################### */
+
+
+/* Start:  Generic binder view tools styles. */
+	.vibe-binderViewTools
+	{
+		display: block;
+		padding: 0;
+	}
+/* End:  Generic binder view tools styles. */
+
+/* Start:  GWT folder view styles. */
+	/* ...Start:  Accessory styles. */
+		.vibe-accessoriesPanel {}
+	/* ...End:  Accessory styles. */
+	
+	/* ...Start:  Administrators view styles. */
+		.vibe-administratorsDataTable {}
+		.vibe-administratorsFlowPanel {}
+	/* ...End:  Administrators view styles. */
+
+	/* ...Start:  Bread crumb panel styles. */
+		.vibe-breadCrumbCollection-image   {vertical-align: middle; margin-right: 5px; margin-bottom: 3px;}
+		.vibe-breadCrumbCollection-label   {font-size: 1.4em; color: #1f1f1f; padding: 0px 10px 2px 0px; white-space: nowrap;}
+		.vibe-breadCrumbCollection-panel   {display: inline-block; white-space: nowrap;}
+		.vibe-breadCrumbPanel              {width: 1%;}
+		.vibe-breadCrumbProfiles-image     {vertical-align: middle; margin-right: 5px; margin-bottom: 3px;}
+		.vibe-breadCrumbProfiles-label     {font-size: 1.4em; color: #1f1f1f; padding: 0px 10px 2px 0px; white-space: nowrap;}
+		.vibe-breadCrumbProfiles-panel     {display: inline-block; white-space: nowrap;}
+		.vibe-breadCrumbRightPanel         {position: absolute; top: 5px; right: 5px; white-space: nowrap;}
+		.vibe-breadCrumbRoot               {position: relative;}
+		.vibe-breadCrumbTrashAnchor        {padding-left: 5px; cursor: pointer;}
+		.vibe-breadCrumbTrashImg           {width: 25px; height: 25px;}
+		.vibe-breadCrumbWhatsNewLink       {cursor: pointer; color: #036f9f !important; padding: 2px; font-size: 12px; vertical-align: middle; padding-right: 5px;}
+		.vibe-breadCrumbWhatsNewLink:hover {color: #135c8f !important; cursor: pointer; background: #cce9ee; border-radius: 3px; -moz-border-radius: 3px; -webkit-border-radius: 3px; padding: 2px; padding-right: 15px;}
+	/* ...End:  Bread crumb panel styles. */
+	
+	/* ...Start:  Binder owner avatar panel styles. */
+		.vibe-binderOwnerAvatar-image         {width: 60px; border-radius: 2px;}
+		.vibe-binderOwnerAvatar-info          {display: inline-block; font-size: 11px; color: #505354; vertical-align: top; padding-left: 8px; line-height: 14px; margin-bottom: 5px;}
+		.vibe-binderOwnerAvatar-infoEMA       {display: block;}
+		.vibe-binderOwnerAvatar-infoMobileEMA {display: block;}
+		.vibe-binderOwnerAvatar-infoPhone     {display: block;}
+		.vibe-binderOwnerAvatar-infoTextEMA   {display: block;}
+		.vibe-binderOwnerAvatar-infoTitle     {display: block; font-weight: bold; font-size: 12px;}
+		.vibe-binderOwnerAvatar-panel         {}
+	/* ...End:  Binder owner avatar panel styles. */
+	
+	/* ...Start:  Calendar navigation panel styles. */
+		.vibe-calNav-date           {color: #505354; font-weight: normal; font-size: 18px; font-family: Arial, Helvetica, sans-serif;}
+		.vibe-calNav-dateNavPanel   {padding: 0 10px;}
+		.vibe-calNav-datePanel      {padding: 0 10px;}
+		.vibe-calNav-datePicker     {}
+		.vibe-calNav-daysSelImg     {width: 25px; height: 25px; margin: 0 2px 0 0; border: 0px; vertical-align: middle;}
+		.vibe-calNav-daysSelPanel   {margin: 0px; padding: 0px; padding-left: 8px; vertical-align: middle;}
+		.vibe-calNav-hoursMenu      {vertical-align: middle; background: transparent !important; padding: 0px !important;}
+		.vibe-calNav-hoursMenuPanel {margin: 0px; padding: 0px; vertical-align: middle;}
+		.vibe-calNav-panel          {background-color: #ededed; margin: 0px; padding: 10px; display: table; table-layout: fixed; overflow: hidden; white-space: nowrap; -moz-border-radius: 0px !important; border-radius: 0px !important; -webkit-border-radius: 0px  !important;}
+		.vibe-calNav-panelLeft      {}
+		.vibe-calNav-panelLeftHP    {}
+		.vibe-calNav-panelRight     {}
+		.vibe-calNav-periodNavPanel {margin: 0px; padding: 0px; vertical-align: middle;}
+		.vibe-calNav-settingsPanel  {margin: 0px; padding: 0px; padding-left: 3px; vertical-align: middle;}
+		.vibe-calNav-separator      {border-left: 1px dotted #FFFFFF; margin: 0px 5px 0px 5px; padding: 0px; width: 1px; vertical-align: middle; white-space: nowrap;}
+		.vibe-calNav-today          {padding-left: 2px;}
+	/* ...End:  Calendar navigation panel styles. */
+
+	/* ...Start:  Description panel styles. */
+		.vibe-descriptionContent        {color: #505354; font-size: 15px;}
+		.vibe-descriptionContentClipped {height: 225px; overflow: auto !important;}
+		.vibe-descriptionExpanderAnchor {text-decoration: none; cursor: pointer;}
+		.vibe-descriptionExpanderImg    {position: absolute; right: 0px; top: -8px; border: 0px none;}
+		.vibe-descriptionExpanderBar    {margin-top: 0.5em; margin-bottom: 8px; border-bottom: 1px solid #CCC; position: relative;}
+		.vibe-descriptionHTML           {overflow: hidden;}
+		.vibe-descriptionPanel          {padding-left: 10px;}
+		.vibe-descriptionText           {overflow: hidden;}
+	/* ...End:  Description panel styles. */
+	
+	/* ...Start:  Entry menu panel styles. */
+		.vibe-entryMenu-configPanel         {vertical-align: top;}
+		.vibe-entryMenu-filterOptions-panel {vertical-align: top;}
+		.vibe-entryMenu-filtersPanel        {vertical-align: top; padding-right: 8px; margin-top: 6px;}
+		.vibe-entryMenu-grid                {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed; border-top-left-radius: 3px; border-top-right-radius: 3px;}
+		.vibe-entryMenu-quickFilters-filter {padding-top: 1px;}
+		.vibe-entryMenu-quickFilters-panel  {vertical-align: top; padding: 0 5px; margin-top: 1px; border-left: none; height: 19px; white-space: nowrap; background-color: #fff; border: 1px solid #b8b8b8; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px;}
+		.vibe-entryMenu-rightPanel          {padding-right: 5px; margin-right: 3px; margin-top: 3px;}
+	/* ...End:  Entry menu panel styles. */
+	
+	/* ...Start:  Filter panel styles. */
+		.vibe-filterAnchor                 {cursor: pointer;}
+		.vibe-filterAnchor-hover           {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-filterAnchorLabel            {font-size: 12px; white-space: nowrap;}
+		.vibe-filterAnchorLabel-current    {color: white !important; font-weight: bold !important; background-color: #81b2bd; padding: 2px 5px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
+		.vibe-filterAnchorLabel-notcurrent {font-weight: normal !important; padding: 2px 5px;}
+		.vibe-filterEditPanel              {font-size: 11px !important;}
+		.vibe-filterEditLabel              {font-size: 11px; white-space: nowrap;}
+		.vibe-filterPanel                  {background-color: transparent;}
+		.vibe-filtersGrid                  {}
+		.vibe-filtersLabel                 {}
+		.vibe-filtersPanel                 {padding-left: 10px; font-size: 11px !important;}
+	/* ...End:  Filter panel styles. */
+	
+	/* ...Start:  HTML element panel styles. */
+		.vibe-htmlElementPanel           {padding-left: 10px;}
+		.vibe-htmlElementPerElementPanel {display:  block; margin: 0px; font-style: normal !important;}
+	/* ...End:  HTML element panel styles. */
+	
+	/* ...Start:  Limit User Visibility view styles. */
+		.vibe-limitUserVisibilityDataTable {}
+		.vibe-limitUserVisibilityFlowPanel {}
+	/* ...End:  Limit User Visibility view styles. */
+
+	/* Start:  Quick filter styles. */
+		.vibe-quickFilter_image      {cursor: pointer; margin-right: 5px;}
+		.vibe-quickFilter_input      {font-size: 11px !important; width: 130px; border: none !important; background-color: transparent !important; padding: 1px 0 !important; vertical-align: middle;}
+		.vibe-quickFilter_inputBlur  {color: graytext;}
+		.vibe-quickFilter_inputFocus {color: #353838 !important;}
+	/* Start:  Quick filter styles. */
+
+	/* ...Start:  Footer panel styles. */
+		.vibe-footerPanel                       {padding-top: 5px !important;}
+		.vibe-footerAnchor                      {cursor: pointer; color: #666;}
+		.vibe-footerAnchor-hover                {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-footerAnchorLabel                 {font-size: small;}
+		.vibe-footerAnchorPanel                 {text-align: center;}
+		.vibe-footerDataCloser                  {text-align: right;}
+		.vibe-footerDataCloserAnchor            {cursor: pointer;}
+		.vibe-footerDataCloserImage             {}
+		.vibe-footerDataHintGrid                {width: 100%; background: #eaebe8; border-spacing: 0px;}
+		.vibe-footerDataHintGridFooter          {padding: 10px 10px 6px 6px;}
+		.vibe-footerDataHintGridHeader          {font-weight: bold;}
+		.vibe-footerDataLinksGrid               {width: 100%; background: #fafafa; border-spacing: 2px; box-shadow: 0px 2px 6px #949494;}
+		.vibe-footerDataLinksInput              {width: 100%; background-color: #fafafa; overflow: hidden; padding: 0px !important; border: 0px;}
+		.vibe-footerDataLinksOpenerAnchor       {cursor: pointer; color: #666; text-decoration: none;}
+		.vibe-footerDataLinksOpenerAnchor-hover {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-footerDataLinksOpenerLabel        {}
+		.vibe-footerDataLinksPanel              {padding: 10px;}
+		.vibe-footerDataLinksText               {}
+		.vibe-footerDataPanel                   {background-color: #eaebe8; padding: 10px; margin: 20px; display: block; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	/* ...End:  Footer panel styles. */
+	
+	/* ...Start:  User list panel styles. */
+		.vibe-userListPanel                    {padding-left: 10px;}
+		.vibe-userListPerUserLabel             {font-weight: bold; font-size: 12px; display: inline-block; padding-right: 5px; padding-top: 10px;}
+		.vibe-userListPerUserPanel             {margin: 0px; font-style: normal !important;}
+		.vibe-userListPerUserPrincipalPanel    {cursor: pointer;}
+		.vibe-userListPerUserPresence-control  {vertical-align: text-bottom;}
+		.vibe-userListPerUserPresence-image    {width: 25px; height: 25px; border-radius: 2px; margin-right: 3px;}
+		.vibe-userListPerUserPresence-label    {display: inline; font-size: 12px; font-weight: bold; padding-left: 2px !important;}
+		.vibe-userListPerUserPresence-disabled {color: #c4c4c4;}
+		.vibe-userListPerUserPresence-enabled  {color: #353838;}
+	/* ...End:  User list panel styles. */
+	
+	/* ...Start:  Generic folder view styles. */
+		.vibe-folderViewBase               {border: 8px solid transparent;}
+		.vibe-folderViewBase-dndHint       {position: absolute !important; top: 8px; left: 25%; right: 25%; color: black; font-size: 1em; font-weight: bold; text-align: center; padding: 10px; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px; background: #09f;}
+		.vibe-folderViewBase-dndPanel      {position: relative;}
+		.vibe-folderViewBase-dndPanelHover {}
+		.vibe-folderViewBase-hover         {border: 8px solid #09f !important;}
+	/* ...End:  Generic folder view styles. */
+	
+	/* ...Start:  Generic data table folder view styles. */
+		.vibe-dataTableFolderColumn               {}
+		.vibe-dataTableFolderColumn-headerCenter  {text-align: center !important;}
+		.vibe-dataTableFolderColumn-mobileDevices {height: 25px; width: 25px;}
+		.vibe-dataTableFolderColumn-select        {}
+		.vibe-dataTableFolderDataTableBase        {}
+		.vibe-dataTableFolderFlowPanelBase        {}
+		.vibe-dataTableFolderRow                  {}
+		.vibe-dataTableFolderRow-select           {}
+		.vibe-dataTableFolderViewBase             {}
+		.vibe-dataTableFolderVerticalPanelBase    {}
+	/* ...End:  Generic data table folder view styles. */
+	
+	/* ...Start:  Data table cell styles. */
+		.vibe-dataTableActions-column             {}
+		.vibe-dataTableActions-hover              {cursor: pointer;}
+		.vibe-dataTableActions-img                {}
+		.vibe-dataTableActions-menuDropDown       {}
+		.vibe-dataTableActions-menuPopupItem      {white-space: nowrap;}
+		.vibe-dataTableAssignment-control         {vertical-align:text-bottom;}
+		.vibe-dataTableAssignment-disabled        {color: #c4c4c4;}
+		.vibe-dataTableAssignment-enabled         {color: #353838;}
+		.vibe-dataTableAssignment-image           {height: 20px; width: 20px; border-radius: 2px; margin-right: 3px;}
+		.vibe-dataTableAssignment-label           {display: inline; padding-left: 2px !important;}
+		.vibe-dataTableAssignment-labelEllipsis   {display: inline-block !important; overflow: hidden; text-overflow: ellipsis;}
+		.vibe-dataTableAssignment-labelIE         {vertical-align: -5px;}
+		.vibe-dataTableAssignment-list            {}
+		.vibe-dataTableAssignment-panel           {white-space: nowrap;}
+		.vibe-dataTableComments-bubble            {color: #036f9f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 8px; padding-right: 8px; text-align: center; display: inline;}
+		.vibe-dataTableComments-bubbleBig         {background: url(images/comments_25_wide.png) no-repeat scroll center center transparent;}
+		.vibe-dataTableComments-bubbleSmall       {background: url(images/comments_25.png)      no-repeat scroll center center transparent;}
+		.vibe-dataTableComments-headerBubble      {color: #036f9f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 4px; padding-right: 4px; text-align: center; display: inline; background: url(images/comments_sm.png) no-repeat scroll center center transparent;}
+		.vibe-dataTableComments-panel             {text-align: center; display: block;}
+		.vibe-dataTableComments-panel0            {}
+		.vibe-dataTableCustom-anchor              {}
+		.vibe-dataTableCustom-anchor-label        {}
+		.vibe-dataTableCustom-event               {}
+		.vibe-dataTableCustom-event-allDay        {}
+		.vibe-dataTableCustom-event-start         {}
+		.vibe-dataTableCustom-event-end           {}
+		.vibe-dataTableCustom-event-duration      {}
+		.vibe-dataTableCustom-string              {}
+		.vibe-dataTableDescription-html           {white-space: normal;}
+		.vibe-dataTableDescription-span           {white-space: normal;}
+		.vibe-dataTableEMA-hover                  {color: #135c8f !important; cursor: pointer; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableEMA-title                  {cursor: pointer; color: #036f9f !important; padding: 2px;}
+		.vibe-dataTableEMA-titleNoLink            {color: #353838 !important; padding: 2px;}
+		.vibe-dataTableEntity-Marker              {display: inline; cursor: pointer;}
+		.vibe-dataTableEntry-download             {border: 0px solid #666666; padding-left: 0px; padding-right: 0px; line-height: 11px;}
+		.vibe-dataTableEntry-panel                {}
+		.vibe-dataTableEntry-panelDropTarget      {background-color: #09f !important; color: black !important;}
+		.vibe-dataTableEntry-title                {cursor: pointer; color: #036f9f !important; padding: 2px; font-size: 12px; white-space: nowrap;}
+		.vibe-dataTableEntry-titleHidden          {cursor: pointer; color: #c4c4c4 !important; padding: 2px;}
+		.vibe-dataTableEntry-titleLinkPanel       {display: inline; text-decoration: none;}
+		.vibe-dataTableEntry-titleNoLink          {color: #353838 !important; padding: 2px;}
+		.vibe-dataTableEntry-titleNoLinkHidden    {color: #c4c4c4 !important; padding: 2px;}
+		.vibe-dataTableEntry-titlePanel           {}
+		.vibe-dataTableEntry-unseenMarker         {position: relative; left: 3px; margin-left: -12px; display: inline; cursor: pointer;}
+		.vibe-dataTableEntry-viewAnchor           {text-decoration: none;}
+		.vibe-dataTableEntry-viewLabel            {}
+		.vibe-dataTableGuest-avatar               {border-width: 1px; border-style: solid; border-color: #ccc; width: 50px; height: 50px;}
+		.vibe-dataTableGuest-avatarHover          {cursor: pointer;}
+		.vibe-dataTableGuest-info                 {display: inline-block; font-size: 11px; color: #505354; vertical-align: top; padding-left: 8px; line-height: 15px;}
+		.vibe-dataTableGuest-infoEMA              {display: block;}
+		.vibe-dataTableGuest-infoMobileEMA        {display: block;}
+		.vibe-dataTableGuest-infoPhone            {display: block;}
+		.vibe-dataTableGuest-infoTextEMA          {display: block;}
+		.vibe-dataTableGuest-infoTitle            {display: block; font-weight: bold;}
+		.vibe-dataTableItem-Img                   {vertical-align: middle; margin-right: 2px;}
+		.vibe-dataTableLink-hover                 {color: #135c8f !important; cursor: pointer; background-color: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableLink-hoverNoLPad           {}
+		.vibe-dataTableLUV-hover                  {color: #135c8f !important; cursor: pointer; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableLUV-title                  {cursor: pointer; color: #036f9f !important; padding: 2px;}
+		.vibe-dataTableMobileDevices-bubble       {color: #036f9f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 8px; padding-right: 8px; text-align: center; display: inline;}
+		.vibe-dataTableMobileDevices-bubbleBig    {background: url(images/devices_25_wide.png) no-repeat scroll center center transparent;}
+		.vibe-dataTableMobileDevices-bubbleSmall  {background: url(images/devices_25.png)      no-repeat scroll center center transparent;}
+		.vibe-dataTableMobileDevices-headerBubble {color: #036f9f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 4px; padding-right: 4px; text-align: center; display: inline; background: url(images/devices_sm.png) no-repeat scroll center center transparent;}
+		.vibe-dataTableMobileDevices-panel        {text-align: center; display: block;}
+		.vibe-dataTableMobileDevices-panel0       {}
+		.vibe-dataTableMobileDeviceWipe-panel     {text-align: center; display: block;}
+		.vibe-dataTableMobileDeviceWipe-text      {display: inline; text-decoration: none;}
+		.vibe-dataTablePresence-control           {vertical-align: text-bottom;}
+		.vibe-dataTablePresence-label             {display: inline; font-weight: normal; padding-left: 2px !important;}
+		.vibe-dataTablePresence-disabled          {color: #c4c4c4;}
+		.vibe-dataTablePresence-enabled           {color: #353838;}
+		.vibe-dataTablePresence-image             {width: 20px; height: 20px; border-radius: 2px; margin-right: 3px;}
+		.vibe-dataTableProxyIdentity-hover        {color: #135c8f !important; cursor: pointer; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableProxyIdentity-title        {cursor: pointer; color: #036f9f !important; padding: 2px;}
+		.vibe-dataTableShareStringValue-expired   {color: red; font-weight: bold;}
+		.vibe-dataTableShareStringValue-label     {white-space: nowrap; padding-top: 5px;}
+		.vibe-dataTableShareStringValue-panel     {white-space: nowrap; height: 25px;}
+		.vibe-dataTableTaskFolder-disabled        {color: #c4c4c4;}
+		.vibe-dataTableTaskFolder-enabled         {color: #353838;}
+		.vibe-dataTableTaskFolder-label           {display: inline; color: #036f9f;}
+		.vibe-dataTableTaskFolder-panel           {white-space: nowrap;}
+		.vibe-dataTableTaskFolder-stats           {padding-left: 8px;}
+		.vibe-dataTableTaskFolder-statsStatusBar  {width: 150px;}
+		.vibe-dataTableGroupType-image            {}
+		.vibe-dataTableGroupType-panel            {text-align: center; display: block;}
+		.vibe-dataTablePrincipalAdminType-panel   {text-align: center; display: block;}
+		.vibe-dataTablePrincipalAdminType-image   {}
+	/* ...End:  Data table cell styles. */
+
+	/* ...Start:  Calendar folder view styles. */
+		.vibe-calendarFolder-appointment {}
+		.vibe-calendarFolder             {}
+		.vibe-calendarFolderShowHintDlg  {z-index: 5001 !important;}
+	/* ...End:  Calendar folder view styles. */
+
+	/* ...Start:  Collection view styles. */
+		.vibe-collectionDataTable {}
+		.vibe-collectionFlowPanel {}
+	/* ...End:  Discussion folder view styles. */
+	
+	/* ...Start:  Discussion folder view styles. */
+		.vibe-discussionFolderDataTable {}
+		.vibe-discussionFolderFlowPanel {}
+	/* ...End:  Discussion folder view styles. */
+	
+	/* ...Start:  Email templates view styles. */
+		.vibe-emailTemplatesDataTable {}
+		.vibe-emailTemplatesFlowPanel {}
+	/* ...End:  Email templates view styles. */
+
+	/* ...Start:  File folder view styles. */
+		.vibe-fileFolderDataTable {}
+		.vibe-fileFolderFlowPanel {}
+	/* ...End:  File folder view styles. */
+
+	/* ...Start:  Global Workspaces view styles. */
+		.vibe-globalWorkspacesDataTable {}
+		.vibe-globalWorkspacesFlowPanel {}
+	/* ...End:  Global Workspaces view styles. */
+
+	/* ...Start:  Guest book folder view styles. */
+		.vibe-guestbookFolderDataTable {}
+		.vibe-guestbookFolderFlowPanel {}
+	/* ...End:  Guest book folder view styles. */
+
+	/* ...Start:  Micro-blog folder view styles. */
+		.vibe-microBlogFolderDataTable {}
+		.vibe-microBlogFolderFlowPanel {}
+	/* ...End:  Micro-blog folder view styles. */
+	
+	/* ...Start:  Milestone folder view styles. */
+		.vibe-milestoneFolderDataTable {}
+		.vibe-milestoneFolderFlowPanel {}
+		.vibe-milestoneFolderOverdue   {font-style: italic; font-weight: bold; color: red;}
+	/* ...End:  Milestone folder view styles. */
+
+	/* ...Start:  Mirrored file folder view styles. */
+		.vibe-mirroredFileFolderDataTable     {}
+		.vibe-mirroredFileFolderFlowPanel     {}
+		.vibe-mirroredFileFolderNotConfigured {color: red; font-weight: bold; font-size: 1.2em;}
+	/* ...End:  Mirrored file folder view styles. */
+	
+	/* ...Start:  Mobile Devices view styles. */
+		.vibe-mobileDevicesDataTable {}
+		.vibe-mobileDevicesFlowPanel {}
+	/* ...End:  Mobile Devices view styles. */
+
+	/* ...Start:  Proxy Identities view styles. */
+		.vibe-proxyIdentitiesDataTable {}
+		.vibe-proxyIdentitiesFlowPanel {}
+	/* ...End:  Proxy Identities view styles. */
+
+	/* ...Start:  Personal Workspaces view styles. */
+		.vibe-personalWorkspacesDataTable {}
+		.vibe-personalWorkspacesFlowPanel {}
+	/* ...End:  Personal Workspaces view styles. */
+
+	/* ...Start:  Photo Album folder view styles. */
+		.vibe-photoAlbumFolderView {}
+	/* ...End:  Photo Album folder view styles. */
+	
+	/* ...Start:  Survey folder view styles. */
+		.vibe-surveyFolderDataTable {}
+		.vibe-surveyFolderFlowPanel {}
+		.vibe-surveyFolderOverdue   {font-style: italic;}
+	/* ...End:  Survey folder view styles. */
+
+	/* ...Start:  Task folder view styles. */
+		.vibe-taskFolderFlowPanel     {}
+		.vibe-taskFolderVerticalPanel {}
+		.vibe-taskFolderView          {}
+	/* ...End:  Task folder view styles. */
+	
+	/* ...Start:  Task graphs panel styles. */
+		.vibe-taskGraphsExpander        {display: block;}
+		.vibe-taskGraphsExpanderA       {text-decoration: none; cursor: pointer;}
+		.vibe-taskGraphsExpanderA-hover {color: #135c8f; cursor: pointer; background-color: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-taskGraphsExpanderImg     {}
+		.vibe-taskGraphsGrid            {}
+		.vibe-taskGraphsHidden          {visibility: hidden; display:none;}
+		.vibe-taskGraphsLabel           {color: #333333; font-size: 0.75em; font-weight: bold;}
+		.vibe-taskGraphsPanel           {}
+		.vibe-taskGraphsPriorities      {margin-left: 6px;}
+		.vibe-taskGraphsPrioritiesBar   {width: 300px;}
+		.vibe-taskGraphsRefresh         {}
+		.vibe-taskGraphsRefreshButton   {}
+		.vibe-taskGraphsStatus          {margin-left: 6px;}
+		.vibe-taskGraphsStatusBar       {width: 300px;}
+	/* ...End:  Task graphs panel styles. */
+	
+	/* ...Start:  Team Workspaces view styles. */
+		.vibe-teamWorkspacesDataTable {}
+		.vibe-teamWorkspacesFlowPanel {}
+	/* ...End:  Team Workspaces view styles. */
+
+	/* ...Start:  Trash view styles. */
+		.vibe-trashDataTable {}
+		.vibe-trashFlowPanel {}
+	/* ...End:  trash view styles. */
+
+	/* ...Start:  Blog folder view styles. */
+		.vibe-blogFolderFlowPanel     {}
+		.vibe-blogFolderVerticalPanel {}
+		.vibe-blogFolderView          {}
+	/* ...End:  Task folder view styles. */
+	
+	/* ...Start:  Wiki folder view styles. */
+		.vibe-wikiFolderView {}
+	/* ...End:  Wiki folder view styles. */
+/* End:  GWT folder view styles. */
+
+/* Start:  GWT workspace view styles. */
+	.vibe-discussionWSView_AccessoriesPanel, .vibe-teamWSView_AccessoriesPanel, .vibe-genericWSView_AccessoriesPanel, .vibe-projectManagementWSView_AccessoriesPanel, .vibe-personalWorkspacesView_AccessoriesPanel, .vibe-netFoldersWSView_AccessoriesPanel
+	{
+	}
+	
+	.vibe-discussionWSView_HtmlElementPanel, .vibe-teamWSView_HtmlElementPanel, .vibe-genericWSView_HtmlElementPanel, .vibe-projectManagementWSView_HtmlElementPanel, .vibe-personalWorkspacesView_HtmlElementPanel, .vibe-netFoldersWSView_HtmlElementPanel
+	{
+	}
+	
+	.vibe-discussionWSView_BreadCrumbPanel, .vibe-teamWSView_BreadCrumbPanel, .vibe-genericWSView_BreadCrumbPanel, .vibe-projectManagementWSView_BreadCrumbPanel, .vibe-netFoldersWSView_BreadCrumbPanel, .vibe-homeWSView_BreadCrumbPanel
+	{
+		margin-top: 8px;
+	}
+	
+	.vibe-discussionWSView_DescPanel, .vibe-teamWSView_DescPanel, .vibe-genericWSView_DescPanel, .vibe-homeWSView_DescPanel, .vibe-projectManagementWSView_DescPanel, .vibe-personalWorkspacesView_DescPanel, .vibe-netFoldersWSView_DescPanel
+	{
+	}
+
+	.vibe-discussionWSView_FooterPanel, .vibe-genericWSView_FooterPanel, .vibe-homeWSView_FooterPanel, .vibe-projectManagementWSView_FooterPanel, .vibe-personalWorkspacesView_FooterPanel, .vibe-netFoldersWSView_FooterPanel
+	{
+	}
+	
+	.vibe-discussionWSView_ListOfChildrenPanel
+	{
+	}
+	
+	.vibe-teamWSView_ListOfChildrenPanel
+	{
+		margin-top: 8px;
+	}
+	
+	.vibe-discussionWSView_LPPanel, .vibe-teamWSView_LPPanel, .vibe-homeWSView_LPPanel
+	{
+	}
+	
+	.vibe-discussionWSView_MainPanel, .vibe-teamWSView_MainPanel, .vibe-genericWSView_MainPanel, .vibe-homeWSView_MainPanel, .vibe-projectManagementWSView_MainPanel, .vibe-personalWorkspacesView_MainPanel, .vibe-netFoldersWSView_MainPanel
+	{
+		overflow: auto;
+	}
+	
+	.vibe-discussionWSView_TitlePanel, .vibe-teamWSView_TitlePanel
+	{
+	}
+	
+	/* ...Start:  Personal Workspace view styles. */
+		.vibe-personalWorkspaceView_AccessoriesPanel {}
+		.vibe-personalWorkspaceView_DashboardPanel   {}
+		.vibe-personalWorkspaceView_FooterPanel      {}
+		.vibe-personalWorkspaceView_HeaderPanel      {}
+		.vibe-personalWorkspaceView_MainPanel        {}
+	/* ...End:  Personal Workspace view styles. */
+/* End:  GWT workspace view styles. */
+
+/* Start:  Add files dialog styles. */
+	.vibe-addFilesDlgBox .popupContent {background-color: white !important;}
+	.vibe-addFilesDlg_HelpImg          {margin-left: 10px;}
+	.vibe-addFilesDlg-HelpPanel        {display: block; padding-right: 6px; white-space: nowrap;}
+	.vibe-addFilesDlg_IFrame           {padding: 6px !important; visibility: visible !important;}
+	.vibe-addFilesDlg_Label            {}
+	.vibe-addFilesDlg_Panel            {width: 500px; height: 280px;}
+/* End:  Add files dialog styles. */
+
+/* Start:  Add files via HTML5 styles. */
+	.vibe-addFilesHtml5Popup                             {z-index: 1001; border: 3px solid #09f !important; -moz-border-radius: 15px !important; border-radius: 15px !important; -webkit-border-radius: 15px !important; background: url("images/trans_blue_stripes.png") repeat !important;}
+	.vibe-addFilesHtml5Popup-closePanel                  {color: #FFFFFF; background-color: transparent !important; opacity: 1.0 !important; filter: alpha(opacity=100) !important; font-size: 0.8em; position: absolute; right: -12px; top: -12px; z-index: 1002;}
+	.vibe-addFilesHtml5Popup-closePanel:hover            {cursor: pointer;}
+	.vibe-addFilesHtml5Popup-glass                       {background-color: #000; filter: alpha(opacity=15); opacity: 0.15; overflow: hidden; z-index: 1000;}
+	.vibe-addFilesHtml5Popup-hover                       {border: 3px solid #ebaf1b !important; -moz-border-radius: 15px !important; border-radius: 15px !important; -webkit-border-radius: 15px !important; background: url("images/trans_yellow_stripes.png") repeat !important;}
+	.vibe-addFilesHtml5Popup-dndPanel                    {position: relative;}
+	.vibe-addFilesHtml5Popup-dndPanelHover               {}
+	.vibe-addFilesHtml5Popup-dupsList                    {}
+	.vibe-addFilesHtml5Popup-dupsName                    {}
+	.vibe-addFilesHtml5Popup-filename                    {max-width: 500px; text-overflow: ellipsis; overflow: hidden; display: inline-block; vertical-align: middle; margin-bottom: 3px; white-space: nowrap;}
+	.vibe-addFilesHtml5Popup-html5UploadPopup-glass      {background-color: #09f; filter: alpha(opacity=30); opacity: 0.3; overflow: hidden;}
+	.vibe-addFilesHtml5Popup-html5UploadPopup-panel      {color: white; font-size: 1.2em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans50_black.png") repeat;}
+	.vibe-addFilesHtml5Popup-html5UploadPopup-root       {}
+	.vibe-addFilesHtml5Popup-innerHintBrowseButton       {font-size: 14px !important; border: 1px solid transparent;}
+	.vibe-addFilesHtml5Popup-innerHintBrowseButton:hover {font-size: 14px !important;}
+	.vibe-addFilesHtml5Popup-innerHintBrowsePanel        {display: block; margin-top: 1em;}
+	.vibe-addFilesHtml5Popup-innerHintBrowseUpload       {visibility: hidden; width: 0px; margin: 0px;}
+	.vibe-addFilesHtml5Popup-innerHintCloseButton        {font-size: 14px !important; margin-left: 20px; border: 1px solid transparent;}
+	.vibe-addFilesHtml5Popup-innerHintCloseButton:hover  {font-size: 14px !important; margin-left: 20px;}
+	.vibe-addFilesHtml5Popup-innerHintBusy               {margin-right: 10px; vertical-align: middle;}
+	.vibe-addFilesHtml5Popup-innerHintLabel              {}
+	.vibe-addFilesHtml5Popup-innerHintPanel              {position: absolute; top: 150px; left: 25%; right: 25%; color: white; font-size: 1.2em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans50_black.png") repeat;}
+	.vibe-addFilesHtml5Popup-panel                       {z-index: 1001;}
+	.vibe-addFilesHtml5Popup-progressBar-panel           {padding: 6px; margin-left: auto; margin-right: auto; margin-top: 15px;}
+	.vibe-addFilesHtml5Popup-progressBar-perItem-bar     {margin-bottom: 3px; width: 250px !important;}
+	.vibe-addFilesHtml5Popup-progressBar-perItem-label   {padding-right: 5px;}
+	.vibe-addFilesHtml5Popup-progressBar-total-bar       {margin-bottom: 3px; width: 250px !important;}
+	.vibe-addFilesHtml5Popup-progressBar-total-label     {padding-right: 5px;}
+/* Start:  Add files via HTML5 styles. */
+
+/* Start:  Cloud Folder authentication dialog styles. */
+	.vibe-cloudFolderAuthenticationDlgBox .popupContent {background-color: white !important;}
+	.vibe-cloudFolderAuthenticationDlg_Logo             {margin-left: 10px;}
+	.vibe-cloudFolderAuthenticationDlg_Message          {padding: 10px; white-space: normal; display: block !important;}
+	.vibe-cloudFolderAuthenticationDlg_MessageAbove     {margin-bottom: 10px;}
+	.vibe-cloudFolderAuthenticationDlg_MessageBelow     {margin-top: 10px;}
+	.vibe-cloudFolderAuthenticationDlg_Panel            {width: 500px; height: 280px;}
+/* End:  Cloud Folder authentication dialog styles. */
+
+/* Start:  File conflicts dialog styles. */
+	.vibe-fileConflictsDlg                 {}
+	.vibe-fileConflictsDlg-banner          {width: 500px; padding-bottom: 10px; font-size: 1.2em;}
+	.vibe-fileConflictsDlg-conflictImg     {}
+	.vibe-fileConflictsDlg-conflictName    {font-size: 1.1em;}
+	.vibe-fileConflictsDlg-conflicts       {padding: 4px;}
+	.vibe-fileConflictsDlg-folderImg       {}
+	.vibe-fileConflictsDlg-folderName      {font-weight: bold; font-size: 1.2em;}
+	.vibe-fileConflictsDlg-folderNamePanel {margin-left: 5px;}
+	.vibe-fileConflictsDlg-folderNamePath  {font-size: 14px; color: #888;}
+	.vibe-fileConflictsDlg-folderPanel     {padding-bottom: 10px;}
+	.vibe-fileConflictsDlg-ok              {margin-right: 75px !important;}
+	.vibe-fileConflictsDlg-panel           {padding: 10px;}
+	.vibe-fileConflictsDlg-scroll          {overflow-y: auto !important; overflow-x: hidden !important; border: 1px solid #C4C4C4;}
+	.vibe-fileConflictsDlg-scrollHeader    {font-size: .9em; color: #666;}
+	.vibe-fileConflictsDlg-scrollLimit     {height: 175px;}
+/* End:  Add File conflicts dialog styles. */
+
+/* Start:  Manage comments composite styles. */
+	.vibe-manageCommentsComposite                        {background-color: white !important;}
+	.vibe-manageCommentsComposite-addCommentAvatar       {vertical-align: top !important; margin: 3px 5px 5px 15px; width: 30px; height: 30px; border-radius: 2px;}
+	.vibe-manageCommentsComposite-addCommentHint         {color: #949494; font-size: .8em; display: inline-block; width: 280px;}
+	.vibe-manageCommentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 10px;}
+	.vibe-manageCommentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; padding-top: 15px; padding-bottom: 15px; }
+	.vibe-manageCommentsComposite-addCommentPanel-nonIE  {width: 100%; }
+	.vibe-manageCommentsComposite-addCommentTextArea     {background-color: #fff; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 490px; height: 45px; padding: 5px; border: 1px solid #ccc; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
+	.vibe-manageCommentsComposite-captionImg             {width: 36px; height: 36px;}
+	.vibe-manageCommentsComposite-commentsWidget         {height: 300px; overflow: auto; position: relative; width: 550px;}
+	.vibe-manageCommentsComposite-label                  {}
+	.vibe-manageCommentsComposite-panel                  {}
+	.vibe-manageCommentsComposite-sendButton-nonIE       {float:right;}
+	.vibe-manageCommentsComposite-sendButton-nonIE:hover {float:right;}
+	.vibe-manageCommentsComposite-sendButton-IE          {margin-left: 20px;}
+	.vibe-manageCommentsComposite-sendButton-IE:hover    {margin-left: 20px;}
+	.vibe-manageCommentsComposite-sendButton             {
+		color:#1f1f1f;
+	 	font-size: 13px !important;
+	    font-family: Arial, sans-serif !important;
+	    text-align: center !important;
+	  	white-space: nowrap !important;
+		border: 1px solid #c4c4c4;
+	  	background: #fff none scroll 0 0;
+		margin-right: 5px;
+		padding: 2px 10px;
+		text-decoration:none;
+	  	cursor: pointer;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+	}
+	.vibe-manageCommentsComposite-sendButton:hover {
+		color: #135c8f !important;
+		font-size: 13px !important;
+	    white-space: nowrap !important;
+	    text-decoration: none !important;
+		border: 1px solid #81b2bd;
+		background: #cce9ee;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+	}
+/* End:  Manage comments composite styles. */
+
+/* Start:  Manage comments dialog styles. */
+	.vibe-manageCommentsDlg .popupContent {background-color: white !important;}
+	.vibe-manageCommentsDlg-captionCount  {
+		position: absolute;
+		top: 13px;
+		right: 0px;
+		padding-left: 10px;
+		padding-right: 20px;
+		font-size: 13px;
+	}
+	.vibe-manageCommentsDlg-panel         {}
+	.vibe-manageCommentsDlg-headerCaption {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 420px;}
+/* End:  Manage comments dialog styles. */
+
+/* Start:  Manage mobile devices dialog styles. */
+	.vibe-manageMobileDevicesDlg                    {}
+	.vibe-manageMobileDevicesDlg .popupContent      {background-color: white !important;}
+	.vibe-manageMobileDevicesDlg-captionCount       {position: absolute; top: 11px; right: 40px; padding-left: 10px; padding-right: 10px; font-size: 13px;}
+	.vibe-manageMobileDevicesDlg-headerCaption-user {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 600px;}
+	.vibe-manageMobileDevicesDlg-panel              {}
+	.vibe-manageMobileDevicesDlg-system             {}
+	.vibe-manageMobileDevicesDlg-user               {width: 800px; height: 600px;}
+/* End:  Manage mobile devices dialog styles. */
+
+/* Start:  Manage proxy identities dialog styles. */
+	.vibe-manageProxyIdentitiesDlg                    {}
+	.vibe-manageProxyIdentitiesDlg .popupContent      {background-color: white !important;}
+	.vibe-manageProxyIdentitiesDlg-captionCount       {position: absolute; top: 11px; right: 40px; padding-left: 10px; padding-right: 10px; font-size: 13px;}
+	.vibe-manageProxyIdentitiesDlg-headerCaption-user {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 600px;}
+	.vibe-manageProxyIdentitiesDlg-panel              {}
+/* End:  Manage proxy identities dialog styles. */
+
+/* Start:  Modify limited user visibility dialog styles. */
+	.vibe-modifyLimitedUserVisibilityDlg-hint      {white-space: normal; width:  300px; padding-bottom: 10px; font-size: 14px; color: #505354;}
+	.vibe-modifyLimitedUserVisibilityDlg-rb        {display: block;}
+	.vibe-modifyLimitedUserVisibilityDlg-rb label  {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;}
+	.vibe-modifyLimitedUserVisibilityDlg-rootPanel {padding: 10px;}
+/* End:  Modify limited user visibility dialog styles. */
+
+/* Start:  Size columns dialog styles. */
+	.vibe-sizeColumnsDlg-colCaptionImg {}
+	.vibe-sizeColumnsDlg-colCaptionTxt {font-size:  14px;}
+	.vibe-sizeColumnsDlg-colPanel      {}
+	.vibe-sizeColumnsDlg-content       {}
+	.vibe-sizeColumnsDlg-dataTable     {background-color: #F6F6F6; border: 1px solid #D2D5D1; border-bottom: 0px solid #F6F6F6;}
+	.vibe-sizeColumnsDlg-headerCell    {}
+	.vibe-sizeColumnsDlg-headerRow     {
+		background: #ededed;
+		color: #505354;
+		font-size: 0.8em;
+		height: 24px;
+		padding: 0.2em;
+		text-align: left;
+		text-indent: 0.5em;
+		white-space: nowrap;
+	}
+	.vibe-sizeColumnsDlg-label          {}
+	.vibe-sizeColumnsDlg-radio          {}
+	.vibe-sizeColumnsDlg-radioLabel     {}
+	.vibe-sizeColumnsDlg-rowCell        {font-size: .75em; padding: 3px 8px; border-bottom: 1px solid #D2D5D1; white-space: nowrap;}
+	.vibe-sizeColumnsDlg-rowCellCB      {text-align: center;}
+	.vibe-sizeColumnsDlg-row-even       {background: #fff;  }
+	.vibe-sizeColumnsDlg-row-odd        {background: #fff;}
+	.vibe-sizeColumnsDlg-scrollLimit    {height: 210px;}
+	.vibe-sizeColumnsDlg-scrollPanel    {overflow-y: auto !important; overflow-x: hidden !important; padding: 5px; padding-right: 28px; margin: 5px;}
+	.vibe-sizeColumnsDlg-sizePanel      {}
+	.vibe-sizeColumnsDlg-sizeRB         {}
+	.vibe-sizeColumnsDlg-sizeSlider     {width: 100px !important;}
+	.vibe-sizeColumnsDlg-sizeSliderHint {display: inline-block; width: 425px; padding-top: 10px; padding-left: 10px; font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
+	.vibe-sizeColumnsDlg-sizeSpinner    {}
+	.vibe-sizeColumnsDlg-sizeSpinner .textBox
+	{
+		font-size: 12px;
+		padding: 3px 0px;
+		text-align: center;
+		font-family: sans-serif;
+		font-weight: bold;
+		border: 1px solid #949494;
+		border-radius: 3px;
+	}
+/* End:  Size columns dialog styles. */
+
+/* Start:  Copy/Move entries dialog styles. */
+	.vibe-cmeDlg_BrowseButton    {
+		cursor: pointer;
+		border: 1px solid #B8B8B8;
+		font-weight: normal !important;
+		font-size: 12px;
+		margin-left: 3px;
+		padding: 2px 5px  !important;
+		text-decoration:none;	
+		white-space: nowrap;
+		text-align: center !important;
+		width: 35px;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		background: #f6f6f6;
+	}
+	
+	.vibe-cmeDlg_BrowseButton:hover {
+		color: #135c8f !important;
+		border: 1px solid #81b2bd;
+		padding: 2px 5px  !important;
+		background: #cce9ee;
+		border-radius: 5px !important;
+		-moz-border-radius: 5px !important;
+		-webkit-border-radius: 5px !important;
+	}
+
+	.vibe-cmeDlg_BrowseImg       {width: 25px; height: 25px; margin: 0 2px 0 0; border: 0px; vertical-align: middle;}
+	.vibe-cmeDlg_Caption1        {display: block !important;}
+	.vibe-cmeDlg_Caption2        {display: block !important;}
+	.vibe-cmeDlg_CaptionPanel    {white-space: nowrap; color: #505354;}
+	.vibe-cmeDlg_Dest            {font-weight: bold; margin-left: 3px;}
+	.vibe-cmeDlg_DestNone        {margin-left: 3px; color: graytext;}
+	.vibe-cmeDlg_DestLabel       {}
+	.vibe-cmeDlg_DestPanel       {white-space: nowrap; padding-top: 10px;}
+	.vibe-cmeDlg_FindLabel       {color: #505354;}
+	.vibe-cmeDlg_FindPanel_Inner {}
+	.vibe-cmeDlg_FindPanel_Outer {padding-top: 15px;}
+	.vibe-cmeDlg_FindWidget      {margin-top: 2px; display: inline;}
+	.vibe-cmeDlg_ProgressBar     {margin-bottom: 5px; margin-top: 10px;}
+	.vibe-cmeDlg_ProgressLabel   {margin-left: 3px;}
+	.vibe-cmeDlg_ProgressPanel   {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
+	.vibe-cmeDlg_ProgressSpinner {}
+	.vibe-cmeDlg_RootPanel       {padding: 10px;}
+/* End:  Copy/Move entries dialog styles. */
+
+/* Start:  Change entry types dialog styles. */
+	.vibe-changeEntryTypesCurDef     {margin-left: 2px;}
+	.vibe-changeEntryTypesCurLabel   {}
+	.vibe-changeEntryTypesCurPanel   {white-space: nowrap; padding-bottom: 8px;}
+	.vibe-changeEntryTypesFooter     {padding-top: 10px;}
+	.vibe-changeEntryTypesNote       {width: 600px; padding-top: 10px;}
+	.vibe-changeEntryTypesNewLabel   {font-weight: bold;}
+	.vibe-changeEntryTypesNewSelect  {padding-left: 2px;}
+	.vibe-changeEntryTypesRootPanel  {padding: 6px;}
+/* End:  Change entry types dialog styles. */
+
+/* Start:  Profile entry dialog styles. */
+	.vibe-profileEntryDlg-attrCaption {font-weight: bold; padding-right: 3px;}
+	.vibe-profileEntryDlg-attrValue   {}
+	.vibe-profileEntryDlg-avatar      {border-width: 1px; border-style: solid; border-color: #ccc; width: 100px; height: 100px;}
+	.vibe-profileEntryDlg-button      {}
+	.vibe-profileEntryDlg-buttons     {padding-top: 5px;}
+	.vibe-profileEntryDlg-delete      {}
+	.vibe-profileEntryDlg-footer      {padding: 5px; padding-top: 10px; width: 350px; color: #353838; font-size: small;}
+	.vibe-profileEntryDlg-grid        {padding: 5px;}
+	.vibe-profileEntryDlg-modify      {}
+	.vibe-profileEntryDlg-rootPanel   {}
+	.vibe-profileEntryDlg-title       {font-size: 20px; font-weight: 200; font-family: Arial, Helvetica, sans-serif; color:#5691A6!important;}
+/* End:  Profile entry dialog styles. */
+
+/* Start:  Empty widget styles. */
+	.vibe-emptyWidget-head      {font-size: 1.8em; color: #5691A6; margin-left: 90px;}
+	.vibe-emptyWidget-headImage {position: absolute; top: 0px; left: 0px; padding: 10px 20px; }
+	.vibe-emptyWidget-headSub   {font-size: 14px; color: #949494; margin-bottom: 20px; margin-left: 90px; }
+	.vibe-emptyWidget-info      {font-size: 16px; color: #505354; margin-top: 10px; line-height: 24px;}	
+	.vibe-emptyWidget-rootPanel {position:relative; background-color: #fafafa; margin: 20px 40px; border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 450px; font-size: 1.15em;}
+/* End:  Empty widget styles. */
+
+/* Start:  Delete selections dialog styles. */
+	.vibe-deleteSelectionsDlg                    {min-width: 220px;}
+	.vibe-deleteSelectionsDlg-indent             {padding-left: 20px;}
+	.vibe-deleteSelectionsDlg-purgeNote          {font-size: 14px;}
+	.vibe-deleteSelectionsDlg-purgeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
+	.vibe-deleteSelectionsDlg-radio              {} 
+	.vibe-deleteSelectionsDlg-trashRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
+	.vibe-deleteSelectionsDlg-rootPanel          {padding: 8px;}
+	.vibe-deleteSelectionsDlg-warning            {padding-top: 8px;}
+	.vibe-deleteSelectionsDlg-warningImg         {margin-right: 3px;}
+	.vibe-deleteSelectionsDlg-warningPanel       {display: none; visibility: hidden;}
+	.vibe-deleteSelectionsDlg-warningPanelActive {display: inline !important; visibility: visible !important;}
+	.vibe-deleteSelectionsDlg-warningTxt         {font-size: 14px; font-weight: bold;}
+	.vibe-deleteSelectionsDlg-warningSituation1  {}
+	.vibe-deleteSelectionsDlg-warningSituation2  {}
+	.vibe-deleteSelectionsDlg-warningSituation3  {padding-left: 3px;}
+/* End:  Delete selections dialog styles. */
+
+
+/* Start:  Delete selected users dialog styles. */
+	.vibe-deleteSelectedUsersDlg                       {min-width: 220px;}
+	.vibe-deleteSelectedUsersDlg-indent                {padding-left: 20px;}
+	.vibe-deleteSelectedUsersDlg-purgeCheckBoxCell     {} 
+	.vibe-deleteSelectedUsersDlg-purgeCheckBoxWS label {font-size: 14px !important; padding-top: 5px; padding-left: 2px; display: inline-block;} 
+	.vibe-deleteSelectedUsersDlg-purgeNote             {font-size: 14px; padding-bottom: 2px;}
+	.vibe-deleteSelectedUsersDlg-purgeRadio label      {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;}
+	.vibe-deleteSelectedUsersDlg-radio                 {} 
+	.vibe-deleteSelectedUsersDlg-trashRadio label      {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
+	.vibe-deleteSelectedUsersDlg-rootPanel             {padding: 8px;}
+	.vibe-deleteSelectedUsersDlg-warning               {padding-top: 8px;}
+	.vibe-deleteSelectedUsersDlg-warningImg            {margin-right: 3px;}
+	.vibe-deleteSelectedUsersDlg-warningPanel          {display: none; visibility: hidden;}
+	.vibe-deleteSelectedUsersDlg-warningPanelActive    {display: inline !important; visibility: visible !important;}
+	.vibe-deleteSelectedUsersDlg-warningTxt            {font-size: 14px; font-weight: bold;}
+	.vibe-deleteSelectedUsersDlg-warningSituation1     {}
+	.vibe-deleteSelectedUsersDlg-warningSituation2     {}
+	.vibe-deleteSelectedUsersDlg-warningSituation3     {padding-left: 3px;}
+/* End:  Delete selected users dialog styles. */
+
+/* Start:  Edit-in-place frame styles. */
+	.vibe-editInPlaceInner {}
+	.vibe-editInPlaceOuter {visibility: hidden; display: block; width: 0px; height: 0px;}
+/* End:  Edit-in-place frame styles. */

@@ -1,0 +1,1046 @@
+/* CSS Document */
+
+	body {
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: #b8b8b8;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	}
+
+	a { color: #016ba6; text-decoration: none }  /* #4c757b teal */
+
+	a.actionlink	  	{ text-decoration: none; padding: 3px 8px;}
+	a.actionlinkdis 	{ color: #999999; text-decoration: none; padding: 3px 8px;}
+	
+	a.actionlink:hover { 
+		color: white;
+		background: url(images/main/blue_slice.png) repeat-x;
+		background-position: bottom;
+		}
+
+	a.globalactionlink:hover { 
+	color: #c3dfe0; 
+	border: 1px solid #c3dfe0;
+	}
+	
+	.absoluteDIV {position: absolute;}
+	
+	.relativeDIV,
+	#related-files_1,
+	#related-files_2,
+	#related-files_3
+		{ position: relative; }
+		
+	
+	/*  font colors  */
+	.wg-teal { color: #5a9a98; }
+	.wg-graydark { color: #6a737b; }
+	.wg-graymedium { color: #94ada9; }
+
+
+	/* general form styles     */
+	input[type="checkbox"] {
+	margin: 2px 3px;
+	vertical-align: text-bottom;
+	}
+	
+	input[type="checkbox"].comment1 {
+	vertical-align: text-bottom;
+	margin: 0px 3px;
+	}
+
+	input[type="radio"] {
+	margin: 3px 4px;
+	vertical-align: middle;
+	}
+	
+	#heading 	{
+	position: relative;
+	background: url(images/main/Teaming_H_slice.png) repeat-x;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	/* height: 71px; */
+	overflow: hidden;
+	z-index:2;
+	}
+	
+	#headgraphic	{
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 0;
+	}
+	
+	.globalactions {
+	position: relative;
+	top: 23px;
+	left: 300px;
+	white-space:nowrap;
+	z-index: 20;
+	}
+	
+	.globalactiontext a {
+	color: black;
+	font-weight: bold;
+	letter-spacing: .1em;
+	text-transform:uppercase;
+	font-size: 0.6em;
+	padding: 3px 5px; 
+	margin-left: -5px;
+	border: 1px solid transparent; 
+	}
+	
+	.globalaction-hints {
+		position: absolute;
+		top: -10px;
+		left: 250px;
+		color: #fff;
+		font-size: .7em;
+		text-align: center;
+		width: 150px;
+		overflow: hidden;
+		}
+	.globalaction-hints span { display: none;}
+
+	.headtitle {
+	color: #fff;
+	width: 200px;
+	font-size: .9em;
+	font-style:italic;
+	letter-spacing: .1em;
+	}
+	
+	.identity {
+	position: relative;
+	left: 40px;
+	font-size: 0.7em;
+	margin-bottom: 0.2em;
+	}
+	
+	/* heading buttons */
+
+	#actionbut 			{ position: absolute; z-index: 6; top: 40px; right: 100px; width: 100px; height: 48px; white-space: nowrap; }
+	#actionbut a		{ color: white; font-size: .7em; text-transform: uppercase; letter-spacing: .1em; padding-right: 1.5em; }
+	#logo		        { position: absolute; z-index: 1; top: 10px; right: 15px; }
+	
+	.subhead {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 20px;
+	padding: 2px 0px 4px 0px;
+	background: url(images/main/level_one_pattern4_border.png) repeat-x;
+	white-space:nowrap;
+	z-index:3;
+	}
+
+	.subheadtitle {
+	font-weight: bold;
+	font-size: 0.85em;
+	padding-left: 15px;
+	padding-right: 2em;
+	letter-spacing: .1em;
+	
+	}
+	
+	.subheadtext {
+	color: #000000;
+	font-weight: normal;
+	font-size: 0.8em;
+	padding: 4px 0px 4px 0px;
+	border-left: 1px solid white;
+	}
+	
+	.search-adv { 
+		position: absolute;
+		top: 96px;
+		right: 30px;
+		width: 210px;
+		overflow: auto;
+		padding: 5px 10px 10px;
+		background: url(images/main/trans50_black.png) repeat;
+		-moz-border-radius-bottomright: 8px;
+		-moz-border-radius-bottomleft: 8px;
+		z-index: 210;
+		}
+
+	.t-breadcrumb {
+		color: #fff;
+		font-size: .85em;
+		margin: 0px 20px;
+		}
+		.t-breadcrumb span { position: relative; margin-right: 15px; }
+		.t-breadcrumb span a { color: #fff;}
+
+	.t-breadcrumb-closed { 
+		position: absolute;
+		top: 96px;
+		left: 52px;
+		height: 16px;
+		width: 28px;
+		text-align: center;
+		overflow: hidden;
+		padding: 0px;
+		background: url(images/main/trans50_black.png) repeat;
+		-moz-border-radius-bottomright: 8px;
+		-moz-border-radius-bottomleft: 8px;
+		z-index: 210;
+		}
+	.t-breadcrumb-open { 
+		position: absolute;
+		top: 96px;
+		left: 52px;
+		right: 30px;
+		height: 65px;
+		overflow: auto;
+		padding: 5px;
+		background: url(images/main/trans50_black.png) repeat;
+		-moz-border-radius-bottomright: 8px;
+		-moz-border-radius-bottomleft: 8px;
+		z-index: 210;
+		}
+
+	#ws-leftnav-control,
+	#admin-leftnav-control {
+		position: absolute;
+		top: 96px;
+		left: 20px;
+		height: 16px;
+		width: 28px;
+		text-align: center;
+		overflow: hidden;
+		background: url(images/main/trans50_black.png) repeat;
+		-moz-border-radius-bottomright: 8px;
+		-moz-border-radius-bottomleft: 8px;
+		z-index: 210;
+		}
+
+	.leftnav { 
+		float: left;
+		position: relative;
+		top: -1px;
+		width: 225px;
+		margin-right: 10px;
+		margin-left: 10px;
+		background-color: #efeeec;
+		padding: 20px 0;
+		border-right: 1px solid #aeb0aa;
+		-moz-border-radius-bottomright: 10px;
+		-moz-border-radius-bottomleft: 10px;
+		z-index:100;
+		}
+	
+	/*  microblog styles  */
+	#microblog {
+		background: #e8e9e6 url(images/main/putty_blend3.png) repeat-x;
+		background-position: bottom;
+		border-bottom: 1px solid #babdb6;  /* #babdb6 */
+		padding: 5px 5px;
+		z-index: 10;
+	}
+	#microblog-head { 
+		color: #949691;
+		font-size: .65em;
+		font-weight: bold;
+		text-transform: uppercase;
+	}
+	#microblog-content {
+		color: #666;
+		font-size: .7em;
+		margin: 5px;
+	}
+	#microblog-edit {
+		display: none;
+		color: black;
+		font-size: .8em;
+		margin: 10px 5px;
+	}
+	#microblog-text {
+		font-size: 1em;
+	}
+	#microblog-clear {
+		margin-left: 2em;
+	}
+	#microblog-buttons {
+		font-size: .7em;
+		margin-top: .3em;
+	}
+	
+/* mouseover styles    */
+
+.overfolder-item {
+	background-color: #fff;
+	cursor: pointer;
+	}
+
+.ws-folder {
+	position: relative;
+	color: #016ba6;
+	font-size: .8em;
+	}
+
+	.ws-folder .Fh,
+	.ws-folder .Fh-b {
+		margin-left: 16px;
+		padding: 6px 4px 4px;
+		}
+	.ws-folder .Fh img.toggle,
+	.ws-folder .Fh-b img.toggle{
+		position: absolute;
+		top: 8px;
+		left: 2px;
+		}
+		
+	.ws-folder .L1 {
+		font-weight: normal;
+		margin-left: 30px;
+		padding-top: 3px;
+		}
+	
+	#homecontent {
+	position: relative;
+	padding: 0px;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	background-color: white;
+	}
+	
+
+.tabs { 
+	padding: 4px 10px 2px 10px;
+	border-bottom: 1px solid #4b8cbe;
+	}
+	.tabs span.tab-on {
+		color: white;
+		font-weight: bold;
+		font-size: 12px;
+		background: url(images/main/blue_slice.png) repeat-x;
+		background-position: bottom;
+		white-space: nowrap;
+		padding: 3px 8px;
+		border-top: 1px solid #5aa7e3;
+		border-left: 1px solid #5aa7e3;
+		border-right: 1px solid #5aa7e3;
+		-moz-border-radius-topright: 5px;
+		-moz-border-radius-topleft: 5px; 
+		}
+	.tabs span.tab-off {
+		font-weight: normal;
+		font-size: 12px;
+		border-bottom: 1px solid #4b8cbe;
+		background: url(images/main/gray_slice.png) repeat-x;
+		background-position: bottom;
+		white-space: nowrap;
+		padding: 3px 8px;
+		border-top: 1px solid #999;
+		border-left: 1px solid #999;
+		border-right: 1px solid #999;
+		-moz-border-radius-topright: 5px;
+		-moz-border-radius-topleft: 5px; 
+		cursor: pointer;
+		}
+
+.tab-leftend {
+	border-left: 1px solid #5aa7e3;
+	}	
+.tab-rightend {
+	border-right: 1px solid #5aa7e3;
+	}	
+
+
+/*  Contents styles  */
+
+.contents {
+	margin: 0px 10px 10px 10px;
+	display: none;
+	}
+
+
+/*  content table styles */
+	#hometable {
+		display: block;
+		margin-top: 10px;
+		}
+	#hometable td { vertical-align: top;}
+	.wg-blend-h {
+		background:url(images/main/WG_BMTheading_slice_horz.png) repeat-y;
+		background-color: #e1eff0;
+	}
+	.wg-lightteal2 {
+		background-color: #e1eff0;
+	}
+	.wg-lightyellow {
+		background-color: #FFD457;
+	}
+	.wg-tablesubhead1 {
+		background-color: #72AEB6;
+		background: url(images/main/H_bg_blend_teal.png) repeat-x;  
+		color: #fff;
+		text-align: center;
+		font-size: 1em;
+		font-weight: bold;
+		letter-spacing: .1em;
+		padding: 3px 3px 3px 15px;
+	/*	-moz-border-radius-bottomright: 10px;
+		-moz-border-radius-bottomleft: 15px; */
+	}
+	.wg-tablesubhead2 {
+		color: #000;
+		font-size: .95em;
+		font-weight: bold;
+		padding: 5px 3px 3px 15px;
+		border-bottom: 1px solid #fff;
+	}
+
+	.wg-item {
+		color: #455560;
+		font-size: .85em;
+		padding: 2px 6px 6px 15px;
+	}
+	.wg-link {
+		font-size: .85em;
+		padding: 2px 3px 2px 15px;
+	}
+	
+	.wg-bg-lightgray {
+		background-color: #efeeec;
+	}
+	
+	
+	
+	
+	.subcontent {
+	margin: 10px;
+	height: 95%;
+	}
+
+	#navcontainer		{
+	position: absolute;
+	top: 0px;
+	height: 100%;
+	width: 230px;
+	background-color:#edeeec;
+	}
+
+	.nav		{
+	position: relative;
+	width: auto;
+	padding: 5px 10px 5px 15px;
+	font-size: 0.8em;
+	border-bottom: 1px solid #c3c5c0;
+	}
+	.nav a {
+	color: #273961; 
+	text-decoration: none;
+ 	}	
+	.nav div {
+	padding-top: 0.2em; 	
+	padding-bottom: 0.2em; 	
+	}
+	
+	.nav div.subhead1 {
+	padding-top: 0.2em; 	
+	padding-bottom: 0.2em;
+	color: #212a59;
+	font-weight:bold;
+	border-bottom: 1px solid #fff;
+	}
+	
+	.subhead1link {
+	padding-top: 0.2em; 	
+	padding-bottom: 0.2em;
+	margin-left: 1em; 	
+	}
+	
+	.searchDIV
+	{ position: absolute; top: 3px; right: 35px; }
+
+	img.closeopenbutton  /* apply to the <img> inside the DIV <img class="closeopenbutton"> */
+	{ position: absolute; top: 0px; right: 10px; padding: 5px; }
+	
+	.menuitem1 a:link {text-decoration: none}
+	.menuitem2 a:link {text-decoration: none; color: gray}
+	.head2dotline  { color: #154045; font-weight: normal; font-size: 1.2em; background-image: url(images/main/dotline_bg.gif); background-repeat: repeat-x; background-position: 0 bottom; letter-spacing: 0.1em; margin-top: 0.5em; padding-bottom: 5px; }
+
+	.regtext 		{ font-weight: normal; letter-spacing: normal; padding: 0px 5px 0px 5px}
+	
+	.menuimage {padding-left: 5px;}
+
+	#whatsnewaction, #teamaction, #manageaction, #workspaceaction { position: relative;}		
+	#whatsnewmenu, #teammenu, #managemenu, #workspacemenu { position: absolute; top: -1px;left: 0px;}
+	#whatsnewmenulist, #workspacemenulist, #teammenulist, #managemenulist	{ z-index: 10;}
+
+
+/*  Dialog CSS  */
+.dialog  /* apply to a span - this is a wrapper around the entire dialog */ 
+	{ background-color: #fff; 
+	position: absolute; 
+	left: 100px; 
+	top: 30px; 
+	width: 850px; 
+	border: solid 1px black;
+	z-index: 300}
+
+.dialog .title  /* apply to the title DIV  <div class="title"> */ 
+	{ color: white; 
+	font-weight: bold; 
+	font-size: .95em;
+	line-height: 1em;
+	background: url(images/main/blue_slice.png) repeat-x;
+	background-position: bottom;
+	text-align: left; 
+	text-indent: 0.2em; 
+	padding: 0.3em}
+
+	span.pretitle {color: #F6F6F6;} /* inline style for use within the dialog title */
+
+.dialog .subtitle  /* apply to a DIV to section page  <div class="subtitle"> */
+	{ background-color: #F6F6F6; 
+	padding: 4px; 
+	border-bottom: 1px solid #babdb6 }
+
+.dialog .title img.closebutton  /* apply to the <img> inside the title DIV  <img class="closebutton"> */
+	{ position: absolute; top: 3px; right: 3px; }
+
+.dialog .content 
+	{ margin: 10px; min-height: 50px;}
+
+.dialog .content .list1 
+	{ padding: 2px;
+	font-size: .85em;
+	border-bottom: 1px solid #babdb6;
+	overflow:hidden;	
+	 }
+
+.dialog .footer 
+	{ position: relative; background-color: #F6F6F6; margin-top: 1em; padding: 0.5em; border-top: 1px solid #babdb6; }
+	
+.dialog .footer img 
+	{ float: right; 
+	margin-right: 5px; }
+	
+.level2dialog	{  /* use inside an element with a .dialog class */
+	position: absolute; 
+	top: 0px; 
+	left: 50px; 
+	background-color: #f6f6f6;
+	margin-left: 1em; 
+	width: 500px; 
+	border: 2px solid #4b8cbe; 
+	border-top: none;
+	} 
+		
+.level2dialog .subtitle  /* apply to a DIV to section page  <div class="subtitle"> */ {
+	background-color: #c6e7f6; /*light blue */
+	padding: 1px 5px 10px 10px;
+	}
+	
+.level2dialog .unitlabel  /* apply to a span after a input  <span class="unitlabel"> */ {
+	color: #4d6d8b;
+	font-size: 0.85em;
+	padding: 0px 5px;
+	}
+
+
+.related-div {
+	position: relative;
+	font-weight: normal;
+	top: 0px;
+	right: 0px;
+	padding: 3px;
+	width: 150px;
+	background-color: #f6f6f6;
+	}
+	
+	.related-head img {
+		position:absolute; 
+		top: 5px;
+		right: 8px;
+		}
+	.related-head {
+		color: #000;
+		font-size: .7em;
+		text-transform: uppercase;
+		padding: .5em;
+		background: #ffe085;
+		}
+	.related-item {
+		font-size: .85em;
+		white-space: normal;
+		padding: 3px 0;
+		margin-left: .75em;
+		overflow:hidden; 
+		}
+
+.T-layout td {
+	white-space: nowrap;
+	background-color: transparent;
+	}
+
+/*  Object List Table CSS  */
+/*-------------------------------------------*/
+/*menu actions, e.g., New, Edit, Delete, include a rollover color change. On the onmouseover event, change the menu links (<a>) to the same color as the title background. Change the text color to white. See the HTML example in the guideline for implementation examples.*/
+
+.objlist2  /*   apply to the object list table tag <table class="objlist">  */ 
+	{ 
+	margin-top: -1px;
+	background-color: #efeeec;
+	border-top: 20px solid #efeeec;
+	border-left: 5px solid #efeeec;
+	border-right: 5px solid #efeeec;
+	border-bottom: 0px solid #efeeec;
+	-moz-border-radius-bottomright: 10px;
+	-moz-border-radius-bottomleft: 10px;
+	}
+
+.objlist2b  /*   apply to the object list table tag <table class="objlist">  */ 
+	{ 
+	margin-top: 0px;
+	padding-bottom: .5em;
+	background-color: #efeeec;
+	margin-top: .5em;
+	border-left: 0px solid transparent;
+	border-right: 0px solid transparent;
+	border-bottom: 0px solid transparent;
+	}
+
+.objlist2 tr.title  /* apply to the first row in table  <tr class="title"> */
+	{
+	color: white;
+	font-weight: bold;
+	font-size: 0.95em;
+	text-align: left;
+	height: 24px;
+	text-indent: .5em;
+	padding: 0.2em;
+	border-top: 1px solid #5aa7e3;
+	background: url(images/main/blue_slice.png) repeat-x;
+	background-position: bottom;
+	white-space: nowrap;
+	}
+.title-leftend {
+	border-left: 1px solid #5aa7e3;
+	}	
+.title-rightend {
+	border-right: 1px solid #5aa7e3;
+	}	
+	 
+.objlist2 tr.entry-menu td {
+	padding: 3px;
+	background-color: #e2f0f6;
+	}
+	
+.objlist2 tr.entry-menu td.nocolor { background-color: transparent;}
+	
+.objlist2 tr.menu div.menuitem1  /* allows the menu item to wrap if text is longer than the the menu. */ 
+	{ white-space: normal; }
+
+.objlist2 tr.menu a	/* menu style will automaticallly apply to all links within the table row*/ 
+	{ text-decoration: none; 
+	padding-top: 2px; 
+	padding-bottom: 2px; 
+	padding-right: 6px; 
+	padding-left: 6px; 
+	font-size: 0.85em; }
+.objlist2 tr.menu td {
+	padding: 2px 2px 2px 0;}
+
+.objlist2 tr.columnhead td,
+.objlist2b tr.columnhead td   /* Apply to the column headings row following the menu <tr class="columnhead"> */
+	{ 
+	color: #666; 
+	font-size: 0.75em; 
+	padding-top: 0.2em; 
+	padding-bottom: 0.2em;
+	padding-left: .5em;
+	padding-right: .5em;
+	border-bottom: 1px solid #bbbbb9; 
+	white-space: nowrap;
+	background-color: #e2f0f6;
+	}
+	
+.objlist2 tr.columnhead .sortedcol { color: #666; font-weight: bold;}
+	
+
+.objlist2 tr.regrow td,
+.objlist2b tr.regrow td/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
+	{ 
+	background-color: #fff;
+	font-size:.75em;
+	padding: 3px 8px;
+	border-bottom: 1px solid #dbdbd3;
+	white-space: nowrap;
+	}
+
+.objlist2 tr.regrow td.related	/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
+	{
+	padding: 0px;
+	vertical-align: top;
+	}
+
+.objlist2 tr.related-bg td	/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
+	{ 
+	background-color: #ffe085;
+	font-size:.75em;
+	padding: 3px 8px;
+	border-bottom: 1px solid #dbdbd3;
+	}
+
+objlist2 tr.regrow td.wrapOK { white-space: normal;}
+
+.objlist2 tr.regrowB td	/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
+	{ 
+	background-color: #fff;
+	font-size:.75em;
+	border-bottom: 1px solid #dbdbd3;
+	vertical-align: top;
+	}
+
+.objlist2 tr.footrow td
+	{ color: #666666; text-align: center; letter-spacing: .1em; font-size:0.7em; padding: 5px; } /* #babdb6 */
+	
+tr.tablecolumnhead td  
+	{ color: #000; 
+	font-weight: bold; 
+	font-size: 0.75em; 
+	background-color: #F1F2F0; 
+	border-bottom: 1px solid black; }
+	
+tr.ends td   
+	{ border-right: 1px solid #bbbbb9; 
+	border-left: 1px solid #bbbbb9}	
+			
+tr.titleends td   
+	{ border-right: 1px solid #173751; 
+	border-left: 1px solid #173751}		
+		
+td.leftend    
+	{ border-left: 1px solid #bbbbb9 }
+				
+td.rightend   
+	{ border-right: 1px solid #bbbbb9; }	
+	
+
+
+
+/* Entry styles - Blog, Recent, etc */
+/*-------------------------------------------*/
+
+.entry-menu a {
+	text-decoration: none; 
+	padding: 2px 10px; 
+	font-size: 0.8em;
+	margin-right: 3px;
+	border: 1px solid #abdff6; /* #bbe4f6; */
+	background: url(images/main/highlight_30.png) repeat-x;
+	background-position:center;
+	-moz-border-radius: 10px;
+	}
+.entry-menu {
+	padding: 5px;}
+
+.entry-head {
+	position: relative;
+	background-color: #F6F6F6; 
+	border-bottom: 1px solid #babdb6;
+	}
+	
+.entry {
+	position: relative;
+	color: #666;
+	border-bottom: 1px solid #d2d5d1;
+	padding: 10px;
+	background-color: #fff;
+	}
+	.entry-title {
+		color: #000;
+		font-size: 16px;
+		padding-right: 20px;
+		}
+	.entry-content {
+		font-size: 13px;
+		padding-top: 4px;
+		white-space: normal;
+		}
+	.entry-author {
+		font-size: 10px;
+		text-transform: uppercase;
+		padding-top: 2px;
+		padding-right: 10px;
+		}
+	.entry-date {
+		font-size: 10px;
+		color: #666;
+		padding-right: 10px;
+		}
+	.entry-type {
+		font-size: 10px;
+		color: #666;
+		background-color: #fef7e4;
+		padding: 3px;
+		}
+	.entry-comment-label {
+		position: absolute;
+		right: 6px;
+		top: 10px;
+		color: #000;
+		font-size: 12px;
+		font-weight: bold;
+		text-align: center;
+		padding: 5px 8px;
+		background:url(images/main/comments_22.png) no-repeat center;
+		}
+	.entry a.mk-comment, a.remove-action {
+		font-size:12px;
+		padding: 3px 10px 3px 0px;
+		}	
+
+.comment {
+	position: relative;
+	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
+	padding: 5px 5px 5px 70px;
+	}
+.comment2 {
+	position: relative;
+	border-bottom: 1px solid #e2e5e1;
+	padding: 5px 5px 5px 130px;
+	}
+
+	.comment .entry-title, .comment2 .entry-title {
+		font-size: 12px;
+		color: #666;
+		padding-top: 5px;
+		white-space: nowrap;
+		width: 95%;
+		overflow: hidden;
+		}
+	.comment .entry-title span, .comment2 .entry-title span {
+		font-size: 12px;
+		font-weight: bold;
+		color: #000;
+		padding-right: 5px;
+		}
+	.comment-bg {
+		font-size: 12px;
+		color: #666;
+		background-color: #fef8dc; /* #fffae4; #FEF6D4; */
+		padding: 10px;
+		}
+	.comment img {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+		width: 50px;
+		}	
+	.comment2 img {
+		position: absolute;
+		top: 10px;
+		left: 70px;
+		width: 50px;
+		}	
+
+.archives {
+	position: relative;
+	color: #666;
+	padding: 10px;
+	background-color: #fff;
+	}
+	.archive-title {
+		color: #000;
+		font-size: 12px;
+		text-transform: uppercase;
+		margin-bottom: .5em;
+		}
+	.archive-head {
+		font-size: 12px;
+		font-weight: bold;
+		white-space: normal;
+		}
+	.archive-content {
+		font-size: 13px;
+		white-space: normal;
+		margin-left: .75em;
+		}
+
+
+
+/*  Menu CSS  */
+/*-------------------------------------------*/
+
+.menudetail {
+	position: relative; 
+	background-color: #ffffff; 
+	text-align: left; 
+/*	border: solid 1px #000;  */
+	top: 0px;
+	left: 0px; 
+	width: 200px;
+}
+
+.menushadow? {  /*  used with .menudetail to create a shadow effect */
+	background:url(images/main/shadow_black.png) repeat;
+	position: absolute;
+	top: 5px;
+	left: 6px;
+	width: 200px;
+	-moz-border-radius: 5px;
+}
+	
+.entry-menu-list {
+	position: absolute;
+	font-size: .8em;
+	z-index: 350;
+	}	
+.entry-menu-list .menudetail {
+	width: 150px;
+	border: 1px solid #5aa7e3;
+	}	
+	
+.menutitle {
+	color: #F6F6F6;
+	font-size: 1em;
+	font-weight: bold;
+	background: url(images/main/blue_slice.png) repeat-x;
+	background-position: bottom;
+	margin-bottom: 0.5em;
+	padding: 5px; 
+}
+   tr.rule2 div.menutitle { font-size: 1em; }
+   td div.menutitle { font-size: 1em; }
+   tr.columnhead div.menutitle { font-size: 1em; background-color: #e0e1df; }
+   span div.menutitle { font-size: 1em; }
+
+.menutitle img, .infoboxtitle img 
+	{float: right}
+
+tr.columnhead div.menudetail { background-color: #ffffff; text-align: left; position: absolute; z-index: 10; top: 0; width: 200px; border: solid 1px #000; font-weight: normal; font-size: 1em;}
+
+.menuitem1 a:link
+	{ text-decoration: none;}
+
+.menuitem1 a	
+	{padding-top: 2px; 
+	padding-bottom: 2px; 
+	padding-right: 5px; 
+	padding-left: 5px; 
+	text-decoration: none;}
+	
+.menuitem1 a:hover {
+	color: white;
+	background: url(images/main/blue_slice.png) repeat-x;
+	background-position: bottom;
+		}
+
+.menuitem1 { 
+	padding: 0.2em 0.5em 0.3em; 
+	line-height: 1.1em; 
+}
+
+.menuitem2    /* disabled menu item (disabled link) */ 
+	{ color: gray; 
+	padding: 0.3em; 
+	margin-left: 0.5em}
+
+.menuitemspacer    /* to add a spacer between a section or group within a menu */ 
+	{ font-size: 0.85em; padding: 0.3em; margin-left: 0.5em; background: url(images/main/dotline_bg.gif) repeat-x; }
+
+.menusubhead    /* used within a menu */ {
+	color: gray;
+	font-size: 0.75em;
+	padding: 6px 4px 4px 6px;
+	background-color: #F6F6F6;
+	text-transform:uppercase;
+	letter-spacing: 0.1em;
+	vertical-align: middle;
+	white-space: normal;
+}
+
+.menubottom  { margin-bottom: 0px; padding-bottom: 0px; padding-top: 5px; border-bottom: 3px solid #5aa7e3; }
+/*-------------------------------------------*/
+
+
+
+/* message / warning dialog */
+/*-------------------------------------------*/
+
+.messagebox_content
+	{ position: relative; background:#ebeca5; } 
+
+.messagebox_content img		{ position: absolute; top: 5px; left: 5px; }
+#closebutton 				{ position: absolute; top: 2px; right: 2px; }	
+
+.messagebox_content .warntype 		{ color: #9a4000; padding-right: 0.3em; }
+.messagebox_content .errortype 		{ color: #d61e11; text-transform: uppercase; letter-spacing: 0.1em; padding-right: 0.3em; }
+.messagebox_content .infotype 		{ color: #4d6d8b; padding-right: 0.3em; }
+.messagebox_content .successtype 	{ color: #117f12; padding-right: 0.3em; }
+.messagebox_content .unknowntype 	{ color: #9a4000; padding-right: 0.3em; }
+
+.messagebox_content .messagetext	{ margin-left: 40px; padding: 13px 5px; font-size: 0.8em; font-weight: bold; min-height: 10px; } 
+	
+.messagebox_content .subtext		{ color: #424242; font-size: 0.8em; background-color: #fff; margin-top: 0.2em; padding: 0.5em 1.5em 0.75em; }
+.messagebox_content .nv-footer		{ margin-top: 0;}
+/*-------------------------------------------*/
+
+
+
+
+/*  Default View  */
+#defaultviewlist	{float: left; margin-right: 40px;}
+
+.view-Branding  { background-color:#a6d5ef; padding: 5px 5px 15px; white-space: nowrap; vertical-align: top;}
+.view-Menu		{ background-color:#e9efa5; padding: 5px 50px 5px 5px; vertical-align: top;}
+.view-Sidebar	{ background-color:#a6efc1; padding: 5px; vertical-align: top;}
+.view-Content	{ background-color:#efeeec; padding: 50px; white-space: nowrap; vertical-align: top;}
+.view-Footer 	{ background-color:#efd79d; padding: 5px; white-space: nowrap; vertical-align: top;}
+
+
+/*  Landing Page Configuration */
+#ws-elements 				{ border: 1px solid #999; font-size: .8em; }
+	#ws-elements > div		{ background:#efeeec url(images/main/putty_blend3.png) repeat-x; margin: 3px; padding: 3px; height: 20px; vertical-align: middle; z-index: 130 }
+	#ws-elements > div img	{ vertical-align: text-bottom; margin-right: 2px; z-index: 130}
+#ws-tables > div			{ background:#efeeec url(images/main/putty_blend3.png) repeat-x; margin: 2px; padding: 2px; height: 20px; min-width: 100px; vertical-align: middle; white-space: nowrap;  }
+
+#ws-code 					{ position: relative; font-size: .8em; padding: 8px; background:#efeeec url(images/main/putty_blend3.png) repeat-x; border-left: 1px solid #CCC; border-right: 1px solid #CCC; border-bottom: 1px solid #CCC; }
+	.ws-tabon a				{ padding: 4px 10px; color: #fff; background: url(images/main/level_one_pattern4_overblue2.png) repeat-x; font-weight: bold;}
+	.ws-taboff a			{ padding: 4px 10px; color: #000; background: transparent; font-weight: normal;}
+	.ws-tabover	a			{ padding: 4px 10px; color: #000; background: url(images/main/level_one_pattern4_2.png) repeat-x; font-weight: normal; }
+	#ws-code div.contextbut	{ position: absolute; right: 20px; }
+
+#ws-layout 					{ position: relative; background-color: #FFF; width: 650px; min-height: 350px; border: 1px solid #999; overflow: auto; }
+#ws-layout-label 			{ font-size: 1em; color:#999; margin-top: 3em; text-align: center;}
+#ws-layout-table 			{ position: relative; top: 0px; left: 0px; margin: .5em; }
+#ws-layout-table table		{ width: 630px; }
+#ws-layout-table td			{ padding: .5em; background-color:#CCC; }
+#ws-tables					{ position: relative; }
+#ws-tables > div			{ position: absolute; top: 0px; left: 0px; height: 20px; }
+
+.ws-edit-buttons			{ position: absolute; top: 0px; right: 5px; background-color: #ebeca5; border: 1px solid #CCC; padding: 2px; }
+
+.drop-area-main, td.drophover	{ background-color:#FFC; border: 3px solid #09F;}
+.drophover						{ background-color: #09F; border: 3px solid #09F; }
+
+#ws-table-dialog, #ws-delete-dialog, #ws-img-delete-dialog, #ws-graphic1-dialog			{ z-index: 140;}
+
+.file-entry-dialog  {width: 750px; left: 100px; top: 70px;}
+
+.graph-div				{ position: relative;}
+.graph-bg 				{ position: absolute; top: -8px;}
+.graph-highwatermark 	{ position: absolute; top: -5px; left: 85px}
+.graph-used 			{ position: absolute; top: -5px;}
+.graph-label 			{ position: absolute; top: -5px; left: 110px}
+
+.nv-footer		{  position: relative; background-color: #efeeec; vertical-align:middle; text-align: right; margin-top: .5em; padding: 0.5em; border-top: 1px solid #babdb6; }
+#opaque-div		{ position: absolute; top: 0px; left: 0px; background: url(images/main/trans30_black.png) repeat; width: 100%; height: 100%; overflow: hidden; z-index: 200;  }
+
+.roundcorner {
+	-moz-border-radius: 10px
+	}
+.roundcornerLG {
+	-moz-border-radius: 40px
+	}

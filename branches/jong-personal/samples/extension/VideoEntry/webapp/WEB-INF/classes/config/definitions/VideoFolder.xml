@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definition name="VideoFolder"
+	    caption="VideoFolder"
+	    type="5" nextId="6"
+	    definitionType="5"
+	    databaseId="ff8081811b3ca719011b3cace9e6000f">
+  <item name="folderForm" caption="__folder_form" type="form" display="form" id="1">
+    <properties/>
+    <item name="title" caption="__title" type="data" id="2">
+      <properties>
+        <property name="caption" value="__title"/>
+        <property name="name" value="title"/>
+        <property name="width" value="60"/>
+        <property name="generated" value=""/>
+        <property name="itemSource" value=""/>
+      </properties>
+    </item>
+    <item name="folderIcon" caption="__icon" type="data" id="3">
+      <properties>
+        <property name="caption" value="__icon"/>
+        <property name="name" value="iconName"/>
+      </properties>
+    </item>
+  </item>
+  <item name="forumView" caption="__folder_view" id="4">
+    <properties>
+      <property name="type" value="folder"/>
+    </properties>
+    <item name="folderList" caption="__folder_listing" id="5">
+      <properties/>
+    </item>
+  </item>
+  <properties>
+    <property name="caption" value="VideoFolder"/>
+    <property name="name" value="VideoFolder"/>
+    <property name="icon" value="/icons/folder_blue.gif"/>
+  </properties>
+</definition>

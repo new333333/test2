@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_taskFolder" caption="__definition_default_folder_task" type="5" nextId="17" definitionType="5" databaseId="402883c1129b1f8101129b28bc620003"> 
+  <item name="folderForm" caption="__folder_form" type="form" id="1" display="form"> 
+    <properties/>  
+    <item name="title" caption="__title" type="data" id="3"> 
+      <properties> 
+        <property name="name" value="title"/>  
+        <property name="caption" value="__title"/>  
+        <property name="width" value="100"/>  
+        <property name="inline" caption="__inline" type="boolean" value="false"> 
+          <help>ihelp.designers.mark_as_inline</help> 
+        </property>  
+        <property name="generated" caption="__isTitleGenerated" type="boolean" definitionType="1" value="false"> 
+          <help>ihelp.designers.mark_as_title</help> 
+        </property> 
+      </properties> 
+    </item>  
+    <item name="description" caption="__description" type="data" id="4"> 
+      <properties> 
+        <property name="name" value="description"/>  
+        <property name="caption" value="__description"/>  
+        <property name="height" value=""/>  
+        <property name="required" value=""/> 
+      </properties> 
+    </item>  
+    <item name="folderRemoteApp" caption="__remoteApp" type="data" category="folderData" display="form" id="11"> 
+      <properties> 
+        <property name="caption" value="__remoteApp"/>  
+        <property name="name" value="_remoteApp"/> 
+      </properties> 
+    </item>  
+    <item name="folderIcon" caption="__icon" type="data" id="5"> 
+      <properties> 
+        <property name="name" value="iconName"/>  
+        <property name="caption" value="__icon"/> 
+      </properties> 
+    </item>  
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="16"> 
+      <properties> 
+        <property name="caption" value="__attach_files"/>  
+        <property name="name" value="ss_attachFile"/>  
+        <property name="width" value="60"/>  
+        <property name="number" value=""/>  
+        <property name="storage" value="simpleFileRepository"/>  
+        <property name="hide" value="true"/> 
+      </properties> 
+    </item>  
+    <operations>
+      <operation name="addOption" caption="__add"/>
+      <operation name="moveItem" caption="__move"/>
+    </operations>
+    <operations>
+      <operation name="addOption" caption="__add"/>
+      <operation name="moveItem" caption="__move"/>
+    </operations>
+    <operations>
+      <operation name="addOption" caption="__add"/>
+      <operation name="moveItem" caption="__move"/>
+    </operations>
+  </item>  
+  <item name="forumView" caption="__folder_view" id="6"> 
+    <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="14"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
+    <item name="folderDataItem" type="dataView" caption="__folder_data_item" category="folderViewData" display="view" id="13" formItem="folderRemoteApp"> 
+      <properties> 
+        <property name="caption" value="__remoteApp"/>  
+        <property name="name" value="_remoteApp"/> 
+      </properties> 
+    </item>  
+    <item name="dashboardCanvas" caption="__dashboard_canvas" id="7"> 
+      <properties> 
+        <property name="caption" value="__dashboard_canvas"/> 
+      </properties> 
+    </item>  
+    <item name="descriptionView" caption="__description" category="commonEntryViewData" display="view" id="15"> 
+      <properties> 
+        <property name="caption" value="__description"/> 
+      </properties> 
+    </item>  
+    <item name="folderList" caption="__folder_listing" id="9"> 
+      <properties/> 
+    </item>  
+    <properties> 
+      <property name="type" value="task"/> 
+    </properties> 
+  </item>  
+  <properties>
+    <property name="caption" value="__definition_default_folder_task"/>
+    <property name="name" value="_taskFolder"/>
+    <property name="family" value="task"/>
+    <property name="defaultToFileEntries" value="true"/>
+    <property name="icon" value="/icons/folder_blue_task.png"/>
+  </properties>
+  <export-mappings/>
+</definition>

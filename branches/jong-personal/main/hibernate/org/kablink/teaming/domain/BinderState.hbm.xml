@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_BinderState" name="org.kablink.teaming.domain.BinderState">
+    <id unsaved-value="null" name="binderId">
+      <generator class="assigned"/>
+    </id>
+    <property name="zoneId" access="field"/>
+    <property name="lastSyncTime"/>
+    <property name="lastFullSyncCompletionTime"/>
+    <property name="fullSyncStopRequested"/>
+    <component name="fullSyncStats" class="org.kablink.teaming.domain.BinderState$FullSyncStats">
+      <property name="statusStr" column="fullSync_status" length="16" index="statusAndDate_binderState"/>
+      <property name="statusDate" column="fullSync_statusDate" index="statusAndDate_binderState"/>
+      <property name="statusIpv4Address" column="fullSync_statusIpv4Address" length="16"/>
+      <property name="startDate" column="fullSync_startDate"/>
+      <property name="endDate" column="fullSync_endDate"/>
+      <property name="dirOnly" column="fullSync_dirOnly"/>
+      <property name="enumerationFailed" column="fullSync_enumFailed"/>
+      <property name="countFiles" column="fullSync_countFiles"/>
+      <property name="countFileAdd" column="fullSync_countFileAdd"/>
+      <property name="countFileExpunge" column="fullSync_countFileExpunge"/>
+      <property name="countFileModify" column="fullSync_countFileModify"/>
+      <property name="countFileSetAcl" column="fullSync_countFileSetAcl"/>
+      <property name="countFileSetOwnership" column="fullSync_countFileSetOwner"/>
+      <property name="countFolders" column="fullSync_countFolders"/>
+      <property name="countFolderAdd" column="fullSync_countFolderAdd"/>
+      <property name="countFolderExpunge" column="fullSync_countFolderExpunge"/>
+      <property name="countFolderSetAcl" column="fullSync_countFolderSetAcl"/>
+      <property name="countFolderSetOwnership" column="fullSync_countFolderSetOwner"/>
+      <property name="countEntryExpunge" column="fullSync_countEntryExpunge"/>
+      <property name="countFailure" column="fullSync_countFailure"/>
+      <property name="countFolderProcessed" column="fullSync_countFolderProcessed"/>
+      <property name="countFolderMaxQueue" column="fullSync_countFolderMaxQueue"/>
+    </component>
+    <property name="syncTypeStr" column="syncType" length="1"/>
+    <property name="syncIpv4Address" length="16"/>
+    <property name="syncInProgress" access="field"/>
+    <property name="updatedToDate"/>
+  </class>
+</hibernate-mapping>
