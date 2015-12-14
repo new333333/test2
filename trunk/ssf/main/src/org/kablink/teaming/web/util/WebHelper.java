@@ -44,7 +44,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -91,7 +90,7 @@ import org.springframework.web.multipart.MultipartFile;
  * 
  * @author ?
  */
-@SuppressWarnings({"unchecked", "unused"})
+@SuppressWarnings("unchecked")
 public class WebHelper {
 	protected static Log logger = LogFactory.getLog(WebHelper.class);
 	protected static Pattern htmlEscapes = Pattern.compile("(\\&[^;]*;)"); //can be shared
@@ -171,7 +170,6 @@ public class WebHelper {
 	
 	public static HttpServletRequest getHttpServletRequest(PortletRequest request) {
 		HttpServletRequest req = null;
-		ActionRequest actionRequest;
 		
 		if(request instanceof HttpServletRequestReachable) {
 			req = ((HttpServletRequestReachable)request).getHttpServletRequest();
@@ -478,76 +476,8 @@ public class WebHelper {
 	 * @param request
 	 * @return
 	 */
-	public static String getFileHandleOnUploadedSiteBrandingFile(ActionRequest request)
-		throws IOException {
-		Map fileMap = null;
-		if (request instanceof MultipartFileSupport)
-			fileMap = ((MultipartFileSupport) request).getFileMap();
-		if(fileMap == null || fileMap.size() == 0)
-			return null;
-		MultipartFile mpfile = (MultipartFile) fileMap.values().iterator().next();
-		String fileName = mpfile.getOriginalFilename();
-		if(!validateFilenameForSafeLeaf(fileName))
-			throw new UncheckedIOException(new IOException("Illegal file name [" + fileName + "]"));
-
-		// Encode the original file name into the prefix.
-		String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
-
-		File destFile = TempFileUtil.createTempFile(prefix);
-
-		storeFile1(mpfile, destFile);
-
-		return destFile.getName();
-	}
-
-	private static void storeFile1(MultipartFile mpfile, File destFile) throws IOException {
-		BufferedReader breader = new BufferedReader(new InputStreamReader (mpfile.getInputStream()));
-
-		try {
-			BufferedWriter bwriter = new BufferedWriter(new FileWriter (destFile));
-
-			try {
-				while(breader.ready()) {
-					String line = breader.readLine();
-
-					if(line.endsWith("=")) {
-						while(line.endsWith("=") && breader.ready()) {
-							String temp = line.substring(0, line.length() - 1);
-							bwriter.write(temp);
-
-							line = breader.readLine();
-						}
-						bwriter.write(line);
-					}
-					else {
-						bwriter.write(line);
-					}
-					bwriter.newLine();
-				}
-			}
-			finally {
-				bwriter.close();
-			}
-		}
-		finally {
-			breader.close();
-		}
-	}
-	
-	private static void storeFile2(MultipartFile mpfile, File destFile) throws IOException {
-		InputStream is = mpfile.getInputStream();
-		try {
-			OutputStream os = new FileOutputStream(destFile);
-			try {
-				IOUtils.copy(is, os);
-			}
-			finally {
-				os.close();
-			}
-		}
-		finally {
-			is.close();
-		}
+	public static String getFileHandleOnUploadedSiteBrandingFile(ActionRequest request) throws IOException {
+		return getFileHandleOnUploadedFile(request);
 	}
 
 	/**
