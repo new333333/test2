@@ -89,6 +89,7 @@ import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UserExistsException;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
@@ -311,7 +312,6 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.telemetry.TelemetryService;
-import org.kablink.teaming.util.*;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.FileLinkAction;
@@ -6865,7 +6865,9 @@ public class GwtServerHelper {
 						IdentityInfo identityInfo = user.getIdentityInfo();
 						if (!(identityInfo.isInternal())) {
 							// Yes!  Get a URL to the user's workspace.
-							AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, false);
+							Boolean oldUseRTContext = ZoneContextHolder.getUseRuntimeContext();
+							ZoneContextHolder.setUseRuntimeContext(Boolean.FALSE);
+							AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 							adapterUrl.setParameter(WebKeys.ACTION,          WebKeys.ACTION_VIEW_PERMALINK          );
 							adapterUrl.setParameter(WebKeys.URL_ENTRY_ID,    String.valueOf(user.getId())           );
 							adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name());
@@ -6881,6 +6883,10 @@ public class GwtServerHelper {
 							String token = ExternalUserUtil.encodeUserToken(user);
 							adapterUrl.setParameter( ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN, token );
 							String url = adapterUrl.toString();
+							ZoneContextHolder.setUseRuntimeContext(oldUseRTContext);
+							if (PermaLinkUtil.forceSecureLinksInEmail()) {
+								url = PermaLinkUtil.forceHTTPSInUrl(url);
+							}
 
 							// Has this external user already
 							// self-registered?
