@@ -2986,9 +2986,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				// Most likely conversion did not succeed, nothing client
 				// can do about this limitation of software.
 				String eMsg = e.toString();
-				logger.error("AbstractBinderProcessor.buildIndexDocumentFromFile( EXCEPTION:1 ):  " + eMsg);
+				logger.error("AbstractBinderProcessor.buildIndexDocumentFromFile( EXCEPTION:1 ) for file '" + fa.getFileItem().getName() + "':  " + eMsg);
 				if (logger.isDebugEnabled()) {
-					logger.debug("AbstractBinderProcessor.buildIndexDocumentFromFile( EXCEPTION:1:STACK )", e);
+					logger.debug("AbstractBinderProcessor.buildIndexDocumentFromFile( EXCEPTION:1:STACK ) for file '" + fa.getFileItem().getName() + "'", e);
 				}
 			}
 			// Indicate that file content is being indexed.
