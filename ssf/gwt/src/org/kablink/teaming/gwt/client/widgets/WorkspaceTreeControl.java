@@ -188,12 +188,11 @@ public class WorkspaceTreeControl extends ResizeComposite
 					// Asynchronously render the horizontal tree so
 					// that we can release the AJAX request ASAP.
 					GetHorizontalTreeRpcResponseData responseData = (GetHorizontalTreeRpcResponseData) response.getResponseData();
-					List<TreeInfo> tiList = responseData.getTreeInfo();
+					m_treeDisplay = new TreeDisplayHorizontal(wsTree, responseData.getTreeInfo());
 					renderHTreeAsync(
 						mainPanel,
 						wsTree,
-						selectedBinderInfo,
-						tiList);
+						selectedBinderInfo);
 				}
 			});
 			
@@ -215,14 +214,14 @@ public class WorkspaceTreeControl extends ResizeComposite
 				
 				@Override
 				public void onSuccess(VibeRpcResponse response)  {
-					// Asynchronously render the vertical tree so that
-					// we can release the AJAX request ASAP.
-					TreeInfo ti = ((TreeInfo) response.getResponseData());
+					// Construct the vertical tree display and
+					// asynchronously render it so that we can release
+					// the AJAX request ASAP.
+					m_treeDisplay = new TreeDisplayVertical(wsTree, ((TreeInfo) response.getResponseData()));
 					renderVTreeAsync(
 						mainPanel,
 						wsTree,
-						selectedBinderInfo,
-						ti);
+						selectedBinderInfo);
 				}
 			});
 			
@@ -694,11 +693,11 @@ public class WorkspaceTreeControl extends ResizeComposite
 	/*
 	 * Asynchronously renders a horizontal tree.
 	 */
-	private void renderHTreeAsync(final FlowPanel mainPanel, final WorkspaceTreeControl wsTree, final BinderInfo selectedBinderInfo, final List<TreeInfo> tiList) {
+	private void renderHTreeAsync(final FlowPanel mainPanel, final WorkspaceTreeControl wsTree, final BinderInfo selectedBinderInfo) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				renderHTreeNow(mainPanel, wsTree, selectedBinderInfo, tiList);
+				renderHTreeNow(mainPanel, wsTree, selectedBinderInfo);
 			}
 		});
 	}
@@ -706,19 +705,18 @@ public class WorkspaceTreeControl extends ResizeComposite
 	/*
 	 * Synchronously renders a horizontal tree.
 	 */
-	private void renderHTreeNow(FlowPanel mainPanel, WorkspaceTreeControl wsTree, BinderInfo selectedBinderInfo, List<TreeInfo> tiList) {
-		m_treeDisplay = new TreeDisplayHorizontal(wsTree, tiList);
+	private void renderHTreeNow(FlowPanel mainPanel, WorkspaceTreeControl wsTree, BinderInfo selectedBinderInfo) {
 		m_treeDisplay.render(selectedBinderInfo, mainPanel);
 	}
 	
 	/*
 	 * Asynchronously renders a vertical tree.
 	 */
-	private void renderVTreeAsync(final FlowPanel mainPanel, final WorkspaceTreeControl wsTree, final BinderInfo selectedBinderInfo, final TreeInfo ti) {
+	private void renderVTreeAsync(final FlowPanel mainPanel, final WorkspaceTreeControl wsTree, final BinderInfo selectedBinderInfo) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				renderVTreeNow(mainPanel, wsTree, selectedBinderInfo, ti);
+				renderVTreeNow(mainPanel, wsTree, selectedBinderInfo);
 			}
 		});
 	}
@@ -726,10 +724,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 	/*
 	 * Synchronously renders a vertical tree.
 	 */
-	private void renderVTreeNow(FlowPanel mainPanel, WorkspaceTreeControl wsTree, final BinderInfo selectedBinderInfo, TreeInfo ti) {
-		// Construct the vertical tree display.
-		m_treeDisplay = new TreeDisplayVertical(wsTree, ti);
-		
+	private void renderVTreeNow(FlowPanel mainPanel, WorkspaceTreeControl wsTree, final BinderInfo selectedBinderInfo) {
 		// Are we starting up showing what's new?
 		RequestInfo ri = GwtClientHelper.getRequestInfo();
 		if (ri.isShowWhatsNewOnLogin()) {
