@@ -182,7 +182,7 @@ public class EditMobileBrandingDlg extends DlgBox
 	public HelpData getHelpData() {
 		HelpData helpData = new HelpData();
 		helpData.setGuideName(HelpData.ADMIN_GUIDE);
-		helpData.setPageId("edit_mobile_branding");
+		helpData.setPageId("edit-mobile-branding");
 		return helpData;
 	}
 
