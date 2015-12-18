@@ -1312,6 +1312,8 @@ body, table td, select
 .margin-right-22		{margin-right: 22px;}
 .marginRightPoint25em	{margin-right: .25em;}
 
+.paddingleft2 {padding-left: 2em;}
+
 
 /* Style used for the panel that holds the content in the "color picker" dialog. */
 .colorPickerContentPanel
