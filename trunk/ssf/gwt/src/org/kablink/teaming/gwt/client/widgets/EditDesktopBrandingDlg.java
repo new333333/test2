@@ -181,7 +181,7 @@ public class EditDesktopBrandingDlg extends DlgBox
 	public HelpData getHelpData() {
 		HelpData helpData = new HelpData();
 		helpData.setGuideName(HelpData.ADMIN_GUIDE);
-		helpData.setPageId("edit_desktop_branding");
+		helpData.setPageId("edit-desktop-branding");
 		return helpData;
 	}
 
