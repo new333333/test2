@@ -36,6 +36,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,6 +71,45 @@ public class SiteBrandingHelper {
 	// branding.
 	private final static String SITE_BRANDING_BASE	= "siteBranding";
 	
+	/**
+	 * This class is used to hold application branding file information.
+	 */
+	public static class BrandingFileInfo {
+		private String	m_fileDateTime;	//
+		private String	m_fileName;		//
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param fileName
+		 * @param fileDateTime
+		 */
+		public BrandingFileInfo(String fileName, String fileDateTime) {
+			// Initialize the super class...
+			super();
+			
+			// ...and store the parameters.
+			setFileName(    fileName    );
+			setFileDateTime(fileDateTime);
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public String getFileDateTime() {return m_fileDateTime;}
+		public String getFileName()     {return m_fileName;    }
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setFileDateTime(String fileDateTime) {m_fileDateTime = fileDateTime;}
+		public void setFileName(    String fileName)     {m_fileName     = fileName;    }
+	}
+	
 	/*
 	 * Class constructor that prevents this class from being
 	 * instantiated.
@@ -88,6 +130,16 @@ public class SiteBrandingHelper {
 
 	public static File getAndroidMobileApplicationBrandingFile() {
 		return getApplicationBrandingFile(getAppNode(ANDROID, MOBILE));
+	}
+
+	/**
+	 * Returns a BrandingFileInfo object that describes the current
+	 * Android Mobile Application Site Branding file.
+	 * 
+	 * @return
+	 */
+	public static BrandingFileInfo getAndroidMobileApplicationBrandingInfo() {
+		return getApplicationBrandingInfoImpl(getAppNode(ANDROID, MOBILE));
 	}
 
 	/*
@@ -129,6 +181,34 @@ public class SiteBrandingHelper {
 		return reply;
 	}
 
+	/*
+	 * Returns a BrandingFileInfo object that describes the current
+	 * application Site Branding file from the specified application
+	 * node.
+	 */
+	private static BrandingFileInfo getApplicationBrandingInfoImpl(String appNode) {
+		// If we can't find the branding file...
+		BrandingFileInfo reply;
+		File file = getApplicationBrandingFile(appNode);
+		if (null == file) {
+			// ...there can be no branding file information.
+			reply = null;
+		}
+		
+		else {
+			// Otherwise, construct a BrandingFileInfo object using
+			// the file.
+			reply = new BrandingFileInfo(
+				file.getName(),
+				getDateTimeString(new Date(file.lastModified())));
+		}
+
+		// If we get here, reply is null or refers to the
+		// BrandingFileInfo object describing the request branding
+		// file.  Return it.
+		return reply;
+	}
+	
 	/*
 	 * Returns the name of the current Application Site Branding file
 	 * from the specified application node.
@@ -179,6 +259,16 @@ public class SiteBrandingHelper {
 	}
 
 	/**
+	 * Returns a BrandingFileInfo object that describes the current
+	 * IOS Mobile Application Site Branding file.
+	 * 
+	 * @return
+	 */
+	public static BrandingFileInfo getIosMobileApplicationBrandingInfo() {
+		return getApplicationBrandingInfoImpl(getAppNode(IOS, MOBILE));
+	}
+
+	/**
 	 * Returns the name of the current Mac Desktop Application Site
 	 * Branding file.
 	 * 
@@ -190,6 +280,16 @@ public class SiteBrandingHelper {
 
 	public static File getMacMobileApplicationBrandingFile() {
 		return getApplicationBrandingFile(getAppNode(MAC, DESKTOP));
+	}
+
+	/**
+	 * Returns a BrandingFileInfo object that describes the current
+	 * Mac Desktop Application Site Branding file.
+	 * 
+	 * @return
+	 */
+	public static BrandingFileInfo getMacDesktopApplicationBrandingInfo() {
+		return getApplicationBrandingInfoImpl(getAppNode(MAC, DESKTOP));
 	}
 
 	/*
@@ -227,6 +327,16 @@ public class SiteBrandingHelper {
 	}
 
 	/**
+	 * Returns a BrandingFileInfo object that describes the current
+	 * Windows Desktop Application Site Branding file.
+	 * 
+	 * @return
+	 */
+	public static BrandingFileInfo getWindowsDesktopApplicationBrandingInfo() {
+		return getApplicationBrandingInfoImpl(getAppNode(WINDOWS, DESKTOP));
+	}
+
+	/**
 	 * Returns the name of the current Windows Mobile Application Site
 	 * Branding file.
 	 * 
@@ -240,6 +350,37 @@ public class SiteBrandingHelper {
 		return getApplicationBrandingFile(getAppNode(WINDOWS, MOBILE));
 	}
 
+	/**
+	 * Returns a BrandingFileInfo object that describes the current
+	 * Windows Mobile Application Site Branding file.
+	 * 
+	 * @return
+	 */
+	public static BrandingFileInfo getWindowsMobileApplicationBrandingInfo() {
+		return getApplicationBrandingInfoImpl(getAppNode(WINDOWS, MOBILE));
+	}
+
+	/*
+	 * Returns a formatted date/time string for the current user's
+	 * locale and time zone.
+	 */
+	private static String getDateTimeString(Date date, int dateStyle, int timeStyle, TimeZone tz) {
+		DateFormat df = DateFormat.getDateTimeInstance(dateStyle, timeStyle, RequestContextHolder.getRequestContext().getUser().getLocale());
+		df.setTimeZone(tz);
+		return df.format(date);
+	}
+	
+	@SuppressWarnings("unused")
+	private static String getDateTimeString(Date date, int dateStyle, int timeStyle) {
+		// Always use the initial form of the method.
+		return getDateTimeString(date, dateStyle, timeStyle, RequestContextHolder.getRequestContext().getUser().getTimeZone());
+	}
+	
+	private static String getDateTimeString(Date date) {
+		// Always use the initial form of the method.
+		return getDateTimeString(date, DateFormat.MEDIUM, DateFormat.LONG, RequestContextHolder.getRequestContext().getUser().getTimeZone());
+	}
+	
 	/**
 	 * Sets the Android Mobile Application Site Branding file.
 	 *

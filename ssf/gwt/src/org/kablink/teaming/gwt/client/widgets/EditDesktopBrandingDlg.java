@@ -40,6 +40,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDesktopSiteBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GwtBrandingFileInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GwtDesktopBrandingRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.RemoveDesktopSiteBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -48,6 +50,7 @@ import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.UploadSiteBrandingFile;
 import org.kablink.teaming.gwt.client.widgets.UploadSiteBrandingFile.SiteBrandingDescriptor;
+import org.kablink.teaming.gwt.client.widgets.UploadSiteBrandingFile.SiteBrandingRefreshCallback;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -270,6 +273,11 @@ public class EditDesktopBrandingDlg extends DlgBox
 			}
 
 			@Override
+			public String getFileDateTime() {
+				return m_desktopBrandingData.getMacFileDateTime();
+			}
+
+			@Override
 			public String getFileName() {
 				return m_desktopBrandingData.getMacFileName();
 			}
@@ -280,13 +288,13 @@ public class EditDesktopBrandingDlg extends DlgBox
 			}
 
 			@Override
-			public String getOverwriteConfirmationMsg(String fName) {
-				return m_messages.editDesktopBrandingDlg_Comfirm_MacOverwrite(fName);
+			public String getOverwriteHint() {
+				return m_messages.editDesktopBrandingDlg_Hint_Overwrite(getFileName(), getFileDateTime());
 			}
 
 			@Override
-			public String getOverwriteHint(String fName) {
-				return m_messages.editDesktopBrandingDlg_Hint_MacOverwrite(fName);
+			public String getOverwriteConfirmationMsg(String fName) {
+				return m_messages.editDesktopBrandingDlg_Comfirm_MacOverwrite(fName);
 			}
 
 			@Override
@@ -320,6 +328,11 @@ public class EditDesktopBrandingDlg extends DlgBox
 			}
 			
 			@Override
+			public void refreshBrandingInfo(SiteBrandingRefreshCallback refreshCallback) {
+				refreshDesktopBrandingInfo(refreshCallback);
+			}
+			
+			@Override
 			public void removeFile() {
 				RemoveDesktopSiteBrandingCmd cmd = new RemoveDesktopSiteBrandingCmd();
 				cmd.setMacFileName(getFileName());
@@ -338,16 +351,17 @@ public class EditDesktopBrandingDlg extends DlgBox
 			
 					@Override
 					public void onSuccess(VibeRpcResponse response) {
-						setFileName(null);
+						setFileInfo(null);
 						populateDlgAsync();
 					}
 				});
 			}
 			
 			@Override
-			public void setFileName(String fName) {
-				m_desktopBrandingData.setMacFileName(fName);
+			public void setFileInfo(GwtBrandingFileInfo fi) {
+				m_desktopBrandingData.setMacFileInfo(fi);
 			}
+
 		});
 
 		// ...add the widgets for uploading Windows branding...
@@ -368,6 +382,11 @@ public class EditDesktopBrandingDlg extends DlgBox
 			}
 
 			@Override
+			public String getFileDateTime() {
+				return m_desktopBrandingData.getWindowsFileDateTime();
+			}
+
+			@Override
 			public String getFileName() {
 				return m_desktopBrandingData.getWindowsFileName();
 			}
@@ -378,13 +397,13 @@ public class EditDesktopBrandingDlg extends DlgBox
 			}
 
 			@Override
-			public String getOverwriteConfirmationMsg(String fName) {
-				return m_messages.editDesktopBrandingDlg_Comfirm_WindowsOverwrite(fName);
+			public String getOverwriteHint() {
+				return m_messages.editDesktopBrandingDlg_Hint_Overwrite(getFileName(), getFileDateTime());
 			}
 
 			@Override
-			public String getOverwriteHint(String fName) {
-				return m_messages.editDesktopBrandingDlg_Hint_WindowsOverwrite(fName);
+			public String getOverwriteConfirmationMsg(String fName) {
+				return m_messages.editDesktopBrandingDlg_Comfirm_WindowsOverwrite(fName);
 			}
 
 			@Override
@@ -418,6 +437,11 @@ public class EditDesktopBrandingDlg extends DlgBox
 			}
 			
 			@Override
+			public void refreshBrandingInfo(SiteBrandingRefreshCallback refreshCallback) {
+				refreshDesktopBrandingInfo(refreshCallback);
+			}
+			
+			@Override
 			public void removeFile() {
 				RemoveDesktopSiteBrandingCmd cmd = new RemoveDesktopSiteBrandingCmd();
 				cmd.setWindowsFileName(getFileName());
@@ -436,15 +460,15 @@ public class EditDesktopBrandingDlg extends DlgBox
 			
 					@Override
 					public void onSuccess(VibeRpcResponse response) {
-						setFileName(null);
+						setFileInfo(null);
 						populateDlgAsync();
 					}
 				});
 			}
 			
 			@Override
-			public void setFileName(String fName) {
-				m_desktopBrandingData.setWindowsFileName(fName);
+			public void setFileInfo(GwtBrandingFileInfo fi) {
+				m_desktopBrandingData.setWindowsFileInfo(fi);
 			}
 		});
 
@@ -453,7 +477,33 @@ public class EditDesktopBrandingDlg extends DlgBox
 		setPopupPosition(m_showX,  m_showY );
 		show();
 	}
+
+	/*
+	 * Refreshes the desktop branding information.
+	 */
+	private void refreshDesktopBrandingInfo(final SiteBrandingRefreshCallback refreshCallback) {
+		GwtClientHelper.executeCommand(new GetDesktopSiteBrandingCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(final Throwable t) {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_GetDesktopBranding(),
+							((String[]) null));
+						refreshCallback.refreshComplete();
+					}
+				});
+			}
 	
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				m_desktopBrandingData = ((GwtDesktopBrandingRpcResponseData) response.getResponseData());
+				refreshCallback.refreshComplete();
+			}
+		});
+	}
 	/*
 	 * Registers any global event handlers that need to be registered.
 	 */

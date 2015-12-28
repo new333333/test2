@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.GwtBrandingFileInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
@@ -77,18 +78,28 @@ public class UploadSiteBrandingFile {
 		public boolean            hasExistingFile();
 		public FlexTable          getGrid();
 		public GwtTeamingMessages getMessages();
+		public String             getFileDateTime();
 		public String             getFileName();
 		public String             getNoFileError();
 		public String             getOverwriteConfirmationMsg(String fName);
-		public String             getOverwriteHint(           String fName);
+		public String             getOverwriteHint();
 		public String             getRemoveAlt();
 		public String             getRemoveConfirmationMsg();
 		public String             getUploadAlt();
 		public String             getUploadId();
 		public String             getUploadOperation();
 		public String             getWidgetLabel();
+		public void               refreshBrandingInfo(SiteBrandingRefreshCallback refreshCallback);
 		public void               removeFile();
-		public void               setFileName(String fName);
+		public void               setFileInfo(GwtBrandingFileInfo fi);
+	}
+
+	/**
+	 * Interface used for a container to tell the site branding
+	 * widget that its branding refresh has completed.
+	 */
+	public interface SiteBrandingRefreshCallback {
+		public void refreshComplete();
 	}
 	
 	/**
@@ -122,11 +133,13 @@ public class UploadSiteBrandingFile {
 		return reply;
 	}
 	
+	@SuppressWarnings("unused")
 	private InlineLabel buildInlineLabel(String data) {
 		// Always use the initial form of the method.
 		return buildInlineLabel(data, (-1), null);
 	}
 
+	@SuppressWarnings("unused")
 	private InlineLabel buildInlineLabel(String data, int length) {
 		// Always use the initial form of the method.
 		return buildInlineLabel(data, length, null);
@@ -183,15 +196,17 @@ public class UploadSiteBrandingFile {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
 				// Store the name of the file we just uploaded in the
 				// descriptor...
-				String fName = jsGetBaseUploadFileName(m_fileUploadId);
-				m_descriptor.setFileName(fName);
-				
-				// ...show the hint with the new name...
-				m_overwriteHint.getElement().setInnerText(m_descriptor.getOverwriteHint(fName));
-				m_overwriteHint.setVisible(true);
-				
-				// ...and enable the 'Remove' button.
-				m_removeButton.setEnabled(true);
+				m_descriptor.refreshBrandingInfo(new SiteBrandingRefreshCallback() {
+					@Override
+					public void refreshComplete() {
+						// ...show the hint with the new name...
+						m_overwriteHint.getElement().setInnerText(m_descriptor.getOverwriteHint());
+						m_overwriteHint.setVisible(true);
+						
+						// ...and enable the 'Remove' button.
+						m_removeButton.setEnabled(true);
+					}
+				});
 			}
 		});
 		
@@ -332,23 +347,11 @@ public class UploadSiteBrandingFile {
 		// they upload a new file.
 		row += 1;
 		fcf.setColSpan(row, 1, 3);
-		m_overwriteHint = new Label(m_descriptor.getOverwriteHint(m_descriptor.getFileName()));
+		m_overwriteHint = new Label(m_descriptor.getOverwriteHint());
 		m_overwriteHint.addStyleName("vibe-uploadSiteBranding-overwriteHint");
 		ft.setWidget(row, 1, m_overwriteHint);
 		m_overwriteHint.setVisible(m_descriptor.hasExistingFile());
 	}
-
-	/*
-	 * Returns the base file name from the file <INPUT> widget with the
-	 * specified ID.
-	 * 
-	 * We can't just use FileUpload.getFilename() here because WebKit
-	 * (e.g., Chrome) browser return something like
-	 * 'C:\fakepath\filename.ext' where all we want is 'filename.ext'.
-	 */
-	private static native String jsGetBaseUploadFileName(String id) /*-{
-		return $wnd.top.document.getElementById(id).files[0].name;
-	}-*/;
 
 	/*
 	 * Asynchronously removes the current file.

@@ -32,41 +32,40 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class is used to hold desktop application branding data.
+ * This class is used to hold application branding file information.
  * 
  * @author drfoster@novell.com
  */
-public class GwtDesktopBrandingRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private GwtBrandingFileInfo	m_macFileInfo;		//
-	private GwtBrandingFileInfo	m_windowsFileInfo;	//
+public class GwtBrandingFileInfo implements IsSerializable {
+	private String	m_fileDateTime;	//
+	private String	m_fileName;		//
 	
 	/*
 	 * Constructor method.
 	 * 
 	 * Zero parameter constructor required for GWT serialization.
 	 */
-	private GwtDesktopBrandingRpcResponseData() {
+	private GwtBrandingFileInfo() {
+		// Initialize the super class.
 		super();
 	}
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param macFileInfo
-	 * @param windowsFileInfo
+	 * @param fileName
+	 * @param fileDateTime
 	 */
-	public GwtDesktopBrandingRpcResponseData(GwtBrandingFileInfo macFileInfo, GwtBrandingFileInfo windowsFileInfo) {
+	public GwtBrandingFileInfo(String fileName, String fileDateTime) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setMacFileInfo(    macFileInfo    );
-		setWindowsFileInfo(windowsFileInfo);
+		setFileName(    fileName    );
+		setFileDateTime(fileDateTime);
 	}
 	
 	/**
@@ -74,18 +73,14 @@ public class GwtDesktopBrandingRpcResponseData implements IsSerializable, VibeRp
 	 * 
 	 * @return
 	 */
-	public GwtBrandingFileInfo getMacFileInfo()         {return m_macFileInfo;    }
-	public GwtBrandingFileInfo getWindowsFileInfo()     {return m_windowsFileInfo;}
-	public String              getMacFileDateTime()     {return ((null == m_macFileInfo)     ? null : m_macFileInfo.getFileDateTime());    }
-	public String              getMacFileName()         {return ((null == m_macFileInfo)     ? null : m_macFileInfo.getFileName());        }
-	public String              getWindowsFileDateTime() {return ((null == m_windowsFileInfo) ? null : m_windowsFileInfo.getFileDateTime());}
-	public String              getWindowsFileName()     {return ((null == m_windowsFileInfo) ? null : m_windowsFileInfo.getFileName());    }
+	public String getFileDateTime() {return m_fileDateTime;}
+	public String getFileName()     {return m_fileName;    }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setMacFileInfo(    GwtBrandingFileInfo macFileInfo)     {m_macFileInfo     = macFileInfo;    }
-	public void setWindowsFileInfo(GwtBrandingFileInfo windowsFileInfo) {m_windowsFileInfo = windowsFileInfo;}
+	public void setFileDateTime(String fileDateTime) {m_fileDateTime = fileDateTime;}
+	public void setFileName(    String fileName)     {m_fileName     = fileName;    }
 }
