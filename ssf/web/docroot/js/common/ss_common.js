@@ -9906,14 +9906,21 @@ function ss_ensureAnchorsTargetTopFrame() {
 	var skipNohref  = 0;
 	var skipOnclick = 0;
 	var skipTarget  = 0;
+	var selfTarget;
 	for (var i = 0; i < count; i += 1) {
 		// If the <A> already has a 'target="..."'...
 		var anchor = anchors[i];
 		var target = anchor.getAttribute("target");
 		if (target && (0 < target.length)) {
-			// ...skip it.
-			skipTarget += 1;
-			continue;
+			selfTarget = (target == "_self");
+			if (!selfTarget) {
+				// ...skip it.
+				skipTarget += 1;
+				continue;
+			}
+		}
+		else {
+			selfTarget = false;
 		}
 		
 		// If the <A> has an onclick handler...
@@ -9978,9 +9985,21 @@ function ss_ensureAnchorsTargetTopFrame() {
 				continue;
 			}
 			
-			// Add a 'target="_top"' to it.
-			patched += 1;
-			anchor.setAttribute("target", "_top");
+			if (selfTarget) {
+				// DRF (20151228):  This is a special case to address
+				//    bug#959072.  If a Wiki page has a self reference
+				//    link, we want to send its URL through the content
+				//    control, not the IFRAME.
+			    anchor.onclick =
+			    	function(e) {
+			    		window.top.ss_gotoContentUrl(this.getAttribute("href")); return false;
+			    	};
+			}
+			else {
+				// Add a 'target="_top"' to it.
+				patched += 1;
+				anchor.setAttribute("target", "_top");
+			}
 		}
 		
 		else {
