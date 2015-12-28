@@ -42,9 +42,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class GwtMobileBrandingRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private String	m_androidFileName;	//
-	private String	m_iosFileName;		//
-	private String	m_windowsFileName;	//
+	private GwtBrandingFileInfo	m_androidFileInfo;	//
+	private GwtBrandingFileInfo	m_iosFileInfo;		//
+	private GwtBrandingFileInfo	m_windowsFileInfo;	//
 	
 	/*
 	 * Constructor method.
@@ -59,18 +59,18 @@ public class GwtMobileBrandingRpcResponseData implements IsSerializable, VibeRpc
 	/**
 	 * Constructor method.
 	 * 
-	 * @param androidFileName
-	 * @param iosFileName
-	 * @param windowsFileName
+	 * @param androidFileInfo
+	 * @param iosFileInfo
+	 * @param windowsFileInfo
 	 */
-	public GwtMobileBrandingRpcResponseData(String androidFileName, String iosFileName, String windowsFileName) {
+	public GwtMobileBrandingRpcResponseData(GwtBrandingFileInfo androidFileInfo, GwtBrandingFileInfo iosFileInfo, GwtBrandingFileInfo windowsFileInfo) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
-		setAndroidFileName(androidFileName);
-		setIOSFileName(    iosFileName    );
-		setWindowsFileName(windowsFileName);
+		setAndroidFileInfo(androidFileInfo);
+		setIOSFileInfo(    iosFileInfo    );
+		setWindowsFileInfo(windowsFileInfo);
 	}
 	
 	/**
@@ -78,16 +78,22 @@ public class GwtMobileBrandingRpcResponseData implements IsSerializable, VibeRpc
 	 * 
 	 * @return
 	 */
-	public String getAndroidFileName() {return m_androidFileName;}
-	public String getIOSFileName()     {return m_iosFileName;    }
-	public String getWindowsFileName() {return m_windowsFileName;}
+	public GwtBrandingFileInfo getAndroidFileInfo()     {return m_androidFileInfo;}
+	public GwtBrandingFileInfo getIOSFileInfo()         {return m_iosFileInfo;    }
+	public GwtBrandingFileInfo getWindowsFileInfo()     {return m_windowsFileInfo;}
+	public String              getAndroidFileDateTime() {return ((null == m_androidFileInfo) ? null : m_androidFileInfo.getFileDateTime());}
+	public String              getAndroidFileName()     {return ((null == m_androidFileInfo) ? null : m_androidFileInfo.getFileName());    }
+	public String              getIOSFileDateTime()     {return ((null == m_iosFileInfo)     ? null : m_iosFileInfo.getFileDateTime());    }
+	public String              getIOSFileName()         {return ((null == m_iosFileInfo)     ? null : m_iosFileInfo.getFileName());        }
+	public String              getWindowsFileDateTime() {return ((null == m_windowsFileInfo) ? null : m_windowsFileInfo.getFileDateTime());}
+	public String              getWindowsFileName()     {return ((null == m_windowsFileInfo) ? null : m_windowsFileInfo.getFileName());    }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setAndroidFileName(String androidFileName) {m_androidFileName = androidFileName;}
-	public void setIOSFileName(    String iosFileName)     {m_iosFileName     = iosFileName;    }
-	public void setWindowsFileName(String windowsFileName) {m_windowsFileName = windowsFileName;}
+	public void setAndroidFileInfo(GwtBrandingFileInfo androidFileInfo) {m_androidFileInfo = androidFileInfo;}
+	public void setIOSFileInfo(    GwtBrandingFileInfo iosFileInfo)     {m_iosFileInfo     = iosFileInfo;    }
+	public void setWindowsFileInfo(GwtBrandingFileInfo windowsFileInfo) {m_windowsFileInfo = windowsFileInfo;}
 }

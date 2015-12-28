@@ -40,6 +40,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMobileSiteBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GwtBrandingFileInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GwtMobileBrandingRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.RemoveMobileSiteBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -48,6 +50,7 @@ import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.UploadSiteBrandingFile.SiteBrandingDescriptor;
+import org.kablink.teaming.gwt.client.widgets.UploadSiteBrandingFile.SiteBrandingRefreshCallback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -271,6 +274,11 @@ public class EditMobileBrandingDlg extends DlgBox
 			}
 
 			@Override
+			public String getFileDateTime() {
+				return m_mobileBrandingData.getAndroidFileDateTime();
+			}
+
+			@Override
 			public String getFileName() {
 				return m_mobileBrandingData.getAndroidFileName();
 			}
@@ -281,13 +289,13 @@ public class EditMobileBrandingDlg extends DlgBox
 			}
 
 			@Override
-			public String getOverwriteConfirmationMsg(String fName) {
-				return m_messages.editMobileBrandingDlg_Comfirm_AndroidOverwrite(fName);
+			public String getOverwriteHint() {
+				return m_messages.editDesktopBrandingDlg_Hint_Overwrite(getFileName(), getFileDateTime());
 			}
 
 			@Override
-			public String getOverwriteHint(String fName) {
-				return m_messages.editMobileBrandingDlg_Hint_AndroidOverwrite(fName);
+			public String getOverwriteConfirmationMsg(String fName) {
+				return m_messages.editMobileBrandingDlg_Comfirm_AndroidOverwrite(fName);
 			}
 
 			@Override
@@ -321,6 +329,11 @@ public class EditMobileBrandingDlg extends DlgBox
 			}
 			
 			@Override
+			public void refreshBrandingInfo(SiteBrandingRefreshCallback refreshCallback) {
+				refreshMobileBrandingInfo(refreshCallback);
+			}
+			
+			@Override
 			public void removeFile() {
 				RemoveMobileSiteBrandingCmd cmd = new RemoveMobileSiteBrandingCmd();
 				cmd.setAndroidFileName(getFileName());
@@ -339,15 +352,15 @@ public class EditMobileBrandingDlg extends DlgBox
 			
 					@Override
 					public void onSuccess(VibeRpcResponse response) {
-						setFileName(null);
+						setFileInfo(null);
 						populateDlgAsync();
 					}
 				});
 			}
 			
 			@Override
-			public void setFileName(String fName) {
-				m_mobileBrandingData.setAndroidFileName(fName);
+			public void setFileInfo(GwtBrandingFileInfo fi) {
+				m_mobileBrandingData.setAndroidFileInfo(fi);
 			}
 		});
 
@@ -369,6 +382,11 @@ public class EditMobileBrandingDlg extends DlgBox
 			}
 
 			@Override
+			public String getFileDateTime() {
+				return m_mobileBrandingData.getIOSFileDateTime();
+			}
+
+			@Override
 			public String getFileName() {
 				return m_mobileBrandingData.getIOSFileName();
 			}
@@ -379,13 +397,13 @@ public class EditMobileBrandingDlg extends DlgBox
 			}
 
 			@Override
-			public String getOverwriteConfirmationMsg(String fName) {
-				return m_messages.editMobileBrandingDlg_Comfirm_IosOverwrite(fName);
+			public String getOverwriteHint() {
+				return m_messages.editDesktopBrandingDlg_Hint_Overwrite(getFileName(), getFileDateTime());
 			}
 
 			@Override
-			public String getOverwriteHint(String fName) {
-				return m_messages.editMobileBrandingDlg_Hint_IosOverwrite(fName);
+			public String getOverwriteConfirmationMsg(String fName) {
+				return m_messages.editMobileBrandingDlg_Comfirm_IosOverwrite(fName);
 			}
 
 			@Override
@@ -419,6 +437,11 @@ public class EditMobileBrandingDlg extends DlgBox
 			}
 			
 			@Override
+			public void refreshBrandingInfo(SiteBrandingRefreshCallback refreshCallback) {
+				refreshMobileBrandingInfo(refreshCallback);
+			}
+			
+			@Override
 			public void removeFile() {
 				RemoveMobileSiteBrandingCmd cmd = new RemoveMobileSiteBrandingCmd();
 				cmd.setIOSFileName(getFileName());
@@ -437,15 +460,15 @@ public class EditMobileBrandingDlg extends DlgBox
 			
 					@Override
 					public void onSuccess(VibeRpcResponse response) {
-						setFileName(null);
+						setFileInfo(null);
 						populateDlgAsync();
 					}
 				});
 			}
 			
 			@Override
-			public void setFileName(String fName) {
-				m_mobileBrandingData.setIOSFileName(fName);
+			public void setFileInfo(GwtBrandingFileInfo fi) {
+				m_mobileBrandingData.setIOSFileInfo(fi);
 			}
 		});
 
@@ -467,6 +490,11 @@ public class EditMobileBrandingDlg extends DlgBox
 			}
 
 			@Override
+			public String getFileDateTime() {
+				return m_mobileBrandingData.getWindowsFileDateTime();
+			}
+
+			@Override
 			public String getFileName() {
 				return m_mobileBrandingData.getWindowsFileName();
 			}
@@ -477,13 +505,13 @@ public class EditMobileBrandingDlg extends DlgBox
 			}
 
 			@Override
-			public String getOverwriteConfirmationMsg(String fName) {
-				return m_messages.editMobileBrandingDlg_Comfirm_WindowsOverwrite(fName);
+			public String getOverwriteHint() {
+				return m_messages.editDesktopBrandingDlg_Hint_Overwrite(getFileName(), getFileDateTime());
 			}
 
 			@Override
-			public String getOverwriteHint(String fName) {
-				return m_messages.editMobileBrandingDlg_Hint_WindowsOverwrite(fName);
+			public String getOverwriteConfirmationMsg(String fName) {
+				return m_messages.editMobileBrandingDlg_Comfirm_WindowsOverwrite(fName);
 			}
 
 			@Override
@@ -517,6 +545,11 @@ public class EditMobileBrandingDlg extends DlgBox
 			}
 			
 			@Override
+			public void refreshBrandingInfo(SiteBrandingRefreshCallback refreshCallback) {
+				refreshMobileBrandingInfo(refreshCallback);
+			}
+			
+			@Override
 			public void removeFile() {
 				RemoveMobileSiteBrandingCmd cmd = new RemoveMobileSiteBrandingCmd();
 				cmd.setWindowsFileName(getFileName());
@@ -535,15 +568,15 @@ public class EditMobileBrandingDlg extends DlgBox
 			
 					@Override
 					public void onSuccess(VibeRpcResponse response) {
-						setFileName(null);
+						setFileInfo(null);
 						populateDlgAsync();
 					}
 				});
 			}
 			
 			@Override
-			public void setFileName(String fName) {
-				m_mobileBrandingData.setWindowsFileName(fName);
+			public void setFileInfo(GwtBrandingFileInfo fi) {
+				m_mobileBrandingData.setWindowsFileInfo(fi);
 			}
 		});
 
@@ -551,6 +584,33 @@ public class EditMobileBrandingDlg extends DlgBox
 		setPixelSize(    m_showCX, m_showCY);
 		setPopupPosition(m_showX,  m_showY );
 		show();
+	}
+	
+	/*
+	 * Refreshes the mobile branding information.
+	 */
+	private void refreshMobileBrandingInfo(final SiteBrandingRefreshCallback refreshCallback) {
+		GwtClientHelper.executeCommand(new GetMobileSiteBrandingCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(final Throwable t) {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_GetMobileBranding(),
+							((String[]) null));
+						refreshCallback.refreshComplete();
+					}
+				});
+			}
+	
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				m_mobileBrandingData = ((GwtMobileBrandingRpcResponseData) response.getResponseData());
+				refreshCallback.refreshComplete();
+			}
+		});
 	}
 	
 	/*
