@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2015 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,12 +33,15 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
-
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="helpGuideName" value="admin" scope="request" />
+<c:set var="helpPageId" value="nodes" scope="request" />
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 
+<ssf:form titleTag="administration.configure_search_nodes">
 <form class="ss_style ss_form" name="${renderResponse.namespace}fm" id="${renderResponse.namespace}fm" method="post" 
 	action="<ssf:url action="configure_search_nodes" actionUrl="true"/>">
 <div class="ss_buttonBarRight">
@@ -119,6 +122,7 @@
 		  onClick="ss_cancelButtonCloseWindow();return false;"/>
 </div>
 </form>
+</ssf:form>
 
 </div>
 </div>
