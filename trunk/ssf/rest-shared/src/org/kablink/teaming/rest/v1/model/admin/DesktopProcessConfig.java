@@ -26,7 +26,7 @@ import java.util.List;
  * Date: 11/20/13
  * Time: 9:40 PM
  */
-@XmlRootElement(name="desktop_process_config")
+@XmlRootElement(name="admin_desktop_process_config")
 public class DesktopProcessConfig extends BaseRestObject {
     private Boolean allowUnlistedProcesses;
     private ProcessLists macProcesses;

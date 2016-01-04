@@ -26,7 +26,7 @@ import java.util.List;
  * Date: 11/20/13
  * Time: 9:40 PM
  */
-@XmlRootElement(name="desktop_process_config")
+@XmlRootElement(name="desktop_process_lists")
 public class ProcessLists extends BaseRestObject {
     private List<ProcessInfo> allowedProcesses;
     private List<ProcessInfo> blockedProcesses;

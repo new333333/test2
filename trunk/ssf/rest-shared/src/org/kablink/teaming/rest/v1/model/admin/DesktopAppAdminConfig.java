@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Date: 11/20/13
  * Time: 9:40 PM
  */
-@XmlRootElement(name="desktop_app_config")
+@XmlRootElement(name="admin_desktop_app_config")
 public class DesktopAppAdminConfig extends BaseRestObject {
     private Boolean enabled;
     private Boolean allowCachedPassword;
