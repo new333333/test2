@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<project name="liquibase" basedir="." default="compile">
+	<import file="../build-common.xml" />
+	<import file="../deploy-support.xml" />
+		
+	<property name="jar.file" value="kablink-teaming-liquibase.jar" />
+	
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+		<fileset dir="../lib" includes="*.jar" />
+	</path>
+
+</project>

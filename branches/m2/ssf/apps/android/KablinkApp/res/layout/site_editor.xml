@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:padding="10px" >
+              
+	<ScrollView
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent">
+
+	<RelativeLayout
+			  android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:padding="10px" >
+
+    <TextView android:id="@+id/titleLabelSiteTitle"
+    		  android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/title_site_name"/>
+
+    <EditText android:id="@+id/siteTitle" 
+        android:maxLines="1" 
+        android:layout_marginTop="2dip"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:autoText="true"
+        android:inputType="textCapWords"
+        android:scrollHorizontally="true" 
+        android:layout_below="@+id/titleLabelSiteTitle"/>
+
+    <TextView android:id="@+id/titleLabelSiteUrl"
+    		  android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/title_site_url"
+              android:layout_below="@+id/siteTitle"/>
+
+    <EditText android:id="@+id/siteUrl" 
+        android:maxLines="1" 
+        android:layout_marginTop="2dip"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:autoText="true"
+        android:inputType="text"
+        android:scrollHorizontally="true" 
+        android:layout_below="@+id/titleLabelSiteUrl"/>
+
+    <TextView android:id="@+id/titleLabelLoginName"
+    		  android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/title_login_name"
+              android:layout_below="@+id/siteUrl"/>
+
+    <EditText android:id="@+id/loginName" 
+        android:maxLines="1" 
+        android:layout_marginTop="2dip"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:autoText="true"
+        android:inputType="text"
+        android:scrollHorizontally="true" 
+        android:layout_below="@+id/titleLabelLoginName"/>
+
+    <TextView android:id="@+id/titleLabelPassword"
+    		  android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/title_password"
+              android:layout_below="@+id/loginName"/>
+
+    <EditText android:id="@+id/password" 
+    	android:password="true"
+        android:maxLines="1" 
+        android:layout_marginTop="2dip"
+        android:layout_width="wrap_content"
+      	android:ems="25"
+        android:layout_height="wrap_content" 
+        android:autoText="true"
+        android:inputType="text"
+        android:scrollHorizontally="true" 
+        android:layout_below="@+id/titleLabelPassword"/>
+
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/saveButton"
+            android:text="@string/menu_save"
+            android:layout_below="@+id/password"/>
+
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/cancelButton"
+            android:text="@string/menu_cancel"
+            android:layout_below="@+id/password"
+            android:layout_toRightOf="@+id/saveButton"/>
+
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/deleteButton"
+            android:text="@string/menu_delete"
+            android:layout_below="@+id/password"
+            android:layout_toRightOf="@+id/cancelButton"/>
+
+</RelativeLayout>
+</ScrollView>
+</RelativeLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_ZoneInfo" name="org.kablink.teaming.domain.ZoneInfo">
+    <!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="zoneId" unique="true" not-null="true"/>
+    <property name="zoneName" length="128" unique="true" not-null="true"/>
+    <property name="virtualHost" access="field" length="255" unique="true"/>
+  </class>
+</hibernate-mapping>

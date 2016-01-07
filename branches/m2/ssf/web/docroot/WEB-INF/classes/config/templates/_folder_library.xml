@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="5" internalId="402883b90d0de1f3010d0df5582b0011">
+  <attribute name="templateTitle" type="string"><![CDATA[__template_folder_library]]></attribute>
+  <attribute name="templateDescription" type="description"><![CDATA[__template_folder_library_description]]></attribute>
+  <attribute name="title" type="string"><![CDATA[__template_folder_library]]></attribute>
+  <attribute name="description" type="description"><![CDATA[]]></attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_file_library.png</attribute>
+  <attribute name="name" type="string">_folder_library</attribute>
+  <property name="library">true</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="_libraryFolder" databaseId="402883c6115753d8011157619e350009"/>
+  <definition name="_libraryEntry" databaseId="402883c6115753d8011157829367000f"/>
+</template>

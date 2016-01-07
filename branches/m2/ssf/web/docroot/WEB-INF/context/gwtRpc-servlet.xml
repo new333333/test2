@@ -1,0 +1,33 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <!-- Maps the request through to a concrete controller instance -->
+    <bean id="urlMapping" parent="simpleUrlHandlerMappingTemplate">
+        <property name="mappings">
+            <value>
+            /**/gwtTeaming.rpc=gwtRpcController
+            </value>
+        </property>
+    </bean>
+
+	<!-- The GwtRpcServiceImpl class gets called by GwtRpcController to actually handle the gwt rpc request. -->
+    <bean id="gwtRpcService" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.gwt.server.GwtRpcServiceImpl">
+    </bean>
+
+    <!-- GwtRpcController wraps our service in order to decode the incoming -->
+    <!-- request then delegates processing of the call to the POJO service -->
+    <!-- and then encodes the return value forwarding the response. -->
+    <bean id="gwtRpcController" class="org.kablink.teaming.gwt.server.GwtRpcController" depends-on="gwtRpcService">
+        <property name="remoteService">
+            <ref bean="gwtRpcService"  />
+        </property>
+    </bean>
+
+</beans>

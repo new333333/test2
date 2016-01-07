@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_IndexingJournal" name="org.kablink.teaming.domain.IndexingJournal">
+    <id unsaved-value="null" name="id" type="long" node="@id">
+      <generator class="native">
+      	<param name="sequence">ss_indexingjournal_id_sequence</param>
+      </generator>
+    </id>
+    <property name="zoneId" access="field"/>
+    <property name="nodeName" length="128" index="indexingJournal_nodeIndex"/>
+    <property name="indexName" length="160" index="indexingJournal_nodeIndex"/>
+    <property name="operationName" length="32"/>
+    <property name="operationArgs" length="20000000" type="org.kablink.teaming.spring.orm.hibernate3.support.CompressedBlobSerializableType"/>
+    <property name="ipv4Address" length="16"/>
+  </class>
+</hibernate-mapping>

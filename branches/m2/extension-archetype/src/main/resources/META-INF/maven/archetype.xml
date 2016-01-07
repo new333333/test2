@@ -1,0 +1,6 @@
+<archetype>
+  <id>kablink-extension</id>
+  <resources>
+  	<resource>src/main/webapp/WEB-INF/web.xml</resource>
+  </resources>
+</archetype>
