@@ -1930,10 +1930,14 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			    
 		if (type.equals("group")) {
 			searchTermFilter.addGroupNameFilter(searchText);
+			// 1/8/2016 JK (bug 960775)
+			searchTermFilter.addTitleFilter(searchText);
 		} else if (type.equals("team")) {
 			searchTermFilter.addTeamFilter(searchText);
 		} else {
 			searchTermFilter.addLoginNameFilter(searchText);
+			// 1/8/2016 JK (bug 960775)
+			searchTermFilter.addTitleFilter(searchText);
 		}
 			   	
 		//Do a search to find the first few items that match the search text
