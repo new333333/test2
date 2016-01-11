@@ -169,6 +169,10 @@
 	<bean id="moduleEventListenerManagerInterceptor" class="org.kablink.teaming.module.interceptor.EventListenerManagerInterceptor">
 	</bean>
 	
+	<bean id="invocationLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.InvocationLoggingInterceptor"/>
+	
+	<bean id="aopallianceWsLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.WsLoggingInterceptor"/>
+	
 	<bean id="scheduler" class="org.kablink.teaming.spring.scheduling.quartz.SchedulerFactoryBean">
 		<property name="dataSource"><ref bean="dataSource"/></property>
 		<property name="autoStartup"><value>${org.quartz.auto.startup}</value></property>
@@ -206,6 +210,7 @@
 	<bean id="baseTransactionProxy" parent="baseTransactionWithoutInterceptorsProxy" abstract="true">
 		<property name="preInterceptors">
 			<list>
+				<ref bean="invocationLoggingInterceptor"/>
 				<!--<ref bean="performanceMonitorInterceptor"/>-->
 				<ref bean="invocationStatisticsInterceptor"/>
 				<ref bean="indexSynchronizationManagerInterceptor"/>
@@ -242,6 +247,7 @@
 	<bean id="moduleTransactionProxy" parent="baseTransactionWithoutInterceptorsProxy" abstract="true">
 		<property name="preInterceptors">
 			<list>
+				<ref bean="invocationLoggingInterceptor"/>
 				<!--<ref bean="performanceMonitorInterceptor"/>-->
 				<ref bean="invocationStatisticsInterceptor"/>
 				<ref bean="moduleEventListenerManagerInterceptor"/>
@@ -253,6 +259,7 @@
 	<bean id="moduleNonTransactionProxy" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="sPropsUtil" abstract="true">
 		<property name="interceptorNames">
 			<list>
+				<value>invocationLoggingInterceptor</value>
 				<!--<value>performanceMonitorInterceptor</value>-->
 				<value>invocationStatisticsInterceptor</value>
 				<value>moduleEventListenerManagerInterceptor</value>
@@ -1101,34 +1108,6 @@ Application exception overridden by commit exception
 
 	<bean id="dashboardHelper" class="org.kablink.teaming.web.util.DashboardHelper" parent="dependOnAllModulesTemplate"/>
 		
-	<bean id="ssfs" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="sPropsUtil">
-		<property name="target">
-			<bean class="org.kablink.teaming.ssfs.server.impl.KablinkFileSystemImpl" parent="dependOnAllModulesTemplate">
-				<property name="mimeTypes"><ref bean="mimeTypes"/></property>
-				<property name="coreDao"><ref bean="coreDao"/></property>
-			</bean>
-		</property>
-		<property name="proxyInterfaces">
-			<value>org.kablink.teaming.ssfs.server.KablinkFileSystem</value>
-		</property>
-		<property name="interceptorNames">
-			<list>
-				<value>aopallianceSsfsLoggingInterceptor</value>
-				<!-- Setting up of request context is done by the cross-context
-				     dispatcher server/servlet. The same servlet also takes care
-				     of logging. -->
-				<value>aopallianceOpenSessionInViewInterceptor</value>
-				<!-- This must come after open-session-in-view -->
-				<value>aopallianceResolveRequestContextInterceptor</value>
-				<value>aopallianceMethodInvocationTraceInterceptor</value>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="aopallianceWsLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.LoggingInterceptor"/>
-	
-	<bean id="aopallianceSsfsLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.LoggingInterceptor"/>
-	
 	<bean id="aopallianceOpenSessionInViewInterceptor" class="org.kablink.teaming.util.aopalliance.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
@@ -1496,7 +1475,6 @@ text/calendar											  ics
 	<bean id="runtimeStatistics" class="org.kablink.teaming.util.RuntimeStatistics">
 		<property name="invocationStatisticsInterceptor"><ref bean="invocationStatisticsInterceptor"/></property>
 		<property name="wsLoggingInterceptor"><ref bean="aopallianceWsLoggingInterceptor"/></property>
-		<property name="ssfsLoggingInterceptor"><ref bean="aopallianceSsfsLoggingInterceptor"/></property>
 	</bean>
 	
 	<!-- ================================  JMX/MBean Support =============================== -->
