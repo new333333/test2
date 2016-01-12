@@ -723,6 +723,11 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
     			}
     		}
     	}
+    	
+    	if(entry.hasEntryAcl()) {
+    		getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(source.getZoneId(), source, entry);
+    	}
+    	
     	processChangeLog(entry, ChangeLog.ADDENTRY);
 		getCoreDao().evict(tags);
 		
@@ -1115,6 +1120,11 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 			       					sourceMap.clear();
 			       					if (preserverDocNum) folder.addEntry(dEntry, sEntry.getHKey().getLastNumber());
 			       					else folder.addEntry(dEntry);
+			       					if(sEntry.hasEntryAcl()) {
+			       						dEntry.setHasEntryAcl(true);
+			       						if(sEntry.isIncludeFolderAcl())
+			       							dEntry.setCheckFolderAcl(true);
+			       					}
 			          			} else {
 			          				FolderEntry dParent = sourceMap.get(sEntry.getParentEntry());
 			          				dParent.addReply(dEntry, sEntry.getHKey().getLastNumber());
