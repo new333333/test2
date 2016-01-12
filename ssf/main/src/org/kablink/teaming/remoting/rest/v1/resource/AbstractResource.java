@@ -2049,7 +2049,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     private Set<FolderEntry> getFolderEntriesByName(Folder parentFolder, String name) {
         FolderModule folderModule = getFolderModule();
-        Set<FolderEntry> allEntries = new HashSet<>();
+        Set<FolderEntry> allEntries = new HashSet<FolderEntry>();
         Set<String> namesToTry = getNormalizedNames(name);
         for (String nm : namesToTry) {
             allEntries.addAll(folderModule.getFolderEntryByTitle(parentFolder.getId(), nm));
@@ -2062,7 +2062,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     private Set<String> getNormalizedNames(String name) {
-        Set<String> namesToTry = new HashSet<>();
+        Set<String> namesToTry = new HashSet<String>();
         namesToTry.add(Normalizer.normalize(name, Normalizer.Form.NFC));
         namesToTry.add(Normalizer.normalize(name, Normalizer.Form.NFD));
         return namesToTry;
