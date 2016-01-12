@@ -39,7 +39,6 @@
 		</delete>		
 		
 		<delete dir="${app.server.ssf.dir}"/>
-		<delete dir="${app.server.ssfs.dir}"/>
 		<delete dir="${app.server.webdav.dir}"/>
 	</target>
 	
@@ -56,21 +55,7 @@
 					<pathelement location="${app.server.dir}/common/lib/servlet-api.jar" />
 				</path>
 			</then>
-			<elseif>
-				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
-				<then>
-					<path id="deploy.standalone.classpath">
-						<pathelement location="${app.server.deploy.dir}/liferay-portal.ear/portal-ejb.jar" />
-						<pathelement location="${env.ANT_HOME}/lib/ant.jar" />
-						<fileset dir="${app.server.deploy.dir}/liferay-portal.ear/lib" />
-						<fileset dir="${app.server.server.dir}/lib"/>
-						<!--<pathelement location="${app.server.deploy.dir}/../lib/javax.servlet.jar" />-->
-						<pathelement location="${app.server.server.dir}/lib/ext/portal-ascore.jar" />
-						<pathelement location="${app.server.server.dir}/lib/ext/portlet.jar" />
-					</path>
-				</then>
-			</elseif>
-		</if>	
+		</if>
 	</target>
 	
 	<target name="full-deploy">
@@ -79,12 +64,6 @@
 			<then>
 				<antcall target="deploy-standalone-tomcat" />
 			</then>
-			<elseif>
-				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
-				<then>
-					<antcall target="deploy-standalone-jboss-tomcat" />
-				</then>
-			</elseif>
 		</if>
 	</target>
 	
@@ -111,8 +90,6 @@
 		<!-- AS core component is deployed into the app server's shared area -->
 		<ant dir="${project.dir}/as-common" target="${target}" inheritAll="false" />
 		<ant dir="${project.dir}/as-shared" target="${target}" inheritAll="false" />
-		<!-- ssfs component is deployed into its own web app -->
-		<!--<ant dir="${project.dir}/ssfs" target="${target}" inheritAll="false" />-->
 		<!-- ssr component is deployed into its own web app -->
 		<ant dir="${project.dir}/ssr" target="${target}" inheritAll="false" />
 		<!-- simple-url component is deployed into its own web app -->
@@ -190,52 +167,10 @@
 		</copy>
 	</target>
 		
-	<target name="deploy-standalone-jboss-tomcat" depends="init-standalone, clean-app-server">		
-		<copy file="${project.dir}/war/ssf.war" todir="temp2"/>
-		
-		<antcall target="copy-standalone-specific-ssf-artifacts"/>
-
-		<war basedir="temp"
-			destfile="temp2/ssf.war"
-			webxml="temp/WEB-INF/web.xml"
-			update="true" />				
-
-		<antcall target="deploy-war">
-			<param name="deploy-support.war.name" value="ssf" />
-			<param name="deploy-support.war.dir" value="temp2" />
-		</antcall>
-
-		<delete dir="temp" />
-		<delete dir="temp2" />
-		
-		<antcall target="deploy-additional-components" />
-						
-		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
-		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${app.server.server.dir}/lib" />
-		<copy file="${project.dir}/lib/ojdbc7.jar" todir="${app.server.server.dir}/lib" />
-
-		<!-- 1. JBoss 4.0.2+ classloader does not work properly if the application 
-		     comes with its own log4j archive. (You get the following error -
-		     log4j:ERROR A "org.jboss.logging.util.OnlyOnceErrorHandler" object is not assignable to a "org.apache.log4j.spi.ErrorHandler" variable.)
-		     So, we should remove the jar file from our lib area so that it uses
-		     the one that JBoss has. 
-		     2. Liferay puts portlet.jar in the server's shared area (server/default/deploy/lib/ext).
-		     If we have our own portlet.jar in our lib directory, the Liferay fails to 
-		     register our portlets at startup time (it fails with usual ugly classloader
-		     problem). So we remove that too. -->
-		<delete>
-			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,portlet.jar"/>
-		</delete>		
-	</target>
-
 	<target name="copy-standalone-specific-ssf-artifacts">
 		<copy overwrite="true" 
 			file="${project.dir}/web/docroot/WEB-INF/web.xml"
 			tofile="temp/WEB-INF/web.xml"/>
-	
-		<copy overwrite="true" 
-			file="${project.dir}/web/docroot/WEB-INF/jboss-web.xml"
-			tofile="temp/WEB-INF/jboss-web.xml"/>
 	</target>
 
 </project>
