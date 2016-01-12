@@ -31,7 +31,6 @@
                         <configuration>
                             <target>
                                 <mkdir dir="${basedir}/docroot/WEB-INF/classes/content"/>
-                                <ant target="make-jboss-web.xml" />
                                 <ant target="make-web.xml" />
                                 <ant target="make-strings.xml" />
                             </target>

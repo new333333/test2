@@ -9,95 +9,19 @@
 	<propertycopy name="app.server.ssf.dir" from="app.server.${portal.type}.${app.server.type}.ssf.dir" />
 	<property name="jsp.artifacts.dir" value="${basedir}/${jspclasses.dir}/${app.server.type}" />
 	<property name="generic.web.xml" value="web.xml"/>
-	<property name="liferay.portal.web.xml" value="liferay-portal.web.xml"/>
-	<property name="jboss.portal.web.xml" value="jboss-portal.web.xml"/>
-	<property name="generic.jboss-web.xml" value="jboss-web.xml"/>
-	<property name="liferay.portal.jboss-web.xml" value="liferay-portal.jboss-web.xml"/>
-	<property name="jboss.portal.jboss-web.xml" value="jboss-portal.jboss-web.xml"/>
-	
+
 	<target name="clean">
 		<delete dir="temp"/>
 		<delete dir="${jspclasses.dir}" />
 		<delete file="${war.file}" failonerror="false" />
 		<delete>
 			<fileset dir="${web.dir}/WEB-INF"
-				includes="web.xml,*.web.xml,jboss-web.xml,*.jboss-web.xml">
+				includes="web.xml,*.web.xml">
 			</fileset>
 		</delete>
 	</target>
 
-	<target name="make-jboss-web.xml">
-		<!-- Generate jboss-web.xml for Liferay portal -->
-		<delete file="${web.dir}/WEB-INF/${liferay.portal.jboss-web.xml}" />
-		<copy file="${web.dir}/WEB-INF/jboss-web.xml.tmpl" tofile="${web.dir}/WEB-INF/${liferay.portal.jboss-web.xml}" />
-		<replace 
-			file="${web.dir}/WEB-INF/${liferay.portal.jboss-web.xml}" 
-			propertyFile="replace.properties">
-			<replacefilter 
-				token="@@SECURITY_DOMAIN@@"
-				value=""/>
-		</replace>
-
-		<!-- Generate jboss-web.xml for JBoss portal -->
-		<delete file="${web.dir}/WEB-INF/${jboss.portal.jboss-web.xml}" />
-		<copy file="${web.dir}/WEB-INF/jboss-web.xml.tmpl" tofile="${web.dir}/WEB-INF/${jboss.portal.jboss-web.xml}" />
-		<replace 
-			file="${web.dir}/WEB-INF/${jboss.portal.jboss-web.xml}" 
-			propertyFile="replace.properties">
-			<replacefilter 
-				token="@@SECURITY_DOMAIN@@"
-				property="jbossportal.jbosstomcat.jbossweb.security.domain"/>
-		</replace>
-	
-		<!-- Generate generic jboss-web.xml -->
-		<delete file="${web.dir}/WEB-INF/${generic.jboss-web.xml}" />
-		<copy file="${web.dir}/WEB-INF/jboss-web.xml.tmpl" tofile="${web.dir}/WEB-INF/${generic.jboss-web.xml}" />
-		<replace 
-			file="${web.dir}/WEB-INF/${generic.jboss-web.xml}" 
-			propertyFile="replace.properties">
-			<replacefilter 
-				token="@@SECURITY_DOMAIN@@"
-				value="&lt;!-- If running under JBoss Portal, uncomment the following --&gt;${line.separator}&lt;!--${line.separator}@@SECURITY_DOMAIN@@${line.separator}--&gt;${line.separator}"/>
-			<replacefilter 
-				token="@@SECURITY_DOMAIN@@"
-				property="jbossportal.jbosstomcat.jbossweb.security.domain"/>
-		</replace>
-	</target>
-	
 	<target name="make-web.xml">
-		<!-- Generate web.xml for Liferay portal -->
-		<delete file="${web.dir}/WEB-INF/${liferay.portal.web.xml}" />
-		<copy file="${web.dir}/WEB-INF/web.xml.tmpl" tofile="${web.dir}/WEB-INF/${liferay.portal.web.xml}" />
-		<replace 
-			file="${web.dir}/WEB-INF/${liferay.portal.web.xml}" 
-			value=""
-			propertyFile="replace.properties">
-			<replacefilter 
-				token="@@LOGIN_FILTER@@"
-				property="liferayportal.*.web.loginfilter"/>
-			<replacefilter 
-				token="@@TAGLIB_PORTLET@@"/>
-			<replacefilter 
-				token="@@SECURITY@@"/>
-		</replace>
-
-		<!-- Generate web.xml for JBoss portal -->
-		<delete file="${web.dir}/WEB-INF/${jboss.portal.web.xml}" />
-		<copy file="${web.dir}/WEB-INF/web.xml.tmpl" tofile="${web.dir}/WEB-INF/${jboss.portal.web.xml}" />
-		<replace 
-			file="${web.dir}/WEB-INF/${jboss.portal.web.xml}" 
-			value=""
-			propertyFile="replace.properties">
-			<replacefilter 
-				token="@@LOGIN_FILTER@@"/>
-			<replacefilter 
-				token="@@TAGLIB_PORTLET@@"
-				property="jbossportal.jbosstomcat.web.taglib.portlet"/>
-			<replacefilter 
-				token="@@SECURITY@@"
-				property="jbossportal.jbosstomcat.web.security"/>
-		</replace>
-	
 		<!-- Generate generic web.xml -->
 		<delete file="${web.dir}/WEB-INF/${generic.web.xml}" />
 		<copy file="${web.dir}/WEB-INF/web.xml.tmpl" tofile="${web.dir}/WEB-INF/${generic.web.xml}" />
@@ -117,14 +41,14 @@
 		</replace>
 	</target>
 		
-	<target name="make-all-generated-files" depends="make-jboss-web.xml,make-web.xml,make-strings.xml,make-portlet.xml,make-portlet-properties">
+	<target name="make-all-generated-files" depends="make-web.xml,make-strings.xml,make-portlet.xml,make-portlet-properties">
 	</target>
 	
 	<target name="war" depends="make-all-generated-files">
 		<war
 			basedir="${web.dir}"
 			destfile="${war.file}"
-			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl,css/**,js/**,images/**,themes/**"
+			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/xslt/*.tmpl,css/**,js/**,images/**,themes/**"
 			webxml="${web.dir}/WEB-INF/${generic.web.xml}"
 		>
 			<!-- No longer necessary
@@ -325,7 +249,7 @@
 		</copy>
 		<copy todir="${app.server.ssf.dir}">
 			<fileset dir="${web.dir}">
-				<exclude name="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl" />
+				<exclude name="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/xslt/*.tmpl" />
 				<exclude name="js/**" />
 				<exclude name="css/**" />
 				<exclude name="images/**" />
@@ -441,12 +365,6 @@
 			<then>
 				<antcall target="precompile-jsp-tomcat" />
 			</then>
-			<elseif>
-				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
-				<then>
-					<antcall target="precompile-jsp-jboss-tomcat" />
-				</then>
-			</elseif>
 		</if>
 	</target>
 	

@@ -28,7 +28,6 @@
 			<fileset dir="${project.dir}/slide-webdavclient" includes="kablink-teaming-slide-webdavclient.jar" />
 			<fileset dir="${project.dir}/taglib" includes="kablink-teaming-taglib.jar" />
 			<fileset dir="${project.dir}/indexer-lucene" includes="kablink-teaming-lucenecommon.jar" />
-			<fileset dir="${project.dir}/liferay/teaming" includes="kablink-teaming-liferay-hooks.jar" />
 			<fileset dir="${project.dir}/lib" includes="${libraries.ssf}" />
 			<fileset dir="${project.dir}/lib" includes="jms.jar" />
 			<fileset dir="${project.dir}/gwt" includes="kablink-teaming-gwt.jar" />

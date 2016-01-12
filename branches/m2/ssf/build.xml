@@ -36,28 +36,10 @@
 	     deploying them. -->
 	<target name="full-deploy-internal" depends="init">
 		<if>
-			<equals arg1="${portal.type}" arg2="liferay" />
-			<then>				
-				<ant dir="liferay" target="full-deploy" inheritAll="false" />
+			<equals arg1="${portal.type}" arg2="standalone" />
+			<then>
+				<ant dir="standalone" target="full-deploy" inheritAll="false" />
 			</then>
-			<elseif>
-				<equals arg1="${portal.type}" arg2="jbossportal" />
-				<then>				
-					<ant dir="jboss-portal" target="full-deploy" inheritAll="false" />
-				</then>
-			</elseif>
-			<elseif>
-				<equals arg1="${portal.type}" arg2="standalone" />
-				<then>				
-					<ant dir="standalone" target="full-deploy" inheritAll="false" />
-				</then>
-			</elseif>
-			<elseif>
-				<equals arg1="${portal.type}" arg2="liferay-light" />
-				<then>				
-					<ant dir="liferay-light" target="full-deploy" inheritAll="false" />
-				</then>
-			</elseif>
 		</if>
 	</target>
 	
@@ -72,11 +54,6 @@
 		<antcall target="compile" />
 		<antcall target="jar" />
 		<ant dir="standalone" target="build" inheritAll="false" />
-		<!--<ant dir="liferay-light" target="build" inheritAll="false" />-->
-		<!-- No longer supported portal types 
-		<ant dir="liferay" target="build" inheritAll="false" />
-		<ant dir="jbossportal" target="build" inheritAll="false" />
-		-->
 	</target>
 
 	<target name="clean-build" depends="clean,build" />
@@ -117,9 +94,6 @@
 		<ant dir="main" target="clean" inheritAll="false"/>
 		<ant dir="slide-webdavclient" target="clean" inheritAll="false"/>
 		<ant dir="portal-module" target="clean" inheritAll="false"/>
-		<!--<ant dir="liferay" target="clean" inheritAll="false"/>
-		<ant dir="liferay-light" target="clean" inheritAll="false" />
-		<ant dir="jboss-portal" target="clean" inheritAll="false"/>-->
 		<ant dir="taglib" target="clean" inheritAll="false"/>
 		<ant dir="gwt" target="clean" inheritAll="false"/>
 
@@ -130,8 +104,6 @@
 		<ant dir="web" target="clean" inheritAll="false"/>
 
 		<ant dir="war" target="clean" inheritAll="false"/>
-		
-		<!--<ant dir="ssfs" target="clean" inheritAll="false"/>-->
 		
 		<ant dir="ssr" target="clean" inheritAll="false"/>
 		<ant dir="simple-url" target="clean" inheritAll="false"/>		
@@ -166,9 +138,6 @@
 		<ant dir="slide-webdavclient" target="compile" inheritall="false"/>
 
 		<ant dir="portal-module" target="compile" inheritall="false"/>
-		<!--<ant dir="liferay" target="compile" inheritall="false"/>
-		<ant dir="liferay-light" target="compile" inheritall="false"/>
-		<ant dir="jboss-portal" target="compile" inheritall="false"/>-->
 		<ant dir="taglib" target="compile" inheritall="false"/>
 		<ant dir="gwt" target="compile" inheritall="false"/>
 		
@@ -207,9 +176,6 @@
 		<ant dir="main" target="jar" inheritall="false"/>
 		<ant dir="slide-webdavclient" target="jar" inheritall="false"/>
 		<ant dir="portal-module" target="jar" inheritall="false"/>
-		<!--<ant dir="liferay" target="jar" inheritall="false"/>
-		<ant dir="liferay-light" target="jar" inheritall="false"/>
-		<ant dir="jboss-portal" target="jar" inheritall="false"/>-->
 		<ant dir="taglib" target="jar" inheritall="false"/>
 		<ant dir="gwt" target="jar" inheritall="false"/>
 
@@ -218,8 +184,6 @@
 		<ant dir="web" target="war" inheritall="false"/>
 
 		<ant dir="war" target="war" inheritall="false"/>
-		
-		<!--<ant dir="ssfs" target="war" inheritall="false"/>-->
 		
 		<ant dir="ssr" target="war" inheritall="false"/>
 		
@@ -254,8 +218,6 @@
 		<ant dir="main" target="deploy" inheritall="false"/>
 		<ant dir="slide-webdavclient" target="deploy" inheritall="false"/>
 		<ant dir="portal-module" target="deploy" inheritall="false"/>
-		<!--<ant dir="liferay" target="deploy" inheritall="false"/>
-		<ant dir="jboss-portal" target="deploy" inheritall="false"/>-->
 		<ant dir="taglib" target="deploy" inheritall="false"/>
 		<ant dir="gwt" target="deploy" inheritall="false"/>
 
@@ -263,8 +225,6 @@
 		<!--<ant dir="tools" target="deploy" />-->
 		
 		<ant dir="web" target="deploy" inheritall="false"/>
-		
-		<!--<ant dir="ssfs" target="deploy" inheritall="false"/>-->
 		
 		<ant dir="ssr" target="deploy" inheritall="false"/>
 		
@@ -302,9 +262,6 @@
 		<ant dir="main" target="java2html" inheritAll="false"/>
 		<ant dir="slide-webdavclient" target="java2html" inheritAll="false"/>
 		<ant dir="portal-module" target="java2html" inheritAll="false"/>
-		<!--<ant dir="liferay" target="java2html" inheritAll="false"/>
-		<ant dir="liferay-light" target="java2html" inheritAll="false"/>
-		<ant dir="jboss-portal" target="java2html" inheritAll="false"/>-->
 		<ant dir="taglib" target="java2html" inheritAll="false"/>
 		<ant dir="gwt" target="java2html" inheritAll="false"/>
 		<ant dir="tools" target="java2html" inheritAll="false"/>
@@ -338,9 +295,6 @@
 		<ant dir="main" target="javadoc" inheritAll="false"/>
 		<ant dir="slide-webdavclient" target="javadoc" inheritAll="false"/>
 		<ant dir="portal-module" target="javadoc" inheritAll="false"/>
-		<!--<ant dir="liferay" target="javadoc" inheritAll="false"/>
-		<ant dir="liferay-light" target="javadoc" inheritAll="false"/>
-		<ant dir="jboss-portal" target="javadoc" inheritAll="false"/>-->
 		<ant dir="taglib" target="javadoc" inheritAll="false"/>
 		<ant dir="gwt" target="javadoc" inheritAll="false"/>
 		<ant dir="tools" target="javadoc" inheritAll="false"/>

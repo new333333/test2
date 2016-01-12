@@ -34,7 +34,6 @@
 	<propertycopy name="app.server.shared.lib.dir" from="app.server.${portal.type}.${app.server.type}.shared.lib.dir" />
 	<propertycopy name="app.server.lib.dir" from="app.server.${portal.type}.${app.server.type}.lib.dir" />
 	<propertycopy name="app.server.ssf.dir" from="app.server.${portal.type}.${app.server.type}.ssf.dir" />
-	<propertycopy name="app.server.ssfs.dir" from="app.server.${portal.type}.${app.server.type}.ssfs.dir" />
 	<propertycopy name="app.server.webdav.dir" from="app.server.${portal.type}.${app.server.type}.webdav.dir" />
 
 	<tstamp>
