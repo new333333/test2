@@ -11,6 +11,11 @@
     <packaging>jar</packaging>
     <build>
         <sourceDirectory>src</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>${basedir}/hibernate</directory>
+            </resource>
+        </resources>
     </build>
     <dependencies>
         <dependency>
