@@ -112,6 +112,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.text.DateFormat;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -2010,7 +2011,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     private void addChildFolderByName(SearchResultList<SearchableObject> results, Long parentBinderId, String name) {
-        Binder child = getBinderModule().getBinderByParentAndTitle(parentBinderId, name, true);
+        Binder child = getFolderByName(parentBinderId, name);
         if (child != null) {
             results.append(ResourceUtil.buildBinderBrief(child));
         }
@@ -2019,10 +2020,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     private void addChildFolderEntriesByName(SearchResultList<SearchableObject> results, Long parentFolderId, String name, boolean addAsFile) {
         FolderModule folderModule = getFolderModule();
         Folder parentFolder = folderModule.getFolder(parentFolderId);
-        Set<FolderEntry> folderEntryByTitle = folderModule.getFolderEntryByTitle(parentFolder.getId(), name);
+        Set<FolderEntry> folderEntryByTitle = getFolderEntriesByName(parentFolder, name);
         Set<Long> ids = new HashSet<Long>();
         for (FolderEntry entry : folderEntryByTitle) {
-            if (!entry.isPreDeleted()) {
+            if (!entry.isPreDeleted() && !ids.contains(entry.getId())) {
                 if (addAsFile) {
                     results.append(ResourceUtil.buildFileProperties(entry.getPrimaryFileAttachment()));
                 } else {
@@ -2031,16 +2032,40 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 ids.add(entry.getId());
             }
         }
-        FolderEntry entry = folderModule.getLibraryFolderEntryByFileName(parentFolder, name);
-        if (entry!=null && !ids.contains(entry.getId())) {
-            if (!entry.isPreDeleted()) {
-                if (addAsFile) {
-                    results.append(ResourceUtil.buildFileProperties(entry.getPrimaryFileAttachment()));
-                } else {
-                    results.append(ResourceUtil.buildFolderEntryBrief(entry));
+    }
+
+    private Binder getFolderByName(Long parentBinderId, String name) {
+        Set<String> namesToTry = getNormalizedNames(name);
+        for (String nm : namesToTry) {
+            Binder binder = getBinderModule().getBinderByParentAndTitle(parentBinderId, nm, true);
+            if (binder != null) {
+                if (binder instanceof Folder && !((Folder)binder).isPreDeleted()) {
+                    return binder;
                 }
             }
         }
+        return null;
+    }
+
+    private Set<FolderEntry> getFolderEntriesByName(Folder parentFolder, String name) {
+        FolderModule folderModule = getFolderModule();
+        Set<FolderEntry> allEntries = new HashSet<>();
+        Set<String> namesToTry = getNormalizedNames(name);
+        for (String nm : namesToTry) {
+            allEntries.addAll(folderModule.getFolderEntryByTitle(parentFolder.getId(), nm));
+            FolderEntry entry = folderModule.getLibraryFolderEntryByFileName(parentFolder, nm);
+            if (entry != null) {
+                allEntries.add(entry);
+            }
+        }
+        return allEntries;
+    }
+
+    private Set<String> getNormalizedNames(String name) {
+        Set<String> namesToTry = new HashSet<>();
+        namesToTry.add(Normalizer.normalize(name, Normalizer.Form.NFC));
+        namesToTry.add(Normalizer.normalize(name, Normalizer.Form.NFD));
+        return namesToTry;
     }
 
     private Map searchForFolderContents(long folderId, boolean includeSubFolders, boolean includeEntries, boolean allowJits, int offset, int maxCount) {
@@ -2270,10 +2295,13 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
 
         if (name!=null) {
+            Set<String> namesToTry = getNormalizedNames(name);
             List<SearchableObject> newResults = new ArrayList<SearchableObject>();
             for (SearchableObject result : results) {
-                if (result.getDisplayName().equalsIgnoreCase(name)) {
-                    newResults.add(result);
+                for (String nm : namesToTry) {
+                    if (result.getDisplayName().equalsIgnoreCase(nm)) {
+                        newResults.add(result);
+                    }
                 }
             }
             results = newResults;
