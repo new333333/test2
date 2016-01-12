@@ -36,6 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.DateFormat;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -2911,7 +2912,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (inputData.getValues(nameValue).length > 1) {
 							entryData.put(nameValue, StringCheckUtil.check(mapInputData(inputData.getValues(nameValue))));
 						} else {
-							entryData.put(nameValue, StringCheckUtil.check(mapInputData(inputData.getSingleValue(nameValue))));
+							String singleValue = inputData.getSingleValue(nameValue);
+							if (itemName.equals("title")) {
+								singleValue = Normalizer.normalize(singleValue, Normalizer.Form.NFC);
+							}
+							entryData.put(nameValue, StringCheckUtil.check(mapInputData(singleValue)));
 						}
 					}
 				}
