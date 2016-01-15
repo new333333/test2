@@ -2034,7 +2034,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
     }
 
-    private Binder getFolderByName(Long parentBinderId, String name) {
+    protected Binder getFolderByName(Long parentBinderId, String name) {
         Set<String> namesToTry = getNormalizedNames(name);
         for (String nm : namesToTry) {
             Binder binder = getBinderModule().getBinderByParentAndTitle(parentBinderId, nm, true);
@@ -2047,7 +2047,20 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return null;
     }
 
-    private Set<FolderEntry> getFolderEntriesByName(Folder parentFolder, String name) {
+    protected FolderEntry getLibraryFolderEntryByName(Folder parentFolder, String fileName) {
+        Set<String> namesToTry = getNormalizedNames(fileName);
+        for (String nm : namesToTry) {
+            FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(parentFolder, nm);
+            if (entry != null) {
+                if (!entry.isPreDeleted()) {
+                    return entry;
+                }
+            }
+        }
+        return null;
+    }
+
+    protected Set<FolderEntry> getFolderEntriesByName(Folder parentFolder, String name) {
         FolderModule folderModule = getFolderModule();
         Set<FolderEntry> allEntries = new HashSet<FolderEntry>();
         Set<String> namesToTry = getNormalizedNames(name);
@@ -2061,7 +2074,18 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return allEntries;
     }
 
-    private Set<String> getNormalizedNames(String name) {
+    protected FileAttachment findFileAttachmentByName(org.kablink.teaming.domain.DefinableEntity entity, String name) {
+        Set<String> normalizedNames = getNormalizedNames(name);
+        for (String nm : normalizedNames) {
+            FileAttachment fa = entity.getFileAttachment(nm);
+            if (fa != null) {
+                return fa;
+            }
+        }
+        return null;
+    }
+
+    protected Set<String> getNormalizedNames(String name) {
         Set<String> namesToTry = new HashSet<String>();
         namesToTry.add(Normalizer.normalize(name, Normalizer.Form.NFC));
         namesToTry.add(Normalizer.normalize(name, Normalizer.Form.NFD));

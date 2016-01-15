@@ -30,6 +30,7 @@ import org.kablink.util.api.ApiErrorCode;
 import javax.activation.MimetypesFileTypeMap;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -63,8 +64,9 @@ abstract public class AbstractFileResource extends AbstractResource {
         if (fileName==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing file_name query parameter");
         }
+        fileName = Normalizer.normalize(fileName, Normalizer.Form.NFC);
 
-        org.kablink.teaming.domain.FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
+        org.kablink.teaming.domain.FolderEntry entry = getLibraryFolderEntryByName(folder, fileName);
 
         try {
             if(entry != null) {
@@ -95,7 +97,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             }
             throw e;
         }
-        return ResourceUtil.buildFileProperties(entry.getFileAttachment(fileName));
+        return ResourceUtil.buildFileProperties(findFileAttachmentByName(entry, fileName));
     }
 
     protected FileProperties writeNewFileContent(
@@ -109,10 +111,11 @@ abstract public class AbstractFileResource extends AbstractResource {
         if (filename==null || filename.length()==0) {
             throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "The file_name query parameter must be specified.");
         }
+        filename = Normalizer.normalize(filename, Normalizer.Form.NFC);
         Date modDate = dateFromISO8601(modDateISO8601);
         DefinableEntity entity = findDefinableEntity(entityType, entityId);
-        FileAttachment fa = entity.getFileAttachment(filename);
-        if (fa!=null) {
+        FileAttachment fa = findFileAttachment(filename);
+        if (fa != null) {
             throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType + ".", ResourceUtil.buildFileProperties(fa));
         }
         modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate, expectedMd5);
@@ -163,7 +166,8 @@ abstract public class AbstractFileResource extends AbstractResource {
             throws WriteFilesException, WriteEntryDataException {
         Date modDate = dateFromISO8601(modDateISO8601);
         DefinableEntity entity = findDefinableEntity(entityType, entityId);
-        FileAttachment fa = entity.getFileAttachment(filename);
+        filename = Normalizer.normalize(filename, Normalizer.Form.NFC);
+        FileAttachment fa = findFileAttachmentByName(entity, filename);
         if (fa != null) {
             if (update!=null && !update) {
                 throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType.name() + ".", ResourceUtil.buildFileProperties(fa));
@@ -225,7 +229,7 @@ abstract public class AbstractFileResource extends AbstractResource {
 
     protected FileAttachment getFileAttachment(DefinableEntity entity, String filename)
             throws NotFoundException {
-        FileAttachment fa = entity.getFileAttachment(filename);
+        FileAttachment fa = findFileAttachmentByName(entity, filename);
         if (fa != null)
             return fa;
         else
@@ -335,7 +339,7 @@ abstract public class AbstractFileResource extends AbstractResource {
     protected void deleteFile(EntityIdentifier.EntityType entityType, long entityId, String filename)
             throws WriteFilesException, WriteEntryDataException, BadRequestException {
         DefinableEntity entity = findDefinableEntity(entityType, entityId);
-        FileAttachment fa = entity.getFileAttachment(filename);
+        FileAttachment fa = findFileAttachment(filename);
         if (fa==null) {
             throw new NoFileByTheNameException(filename);
         }

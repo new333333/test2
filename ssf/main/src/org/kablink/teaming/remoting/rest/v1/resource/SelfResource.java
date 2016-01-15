@@ -108,6 +108,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.io.InputStream;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.util.*;
 
@@ -430,7 +431,7 @@ public class SelfResource extends AbstractFileResource {
         } catch (TitleException e) {
             org.kablink.teaming.rest.v1.model.Binder data = null;
             try {
-                org.kablink.teaming.domain.Binder binder = getBinderModule().getBinderByParentAndTitle(parent.getId(), title);
+                org.kablink.teaming.domain.Binder binder = getFolderByName(parent.getId(), title);
                 if (binder!=null) {
                     data = ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
                 }
@@ -456,6 +457,11 @@ public class SelfResource extends AbstractFileResource {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No folder title was supplied in the POST data.");
         }
         try {
+            newBinder.setTitle(Normalizer.normalize(newBinder.getTitle(), Normalizer.Form.NFC));
+            org.kablink.teaming.domain.Binder child = getFolderByName(parent.getId(), newBinder.getTitle());
+            if (child!=null) {
+                throw new TitleException(newBinder.getTitle());
+            }
             org.kablink.teaming.domain.Binder binder = FolderUtils.createLibraryFolder(parent, newBinder.getTitle());
             org.kablink.teaming.rest.v1.model.Folder folder =
                     (org.kablink.teaming.rest.v1.model.Folder) ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
@@ -464,7 +470,7 @@ public class SelfResource extends AbstractFileResource {
         } catch (TitleException e) {
             org.kablink.teaming.rest.v1.model.Binder data = null;
             try {
-                org.kablink.teaming.domain.Binder binder = getBinderModule().getBinderByParentAndTitle(parent.getId(), newBinder.getTitle());
+                org.kablink.teaming.domain.Binder binder = getFolderByName(parent.getId(), newBinder.getTitle());
                 if (binder!=null) {
                     data = ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
                     data.setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
