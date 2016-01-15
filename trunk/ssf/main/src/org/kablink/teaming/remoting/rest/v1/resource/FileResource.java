@@ -74,6 +74,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -278,6 +279,7 @@ public class FileResource extends AbstractFileResource {
         if (name==null || name.length()==0) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'name' form parameter");
         }
+        name = Normalizer.normalize(name, Normalizer.Form.NFC);
         DefinableEntity entity = fa.getOwner().getEntity();
 
         Map<FileAttachment,String> renamesTo = new HashMap<FileAttachment,String>();
@@ -334,6 +336,9 @@ public class FileResource extends AbstractFileResource {
 
         FileAttachment newAttachment;
         if (binder.isLibrary()) {
+            if (name!=null) {
+                name = Normalizer.normalize(name, Normalizer.Form.NFC);
+            }
             newAttachment = FolderUtils.moveLibraryFile(fa, (Folder) binder, name);
         } else {
             FolderEntry newEntry = getFolderModule().moveEntry(null, entity.getId(), newFolderId, null, null);

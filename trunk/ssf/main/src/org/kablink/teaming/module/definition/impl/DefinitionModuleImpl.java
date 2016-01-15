@@ -2912,11 +2912,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (inputData.getValues(nameValue).length > 1) {
 							entryData.put(nameValue, StringCheckUtil.check(mapInputData(inputData.getValues(nameValue))));
 						} else {
-							String singleValue = inputData.getSingleValue(nameValue);
-							if (itemName.equals("title")) {
-								singleValue = Normalizer.normalize(singleValue, Normalizer.Form.NFC);
-							}
-							entryData.put(nameValue, StringCheckUtil.check(mapInputData(singleValue)));
+							entryData.put(nameValue, StringCheckUtil.check(mapInputData(inputData.getSingleValue(nameValue))));
 						}
 					}
 				}

@@ -2507,7 +2507,23 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	@Override
 	public Binder getBinderByParentAndTitle(Long parentBinderId, String title, boolean returnLimitedBinderIfInferredAccess) throws AccessControlException {
-		title = Normalizer.normalize(title, Normalizer.Form.NFC);
+		Binder binder = _getBinderByParentAndTitle(parentBinderId, title, returnLimitedBinderIfInferredAccess);
+		if (binder==null) {
+			String alternateTitle = Normalizer.normalize(title, Normalizer.Form.NFC);
+			if (!alternateTitle.equals(title)) {
+				binder = _getBinderByParentAndTitle(parentBinderId, title, returnLimitedBinderIfInferredAccess);
+			}
+		}
+		if (binder==null) {
+			String alternateTitle = Normalizer.normalize(title, Normalizer.Form.NFD);
+			if (!alternateTitle.equals(title)) {
+				binder = _getBinderByParentAndTitle(parentBinderId, title, returnLimitedBinderIfInferredAccess);
+			}
+		}
+		return binder;
+	}
+
+	private Binder _getBinderByParentAndTitle(Long parentBinderId, String title, boolean returnLimitedBinderIfInferredAccess) throws AccessControlException {
 		Binder binder = getCoreDao().loadBinderByParentAndName(parentBinderId, title,
                 RequestContextHolder.getRequestContext().getZoneId());
         if (binder!=null) {

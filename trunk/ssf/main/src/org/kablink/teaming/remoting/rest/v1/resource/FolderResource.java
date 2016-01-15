@@ -297,7 +297,7 @@ public class FolderResource extends AbstractBinderResource {
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(0, folder.getModificationDate());
         if (fileName!=null) {
             if (folder.isLibrary()) {
-                org.kablink.teaming.domain.FolderEntry folderEntry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
+                org.kablink.teaming.domain.FolderEntry folderEntry = getLibraryFolderEntryByName(folder, fileName);
                 if (folderEntry!=null) {
                     results.append(ResourceUtil.buildFolderEntryBrief(folderEntry));
                 }

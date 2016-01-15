@@ -63,6 +63,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.DateFormat;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -145,7 +146,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
 
         Map data = new HashMap();
-        data.put("title", name);
+        data.put("title", Normalizer.normalize(name, Normalizer.Form.NFC));
         InputDataAccessor inputData = new MapInputData(data);
 
         getBinderModule().modifyBinder(id, inputData, null, null, null);
@@ -295,6 +296,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         if (BinderHelper.isBinderHomeFolder(source)) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Copying a home folder is not supported");
         }
+        title = Normalizer.normalize(title, Normalizer.Form.NFC);
         Map options = new HashMap();
         options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, title);
         try {
@@ -303,7 +305,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         } catch (TitleException e) {
             Binder data = null;
             try {
-                org.kablink.teaming.domain.Binder binder = getBinderModule().getBinderByParentAndTitle(parentId, title);
+                org.kablink.teaming.domain.Binder binder = getFolderByName(parentId, title);
                 if (binder!=null) {
                     data = ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
                 }
@@ -540,7 +542,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No folder title was supplied in the POST data.");
         }
         try {
-            org.kablink.teaming.domain.Binder child = getBinderModule().getBinderByParentAndTitle(parent.getId(), newBinder.getTitle());
+            newBinder.setTitle(Normalizer.normalize(newBinder.getTitle(), Normalizer.Form.NFC));
+            org.kablink.teaming.domain.Binder child = getFolderByName(parent.getId(), newBinder.getTitle());
             if (child!=null) {
                 throw new TitleException(newBinder.getTitle());
             }
@@ -549,7 +552,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         } catch (TitleException e) {
             Binder data = null;
             try {
-                org.kablink.teaming.domain.Binder binder = getBinderModule().getBinderByParentAndTitle(parentId, newBinder.getTitle());
+                org.kablink.teaming.domain.Binder binder = getFolderByName(parentId, newBinder.getTitle());
                 if (binder!=null) {
                     data = ResourceUtil.buildBinder(binder, true, descriptionFormat);
                 }
@@ -564,6 +567,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         if (newBinder.getTitle()==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No binder title was supplied in the POST data.");
         }
+        newBinder.setTitle(Normalizer.normalize(newBinder.getTitle(), Normalizer.Form.NFC));
         org.kablink.teaming.domain.Binder binder = BinderUtils.createBinder(parentId, newBinder.getTitle(), null, templateId);
         return ResourceUtil.buildBinder(binder, true, descriptionFormat);
     }
