@@ -17,10 +17,7 @@ import org.kablink.teaming.module.shared.BinderUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
-import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
-import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
-import org.kablink.teaming.remoting.rest.v1.exc.RestExceptionWrapper;
+import org.kablink.teaming.remoting.rest.v1.exc.*;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
@@ -119,8 +116,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @DELETE
     @Path("{id}")
     public void deleteBinder(@PathParam("id") long id,
+                             @QueryParam("only_if_empty") @DefaultValue("false") boolean onlyIfEmpty,
                              @QueryParam("purge") @DefaultValue("false") boolean purge) throws Exception {
-        _deleteBinder(id, purge);
+        _deleteBinder(id, onlyIfEmpty, purge);
     }
 
     @GET
@@ -572,11 +570,14 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return ResourceUtil.buildBinder(binder, true, descriptionFormat);
     }
 
-    protected void _deleteBinder(long id, boolean purge) throws Exception {
+    protected void _deleteBinder(long id, boolean onlyIfEmpty, boolean purge) throws Exception {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
         if (binder.isMirrored() && (binder instanceof org.kablink.teaming.domain.Folder) &&
                 ((org.kablink.teaming.domain.Folder)binder).isTop()) {
             throw new BadRequestException(ApiErrorCode.NOT_SUPPORTED, "The folder is a top-level net or home folder and cannot be deleted in this manner.");
+        }
+        if (onlyIfEmpty && hasChildren(id, true)) {
+            throw new ConflictException(ApiErrorCode.BINDER_NOT_EMPTY, "The binder is not empty.");
         }
         if (purge || binder.isMirrored()) {
             getBinderModule().deleteBinder(id);

@@ -1938,6 +1938,12 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return folder;
     }
 
+    protected boolean hasChildren(long id, boolean allowJits) {
+        Binder binder = _getBinder(id);
+        Map resultMap = searchForChildren(binder, null, true, true, allowJits, 0, 1);
+        return 0<(Integer)resultMap.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
+    }
+
     protected SearchResultList<SearchableObject> getChildren(long id, Criterion filter, String name, boolean binders, boolean entries, boolean files,
                                                              boolean allowJits, Integer offset, Integer maxCount,
                                                           String nextUrl, Map<String, Object> nextParams, int descriptionFormat,
@@ -1966,30 +1972,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 maxCount = -1;
             }
             Map resultMap;
-            if (binder instanceof Folder) {
-                resultMap = searchForFolderContents(id, binders, entries || files, allowJits, offset, maxCount);
-            } else {
-                Criteria crit = new Criteria();
-                if (filter != null) {
-                    crit.add(filter);
-                }
-                Junction or = Restrictions.disjunction();
-                if (binders) {
-                    or.add(SearchUtils.buildBindersCriterion());
-                }
-                if (entries || files) {
-                    or.add(SearchUtils.buildEntriesCriterion());
-                }
-                //        if (files) {
-                //            or.add(SearchUtils.buildAttachmentsCriterion());
-                //        }
-                crit.add(or);
-                crit.add(SearchUtils.buildParentBinderCriterion(id));
-                crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
-                crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
-
-                resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_PREAPPROVED_PARENTS, offset, maxCount, binder, allowJits);
-            }
+            resultMap = searchForChildren(binder, filter, binders, entries || files, allowJits, offset, maxCount);
             SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(this, descriptionFormat, files), resultMap, nextUrl, nextParams, offset);
             if (modifiedSince != null && results.getLastModified() != null && !modifiedSince.before(results.getLastModified())) {
                 throw new NotModifiedException();
@@ -2008,6 +1991,35 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             }
         }
         return results;
+    }
+
+    private Map searchForChildren(Binder binder, Criterion filter, boolean binders, boolean entries, boolean allowJits, Integer offset, Integer maxCount) {
+        Map resultMap;
+        if (binder instanceof Folder) {
+            resultMap = searchForFolderContents(binder.getId(), binders, entries, allowJits, offset, maxCount);
+        } else {
+            Criteria crit = new Criteria();
+            if (filter != null) {
+                crit.add(filter);
+            }
+            Junction or = Restrictions.disjunction();
+            if (binders) {
+                or.add(SearchUtils.buildBindersCriterion());
+            }
+            if (entries) {
+                or.add(SearchUtils.buildEntriesCriterion());
+            }
+            //        if (files) {
+            //            or.add(SearchUtils.buildAttachmentsCriterion());
+            //        }
+            crit.add(or);
+            crit.add(SearchUtils.buildParentBinderCriterion(binder.getId()));
+            crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
+            crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
+
+            resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_PREAPPROVED_PARENTS, offset, maxCount, binder, allowJits);
+        }
+        return resultMap;
     }
 
     private void addChildFolderByName(SearchResultList<SearchableObject> results, Long parentBinderId, String name) {
