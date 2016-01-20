@@ -32,8 +32,12 @@
  */
 package org.kablink.teaming.webdav.milton;
 
+import java.lang.invoke.MethodHandles;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.util.WindowsUtil;
@@ -57,6 +61,8 @@ import com.bradmcevoy.http.Auth;
  */
 public class WebdavServletRequest extends com.bradmcevoy.http.ServletRequest {
 
+	private static Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
+
 	private HttpServletRequest httpServletRequest;
 	
 	/**
@@ -72,6 +78,8 @@ public class WebdavServletRequest extends com.bradmcevoy.http.ServletRequest {
 		Auth auth = super.getAuthorization();
 		// 4/15/2015 (bug 926653) - This block of code is added to address this particular bug
 		// 1/5/2016 (bug 959754) - Additional logic added to address this bug.
+		if(logger.isDebugEnabled())
+			logger.debug("Auth(in)={" + auth + "}");
 		if(auth == null || auth.getUser() == null) {
 			String userName = httpServletRequest.getRemoteUser();
 			if(userName != null && !userName.equals("")) {
@@ -91,6 +99,8 @@ public class WebdavServletRequest extends com.bradmcevoy.http.ServletRequest {
 				}
 			}
 		}
+		if(logger.isDebugEnabled())
+			logger.debug("Auth(out)={" + auth + "}");
 		return auth;
 	}
 }
