@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -1921,25 +1922,35 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  
     @Override
 	public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries) {
-    	indexFunctionMembership(binder, cascade, runInBackground, indexEntries, false);
+    	indexFunctionMembership(binder, cascade, runInBackground, indexEntries, false, null);
     }
     
-    @Override
-	public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
-		String value = EntityIndexUtils.getFolderAclString(binder);
+	public void indexFunctionMembership(Binder binder, boolean cascade, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing, Boolean dealingWithExternalAcl) {
+		//String value = EntityIndexUtils.getFolderAclString(binder);
     	if (cascade) {
-    		Map params = new HashMap();
-    		params.put("functionTest", Boolean.FALSE);
-    		//this will return binders down the tree that may come after others that are not inheritting, 
-    		//but since the upper ancestor is in the tree it won't hurt to have extras in the not phrase
-    		List<Object[]> notBinders = getCoreDao().loadObjects("select x.id,x.binderKey.sortKey from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
-    				binder.getBinderKey().getSortKey() + "%' and x.functionMembershipInherited=:functionTest order by x.binderKey.sortKey", params);
-       		List<Long>ids = pruneUpdateList(binder, notBinders);
-    		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
-    		if (ids.size() <= limit) {
-    			doFieldUpdate(binder, ids, Constants.FOLDER_ACL_FIELD, value, runInBackground, indexEntries, skipFileContentIndexing);
-    			doRssUpdate(binder);
-    		} else {
+    		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 100;  //account for others in search
+    		boolean indexFunctionMembershipWithNotBinderIds = SPropsUtil.getBoolean("index.function.membership.with.notbinderids", true);
+    		if(indexFunctionMembershipWithNotBinderIds) {
+	    		Map params = new HashMap();
+	    		params.put("functionTest", Boolean.FALSE);
+	    		//this will return binders down the tree that may come after others that are not inheritting, 
+	    		//but since the upper ancestor is in the tree it won't hurt to have extras in the not phrase
+	    		List<Object[]> notBinders;
+	    		if(Boolean.TRUE.equals(dealingWithExternalAcl))
+	    			notBinders = getCoreDao().loadObjects("select x.id,x.binderKey.sortKey from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
+	    				binder.getBinderKey().getSortKey() + "%' and x.extFunctionMembershipInherited=:functionTest order by x.binderKey.sortKey", params);
+	    		else
+	    			notBinders = getCoreDao().loadObjects("select x.id,x.binderKey.sortKey from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
+	        				binder.getBinderKey().getSortKey() + "%' and x.functionMembershipInherited=:functionTest order by x.binderKey.sortKey", params);
+	       		List<Long>ids = pruneUpdateList(binder, notBinders);
+	    		if (ids.size() <= limit) {
+	    			doFieldUpdate(binder, ids, /*Constants.FOLDER_ACL_FIELD, value,*/ runInBackground, indexEntries, skipFileContentIndexing);
+	    			doRssUpdate(binder);
+	    		} else {
+	    			indexFunctionMembershipWithNotBinderIds = false;
+	    		}
+    		}
+    		if(!indexFunctionMembershipWithNotBinderIds) {
     			//revert to walking the tree
     	    	List<Binder> binders = new ArrayList();
     	    	binders.add(binder);
@@ -1947,33 +1958,40 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	    	while (!candidates.isEmpty()) {
     	    		Binder c = candidates.get(0);
     	    		candidates.remove(0);
-    	    		if (c.isFunctionMembershipInherited()) {
+    	    		if((Boolean.TRUE.equals(dealingWithExternalAcl))? c.isExtFunctionMembershipInherited() : c.isFunctionMembershipInherited()) {
     	    			binders.add(c);
     	    			candidates.addAll(c.getBinders());
     	    		}
     	    		if (binders.size() >= limit) {
-    	    			doFieldUpdate(binders, Constants.FOLDER_ACL_FIELD, value,indexEntries);
+    	    			doFieldUpdate(binders, /*Constants.FOLDER_ACL_FIELD, value,*/ runInBackground, indexEntries, skipFileContentIndexing);
     	    			doRssUpdate(binders);
     	    			//evict used binders so don't fill session cache, but don't evict starting binder
-    	    			if (binders.get(0).equals(binder)) binders.remove(0);
+    	    			if (binders.get(0).equals(binder)) 
+    	    				binders.remove(0);
     	    			getCoreDao().evict(binders);					
     	    			binders.clear();
     	    		}
     	    	}
     	       	//finish list
-    			doFieldUpdate(binders, Constants.FOLDER_ACL_FIELD, value, indexEntries);
-    			doRssUpdate(binders);
+    	    	if(binders.size() > 0) {
+	    			doFieldUpdate(binders, /*Constants.FOLDER_ACL_FIELD, value,*/ runInBackground, indexEntries, skipFileContentIndexing);
+	    			doRssUpdate(binders);
+	    			//evict used binders so don't fill session cache, but don't evict starting binder
+	    			if (binders.get(0).equals(binder)) 
+	    				binders.remove(0);
+	    			getCoreDao().evict(binders);	
+    	    	}
     		}
     	} else {
-       		doFieldUpdate(binder, Constants.FOLDER_ACL_FIELD, value, runInBackground, indexEntries, skipFileContentIndexing);
-       		doRssUpdate(binder);
-       	    		
+       		doFieldUpdate(binder, /*Constants.FOLDER_ACL_FIELD, value,*/ runInBackground, indexEntries, skipFileContentIndexing);
+       		doRssUpdate(binder);     	    		
     	}
     	
     }
+
      @Override
 	public void indexTeamMembership(Binder binder, boolean cascade) {
-    	String value = getBinderModule().getTeamMemberString( binder );
+    	//String value = getBinderModule().getTeamMemberString( binder );
     	if (cascade) {
     		Map params = new HashMap();
     		params.put("functionTest", Boolean.FALSE);
@@ -1984,7 +2002,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        		List<Long>ids = pruneUpdateList(binder, notBinders);
        		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
     		if (ids.size() <= limit) {
-          		doFieldUpdate(binder, ids, Constants.TEAM_ACL_FIELD, value, null, false);
+          		doFieldUpdate(binder, ids, /*Constants.TEAM_ACL_FIELD, value,*/ null, false);
           		doRssUpdate(binder);
        		} else {
        			List<Binder> binders = new ArrayList();
@@ -1998,7 +2016,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         				candidates.addAll(c.getBinders());
            			} 
        	    		if (binders.size() >= limit) {
-       	    			doFieldUpdate(binders, Constants.TEAM_ACL_FIELD, value, false);
+       	    			doFieldUpdate(binders, /*Constants.TEAM_ACL_FIELD, value,*/ null, false);
        	    			doRssUpdate(binders);
        	    			//evict used binders so don't fill session cache, but don't evict starting binder
        	    			if (binders.get(0).equals(binder)) binders.remove(0);
@@ -2007,11 +2025,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         			}
         		}
         		//finish list
-        		doFieldUpdate(binders, Constants.TEAM_ACL_FIELD, value, false);
+        		doFieldUpdate(binders, /*Constants.TEAM_ACL_FIELD, value,*/ null, false);
         		doRssUpdate(binders);
        		}
     	} else {
-    		doFieldUpdate(binder, Constants.TEAM_ACL_FIELD, value, null, false);
+    		doFieldUpdate(binder, /*Constants.TEAM_ACL_FIELD, value,*/ null, false);
     		doRssUpdate(binder);
     	}
     	
@@ -2046,46 +2064,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	public void indexOwner(Collection<Binder>binders, Long ownerId) {
   		String value = Constants.EMPTY_ACL_FIELD;
  		if (ownerId != null) value = ownerId.toString();
- 		doFieldUpdate(binders, Constants.BINDER_OWNER_ACL_FIELD, value, false);     		
+ 		doFieldUpdate(binders, /*Constants.BINDER_OWNER_ACL_FIELD, value,*/ null, false);     		
      }
 
-     private void executeUpdateQuery(Criteria crit, String field, String value, Boolean runInBackground, boolean indexEntries) {
-    	 executeUpdateQuery(crit, field, value, runInBackground, indexEntries, false);
-     }
-     
-     private void executeUpdateQuery(Criteria crit, String field, String value, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
+     private void reindexBinders(List<Long> binders, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
+ 		// flush anything that is waiting
+ 		IndexSynchronizationManager.applyChanges();
 
-		Map<String,Object> doc;
-		List<Long> binders = new ArrayList<Long>();
-		
-		// flush anything that is waiting
-		IndexSynchronizationManager.applyChanges();
-
-		// Get a list of the binders which need to be reindexed
-		LuceneReadSession luceneSessionn = getLuceneSessionFactory()
-				.openReadSession();
-		QueryBuilder qbb = new QueryBuilder(false, false); 
-		
-		crit.add(conjunction().add(
-				eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER)));
-		
-		SearchObject so = qbb.buildQuery(crit.toQuery());
-		
-		Hits hits = luceneSessionn.search(RequestContextHolder.getRequestContext().getUserId(), so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
-				so.getLuceneQuery(), SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
-		luceneSessionn.close();
-		for (int i = 0; i < hits.length(); i++) {
-			doc = hits.doc(i);
-			String binderId = (String) doc.get(Constants.DOCID_FIELD);
-			if (binderId != null) {
-				try {
-					binders.add(Long.valueOf(binderId));
-				} catch (Exception ignore) {
-				}
-			}
-		}
-		
-		if(Boolean.FALSE.equals(runInBackground)) {
+ 		if(Boolean.FALSE.equals(runInBackground)) { // Run in foreground
 	    	for (Long id:binders) {
 				try {
 					getBinderModule().indexBinderIncremental(id, indexEntries, skipFileContentIndexing);
@@ -2097,70 +2083,117 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 					continue;
 				}
 	    	}
+	 		// flush in case not everything has been flushed.
+	 		IndexSynchronizationManager.applyChanges();
 		}
 		else {
-			// Setup the background job for reindexing
+			// Setup and submit background job for reindexing
 			User user = RequestContextHolder.getRequestContext().getUser();
 			String className = SPropsUtil.getString("job.binder.reindex.class", "org.kablink.teaming.jobs.DefaultBinderReindex");
 			BinderReindex job = (BinderReindex)ReflectHelper.getInstance(className);
 			job.scheduleNonBlocking(binders, user, indexEntries); 
 		}
-
-	}
+     }
      
      // this will update the binder, its attachments and entries, and
 		// subfolders and entries that inherit
-     private void doFieldUpdate(Binder binder, List<Long>notBinderIds, String field, String value, Boolean runInBackground, boolean indexEntries) {
-    	 doFieldUpdate(binder, notBinderIds, field, value, runInBackground, indexEntries, false);
+     private void doFieldUpdate(Binder binder, List<Long>notBinderIds, /*String field, String value,*/ Boolean runInBackground, boolean indexEntries) {
+    	 doFieldUpdate(binder, notBinderIds, /*field, value,*/ runInBackground, indexEntries, false);
      }
      
-      private void doFieldUpdate(Binder binder, List<Long>notBinderIds, String field, String value, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
- 		// Now, create a query which can be used by the index update method to modify all the
+     private void doFieldUpdate(Binder binder, List<Long>notBinderIds, /*String field, String value,*/ Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
+		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index 
- 		Criteria crit = new Criteria()
-  			.add(eq(Constants.ENTRY_ANCESTRY, binder.getId().toString()));
- 		
+		Criteria crit = new Criteria()
+ 			.add(eq(Constants.ENTRY_ANCESTRY, binder.getId().toString()));
 		if (!notBinderIds.isEmpty()) {	
 			crit.add(not()
 				.add(in(Constants.ENTRY_ANCESTRY, LongIdUtil.getIdsAsStringSet(notBinderIds)))
 			);
- 		}
-		executeUpdateQuery(crit, field, value, runInBackground, indexEntries, skipFileContentIndexing);
-    }
+		}
+		crit.add(conjunction().add(
+				eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER)));
+
+		// flush anything that is waiting before doing search
+		IndexSynchronizationManager.applyChanges();
+
+		// Get a list of binders that need to be re-indexed
+		Hits hits;
+		LuceneReadSession luceneSessionn = getLuceneSessionFactory().openReadSession();
+		try {
+			QueryBuilder qbb = new QueryBuilder(false, false); 			
+			SearchObject so = qbb.buildQuery(crit.toQuery());
+			hits = luceneSessionn.search(RequestContextHolder.getRequestContext().getUserId(), 
+					so.getBaseAclQueryStr(), 
+					so.getExtendedAclQueryStr(), 
+					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
+					so.getLuceneQuery(), 
+					// Do NOT use DOCID_FIELD for this!! We optimized unbounded search only for ENTITY_ID_FIELD!!
+					SearchUtils.fieldNamesList(Constants.ENTITY_ID_FIELD)); 
+		}
+		finally {
+			luceneSessionn.close();
+		}
+
+		Map<String,Object> doc;
+		List<Long> binderIds = new ArrayList<Long>();
+		Long binderId;
+		for (int i = 0; i < hits.length(); i++) {
+			doc = hits.doc(i);
+			binderId = (Long) doc.get(Constants.ENTITY_ID_FIELD);
+			if(binderId != null)
+				binderIds.add(binderId);
+		}
+
+		reindexBinders(binderIds, runInBackground, indexEntries, skipFileContentIndexing);
+   }
 
     //this will update just the binder, its attachments and entries only
-    private void doFieldUpdate(Binder binder, String field, String value, Boolean runInBackground, boolean indexEntries) {
-    	doFieldUpdate(binder, field, value, runInBackground, indexEntries, false);
+    private void doFieldUpdate(Binder binder, /*String field, String value,*/ Boolean runInBackground, boolean indexEntries) {
+    	doFieldUpdate(binder, /*field, value,*/ runInBackground, indexEntries, false);
     }
     
   	//this will update just the binder, its attachments and entries only
-     private void doFieldUpdate(Binder binder, String field, String value, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
-  		// Now, create a query which can be used by the index update method to modify all the
- 		// entries, replies, attachments, and binders(workspaces) in the index 
-    	//_binderId= OR (_docId= AND (_docType=binder OR _attType=binder)) 
-    	Criteria crit = new Criteria()
-    	.add(disjunction()
-    		.add(eq(Constants.BINDER_ID_FIELD, binder.getId().toString())) // get all the entries, replies and their attachments using parentBinder
-    		.add(conjunction()	//gt binder itself (_docId= AND (_docType=binder OR _attType=binder)) 
-    			.add(eq(Constants.DOCID_FIELD, binder.getId().toString()))
-    			.add(disjunction()
-    				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_BINDER))
-    				.add(eq(Constants.ATTACHMENT_TYPE_FIELD, Constants.ATTACHMENT_TYPE_BINDER))
-    			)
-    		)
-    	);
+    private void doFieldUpdate(Binder binder, /*String field, String value,*/ Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
+ 		// Now, create a query which can be used by the index update method to modify all the
+		// entries, replies, attachments, and binders(workspaces) in the index 
+	   	//_binderId= OR (_docId= AND (_docType=binder OR _attType=binder)) 
+	   	
+	   	 /*
+	   	Criteria crit = new Criteria()
+	   	.add(disjunction()
+	   		.add(eq(Constants.BINDER_ID_FIELD, binder.getId().toString())) // get all the entries, replies and their attachments using parentBinder
+	   		.add(conjunction()	//gt binder itself (_docId= AND (_docType=binder OR _attType=binder)) 
+	   			.add(eq(Constants.DOCID_FIELD, binder.getId().toString()))
+	   			.add(disjunction()
+	   				.add(eq(Constants.DOC_TYPE_FIELD,Constants.DOC_TYPE_BINDER))
+	   				.add(eq(Constants.ATTACHMENT_TYPE_FIELD, Constants.ATTACHMENT_TYPE_BINDER))
+	   			)
+	   		)
+	   	);
 		executeUpdateQuery(crit, field, value, runInBackground, indexEntries, skipFileContentIndexing);
-     }
+		*/
+		
+		List<Long> ids = Arrays.asList(new Long[] {binder.getId()});
+		
+		reindexBinders(ids, runInBackground, indexEntries, skipFileContentIndexing);
+    }
  
-    private void doFieldUpdate(Collection<Binder>binders, String field, String value, boolean indexEntries) {
+    private void doFieldUpdate(Collection<Binder>binders, /*String field, String value,*/ Boolean runInBackground, boolean indexEntries) {
+    	doFieldUpdate(binders, /*field, value,*/ runInBackground, indexEntries, false);
+    }
+     
+    private void doFieldUpdate(Collection<Binder>binders, /*String field, String value,*/ Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
      	if (binders.isEmpty()) return;
  		// Now, create a query which can be used by the index update method to modify all the
  		// entries, replies, attachments, and binders(workspaces) in the index 
        	//_binderId= OR (_docId= AND (_docType=binder OR _attType=binder)) 
-		ArrayList<String>ids = new ArrayList();
+		ArrayList<Long>ids = new ArrayList();
 		for (Binder b:binders) {
-			ids.add(b.getId().toString());
+			ids.add(b.getId());
 		}
+		
+		/*
 	   	Criteria crit = new Criteria()
     	.add(disjunction()
     		.add(in(Constants.BINDER_ID_FIELD, ids)) // get all the entries, replies and their attachments using parentBinder
@@ -2172,7 +2205,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			)
     		)
     	);
-		executeUpdateQuery(crit, field, value, null, indexEntries);
+		executeUpdateQuery(crit, field, value, runInBackground, indexEntries, skipFileContentIndexing);
+		*/
+		
+		reindexBinders(ids, runInBackground, indexEntries, skipFileContentIndexing);
      }
     
     private void doRssDelete(Binder binder) {
