@@ -194,7 +194,19 @@ public class Hits implements Serializable {
         return ss_hits;
     }
 
-    private static Map<String,Object> toMap(Document doc, List<String> fieldNames) {
+	public static Hits transfer(List<Long> entityIds, boolean totalHitsApproximate) {
+		Hits ss_hits = new Hits(entityIds.size());	
+		for(Long entityId:entityIds) {
+			HashMap<String,Object> map = new HashMap<String,Object>();
+			map.put(Constants.ENTITY_ID_FIELD, entityId);
+			ss_hits.addDoc(map);
+		}
+        ss_hits.setTotalHits(entityIds.size());
+        ss_hits.setTotalHitsApproximate(totalHitsApproximate);
+        return ss_hits;
+	}
+
+	private static Map<String,Object> toMap(Document doc, List<String> fieldNames) {
 		Fieldable fld;
 		HashMap<String,Object> map = new HashMap<String,Object>();
 		//enumerate thru all the fields, and add to the map if relevant

@@ -1446,7 +1446,23 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				conditionsExistInOrigianl) && 
 				(workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
-			loadBinderProcessor(binder).indexFunctionMembership(binder, true, false, true, skipFileContentIndexing);
+			boolean indexEntries = true;
+			if(dealingWithExternalAcl(justThisScope, scope) && originalNFA.equals(currentNFA)) {
+				// When changing ACLs on a net folder (or its sub-folder), the only ACLs
+				// that can affect entries within that tree is the "allow access to net folder" 
+				// rights. File system ACLs aren't dredged for files hence not indexed with
+				// file entries. Additional rights given by sharing are indexed with file
+				// entries, however, those rights are assigned to file or folder through
+				// some other method not this one, so we don't have to worry about it here.
+				// Therefore, unless the ACLs for the "allow access to net folder" have
+				// changed for the binder, there is no need to re-index the entries under
+				// that binder.
+				// Note: In actuality, when changing "allow access to net folder" on a net
+				// folder, this method is called with justThisScope set to false indicating
+				// that the ACLs Filr base ACLs rather than file ACLs...
+				indexEntries = false;
+			}
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true, false, indexEntries, skipFileContentIndexing, dealingWithExternalAcl(justThisScope, scope));
 		} else if (!originalRead.equals(currentRead) && workArea instanceof Entry) {
 			Entry entry = (Entry)workArea;
 			indexEntry(entry, skipFileContentIndexing);
@@ -1732,7 +1748,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				conditionsExistInCurrent || conditionsExistInOriginal) && (wa instanceof Binder)) {
 			// Yes!  Re-index it.
 			Binder binder = ((Binder) wa);
-			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null, true);
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null, true, skipFileContentIndexing, null);
 		}
 		
       	// No, we don't we need to re-index a WorkArea binder!  Do we
@@ -1973,7 +1989,20 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         //index outside of transaction
         if (index && (workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
-			loadBinderProcessor(binder).indexFunctionMembership(binder, true, null, true, skipFileContentIndexing);
+			boolean indexEntries = true;
+			if(dealingWithExternalAcl(justThisScope, scope)) {
+				// When changing external inheritance flag (hence, possibly read ACLs) on a net folder 
+				// (or its sub-folder), there's no need to re-index the file entries in that tree 
+				// because ACLs aren't indexed with file entries within net folder. The only part of
+				// the ACLs to be concerned about is the "allow access to net folder" right. 
+				// However that right is not a file ACL but Filr base ACL meaning that whether
+				// that ACL is inherited or not is either governed by internal inheritance flag
+				// or is enforced independently of any inheritance flag. The bottom line is there's
+				// no need to re-index file entries within net folder just because this method is
+				// called.
+				indexEntries = false;
+			}
+			loadBinderProcessor(binder).indexFunctionMembership(binder, true, false, indexEntries, skipFileContentIndexing, dealingWithExternalAcl(justThisScope, scope));
 		}
      }
 	
