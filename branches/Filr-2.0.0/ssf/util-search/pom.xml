@@ -1,0 +1,34 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.kablink</groupId>
+        <artifactId>kablink-teaming</artifactId>
+        <version>5.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>kablink-teaming-util-search</artifactId>
+    <name>Search Utility Library</name>
+    <packaging>jar</packaging>
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queries</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>kablink-teaming-util</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>

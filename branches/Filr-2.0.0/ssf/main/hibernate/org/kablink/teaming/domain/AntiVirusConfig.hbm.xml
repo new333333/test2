@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_AntiVirusConfig" dynamic-update="true" lazy="false" dynamic-insert="false" name="org.kablink.teaming.domain.AntiVirusConfig">
+		<!--<cache usage="read-write"/>-->
+    <id unsaved-value="null" name="zoneId" access="field">
+      <generator class="assigned"/>
+	</id>
+	<property name="type"        	not-null="true" access="field" type="short" />
+	<property name="enabled"     	not-null="true" access="field"/>
+    <property name="serviceUrl"  	not-null="true" access="field" length="128" />
+    <property name="interfaceId" 	not-null="true" access="field" length="32" />
+    <property name="username"    	not-null="true" access="field" length="32" />
+    <property name="password"    	not-null="true" access="field" length="128" />
+	<property name="connectTimeout" access="field"/>
+	<property name="lastUpdateTime" not-null="true" access="field"/>
+  </class>
+</hibernate-mapping>

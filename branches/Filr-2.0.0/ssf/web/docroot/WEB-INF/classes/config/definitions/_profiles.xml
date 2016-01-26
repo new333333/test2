@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_profiles" caption="__definition_default_profiles" type="6" nextId="11" definitionType="6" internalId="402883b90cc53079010cc539bf260006" databaseId="4028839f124341580112434186dc0001"> 
+  <item name="profileForm" caption="__profile_form" type="form" id="1"> 
+    <properties/>  
+    <item name="title" caption="__title" type="data" id="2"> 
+      <properties> 
+        <property name="name" value="title"/>  
+        <property name="caption" value="__title"/>  
+        <property name="width" value="60"/>  
+        <property name="inline" value=""/>  
+        <property name="generated" value=""/>  
+        <property name="itemSource" value=""/> 
+      </properties> 
+    </item>  
+    <item name="description" caption="__description" type="data" id="3"> 
+      <properties> 
+        <property name="name" value="description"/>  
+        <property name="caption" value="__description"/>  
+        <property name="height" value=""/>  
+        <property name="required" value=""/> 
+      </properties> 
+    </item>  
+    <item name="workspaceIcon" caption="__icon" type="data" category="workspaceData" id="8"> 
+      <properties> 
+        <property name="name" value="iconName"/>  
+        <property name="caption" value="__icon"/> 
+      </properties> 
+    </item>  
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="10">
+      <properties>
+        <property name="caption" value="__attach_files"/>
+        <property name="name" value="ss_attachFile"/>
+        <property name="width" value="60"/>
+        <property name="number" value=""/>
+        <property name="storage" value="simpleFileRepository"/>
+        <property name="hide" value="true"/>
+      </properties>
+    </item>
+  </item>  
+  <item name="profileView" caption="__profile_view" id="4"> 
+    <properties/>  
+    <item name="descriptionView" caption="__description" id="6"> 
+      <properties> 
+        <property name="caption" value="__description"/> 
+      </properties> 
+    </item>  
+    <item name="dashboardCanvas" caption="__dashboard_canvas" id="5"> 
+      <properties> 
+        <property name="caption" value="__dashboard_canvas"/> 
+      </properties> 
+    </item>  
+    <item name="profileList" caption="__profile_listing" id="7"> 
+      <properties/> 
+    </item> 
+  </item>  
+  <properties> 
+    <property name="name" value="_profiles"/>  
+    <property name="caption" value="__definition_default_profiles"/>  
+    <property name="icon" value="/icons/profile_list.png"/> 
+  </properties>  
+  <export-mappings/>
+</definition>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_Subscriptions" name="org.kablink.teaming.domain.Subscription">
+    <!--<cache usage="read-write"/>-->
+    <composite-id name="id" class="org.kablink.teaming.domain.UserEntityPK">
+      <key-property name="principalId"/>
+      <key-property name="entityId">
+      	<column name="entityId" index="entity_Subscriptions"/>
+      </key-property>
+      <key-property name="entityType">
+      	<column name="entityType" index="entity_Subscriptions"/>
+      </key-property>
+    </composite-id>
+    <property name="zoneId" access="field"/>
+    <property name="style" access="field"/>
+    <property name="encodedStyles" length="256"/>
+  </class>
+</hibernate-mapping>

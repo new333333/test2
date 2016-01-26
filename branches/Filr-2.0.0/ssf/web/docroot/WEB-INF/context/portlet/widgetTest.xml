@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+
+	<!-- Controllers -->
+
+	<bean id="widgetTestController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.widget_test.WidgetTestController" />
+	<bean id="treeController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.widget_test.TreeController" />
+	<bean id="timepickerController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.widget_test.TimepickerController" />	
+	<bean id="eventController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.widget_test.EventController" />	
+	<bean id="fragmentController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.widget_test.FragmentController" />
+	<bean id="definitionBuilderController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.definitionBuilder.ViewController" />
+	<bean id="flushController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.widget_test.FlushController">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+
+	<!-- Handlers -->
+
+	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
+			<property name="portletModeParameterMap">
+			<map>
+				<entry key="view">
+					<map>
+						<entry key="tree"><ref bean="treeController"/></entry>
+						<entry key="fragment"><ref bean="fragmentController"/></entry>
+						<entry key="definition_builder"><ref bean="definitionBuilderController"/></entry>
+						<entry key="date"><ref bean="widgetTestController"/></entry>
+						<entry key="time"><ref bean="timepickerController"/></entry>
+						<entry key="event"><ref bean="eventController"/></entry>
+						<entry key="htmledit"><ref bean="widgetTestController"/></entry>
+						<entry key="flush"><ref bean="flushController"/></entry>
+					</map>
+				</entry>
+				<entry key="edit">
+					<map>
+					</map>
+				</entry>
+				<entry key="help">
+					<map>
+					</map>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="portletModeHandlerMapping" parent="portletModeHandlerMappingTemplate">
+		<property name="portletModeMap">
+			<map>
+				<entry key="view"><ref bean="widgetTestController"/></entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="defaultExceptionHandler" parent="portletDefaultExceptionHandlerTemplate"/>
+
+</beans>
