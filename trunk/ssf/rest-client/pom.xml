@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>kablink-teaming-rest-shared</artifactId>
+            <artifactId>kablink-teaming-rest-lib</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
