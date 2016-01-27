@@ -203,6 +203,7 @@ public enum ApiErrorCode {
 	// ShareItem errors
 	SHAREITEM_NOT_FOUND, // No share found with this name or id
     INVALID_EMAIL_ADDRESS, // Invalid definition
+    INVALID_RECIPIENT, // Invalid definition
 
     DEVICE_EXISTS, // A device with the ID already exists
     DEVICE_NOT_FOUND, // No device found with this id

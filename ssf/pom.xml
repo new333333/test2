@@ -19,8 +19,7 @@
         <module>mobile</module>
         <module>portal-module</module>
         <module>rest</module>
-        <module>rest-client</module>
-        <module>rest-shared</module>
+        <module>rest-lib</module>
         <module>simple-url</module>
         <module>slide-webdavclient</module>
         <module>ssr</module>
@@ -257,6 +256,11 @@
                 <version>1.9.13</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>2.7.0</version>
+            </dependency>
+            <dependency>
                 <groupId>com.sun.jersey</groupId>
                 <artifactId>jersey-core</artifactId>
                 <version>1.19</version>
@@ -283,7 +287,7 @@
             </dependency>
             <dependency>
                 <groupId>javax.xml</groupId>
-                <artifactId>jaxrpc</artifactId>
+                <artifactId>jaxrpc-api</artifactId>
                 <version>1.1</version>
             </dependency>
             <dependency>
@@ -493,6 +497,16 @@
                 <groupId>com.github.axet</groupId>
                 <artifactId>kaptcha</artifactId>
                 <version>0.0.9</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.enunciate</groupId>
+                <artifactId>enunciate-core-annotations</artifactId>
+                <version>1.31</version>
+            </dependency>
+            <dependency>
+                <groupId>com.webcohesion.enunciate</groupId>
+                <artifactId>enunciate-core-annotations</artifactId>
+                <version>2.2.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

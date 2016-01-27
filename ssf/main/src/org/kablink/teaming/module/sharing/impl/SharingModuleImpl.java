@@ -63,7 +63,6 @@ import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
-import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
@@ -151,7 +150,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
             }
    		} else if (shareItem.getRecipientType().equals(RecipientType.user)) {
             if (shareItem.getRecipientId().equals(user.getId())) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Can't share with yourself.");
+                throw new InvalidRecipientException("Can't share with yourself.");
             }
             recipient = getProfileModule().getEntry(shareItem.getRecipientId());
             if (!recipient.getEntityType().equals(EntityType.user)) {
