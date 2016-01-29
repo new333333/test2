@@ -12,6 +12,6 @@
     <property name="loginTime" access="field" index="loginTime_loginAudit"/>
     <property name="userId" access="field" index="userId_loginAudit"/>
  	<property name="authenticator" access="field" type="short"/>
-    <property name="clientAddr" access="field" length="16"/>
+    <property name="clientAddr" access="field" length="40"/>
   </class>
 </hibernate-mapping>

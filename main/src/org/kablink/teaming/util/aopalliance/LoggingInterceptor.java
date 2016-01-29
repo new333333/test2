@@ -45,6 +45,8 @@ public class LoggingInterceptor implements MethodInterceptor {
 	protected Log logger = LogFactory.getLog(getClass());
 	
 	private EventsStatistics eventsStatistics;
+	
+	private boolean logError = true;
 
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		try {
@@ -52,25 +54,33 @@ public class LoggingInterceptor implements MethodInterceptor {
 			
 			Object result = invocation.proceed();
 			
-			if(eventsStatistics.isEnabled())
-				eventsStatistics.addEvent(getInvocationName(invocation), System.nanoTime()-startTime);
+			long endTime = System.nanoTime();
+			
+			if(eventsStatistics != null && eventsStatistics.isEnabled())
+				eventsStatistics.addEvent(getInvocationName(invocation), endTime-startTime);
 			
 			if(logger.isDebugEnabled())
-				logger.debug("(" + ((System.nanoTime()-startTime)/1000000.0) + " ms) " + invocation.toString());
+				logger.debug("(" + ((endTime-startTime)/1000000.0) + " ms) " + invocation.toString());
 			
 			return result;
 		}
 		catch(Throwable t) {
-			if(logger.isDebugEnabled())
-				logger.warn(invocation.toString() + org.kablink.teaming.util.Constants.NEWLINE + t.toString(), t);
-			else
-				logger.warn(invocation.toString() + org.kablink.teaming.util.Constants.NEWLINE + t.toString());
+			if(logError) {
+				if(logger.isDebugEnabled())
+					logger.warn(invocation.toString(), t);
+				else
+					logger.warn(invocation.toString() + org.kablink.teaming.util.Constants.NEWLINE + t.toString());
+			}
 			throw t;
 		}
 	}
 
 	public void setEventsStatistics(EventsStatistics es) {
 		this.eventsStatistics = es;
+	}
+	
+	public void setLogError(boolean logError) {
+		this.logError = logError;
 	}
 
 	private String getInvocationName(MethodInvocation invocation) {
@@ -81,5 +91,4 @@ public class LoggingInterceptor implements MethodInterceptor {
 		sb.append('.').append(method.getName());
 		return sb.toString();
 	}
-
 }

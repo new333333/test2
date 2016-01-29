@@ -887,10 +887,13 @@ public class ReadFileController extends AbstractReadFileController {
 							cacheControl += ", proxy-revalidate, s-maxage=0";
 						}
 						response.setHeader("Cache-Control", cacheControl);
-						String attachment = "";
-						if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
-						response.setHeader("Content-Disposition",
-								attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
+						String attachment;
+						if (FileHelper.checkIfAttachment(contentType))
+						     attachment = "attachment; ";
+						else attachment = "";
+						String encodedFileName    = FileHelper.encodeFileName(                      request,                  shortFileName            );
+						String contentDisposition = FileHelper.getHttpContentDispositionForFilename(request, encodedFileName, shortFileName, attachment);
+						response.setHeader("Content-Disposition", contentDisposition);
 						response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
 						try {
 							Binder parent = getBinder(entity);

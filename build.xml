@@ -97,8 +97,6 @@
 		
 		<ant dir="util" target="clean" inheritAll="false"/>
 		<ant dir="util-search" target="clean" inheritAll="false"/>
-		<ant dir="rest-shared" target="clean" inheritAll="false"/>
-		<ant dir="rest-client" target="clean" inheritAll="false"/>
 		<ant dir="commons-httpclient-contrib" target="clean" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="clean" inheritAll="false"/>
 		<ant dir="as-common" target="clean" inheritAll="false"/>
@@ -115,6 +113,7 @@
 
 		<ant dir="main-minimum" target="clean" inheritAll="false"/>
 		<ant dir="main" target="clean" inheritAll="false"/>
+		<ant dir="rest-lib" target="clean" inheritAll="false"/>
 		<ant dir="slide-webdavclient" target="clean" inheritAll="false"/>
 		<ant dir="portal-module" target="clean" inheritAll="false"/>
 		<!--<ant dir="liferay" target="clean" inheritAll="false"/>
@@ -143,8 +142,6 @@
 	<target name="compile" depends="init">
 		<ant dir="util" target="compile" inheritall="false"/>
 		<ant dir="util-search" target="compile" inheritall="false"/>
-		<ant dir="rest-shared" target="compile" inheritall="false"/>
-		<ant dir="rest-client" target="compile" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="compile" inheritall="false"/>
 		<ant dir="indexer-lucene" target="compile" inheritall="false"/>			
 		<ant dir="as-common" target="compile" inheritall="false"/>
@@ -163,6 +160,7 @@
 
 		<ant dir="main-minimum" target="compile" inheritall="false"/>
 		<ant dir="main" target="compile" inheritall="false"/>
+		<ant dir="rest-lib" target="compile" inheritall="false"/>
 		<ant dir="slide-webdavclient" target="compile" inheritall="false"/>
 
 		<ant dir="portal-module" target="compile" inheritall="false"/>
@@ -186,8 +184,6 @@
 	<target name="jar" depends="init">
 		<ant dir="util" target="jar" inheritall="false"/>
 		<ant dir="util-search" target="jar" inheritall="false"/>
-		<ant dir="rest-shared" target="jar" inheritall="false"/>
-		<ant dir="rest-client" target="jar" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="jar" inheritall="false"/>
 		<ant dir="indexer-lucene" target="jar" inheritall="false"/>
 		<ant dir="as-common" target="jar" inheritall="false"/>
@@ -205,6 +201,7 @@
 		<ant dir="main" target="compile-common" inheritall="false"/>
 		<ant dir="main-minimum" target="jar" inheritall="false"/>
 		<ant dir="main" target="jar" inheritall="false"/>
+		<ant dir="rest-lib" target="jar" inheritall="false"/>
 		<ant dir="slide-webdavclient" target="jar" inheritall="false"/>
 		<ant dir="portal-module" target="jar" inheritall="false"/>
 		<!--<ant dir="liferay" target="jar" inheritall="false"/>
@@ -235,8 +232,6 @@
 	<target name="deploy" depends="init">
 		<ant dir="util" target="deploy" inheritall="false"/>
 		<ant dir="util-search" target="deploy" inheritall="false"/>
-		<ant dir="rest-shared" target="deploy" inheritall="false"/>
-		<ant dir="rest-client" target="deploy" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="deploy" inheritall="false"/>
 		<ant dir="indexer-lucene" target="deploy" inheritall="false"/>
 		<ant dir="as-common" target="deploy" inheritall="false"/>
@@ -252,6 +247,7 @@
 
 		<ant dir="main-minimum" target="deploy" inheritall="false"/>
 		<ant dir="main" target="deploy" inheritall="false"/>
+		<ant dir="rest-lib" target="deploy" inheritall="false"/>
 		<ant dir="slide-webdavclient" target="deploy" inheritall="false"/>
 		<ant dir="portal-module" target="deploy" inheritall="false"/>
 		<!--<ant dir="liferay" target="deploy" inheritall="false"/>
@@ -282,8 +278,6 @@
 
 		<ant dir="util" target="java2html" inheritAll="false"/>
 		<ant dir="util-search" target="java2html" inheritAll="false"/>
-		<ant dir="rest-shared" target="java2html" inheritAll="false"/>
-		<ant dir="rest-client" target="java2html" inheritAll="false"/>
 		<ant dir="commons-httpclient-contrib" target="java2html" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="java2html" inheritAll="false"/>
 		<ant dir="as-common" target="java2html" inheritAll="false"/>
@@ -300,6 +294,7 @@
 
 		<ant dir="main-minimum" target="java2html" inheritAll="false"/>
 		<ant dir="main" target="java2html" inheritAll="false"/>
+		<ant dir="rest-lib" target="java2html" inheritAll="false"/>
 		<ant dir="slide-webdavclient" target="java2html" inheritAll="false"/>
 		<ant dir="portal-module" target="java2html" inheritAll="false"/>
 		<!--<ant dir="liferay" target="java2html" inheritAll="false"/>
@@ -318,8 +313,6 @@
 
 		<ant dir="util" target="javadoc" inheritAll="false"/>
 		<ant dir="util-search" target="javadoc" inheritAll="false"/>
-		<ant dir="rest-shared" target="javadoc" inheritAll="false"/>
-		<ant dir="rest-client" target="javadoc" inheritAll="false"/>
 		<ant dir="commons-httpclient-contrib" target="javadoc" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="javadoc" inheritAll="false"/>
 		<ant dir="as-common" target="javadoc" inheritAll="false"/>
@@ -336,6 +329,7 @@
 
 		<ant dir="main-minimum" target="javadoc" inheritAll="false"/>
 		<ant dir="main" target="javadoc" inheritAll="false"/>
+		<ant dir="rest-lib" target="javadoc" inheritAll="false"/>
 		<ant dir="slide-webdavclient" target="javadoc" inheritAll="false"/>
 		<ant dir="portal-module" target="javadoc" inheritAll="false"/>
 		<!--<ant dir="liferay" target="javadoc" inheritAll="false"/>

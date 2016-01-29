@@ -11,6 +11,7 @@
 	
 	<property name="jar.file" value="kablink-teaming-main.jar" />
 	<property name="hibernate.dir" value="${basedir}/hibernate" />
+
 	<target name="clean" depends="ss-hib-clean,build-common.clean" />
 
 	<target name="compile" depends="compile-common,build-common.compile" />
@@ -69,5 +70,4 @@
 			</fileset>
 	    </copy>		
 	</target>
-	
 </project>

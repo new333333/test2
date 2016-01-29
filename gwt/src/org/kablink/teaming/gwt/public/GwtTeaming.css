@@ -1312,6 +1312,8 @@ body, table td, select
 .margin-right-22		{margin-right: 22px;}
 .marginRightPoint25em	{margin-right: .25em;}
 
+.paddingleft2 {padding-left: 2em;}
+
 
 /* Style used for the panel that holds the content in the "color picker" dialog. */
 .colorPickerContentPanel
@@ -6077,7 +6079,8 @@ td.datePickerMonth {
 .fileSyncAppDlg_ModeHeader        {}
 .fileSyncAppDlg_ModePanel         {display: block; padding-top: 10px;}
 .fileSyncAppDlg_ModeRadio         {margin-left: 10px;}
-.fileSyncAppDlg_ModeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
+.fileSyncAppDlg_ModeRadio input   {display: inline;} 
+.fileSyncAppDlg_ModeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline;} 
 .fileSyncAppDlg_Radio             {}
 .fileSyncAppDlg_RestoreDefaults   {margin-top: 10px; margin-left: 10px;}
 .fileSyncAppDlg_SectionHeader     {font-size: 13px; font-weight: normal;}
