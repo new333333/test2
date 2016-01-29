@@ -43,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.rpc.shared.GwtBrandingFileInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GwtDesktopBrandingRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GwtMobileBrandingRpcResponseData;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -52,6 +53,7 @@ import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SiteBrandingHelper;
+import org.kablink.teaming.util.SiteBrandingHelper.BrandingFileInfo;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.WebHelper;
 
@@ -69,6 +71,19 @@ public class GwtBrandingHelper {
 	 */
 	private GwtBrandingHelper() {
 		// Nothing to do.
+	}
+
+	/*
+	 * Converts a BrandingFileInfo object to a GwtBrandingFileInfo
+	 * object.
+	 */
+	private static GwtBrandingFileInfo getGwtBFIFromFI(BrandingFileInfo fi) {
+		return (
+			(null == fi) ?
+				null     :
+				new GwtBrandingFileInfo(
+					fi.getFileName(),
+					fi.getFileDateTime()));
 	}
 	
 	/**
@@ -128,8 +143,8 @@ public class GwtBrandingHelper {
 		try {
 			return
 				new GwtDesktopBrandingRpcResponseData(
-					SiteBrandingHelper.getMacDesktopApplicationBranding(),
-					SiteBrandingHelper.getWindowsDesktopApplicationBranding());
+					getGwtBFIFromFI(SiteBrandingHelper.getMacDesktopApplicationBrandingInfo()),
+					getGwtBFIFromFI(SiteBrandingHelper.getWindowsDesktopApplicationBrandingInfo()));
 		}
 		
 		catch (Exception ex) {
@@ -157,9 +172,9 @@ public class GwtBrandingHelper {
 		try {
 			return
 				new GwtMobileBrandingRpcResponseData(
-					SiteBrandingHelper.getAndroidMobileApplicationBranding(),
-					SiteBrandingHelper.getIosMobileApplicationBranding(),
-					SiteBrandingHelper.getWindowsMobileApplicationBranding());
+					getGwtBFIFromFI(SiteBrandingHelper.getAndroidMobileApplicationBrandingInfo()),
+					getGwtBFIFromFI(SiteBrandingHelper.getIosMobileApplicationBrandingInfo()),
+					getGwtBFIFromFI(SiteBrandingHelper.getWindowsMobileApplicationBrandingInfo()));
 		}
 		
 		catch (Exception ex) {

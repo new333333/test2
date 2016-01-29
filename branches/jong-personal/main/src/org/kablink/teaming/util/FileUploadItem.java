@@ -45,6 +45,7 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.module.mail.impl.DefaultEmailPoster.FileHandler;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -103,9 +104,15 @@ public class FileUploadItem {
 	public FileUploadItem(int type, String name, MultipartFile mf, String repositoryName) {
 		this.type = type;
 		this.name = name;
-		this.mf = mf;
+		this.setMultipartFile(mf);
 		this.repositoryName = repositoryName;
 		this.description = new Description();
+	}
+	
+	private void setMultipartFile(MultipartFile mf) {
+		this.mf = mf;
+		// 1/20/2016 JK (bug 960849) - This step is necessary to protect from XSS attack.
+		this.fileName = StringCheckUtil.check(mf.getOriginalFilename());
 	}
 	
 	public boolean getGenerateThumbnail() {
@@ -229,10 +236,7 @@ public class FileUploadItem {
 	 * @return
 	 */
 	public String getOriginalFilename() {
-		if(fileName == null)
-			return mf.getOriginalFilename();
-		else
-			return fileName;
+		return fileName;
 	}
 	
 	public void setOriginalFilename(String fileName) {

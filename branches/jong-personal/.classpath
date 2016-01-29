@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="rest-lib/src"/>
 	<classpathentry kind="src" path="samples/rest-client/src"/>
 	<classpathentry kind="src" path="rest-client/src"/>
 	<classpathentry kind="src" path="indexer-lucene/test/src"/>
 	<classpathentry kind="src" path="ssr/src"/>
 	<classpathentry kind="src" path="rest/src"/>
-	<classpathentry kind="src" path="rest-shared/src"/>
 	<classpathentry kind="src" path="as-shared/src"/>
 	<classpathentry kind="src" path="as-common/src"/>
 	<classpathentry kind="src" path="tomcat/src"/>
@@ -203,5 +203,6 @@
 	<classpathentry kind="lib" path="lib/tika-parsers.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15on.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpmime.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/enunciate-core-annotations.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

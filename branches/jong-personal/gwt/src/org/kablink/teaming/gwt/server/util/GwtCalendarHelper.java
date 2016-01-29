@@ -536,7 +536,7 @@ public class GwtCalendarHelper {
 					// If the entry is not a recurrent event...
 					String attr = (ca.isTask() ? TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME : "event");
 					CustomAttribute customAttribute = entry.getCustomAttribute(attr);
-					Event dbEvent = ((Event) customAttribute.getValue());
+					Event dbEvent = ((null == customAttribute) ? null : ((Event) customAttribute.getValue()));
 					if ((null == dbEvent) || (Event.NO_RECURRENCE == dbEvent.getFrequency())) {
 						// ...make sure we're not tracking any
 						// ...recurrence information for it.

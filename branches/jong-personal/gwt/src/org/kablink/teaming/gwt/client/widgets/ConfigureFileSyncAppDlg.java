@@ -74,6 +74,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -96,6 +97,8 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	private CheckBox			m_allowPwdCacheCB;				//
 	private CheckBox			m_enableDeployCB;				//
 	private CheckBox			m_enableFileSyncAccessCB;		//
+	private FlexCellFormatter	m_appListGridFCF;				//
+	private FlexTable			m_appListGrid;					//
 	private FlexTable			m_autoUpdateChoiceTable;		//
 	private FlexTable			m_autoUpdateUrlOnlyTable;		//
 	private FlowPanel			m_appListPanel;					//
@@ -120,6 +123,9 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	
 	private final static int	DESCRIPTION_INDEX	= 1;
 	private final static int	PROCESS_NAME_INDEX	= 0;
+	
+	private final static int	BLACK_COL	= 1;
+	private final static int	WHITE_COL	= 0;
 	
 	/*
 	 * Class constructor.
@@ -155,34 +161,37 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	/*
 	 * Adds the Whitelist/Blacklist headers above the lists.
 	 */
-	private void addListHeaders(FlexTable ft) {
-		int row = ft.getRowCount();
+	private void addListHeaders() {
+		int row = m_appListGrid.getRowCount();
 		
 		Label l = new Label(m_messages.fileSyncDlg_LabelWhitelist());
 		l.addStyleName("fileSyncAppDlg_ListTableHeader margintop3");
-		ft.setWidget(row, 0, l);
+		m_appListGrid.setWidget(row, WHITE_COL, l);
 		
 		l = new Label(m_messages.fileSyncDlg_LabelBlacklist());
-		l.addStyleName("fileSyncAppDlg_ListTableHeader margintop3 marginleft2");
-		ft.setWidget(row, 1, l);
+		l.addStyleName("fileSyncAppDlg_ListTableHeader margintop3");
+		m_appListGrid.setWidget(      row, BLACK_COL, l             );
+		m_appListGridFCF.addStyleName(row, BLACK_COL, "paddingleft2");
 	}
 	
 	/*
 	 * Adds the Mac list boxes.
 	 */
-	private void addMacLists(FlexTable ft) {
-		int row = ft.getRowCount();
-		ft.setWidget(row, 0, createMacWhiteList());
-		ft.setWidget(row, 1, createMacBlackList());
+	private void addMacLists() {
+		int row = m_appListGrid.getRowCount();
+		m_appListGrid.setWidget(      row, WHITE_COL, createMacWhiteList());
+		m_appListGrid.setWidget(      row, BLACK_COL, createMacBlackList());
+		m_appListGridFCF.addStyleName(row, BLACK_COL, "paddingleft2"      );
 	}
 	
 	/*
 	 * Adds the Windows list boxes.
 	 */
-	private void addWindowsLists(FlexTable ft) {
-		int row = ft.getRowCount();
-		ft.setWidget(row, 0, createWindowsWhiteList());
-		ft.setWidget(row, 1, createWindowsBlackList());
+	private void addWindowsLists() {
+		int row = m_appListGrid.getRowCount();
+		m_appListGrid.setWidget(      row, WHITE_COL, createWindowsWhiteList());
+		m_appListGrid.setWidget(      row, BLACK_COL, createWindowsBlackList());
+		m_appListGridFCF.addStyleName(row, BLACK_COL, "paddingleft2"          );
 	}
 	
 	/*
@@ -211,12 +220,13 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		m_appListPanel.add(createListHint()            );
 		m_appListPanel.add(createRestoreDefaultButton());
 		m_appListPanel.add(createModeWidgets()         );
-		FlexTable ft = new VibeFlexTable();
-		ft.addStyleName("fileSyncAppDlg_ListTable marginleft1");
-		m_appListPanel.add(ft);
-		addListHeaders( ft);
-		addWindowsLists(ft);
-		addMacLists(    ft);
+		m_appListGrid = new VibeFlexTable();
+		m_appListGrid.addStyleName("fileSyncAppDlg_ListTable marginleft1");
+		m_appListPanel.add(m_appListGrid);
+		m_appListGridFCF = m_appListGrid.getFlexCellFormatter();
+		addListHeaders();
+		addWindowsLists();
+		addMacLists();
 		
 		// If this isn't Filr...
 		if (!(m_isFilr)) {
@@ -463,7 +473,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	 */
 	private Widget createMacBlackList() {
 		FlowPanel fp = new FlowPanel();
-		fp.addStyleName("fileSyncAppDlg_MacListPanel marginleft2");
+		fp.addStyleName("fileSyncAppDlg_MacListPanel");
 		
 		// Note that the list will be added to the FlowPanel by
 		// createList().
@@ -577,7 +587,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	 */
 	private Widget createWindowsBlackList() {
 		FlowPanel fp = new FlowPanel();
-		fp.addStyleName("fileSyncAppDlg_WindowsListPanel marginleft2");
+		fp.addStyleName("fileSyncAppDlg_WindowsListPanel");
 		
 		// Note that the list will be added to the FlowPanel by
 		// createList().
@@ -630,8 +640,25 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	 * to reflect the given AppListMode.
 	 */
 	private void danceDialogAppListNow(final GwtAppListMode mode) {
-//!		...this needs to be implemented...
-//!		GwtClientHelper.debugAlert("GwtAppListMode." + mode.name() + ":  ...this needs to be implemented...");
+		boolean showBlack;
+		boolean showWhite;
+		switch (mode) {
+		default:
+		case DISABLED:   showBlack =        showWhite = false; break;
+		case WHITELIST:  showBlack = false; showWhite = true;  break;
+		case BLACKLIST:  showBlack = true;  showWhite = false; break;
+		case BOTH:       showBlack = true;  showWhite = true;  break;
+		}
+	
+		for (int row = 0; row < m_appListGrid.getRowCount(); row += 1) {
+			m_appListGridFCF.setVisible(row, WHITE_COL, showWhite);
+			m_appListGridFCF.setVisible(row, BLACK_COL, showBlack);
+			if (showBlack) {
+				if (showWhite)
+				     m_appListGridFCF.addStyleName(   row, BLACK_COL, "paddingleft2");
+				else m_appListGridFCF.removeStyleName(row, BLACK_COL, "paddingleft2");
+			}
+		}
 	}
 	
 	/**
@@ -949,7 +976,8 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		if (m_isFilr) {
 			// Yes!  Check the appropriate radio button...
 			RadioButton rb;
-			switch (appLists.getAppListMode()) {
+			GwtAppListMode mode = appLists.getAppListMode();
+			switch (mode) {
 			default:
 			case DISABLED:   rb = m_disabledRB;  break;
 			case BLACKLIST:  rb = m_blacklistRB; break;
@@ -958,11 +986,14 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 			}
 			rb.setValue(true, true);
 
-			// ...and populate the platform list boxes.
+			// ...populate the platform list boxes...
 			populateAppList(m_macBlackLB,     appLists.getBlackApplications(GwtAppPlatform.MAC)    );
 			populateAppList(m_macWhiteLB,     appLists.getWhiteApplications(GwtAppPlatform.MAC)    );
 			populateAppList(m_windowsBlackLB, appLists.getBlackApplications(GwtAppPlatform.WINDOWS));
 			populateAppList(m_windowsWhiteLB, appLists.getWhiteApplications(GwtAppPlatform.WINDOWS));
+
+			// ...and dance the dialog as per the selected radio button.
+			danceDialogAppListAsync(mode);
 		}
 		
 		else {

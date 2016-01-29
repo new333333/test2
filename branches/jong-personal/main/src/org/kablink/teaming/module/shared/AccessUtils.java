@@ -696,56 +696,9 @@ public class AccessUtils  {
        		ace2 = ex2;
        	}
       	
-       	//Next, see if entry allows other operations such as CREATOR_READ, CREATOR_MODIFY, CREATOR_DELETE
-       	if (WorkAreaOperation.READ_ENTRIES.equals(operation) && entry.getCreation() != null && 
-       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
-  			try {
-  				if (entry.hasEntryAcl()) {
-  					getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_READ);
-  	       			if (!widen) {
-  	       				//"Widening" is not allowed, so also check for read access to the folder
-  	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
-  	       			}
-  					return;
-  				}
-  			} catch(OperationAccessControlException ex2) {}
-       	} else if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation) && entry.getCreation() != null && 
-       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
-  			try {
-  				if (entry.hasEntryAcl()) {
-  					getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_MODIFY);
-  	       			if (!widen) {
-  	       				//"Widening" is not allowed, so also check for read access to the folder
-  	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
-  	       			}
-  					return;
-  				}
-  			} catch(OperationAccessControlException ex2) {}
-       	} else if (WorkAreaOperation.RENAME_ENTRIES.equals(operation) && entry.getCreation() != null && 
-       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
-  			try {
-  				if (entry.hasEntryAcl()) {
-  					getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_RENAME);
-  	       			if (!widen) {
-  	       				//"Widening" is not allowed, so also check for read access to the folder
-  	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
-  	       			}
-  					return;
-  				}
-  			} catch(OperationAccessControlException ex2) {}
-       	} else if (WorkAreaOperation.DELETE_ENTRIES.equals(operation) && entry.getCreation() != null && 
-       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
-  			try {
-  				if (entry.hasEntryAcl()) {
-  					getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_DELETE);
-  	       			if (!widen) {
-  	       				//"Widening" is not allowed, so also check for read access to the folder
-  	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
-  	       			}
-  					return;
-  				}
-  			} catch(OperationAccessControlException ex2) {}
-       	}
+       	//Next, see if entry allows other operations such as CREATOR_READ, CREATOR_MODIFY, CREATOR_DELETE, CREATOR_RENAME
+       	if(checkCreatorGrantedAccessOnEntry(user, binder, entry, operation, widen))
+       		return;
        	
        	//Make sure this entity has an acl
 		if (entry instanceof FolderEntry && entry.isAclExternallyControlled() && ((FolderEntry)entry).noAclDredged()) {
@@ -780,32 +733,9 @@ public class AccessUtils  {
        			ace = ex5;
        		}
 	       	
-	      //Next, see if binder allows other operations such as CREATOR_MODIFY
-	       	if (WorkAreaOperation.READ_ENTRIES.equals(operation) && entry.getCreation() != null && 
-	       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
-      			try {
-      				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_READ);
-	      			return;
-     			} catch (AccessControlException ex3) {}
-	      	} else if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation) && entry.getCreation() != null && 
-	      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
-      			try {
-      				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
-	      			return;
-      			} catch (AccessControlException ex3) {}
-	      	} else if (WorkAreaOperation.RENAME_ENTRIES.equals(operation) && entry.getCreation() != null && 
-	      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
-      			try {
-      				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_RENAME);
-	      			return;
-      			} catch (AccessControlException ex3) {}
-	      	} else if (WorkAreaOperation.DELETE_ENTRIES.equals(operation) && entry.getCreation() != null && 
-	      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
-      			try {
-      				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_DELETE);
-	      			return;
-      			} catch (AccessControlException ex3) {}
-	      	}
+	       	//Next, see if binder allows other operations such as CREATOR_MODIFY
+	       	if(checkCreatorGrantedAccessOnBinder(user, binder, entry, operation))
+	       		return;
        	}
        	
 		// Bugzilla 939041:  Although the fix for this bug involved
@@ -841,6 +771,88 @@ public class AccessUtils  {
        	}
 	}
     
+    private static boolean checkCreatorGrantedAccessOnEntry(User user, Binder binder, Entry entry, WorkAreaOperation operation, boolean widen) {
+       	if (WorkAreaOperation.READ_ENTRIES.equals(operation) && entry.getCreation() != null && 
+       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
+  			try {
+  				if (entry.hasEntryAcl()) {
+  					getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_READ);
+  	       			if (!widen) {
+  	       				//"Widening" is not allowed, so also check for read access to the folder
+  	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
+  	       			}
+  					return true;
+  				}
+  			} catch(OperationAccessControlException ex2) {}
+       	} else if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation) && entry.getCreation() != null && 
+       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
+  			try {
+  				if (entry.hasEntryAcl()) {
+  					getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_MODIFY);
+  	       			if (!widen) {
+  	       				//"Widening" is not allowed, so also check for read access to the folder
+  	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
+  	       			}
+  					return true;
+  				}
+  			} catch(OperationAccessControlException ex2) {}
+       	} else if (WorkAreaOperation.RENAME_ENTRIES.equals(operation) && entry.getCreation() != null && 
+       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
+  			try {
+  				if (entry.hasEntryAcl()) {
+  					getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_RENAME);
+  	       			if (!widen) {
+  	       				//"Widening" is not allowed, so also check for read access to the folder
+  	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
+  	       			}
+  					return true;
+  				}
+  			} catch(OperationAccessControlException ex2) {}
+       	} else if (WorkAreaOperation.DELETE_ENTRIES.equals(operation) && entry.getCreation() != null && 
+       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
+  			try {
+  				if (entry.hasEntryAcl()) {
+  					getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_DELETE);
+  	       			if (!widen) {
+  	       				//"Widening" is not allowed, so also check for read access to the folder
+  	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
+  	       			}
+  					return true;
+  				}
+  			} catch(OperationAccessControlException ex2) {}
+       	}
+       	return false;
+    }
+    
+    private static boolean checkCreatorGrantedAccessOnBinder(User user, Binder binder, Entry entry, WorkAreaOperation operation) {
+       	if (WorkAreaOperation.READ_ENTRIES.equals(operation) && entry.getCreation() != null && 
+       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
+  			try {
+  				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_READ);
+      			return true;
+ 			} catch (AccessControlException ex3) {}
+      	} else if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation) && entry.getCreation() != null && 
+      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
+  			try {
+  				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
+      			return true;
+  			} catch (AccessControlException ex3) {}
+      	} else if (WorkAreaOperation.RENAME_ENTRIES.equals(operation) && entry.getCreation() != null && 
+      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
+  			try {
+  				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_RENAME);
+      			return true;
+  			} catch (AccessControlException ex3) {}
+      	} else if (WorkAreaOperation.DELETE_ENTRIES.equals(operation) && entry.getCreation() != null && 
+      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
+  			try {
+  				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_DELETE);
+      			return true;
+  			} catch (AccessControlException ex3) {}
+      	}
+       	return false;
+    }
+    
 	private static void operationCheck(User user, Binder binder, WorkflowSupport entry, WorkAreaOperation operation) {
 		WfAcl.AccessType accessType = null;
 		if (WorkAreaOperation.READ_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.read;
@@ -863,8 +875,14 @@ public class AccessUtils  {
  				if (entry.isWorkAreaAccess(accessType)) { 		
  					//The workflow ACL did not allow this operation but the acl specifies "forum default", 
  					//  so now see if the binder affords this operation
+ 					if(checkCreatorGrantedAccessOnBinder(user, binder, (Entry)entry, operation))
+ 						return;
  					getInstance().accessControlManager.checkOperation(user, binder, operation);
- 				} else throw ex;
+ 					return;
+ 				}
+ 				else {
+ 					throw ex;
+ 				}
  			}
  			
  		} else {
@@ -872,6 +890,8 @@ public class AccessUtils  {
  			if (entry.isWorkAreaAccess(accessType)) {
  				//The workflow specifies "forum default" for this access. 
  				// So, just do the regular binder level check. If that fails check the workflow acl.
+				if(checkCreatorGrantedAccessOnBinder(user, binder, (Entry)entry, operation))
+ 					return;
  				try {
  					getInstance().accessControlManager.checkOperation(user, binder, operation);
 					return;

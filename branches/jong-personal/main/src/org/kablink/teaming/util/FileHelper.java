@@ -269,9 +269,13 @@ public class FileHelper {
 	 * 
 	 * @throws UnsupportedEncodingException
 	 */
-	public static String getHttpContentDispositionForFilename(HttpServletRequest request, String defaultFileName, String actualFileName) throws UnsupportedEncodingException {
-		String reply = ("attachment; filename=\"" + defaultFileName + "\"; filename*=" + utf8EncodeFileNameForHttpContentDisposition(request, actualFileName));
+	public static String getHttpContentDispositionForFilename(HttpServletRequest request, String defaultFileName, String actualFileName, String attachment) throws UnsupportedEncodingException {
+		String reply = (attachment + "filename=\"" + defaultFileName + "\"; filename*=" + utf8EncodeFileNameForHttpContentDisposition(request, actualFileName));
 		return reply;
+	}
+	
+	public static String getHttpContentDispositionForFilename(HttpServletRequest request, String defaultFileName, String actualFileName) throws UnsupportedEncodingException {
+		return getHttpContentDispositionForFilename(request, defaultFileName, actualFileName, "attachment; ");
 	}
 	
 	private static String utf8EncodeFileNameForHttpContentDisposition(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {

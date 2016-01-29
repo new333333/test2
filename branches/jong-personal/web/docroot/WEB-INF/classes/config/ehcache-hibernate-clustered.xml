@@ -41,7 +41,7 @@
                                 
 	<cacheManagerPeerListenerFactory
 	    class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
-	    properties="hostName=198.76.54.32"
+	    properties="hostName=198.76.54.32, port=40001"
 	/>
 	
 	-->

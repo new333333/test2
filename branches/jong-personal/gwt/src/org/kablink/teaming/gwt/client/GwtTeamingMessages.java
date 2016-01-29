@@ -3867,8 +3867,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editDesktopBrandingDlg_Comfirm_MacRemove(       String fName);
 	String editDesktopBrandingDlg_Comfirm_WindowsOverwrite(String fName);
 	String editDesktopBrandingDlg_Comfirm_WindowsRemove(   String fName);
-	String editDesktopBrandingDlg_Hint_MacOverwrite(       String fName);
-	String editDesktopBrandingDlg_Hint_WindowsOverwrite(   String fName);
+	String editDesktopBrandingDlg_Hint_Overwrite(String fName, String dateTime);
 	String editDesktopBrandingDlg_MacCaption();
 	String editDesktopBrandingDlg_WindowsCaption();
 	String editDesktopBrandingDlg_Error_NoMacFile();
@@ -3888,10 +3887,8 @@ public interface GwtTeamingMessages extends Messages {
 	String editMobileBrandingDlg_Comfirm_IosRemove(       String fName);
 	String editMobileBrandingDlg_Comfirm_WindowsOverwrite(String fName);
 	String editMobileBrandingDlg_Comfirm_WindowsRemove(   String fName);
-	String editMobileBrandingDlg_Hint_AndroidOverwrite(   String fName);
-	String editMobileBrandingDlg_Hint_IosOverwrite(       String fName);
-	String editMobileBrandingDlg_Hint_WindowsOverwrite(   String fName);
 	String editMobileBrandingDlg_AndroidCaption();
+	String editMobileBrandingDlg_Hint_Overwrite(String fName, String dateTime);
 	String editMobileBrandingDlg_IosCaption();
 	String editMobileBrandingDlg_WindowsCaption();
 	String editMobileBrandingDlg_Error_NoAndroidFile();
