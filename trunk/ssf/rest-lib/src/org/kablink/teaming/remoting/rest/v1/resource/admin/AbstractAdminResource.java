@@ -32,9 +32,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * User: David
- * Date: 11/20/13
- * Time: 8:59 PM
+ * Base class for Admin Resources
  */
 public class AbstractAdminResource extends AbstractResource {
     protected NetFolder _createNetFolder(NetFolder netFolder, ResourceDriverConfig resourceDriverConfig) throws WriteFilesException, WriteEntryDataException {

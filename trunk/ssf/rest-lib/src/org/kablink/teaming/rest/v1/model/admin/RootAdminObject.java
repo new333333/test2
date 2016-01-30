@@ -15,7 +15,7 @@
  *
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
  * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
@@ -30,48 +30,19 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.v1.model;
+package org.kablink.teaming.rest.v1.model.admin;
 
-import javax.xml.bind.annotation.XmlElement;
+import org.kablink.teaming.rest.v1.model.BaseRestObject;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Reference to the recipient of a shared item.
+ * Root object of the REST Admin API.  Contains related links to top level resources in the REST API.
  *
- * <p>
- * Type can be one of <code>user</code>, <code>group</code>. <code>external_user</code>, <code>public</code>. <code>public_link</code>.
- * If type is <code>public</code> or <code>public_link</code>, ID and hrek are not applicable.
- * </p>
- *
- */
-@XmlRootElement(name = "share_recipient")
-public class ShareRecipient extends Recipient {
-    public static String GROUP = "group";
-    public static String TEAM = "team";
-    public static String INTERNAL_USER = "user";
-    public static String EXTERNAL_USER = "external_user";
-    public static String PUBLIC = "public";
-    public static String PUBLIC_LINK = "public_link";
+ * <p>Related link names include: desktop_application, net_folder_servers, net_folders, personal_storage, public_shares,
+ * shares, share_settings, user_sources, user_source_sync, user_source_sync_config, web_application.</p>
+ **/
+@XmlRootElement (name = "rest_api_root")
+public class RootAdminObject extends BaseRestObject {
 
-    private String emailAddress;
-
-    public ShareRecipient() {
-    }
-
-    public ShareRecipient(Long id, String type, String email) {
-        super(id, type);
-        this.emailAddress = email;
-    }
-
-    /**
-     * The email address of the recipient.  Only applies when <code>type</code> is <code>external_user</code>.
-     */
-    @XmlElement(name="email")
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
 }

@@ -66,7 +66,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
- * Resources for managing net folder servers
+ * Resources for managing Net Folder Servers
  */
 @Path("/admin/net_folder_servers")
 @Singleton
@@ -77,8 +77,8 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
 
     /**
      * Gets a list of Net Folder Servers.
-     * @param fullDetails   If true, the Net Folder Server's synchronization schedule is included in the response.
-     * @return The list of Net Folder Servers.
+     * @param fullDetails   If true, the Net Folder Server's sync_schedule is included in the response.  Otherwise, it is not included.
+     * @return A SearchResultList of NetFolderServer objects.
      */
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -100,11 +100,10 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
      *     <li>driver_type</li>
      *     <li>server_path</li>
      *     <li>auth_type</li>
-     *     <li>proxy_dn</li>
-     *     <li>proxy_password</li>
+     *     <li>proxy_use_identity</li>
+     *     <li>proxy_dn/proxy_password or proxy_identity</li>
+     *     <li></li>
      * </ul>
-     * Proxy Identities (proxy DNs and passwords shared between multiple Net Folder Servers) are not yet supported through
-     * the REST interface.
      * </p>
      * @return The full Net Folder Server object
      * @see NetFolderServer
@@ -153,7 +152,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
      * </p>
      * @param id
      * @param newServer
-     * @return
+     * @return The updated Net Folder Server.
      */
     @PUT
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -191,7 +190,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
      * The Net Folder Server cannot be deleted if it is hosting one or more Net Folders.  You must delete all of the Net Folders
      * associated with the Net Folder Server prior to deleting the Net Folder Server.
      * </p>
-     * @param id  The ID of the Net Folder Server
+     * @param id  The ID of the Net Folder Server.
      */
     @DELETE
     @Path("{id}")
@@ -223,7 +222,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
      *                    These require additional database lookups so are not returned by default.
      * @param type      (optional) Accepted values are "net" and "home".  If "home", only Home Directories will be returned.  If "net",
      *                  Home Directories will be excluded.
-     * @return  A list of Net Folders
+     * @return  A SaerchResultList of NetFolder objects.
      */
     @GET
     @Path("{id}/net_folders")

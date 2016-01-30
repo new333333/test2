@@ -32,12 +32,12 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import com.webcohesion.enunciate.metadata.DocumentationExample;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 5/30/12
- * Time: 4:29 PM
+ * An ID, type and HRef which references another resource object.
  */
 @XmlRootElement
 public class EntityId extends LongIdLinkPair {
@@ -51,6 +51,9 @@ public class EntityId extends LongIdLinkPair {
         this.type = type;
     }
 
+    /**
+     * The type of object.  Types include <code>folder</code>, <code>folderEntry</code>, <code>user</code> and <code>group</code>.
+     */
     public String getType() {
         return type;
     }

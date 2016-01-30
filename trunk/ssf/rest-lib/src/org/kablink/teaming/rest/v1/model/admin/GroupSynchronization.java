@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Data type representing the LDAP group synchronization settings.
+ * The LDAP group synchronization settings.
  */
 @XmlRootElement(name="group_synchronization")
 public class GroupSynchronization {

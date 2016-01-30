@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Data type that configures how home directory net folders are created for users that are imported from LDAP.
+ * Configuration defining how home directory net folders are created for users that are imported from LDAP.
  */
 @XmlRootElement(name="home_dir_config")
 public class LdapHomeDirConfig {

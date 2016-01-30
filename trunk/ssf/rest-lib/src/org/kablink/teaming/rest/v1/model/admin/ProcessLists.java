@@ -14,6 +14,7 @@
  */
 package org.kablink.teaming.rest.v1.model.admin;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.BaseRestObject;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -21,11 +22,7 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-/**
- * User: David
- * Date: 11/20/13
- * Time: 9:40 PM
- */
+@Undocumented
 @XmlRootElement(name="desktop_process_lists")
 public class ProcessLists extends BaseRestObject {
     private List<ProcessInfo> allowedProcesses;

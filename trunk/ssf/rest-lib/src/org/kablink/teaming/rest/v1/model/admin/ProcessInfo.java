@@ -14,17 +14,11 @@
  */
 package org.kablink.teaming.rest.v1.model.admin;
 
-import org.kablink.teaming.rest.v1.model.Access;
-import org.kablink.teaming.rest.v1.model.Recipient;
-import org.kablink.teaming.rest.v1.model.ShareRecipient;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * User: David
- * Date: 11/20/13
- * Time: 9:40 PM
- */
+@Undocumented
 @XmlRootElement(name="process")
 public class ProcessInfo {
     private String name;
