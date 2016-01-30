@@ -23,9 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * User: David
- * Date: 11/20/13
- * Time: 9:40 PM
+ * Global Share Settings.
  */
 @XmlRootElement(name="share_settings")
 public class ShareSettings extends BaseRestObject {
@@ -36,6 +34,9 @@ public class ShareSettings extends BaseRestObject {
     public ShareSettings() {
     }
 
+    /**
+     * Whether or not users can share with LDAP groups.
+     */
     @XmlElement(name="allow_sharing_with_ldap_groups")
     public Boolean getAllowShareWithLdapGroups() {
         return allowShareWithLdapGroups;
@@ -45,6 +46,9 @@ public class ShareSettings extends BaseRestObject {
         this.allowShareWithLdapGroups = allowShareWithLdapGroups;
     }
 
+    /**
+     * List of users and groups who have been assigned permissions to share.
+     */
     @XmlElementWrapper(name="sharing_permissions")
     @XmlElement(name="permission")
     public List<AssignedSharingPermission> getSharingPermissions() {
@@ -55,6 +59,9 @@ public class ShareSettings extends BaseRestObject {
         this.sharingPermissions = sharingPermissions;
     }
 
+    /**
+     * Restricts sharing with external users by email address or email domain.
+     */
     @XmlElement(name="external_restrictions")
     public ExternalSharingRestrictions getExternalRestrictions() {
         return externalRestrictions;

@@ -36,9 +36,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 5/23/12
- * Time: 4:45 PM
+ * An ID and HRef which references another resource object.
  */
 @XmlRootElement
 public class LongIdLinkPair {
@@ -53,6 +51,9 @@ public class LongIdLinkPair {
         this.link = link;
     }
 
+    /**
+     * The ID of the resource.
+     */
     public Long getId() {
         return id;
     }
@@ -61,6 +62,9 @@ public class LongIdLinkPair {
         this.id = id;
     }
 
+    /**
+     * The path to the resource.  This is relative to the root of the REST API (https://serveraddress/rest).
+     */
     @XmlElement(name="href")
     public String getLink() {
         return link;

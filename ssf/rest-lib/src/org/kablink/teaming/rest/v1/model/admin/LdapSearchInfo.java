@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Data type defining a LDAP container to search for users or groups.
+ * An LDAP container to search for users or groups.
  */
 @XmlRootElement(name="search_info")
 public class LdapSearchInfo {

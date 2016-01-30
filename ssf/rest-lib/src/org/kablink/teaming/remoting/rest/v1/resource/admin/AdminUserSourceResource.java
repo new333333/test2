@@ -35,6 +35,8 @@ package org.kablink.teaming.remoting.rest.v1.resource.admin;
 import com.sun.jersey.spi.resource.Singleton;
 import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import com.webcohesion.enunciate.metadata.rs.ResourceLabel;
+import com.webcohesion.enunciate.metadata.rs.ResponseCode;
+import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import org.dom4j.Element;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
@@ -74,6 +76,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+/**
+ * Resources for managing LDAP User Sources.
+ */
 @Path("/admin/user_sources")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -81,6 +86,10 @@ import java.util.TimeZone;
 @ResourceLabel("LDAP User Source Resource")
 public class AdminUserSourceResource extends AbstractAdminResource {
 
+    /**
+     * Retrieves all of the configured LDAP User Sources.
+     * @return A SearchResultList of LdapUserSource objects.
+     */
     @GET
    	public SearchResultList<LdapUserSource> getUserSources() {
         List<LdapConnectionConfig> configList = getAuthenticationModule().getLdapConnectionConfigs();
@@ -91,6 +100,22 @@ public class AdminUserSourceResource extends AbstractAdminResource {
         return results;
    	}
 
+    /**
+     * Creates a new LDAP User Source.
+     * <p>
+     * The following LDAP User Source fields are mandatory:
+     * <ul>
+     *     <li>url</li>
+     *     <li>username_attribute</li>
+     *     <li>guid_attribute</li>
+     *     <li>username</li>
+     *     <li>password</li>
+     *     <li>user_contexts</li>
+     * </ul>
+     * </p>
+     * @param userSource
+     * @return  The new Ldap User Source object.
+     */
     @POST
    	@Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	public LdapUserSource createUserSource(LdapUserSource userSource) {
@@ -99,6 +124,12 @@ public class AdminUserSourceResource extends AbstractAdminResource {
         return AdminResourceUtil.buildUserSource(config, getResourceDriverModule());
    	}
 
+    /**
+     * Triggers a sync of all LDAP User Sources.
+     *
+     * <p>The request blocks until the sync has completed.</p>
+     * @return The LDAP sync results.
+     */
     @POST
     @Path("sync")
     @Consumes({"*/*"})
@@ -108,6 +139,10 @@ public class AdminUserSourceResource extends AbstractAdminResource {
         return AdminResourceUtil.buildLdapSyncResults(results);
    	}
 
+    /**
+     * Retrieves the current User Source Synchronization settings.
+     * @return The UserSourceSynchronization object.
+     */
     @GET
     @Path("sync_config")
     public UserSourceSynchronization getUserSourceSynchronization() {
@@ -137,6 +172,11 @@ public class AdminUserSourceResource extends AbstractAdminResource {
         return sync;
     }
 
+    /**
+     * Updates the User Source Synchronization settings.  Only the fields that are included in the request body are updated.
+     * @param sync
+     * @return  The updated UserSourceSynchronization settings.
+     */
     @PUT
     @Path("sync_config")
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -202,15 +242,31 @@ public class AdminUserSourceResource extends AbstractAdminResource {
         return getUserSourceSynchronization();
     }
 
+    /**
+     * Retrieves an LDAP User Source.
+     * @param id
+     * @return
+     */
     @GET
     @Path("{id}")
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(LDAP_CONFIG_NOT_FOUND) No LDAP User Source exists with the specified ID.")
+    })
     public LdapUserSource getUserSource(@PathParam("id") String id) {
         LdapConnectionConfig config = getAuthenticationModule().getLdapConnectionConfig(id);
         return AdminResourceUtil.buildUserSource(config, getResourceDriverModule());
     }
 
+    /**
+     * Deletes an LDAP User Source.
+     * @param id
+     */
     @DELETE
     @Path("{id}")
+    @StatusCodes({
+            @ResponseCode(code=204, condition="The LDAP User Source is deleted successfully"),
+            @ResponseCode(code=404, condition="(LDAP_CONFIG_NOT_FOUND) No LDAP User Source exists with the specified ID.")
+    })
     public void deleteUserSource(@PathParam("id") String id) {
         List<LdapConnectionConfig> configs = getAuthenticationModule().getLdapConnectionConfigs();
         boolean found = false;

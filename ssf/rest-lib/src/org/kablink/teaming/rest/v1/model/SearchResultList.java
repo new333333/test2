@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import com.webcohesion.enunciate.metadata.DocumentationExample;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -41,9 +43,7 @@ import java.net.URLEncoder;
 import java.util.*;
 
 /**
- * User: david
- * Date: 5/18/12
- * Time: 12:45 PM
+ * A list of paged results.
  */
 @XmlRootElement (name = "results")
 public class SearchResultList<T> {
@@ -82,6 +82,10 @@ public class SearchResultList<T> {
         }
     }
 
+    /**
+     * The 0-based index of the first result included in the list.
+     */
+    @DocumentationExample("0")
     public Integer getFirst() {
         return first;
     }
@@ -90,6 +94,9 @@ public class SearchResultList<T> {
         this.first = first;
     }
 
+    /**
+     * The number of results returned.
+     */
     public Integer getCount() {
         return count;
     }
@@ -98,6 +105,9 @@ public class SearchResultList<T> {
         this.count = count;
     }
 
+    /**
+     * The total number of matching results.
+     */
     public Integer getTotal() {
         return total;
     }
@@ -106,6 +116,9 @@ public class SearchResultList<T> {
         this.total = total;
     }
 
+    /**
+     * Path that can be used to retrieve the next page of results.
+     */
     public String getNext() {
         return next;
     }
@@ -165,6 +178,9 @@ public class SearchResultList<T> {
         }
     }
 
+    /**
+     * The list of results.
+     */
     @XmlElementWrapper(name = "items")
     @XmlElement(name = "item")
     public List<T> getResults() {

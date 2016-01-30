@@ -18,9 +18,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: David
- * Date: 11/20/13
- * Time: 9:40 PM
+ * A schedule.
  */
 @XmlRootElement(name="schedule")
 public class Schedule {
@@ -35,6 +33,9 @@ public class Schedule {
     private Time at;
     private Time every;
 
+    /**
+     * Indicates whether or not this schedule is enabled.
+     */
     public Boolean getEnabled() {
         return enabled==null ? Boolean.TRUE : enabled;
     }
@@ -43,6 +44,9 @@ public class Schedule {
         this.enabled = enabled;
     }
 
+    /**
+     * Can be "daily" or "selected_days".  If "selected_days", the "selected_days" field should also be set.
+     */
     @XmlElement(name="when")
     public String getDayFrequency() {
         return dayFrequency;
@@ -52,6 +56,9 @@ public class Schedule {
         this.dayFrequency = dayFrequency;
     }
 
+    /**
+     * If "when" is "selected_days", this defines on which days the schedule is active.
+     */
     @XmlElement(name="selected_days")
     public SelectedDays getSelectedDays() {
         return selectedDays;
@@ -61,6 +68,9 @@ public class Schedule {
         this.selectedDays = selectedDays;
     }
 
+    /**
+     * For once-a-day schedules, this is the time (GMT) at which the schedule should activate.
+     */
     public Time getAt() {
         return at;
     }
@@ -69,6 +79,11 @@ public class Schedule {
         this.at = at;
     }
 
+    /**
+     * For repeating schedules, this is the interval with which the schedule activates.
+     *
+     * <p>Valid time values are 0:15, 0:30, 0:45, 1:00, 2:00, 3:00, 4:00, 6:00, 8:00 and 12:00</p>
+     */
     public Time getEvery() {
         return every;
     }

@@ -69,11 +69,11 @@ import java.util.List;
 public class AdminShareResource extends AbstractAdminResource {
 
     /**
-     * Lists shares in the system.
+     * Lists Shares in the system.
      * @param sharedById    Return only the items that were shared by the user with the specified ID
      * @param sharedWithId  Return only the items that were shared with the user or group with the specified ID
      * @param includeExpired    Controls whether or not expired shares are returned in the results.
-     * @return Returns all of the specified shares
+     * @return A SearchResultList of Share objects.
      */
     @GET
     public SearchResultList<Share> getShares(@QueryParam("shared_by") Long sharedById,
@@ -100,7 +100,7 @@ public class AdminShareResource extends AbstractAdminResource {
 
     /**
      * Lists all of the public shares in the system
-     * @return Returns all public shares
+     * @return A SearchResultList of Share objects.
      */
     @GET
     @Path("/public")
@@ -119,7 +119,7 @@ public class AdminShareResource extends AbstractAdminResource {
     /**
      * Gets a share by ID.
      * @param id    The ID of the share to get
-     * @return  The share with the given ID
+     * @return  The Share with the given ID
      */
     @StatusCodes({
             @ResponseCode(code=404, condition="(SHAREITEM_NOT_FOUND) No share exists with the specified ID.")
@@ -136,7 +136,7 @@ public class AdminShareResource extends AbstractAdminResource {
     }
 
     /**
-     * Deletes a share
+     * Deletes a Share
      * @param id    The ID of the share to delete
      */
     @StatusCodes({
