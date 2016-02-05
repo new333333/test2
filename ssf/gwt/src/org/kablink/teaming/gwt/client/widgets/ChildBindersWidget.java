@@ -473,7 +473,10 @@ public class ChildBindersWidget extends ToolPanelBase
 					Image img;
 					
 					// Yes
-					img = getFolderImageForHeader( binderInfo.getFolderType() );
+					img = GwtClientHelper.buildImage(childBinder, BinderIconSize.LARGE, null);
+					if (img==null) {
+						img = getFolderImageForHeader( binderInfo.getFolderType() );
+					}
 					img.getElement().setAttribute( "align", "absmiddle" ); 
 					binderPanel = new BinderPanel( binderInfo, childBinder.getBinderPermalink(), img, false );
 					
