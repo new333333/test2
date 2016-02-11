@@ -330,7 +330,7 @@ public class DatabaseConfigPage implements IWizardPage<InstallerConfig>
 
 	private String getHostPort(String url)
 	{
-		// url example jdbc:jtds:sqlserver://localhost/filr;SelectMethod=cursor
+		// url example jdbc:jtds:sqlserver://localhost/filr;useCursors=true
 		// Note SQL server does not have a port
 		String pattern = "//";
 		if (url != null)
