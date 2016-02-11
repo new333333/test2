@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_OpenIDProviders" name="org.kablink.teaming.domain.OpenIDProvider">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <property name="zoneId" access="field" not-null="true"/>
+	<property name="name" length="64" not-null="true"/>
+	<property name="title" length="128" not-null="true"/>
+	<property name="url" length="256" not-null="true"/>
+	<property name="regex" length="256" not-null="true"/>
+	<property name="emailRegex" length="128"/>
+	<properties name="providerNameKey" unique="true" update="false" insert="false">
+		<property name="zoneId" access="field" update="false" insert="false"/>
+		<property name="name" update="false" insert="false"/>
+	</properties>
+  </class>
+</hibernate-mapping>

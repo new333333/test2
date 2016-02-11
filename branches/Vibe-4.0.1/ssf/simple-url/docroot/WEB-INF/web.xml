@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+	<context-param>
+		<param-name>landingPagePath</param-name>
+		<param-value>/ssf/a/</param-value>
+	</context-param>
+	<servlet>
+		<servlet-name>SimpleURLServlet</servlet-name>
+		<servlet-class>org.kablink.teaming.simpleurl.servlet.SimpleURLServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SimpleURLServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+</web-app>

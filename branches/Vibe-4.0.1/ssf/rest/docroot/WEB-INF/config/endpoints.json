@@ -1,0 +1,26 @@
+[{
+    "priority":"FILE",
+    "patterns":[{
+        "url":"^/files/[a-zA-Z0-9]*$",
+        "methods":["GET","POST"]
+    },{
+        "url":".*/attachments$",
+        "methods":["POST"]
+    },{
+        "url":".*/library_files$",
+        "methods":["POST"]
+    },{
+        "url":"^/v1/file/[a-zA-Z0-9]*$",
+        "methods":["GET","POST"]
+    }]
+},{
+    "priority":"EXPENSIVE",
+    "patterns":[{
+        "url":"^/shares/.*$"
+    }]
+},{
+    "priority":"INEXPENSIVE",
+    "patterns":[{
+        "url":"^.*$"
+    }]
+}]

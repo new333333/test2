@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<project name="InstallConfig" basedir="." default="war">
+	<import file="../build-common.xml"   />
+
+	<!-- Define the basics of what we're building. -->
+	<property name="build.gwt.module" value="InstallConfig"              />
+
+	
+	<!-- Define what we're building for GwtTeaming. -->
+	<target name="init-gwt-build" depends="init-gwt-builds, init-gwt-production, init-gwt-development">
+		<property name="gwt.module" value="org.kabling.teaming.install.InstallConfig" />
+		<property name="gwt.war"    value="-war www"                            />
+	</target>
+	<target name="init-gwt-builds">
+		<condition property="development.build">
+			<equals arg1="${build.gwt.mode}" arg2="development" />
+		</condition>
+		<condition property="production.build">
+			<not>
+				<isset property="development.build"/>
+			</not>
+		</condition>
+	</target>
+	<target name="init-gwt-production" if="production.build">
+		<echo message="Compiling ${build.gwt.module} for production."/>
+		<property name="gwt.base"            value="${build.gwt.module}_prod" />
+		<property name="gwt.localWorkers"    value="-localWorkers 4"          />
+		<property name="gwt.logLevel"        value="-logLevel INFO"           />
+		<property name="gwt.style"           value="-style OBF"               />
+		<property name="gwt.additionalArgs1" value=""                         />
+	</target>
+	<target name="init-gwt-development" if="development.build">
+		<echo message="Compiling ${build.gwt.module} for development."/>
+		<property name="gwt.base"            value="${build.gwt.module}_dev" />
+		<property name="gwt.localWorkers"    value="-localWorkers 2"         />
+		<property name="gwt.logLevel"        value="-logLevel INFO"          />
+		<property name="gwt.style"           value="-style DETAILED"         />
+		<property name="gwt.additionalArgs1" value="-draftCompile -ea"       />
+	</target>
+
+	<!-- Are we supposed to generate a compilation report? -->
+	<condition property="gwt.additionalArgs2" value="-compileReport" else="">
+		<istrue value="${build.gwt.compileReport}" />
+	</condition>
+	
+	<!-- Define the platform that we're building on. -->
+	<condition property="build.mac"      value="true" else="false">                                     <os family="mac"     />      </condition>
+	<condition property="build.linux"    value="true" else="false"><and><isfalse value="${build.mac}" /><os family="unix"    /></and></condition>
+	<condition property="build.windows"  value="true" else="false">                                     <os family="windows" />      </condition>
+
+	
+	<!-- Define the GWT development jar. -->
+	<condition property="gwt.dev.jar" value="gwt-dev.jar"><istrue value="${build.linux}"   /></condition>
+	<condition property="gwt.dev.jar" value="gwt-dev.jar"><istrue value="${build.mac}"     /></condition>
+	<condition property="gwt.dev.jar" value="gwt-dev.jar"><istrue value="${build.windows}" /></condition>
+
+	
+	<!-- Define the tool directories. -->
+	<property name="gwt.dir" location="lib" />
+	<property name="lib.dir" location="../lib"       />
+
+	
+	<!-- Set the desired classpath. -->
+	<fileset id="gwtjars" dir="${gwt.dir}">
+		<include name="gwt-user.jar"                        />
+		<include name="gwt-dnd.jar"                         />
+		<include name="${gwt.dev.jar}"                      />
+		<include name="validation-api-1.0.0.GA.jar"         />
+		<include name="validation-api-1.0.0.GA-sources.jar" />
+	</fileset>
+	<fileset id="libjars" dir="${lib.dir}">
+		<include name="xml-apis.jar"                        />
+		<include name="xercesImpl.jar"         				/>
+		<include name="log4j.jar" 							/>
+	</fileset>
+	<pathconvert property="gwtjars" refid="gwtjars" />
+	<pathconvert property="libjars" refid="libjars" />
+	<path id="classpath">
+		<pathelement location="${src.dir}"  />
+		<pathelement path="${gwtjars}"      />
+		<pathelement path="${libjars}"      />
+	</path>
+
+	<target name="javac" depends="init-gwt-build" description="Compile java source to bytecode">
+		    <mkdir dir="www/WEB-INF/classes"/>
+		    <javac srcdir="src" includes="**" encoding="utf-8"
+		        destdir="www/WEB-INF/classes"
+		        source="1.5" target="1.5" nowarn="true"
+		    	classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}:${gwt.dir}/validation-api-1.0.0.GA.jar:${gwt.dir}/validation-api-1.0.0.GA-sources.jar:${lib.dir}/log4j.jar:${lib.dir}/xml-apis.jar:${lib.dir}/jna-3.4.0.jar:${lib.dir}/libpam4j-1.6.jar:${lib.dir}/joda-time.jar:${lib.dir}/commons-fileupload.jar;${lib.dir}/commons-io.jar;${lib.dir}/mail.jar"
+		        debug="true" debuglevel="lines,vars,source">
+		    </javac>
+		    <copy todir="www/WEB-INF/classes">
+		      <fileset dir="src" excludes="**/*.java"/>
+		    </copy>
+		  </target>
+	
+	<target name="compile-gwt" depends="javac">
+		<!-- Compile the GWT stuff into www. -->
+		<java
+				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}:${gwt.dir}/validation-api-1.0.0.GA.jar:${gwt.dir}/validation-api-1.0.0.GA-sources.jar:${lib.dir}/log4j.jar:${lib.dir}/xml-apis.jar:${lib.dir}/jna-3.4.0.jar:${lib.dir}/libpam4j-1.6.jar::${lib.dir}/joda-time.jar:${lib.dir}/commons-fileupload.jar;${lib.dir}/commons-io.jar;${lib.dir}/mail.jar"
+				failonerror="true"
+				classname="com.google.gwt.dev.Compiler"
+				fork="true">
+			<!-- GWT Compiler JVM arguments. -->
+			<jvmarg value="-Xms1512m"                />
+			<jvmarg value="-Xmx1512m"                />
+			<jvmarg value="-Xss16m"                  />
+			<jvmarg value="-Xverify:none"            />
+			<jvmarg value="-XX:PermSize=256m"        />
+			<jvmarg value="-XX:MaxPermSize=512m"     />
+			<jvmarg value="-Djava.awt.headless=true" />
+			<!-- GWT Compiler arguments. -->
+			<arg line="${gwt.war} ${gwt.style} ${gwt.logLevel} ${gwt.localWorkers} ${gwt.additionalArgs1} ${gwt.additionalArgs2} ${gwt.module}" />
+		</java>
+	</target>
+
+	<target name="war" depends="compile-gwt" description="Create a war file">
+		 <copy todir="www/WEB-INF/lib">
+		 	<fileset dir="${lib.dir}">
+		 		<include name="xml-apis.jar"/>
+		 		<include name="xercesImpl.jar"/>
+		 		<include name="log4j.jar"/>
+		 		<include name="libpam4j-1.6.jar"/>
+		 		<include name="jna-3.4.0.jar"/>
+		 		<include name="joda-time.jar"/>
+		 		<include name="commons-fileupload.jar"/>
+		 		<include name="mysql-connector-java-5.1.22-bin.jar"/>
+		 		<include name="commons-io.jar"/>
+		 		<include name="mail.jar"/>
+		 	 </fileset>
+		 	<fileset dir="${gwt.dir}">
+		 		<include name="gwt-servlet.jar"/>
+		 	</fileset>
+		  </copy>
+		 <copy todir="www/3rdparty">
+			<fileset dir="war/3rdparty"/>
+		</copy>
+		 <copy todir="www/WEB-INF">
+				<fileset dir="war/WEB-INF"/>
+		 </copy>
+		<copy todir="www/WEB-INF/classes">
+			<resources>
+				<file file="war/WEB-INF/classes/log4j.properties"/>
+			</resources>
+		</copy>
+		 <copy todir="www/images">
+			<fileset dir="war/images"/>
+		</copy>
+		<copy todir="www" flatten="true">
+			<resources>
+				<file file="war/index.html"/>
+				<file file="war/InstallConfig.css"/>
+			</resources>
+		</copy>
+	    <zip destfile="filrconfig.war" basedir="www"/>
+	  </target>
+
+	  <target name="clean" description="Cleans this project">
+	   	<delete dir="www" failonerror="false" />
+		<delete dir="gwt-unitCache" failonerror="false" />
+	  	<delete file="filrconfig.war" failonerror="false" />
+	  </target>
+</project>

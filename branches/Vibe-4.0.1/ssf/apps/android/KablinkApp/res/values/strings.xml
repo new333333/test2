@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kablink</string>
+    <string name="menu_addSite">Add a Site</string>
+    <string name="menu_selectSite">Select a Site</string>
+    <string name="menu_editSite">Edit Site</string>
+    <string name="menu_cancel">Cancel</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_done">Done</string>
+    <string name="menu_save">Save</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_done">Done</string>
+    <string name="returnToMain">Return to the main screen</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_site_editor">Site Editor</string>
+    <string name="title_exit_dialog">Exit\?</string>
+    <string name="title_site_list">Site List</string>
+    <string name="title_site_name">Site Name</string>
+    <string name="title_site_url">URL</string>
+    <string name="title_login_name">Login Name</string>
+    <string name="title_password">Password</string>
+    <string name="title_view">View</string>
+    <string name="title_edit">Edit</string>
+    <string name="title_create">Create</string>
+    <string name="title_delete">Delete</string>
+    <string name="siteSelect">Select a Site</string>
+    <string name="exitAppWarning">Do you want to exit\?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="deleteSiteWarning">Do you really want to delete this site\?</string>
+</resources>

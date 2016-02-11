@@ -1,0 +1,818 @@
+/*
+	iPhone Style Sheet 
+*/
+
+body { 
+	background-color: #fff; 
+	margin: 0; 
+	}
+
+a { 
+	color: #036f9f; text-decoration: none; 
+	}
+label { 
+	font-size: .9em;
+	}
+textarea { 
+	font-size: 1em; width: 275px;
+	padding: 5px;
+	border-radius: 3px;
+	border: 1px solid #b8b8b8;
+	}
+select { 
+	font-size: 1.4em;
+	}
+input[type=button], input[type=submit], input[type=reset] { 
+	font-size: 1em;
+	}
+input[type=text], input[type=password] {
+	padding: 5px;
+	border-radius: 3px;
+	border: 1px solid #b8b8b8;
+	}	
+div.pad-top20 {
+	padding-top: 10px;
+	}	
+div.pad-left20 {
+	padding-left: 10px;
+	}	
+span.pad-left20 {
+	padding-left: 10px;
+	}	
+
+span.pad-left20 select {
+	color: #036f9f;
+	}	
+
+.font-red {
+	color: red;
+	}
+
+/* colors 
+
+#7abcba - light teal
+
+*/
+
+#login-pg, #home-pg, #myws-pg, #blog-pg { 
+	position: relative; 
+	font-family: Arial, Helvetica, sans-serif;
+	}
+
+#contentDetail { 
+	padding: 0 20px;
+	}
+
+.header { 
+	color: #1f1f1f; 
+	font-size: 16px;
+	text-align: center;
+	padding-top: 35px;
+	background-color: #eceeec;
+	font-weight: bold; 
+	width: 100%;
+	}
+		
+.search { 
+	position: relative;
+	top: -6px;
+	right: 5px;
+	font-size: 11px;
+	font-weight: normal; 
+	padding: 2px 10px 0 6px;
+	border: 1px solid transparent;
+	white-space:nowrap;
+}
+.search img {
+	width: 25px;
+	height: 25px;
+	}
+
+.homelink { 
+	position: relative;
+	top: -6px;
+	left: 5px;
+	font-size: 11px;
+	font-weight: normal; 
+	padding: 2px 6px 0 10px;
+	border: 1px solid transparent;
+	white-space:nowrap;
+	}
+.homelink img {
+	width: 25px;
+	height: 25px;
+	}
+
+.backlink { 
+	position: relative;
+	top: -6px;
+	left: 4px;
+	padding: 3px 8px 0px 8px;
+	vertical-align: middle;
+	border: 1px solid transparent;
+	white-space:nowrap;
+	}
+.lastupdated {
+	font-size: .6em;
+	}	
+.action-dialog { 
+	position: absolute;
+	display: none;
+	top: 63px; 
+	left: 5px;
+	right: 5px;
+	padding: 10px;
+	border: 1px solid #b8b8b8;
+	background: #fafafa;
+	}
+#calendar-show-filter-menu {top:30px }
+.search	a, .homelink a { 
+	color: #fff;
+	}
+
+#actions { 
+	top: 0px; 
+	left: 0px; 
+	padding: 10px;
+	background-color: #eceeec;
+	border-bottom: 1px solid #b8b8b8;
+	white-space: nowrap;
+	vertical-align: middle;
+	}
+#actions a {
+	font-size: 13px !important; 
+	font-weight: bold; 
+	padding: 4px;
+	margin-right: 3px;
+	}
+		
+.dialog-head { 
+	font-size: .95em;
+	font-weight: bold;
+	text-transform: uppercase;
+	margin-bottom: .5em;
+	}
+.dialog-content { 
+	margin-top: 10px;
+	margin-bottom: 10px;
+	}
+
+.menu-spacer { 
+	border-top: 1px solid #d2d5d1;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	height: 5px;
+	line-height:.5em;
+	}
+.close-menu {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	}
+.close-menu input {width: 25px; height: 25px;}	
+
+.menu-item {padding-left: .5em; padding-right: 30px; margin-bottom: 15px;}
+.menu-item a { font-size: 1.2em; padding-bottom: 4px; font-weight: normal;}
+.menu-curlevel {font-weight: bold;}	
+
+#micro-blog-a { 
+	color: black;
+	} 	
+#micro-blog-date {
+	padding-left: 10px;
+	color: #505354;
+	font-weight: normal;	
+	}
+#micro-blog-clear {
+	margin-left: 1em; 
+	}
+#micro-blog-buttons {
+	margin: 10px;
+	}
+#micro-blog-text {
+	width: 90%;
+	}
+.entry-actions {
+	text-align: right; 
+	background-color: #f6f6f6;
+	padding: 5px;
+	padding-left: 10px;
+    }
+.entry-actions img{
+	padding-right: 15px;
+    }
+.entry-action-buttons2 {
+	padding-top: 5px;
+	padding-left: 10px;
+	}
+
+#categoryTable {
+	table-layout:fixed;
+	width: 100%;
+	}
+#categoryTable td {
+	text-align: center;
+	padding: 4px;
+	width: 30%;
+	background-color: transparent;
+	}
+.category {
+	position: absolute;
+	top: 40px;
+	width: 100%;
+	height: 28px;
+	text-align: center;
+	background-color: #fff;
+	}
+.category-on {
+	font-size: 16px;
+	font-weight: bold;
+	background-color: #fff;
+	}	
+.category-off {
+	font-size: 14px;
+	font-weight: bold;
+	background-color: #b8b8b8;
+	}
+	
+.content {
+	width: 100%;
+	background-color: #fff;
+	}
+	
+.ws-title {
+	font-size: 1em;
+	font-weight: bold;
+	padding: 5px;
+	background-color: #c3c5c0;
+	background-image: url(images/mobile/level_one_pattern4.gif);
+	background-repeat: repeat-x;
+	border-bottom: 1px solid #1C5894;
+	white-space:nowrap;
+	}
+
+.masthead-username {
+	text-align: center; 
+	color: #1f1f1f;
+	padding:10px; 
+	font-size: 1.2em;
+    }
+.masthead-title {
+	position:relative;
+	top:-7px;
+	font-size: 1em;
+	}
+.masthead-title2 {
+	font-size: .6em;
+	color: #808080;
+	}
+	
+/*  folder styles */
+.folders {
+	position: relative;
+	}
+.folder-content {
+	background-color: #f6f6f6;
+	}
+	
+.folder-head {
+	clear: both; 
+	color: #fafafa;
+	font-size: .85em;
+	text-align: center;
+	font-weight: normal;
+	vertical-align: middle;
+	padding: 2px 10px;
+	letter-spacing: 1px;
+	background:#ccc;
+	}
+.folder-select {
+		background: #eceeec !important;
+		color: #1f1f1f;
+		font-size: 14px;
+		font-weight: normal;
+		text-align: center;
+		padding: 5px;
+	}
+
+.folder-item {
+	font-size: 1.1em;
+	background-color: #fff;
+	padding: 10px 15px 10px 15px;
+	border-bottom: 1px solid #e0e0e0;
+	white-space: nowrap;
+	overflow: hidden;
+	}
+.folder-item-ws {
+	background-color: #fff;
+	border-bottom: 1px solid #e0e0e0;
+	}
+.folder-item-profile {
+	background-color: #f6f6f6;
+	}
+.folder-item-subtext {
+	font-size: 10px;
+	color:#999;
+	}
+
+/*  footer styles */
+.footerbar				{ position: relative; left: 0px; bottom: 0px; height: 40px; width: 100%; margin: 20px 0 0 0; }
+.footerbar #logo		{ position: relative; top: 8px; left: 8px; }
+.footerbar .copyright	{ position: relative; top: -8px; left: 40px; width: 250px; color: #cccccc; }
+
+
+/* Entry styles - Blog, Recent, etc */
+
+.entry {
+	position: relative;
+	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
+	background-color:#fff;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	min-height: 30px;
+	}
+.entry-title {
+	font-size: 1em;
+	line-height: 1em;
+	font-weight: bold;
+	padding-top: 5px;
+	padding-right: 34px;
+	padding-left: 10px;
+	}
+
+.entry-title div.doc-number {
+	color: #666;
+	padding-right: 0px;
+	font-size: 14px;
+	font-weight: normal;
+	display: inline;
+	}
+.entry-content {
+	font-size: 16px;
+	color: #333;
+	padding-right: 15px;
+	padding-top: 5px;
+	padding-bottom: 10px;
+	padding-left: 10px;
+	}
+.entry-element {
+	font-size: 14px;
+	color: #666;
+	padding-top: 4px;
+	padding-left: 12px;
+	}
+#profile-page .entry-element {
+	color: #000;
+	}	
+.entry-caption {
+	font-weight: bold;
+	font-size: 12px;
+	color: #000;
+	padding-top: 4px;
+	}
+.entry-signature {
+	margin-top: 2px;
+	margin-left: 10px;
+	}
+.entry-author {
+	font-size: 14px;
+	}
+.entry-date {
+	font-size: 12px;
+	color: #666;
+	padding-left: 5px;
+	}
+.entry-type {
+	font-size: 12px;
+	color: #666;
+	margin: 0px;
+	padding-top: 8px;
+	padding-bottom: 10px;
+	padding-left: 10px;
+	}
+.entry-type span {
+	padding: 2px 5px;
+	}
+.label-gray {
+	color: #666;
+	}	
+.entry-comment-label {
+	position: absolute;
+	right: 5px;
+	top: 2px;
+	color: #000;
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+	padding: 5px 8px;
+	background:url(images/mobile/comments_25.png) no-repeat center;
+	width: 25px;
+	height: 25px;
+	line-height: 22px;
+	}
+.entry a.mk-comment, a.remove-action {
+	font-size:12px;
+	padding: 3px 10px 3px 0px;
+	}	
+
+.comment {
+	position: relative;
+	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
+	padding: 5px 5px 5px 30px;
+	}
+.comment2 {
+	position: relative;
+	border-bottom: 1px solid #e2e5e1;
+	padding: 5px 5px 5px 55px;
+	}
+
+.comment .entry-title, .comment2 .entry-title {
+	font-size: .97em;
+	color: #666;
+	padding-top: 5px;
+	white-space: nowrap;
+	overflow: hidden;
+	}
+.comment .entry-title div.doc-number, .comment2 .entry-title div.doc-number {
+	color: #666;
+	font-size: 14px;
+	font-weight: normal;
+	padding-right: 5px;
+	display: inline;
+	}
+.comment .entry-title span.number, .comment2 .entry-title span.number {
+	font-weight: normal;
+	}
+.comment-bg {
+	font-size: 16px;
+	color: #666;
+	background-color: #fef8dc; /* #fffae4; #FEF6D4; */
+	padding: 10px;
+	}
+.comment img {
+	position: absolute;
+	top: 6px;
+	left: 6px;
+	}	
+.comment2 img {
+	position: absolute;
+	top: 10px;
+	left: 40px;
+	}	
+	
+/*  iPhone Specific CSS3 */
+
+.roundcorner {
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	}
+.roundcornerLG {
+	border-radius: 40px;
+	-webkit-border-radius: 40px;
+	}
+	
+
+
+
+
+
+
+
+
+
+/* styles to support definition elements */
+
+
+/* Specify generic, not specific, fonts in font-family */
+code, pre	{
+	font-family: monospace;
+	}
+
+/* Allow preformatted lines to break */
+pre {
+	white-space: -pre-wrap; /* Opera 6 CSS Extension */
+	white-space: pre-wrap; /* CSS2.1 Addition */
+	}
+
+	/*  Typography */
+
+/* Specific fonts are ok for headlines, so leave font-family alone
+   Adjust top margin from px to em and reduce it a bit (the 2px on the
+    bottom margin is small enough to be left alone)
+   Reduce line height to 1em; headings frequently break into multiple
+    lines on such small screen, and we don't want spacing /within/ the
+    heading, only around it. */
+h1, h2, h3, h4, h5, h6	{
+	line-height: normal;
+	margin-top: 0em;
+	}
+
+h4 {
+	font-size: 1em;
+	}
+h5 {
+	font-size: 0.83em;
+	}
+h6 {
+	margin: 0 0 2.5em 0;
+	font-size: 0.83em;
+	}
+
+.workflow { 
+	background: #ededed; 
+	padding:5px;
+	font-size: 0.83em !important;
+	}
+
+
+	/*  Forms */
+
+.ss_mobile_small, .ss_mobile_small a, .ss_mobile_small table td {
+	font-size:9px;
+}
+.ss_mobile_large, .ss_mobile_large a, .ss_mobile_large table td {
+	font-size:14px;
+}
+.ss_mobile_light, .ss_mobile_light a, .ss_mobile_light table td {
+	color:#999999;
+}
+.ss_bold, .ss_bold a, .ss_bold table td {
+	font-weight: bold;
+}
+.ss_mobile_breadcrumbs, .ss_mobile_breadcrumbs a a:visited, .ss_mobile_breadcrumbs table td {
+	color:gray;
+}
+.ss_mobile_description {
+  	padding: 6px 4px 6px 4px;
+  	margin: 6px 0px 6px 0px;
+  	background-color: #E9F1F1;  /* switch back to this: #A6C5C5 #E9F1F1 !important; */
+	}
+.ss_mobile_workflow {
+	border: solid 1px #CCCCCC;
+	padding: 4px;
+	}
+.ss_mobile_workflow_state {
+	padding-left: 10px;
+	font-weight: bold;
+	font-size: 14px;
+	}
+.ss_mobile_masthead {
+	border: solid 1px black;
+	background-color: #cecece;
+	margin-bottom:10px;
+	}
+.ss_mobile_footer {
+	border: solid 1px black;
+	background-color: #cecece;
+	}
+.ss_entryContent {
+	margin-bottom: 5px;
+	}
+.ss_labelAbove {
+	padding-top: 2px;
+	padding-bottom: 2px;
+	display: block;
+	font-weight: bold;
+	}
+.ss_labelLeft {
+  font-weight: bold;
+  display: inline;
+  padding-right: 2px;
+	}
+.ss_mobile_folder_list {
+	padding-bottom:6px;
+	}
+.ss_mobile_table tr {
+	padding-bottom:6px;
+	}
+	
+.ss_entryContent input.ss_text {
+	font-size: 13px;
+	width: 250px;
+	}	
+.ss_entryContent textarea#description {
+	width: 90%;
+	height: 200px;
+	}	
+.ss_mobile_form_element input[type="text"] {
+	width: 80px;
+	}
+	
+/* Calendar */
+
+.ss_mobile_calendar_weekdayLabel th {
+	color: #fff;
+	font-size: .6em;
+	font-weight: bold;
+	background-color: #b8b8b8;
+	cursor: default;
+	text-transform: uppercase;
+	padding: 4px;
+	}
+.ss_mobile_calendar_header {
+	font-size: 1.3em;
+	color: #fff;
+	padding-right: 20px;
+	padding-left: 20px;
+	}
+.ss_mobile_calendar_monthyear td {
+	background-color: #b8b8b8;
+	padding: 3px;
+	}
+table.ss_mobile_calendar {
+	width:100%;
+	border-collapse: collapse;
+	empty-cells: show;
+	}
+tr.ss_mobile_calendar_entry_row td {
+	font-size: .85em;
+	padding: 8px;
+	background: #fff;
+	border-bottom: 1px solid #eceeec;
+	}
+td.ss_mobile_calendar_weekend {
+	background-color: #efeeec;
+	border-bottom: 1px solid #e0e2e0;
+	}
+.ss_mobile_calendar_time {
+	text-align: right;
+	width: 10%;
+	white-space: nowrap;
+	}
+table.ss_mobile_calendar_month {
+	width:100%;
+	text-align: center;
+	border-bottom: 1px solid #949494;
+	background-color: #fff;
+	}
+td.ss_mobile_calendar_day,
+tr.ss_mobile_calendar_entry_row td {
+	background-color: #fff;
+	border-bottom: 1px solid #eceeec;
+	}
+td.ss_mobile_calendar_today {
+	border: 1px solid #1C5894;
+	border-bottom: 1px solid #1C5894;
+	}
+table.ss_mobile_calendar_month td {
+	font-size: 1.1em;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	}
+table.ss_mobile_calendar_month td a {
+	padding: 4px 10px;
+	}
+td.ss_mobile_calendar_today span {
+	color: #036f9f;
+	}
+td.ss_mobile_calendar_current_day {
+	font-weight: bold;
+	text-transform: uppercase;
+	background-color: #f8f975 /* #feed7b; #fef7c7; */
+	}
+
+div.ss_mobile_calendar_entries_header,
+div.ss_mobile_calendar_no_entries_header {
+	background-color: #fef7c7;
+	padding: 3px 0;
+	text-align: center;
+}
+div.ss_mobile_calendar_entries_header span,
+div.ss_mobile_calendar_no_entries_header span {
+	font-size: .9em;
+	font-weight: bold;
+	padding-right: 10px;
+}
+td div.ss_mobile_calendar_entries_header span {
+	font-size: 1.02em;
+}
+div.ss_mobile_calendar_entries_family_header {
+	padding: 6px;
+	text-align: left;
+}
+div.ss_mobile_calendar_entries_family_header span {
+	font-size: 1.02em;
+	font-weight: bold;
+}
+div.ss_mobile_calendar_no_entries_content {
+	padding: 20px;
+	padding-bottom: 100px;
+	color: #b8b8b8;
+	background-color: #fff;
+}
+div.ss_mobile_calendar_no_entries_content span {
+	font-size: .9em;
+}
+
+.ss_dateinput td {
+	padding: 2px 0 0 0 !important;
+	border-top: none !important;
+	border-bottom: none !important;
+}
+.ss_eventdateinput td {
+	padding: 2px 0 5px;
+	border-top: 1px solid #bbbbb6;
+	}
+.ss_eventdateinput2 td {
+	padding: 2px 0 5px;
+	border-bottom: 1px solid #bbbbb6;
+	}
+
+.ss_fieldset {
+	border: 0;
+	
+	}
+
+ /*  Helpers */
+	
+.background_light {
+	background-color: #9A9A98!important;
+	}
+.background_dark {
+	background-color: #5A9A98!important;
+	}	
+.background_lightest {
+	background-color: #DBE9E8!important;
+	}	
+.linewrap {
+	border-bottom: thin solid #5A9A98;
+	margin-bottom: 6px;
+	}
+.floatleft	{
+	margin: 0 1.15em 0 0;
+	}
+.form {
+	font-size: 1.0em;
+	margin-right: 5px;
+	}
+.form-button {
+	font-size: .83em;
+	padding-right: 5px;
+	padding-bottom: 15px;
+	}
+
+.ss_clear {
+	clear: both;
+	}
+	
+.ss_form_wrap {
+	background-color: #eceeec;
+/*	padding: 0 10px 10px 10px!important; */
+	}
+.ss_form_header {
+	clear: both; 
+	color: #1f1f1f;
+	font-size: 1em;
+	font-weight: bold;
+	vertical-align: middle;
+	padding: 25px 5px 0px 10px;
+	letter-spacing: 1px;
+	background-color: #eceeec;
+	}
+.ss_form_subhead {
+	 color: #333;
+	 }
+.ss_form_subhead a:hover{
+	 color: #555;
+	 }	
+	 
+/* lists */
+ul.ss_nobullet {
+  margin-left: 0em;
+  padding: 0em;
+  margin: 0px 0px 2px 0px;
+  }
+
+ul.ss_nobullet li {
+  list-style-type: none !important;
+  margin: 0px;
+  padding: 0px;
+  border:none !important;
+  }
+
+ul.ss_square li {
+  list-style-type: square;
+}
+
+a.ss_linkButton:link, a.ss_linkButton:visited {
+ cursor: pointer;
+ <c:if test="<%= isIE %>">
+   		height: 20px; 
+   		margin: 1px;
+  		padding: 0px 7px 0px 7px;
+ </c:if>
+  text-align: center;
+  padding: 0px 6px 0px 6px;
+  font-size: 12px !important;
+  font-family: Arial, sans-serif;
+  white-space: nowrap;
+  text-decoration: none !important;
+  border: 1px solid #5A9A98;
+  background-image: url(images/mobile/background_inline_button_blue.gif);
+  background-repeat: repeat-x;
+	}	
+
+
+.my-item a {
+	padding: 5px 100px 5px 0px;
+	}

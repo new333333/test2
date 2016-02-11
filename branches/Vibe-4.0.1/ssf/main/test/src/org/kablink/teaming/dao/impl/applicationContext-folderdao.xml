@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" destroy-method="close">
+		<property name="driverClassName"><value>com.mysql.jdbc.Driver</value></property>
+		<property name="url"><value>jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;characterEncoding=UTF-8</value></property>
+		<property name="username"><value>sitescape</value></property>
+		<property name="password"><value>sitescape</value></property>
+	</bean>
+
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler"/>
+
+	<!-- Hibernate session factory: Different from our production configuration 
+	     in an effort to be able to test the code in as much isolation as possible.
+	     For example, this configuration does not depend upon JNDI for datasource
+	     lookup, etc. -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource"><ref local="dataSource"/></property>
+		<property name="lobHandler"><ref local="lobHandler"/></property>
+		<!-- Sitescape mappings only -->
+		<property name="mappingResources">
+			<list>
+		<value>org/kablink/teaming/security/accesstoken/impl/TokenInfo.hbm.xml</value>
+		<value>org/kablink/teaming/security/function/Function.hbm.xml</value>
+	    <value>org/kablink/teaming/security/function/WorkAreaFunctionMembership.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/Attachment.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/AuditTrail.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/AuthenticationConfig.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/Binder.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/ChangeLog.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/CustomAttribute.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/Dashboard.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/Definition.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/Event.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/FolderEntry.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/IndexingJournal.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/LdapConnectionConfig.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/LibraryEntry.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/LicenseStats.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/Membership.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/PostingDef.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/Principal.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/Ratings.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/IndexNode.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/SeenMap.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/SimpleName.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/Subscription.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/Tag.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/UserProperties.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/Visits.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/WorkflowResponse.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/WorkflowState.hbm.xml</value>
+	    <value>org/kablink/teaming/domain/ZoneInfo.hbm.xml</value>
+
+			</list>
+		</property>
+  		<property name="hibernateProperties">
+ 		   <props>
+  		    <prop key="hibernate.show_sql">false</prop>
+			<prop key="hibernate.cache.use_second_level_cache">false</prop>
+		    </props>
+		</property>
+	</bean>
+
+	<bean id="sPropsUtil" class="org.kablink.teaming.util.SPropsUtil">
+		<property name="config">
+			<bean class="org.kablink.teaming.util.PropertiesClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>config/ssf.properties</value>
+					</list>		
+				</property>
+			</bean>
+		</property>
+	</bean>
+	<bean id="coreDaoImpl" class="org.kablink.teaming.dao.impl.CoreDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+
+	<bean id="profileDaoImpl" class="org.kablink.teaming.dao.impl.ProfileDaoImpl"  depends-on="sPropsUtil">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
+	</bean>
+	<bean id="folderDaoImpl" class="org.kablink.teaming.dao.impl.FolderDaoImpl">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
+	</bean>
+	<!-- Local transaction manager. -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+	</bean>
+
+
+
+</beans>

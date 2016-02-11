@@ -1,0 +1,999 @@
+body {
+	background: none repeat scroll 0 0 #C5C5C5 !important;
+	color: #FFFFFF !important;
+	font: 100%/1.4 Arial, Helvetica, sans-serif !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.displayNone {
+	display: none;
+}
+
+.loginProductImage {
+	background-repeat: no-repeat;
+	margin-top: 15px;
+	margin-left: 25px;
+	float: left;
+	margin-bottom: 50px;
+}
+
+.loginContainer {
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	background: -webkit-gradient(linear, 0% 0, 0% 100%, from(#4B4F51),
+		to(#3A3E40), color-stop(0.2, #3A3E40) );
+	background: -moz-linear-gradient(0% 0 270deg, #4B4F51, #3A3E40 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=   '#4B4F51',
+		endColorstr=   '#3A3E40' );
+	box-shadow: 0 1px 2px #3A3E40 inset;
+	margin: 5% 0 10px 0;
+	width: 300px;
+}
+
+
+a.logout {
+    border-left: 1px solid #B8B8B8;
+    color: #B8B8B8;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: normal;
+    padding: 0 4px;
+    text-decoration: none;
+}
+
+.username {
+    padding-right: 6px;
+    text-align: right;
+}
+
+.masterhead-actions {
+    color: #EBF5F5;
+    display: inline-block;
+    font-size: 13px;
+    padding: 15px 10px 10px 5px;
+    vertical-align: middle;
+}
+
+.content {
+	margin: 0 25px 15px;
+}
+
+.loginProductVersion {
+	clear: both;
+	padding-top: 30px;
+	text-align: left;
+}
+
+.loginProductInfoLabel {
+	color: #CCCCCC;
+	font-size: 12px;
+	padding: 0 25px;
+}
+
+.loginCopyrightLabel {
+	color: #949494;
+	font-size: 9px;
+	margin-top: 2px;
+	padding: 0 25px;
+}
+
+.loginBevel {
+	border-bottom: 1px solid #4F5254;
+	border-top: 1px solid #343738;
+	line-height: 0;
+	margin-top: 10px;
+	width: 100%;
+}
+
+.userNamePanel,.passwordPanel {
+	color: #CCCCCC;
+	font-size: 12px;
+	font-weight: normal;
+	padding-top: 5px;
+	text-align: left;
+	padding-left: 25px;
+}
+
+.userNamePanel span,.passwordPanel span {
+	padding-bottom: 3px;
+}
+
+.userNamePanel input,.passwordPanel input {
+	font-size: 13px;
+	background-color: #EDEDED;
+	margin: 2px 0 10px;
+	padding: 3px;
+	width: 240px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	box-border-radius: 4px;
+	border: 2px;
+	outline: none;
+}
+
+.userNamePanel input:focus,.passwordPanel input:focus {
+	box-shadow: -3px -3px 3px #59828F, 3px -3px 3px #59828F, -3px 3px 3px
+		#59828F, 3px 3px 3px #59828F;
+	-moz-box-shadow: -3px -3px 3px #59828F, 3px -3px 3px #59828F, -3px 3px
+		3px #59828F, 3px 3px 3px #59828F;
+	-webkit-box-shadow: -3px -3px 3px #59828F, 3px -3px 3px #59828F, -3px
+		3px 3px #59828F, 3px 3px 3px #59828F;
+}
+
+.loginButtonPanel {
+	text-align: right;
+	margin: 10px;
+}
+
+.loginButton {
+	background: -webkit-gradient(linear, left top, left bottom, from(#81b2bd),
+		to(#59828f) ) repeat-x;
+	background: -moz-linear-gradient(top, #81b2bd, #59828f);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=   '#81b2bd',
+		endColorstr=   '#59828f' );
+	border: medium none;
+	border-radius: 11px 11px 11px 11px;
+	color: #FFFFFF;
+	margin: 0 0 10px 10px;
+	padding: 4px 13px;
+	cursor: pointer;
+}
+
+.loginFailed {
+	background-color: #FAFAD5;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	color: black;
+	font-size: 11px;
+	padding: 7px;
+	width: 300px;
+}
+
+.testMeTop {
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+}
+
+.testMeLeft {
+	margin: 5px 10px;
+	height: 100%;
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+}
+
+.rightContent {
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	margin: 5px 5px 10px 5px;
+	padding: 10px;
+	overflow: auto;
+}
+
+.mainheader {
+	background: #3A3E40;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=   '#64696b',
+		endColorstr=   '#3c4143' );
+	background: -webkit-gradient(linear, left top, left bottom, from(#64696b),
+		to(#3c4143) );
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=   '#64696b',
+		endColorstr=   '#3c4143' );
+	background: -moz-linear-gradient(top, #64696b, #3c4143);
+	color: white;
+}
+
+.mainHeaderProductImg {
+	margin: 10px;
+}
+
+.leftnav {
+	background: none repeat scroll 0 0 #EAEAEA;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	margin: 5px 5px 10px 5px;
+	width: 220px;
+}
+
+.leftnav-header {
+	background: #949494;
+	color: #FAFAFA;
+	font-size: 14px;
+	font-weight: bold;
+	margin-bottom: 5px;
+	padding: 3px 5px 3px 5px;
+	border-radius: 3px 3px 0 0;
+	-moz-border-radius: 3px 3px 0 0;
+}
+
+.leftnav-title {
+	font-size: 14px;
+	font-weight: bold;
+	padding: 2px 0px;
+}
+
+.leftnav-item {
+	color: #353838;
+	font-size: 13px;
+	margin: 3px 5px;
+	padding: 2px;
+}
+
+.leftnav-item:hover {
+	cursor: pointer;
+	-moz-border-radius: 3px 3px 3px 3px;
+	border-radius: 3px;
+	background: none repeat scroll 0 0 #CCE9EE;
+	color: #135C8F;
+}
+
+/* Styles used with instructions in a dialog box. */
+.dlgBox_closePanel {
+	color: #FFFFFF;
+	font-size: 0.8em;
+	position: absolute;
+	right: -8px;
+	top: -8px;
+	z-index: 1001;
+}
+
+.dlgBox_closePanel:hover {
+	cursor: pointer;
+}
+
+.dlgInstructions {
+	font-family: Arial, sans-serif;
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+/* Styles used for text in the content of a dialog box. */
+.dlgContent {
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Styles used for the help link in a dialog header. */
+.dlgHeaderHelpImg {
+	cursor: pointer;
+	padding: 2px;
+	position: absolute;
+	right: 8px;
+	top: 9px;
+}
+
+/* Styles used for the error panel in a dialog. */
+.dlgErrorPanel {
+	font-size: 12px;
+	background-color: #FCECD3;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: 5px 10px;
+	margin: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	color: #505354;
+}
+
+.dlgErrorLabel {
+	font-size: 12px;
+	font-weight: bold;
+}
+
+/* Styles for buttons */
+.teamingButton {
+	margin-left: 0.5em;
+}
+
+.teamingDlgBoxFooter .gwt-Button {
+	color: #fff;
+	font-size: 11px;
+	font-family: Arial, sans-serif !important;
+	background: #949494 none repeat scroll 0 0;
+	margin-right: 3px;
+	padding: 2px 10px;
+	text-decoration: none;
+	cursor: pointer;
+	white-space: nowrap;
+	border: 0px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	-webkit-border-radius: 15px;
+	text-align: center !important;
+	min-width: 60px;
+}
+
+.teamingDlgBoxFooter .gwt-Button:hover {
+	color: #135c8f;
+	white-space: nowrap !important;
+	text-decoration: none !important;
+	border: 0px;
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: -webkit-gradient(linear, left bottom, left top, color-stop(0.47, #A8D4DD
+		), color-stop(0.53, #D5EDF1), color-stop(1, #C8E4E9) );
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	-webkit-border-radius: 15px;
+}
+
+.teamingDlgBoxFooter .gwt-Button[disabled],.teamingDlgBoxFooter .gwt-Button[disabled]:hover
+	{
+	cursor: default;
+	color: #e0e0e0;
+	background: #c4c4c4;
+}
+
+.teamingDlgBoxHeaderBG_NonIE {
+	background-color: #81b2bd;
+	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd)
+		!important;
+	background-image: -moz-linear-gradient(top, #abced1, #81b2bd) !important;
+	background-image: -ms-linear-gradient(top, #abced1, #81b2bd) !important;
+	background-image: -o-linear-gradient(top, #abced1, #81b2bd) !important;
+	background-image: linear-gradient(top, #abced1, #81b2bd) !important;
+	/* standard, but currently unimplemented */
+}
+
+.teamingDlgBoxHeaderBG_IE {
+	background: url(images/dialog_header_tile3.png) repeat;
+}
+
+.teamingDlgBoxHeader-captionImagePanel {
+	display: inline;
+}
+
+.teamingDlgBoxHeader-captionLabel {
+	display: inline !important;
+}
+
+.teamingDlgBoxHeader:hover {
+	cursor: move;
+}
+
+.padding5R {
+	padding-right: 5px;
+}
+
+/* Styles for dialog boxes */
+.teamingDlgBox {
+	font-family: Arial, Helvetica, sans-serif;
+	background: url(images/trans30_black.png) repeat;
+	padding: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	-webkit-border-radius: 6px;
+	z-index: 1001;
+}
+
+.teamingDlgBox_NoClip,.teamingPopupPanel_NoClip {
+	clip: rect(-10000px, 10000px, 10000px, 0px) !important;
+}
+
+.teamingDlgBox_Glass {
+	background-color: #000;
+	filter: alpha(opacity =   50);
+	opacity: 0.5;
+	overflow: hidden;
+	z-index: 1000;
+}
+
+.teamingDlgBox .popupContent {
+	background-color: #f6f6f6;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.teamingDlgBox .popupContent:first-child {
+    overflow: auto;
+}
+
+/* Styles for the content of a dialog box. */
+.teamingDlgBoxContent {
+	margin: 10px;
+}
+
+/* Styles for the footer of a dialog box. */
+.teamingDlgBoxFooter {
+	background-color: #EAEBE8;
+	border-top: 1px solid #BABDB6;
+	margin-top: 0.5em;
+	padding: 0.5em;
+	text-align: right;
+	vertical-align: middle;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+}
+
+.leftAlignFooter {
+	text-align: left;
+}
+
+/* Styles for the header in a dialog box. */
+.teamingDlgBoxHeader {
+	color: #fff;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 5px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
+	white-space: nowrap;
+	vertical-align: middle;
+}
+
+td.table-key {
+	color: #505354;
+	font-size: 12px;
+	text-align: right;
+}
+
+td.table-value {
+	color: #505354;
+	font-size: 12px;
+	padding-left: 10px;
+}
+
+.configWizardDlg.gwt-PopupPanel {
+	border: none;
+	padding: 0px;
+	border-radius: 3px;
+}
+
+.installConfigWizard {
+	width: 550px;
+	background: #fff;
+	border-radius: 3px;
+}
+
+.installConfigWizardPage {
+	height: 460px;
+	overflow: auto;
+}
+
+.finishButton {
+	margin-left: 325px;
+}
+
+.configSelectPanel {
+	margin: 0px 10px;
+}
+
+.wizardPage,.configPage {
+	margin: 10px;
+	color: black;
+	font-size: 12px;
+}
+
+.configPageTitleDescLabel {
+	color: #505354;
+	padding-top: 10px;
+	padding-left: 10px;
+}
+
+.createPartitionButton {
+	
+}
+
+.configPageDescLabel {
+	color: #949494;
+	font-style: italic;
+	padding-top: 10px;
+	padding-left: 10px;
+}
+
+.wizardPageDesc,.configDescLabel {
+	color: #949494;
+	font-style: italic;
+	padding: 10px 0px 20px 0;
+}
+
+.configDescLabel {
+	padding-left: 20px;
+}
+
+.configWizFooterLabel {
+	color: #949494;
+	font-style: italic;
+	margin-top: 30px;
+}
+
+.configSelectRB {
+	display: block;
+	padding: 3px 0px;
+}
+
+.gwt-ValueSpinner .arrows {
+	width: 17px;
+	height: 18px;
+	margin-left: 1px;
+	line-height: 10px;
+	margin-right: 4px;
+}
+
+.gwt-ValueSpinner .textBox {
+	text-align: right;
+	font-family: sans-serif;
+	padding: 2px 0px;
+	width: 40px;
+}
+
+.gwValueSpinner,.gwValueSpinner .gwt-ValueSpinner {
+	display: inline-block;
+}
+
+.gwValueSpinnerKey {
+	vertical-align: top;
+	padding-top: 5px;
+	display: inline-block;
+}
+
+.gwValueSpinner-Label {
+	vertical-align: super;
+	font-size: 12px;
+	color: #505354;
+	padding-right: 5px;
+}
+
+.gwValueSpinner-Label.disabled {
+	color: #949494 !important;
+}
+
+/**Comment box, used to display messages if we have validation errors **/
+.commentBoxDlg {
+	padding: 3px;
+	border: 0px;
+	color:#505354;
+	z-index: 99999;
+}
+
+.commentBoxDlg .content {
+	background-color: #FFF;
+	padding: 8px;
+	font-size: 12px;
+	min-height: 40px;
+	min-width: 200px;
+	max-width: 200px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	border: 4px solid #FFCC33;
+	-moz-box-shadow: 2px 2px rgba(0, 0, 0, 0.3);
+	-webkit-box-shadow: 2px 2px rgba(0, 0, 0, 0.3);
+	box-shadow: 2px 2px rgba(0, 0, 0, 0.3);
+	position: relative;
+	margin-left: 0px;
+}
+
+.commentBoxDlg .content:after,.commentBoxDlg .content:before {
+	border: transparent solid;
+	content: ' ';
+	height: 0;
+	position: absolute;
+	width: 0;
+}
+
+.commentBoxDlg .content.leftArrow:after {
+	border-width: 14px;
+	border-right-color: #fff;
+	top: 6px;
+	left: -22px
+}
+
+.commentBoxDlg .content.leftArrow:before {
+	border-width: 10px;
+	border-right-color: #FFCC33;
+	top: 10px;
+	left: -24px;
+}
+
+.commentBoxDlg .content.rightArrow:after {
+	border-width: 9px;
+	border-left-color: #fff;
+	top: 11px;
+	left: 100%;
+}
+
+.commentBoxDlg .content.rightArrow:before {
+	border-width: 14px;
+	border-left-color: #FFCC33;
+	top: 6px;
+	left: 100%;
+}
+
+.commentBoxDlg .content.downArrow:after {
+	border-width: 9px;
+	border-top-color: #fff;
+	top: 100%;
+	left: 25px;
+}
+
+.commentBoxDlg .content.downArrow:before {
+	border-width: 14px;
+	border-top-color: #ffcc33;
+	top: 100%;
+	left: 20px;
+}
+
+.commentBoxDlg .content.upArrow:after {
+	border-width: 14px;
+	border-bottom-color: #fff;
+	top: -22px;
+	left: 15px;
+}
+
+.commentBoxDlg .content.upArrow:before {
+	border-width: 9px;
+	border-bottom-color: #ffcc33;
+	top: -22px;
+	left: 20px;
+}
+
+.gw-TextBox {
+	min-width: 250px;
+	padding: 2px 0px;
+}
+
+.gwt-TextBox-watermark {
+	color: DarkGray;
+	font-style: italic;
+}
+
+.statusIndicator {
+	padding: 25px;
+	background: #fafafa;
+	border-radius: 3px;
+	width: 350px;
+}
+
+.statusIndicator img {
+	vertical-align: middle;
+	padding-right: 5px;
+}
+
+.statusIndicator span {
+	color: #505354;
+	font-size: 16px;
+}
+
+.gwValueSpinner span.infoLabel {
+	color: #949494;
+	font-style: italic;
+	font-size: 12px;
+}
+
+.gw-dlgConfirm {
+    padding: 10px;
+    color: #505354;
+    font-size: 12px;
+}
+
+.gw-dlgConfirm img {
+    display: inline-block;
+    margin: 15px;
+}
+
+.gw-dlgConfirmDesc {
+	display: inline-block;
+	width: 350px;
+}
+
+.webDavPageContent {
+	margin: 50px;
+}
+
+.webServicePageContent,
+.networkInfoPageContent,
+.reqConnectionsPageContent,
+.jdkPageContent,
+.clusteringPageContent,
+.inboundPageContent,
+.outboundPageContent {
+	margin: 30px 50px;
+}
+
+.webServicePageAuthCheckBox {
+	display: block;
+	margin: 10px 0px;
+}
+
+.tomcatRestartPanel {
+	background-color: #FAFAFA;
+	margin: 10px 0;
+	padding: 10px;
+	text-align: center;
+}
+
+.tomcatRestartDescLabel {
+	color: #949494;
+	font-style: italic;
+	font-size: 12px;
+	display: block;
+}
+
+.tomcatRestartButton,.exportButton,.createPartitionButton,.luceneHAButton,.revertChangesButton {
+	margin-bottom: 10px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff),
+		to(#E0E0E0) );
+	background: -moz-linear-gradient(center top, #ffffff, #E0E0E0) repeat
+		scroll 0 0;
+	background: linear-gradient(center top, #ffffff, #E0E0E0) repeat scroll
+		0 0;
+	background-color: transparent;
+	border: 1px solid #B8B8B8;
+	font-weight: normal !important;
+	font-size: 12px;
+	padding: 2px 10px !important;
+	text-decoration: none;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	-webkit-border-radius: 15px;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.revertChangesButton {
+	margin-top: 30px;
+}
+.tomcatRestartButton:hover,.revertChangesButton:hover {
+		color: #135c8f !important;
+		background-color:#C8E4E9;
+		border: 1px solid #81b2bd;
+		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -webkit-gradient(
+			linear,
+			left bottom,
+			left top,
+			color-stop(0.47, #A8D4DD),
+			color-stop(0.53, #D5EDF1),
+			color-stop(1, #C8E4E9));
+		-moz-border-radius: 15px;
+		border-radius: 15px;
+		-webkit-border-radius: 15px;
+}
+
+.tomcatRestartButton[disabled],.tomcatRestartButton[disabled]:hover,.revertChangesButton[disabled],.revertChangesButton[disabled]:hover  {    
+ 	color: silver !important; 
+ 	background:none;
+ 	border: 1px solid #B8B8B8;
+ 	cursor: default;
+ }
+
+.exportButton {
+	margin : 20px 10px;
+}
+
+.section {
+	margin-top: 25px;
+	color: #505354;
+	font-size: 12px;
+}
+
+.sectionHeader {
+	font-weight: bold;
+	font-size: 12px;
+	border-bottom: 1px solid #ccc;
+	color: #505354;
+	margin-bottom: 10px;
+	display: block;
+	text-align: left;
+}
+
+.textError {
+	border: 1px inset red;
+	background: #FCECD3;
+}
+
+.configSummary {
+	margin-left: 25px;
+}
+
+.configSummary td.table-key,.configSummaryKeyLabel {
+	color: #505354;
+	font-size: 11px;
+	text-align: right;
+}
+
+.configSummary td.table-value,.configSummaryValueLabel {
+	color: black;
+	font-size: 13px;
+	padding-left: 10px;
+	padding-right: 60px;
+}
+
+.configSummaryTitle {
+	font-size: 18px;
+	margin-bottom: 5px;
+	color: #505354;
+}
+
+.configSummaryDivContent {
+	margin-left: 10px;
+	margin-top: 5px;
+}
+
+.networkInterfaceForCacheDescLabel {
+	color: #949494;
+	font-style: italic;
+	font-size: 12px;
+	display: block;
+	margin-top: 15px;
+}
+
+.clusteringTable,.inboundEmailTable,.outboundEmailTable {
+	margin-left: 10px;
+}
+
+.useAccessGatewayWebDavCheckBox {
+	margin-top:20px;
+	display: block;
+}
+
+.storageDetailsPanel {
+	margin-top : 15px;
+	margin-left: 10px;
+}
+
+.deviceStorageHeaderPanel {
+	margin-left: 10px;
+}
+
+.partitionInfoPanel {
+	background : #ededed;
+	border-radius : 5px;
+	margin: 0px 15px 0px 0px;
+	padding: 10px;
+}
+
+.partitionSelectLabel {
+	padding-left: 10px;
+}
+
+.storageDetailsDescLabel {
+	border-bottom: 1px solid #CCCCCC;
+    color: #949494;
+    font-style: italic;
+    margin-bottom: 10px;
+    padding: 10px 0 3px;
+}
+
+.storageDetailsTable td.table-key {
+	color: #949494;
+	font-size: 11px;
+	text-align: right;
+	white-space: nowrap;
+}
+
+.importPageContent {
+	margin: 10px 10px 50px 10px;
+}
+
+.configFinishedLabel {
+	font-size: 14px;
+	margin: 10px 0px;
+	color : #505354;
+	background: #ededed;
+	border-radius : 4px;
+	padding: 10px;
+}
+
+.partitionInfoTable {
+	border-radius : 3px;
+	border: 1px solid #ccc;
+	background: #fff;
+	border-collapse: collapse;
+	width :250px;
+}
+
+.partitionInfoTable td {
+	color: #505354;
+	font-size: 11px;
+	padding : 3px 5px;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+
+.partitionInfoTable td.header {
+	color: #505354;
+	font-size: 11px;
+	padding : 3px 5px;
+	border-right: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	font-weight: bold;
+	background: #ededed;
+}
+
+.partitionInfoTable tr.selected td {
+	background: #cce9ee;
+}
+
+.storageDetailsTable {
+	width : 100%;
+}
+
+.createPartitionButton {
+	margin-top: 10px;
+}
+
+.luceneHAButton {
+	margin-bottom:5px;
+	margin-top:10px;
+	margin-right:5px;
+}
+
+.reverProxyPortTable, .namContentPanel {
+	margin-top: 20px;
+	padding: 10px;
+	border-radius: 3px;
+}
+
+.namContentPanel {
+	width: 80%;
+	background: #fff;
+	margin-top: 0;
+}
+
+.namContentPanelHeader {
+	font-weight: bold;
+	font-size: 12px;
+}
+
+.enableNamCheckBox {
+	margin-top: 20px;
+	display: block;
+}
+
+.networkPageHttpEnabledCheckBox {
+	display:inline-block;
+	vertical-align: middle;
+	height: 28px;
+	margin-right: 5px;
+}
+
+.defaultLocaleLabel {
+	padding-right: 5px;
+}
+
+.clusteringShareNotAvailableLabel {
+	-moz-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
+    margin: 10px 5px;
+    padding: 2px 6px;
+    background: #F7F8E0;
+    color: #505354;
+}
+
+.networkPagePortRedirectProxyDescLabel,.vashareNotAvailableLabel {
+	background: none repeat scroll 0 0 #FAFAFA;
+    color: #505354;
+    font-size: 12px;
+    margin: 10px 0 0 100px;
+    padding: 7px;
+    width: 450px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.vashareNotAvailableLabel {
+	margin: 0px 0 0 20px;
+}

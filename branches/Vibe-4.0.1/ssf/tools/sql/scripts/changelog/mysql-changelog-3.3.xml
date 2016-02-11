@@ -1,0 +1,2785 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This changelog defines schema equivalent to that of Vibe 3.3 (and also Vibe 3.4 since 3.4 shares the same schema as 3.3) -->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-1">
+        <createTable tableName="JBPM_ACTION">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="class" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(255)"/>
+            <column name="ISPROPAGATIONALLOWED_" type="BIT"/>
+            <column name="ACTIONEXPRESSION_" type="VARCHAR(255)"/>
+            <column name="ISASYNC_" type="BIT"/>
+            <column name="REFERENCEDACTION_" type="BIGINT"/>
+            <column name="ACTIONDELEGATION_" type="BIGINT"/>
+            <column name="EVENT_" type="BIGINT"/>
+            <column name="PROCESSDEFINITION_" type="BIGINT"/>
+            <column name="TIMERNAME_" type="VARCHAR(255)"/>
+            <column name="DUEDATE_" type="VARCHAR(255)"/>
+            <column name="REPEAT_" type="VARCHAR(255)"/>
+            <column name="TRANSITIONNAME_" type="VARCHAR(255)"/>
+            <column name="TIMERACTION_" type="BIGINT"/>
+            <column name="EXPRESSION_" type="VARCHAR(4000)"/>
+            <column name="EVENTINDEX_" type="INT"/>
+            <column name="EXCEPTIONHANDLER_" type="BIGINT"/>
+            <column name="EXCEPTIONHANDLERINDEX_" type="INT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-2">
+        <createTable tableName="JBPM_BYTEARRAY">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(255)"/>
+            <column name="FILEDEFINITION_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-3">
+        <createTable tableName="JBPM_BYTEBLOCK">
+            <column name="PROCESSFILE_" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BYTES_" type="BLOB"/>
+            <column name="INDEX_" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-4">
+        <createTable tableName="JBPM_COMMENT">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="VERSION_" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACTORID_" type="VARCHAR(255)"/>
+            <column name="TIME_" type="DATETIME"/>
+            <column name="MESSAGE_" type="VARCHAR(4000)"/>
+            <column name="TOKEN_" type="BIGINT"/>
+            <column name="TASKINSTANCE_" type="BIGINT"/>
+            <column name="TOKENINDEX_" type="INT"/>
+            <column name="TASKINSTANCEINDEX_" type="INT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-5">
+        <createTable tableName="JBPM_DECISIONCONDITIONS">
+            <column name="DECISION_" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRANSITIONNAME_" type="VARCHAR(255)"/>
+            <column name="EXPRESSION_" type="VARCHAR(255)"/>
+            <column name="INDEX_" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-6">
+        <createTable tableName="JBPM_DELEGATION">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CLASSNAME_" type="VARCHAR(4000)"/>
+            <column name="CONFIGURATION_" type="VARCHAR(4000)"/>
+            <column name="CONFIGTYPE_" type="VARCHAR(255)"/>
+            <column name="PROCESSDEFINITION_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-7">
+        <createTable tableName="JBPM_EVENT">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="EVENTTYPE_" type="VARCHAR(255)"/>
+            <column name="TYPE_" type="CHAR(1)"/>
+            <column name="GRAPHELEMENT_" type="BIGINT"/>
+            <column name="NODE_" type="BIGINT"/>
+            <column name="PROCESSDEFINITION_" type="BIGINT"/>
+            <column name="TRANSITION_" type="BIGINT"/>
+            <column name="TASK_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-8">
+        <createTable tableName="JBPM_EXCEPTIONHANDLER">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="EXCEPTIONCLASSNAME_" type="VARCHAR(4000)"/>
+            <column name="TYPE_" type="CHAR(1)"/>
+            <column name="GRAPHELEMENT_" type="BIGINT"/>
+            <column name="NODE_" type="BIGINT"/>
+            <column name="GRAPHELEMENTINDEX_" type="INT"/>
+            <column name="PROCESSDEFINITION_" type="BIGINT"/>
+            <column name="TRANSITION_" type="BIGINT"/>
+            <column name="TASK_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-9">
+        <createTable tableName="JBPM_LOG">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INDEX_" type="INT"/>
+            <column name="DATE_" type="DATETIME"/>
+            <column name="TOKEN_" type="BIGINT"/>
+            <column name="PARENT_" type="BIGINT"/>
+            <column name="SWIMLANEINSTANCE_" type="BIGINT"/>
+            <column name="TASKINSTANCE_" type="BIGINT"/>
+            <column name="TASKACTORID_" type="VARCHAR(255)"/>
+            <column name="NODE_" type="BIGINT"/>
+            <column name="ENTER_" type="DATETIME"/>
+            <column name="LEAVE_" type="DATETIME"/>
+            <column name="DURATION_" type="BIGINT"/>
+            <column name="NEWLONGVALUE_" type="BIGINT"/>
+            <column name="TRANSITION_" type="BIGINT"/>
+            <column name="SOURCENODE_" type="BIGINT"/>
+            <column name="DESTINATIONNODE_" type="BIGINT"/>
+            <column name="EXCEPTION_" type="VARCHAR(4000)"/>
+            <column name="ACTION_" type="BIGINT"/>
+            <column name="TASKOLDACTORID_" type="VARCHAR(255)"/>
+            <column name="VARIABLEINSTANCE_" type="BIGINT"/>
+            <column name="OLDSTRINGVALUE_" type="VARCHAR(4000)"/>
+            <column name="NEWSTRINGVALUE_" type="VARCHAR(4000)"/>
+            <column name="OLDDOUBLEVALUE_" type="DOUBLE"/>
+            <column name="NEWDOUBLEVALUE_" type="DOUBLE"/>
+            <column name="OLDLONGIDCLASS_" type="VARCHAR(255)"/>
+            <column name="OLDLONGIDVALUE_" type="BIGINT"/>
+            <column name="NEWLONGIDCLASS_" type="VARCHAR(255)"/>
+            <column name="NEWLONGIDVALUE_" type="BIGINT"/>
+            <column name="OLDSTRINGIDCLASS_" type="VARCHAR(255)"/>
+            <column name="OLDSTRINGIDVALUE_" type="VARCHAR(255)"/>
+            <column name="NEWSTRINGIDCLASS_" type="VARCHAR(255)"/>
+            <column name="NEWSTRINGIDVALUE_" type="VARCHAR(255)"/>
+            <column name="CHILD_" type="BIGINT"/>
+            <column name="MESSAGE_" type="VARCHAR(4000)"/>
+            <column name="OLDLONGVALUE_" type="BIGINT"/>
+            <column name="OLDDATEVALUE_" type="DATETIME"/>
+            <column name="NEWDATEVALUE_" type="DATETIME"/>
+            <column name="OLDBYTEARRAY_" type="BIGINT"/>
+            <column name="NEWBYTEARRAY_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-10">
+        <createTable tableName="JBPM_MESSAGE">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESTINATION_" type="VARCHAR(255)"/>
+            <column name="EXCEPTION_" type="VARCHAR(4000)"/>
+            <column name="ISSUSPENDED_" type="BIT"/>
+            <column name="TOKEN_" type="BIGINT"/>
+            <column name="TEXT_" type="VARCHAR(255)"/>
+            <column name="ACTION_" type="BIGINT"/>
+            <column name="TRANSITIONNAME_" type="VARCHAR(255)"/>
+            <column name="TASKINSTANCE_" type="BIGINT"/>
+            <column name="NODE_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-11">
+        <createTable tableName="JBPM_MODULEDEFINITION">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(4000)"/>
+            <column name="PROCESSDEFINITION_" type="BIGINT"/>
+            <column name="STARTTASK_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-12">
+        <createTable tableName="JBPM_MODULEINSTANCE">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROCESSINSTANCE_" type="BIGINT"/>
+            <column name="TASKMGMTDEFINITION_" type="BIGINT"/>
+            <column name="NAME_" type="VARCHAR(255)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-13">
+        <createTable tableName="JBPM_NODE">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(255)"/>
+            <column name="PROCESSDEFINITION_" type="BIGINT"/>
+            <column name="ISASYNC_" type="BIT"/>
+            <column name="ACTION_" type="BIGINT"/>
+            <column name="SUPERSTATE_" type="BIGINT"/>
+            <column name="DECISIONEXPRESSION_" type="VARCHAR(255)"/>
+            <column name="DECISIONDELEGATION" type="BIGINT"/>
+            <column name="SUBPROCESSDEFINITION_" type="BIGINT"/>
+            <column name="SIGNAL_" type="INT"/>
+            <column name="CREATETASKS_" type="BIT"/>
+            <column name="ENDTASKS_" type="BIT"/>
+            <column name="NODECOLLECTIONINDEX_" type="INT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-14">
+        <createTable tableName="JBPM_POOLEDACTOR">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ACTORID_" type="VARCHAR(255)"/>
+            <column name="SWIMLANEINSTANCE_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-15">
+        <createTable tableName="JBPM_PROCESSDEFINITION">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(255)"/>
+            <column name="VERSION_" type="INT"/>
+            <column name="ISTERMINATIONIMPLICIT_" type="BIT"/>
+            <column name="STARTSTATE_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-16">
+        <createTable tableName="JBPM_PROCESSINSTANCE">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="VERSION_" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="START_" type="DATETIME"/>
+            <column name="END_" type="DATETIME"/>
+            <column name="ISSUSPENDED_" type="BIT"/>
+            <column name="PROCESSDEFINITION_" type="BIGINT"/>
+            <column name="ROOTTOKEN_" type="BIGINT"/>
+            <column name="SUPERPROCESSTOKEN_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-17">
+        <createTable tableName="JBPM_RUNTIMEACTION">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="VERSION_" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EVENTTYPE_" type="VARCHAR(255)"/>
+            <column name="TYPE_" type="CHAR(1)"/>
+            <column name="GRAPHELEMENT_" type="BIGINT"/>
+            <column name="PROCESSINSTANCE_" type="BIGINT"/>
+            <column name="ACTION_" type="BIGINT"/>
+            <column name="PROCESSINSTANCEINDEX_" type="INT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-18">
+        <createTable tableName="JBPM_SWIMLANE">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(255)"/>
+            <column name="ACTORIDEXPRESSION_" type="VARCHAR(255)"/>
+            <column name="POOLEDACTORSEXPRESSION_" type="VARCHAR(255)"/>
+            <column name="ASSIGNMENTDELEGATION_" type="BIGINT"/>
+            <column name="TASKMGMTDEFINITION_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-19">
+        <createTable tableName="JBPM_SWIMLANEINSTANCE">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(255)"/>
+            <column name="ACTORID_" type="VARCHAR(255)"/>
+            <column name="SWIMLANE_" type="BIGINT"/>
+            <column name="TASKMGMTINSTANCE_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-20">
+        <createTable tableName="JBPM_TASK">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(255)"/>
+            <column name="PROCESSDEFINITION_" type="BIGINT"/>
+            <column name="DESCRIPTION_" type="VARCHAR(4000)"/>
+            <column name="ISBLOCKING_" type="BIT"/>
+            <column name="ISSIGNALLING_" type="BIT"/>
+            <column name="DUEDATE_" type="VARCHAR(255)"/>
+            <column name="ACTORIDEXPRESSION_" type="VARCHAR(255)"/>
+            <column name="POOLEDACTORSEXPRESSION_" type="VARCHAR(255)"/>
+            <column name="TASKMGMTDEFINITION_" type="BIGINT"/>
+            <column name="TASKNODE_" type="BIGINT"/>
+            <column name="STARTSTATE_" type="BIGINT"/>
+            <column name="ASSIGNMENTDELEGATION_" type="BIGINT"/>
+            <column name="SWIMLANE_" type="BIGINT"/>
+            <column name="TASKCONTROLLER_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-21">
+        <createTable tableName="JBPM_TASKACTORPOOL">
+            <column name="POOLEDACTOR_" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASKINSTANCE_" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-22">
+        <createTable tableName="JBPM_TASKCONTROLLER">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="TASKCONTROLLERDELEGATION_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-23">
+        <createTable tableName="JBPM_TASKINSTANCE">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(255)"/>
+            <column name="DESCRIPTION_" type="VARCHAR(4000)"/>
+            <column name="ACTORID_" type="VARCHAR(255)"/>
+            <column name="CREATE_" type="DATETIME"/>
+            <column name="START_" type="DATETIME"/>
+            <column name="END_" type="DATETIME"/>
+            <column name="DUEDATE_" type="DATETIME"/>
+            <column name="PRIORITY_" type="INT"/>
+            <column name="ISCANCELLED_" type="BIT"/>
+            <column name="ISSUSPENDED_" type="BIT"/>
+            <column name="ISOPEN_" type="BIT"/>
+            <column name="ISSIGNALLING_" type="BIT"/>
+            <column name="ISBLOCKING_" type="BIT"/>
+            <column name="TASK_" type="BIGINT"/>
+            <column name="TOKEN_" type="BIGINT"/>
+            <column name="SWIMLANINSTANCE_" type="BIGINT"/>
+            <column name="TASKMGMTINSTANCE_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-24">
+        <createTable tableName="JBPM_TIMER">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(255)"/>
+            <column name="DUEDATE_" type="DATETIME"/>
+            <column name="REPEAT_" type="VARCHAR(255)"/>
+            <column name="TRANSITIONNAME_" type="VARCHAR(255)"/>
+            <column name="EXCEPTION_" type="VARCHAR(4000)"/>
+            <column name="ISSUSPENDED_" type="BIT"/>
+            <column name="ACTION_" type="BIGINT"/>
+            <column name="TOKEN_" type="BIGINT"/>
+            <column name="PROCESSINSTANCE_" type="BIGINT"/>
+            <column name="TASKINSTANCE_" type="BIGINT"/>
+            <column name="GRAPHELEMENTTYPE_" type="VARCHAR(255)"/>
+            <column name="GRAPHELEMENT_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-25">
+        <createTable tableName="JBPM_TOKEN">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="VERSION_" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(255)"/>
+            <column name="START_" type="DATETIME"/>
+            <column name="END_" type="DATETIME"/>
+            <column name="NODEENTER_" type="DATETIME"/>
+            <column name="NEXTLOGINDEX_" type="INT"/>
+            <column name="ISABLETOREACTIVATEPARENT_" type="BIT"/>
+            <column name="ISTERMINATIONIMPLICIT_" type="BIT"/>
+            <column name="ISSUSPENDED_" type="BIT"/>
+            <column name="NODE_" type="BIGINT"/>
+            <column name="PROCESSINSTANCE_" type="BIGINT"/>
+            <column name="PARENT_" type="BIGINT"/>
+            <column name="SUBPROCESSINSTANCE_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-26">
+        <createTable tableName="JBPM_TOKENVARIABLEMAP">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="TOKEN_" type="BIGINT"/>
+            <column name="CONTEXTINSTANCE_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-27">
+        <createTable tableName="JBPM_TRANSITION">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(255)"/>
+            <column name="PROCESSDEFINITION_" type="BIGINT"/>
+            <column name="FROM_" type="BIGINT"/>
+            <column name="TO_" type="BIGINT"/>
+            <column name="FROMINDEX_" type="INT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-28">
+        <createTable tableName="JBPM_VARIABLEACCESS">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="VARIABLENAME_" type="VARCHAR(255)"/>
+            <column name="ACCESS_" type="VARCHAR(255)"/>
+            <column name="MAPPEDNAME_" type="VARCHAR(255)"/>
+            <column name="PROCESSSTATE_" type="BIGINT"/>
+            <column name="TASKCONTROLLER_" type="BIGINT"/>
+            <column name="INDEX_" type="INT"/>
+            <column name="SCRIPT_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-29">
+        <createTable tableName="JBPM_VARIABLEINSTANCE">
+            <column autoIncrement="true" name="ID_" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CLASS_" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NAME_" type="VARCHAR(255)"/>
+            <column name="CONVERTER_" type="CHAR(1)"/>
+            <column name="TOKEN_" type="BIGINT"/>
+            <column name="TOKENVARIABLEMAP_" type="BIGINT"/>
+            <column name="PROCESSINSTANCE_" type="BIGINT"/>
+            <column name="BYTEARRAYVALUE_" type="BIGINT"/>
+            <column name="DATEVALUE_" type="DATETIME"/>
+            <column name="DOUBLEVALUE_" type="DOUBLE"/>
+            <column name="LONGIDCLASS_" type="VARCHAR(255)"/>
+            <column name="LONGVALUE_" type="BIGINT"/>
+            <column name="STRINGIDCLASS_" type="VARCHAR(255)"/>
+            <column name="STRINGVALUE_" type="VARCHAR(255)"/>
+            <column name="TASKINSTANCE_" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-30">
+        <createTable tableName="SS_Attachments">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="folderEntry" type="BIGINT"/>
+            <column name="principal" type="BIGINT"/>
+            <column name="binder" type="BIGINT"/>
+            <column name="ownerType" type="VARCHAR(16)"/>
+            <column name="ownerId" type="BIGINT"/>
+            <column name="owningBinderKey" type="VARCHAR(255)"/>
+            <column name="owningBinderId" type="BIGINT"/>
+            <column name="name" type="VARCHAR(64)"/>
+            <column name="relevanceUUID" type="VARCHAR(256)"/>
+            <column name="creation_date" type="DATETIME"/>
+            <column name="creation_principal" type="BIGINT"/>
+            <column name="modification_date" type="DATETIME"/>
+            <column name="modification_principal" type="BIGINT"/>
+            <column name="fileName" type="VARCHAR(255)"/>
+            <column name="fileLength" type="BIGINT"/>
+            <column name="description_text" type="LONGTEXT"/>
+            <column name="description_format" type="INT"/>
+            <column name="lastVersion" type="INT"/>
+            <column name="majorVersion" type="INT"/>
+            <column name="minorVersion" type="INT"/>
+            <column name="fileStatus" type="INT"/>
+            <column name="agingEnabled" type="BIT"/>
+            <column name="agingDate" type="DATETIME"/>
+            <column name="encrypted" type="BIT"/>
+            <column name="encryptionKey" type="BLOB"/>
+            <column name="repositoryName" type="VARCHAR(128)"/>
+            <column name="filelock_id" type="VARCHAR(128)"/>
+            <column name="filelock_subject" type="VARCHAR(192)"/>
+            <column name="filelock_owner" type="BIGINT"/>
+            <column name="filelock_expirationDate" type="DATETIME"/>
+            <column name="filelock_ownerInfo" type="VARCHAR(256)"/>
+            <column name="filelock_dirty" type="BIT"/>
+            <column name="versionNumber" type="INT"/>
+            <column name="versionName" type="VARCHAR(256)"/>
+            <column name="parentAttachment" type="CHAR(32)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-31">
+        <createTable tableName="SS_AuditTrail">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="startDate" type="DATETIME"/>
+            <column name="startBy" type="BIGINT"/>
+            <column name="endBy" type="BIGINT"/>
+            <column name="endDate" type="DATETIME"/>
+            <column name="entityType" type="VARCHAR(16)"/>
+            <column name="entityId" type="BIGINT"/>
+            <column name="owningBinderId" type="BIGINT"/>
+            <column name="owningBinderKey" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(512)"/>
+            <column name="transactionType" type="VARCHAR(16)"/>
+            <column name="fileId" type="CHAR(32)"/>
+            <column name="applicationId" type="BIGINT"/>
+            <column name="deletedFolderEntryFamily" type="VARCHAR(32)"/>
+            <column name="tokenId" type="BIGINT"/>
+            <column name="state" type="VARCHAR(64)"/>
+            <column name="threadName" type="VARCHAR(64)"/>
+            <column name="definitionId" type="VARCHAR(32)"/>
+            <column name="ended" type="BIT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-32">
+        <createTable tableName="SS_BinderQuota">
+            <column name="binderId" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="diskQuota" type="BIGINT"/>
+            <column name="diskSpaceUsed" type="BIGINT"/>
+            <column name="diskSpaceUsedCumulative" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-33">
+        <createTable tableName="SS_ChangeLogs">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="docNumber" type="VARCHAR(512)"/>
+            <column name="userName" type="VARCHAR(82)"/>
+            <column name="userId" type="BIGINT"/>
+            <column name="operationDate" type="DATETIME"/>
+            <column name="operation" type="VARCHAR(32)"/>
+            <column name="version" type="BIGINT"/>
+            <column name="xmlString" type="LONGTEXT"/>
+            <column name="entityType" type="VARCHAR(16)"/>
+            <column name="entityId" type="BIGINT"/>
+            <column name="owningBinderId" type="BIGINT"/>
+            <column name="owningBinderKey" type="VARCHAR(255)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-34">
+        <createTable tableName="SS_CustomAttributes">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="folderEntry" type="BIGINT"/>
+            <column name="principal" type="BIGINT"/>
+            <column name="binder" type="BIGINT"/>
+            <column name="ownerType" type="VARCHAR(16)"/>
+            <column name="ownerId" type="BIGINT"/>
+            <column name="owningBinderKey" type="VARCHAR(255)"/>
+            <column name="owningBinderId" type="BIGINT"/>
+            <column name="name" type="VARCHAR(64)"/>
+            <column name="stringValue" type="VARCHAR(2000)"/>
+            <column name="description_text" type="LONGTEXT"/>
+            <column name="description_format" type="INT"/>
+            <column name="longValue" type="BIGINT"/>
+            <column name="dateValue" type="DATETIME"/>
+            <column name="serializedValue" type="LONGBLOB"/>
+            <column name="xmlValue" type="LONGTEXT"/>
+            <column name="booleanValue" type="BIT"/>
+            <column name="valueType" type="INT"/>
+            <column name="position" type="INT"/>
+            <column name="parent" type="CHAR(32)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-35">
+        <createTable tableName="SS_Dashboards">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="nextComponentId" type="INT"/>
+            <column name="showComponents" type="BIT"/>
+            <column name="version" type="INT"/>
+            <column name="properties" type="LONGBLOB"/>
+            <column name="creation_date" type="DATETIME"/>
+            <column name="creation_principal" type="BIGINT"/>
+            <column name="modification_date" type="DATETIME"/>
+            <column name="modification_principal" type="BIGINT"/>
+            <column name="owner_id" type="BIGINT"/>
+            <column name="owner_type" type="INT"/>
+            <column name="binderId" type="BIGINT"/>
+            <column name="portletName" type="VARCHAR(256)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-36">
+        <createTable tableName="SS_DefinitionMap">
+            <column name="binder" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="definition" type="CHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-37">
+        <createTable tableName="SS_Definitions">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(64)"/>
+            <column name="title" type="VARCHAR(128)"/>
+            <column name="internalId" type="VARCHAR(32)"/>
+            <column name="type" type="INT"/>
+            <column name="visibility" type="INT"/>
+            <column name="encoding" type="LONGBLOB"/>
+            <column name="binderId" type="BIGINT"/>
+            <column name="creation_date" type="DATETIME"/>
+            <column name="creation_principal" type="BIGINT"/>
+            <column name="modification_date" type="DATETIME"/>
+            <column name="modification_principal" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-38">
+        <createTable tableName="SS_EmailAddresses">
+            <column name="principal" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address" type="VARCHAR(256)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-39">
+        <createTable tableName="SS_EmailLog">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sendDate" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fromField" type="VARCHAR(255)"/>
+            <column name="subj" type="VARCHAR(255)"/>
+            <column name="comments" type="LONGTEXT"/>
+            <column name="status" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="toEmailAddresses" type="LONGTEXT"/>
+            <column name="fileAttachments" type="LONGTEXT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-40">
+        <createTable tableName="SS_Events">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="folderEntry" type="BIGINT"/>
+            <column name="principal" type="BIGINT"/>
+            <column name="binder" type="BIGINT"/>
+            <column name="ownerType" type="VARCHAR(16)"/>
+            <column name="ownerId" type="BIGINT"/>
+            <column name="owningBinderKey" type="VARCHAR(255)"/>
+            <column name="owningBinderId" type="BIGINT"/>
+            <column name="name" type="VARCHAR(64)"/>
+            <column name="dtStart" type="DATETIME"/>
+            <column name="dtCalcStart" type="DATETIME"/>
+            <column name="dtEnd" type="DATETIME"/>
+            <column name="dtCalcEnd" type="DATETIME"/>
+            <column name="frequency" type="INT"/>
+            <column name="repeatInterval" type="INT"/>
+            <column name="until" type="DATETIME"/>
+            <column name="repeatCount" type="INT"/>
+            <column name="weekStart" type="INT"/>
+            <column name="timeZoneSensitive" type="BIT"/>
+            <column name="days" type="VARCHAR(100)"/>
+            <column name="monthDay" type="VARCHAR(100)"/>
+            <column name="yearDay" type="VARCHAR(100)"/>
+            <column name="weekNo" type="VARCHAR(100)"/>
+            <column name="months" type="VARCHAR(100)"/>
+            <column name="minutes" type="VARCHAR(100)"/>
+            <column name="hours" type="VARCHAR(100)"/>
+            <column name="duration" type="VARCHAR(32)"/>
+            <column name="creation_date" type="DATETIME"/>
+            <column name="creation_principal" type="BIGINT"/>
+            <column name="modification_date" type="DATETIME"/>
+            <column name="modification_principal" type="BIGINT"/>
+            <column name="timeZone" type="VARCHAR(80)"/>
+            <column name="calUid" type="VARCHAR(255)"/>
+            <column name="freeBusy" type="VARCHAR(32)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-41">
+        <createTable tableName="SS_Extensions">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(64)"/>
+            <column name="description" type="VARCHAR(256)"/>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="version" type="VARCHAR(255)"/>
+            <column name="type" type="INT"/>
+            <column name="author" type="VARCHAR(255)"/>
+            <column name="authorEmail" type="VARCHAR(255)"/>
+            <column name="authorSite" type="VARCHAR(255)"/>
+            <column name="dateCreated" type="VARCHAR(255)"/>
+            <column name="dateDeployed" type="VARCHAR(255)"/>
+            <column name="zoneId" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-42">
+        <createTable tableName="SS_FolderEntries">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="preDeleted" type="BIT"/>
+            <column name="preDeletedWhen" type="BIGINT"/>
+            <column name="preDeletedBy" type="BIGINT"/>
+            <column name="deleted" type="BIT"/>
+            <column name="subscribed" type="BIT"/>
+            <column name="hasEntryAcl" type="BIT"/>
+            <column name="checkFolderAcl" type="BIT"/>
+            <column name="reserved_date" type="DATETIME"/>
+            <column name="reserved_principal" type="BIGINT"/>
+            <column name="entry_level" type="INT"/>
+            <column name="entry_sortKey" type="VARCHAR(255)"/>
+            <column name="owningBinderKey" type="VARCHAR(255)"/>
+            <column name="lastActivity" type="DATETIME"/>
+            <column name="logVersion" type="BIGINT"/>
+            <column name="replyCount" type="INT"/>
+            <column name="nextDescendant" type="INT"/>
+            <column name="totalReplyCount" type="INT"/>
+            <column name="postedBy" type="VARCHAR(256)"/>
+            <column name="topEntry" type="BIGINT"/>
+            <column name="parentEntry" type="BIGINT"/>
+            <column name="wrk_date" type="DATETIME"/>
+            <column name="wrk_principal" type="BIGINT"/>
+            <column name="parentBinder" type="BIGINT"/>
+            <column name="description_text" type="LONGTEXT"/>
+            <column name="description_format" type="INT"/>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="normalTitle" type="VARCHAR(255)"/>
+            <column name="iconName" type="VARCHAR(64)"/>
+            <column name="entryDef" type="CHAR(32)"/>
+            <column name="creation_date" type="DATETIME"/>
+            <column name="creation_principal" type="BIGINT"/>
+            <column name="modification_date" type="DATETIME"/>
+            <column name="modification_principal" type="BIGINT"/>
+            <column name="definitionType" type="INT"/>
+            <column name="ratings_average" type="DOUBLE"/>
+            <column name="ratings_count" type="BIGINT"/>
+            <column name="popularity" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-43">
+        <createTable tableName="SS_FolderEntryStats">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="popularity" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-44">
+        <createTable tableName="SS_Forums">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="library" type="BIT"/>
+            <column name="deleted" type="BIT"/>
+            <column name="uniqueTitles" type="BIT"/>
+            <column name="logVersion" type="BIGINT"/>
+            <column name="mirrored" type="BIT"/>
+            <column name="binderCount" type="INT"/>
+            <column name="resourceDriverName" type="VARCHAR(64)"/>
+            <column name="resourcePath" type="VARCHAR(1024)"/>
+            <column name="parentBinder" type="BIGINT"/>
+            <column name="owner" type="BIGINT"/>
+            <column name="name" type="VARCHAR(128)"/>
+            <column name="pathName" type="VARCHAR(1024)"/>
+            <column name="notify_teamOn" type="BIT"/>
+            <column name="notify_style" type="INT"/>
+            <column name="notify_email" type="LONGTEXT"/>
+            <column name="notify_fromAddress" type="VARCHAR(128)"/>
+            <column name="notify_subject" type="VARCHAR(128)"/>
+            <column name="posting" type="CHAR(32)"/>
+            <column name="properties" type="LONGBLOB"/>
+            <column name="functionMembershipInherited" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="definitionsInherited" type="BIT"/>
+            <column name="definitionType" type="INT"/>
+            <column name="teamMembershipInherited" type="BIT"/>
+            <column name="ratings_average" type="DOUBLE"/>
+            <column name="ratings_count" type="BIGINT"/>
+            <column name="description_text" type="LONGTEXT"/>
+            <column name="description_format" type="INT"/>
+            <column name="branding" type="LONGTEXT"/>
+            <column name="brandingExt" type="LONGTEXT"/>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="normalTitle" type="VARCHAR(255)"/>
+            <column name="iconName" type="VARCHAR(64)"/>
+            <column name="internalId" type="VARCHAR(32)"/>
+            <column name="nextBinderNumber" type="INT"/>
+            <column name="binder_level" type="INT"/>
+            <column name="binder_sortKey" type="VARCHAR(255)"/>
+            <column name="versionsEnabled" type="BIT"/>
+            <column name="versionsToKeep" type="BIGINT"/>
+            <column name="versionAgingDays" type="BIGINT"/>
+            <column name="versionAgingEnabled" type="BIT"/>
+            <column name="maxFileSize" type="BIGINT"/>
+            <column name="fileEncryptionEnabled" type="BIT"/>
+            <column name="entryDef" type="CHAR(32)"/>
+            <column name="creation_date" type="DATETIME"/>
+            <column name="creation_principal" type="BIGINT"/>
+            <column name="modification_date" type="DATETIME"/>
+            <column name="modification_principal" type="BIGINT"/>
+            <column name="postingEnabled" type="BIT"/>
+            <column name="topFolder" type="BIGINT"/>
+            <column name="nextEntryNumber" type="INT"/>
+            <column name="entryRootKey" type="CHAR(15)"/>
+            <column name="preDeleted" type="BIT"/>
+            <column name="preDeletedWhen" type="BIGINT"/>
+            <column name="preDeletedBy" type="BIGINT"/>
+            <column name="searchTitle" type="VARCHAR(255)"/>
+            <column name="templateTitle" type="VARCHAR(128)"/>
+            <column name="tDescription_text" type="LONGTEXT"/>
+            <column name="tDescription_format" type="INT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-45">
+        <createTable tableName="SS_FunctionConditionMap">
+            <column name="functionId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="meet" type="VARCHAR(16)"/>
+            <column name="conditionId" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-46">
+        <createTable tableName="SS_FunctionConditions">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="encodedSpec" type="LONGTEXT"/>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description_text" type="LONGTEXT"/>
+            <column name="description_format" type="INT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-47">
+        <createTable tableName="SS_FunctionOperations">
+            <column name="functionId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="operationName" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-48">
+        <createTable tableName="SS_Functions">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="internalId" type="VARCHAR(32)"/>
+            <column name="zoneWide" type="BIT"/>
+            <column name="scope" type="VARCHAR(16)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-49">
+        <createTable tableName="SS_IndexingJournal">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="nodeName" type="VARCHAR(128)"/>
+            <column name="indexName" type="VARCHAR(160)"/>
+            <column name="operationName" type="VARCHAR(32)"/>
+            <column name="operationArgs" type="LONGBLOB"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-50">
+        <createTable tableName="SS_IndexNode">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="nodeName" type="VARCHAR(128)"/>
+            <column name="indexName" type="VARCHAR(160)"/>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="accessMode" type="VARCHAR(16)"/>
+            <column name="inSynch" type="BIT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-51">
+        <createTable tableName="SS_LdapConnectionConfig">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="url" type="VARCHAR(255)"/>
+            <column name="userIdAttribute" type="VARCHAR(255)"/>
+            <column name="mappings" type="LONGTEXT"/>
+            <column name="userSearches" type="LONGTEXT"/>
+            <column name="groupSearches" type="LONGTEXT"/>
+            <column name="principal" type="VARCHAR(255)"/>
+            <column name="credentials" type="VARCHAR(255)"/>
+            <column name="position" type="INT"/>
+            <column name="ldapGuidAttribute" type="VARCHAR(255)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-52">
+        <createTable tableName="SS_LibraryEntries">
+            <column name="binderId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="entityId" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-53">
+        <createTable tableName="SS_LicenseStats">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="snapshotDate" type="DATETIME"/>
+            <column name="internalUserCount" type="BIGINT"/>
+            <column name="externalUserCount" type="BIGINT"/>
+            <column name="activeUserCount" type="BIGINT"/>
+            <column name="checksum" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-54">
+        <createTable tableName="SS_Notifications">
+            <column name="binderId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="principalId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-55">
+        <createTable tableName="SS_NotifyStatus">
+            <column name="ownerId" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="ownerType" type="VARCHAR(16)"/>
+            <column name="owningBinderKey" type="VARCHAR(255)"/>
+            <column name="owningBinderId" type="BIGINT"/>
+            <column name="lastModified" type="DATETIME"/>
+            <column name="lastDigestSent" type="DATETIME"/>
+            <column name="lastFullSent" type="DATETIME"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-56">
+        <createTable tableName="SS_Postings">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="BIT"/>
+            <column name="emailAddress" type="VARCHAR(256)"/>
+            <column name="password" type="VARCHAR(64)"/>
+            <column name="credentials" type="VARCHAR(64)"/>
+            <column name="binder" type="BIGINT"/>
+            <column name="definition" type="CHAR(32)"/>
+            <column name="replyPostingOption" type="INT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-57">
+        <createTable tableName="SS_PrincipalMembership">
+            <column name="userId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="groupId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-58">
+        <createTable tableName="SS_Principals">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="workspaceId" type="BIGINT"/>
+            <column name="internalId" type="VARCHAR(32)"/>
+            <column name="deleted" type="BIT"/>
+            <column name="disabled" type="BIT"/>
+            <column name="logVersion" type="BIGINT"/>
+            <column name="emailAddress" type="VARCHAR(24)"/>
+            <column name="name" type="VARCHAR(128)"/>
+            <column name="foreignName" type="VARCHAR(255)"/>
+            <column name="ldapGuid" type="VARCHAR(128)"/>
+            <column name="theme" type="VARCHAR(64)"/>
+            <column name="parentBinder" type="BIGINT"/>
+            <column name="description_text" type="LONGTEXT"/>
+            <column name="description_format" type="INT"/>
+            <column name="title" type="VARCHAR(255)"/>
+            <column name="normalTitle" type="VARCHAR(255)"/>
+            <column name="iconName" type="VARCHAR(64)"/>
+            <column name="definitionType" type="INT"/>
+            <column name="entryDef" type="CHAR(32)"/>
+            <column name="creation_date" type="DATETIME"/>
+            <column name="creation_principal" type="BIGINT"/>
+            <column name="modification_date" type="DATETIME"/>
+            <column name="modification_principal" type="BIGINT"/>
+            <column name="diskQuota" type="BIGINT"/>
+            <column name="fileSizeLimit" type="BIGINT"/>
+            <column name="displayStyle" type="VARCHAR(16)"/>
+            <column name="loginDate" type="DATETIME"/>
+            <column name="firstName" type="VARCHAR(64)"/>
+            <column name="lastName" type="VARCHAR(64)"/>
+            <column name="middleName" type="VARCHAR(64)"/>
+            <column name="organization" type="VARCHAR(256)"/>
+            <column name="phone" type="VARCHAR(128)"/>
+            <column name="zonName" type="VARCHAR(100)"/>
+            <column name="skypeId" type="VARCHAR(64)"/>
+            <column name="twitterId" type="VARCHAR(64)"/>
+            <column name="status" type="VARCHAR(256)"/>
+            <column name="statusDate" type="DATETIME"/>
+            <column name="miniBlogId" type="BIGINT"/>
+            <column name="maxGroupsQuota" type="BIGINT"/>
+            <column name="maxGroupsFileSizeLimit" type="BIGINT"/>
+            <column name="diskSpaceUsed" type="BIGINT"/>
+            <column name="password" type="VARCHAR(64)"/>
+            <column name="pwdenc" type="VARCHAR(32)"/>
+            <column name="timeZone" type="VARCHAR(80)"/>
+            <column name="locale" type="VARCHAR(32)"/>
+            <column name="digestSeed" type="BIGINT"/>
+            <column name="postUrl" type="VARCHAR(256)"/>
+            <column name="timeout" type="INT"/>
+            <column name="trusted" type="BIT"/>
+            <column name="maxIdleTime" type="INT"/>
+            <column name="sameAddrPolicy" type="BIT"/>
+            <column name="dynamic" type="BIT"/>
+            <column name="ldapQuery" type="LONGTEXT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-59">
+        <createTable tableName="SS_Ratings">
+            <column name="principalId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityType" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="rating" type="BIGINT"/>
+            <column name="readCount" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-60">
+        <createTable tableName="SS_SeenMap">
+            <column name="principalId" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="seenMap" type="LONGBLOB">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastPrune" type="DATETIME"/>
+            <column name="pruneDays" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-61">
+        <createTable tableName="SS_SharedEntity">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="referer" type="BIGINT"/>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="accessType" type="BIGINT"/>
+            <column name="accessId" type="BIGINT"/>
+            <column name="sharedDate" type="DATETIME"/>
+            <column name="entityType" type="VARCHAR(16)"/>
+            <column name="entityId" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-62">
+        <createTable tableName="SS_SimpleName">
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="emailAddress" type="VARCHAR(128)"/>
+            <column name="binderId" type="BIGINT"/>
+            <column name="binderType" type="VARCHAR(16)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-63">
+        <createTable tableName="SS_Subscriptions">
+            <column name="principalId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entityType" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="style" type="INT"/>
+            <column name="encodedStyles" type="VARCHAR(256)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-64">
+        <createTable tableName="SS_Tags">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="entity_type" type="INT"/>
+            <column name="entity_id" type="BIGINT"/>
+            <column name="owner_type" type="INT"/>
+            <column name="owner_id" type="BIGINT"/>
+            <column name="name" type="VARCHAR(64)"/>
+            <column name="isPublic" type="BIT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-65">
+        <createTable tableName="SS_TokenInfo">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="CHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="seed" type="VARCHAR(128)"/>
+            <column name="lastAccessTime" type="DATETIME"/>
+            <column name="userId" type="BIGINT"/>
+            <column name="applicationId" type="BIGINT"/>
+            <column name="binderId" type="BIGINT"/>
+            <column name="binderAccessConstraints" type="INT"/>
+            <column name="requesterId" type="BIGINT"/>
+            <column name="clientAddr" type="VARCHAR(128)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-66">
+        <createTable tableName="SS_UserProperties">
+            <column name="principalId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="binderId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="properties" type="LONGBLOB">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-67">
+        <createTable tableName="SS_WorkAreaFunctionMembers">
+            <column name="workAreaFunctionMembershipId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="memberId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-68">
+        <createTable tableName="SS_WorkAreaFunctionMemberships">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="workAreaId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="workAreaType" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="functionId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-69">
+        <createTable tableName="SS_WorkflowHistory">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="startBy" type="BIGINT"/>
+            <column name="startDate" type="DATETIME"/>
+            <column name="endBy" type="BIGINT"/>
+            <column name="endDate" type="DATETIME"/>
+            <column name="entityId" type="BIGINT"/>
+            <column name="entityType" type="VARCHAR(16)"/>
+            <column name="owningBinderId" type="BIGINT"/>
+            <column name="owningBinderKey" type="VARCHAR(255)"/>
+            <column name="tokenId" type="BIGINT"/>
+            <column name="state" type="VARCHAR(64)"/>
+            <column name="threadName" type="VARCHAR(64)"/>
+            <column name="definitionId" type="VARCHAR(32)"/>
+            <column name="ended" type="BIT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-70">
+        <createTable tableName="SS_WorkflowMap">
+            <column name="binder" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="workflowDefinition" type="CHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="entryDefinition" type="VARCHAR(32)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-71">
+        <createTable tableName="SS_WorkflowResponses">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="folderEntry" type="BIGINT"/>
+            <column name="principal" type="BIGINT"/>
+            <column name="binder" type="BIGINT"/>
+            <column name="ownerType" type="VARCHAR(16)"/>
+            <column name="ownerId" type="BIGINT"/>
+            <column name="owningBinderKey" type="VARCHAR(255)"/>
+            <column name="owningBinderId" type="BIGINT"/>
+            <column name="name" type="VARCHAR(64)"/>
+            <column name="response" type="VARCHAR(2000)"/>
+            <column name="definitionId" type="VARCHAR(32)"/>
+            <column name="responderId" type="BIGINT"/>
+            <column name="responseDate" type="DATETIME"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-72">
+        <createTable tableName="SS_WorkflowStates">
+            <column name="tokenId" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT"/>
+            <column name="folderEntry" type="BIGINT"/>
+            <column name="principal" type="BIGINT"/>
+            <column name="binder" type="BIGINT"/>
+            <column name="ownerType" type="VARCHAR(16)"/>
+            <column name="ownerId" type="BIGINT"/>
+            <column name="owningBinderKey" type="VARCHAR(255)"/>
+            <column name="owningBinderId" type="BIGINT"/>
+            <column name="wrk_date" type="DATETIME"/>
+            <column name="wrk_principal" type="BIGINT"/>
+            <column name="state" type="VARCHAR(64)"/>
+            <column name="threadName" type="VARCHAR(64)"/>
+            <column name="timerId" type="BIGINT"/>
+            <column name="definition" type="CHAR(32)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-73">
+        <createTable tableName="SS_ZoneConfig">
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="upgradeVersion" type="INT"/>
+            <column name="mobileAccessEnabled" type="BIT"/>
+            <column name="diskQuotasEnabled" type="BIT"/>
+            <column name="diskQuotaUserDefault" type="INT"/>
+            <column name="diskQuotasHighwaterPercentage" type="INT"/>
+            <column name="fileSizeLimitUserDefault" type="BIGINT"/>
+            <column name="binderQuotasInitialized" type="BIT"/>
+            <column name="binderQuotasEnabled" type="BIT"/>
+            <column name="binderQuotasAllowOwner" type="BIT"/>
+            <column name="fileVersionsMaxAge" type="BIGINT"/>
+            <column name="fsaEnabled" type="BIT"/>
+            <column name="fsaSynchInterval" type="INT"/>
+            <column name="fsaAutoUpdateUrl" type="VARCHAR(255)"/>
+            <column name="postingEnabled" type="BIT"/>
+            <column name="simpleUrlPostingEnabled" type="BIT"/>
+            <column name="sendMailEnabled" type="BIT"/>
+            <column name="defaultHomePageId" type="BIGINT"/>
+            <column name="defaultGuestHomePageId" type="BIGINT"/>
+            <column name="holidays" type="VARCHAR(4000)"/>
+            <column name="weekendDays" type="VARCHAR(128)"/>
+            <column name="allowLocalLogin" type="BIT"/>
+            <column name="allowAnonymousAccess" type="BIT"/>
+            <column name="allowSelfRegistration" type="BIT"/>
+            <column name="lastUpdate" type="BIGINT"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-74">
+        <createTable tableName="SS_ZoneInfo">
+            <column name="id" type="CHAR(32)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneName" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="virtualHost" type="VARCHAR(255)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-75">
+        <createTable tableName="SSQRTZ_BLOB_TRIGGERS">
+            <column name="TRIGGER_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BLOB_DATA" type="BLOB"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-76">
+        <createTable tableName="SSQRTZ_CALENDARS">
+            <column name="CALENDAR_NAME" type="VARCHAR(100)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="CALENDAR" type="BLOB">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-77">
+        <createTable tableName="SSQRTZ_CRON_TRIGGERS">
+            <column name="TRIGGER_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CRON_EXPRESSION" type="VARCHAR(120)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TIME_ZONE_ID" type="VARCHAR(80)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-78">
+        <createTable tableName="SSQRTZ_FIRED_TRIGGERS">
+            <column name="ENTRY_ID" type="VARCHAR(95)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="TRIGGER_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_VOLATILE" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="INSTANCE_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FIRED_TIME" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRIORITY" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATE" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_NAME" type="VARCHAR(100)"/>
+            <column name="JOB_GROUP" type="VARCHAR(100)"/>
+            <column name="IS_STATEFUL" type="VARCHAR(1)"/>
+            <column name="REQUESTS_RECOVERY" type="VARCHAR(1)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-79">
+        <createTable tableName="SSQRTZ_JOB_DETAILS">
+            <column name="JOB_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_GROUP" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(250)"/>
+            <column name="JOB_CLASS_NAME" type="VARCHAR(250)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_DURABLE" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_VOLATILE" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_STATEFUL" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REQUESTS_RECOVERY" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_DATA" type="BLOB"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-80">
+        <createTable tableName="SSQRTZ_JOB_LISTENERS">
+            <column name="JOB_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_GROUP" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_LISTENER" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-81">
+        <createTable tableName="SSQRTZ_LOCKS">
+            <column name="LOCK_NAME" type="VARCHAR(40)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-82">
+        <createTable tableName="SSQRTZ_PAUSED_TRIGGER_GRPS">
+            <column name="TRIGGER_GROUP" type="VARCHAR(100)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-83">
+        <createTable tableName="SSQRTZ_SCHEDULER_STATE">
+            <column name="INSTANCE_NAME" type="VARCHAR(100)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="LAST_CHECKIN_TIME" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CHECKIN_INTERVAL" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-84">
+        <createTable tableName="SSQRTZ_SIMPLE_TRIGGERS">
+            <column name="TRIGGER_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REPEAT_COUNT" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REPEAT_INTERVAL" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TIMES_TRIGGERED" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-85">
+        <createTable tableName="SSQRTZ_TRIGGER_LISTENERS">
+            <column name="TRIGGER_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_LISTENER" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-86">
+        <createTable tableName="SSQRTZ_TRIGGERS">
+            <column name="TRIGGER_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_GROUP" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_NAME" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_GROUP" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="IS_VOLATILE" type="VARCHAR(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(250)"/>
+            <column name="NEXT_FIRE_TIME" type="BIGINT"/>
+            <column name="PREV_FIRE_TIME" type="BIGINT"/>
+            <column name="PRIORITY" type="INT"/>
+            <column name="TRIGGER_STATE" type="VARCHAR(16)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TRIGGER_TYPE" type="VARCHAR(8)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="START_TIME" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="END_TIME" type="BIGINT"/>
+            <column name="CALENDAR_NAME" type="VARCHAR(100)"/>
+            <column name="MISFIRE_INSTR" type="SMALLINT"/>
+            <column name="JOB_DATA" type="BLOB"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-87">
+        <addPrimaryKey columnNames="PROCESSFILE_, INDEX_" tableName="JBPM_BYTEBLOCK"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-88">
+        <addPrimaryKey columnNames="DECISION_, INDEX_" tableName="JBPM_DECISIONCONDITIONS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-89">
+        <addPrimaryKey columnNames="TASKINSTANCE_, POOLEDACTOR_" tableName="JBPM_TASKACTORPOOL"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-90">
+        <addPrimaryKey columnNames="binder, position" tableName="SS_DefinitionMap"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-91">
+        <addPrimaryKey columnNames="principal, type" tableName="SS_EmailAddresses"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-92">
+        <addPrimaryKey columnNames="functionId, operationName" tableName="SS_FunctionOperations"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-93">
+        <addPrimaryKey columnNames="binderId, type, name" tableName="SS_LibraryEntries"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-94">
+        <addPrimaryKey columnNames="userId, groupId" tableName="SS_PrincipalMembership"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-95">
+        <addPrimaryKey columnNames="principalId, entityId, entityType" tableName="SS_Ratings"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-96">
+        <addPrimaryKey columnNames="zoneId, name" tableName="SS_SimpleName"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-97">
+        <addPrimaryKey columnNames="principalId, entityId, entityType" tableName="SS_Subscriptions"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-98">
+        <addPrimaryKey columnNames="principalId, binderId" tableName="SS_UserProperties"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-99">
+        <addPrimaryKey columnNames="workAreaFunctionMembershipId, memberId" tableName="SS_WorkAreaFunctionMembers"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-100">
+        <addPrimaryKey columnNames="binder, entryDefinition" tableName="SS_WorkflowMap"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-101">
+        <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="SSQRTZ_BLOB_TRIGGERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-102">
+        <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="SSQRTZ_CRON_TRIGGERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-103">
+        <addPrimaryKey columnNames="JOB_NAME, JOB_GROUP" tableName="SSQRTZ_JOB_DETAILS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-104">
+        <addPrimaryKey columnNames="JOB_NAME, JOB_GROUP, JOB_LISTENER" tableName="SSQRTZ_JOB_LISTENERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-105">
+        <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="SSQRTZ_SIMPLE_TRIGGERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-106">
+        <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP, TRIGGER_LISTENER" tableName="SSQRTZ_TRIGGER_LISTENERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-107">
+        <addPrimaryKey columnNames="TRIGGER_NAME, TRIGGER_GROUP" tableName="SSQRTZ_TRIGGERS"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-108">
+        <addForeignKeyConstraint baseColumnNames="ACTIONDELEGATION_" baseTableName="JBPM_ACTION" constraintName="FK_ACTION_ACTNDEL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_DELEGATION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-109">
+        <addForeignKeyConstraint baseColumnNames="EVENT_" baseTableName="JBPM_ACTION" constraintName="FK_ACTION_EVENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_EVENT" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-110">
+        <addForeignKeyConstraint baseColumnNames="EXCEPTIONHANDLER_" baseTableName="JBPM_ACTION" constraintName="FK_ACTION_EXPTHDL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_EXCEPTIONHANDLER" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-111">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_ACTION" constraintName="FK_ACTION_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-112">
+        <addForeignKeyConstraint baseColumnNames="REFERENCEDACTION_" baseTableName="JBPM_ACTION" constraintName="FK_ACTION_REFACT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-113">
+        <addForeignKeyConstraint baseColumnNames="TIMERACTION_" baseTableName="JBPM_ACTION" constraintName="FK_CRTETIMERACT_TA" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-114">
+        <addForeignKeyConstraint baseColumnNames="FILEDEFINITION_" baseTableName="JBPM_BYTEARRAY" constraintName="FK_BYTEARR_FILDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-115">
+        <addForeignKeyConstraint baseColumnNames="PROCESSFILE_" baseTableName="JBPM_BYTEBLOCK" constraintName="FK_BYTEBLOCK_FILE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_BYTEARRAY" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-116">
+        <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="JBPM_COMMENT" constraintName="FK_COMMENT_TSK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TASKINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-117">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_COMMENT" constraintName="FK_COMMENT_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-118">
+        <addForeignKeyConstraint baseColumnNames="DECISION_" baseTableName="JBPM_DECISIONCONDITIONS" constraintName="FK_DECCOND_DEC" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-119">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_DELEGATION" constraintName="FK_DELEGATION_PRCD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-120">
+        <addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="JBPM_EVENT" constraintName="FK_EVENT_NODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-121">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_EVENT" constraintName="FK_EVENT_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-122">
+        <addForeignKeyConstraint baseColumnNames="TASK_" baseTableName="JBPM_EVENT" constraintName="FK_EVENT_TASK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TASK" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-123">
+        <addForeignKeyConstraint baseColumnNames="TRANSITION_" baseTableName="JBPM_EVENT" constraintName="FK_EVENT_TRANS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TRANSITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-124">
+        <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="JBPM_LOG" constraintName="FK_LOG_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-125">
+        <addForeignKeyConstraint baseColumnNames="CHILD_" baseTableName="JBPM_LOG" constraintName="FK_LOG_CHILDTOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-126">
+        <addForeignKeyConstraint baseColumnNames="DESTINATIONNODE_" baseTableName="JBPM_LOG" constraintName="FK_LOG_DESTNODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-127">
+        <addForeignKeyConstraint baseColumnNames="NEWBYTEARRAY_" baseTableName="JBPM_LOG" constraintName="FK_LOG_NEWBYTES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_BYTEARRAY" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-128">
+        <addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="JBPM_LOG" constraintName="FK_LOG_NODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-129">
+        <addForeignKeyConstraint baseColumnNames="OLDBYTEARRAY_" baseTableName="JBPM_LOG" constraintName="FK_LOG_OLDBYTES" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_BYTEARRAY" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-130">
+        <addForeignKeyConstraint baseColumnNames="PARENT_" baseTableName="JBPM_LOG" constraintName="FK_LOG_PARENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_LOG" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-131">
+        <addForeignKeyConstraint baseColumnNames="SOURCENODE_" baseTableName="JBPM_LOG" constraintName="FK_LOG_SOURCENODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-132">
+        <addForeignKeyConstraint baseColumnNames="SWIMLANEINSTANCE_" baseTableName="JBPM_LOG" constraintName="FK_LOG_SWIMINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_SWIMLANEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-133">
+        <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="JBPM_LOG" constraintName="FK_LOG_TASKINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TASKINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-134">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_LOG" constraintName="FK_LOG_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-135">
+        <addForeignKeyConstraint baseColumnNames="TRANSITION_" baseTableName="JBPM_LOG" constraintName="FK_LOG_TRANSITION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TRANSITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-136">
+        <addForeignKeyConstraint baseColumnNames="VARIABLEINSTANCE_" baseTableName="JBPM_LOG" constraintName="FK_LOG_VARINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_VARIABLEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-137">
+        <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="JBPM_MESSAGE" constraintName="FK_CMD_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-138">
+        <addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="JBPM_MESSAGE" constraintName="FK_CMD_NODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-139">
+        <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="JBPM_MESSAGE" constraintName="FK_CMD_TASKINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TASKINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-140">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_MESSAGE" constraintName="FK_MSG_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-141">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_MODULEDEFINITION" constraintName="FK_MODDEF_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-142">
+        <addForeignKeyConstraint baseColumnNames="STARTTASK_" baseTableName="JBPM_MODULEDEFINITION" constraintName="FK_TSKDEF_START" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TASK" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-143">
+        <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="JBPM_MODULEINSTANCE" constraintName="FK_MODINST_PRCINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-144">
+        <addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_" baseTableName="JBPM_MODULEINSTANCE" constraintName="FK_TASKMGTINST_TMD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-145">
+        <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="JBPM_NODE" constraintName="FK_NODE_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-146">
+        <addForeignKeyConstraint baseColumnNames="DECISIONDELEGATION" baseTableName="JBPM_NODE" constraintName="FK_DECISION_DELEG" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_DELEGATION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-147">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_NODE" constraintName="FK_NODE_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-148">
+        <addForeignKeyConstraint baseColumnNames="SUBPROCESSDEFINITION_" baseTableName="JBPM_NODE" constraintName="FK_PROCST_SBPRCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-149">
+        <addForeignKeyConstraint baseColumnNames="SUPERSTATE_" baseTableName="JBPM_NODE" constraintName="FK_NODE_SUPERSTATE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-150">
+        <addForeignKeyConstraint baseColumnNames="SWIMLANEINSTANCE_" baseTableName="JBPM_POOLEDACTOR" constraintName="FK_POOLEDACTOR_SLI" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_SWIMLANEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-151">
+        <addForeignKeyConstraint baseColumnNames="STARTSTATE_" baseTableName="JBPM_PROCESSDEFINITION" constraintName="FK_PROCDEF_STRTSTA" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-152">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_PROCESSINSTANCE" constraintName="FK_PROCIN_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-153">
+        <addForeignKeyConstraint baseColumnNames="ROOTTOKEN_" baseTableName="JBPM_PROCESSINSTANCE" constraintName="FK_PROCIN_ROOTTKN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-154">
+        <addForeignKeyConstraint baseColumnNames="SUPERPROCESSTOKEN_" baseTableName="JBPM_PROCESSINSTANCE" constraintName="FK_PROCIN_SPROCTKN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-155">
+        <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="JBPM_RUNTIMEACTION" constraintName="FK_RTACTN_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-156">
+        <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="JBPM_RUNTIMEACTION" constraintName="FK_RTACTN_PROCINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-157">
+        <addForeignKeyConstraint baseColumnNames="ASSIGNMENTDELEGATION_" baseTableName="JBPM_SWIMLANE" constraintName="FK_SWL_ASSDEL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_DELEGATION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-158">
+        <addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_" baseTableName="JBPM_SWIMLANE" constraintName="FK_SWL_TSKMGMTDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-159">
+        <addForeignKeyConstraint baseColumnNames="SWIMLANE_" baseTableName="JBPM_SWIMLANEINSTANCE" constraintName="FK_SWIMLANEINST_SL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_SWIMLANE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-160">
+        <addForeignKeyConstraint baseColumnNames="TASKMGMTINSTANCE_" baseTableName="JBPM_SWIMLANEINSTANCE" constraintName="FK_SWIMLANEINST_TM" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-161">
+        <addForeignKeyConstraint baseColumnNames="ASSIGNMENTDELEGATION_" baseTableName="JBPM_TASK" constraintName="FK_TASK_ASSDEL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_DELEGATION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-162">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_TASK" constraintName="FK_TASK_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-163">
+        <addForeignKeyConstraint baseColumnNames="STARTSTATE_" baseTableName="JBPM_TASK" constraintName="FK_TASK_STARTST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-164">
+        <addForeignKeyConstraint baseColumnNames="SWIMLANE_" baseTableName="JBPM_TASK" constraintName="FK_TASK_SWIMLANE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_SWIMLANE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-165">
+        <addForeignKeyConstraint baseColumnNames="TASKCONTROLLER_" baseTableName="JBPM_TASK" constraintName="FK_TSK_TSKCTRL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TASKCONTROLLER" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-166">
+        <addForeignKeyConstraint baseColumnNames="TASKMGMTDEFINITION_" baseTableName="JBPM_TASK" constraintName="FK_TASK_TASKMGTDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-167">
+        <addForeignKeyConstraint baseColumnNames="TASKNODE_" baseTableName="JBPM_TASK" constraintName="FK_TASK_TASKNODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-168">
+        <addForeignKeyConstraint baseColumnNames="POOLEDACTOR_" baseTableName="JBPM_TASKACTORPOOL" constraintName="FK_TSKACTPOL_PLACT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_POOLEDACTOR" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-169">
+        <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="JBPM_TASKACTORPOOL" constraintName="FK_TASKACTPL_TSKI" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TASKINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-170">
+        <addForeignKeyConstraint baseColumnNames="TASKCONTROLLERDELEGATION_" baseTableName="JBPM_TASKCONTROLLER" constraintName="FK_TSKCTRL_DELEG" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_DELEGATION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-171">
+        <addForeignKeyConstraint baseColumnNames="SWIMLANINSTANCE_" baseTableName="JBPM_TASKINSTANCE" constraintName="FK_TASKINST_SLINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_SWIMLANEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-172">
+        <addForeignKeyConstraint baseColumnNames="TASK_" baseTableName="JBPM_TASKINSTANCE" constraintName="FK_TASKINST_TASK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TASK" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-173">
+        <addForeignKeyConstraint baseColumnNames="TASKMGMTINSTANCE_" baseTableName="JBPM_TASKINSTANCE" constraintName="FK_TASKINST_TMINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-174">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_TASKINSTANCE" constraintName="FK_TASKINST_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-175">
+        <addForeignKeyConstraint baseColumnNames="ACTION_" baseTableName="JBPM_TIMER" constraintName="FK_TIMER_ACTION" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-176">
+        <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="JBPM_TIMER" constraintName="FK_TIMER_PRINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-177">
+        <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="JBPM_TIMER" constraintName="FK_TIMER_TSKINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TASKINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-178">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_TIMER" constraintName="FK_TIMER_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-179">
+        <addForeignKeyConstraint baseColumnNames="NODE_" baseTableName="JBPM_TOKEN" constraintName="FK_TOKEN_NODE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-180">
+        <addForeignKeyConstraint baseColumnNames="PARENT_" baseTableName="JBPM_TOKEN" constraintName="FK_TOKEN_PARENT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-181">
+        <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="JBPM_TOKEN" constraintName="FK_TOKEN_PROCINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-182">
+        <addForeignKeyConstraint baseColumnNames="SUBPROCESSINSTANCE_" baseTableName="JBPM_TOKEN" constraintName="FK_TOKEN_SUBPI" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-183">
+        <addForeignKeyConstraint baseColumnNames="CONTEXTINSTANCE_" baseTableName="JBPM_TOKENVARIABLEMAP" constraintName="FK_TKVARMAP_CTXT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_MODULEINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-184">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_TOKENVARIABLEMAP" constraintName="FK_TKVARMAP_TOKEN" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-185">
+        <addForeignKeyConstraint baseColumnNames="FROM_" baseTableName="JBPM_TRANSITION" constraintName="FK_TRANSITION_FROM" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-186">
+        <addForeignKeyConstraint baseColumnNames="PROCESSDEFINITION_" baseTableName="JBPM_TRANSITION" constraintName="FK_TRANS_PROCDEF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSDEFINITION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-187">
+        <addForeignKeyConstraint baseColumnNames="TO_" baseTableName="JBPM_TRANSITION" constraintName="FK_TRANSITION_TO" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-188">
+        <addForeignKeyConstraint baseColumnNames="PROCESSSTATE_" baseTableName="JBPM_VARIABLEACCESS" constraintName="FK_VARACC_PROCST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_NODE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-189">
+        <addForeignKeyConstraint baseColumnNames="SCRIPT_" baseTableName="JBPM_VARIABLEACCESS" constraintName="FK_VARACC_SCRIPT" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_ACTION" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-190">
+        <addForeignKeyConstraint baseColumnNames="TASKCONTROLLER_" baseTableName="JBPM_VARIABLEACCESS" constraintName="FK_VARACC_TSKCTRL" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TASKCONTROLLER" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-191">
+        <addForeignKeyConstraint baseColumnNames="BYTEARRAYVALUE_" baseTableName="JBPM_VARIABLEINSTANCE" constraintName="FK_BYTEINST_ARRAY" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_BYTEARRAY" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-192">
+        <addForeignKeyConstraint baseColumnNames="PROCESSINSTANCE_" baseTableName="JBPM_VARIABLEINSTANCE" constraintName="FK_VARINST_PRCINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_PROCESSINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-193">
+        <addForeignKeyConstraint baseColumnNames="TASKINSTANCE_" baseTableName="JBPM_VARIABLEINSTANCE" constraintName="FK_VAR_TSKINST" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TASKINSTANCE" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-194">
+        <addForeignKeyConstraint baseColumnNames="TOKEN_" baseTableName="JBPM_VARIABLEINSTANCE" constraintName="FK_VARINST_TK" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TOKEN" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-195">
+        <addForeignKeyConstraint baseColumnNames="TOKENVARIABLEMAP_" baseTableName="JBPM_VARIABLEINSTANCE" constraintName="FK_VARINST_TKVARMP" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="ID_" referencedTableName="JBPM_TOKENVARIABLEMAP" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-196">
+        <addForeignKeyConstraint baseColumnNames="binder" baseTableName="SS_Attachments" constraintName="FKA1AD4C31AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-197">
+        <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="SS_Attachments" constraintName="FKA1AD4C3176767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-198">
+        <addForeignKeyConstraint baseColumnNames="filelock_owner" baseTableName="SS_Attachments" constraintName="FKA1AD4C31DC9F01CF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-199">
+        <addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="SS_Attachments" constraintName="FKA1AD4C31F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_FolderEntries" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-200">
+        <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="SS_Attachments" constraintName="FKA1AD4C31BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-201">
+        <addForeignKeyConstraint baseColumnNames="parentAttachment" baseTableName="SS_Attachments" constraintName="FKA1AD4C312D9DE71B" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Attachments" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-202">
+        <addForeignKeyConstraint baseColumnNames="principal" baseTableName="SS_Attachments" constraintName="FKA1AD4C31E49240ED" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-203">
+        <addForeignKeyConstraint baseColumnNames="binder" baseTableName="SS_CustomAttributes" constraintName="FK476EDFC7AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-204">
+        <addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="SS_CustomAttributes" constraintName="FK476EDFC7F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_FolderEntries" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-205">
+        <addForeignKeyConstraint baseColumnNames="parent" baseTableName="SS_CustomAttributes" constraintName="FK476EDFC7F05A86A6" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_CustomAttributes" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-206">
+        <addForeignKeyConstraint baseColumnNames="principal" baseTableName="SS_CustomAttributes" constraintName="FK476EDFC7E49240ED" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-207">
+        <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="SS_Dashboards" constraintName="FKFA9653BE76767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-208">
+        <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="SS_Dashboards" constraintName="FKFA9653BEBE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-209">
+        <addForeignKeyConstraint baseColumnNames="binder" baseTableName="SS_DefinitionMap" constraintName="FK170F74AAFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-210">
+        <addForeignKeyConstraint baseColumnNames="definition" baseTableName="SS_DefinitionMap" constraintName="FK170F74A5D291C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Definitions" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-211">
+        <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="SS_Definitions" constraintName="FK7B56F60176767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-212">
+        <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="SS_Definitions" constraintName="FK7B56F601BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-213">
+        <addForeignKeyConstraint baseColumnNames="principal" baseTableName="SS_EmailAddresses" constraintName="FKC706C345E49240ED" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-214">
+        <addForeignKeyConstraint baseColumnNames="binder" baseTableName="SS_Events" constraintName="FKDE0E53F8AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-215">
+        <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="SS_Events" constraintName="FKDE0E53F876767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-216">
+        <addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="SS_Events" constraintName="FKDE0E53F8F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_FolderEntries" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-217">
+        <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="SS_Events" constraintName="FKDE0E53F8BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-218">
+        <addForeignKeyConstraint baseColumnNames="principal" baseTableName="SS_Events" constraintName="FKDE0E53F8E49240ED" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-219">
+        <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="SS_FolderEntries" constraintName="FKA6632C8376767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-220">
+        <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="SS_FolderEntries" constraintName="FKA6632C83BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-221">
+        <addForeignKeyConstraint baseColumnNames="parentBinder" baseTableName="SS_FolderEntries" constraintName="FKA6632C835B285D8D" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-222">
+        <addForeignKeyConstraint baseColumnNames="parentEntry" baseTableName="SS_FolderEntries" constraintName="FKA6632C832EBDEAFD" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_FolderEntries" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-223">
+        <addForeignKeyConstraint baseColumnNames="reserved_principal" baseTableName="SS_FolderEntries" constraintName="FKA6632C83DAD68C8B" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-224">
+        <addForeignKeyConstraint baseColumnNames="topEntry" baseTableName="SS_FolderEntries" constraintName="FKA6632C83B8A6E532" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_FolderEntries" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-225">
+        <addForeignKeyConstraint baseColumnNames="wrk_principal" baseTableName="SS_FolderEntries" constraintName="FKA6632C8386C93453" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-226">
+        <addForeignKeyConstraint baseColumnNames="id" baseTableName="SS_FolderEntryStats" constraintName="FKC94AB27AF1E91E10" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_FolderEntries" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-227">
+        <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="SS_Forums" constraintName="FKDF668A5176767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-228">
+        <addForeignKeyConstraint baseColumnNames="entryDef" baseTableName="SS_Forums" constraintName="FKDF668A511CD53535" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Definitions" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-229">
+        <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="SS_Forums" constraintName="FKDF668A51BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-230">
+        <addForeignKeyConstraint baseColumnNames="owner" baseTableName="SS_Forums" constraintName="FKDF668A5156E7C372" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-231">
+        <addForeignKeyConstraint baseColumnNames="parentBinder" baseTableName="SS_Forums" constraintName="FKDF668A515B285D8D" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-232">
+        <addForeignKeyConstraint baseColumnNames="posting" baseTableName="SS_Forums" constraintName="FKDF668A514477DE34" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Postings" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-233">
+        <addForeignKeyConstraint baseColumnNames="topFolder" baseTableName="SS_Forums" constraintName="FKDF668A511CACB780" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-234">
+        <addForeignKeyConstraint baseColumnNames="conditionId" baseTableName="SS_FunctionConditionMap" constraintName="FK945D2AD868DAC30E" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_FunctionConditions" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-235">
+        <addForeignKeyConstraint baseColumnNames="functionId" baseTableName="SS_FunctionConditionMap" constraintName="FK945D2AD8BCA364AE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Functions" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-236">
+        <addForeignKeyConstraint baseColumnNames="functionId" baseTableName="SS_FunctionOperations" constraintName="FKBEF25643BCA364AE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Functions" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-237">
+        <addForeignKeyConstraint baseColumnNames="binderId" baseTableName="SS_Notifications" constraintName="FK9131F9293AD146FE" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-238">
+        <addForeignKeyConstraint baseColumnNames="principalId" baseTableName="SS_Notifications" constraintName="FK9131F9295212927D" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-239">
+        <addForeignKeyConstraint baseColumnNames="binder" baseTableName="SS_Postings" constraintName="FKB05DE490AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-240">
+        <addForeignKeyConstraint baseColumnNames="definition" baseTableName="SS_Postings" constraintName="FKB05DE4905D291C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Definitions" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-241">
+        <addForeignKeyConstraint baseColumnNames="groupId" baseTableName="SS_PrincipalMembership" constraintName="FK176F6225395F3D38" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-242">
+        <addForeignKeyConstraint baseColumnNames="userId" baseTableName="SS_PrincipalMembership" constraintName="FK176F6225921A9ADA" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-243">
+        <addForeignKeyConstraint baseColumnNames="creation_principal" baseTableName="SS_Principals" constraintName="FK7693816476767782" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-244">
+        <addForeignKeyConstraint baseColumnNames="modification_principal" baseTableName="SS_Principals" constraintName="FK76938164BE6C51FF" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-245">
+        <addForeignKeyConstraint baseColumnNames="parentBinder" baseTableName="SS_Principals" constraintName="FK769381645B285D8D" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-246">
+        <addForeignKeyConstraint baseColumnNames="referer" baseTableName="SS_SharedEntity" constraintName="FK93426C47D4068DC7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-247">
+        <addForeignKeyConstraint baseColumnNames="workAreaFunctionMembershipId" baseTableName="SS_WorkAreaFunctionMembers" constraintName="FK72202A04B4C37436" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_WorkAreaFunctionMemberships" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-248">
+        <addForeignKeyConstraint baseColumnNames="binder" baseTableName="SS_WorkflowMap" constraintName="FK33D2499EAFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-249">
+        <addForeignKeyConstraint baseColumnNames="workflowDefinition" baseTableName="SS_WorkflowMap" constraintName="FK33D2499EE2459134" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Definitions" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-250">
+        <addForeignKeyConstraint baseColumnNames="binder" baseTableName="SS_WorkflowResponses" constraintName="FKC44C5F14AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-251">
+        <addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="SS_WorkflowResponses" constraintName="FKC44C5F14F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_FolderEntries" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-252">
+        <addForeignKeyConstraint baseColumnNames="principal" baseTableName="SS_WorkflowResponses" constraintName="FKC44C5F14E49240ED" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-253">
+        <addForeignKeyConstraint baseColumnNames="binder" baseTableName="SS_WorkflowStates" constraintName="FK8FA8AA80AFFFFC63" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Forums" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-254">
+        <addForeignKeyConstraint baseColumnNames="definition" baseTableName="SS_WorkflowStates" constraintName="FK8FA8AA805D291C35" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Definitions" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-255">
+        <addForeignKeyConstraint baseColumnNames="folderEntry" baseTableName="SS_WorkflowStates" constraintName="FK8FA8AA80F8D591B9" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_FolderEntries" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-256">
+        <addForeignKeyConstraint baseColumnNames="principal" baseTableName="SS_WorkflowStates" constraintName="FK8FA8AA80E49240ED" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-257">
+        <addForeignKeyConstraint baseColumnNames="wrk_principal" baseTableName="SS_WorkflowStates" constraintName="FK8FA8AA8086C93453" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_Principals" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-258">
+        <addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="SSQRTZ_BLOB_TRIGGERS" constraintName="FK_SSQRTZ_BLOB_TRIGGERS_SSQRTZ_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="SSQRTZ_TRIGGERS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-259">
+        <addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="SSQRTZ_CRON_TRIGGERS" constraintName="FK_SSQRTZ_CRON_TRIGGERS_SSQRTZ_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="SSQRTZ_TRIGGERS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-260">
+        <addForeignKeyConstraint baseColumnNames="JOB_NAME, JOB_GROUP" baseTableName="SSQRTZ_JOB_LISTENERS" constraintName="FK_SSQRTZ_JOB_LISTENERS_SSQRTZ_JOB_DETAILS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="JOB_NAME, JOB_GROUP" referencedTableName="SSQRTZ_JOB_DETAILS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-261">
+        <addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="SSQRTZ_SIMPLE_TRIGGERS" constraintName="FK_SSQRTZ_SIMPLE_TRIGGERS_SSQRTZ_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="SSQRTZ_TRIGGERS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-262">
+        <addForeignKeyConstraint baseColumnNames="TRIGGER_NAME, TRIGGER_GROUP" baseTableName="SSQRTZ_TRIGGER_LISTENERS" constraintName="FK_SSQRTZ_TRIGGER_LISTENERS_SSQRTZ_TRIGGERS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="TRIGGER_NAME, TRIGGER_GROUP" referencedTableName="SSQRTZ_TRIGGERS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-263">
+        <addForeignKeyConstraint baseColumnNames="JOB_NAME, JOB_GROUP" baseTableName="SSQRTZ_TRIGGERS" constraintName="FK_SSQRTZ_TRIGGERS_SSQRTZ_JOB_DETAILS" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="JOB_NAME, JOB_GROUP" referencedTableName="SSQRTZ_JOB_DETAILS" referencesUniqueColumn="false"/>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-264">
+        <createIndex indexName="IDX_PLDACTR_ACTID" tableName="JBPM_POOLEDACTOR" unique="false">
+            <column name="ACTORID_"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-265">
+        <createIndex indexName="IDX_TASK_ACTORID" tableName="JBPM_TASKINSTANCE" unique="false">
+            <column name="ACTORID_"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-266">
+        <createIndex indexName="entityOwner_Att" tableName="SS_Attachments" unique="false">
+            <column name="ownerType"/>
+            <column name="ownerId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-267">
+        <createIndex indexName="owningBinder_Att" tableName="SS_Attachments" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-268">
+        <createIndex indexName="entityOwner_audit" tableName="SS_AuditTrail" unique="false">
+            <column name="entityType"/>
+            <column name="entityId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-269">
+        <createIndex indexName="owningBinder_audit" tableName="SS_AuditTrail" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-270">
+        <createIndex indexName="search_audit" tableName="SS_AuditTrail" unique="false">
+            <column name="zoneId"/>
+            <column name="startDate"/>
+            <column name="startBy"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-271">
+        <createIndex indexName="entityOwner_clog" tableName="SS_ChangeLogs" unique="false">
+            <column name="entityType"/>
+            <column name="entityId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-272">
+        <createIndex indexName="operationDate_clog" tableName="SS_ChangeLogs" unique="false">
+            <column name="zoneId"/>
+            <column name="operationDate"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-273">
+        <createIndex indexName="owningBinder_clog" tableName="SS_ChangeLogs" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-274">
+        <createIndex indexName="entityOwner_cAtt" tableName="SS_CustomAttributes" unique="false">
+            <column name="ownerType"/>
+            <column name="ownerId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-275">
+        <createIndex indexName="owningBinder_cAtt" tableName="SS_CustomAttributes" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-276">
+        <createIndex indexName="binder_Dash" tableName="SS_Dashboards" unique="false">
+            <column name="binderId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-277">
+        <createIndex indexName="ownerKey_Dash" tableName="SS_Dashboards" unique="false">
+            <column name="owner_id"/>
+            <column name="owner_type"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-278">
+        <createIndex indexName="internal_Definition" tableName="SS_Definitions" unique="false">
+            <column name="zoneId"/>
+            <column name="internalId"/>
+            <column name="type"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-279">
+        <createIndex indexName="name_Definition" tableName="SS_Definitions" unique="true">
+            <column name="zoneId"/>
+            <column name="binderId"/>
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <!-- Bug 835664 - Commenting out this change set as of Filr 1.1 and Hudson so that new 
+         install of Filr/Vibe would no longer create this particular index with the default 
+         index size induced from the column size which potentially exceeds the max index size
+         supported by MySQL InnoDB storage engine. MySQL 5.6 and onward seems no longer 
+         tolerate this. For new install, another change set that comes later will create an
+         index with more acceptable index prefix length. For upgrades from earlier versions 
+         of systems, change sets that come later will drop old index and create new index with
+         modified length that is acceptable with all versions of MySQL.  
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-280">
+        <createIndex indexName="address_email" tableName="SS_EmailAddresses" unique="false">
+            <column name="address"/>
+        </createIndex>
+    </changeSet>
+    -->
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-281">
+        <createIndex indexName="sendDate_emaillog" tableName="SS_EmailLog" unique="false">
+            <column name="zoneId"/>
+            <column name="sendDate"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-282">
+        <createIndex indexName="entityOwner_Event" tableName="SS_Events" unique="false">
+            <column name="ownerType"/>
+            <column name="ownerId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-283">
+        <createIndex indexName="owningBinder_Event" tableName="SS_Events" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-284">
+        <createIndex indexName="name_Extensions" tableName="SS_Extensions" unique="true">
+            <column name="zoneId"/>
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-285">
+        <createIndex indexName="entryDef_fEntry" tableName="SS_FolderEntries" unique="false">
+            <column name="entryDef"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-286">
+        <createIndex indexName="entrySortKey_fEntry" tableName="SS_FolderEntries" unique="true">
+            <column name="entry_sortKey"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-287">
+        <createIndex indexName="owningBinderKey_fEntry" tableName="SS_FolderEntries" unique="false">
+            <column name="owningBinderKey"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-288">
+        <createIndex indexName="binderSortKey_Binder" tableName="SS_Forums" unique="true">
+            <column name="binder_sortKey"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-289">
+        <createIndex indexName="internal_Binder" tableName="SS_Forums" unique="false">
+            <column name="zoneId"/>
+            <column name="internalId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-290">
+        <createIndex indexName="name_Functions" tableName="SS_Functions" unique="true">
+            <column name="zoneId"/>
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-291">
+        <createIndex indexName="indexingJournal_nodeIndex" tableName="SS_IndexingJournal" unique="false">
+            <column name="nodeName"/>
+            <column name="indexName"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-292">
+        <createIndex indexName="name_IndexNode" tableName="SS_IndexNode" unique="true">
+            <column name="nodeName"/>
+            <column name="indexName"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-293">
+        <createIndex indexName="snapshot_lstats" tableName="SS_LicenseStats" unique="false">
+            <column name="zoneId"/>
+            <column name="snapshotDate"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-294">
+        <createIndex indexName="notifyStatus_digest" tableName="SS_NotifyStatus" unique="false">
+            <column name="zoneId"/>
+            <column name="lastModified"/>
+            <column name="lastDigestSent"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-295">
+        <createIndex indexName="notifyStatus_full" tableName="SS_NotifyStatus" unique="false">
+            <column name="zoneId"/>
+            <column name="lastModified"/>
+            <column name="lastFullSent"/>
+        </createIndex>
+    </changeSet>
+    <!-- Bug 835664 - Commenting out this change set as of Filr 1.1
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-296">
+        <createIndex indexName="email_postings" tableName="SS_Postings" unique="false">
+            <column name="zoneId"/>
+            <column name="emailAddress"/>
+        </createIndex>
+    </changeSet>
+    -->
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-297">
+        <createIndex indexName="entryDef_principal" tableName="SS_Principals" unique="false">
+            <column name="entryDef"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-298">
+        <createIndex indexName="internal_principal" tableName="SS_Principals" unique="false">
+            <column name="zoneId"/>
+            <column name="internalId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-299">
+        <createIndex indexName="ldapGuid_principal" tableName="SS_Principals" unique="false">
+            <column name="ldapGuid"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-300">
+        <createIndex indexName="type_principal" tableName="SS_Principals" unique="false">
+            <column name="zoneId"/>
+            <column name="type"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-301">
+        <createIndex indexName="name_principal" tableName="SS_Principals" unique="true">
+            <column name="zoneId"/>
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-302">
+        <createIndex indexName="foreignName_principal" tableName="SS_Principals" unique="true">
+            <column name="zoneId"/>
+            <column name="foreignName"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-303">
+        <createIndex indexName="entity_Ratings" tableName="SS_Ratings" unique="false">
+            <column name="entityId"/>
+            <column name="entityType"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-304">
+        <createIndex indexName="access_shared" tableName="SS_SharedEntity" unique="false">
+            <column name="accessType"/>
+            <column name="accessId"/>
+            <column name="sharedDate"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-305">
+        <createIndex indexName="entity_shared" tableName="SS_SharedEntity" unique="false">
+            <column name="entityType"/>
+            <column name="entityId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-306">
+        <createIndex indexName="binderId_simpleName" tableName="SS_SimpleName" unique="false">
+            <column name="binderId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-307">
+        <createIndex indexName="emailAddress_simpleName" tableName="SS_SimpleName" unique="false">
+            <column name="emailAddress"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-308">
+        <createIndex indexName="entity_Subscriptions" tableName="SS_Subscriptions" unique="false">
+            <column name="entityId"/>
+            <column name="entityType"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-309">
+        <createIndex indexName="entity_tag" tableName="SS_Tags" unique="false">
+            <column name="entity_type"/>
+            <column name="entity_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-310">
+        <createIndex indexName="owner_tag" tableName="SS_Tags" unique="false">
+            <column name="owner_type"/>
+            <column name="owner_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-311">
+        <createIndex indexName="userId_tokenInfoSession" tableName="SS_TokenInfo" unique="false">
+            <column name="userId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-312">
+        <createIndex indexName="entityOwner_wfhistory" tableName="SS_WorkflowHistory" unique="false">
+            <column name="entityId"/>
+            <column name="entityType"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-313">
+        <createIndex indexName="owningBinder_wfhistory" tableName="SS_WorkflowHistory" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-314">
+        <createIndex indexName="startDate_wfhistory" tableName="SS_WorkflowHistory" unique="false">
+            <column name="zoneId"/>
+            <column name="startDate"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-315">
+        <createIndex indexName="entityOwner" tableName="SS_WorkflowResponses" unique="false">
+            <column name="ownerType"/>
+            <column name="ownerId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-316">
+        <createIndex indexName="owningBinder" tableName="SS_WorkflowResponses" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-317">
+        <createIndex indexName="entityOwner_wState" tableName="SS_WorkflowStates" unique="false">
+            <column name="ownerType"/>
+            <column name="ownerId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-318">
+        <createIndex indexName="owningBinder_wState" tableName="SS_WorkflowStates" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-319">
+        <createIndex indexName="virtualHost_ZoneInfo" tableName="SS_ZoneInfo" unique="true">
+            <column name="virtualHost"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-320">
+        <createIndex indexName="zoneId_ZoneInfo" tableName="SS_ZoneInfo" unique="true">
+            <column name="zoneId"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="schema" id="1325864746197-321">
+        <createIndex indexName="zoneName_ZoneInfo" tableName="SS_ZoneInfo" unique="true">
+            <column name="zoneName"/>
+        </createIndex>
+    </changeSet>
+    <changeSet author="jong (generated)" context="data" id="1325864746197-322">
+        <insert tableName="SSQRTZ_LOCKS">
+            <column name="LOCK_NAME" value="CALENDAR_ACCESS" />
+        </insert> 
+        <insert tableName="SSQRTZ_LOCKS">
+            <column name="LOCK_NAME" value="JOB_ACCESS" />
+        </insert>
+        <insert tableName="SSQRTZ_LOCKS">
+            <column name="LOCK_NAME" value="MISFIRE_ACCESS" />
+        </insert>
+        <insert tableName="SSQRTZ_LOCKS">
+            <column name="LOCK_NAME" value="STATE_ACCESS" />
+        </insert>
+        <insert tableName="SSQRTZ_LOCKS">
+            <column name="LOCK_NAME" value="TRIGGER_ACCESS" />
+        </insert>
+     </changeSet>
+</databaseChangeLog>

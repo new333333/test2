@@ -1,0 +1,408 @@
+/* */
+
+/* ########################################################################################################### */
+
+
+/* Start:  Generic menu styles. */
+	.gwt-MenuBar-horizontal               {border: 0px solid #BBB !important; background: #ededed;}
+	.gwt-MenuBar-horizontal .gwt-MenuItem {color: #1f1f1f; padding: 0 6px;}
+	
+	a.gwt-MenuItem-anchor, a.gwt-MenuItem-anchor:visited, a.gwt-MenuItem-anchor:link {color: #fff !important; text-decoration: none;}
+	a.gwt-MenuItem-anchor:hover {color: #81b2bd !important; background-color: #353838; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; cursor: default;}
+			
+	a.gwt-MenuItem-anchorMain, a.gwt-MenuItem-anchorMain:visited, a.gwt-MenuItem-anchorMain:link {color: #1f1f1f !important; text-decoration: none;}
+	a.gwt-MenuItem-anchorMain:hover {color: #135c8f !important; background-color: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px; cursor: default;}
+/* End:  Generic binder view tools styles. */
+
+/* Start:  Entry menu styles. */
+	.vibe-configureMenuBar         {padding-right: 0px !important; padding-left: 8px !important;}
+	.vibe-configureMenuBarDropDown {}
+	.vibe-configureMenuBarItem     {border: 0 !important; padding-left: 0px !important; padding-right: 0px !important; margin-right: 6px !important;}
+	.vibe-configureMenuImg         {padding-top: 1px; cursor: pointer;}
+	
+	.vibe-filterMenuBar         {padding-right: 0px !important;}
+	.vibe-filterMenuBarDropDown {}
+	.vibe-filterMenuBarItem     {border: 0 !important; padding-left: 0px !important; padding-right: 0px !important;}
+	.vibe-filterMenuImg         {padding-top: 1px; cursor: pointer;}
+	.vibe-filterMenuSavedAnchor {}
+	.vibe-filterMenuSavedImg    {margin-left: 4px; cursor: pointer;}	
+	.vibe-filterMenuSavedLabel  {}
+	.vibe-filterMenuSavedPanel  {
+		font-size: .9em;
+		color: #036f9f;
+		padding: 0px 4px;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+/*		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background-image: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background-image: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background-image: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background-image: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);	
+		background-image: -webkit-gradient(
+			linear,
+			left bottom,
+			left top,
+			color-stop(0.47, #A8D4DD),
+			color-stop(0.53, #D5EDF1),
+			color-stop(1, #C8E4E9));  */
+	}
+
+	.vibe-entryMenuBar       {padding: 3px;}
+	.vibe-entryMenuBarCheck  {margin-right: 2px;}
+	.vibe-entryMenuPin       {}
+	.vibe-menuDisabled       {color: #c4c4c4 !important; background-color: #ededed !important;}
+	.vibe-menuDisabled:hover {
+/*		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;        */
+		color: #c4c4c4 !important;
+		background-color: #ededed !important;
+		border: 1px solid #B8B8B8 !important;
+		font-weight: normal !important;
+		cursor: pointer !important;
+		font-size: 11px;
+		padding: 2px 10px  !important;
+		text-decoration:none;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+	}
+	
+	.vibe-entryMenuBarItem
+	{	
+		border: 1px solid #B8B8B8;
+		font-weight: normal !important;
+		font-size: 11px;
+		padding: 2px 10px  !important;
+		text-decoration:none;	
+		cursor: pointer !important;
+		white-space: nowrap;
+		background-color: #fafafa;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+/*		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;              */
+	}
+	.vibe-entryMenuBarCalendarShowHint  {}
+	.vibe-entryMenuBarItemImage         {}
+	.vibe-entryMenuBarPin               {}
+	.vibe-entryMenuBarSharedFiles       {}
+	.vibe-entryMenuBarSimpleImageButton {border: none !important; background-color: transparent !important;}
+	
+	.vibe-entryMenuPopup     {white-space: nowrap;}
+	.vibe-entryMenuPopupItem {white-space: nowrap;}
+/* End:  Entry menu styles. */
+
+/* Start:  Main menu styles. */
+	.vibe-mainMenuBar_BoxDropDownImg
+	{
+		vertical-align: middle;
+	}
+	.vibe-mainMenuBar_BoxDropDownImgNonIE
+	{
+		margin-left: 1px;
+	}
+	.vibe-mainMenuBar_BoxImg
+	{
+		vertical-align: middle;
+	}
+	.vibe-mainMenuBar_BoxImgNonIE
+	{
+		margin-right: 2px;
+	}
+	.vibe-mainMenuBar_BoxPanel
+	{
+		border-left: 1px solid white;
+		color: #414648; /* dark grey */
+		font-size: 0.73em;
+		font-weight: normal;
+		padding: 3px 6px;
+		vertical-align: top;
+		white-space: nowrap;
+	}
+	.vibe-mainMenuBar_BoxText
+	{
+		font-size: 12px;
+		font-weight: normal;
+		vertical-align: middle;
+	}
+	.vibe-mainMenuButton
+	{
+		display: inline-block;
+		height: 20px;
+		margin-left: 3px;
+		overflow: hidden;
+		padding: 0px 3px !important;
+		text-align: center;
+		top: 2px;
+		width: 22px;
+		z-index: 310;
+	}
+	.vibe-mainMenuButton_Group
+	{
+		border: 0px !important;
+		display: inline-block;
+		font-size: 0.85em;
+		font-weight: bold;
+		height: 20px;
+		letter-spacing: 0.05em;
+		padding: 0px;
+	}
+	.vibe-mainMenuButton_WidgetAnchor
+	{
+		cursor: pointer;
+	}
+	.vibe-mainMenuButton_WidgetImage
+	{
+		margin-top: 3px;
+	}
+	.vibe-mainMenuContent
+	{
+		background: transparent;
+		display: inline-block;
+		height: 18px;
+		margin: 0px;
+		padding-top: 5px;
+	}
+
+	.vibe-binderViewTools .gwt-MenuBar-horizontal
+	{
+		background: #ededed url(images/spacer_1px.png);
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+		-moz-border-radius-topleft: 5px;
+		-moz-border-radius-topright: 5px;
+		-webkit-border-top-left-radius: 5px;
+		-webkit-border-top-right-radius: 5px;
+	}
+	.vibe-binderViewTools .gwt-MenuBar-horizontal .gwt-MenuBar table td {padding-right: 5px;}	
+
+	.vibe-mainMenuControl
+	{
+		height: 35px;
+		left: 0;
+		padding: 0px;
+		position: relative;
+		top: 0;
+/*		background: transparent url(images/main_menu_bg.png) repeat-x;  */
+		background-color: #ededed;
+		white-space: nowrap;
+		width: 100%;
+		z-index: 300;
+	}
+	
+	/* Start: GWT Vertical Menu styles*/
+	.gwt-PopupPanel {
+		background: #505354;
+/*		background: #f6f6f6; */
+		border: 0px;
+		padding: 6px;
+		-moz-border-radius: 5px;
+		border-radius: 5px;
+		-webkit-border-radius: 5px;
+		box-shadow: 0 2px 4px #505354;
+		}
+	.gwt-MenuBarPopup {
+		box-shadow: 0 2px 4px #505354;
+		margin: 4px 0px;
+		z-index: 1102;
+		}
+	.gwt-MenuBarPopup .menuPopupTopCenter,
+	.gwt-MenuBarPopup .menuPopupBottomCenter,
+	.gwt-MenuBarPopup .menuPopupMiddleLeft,
+	.gwt-MenuBarPopup .menuPopupMiddleRight,
+	.gwt-MenuBar-vertical {
+		background: #505354;
+/*		background: #f6f6f6; */
+		}			
+	.gwt-MenuBarPopup .menuPopupTopLeft {
+		background: #505354;
+		-moz-border-radius-topleft: 5px;
+		border-top-left-radius: 5px;
+		-webkit-border-top-left-radius: 5px;
+		}	
+	.gwt-MenuBarPopup .menuPopupTopRight {
+		background: #505354;
+		-moz-border-radius-topright: 5px;
+		border-top-right-radius: 5px;
+		-webkit-border-top-right-radius: 5px;
+		}	
+	.gwt-MenuBarPopup .menuPopupBottomLeft {
+		background: #505354;
+		-moz-border-radius-bottomleft: 5px;
+		border-bottom-left-radius: 5px;
+		-webkit-border-bottom-left-radius: 5px;
+		}	
+	.gwt-MenuBarPopup .menuPopupBottomRight {
+		background: #505354;
+		-moz-border-radius-bottomright: 5px;
+		border-bottom-right-radius: 5px;
+		-webkit-border-bottom-right-radius: 5px;
+		}	
+	.gwt-MenuBar-vertical .gwt-MenuItem {
+		color: #fff;
+/*		color: #353838; */
+		padding: 4px 6px;
+		}
+	.gwt-MenuBar-vertical .gwt-MenuItemSeparator {
+		padding: 0;
+		}
+	.gwt-MenuBar-vertical .gwt-MenuItemSeparator .menuSeparatorInner {
+		height: 0px;
+		border: 0px;
+		margin: 5px 0;
+		border-top: 1px solid #1f1f1f;
+		border-bottom: 1px solid #626566;
+		}
+	.gwt-MenuBar .gwt-MenuItem-selected {
+		color: #81b2bd;
+		background-color: #353838;
+		border-radius: 3px;
+		-moz-border-radius: 3px;
+		-webkit-border-radius: 3px;
+		}		
+		
+	.vibe-mainMenuControl .gwt-MenuBar .gwt-MenuItem-selected {
+		color:#135c8f;
+		background-color:#cce9ee;
+		border-radius: 3px;
+		-moz-border-radius: 3px;
+		-webkit-border-radius: 3px;
+/*		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%)!important;
+		background-image: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
+		background-image: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
+		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
+		background-image: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
+		background-image: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
+		background-image: -webkit-gradient(
+			linear,
+			left bottom,
+			left top,
+			color-stop(0.47, #A8D4DD),
+			color-stop(0.53, #D5EDF1),
+			color-stop(1, #C8E4E9)) !important;  */
+		}	
+		
+	.vibe-entryMenuBar .gwt-MenuItem-selected {
+		color: #135c8f;
+		background-color:#cce9ee;
+		border: 1px solid #81b2bd;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+/*		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		background: -webkit-gradient(
+			linear,
+			left bottom,
+			left top,
+			color-stop(0.47, #A8D4DD),
+			color-stop(0.53, #D5EDF1),
+			color-stop(1, #C8E4E9));      */
+	}
+
+	/* End: GWT Vertical Menu styles*/
+
+
+	.vibe-globalSearch
+	{
+		display: inline;
+	}
+	.vibe-mainMenuPopup
+	{
+	}
+	.vibe-mainMenuPopup_Core
+	{
+		z-index: 351;
+	}
+	.vibe-mainMenuPopup_Glass
+	{
+		background-color: #000;
+		filter: alpha(opacity=0);
+		opacity: 0.0;
+		z-index: 350;
+	}
+	.vibe-mainMenuPopup_Item
+	{ 
+		white-space: nowrap;
+	}
+	.vibe-mainMenuPopup_ItemPanel
+	{
+	}
+	.vibe-mainMenuPopup_ItemText
+	{
+	}
+	.vibe-mainMenuSearch_Image
+	{
+		margin-right: 3px;
+		margin-top: 3px;
+		vertical-align: top;
+	}
+	.vibe-mainMenuSearch_Input
+	{
+		font-size: 12px;
+		padding: 2px 0 !important;
+		vertical-align: middle;
+		width: 150px;
+		background-color: transparent;
+		border: 0px;
+	}
+	.vibe-mainMenuSearch_InputBlur  {color: #949494;}
+	.vibe-mainMenuSearch_InputFocus {color: #1f1f1f !important;}
+	.vibe-mainMenuSearchOptions_Button
+	{
+		border: 0px !important;
+		display: block;
+		font-size: 0.85em;
+		font-weight: bold;
+		height: 20px;
+		letter-spacing: 0.05em;
+		padding: 0px;
+		position: absolute;
+		right: 10px;
+		top: 6px;
+		white-space: nowrap;
+	}
+	.vibe-mainMenuSearch_Panel
+	{
+		padding: 0 0 0 5px;
+		border-left: none;
+		display: block;
+		position: absolute;
+		right: 46px;
+		top: 7px;
+		height: 20px;
+		white-space: nowrap;
+		background: #fff;
+		border: 1px solid #c4c4c4;
+		border-radius: 15px;
+		-moz-border-radius: 15px;
+		-webkit-border-radius: 15px;
+	}
+
+.gwt-MenuBar table {
+	webkit-border-horizontal-spacing: 0px;
+	webkit-border-vertical-spacing: 0px;	
+	}	
+	
+.vibe-popupMenu
+{
+	z-index: 1010;
+}
+
+.vibe-popupMenuItemImg
+{
+	margin-right: 5px;
+}
+
+
+/* End:  Main menu styles. */

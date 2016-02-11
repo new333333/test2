@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="8" internalId="402880e619c6250f0119c62794b9000c">
+  <attribute name="templateTitle" type="string">__template_discussions_workspace</attribute>
+  <attribute name="templateDescription" type="description">__template_discussions_workspace_description</attribute>
+  <attribute name="title" type="string">__discussion_workspace</attribute>
+  <attribute name="description" type="description"></attribute>
+  <attribute name="iconName" type="string">/icons/workspace_discussions.png</attribute>
+  <attribute name="name" type="string">_workspace_discussions</attribute>
+  <property name="library">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="_discussions" />
+</template>
