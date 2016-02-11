@@ -30,30 +30,45 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.cache.impl;
+package org.kablink.teaming.tomcat.valve;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+
+import org.apache.catalina.connector.Request;
+import org.apache.catalina.connector.Response;
+import org.apache.catalina.valves.ValveBase;
+import org.kablink.util.cache.ThreadBoundSimpleCache;
 
 /**
- * Simple LRU cache.
- * 
  * @author Jong
  *
  */
-public class LRUCache extends LinkedHashMap<String,Object> {
-
-	private static final long serialVersionUID = 1L;
+public class ThreadBoundCacheValve extends ValveBase {
 	
-	private int maxEntries;
+	private static final long THREAD_BOUND_CACHE_TIME_TO_LIVE_IN_SECONDS_DEFAULT = 60;
+	
+	private long cacheTimeToLiveInSeconds = THREAD_BOUND_CACHE_TIME_TO_LIVE_IN_SECONDS_DEFAULT;
 
-	public LRUCache(int maxEntries) {
-		super(maxEntries+1, 0.75f, true);
-		this.maxEntries = maxEntries;
+	/* (non-Javadoc)
+	 * @see org.apache.catalina.valves.ValveBase#invoke(org.apache.catalina.connector.Request, org.apache.catalina.connector.Response)
+	 */
+	@Override
+	public void invoke(Request request, Response response) throws IOException,
+			ServletException {
+		
+		ThreadBoundSimpleCache.initialize(cacheTimeToLiveInSeconds);
+		try {
+			getNext().invoke(request, response);
+		}
+		finally {
+			ThreadBoundSimpleCache.destroy();
+		}
 	}
-	
-	@Override    
-	protected boolean removeEldestEntry(Map.Entry<String,Object> eldest) {
-		return size() > maxEntries;
-    }
+
+	public void setCacheTimeToLiveInSeconds(long cacheTimeToLiveInSeconds) {
+		this.cacheTimeToLiveInSeconds = cacheTimeToLiveInSeconds;
+	}
+
 }
