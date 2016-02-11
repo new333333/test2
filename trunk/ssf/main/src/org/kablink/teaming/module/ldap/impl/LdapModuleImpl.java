@@ -1443,7 +1443,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							results = ldapContext.search( baseDn, filter, searchControls );
 							
 							// loop through the results in each page
-							while ( hasMore( results ) )
+							while ( hasMore( results, true ) )
 							{
 								SearchResult sr;
 								Attributes lAttrs = null;
@@ -1795,7 +1795,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					// Search for users using the base dn and filter criteria.
 					ctxSearch = ldapContext.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), searchCtrls );
-					while ( hasMore( ctxSearch ) )
+					while ( hasMore( ctxSearch, true ) )
 					{
 						String userName;
 						String fixedUpUserName;
@@ -1944,7 +1944,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					// Search for groups using the base dn and filter criteria.
 					ctxSearch = ldapContext.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), searchCtrls );
-					while ( hasMore( ctxSearch ) )
+					while ( hasMore( ctxSearch, true ) )
 					{
 						String groupName;
 						String fullDN;
@@ -2250,7 +2250,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
             controls.setSearchScope(SearchControls.OBJECT_SCOPE);
             answer = ctx.search(base, filter, controls);
 
-            if (hasMore(answer)) {                
+            if (hasMore(answer, false)) {                
                 SearchResult sr;
                 Attributes attrs;
 
@@ -2293,7 +2293,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
                 controls.setReturningAttributes(attr);
                 answer = ctx.search(base, filter, controls);
 
-                if (hasMore(answer)) {
+                if (hasMore(answer, false)) {
                     SearchResult sr;
                     Attributes attrs;
 
@@ -2385,7 +2385,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
-					if ( !hasMore( ctxSearch ) ) 
+					if ( !hasMore( ctxSearch, false ) ) 
 					{
 						continue;
 					}
@@ -2485,7 +2485,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
-					if ( !hasMore( ctxSearch ) ) 
+					if ( !hasMore( ctxSearch, false ) ) 
 					{
 						continue;
 					}
@@ -2640,7 +2640,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
-					if (!hasMore( ctxSearch ) )
+					if (!hasMore( ctxSearch, false ) )
 					{
 						continue;
 					}
@@ -2772,7 +2772,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 				
 				ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
-				if (!hasMore( ctxSearch ) )
+				if (!hasMore( ctxSearch, false ) )
 				{
 					continue;
 				}
@@ -3014,7 +3014,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						search = "(&"+search+filter+")";
 					}
 					NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), search, sch);
-					if (!hasMore( ctxSearch )) {
+					if (!hasMore( ctxSearch, false )) {
 						continue;
 					}
 					Binding bd = (Binding)ctxSearch.next();
@@ -3197,7 +3197,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				search = "(distinguishedName=" + fqdn + ")";
 				
 				ctxSearch = ctx.search( baseDN, search, sch );
-				if ( !hasMore( ctxSearch ) )
+				if ( !hasMore( ctxSearch, false ) )
 				{
 					continue;
 				}
@@ -5177,7 +5177,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	/**
 	 * 
 	 */
-	private boolean hasMore( NamingEnumeration namingEnumeration )
+	private boolean hasMore( NamingEnumeration namingEnumeration, boolean throwExceptionUponError ) throws NamingException
 	{
 		boolean hasMore = false;
 
@@ -5188,11 +5188,20 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			// NamingEnumeration.hasMore() will throw an exception if needed only after all valid
 			// objects have been returned as a result of walking through the enumeration.
+			// 
+			// 2/4/2016 JK (bug 965166) The above statement is not only incorrect but also very
+			// dangerous. Specifically, this method throws exception if the system lost connection
+			// with the LDAP server. Ignoring such error can lead to massive unexpected deletion or
+			// disabling of users. When such danger is present, we must propagate the exception up
+			// through the call stack.
 			hasMore = namingEnumeration.hasMore();
 		}
 		catch( Exception ex )
 		{
-			logger.error( "namingEnumeration.hasMore() threw exception: ", ex );
+			if(throwExceptionUponError)
+				throw ex; // Rethrow
+			else 
+				logger.error( "namingEnumeration.hasMore() threw exception: ", ex );
 		}
 	
 		return hasMore;
@@ -5508,7 +5517,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					results = ctx.search( searchInfo.getBaseDn(), filter, sch );
 					
 					// loop through the results in each page
-					while ( hasMore( results ) )
+					while ( hasMore( results, true ) )
 					{
 						String	userName;
 						String	fixedUpUserName;
@@ -6350,7 +6359,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					results = ctx.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch );
 
-					while ( hasMore( results ) )
+					while ( hasMore( results, true ) )
 					{
 						String groupName;
 						String fixedUpGroupName;
@@ -6602,7 +6611,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				answer = ctx.search( searchInfo.getBaseDn(), search, searchCtls );
 
 				// There should only be 1 result returned.
-				if ( hasMore( answer ) )
+				if ( hasMore( answer, true ) )
 				{
 					SearchResult next;
                     Attributes attrs;
@@ -6616,7 +6625,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
                     	// There should only be 1 attribute returned.
                     	ne = attrs.getAll();
-                		if ( hasMore( ne ) )
+                		if ( hasMore( ne, true ) )
                 		{
                 			Attribute attr;
                 			NamingEnumeration listOfAttrValues;
@@ -6651,7 +6660,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
                 			// Iterate through the values of the member attribute.
                 			listOfAttrValues = attr.getAll();
-                			while ( hasMore( listOfAttrValues ) )
+                			while ( hasMore( listOfAttrValues, true ) )
                 			{
                 				Object obj;
                 				
@@ -6819,7 +6828,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						results = ldapContext.search( searchInfo.getBaseDn(), searchFilter, sch );
 						
 						// loop through the results in each page
-						while ( hasMore( results ) )
+						while ( hasMore( results, true ) )
 						{
 							String userName;
 							String relativeName;
@@ -7424,7 +7433,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			// Get the Domain Root Object
 			ctxSearch = ldapCtx.search( baseDN, search, sch );
-			if ( hasMore( ctxSearch ) )
+			if ( hasMore( ctxSearch, false ) )
 			{
 				SearchResult searchResult;
 				Attributes attrs;
