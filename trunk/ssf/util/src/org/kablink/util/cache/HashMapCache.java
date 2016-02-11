@@ -30,34 +30,48 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.module.zone;
+package org.kablink.util.cache;
 
-import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.util.cache.HashMapCache;
+import org.kablink.util.Pair;
 
-public class ZoneUtil {
+import java.util.HashMap;
+import java.util.Map;
 
-    private static HashMapCache<String, Long> zoneIdCache = new HashMapCache<String, Long>(SPropsUtil.getLong("cache.zone.id", 300));
+public class HashMapCache<K, V> {
+    private Map<K, Pair<Long, V>> cache;
+    private long timeToLiveInMillis;
 
-	public static Long getZoneIdByZoneName(String zoneName) {
-        Long id = zoneIdCache.get(zoneName);
-        if (id==null) {
-    		id = getCoreDao().findTopWorkspaceId(zoneName);
-            zoneIdCache.put(zoneName, id);
+    public HashMapCache(long timeToLiveInSeconds) {
+        this.timeToLiveInMillis = timeToLiveInSeconds * 1000;
+        cache = new HashMap<K, Pair<Long, V>>();
+    }
+
+    public V put(K key, V value) {
+        Pair<Long, V> previous = cache.put(key, new Pair<Long, V>(System.currentTimeMillis() + this.timeToLiveInMillis, value));
+        if(previous != null)
+        	return previous.getB();
+        else
+        	return null;
+    }
+
+    public V get(K key) {
+        Pair<Long, V> pair = cache.get(key);
+        if (pair!=null && pair.getA()>System.currentTimeMillis()) {
+            return pair.getB();
         }
-        return id;
-	}
+        cache.remove(key);
+        return null;
+    }
 
-	public static Long getDefaultZoneId() {
-   		String defaultZoneName = SZoneConfig.getDefaultZoneName();
-   		return getZoneIdByZoneName(defaultZoneName);
-	}
-	
-	private static CoreDao getCoreDao() {
-		return (CoreDao) SpringContextUtil.getBean("coreDao");
-	}
+    public void remove(K key) {
+        cache.remove(key);
+    }
+
+    public void clear() {
+        cache.clear();
+    }
+    
+    public int size() {
+    	return cache.size();
+    }
 }

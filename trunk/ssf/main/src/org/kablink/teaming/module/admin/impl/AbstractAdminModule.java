@@ -68,7 +68,6 @@ import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.cache.impl.ThreadBoundLRUCache;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
@@ -174,6 +173,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.cache.ThreadBoundLRUCache;
 import org.kablink.util.search.Constants;
 
 import org.springframework.beans.factory.InitializingBean;
