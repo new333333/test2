@@ -40,10 +40,14 @@ public class ExternalSharingRestrictions extends BaseRestObject {
     }
 
     /**
-     * The sharing restriction mode.  Allowed values are "none", "whitelist" and "blacklist"
-     * If "none", there are no domain or email restrictions for users with rights to share with external users
-     * If "whitelist", users with external sharing rights can only share with listed email addresses and email domains
-     * If "blacklist", users with external sharing rights can share with any email address except those listed.
+     * The sharing restriction mode.
+     * <p>Allowed values are:
+     * <ul>
+     * <li><code>none</code>: there are no domain or email restrictions for users with rights to share with external users.</li>
+     * <li><code>whitelist</code>: users with external sharing rights can only share with listed email addresses and email domains.</li>
+     * <li><code>blacklist</code>: users with external sharing rights can share with any email address except those listed.</li>
+     * </ul>
+     * </p>
      */
     @XmlElement(name="mode")
     public String getMode() {

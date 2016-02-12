@@ -46,6 +46,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
+import com.webcohesion.enunciate.metadata.rs.ResourceLabel;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.dom4j.Document;
@@ -60,6 +62,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.ReleaseInfo;
 import org.kablink.teaming.rest.v1.model.RootRestObject;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
@@ -83,10 +86,12 @@ import java.util.Map;
 @Path("/")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@ResourceLabel("Miscellaneous")
 public class MiscResource extends AbstractResource {
 
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @ResourceGroup("Root")
    	public RootRestObject getRootObject() {
         RootRestObject obj = new RootRestObject();
         obj.addAdditionalLink("binders", "/binders");
@@ -117,6 +122,7 @@ public class MiscResource extends AbstractResource {
 	@GET
 	@Path("release_info")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @ResourceGroup("Release Information")
 	public ReleaseInfo getReleaseInfo() {
         ReleaseInfo releaseInfo = new ReleaseInfo();
         releaseInfo.setBuildDate(ResourceUtil.toCalendar(org.kablink.teaming.util.ReleaseInfo.getBuildDate()));
@@ -140,6 +146,7 @@ public class MiscResource extends AbstractResource {
 	@GET
 	@Path("zone_config")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @ResourceGroup("Zone Configuration")
 	public ZoneConfig getZoneConfig(@QueryParam("include_desktop_process_config") @DefaultValue("false") boolean includeProcessConfig,
                                     @Context HttpServletRequest request) {
         org.kablink.teaming.domain.ZoneConfig zoneConfig =
@@ -162,8 +169,10 @@ public class MiscResource extends AbstractResource {
         return result;
 	}
 
+    @Undocumented
 	@GET
 	@Path("zone_config/branding/mobile/{platform}")
+    @ResourceGroup("Zone Configuration")
 	public Response getMobileBranding(@PathParam("platform") String platformStr,
                                     @Context HttpServletRequest request) throws FileNotFoundException, URIException {
         ResourceUtil.MobilePlatform platform = toEnum(ResourceUtil.MobilePlatform.class, "platform", platformStr);
@@ -172,8 +181,10 @@ public class MiscResource extends AbstractResource {
         return getBrandingResponse(brandingZipFile, request);
 	}
 
+    @Undocumented
 	@GET
 	@Path("zone_config/branding/desktop/{platform}")
+    @ResourceGroup("Zone Configuration")
 	public Response getDesktopBranding(@PathParam("platform") String platformStr,
                                     @Context HttpServletRequest request) throws FileNotFoundException, URIException {
         ResourceUtil.DesktopPlatform platform = toEnum(ResourceUtil.DesktopPlatform.class, "platform", platformStr);
@@ -202,6 +213,7 @@ public class MiscResource extends AbstractResource {
                 .header("Content-Length", length).build();
 	}
 
+    @Undocumented
     @GET
     @Path("static/{subpath:.+}")
     public Response getStaticResource(@PathParam("subpath") String subpath, @Context HttpServletRequest request) {
@@ -215,6 +227,7 @@ public class MiscResource extends AbstractResource {
         }
     }
 
+    @Undocumented
     @POST
     @Path("/legacy_query")
    	public SearchResultList<SearchableObject> legacySearch(@Context HttpServletRequest request,

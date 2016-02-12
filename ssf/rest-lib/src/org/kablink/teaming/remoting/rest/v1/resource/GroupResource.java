@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -56,6 +57,7 @@ import java.util.Map;
 @Path("/groups")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@ResourceGroup("Users and Groups")
 public class GroupResource extends AbstractPrincipalResource {
 	// Get all users
 	@GET

@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
@@ -76,6 +77,7 @@ import java.util.*;
 @Path("/binders")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@ResourceGroup("Binders")
 public class BinderResource extends AbstractResource {
     @GET
     public SearchResultList<BinderBrief> getBinders(@QueryParam("id") Set<Long> ids,

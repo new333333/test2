@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,9 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: david
- * Date: 5/16/12
- * Time: 2:48 PM
+ * A user's effective mobile application settings.
  */
 @XmlRootElement(name = "mobile_app_config")
 public class MobileAppConfig {
@@ -66,6 +66,10 @@ public class MobileAppConfig {
     private List<String> androidAppWhiteList;
     private List<String> iOSAppWhiteList;
 
+    /**
+     * Whether or not users should be able to use the mobile application.  This is not enforced by the server.
+     * It's up to mobile applications to honor this setting.
+     */
     @XmlElement(name="enabled")
     public Boolean isEnabled() {
         return enabled;
@@ -75,6 +79,9 @@ public class MobileAppConfig {
         this.enabled = enabled;
     }
 
+    /**
+     * Whether users can save their password or must provide their password each time they open the mobile application.
+     */
     @XmlElement(name="allow_cached_password")
     public Boolean getAllowCachedPassword() {
         return allowCachedPassword;
@@ -84,6 +91,9 @@ public class MobileAppConfig {
         this.allowCachedPassword = allowCachedPassword;
     }
 
+    /**
+     * Whether users can download files in the mobile application for viewing while offline.
+     */
     @XmlElement(name="allow_cached_content")
     public Boolean getAllowCachedContent() {
         return allowCachedContent;
@@ -93,6 +103,7 @@ public class MobileAppConfig {
         this.allowCachedContent = allowCachedContent;
     }
 
+    @Undocumented
     @XmlElement(name="allow_play_with_other_apps")
     public Boolean getAllowPlayWithOtherApps() {
         return allowPlayWithOtherApps;
@@ -102,6 +113,10 @@ public class MobileAppConfig {
         this.allowPlayWithOtherApps = allowPlayWithOtherApps;
     }
 
+    /**
+     * Require users to use a PIN code to access the mobile application.
+     * @return
+     */
     @XmlElement(name="force_pin_code")
     public Boolean getForcePinCode() {
         return forcePinCode;
@@ -111,6 +126,9 @@ public class MobileAppConfig {
         this.forcePinCode = forcePinCode;
     }
 
+    /**
+     * How often, in minutes, that the mobile applications should check with the server for updated settings and modified files.
+     */
     @XmlElement(name="sync_interval")
     public Integer getSyncInterval() {
         return syncInterval;
@@ -120,6 +138,9 @@ public class MobileAppConfig {
         this.syncInterval = syncInterval;
     }
 
+    /**
+     * Whether users can cut or copy data from the mobile application so the data can be pasted into third-party applications.
+     */
     @XmlElement(name="allow_cut_copy")
     public Boolean getAllowCutCopy() {
         return allowCutCopy;
@@ -129,6 +150,9 @@ public class MobileAppConfig {
         this.allowCutCopy = allowCutCopy;
     }
 
+    /**
+     * Whether users can take a screen capture while inside the mobile application.
+     */
     @XmlElement(name="allow_screen_capture")
     public Boolean getAllowScreenCapture() {
         return allowScreenCapture;
@@ -138,6 +162,9 @@ public class MobileAppConfig {
         this.allowScreenCapture = allowScreenCapture;
     }
 
+    /**
+     * Whether users are allowed to run the mobile application on a rooted or jail-broken device.
+     */
     @XmlElement(name="allow_rooted_devices")
     public Boolean getAllowRootedDevices() {
         return allowRootedDevices;
@@ -147,6 +174,18 @@ public class MobileAppConfig {
         this.allowRootedDevices = allowRootedDevices;
     }
 
+    /**
+     * Controls the user's ability to send files to third-party applications for viewing and editing.
+     *
+     * <p>Possible values are:
+     * <ul>
+     *     <li><code>all</code> (user can send files to any application)</li>
+     *     <li><code>none</code> (user cannot send files to any application)</li>
+     *     <li><code>selected</code> (user can only send files applications listed in the platform-specific whitelist
+     *     (<code>android_app_whitelist</code> or <code>ios_app_whitelist</code></li>
+     * </ul>
+     * </p>
+     */
     @XmlElement(name="allowed_open_in_apps")
     public String getAllowedOpenInApps() {
         return allowedOpenInApps;
@@ -156,6 +195,9 @@ public class MobileAppConfig {
         this.allowedOpenInApps = allowedOpenInApps;
     }
 
+    /**
+     * List of Android applications to which the user is allowed to send files.  Only applies if <code>allowed_open_in_apps</code> is <code>selected</code>.
+     */
     @XmlElementWrapper(name="android_app_whitelist")
     @XmlElement(name="app")
     public List<String> getAndroidAppWhiteList() {
@@ -166,6 +208,7 @@ public class MobileAppConfig {
         this.androidAppWhiteList = androidAppWhiteList;
     }
 
+    @Undocumented
     @XmlElementWrapper(name="branding")
     @XmlElement(name="platform")
     public List<NameHrefPair> getBranding() {
@@ -185,6 +228,9 @@ public class MobileAppConfig {
         }
     }
 
+    /**
+     * List of iOS applications to which the user is allowed to send files.  Only applies if <code>allowed_open_in_apps</code> is <code>selected</code>.
+     */
     @XmlElementWrapper(name="ios_app_whitelist")
     @XmlElement(name="app")
     public List<String> getiOSAppWhiteList() {

@@ -16,6 +16,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -78,6 +79,7 @@ import java.util.*;
 @Path("/shares")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@ResourceGroup("Sharing")
 public class ShareResource extends AbstractResource {
     @POST
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})

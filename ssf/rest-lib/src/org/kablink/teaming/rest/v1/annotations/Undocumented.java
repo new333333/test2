@@ -41,6 +41,6 @@ import java.lang.annotation.Target;
 
 @Target ( { ElementType.METHOD, ElementType.TYPE, ElementType.FIELD } )
 @Retention ( RetentionPolicy.RUNTIME )
-@Facet( "http://kablink.org/facets#unupported" )
+@Facet( "http://kablink.org/facets#unsupported" )
 public @interface Undocumented {
 }
