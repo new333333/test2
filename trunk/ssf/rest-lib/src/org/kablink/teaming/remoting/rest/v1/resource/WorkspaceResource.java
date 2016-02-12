@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import org.dom4j.Document;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Description;
@@ -78,6 +79,7 @@ import java.util.*;
 @Path("/workspaces")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@ResourceGroup("Workspaces")
 public class WorkspaceResource extends AbstractBinderResource {
 
     protected String getBasePath() {

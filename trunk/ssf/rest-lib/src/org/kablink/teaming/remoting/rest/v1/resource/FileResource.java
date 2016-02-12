@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -88,6 +89,7 @@ import java.util.Set;
 @Path("/files")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@ResourceGroup("Files")
 public class FileResource extends AbstractFileResource {
 
     @GET

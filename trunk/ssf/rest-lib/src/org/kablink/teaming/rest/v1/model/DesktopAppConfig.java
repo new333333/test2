@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -39,9 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: david
- * Date: 5/16/12
- * Time: 2:48 PM
+ * Desktop application configuration
  */
 @XmlRootElement(name = "desktop_app_config")
 public class DesktopAppConfig {
@@ -53,6 +53,9 @@ public class DesktopAppConfig {
     private List<NameHrefPair> branding;
     private DesktopAppProcessConfig processConfig;
 
+    /**
+     * Auto-update server URL.  The is the location where the desktop application can check for newer versions and update itself.
+     */
     @XmlElement(name="auto_update_url")
     public String getAutoUpdateUrl() {
         return autoUpdateUrl;
@@ -62,6 +65,10 @@ public class DesktopAppConfig {
         this.autoUpdateUrl = autoUpdateUrl;
     }
 
+    /**
+     * Whether or not the desktop applications are enabled.  This is not enforced by the server.  The desktop application
+     * should honor this setting.
+     */
     @XmlElement(name="enabled")
     public Boolean isEnabled() {
         return enabled;
@@ -71,6 +78,9 @@ public class DesktopAppConfig {
         this.enabled = enabled;
     }
 
+    /**
+     * Whether or nor the desktop application should offer to cache or remember the user's password.
+     */
     @XmlElement(name="allow_cached_password")
     public Boolean getAllowCachedPassword() {
         return allowCachedPassword;
@@ -80,6 +90,9 @@ public class DesktopAppConfig {
         this.allowCachedPassword = allowCachedPassword;
     }
 
+    /**
+     * The maximum file size that the desktop application should sync (upload or download).
+     */
     @XmlElement(name="max_file_size")
     public Long getMaxFileSize() {
         return maxFileSize;
@@ -89,6 +102,9 @@ public class DesktopAppConfig {
         this.maxFileSize = maxFileSize;
     }
 
+    /**
+     * How often, in minutes, that the desktop application should check with the server for updated settings and modified files.
+     */
     @XmlElement(name="sync_interval")
     public Integer getSyncInterval() {
         return syncInterval;
@@ -98,6 +114,7 @@ public class DesktopAppConfig {
         this.syncInterval = syncInterval;
     }
 
+    @Undocumented
     @XmlElementWrapper(name="branding")
     @XmlElement(name="platform")
     public List<NameHrefPair> getBranding() {
@@ -117,6 +134,9 @@ public class DesktopAppConfig {
         }
     }
 
+    /**
+     * Configures which desktop processes can trigger on-demand file downloads.
+     */
     @XmlElement(name="process_config")
     public DesktopAppProcessConfig getProcessConfig() {
         return processConfig;

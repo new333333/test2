@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.remoting.rest.v1.util.NetFolderBriefBuilder;
@@ -60,13 +61,11 @@ import java.util.Map;
 import static org.kablink.util.search.Restrictions.in;
 
 /**
- * User: david
- * Date: 9/5/12
- * Time: 3:01 PM
  */
 @Path("/net_folders")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@ResourceGroup("Net Folders")
 public class NetFoldersResource extends AbstractResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

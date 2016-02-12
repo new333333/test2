@@ -34,6 +34,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
@@ -121,6 +122,7 @@ import java.util.*;
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @SuppressWarnings("unchecked")
+@ResourceGroup("Authenticated User")
 public class SelfResource extends AbstractFileResource {
     private Map<Long, Long> homeDirCheckTime = new HashMap<Long, Long>();
 

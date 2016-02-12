@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="slide-webdavclient" basedir="." default="compile">
+<project name="rest-lib" basedir="." default="compile">
 	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
 		
