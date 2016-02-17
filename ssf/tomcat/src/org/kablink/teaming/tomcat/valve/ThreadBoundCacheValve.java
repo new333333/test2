@@ -39,6 +39,7 @@ import javax.servlet.ServletException;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;
+import org.kablink.util.cache.ThreadBoundLRUCache;
 import org.kablink.util.cache.ThreadBoundSimpleCache;
 
 /**
@@ -47,9 +48,13 @@ import org.kablink.util.cache.ThreadBoundSimpleCache;
  */
 public class ThreadBoundCacheValve extends ValveBase {
 	
-	private static final long THREAD_BOUND_CACHE_TIME_TO_LIVE_IN_SECONDS_DEFAULT = 60;
+	private static final long THREAD_BOUND_SIMPLE_CACHE_TIME_TO_LIVE_IN_SECONDS_DEFAULT = 60;
 	
-	private long cacheTimeToLiveInSeconds = THREAD_BOUND_CACHE_TIME_TO_LIVE_IN_SECONDS_DEFAULT;
+	private static final int THREAD_BOUND_LRU_CACHE_SIZE_LIMIT_DEFAULT = 100;
+	
+	private long simpleCacheTimeToLiveInSeconds = THREAD_BOUND_SIMPLE_CACHE_TIME_TO_LIVE_IN_SECONDS_DEFAULT;
+	
+	private int lruCacheSizeLimit = THREAD_BOUND_LRU_CACHE_SIZE_LIMIT_DEFAULT;
 
 	/* (non-Javadoc)
 	 * @see org.apache.catalina.valves.ValveBase#invoke(org.apache.catalina.connector.Request, org.apache.catalina.connector.Response)
@@ -58,17 +63,30 @@ public class ThreadBoundCacheValve extends ValveBase {
 	public void invoke(Request request, Response response) throws IOException,
 			ServletException {
 		
-		ThreadBoundSimpleCache.initialize(cacheTimeToLiveInSeconds);
+		if(simpleCacheTimeToLiveInSeconds > 0)
+			ThreadBoundSimpleCache.initialize(simpleCacheTimeToLiveInSeconds);
 		try {
-			getNext().invoke(request, response);
+			if(lruCacheSizeLimit > 0)
+				ThreadBoundLRUCache.initialize(lruCacheSizeLimit);
+			try {
+				getNext().invoke(request, response);
+			}
+			finally {
+				if(lruCacheSizeLimit > 0)
+					ThreadBoundLRUCache.destroy();
+			}
 		}
 		finally {
-			ThreadBoundSimpleCache.destroy();
+			if(simpleCacheTimeToLiveInSeconds > 0)
+				ThreadBoundSimpleCache.destroy();
 		}
 	}
 
-	public void setCacheTimeToLiveInSeconds(long cacheTimeToLiveInSeconds) {
-		this.cacheTimeToLiveInSeconds = cacheTimeToLiveInSeconds;
+	public void setSimpleCacheTimeToLiveInSeconds(long simpleCacheTimeToLiveInSeconds) {
+		this.simpleCacheTimeToLiveInSeconds = simpleCacheTimeToLiveInSeconds;
 	}
 
+	public void setLruCacheSizeLimit(int lruCacheSizeLimit) {
+		this.lruCacheSizeLimit = lruCacheSizeLimit;
+	}
 }
