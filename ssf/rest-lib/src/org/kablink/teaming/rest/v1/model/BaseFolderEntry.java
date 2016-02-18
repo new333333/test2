@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlElement;
  * Time: 4:02 PM
  */
 public abstract class BaseFolderEntry extends Entry {
+    protected String entryType;
     protected String docNumber;
     protected Integer docLevel;
     protected Integer replyCount;
@@ -92,4 +93,13 @@ public abstract class BaseFolderEntry extends Entry {
         this.totalReplyCount = totalReplyCount;
     }
 
+
+    @XmlElement(name = "entry_type")
+    public String getEntryType() {
+        return entryType;
+    }
+
+    public void setEntryType(String entryType) {
+        this.entryType = entryType;
+    }
 }

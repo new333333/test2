@@ -40,23 +40,12 @@ import javax.xml.bind.annotation.XmlElement;
  * Time: 4:02 PM
  */
 public abstract class Entry extends DefinableEntity {
-    protected String entryType;
-
     protected Entry() {
         setDocType("entry");
     }
 
     protected Entry(Entry orig) {
         super(orig);
-        this.entryType = orig.entryType;
     }
 
-    @XmlElement(name = "entry_type")
-    public String getEntryType() {
-        return entryType;
-    }
-
-    public void setEntryType(String entryType) {
-        this.entryType = entryType;
-    }
 }
