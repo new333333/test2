@@ -114,9 +114,7 @@ import java.text.ParseException;
 import java.util.*;
 
 /**
- * User: david
- * Date: 5/16/12
- * Time: 4:04 PM
+ * Resources related the authenticated user.
  */
 @Path("/self")
 @Singleton
@@ -128,8 +126,11 @@ public class SelfResource extends AbstractFileResource {
 
     /**
      * Gets the User object representing the authenticated user.
-     * @param includeAttachments    Configures whether attachments should be included in the returned User object.
-     * @return  Returns the authenticated User object
+     * @param includeAttachments    Whether to include attachments in the returned User object.
+     * @param includeMobileDevices  Whether to include the mobile devices associated with the user in the response.
+     * @param includeGroups  Whether to include the groups the user belongs to in the response.
+     * @param descriptionFormatStr The desired format for the User description.  Can be "html" or "text".
+     * @return  The authenticated User object
      */
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
