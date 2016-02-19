@@ -38,7 +38,7 @@ public class DesktopAppProcessConfig extends BaseRestObject {
     /**
      * Defines whether an unlisted process can trigger on-demand downloads.
      *
-     * <p>An unlisted process is any process that is not included in either the allowed_process or blocked_process lists</p>
+     * <p>An unlisted process is any process that is not included in either the <code>allowed_process</code> or <code>blocked_process</code> lists</p>
      */
     @XmlElement(name="allow_unlisted_processes")
     public Boolean getAllowUnlistedProcesses() {
@@ -50,7 +50,8 @@ public class DesktopAppProcessConfig extends BaseRestObject {
     }
 
     /**
-     * Defines whether a user can override the "allow_unlisted_processes" setting.  Only applies if "allow_unlisted_processes" is false.
+     * Defines whether a user can override the <code>allow_unlisted_processes</code> setting.  Only applies if
+     * <code>allow_unlisted_processes</code> is false.
      * <p>When this is true, unlisted processes are blocked until the desktop user indicates that the process should be allowed.</p>
      */
     @XmlElement(name="allow_unlisted_process_override")
@@ -65,7 +66,7 @@ public class DesktopAppProcessConfig extends BaseRestObject {
     /**
      * A list of process names that are allowed to trigger on-demand downloads on the desktop.
      *
-     * <p>Only applicable when allow_unlisted_processes is false or allow_unlisted_process_override is true.</p>
+     * <p>Only applicable when <code>allow_unlisted_processes</code> is false or <code>allow_unlisted_process_override</code> is true.</p>
      */
     @XmlElementWrapper(name="allowed_processes")
     @XmlElement(name="name")
@@ -80,7 +81,7 @@ public class DesktopAppProcessConfig extends BaseRestObject {
     /**
      * A list of process names that are not allowed to trigger on-demand downloads on the desktop.
      *
-     * <p>Only applicable when allow_unlisted_processes is true.</p>
+     * <p>Only applicable when <code>allow_unlisted_processes</code> is true.</p>
      */
     @XmlElementWrapper(name="blocked_processes")
     @XmlElement(name="name")

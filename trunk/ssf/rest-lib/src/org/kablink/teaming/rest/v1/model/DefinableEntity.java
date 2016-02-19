@@ -151,7 +151,8 @@ public abstract class DefinableEntity extends SearchableObject {
     }
 
     /**
-     * A string identifying the type of this entity.  Possible values are "user", "group", "folder", "workspace" and "folderEntry".
+     * A string identifying the type of this entity.  Possible values are <code>user</code>, <code>group</code>,
+     * <code>folder</code>, <code>workspace</code> and <code>folderEntry</code>.
      */
     @XmlElement(name="entity_type")
     public String getEntityType() {

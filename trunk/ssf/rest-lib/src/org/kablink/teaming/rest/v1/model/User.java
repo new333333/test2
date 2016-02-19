@@ -251,9 +251,9 @@ public class User extends Principal {
     /**
      * Information about the user's avatar (profile picture).  It has three related links:
      * <ul>
-     *     <li>"content": the HRef used to download the full image</li>
-     *     <li>"thumbnail": the HRef used to download a square thumbnail of the image</li>
-     *     <li>"scaled_image": the HRef used to download the a scaled, small version of image</li>
+     *     <li><code>content</code>: the HRef used to download the full image</li>
+     *     <li><code>thumbnail</code>: the HRef used to download a square thumbnail of the image</li>
+     *     <li><code>scaled_image</code>: the HRef used to download the a scaled, small version of image</li>
      * </ul>
      *
      */
@@ -291,7 +291,7 @@ public class User extends Principal {
     }
 
     /**
-     * The user's effective Mobile Application settings
+     * The user's effective mobile application settings
      */
     @XmlElement(name="mobile_app_config")
     public MobileAppConfig getMobileAppConfig() {
@@ -303,7 +303,7 @@ public class User extends Principal {
     }
 
     /**
-     * The user's effective Desktop Application settings
+     * The user's effective desktop application settings
      */
     @XmlElement(name="desktop_app_config")
     public DesktopAppConfig getDesktopAppConfig() {
