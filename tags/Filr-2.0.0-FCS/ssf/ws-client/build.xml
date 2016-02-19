@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+
+<project name="ws-client" basedir="." default="jar">
+	<import file="../build-common.xml"/>
+
+	<property name="generated.dir" value="${basedir}/generated" />
+	<property name="jar.file" value="kablink-teaming-wsclient.jar"/>
+	<property name="client.url" value="http://localhost:8080/ssr/ws" />
+	
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+	<pathelement path="${project.dir}/ws-client/classes" />
+		<pathelement path="${project.dir}/util/classes" />
+		<pathelement location="${project.dir}/ws-client/kablink-teaming-wsclient.jar"/>
+		<fileset dir="../lib" includes="*.jar" />
+	</path>
+
+	<target name="clean">
+		<delete dir="${classes.dir}" />
+		<delete dir="${generated.dir}" />
+		<delete file="${jar.file}" />
+	</target>
+	
+	<target name="compileGenerated">
+		<mkdir dir="${classes.dir}" />
+		<javac
+			classpathref="project.classpath"
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}">
+			<src path="${generated.dir}" />
+		</javac>
+	</target>
+
+	<target name="compileCombined">
+		<antcall target="compileGenerated"/>
+		<antcall target="compile"/>
+	</target>
+
+	<target name="jar" depends="compileCombined">
+		<delete file="${jar.file}"/>
+		<jar
+			jarfile="${jar.file}"
+		>
+			<fileset dir="${classes.dir}" />
+			<fileset dir="${generated.dir}" />
+			<fileset dir="${source.dir}" />
+		</jar>
+	</target>
+
+	<target name="wsdl2java" description="Generate client service bindings from WSDL">
+		<delete dir="${generated.dir}" />
+		<mkdir dir="${generated.dir}" />
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/TeamingServiceV1?wsdl" >
+			<mapping
+				namespace="http://ws.remoting.teaming.kablink.org/v1"
+				package="org.kablink.teaming.client.ws" />
+			<mapping
+				namespace="http://model.ws.remoting.teaming.kablink.org/v1"
+				package="org.kablink.teaming.client.ws.model" />
+		</axis-wsdl2java>
+	</target>
+
+	<target name="build" depends="clean" >
+		<antcall target="wsdl2java"/>
+		<antcall target="jar"/>
+	</target>
+</project>

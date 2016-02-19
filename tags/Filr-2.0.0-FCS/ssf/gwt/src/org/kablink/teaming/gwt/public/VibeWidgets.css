@@ -1,0 +1,198 @@
+/* Styles used in the ChildBindersWidget */
+
+.childBindersWidget_IconListPanel
+{
+}
+
+.childBindersWidget_ListOfWorkspacesPanel, .childBindersWidget_ListOfFoldersPanel
+{
+	border-color: #e0e0e0;
+	border-style: solid solid solid;
+	border-width: 1px;
+	margin-bottom: 4px;
+	padding-top: 2px;
+	padding-left: 4px;
+	padding-bottom: 2px;
+	border-radius: 2px;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_HeaderPanel, .childBindersWidget_ListOfFoldersPanel_HeaderPanel
+{
+	padding: 5px 5px 5px 0;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_HeaderText, .childBindersWidget_ListOfFoldersPanel_HeaderText
+{
+	color: #505354;
+	font-size: 16px;
+	padding-left: 4px;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_Table, .childBindersWidget_ListOfFoldersPanel_Table
+{
+	margin-left: 25px;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_workspaceLabel, .childBindersWidget_ListOfFoldersPanel_folderLabel
+{
+    color: #036f9f;
+    font-size: 14px;
+    line-height: 15px;
+    padding-left: 4px;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_workspacePanel
+{
+	margin-right: 40px;
+	margin-bottom: 10px;
+}
+.childBindersWidget_ListOfFoldersPanel_FolderPanel
+{
+	margin-right: 25px;
+	margin-bottom: 3px;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_workspaceLabel:hover, .childBindersWidget_ListOfFoldersPanel_folderLabel:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	border: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_WorkspaceDescPanel, .childBindersWidget_ListOfWorkspacesPanel_FolderDescPanel
+{
+	font-size: 10px;
+	line-height: 13px;
+	padding-left: 1px;
+	padding-right: 2px;
+	padding-bottom: 1px;
+	color: #777;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	font-weight: 500;
+	width: 200px;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_unreadLabel, .childBindersWidget_ListOfFoldersPanel_unreadLabel
+{
+	color: #777;
+	font-size: 9px;
+	font-style: normal;
+	white-space: nowrap;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_unreadLabelRed, .childBindersWidget_ListOfFoldersPanel_unreadLabelRed
+{
+	color: red;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_unreadLabelRed:hover, .childBindersWidget_ListOfFoldersPanel_unreadLabelRed:hover
+{
+	cursor: pointer;
+}
+
+.childBindersWidget_ListOfWorkspacesPanel_ChildBindersPanel
+{
+	margin-left: 25px;
+	margin-bottom: 10px;
+}
+
+
+.childBindersWidget_MainPanel
+{
+	
+}
+
+/* ########################################################################################################### */
+
+/* Styles used with the ProjectInfoWidget */
+
+.projectInfoWidget_InfoTable
+{
+}
+
+.projectInfoWidget_MainPanel
+{
+}
+
+.projectInfoWidget_ManagersPanel
+{
+}
+
+.projectInfoWidget_ManagerName
+{
+	color: #353838;
+	font-size: 11px;
+	margin-left: 4px;
+	padding-bottom: 2px;
+	padding-left: 1px;
+	padding-right: 6px;
+	vertical-align: top;
+}
+
+.projectInfoWidget_ManagerName:hover
+{
+	color: #036f9f;
+	cursor: pointer;
+	background: #cce9ee;
+	border: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+
+/* ########################################################################################################### */
+
+/* Styles used with the ProjectStatsWidget */
+
+.projectStatsWidget_BinderLabel
+{
+    color: #135C8F;
+    font-size: 14px;
+    line-height: 15px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.projectStatsWidget_BinderLabel:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	border: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.projectStatsWidget_BinderPanel
+{
+	padding-bottom: 6px;
+}
+
+.projectStatsWidget_CaptionPanel
+{
+}
+
+.projectStatsWidget_ContentPanel
+{
+}
+
+.projectStatsWidget_GraphPanel
+{
+	margin-bottom: 4px;
+	margin-left: 20px;
+	margin-top: 6px;
+}
+
+.projectStatsWidget_MainPanel
+{
+}
+
+.projectStatsWidget_TasksStatsPanel, .projectStatsWidget_MilestoneStatsPanel
+{
+	width: 300px;
+}
+
+
+/* ########################################################################################################### */

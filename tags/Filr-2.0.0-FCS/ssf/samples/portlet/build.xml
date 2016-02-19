@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<project name="sample-portlet" basedir="." default="build">
+	<property name="project.dir" value="${basedir}/../.." />
+
+	<import file="${project.dir}/build-common.xml"/>
+
+	<import file="${project.dir}/deploy-support.xml" />
+		
+	<property name="jar.file" value="teaming-sample-portlet.jar" />
+	
+	<target name="deploy" depends="deploy-jarfile,deploy-other"/>
+	
+	<target name="deploy-jarfile" depends="jar">
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+	<target name="deploy-other">
+		<copy todir="${app.server.ssf.dir}" overwrite="true">
+			<fileset dir="web"
+				includes="**/*"
+			/>
+		</copy>
+	</target>
+	
+	<target name="build" depends="jar"/>
+</project>

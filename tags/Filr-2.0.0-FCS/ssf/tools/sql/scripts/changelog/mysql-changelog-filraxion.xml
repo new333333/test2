@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <changeSet author="jong" context="schema" failOnError="true" id="1">
+        <createTable tableName="SS_NetFolderConfig">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>           
+            <column name="lockVersion" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+			<column name="topFolderId" type="BIGINT">
+                <constraints nullable="false"/>
+			</column>			
+			<column name="netFolderServerId" type="BIGINT">
+                <constraints nullable="false"/>
+			</column>			
+            <column name="resourcePath" type="VARCHAR(1024)">
+            	<constraints nullable="false"/>
+            </column>
+			<column name="homeDir" type="BIT">
+                <constraints nullable="true"/>
+			</column>			
+			<column name="allowDesktopAppToSyncData" type="BIT">
+                <constraints nullable="true" />
+            </column>
+			<column name="allowMobileAppsToSyncData" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="indexContent" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="jitsEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="jitsMaxAge" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="jitsAclMaxAge" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="fullSyncDirOnly" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="syncScheduleOption" type="SMALLINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="useInheritedIndexContent" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="useInheritedJitsSettings" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="allowDAToTriggerInitialHFSync" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="useInheritedDATriggerSetting" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <createIndex indexName="name_netFolderConfig" tableName="SS_NetFolderConfig" unique="false">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="3">
+        <createIndex indexName="nfsId_netFolderConfig" tableName="SS_NetFolderConfig" unique="false">
+            <column name="netFolderServerId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="4">
+        <modifyDataType tableName="SS_Forums" columnName="internalId" newDataType="VARCHAR(32)"/>
+        <modifySql dbms="mysql">
+            <append value=" character set latin1 collate latin1_bin"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5">
+        <modifyDataType tableName="SS_Forums" columnName="binder_sortKey" newDataType="VARCHAR(255)"/>
+        <modifySql dbms="mysql">
+            <append value=" character set latin1 collate latin1_bin"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="6">
+    	<comment>This column is created with explicit non-default charset and collate for efficiency</comment>
+   	    <sql>ALTER TABLE `SS_Forums` ADD `binderType` CHAR(1) character set latin1 collate latin1_bin NOT NULL DEFAULT 'f';</sql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="7">
+        <sql>
+update SS_Forums set binderType = LEFT(type, 1);
+        </sql>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="8">
+        <comment>This column is replaced by binderType column</comment>
+        <dropColumn tableName="SS_Forums" columnName="type"/>
+    </changeSet>
+		
+    <changeSet author="jong" context="schema" failOnError="true" id="9">
+        <addColumn tableName="SS_Forums">
+            <column name="netFolderConfigId" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_Forums">
+            <column name="legacyMirroredDriverNameHash" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn tableName="SS_Forums">
+            <column name="relRscPath" type="VARCHAR(1024)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10">
+        <customChange class="org.kablink.liquibase.change.custom.MigrateMirroredFoldersChange">
+            <param name="dbType" value="mysql"/>
+            <param name="batchSize" value="1000"/>
+            <param name="transactionSize" value="100"/>
+        </customChange>
+    </changeSet>
+    	
+	<changeSet author="jong" context="schema" failOnError="true" id="11">
+        <comment>These columns are no longer needed because SS_NetFolderConfig table assumes the role</comment>
+        <dropColumn tableName="SS_Forums" columnName="resourceDriverName"/>
+        <dropColumn tableName="SS_Forums" columnName="resourcePath"/>
+        <dropColumn tableName="SS_Forums" columnName="homeDir"/>
+        <dropColumn tableName="SS_Forums" columnName="allowDesktopAppToSyncData"/>
+        <dropColumn tableName="SS_Forums" columnName="allowMobileAppsToSyncData"/>
+        <dropColumn tableName="SS_Forums" columnName="indexContent"/>
+        <dropColumn tableName="SS_Forums" columnName="jitsEnabled"/>
+        <dropColumn tableName="SS_Forums" columnName="jitsMaxAge"/>
+        <dropColumn tableName="SS_Forums" columnName="jitsAclMaxAge"/>
+        <dropColumn tableName="SS_Forums" columnName="fullSyncDirOnly"/>
+        <dropColumn tableName="SS_Forums" columnName="syncScheduleOption"/>
+        <dropColumn tableName="SS_Forums" columnName="useInheritedIndexContent"/>
+        <dropColumn tableName="SS_Forums" columnName="useInheritedJitsSettings"/>
+        <dropColumn tableName="SS_Forums" columnName="allowDAToTriggerInitialHFSync"/>
+        <dropColumn tableName="SS_Forums" columnName="useInheritedDATriggerSetting"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="12">
+        <createIndex indexName="topFolderId_netFolderConfig" tableName="SS_NetFolderConfig" unique="true">
+            <column name="topFolderId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="13">
+        <addColumn tableName="SS_KeyShieldConfig">
+            <column name="usernameAttributeAlias" type="VARCHAR(16)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="dennis" context="schema" failOnError="true" id="14">
+        <comment>Manage Proxy Identities</comment>
+        <createTable tableName="SS_ProxyIdentity">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>           
+        	<column name="zoneId" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="proxyName" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+	</changeSet>
+	
+    <changeSet author="dennis" context="schema" failOnError="true" id="15">
+        <comment>Use Proxy Identities</comment>
+        <addColumn  tableName="SS_ResourceDriver">
+            <column name="useProxyIdentity" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addColumn  tableName="SS_ResourceDriver">
+            <column name="proxyIdentityId" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="16">
+        <comment>Add force pin code option to mobile applications configuration for Filr</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="mobileAppsForcePinCode" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="dhivya" context="schema" failOnError="true" id="17">
+        <comment>Netbios name if the user was provisioned from AD</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="netbiosName" type="VARCHAR(16)">
+              <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet> 
+
+    <changeSet author="jong" context="schema" failOnError="true" id="18">
+        <comment>Add telemetryEnabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="telemetryEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="20">
+        <comment>Anti-virus service configuration</comment>
+        <createTable tableName="SS_AntiVirusConfig">
+        	<column name="zoneId" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(32)">
+                <constraints nullable="false" />
+            </column>
+            <column name="lastUpdateTime" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+	</changeSet>
+	
+    <changeSet author="jong" context="schema" failOnError="true" id="21">
+    	<comment>This column is created with explicit non-default charset and collate for efficiency reason</comment>
+    	<sql>ALTER TABLE SS_AntiVirusConfig ADD serviceUrl VARCHAR(128) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL;</sql>
+	</changeSet>
+	
+    <changeSet author="jong" context="schema" failOnError="true" id="22">
+    	<comment>This column is created with explicit non-default charset and collate for efficiency reason</comment>
+    	<sql>ALTER TABLE SS_AntiVirusConfig ADD interfaceId VARCHAR(32) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL;</sql>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="23">
+    	<comment>This column is created with explicit non-default charset and collate for efficiency reason</comment>
+    	<sql>ALTER TABLE SS_AntiVirusConfig ADD password VARCHAR(128) CHARACTER SET latin1 COLLATE latin1_bin NOT NULL;</sql>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="24">
+        <addColumn tableName="SS_AntiVirusConfig">
+            <column name="connectTimeout" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="25">
+        <comment>Add telemetryTier2Enabled field to SS_ZoneConfig table</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="telemetryTier2Enabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="26">
+        <addForeignKeyConstraint baseColumnNames="netFolderServerId" baseTableName="SS_NetFolderConfig" constraintName="FKCEAFD38EED036070" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="SS_ResourceDriver" referencesUniqueColumn="false"/>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="27">
+        <addColumn tableName="SS_KeyShieldConfig">
+            <column name="hardwareTokenRequired" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="28">
+        <addColumn tableName="SS_KeyShieldConfig">
+            <column name="nonSsoAllowedForLdapUser" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="29">
+        <addColumn tableName="SS_KeyShieldConfig">
+            <column name="ssoErrorMessageForWeb" type="VARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="30">
+        <addColumn tableName="SS_KeyShieldConfig">
+            <column name="ssoErrorMessageForWebdav" type="VARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="dennis" context="schema" failOnError="true" id="31">
+        <addColumn tableName="SS_LdapConnectionConfig">
+            <column name="importUsersAsExternalUsers" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="32">
+        <comment>Increase clientAddr column size from 16 to 40 characters to accommodate ipv6</comment>
+        <modifyDataType tableName="SS_LoginAudit" columnName="clientAddr" newDataType="VARCHAR(40)"/>
+        <modifySql dbms="mysql">
+            <append value=" character set latin1 collate latin1_bin not null"/>
+        </modifySql>
+    </changeSet>
+    
+	<changeSet author="dennis" context="schema" failOnError="true" id="33">
+		<comment>Desktop Configuration - Applications Whitelist/Blacklist</comment>
+		<addColumn tableName="SS_ZoneConfig">
+			<column name="fsaApplicationsBlob" type="LONGTEXT" />
+		</addColumn>
+	</changeSet>
+
+    <changeSet author="dennis" context="schema" failOnError="true" id="34">
+		<comment>Default Locale Language for New External Users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="localeLanguageExt" type="VARCHAR(16)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="dennis" context="schema" failOnError="true" id="35">
+		<comment>Default Locale Country for New External Users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="localeCountryExt" type="VARCHAR(16)"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="dennis" context="schema" failOnError="true" id="36">
+		<comment>Default TimeZone for New Users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="timeZone" type="VARCHAR(80)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="dennis" context="schema" failOnError="true" id="37">
+		<comment>Default TimeZone for New External Users</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="timeZoneExt" type="VARCHAR(80)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

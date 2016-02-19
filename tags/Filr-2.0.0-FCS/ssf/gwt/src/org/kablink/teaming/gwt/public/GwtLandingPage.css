@@ -1,0 +1,643 @@
+.landingPageMainPanel
+{
+	position: relative;
+	background-color:#fff;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.landingPageMainPanel a {
+  	text-decoration: none;
+}
+
+.landingPageViewPreviewHeight
+{
+	height: 600px;
+}
+
+
+.fontSizeMedium
+{
+	font-size: medium;
+}
+
+.landingPageOverflowAuto
+{
+	overflow: auto;
+}
+
+
+/* Style used for all widgets on a landing page. */
+.landingPageWidgetMainPanel 
+{
+	background: transparent;
+	margin: 6px;
+}
+
+.landingPageWidgetMainPanel_dark 
+{
+	background: transparent;
+	margin: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	-webkit-border-radius: 6px;
+}
+
+/* Style used for the title on widgets in a landing page. */
+.landingPageWidgetTitlePanel
+{
+	background-color:#ededed;
+	color: #777; 
+	font-size: 14px;
+	font-weight:bold;
+	padding: 8px;
+}
+
+.landingPageWidgetTitlePanel_dark
+{
+  background: #949494;
+  color: #f6f6f6;
+  font-size: 14px;
+  font-weight:bold;
+  padding: 5px;
+  margin-bottom: 0px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+}
+
+.landingPageWidgetContentPanel, .landingPageWidgetContentPanel_dark
+{
+	background: #ededed;
+}
+
+.landingPageWidgetNoBorder
+{
+	border-width: 0px;
+}
+
+.landingPageWidgetShowBorder
+{
+	border-color: #ccc;
+	border-style: solid;
+	border-width: 1px;
+}
+
+/* ######## Styles used with the landing page properties dialog ######## */
+
+.lpPropertiesPanel
+{
+	margin-top: 20px;
+	position: relative;
+}
+
+/* #################################################################### */
+
+
+/* ######## Styles used with the entry widget on a landing page. ######## */
+
+.entryWidgetAuthorPanel, .entryWidgetAuthorPanel_dark
+{
+}
+
+.entryWidgetAuthorLabel
+{
+	color: #353838;
+	display: inline;
+	font-size: 11px;
+	font-weight: bold;
+	margin-left: 4px;
+	padding-right: 6px;
+	padding-left: 1px;
+	vertical-align: top;
+}
+
+.entryWidgetAuthorLabel:hover, .entryWidgetAuthorLable_dark:hover
+{
+	color: #135c8f;
+	cursor: pointer;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.entryWidgetContentPanel, .entryWidgetContentPanel_dark
+{
+}
+
+.entryWidgetDateLabel
+{
+	font-size: 10px;
+	color: #666666;
+	display: inline;
+	padding-right: 10px;
+	white-space: nowrap;
+	vertical-align: top;
+}
+
+.entryWidgetDesc, .entryWidgetDesc_dark
+{
+	padding: 8px;
+}
+div.entryWidgetDesc      a:hover {text-decoration:underline; background: #cce9ee;}
+div.entryWidgetDesc_dark a:hover {text-decoration:underline; background: #cce9ee;}
+
+.entryWidgetMainPanel
+{
+}
+
+.entryWidgetRepliesPanel
+{
+	margin-left: 10px;
+}
+
+.entryWidgetTitleLabel, .entryWidgetTitleLabel_dark
+{
+	color: #036f9f;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+.entryWidgetTitleLabel:hover, .entryWidgetTitleLabel_dark:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.entryWidgetTitlePanel, .entryWidgetTitlePanel_dark
+{
+}
+
+/* ##################################################################### */
+
+
+
+/* ######## Styles used with the file folder widget on a landing page. ######## */
+
+.fileFolderWidgetDesc, .fileFolderWidgetDesc_dark
+{
+	padding-left: 4px;
+	padding-right: 4px;	
+}
+
+
+.fileFolderWidgetLinkToFilePanel, .fileFolderWidgetLinkToFilePanel_dark
+{
+	margin: 6px;
+}
+
+.fileFolderWidgetLinkToFile, .fileFolderWidgetLinkToFile_dark
+{
+	color: #036f9f;
+	font-size: 14px;
+	line-height: 15px;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+.fileFolderWidgetListOfEntriesPanel, .fileFolderWidgetListOfEntriesPanel_dark
+{
+}
+
+.fileFolderWidgetMainPanel, .fileFolderWidgetMainPanel_dark
+{
+}
+
+.fileFolderWidgetTitleLabel, .fileFolderWidgetTitleLabel_dark
+{
+	color: #036f9f;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+.fileFolderWidgetTitleLabel:hover, .fileFolderWidgetTitleLabel_dark:hover, .fileFolderWidgetLinkToFile:hover, .fileFolderWidgetLinkToFile_dark:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+
+.fileFolderWidgetTitlePanel, .fileFolderWidgetTitlePanel_dark
+{
+}
+
+/* ##################################################################### */
+
+
+
+
+/* ######## Styles used with the folder widget on a landing page. ######## */
+
+.folderWidgetContentPanel, .folderWidgetContentPanel_dark
+{
+}
+
+.folderWidgetDesc, .folderWidgetDesc_dark
+{
+	padding-left: 4px;
+	padding-right: 4px;	
+}
+
+.folderWidgetListOfEntriesPanel, .folderWidgetListOfEntriesPanel_dark
+{
+}
+
+.folderWidgetLinkToEntryPanel, .folderWidgetLinkToEntryPanel_dark
+{
+	margin: 6px;
+}
+
+.folderWidgetLinkToEntry, .folderWidgetLinkToEntry_dark
+{
+	color: #036f9f;
+	font-size: 14px;
+	line-height: 15px;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+
+.folderWidgetMainPanel, .folderWidgetMainPanel_dark
+{
+}
+
+.folderWidgetMiscPanel, .folderWidgetMiscPanel_dark
+{
+	padding-left: 8px;
+}
+
+.folderWidgetTitleLabel, .folderWidgetTitleLabel_dark
+{
+	color: #036f9f;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+.folderWidgetTitleLabel:hover, .folderWidgetTitleLabel_dark:hover, .folderWidgetLinkToEntry:hover, .folderWidgetLinkToEntry_dark:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.folderWidgetTitlePanel, .folderWidgetTitlePanel_dark
+{
+}
+
+/* ##################################################################### */
+
+
+
+/* ######## Styles used with the html widget on a landing page. ######## */
+
+.graphicWidgetMainPanel, .graphicWidgetMainPanel_dark
+{
+	background: transparent;
+}
+
+.graphicWidgetImgPanel, .graphicWidgetImgPanel_dark
+{
+	padding: 5px;
+}
+
+/* ##################################################################### */
+
+
+
+/* ######## Styles used with the html widget on a landing page. ######## */
+
+/* Styles used with the html widget on a landing page. */
+.htmlWidgetMainPanel
+{
+	font-size: 12px;
+}
+
+/* ##################################################################### */
+
+
+
+/* ######## Styles used with the iFrame widget on a landing page. ######## */
+
+.iFrameWidgetMainPanel, .iFrameWidgetMainPanel_dark
+{
+}
+
+.iFrameWidgetNoBorder
+{
+	border-width: 0px;
+}
+
+.iFrameWidgetShowBorder
+{
+	border-color: #666666 #BBBBBB #BBBBBB #666666;
+	bolder-style: solid;
+	border-width: 2px;
+}
+
+.iFrameWidgetTitleLabel, .iFrameWidgetTitleLabel_dark
+{
+	color: #036f9f;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+
+/* ##################################################################### */
+
+
+
+/* ######## Styles used with the link to binder widget on a landing page. ######## */
+
+.linkToBinderWidgetLink, .linkToBinderWidgetLink_dark
+{
+	color: #036f9f;
+	font-size: 0.75em;
+	letter-spacing: 0.03em;
+	padding: 2px 8px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    text-decoration: none !important;
+}
+
+.linkToBinderWidgetLink:hover, .linkToBinderWidgetLink_dark:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.linkToBinderWidgetMainPanel, .linkToBinderWidgetMainPanel_dark
+{
+}
+
+/* ##################################################################### */
+
+
+/* ######## Styles used with the link to entry widget on a landing page. ######## */
+
+.linkToEntryWidgetLink, .linkToEntryWidgetLink_dark
+{
+	color: #036f9f;
+	font-size: 0.75em;
+	letter-spacing: 0.03em;
+	padding: 2px 8px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    text-decoration: none !important;
+}
+
+.linkToEntryWidgetLink:hover, .linkToEntryWidgetLink_dark:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.linkToEntryWidgetMainPanel, .linkToEntryWidgetMainPanel_dark
+{
+}
+
+/* ##################################################################### */
+
+
+/* ######## Styles used with the list widget on a landing page. ######## */
+
+.listWidgetMainPanel
+{
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.listWidgetMainPanel_dark
+{
+}
+
+.listWidgetTitlePanel, .listWidgetTitlePanel_dark
+{
+}
+
+.listWidgetTitleLabel
+{
+	color: #036f9f;
+	font-size: 14px;
+	line-height: 15px;
+}
+.listWidgetTitleLabel_dark
+{
+	color: #f6f6f6;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+.listWidgetContentPanel, .listWidgetContentPanel_dark
+{
+}
+
+/* ##################################################################### */
+
+
+
+/* ####### Styles used with the table widget on a landing page. ######## */
+
+.tableWidget, .tableWidget_dark
+{
+  	background-color: transparent;
+	border-collapse: collapse;
+  	padding: 0px;
+  	table-layout: fixed;
+  	text-align:left !important;
+  	width: 100%;
+}
+
+.tableWidgetMainPanel
+{
+}
+
+.tableWidgetMainPanel_dark
+{
+	background-color: transparent;
+}
+
+/* ##################################################################### */
+
+
+
+/* ######## Styles used with the task folder widget on a landing page. ######## */
+
+.taskFolderWidgetAssignedGroupPanel, .taskFolderWidgetAssignedGroupPanel_dark, .taskFolderWidgetAssignedTeamPanel, .taskFolderWidgetAssignedTeamPanel_dark
+{
+	margin-left: 4px;
+}
+
+.taskFolderWidgetAssignedPerson, .taskFolderWidgetAssignedPerson_dark, .taskFolderWidgetAssignedGroup, .taskFolderWidgetAssignedGroup_dark
+{
+	color: #353838;
+	font-size: 11px;
+	margin-left: 4px;
+	padding-bottom: 2px;
+	padding-left: 1px;
+	padding-right: 6px;
+	vertical-align: top;
+}
+
+.taskFolderWidgetAssignedPerson:hover, .taskFolderWidgetAssignedPerson_dark:hover, .taskFolderWidgetAssignedGroup:hover, .taskFolderWidgetAssignedGroup_dark:hover, .taskFolderWidgetAssignedTeam:hover, .taskFolderWidgetAssignedTeam_dark:hover
+{
+	color: #135c8f;
+	cursor: pointer;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.taskFolderWidgetAssignedTeam, .taskFolderWidgetAssignedTeam_dark
+{
+}
+
+.taskFolderWidgetAssignedToPanel, .taskFolderWidgetAssignedToPanel_dark
+{
+}
+
+.taskFolderWidgetDesc, .taskFolderWidgetDesc_dark
+{
+	padding-left: 4px;
+	padding-right: 4px;	
+}
+
+.taskFolderWidgetGroupMembersPanel, .taskFolderWidgetGroupMembersPanel_dark, .taskFolderWidgetTeamMembersPanel, .taskFolderWidgetTeamMembersPanel_dark
+{
+	padding-left: 20px;
+}
+
+.taskFolderWidgetLinkToTaskPanel, .taskFolderWidgetLinkToTaskPanel_dark
+{
+	margin: 6px;
+}
+
+.taskFolderWidgetLinkToTask, .taskFolderWidgetLinkToTask_dark, .taskFolderWidgetLinkToLocation, .taskFolderWidgetLinkToLocation_dark
+{
+	color: #036f9f;
+	font-size: 14px;
+	line-height: 15px;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+.taskFolderWidgetListOfTasksPanel, .taskFolderWidgetListOfTasksPanel_dark
+{
+}
+
+.taskFolderWidgetMainPanel, .taskFolderWidgetMainPanel_dark
+{
+}
+
+.taskFolderWidgetTaskDescPanel, .taskFolderWidgetTaskDescPanel_dark
+{
+	font-size: 11px;
+	padding-left: 8px;
+}
+
+.taskFolderWidgetTaskTitlePanel, .taskFolderWidgetTaskTitlePanel_dark
+{
+}
+
+.taskFolderWidgetTitleLabel, .taskFolderWidgetTitleLabel_dark, .myTasksWidgetTitleLabel, .myTasksWidgetTitleLabel_dark
+{
+	color: #036f9f;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+.taskFolderWidgetTitleLabel:hover, .taskFolderWidgetTitleLabel_dark:hover, .taskFolderWidgetLinkToTask:hover, .taskFolderWidgetLinkToTask_dark:hover, .taskFolderWidgetLinkToLocation:hover, .taskFolderWidgetLinkToLocation_dark:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.taskFolderWidgetTitlePanel, .taskFolderWidgetTitlePanel_dark
+{
+}
+
+/* ##################################################################### */
+
+
+
+/* ####### Styles used with the url widget on a landing page. ######## */
+
+.urlWidgetLink, .urlWidgetLink_dark
+{
+	color: #036f9f;
+	font-size: 0.75em;
+	letter-spacing: 0.03em;
+	padding: 2px 8px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    text-decoration: none !important;
+}
+
+.urlWidgetLink:hover, .urlWidgetLink_dark:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.urlWidgetMainPanel, .urlWidgetMainPanel_dark
+{
+}
+
+/* ##################################################################### */
+
+
+/* ######## Styles used with the utility element widget on a landing page. ######## */
+
+.utilityElementWidgetLink, .utilityElementWidgetLink_dark
+{
+	color: #036f9f;
+	font-size: 0.75em;
+	letter-spacing: 0.03em;
+	padding: 2px 8px;
+    -moz-border-radius: 5px;
+	border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.utilityElementWidgetLink:hover, .utilityElementWidgetLink_dark:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.utilityElementWidgetMainPanel, .utilityElementWidgetMainPanel_dark
+{
+}
+
+/* ##################################################################### */
+
+

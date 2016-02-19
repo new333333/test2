@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="5" internalId="402883b90d0de1f3010d0df5582b0010">
+  <attribute name="templateTitle" type="string"><![CDATA[__template_folder_photo]]></attribute>
+  <attribute name="templateDescription" type="description"><![CDATA[__template_folder_photo_description]]></attribute>
+  <attribute name="title" type="string"><![CDATA[__template_folder_photo]]></attribute>
+  <attribute name="description" type="description"><![CDATA[]]></attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_photo.png</attribute>
+  <attribute name="name" type="string">_folder_photo</attribute>
+  <property name="library">true</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="_photoFolder" databaseId="402883c6115753d8011157619e350008"/>
+  <definition name="_photoEntry" databaseId="402883c6115753d80111578720900010"/>
+</template>

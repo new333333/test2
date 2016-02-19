@@ -1,0 +1,74 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+    <!-- ============================== Digest authentication ============================ -->
+
+	<bean id="digestProcessingFilter"
+		class="org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
+       	<property name="userDetailsService" ref="digestUserDetailsService"/>
+		<property name="authenticationEntryPoint" ref="digestProcessingFilterEntryPoint"/>
+	</bean>
+	
+	<bean id="digestProcessingFilterEntryPoint"
+		class="org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
+		<property name="realmName" value="Vibe"/>
+		<property name="key" value="U2l0ZVNjYXBl"/>
+	</bean>
+
+	<bean id="digestUserDetailsService" 
+		class="org.kablink.teaming.asmodule.spring.security.userdetails.DecryptedPasswordUserDetailsService">
+	</bean>
+
+	<bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
+		<constructor-arg>
+		    <list>
+		        <ref bean="authenticationProvider"/>
+		    </list>
+		</constructor-arg>
+		<property name="authenticator"><value>webdav</value></property>
+	</bean>
+
+	<!-- 
+	     When Basic Authentication is in use, the Spring's basic processing filter (re)authenticates
+	     the user ONLY IF the user isn't already authenticated OR the username doesn't match the 
+	     value from the current security context. That is, the system doesn't end up re-authenticating
+	     the same user repeatedly for each and every request. The user's credential is checked only
+	     at the session boundary. 
+	     
+	     Unfortunately, the digest authentication loses this efficiency. Apparently the digest 
+	     authentication requires the server to re-authenticate the user if/when the user credential
+	     is present even when each request is accompanied by a still-valid session. There are two
+	     problems with this:
+	     
+	     1) Because the authentication code is invoked for every request, it is difficult for the system
+	     to discern the login or session boundary. It acts more like a stateless web services requests
+	     than webdav requests.
+	      
+	     2) The repeated authentication results in inefficiency in the system. To alleviate this problem,
+	     we substitute a null authentication provider for the real one so as to avoid executing the
+	     regular authentication pipeline (which may involve additional interactions with the LDAP source 
+	     as well as with Teaming's local database) once the digest processing has already been completed 
+	     successfully. In other word, once the digest password comparison succeeds for each request,
+	     then we can safely declare that the authentication is complete for the request without having
+	     to further invoke Teaming's regular authentication pipeline. The downside of this optimization
+	     is that with digest authentication in place there would be no opportunity for webdav interactions 
+	     to trigger synchronization of user's profile information from the LDAP source into Teaming's database.  
+	-->   
+	      
+	<bean id="authenticationProvider" class="org.kablink.teaming.asmodule.spring.security.providers.DummyAuthenticationProvider"/>
+	
+    <security:http entry-point-ref="digestProcessingFilterEntryPoint" authentication-manager-ref="_authenticationManager"> 
+		<security:custom-filter position="BASIC_AUTH_FILTER" ref="digestProcessingFilter"/>
+        <security:session-management session-fixation-protection="newSession" />
+        <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
+        <security:anonymous enabled="false" />
+    </security:http>
+	
+</beans>
