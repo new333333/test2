@@ -59,7 +59,7 @@ public abstract class SearchableObject extends BaseRestObject {
     }
 
     /**
-     * The indexed document type.  Can be:
+     * The indexed document type.  Possible values are:
      * <ul>
      *     <li><code>entry</code> (folder entries, replies, users and groups)</li>
      *     <li><code>binder</code> (workspaces and folders)</li>

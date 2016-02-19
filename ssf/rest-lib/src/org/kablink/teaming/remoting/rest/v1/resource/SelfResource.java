@@ -60,6 +60,7 @@ import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChange;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
@@ -120,7 +121,6 @@ import java.util.*;
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @SuppressWarnings("unchecked")
-@ResourceGroup("Authenticated User")
 public class SelfResource extends AbstractFileResource {
     private Map<Long, Long> homeDirCheckTime = new HashMap<Long, Long>();
 
@@ -134,7 +134,8 @@ public class SelfResource extends AbstractFileResource {
      */
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public User getSelf(@QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+    @ResourceGroup("Authenticated User")
+    public User getSelf(@Undocumented @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
                         @QueryParam("include_mobile_devices") @DefaultValue("false") boolean includeMobileDevices,
                         @QueryParam("include_groups") @DefaultValue("false") boolean includeGroups,
                         @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
@@ -216,6 +217,7 @@ public class SelfResource extends AbstractFileResource {
      * Returns the authenticated user's favorite binders
      * @return Returns a list of BinderBrief objects.
      */
+    @Undocumented
     @GET
     @Path("/favorites")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -233,6 +235,7 @@ public class SelfResource extends AbstractFileResource {
      * Returns the teams that the authenticated user is a member of.
      * @return Returns a list of BinderBrief objects.
      */
+    @Undocumented
     @GET
     @Path("/teams")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -252,10 +255,10 @@ public class SelfResource extends AbstractFileResource {
      * @deprecated  This operation is temporary and is very likely to change.
      * @return Returns a list of BinderBrief objects.
      */
-    @Deprecated
 	@GET
     @Path("/roots")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @ResourceGroup("Top Level Folders")
     public SearchResultList<BinderBrief> getRoots() {
 
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
@@ -284,6 +287,7 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/net_folders")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @ResourceGroup("Top Level Folders")
     public BinderBrief getNetFolders() {
         return getFakeNetFolders();
     }
@@ -291,6 +295,7 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/public_shares")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @ResourceGroup("Top Level Folders")
     public BinderBrief getPublicShares() {
         BinderBrief fakePublicShares = getFakePublicShares(true);
         if (fakePublicShares==null) {
@@ -299,6 +304,7 @@ public class SelfResource extends AbstractFileResource {
         return fakePublicShares;
     }
 
+    @Undocumented
     @GET
     @Path("/public_shares/library_info")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -310,6 +316,7 @@ public class SelfResource extends AbstractFileResource {
         return getPublicSharesLibraryInfo();
     }
 
+    @ResourceGroup("Top Level Folders")
     @GET
     @Path("/shared_with_me")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -322,6 +329,7 @@ public class SelfResource extends AbstractFileResource {
         return fakeSharedWithMe;
     }
 
+    @Undocumented
     @GET
     @Path("/shared_with_me/library_info")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -329,6 +337,7 @@ public class SelfResource extends AbstractFileResource {
         return getSharedWithLibraryInfo(getLoggedInUserId());
     }
 
+    @ResourceGroup("Top Level Folders")
     @GET
     @Path("/shared_by_me")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -336,6 +345,7 @@ public class SelfResource extends AbstractFileResource {
         return getFakeSharedByMe();
     }
 
+    @Undocumented
     @GET
     @Path("/shared_by_me/library_info")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -343,6 +353,7 @@ public class SelfResource extends AbstractFileResource {
         return getSharedByLibraryInfo(getLoggedInUserId());
     }
 
+    @ResourceGroup("Top Level Folders")
     @GET
     @Path("/my_files")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -359,6 +370,7 @@ public class SelfResource extends AbstractFileResource {
         return fakeMyFileFolders;
     }
 
+    @Undocumented
     @GET
     @Path("/my_files/library_info")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -369,6 +381,7 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/my_files/library_children")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @ResourceGroup("My Files")
     public Response getMyFileLibraryChildren(
             @QueryParam("title") String name,
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -389,6 +402,7 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/my_files/library_folders")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @ResourceGroup("My Files")
     public Response getMyFileLibraryFolders(
             @QueryParam("title") String name,
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -409,6 +423,7 @@ public class SelfResource extends AbstractFileResource {
     @Path("/my_files/library_folders")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ResourceGroup("My Files")
     public org.kablink.teaming.rest.v1.model.Folder copyFolder(@QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                @FormParam("title") String title,
                                                                @FormParam("source_id") Long sourceId) {
@@ -448,6 +463,7 @@ public class SelfResource extends AbstractFileResource {
    	@Path("/my_files/library_folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ResourceGroup("My Files")
    	public org.kablink.teaming.rest.v1.model.Folder createLibraryFolder(
                                       org.kablink.teaming.rest.v1.model.BinderBrief newBinder,
                                       @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
@@ -487,6 +503,7 @@ public class SelfResource extends AbstractFileResource {
 
     @GET
     @Path ("/my_files/library_changes")
+    @ResourceGroup("My Files")
     public BinderChanges getMyFilesChanges(@QueryParam("since") String since,
                                            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                            @QueryParam("recursive") @DefaultValue("true") boolean recursive,
@@ -520,6 +537,7 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/my_files/library_tree")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @ResourceGroup("My Files")
     public BinderTree getMyFileLibraryTree(
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
@@ -550,6 +568,7 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/my_files/library_entities")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @ResourceGroup("My Files")
     public SearchResultList<SearchableObject> getMyFileLibraryEntities(
               @QueryParam("recursive") @DefaultValue("false") boolean recursive,
               @QueryParam("binders") @DefaultValue("true") boolean includeBinders,
@@ -600,6 +619,7 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/my_files/library_files")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @ResourceGroup("My Files")
     public Response getMyFileLibraryFiles(
             @QueryParam("file_name") String fileName,
             @QueryParam("recursive") @DefaultValue("false") boolean recursive,
@@ -627,6 +647,7 @@ public class SelfResource extends AbstractFileResource {
     @Path("/my_files/library_files")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ResourceGroup("My Files")
     public FileProperties copyFile(@FormParam("file_name") String fileName,
                                    @FormParam("source_id") String sourceId,
                                    @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
@@ -659,6 +680,7 @@ public class SelfResource extends AbstractFileResource {
     @Path("/my_files/library_files")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ResourceGroup("My Files")
     public FileProperties addLibraryFileFromMultipart(@QueryParam("file_name") String fileName,
                                          @QueryParam("mod_date") String modDateISO8601,
                                          @QueryParam("md5") String expectedMd5,
@@ -678,6 +700,7 @@ public class SelfResource extends AbstractFileResource {
     @Path("/my_files/library_files")
     @Consumes("*/*")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @ResourceGroup("My Files")
     public FileProperties addLibraryFile(@QueryParam("file_name") String fileName,
                                          @QueryParam("mod_date") String modDateISO8601,
                                          @QueryParam("md5") String expectedMd5,
@@ -696,6 +719,7 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("/my_files/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @ResourceGroup("My Files")
     public SearchResultList<RecentActivityEntry> getMyFileRecentActivity(
             @QueryParam("file_name") String fileName,
             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
@@ -739,6 +763,7 @@ public class SelfResource extends AbstractFileResource {
         return resultList;
     }
 
+    @Undocumented
     @POST
     @Path("/my_files/initial_sync")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -760,6 +785,7 @@ public class SelfResource extends AbstractFileResource {
         return Response.ok().build();
     }
 
+    @Undocumented
     @GET
     @Path("mobile_devices")
     public SearchResultList<MobileDevice> getMobileDevices() {
@@ -773,6 +799,7 @@ public class SelfResource extends AbstractFileResource {
         return results;
     }
 
+    @Undocumented
     @POST
     @Path("mobile_devices")
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -786,6 +813,7 @@ public class SelfResource extends AbstractFileResource {
         return ResourceUtil.buildMobileDevice(mobileDevice);
     }
 
+    @Undocumented
     @GET
     @Path("mobile_devices/{id}")
     public MobileDevice getMobileDevice(@PathParam("id") String id) {
@@ -796,6 +824,7 @@ public class SelfResource extends AbstractFileResource {
         throw new NotFoundException(ApiErrorCode.DEVICE_NOT_FOUND, "No device with ID: " + id);
     }
 
+    @Undocumented
     @PUT
     @Path("mobile_devices/{id}")
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -823,6 +852,7 @@ public class SelfResource extends AbstractFileResource {
         throw new NotFoundException(ApiErrorCode.DEVICE_NOT_FOUND, "No device with ID: " + id);
     }
 
+    @Undocumented
     @DELETE
     @Path("mobile_devices/{id}")
     public void deleteMobileDevice(@PathParam("id") String id) {
@@ -834,6 +864,7 @@ public class SelfResource extends AbstractFileResource {
         throw new NotFoundException(ApiErrorCode.DEVICE_NOT_FOUND, "No device with ID: " + id);
     }
 
+    @Undocumented
     @GET
     @Path("/my_teams")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -845,6 +876,7 @@ public class SelfResource extends AbstractFileResource {
         return fakeFolder;
     }
 
+    @Undocumented
     @GET
     @Path("/my_favorites")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
