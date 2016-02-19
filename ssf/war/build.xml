@@ -23,7 +23,7 @@
 			<fileset dir="${project.dir}/main" includes="kablink-teaming-main.jar" />
 			<fileset dir="${project.dir}/util" includes="kablink-teaming-util.jar" />
 			<fileset dir="${project.dir}/util-search" includes="kablink-teaming-util-search.jar" />
-			<fileset dir="${project.dir}/rest-lib" includes="kablink-teaming-rest-lib.jar" />
+			<fileset dir="${project.dir}/rest-shared" includes="kablink-teaming-rest-shared.jar" />
 			<fileset dir="${project.dir}/commons-httpclient-contrib" includes="kablink-teaming-commons-httpclient-contrib.jar" />
 			<fileset dir="${project.dir}/slide-webdavclient" includes="kablink-teaming-slide-webdavclient.jar" />
 			<fileset dir="${project.dir}/taglib" includes="kablink-teaming-taglib.jar" />

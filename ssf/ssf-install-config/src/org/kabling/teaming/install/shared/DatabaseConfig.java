@@ -119,7 +119,7 @@ public class DatabaseConfig implements Serializable
 	public String getHostNameFromUrl()
 	{
 		String url = getResourceUrl();
-		// url example jdbc:jtds:sqlserver://localhost/sitescape;useCursors=true
+		// url example jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor
 		String pattern = "//";
 
 		if (url != null)
@@ -147,7 +147,7 @@ public class DatabaseConfig implements Serializable
 	
 	private String getDbName(String url)
 	{
-		// url example jdbc:jtds:sqlserver://localhost/sitescape;useCursors=true
+		// url example jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor
 		String pattern = "//";
 		int startIndex = url.indexOf(pattern) + pattern.length();
 		

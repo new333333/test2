@@ -49,6 +49,7 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.teaming.cache.impl.ThreadBoundLRUCache;
 import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.domain.NoRoleByTheIdException;
 import org.kablink.teaming.domain.NoRoleConditionByTheIdException;
@@ -61,7 +62,6 @@ import org.kablink.teaming.security.dao.SecurityDao;
 import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
-import org.kablink.util.cache.ThreadBoundLRUCache;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 

@@ -10,7 +10,7 @@
 	<path id="project.classpath">
 		<!--<pathelement path="${project.dir}/rest-client/classes" />-->
 		<!--<pathelement path="${project.dir}/util/classes" />-->
-		<pathelement path="${project.dir}/rest-lib/classes" />
+		<pathelement path="${project.dir}/rest-shared/classes" />
 		<fileset dir="${project.dir}/lib" includes="${libraries.restclient}" />
 	</path>
 

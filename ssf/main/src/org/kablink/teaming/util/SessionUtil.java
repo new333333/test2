@@ -38,7 +38,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Interceptor;
 import org.hibernate.engine.SessionImplementor;
-import org.hibernate.stat.SessionStatistics;
 
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
@@ -101,10 +100,5 @@ public class SessionUtil {
 	   	if (TransactionSynchronizationManager.hasResource(getSessionFactory())) return true;
 	   	return false;
 		
-	}
-	public static SessionStatistics getSessionStatistics() {
-		Session session = getSession();
-		if (session == null) return null;
-		return session.getStatistics();
 	}
 }

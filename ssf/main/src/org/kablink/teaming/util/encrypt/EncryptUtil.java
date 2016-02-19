@@ -42,12 +42,12 @@ import org.apache.commons.logging.LogFactory;
 import org.jasypt.encryption.StringEncryptor;
 
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.cache.impl.HashMapCache;
 import org.kablink.teaming.domain.ProxyIdentity;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.PasswordHashEncryptor;
-import org.kablink.util.cache.HashMapCache;
 import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
 
 public class EncryptUtil {

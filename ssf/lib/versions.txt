@@ -48,7 +48,6 @@ dom4j 1.6.1
 draggable-plugin 1.0.4 (Draggable Plugin for gQuery)
 EasyMock 1.2 (Java 1.3)
 Ehcache 2.6.7 (needed by Hibernate)
-enunciate-core-annotations 2.2.0 (Used to generate REST documentation)
 ezmorph 1.0.1
 firebug-lite 1.2
 groovy 1.8.5
@@ -70,7 +69,6 @@ Jackrabbit Core 1.4.5
 Jackrabbit SPI 1.4
 Jackrabbit SPI Commons 1.4
 Jackson 1.9.2 (high-performance JSON processor needed by Jersey; This includes core-asl, jaxrs, mapper-asl, and xc)
-Jackson-databind 2.7.0 (Used to generate REST documentation).
 Jakarta Taglibs Standard 1.1
 Jasypt 1.7
 JavaMail 1.5.2 (Oracle's reference implementation)

@@ -1443,7 +1443,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							results = ldapContext.search( baseDn, filter, searchControls );
 							
 							// loop through the results in each page
-							while ( hasMore( results, true ) )
+							while ( hasMore( results ) )
 							{
 								SearchResult sr;
 								Attributes lAttrs = null;
@@ -1795,7 +1795,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					// Search for users using the base dn and filter criteria.
 					ctxSearch = ldapContext.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), searchCtrls );
-					while ( hasMore( ctxSearch, true ) )
+					while ( hasMore( ctxSearch ) )
 					{
 						String userName;
 						String fixedUpUserName;
@@ -1944,7 +1944,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					// Search for groups using the base dn and filter criteria.
 					ctxSearch = ldapContext.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), searchCtrls );
-					while ( hasMore( ctxSearch, true ) )
+					while ( hasMore( ctxSearch ) )
 					{
 						String groupName;
 						String fullDN;
@@ -2250,7 +2250,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
             controls.setSearchScope(SearchControls.OBJECT_SCOPE);
             answer = ctx.search(base, filter, controls);
 
-            if (hasMore(answer, false)) {                
+            if (hasMore(answer)) {                
                 SearchResult sr;
                 Attributes attrs;
 
@@ -2293,7 +2293,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
                 controls.setReturningAttributes(attr);
                 answer = ctx.search(base, filter, controls);
 
-                if (hasMore(answer, false)) {
+                if (hasMore(answer)) {
                     SearchResult sr;
                     Attributes attrs;
 
@@ -2385,7 +2385,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
-					if ( !hasMore( ctxSearch, false ) ) 
+					if ( !hasMore( ctxSearch ) ) 
 					{
 						continue;
 					}
@@ -2485,7 +2485,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
-					if ( !hasMore( ctxSearch, false ) ) 
+					if ( !hasMore( ctxSearch ) ) 
 					{
 						continue;
 					}
@@ -2640,7 +2640,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
-					if (!hasMore( ctxSearch, false ) )
+					if (!hasMore( ctxSearch ) )
 					{
 						continue;
 					}
@@ -2772,7 +2772,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 				
 				ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
-				if (!hasMore( ctxSearch, false ) )
+				if (!hasMore( ctxSearch ) )
 				{
 					continue;
 				}
@@ -3014,7 +3014,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						search = "(&"+search+filter+")";
 					}
 					NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), search, sch);
-					if (!hasMore( ctxSearch, false )) {
+					if (!hasMore( ctxSearch )) {
 						continue;
 					}
 					Binding bd = (Binding)ctxSearch.next();
@@ -3197,7 +3197,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				search = "(distinguishedName=" + fqdn + ")";
 				
 				ctxSearch = ctx.search( baseDN, search, sch );
-				if ( !hasMore( ctxSearch, false ) )
+				if ( !hasMore( ctxSearch ) )
 				{
 					continue;
 				}
@@ -3581,13 +3581,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 				groupConfigsSynced += 1;
 
+		   		LdapContext ctx=null;
 		  		try {
 
 			   		// Tell the ContainerCoordinator the type of ldap directory we are working with.
 					m_containerCoordinator.setLdapDirType( getLdapDirType( config.getLdapGuidAttribute() ) );
+
+		  			ctx = getGroupContext(zone.getId(), config);
 				
 		  			logger.info( "ldap url used to search for groups: " + config.getUrl() );
-					syncGroups( zone, config, groupCoordinator, info.isMembershipSync(), externalUserSync );
+					syncGroups( zone, ctx, config, groupCoordinator, info.isMembershipSync(), externalUserSync );
 			   		logger.info( "Finished syncGroups()" );
 				}
 		  		catch (Exception ex)
@@ -3626,6 +3629,32 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			  				ldapSyncEx = new LdapSyncException( config, new NamingException( ex.toString() ) );
 			  			}
 		  			}
+		  		}
+		  		finally
+		  		{
+					if (ctx != null) {
+						try
+						{
+							ctx.close();
+						}
+						catch (NamingException namingEx)
+				  		{
+							logger.error( "closing group context threw an exception: ", namingEx );
+							
+				  			//~JW:  When we re-write the ldap config page in GWT, we need to collect all of these
+				  			//~JW:  errors and return them instead of just throwing an exception for the first
+				  			//~JW:  problem we find.
+				  			// Have we already encountered a problem?
+				  			if ( ldapSyncEx == null )
+				  			{
+				  				// No
+				  				// Create an LdapSyncException.  We throw an LdapSyncException so we can return
+				  				// the LdapConnectionConfig object that was being used when the error happened.
+				  				// We will throw the exception after we have gone through all the ldap configs.
+				  				ldapSyncEx = new LdapSyncException( config, namingEx );
+				  			}
+				  		}
+					}
 		  		}
 			}// end for()
 	   		
@@ -5148,7 +5177,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	/**
 	 * 
 	 */
-	private boolean hasMore( NamingEnumeration namingEnumeration, boolean throwExceptionUponError ) throws NamingException
+	private boolean hasMore( NamingEnumeration namingEnumeration )
 	{
 		boolean hasMore = false;
 
@@ -5159,20 +5188,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			// NamingEnumeration.hasMore() will throw an exception if needed only after all valid
 			// objects have been returned as a result of walking through the enumeration.
-			// 
-			// 2/4/2016 JK (bug 965166) The above statement is not only incorrect but also very
-			// dangerous. Specifically, this method throws exception if the system lost connection
-			// with the LDAP server. Ignoring such error can lead to massive unexpected deletion or
-			// disabling of users. When such danger is present, we must propagate the exception up
-			// through the call stack.
 			hasMore = namingEnumeration.hasMore();
 		}
 		catch( Exception ex )
 		{
-			if(throwExceptionUponError)
-				throw ex; // Rethrow
-			else 
-				logger.error( "namingEnumeration.hasMore() threw exception: ", ex );
+			logger.error( "namingEnumeration.hasMore() threw exception: ", ex );
 		}
 	
 		return hasMore;
@@ -5488,7 +5508,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					results = ctx.search( searchInfo.getBaseDn(), filter, sch );
 					
 					// loop through the results in each page
-					while ( hasMore( results, true ) )
+					while ( hasMore( results ) )
 					{
 						String	userName;
 						String	fixedUpUserName;
@@ -6207,6 +6227,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 	protected void syncGroups(
 		Binder zone,
+		LdapContext ctx,
 		LdapConnectionConfig config,
 		GroupCoordinator groupCoordinator,
 		boolean syncMembership,
@@ -6241,268 +6262,247 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				logger.info( "\tSearching for groups in base dn: " + searchInfo.getBaseDn() );
 				
-				LdapContext ctx = getGroupContext(zone.getId(), config);
+				listOfADGroupsToSyncMembership.clear();
 				
-				try {
-					listOfADGroupsToSyncMembership.clear();
+				// Get the mapping of attributes for a group.
+				Map groupAttributes = (Map) getZoneMap(zone.getName()).get(GROUP_ATTRIBUTES);
+				groupCoordinator.setAttributes(groupAttributes);
+				
+				Set la = new HashSet(groupAttributes.keySet());
+				if ( workingWithAD == false )
+					la.addAll((List) getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES));
+				
+				// Create a String[] of all the attributes we need to read from the directory.
+				{
+					int len;
+					int index;
 					
-					// Get the mapping of attributes for a group.
-					Map groupAttributes = (Map) getZoneMap(zone.getName()).get(GROUP_ATTRIBUTES);
-					groupCoordinator.setAttributes(groupAttributes);
+					// Get the names of the attributes that may hold the group membership.
+					memberAttributes = (List) getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES);
+
+					// Get the names of the group attributes
+					attributeNames = groupCoordinator.getAttributeNames();
 					
-					Set la = new HashSet(groupAttributes.keySet());
-					if ( workingWithAD == false )
-						la.addAll((List) getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES));
+					len = 3; // Make room for objectSid, sAMAccountName, and ldap guid attribute.
+					if ( attributeNames != null )
+						len += attributeNames.length;
 					
-					// Create a String[] of all the attributes we need to read from the directory.
+					if ( workingWithAD == false && memberAttributes != null )
+						len += memberAttributes.size();
+					
+					index = 0;
+					attributesToRead = new String[len];
+					for (i = 0; i < attributeNames.length; ++i)
 					{
-						int len;
-						int index;
-						
-						// Get the names of the attributes that may hold the group membership.
-						memberAttributes = (List) getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES);
-	
-						// Get the names of the group attributes
-						attributeNames = groupCoordinator.getAttributeNames();
-						
-						len = 3; // Make room for objectSid, sAMAccountName, and ldap guid attribute.
-						if ( attributeNames != null )
-							len += attributeNames.length;
-						
-						if ( workingWithAD == false && memberAttributes != null )
-							len += memberAttributes.size();
-						
-						index = 0;
-						attributesToRead = new String[len];
-						for (i = 0; i < attributeNames.length; ++i)
-						{
-							attributesToRead[index] = attributeNames[i];
-							++index;
-						}
-						
-						if ( workingWithAD == false )
-						{
-							for (i = 0; i < memberAttributes.size(); ++i)
-							{
-								attributesToRead[index] = (String)memberAttributes.get( i );
-								++index;
-							}
-						}
-						
-						attributesToRead[index] = ldapGuidAttribute;
+						attributesToRead[index] = attributeNames[i];
 						++index;
-						
-						// Is the ldap directory AD?
-						if ( workingWithAD )
+					}
+					
+					if ( workingWithAD == false )
+					{
+						for (i = 0; i < memberAttributes.size(); ++i)
 						{
-							// Yes
-							// Add "objectSid" to the list of ldap attributes to read.
-							attributesToRead[index] = OBJECT_SID_ATTRIBUTE;
-							++index;
-	
-							// Add "sAMAccountName" to the list of ldap attributes to read.
-							attributesToRead[index] = SAM_ACCOUNT_NAME_ATTRIBUTE;
+							attributesToRead[index] = (String)memberAttributes.get( i );
 							++index;
 						}
 					}
 					
-					// Request the paged results control
+					attributesToRead[index] = ldapGuidAttribute;
+					++index;
+					
+					// Is the ldap directory AD?
+					if ( workingWithAD )
+					{
+						// Yes
+						// Add "objectSid" to the list of ldap attributes to read.
+						attributesToRead[index] = OBJECT_SID_ATTRIBUTE;
+						++index;
+
+						// Add "sAMAccountName" to the list of ldap attributes to read.
+						attributesToRead[index] = SAM_ACCOUNT_NAME_ATTRIBUTE;
+						++index;
+					}
+				}
+				
+				// Request the paged results control
+				try
+				{
+					Control[] ctls = new Control[]{ new PagedResultsControl( pageSize, true ) };
+					ctx.setRequestControls( ctls );
+				}
+				catch ( IOException ex )
+				{
+					logger.error( "In syncGroups(), call to new PagedResultsControl() threw an exception: ", ex );
+				}
+				
+				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
+				SearchControls sch = new SearchControls(
+													scope,
+													0,
+													0,
+													attributesToRead,
+													false,
+													false);
+	
+				do
+				{
+					NamingEnumeration results;
+					
+					results = ctx.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch );
+
+					while ( hasMore( results ) )
+					{
+						String groupName;
+						String fixedUpGroupName;
+						String teamingName;
+                                                ADLdapObject domainInfo;
+						String domainName = null, netbiosName = null;
+                                                
+						Attribute id;
+						SearchResult sr;
+						
+						sr = (SearchResult) results.next();
+						groupName = sr.getNameInNamespace();
+						
+						// Fixup the  by replacing all "/" with "\/".
+						fixedUpGroupName = fixupName( groupName );
+						fixedUpGroupName = fixedUpGroupName.trim();
+						
+						// Read the given attributes for this group from the directory.
+						Attributes lAttrs = sr.getAttributes();
+						
+						String relativeName = groupName.trim();
+						String dn;
+						if ( sr.isRelative() && !"".equals(ctx.getNameInNamespace())) {
+							if(!"".equals(relativeName)) {
+								dn = relativeName + "," + ctx.getNameInNamespace().trim();
+							} else {
+								dn = ctx.getNameInNamespace().trim();
+							}
+						} else {
+							dn = relativeName;
+						}
+						
+						id = lAttrs.get( "cn" );
+						if ( id != null )
+						{
+							teamingName = idToName((String)id.get());
+						}
+						else
+							teamingName = dn;
+						
+						if ( teamingName == null )
+							continue;
+
+						if ( workingWithAD ) {
+							domainInfo = getDomainInfo( config );
+                                                        if (domainInfo != null) {
+                                                            domainName = domainInfo.getDomainName();
+                                                            netbiosName = domainInfo.getNetbiosName();   
+                                                        }
+                                                }
+                                                else {
+                                                        netbiosName = null;
+							domainName = null;
+                                                }
+						//doing this one at a time is going to be slow for lots of groups
+						//not sure why it was changed for v2
+						if ( groupCoordinator.record( dn, teamingName, lAttrs, ldapGuidAttribute, domainName, netbiosName, createAsExternal ) && syncMembership )
+						{ 
+							//Get map indexed by id
+							Object[] gRow = groupCoordinator.getGroup(dn);
+							if (gRow == null) continue; //not created
+							Long groupId = (Long)gRow[PRINCIPAL_ID];
+							if (groupId == null) continue; // never got created
+							
+							if ( workingWithAD == false )
+							{
+								Attribute att = null;
+								for (i=0; i<memberAttributes.size(); i++) {
+									att = lAttrs.get((String)memberAttributes.get(i));
+									if(att != null && att.get() != null && att.size() != 0) {
+										break;
+									}
+									att = null;
+								}
+								Enumeration members = null;
+								if(att != null) {
+									members = att.getAll();
+								}
+								
+								if(members != null) {
+									groupCoordinator.syncMembership(groupId, members);
+								}
+							}
+							else
+							{
+								String guid;
+								String objectSid;
+								ADGroup group;
+
+								// Get the ldap guid that was read from the ldap directory for this user.
+								guid = getLdapGuid( lAttrs, ldapGuidAttribute );
+								
+								// Get the group's object sid
+								objectSid = getObjectSid( lAttrs );
+								
+								group = new ADGroup( guid, objectSid, teamingName, groupId );
+								listOfADGroupsToSyncMembership.add( group );
+							}
+						}
+					}
+
+					// examine the response controls
+					cookie = parseControls( ctx.getResponseControls() );
+
 					try
 					{
-						Control[] ctls = new Control[]{ new PagedResultsControl( pageSize, true ) };
-						ctx.setRequestControls( ctls );
+						// pass the cookie back to the server for the next page
+						PagedResultsControl prCtrl;
+						
+						prCtrl = new PagedResultsControl( pageSize, cookie, Control.CRITICAL );
+						ctx.setRequestControls( new Control[]{ prCtrl } );
 					}
 					catch ( IOException ex )
 					{
-						logger.error( "In syncGroups(), call to new PagedResultsControl() threw an exception: ", ex );
+						cookie = null;
+						logger.error( "In syncGroups(), call to PagedResultsControl() threw an exception: ", ex );
 					}
+
+					// clear cache to prevent thrashing resulted from prolonged use of a single session
+        			getCoreDao().clear();
+
+				} while ( (cookie != null) && (cookie.length != 0) );
+				
+				// Do we have any AD groups that we need to sync their membership?
+				if ( syncMembership && listOfADGroupsToSyncMembership != null )
+				{
+					int cnt;
 					
-					int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
-					SearchControls sch = new SearchControls(
-														scope,
-														0,
-														0,
-														attributesToRead,
-														false,
-														false);
-		
-					do
+					cnt = 0;
+					for ( ADGroup nextADGroup : listOfADGroupsToSyncMembership )
 					{
-						NamingEnumeration results;
+						Enumeration members;
 						
-						results = ctx.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch );
-	
-						while ( hasMore( results, true ) )
-						{
-							String groupName;
-							String fixedUpGroupName;
-							String teamingName;
-	                                                ADLdapObject domainInfo;
-							String domainName = null, netbiosName = null;
-	                                                
-							Attribute id;
-							SearchResult sr;
-							
-							sr = (SearchResult) results.next();
-							groupName = sr.getNameInNamespace();
-							
-							// Fixup the  by replacing all "/" with "\/".
-							fixedUpGroupName = fixupName( groupName );
-							fixedUpGroupName = fixedUpGroupName.trim();
-							
-							// Read the given attributes for this group from the directory.
-							Attributes lAttrs = sr.getAttributes();
-							
-							String relativeName = groupName.trim();
-							String dn;
-							if ( sr.isRelative() && !"".equals(ctx.getNameInNamespace())) {
-								if(!"".equals(relativeName)) {
-									dn = relativeName + "," + ctx.getNameInNamespace().trim();
-								} else {
-									dn = ctx.getNameInNamespace().trim();
-								}
-							} else {
-								dn = relativeName;
-							}
-							
-							id = lAttrs.get( "cn" );
-							if ( id != null )
-							{
-								teamingName = idToName((String)id.get());
-							}
-							else
-								teamingName = dn;
-							
-							if ( teamingName == null )
-								continue;
-	
-							if ( workingWithAD ) {
-								domainInfo = getDomainInfo( config );
-	                                                        if (domainInfo != null) {
-	                                                            domainName = domainInfo.getDomainName();
-	                                                            netbiosName = domainInfo.getNetbiosName();   
-	                                                        }
-	                                                }
-	                                                else {
-	                                                        netbiosName = null;
-								domainName = null;
-	                                                }
-							//doing this one at a time is going to be slow for lots of groups
-							//not sure why it was changed for v2
-							if ( groupCoordinator.record( dn, teamingName, lAttrs, ldapGuidAttribute, domainName, netbiosName, createAsExternal ) && syncMembership )
-							{ 
-								//Get map indexed by id
-								Object[] gRow = groupCoordinator.getGroup(dn);
-								if (gRow == null) continue; //not created
-								Long groupId = (Long)gRow[PRINCIPAL_ID];
-								if (groupId == null) continue; // never got created
-								
-								if ( workingWithAD == false )
-								{
-									Attribute att = null;
-									for (i=0; i<memberAttributes.size(); i++) {
-										att = lAttrs.get((String)memberAttributes.get(i));
-										if(att != null && att.get() != null && att.size() != 0) {
-											break;
-										}
-										att = null;
-									}
-									Enumeration members = null;
-									if(att != null) {
-										members = att.getAll();
-									}
-									
-									if(members != null) {
-										groupCoordinator.syncMembership(groupId, members);
-									}
-								}
-								else
-								{
-									String guid;
-									String objectSid;
-									ADGroup group;
-	
-									// Get the ldap guid that was read from the ldap directory for this user.
-									guid = getLdapGuid( lAttrs, ldapGuidAttribute );
-									
-									// Get the group's object sid
-									objectSid = getObjectSid( lAttrs );
-									
-									group = new ADGroup( guid, objectSid, teamingName, groupId );
-									listOfADGroupsToSyncMembership.add( group );
-								}
-							}
-						}
-	
-						// examine the response controls
-						cookie = parseControls( ctx.getResponseControls() );
-	
-						try
-						{
-							// pass the cookie back to the server for the next page
-							PagedResultsControl prCtrl;
-							
-							prCtrl = new PagedResultsControl( pageSize, cookie, Control.CRITICAL );
-							ctx.setRequestControls( new Control[]{ prCtrl } );
-						}
-						catch ( IOException ex )
-						{
-							cookie = null;
-							logger.error( "In syncGroups(), call to PagedResultsControl() threw an exception: ", ex );
-						}
-	
-						// clear cache to prevent thrashing resulted from prolonged use of a single session
-	        			getCoreDao().clear();
-	
-					} while ( (cookie != null) && (cookie.length != 0) );
-					
-					// Do we have any AD groups that we need to sync their membership?
-					if ( syncMembership && listOfADGroupsToSyncMembership != null )
-					{
-						int cnt;
+						members = getGroupMembershipFromAD(
+														nextADGroup.getGuid(),
+														nextADGroup.getObjectSid(),
+														nextADGroup.getName(),
+														zone,
+														config,
+														searchInfo );
 						
-						cnt = 0;
-						for ( ADGroup nextADGroup : listOfADGroupsToSyncMembership )
+						if ( members != null )
 						{
-							Enumeration members;
+							++cnt;
+
+							groupCoordinator.syncMembership( nextADGroup.getDbId(), members );
 							
-							members = getGroupMembershipFromAD(
-															nextADGroup.getGuid(),
-															nextADGroup.getObjectSid(),
-															nextADGroup.getName(),
-															zone,
-															config,
-															searchInfo );
-							
-							if ( members != null )
+							if ( (cnt % 10) == 0 )
 							{
-								++cnt;
-	
-								groupCoordinator.syncMembership( nextADGroup.getDbId(), members );
-								
-								if ( (cnt % 10) == 0 )
-								{
-									// clear cache to prevent thrashing resulted from prolonged use of a single session
-				        			getCoreDao().clear();
-								}
+								// clear cache to prevent thrashing resulted from prolonged use of a single session
+			        			getCoreDao().clear();
 							}
-						}
-					}
-				}
-				finally {
-					if(ctx != null) {
-						try {
-							ctx.close();
-						}
-						catch(Exception e) {
-							// An error encountered during closing of a group context (i.e., connection)
-							// after done with it doesn't really impact anything on our side negatively.
-							// So, just log the error and proceed normally rather than propagating the
-							// exception through the call stack. If this error indeed indicates a condition
-							// that will keep the LDAP sync from proceeding further (e.g., LDAP server down)
-							// then we will get another error during processing of the next unit of work 
-							// in the cycle and it will be reported back properly. So we don't lose anything.
-							logger.error( "closing group context threw an exception: ", e );
 						}
 					}
 				}
@@ -6602,7 +6602,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				answer = ctx.search( searchInfo.getBaseDn(), search, searchCtls );
 
 				// There should only be 1 result returned.
-				if ( hasMore( answer, true ) )
+				if ( hasMore( answer ) )
 				{
 					SearchResult next;
                     Attributes attrs;
@@ -6616,7 +6616,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
                     	// There should only be 1 attribute returned.
                     	ne = attrs.getAll();
-                		if ( hasMore( ne, true ) )
+                		if ( hasMore( ne ) )
                 		{
                 			Attribute attr;
                 			NamingEnumeration listOfAttrValues;
@@ -6651,7 +6651,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
                 			// Iterate through the values of the member attribute.
                 			listOfAttrValues = attr.getAll();
-                			while ( hasMore( listOfAttrValues, true ) )
+                			while ( hasMore( listOfAttrValues ) )
                 			{
                 				Object obj;
                 				
@@ -6819,7 +6819,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						results = ldapContext.search( searchInfo.getBaseDn(), searchFilter, sch );
 						
 						// loop through the results in each page
-						while ( hasMore( results, true ) )
+						while ( hasMore( results ) )
 						{
 							String userName;
 							String relativeName;
@@ -7424,7 +7424,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			// Get the Domain Root Object
 			ctxSearch = ldapCtx.search( baseDN, search, sch );
-			if ( hasMore( ctxSearch, false ) )
+			if ( hasMore( ctxSearch ) )
 			{
 				SearchResult searchResult;
 				Attributes attrs;

@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -172,11 +171,6 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	protected int inClauseLimit=1000;
 	protected Log logger = LogFactory.getLog(getClass());
-	
-	// Cache of mappings from internal IDs to primary key values for reserved binders.
-	// Since this mapping should never change for the duration of a running JVM,
-	// we don't have to time out or evict the entries ever.
-	private static ConcurrentHashMap<String, Long> reservedBinderIdCache = new ConcurrentHashMap<String,Long>();
 
     /**
      * Called after bean is initialized.  
@@ -1574,21 +1568,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
     @Override
 	public Binder loadReservedBinder(final String reservedId, final Long zoneId) {
-    	String key = zoneId.toString() + "_" + reservedId;
-    	Long binderId = reservedBinderIdCache.get(key);
-    	if(binderId == null) {
-    		Binder binder = this._loadReservedBinder(reservedId, zoneId);
-    		if(binder != null) {
-    			reservedBinderIdCache.put(key, binder.getId());
-    		}
-    		return binder;
-    	}
-    	else {
-    		return this.loadBinder(binderId, zoneId);
-    	}
-    }
- 
-	private Binder _loadReservedBinder(final String reservedId, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
 	        return (Binder)getHibernateTemplate().execute(
@@ -1609,11 +1588,11 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	             );
     	}
     	finally {
-    		end(begin, "_loadReservedBinder(String,Long)");
+    		end(begin, "loadReservedBinder(String,Long)");
     	}	        
     }
  
-	@Override
+    @Override
 	public Definition loadReservedDefinition(final String reservedId, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {

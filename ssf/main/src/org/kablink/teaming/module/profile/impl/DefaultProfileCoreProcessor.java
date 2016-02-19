@@ -332,7 +332,6 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	   List excludeIds=null;
 	   if (!user.getWSTitle().equals(originalWSTitle) || !user.getSearchTitle().equals(originalSearchTitle)) {
 		   //need to update user workspace titles and index
-		   logger.info("Updating user workspace title: oldWsTitle='" + originalWSTitle + "', oldSearchTItle='" + originalSearchTitle + "', newWsTitle='" + user.getWSTitle() + "', newSearchTitle='" + user.getSearchTitle() + "'");
 		   if (user.getWorkspaceId() != null) {
 			   Workspace ws = (Workspace)getCoreDao().load(Workspace.class, user.getWorkspaceId());
 			   if (ws != null) {

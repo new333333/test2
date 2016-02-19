@@ -22,7 +22,7 @@
 		<mkdir dir="lib"/>
 		<!-- Copy REST client and shared libraries -->
 		<copy file="${project.dir}/rest-client/kablink-teaming-rest-client.jar" todir="lib"/>
-		<copy file="${project.dir}/rest-lib/kablink-teaming-rest-lib.jar" todir="lib"/>
+		<copy file="${project.dir}/rest-shared/kablink-teaming-rest-shared.jar" todir="lib"/>
 		<!-- Copy 3rd party libraries needed by the Vibe REST -->
 		<copy todir="lib">
 			<fileset dir="${project.dir}/lib"

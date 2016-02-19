@@ -589,7 +589,7 @@ public final class ConfigService
 	 * "jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;characterEncoding=UTF-8" username="root" password="" /> </Config>
 	 * 
 	 * <!-- --> <!-- SQLServer_Default --> <!-- --> <Config id="SQLServer_Default" type="SQLServer"> <Resource for="icecore"
-	 * driverClassName="net.sourceforge.jtds.jdbc.Driver" url="jdbc:jtds:sqlserver://localhost/sitescape;useCursors=true" username="sa"
+	 * driverClassName="net.sourceforge.jtds.jdbc.Driver" url="jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor" username="sa"
 	 * password="" /> </Config>
 	 * 
 	 * <!-- --> <!-- Oracle_Default --> <!-- --> <Config id="Oracle_Default" type="Oracle"> <Resource for="icecore"
