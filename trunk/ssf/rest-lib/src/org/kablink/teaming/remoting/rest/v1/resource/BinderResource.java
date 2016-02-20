@@ -43,6 +43,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.RestExceptionWrapper;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChildren;
@@ -79,13 +80,23 @@ import java.util.*;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @ResourceGroup("Binders")
 public class BinderResource extends AbstractResource {
+    /**
+     * Lists a set of binders by ID.
+     *
+     * <p>This resource supports top level folder IDs, such as -100 (My Files)</p>
+     *
+     * @param ids   The binders to return.
+     * @param libraryInfo   Whether to calculate and return additional folder statistics for the binders.  These calculations can be very expensive.
+     * @param descriptionFormatStr The desired format for the binder descriptions.  Can be "html" or "text".
+     * @return A SearchResultList of BinderBrief objects.
+     */
     @GET
     public SearchResultList<BinderBrief> getBinders(@QueryParam("id") Set<Long> ids,
-                                                    @QueryParam("library_mod_times") @DefaultValue("false") boolean libraryModTimes,
+                                                    @Undocumented @QueryParam("library_mod_times") @DefaultValue("false") boolean libraryModTimes,
                                                     @QueryParam("library_info") @DefaultValue("false") boolean libraryInfo,
                                                     @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
-                                                    @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                    @QueryParam("count") @DefaultValue("100") Integer maxCount) {
+                                                    @Undocumented @QueryParam("first") @DefaultValue("0") Integer offset,
+                                                    @Undocumented @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         boolean skipSearch = true;
         List<Long> specialIds = new ArrayList<Long>();
         Set<Long> missingIds = new HashSet<Long>();
@@ -158,6 +169,7 @@ public class BinderResource extends AbstractResource {
         return results;
     }
 
+    @Undocumented
     @POST
     @Path("/legacy_query")
    	public SearchResultList<BinderBrief> getBindersViaLegacyQuery(@Context HttpServletRequest request,
@@ -174,6 +186,36 @@ public class BinderResource extends AbstractResource {
         return results;
    	}
 
+    /**
+     * Lists the children of the specified binders.
+     *
+     * <p><code>count</code> specifies the total number of children to return.  For example, <code>id=-100&id=48&id=49&count=10</code>
+     * might return all 6 children of folder 48, the first 4 children of folder 49 and no results for folder -100.  The order that the binder IDs are
+     * processed in is non-deterministic.</p>
+     *
+     * <p>The <code>first_id</code> and <code>first</code> parameters can be used to continue retrieving results from binders
+     * whose children are only partially listed in the previous request. The children of the binder specified by
+     * <code>first_id</code> are included first, beginning with the <code>first + 1</code> child. </p>
+     *
+     * <p>For example, <code>id=-100&id=48&first_id=48&first=4&count=10</code> is will return results 5-14 of
+     * folder 48.  If folder 48 has fewer than 14 children, then the first few children of folder -100 will also be included
+     * in the response.</p>
+     *
+     * <p>Paging the results of the Shared with Me (-101), Shared by Me (-102) and Public (-104) top level folders is not
+     * supported.  This resource will return all children of those folders, even if that means that more than <code>count</code>
+     * children are returned.</p>
+     *
+     * <p>If an error occurs listing the children of a particular binder, a BinderChildren object for that binder will be included
+     * in the results with information about the error that occurred.</p>
+     *
+     * <p>This resource supports top level folder IDs, such as -100 (My Files)</p>
+     * @param ids   The set of binder IDs whose children are to be listed.
+     * @param firstId   The binder to start with.
+     * @param descriptionFormatStr The desired format for the binder descriptions.  Can be "html" or "text".
+     * @param offset    Specifies the first child to return.  Ignored if <code>first_id</code> is not specified.
+     * @param maxCount  The maximum number of children to return.
+     * @return  A list of BinderChildren resources.
+     */
     @GET
     @Path("library_children")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -256,7 +298,8 @@ public class BinderResource extends AbstractResource {
      * Returns the Binder with the specified ID.
      * @param id    The ID of the binder to return.
      * @param includeAttachments    Configures whether attachments should be included in the returned Binder object.
-     * @return  Returns a subclass of Binder.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @return  Returns a subclass of Binder (Folder or Workspace).
      */
     @GET
     @Path("{id}")

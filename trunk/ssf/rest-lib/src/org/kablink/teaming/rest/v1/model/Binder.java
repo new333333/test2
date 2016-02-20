@@ -37,7 +37,11 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
+import java.util.List;
 
+/**
+ * A base class for containers such as folders and workspaces.
+ */
 @XmlRootElement (name="binder")
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type", defaultImpl = Binder.class)
 public class Binder extends DefinableEntity {
@@ -58,6 +62,9 @@ public class Binder extends DefinableEntity {
         this.path = orig.path;
     }
 
+    /**
+     * The absolute path of the Binder.
+     */
     public String getPath() {
         return path;
     }
@@ -66,6 +73,9 @@ public class Binder extends DefinableEntity {
         this.path = path;
     }
 
+    /**
+     * Library information about the binder.
+     */
     @XmlElement(name = "library_info")
     public LibraryInfo getLibraryInfo() {
         return libraryInfo;

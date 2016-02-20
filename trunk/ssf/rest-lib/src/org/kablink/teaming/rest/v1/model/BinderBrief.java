@@ -37,9 +37,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * User: david
- * Date: 5/17/12
- * Time: 3:54 PM
+ * Minimal information about a binder.  BinderBrief objects are typically returned in list results because they are
+ * more efficient to build than full Binder objects.
  */
 @XmlRootElement(name = "binder_brief")
 public class BinderBrief extends DefinableEntityBrief {
