@@ -1,5 +1,7 @@
 package org.kablink.teaming.rest.v1.model;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
@@ -10,9 +12,8 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
- * User: david
- * Date: 5/21/12
- * Time: 2:37 PM
+ * Base class for BinderBrief, FolderEntryBrief, ReplyBrief, UserBrief and GroupBrief objects.  Brief objects
+ * are typically returned in list results because they are more efficient to build than their full counterparts.
  */
 public abstract class DefinableEntityBrief extends SearchableObject {
     private Long id;
@@ -53,6 +54,9 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.additionalPermaLinks = orig.additionalPermaLinks;
     }
 
+    /**
+     * Date and time that the entity was created and the user who created it.
+     */
     public HistoryStamp getCreation() {
         return creation;
     }
@@ -61,6 +65,10 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.creation = creation;
     }
 
+    /**
+     * A string identifying the type of this entity.  Possible values are <code>user</code>, <code>group</code>,
+     * <code>folder</code>, <code>workspace</code> and <code>folderEntry</code>.
+     */
     @XmlElement(name = "entity_type")
     public String getEntityType() {
         return entityType;
@@ -70,6 +78,7 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.entityType = entityType;
     }
 
+    @Undocumented
     public String getFamily() {
         return family;
     }
@@ -78,6 +87,7 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.family = family;
     }
 
+    @Undocumented
     @XmlElement(name = "icon_href")
     public String getIcon() {
         return icon;
@@ -87,6 +97,11 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.icon = icon;
     }
 
+    /**
+     * An ID for the entity.  This is guaranteed to be unique for each entity type, but not necessarily unique among all entities.
+     *
+     * <p>For example, there will only be 1 user with an ID of 12, but there might also be a folder with an ID of 12.</p>
+     */
     public Long getId() {
         return id;
     }
@@ -95,6 +110,9 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.id = id;
     }
 
+    /**
+     * The date and time when the entity was last modified and the user who modified it.
+     */
     public HistoryStamp getModification() {
         return modification;
     }
@@ -108,6 +126,9 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.modification = modification;
     }
 
+    /**
+     * Information about the binder where this entity resides.
+     */
     @XmlElement(name = "parent_binder")
     public ParentBinder getParentBinder() {
         return parentBinder;
@@ -117,6 +138,7 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.parentBinder = parentBinder;
     }
 
+    @Undocumented
     @XmlElement(name = "definition")
     public StringIdLinkPair getDefinition() {
         return definition;
@@ -126,6 +148,9 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.definition = definition;
     }
 
+    /**
+     * The title or displayable name of the entity.
+     */
     public String getTitle() {
         return title;
     }
@@ -134,6 +159,9 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.title = title;
     }
 
+    /**
+     * Description of the entity.  For replies, this is the text of the comment.
+     */
     public Description getDescription() {
         return description;
     }
@@ -142,6 +170,9 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.description = description;
     }
 
+    /**
+     * A URL in the web application for this entity.
+     */
     @XmlElement(name="permalink")
     public String getPermaLink() {
         return permaLink;
@@ -151,6 +182,7 @@ public abstract class DefinableEntityBrief extends SearchableObject {
         this.permaLink = permaLink;
     }
 
+    @Undocumented
     public List<Link> getAdditionalPermaLinks() {
         return additionalPermaLinks;
     }

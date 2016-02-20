@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Text and information about the formatting of the text.
+ * Description text with information about the formatting of the text.
  */
 @XmlRootElement (name="description")
 public class Description {
