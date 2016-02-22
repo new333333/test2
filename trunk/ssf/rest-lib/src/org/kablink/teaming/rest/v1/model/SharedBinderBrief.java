@@ -22,9 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: david
- * Date: 7/25/12
- * Time: 2:00 PM
+ * Minimal information about a binder plus sharing information.
  */
 @XmlRootElement(name="shared_binder_brief")
 public class SharedBinderBrief extends BinderBrief implements SharedSearchableObject {
@@ -44,6 +42,9 @@ public class SharedBinderBrief extends BinderBrief implements SharedSearchableOb
         return new SharedBinderBrief(this);
     }
 
+    /**
+     * Share information
+     */
     @XmlElementWrapper(name="shares")
     @XmlElement(name="share")
     public List<Share> getShares() {

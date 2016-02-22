@@ -85,7 +85,9 @@ public class BinderResource extends AbstractResource {
      *
      * <p>This resource supports top level folder IDs, such as -100 (My Files)</p>
      *
-     * @param ids   The binders to return.
+     * <p>Example: <code>GET /rest/binders?id=-100&id=46&id=48</code></p>
+     *
+     * @param ids   The ID of a binder.  Can be specified multiple times.
      * @param libraryInfo   Whether to calculate and return additional folder statistics for the binders.  These calculations can be very expensive.
      * @param descriptionFormatStr The desired format for the binder descriptions.  Can be "html" or "text".
      * @return A SearchResultList of BinderBrief objects.
@@ -209,7 +211,7 @@ public class BinderResource extends AbstractResource {
      * in the results with information about the error that occurred.</p>
      *
      * <p>This resource supports top level folder IDs, such as -100 (My Files)</p>
-     * @param ids   The set of binder IDs whose children are to be listed.
+     * @param ids   The ID of a binder whose children are to be listed.  Can be specified multiple times.
      * @param firstId   The binder to start with.
      * @param descriptionFormatStr The desired format for the binder descriptions.  Can be "html" or "text".
      * @param offset    Specifies the first child to return.  Ignored if <code>first_id</code> is not specified.

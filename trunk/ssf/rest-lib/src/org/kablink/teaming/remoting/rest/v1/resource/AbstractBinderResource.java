@@ -24,6 +24,7 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.BaseBinderChange;
 import org.kablink.teaming.rest.v1.model.Binder;
@@ -205,6 +206,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return createBinder(id, binder, templateId, toDomainFormat(descriptionFormatStr));
 	}
 
+    @Undocumented
 	@GET
 	@Path("{id}/binder_tree")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -231,6 +233,19 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return getBinderChanges(new Long [] {id}, null, since, recursive, descriptionFormatStr, maxCount, getBasePath() + id + "/library_changes");
     }
 
+    /**
+     * Lists the children of a binder.
+     *
+     * <p>The <code>title</code> query parameter limits the results to those children with the specified name.  Wildcards are not supported.</p>
+     *
+     * @param id    The ID of the binder.
+     * @param name  The name of the child to return,
+     * @param descriptionFormatStr The desired format for the children descriptions.  Can be "html" or "text".
+     * @param allowJits Whether to trigger JITS, if applicable.
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObjects (BinderBriefs and FileProperties).
+     */
     @GET
    	@Path("{id}/library_children")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -254,6 +269,18 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return Response.ok(children).lastModified(lastModified).build();
    	}
 
+    /**
+     * Lists the child folders of a binder.
+     *
+     * <p>The <code>title</code> query parameter limits the results to those folders with the specified name.  Wildcards are not supported.</p>
+     *
+     * @param id    The ID of the binder.
+     * @param name  The name of the child to return,
+     * @param descriptionFormatStr The desired format for the children descriptions.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObjects (BinderBriefs and FileProperties).
+     */
     @GET
    	@Path("{id}/library_folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -324,7 +351,17 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return (Folder) _createLibraryFolder(id, binder, toDomainFormat(descriptionFormatStr));
    	}
 
-    // Read entries
+    /**
+     * Lists the child files of a binder.
+     *
+     * @param id    The ID of the binder.
+     * @param fileName The name of the child to return,
+     * @param recursive Whether to search the binder and sub-binders for files.
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @param includeParentPaths    If true, the path of the parent binder is included in each result.
+     * @return  A SearchResultList of SearchableObjects (BinderBriefs and FileProperties).
+     */
 	@GET
 	@Path("{id}/library_files")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -354,10 +391,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return Response.ok(subFiles).lastModified(lastModified).build();
 	}
 
-    // Read entries
 	@GET
 	@Path("{id}/files")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
 	public Response getFiles(@PathParam("id") long id,
                                                      @QueryParam("file_name") String fileName,
                                                      @QueryParam("recursive") @DefaultValue("false") boolean recursive,
@@ -437,6 +474,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @GET
    	@Path("{id}/team_members")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
    	public SearchResultList<TeamMember> getTeamMembers(@PathParam("id") long id,
             @QueryParam("expand_groups") @DefaultValue("false") boolean expandGroups) {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
@@ -451,6 +489,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @POST
    	@Path("{id}/team_members")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
    	public TeamMember addTeamMember(@PathParam("id") long id, PrincipalBrief principal) {
         _getBinder(id);
         Principal member = getProfileModule().getEntry(principal.getId());
@@ -465,6 +504,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @DELETE
    	@Path("{id}/team_members")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
    	public void clearTeamMembers(@PathParam("id") long id) {
         _getBinder(id);
         getBinderModule().setTeamMembershipInherited(id, true);
@@ -473,6 +513,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @DELETE
    	@Path("{id}/team_members/{memberId}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
    	public void deleteTeamMember(@PathParam("id") long id, @PathParam("memberId") long memberId) {
         _getBinder(id);
         Set<Long> teamMembers = getBinderModule().getTeamMemberIds(id, false);
@@ -486,6 +527,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     @GET
     @Path("{id}/tags")
+    @Undocumented
     public SearchResultList<Tag> getTags(@PathParam("id") Long id) {
         org.kablink.teaming.domain.Binder entry = _getBinder(id);
         return getBinderTags(entry, false);
@@ -495,6 +537,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Path("{id}/tags")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public SearchResultList<Tag> addTag(@PathParam("id") Long id, Tag tag) {
         _getBinder(id);
         org.kablink.teaming.domain.Tag[] tags = getBinderModule().setTag(id, tag.getName(), tag.isPublic());
@@ -507,6 +550,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     @DELETE
     @Path("{id}/tags")
+    @Undocumented
     public void deleteTags(@PathParam("id") Long id) {
         org.kablink.teaming.domain.Binder entry = _getBinder(id);
         Collection<org.kablink.teaming.domain.Tag> tags = getBinderModule().getTags(entry);
@@ -517,6 +561,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     @GET
     @Path("{id}/tags/{tagId}")
+    @Undocumented
     public Tag getTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
         org.kablink.teaming.domain.Binder entry = _getBinder(id);
         Collection<org.kablink.teaming.domain.Tag> tags = getBinderModule().getTags(entry);
@@ -530,6 +575,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     @DELETE
     @Path("{id}/tags/{tagId}")
+    @Undocumented
     public void deleteTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
         getFolderModule().deleteTag(null, id, tagId);
     }

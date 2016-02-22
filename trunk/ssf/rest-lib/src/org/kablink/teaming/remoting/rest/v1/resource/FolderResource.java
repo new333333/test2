@@ -61,6 +61,7 @@ import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
@@ -131,6 +132,7 @@ public class FolderResource extends AbstractBinderResource {
 
     @POST
     @Path("/legacy_query")
+    @Undocumented
    	public SearchResultList<BinderBrief> getFoldersViaLegacyQuery(@Context HttpServletRequest request,
                                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -151,6 +153,7 @@ public class FolderResource extends AbstractBinderResource {
      */
     @GET
     @Path("operations")
+    @Undocumented
     public SearchResultList<Operation> getOperations() {
         SearchResultList<Operation> results = new SearchResultList<Operation>();
         for (BinderModule.BinderOperation operation : BinderModule.BinderOperation.values()) {
@@ -166,6 +169,7 @@ public class FolderResource extends AbstractBinderResource {
 
     @GET
     @Path("operations/{name}")
+    @Undocumented
     public Operation getOperation(@PathParam("name") String id) {
         BinderModule.BinderOperation binderOp = getBinderOperation(id);
         if (binderOp!=null) {
@@ -186,6 +190,7 @@ public class FolderResource extends AbstractBinderResource {
      */
     @GET
     @Path("operations/{name}/permissions")
+    @Undocumented
     public SearchResultList<Permission> testPermissions(@PathParam("name") String id, @QueryParam("folder")List<Long> folderIds) {
         BinderModule.BinderOperation binderOp = getBinderOperation(id);
         if (binderOp!=null) {
@@ -206,6 +211,7 @@ public class FolderResource extends AbstractBinderResource {
     @GET
     @Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public Response getSubBinders(@PathParam("id") long id,
                                   @QueryParam("title") String name,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -227,6 +233,7 @@ public class FolderResource extends AbstractBinderResource {
     @GET
     @Path("{id}/children")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public Response getChildren(@PathParam("id") long id,
                                 @QueryParam("title") String name,
                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -250,6 +257,7 @@ public class FolderResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
 	public Response getSubFolders(@PathParam("id") long id,
                                   @QueryParam("title") String name,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -289,6 +297,7 @@ public class FolderResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/entries")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
 	public SearchResultList<FolderEntryBrief> getFolderEntries(@PathParam("id") long id,
                                                                @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -333,6 +342,7 @@ public class FolderResource extends AbstractBinderResource {
    	@Path("{id}/entries")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
    	public FolderEntry createFolderEntry(@PathParam("id") long id,
                                          @QueryParam("file_entry") @DefaultValue("false") boolean fileEntry,
                                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
