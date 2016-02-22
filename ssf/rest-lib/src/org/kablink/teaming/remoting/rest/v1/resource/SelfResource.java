@@ -378,6 +378,18 @@ public class SelfResource extends AbstractFileResource {
         return getMyFilesLibraryInfo();
     }
 
+    /**
+     * Lists the children of My Files.
+     *
+     * <p>The <code>title</code> query parameter limits the results to those children with the specified name.  Wildcards are not supported.</p>
+     *
+     * @param name  The name of the child to return,
+     * @param descriptionFormatStr The desired format for the children descriptions.  Can be "html" or "text".
+     * @param allowJits Whether to trigger JITS, if applicable.
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObjects (BinderBriefs and FileProperties).
+     */
     @GET
     @Path("/my_files/library_children")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -399,6 +411,17 @@ public class SelfResource extends AbstractFileResource {
         }
     }
 
+    /**
+     * Lists the child folders of My Files.
+     *
+     * <p>The <code>title</code> query parameter limits the results to those folders with the specified name.  Wildcards are not supported.</p>
+     *
+     * @param name  The name of the child to return,
+     * @param descriptionFormatStr The desired format for the children descriptions.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObjects (BinderBriefs and FileProperties).
+     */
     @GET
     @Path("/my_files/library_folders")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -616,6 +639,16 @@ public class SelfResource extends AbstractFileResource {
         return results;
     }
 
+    /**
+     * Lists the child files of My Files.
+     *
+     * @param fileName The name of the child to return,
+     * @param recursive Whether to search the binder and sub-binders for files.
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @param includeParentPaths    If true, the path of the parent binder is included in each result.
+     * @return  A SearchResultList of SearchableObjects (BinderBriefs and FileProperties).
+     */
     @GET
     @Path("/my_files/library_files")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
