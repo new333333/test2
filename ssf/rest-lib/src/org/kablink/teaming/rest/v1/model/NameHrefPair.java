@@ -34,6 +34,9 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * An HRef with an associated name.
+ */
 @XmlRootElement(name = "link")
 public class NameHrefPair {
     private String name;

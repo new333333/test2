@@ -34,11 +34,6 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * User: david
- * Date: 5/23/12
- * Time: 4:45 PM
- */
 @XmlRootElement
 public class Operation extends BaseRestObject {
     private String name;

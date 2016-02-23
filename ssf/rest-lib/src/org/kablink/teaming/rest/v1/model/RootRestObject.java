@@ -35,7 +35,7 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Root object of the REST API.  Contains links to top level resources in the REST API..
+ * Root object of the REST API.  Contains links to top level resources in the REST API.
  */
 @XmlRootElement (name = "rest_api_root")
 public class RootRestObject extends BaseRestObject {

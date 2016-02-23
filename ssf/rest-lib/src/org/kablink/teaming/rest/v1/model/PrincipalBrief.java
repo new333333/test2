@@ -32,13 +32,14 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 5/16/12
- * Time: 4:47 PM
+ * Minimal information about a Principal (User or Group).  Brief objects
+ * are typically returned in list results because they are more efficient to build than their full counterparts.
  */
 @XmlRootElement(name = "principal_brief")
 public class PrincipalBrief extends EntryBrief {
@@ -60,6 +61,9 @@ public class PrincipalBrief extends EntryBrief {
         this.emailAddress = orig.emailAddress;
     }
 
+    /**
+     * A unique name for the user or group.  For users, this is the user's login name.
+     */
     public String getName() {
         return name;
     }
@@ -68,6 +72,9 @@ public class PrincipalBrief extends EntryBrief {
         this.name = name;
     }
 
+    /**
+     * The user or group's primary email address.
+     */
     @XmlElement(name = "email_address")
     public String getEmailAddress() {
         return emailAddress;
@@ -77,6 +84,7 @@ public class PrincipalBrief extends EntryBrief {
         this.emailAddress = emailAddress;
     }
 
+    @Undocumented
     public Boolean getReserved() {
         return reserved;
     }

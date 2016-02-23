@@ -3,9 +3,8 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * User: david
- * Date: 5/21/12
- * Time: 2:39 PM
+ * Base class for FolderEntryBriefs, ReplyBriefs and PrincipalBriefs.  Brief objects
+ * are typically returned in list results because they are more efficient to build than their full counterparts.
  */
 public abstract class EntryBrief extends DefinableEntityBrief {
     protected String entryType;
@@ -24,6 +23,15 @@ public abstract class EntryBrief extends DefinableEntityBrief {
         this.entryType = orig.entryType;
     }
 
+    /**
+     * The type of entry.  Possible values are:
+     * <ul>
+     *     <li><code>entry</code></li>
+     *     <li><code>reply</code></li>
+     *     <li><code>user</code></li>
+     *     <li><code>group</code></li>
+     * </ul>
+     */
     @XmlElement(name = "entry_type")
     public String getEntryType() {
         return entryType;

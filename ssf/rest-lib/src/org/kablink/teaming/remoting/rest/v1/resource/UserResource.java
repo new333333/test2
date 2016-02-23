@@ -68,6 +68,7 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UserBriefBuilder;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.GroupBrief;
 import org.kablink.teaming.rest.v1.model.PrincipalBrief;
@@ -173,6 +174,7 @@ public class UserResource extends AbstractPrincipalResource {
         return ResourceUtil.buildUser(getProfileModule().addUser(defId, inputData, null, null), true, toDomainFormat(descriptionFormatStr));
 	}
 
+    @Undocumented
     @GET
     @Path("/name/{name}")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -230,6 +232,7 @@ public class UserResource extends AbstractPrincipalResource {
         return Response.ok().build();
     }
 
+    @Undocumented
     @GET
     @Path("/{id}/teams")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -242,6 +245,7 @@ public class UserResource extends AbstractPrincipalResource {
         return results;
     }
 
+    @Undocumented
     @GET
     @Path("/{id}/favorites")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
