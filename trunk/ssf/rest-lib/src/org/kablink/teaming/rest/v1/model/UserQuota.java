@@ -35,11 +35,6 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * User: david
- * Date: 5/16/12
- * Time: 2:51 PM
- */
 @XmlRootElement(name = "user_quota")
 public class UserQuota {
     private Long diskSpaceUsed;

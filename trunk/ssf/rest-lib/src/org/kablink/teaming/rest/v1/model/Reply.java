@@ -35,7 +35,9 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-// This annotation is necessary not only for XML but also for JSON representation.
+/***
+ * A reply or comment.
+ */
 @XmlRootElement (name="reply")
 public class Reply extends BaseFolderEntry {
     private LongIdLinkPair parentEntry;
@@ -56,6 +58,9 @@ public class Reply extends BaseFolderEntry {
         return new Reply(this);
     }
 
+    /**
+     * The parent reply or folder entry.
+     */
     @XmlElement(name = "parent_entry")
     public LongIdLinkPair getParentEntry() {
         return parentEntry;
@@ -65,6 +70,9 @@ public class Reply extends BaseFolderEntry {
         this.parentEntry = parentEntry;
     }
 
+    /**
+     * The top level folder entry for this reply.
+     */
     @XmlElement(name = "top_entry")
     public LongIdLinkPair getTopEntry() {
         return topEntry;

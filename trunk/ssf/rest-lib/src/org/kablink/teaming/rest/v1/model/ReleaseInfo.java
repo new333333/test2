@@ -32,10 +32,15 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Calendar;
 
+/**
+ * Server version information.
+ */
 @XmlRootElement(name = "release_info")
 public class ReleaseInfo extends BaseRestObject {
     private String productName;
@@ -49,11 +54,17 @@ public class ReleaseInfo extends BaseRestObject {
    	private String contentVersion;
     private Integer restApiRevision;
 
+    /**
+     * Build date.
+     */
     @XmlElement(name="build_date")
     public Calendar getBuildDate() {
         return buildDate;
     }
 
+    /**
+     * Product build number.
+     */
     @XmlElement(name="build_number")
     public Integer getBuildNumber() {
         return buildNumber;
@@ -64,21 +75,35 @@ public class ReleaseInfo extends BaseRestObject {
         return contentVersion;
     }
 
+    /**
+     * Whether the server is fully licensed.
+     */
     @XmlElement(name="licensed_edition")
     public Boolean isLicenseRequiredEdition() {
         return licenseRequiredEdition;
     }
 
+    /**
+     * Name of the product.
+     */
     @XmlElement(name="product_name")
     public String getProductName() {
         return productName;
     }
 
+    /**
+     * Product version.
+     * @return
+     */
     @XmlElement(name="product_version")
     public String getProductVersion() {
         return productVersion;
     }
 
+    /**
+     * Date and time when the server last started.
+     * @return
+     */
     @XmlElement(name="server_start_time")
     public Calendar getServerStartTime() {
         return serverStartTime;
@@ -112,6 +137,7 @@ public class ReleaseInfo extends BaseRestObject {
         this.serverStartTime = serverStartTime;
     }
 
+    @Undocumented
     @XmlElement(name="rest_api_revision")
     public Integer getRestApiRevision() {
         return restApiRevision;
@@ -121,6 +147,9 @@ public class ReleaseInfo extends BaseRestObject {
         this.restApiRevision = restApiRevision;
     }
 
+    /**
+     * Version of the server appliance.
+     */
     @XmlElement(name="appliance_version")
     public String getApplianceVersion() {
         return applianceVersion;
@@ -130,6 +159,9 @@ public class ReleaseInfo extends BaseRestObject {
         this.applianceVersion = applianceVersion;
     }
 
+    /**
+     * Appliance build number.
+     */
     @XmlElement(name="appliance_build_number")
     public Integer getApplianceBuildNumber() {
         return applianceBuildNumber;

@@ -80,11 +80,11 @@ public class User extends Principal {
         return new User(this);
     }
 
+    @Undocumented
     public Boolean getPerson() {
         return person;
     }
 
-    @Undocumented
     public void setPerson(Boolean person) {
         this.person = person;
     }
@@ -100,7 +100,7 @@ public class User extends Principal {
     }
 
     /**
-     * The disk space, in bytes, consumed by the user's personal storage
+     * The disk space, in bytes, consumed by the user's personal storage.
      */
     @XmlElement(name="disk_space_used")
     public Long getDiskSpaceUsed() {
@@ -136,7 +136,7 @@ public class User extends Principal {
     }
 
     /**
-     * The user's first name
+     * The user's first name.
      */
     @XmlElement(name="first_name")
     public String getFirstName() {
@@ -148,7 +148,7 @@ public class User extends Principal {
     }
 
     /**
-     * The user's last name
+     * The user's last name.
      */
     @XmlElement(name="last_name")
     public String getLastName() {
@@ -160,7 +160,7 @@ public class User extends Principal {
     }
 
     /**
-     * The user's locale
+     * The user's locale.
      */
     public Locale getLocale() {
         return locale;
@@ -171,7 +171,7 @@ public class User extends Principal {
     }
 
     /**
-     * The user's middle name
+     * The user's middle name.
      */
     @XmlElement(name="middle_name")
     public String getMiddleName() {
@@ -193,7 +193,7 @@ public class User extends Principal {
     }
 
     /**
-     * The user's organization
+     * The user's organization.
      */
     @XmlElement(name="organization")
     public String getOrganization() {
@@ -205,7 +205,7 @@ public class User extends Principal {
     }
 
     /**
-     * The user's primary phone number
+     * The user's primary phone number.
      */
     @XmlElement(name="phone")
     public String getPhone() {
@@ -291,7 +291,7 @@ public class User extends Principal {
     }
 
     /**
-     * The user's effective mobile application settings
+     * The user's effective mobile application settings.
      */
     @XmlElement(name="mobile_app_config")
     public MobileAppConfig getMobileAppConfig() {
@@ -303,7 +303,7 @@ public class User extends Principal {
     }
 
     /**
-     * The user's effective desktop application settings
+     * The user's effective desktop application settings.
      */
     @XmlElement(name="desktop_app_config")
     public DesktopAppConfig getDesktopAppConfig() {

@@ -47,6 +47,7 @@ import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
@@ -393,6 +394,7 @@ public class FileResource extends AbstractFileResource {
     @POST
     @Path("{id}/major_version")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public FileProperties incrementMajorVersion(@PathParam("id") String fileId) {
         FileAttachment fa = findFileAttachment(fileId);
         getBinderModule().incrementFileMajorVersion(fa.getOwner().getEntity(), fa);
@@ -402,6 +404,7 @@ public class FileResource extends AbstractFileResource {
     @GET
     @Path("{id}/versions")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public SearchResultList<FileVersionProperties> getVersions(@PathParam("id") String fileId) {
         FileAttachment fa = findFileAttachment(fileId);
         List<FileVersionProperties> versions = fileVersionsFromFileAttachment(fa);
@@ -413,6 +416,7 @@ public class FileResource extends AbstractFileResource {
     @GET
     @Path("{id}/versions/current")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public FileVersionProperties getCurrent(@PathParam("id") String fileId) {
         FileAttachment fa = findFileAttachment(fileId);
         FileVersionProperties props = new FileVersionProperties();
@@ -424,6 +428,7 @@ public class FileResource extends AbstractFileResource {
     @POST
     @Path("{id}/versions/current")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public FileVersionProperties setCurrent(@PathParam("id") String fileId,
                                      FileVersionProperties properties) {
         FileAttachment fa = findFileAttachment(fileId);

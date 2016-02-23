@@ -20,9 +20,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 /**
- * User: david
- * Date: 7/25/12
- * Time: 11:38 AM
  */
 @XmlRootElement(name="mobile_device")
 public class MobileDevice extends BaseRestObject {

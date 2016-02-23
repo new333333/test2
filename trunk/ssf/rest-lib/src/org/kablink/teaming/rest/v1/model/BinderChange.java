@@ -18,9 +18,7 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 7/25/12
- * Time: 11:38 AM
+ * A change that occurred to a binder.
  */
 @XmlRootElement(name="binder_change")
 public class BinderChange extends BaseBinderChange {
@@ -31,6 +29,9 @@ public class BinderChange extends BaseBinderChange {
         setType(Type.binder.name());
     }
 
+    /**
+     * The ID of the binder.
+     */
     public Long getId() {
         return id;
     }
@@ -39,6 +40,9 @@ public class BinderChange extends BaseBinderChange {
         this.id = id;
     }
 
+    /**
+     * The latest version of the binder.  Only applies to <code>add</code> and <code>modify</code> changes.
+     */
     public Binder getBinder() {
         return binder;
     }
