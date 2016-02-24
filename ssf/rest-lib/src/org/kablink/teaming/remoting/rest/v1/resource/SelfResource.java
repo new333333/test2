@@ -35,6 +35,8 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import com.sun.jersey.spi.resource.Singleton;
 
 import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
+import com.webcohesion.enunciate.metadata.rs.ResponseCode;
+import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
@@ -676,11 +678,24 @@ public class SelfResource extends AbstractFileResource {
         return Response.ok(resultList).lastModified(lastModified).build();
     }
 
+    /**
+     * Copies a file into the user's My Files top level folder.
+     *
+     * <p>The Content-Type must be <code>application/x-www-form-urlencoded</code>.  The parameter values in the form data should
+     * be URL-encoded UTF-8 strings.  For example: <code>source_id=09c1c3fb530f562401531070137b000e&file_name=H%C3%B6wdy</code></p>.
+     * @param fileName    The name of the new file.
+     * @param sourceId    The ID of the source file to copy.
+     * @return  The new file metadata.
+     */
     @POST
     @Path("/my_files/library_files")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @ResourceGroup("My Files")
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(FILE_NOT_FOUND) The source file does not exist."),
+            @ResponseCode(code=409, condition="(FILE_EXISTS) A file with the specified name already exists in the target folder."),
+    })
     public FileProperties copyFile(@FormParam("file_name") String fileName,
                                    @FormParam("source_id") String sourceId,
                                    @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
@@ -709,11 +724,25 @@ public class SelfResource extends AbstractFileResource {
         return null;
     }
 
+    /**
+     * Adds a file to the user's My Files top level folder.  This is the multipart form version.  The Content-Type must be <code>multipart/form-data</code>.
+     * See <a>https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2</a>.
+     *
+     * @param fileName  The name of the file to create.
+     * @param modDateISO8601    The desired last modified time for the new file.
+     * @param expectedMd5       The MD5 checksum of the file.  If specified, the REST interface returns an error if the
+     *                          MD5 checksum of the uploaded content does not match the expected value.
+     * @param overwriteExisting     If a file already exists with the specified name, this specifies whether to overwrite the file (true) or fail with an error (false).
+     */
+    @Undocumented
     @POST
     @Path("/my_files/library_files")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @ResourceGroup("My Files")
+    @StatusCodes({
+            @ResponseCode(code=409, condition="(FILE_EXISTS) A file with the specified name already exists in the target folder."),
+    })
     public FileProperties addLibraryFileFromMultipart(@QueryParam("file_name") String fileName,
                                          @QueryParam("mod_date") String modDateISO8601,
                                          @QueryParam("md5") String expectedMd5,
@@ -729,11 +758,26 @@ public class SelfResource extends AbstractFileResource {
         return file;
     }
 
+    /**
+     * Adds a file to the user's My Files top level folder.  The request Content-Type can be anything except <code>x-www-form-urlencoded</code>.
+     * Supports <code>multipart/form-data</code> posts (see <a href="https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2">here</a>).
+     * If another Content-Type is specified (<code>application/octet-stream</code>, for example), the raw bytes of the request body
+     * are read and stored as the file content.
+     *
+     * @param fileName  The name of the file to create.
+     * @param modDateISO8601    The desired last modified time for the new file.
+     * @param expectedMd5       The MD5 checksum of the file.  If specified, the REST interface returns an error if the
+     *                          MD5 checksum of the uploaded content does not match the expected value.
+     * @param overwriteExisting     If a file already exists with the specified name, this specifies whether to overwrite the file (true) or fail with an error (false).
+     */
     @POST
     @Path("/my_files/library_files")
     @Consumes("*/*")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @ResourceGroup("My Files")
+    @StatusCodes({
+            @ResponseCode(code=409, condition="(FILE_EXISTS) A file with the specified name already exists in the target folder."),
+    })
     public FileProperties addLibraryFile(@QueryParam("file_name") String fileName,
                                          @QueryParam("mod_date") String modDateISO8601,
                                          @QueryParam("md5") String expectedMd5,

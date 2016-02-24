@@ -91,7 +91,7 @@ import java.util.Set;
 public class ReplyResource extends AbstractFolderEntryResource {
 
 	@GET
-	public SearchResultList<ReplyBrief> getReply(@QueryParam("id") Set<Long> ids,
+	public SearchResultList<ReplyBrief> getReplies(@QueryParam("id") Set<Long> ids,
                                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                  @QueryParam("first") @DefaultValue("0") Integer offset,
 			                                     @QueryParam("count") @DefaultValue("100") Integer maxCount) {
