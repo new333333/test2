@@ -74,9 +74,7 @@ import java.util.Map;
  */
 abstract public class AbstractFolderEntryResource  extends AbstractDefinableEntityResource {
 
-	@DELETE
-    @Path("{id}")
-	public void deleteFolderEntry(@PathParam("id") long id,
+	protected void _deleteFolderEntry(@PathParam("id") long id,
                                   @QueryParam("purge") @DefaultValue("false") boolean purge,
                                   @QueryParam("version") Integer lastVersionNumber
                                   ) throws Exception {
@@ -104,9 +102,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
         }
 	}
 
-    @GET
-    @Path("{id}/reply_tree")
-    public SearchResultTree<Reply> getReplyTree(@PathParam("id") Long id,
+    protected SearchResultTree<Reply> _getReplyTree(@PathParam("id") Long id,
                                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         SearchResultTree<Reply> tree = new SearchResultTree<Reply>();
@@ -114,29 +110,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
         return tree;
     }
 
-    @GET
-    @Path("{id}/replies")
-    public SearchResultList<Reply> getReplies(@PathParam("id") Long id,
-                                              @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
-        List replies = entry.getReplies();
-        SearchResultList<Reply> results = new SearchResultList<Reply>();
-        for (Object o : replies) {
-            org.kablink.teaming.domain.FolderEntry reply = (org.kablink.teaming.domain.FolderEntry) o;
-            if (!reply.isPreDeleted()) {
-                results.append(ResourceUtil.buildReply(reply, false, toDomainFormat(descriptionFormatStr)));
-            }
-        }
-        return results;
-    }
-
-    @POST
-    @Path("{id}/replies")
-    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Reply addReply(@PathParam("id") Long id,
-                          Reply entry,
-                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
+    protected Reply _addReply(Long id, Reply entry, String descriptionFormatStr)
             throws WriteFilesException, WriteEntryDataException {
         org.kablink.teaming.domain.FolderEntry parent = _getFolderEntry(id);
         if (entry==null) {
@@ -157,9 +131,22 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
             defId = entry.getDefinition().getId();
         }
         Map options = new HashMap();
-      	populateTimestamps(options, entry);
+        populateTimestamps(options, entry);
         org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().addReply(null, id, defId, new RestModelInputData(entry), null, options);
         return ResourceUtil.buildReply(newEntry, true, toDomainFormat(descriptionFormatStr));
+    }
+
+    protected SearchResultList<Reply> _getReplies(Long id, String descriptionFormatStr) {
+        org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
+        List replies = entry.getReplies();
+        SearchResultList<Reply> results = new SearchResultList<Reply>();
+        for (Object o : replies) {
+            org.kablink.teaming.domain.FolderEntry reply = (org.kablink.teaming.domain.FolderEntry) o;
+            if (!reply.isPreDeleted()) {
+                results.append(ResourceUtil.buildReply(reply, false, toDomainFormat(descriptionFormatStr)));
+            }
+        }
+        return results;
     }
 
 
