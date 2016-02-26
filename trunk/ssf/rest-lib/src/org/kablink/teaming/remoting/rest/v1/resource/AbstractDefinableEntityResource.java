@@ -44,6 +44,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.BaseFileProperties;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
@@ -68,11 +69,23 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * User: david
- * Date: 6/1/12
- * Time: 11:11 AM
+ * Base resource for all definable entities.
  */
 public abstract class AbstractDefinableEntityResource extends AbstractFileResource {
+    /**
+     * Get all of the parent binders of the entity.  The top workspace is the first item and the entity's parent binder is the
+     * last item.
+     *
+     * <p>For example, the ancestry of "/Home Workspace/Personal Workspaces/Bob Barker (bbarker)/A/B" is:
+     * <ul>
+     *     <li>/Home Workspace</li>
+     *     <li>/Home Workspace/Personal Workspaces</li>
+     *     <li>/Home Workspace/Personal Workspaces/Bob Barker (bbarker)</li>
+     *     <li>/Home Workspace/Personal Workspaces/Bob Barker (bbarker)/A</li>
+     * </ul>
+     * @param id    The ID of the entity.
+     * @return  A list of BinderBrief objects.
+     */
     @GET
     @Path("{id}/ancestry")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -103,6 +116,7 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
     @GET
     @Path("{id}/attachments")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public SearchResultList<BaseFileProperties> getAttachments(@PathParam("id") long id) {
         DefinableEntity entity = getDefinableEntity(id);
 
@@ -122,6 +136,7 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
     @Path("{id}/attachments")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public FileProperties postAttachment_Multipart(@PathParam("id") long id,
                                @QueryParam("file_name") String fileName,
                                @QueryParam("data_name") String dataName,
@@ -141,6 +156,7 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
         }
     }
 
+    @Undocumented
     @POST
     @Path("{id}/attachments")
     @Consumes("*/*")
@@ -164,6 +180,7 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
         }
     }
 
+    @Undocumented
     @POST
     @Path("{id}/attachments")
    	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)

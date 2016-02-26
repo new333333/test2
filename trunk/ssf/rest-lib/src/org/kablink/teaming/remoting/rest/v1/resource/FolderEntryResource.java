@@ -51,6 +51,7 @@ import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
 import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
@@ -117,6 +118,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
 	@POST
     @Path("legacy_query")
+    @Undocumented
 	public SearchResultList<FolderEntryBrief> getFolderEntriesViaLegacyQuery(@Context HttpServletRequest request,
                                                                              @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -134,6 +136,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @GET
     @Path("operations")
+    @Undocumented
     public SearchResultList<Operation> getOperations() {
         SearchResultList<Operation> results = new SearchResultList<Operation>();
         for (FolderModule.FolderOperation operation : FolderModule.FolderOperation.values()) {
@@ -146,6 +149,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @GET
     @Path("operations/{name}")
+    @Undocumented
     public Operation getOperation(@PathParam("name") String id) {
         FolderModule.FolderOperation folderOp = getFolderOperation(id);
         if (folderOp!=null) {
@@ -156,6 +160,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @GET
     @Path("operations/{name}/permissions")
+    @Undocumented
     public SearchResultList<Permission> testPermissions(@PathParam("name") String id, @QueryParam("entry")List<Long> entryIds) {
         FolderModule.FolderOperation folderOp = getFolderOperation(id);
         if (folderOp!=null && folderOp.appliesToEntries()) {
@@ -213,6 +218,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @GET
     @Path("{id}/reservation")
+    @Undocumented
     public HistoryStamp getReservation(@PathParam("id") Long id) {
         org.kablink.teaming.domain.FolderEntry hEntry = _getFolderEntry(id);
         org.kablink.teaming.domain.HistoryStamp reservation = hEntry.getReservation();
@@ -229,6 +235,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @PUT
     @Path("{id}/reservation")
+    @Undocumented
     public HistoryStamp reserve(@PathParam("id") Long id) {
         _getFolderEntry(id);
         org.kablink.teaming.domain.HistoryStamp reservation = getFolderModule().reserveEntry(null, id);
@@ -237,6 +244,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @DELETE
     @Path("{id}/reservation")
+    @Undocumented
     public void unreserve(@PathParam("id") Long id) {
         getFolderModule().unreserveEntry(null, id);
     }

@@ -67,6 +67,15 @@ import static org.kablink.util.search.Restrictions.in;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @ResourceGroup("Net Folders")
 public class NetFoldersResource extends AbstractResource {
+    /**
+     * List the net folders that the authenticated user has access to.
+     * <p>The optional <code>title</code> query parameter limits the results to the net folder with the specified name.  Wildcards are not supported.</p>
+     * @param name  The name of the net folder.
+     * @param descriptionFormatStr The desired format for the children descriptions.  Can be "html" or "text".
+     * @param offset
+     * @param maxCount
+     * @return
+     */
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<NetFolderBrief> getNetFolders(@QueryParam("title") String name,

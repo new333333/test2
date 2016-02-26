@@ -87,6 +87,13 @@ public class WorkspaceResource extends AbstractBinderResource {
         return "/workspaces/";
     }
 
+    /**
+     * Get workspaces by ID.
+     *
+     * @param ids   The ID of a folder.  Can be specified multiple times.
+     * @param descriptionFormatStr The desired format for the binder descriptions.  Can be "html" or "text".
+     * @return A SearchResultList of BinderBrief objects.
+     */
     @GET
     public SearchResultList<BinderBrief> getWorkspaces(@QueryParam("id") Set<Long> ids,
                                                        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
