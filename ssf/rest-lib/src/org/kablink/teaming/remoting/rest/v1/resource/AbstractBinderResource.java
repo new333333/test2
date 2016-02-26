@@ -148,6 +148,27 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     /**
+     * Get all of the parent binders of the binder.  The top workspace is the first item and the immediate parent is the
+     * last item.
+     *
+     * <p>For example, the ancestry of "/Home Workspace/Personal Workspaces/Bob Barker (bbarker)/A/B" is:
+     * <ul>
+     *     <li>/Home Workspace</li>
+     *     <li>/Home Workspace/Personal Workspaces</li>
+     *     <li>/Home Workspace/Personal Workspaces/Bob Barker (bbarker)</li>
+     *     <li>/Home Workspace/Personal Workspaces/Bob Barker (bbarker)/A</li>
+     * </ul>
+     * @param id    The ID of the binder.
+     * @return  A list of BinderBrief objects.
+     */
+    @GET
+    @Path("{id}/ancestry")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public BinderBrief [] getAncestry(@PathParam("id") long id) {
+        return _getAncestry(id);
+    }
+
+    /**
      * Rename the specified binder.  The Content-Type must be <code>application/x-www-form-urlencoded</code>.  The value of the title
      * form parameter in the request body should be a UTF-8 string that has been URL encoded.
      * @param id    The binder to rename.

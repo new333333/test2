@@ -72,24 +72,7 @@ import java.util.*;
  * Base resource for all definable entities.
  */
 public abstract class AbstractDefinableEntityResource extends AbstractFileResource {
-    /**
-     * Get all of the parent binders of the entity.  The top workspace is the first item and the entity's parent binder is the
-     * last item.
-     *
-     * <p>For example, the ancestry of "/Home Workspace/Personal Workspaces/Bob Barker (bbarker)/A/B" is:
-     * <ul>
-     *     <li>/Home Workspace</li>
-     *     <li>/Home Workspace/Personal Workspaces</li>
-     *     <li>/Home Workspace/Personal Workspaces/Bob Barker (bbarker)</li>
-     *     <li>/Home Workspace/Personal Workspaces/Bob Barker (bbarker)/A</li>
-     * </ul>
-     * @param id    The ID of the entity.
-     * @return  A list of BinderBrief objects.
-     */
-    @GET
-    @Path("{id}/ancestry")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public BinderBrief [] getAncestry(@PathParam("id") long id) {
+    protected BinderBrief [] _getAncestry(@PathParam("id") long id) {
         Criterion criterion = null;
         DefinableEntity entity = getDefinableEntity(id);
         if (entity instanceof Entry) {
