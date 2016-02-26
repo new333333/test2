@@ -107,7 +107,13 @@ public class FolderResource extends AbstractBinderResource {
         return "/folders/";
     }
 
-    // Read sub-folders
+    /**
+     * Get folders by ID.
+     *
+     * @param ids   The ID of a folder.  Can be specified multiple times.
+     * @param descriptionFormatStr The desired format for the binder descriptions.  Can be "html" or "text".
+     * @return A SearchResultList of BinderBrief objects.
+     */
     @GET
     public SearchResultList<BinderBrief> getFolders(@QueryParam("id") Set<Long> ids,
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -130,7 +136,6 @@ public class FolderResource extends AbstractBinderResource {
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(toDomainFormat(descriptionFormatStr)), resultsMap, "/folders", nextParams, offset);
         return results;
     }
-
 
     @POST
     @Path("/legacy_query")
@@ -278,6 +283,7 @@ public class FolderResource extends AbstractBinderResource {
         return Response.ok(subBinders).lastModified(lastModified).build();
 	}
 
+    @Undocumented
     @POST
    	@Path("{id}/folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})

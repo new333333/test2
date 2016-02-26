@@ -1,16 +1,15 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
+import com.webcohesion.enunciate.metadata.rs.ResponseCode;
+import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
-import org.kablink.teaming.domain.BinderChange;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TitleException;
-import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.BinderUtils;
@@ -23,10 +22,8 @@ import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
-import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.Access;
-import org.kablink.teaming.rest.v1.model.BaseBinderChange;
 import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
@@ -52,7 +49,6 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Criterion;
 import org.kablink.util.search.Junction;
-import org.kablink.util.search.Order;
 import org.kablink.util.search.Restrictions;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,31 +56,30 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.text.DateFormat;
 import java.text.Normalizer;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Locale;
 
 /**
- * User: david
- * Date: 5/21/12
- * Time: 2:08 PM
+ * Base resource for binders.
  */
 abstract public class AbstractBinderResource extends AbstractDefinableEntityResource {
 
     abstract protected String getBasePath();
     
     /**
-     * Returns the binder with the specified ID.
+     * Get the binder with the specified ID.
      * @param id    The ID of the binder to return.
      * @param includeAttachments    Configures whether attachments should be included in the returned binder object.
+     * @param libraryInfo   Whether to calculate and return binder statistics such as total size on disk.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
      * @return  Returns a subclass of Binder.
      */
     @GET
     @Path("{id}")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(BINDER_NOT_FOUND) The binder does not exist."),
+    })
     public Binder getBinder(@PathParam("id") long id,
                             @QueryParam("library_info") @DefaultValue("false") boolean libraryInfo,
                             @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
@@ -97,6 +92,14 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return model;
     }
 
+    /**
+     * Update a binder.
+     * @param id        The ID of the binder.
+     * @param binder    The new binder object.
+     * @param includeAttachments    Whether to return attachments in the response.
+     * @param descriptionFormatStr The desired format for the children descriptions.  Can be "html" or "text".
+     * @return The updated binder object.
+     */
     @PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -111,17 +114,31 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     /**
-     * Deletes the specifed binder object.  The binder is moved into the Trash, not permanently deleted.
+     * Deletes the specifed binder object.
+     *
+     * <p>Personal storage folders are moved to the trash by default.  <code>purge=true</code> will delete the folder
+     * permanently instead.  Folders on external storage (net folders, mirrored folders) are always deleted permanantly.</p>
+     *
      * @param id    The ID of the binder to delete.
+     * @param onlyIfEmpty  Only delete the folder if it is empty.
+     * @param purge Whether the binder will be deleted permanently (true) or moved to the trash (false).
      */
     @DELETE
     @Path("{id}")
+    @StatusCodes({
+            @ResponseCode(code=409, condition="(BINDER_NOT_EMPTY) The binder is not empty."),
+    })
     public void deleteBinder(@PathParam("id") long id,
                              @QueryParam("only_if_empty") @DefaultValue("false") boolean onlyIfEmpty,
                              @QueryParam("purge") @DefaultValue("false") boolean purge) throws Exception {
         _deleteBinder(id, onlyIfEmpty, purge);
     }
 
+    /**
+     * Get the rights that the authenticated user to the binder.
+     * @param id    The ID of the binder.
+     * @return  An Access object.
+     */
     @GET
     @Path("{id}/access")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -130,10 +147,22 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return getAccessRole(binder);
     }
 
+    /**
+     * Rename the specified binder.  The Content-Type must be <code>application/x-www-form-urlencoded</code>.  The value of the title
+     * form parameter in the request body should be a UTF-8 string that has been URL encoded.
+     * @param id    The binder to rename.
+     * @param name  The new name of the binder.
+     * @param includeAttachments    Whether to include the binder attachments in the response.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @return  The modified binder object.
+     */
     @POST
     @Path("{id}/title")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @StatusCodes({
+            @ResponseCode(code=409, condition="(TITLE_EXISTS) A binder with the specified name already exists."),
+    })
     public Binder renameBinder(@PathParam("id") Long id,
                                      @FormParam("title") String name,
                                      @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
@@ -153,6 +182,14 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return ResourceUtil.buildBinder(_getBinder(id), includeAttachments, toDomainFormat(descriptionFormatStr));
     }
 
+    /**
+     * Move the specified binder.  The Content-Type must be <code>application/x-www-form-urlencoded</code>.
+     * @param id    The binder to move.
+     * @param newBinderId The ID of the target binder.
+     * @param includeAttachments    Whether to include the binder attachments in the response.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @return  The modified binder object.
+     */
     @POST
     @Path("{id}/parent_binder")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -195,7 +232,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
      *                      new parent binder is used to determine the type of binder to create.
      * @return Returns a Binder object representing the newly created binder.
      */
-	@POST
+	@Undocumented
+    @POST
 	@Path("{id}/binders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -215,6 +253,12 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return getSubBinderTree(id, null, toDomainFormat(descriptionFormatStr));
 	}
 
+    /**
+     * Get a tree structure representing the folder structure contained in this binder.
+     * @param id    The ID of the binder.
+     * @param descriptionFormatStr The desired format for the binder descriptions.  Can be "html" or "text".
+     * @return  A BinderTree
+     */
 	@GET
 	@Path("{id}/library_tree")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -302,6 +346,17 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return Response.ok(subBinders).lastModified(lastModified).build();
    	}
 
+
+    /**
+     * Copies a folder into the specified binder.
+     *
+     * <p>The Content-Type must be <code>application/x-www-form-urlencoded</code>.  The title value in the form data should
+     * be a URL-encoded UTF-8 string.  For example: <code>source_id=48&title=H%C3%B6wdy</code></p>.
+     * @param parentId          The ID of the target folder.
+     * @param title    The name of the new binder.
+     * @param sourceId    The ID of the source folder to copy.
+     * @return  The new binder metadata.
+     */
     @POST
     @Path("{id}/library_folders")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -340,6 +395,14 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
     }
 
+    /**
+     * Creates a new folder.
+     *
+     * @param id    The ID of the binder where the folder should be createad..
+     * @param binder    The BinderBrief object to be created.  Minimally, you must specify the "title".
+     * @param descriptionFormatStr The desired format for the folder description in the response.  Can be "html" or "text".
+     * @return  The new Folder object.
+     */
     @POST
    	@Path("{id}/library_folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -418,6 +481,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return Response.ok(subFiles).lastModified(lastModified).build();
 	}
 
+    @Undocumented
 	@GET
 	@Path("{id}/library_info")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})

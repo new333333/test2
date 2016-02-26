@@ -81,7 +81,7 @@ import java.util.*;
 @ResourceGroup("Binders")
 public class BinderResource extends AbstractResource {
     /**
-     * Lists a set of binders by ID.
+     * Get binders by ID.
      *
      * <p>This resource supports top level folder IDs, such as -100 (My Files)</p>
      *

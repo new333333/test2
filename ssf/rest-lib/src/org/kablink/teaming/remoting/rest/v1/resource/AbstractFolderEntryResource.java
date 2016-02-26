@@ -41,6 +41,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.Reply;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchResultTree;
@@ -73,7 +74,6 @@ import java.util.Map;
  */
 abstract public class AbstractFolderEntryResource  extends AbstractDefinableEntityResource {
 
-	// Delete folder entry
 	@DELETE
     @Path("{id}")
 	public void deleteFolderEntry(@PathParam("id") long id,
@@ -165,6 +165,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
 
     @GET
     @Path("{id}/tags")
+    @Undocumented
     public SearchResultList<Tag> getTags(@PathParam("id") Long id) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         return getEntryTags(entry, false);
@@ -174,6 +175,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
     @Path("{id}/tags")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public SearchResultList<Tag> addTag(@PathParam("id") Long id, Tag tag) {
         _getFolderEntry(id);
         org.kablink.teaming.domain.Tag[] tags = getFolderModule().setTag(null, id, tag.getName(), tag.isPublic());
@@ -186,6 +188,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
 
     @DELETE
     @Path("{id}/tags")
+    @Undocumented
     public void deleteTags(@PathParam("id") Long id) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         Collection<org.kablink.teaming.domain.Tag> tags = getFolderModule().getTags(entry);
@@ -196,6 +199,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
 
     @GET
     @Path("{id}/tags/{tagId}")
+    @Undocumented
     public Tag getTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         Collection<org.kablink.teaming.domain.Tag> tags = getFolderModule().getTags(entry);
@@ -209,6 +213,7 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
 
     @DELETE
     @Path("{id}/tags/{tagId}")
+    @Undocumented
     public void deleteTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
         getFolderModule().deleteTag(null, id, tagId);
     }
