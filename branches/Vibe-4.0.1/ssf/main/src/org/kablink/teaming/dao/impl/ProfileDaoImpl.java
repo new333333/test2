@@ -2871,7 +2871,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		u.setWorkspaceId(p.getWorkspaceId());
 		u.setInternalId(p.getInternalId());
 		u.setIdentityInfo( p.getIdentityInfo() );
-		u.setEmailAddress( p.getEmailAddress() );
+		// 02/29/2016 JK (bug 968737) Hide email address. For now, I'm simply removing the value without any substitution.
+		u.setEmailAddress( null );
 		if ( p instanceof User )
 		{
 			u.setExtProvState( ((User) p).getExtProvState() );
