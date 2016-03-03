@@ -295,7 +295,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
     }
 
     /**
-     * List the first level of replies to this entry.
+     * List the first level of replies to the specified folder entry.
      *
      * @param id    The ID of the folder entry.
      * @param descriptionFormatStr The desired format for the folder entry description in the response.  Can be "html" or "text".
@@ -364,6 +364,11 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         getFolderModule().unreserveEntry(null, id);
     }
 
+    /**
+     * Get information about the users and groups with whom the authenticated user has shared the folder entry.
+     * @param id    The ID of the folder entry.
+     * @return A SearchResultList of Share resources.
+     */
     @GET
     @Path("{id}/shares")
     public SearchResultList<Share> getShares(@PathParam("id") Long id) {
@@ -382,6 +387,17 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         return results;
     }
 
+    /**
+     * Share the specified folder entry with another user or group.  Minimally, you must specify the Share recipient and access role.
+     *
+     * <p>If the authenticated user has already shared the folder entry with the specified recipient, this will overwrite
+     * the previous share settings.</p>
+     * @param id    The ID of the folder entry.
+     * @param notifyRecipient   If true, the recipient will be notified by email.
+     * @param notifyAddresses   An email address to notify, if the recipient type is <code>public_link</code>.  May be specified multiple times.
+     * @param share The share object to create.
+     * @return The newly created Share resource.
+     */
     @POST
     @Path("{id}/shares")
     public Share shareEntity(@PathParam("id") Long id,

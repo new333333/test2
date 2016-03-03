@@ -237,6 +237,8 @@ public class LinkUriUtil {
         fp.addAdditionalLink("name", baseUrl + "/name");
         fp.addAdditionalLink("parent_folder", baseUrl + "/parent_folder");
         fp.addAdditionalLink("shares", fp.getOwningEntity().getLink() + "/shares");
+        fp.addAdditionalLink("replies", fp.getOwningEntity().getLink() + "/replies");
+        fp.addAdditionalLink("reply_tree", fp.getOwningEntity().getLink() + "/reply_tree");
         fp.addAdditionalLink("access", fp.getOwningEntity().getLink() + "/access");
         fp.addAdditionalLink("versions", baseUrl + "/versions");
         fp.addAdditionalLink("thumbnail", baseUrl + "/thumbnail");
