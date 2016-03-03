@@ -530,6 +530,11 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                 this.getBasePath() + id + "/recent_activity", nextParams);
     }
 
+    /**
+     * Get information about the users and groups with whom the authenticated user has shared the binder.
+     * @param id    The ID of the binder.
+     * @return A SearchResultList of Share resources.
+     */
     @GET
     @Path("{id}/shares")
     public SearchResultList<Share> getShares(@PathParam("id") Long id) {
@@ -548,6 +553,17 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return results;
     }
 
+    /**
+     * Share the binder with another user or group.  Minimally, you must specify the Share recipient and access role.
+     *
+     * <p>If the authenticated user has already shared the folder with the specified recipient, this will overwrite
+     * the previous share settings.</p>
+     * @param id    The ID of the folder entry.
+     * @param notifyRecipient   If true, the recipient will be notified by email.
+     * @param notifyAddresses   An email address to notify, if the recipient type is <code>public_link</code>.  May be specified multiple times.
+     * @param share The share object to create.
+     * @return The newly created Share resource.
+     */
     @POST
     @Path("{id}/shares")
     public Share shareEntity(@PathParam("id") Long id,

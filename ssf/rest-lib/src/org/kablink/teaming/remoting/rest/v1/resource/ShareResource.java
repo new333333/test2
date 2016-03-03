@@ -82,6 +82,15 @@ import java.util.*;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @ResourceGroup("Sharing")
 public class ShareResource extends AbstractResource {
+    /**
+     * Notify share recipients without modifying the shares.
+     * <p>For <code>public_link</code> share recipients, the <code>notify_address</code> form parameter can be used to specify
+     * email addresses to notify of the public link.</p>
+     * @param ids   ID of a share.  May be specified multiple times.
+     * @param notifyRecipient   If true, the recipients will be notified.
+     * @param notifyAddresses  An email address to send a public link to.  May be specified multiple times.
+     * @return
+     */
     @POST
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public NotifyWarning [] noopPostShare(@FormParam("id") List<Long> ids,
@@ -128,6 +137,11 @@ public class ShareResource extends AbstractResource {
         return new NotifyWarning[0];
     }
 
+    /**
+     * Get the specified Share object.
+     * @param id    The ID of the share.
+     * @return  A Share object.
+     */
     @GET
     @Path("/{id}")
     public Share getShare(@PathParam("id") Long id) {
@@ -139,6 +153,16 @@ public class ShareResource extends AbstractResource {
         return ResourceUtil.buildShare(share, definableEntity, buildShareRecipient(share), isGuestAccessEnabled());
     }
 
+    /**
+     * Overwrite the specified share.  This will not modify the Share's shared entity or recipient.
+     *
+     * <p>The share will be assigned a new ID.  The returned Share object contains the new ID.</p>
+     * @param id    The ID of the share to overwrite.
+     * @param notifyRecipient   If true, the recipient will be notified by email.
+     * @param notifyAddresses   An email address to notify, if the recipient type is <code>public_link</code>.  May be specified multiple times.
+     * @param share     A Share object containing the new share settings.
+     * @return  The update SHare object.
+     */
     @POST
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -192,6 +216,10 @@ public class ShareResource extends AbstractResource {
         return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), isGuestAccessEnabled());
     }
 
+    /**
+     * Delete the specified Share.
+     * @param id    The ID of the share.
+     */
     @DELETE
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -209,6 +237,11 @@ public class ShareResource extends AbstractResource {
         }
     }
 
+    /**
+     * Get the shares where the specified user is the sharer.
+     * @param userId    The ID of the user
+     * @return A SearchResultList of Share objects.
+     */
     @GET
     @Path("/by_user/{id}")
     public SearchResultList<Share> getSharedByUser(@PathParam("id") Long userId) {
@@ -247,7 +280,7 @@ public class ShareResource extends AbstractResource {
     }
 
     /**
-     * Lists the files and folders shared by the specified user..
+     * List the files and folders shared by the specified user..
      *
      * <p>The <code>title</code> query parameter limits the results to those children with the specified name.  Wildcards are not supported.</p>
      *
@@ -280,7 +313,7 @@ public class ShareResource extends AbstractResource {
     }
 
     /**
-     * Lists the folders shared by the specified user.
+     * List the folders shared by the specified user.
      *
      * <p>The <code>title</code> query parameter limits the results to those folders with the specified name.  Wildcards are not supported.</p>
      *
@@ -379,7 +412,7 @@ public class ShareResource extends AbstractResource {
     }
 
     /**
-     * Lists the files shared by the specified user.
+     * List the files shared by the specified user.
      *
      * @param userId    The ID of the user.
      * @param showHidden Whether to include hidden shares in the results.
@@ -452,6 +485,11 @@ public class ShareResource extends AbstractResource {
                 null, "/shares/by_user/" + userId + "/recent_activity", nextParams, showHidden, showUnhidden, true, true);
     }
 
+    /**
+     * Get the shares where the specified user is the recipient.
+     * @param userId    The ID of the user
+     * @return A SearchResultList of Share objects.
+     */
     @GET
     @Path("/with_user/{id}")
     public SearchResultList<Share> getSharedWithUser(@PathParam("id") Long userId) {
@@ -494,7 +532,7 @@ public class ShareResource extends AbstractResource {
     }
 
     /**
-     * Lists the files and folders shared with the specified user.
+     * List the files and folders shared with the specified user.
      *
      * <p>The <code>title</code> query parameter limits the results to those children with the specified name.  Wildcards are not supported.</p>
      *
@@ -527,7 +565,7 @@ public class ShareResource extends AbstractResource {
     }
 
     /**
-     * Lists the folders shared with the specified user.
+     * List the folders shared with the specified user.
      *
      * <p>The <code>title</code> query parameter limits the results to those folders with the specified name.  Wildcards are not supported.</p>
      *
@@ -627,7 +665,7 @@ public class ShareResource extends AbstractResource {
     }
 
     /**
-     * Lists the files shared with the specified user.
+     * List the files shared with the specified user.
      *
      * @param userId    The ID of the user.
      * @param showHidden Whether to include hidden shares in the results.
@@ -713,6 +751,10 @@ public class ShareResource extends AbstractResource {
                 showHidden, showUnhidden, false, true);
     }
 
+    /**
+     * Get the shares where the recipient is public.
+     * @return A SearchResultList of Share objects.
+     */
     @GET
     @Path("/public")
     public SearchResultList<Share> getPublicShares() {
@@ -774,11 +816,10 @@ public class ShareResource extends AbstractResource {
     }
 
     /**
-     * Lists the files and folders shared publicly.
+     * List the files and folders shared publicly.
      *
      * <p>The <code>title</code> query parameter limits the results to those children with the specified name.  Wildcards are not supported.</p>
      *
-     * @param userId    The ID of the user.
      * @param name  The name of the child to return,
      * @param showHidden Whether to include hidden shares in the results.
      * @param showUnhidden Whether to include unhidden, or visible, shares in the results.
@@ -809,7 +850,7 @@ public class ShareResource extends AbstractResource {
     }
 
     /**
-     * Lists the folders shared publically.
+     * List the folders shared publically.
      *
      * <p>The <code>title</code> query parameter limits the results to those folders with the specified name.  Wildcards are not supported.</p>
      *
@@ -890,7 +931,7 @@ public class ShareResource extends AbstractResource {
     }
 
     /**
-     * Lists the files shared publically.
+     * List the files shared publically.
      *
      * @param showHidden Whether to include hidden shares in the results.
      * @param showUnhidden Whether to include unhidden, or visible, shares in the results.
