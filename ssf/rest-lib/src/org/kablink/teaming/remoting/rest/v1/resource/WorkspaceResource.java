@@ -299,7 +299,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/library_entities")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<SearchableObject> getLibraryFiles(@PathParam("id") long id,
+	public SearchResultList<SearchableObject> getLibraryEntities(@PathParam("id") long id,
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                   @QueryParam("binders") @DefaultValue("true") boolean includeBinders,
                                                   @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,
