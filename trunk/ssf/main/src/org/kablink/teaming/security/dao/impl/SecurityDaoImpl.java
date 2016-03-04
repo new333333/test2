@@ -313,7 +313,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 		// zoneId from the cache key to keep it as simple/short as we can.
 		List<WorkAreaFunctionMembership> cachedValue = ThreadBoundLRUCache.get(List.class, "findWorkAreaFunctionMembershipsByOperation", workAreaId,workAreaType,workAreaOperationName);
 		if(cachedValue != null)
-			return cachedValue;
+			return new ArrayList(cachedValue); // Return a copy
 		
 		int retryCount = 0;
 		//The loop will retry up to 5 times if it fails the first time

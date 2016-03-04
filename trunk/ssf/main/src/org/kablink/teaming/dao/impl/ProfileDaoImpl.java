@@ -1950,8 +1950,11 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		long begin = System.nanoTime();
 		
 		Set<Long> cachedValue = ThreadBoundLRUCache.get(Set.class, "getApplicationLevelPrincipalIds", p.getId());
-		if(cachedValue != null)
-			return cachedValue;
+		if(cachedValue != null) {
+			// It is IMPORTANT NOT to return the cache entry directly to the caller
+			// to prevent the caller from modifying the cache entry inadvertently!
+			return new HashSet(cachedValue);
+		}
 		
 		try {
 			Set<Long> result = null;
@@ -3150,7 +3153,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			cacheable = true;
 			Map<ShareItem.RecipientType, Set<Long>> cachedValue = ThreadBoundLRUCache.get(Map.class, "getRecipientIdsWithGrantedRightsToSharedEntities", sharedEntityIdentifiers.iterator().next(), rightNames[0]);
 			if(cachedValue != null)
-				return cachedValue;
+				return new HashMap(cachedValue); // Return a copy
 		}
 				
 		try {
@@ -3208,7 +3211,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			cacheable = true;
 			Set<Long> cachedValue = ThreadBoundLRUCache.get(Set.class, "getSharerIdsToSharedEntities", sharedEntityIdentifiers.iterator().next());
 			if(cachedValue != null)
-				return cachedValue;
+				return new HashSet(cachedValue); // Return a copy
 		}
 		
 		try {
@@ -3467,7 +3470,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  		
  		List<Long> cachedValue = ThreadBoundLRUCache.get(List.class, cacheKey);
  		if(cachedValue != null)
- 			return cachedValue;
+ 			return new ArrayList(cachedValue); // Return a copy
  		
     	Criteria crit = session.createCriteria(UserPrincipal.class)
     			.setProjection(Projections.property("id"))
