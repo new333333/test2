@@ -334,7 +334,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 		                }
 		            );
 		    	ThreadBoundLRUCache.put(matches, "findWorkAreaFunctionMembershipsByOperation", workAreaId,workAreaType,workAreaOperationName);
-		    	return matches;
+		    	return new ArrayList(matches); // Return a copy
 	    	} catch (org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException ol) {
 				++retryCount;
 				if (retryCount >= 5) {

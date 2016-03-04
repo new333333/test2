@@ -1982,7 +1982,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	    		result = new HashSet(p.computePrincipalIds(null));
 	    	}
 	    	ThreadBoundLRUCache.put(result, "getApplicationLevelPrincipalIds", p.getId());
-	    	return result;
+	    	return new HashSet(result); // Return a copy
     	}
     	finally {
     		end(begin, "getApplicationLevelPrincipalIds(Principal)");
@@ -3193,7 +3193,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			Map<ShareItem.RecipientType, Set<Long>> result = recipientResultListToMap(list);
 			if(cacheable)
 				ThreadBoundLRUCache.put(result, "getRecipientIdsWithGrantedRightsToSharedEntities", sharedEntityIdentifiers.iterator().next(), rightNames[0]);
-			return result;
+			return new HashMap(result); // Return a copy
     	}
     	finally {
     		end(begin, "getRecipientIdsWithGrantedRightsToSharedEntities(Collection<EntityIdentifier>,String[])");
@@ -3244,7 +3244,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	      	Set<Long> result = sharerResultListToList(list);
 	      	if(cacheable)
 	      		ThreadBoundLRUCache.put(result, "getSharerIdsToSharedEntities", sharedEntityIdentifiers.iterator().next());
-	      	return result;
+	      	return new HashSet(result); // Return a copy
     	}
     	finally {
     		end(begin, "getSharerIdsToSharedEntities(Collection<EntityIdentifier>)");
@@ -3485,7 +3485,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	
     	ThreadBoundLRUCache.put(result,  cacheKey);
     	
-    	return result;
+    	return new ArrayList(result); // Return a copy
  	}
 
     @Override
