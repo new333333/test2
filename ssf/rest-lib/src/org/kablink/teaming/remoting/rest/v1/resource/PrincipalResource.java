@@ -62,7 +62,25 @@ import java.util.Set;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @ResourceGroup("Users and Groups")
 public class PrincipalResource extends AbstractPrincipalResource {
-	// Get all users
+    /**
+     * Get users and groups by ID or by keyword.
+     *
+     * <p>
+     *     <ul>
+     *         <li>By ID: <code>id=20&id=32&id=46</code></li>
+     *         <li>By Keyword: <code>keyword=Jo*</code></li>
+     *     </ul>
+     * </p>
+     * @param ids   A user or group ID.  May be specified multiple times.
+     * @param keyword   A search term.  Matches on full names, login names, and email address.
+     * @param groups    Whether to include groups in the results.
+     * @param users     Whether to include users in the results.
+     * @param includeAllUsers   Whether to include the "All Users" group in the results.
+     * @param descriptionFormatStr The desired format for the user and group descriptions.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return A SearchResultList of UserBrief and GroupBrief objects.
+     */
 	@GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<PrincipalBrief> getPrincipals(
@@ -92,6 +110,13 @@ public class PrincipalResource extends AbstractPrincipalResource {
         return results;
     }
 
+    /**
+     * Get a user or group.
+     * @param id    The ID of the user or group.
+     * @param includeAttachments    Whether to include attachments in the returned user or group.
+     * @param descriptionFormatStr The desired format for the description.  Can be "html" or "text".
+     * @return  A User or Group resource.
+     */
     @GET
     @Path("/{id}")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

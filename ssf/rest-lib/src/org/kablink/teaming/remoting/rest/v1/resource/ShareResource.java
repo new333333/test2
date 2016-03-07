@@ -17,6 +17,8 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
 import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
+import com.webcohesion.enunciate.metadata.rs.ResponseCode;
+import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -387,6 +389,24 @@ public class ShareResource extends AbstractResource {
         }
     }
 
+    /**
+     * Search files and folder shared by the specified user for entities by keyword.
+     * @param userId    The user ID.
+     * @param recursive Whether to search the immediate folder (false) or all subfolders (true).
+     * @param includeBinders    Whether to include binders in the results.
+     * @param includeFolderEntries  Whether to include folder entries in the results.
+     * @param includeFiles  Whether to include files in the results.
+     * @param includeReplies    Whether to include replies in the results.
+     * @param includeParentPaths    Whether to include the parent binder path with each entity.
+     * @param showHidden    Whether to include files and folders that have been hidden by the user.
+     * @param showUnhidden    Whether to include files and folders that have been not been hidden by the user.
+     * @param keyword   A search term.  May include wildcards, but cannot begin with a wildcard.  For example, "keyword=D*d" is
+     *                  allowed but "keyword=*d" is not.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObject resources (BinderBrief, FolderEntryBrief, FileProperties, ReplyBrief).
+     */
     @GET
     @Path("/by_user/{id}/library_entities")
     public SearchResultList<SearchableObject> getLibraryEntitiesSharedByUser(@PathParam("id") Long userId,
@@ -452,8 +472,20 @@ public class ShareResource extends AbstractResource {
         }
     }
 
+    /**
+     * Get changes to files and folders that have occurred in the user's Share by Me folder since the specified date.
+     * @param userId    The ID of the folder.
+     * @param since UTC date and time in ISO 8601 format.  For example, 2016-03-05T06:24:57Z.
+     * @param recursive Whether to return changes in the immediate folder only (false) or all subfolders (true).
+     * @param descriptionFormatStr The desired format for descriptions.  Can be "html" or "text".
+     * @param maxCount  The maximum number of changes to return.
+     * @return  A BinderChanges resource.
+     */
     @GET
     @Path("/by_user/{id}/library_changes")
+    @StatusCodes({
+            @ResponseCode(code=409, condition="The changes cannot be determined."),
+    })
     public BinderChanges getSharedByUserLibraryChanges(@PathParam("id") Long userId,
                                                        @QueryParam("since") String since,
                                                        @QueryParam("recursive") @DefaultValue("true") boolean recursive,
@@ -465,6 +497,17 @@ public class ShareResource extends AbstractResource {
         return getSharedByChanges(shareItems, since, recursive, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
     }
 
+    /**
+     * List recently changed folder entries shared by the specified user.
+     * @param userId    The ID of the user.
+     * @param includeParentPaths    Whether to include the parent binder path with each entry.
+     * @param descriptionFormatStr The desired format for the folder entry description.  Can be "html" or "text".
+     * @param showHidden Whether to include hidden shares in the results.
+     * @param showUnhidden Whether to include unhidden, or visible, shares in the results.
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of RecentActivityEntry resources.
+     */
     @GET
     @Path("/by_user/{id}/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -597,6 +640,24 @@ public class ShareResource extends AbstractResource {
         }
     }
 
+    /**
+     * Search files and folder shared with the specified user for entities by keyword.
+     * @param userId    The user ID.
+     * @param recursive Whether to search the immediate folder (false) or all subfolders (true).
+     * @param includeBinders    Whether to include binders in the results.
+     * @param includeFolderEntries  Whether to include folder entries in the results.
+     * @param includeFiles  Whether to include files in the results.
+     * @param includeReplies    Whether to include replies in the results.
+     * @param includeParentPaths    Whether to include the parent binder path with each entity.
+     * @param showHidden    Whether to include files and folders that have been hidden by the user.
+     * @param showUnhidden    Whether to include files and folders that have been not been hidden by the user.
+     * @param keyword   A search term.  May include wildcards, but cannot begin with a wildcard.  For example, "keyword=D*d" is
+     *                  allowed but "keyword=*d" is not.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObject resources (BinderBrief, FolderEntryBrief, FileProperties, ReplyBrief).
+     */
     @GET
     @Path("/with_user/{id}/library_entities")
     public SearchResultList<SearchableObject> getLibraryEntitiesSharedWithUser(@PathParam("id") Long userId,
@@ -705,6 +766,14 @@ public class ShareResource extends AbstractResource {
         }
     }
 
+    /**
+     * Get a tree structure representing the folder structure contained the user's Share with Me folder.
+     * @param userId    The ID of the user.
+     * @param descriptionFormatStr The desired format for the binder descriptions.  Can be "html" or "text".
+     * @param showHidden Whether to include hidden shares in the results.
+     * @param showUnhidden Whether to include unhidden, or visible, shares in the results.
+     * @return  A BinderTree
+     */
     @GET
     @Path("/with_user/{id}/library_tree")
     public BinderTree getSharedWithUserLibraryTree(@PathParam("id") Long userId,
@@ -717,8 +786,20 @@ public class ShareResource extends AbstractResource {
                 SearchUtils.buildLibraryTreeCriterion(), toDomainFormat(descriptionFormatStr));
     }
 
+    /**
+     * Get changes to files and folders that have occurred in the user's Share with Me folder since the specified date.
+     * @param userId    The ID of the folder.
+     * @param since UTC date and time in ISO 8601 format.  For example, 2016-03-05T06:24:57Z.
+     * @param recursive Whether to return changes in the immediate folder only (false) or all subfolders (true).
+     * @param descriptionFormatStr The desired format for descriptions.  Can be "html" or "text".
+     * @param maxCount  The maximum number of changes to return.
+     * @return  A BinderChanges resource.
+     */
     @GET
     @Path("/with_user/{id}/library_changes")
+    @StatusCodes({
+            @ResponseCode(code=409, condition="The changes cannot be determined."),
+    })
     public BinderChanges getSharedWithUserLibraryChanges(@PathParam("id") Long userId,
                                                          @QueryParam("since") String since,
                                                          @QueryParam("recursive") @DefaultValue("true") boolean recursive,
@@ -730,6 +811,17 @@ public class ShareResource extends AbstractResource {
         return getSharedWithChanges(shareItems, since, recursive, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
     }
 
+    /**
+     * List recently changed folder entries shared with the specified user.
+     * @param userId    The ID of the user.
+     * @param includeParentPaths    Whether to include the parent binder path with each entry.
+     * @param descriptionFormatStr The desired format for the folder entry description.  Can be "html" or "text".
+     * @param showHidden Whether to include hidden shares in the results.
+     * @param showUnhidden Whether to include unhidden, or visible, shares in the results.
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of RecentActivityEntry resources.
+     */
     @GET
     @Path("/with_user/{id}/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -802,6 +894,13 @@ public class ShareResource extends AbstractResource {
         return getSubBinderTree(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
 
+    /**
+     * Get a tree structure representing the folder structure contained in the Public top-level folder.
+     * @param descriptionFormatStr The desired format for the binder descriptions.  Can be "html" or "text".
+     * @param showHidden Whether to include hidden shares in the results.
+     * @param showUnhidden Whether to include unhidden, or visible, shares in the results.
+     * @return  A BinderTree
+     */
     @GET
     @Path("/public/library_tree")
     public BinderTree getPublicSharesLibraryTree(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
@@ -850,7 +949,7 @@ public class ShareResource extends AbstractResource {
     }
 
     /**
-     * List the folders shared publically.
+     * List the folders shared publicly.
      *
      * <p>The <code>title</code> query parameter limits the results to those folders with the specified name.  Wildcards are not supported.</p>
      *
@@ -931,7 +1030,7 @@ public class ShareResource extends AbstractResource {
     }
 
     /**
-     * List the files shared publically.
+     * List the files shared publicly.
      *
      * @param showHidden Whether to include hidden shares in the results.
      * @param showUnhidden Whether to include unhidden, or visible, shares in the results.
@@ -972,6 +1071,23 @@ public class ShareResource extends AbstractResource {
         }
     }
 
+    /**
+     * Search files and folder shared publicly for entities by keyword.
+     * @param recursive Whether to search the immediate folder (false) or all subfolders (true).
+     * @param includeBinders    Whether to include binders in the results.
+     * @param includeFolderEntries  Whether to include folder entries in the results.
+     * @param includeFiles  Whether to include files in the results.
+     * @param includeReplies    Whether to include replies in the results.
+     * @param includeParentPaths    Whether to include the parent binder path with each entity.
+     * @param showHidden    Whether to include files and folders that have been hidden by the user.
+     * @param showUnhidden    Whether to include files and folders that have been not been hidden by the user.
+     * @param keyword   A search term.  May include wildcards, but cannot begin with a wildcard.  For example, "keyword=D*d" is
+     *                  allowed but "keyword=*d" is not.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObject resources (BinderBrief, FolderEntryBrief, FileProperties, ReplyBrief).
+     */
     @GET
     @Path("/public/library_entities")
     public SearchResultList<SearchableObject> getPublicSharesLibraryEntities(@QueryParam("recursive") @DefaultValue("false") boolean recursive,
@@ -997,8 +1113,19 @@ public class ShareResource extends AbstractResource {
         return results;
     }
 
+    /**
+     * Get changes to files and folders that have occurred in the Public top-level folder since the specified date.
+     * @param since UTC date and time in ISO 8601 format.  For example, 2016-03-05T06:24:57Z.
+     * @param recursive Whether to return changes in the immediate folder only (false) or all subfolders (true).
+     * @param descriptionFormatStr The desired format for descriptions.  Can be "html" or "text".
+     * @param maxCount  The maximum number of changes to return.
+     * @return  A BinderChanges resource.
+     */
     @GET
     @Path("/public/library_changes")
+    @StatusCodes({
+            @ResponseCode(code=409, condition="The changes cannot be determined."),
+    })
     public BinderChanges getPublicSharesLibraryChanges(@QueryParam("since") String since,
                                                        @QueryParam("recursive") @DefaultValue("true") boolean recursive,
                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -1012,6 +1139,16 @@ public class ShareResource extends AbstractResource {
         return getPublicChanges(shareItems, since, recursive, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
     }
 
+    /**
+     * List recently changed folder entries shared publicly.
+     * @param includeParentPaths    Whether to include the parent binder path with each entry.
+     * @param descriptionFormatStr The desired format for the folder entry description.  Can be "html" or "text".
+     * @param showHidden Whether to include hidden shares in the results.
+     * @param showUnhidden Whether to include unhidden, or visible, shares in the results.
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of RecentActivityEntry resources.
+     */
     @GET
     @Path("/public/recent_activity")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

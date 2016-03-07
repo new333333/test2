@@ -94,7 +94,7 @@ import java.util.Set;
 public class FileResource extends AbstractFileResource {
 
     /**
-     * Lists files.
+     * List files by ID or file name.
      * @param ids   A file ID to search for.  Can be specified multiple times (<code>id=0909938984230942380432&id=971239483127492384732914</code>
      * @param fileName  List files matching this file name pattern.  The first characted in the pattern cannot be * or ?.
      * @param includeParentPaths    Whether to include the parent folder path with each result.

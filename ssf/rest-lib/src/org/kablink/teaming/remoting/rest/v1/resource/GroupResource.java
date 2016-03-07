@@ -41,6 +41,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.util.*;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.Group;
 import org.kablink.teaming.search.SearchUtils;
@@ -59,7 +60,14 @@ import java.util.Map;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @ResourceGroup("Users and Groups")
 public class GroupResource extends AbstractPrincipalResource {
-	// Get all users
+    /**
+     * List groups.
+     * @param name  A name to search for.  May contain wildcard characters.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of GroupBrief objects.
+     */
 	@GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public SearchResultList<GroupBrief> getGroups(
@@ -90,8 +98,14 @@ public class GroupResource extends AbstractPrincipalResource {
         SearchResultBuilderUtil.buildSearchResults(results, new GroupBriefBuilder(toDomainFormat(descriptionFormatStr)), resultMap, "/groups", nextParams, offset);
 		return results;
 	}
-	
-	// Create a new user.
+
+    /**
+     * Create a new group.
+     * @param group The group object to create.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @return  The new Group resource.
+     */
+    @Undocumented
 	@POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -108,6 +122,7 @@ public class GroupResource extends AbstractPrincipalResource {
                 true, toDomainFormat(descriptionFormatStr));
 	}
 
+    @Undocumented
     @GET
     @Path("/name/{name}")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -120,6 +135,13 @@ public class GroupResource extends AbstractPrincipalResource {
         return ResourceUtil.buildGroup(getProfileModule().getGroup(name), includeAttachments, toDomainFormat(descriptionFormatStr));
     }
 
+    /**
+     * Get a group.
+     * @param id    The ID of the group.
+     * @param includeAttachments    Whether to include attachments in the returned group.
+     * @param descriptionFormatStr The desired format for the description.  Can be "html" or "text".
+     * @return  A Group resource.
+     */
     @GET
     @Path("/{id}")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -129,6 +151,11 @@ public class GroupResource extends AbstractPrincipalResource {
         return ResourceUtil.buildGroup(_getGroup(id), includeAttachments, toDomainFormat(descriptionFormatStr));
     }
 
+    /**
+     * Update a group.
+     * @param id    The ID of the group.
+     * @param group A Group resource with updated fields.
+     */
     @PUT
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -138,6 +165,13 @@ public class GroupResource extends AbstractPrincipalResource {
         getProfileModule().modifyEntry(id, new RestModelInputData(group));
     }
 
+    /**
+     * List the members of the group.
+     * @param id    The ID of the group.
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of GroupMember objects.
+     */
     @GET
     @Path("/{id}/members")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -161,6 +195,11 @@ public class GroupResource extends AbstractPrincipalResource {
         return results;
     }
 
+    /**
+     * Add a user or group to a group.
+     * @param id    The ID of the group.
+     * @param principal The User or Group to add.
+     */
     @POST
     @Path("/{id}/members")
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -180,6 +219,11 @@ public class GroupResource extends AbstractPrincipalResource {
         getProfileModule().modifyEntry(group.getId(), new MapInputData(updates));
     }
 
+    /**
+     * Remove a member from a group.
+     * @param id    The ID of the Group.
+     * @param memberId  The ID of the Group Member.
+     */
     @DELETE
     @Path("/{id}/members/{memberId}")
     public void removeMember(@PathParam("id") long id, @PathParam("memberId") long memberId) throws WriteFilesException, WriteEntryDataException {

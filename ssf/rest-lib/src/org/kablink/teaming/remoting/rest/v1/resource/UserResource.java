@@ -87,9 +87,25 @@ import org.kablink.util.search.Restrictions;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @ResourceGroup("Users and Groups")
 public class UserResource extends AbstractPrincipalResource {
-	// Get all users
+    /**
+     * Get users by ID or by keyword.
+     *
+     * <p>
+     *     <ul>
+     *         <li>By ID: <code>id=20&id=32&id=46</code></li>
+     *         <li>By Keyword: <code>keyword=Jo*</code></li>
+     *     </ul>
+     * </p>
+     * @param ids   A user or group ID.  May be specified multiple times.
+     * @param keyword   A search term.  Matches on full names, login names, and email address.
+     * @param descriptionFormatStr The desired format for the user and group descriptions.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return A SearchResultList of UserBrief objects.
+     */
 	@GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
 	public SearchResultList<UserBrief> getUsers(
             @QueryParam("id") Set<Long> ids,
             @QueryParam("keyword") String keyword,
@@ -148,7 +164,7 @@ public class UserResource extends AbstractPrincipalResource {
         return results;
 	}
 	
-	// Create a new user.
+	@Undocumented
 	@POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -187,6 +203,13 @@ public class UserResource extends AbstractPrincipalResource {
         return ResourceUtil.buildUser(getProfileModule().getUser(name), includeAttachments, toDomainFormat(descriptionFormatStr));
     }
 
+    /**
+     * Get a user.
+     * @param userId    The ID of the user.
+     * @param includeAttachments    Whether to include attachments in the returned user or group.
+     * @param descriptionFormatStr The desired format for the description.  Can be "html" or "text".
+     * @return  A User resource.
+     */
     @GET
     @Path("/{id}")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -200,6 +223,7 @@ public class UserResource extends AbstractPrincipalResource {
         }
     }
 
+    @Undocumented
     @PUT
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -215,6 +239,12 @@ public class UserResource extends AbstractPrincipalResource {
         return getUser(id, includeAttachments, descriptionFormatStr);
     }
 
+    /**
+     * Change the user's password.
+     * @param id    The ID of the user.
+     * @param oldPassword   The old password.
+     * @param newPassword   The desired new password.
+     */
     @POST
     @Path("/{id}/password")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -258,6 +288,11 @@ public class UserResource extends AbstractPrincipalResource {
         return results;
     }
 
+    /**
+     * List the groups that the user is a member of.
+     * @param id    The ID of the user.
+     * @return  A SearchResultList of GroupBrief resources.
+     */
     @GET
     @Path("/{id}/groups")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

@@ -89,6 +89,9 @@ import java.util.Map;
 @ResourceLabel("Miscellaneous")
 public class MiscResource extends AbstractResource {
 
+    /**
+     * Entry point to the REST Interface.  Returns an object containing related links to other resources.
+     */
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @ResourceGroup("Root")
@@ -119,6 +122,9 @@ public class MiscResource extends AbstractResource {
    		return obj;
    	}
 
+    /**
+     * Get information about the server.
+     */
 	@GET
 	@Path("release_info")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -143,6 +149,11 @@ public class MiscResource extends AbstractResource {
         return releaseInfo;
 	}
 
+    /**
+     * Get system settings.
+     * @param includeProcessConfig  Whether to include desktop application process-blocking configuration.
+     * @return  A ZoneConfig resource.
+     */
 	@GET
 	@Path("zone_config")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

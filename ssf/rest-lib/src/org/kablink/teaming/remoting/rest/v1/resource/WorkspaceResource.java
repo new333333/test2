@@ -295,7 +295,22 @@ public class WorkspaceResource extends AbstractBinderResource {
         throw new NoWorkspaceByTheNameException(name);
     }
 
-    // Read entries
+    /**
+     * Search for entities by keyword.
+     * @param id    The ID of the folder to search.
+     * @param recursive Whether to search the immediate folder (false) or all subfolders (true).
+     * @param includeBinders    Whether to include binders in the results.
+     * @param includeFolderEntries  Whether to include folder entries in the results.
+     * @param includeFiles  Whether to include files in the results.
+     * @param includeReplies    Whether to include replies in the results.
+     * @param includeParentPaths    Whether to include the parent binder path with each entity.
+     * @param keyword   A search term.  May include wildcards, but cannot begin with a wildcard.  For example, "keyword=D*d" is
+     *                  allowed but "keyword=*d" is not.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObject resources (BinderBrief, FolderEntryBrief, FileProperties, ReplyBrief).
+     */
 	@GET
 	@Path("{id}/library_entities")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})

@@ -127,7 +127,7 @@ public class SelfResource extends AbstractFileResource {
     private Map<Long, Long> homeDirCheckTime = new HashMap<Long, Long>();
 
     /**
-     * Gets the User object representing the authenticated user.
+     * Get the User object representing the authenticated user.
      * @param includeAttachments    Whether to include attachments in the returned User object.
      * @param includeMobileDevices  Whether to include the mobile devices associated with the user in the response.
      * @param includeGroups  Whether to include the groups the user belongs to in the response.
@@ -216,7 +216,7 @@ public class SelfResource extends AbstractFileResource {
     }
 
     /**
-     * Returns the authenticated user's favorite binders
+     * Get the authenticated user's favorite binders
      * @return Returns a list of BinderBrief objects.
      */
     @Undocumented
@@ -234,7 +234,7 @@ public class SelfResource extends AbstractFileResource {
     }
 
     /**
-     * Returns the teams that the authenticated user is a member of.
+     * Get the teams that the authenticated user is a member of.
      * @return Returns a list of BinderBrief objects.
      */
     @Undocumented
@@ -252,7 +252,7 @@ public class SelfResource extends AbstractFileResource {
     }
 
     /**
-     * Returns a list of virtual workspace roots for the authenticated user.  This is useful for displaying
+     * Get a list of virtual workspace roots for the authenticated user.  This is useful for displaying
      * starting points for browsing different parts of the workspace hierarchy.
      * @deprecated  This operation is temporary and is very likely to change.
      * @return Returns a list of BinderBrief objects.
@@ -286,6 +286,10 @@ public class SelfResource extends AbstractFileResource {
         return results;
     }
 
+    /**
+     * Get a Binder object representing the top-level Net Folders folder.
+     * @return A BinderBrief object.
+     */
     @GET
     @Path("/net_folders")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -294,6 +298,10 @@ public class SelfResource extends AbstractFileResource {
         return getFakeNetFolders();
     }
 
+    /**
+     * Get a Binder object representing the top-level Public folder.
+     * @return A BinderBrief object.
+     */
     @GET
     @Path("/public_shares")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -318,6 +326,10 @@ public class SelfResource extends AbstractFileResource {
         return getPublicSharesLibraryInfo();
     }
 
+    /**
+     * Get a Binder object representing the top-level Shared with Me folder.
+     * @return A BinderBrief object.
+     */
     @ResourceGroup("Top Level Folders")
     @GET
     @Path("/shared_with_me")
@@ -339,6 +351,10 @@ public class SelfResource extends AbstractFileResource {
         return getSharedWithLibraryInfo(getLoggedInUserId());
     }
 
+    /**
+     * Get a Binder object representing the top-level Shared by Me folder.
+     * @return A BinderBrief object.
+     */
     @ResourceGroup("Top Level Folders")
     @GET
     @Path("/shared_by_me")
@@ -355,6 +371,10 @@ public class SelfResource extends AbstractFileResource {
         return getSharedByLibraryInfo(getLoggedInUserId());
     }
 
+    /**
+     * Get a Binder object representing the top-level My Files folder.
+     * @return A BinderBrief object.
+     */
     @ResourceGroup("Top Level Folders")
     @GET
     @Path("/my_files")
@@ -381,7 +401,7 @@ public class SelfResource extends AbstractFileResource {
     }
 
     /**
-     * Lists the children of My Files.
+     * List the children of My Files.
      *
      * <p>The <code>title</code> query parameter limits the results to those children with the specified name.  Wildcards are not supported.</p>
      *
@@ -414,7 +434,7 @@ public class SelfResource extends AbstractFileResource {
     }
 
     /**
-     * Lists the child folders of My Files.
+     * List the child folders of My Files.
      *
      * <p>The <code>title</code> query parameter limits the results to those folders with the specified name.  Wildcards are not supported.</p>
      *
@@ -444,6 +464,15 @@ public class SelfResource extends AbstractFileResource {
         }
     }
 
+    /**
+     * Copy a folder into the user's My Files folder.
+     *
+     * <p>The Content-Type must be <code>application/x-www-form-urlencoded</code>.  The title value in the form data should
+     * be a URL-encoded UTF-8 string.  For example: <code>source_id=48&title=H%C3%B6wdy</code>.</p>
+     * @param title    The name of the new folder.
+     * @param sourceId    The ID of the source folder to copy.
+     * @return  The new binder metadata.
+     */
 	@POST
     @Path("/my_files/library_folders")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -484,6 +513,13 @@ public class SelfResource extends AbstractFileResource {
         }
     }
 
+    /**
+     * Create a new folder in the authenticated user's My Files folder.
+     *
+     * @param newBinder    The BinderBrief object to be created.  Minimally, you must specify the "title".
+     * @param descriptionFormatStr The desired format for the folder description in the response.  Can be "html" or "text".
+     * @return  The new Folder object.
+     */
     @POST
    	@Path("/my_files/library_folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -526,9 +562,20 @@ public class SelfResource extends AbstractFileResource {
 
    	}
 
+    /**
+     * Get changes to files and folders that have occurred in My Files since the specified date.
+     * @param since UTC date and time in ISO 8601 format.  For example, 2016-03-05T06:24:57Z.
+     * @param recursive Whether to return changes in the immediate folder only (false) or all subfolders (true).
+     * @param descriptionFormatStr The desired format for descriptions.  Can be "html" or "text".
+     * @param maxCount  The maximum number of changes to return.
+     * @return  A BinderChanges resource.
+     */
     @GET
     @Path ("/my_files/library_changes")
     @ResourceGroup("My Files")
+    @StatusCodes({
+            @ResponseCode(code=409, condition="The changes cannot be determined."),
+    })
     public BinderChanges getMyFilesChanges(@QueryParam("since") String since,
                                            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                            @QueryParam("recursive") @DefaultValue("true") boolean recursive,
@@ -559,6 +606,11 @@ public class SelfResource extends AbstractFileResource {
         }
     }
 
+    /**
+     * Get a tree structure representing the folder structure contained in My Files.
+     * @param descriptionFormatStr The desired format for the binder descriptions.  Can be "html" or "text".
+     * @return  A BinderTree
+     */
     @GET
     @Path("/my_files/library_tree")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -590,6 +642,21 @@ public class SelfResource extends AbstractFileResource {
         return results;
     }
 
+    /**
+     * Search for entities by keyword.
+     * @param recursive Whether to search the immediate folder (false) or all subfolders (true).
+     * @param includeBinders    Whether to include binders in the results.
+     * @param includeFolderEntries  Whether to include folder entries in the results.
+     * @param includeFiles  Whether to include files in the results.
+     * @param includeReplies    Whether to include replies in the results.
+     * @param includeParentPaths    Whether to include the parent binder path with each entity.
+     * @param keyword   A search term.  May include wildcards, but cannot begin with a wildcard.  For example, "keyword=D*d" is
+     *                  allowed but "keyword=*d" is not.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObject resources (BinderBrief, FolderEntryBrief, FileProperties, ReplyBrief).
+     */
     @GET
     @Path("/my_files/library_entities")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -642,7 +709,7 @@ public class SelfResource extends AbstractFileResource {
     }
 
     /**
-     * Lists the child files of My Files.
+     * List the child files of My Files.
      *
      * @param fileName The name of the child to return,
      * @param recursive Whether to search the binder and sub-binders for files.
@@ -679,7 +746,7 @@ public class SelfResource extends AbstractFileResource {
     }
 
     /**
-     * Copies a file into the user's My Files top level folder.
+     * Copy a file into the user's My Files top level folder.
      *
      * <p>The Content-Type must be <code>application/x-www-form-urlencoded</code>.  The parameter values in the form data should
      * be URL-encoded UTF-8 strings.  For example: <code>source_id=09c1c3fb530f562401531070137b000e&file_name=H%C3%B6wdy</code></p>.
@@ -725,7 +792,7 @@ public class SelfResource extends AbstractFileResource {
     }
 
     /**
-     * Adds a file to the user's My Files top level folder.  This is the multipart form version.  The Content-Type must be <code>multipart/form-data</code>.
+     * Add a file to the user's My Files top level folder.  This is the multipart form version.  The Content-Type must be <code>multipart/form-data</code>.
      * See <a>https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2</a>.
      *
      * @param fileName  The name of the file to create.
@@ -759,7 +826,7 @@ public class SelfResource extends AbstractFileResource {
     }
 
     /**
-     * Adds a file to the user's My Files top level folder.  The request Content-Type can be anything except <code>x-www-form-urlencoded</code>.
+     * Add a file to the user's My Files top level folder.  The request Content-Type can be anything except <code>x-www-form-urlencoded</code>.
      * Supports <code>multipart/form-data</code> posts (see <a href="https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2">here</a>).
      * If another Content-Type is specified (<code>application/octet-stream</code>, for example), the raw bytes of the request body
      * are read and stored as the file content.
@@ -793,6 +860,14 @@ public class SelfResource extends AbstractFileResource {
         return file;
     }
 
+    /**
+     * List recently changed folder entries in My Files.
+     * @param includeParentPaths    Whether to include the parent binder path with each entry.
+     * @param descriptionFormatStr The desired format for the folder entry description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of RecentActivityEntry resources.
+     */
     @GET
     @Path("/my_files/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

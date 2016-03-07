@@ -114,7 +114,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     /**
-     * Deletes the specifed binder object.
+     * Delete the specifed binder object.
      *
      * <p>Personal storage folders are moved to the trash by default.  <code>purge=true</code> will delete the folder
      * permanently instead.  Folders on external storage (net folders, mirrored folders) are always deleted permanantly.</p>
@@ -135,7 +135,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     /**
-     * Get the rights that the authenticated user to the binder.
+     * Get the rights that the authenticated user has to the binder.
      * @param id    The ID of the binder.
      * @return  An Access object.
      */
@@ -288,8 +288,21 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return getSubBinderTree(id, SearchUtils.buildLibraryTreeCriterion(), toDomainFormat(descriptionFormatStr));
 	}
 
+    /**
+     * Get changes to files and folders that have occurred since the specified date.
+     *
+     * @param id    The ID of the folder.
+     * @param since UTC date and time in ISO 8601 format.  For example, 2016-03-05T06:24:57Z.
+     * @param recursive Whether to return changes in the immediate folder only (false) or all subfolders (true).
+     * @param descriptionFormatStr The desired format for descriptions.  Can be "html" or "text".
+     * @param maxCount  The maximum number of changes to return.
+     * @return  A BinderChanges resource.
+     */
     @GET
     @Path ("{id}/library_changes")
+    @StatusCodes({
+            @ResponseCode(code=409, condition="The changes cannot be determined."),
+    })
     public BinderChanges getLibraryChildrenChanges(@PathParam("id") long id,
                                               @QueryParam("since") String since,
                                               @QueryParam("recursive") @DefaultValue("true") boolean recursive,
@@ -299,7 +312,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     /**
-     * Lists the children of a binder.
+     * List the children of a binder.
      *
      * <p>The <code>title</code> query parameter limits the results to those children with the specified name.  Wildcards are not supported.</p>
      *
@@ -335,7 +348,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
    	}
 
     /**
-     * Lists the child folders of a binder.
+     * List the child folders of a binder.
      *
      * <p>The <code>title</code> query parameter limits the results to those folders with the specified name.  Wildcards are not supported.</p>
      *
@@ -369,10 +382,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
 
     /**
-     * Copies a folder into the specified binder.
+     * Copy a folder into the specified binder.
      *
      * <p>The Content-Type must be <code>application/x-www-form-urlencoded</code>.  The title value in the form data should
-     * be a URL-encoded UTF-8 string.  For example: <code>source_id=48&title=H%C3%B6wdy</code></p>.
+     * be a URL-encoded UTF-8 string.  For example: <code>source_id=48&title=H%C3%B6wdy</code>.</p>
      * @param parentId          The ID of the target folder.
      * @param title    The name of the new binder.
      * @param sourceId    The ID of the source folder to copy.
@@ -417,7 +430,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     }
 
     /**
-     * Creates a new folder.
+     * Create a new folder.
      *
      * @param id    The ID of the binder where the folder should be createad..
      * @param binder    The BinderBrief object to be created.  Minimally, you must specify the "title".
@@ -436,7 +449,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
    	}
 
     /**
-     * Lists the child files of a binder.
+     * List the child files of a binder.
      *
      * @param id    The ID of the binder.
      * @param fileName The name of the child to return,
@@ -511,6 +524,15 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         return getLibraryInfo(new Long[] {id}, binder.isMirrored());
 	}
 
+    /**
+     * List recently changed folder entries in the specified binder.
+     * @param id    The ID of the folder or workspace.
+     * @param includeParentPaths    Whether to include the parent binder path with each entry.
+     * @param descriptionFormatStr The desired format for the folder entry description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of RecentActivityEntry resources.
+     */
     @GET
     @Path("{id}/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

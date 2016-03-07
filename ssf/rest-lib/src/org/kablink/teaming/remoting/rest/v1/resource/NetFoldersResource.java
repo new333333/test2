@@ -87,6 +87,21 @@ public class NetFoldersResource extends AbstractResource {
         return _getNetFolders(name, toDomainFormat(descriptionFormatStr), offset, maxCount, "/net_folders", nextParams);
     }
 
+    /**
+     * Search for entities by keyword.
+     * @param recursive Whether to search the immediate folder (false) or all subfolders (true).
+     * @param includeBinders    Whether to include binders in the results.
+     * @param includeFolderEntries  Whether to include folder entries in the results.
+     * @param includeFiles  Whether to include files in the results.
+     * @param includeReplies    Whether to include replies in the results.
+     * @param includeParentPaths    Whether to include the parent binder path with each entity.
+     * @param keyword   A search term.  May include wildcards, but cannot begin with a wildcard.  For example, "keyword=D*d" is
+     *                  allowed but "keyword=*d" is not.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObject resources (BinderBrief, FolderEntryBrief, FileProperties, ReplyBrief).
+     */
     @GET
     @Path("/library_entities")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -122,6 +137,14 @@ public class NetFoldersResource extends AbstractResource {
         return results;
     }
 
+    /**
+     * List recently changed folder entries in Net Folders.
+     * @param includeParentPaths    Whether to include the parent binder path with each entry.
+     * @param descriptionFormatStr The desired format for the folder entry description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of RecentActivityEntry resources.
+     */
     @GET
     @Path("/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
