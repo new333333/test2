@@ -155,7 +155,7 @@ public class FolderResource extends AbstractBinderResource {
     }
 
     /**
-     * Returns a list of all access-control related operations that can be performed on a folder.
+     * List all access-control related operations that can be performed on a folder.
      * @return A list of Operation objects
      */
     @GET
@@ -190,7 +190,7 @@ public class FolderResource extends AbstractBinderResource {
     }
 
     /**
-     * Tests whether the authenticated user has permission to perform the specified operation on one or more folders.
+     * Test whether the authenticated user has permission to perform the specified operation on one or more folders.
      * @param id    The name of the operation
      * @param folderIds One or more folder IDs to test.
      * @return A list of Permission objects
@@ -211,7 +211,7 @@ public class FolderResource extends AbstractBinderResource {
     }
 
     /**
-     * Gets a list of child binders contained in the specified binder.
+     * Get a list of child binders contained in the specified binder.
      * @param id The id of the parent binder
      * @return Returns a list of BinderBrief objects.
      */
@@ -384,6 +384,22 @@ public class FolderResource extends AbstractBinderResource {
         return ResourceUtil.buildFolderEntry(result, true, toDomainFormat(descriptionFormatStr));
     }
 
+    /**
+     * Search for entities by keyword.
+     * @param id    The ID of the folder to search.
+     * @param recursive Whether to search the immediate folder (false) or all subfolders (true).
+     * @param includeBinders    Whether to include binders in the results.
+     * @param includeFolderEntries  Whether to include folder entries in the results.
+     * @param includeFiles  Whether to include files in the results.
+     * @param includeReplies    Whether to include replies in the results.
+     * @param includeParentPaths    Whether to include the parent binder path with each entity.
+     * @param keyword   A search term.  May include wildcards, but cannot begin with a wildcard.  For example, "keyword=D*d" is
+     *                  allowed but "keyword=*d" is not.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObject resources (BinderBrief, FolderEntryBrief, FileProperties, ReplyBrief).
+     */
 	@GET
 	@Path("{id}/library_entities")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -405,10 +421,10 @@ public class FolderResource extends AbstractBinderResource {
 	}
 
     /**
-     * Copies a file into the specified folder.
+     * Copy a file into the specified folder.
      *
      * <p>The Content-Type must be <code>application/x-www-form-urlencoded</code>.  The parameter values in the form data should
-     * be URL-encoded UTF-8 strings.  For example: <code>source_id=09c1c3fb530f562401531070137b000e&file_name=H%C3%B6wdy</code></p>.
+     * be URL-encoded UTF-8 strings.  For example: <code>source_id=09c1c3fb530f562401531070137b000e&file_name=H%C3%B6wdy</code>.</p>
      * @param id          The ID of the target folder.
      * @param fileName    The name of the new file.
      * @param sourceId    The ID of the source file to copy.
@@ -448,7 +464,7 @@ public class FolderResource extends AbstractBinderResource {
     }
 
     /**
-     * Adds a file to the specified folder.  This is the multipart form version.  The Content-Type must be <code>multipart/form-data</code>.
+     * Add a file to the specified folder.  This is the multipart form version.  The Content-Type must be <code>multipart/form-data</code>.
      * See <a>https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2</a>.
      *
      * @param id    The ID of the folder where the file is to be added.
@@ -479,7 +495,7 @@ public class FolderResource extends AbstractBinderResource {
     }
 
     /**
-     * Adds a file to the specified folder.  The request Content-Type can be anything except <code>x-www-form-urlencoded</code>.
+     * Add a file to the specified folder.  The request Content-Type can be anything except <code>x-www-form-urlencoded</code>.
      * Supports <code>multipart/form-data</code> posts (see <a href="https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2">here</a>).
      * If another Content-Type is specified (<code>application/octet-stream</code>, for example), the raw bytes of the request body
      * are read and stored as the file content.

@@ -189,7 +189,7 @@ public class BinderResource extends AbstractResource {
    	}
 
     /**
-     * Lists the children of the specified binders.
+     * List the children of the specified binders.
      *
      * <p><code>count</code> specifies the total number of children to return.  For example, <code>id=-100&id=48&id=49&count=10</code>
      * might return all 6 children of folder 48, the first 4 children of folder 49 and no results for folder -100.  The order that the binder IDs are
@@ -297,7 +297,7 @@ public class BinderResource extends AbstractResource {
     }
 
     /**
-     * Returns the Binder with the specified ID.
+     * Get the Binder with the specified ID.
      * @param id    The ID of the binder to return.
      * @param includeAttachments    Configures whether attachments should be included in the returned Binder object.
      * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
