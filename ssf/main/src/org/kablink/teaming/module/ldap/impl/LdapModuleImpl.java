@@ -219,7 +219,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 												ObjectKeys.FIELD_INTERNAL,
 												ObjectKeys.FIELD_INTERNALID,
 												ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME,
-												ObjectKeys.FIELD_PRINCIPAL_LDAPGUID};
+												ObjectKeys.FIELD_PRINCIPAL_LDAPGUID,
+												ObjectKeys.FIELD_FROMLDAP};
 
 	protected String [] groupAttrs = new String[]{
 												ObjectKeys.FIELD_PRINCIPAL_NAME,
@@ -242,6 +243,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final int PRINCIPAL_FOREIGN_NAME = 5;
 	private static final int PRINCIPAL_LDAP_GUID = 6;
 	private static final int GROUP_LDAP_CONTAINER = 7;
+	private static final int PRINCIPAL_FROM_LDAP = 7;
 	
 	// An ldap sync for a zone should not be started while another ldap sync is running.
 	private static Hashtable<Long, Boolean> m_zoneSyncInProgressMap = new Hashtable(); 
@@ -4817,21 +4819,35 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					row2 = (Object[])ssUsers.get(ssName);
 					if (row2 != null)
 					{
-						String name;
-						String foreignName;
-						
 						notInLdap.remove(row2[PRINCIPAL_ID]);
 	
 						// Did we find a local user?
-						// A local user will have their name equal to their foreignName
-						name = (String) row2[PRINCIPAL_NAME];
-						foreignName = (String) row2[PRINCIPAL_FOREIGN_NAME];
-						if ( name.equalsIgnoreCase( foreignName ) )
-						{
+						Boolean fromLdap = (Boolean) row2[PRINCIPAL_FROM_LDAP];
+						if(!Boolean.TRUE.equals(fromLdap)) {
 							// We found a local user.  We don't want to sync the ldap user to this user.
 							foundLocalUser = true;
 							row = null;
 							row2 = null;
+						}
+					}
+				}
+				else {
+					// Yes, we're using the ldap guid to identify users.
+					// Do we allow using DN and/or name to identify a record in the database in case GUID
+					// value is missing for the record?
+					if(SPropsUtil.getBoolean("ldap.sync.allow.fallback.match.when.guid.is.missing", true)) {
+						// Yes
+						row = ssDnUsers.get(dn);
+						if(row != null) {
+							notInLdap.remove(row[PRINCIPAL_ID]);
+							if(!(row[PRINCIPAL_LDAP_GUID] == null || row[PRINCIPAL_LDAP_GUID].equals("")))
+								row = null;
+						}
+						row2 = (Object[])ssUsers.get(ssName);
+						if (row2 != null) {
+							notInLdap.remove(row2[PRINCIPAL_ID]);
+							if(!((row2[PRINCIPAL_LDAP_GUID] == null || row2[PRINCIPAL_LDAP_GUID].equals("")) && Boolean.TRUE.equals(row2[PRINCIPAL_FROM_LDAP])))
+								row2 = null;
 						}
 					}
 				}
@@ -4926,41 +4942,48 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				return;
 			} else {
 				if (create) {
-					String	timeZone;
-					String localeId;
-					Map userMods = new HashMap();
-
-					getUpdates( userAttributeNames, userAttributes, lAttrs, userMods, ldapGuidAttribute );
-					
-					userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME, ssName);
-					userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
-					userMods.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
-					userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
-					userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
-                                        userMods.put( ObjectKeys.FIELD_PRINCIPAL_NETBIOS_NAME, netbiosName );
-
-					
-					// Get the default time zone.
-					timeZone = getDefaultTimeZone();
-					if ( timeZone != null && timeZone.length() > 0 )
-					{
-						userMods.put( ObjectKeys.FIELD_USER_TIMEZONE, timeZone );
+					Object[] r = (Object[])ssUsers.get(ssName);
+					if (r != null) {
+						notInLdap.remove(r[PRINCIPAL_ID]);
+						logger.warn("Cannot create user '" + ssName + "' with dn='" + dn + ((ldapGuid != null)? ("' and ldapGuid='" + ldapGuid + "'") : "'") + " because a user with the same name already exists in the database");
 					}
-					
-					// Get the default locale.
-					localeId = getDefaultLocaleId();
-					if ( localeId != null && localeId.length() > 0 )
-					{
-						userMods.put( ObjectKeys.FIELD_USER_LOCALE, localeId );
-					}
-					
-					ldap_new.put(ssName, userMods); 
-					dnUsers.put(dn, new Object[]{ssName, null, Boolean.FALSE, Boolean.valueOf( createAsExternal ), null, dn, ldapGuid});
-					
-					// Create a HomeDirInfo object for this new user
-					if ( Utils.checkIfFilr() )
-					{
-						ldap_new_homeDirInfo.put( ssName.toLowerCase(), homeDirInfo );
+					else {
+						String	timeZone;
+						String localeId;
+						Map userMods = new HashMap();
+	
+						getUpdates( userAttributeNames, userAttributes, lAttrs, userMods, ldapGuidAttribute );
+						
+						userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME, ssName);
+						userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
+						userMods.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
+						userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
+						userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
+	                                        userMods.put( ObjectKeys.FIELD_PRINCIPAL_NETBIOS_NAME, netbiosName );
+	
+						
+						// Get the default time zone.
+						timeZone = getDefaultTimeZone();
+						if ( timeZone != null && timeZone.length() > 0 )
+						{
+							userMods.put( ObjectKeys.FIELD_USER_TIMEZONE, timeZone );
+						}
+						
+						// Get the default locale.
+						localeId = getDefaultLocaleId();
+						if ( localeId != null && localeId.length() > 0 )
+						{
+							userMods.put( ObjectKeys.FIELD_USER_LOCALE, localeId );
+						}
+						
+						ldap_new.put(ssName, userMods); 
+						dnUsers.put(dn, new Object[]{ssName, null, Boolean.FALSE, Boolean.valueOf( createAsExternal ), null, dn, ldapGuid});
+						
+						// Create a HomeDirInfo object for this new user
+						if ( Utils.checkIfFilr() )
+						{
+							ldap_new_homeDirInfo.put( ssName.toLowerCase(), homeDirInfo );
+						}
 					}
 				}
 			}
@@ -5067,9 +5090,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					Object row[] = (Object[])ssUsers.get(name);
 					ldapGuid = (String) row[PRINCIPAL_LDAP_GUID];
 					foreignName = (String) row[PRINCIPAL_FOREIGN_NAME];
+					Boolean fromLdap = (Boolean) row[PRINCIPAL_FROM_LDAP];
 					
 					// Was this user provisioned from ldap?
-					if ( (ldapGuid != null && ldapGuid.length() > 0 ) || !name.equalsIgnoreCase( foreignName ) )
+					if ( (ldapGuid != null && ldapGuid.length() > 0 ) || Boolean.TRUE.equals(fromLdap) )
 					{	
 						Map updates = new HashMap();
 
