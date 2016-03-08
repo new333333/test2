@@ -6909,7 +6909,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		if (logger.isInfoEnabled()) {
 			logger.info(caption);
 			for (Map.Entry<String, Map> me:names.entrySet()) {
-				logger.info("'" + me.getKey() + "':'" + me.getValue().get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) + "'");
+				logger.info("'" + me.getKey() + "':'" + me.getValue().get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) + "', '" + me.getValue().get(ObjectKeys.FIELD_PRINCIPAL_LDAPGUID) + "'");
 			}
 		}
 	}
@@ -8815,7 +8815,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}
 		
-	   	return newUsers;
+		// Log information about newly created users
+		for(User user:(List<User>)newUsers) {
+			logger.info("Created new user {name='" + user.getName() + "', id=" + user.getId() + ", ldapGuid='" + user.getLdapGuid() + "', foreignName='" + user.getForeignName() + "'}"); 
+		}
+
+		return newUsers;
      }
 
     /**
