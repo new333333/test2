@@ -5874,6 +5874,9 @@ td.datePickerMonth {
 .editZoneShareListsTab_ModeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
 .editZoneShareListsTab_SectionHeader     {font-size: 1.1em; font-weight: bold;}
 
+.editZoneShareTermsTab_Header            {font-size: 14px; color: #505354;}
+.editZoneShareTermsTab_SectionHeader     {font-size: 1.1em; font-weight: bold;}
+
 .zoneShareRightsSelectPrincipalsWidget_PrincipalsTablePanelHeight
 {
 	height: 400px;
