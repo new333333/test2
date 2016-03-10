@@ -150,4 +150,9 @@ public class BaseAdminModule extends AbstractAdminModule {
     public void setAutoApplyDeferredUpdateLogs(boolean autoApplyDeferredUpdateLogs) {
 		// Noop
 	}
+	
+	@Override
+    public void setExtUserTermsAndConditions(String extUserTermsAndConditions) {
+		// Noop
+	}
 }

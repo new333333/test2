@@ -762,6 +762,7 @@ Application exception overridden by commit exception
 				<prop key="setAutoApplyDeferredUpdateLogs">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setTelemetrySettings">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setTelemetryTier2Enabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setExtUserTermsAndConditions">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>

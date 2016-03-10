@@ -5,4 +5,5 @@
     <include file="scripts/changelog/sqlserver-changelog-vibe4.0-filr1.1.xml" />
     <include file="scripts/changelog/sqlserver-changelog-filr1.1.1.xml" />
     <include file="scripts/changelog/sqlserver-changelog-filraxion.xml" />
+    <include file="scripts/changelog/sqlserver-changelog-filrproton.xml" />
 </databaseChangeLog> 
