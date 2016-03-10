@@ -115,6 +115,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.ZoneShareRights;
+import org.kablink.teaming.gwt.client.ZoneShareTerms;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
@@ -2776,6 +2777,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ZONE_SHARE_TERMS:
+		{	
+			ZoneShareTerms shareTerms = GwtShareHelper.getZoneShareTerms( this );
+			response = new VibeRpcResponse( shareTerms );
+			return response;
+		}
+		
 		case GET_SHARED_VIEW_STATE:
 		{
 			GetSharedViewStateCmd gsvsCmd = ((GetSharedViewStateCmd) cmd);
@@ -4098,6 +4106,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			result = GwtShareHelper.saveZoneShareRights( this, szsrCmd.getRights() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
+		}
+		
+		case SAVE_ZONE_SHARE_TERMS:
+		{
+			SaveZoneShareTermsCmd szsrCmd=(SaveZoneShareTermsCmd)cmd;
+			Boolean result=GwtShareHelper.saveZoneShareTerms(this,szsrCmd.getZoneShareTerms());
 		}
 		
 		case SEND_FORGOTTEN_PWD_EMAIL:
