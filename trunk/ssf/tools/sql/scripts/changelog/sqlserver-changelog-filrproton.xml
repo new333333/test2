@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+	<changeSet author="jong" context="schema" failOnError="true" id="1">
+		<comment>Terms and conditions text used during registration of external user</comment>
+		<addColumn tableName="SS_ZoneConfig">
+			<column name="extUserTermsAndConditions" type="NTEXT">
+				<constraints nullable="true" />
+			</column>
+		</addColumn>
+	</changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <comment>The date and time external user accepts terms and conditions during registration</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="termsAndConditionsAcceptDate" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

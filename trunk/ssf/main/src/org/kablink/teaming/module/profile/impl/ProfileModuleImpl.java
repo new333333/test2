@@ -3765,4 +3765,10 @@ public String[] getUsernameAndDecryptedPasswordForAuth(String username) {
     		return result;
     	}
     }
+
+	@Override
+	public void setTermsAndConditionsAcceptDate(Long userId, Date date) {
+		User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
+		user.setTermsAndConditionsAcceptDate(date);
+	}
 }

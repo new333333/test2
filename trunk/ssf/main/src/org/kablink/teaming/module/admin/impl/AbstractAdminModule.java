@@ -4241,4 +4241,10 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   		zoneConfig.setTelemetryEnabled(     telemetryEnabled     );
   		zoneConfig.setTelemetryTier2Enabled(telemetryTier2Enabled);
     }
+    
+    @Override
+    public void setExtUserTermsAndConditions(String extUserTermsAndConditions) {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setExtUserTermsAndConditions(extUserTermsAndConditions);
+    }
 }
