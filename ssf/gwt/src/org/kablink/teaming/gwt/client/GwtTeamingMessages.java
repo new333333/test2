@@ -572,7 +572,6 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetXsrfToken();
 	String rpcFailure_GetZipDownloadUrl();
 	String rpcFailure_GetZoneShareRights();
-	String rpcFailure_GetZoneShareTerms();
 	String rpcFailure_HideShares();
 	String rpcFailure_ImportIcalByUrl();
 	String rpcFailure_InvalidateSession();
@@ -649,7 +648,6 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_SaveUserListStatus();
 	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_SaveZoneShareRights();
-	String rpcFailure_SaveZoneShareTerms();
 	String rpcFailure_Search();
 	String rpcFailure_SendForgottenPwdEmail();
 	String rpcFailure_SendNotificationEmail();
@@ -3279,7 +3277,6 @@ public interface GwtTeamingMessages extends Messages {
 	String editZoneShareSettingsDlg_Header();
 	String editZoneShareSettingsDlg_Lists();
 	String editZoneShareSettingsDlg_Rights();
-	String editZoneShareSettingsDlg_Terms();
 	
 	// Strings used in the 'Edit Zone Share Rights' tab.
 	String editZoneShareRightsTab_AllowShareWithLdapGroups_NoExternal();
@@ -3287,8 +3284,6 @@ public interface GwtTeamingMessages extends Messages {
 	String editZoneShareRightsTab_ReadingRights();
 	String editZoneShareRightsTab_SavingRights();
 	String editZoneShareRightsTab_SelectPrincipalsHint();
-	String editZoneShareTermsTab_LicensingTerms();
-	String editZoneShareTermsTab_ReadingLicensingTerms();
 	
 	// Strings used in the 'Edit Zone Share Lists' tab.
 	String editZoneShareListsTab_Add();

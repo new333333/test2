@@ -18,7 +18,9 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Information about the parent binder of an object.
+ * User: david
+ * Date: 10/5/12
+ * Time: 7:06 AM
  */
 @XmlRootElement (name = "parent_binder")
 public class ParentBinder extends LongIdLinkPair {
@@ -32,9 +34,6 @@ public class ParentBinder extends LongIdLinkPair {
 
     private String path;
 
-    /**
-     * The full path of the parent binder.
-     */
     public String getPath() {
         return path;
     }

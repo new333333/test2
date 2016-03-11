@@ -32,13 +32,13 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import org.kablink.teaming.rest.v1.annotations.Undocumented;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * The system settings for the authenticated user.
+ * User: david
+ * Date: 5/16/12
+ * Time: 2:29 PM
  */
 @XmlRootElement(name = "zone_config")
 public class ZoneConfig extends BaseRestObject {
@@ -53,9 +53,6 @@ public class ZoneConfig extends BaseRestObject {
     private Boolean allowShareWithLdapGroups;
     private ExternalSharingRestrictions sharingRestrictions;
 
-    /**
-     * The ID of the zone.  Vibe supports multiple zones.  Filr only supports one zone.
-     */
     public Long getId() {
         return id;
     }
@@ -64,9 +61,6 @@ public class ZoneConfig extends BaseRestObject {
         this.id = id;
     }
 
-    /**
-     * A GUID that can be used to uniquely identify this system.
-     */
     public String getGuid() {
         return guid;
     }
@@ -75,7 +69,6 @@ public class ZoneConfig extends BaseRestObject {
         this.guid = guid;
     }
 
-    @Undocumented
     @XmlElement(name="binder_quotas")
     public BinderQuotasConfig getBinderQuotasConfig() {
         return binderQuotasConfig;
@@ -85,9 +78,6 @@ public class ZoneConfig extends BaseRestObject {
         this.binderQuotasConfig = binderQuotasConfig;
     }
 
-    /**
-     * The user's effective disk quota settings.
-     */
     @XmlElement(name="disk_quotas")
     public DiskQuotasConfig getDiskQuotasConfig() {
         return diskQuotasConfig;
@@ -97,10 +87,6 @@ public class ZoneConfig extends BaseRestObject {
         this.diskQuotasConfig = diskQuotasConfig;
     }
 
-    /**
-     * The user's effective desktop application settings.
-     * @return
-     */
     @XmlElement(name="desktop_app_config")
     public DesktopAppConfig getDesktopAppConfig() {
         return desktopAppConfig;
@@ -110,9 +96,6 @@ public class ZoneConfig extends BaseRestObject {
         this.desktopAppConfig = desktopAppConfig;
     }
 
-    /**
-     * The user's effective mobile application settings,
-     */
     @XmlElement(name="mobile_app_config")
     public MobileAppConfig getMobileAppConfig() {
         return mobileAppConfig;
@@ -122,10 +105,6 @@ public class ZoneConfig extends BaseRestObject {
         this.mobileAppConfig = mobileAppConfig;
     }
 
-    /**
-     * The user's file upload size limit, in bytes.  This is the maximum file size that the user can upload to Filr from any client.
-     * May be null if no size limit has been configured.
-     */
     public Long getFileUploadSizeLimit() {
         return fileUploadSizeLimit;
     }
@@ -135,7 +114,6 @@ public class ZoneConfig extends BaseRestObject {
         this.fileUploadSizeLimit = fileUploadSizeLimit;
     }
 
-    @Undocumented
     public Long getFileVersionsMaxAge() {
         return fileVersionsMaxAge;
     }
@@ -144,9 +122,6 @@ public class ZoneConfig extends BaseRestObject {
         this.fileVersionsMaxAge = fileVersionsMaxAge;
     }
 
-    /**
-     * Whether or not the use is allowed to share with groups imported from LDAP.
-     */
     @XmlElement(name="allow_sharing_with_ldap_groups")
     public Boolean getAllowShareWithLdapGroups() {
         return allowShareWithLdapGroups==null ? Boolean.TRUE : allowShareWithLdapGroups;
@@ -156,9 +131,6 @@ public class ZoneConfig extends BaseRestObject {
         this.allowShareWithLdapGroups = allowShareWithLdapGroups;
     }
 
-    /**
-     * Defines which email addresses are allowed or denied when sharing with external users.
-     */
     @XmlElement(name="external_sharing_restrictions")
     public ExternalSharingRestrictions getSharingRestrictions() {
         return sharingRestrictions;

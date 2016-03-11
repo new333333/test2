@@ -55,24 +55,7 @@ public class Recipient extends LongIdLinkPair {
     }
 
     /**
-     * Type of the recipient.
-     * <p>
-     * For assigned permissions, allowed values are:
-     * <ul>
-     *     <li><code>user</code></li>
-     *     <li><code>group</code></li>
-     * </ul>
-     * </p>
-     * <p>
-     * For share recipients, allowed values are:
-     * <ul>
-     *     <li><code>user</code></li>
-     *     <li><code>group</code></li>
-     *     <li><code>external_user</code></li>
-     *     <li><code>public</code></li>
-     *     <li><code>public_link</code></li>
-     * </ul>
-     * </p>
+     * Type of the recipient.  It can be either <code>user</code> or <code>group</code>.
      */
     public String getType() {
         return type;

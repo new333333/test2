@@ -40,7 +40,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * A base class for all objects that are indexed and can be included in search results.
+ * User: david
+ * Date: 9/5/12
+ * Time: 2:01 PM
  */
 public abstract class SearchableObject extends BaseRestObject {
     private String docType;
@@ -58,14 +60,6 @@ public abstract class SearchableObject extends BaseRestObject {
         this.docType = orig.docType;
     }
 
-    /**
-     * The indexed document type.  Possible values are:
-     * <ul>
-     *     <li><code>entry</code> (folder entries, replies, users and groups)</li>
-     *     <li><code>binder</code> (workspaces and folders)</li>
-     *     <li><code>file</code></li>
-     * </ul>
-     */
     @XmlElement(name="doc_type")
     public String getDocType() {
         return docType;

@@ -71,7 +71,6 @@
  	<property name="entryDefId" access="field" index="entryDef_principal">
  		<column name="entryDef" sql-type="char(32)"/>
  	</property>
- 	<property name="termsAndConditionsAcceptDate"/>
     <component name="creation" node="creation" class="org.kablink.teaming.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
       <many-to-one class="org.kablink.teaming.domain.UserPrincipal" embed-xml="false" node="Principal" name="principal">

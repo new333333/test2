@@ -35,7 +35,9 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * A member of a group.
+ * User: david
+ * Date: 6/18/12
+ * Time: 2:10 PM
  */
 @XmlRootElement(name="group_member")
 public class GroupMember extends BaseRestObject {

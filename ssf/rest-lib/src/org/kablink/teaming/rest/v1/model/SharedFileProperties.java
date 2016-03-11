@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * File metadata plus sharing information.
+ * User: david
+ * Date: 7/25/12
+ * Time: 2:00 PM
  */
 @XmlRootElement(name="shared_file")
 public class SharedFileProperties extends FileProperties implements SharedSearchableObject {

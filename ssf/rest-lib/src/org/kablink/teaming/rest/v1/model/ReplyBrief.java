@@ -35,10 +35,7 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Minimal information about a Reply.  Brief objects are typically returned in list results because
- * they are more efficient to build than their full counterparts.
- */
+// This annotation is necessary not only for XML but also for JSON representation.
 @XmlRootElement (name="reply_brief")
 public class ReplyBrief extends BaseFolderEntryBrief {
     private LongIdLinkPair parentEntry;
@@ -59,9 +56,6 @@ public class ReplyBrief extends BaseFolderEntryBrief {
         return new ReplyBrief(this);
     }
 
-    /**
-     * The parent reply or folder entry.
-     */
     @XmlElement(name = "parent_entry")
     public LongIdLinkPair getParentEntry() {
         return parentEntry;
@@ -71,9 +65,6 @@ public class ReplyBrief extends BaseFolderEntryBrief {
         this.parentEntry = parentEntry;
     }
 
-    /**
-     * The top level folder entry for this reply.
-     */
     @XmlElement(name = "top_entry")
     public LongIdLinkPair getTopEntry() {
         return topEntry;

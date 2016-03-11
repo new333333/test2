@@ -36,7 +36,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Global binder quota settings.
+ * User: david
+ * Date: 5/16/12
+ * Time: 2:36 PM
  */
 @XmlRootElement(name="binder_quotas")
 public class BinderQuotasConfig {

@@ -39,7 +39,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Represents a date and time when a user performed an action.
+ * @author jong
+ *
  */
 @XmlRootElement (name="history_stamp")
 public class HistoryStamp {
@@ -61,9 +62,6 @@ public class HistoryStamp {
 		this.date = cal;
 	}
 
-	/**
-	 * The user.
-	 */
     @XmlElement(name="principal")
 	public LongIdLinkPair getPrincipal() {
 		return principal;
@@ -73,9 +71,6 @@ public class HistoryStamp {
 		this.principal = principal;
 	}
 
-	/**
-	 * The date and time.
-	 */
 	public Calendar getDate() {
 		return date;
 	}

@@ -68,6 +68,7 @@ import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.cache.impl.ThreadBoundLRUCache;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
@@ -173,7 +174,6 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
-import org.kablink.util.cache.ThreadBoundLRUCache;
 import org.kablink.util.search.Constants;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -4078,16 +4078,28 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     	try {
         	boolean allowUseOfHelperThreads = SPropsUtil.getBoolean("index.tree.helper.threads.allow", true);
    	    	boolean skipFileContentIndexing = SPropsUtil.getBoolean("index.tree.defer.file.content.indexing", true);  
+   	    	Integer cacheSizeLimit = null;
+   	    	boolean threadBoundLRUCacheEnable = SPropsUtil.getBoolean("reindexDestructive.threadBoundLRUCache.enable", true);
+   	    	if(threadBoundLRUCacheEnable)
+   	    		cacheSizeLimit = SPropsUtil.getInt("reindexDestructive.threadBoundLRUCache.sizeLimit", 100);
    	    	
-	    	Collection<Long> idsIndexed = getBinderModule().indexTree(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads, skipFileContentIndexing);
-			//if people selected and not yet index; index content only, not the whole ws tree
-	    	if(includeUsersAndGroups) {				
-				ProfileBinder pf = getProfileModule().getProfileBinder();
-				if (!idsIndexed.contains(pf.getId())) {
-					logger.info("Indexing users and groups");
-					errors.add(getBinderModule().indexBinder(pf.getId(), true)); 
-				}
-	    	} 		
+   	    	if(cacheSizeLimit != null)
+   	    		ThreadBoundLRUCache.initialize(cacheSizeLimit);
+			try {
+		    	Collection<Long> idsIndexed = getBinderModule().indexTree(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads, skipFileContentIndexing, cacheSizeLimit);
+				//if people selected and not yet index; index content only, not the whole ws tree
+		    	if(includeUsersAndGroups) {				
+					ProfileBinder pf = getProfileModule().getProfileBinder();
+					if (!idsIndexed.contains(pf.getId())) {
+						logger.info("Indexing users and groups");
+						errors.add(getBinderModule().indexBinder(pf.getId(), true)); 
+					}
+		    	}
+			}
+			finally {
+				if(cacheSizeLimit != null)
+					ThreadBoundLRUCache.destroy();
+			}    		
     	}
     	catch(Exception e) {
     		logger.error("Error reindexing binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""), e);
@@ -4240,11 +4252,5 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setTelemetryEnabled(     telemetryEnabled     );
   		zoneConfig.setTelemetryTier2Enabled(telemetryTier2Enabled);
-    }
-    
-    @Override
-    public void setExtUserTermsAndConditions(String extUserTermsAndConditions) {
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		zoneConfig.setExtUserTermsAndConditions(extUserTermsAndConditions);
     }
 }

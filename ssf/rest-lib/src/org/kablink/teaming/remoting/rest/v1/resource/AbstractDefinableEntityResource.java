@@ -44,7 +44,6 @@ import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
-import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.BaseFileProperties;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
@@ -69,10 +68,15 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * Base resource for all definable entities.
+ * User: david
+ * Date: 6/1/12
+ * Time: 11:11 AM
  */
 public abstract class AbstractDefinableEntityResource extends AbstractFileResource {
-    protected BinderBrief [] _getAncestry(@PathParam("id") long id) {
+    @GET
+    @Path("{id}/ancestry")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public BinderBrief [] getAncestry(@PathParam("id") long id) {
         Criterion criterion = null;
         DefinableEntity entity = getDefinableEntity(id);
         if (entity instanceof Entry) {
@@ -99,7 +103,6 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
     @GET
     @Path("{id}/attachments")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public SearchResultList<BaseFileProperties> getAttachments(@PathParam("id") long id) {
         DefinableEntity entity = getDefinableEntity(id);
 
@@ -119,7 +122,6 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
     @Path("{id}/attachments")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public FileProperties postAttachment_Multipart(@PathParam("id") long id,
                                @QueryParam("file_name") String fileName,
                                @QueryParam("data_name") String dataName,
@@ -139,7 +141,6 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
         }
     }
 
-    @Undocumented
     @POST
     @Path("{id}/attachments")
     @Consumes("*/*")
@@ -163,7 +164,6 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
         }
     }
 
-    @Undocumented
     @POST
     @Path("{id}/attachments")
    	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)

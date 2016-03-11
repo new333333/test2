@@ -5,8 +5,9 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Minimal information about a folder entry.  FolderEntryBrief objects are typically returned in list results because they are
- * more efficient to build than full FolderEntry objects
+ * User: david
+ * Date: 5/21/12
+ * Time: 2:36 PM
  */
 @XmlRootElement
 public class FolderEntryBrief extends BaseFolderEntryBrief {
@@ -25,9 +26,6 @@ public class FolderEntryBrief extends BaseFolderEntryBrief {
         return new FolderEntryBrief(this);
     }
 
-    /**
-     * Information about the primary file associated with this entry.
-     */
     @XmlElement(name="primary_file")
     public FileBrief getPrimaryFile() {
         return primaryFile;

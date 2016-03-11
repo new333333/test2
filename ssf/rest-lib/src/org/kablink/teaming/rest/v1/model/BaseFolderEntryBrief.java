@@ -4,8 +4,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
 /**
- * Base class for FolderEntryBriefs and ReplyBriefs.  Brief objects
- * are typically returned in list results because they are more efficient to build than their full counterparts.
+ * User: david
+ * Date: 5/21/12
+ * Time: 2:39 PM
  */
 public abstract class BaseFolderEntryBrief extends EntryBrief {
     private String docNumber;

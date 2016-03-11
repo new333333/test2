@@ -581,9 +581,4 @@ public interface AdminModule {
      * @param telemetryTier2Enabled
      */
     public void setTelemetrySettings(boolean telemetryTier2Enabled, boolean telemetryEnabled);
-  
-    /**
-     * Sets external user terms and conditions text in the zone config.
-     */
-    public void setExtUserTermsAndConditions(String extUserTermsAndConditions);
  }

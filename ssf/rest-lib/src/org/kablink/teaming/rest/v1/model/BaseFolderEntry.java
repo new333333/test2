@@ -32,12 +32,12 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import org.kablink.teaming.rest.v1.annotations.Undocumented;
-
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Base class for FolderEntries and Replies.
+ * User: david
+ * Date: 5/16/12
+ * Time: 4:02 PM
  */
 public abstract class BaseFolderEntry extends Entry {
     protected String docNumber;
@@ -56,7 +56,6 @@ public abstract class BaseFolderEntry extends Entry {
         this.totalReplyCount = orig.totalReplyCount;
     }
 
-    @Undocumented
     @XmlElement(name = "doc_level")
     public Integer getDocLevel() {
         return docLevel;
@@ -66,7 +65,6 @@ public abstract class BaseFolderEntry extends Entry {
         this.docLevel = docLevel;
     }
 
-    @Undocumented
     @XmlElement(name = "doc_number")
     public String getDocNumber() {
         return docNumber;
@@ -76,9 +74,6 @@ public abstract class BaseFolderEntry extends Entry {
         this.docNumber = docNumber;
     }
 
-    /**
-     * The number of direct replies to this entry.
-     */
     @XmlElement(name = "reply_count")
     public Integer getReplyCount() {
         return replyCount;
@@ -88,9 +83,6 @@ public abstract class BaseFolderEntry extends Entry {
         this.replyCount = replyCount;
     }
 
-    /**
-     * The total number of replies to this entry, including replies to direct replies.
-     */
     @XmlElement(name = "total_reply_count")
     public Integer getTotalReplyCount() {
         return totalReplyCount;

@@ -32,14 +32,14 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import org.kablink.teaming.rest.v1.annotations.Undocumented;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 /**
- * Miscellaneous information and statistics of a Binder.
+ * User: david
+ * Date: 2/7/13
+ * Time: 10:55 AM
  */
 @XmlRootElement(name = "library_info")
 public class LibraryInfo {
@@ -61,9 +61,6 @@ public class LibraryInfo {
         this.modifiedDate = modifiedDate;
     }
 
-    /**
-     * The most recent date and time that a file or folder in the binder has been modified.
-     */
     @XmlElement(name = "mod_date")
     public Date getModifiedDate() {
         return modifiedDate;
@@ -73,9 +70,6 @@ public class LibraryInfo {
         this.modifiedDate = modifiedDate;
     }
 
-    /**
-     * The total disk space consumed by the binder and its children.
-     */
     @XmlElement(name = "disk_space")
     public Long getDiskSpace() {
         return diskSpace;
@@ -85,9 +79,6 @@ public class LibraryInfo {
         this.diskSpace = diskSpace;
     }
 
-    /**
-     * The total number of files in this binder and its subfolders.
-     */
     @XmlElement(name = "file_count")
     public Integer getFileCount() {
         return fileCount;
@@ -97,9 +88,6 @@ public class LibraryInfo {
         this.fileCount = fileCount;
     }
 
-    /**
-     * The total number of subfolders in this binder and its subfolders.
-     */
     @XmlElement(name = "folder_count")
     public Integer getFolderCount() {
         return folderCount;
@@ -109,9 +97,6 @@ public class LibraryInfo {
         this.folderCount = folderCount;
     }
 
-    /**
-     * The last time a full net folder sync was completed for this binder.
-     */
     @XmlElement(name = "mirrored_sync_date")
     public Date getLastMirroredSyncDate() {
         return lastMirroredSyncDate;
@@ -121,9 +106,6 @@ public class LibraryInfo {
         this.lastMirroredSyncDate = lastMirroredSyncDate;
     }
 
-    /**
-     * Whether this binder is a mirrored binder (or has a mirrored binder among its children).
-     */
     public Boolean getMirrored() {
         return mirrored;
     }
@@ -133,7 +115,6 @@ public class LibraryInfo {
     }
 
 
-    @Undocumented
     @XmlElement(name = "allow_client_initiated_sync")
     public Boolean getAllowClientInitiatedSync() {
         return allowClientInitiatedSync;

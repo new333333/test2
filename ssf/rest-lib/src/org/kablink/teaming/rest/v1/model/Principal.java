@@ -32,12 +32,12 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import org.kablink.teaming.rest.v1.annotations.Undocumented;
-
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Base class for users and groups
+ * User: david
+ * Date: 5/16/12
+ * Time: 4:02 PM
  */
 public abstract class Principal extends Entry {
     private String emailAddress;
@@ -53,9 +53,6 @@ public abstract class Principal extends Entry {
         super(orig);
     }
 
-    /**
-     * Whether the user or group is disabled.
-     */
     @XmlElement(name="disabled")
     public Boolean isDisabled() {
         return disabled;
@@ -65,9 +62,6 @@ public abstract class Principal extends Entry {
         this.disabled = disabled;
     }
 
-    /**
-     * The user or group's primary email address.
-     */
     @XmlElement(name="email")
     public String getEmailAddress() {
         return emailAddress;
@@ -77,9 +71,6 @@ public abstract class Principal extends Entry {
         this.emailAddress = emailAddress;
     }
 
-    /**
-     * A unique name for the user or group.  For users, this is the user's login name.
-     */
     @XmlElement(name="name", required = true)
     public String getName() {
         return name;
@@ -89,7 +80,6 @@ public abstract class Principal extends Entry {
         this.name = name;
     }
 
-    @Undocumented
     public Boolean isReserved() {
         return reserved;
     }

@@ -34,6 +34,11 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * User: david
+ * Date: 5/17/12
+ * Time: 4:28 PM
+ */
 @XmlRootElement (name = "team_brief")
 public class TeamBrief extends BinderBrief {
     public TeamBrief() {

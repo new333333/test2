@@ -109,7 +109,6 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Integer cachedRightsRefreshInterval;
 	private Boolean telemetryEnabled;
 	private Boolean telemetryTier2Enabled;
-	private String extUserTermsAndConditions;
 
 	public ZoneConfig()
 	{
@@ -441,13 +440,6 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 			(null == desktopApplicationsLists) ?
 				null                           :
 				desktopApplicationsLists.getFsaApplicationsBlob());
-	}
-	
-	public String getExtUserTermsAndConditions() {
-		return extUserTermsAndConditions;
-	}
-	public void setExtUserTermsAndConditions(String extUserTermsAndConditions) {
-		this.extUserTermsAndConditions = extUserTermsAndConditions;
 	}
 	
 	/**

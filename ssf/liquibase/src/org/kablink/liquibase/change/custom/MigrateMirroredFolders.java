@@ -59,9 +59,6 @@ import java.util.Map;
  */
 public class MigrateMirroredFolders {
 	
-	private static final String LOG_SEVERITY_INFO = "INFO";
-	private static final String LOG_SEVERITY_WARN = "WARN";
-	private static final String LOG_SEVERITY_ERROR = "ERROR";
 
 	public static void main(String[] args) {
 		System.out.println(columnsToCopy);
@@ -311,7 +308,7 @@ public class MigrateMirroredFolders {
 	
 	private String getQueryForRetrievingMirroredNonTopFoldersOneBatch() throws SQLException {
 		String sqlQueryCommonPart =
-				" id,zoneId,resourceDriverName,resourcePath,binder_sortKey,topFolder,"
+				" id,zoneId,resourceDriverName,resourcePath,binder_sortKey,"
 				+ columnsToCopyCommaSeparated
 				+ " FROM SS_Forums" 
 				+ " WHERE netFolderConfigId is null AND resourceDriverName is not null AND topFolder is not null";
@@ -485,44 +482,16 @@ public class MigrateMirroredFolders {
 			// Determine which net folder config this net folder belongs to.
 			String resourcePath = (String) mirroredNonTopFolder.get("resourcePath");
 			String sortKey = (String) mirroredNonTopFolder.get("binder_sortKey");
-			Long topFolderId = toLong(mirroredNonTopFolder.get("topFolder"));
 			NetFolderConfig netFolderConfig = null;
 			for(NetFolderConfig nfc : nfs.netFolderConfigList) {
-				if(topFolderId.equals(nfc.topFolderId)) { 
-					// Found a match
+				if(sortKey.startsWith(nfc.sortKey) && // actually this first condition is sufficient...
+						resourcePath.startsWith(nfc.resourcePath)) {
 					netFolderConfig = nfc;
 					break;
 				}
 			}
-			
-			if(netFolderConfig == null) {
-				// We failed to locate net folder config object within the specified net folder server.
-				// 2/22/2016 JK (bug 967834) Let's check whether this error is caused by the anomaly
-				// reported in the defect where the top of the net folder and its children are pointing
-				// to two different net folder servers.
-				logWarn("Cannot find net folder config for the non-top net folder " + mirroredNonTopFolder + " within net folder server '" + resourceDriverName + "'. Searching other net folder servers...");
-						
-				Object[] match = findNetFolderConfigUsingTopFolderId(topFolderId, zoneId);
-				
-				if(match == null) {
-					throw new MigrateNetFolderConfigException("Still cannot find net folder config that this non-top net folder " + folderId + " belongs to. Aborting.");								
-				}
-				
-				netFolderConfig = (NetFolderConfig) match[0];
-				String correctResourceDriverName = (String) match[1];
-				
-				logWarn("Found net folder config " + netFolderConfig + " that this non-top net folder " + folderId + " belongs to from another net folder server '" + correctResourceDriverName + "'. Correcting net folder server association accordingly...");
-				
-				// It is not necessary to set the resourceDriverName field to the corrected net folder server name
-				// for this non-top folder during the update query execution down below though because the query
-				// nullifies the resourceDriverName field any way.
-			}
-						
-			// Let's do some additional 'soft' validation on the matching net folder config.
-			if(!sortKey.startsWith(netFolderConfig.sortKey))
-				logWarn("Unexpected sort key for non-top net folder " + mirroredNonTopFolder + " with matching net folder config being " + netFolderConfig);
-			if(!resourcePath.startsWith(netFolderConfig.resourcePath))
-				logWarn("Unexpected resource path for non-top net folder " + mirroredNonTopFolder + " with matching net folder config being " + netFolderConfig);			
+			if(netFolderConfig == null)
+				throw new MigrateNetFolderConfigException("Cannot find net folder config that this non-top net folder " + folderId + " belongs to");
 			
 			String nfcRelativePath = resourcePath.substring(netFolderConfig.resourcePath.length());
 			// Remove leading slash or backslash.
@@ -545,22 +514,6 @@ public class MigrateMirroredFolders {
 			migrateLegacyMirroredFolder(mirroredNonTopFolder, legacyMirroredFolderUpdateStmt);
 		}
 
-	}
-	
-	private Object[] findNetFolderConfigUsingTopFolderId(Long topFolderId, Long zoneId) {
-		for(NetFolderServer nfs:netFolderServerList) {
-			if(zoneId == nfs.zoneId) {
-				for(NetFolderConfig nfc : nfs.netFolderConfigList) {
-					if(topFolderId.equals(nfc.topFolderId)) {
-						Object[] result = new Object[2];
-						result[0] = nfc;
-						result[1] = nfs.name;
-						return result; // Found a match
-					}
-				}
-			}
-		}
-		return null;
 	}
 	
 	private void migrateLegacyMirroredFolder(Map<String,Object> mirroredFolder, PreparedStatement legacyMirroredFolderUpdateStmt) throws SQLException, MigrateNetFolderConfigException {
@@ -653,11 +606,7 @@ public class MigrateMirroredFolders {
 	}
 	
 	private void logInfo(String message) {
-		log(message, LOG_SEVERITY_INFO);
-	}
-	
-	private void logWarn(String message) {
-		log(message, LOG_SEVERITY_WARN);
+		log(message, false);
 	}
 	
 	private void logError(String message) {
@@ -665,15 +614,15 @@ public class MigrateMirroredFolders {
 	}
 	
 	private void logError(String message, Exception e) {
-		log(message, LOG_SEVERITY_ERROR);
+		log(message, true);
 		if(e != null) {
 			e.printStackTrace(log);
 			log.flush(); // Flush it immediately
 		}
 	}
-		
-	private void log(String message, String severity) {
-		log.println((new Date()).toString() + " " + severity + " - " + message);
+	
+	private void log(String message, boolean isError) {
+		log.println((new Date()).toString() + " " + ((isError)? "ERROR":"INFO") + " - " + message);
 		// We don't want to lose log information when system aborts or crashes abruptly.
 		// So flush it immediately after writing each message.
 		log.flush();
@@ -762,8 +711,6 @@ public class MigrateMirroredFolders {
 			.append(resourcePath)
 			.append(",topFolderId=")
 			.append(topFolderId)
-			.append(",sortKey=")
-			.append(sortKey)
 			.append("}");
 			return sb.toString();
 		}

@@ -35,7 +35,9 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Base class for folder entries and principals.
+ * User: david
+ * Date: 5/16/12
+ * Time: 4:02 PM
  */
 public abstract class Entry extends DefinableEntity {
     protected String entryType;
@@ -46,17 +48,9 @@ public abstract class Entry extends DefinableEntity {
 
     protected Entry(Entry orig) {
         super(orig);
+        this.entryType = orig.entryType;
     }
 
-    /**
-     * The type of entry.  Possible values are:
-     * <ul>
-     *     <li><code>entry</code></li>
-     *     <li><code>reply</code></li>
-     *     <li><code>user</code></li>
-     *     <li><code>group</code></li>
-     * </ul>
-     */
     @XmlElement(name = "entry_type")
     public String getEntryType() {
         return entryType;

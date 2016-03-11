@@ -30,7 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.util.cache;
+package org.kablink.teaming.cache.impl;
 
 import java.lang.invoke.MethodHandles;
 
@@ -39,9 +39,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Simple LRU cache bound to a thread.
- * <p>
- * By the definition of LRU, the least recently referenced entry is evicted 
- * from the cache when the cache reaches its maximum allowed capacity.
  * 
  * @author Jong
  *

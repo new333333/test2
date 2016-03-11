@@ -61,6 +61,7 @@ import org.hibernate.engine.SessionFactoryImplementor;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
+import org.kablink.teaming.cache.impl.ThreadBoundLRUCache;
 import org.kablink.teaming.comparator.LongIdComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -110,7 +111,6 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.util.Validator;
-import org.kablink.util.cache.ThreadBoundLRUCache;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -1950,11 +1950,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		long begin = System.nanoTime();
 		
 		Set<Long> cachedValue = ThreadBoundLRUCache.get(Set.class, "getApplicationLevelPrincipalIds", p.getId());
-		if(cachedValue != null) {
-			// It is IMPORTANT NOT to return the cache entry directly to the caller
-			// to prevent the caller from modifying the cache entry inadvertently!
-			return new HashSet(cachedValue);
-		}
+		if(cachedValue != null)
+			return cachedValue;
 		
 		try {
 			Set<Long> result = null;
@@ -1982,7 +1979,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	    		result = new HashSet(p.computePrincipalIds(null));
 	    	}
 	    	ThreadBoundLRUCache.put(result, "getApplicationLevelPrincipalIds", p.getId());
-	    	return new HashSet(result); // Return a copy
+	    	return result;
     	}
     	finally {
     		end(begin, "getApplicationLevelPrincipalIds(Principal)");
@@ -3153,7 +3150,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			cacheable = true;
 			Map<ShareItem.RecipientType, Set<Long>> cachedValue = ThreadBoundLRUCache.get(Map.class, "getRecipientIdsWithGrantedRightsToSharedEntities", sharedEntityIdentifiers.iterator().next(), rightNames[0]);
 			if(cachedValue != null)
-				return new HashMap(cachedValue); // Return a copy
+				return cachedValue;
 		}
 				
 		try {
@@ -3193,7 +3190,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			Map<ShareItem.RecipientType, Set<Long>> result = recipientResultListToMap(list);
 			if(cacheable)
 				ThreadBoundLRUCache.put(result, "getRecipientIdsWithGrantedRightsToSharedEntities", sharedEntityIdentifiers.iterator().next(), rightNames[0]);
-			return new HashMap(result); // Return a copy
+			return result;
     	}
     	finally {
     		end(begin, "getRecipientIdsWithGrantedRightsToSharedEntities(Collection<EntityIdentifier>,String[])");
@@ -3211,7 +3208,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 			cacheable = true;
 			Set<Long> cachedValue = ThreadBoundLRUCache.get(Set.class, "getSharerIdsToSharedEntities", sharedEntityIdentifiers.iterator().next());
 			if(cachedValue != null)
-				return new HashSet(cachedValue); // Return a copy
+				return cachedValue;
 		}
 		
 		try {
@@ -3244,7 +3241,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	      	Set<Long> result = sharerResultListToList(list);
 	      	if(cacheable)
 	      		ThreadBoundLRUCache.put(result, "getSharerIdsToSharedEntities", sharedEntityIdentifiers.iterator().next());
-	      	return new HashSet(result); // Return a copy
+	      	return result;
     	}
     	finally {
     		end(begin, "getSharerIdsToSharedEntities(Collection<EntityIdentifier>)");
@@ -3470,7 +3467,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  		
  		List<Long> cachedValue = ThreadBoundLRUCache.get(List.class, cacheKey);
  		if(cachedValue != null)
- 			return new ArrayList(cachedValue); // Return a copy
+ 			return cachedValue;
  		
     	Criteria crit = session.createCriteria(UserPrincipal.class)
     			.setProjection(Projections.property("id"))
@@ -3485,7 +3482,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	
     	ThreadBoundLRUCache.put(result,  cacheKey);
     	
-    	return new ArrayList(result); // Return a copy
+    	return result;
  	}
 
     @Override

@@ -70,7 +70,6 @@ public class EditZoneShareSettingsDlg extends DlgBox
 	private boolean						m_supportsExternalUserImport;
 	private EditZoneShareTabBase		m_listsTab;
 	private EditZoneShareTabBase		m_rightsTab;
-	private EditZoneShareTabBase		m_termsTab;
 	private FlowPanel					m_mainPanel;
 	private GwtTeamingMessages			m_messages;
 	private List<HandlerRegistration>	m_registeredEventHandlers;
@@ -184,9 +183,6 @@ public class EditZoneShareSettingsDlg extends DlgBox
 		m_listsTab = new EditZoneShareListsTab(this);
 		m_tabs.add( m_listsTab, m_messages.editZoneShareSettingsDlg_Lists() );
 		
-		m_termsTab = new EditZoneShareLicenseTermsTab(this);
-		m_tabs.add( m_termsTab, m_messages.editZoneShareSettingsDlg_Terms() );
-		
 		m_mainPanel.add( m_tabs );
 		
 		m_tabs.selectTab(0);
@@ -222,19 +218,7 @@ public class EditZoneShareSettingsDlg extends DlgBox
 							@Override
 							public void success()
 							{
-								m_termsTab.save(new EditZoneShareTabCallback(){
-									@Override
-									public void success()
-									{
-										hide();
-									}
-									
-									@Override
-									public void failure()
-									{
-										setOkEnabled(true);
-									}
-								});
+								hide();
 							}
 
 							@Override
@@ -276,24 +260,9 @@ public class EditZoneShareSettingsDlg extends DlgBox
 							@Override
 							public void success()
 							{
-								m_termsTab.validate(new EditZoneShareTabCallback(){
-
-									@Override
-									public void success() 
-									{
-										// The tabs contents are valid.  Ask
-										// them to save.
-										doSave();										
-									}
-
-									@Override
-									public void failure() 
-									{
-										// Nothing to do.  The lists tab will
-										// have told user about the error.
-										setOkEnabled( true );										
-									}									
-								});								
+								// The tabs contents are valid.  Ask
+								// them to save.
+								doSave();
 							}
 
 							@Override
@@ -389,7 +358,6 @@ public class EditZoneShareSettingsDlg extends DlgBox
 		m_tabs.selectTab(0);
 		m_rightsTab.init();
 		m_listsTab.init();
-		m_termsTab.init();
 	}
 
 	/**

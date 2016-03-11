@@ -39,7 +39,9 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.util.Date;
 
 /**
- * Custom fields of a definable entity.
+ * User: david
+ * Date: 6/6/12
+ * Time: 3:28 PM
  */
 @XmlRootElement
 public class CustomField {

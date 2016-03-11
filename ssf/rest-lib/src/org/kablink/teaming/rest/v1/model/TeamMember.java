@@ -34,7 +34,11 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-
+/**
+ * User: david
+ * Date: 6/18/12
+ * Time: 2:10 PM
+ */
 @XmlRootElement(name="team_member")
 public class TeamMember extends BaseRestObject {
     private PrincipalBrief principal;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,35 +30,30 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.cache.impl;
 
-package org.kablink.teaming.gwt.client.rpc.shared;
-
-import org.kablink.teaming.gwt.client.ZoneShareTerms;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * This class holds all of the information necessary to execute the "save zone share rights" command.
+ * Simple LRU cache.
  * 
- * @author lokesh reddy
+ * @author Jong
  *
  */
+public class LRUCache extends LinkedHashMap<String,Object> {
 
-public class SaveZoneShareTermsCmd extends VibeRpcCmd {
-	private ZoneShareTerms m_zoneShareTerms;
+	private static final long serialVersionUID = 1L;
 	
-	public SaveZoneShareTermsCmd(){
-		super();
-	}
+	private int maxEntries;
 
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.SAVE_ZONE_SHARE_TERMS.ordinal();
+	public LRUCache(int maxEntries) {
+		super(maxEntries+1, 0.75f, true);
+		this.maxEntries = maxEntries;
 	}
 	
-	public void setZoneShareTerms(ZoneShareTerms zoneShareTerms){
-		this.m_zoneShareTerms=zoneShareTerms;
-	}
-	
-	public ZoneShareTerms getZoneShareTerms(){
-		return m_zoneShareTerms;
-	}
+	@Override    
+	protected boolean removeEldestEntry(Map.Entry<String,Object> eldest) {
+		return size() > maxEntries;
+    }
 }

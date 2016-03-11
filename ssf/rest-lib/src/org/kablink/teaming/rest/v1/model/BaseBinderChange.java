@@ -20,7 +20,9 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 import java.util.Date;
 
 /**
- * Base class representing a change that has occurred in a binder.
+ * User: david
+ * Date: 7/25/12
+ * Time: 11:38 AM
  */
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type", defaultImpl = BinderChange.class)
 abstract public class BaseBinderChange {
@@ -34,14 +36,6 @@ abstract public class BaseBinderChange {
     private String type;
     private Date date;
 
-    /**
-     * Type of entity that changed.  Possible values are:
-     * <ul>
-     *     <li><code>binder</code></li>
-     *     <li><code>folder_entry</code></li>
-     *     <li><code>file</code></li>
-     * </ul>
-     */
     public String getType() {
         return type;
     }
@@ -50,14 +44,6 @@ abstract public class BaseBinderChange {
         this.type = type;
     }
 
-    /**
-     * The action that was performed on the changed entity.  Possible values are:
-     * <ul>
-     *     <li><code>add</code></li>
-     *     <li><code>modify</code></li>
-     *     <li><code>delete</code></li>
-     * </ul>
-     */
     public String getAction() {
         return action;
     }
@@ -66,9 +52,6 @@ abstract public class BaseBinderChange {
         this.action = action;
     }
 
-    /**
-     * Date and time that the change occurred.
-     */
     public Date getDate() {
         return date;
     }

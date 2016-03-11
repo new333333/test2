@@ -34,7 +34,6 @@
 package org.kablink.teaming.rest.v1.model;
 
 import org.codehaus.jackson.annotate.JsonTypeInfo;
-import org.kablink.teaming.rest.v1.annotations.Undocumented;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -43,7 +42,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
- * Base class for file objects.
+ * @author jong
+ *
  */
 @JsonTypeInfo(use=JsonTypeInfo.Id.MINIMAL_CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 public abstract class BaseFileProperties extends SearchableObject {
@@ -77,9 +77,6 @@ public abstract class BaseFileProperties extends SearchableObject {
         this.status = orig.status;
     }
 
-	/**
-	 * The ID of the file.
-     */
     public String getId() {
 		return id;
 	}
@@ -88,9 +85,6 @@ public abstract class BaseFileProperties extends SearchableObject {
 		this.id = id;
 	}
 
-	/**
-	 * The date and time when the file was created.
-     */
 	public HistoryStamp getCreation() {
 		return creation;
 	}
@@ -99,9 +93,6 @@ public abstract class BaseFileProperties extends SearchableObject {
 		this.creation = creation;
 	}
 
-	/**
-	 * The datae and time when the file was last modified.
-     */
 	public HistoryStamp getModification() {
 		return modification;
 	}
@@ -115,9 +106,6 @@ public abstract class BaseFileProperties extends SearchableObject {
 		this.modification = modification;
 	}
 
-	/**
-	 * The file size in bytes.
-     */
 	public Long getLength() {
 		return length;
 	}
@@ -126,9 +114,6 @@ public abstract class BaseFileProperties extends SearchableObject {
 		this.length = length;
 	}
 
-	/**
-	 * MD5 checksum.
-     */
     public String getMd5() {
         return md5;
     }
@@ -137,9 +122,6 @@ public abstract class BaseFileProperties extends SearchableObject {
         this.md5 = md5;
     }
 
-	/**
-	 * File version number.  This is incremented each time the file is modified.
-     */
     @XmlElement(name="version_number")
 	public Integer getVersionNumber() {
 		return versionNumber;
@@ -149,7 +131,6 @@ public abstract class BaseFileProperties extends SearchableObject {
 		this.versionNumber = versionNumber;
 	}
 
-	@Undocumented
     @XmlElement(name="major_version")
 	public Integer getMajorVersion() {
 		return majorVersion;
@@ -159,7 +140,6 @@ public abstract class BaseFileProperties extends SearchableObject {
 		this.majorVersion = majorVersion;
 	}
 
-	@Undocumented
     @XmlElement(name="minor_version")
 	public Integer getMinorVersion() {
 		return minorVersion;
@@ -169,7 +149,6 @@ public abstract class BaseFileProperties extends SearchableObject {
 		this.minorVersion = minorVersion;
 	}
 
-	@Undocumented
 	public String getNote() {
 		return note;
 	}
@@ -178,7 +157,6 @@ public abstract class BaseFileProperties extends SearchableObject {
 		this.note = note;
 	}
 
-	@Undocumented
 	public Integer getStatus() {
 		return status;
 	}

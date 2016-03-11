@@ -35,27 +35,18 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Information about an error that occurred.
+ * @author jong
+ *
  */
 @XmlRootElement (name = "error_info")
 public class ErrorInfo {
 
-    /**
-     * Code representing the error.
-     */
 	public String code;
-    /**
-     * Description of the error.  This is intended to give the client developer additional information about the error
-     * that occurred.  It is not suitable for displaying to the end-user.
-     */
 	public String message;
-    /**
-     * Additional data associated with error.
-     */
     public Object data;
 	
 	private ErrorInfo() {}
-
+	
 	public ErrorInfo(String code, String message) {
 		this.code = code;
 		this.message = message;

@@ -36,7 +36,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Problem that occurred sending an email notification to a share recipient.
+ * User: david
+ * Date: 5/30/13
+ * Time: 1:58 PM
  */
 @XmlRootElement(name = "notify_warning")
 public class NotifyWarning {
@@ -53,9 +55,6 @@ public class NotifyWarning {
         this.shareId = shareId;
     }
 
-    /**
-     * Code representing the error.
-     */
     public String getCode() {
         return code;
     }
@@ -64,10 +63,6 @@ public class NotifyWarning {
         this.code = code;
     }
 
-    /**
-     * Description of the error.  This is intended to give the client developer additional information about the error
-     * that occurred.  It is not suitable for displaying to the end-user.
-     */
     public String getMessage() {
         return message;
     }
@@ -76,9 +71,6 @@ public class NotifyWarning {
         this.message = message;
     }
 
-    /**
-     * ID of the share.
-     */
     @XmlElement(name="share_id")
     public Long getShareId() {
         return shareId;

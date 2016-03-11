@@ -21,8 +21,8 @@
 	</folderConfiguration>
 	<ldapConfiguration>	
 		<property name="java.naming.provider.url">ldap://localhost:389</property>
-		<property name="create.flush.threshhold">10</property>
-		<property name="modify.flush.threshhold">10</property>
+		<property name="create.flush.threshhold">100</property>
+		<property name="modify.flush.threshhold">100</property>
 		<userFilter>(&amp;(!(objectClass=computer))(|(objectClass=Person)(objectClass=orgPerson)(objectClass=inetOrgPerson)))</userFilter>
 		<groupFilter>(|(objectClass=group)(objectClass=groupOfNames)(objectClass=groupOfUniqueNames))</groupFilter>
 		<userAttribute>uid</userAttribute>

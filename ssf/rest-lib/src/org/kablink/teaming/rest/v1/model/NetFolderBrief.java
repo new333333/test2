@@ -32,14 +32,9 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import org.kablink.teaming.rest.v1.annotations.Undocumented;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- * Minimal information about a Net Folder.
- */
 @XmlRootElement(name = "net_folder_brief")
 public class NetFolderBrief extends BinderBrief {
     private Boolean allowMobileSync;
@@ -53,7 +48,6 @@ public class NetFolderBrief extends BinderBrief {
         super(orig);
     }
 
-    @Undocumented
     @XmlElement(name = "allow_mobile_sync")
     public Boolean getAllowMobileSync() {
         return allowMobileSync;
@@ -63,9 +57,6 @@ public class NetFolderBrief extends BinderBrief {
         this.allowMobileSync = allowMobileSync;
     }
 
-    /**
-     * Whether desktop sync of the Net Folder is allowed.
-     */
     @XmlElement(name = "allow_desktop_sync")
     public Boolean getAllowDesktopSync() {
         return allowDesktopSync;

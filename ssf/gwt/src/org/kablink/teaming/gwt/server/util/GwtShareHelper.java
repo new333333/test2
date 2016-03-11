@@ -81,7 +81,6 @@ import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.ZoneShareRights;
-import org.kablink.teaming.gwt.client.ZoneShareTerms;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
@@ -127,8 +126,6 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 
 import org.springframework.mail.MailSendException;
-
-import com.google.gwt.safehtml.shared.SafeHtml;
 
 /**
  * Helper methods for the GWT UI server code that services share requests.
@@ -2041,20 +2038,6 @@ public class GwtShareHelper
 		
 		return shareSettings;
 	}
-	
-	/**
-	 * Return the sharing roles that are defined at the zone level.
-	 * 
-	 * @param ami
-	 * 
-	 * @return
-	 */
-	public static ZoneShareTerms getZoneShareTerms( AllModulesInjected ami )
-	{
-		Long zoneId=RequestContextHolder.getRequestContext().getZoneId();
-		ZoneShareTerms shareTerms=new ZoneShareTerms(ami.getZoneModule().getZoneConfig( zoneId ).getExtUserTermsAndConditions());	
-		return shareTerms;
-	}	
 
 	/**
 	 * Return sharing information for the given entities
@@ -2785,25 +2768,6 @@ public class GwtShareHelper
 		
 		return Boolean.TRUE;
 	}
-	
-	/**
-	 * ?
-	 * 
-	 * @param ami
-	 * @param terms and conditions
-	 * 
-	 * @return
-	 */
-	public static Boolean saveZoneShareTerms( AllModulesInjected ami, ZoneShareTerms terms )
-	{
-		if ( ami == null || terms == null || terms.getTermsAndConditions() == null || ami.getAdminModule() == null)
-		{
-			m_logger.error( "In GwtShareHelper.saveZoneShareTerms(), invalid parameters" );
-			return Boolean.FALSE;
-		}		
-		ami.getAdminModule().setExtUserTermsAndConditions(terms.getTermsAndConditions());		
-		return Boolean.TRUE;
-	}	
 
 	/*
 	 * Converts a ShareList to a GwtShareList.

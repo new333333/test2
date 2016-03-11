@@ -32,13 +32,13 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import org.kablink.teaming.rest.v1.annotations.Undocumented;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Description text with information about the formatting of the text.
+ * User: david
+ * Date: 5/16/12
+ * Time: 3:56 PM
  */
 @XmlRootElement (name="description")
 public class Description {
@@ -46,7 +46,6 @@ public class Description {
     private String formatString;
     private Integer format;
 
-    @Undocumented
     public Integer getFormat() {
         return format;
     }
@@ -55,9 +54,6 @@ public class Description {
         this.format = format;
     }
 
-    /**
-     * The text of the description.
-     */
     public String getText() {
         return text;
     }
@@ -66,9 +62,6 @@ public class Description {
         this.text = text;
     }
 
-    /**
-     * The format of the descroption text.  Possible values are "text" and "html".
-     */
     @XmlElement(name="format_str")
     public String getFormatString() {
         return formatString;

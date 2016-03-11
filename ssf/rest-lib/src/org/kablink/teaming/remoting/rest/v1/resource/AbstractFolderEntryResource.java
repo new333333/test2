@@ -41,7 +41,6 @@ import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
-import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.Reply;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchResultTree;
@@ -74,7 +73,10 @@ import java.util.Map;
  */
 abstract public class AbstractFolderEntryResource  extends AbstractDefinableEntityResource {
 
-	protected void _deleteFolderEntry(@PathParam("id") long id,
+	// Delete folder entry
+	@DELETE
+    @Path("{id}")
+	public void deleteFolderEntry(@PathParam("id") long id,
                                   @QueryParam("purge") @DefaultValue("false") boolean purge,
                                   @QueryParam("version") Integer lastVersionNumber
                                   ) throws Exception {
@@ -102,7 +104,9 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
         }
 	}
 
-    protected SearchResultTree<Reply> _getReplyTree(@PathParam("id") Long id,
+    @GET
+    @Path("{id}/reply_tree")
+    public SearchResultTree<Reply> getReplyTree(@PathParam("id") Long id,
                                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         SearchResultTree<Reply> tree = new SearchResultTree<Reply>();
@@ -110,7 +114,29 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
         return tree;
     }
 
-    protected Reply _addReply(Long id, Reply entry, String descriptionFormatStr)
+    @GET
+    @Path("{id}/replies")
+    public SearchResultList<Reply> getReplies(@PathParam("id") Long id,
+                                              @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
+        List replies = entry.getReplies();
+        SearchResultList<Reply> results = new SearchResultList<Reply>();
+        for (Object o : replies) {
+            org.kablink.teaming.domain.FolderEntry reply = (org.kablink.teaming.domain.FolderEntry) o;
+            if (!reply.isPreDeleted()) {
+                results.append(ResourceUtil.buildReply(reply, false, toDomainFormat(descriptionFormatStr)));
+            }
+        }
+        return results;
+    }
+
+    @POST
+    @Path("{id}/replies")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Reply addReply(@PathParam("id") Long id,
+                          Reply entry,
+                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
             throws WriteFilesException, WriteEntryDataException {
         org.kablink.teaming.domain.FolderEntry parent = _getFolderEntry(id);
         if (entry==null) {
@@ -131,28 +157,14 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
             defId = entry.getDefinition().getId();
         }
         Map options = new HashMap();
-        populateTimestamps(options, entry);
+      	populateTimestamps(options, entry);
         org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().addReply(null, id, defId, new RestModelInputData(entry), null, options);
         return ResourceUtil.buildReply(newEntry, true, toDomainFormat(descriptionFormatStr));
-    }
-
-    protected SearchResultList<Reply> _getReplies(Long id, String descriptionFormatStr) {
-        org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
-        List replies = entry.getReplies();
-        SearchResultList<Reply> results = new SearchResultList<Reply>();
-        for (Object o : replies) {
-            org.kablink.teaming.domain.FolderEntry reply = (org.kablink.teaming.domain.FolderEntry) o;
-            if (!reply.isPreDeleted()) {
-                results.append(ResourceUtil.buildReply(reply, false, toDomainFormat(descriptionFormatStr)));
-            }
-        }
-        return results;
     }
 
 
     @GET
     @Path("{id}/tags")
-    @Undocumented
     public SearchResultList<Tag> getTags(@PathParam("id") Long id) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         return getEntryTags(entry, false);
@@ -162,7 +174,6 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
     @Path("{id}/tags")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Undocumented
     public SearchResultList<Tag> addTag(@PathParam("id") Long id, Tag tag) {
         _getFolderEntry(id);
         org.kablink.teaming.domain.Tag[] tags = getFolderModule().setTag(null, id, tag.getName(), tag.isPublic());
@@ -175,7 +186,6 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
 
     @DELETE
     @Path("{id}/tags")
-    @Undocumented
     public void deleteTags(@PathParam("id") Long id) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         Collection<org.kablink.teaming.domain.Tag> tags = getFolderModule().getTags(entry);
@@ -186,7 +196,6 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
 
     @GET
     @Path("{id}/tags/{tagId}")
-    @Undocumented
     public Tag getTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
         org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
         Collection<org.kablink.teaming.domain.Tag> tags = getFolderModule().getTags(entry);
@@ -200,7 +209,6 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
 
     @DELETE
     @Path("{id}/tags/{tagId}")
-    @Undocumented
     public void deleteTag(@PathParam("id") Long id, @PathParam("tagId") String tagId) {
         getFolderModule().deleteTag(null, id, tagId);
     }

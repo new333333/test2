@@ -35,7 +35,9 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Tree representation of all of the subbinders of a binder.
+ * User: david
+ * Date: 5/24/12
+ * Time: 1:57 PM
  */
 @XmlRootElement(name = "binder_tree")
 public class BinderTree extends SearchResultTree<BinderBrief> {

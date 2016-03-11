@@ -35,8 +35,9 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Minimal information about a group.  GroupBrief objects are typically returned in list results because they are
- * more efficient to build than full Group objects
+ * User: david
+ * Date: 5/18/12
+ * Time: 1:10 PM
  */
 @XmlRootElement (name="group_brief")
 public class GroupBrief extends PrincipalBrief {

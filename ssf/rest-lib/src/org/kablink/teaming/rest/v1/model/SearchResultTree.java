@@ -36,7 +36,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 
 /**
- * A tree structure.
+ * User: david
+ * Date: 5/24/12
+ * Time: 10:22 AM
  */
 @XmlRootElement(name = "tree")
 public class SearchResultTree<T> extends SearchResultTreeNode<T> {

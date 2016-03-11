@@ -159,7 +159,7 @@ public class PasswordPage implements IWizardPage<InstallerConfig>
 
 	private String getHostName(String url)
 	{
-		// url example jdbc:jtds:sqlserver://localhost/sitescape;useCursors=true
+		// url example jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor
 		String pattern = "//";
 
 		if (url != null)
@@ -174,7 +174,7 @@ public class PasswordPage implements IWizardPage<InstallerConfig>
 
 	private String getHostPort(String url)
 	{
-		// url example jdbc:jtds:sqlserver://localhost/sitescape;useCursors=true
+		// url example jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor
 		// Note SQL server does not have a port
 		String pattern = "//";
 		if (url != null)

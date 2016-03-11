@@ -37,7 +37,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Calendar;
 
 /**
- * Mininal information about a file.
+ * User: david
+ * Date: 5/30/12
+ * Time: 4:29 PM
  */
 @XmlRootElement
 public class FileBrief extends BaseRestObject {
@@ -51,9 +53,6 @@ public class FileBrief extends BaseRestObject {
     public FileBrief() {
     }
 
-    /**
-     * The ID of the file.
-     */
     public String getId() {
         return id;
     }
@@ -62,9 +61,6 @@ public class FileBrief extends BaseRestObject {
         this.id = id;
     }
 
-    /**
-     * The file name.
-     */
     public String getName() {
         return name;
     }
@@ -73,9 +69,6 @@ public class FileBrief extends BaseRestObject {
         this.name = name;
     }
 
-    /**
-     * The current file version.
-     */
     public Long getVersion() {
         return version;
     }
@@ -84,9 +77,6 @@ public class FileBrief extends BaseRestObject {
         this.version = version;
     }
 
-    /**
-     * The file size, in bytes.
-     */
     public Long getLength() {
         return length;
     }
@@ -95,9 +85,6 @@ public class FileBrief extends BaseRestObject {
         this.length = length;
     }
 
-    /**
-     * The MD5 checksum of the file.
-     */
     public String getMd5() {
         return md5;
     }
@@ -106,9 +93,6 @@ public class FileBrief extends BaseRestObject {
         this.md5 = md5;
     }
 
-    /**
-     * The date and time that the file was last modified.
-     */
     @XmlElement(name = "mod_date")
     public Calendar getModifiedDate() {
         return modifiedDate;

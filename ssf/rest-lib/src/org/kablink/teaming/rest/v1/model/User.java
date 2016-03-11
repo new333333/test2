@@ -32,16 +32,11 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import org.kablink.teaming.rest.v1.annotations.Undocumented;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-/**
- * The metadata for a user
- */
 @XmlRootElement(name = "user")
 public class User extends Principal {
     private Boolean person;
@@ -80,7 +75,6 @@ public class User extends Principal {
         return new User(this);
     }
 
-    @Undocumented
     public Boolean getPerson() {
         return person;
     }
@@ -89,7 +83,6 @@ public class User extends Principal {
         this.person = person;
     }
 
-    @Undocumented
     @XmlElement(name="disk_quota")
     public Long getDiskQuota() {
         return diskQuota;
@@ -99,9 +92,6 @@ public class User extends Principal {
         this.diskQuota = diskQuota;
     }
 
-    /**
-     * The disk space, in bytes, consumed by the user's personal storage.
-     */
     @XmlElement(name="disk_space_used")
     public Long getDiskSpaceUsed() {
         return diskSpaceUsed;
@@ -111,9 +101,6 @@ public class User extends Principal {
         this.diskSpaceUsed = diskSpaceUsed;
     }
 
-    /**
-     * The maximum disk space, in bytes, that the user is allowed to have in personal storage.
-     */
     @XmlElement(name="disk_space_quota")
     public Long getDiskSpaceQuota() {
         return diskSpaceQuota;
@@ -123,9 +110,6 @@ public class User extends Principal {
         this.diskSpaceQuota = diskSpaceQuota;
     }
 
-    /**
-     * The maximum file size, in bytes, that the user is allowed to upload.
-     */
     @XmlElement(name="file_size_limit")
     public Long getFileSizeLimit() {
         return fileSizeLimit;
@@ -135,9 +119,6 @@ public class User extends Principal {
         this.fileSizeLimit = fileSizeLimit;
     }
 
-    /**
-     * The user's first name.
-     */
     @XmlElement(name="first_name")
     public String getFirstName() {
         return firstName;
@@ -147,9 +128,6 @@ public class User extends Principal {
         this.firstName = firstName;
     }
 
-    /**
-     * The user's last name.
-     */
     @XmlElement(name="last_name")
     public String getLastName() {
         return lastName;
@@ -159,9 +137,6 @@ public class User extends Principal {
         this.lastName = lastName;
     }
 
-    /**
-     * The user's locale.
-     */
     public Locale getLocale() {
         return locale;
     }
@@ -170,9 +145,6 @@ public class User extends Principal {
         this.locale = locale;
     }
 
-    /**
-     * The user's middle name.
-     */
     @XmlElement(name="middle_name")
     public String getMiddleName() {
         return middleName;
@@ -182,7 +154,6 @@ public class User extends Principal {
         this.middleName = middleName;
     }
 
-    @Undocumented
     @XmlElement(name="mini_blog")
     public LongIdLinkPair getMiniBlog() {
         return miniBlog;
@@ -192,9 +163,6 @@ public class User extends Principal {
         this.miniBlog = miniBlog;
     }
 
-    /**
-     * The user's organization.
-     */
     @XmlElement(name="organization")
     public String getOrganization() {
         return organization;
@@ -204,9 +172,6 @@ public class User extends Principal {
         this.organization = organization;
     }
 
-    /**
-     * The user's primary phone number.
-     */
     @XmlElement(name="phone")
     public String getPhone() {
         return phone;
@@ -216,7 +181,6 @@ public class User extends Principal {
         this.phone = phone;
     }
 
-    @Undocumented
     @XmlElement(name="skype_id")
     public String getSkypeId() {
         return skypeId;
@@ -226,9 +190,6 @@ public class User extends Principal {
         this.skypeId = skypeId;
     }
 
-    /**
-     * The user's primary time zone.
-     */
     @XmlElement(name="time_zone")
     public String getTimeZone() {
         return timeZone;
@@ -238,7 +199,6 @@ public class User extends Principal {
         this.timeZone = timeZone;
     }
 
-    @Undocumented
     @XmlElement(name="twitter_id")
     public String getTwitterId() {
         return twitterId;
@@ -248,15 +208,6 @@ public class User extends Principal {
         this.twitterId = twitterId;
     }
 
-    /**
-     * Information about the user's avatar (profile picture).  It has three related links:
-     * <ul>
-     *     <li><code>content</code>: the HRef used to download the full image</li>
-     *     <li><code>thumbnail</code>: the HRef used to download a square thumbnail of the image</li>
-     *     <li><code>scaled_image</code>: the HRef used to download the a scaled, small version of image</li>
-     * </ul>
-     *
-     */
     @XmlElement(name="avatar")
     public StringIdLinkPair getAvatar() {
         return avatar;
@@ -266,9 +217,6 @@ public class User extends Principal {
         this.avatar = avatar;
     }
 
-    /**
-     * Information about the user's hidden "My Files" storage folder.
-     */
     @XmlElement(name="hidden_files_folder")
     public LongIdLinkPair getHiddenFilesFolder() {
         return hiddenFilesFolder;
@@ -278,9 +226,6 @@ public class User extends Principal {
         this.hiddenFilesFolder = hiddenFilesFolder;
     }
 
-    /**
-     * Information about the user's workspace.
-     */
     @XmlElement(name="workspace")
     public LongIdLinkPair getWorkspace() {
         return workspace;
@@ -290,9 +235,6 @@ public class User extends Principal {
         this.workspace = workspace;
     }
 
-    /**
-     * The user's effective mobile application settings.
-     */
     @XmlElement(name="mobile_app_config")
     public MobileAppConfig getMobileAppConfig() {
         return mobileAppConfig;
@@ -302,9 +244,6 @@ public class User extends Principal {
         this.mobileAppConfig = mobileAppConfig;
     }
 
-    /**
-     * The user's effective desktop application settings.
-     */
     @XmlElement(name="desktop_app_config")
     public DesktopAppConfig getDesktopAppConfig() {
         return desktopAppConfig;
@@ -314,9 +253,6 @@ public class User extends Principal {
         this.desktopAppConfig = desktopAppConfig;
     }
 
-    /**
-     * The groups the user is a member of.
-     */
     @XmlElementWrapper(name="groups")
     @XmlElement(name="group")
     public List<LongIdLinkPair> getGroups() {
@@ -327,9 +263,6 @@ public class User extends Principal {
         this.groups = groups;
     }
 
-    /**
-     * A list of the user's registered mobile devices.
-     */
     @XmlElementWrapper(name="mobile_devices")
     @XmlElement(name="mobile_device")
     public List<MobileDevice> getMobileDevices() {

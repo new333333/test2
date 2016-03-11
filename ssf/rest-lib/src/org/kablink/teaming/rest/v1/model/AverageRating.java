@@ -32,9 +32,11 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import org.kablink.teaming.rest.v1.annotations.Undocumented;
-
-@Undocumented
+/**
+ * User: david
+ * Date: 5/16/12
+ * Time: 3:57 PM
+ */
 public class AverageRating {
     private Double average;
    	private Long count;

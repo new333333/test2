@@ -218,7 +218,7 @@ public class DatabasePage extends ConfigPageDlgBox
 
 	private String getHostName(String url)
 	{
-		// url example jdbc:jtds:sqlserver://localhost/sitescape;useCursors=true
+		// url example jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor
 		String pattern = "//";
 
 		if (url != null)
@@ -233,7 +233,7 @@ public class DatabasePage extends ConfigPageDlgBox
 
 	private String getDbName(String url)
 	{
-		// url example jdbc:jtds:sqlserver://localhost/sitescape;useCursors=true
+		// url example jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor
 		String pattern = "//";
 		int startIndex = url.indexOf(pattern) + pattern.length();
 		
@@ -252,7 +252,7 @@ public class DatabasePage extends ConfigPageDlgBox
 
 	private String getHostPort(String url)
 	{
-		// url example jdbc:jtds:sqlserver://localhost/sitescape;useCursors=true
+		// url example jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor
 		// Note SQL server does not have a port
 		String pattern = "//";
 		if (url != null)
