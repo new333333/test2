@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+
+<project name="slide-webdavclient" basedir="." default="compile">
+	<import file="../build-common.xml" />
+	<import file="../deploy-support.xml" />
+		
+	<property name="jar.file" value="kablink-teaming-rest-lib.jar" />
+
+	<target name="clean" depends="enunciate-clean,build-common.clean" />
+
+	<target name="deploy" depends="jar">
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+	<target name="enunciate-clean" description="Delete Enunciate files">
+		<delete failonerror="false" dir="${basedir}/doc"/>
+	</target>
+
+	<target name="enunciate1" depends="compile">
+		<path id="enunciate.classpath">
+			<fileset dir="${enunciate1.home}/lib">
+				<include name="*.jar"/>
+				<exclude name="enunciate-c-*.jar"/>
+				<exclude name="enunciate-csharp-*.jar"/>
+				<exclude name="enunciate-gwt-*.jar"/>
+				<exclude name="enunciate-java-*.jar"/>
+				<exclude name="enunciate-obj-c-*.jar"/>
+				<exclude name="enunciate-php-*.jar"/>
+				<exclude name="enunciate-ruby-*.jar"/>
+				<exclude name="enunciate-spring-*.jar"/>
+				<exclude name="enunciate-swagger-*.jar"/>
+			</fileset>
+			<fileset dir="${java.home}">
+				<include name="lib/tools.jar"/>
+			</fileset>
+			<path refid="project.classpath"/>
+		</path>
+
+		<taskdef name="enunciate" classname="org.codehaus.enunciate.main.EnunciateTask">
+			<classpath refid="enunciate.classpath"/>
+		</taskdef>
+
+		<enunciate basedir="src" buildDir="doc">
+			<include name="org/kablink/teaming/remoting/rest/**/*.java"/>
+			<include name="org/kablink/teamin/rest/v1/model/*.java"/>
+			<classpath refid="enunciate.classpath"/>
+			<export artifactId="war.file" destination="doc/kablink-rest-doc.zip" />
+		</enunciate>
+	</target>
+
+	<target name="enunciate" depends="compile">
+		<path id="enunciate.classpath">
+			<fileset dir="${enunciate.home}/lib">
+				<include name="*.jar"/>
+				<exclude name="enunciate-c-*.jar"/>
+				<exclude name="enunciate-csharp-*.jar"/>
+				<exclude name="enunciate-gwt-*.jar"/>
+				<exclude name="enunciate-java-*.jar"/>
+				<exclude name="enunciate-obj-c-*.jar"/>
+				<exclude name="enunciate-php-*.jar"/>
+				<exclude name="enunciate-ruby-*.jar"/>
+				<exclude name="enunciate-spring-*.jar"/>
+				<exclude name="enunciate-swagger-*.jar"/>
+			</fileset>
+			<fileset dir="${java.home}">
+				<include name="lib/tools.jar"/>
+			</fileset>
+			<path refid="project.classpath"/>
+		</path>
+
+		<taskdef name="enunciate" classname="com.webcohesion.enunciate.EnunciateTask">
+			<classpath refid="enunciate.classpath"/>
+		</taskdef>
+
+		<enunciate basedir="src" buildDir="doc/admin"  configFile="enunciate/rest-admin-doc.xml">
+			<include name="org/kablink/teaming/remoting/rest/v1/resource/admin/*.java"/>
+			<include name="org/kablink/teaming/rest/v1/model/admin/*.java"/>
+			<include name="org/kablink/teaming/rest/v1/model/*.java"/>
+			<classpath refid="enunciate.classpath"/>
+			<export artifactId="docs" destination="doc/kablink-rest-admin-doc.zip" />
+		</enunciate>
+
+		<enunciate basedir="src" buildDir="doc/client"  configFile="enunciate/rest-client-doc.xml">
+			<include name="org/kablink/teaming/remoting/rest/v1/resource/*.java"/>
+			<include name="org/kablink/teaming/rest/v1/model/*.java"/>
+			<exclude name="**/DefinitionResource.java"/>
+			<exclude name="**/FileVersionResource.java"/>
+			<exclude name="**/Legacy*Resource.java"/>
+			<exclude name="**/TemplateResource.java"/>
+			<exclude name="**/WorkspacesResource.java"/>
+			<classpath refid="enunciate.classpath"/>
+			<export artifactId="docs" destination="doc/kablink-rest-client-doc.zip" />
+		</enunciate>
+	</target>
+</project>

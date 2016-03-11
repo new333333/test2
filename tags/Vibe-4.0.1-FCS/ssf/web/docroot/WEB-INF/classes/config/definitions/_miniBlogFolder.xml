@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_miniBlogFolder" caption="__definition_default_folder_miniblog" type="5" nextId="12" definitionType="5" databaseId="402883b51c470e76011c4859ba200010" internalId="402883b51c470e76011c4859ba200010"> 
+  <item name="folderForm" caption="__folder_form" type="form" id="1" display="form"> 
+    <properties/>  
+    <item name="title" caption="__title" type="data" display="form" id="10"> 
+      <properties> 
+        <property name="caption" value="__title"/>  
+        <property name="name" value="title"/>  
+        <property name="width" value="60"/>  
+        <property name="generated" value="false"/> 
+      </properties> 
+    </item>  
+    <item name="description" caption="__description" type="data" id="3"> 
+      <properties> 
+        <property name="caption" value="__description"/>  
+        <property name="name" value="description"/>  
+        <property name="height" value=""/>  
+        <property name="required" value=""/> 
+      </properties> 
+    </item>  
+  </item>  
+  <item name="forumView" caption="__folder_view" id="6"> 
+    <item name="descriptionView" caption="__description" id="8"> 
+      <properties> 
+        <property name="caption" value="__description"/> 
+      </properties> 
+    </item>  
+    <item name="folderList" caption="__folder_listing" id="9"> 
+      <properties/> 
+    </item>  
+    <properties> 
+      <property name="type" value="miniblog"/> 
+    </properties> 
+  </item>  
+  <properties>
+    <property name="caption" value="__definition_default_folder_miniblog"/>
+    <property name="name" value="_miniBlogFolder"/>
+    <property name="family" value="miniblog"/>
+    <property name="defaultToFileEntries" value="true"/>
+    <property name="icon" value="/icons/folder_blue_miniblog.png"/>
+  </properties>
+  <export-mappings/>
+</definition>

@@ -1,0 +1,41 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" >
+	<title></title>
+<script type="text/javascript">
+function passBackUrl() {
+	//Get the handle on the form from the parent page
+	var formObj = parent.document.forms[0];
+	
+	var form0 = document.getElementById('form0');
+	var fileName = form0.file1.value;
+	if (fileName == '') return;
+	var iDot = fileName.lastIndexOf(".");
+	if (iDot > 0) {
+		var ext = fileName.substring(iDot+1, fileName.length);
+		ext = ext.toLowerCase();
+	    if (ext != 'gif' && ext != 'jpg' && ext != 'jpeg' && ext != 'png') {
+			alert(self.parent.opener.ss_imageUploadError1);
+			return;
+		}
+	} else {
+		alert(self.parent.opener.ss_imageUploadError1)
+		return;
+	}
+	
+	//The parent form indicates the url to submit the form to
+	form0.action = self.parent.opener.ss_imageUploadUrl;
+	form0.submit();
+}
+</script>
+</head>
+<body>
+<form action="" id="form0" name="form0" method="post" enctype="multipart/form-data" style="display:block;">
+<div >
+<input id="inputFile" name="file1" type="file" 
+  style="width:250px;" onChange="passBackUrl()" />
+</div>
+</form>
+</body>
+</html>

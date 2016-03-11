@@ -1,0 +1,74 @@
+.gwt-SliderBar-shell {
+  width: 100%;
+}
+.gwt-SliderBar-shell1 {
+  height: 34pt;
+}
+.gwt-SliderBar-shell2 {
+  height: 22pt;
+}
+
+.gwt-SliderBar-shell .gwt-SliderBar-line {
+  border: 1px solid black;
+  background-color: white;
+  height: 4px;
+  width: 95%;
+  overflow: hidden;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-line1 {
+  top: 22pt;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-line2 {
+  top: 8pt;
+}
+
+.gwt-SliderBar-shell .gwt-SliderBar-line-disabled {
+  border: 1px solid gray;
+}
+
+.gwt-SliderBar-shell .gwt-SliderBar-knob {
+  width: 11px;
+  height: 21px;
+  z-index: 1;
+  cursor: pointer;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-knob1 {
+  top: 14pt;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-knob2 {
+  top: 4pt;
+}
+
+.gwt-SliderBar-shell .gwt-SliderBar-knob-disabled {
+	cursor: default !important;
+}
+
+.gwt-SliderBar-shell .gwt-SliderBar-tick {
+  width: 1px;
+  height: 6pt;
+  background: black;
+  overflow: hidden;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-tick1 {
+  top: 16pt;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-tick2 {
+  top: 2pt;
+}
+.gwt-SliderBar-shell .gwt-SliderBar-tick-disabled {
+  background: gray;
+}
+
+.gwt-SliderBar-shell .gwt-SliderBar-label {
+  top: 2pt;
+  font-size: 8pt;
+  cursor: default;
+}
+
+.gwt-SliderBar-shell .gwt-SliderBar-line-sliding {
+  cursor: pointer;
+}
+
+.gwt-SliderBar-shell-disabled {
+	outline: 0 !important;
+}

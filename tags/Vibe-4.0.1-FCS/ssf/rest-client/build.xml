@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<project name="rest-client" basedir="." default="compile">
+	<import file="../build-common.xml"/>
+	<import file="../deploy-support.xml" />
+
+	<property name="jar.file" value="kablink-teaming-rest-client.jar"/>
+	
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+		<!--<pathelement path="${project.dir}/rest-client/classes" />-->
+		<!--<pathelement path="${project.dir}/util/classes" />-->
+		<pathelement path="${project.dir}/rest-lib/classes" />
+		<fileset dir="${project.dir}/lib" includes="${libraries.restclient}" />
+	</path>
+
+	<!-- This overrides the imported definition -->
+	<!--
+	<target name="jar" depends="compile">
+		<jar
+			basedir="${classes.dir}"
+			jarfile="${jar.file}"
+			includes="**/rest/v1/**"
+		/>
+		<antcall target="jar-manifest">
+			<param name="jar-manifest.jar.file" value="${jar.file}"/>
+		</antcall>
+	</target>
+	-->
+	
+</project>

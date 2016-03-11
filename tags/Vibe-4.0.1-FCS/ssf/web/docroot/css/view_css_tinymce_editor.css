@@ -1,0 +1,70 @@
+body, td, pre, .mceContentBody {
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  color:#000;
+  margin:8px;
+  background:#FFF;
+}
+
+p { margin:8px 0px 8px 0px; }
+table tr td { border: 1px solid #BBBBBB; }
+
+ul li {
+    margin: 2px 0px 0px 0px;
+    list-style-type: disc;
+    list-style-position: outside;
+    list-style-image: none;
+}
+
+ol li {
+    margin: 2px 0px 0px 0px;
+    list-style-position: outside;
+    list-style-type: decimal;
+}
+
+.ss_largestprint {
+font-size:15px !important;
+}
+.ss_largerprint {
+font-size:14px !important;
+}
+.ss_largeprint {
+font-size:13px !important;
+}
+.ss_normalprint {
+font-size:12px !important;
+}
+.ss_smallprint {
+font-size:11px !important;
+}
+.ss_fineprint {
+font-size:10px !important;
+}
+.ss_finestprint {
+font-size:9px !important;
+}
+
+.ss_size_8px  { font-size: 8px  !important;}
+.ss_size_9px  { font-size: 9px  !important;}
+.ss_size_10px { font-size: 10px !important;}
+.ss_size_11px { font-size: 11px !important;}
+.ss_size_12px { font-size: 12px !important;}
+.ss_size_13px { font-size: 13px !important;}
+.ss_size_14px { font-size: 14px !important;}
+.ss_size_15px { font-size: 15px !important;}
+.ss_size_16px { font-size: 16px !important;}
+.ss_size_18px { font-size: 18px !important;}
+.ss_size_20px { font-size: 20px !important;}
+.ss_size_24px { font-size: 24px !important;}
+.ss_size_28px { font-size: 28px !important;}
+.ss_size_32px { font-size: 32px !important;}
+
+/* styles used in the editor for wikilinks */
+a.ss_icecore_link {
+  	color: #666666 !important;
+  	text-decoration:underline;
+	}
+a:hover.ss_icecore_link {
+  	color: #AFC8E3 !important;
+  	text-decoration:underline;
+}

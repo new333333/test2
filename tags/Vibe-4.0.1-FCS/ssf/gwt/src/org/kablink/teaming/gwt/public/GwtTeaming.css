@@ -1,0 +1,6610 @@
+/* */
+
+/* ########################################################################################################### */
+
+
+/* Collaboration Branding colors - darkest is gray1 */
+.gray1 { color: #1f1f1f !important;}
+.gray2 { color: #353838 !important;}
+.gray3 { color: #505354 !important;}
+.gray4 { color: #949494 !important;}
+.gray5 { color: #b8b8b8 !important;}
+.gray6 { color: #c4c4c4 !important;}
+.gray7 { color: #cccccc !important;}
+.gray8 { color: #e0e0e0 !important;}
+.gray9 { color: #ededed !important;}
+
+.fontSize13px{ font-size: 13px;}
+.fontSize16px{ font-size: 16px;}
+
+.displayBlock       { display: block;          }
+.displayInline      { display: inline;         }
+.displayInlineBlock { display: inline-block;   }
+.displayNone        { display: none;           }
+.displayNone2       { display: none !important;}
+
+.padding3   {padding:         3px;           }
+.padding3b  {padding:         3px !important;}
+.padding5   {padding:         5px;           }
+.padding5b  {padding:         5px !important;}
+.padding5R  {padding-right:   5px;           }
+.padding15R {padding-right:  15px;           }
+.padding2L  {padding-left:    2px;           }
+.padding10L {padding-left:   10px;           }
+.padding10T {padding-top:    10px;           }
+.padding5B  {padding-bottom:  5px;           }
+.padding10B {padding-bottom: 10px;           }
+
+.vibe-fullScroll       {overflow:   auto;}
+.vibe-horizontalScroll {overflow-x: auto; overflow-y: hidden;}
+.vibe-verticalScroll   {overflow-y: auto; overflow-x: hidden;}
+
+.white      {color: white !important;}
+.width1px   {width: 1px;}
+.width300px {width: 300px;}
+
+.maxWidth500 {max-width: 500px;}
+
+.whitespace-normal
+{
+	white-space: normal !important;
+}
+	
+
+.blend2-a {
+		background-image: -webkit-linear-gradient(top, #ebf5f5, #abced1) !important; 
+		background-image:    -moz-linear-gradient(top, #ebf5f5, #abced1) !important; 
+		background-image:     -ms-linear-gradient(top, #ebf5f5, #abced1) !important; 
+		background-image:      -o-linear-gradient(top, #ebf5f5, #abced1) !important; 
+		background-image:         linear-gradient(top, #ebf5f5, #abced1) !important; /* standard, but currently unimplemented */
+}
+.blend2-b
+{
+	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
+}
+.blend2-c {
+		background-image: -webkit-linear-gradient(top, #abced1, #59828f) !important; 
+		background-image:    -moz-linear-gradient(top, #abced1, #59828f) !important; 
+		background-image:     -ms-linear-gradient(top, #abced1, #59828f) !important; 
+		background-image:      -o-linear-gradient(top, #abced1, #59828f) !important; 
+		background-image:         linear-gradient(top, #abced1, #59828f) !important; /* standard, but currently unimplemented */
+}
+
+/* Styles used with the activity stream control */
+.activityStreamCtrl
+{
+	top: 8px !important;
+	background: #fff;
+	border-radius: 5px;
+	overflow: hidden;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.activityStreamActionsTable
+{
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	z-index: 300;
+}
+
+.activityStreamActionsPanel
+{
+	cursor: pointer;
+}
+
+.activityStreamActionsPanel:hover
+{
+	background: #cce9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.activityStreamActionsPanel:hover span
+{
+	color: #036f9f !important;
+}
+
+.activityStreamActionsLabel
+{
+	color: #666666;
+	font-size: 11px;
+	padding-left: 5px;
+	padding-right: 2px;
+	text-align: right;
+	vertical-align: middle;
+}
+
+.activityStreamActionsLabelBold
+{
+	color: black;
+}
+
+
+.activityStreamActionsImg1, .activityStreamActionsImg2
+{
+	padding-right: 4px;
+	vertical-align: middle;
+}
+
+.activityStreamSearchingPanel
+{
+	font-size: 14px;
+	background-color: #fafad5;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: 5px 10px;
+	position: absolute;
+	top: 25px;
+	z-index: 100;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.activityStreamNoEntriesFoundPanel
+{
+	font-size: 14px;
+	background-color: #fafad5;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: 5px 10px;
+	position: absolute;
+	top: 150px;
+	z-index: 100;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.activityStreamCtrlFooter
+{
+	background-color: #ededed;
+	border-top: 1px solid #e0e0e0;
+	padding: 3px;
+	vertical-align: middle;
+	width: 100%;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+}
+
+.activityStreamFooterImages
+{
+	text-align: center; 
+	vertical-align: middle;
+	width: 100%;
+}
+
+.activityStreamCtrlHeader
+{
+	color: #5691A6 !important;
+	font-size: 20px;
+	padding-bottom: 20px;
+	padding-left: 10px;
+	padding-top: 6px;
+}
+
+.activityStreamCtrlHeader2
+{
+	overflow: hidden;
+	padding-right: 250px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.activityStreamCtrlHeaderTitle
+{
+	color: #5691a6;
+	text-decoration: none;
+}
+
+.activityStreamCtrlHeaderSubtitle
+{
+	color: #b8b8b8;
+	font-size: .7em;
+	margin-left: .7em;
+	padding: 5px;
+	white-space: nowrap;
+}
+
+.activityStreamCtrlHeaderActionsTable
+{
+	position: absolute;
+	right: 10px;
+	top: 5px;
+}
+
+.activityStreamCtrlHeaderShowImg, .activityStreamCtrlHeaderRefresh, .activityStreamCtrlHeaderPausePlay
+{
+	cursor: pointer;
+}
+
+.activityStreamCtrlHeaderNextRefreshLabel
+{
+	color: #666666;
+	font-size: 10px;
+	text-align: right;
+}
+
+ .activityStreamCtrlHeaderShowSettingLabel
+{
+	color: #666666;
+	cursor: pointer;
+	font-size: 11px;
+	padding-right: 5px;
+	text-align: right;
+}
+ 
+
+.activityStreamHover, .shareThisDlg_NameHover, .groupMembershipNameHover, .selectPrincipalsWidget_NameHover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+.activityStreamHover span {
+	color: #036f9f;
+}
+
+.activityStreamCtrlSearchResultsPanel
+{
+	overflow: auto;
+	padding-left: 10px;
+	position: relative;
+}
+
+.activityStreamTopEntryMainPanel
+{
+	border-top: 0px solid #e0e0e0;
+	padding-right: 5px;
+	padding-bottom: 8px;
+	padding-left: 0px;
+	position: relative;
+	margin-top: 8px;
+}
+
+.activityStreamCommentMainPanel
+{
+	border-top: 1px solid #e0e0e0;
+	margin-left: 45px;
+	margin-top: 10px;
+	padding-right: 0px;
+	padding-left: 0px;
+	position: relative;
+}
+
+.activityStreamEntryAuthor
+{
+	color: #353838;
+	display: inline-block;
+	font-size: 11px;
+	font-weight: bold;
+	padding-right: 6px;
+	padding-left: 1px;
+	vertical-align: top;
+	white-space: nowrap;
+}
+.activityStreamEntryAuthor:hover
+{
+	color: #036f9f;
+}
+
+.activityStreamEntryDate
+{
+	font-size: 10px;
+	color: #666666;
+	display: inline-block;
+	padding-right: 70px;
+	vertical-align: top;
+	white-space: nowrap;
+}
+
+.vibe-feView-commentsPanel .activityStreamEntryDate
+{
+	font-size: 10px;
+	color: #666666;
+	display: block;
+	padding-right: 70px;
+	vertical-align: top;
+}
+
+.activityStreamTopEntryFullDesc
+{
+	color: #000;
+	font-size: 13px;
+	margin-top: 4px;
+	margin-left: 1px;
+	position: relative;
+}
+
+.activityStreamTopEntryPartialDesc
+{
+	color: #454545;
+	font-size: 13px;
+	/* reduce size for Filr only */
+	height: .1em;
+	margin-top: 4px;
+	margin-left: 1px;
+	overflow: hidden;
+	position: relative;
+}
+.activityStreamTopEntryPartialDesc-vibe
+{
+	color: #454545;
+	font-size: 13px;
+	height: 4em; 
+	margin-top: 4px;
+	margin-left: 1px;
+	overflow: hidden;
+	position: relative;
+}
+
+.activityStreamComment_CommentsPanel
+{
+}
+
+.activityStreamCommentFullDesc
+{
+	color: #000;
+	font-size: 13px;
+	line-height: 17px;
+	margin-top: 4px;
+	margin-left: 1px;
+	margin-right: 20px;
+	padding-bottom: 8px;
+	position: relative;
+}
+
+.activityStreamCommentPartialDesc
+{
+	color: #454545;
+	font-size: 13px;
+	line-height: 17px;
+	height: 30px;
+	margin-top: 4px;
+	margin-bottom: 10px;
+	margin-left: 1px;
+	margin-right: 20px;
+	overflow: hidden;
+	position: relative;
+}
+
+.activityStreamShowHideDescLabel
+{
+	color: #036f9f !important;
+	font-size: 10px;
+	white-space: nowrap;
+}
+
+.activityStreamShowHideDescLabel:hover
+{
+	background: #cce9ee;
+	cursor: pointer;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.activityStreamCommentAvatarImg
+{
+	left: 0;
+	position: absolute;
+	top: 1px;
+	width: 30px;
+	height: 30px;
+	border-radius: 2px;
+}
+
+.activityStreamTopEntryAvatarImg
+{
+	left: 2px;
+	position: absolute;
+	top: 1px;
+	width: 40px;
+	height: 40px;
+	border-radius: 2px;
+}
+
+.activityStreamTopEntryFileImg
+{
+	left: 2px;
+	position: absolute;
+	top: 1px;
+	border-radius: 2px;
+}
+
+.activityStreamCommentHeader
+{
+	border-top: 0px solid #d2d5d1;
+	font-size: 13px;
+	line-height: 15px;
+	margin-left: 40px;
+	padding-right: 25px;
+}
+
+.activityStreamTopEntryHeader
+{
+	background: #f6f6f6;
+	border-top: 1px solid #ededed;
+	padding-right: 95px;
+	padding-left: 50px;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+}
+
+.activityStreamCommentContentPanel
+{
+	font-size: 12px;
+	margin-left: 40px;
+	padding-top: 5px;
+	position: relative;
+	white-space: normal;
+}
+
+.activityStreamTopEntryContentPanel
+{
+	margin-top: 5px;
+	margin-left: 50px;
+	position: relative;
+	white-space: normal;
+}
+
+.activityStreamTopEntryTitlePanel
+{
+	padding-bottom: 4px;
+	padding-right: 10px;
+	padding-top: 4px;
+}
+
+.activityStreamCommentTitlePanel
+{
+	padding-bottom: 4px;
+	padding-right: 30px;
+	padding-top: 4px;
+}
+
+.activityStreamTopEntryTitle
+{
+	text-decoration: none;
+	color: #036f9f;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+.activityStreamCommentTitle
+{
+	color: #036f9f;
+	font-size: 14px;
+	line-height: 15px;
+	text-decoration: none;
+}
+
+.activityStreamTitlePanel
+{
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 80%;
+}
+
+.ActivityStreamTopEntryAdditionalUIPanel
+{
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 20%;
+}
+
+.activityStreamTopEntryBinderName
+{
+	color: #666666 !important;
+	font-size: 10px;
+	white-space: nowrap;
+}
+
+.activityStreamPresencePanel
+{
+	display: none;
+	margin-top: -3px;
+	margin-right: 3px;
+}
+
+.activityStreamNumCommentsPanel
+{
+    background: url(images/comments_25.png) no-repeat scroll center center transparent;
+    color: #036f9f;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    padding-top: 4px;
+    padding-bottom: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    text-align: center;
+}
+
+.activityStreamReply
+{
+	background-color: #F6F6F6;
+	border: 1px solid #C4C4C4;
+	left: 45px;
+	margin-bottom: 10px;
+	margin-top: .5em;
+	padding: 5px;
+	position: relative;
+	width: 450px;
+}
+
+.vibe-feView-commentsPanel .activityStreamReply
+{
+	background-color: #F6F6F6;
+	border: 1px solid #C4C4C4;
+	left: 50px;
+	margin-bottom: 10px;
+	margin-top: .5em;
+	padding: 5px;
+	position: relative;
+	width: 225px;
+}
+
+.activityStreamReply_RelativePos
+{
+	position: relative;
+}
+
+.activityStreamReplyAddACommentPanel
+{
+	color: #c4c4c4;
+	font-size: 14px;
+	left: 15px;
+	position: absolute;
+	top: 6px;
+}
+
+.activityStreamReplyTitlePanel, .shareThisDlg_TitlePanel
+{
+	padding-bottom: 5px;
+}
+
+.activityStreamReplyTitleTextBox, .shareThisDlg_TitleTextBox
+{
+	background-color: transparent;
+	border: 0 none;
+	color: #353838;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	width: 440px;
+}
+
+.activityStreamReplyTextArea
+{
+	background-color: transparent !important;
+	border: 0 !important;
+	color: #1f1f1f;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 15px !important;
+	height: 100px;
+	padding: 5px;
+	resize: none;
+	width: 440px;
+}
+
+.vibe-feView-commentsPanel .activityStreamReplyTextArea
+{
+	background-color: transparent;
+	border: 0 none;
+	color: #353838;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 14px;
+	height: 100px;
+	padding: 5px;
+	resize: none;
+	width: 225px;
+}
+
+.activityStreamReplyFooter
+{
+	margin-bottom: 5px;
+	margin-top: .5em;
+	text-align: right;
+	width: 450px;
+}
+
+.vibe-feView-commentsPanel .activityStreamReplyFooter
+{
+	margin-bottom: 5px;
+	margin-top: .5em;
+	text-align: right;
+	width: 225px;
+}
+
+.activityStreamReplyBtn
+{
+	background: #fafafa !important;
+	color: #1f1f1f;
+	cursor: pointer;
+	font-size: 12px;
+	margin-right: 3px;
+	padding: 2px 10px;
+}
+
+.activityStreamExpandDescImg, .activityStreamCollapseDescImg
+{
+	cursor: pointer;
+	left: -20px;
+	position: absolute;
+}
+
+
+
+/* Styles used in the Share dialog */
+
+.shareThisDlg_NotesLabel, .shareThisDlg_ShareWithTeamsLabel
+{
+	font-size: 12px;
+	padding-top: 8px;
+}
+
+.shareThisDlg_NoNote
+{
+	color: #949494 !important;
+	font-style: italic;
+}
+
+.shareThisDlg_EditSharePanel
+{
+	background-color: transparent;
+	height: 360px;
+	width: 320px;
+	margin-left: 15px;
+}
+
+.shareThisDlg_ExpiresLabel, .shareThisDlg_DefaultExpiresLabel
+{
+	color: #036f9f;
+	padding-left: 4px;
+}
+
+.shareThisDlg_HeaderPanel
+{
+	position: relative;
+	background-color: #fff;
+	margin-bottom: 10px;
+	padding: 10px;
+	border-bottom: 1px solid #c4c4c4;
+}
+
+.shareThisDlg_HeaderImg
+{
+	position: absolute;
+	top: 6px;
+	left: 8px;
+}
+
+.shareThisDlg_HeaderNamePanel
+{
+	margin-left: 55px;
+	width: 610px;
+}
+
+.shareThisDlg_HeaderNameLabel
+{
+	color: #1f1f1f;
+	overflow: hidden;
+}
+
+.shareThisDlg_HeaderPathLabel
+{
+	color: #666666;
+	font-size: 13px;
+	line-height: 16px;
+	margin-top: 3px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.shareThisDlg_NoteLabel
+{
+	color: #036f9f;
+	padding-left: 4px;
+}
+
+.shareThisDlg_NotifyLabel
+{
+	padding-right: 4px;
+}
+
+.shareThisDlg_RecipientNameLabel
+{
+}
+
+.shareThisDlg_RecipientTypeImage
+{
+}
+
+.shareThisDlg_RecipientTypeImagePanel
+{
+}
+
+.shareThisDlg_RecipientTable_highlightRow
+{
+	background: none repeat scroll 0 0 #CCE9EE;
+}
+
+.shareThisDlg_RecipientTablePanel
+{
+}
+
+.shareThisDlg_RecipientTablePanelHeight
+{
+	height: 200px;
+	overflow: auto;
+}
+
+.shareThisDlg_RecipientTable
+{
+	width: 550px;
+	table-layout: fixed;
+}
+
+.shareThisDlg_RecipientTable_Cell
+{
+	overflow: hidden;
+}
+
+.shareThisDlg_RemoveRecipientPanel
+{
+	margin-left: 4px;
+}
+
+.shareThisDlg_RightsLabel, .shareThisDlg_PublicRecipientTypeImage
+{
+	color: #036f9f;
+	padding-left: 4px;
+}
+
+.shareThisDlg_RightsLabel:hover, .shareThisDlg_ExpiresLabel:hover, .shareThisDlg_DefaultExpiresLabel:hover, .shareThisDlg_shareWithTeamsLink:hover, .shareThisDlg_NoteLabel:hover, .shareThisDlg_PublicRecipientTypeImage:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.shareThisDlg_RightsRB
+{
+	padding-right: 8px;
+}
+
+.shareThisDlg_ShareExpired
+{
+	color: #ED1C24 !important;
+}
+
+.shareThisDlg_shareLabel
+{
+	padding-top: 5px;
+	white-space: nowrap;
+	text-align: right;
+}
+
+.shareThisDlg_shareWithTeamsLink
+{
+	color: #036f9f;
+	margin-left: 30px;
+}
+
+.shareThisDlg_ShareWithTeamsPanel
+{
+	padding-top: 10px;
+}
+
+.shareThisDlg_ManageSharesPanel
+{
+	margin-left: 10px;
+	margin-bottom: -5px;
+}
+
+.shareThisDlg_TextArea
+{
+	background-color: transparent;
+	border: 0 none;
+	color: #353838;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 14px;
+	height: 45px;
+	padding: 5px;
+	resize: none;
+	width: 95%;
+}
+
+.shareThisDlg_TextAreaBorder
+{
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+}
+
+
+.shareWithTeamsDlg_InstructionsLabel
+{
+	color: #4D6D8B;
+	font-size: 0.8em;
+	margin-bottom: 6px;
+}
+
+.shareWithTeamsDlg_MyTeamsPanel
+{
+	height: 150px;
+	overflow: auto;
+}
+
+.shareThisDlg_MakePublicDiv
+{
+	position: absolute;
+	top: 8px;
+	right: 10px;
+	z-index: 100;
+}
+
+.shareThisDlg_findTable
+{
+	margin-left: 5px;
+	margin-top: -8px;
+	margin-bottom: 4px;
+}
+.shareThisDlg_findTable input
+{
+	width: 380px;
+	border: 1px solid #c4c4c4;
+}
+
+.shareWithPublicDlg_content
+{
+	margin: 15px;
+}
+.shareWithPublicDlg_instructionsLabel
+{
+	font-size: 13px;
+	color: #666666;
+}
+
+.shareThisDlg_ListOfSharesParentTable
+{
+	position: relative;
+}
+
+.shareThisDlg_ListOfSharesTable
+{
+
+}
+
+.shareThisDlg_ListOfSharesPanel
+{
+	overflow-x: hidden;
+	overflow-y: auto;
+	position: relative;
+}
+
+.shareThisDlg_ListOfSharesPanel table th
+{
+	background: transparent;
+	border-left: 0px;
+	border-bottom: 1px solid #e0e0e0;
+	border-top: 3px solid transparent !important;
+	color: #5691A6;
+	font-size: 14px;
+}
+
+.shareThisDlg_Notify
+{
+	margin-left: 40px;
+	font-size: 15px;
+}
+
+.shareItem_InfoPanel
+{
+	padding: 3px 0;
+	cursor: pointer;
+}
+
+.shareItem_mainPanel
+{
+	width: 230px;
+	margin-left: 4px;
+}
+
+.shareItem_RecipientAvatar
+{
+	height: 35px;
+	width: 35px;
+	margin-top: 2px;
+	margin-right: 5px;
+	border-radius: 2px;
+}
+
+.shareItem_RecipientName
+{
+	color: #000;
+	font-weight: bold;
+}
+
+.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights, .shareItem_PublicUrl, .shareItem_SharedByName, .shareItem_GroupLink
+{
+	color: #666666;
+	font-size: 11px;
+	letter-spacing: .25px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.shareItem_FileAccessRights
+{
+	color: #000;
+	font-size: 12px;
+	letter-spacing: .25px;
+}
+.shareItem_Note
+{
+	color: #353838;
+	font-size: 12px;
+	line-height: 18px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.shareItem_PublicUrl:hover
+{
+	cursor: pointer;
+}
+
+/* End of styles used with the Share dialog */
+
+
+/**
+ * Styles used with the Edit Share dialog
+ */
+.editShareDlg_expirationPanel
+{
+	margin-top: 8px;
+}
+
+
+.groupMembershipGroupNameLabel
+{
+	font-size: 14px;
+	font-weight: bold;
+	padding-top: 6px;
+	display: inline-block;
+}
+
+.modifyStaticMembershipDlg_externalAllowedCb
+{
+	margin-bottom: 18px;
+}
+
+
+
+
+/**
+ * Styles used with the share expiration dialog
+ */
+
+.shareExpirationDlg_expiresOnImg:hover
+{
+	cursor: pointer;
+}
+
+/* End */
+ 
+ 
+ 
+.unreadEntry
+{
+	font-weight: bold;
+	font-size: 13px;
+}
+
+.readEntry
+{
+}
+
+.unreadImg
+{
+	cursor: pointer;
+	padding-right: 2px;
+	vertical-align: middle;
+}
+
+.groupMembershipPopup
+{
+	font-size: 14px;
+	background-color: #fff;
+	border-color: #b8b8b8;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: 5px 10px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	z-index: 1100;
+}
+
+.closeGroupMembershipPopupImg
+{
+	cursor: pointer;
+	position: absolute;
+	right: 10px;
+	top: 10px;
+}
+
+.groupMembershipTablePanel
+{
+	width: 315px;
+}
+
+.groupMembershipTablePanelHeight
+{
+	height: 150px;
+	overflow: auto;
+}
+
+.groupMembershipTable
+{
+	width: 100%;
+}
+
+.displayInline
+{
+	display: inline;
+}
+
+.level1Comment
+{
+	margin-left: 40px;
+}
+
+.verticalAlignTop     {vertical-align: top;}
+.verticalAlignTop2    {vertical-align: top !important;}
+.verticalAlignMiddle  {vertical-align: middle;}
+.verticalAlignMiddle2 {vertical-align: middle !important;}
+
+/* The following two styles are used to prevent an entry's description from starting */
+/* on a new line in the activity stream control. */
+.activityStreamEntryDesc > p
+{
+	margin: 0px;
+	padding-right: 3px;
+}
+
+.activityStreamEntryDesc > div
+{
+	margin: 0px;
+	padding-right: 3px;
+}
+
+/* ########################################################################################################### */
+
+/* general styles to override the GWT standard.css file */
+
+a, a:visited, a:hover {
+	color: #036f9f !important;
+	}
+	
+/* Style used for the AdminActionControl. */
+.adminActionControl
+{
+	display: inline-block;
+	font-size: 13px;
+	margin: 0px;
+	padding: 3px;
+	padding-left: 2px;
+	white-space: nowrap;
+}
+
+.adminActionControlMouseOver
+{
+	color: #036f9f;
+	background: #cce9ee;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+
+/*	background: -moz-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
+/*	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
+/*	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
+/*	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
+/*	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
+/*	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
+}
+
+/* Style used for the AdminActionsTreeControl found in Teaming's administration page. */
+.adminActionsTreeControl
+{
+	color: #353838;
+	left: 8px;
+	background-color: transparent;
+	padding: 0 0 8px;
+	position: absolute;
+	border-right: 1px solid #e0e0e0;
+	overflow: auto;
+	top: 8px;
+	width: 255px;
+	z-index: 100;
+/*	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;  */
+}
+
+/* Style used for the header in the AdminActionsTreeControl */
+.adminActionsTreeControlHeader
+{
+	color: #949494;
+	background-color: transparent;
+	width: 100%;
+	padding: 4px;
+}
+
+/* Style used for the header in the AdminActionsTreeControl */
+.adminActionsTreeControlHeader2
+{
+	font-size: 18px;
+	font-weight: normal;
+/*	text-shadow: 0 2px 8px #949494;  */
+	margin-right: 5px;
+	margin-bottom: 5px;
+}
+
+/* Style used for the table that holds all the administration categories. */
+.adminCategoriesTable
+{
+}
+
+/* Style used with the category name. */
+.adminCategoryName
+{
+	font-size: 15px;
+	font-weight: bold;
+}
+
+/* Style used for the panel that holds the administration content control. */
+.adminContentControl
+{
+	position: absolute;
+	top: 8px;
+	background-color: #fff;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	}
+
+/* Style used for the iframe in the content control that holds the administration content. */
+.adminContentControl iframe.gwt-Frame
+{
+	border-width: 0px;
+}
+
+.adminControl_CloseLabel
+{
+    color: #353838 !important;
+    background: transparent;
+	border: 1px solid transparent;
+    font-size: 12px;
+	font-weight: normal;
+	margin-right: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    text-decoration: none;
+    white-space: nowrap;
+    border-radius: 5px;
+}
+
+.adminControl_CloseLabel:hover
+{
+    color: #036f9f !important;
+	cursor: pointer;
+	border: 1px solid #81b2bd;
+	background: #cee9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+body, table td, select
+{
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.n-Label /* Novell - for text input field, radio buttons, and checkbox labels */
+{
+	font-size: 0.85em;
+	color: #666;  /* gray */
+	text-transform: capitalize;
+}
+
+.n-Transparent-Black-Div
+{
+	background: url(images/trans50_black.png) repeat; overflow: hidden; z-index: 1000;
+}
+
+.bold
+{
+	font-weight: bold;
+}
+
+.red
+{
+	color: red;
+}
+
+.bulletListItem
+{
+	margin-left: 1em;
+}
+
+.smalltext  { color: black; font-size: 0.75em;  line-height: 1em;   }
+.mediumtext { color: black; font-size: 0.85em;  line-height: 1.1em; }
+.largetext  { color: black; font-style: normal; line-height: 1.1em; font-weight: normal; font-size: 1em; }
+
+/* Various margin styles */
+.margintop1      {margin-top:    0.3em;}
+.margintop1a     {margin-top:    0.3em !important;}
+.margintop2      {margin-top:    0.5em;}
+.margintop3      {margin-top:    1em;}
+.margintop4      {margin-top:    1.5em;}
+.margintop5      {margin-top:    2em;}
+.margintop3px    {margin-top:    3px;}
+.margintop3pxb   {margin-top:    3px !important;}
+.marginTop5px	 {margin-top: 	 5px;}
+.marginTop10px	 {margin-top:   10px;}
+.marginTop15px	 {margin-top:   15px;}
+.marginTop20px	 {margin-top:   20px;}
+
+.marginleft1         {margin-left:   1em;}
+.marginleft2         {margin-left:   2em;}
+.marginleft2px       {margin-left:   2px;}
+.marginleft3         {margin-left:   3em !important;}
+.marginleft4         {margin-left:   4em;}
+.marginleft5px       {margin-left:   5px;}
+.marginleft8px       {margin-left:   8px;}
+.marginLeftPoint25em {margin-left: .25em;}
+.marginLeftCBWidth   {margin-left:  23px;}
+
+.marginbottom1   		{margin-bottom: 0.3em;}
+.marginbottom2   		{margin-bottom: 0.5em;}
+.marginbottom3   		{margin-bottom: 1em;}
+.marginbottom4px   		{margin-bottom: 4px;}
+.marginBottom15em		{margin-bottom: .15em;}
+.marginBottomPoint25em	{margin-bottom: .25em;}
+
+.marginright2px  		{margin-right:  2px;}
+.marginright3px  		{margin-right:  3px;}
+.marginright5px  		{margin-right: 5px;}
+.marginright10px 		{margin-right:  10px;}
+.margin-right-5			{margin-right: 5px;}
+.margin-right-22		{margin-right: 22px;}
+.marginRightPoint25em	{margin-right: .25em;}
+
+.paddingleft2 {padding-left: 2em;}
+
+
+/* Style used for the panel that holds the content in the "color picker" dialog. */
+.colorPickerContentPanel
+{
+	height: 270px;
+	overflow: auto;
+	width: 300px;
+}
+
+/* Styles for a td that holds a color name or hex value in the "color picker" dialog. */
+.colorPickerColorNameTD, .colorPickerHexValueTD
+{
+	background-color: #FFFFFF;
+	border-bottom: 1px solid #D2D5D1;
+	cursor: pointer;
+	font-size: 0.75em;
+	padding: 3px 8px;
+	white-space: nowrap;
+}
+
+/* Style for a span that holds a color's hex value. */
+.colorPickerHexValueSpan
+{
+	background-color: #F0F8FF;
+	border: 1px dotted #BABDB6;
+	display: inline-block;
+	height: 14px;
+	margin: 5px;
+	vertical-align: middle;
+	width: 14px;
+}
+
+/* Styles for the row that holds the header in the table that holds the colors in the "color picker" dialog. */
+.colorPickerHeaderTR
+{
+	background: transparent url("images/blends/gray_blend8_28.png") repeat-x scroll center;
+	color: #505354;
+	font-size: 0.8em;
+	height: 24px;
+	padding: 0.2em;
+	text-align: left;
+	text-indent: 0.5em;
+	white-space: nowrap;
+}
+
+/* Styles for cell that holds the header in the table that holds the colors in the "color picker" dialog. */
+.colorPickerHeaderTD
+{
+	font-family: Arial,Helvetica,Geneva,Swiss,SunSans-Regular;
+	font-size: 1em;
+}
+
+/* Styles used with the table that holds the colors in the "color picker" dialog */
+.colorPickerTable
+{
+	background-color: #F6F6F6;
+	border: 1px solid #c4c4c4;
+	border-bottom: 0px solid;
+	font-family: Arial,Helvetica,Geneva,Swiss,SunSans-Regular;
+}
+
+/* */
+.cursorDefault  {cursor: default;}
+.cursorDefault2 {cursor: default !important;}
+.cursorPointer  {cursor: pointer;}
+.cursorPointer2 {cursor: pointer !important;}
+.cursorMove     {cursor: move;}
+
+/* Styles used with instructions in a dialog box. */
+.dlgBox_closePanel
+{
+	color: #FFFFFF;
+	font-size: 0.8em;
+	position: absolute;
+	right: -7px;
+	top: -7px;
+	z-index: 1001;
+}
+
+.dlgBox_closePanel:hover
+{
+	cursor: pointer;
+}
+
+.dlgBox_statusPanel
+{
+	left: 10px;
+	position: absolute;
+	top: 10px;
+	z-index: 1901;
+}
+
+.dlgBox_statusPanel_relative
+{
+	left: inherit !important;
+	position: inherit !important;
+	top: inherit !important;
+	z-index: inherit !important;
+}
+
+.dlgBox_statusMsg
+{
+	color: #505354;
+	font-style: italic;
+}
+
+
+.dlgInstructions
+{
+	font-family: Arial,sans-serif;
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+/* Styles used for text in the content of a dialog box. */
+.dlgContent
+{
+	font-family: Arial,Helvetica,sans-serif;
+}
+
+/* Styles used for the help link in a dialog header. */
+.dlgHeaderHelpImg
+{
+	cursor: pointer;
+	padding: 2px;
+	position: absolute;
+	right: 20px;
+	top: 4px;
+}
+
+/* Styles used for the tour link in a dialog header. */
+.dlgHeaderTourImg
+{
+	cursor: pointer;
+	padding: 2px;
+	position: absolute;
+	right: 40px;
+	top: 4px;
+}
+
+/* Styles used for the error panel in a dialog. */
+.dlgErrorPanel
+{
+	font-size: 12px;
+	background-color: #EBECA5;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: 5px 10px;
+	margin: 10px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.dlgErrorPanelWrapper
+{
+	position: relative;
+}
+
+.dlgBox_closeErrorPanel
+{
+	color: #FFFFFF;
+	font-size: 0.8em;
+	position: absolute;
+	right: 2px;
+	top: -8px;
+	z-index: 1001;
+}
+
+.dlgBox_closeErrorPanel:hover
+{
+	cursor: pointer;
+}
+
+.dlgErrorLabel
+{
+	font-size: 12px;
+	font-weight: bold;
+}
+
+
+/* Styles used with the panel that wraps a drop widget. */
+.dropWidgetWrapperPanel
+{
+	padding-top: 12px;
+	padding-bottom: 12px;
+}
+
+/* Style used for the "Advanced" link in the "edit branding" dialog. */
+.editBrandingAdvancedLink, .editorOverridesLink1, .selfRegLink1
+{
+}
+
+/* Style used for the Browse link in the "edit branding" dialog. */
+.editBrandingBrowseLink, .editBrandingAdvancedLink, .addAttachmentLink, .colorPickerLink
+{
+	cursor: pointer;
+	border: 1px solid #B8B8B8;
+	font-weight: normal !important;
+	font-size: 12px;
+	margin-left: 3px;
+	padding: 2px 5px  !important;
+	text-decoration:none;	
+	white-space: nowrap;
+	text-align: center !important;
+	width: 20px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background-color: transparent;
+}
+	
+.editBrandingBrowseLink:hover, .editBrandingAdvancedLink:hover, .addAttachmentLink:hover, .colorPickerLink:hover, #forgottenPwdSpan:hover
+{
+	color: #036f9f !important;
+	border: 1px solid #81b2bd;
+	padding: 2px 5px  !important;
+	background: #cee9ee;
+	border-radius: 5px !important;
+	-moz-border-radius: 5px !important;
+	-webkit-border-radius: 5px !important;
+}
+
+.editBrandingDlg_LoginDialogHint
+{
+	color: #4D6D8B;
+	font-size: 1em;
+	margin-bottom: 0.5em;
+}
+
+.editBrandingDlg_LoginDialogCaptionPanel
+{
+	font-size: 13px;
+}
+
+/* Style used for links in the "edit branding" dialog. */
+.editBrandingLink, .editorOverridesLink2, .selfRegLink2, .landingPagePropertiesLink
+{
+	color: #036f9f;
+	cursor: pointer;
+	margin-left: 4px;
+	text-decoration: none;
+}
+
+/* Style used for the "sample text" in the "edit branding" dialog. */
+.editBrandingSampleText
+{
+	border: 1px dotted #BABDB6;
+	padding: 4px 8px;
+}
+
+/* Styles used with the actions control found on a widget in the landing page editor. */
+.lpeActionsControl
+{
+	background-color: #EBECA5;
+	border: 1px solid #CCCCCC;
+	padding: 1px;
+	padding-right: 4px;
+	white-space: nowrap;
+	width: 41px;
+}
+
+.lpePreviewImg
+{
+	cursor: pointer;
+	margin-right: 5px;
+}
+
+.lpeEditImg
+{
+	cursor: pointer;
+	margin-right: 5px;
+}
+
+.lpeDeleteImg
+{
+	cursor: pointer;
+}
+
+/* Styles used with the "edit" anchor in the Edit-Delete control. */
+.editDeleteControlAnchor
+{
+	color: #016BA6;
+	text-decoration: none;
+}
+
+/* Styles used with the panel that wraps the edit-delete control. */
+.editDeleteWrapperPanel
+{
+	cursor: default;
+	height: 15px;
+	margin-left: 0.5em;
+	position: relative;
+}
+
+/* Styles for the ui that displays "Searching..." */
+.findSearchingPanel
+{
+	background-color: #EBECA5;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: .5em;
+	position: absolute;
+	top: 25px;
+	z-index: 100;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+/* Styles for the "search results" in a "find" control. */
+.findSearchResults
+{
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	left: 0px;
+	margin-left: 2px;
+	position: absolute;
+	right: 0px;
+	z-index: 2000;
+}
+
+.findSearchResultsPanel
+{
+	position: relative;
+	z-index: 10;		/* Fixes a bug in IE where the search results don't fully display on top. */
+}
+
+/* Styles for the "search results" in a "find" control. */
+.findSearchResultsContent
+{
+	background-color: white;
+	height: 250px;
+	overflow: auto;
+	width: 200px;	/* Even though this isn't the real width, we need to specify it or IE won't honor the overflow: auto. */
+}
+
+/* Styles for the footer of the "search results" in a "find" control. */
+.findSearchResultsFooter
+{
+	background-color: #EFEEEC;
+	border-top: 1px solid #BABDB6;
+	height: 15px;
+	padding: 4px 5px 10px;
+}
+
+/* Styles used to position the previous and next images in the "search results" footer. */
+.findSearchResultsFooterImages
+{
+	text-align: center; 
+	width: 100%;
+}
+.findSearchResultsFooterImages img
+{
+	vertical-align: middle;
+}
+/* Style used for an item in a search result list. */
+.findSearchResultItemWidget
+{
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 0px;
+	padding: 3px;
+	white-space: nowrap;
+}
+.findSearchResultItemWidget a
+{
+	color: #1f1f1f !important;
+}
+.findSearchResultItemWidget span.gwt-InlineLabel
+{
+	color: #505354;
+}
+
+.findSearchResultItemWidget_HighlightOn
+{
+	background: none repeat scroll 0 0 #CCE9EE;
+}
+
+.findSearchResults_NoItemsFound
+{
+	border-bottom: 1px solid #BABDB6;
+	color: #505354;
+	margin-bottom: .5em;
+	margin-left: 1em;
+	margin-right: .5em;
+	margin-top: 1em;
+	padding-bottom: 6px;
+	white-space: nowrap;
+}
+
+.findCtrlScopePanel
+{
+}
+
+.findCtrlPanel
+{
+	border: 1px solid #D2D5D1;
+	margin-left: 8px;
+	padding: 5px;
+	position: relative;
+}
+
+.findCtrlLabel
+{
+}
+
+.findCtrlCloseImg
+{
+	cursor: pointer;
+	position: absolute;
+	right: 5px;
+	top: 5px;
+}
+
+.findCtrl_FloatingHint
+{
+	color: #949494;
+	font-size: 13px;
+	position: absolute;
+	left: 10px;
+	top: 8px;
+	z-index: 1000;
+}
+
+
+.gwtFindCtrl .gwt-TextBox
+{
+	margin-top: 2px;
+	margin-left: 1px;
+}
+
+
+/* Style used to display the login "authenticating..." message in the login dialog. */
+.loginAuthenticatingMsg
+{
+}
+
+/* Style used to display the "login failed" message in the login dialog. */
+.loginFailedMsg
+{
+	color: red;
+}
+
+.loginDlg_useOpenIdPanel
+{
+	color: #505354;
+	margin: 10px 10px 20px 10px;
+}
+
+.loginDlg_downloadingFileMsgPanel {padding: 10px; white-space: normal; width: 350px;}
+.loginDlg_downloadingFileMsg1     {}
+.loginDlg_downloadingFileMsg2     {padding-top:10px;}
+
+.loginDlg_openIdProviderImg:hover
+{
+	cursor: pointer;
+}
+
+.loginDlg_openIdProvidersPanel
+{
+	margin-left: 10px;
+	margin-top: 8px;
+}
+
+.loginDlgBox_Glass
+{
+	background-color: #E0E0E0;
+	filter: alpha(opacity=100);
+	opacity: 1;
+	overflow: hidden;
+	z-index: 1000;
+}
+
+
+/* Styles used in the Sign In dialog for User ID and Password labels */
+
+#userIdLabel, #pwdLabel
+{
+	color: #505354;
+}
+
+.loginDlg_OrText
+{
+	margin-bottom: 8px;
+	margin-top: 12px;
+	text-align: center;	
+}
+
+.loginDlg_pleaseSelectProviderLabel
+{
+	margin-bottom: 10px;
+	margin-left: 6px;
+	margin-top: 4px;
+}
+
+.loginDlg_ExtUserPwdResetPanel
+{
+	margin-top: 8px;
+}
+
+.loginDlg_ExtUserPwdResetPanel
+{
+	margin-top: 8px;
+	margin-left: 8px;
+}
+
+
+.loginDlg_extUserSelfRegHint, .loginDlg_ExtUserPwdResetHint
+{
+	font-size: small;
+	margin-bottom: .75em;
+	width: 370px;
+}
+
+.loginDlg_selfRegPanel
+{
+	margin-top: 8px;
+}
+
+.loginDlg_RegistrationRequiredPanel
+{
+	margin-top: 8px;
+	margin-left: 8px;
+}
+
+.loginDlg_confirmationPanel
+{
+	padding-top: 12px;
+	padding-left: 12px;
+	padding-bottom: 12px;
+	width: 350px;
+}
+
+.loginDlg_confirmationImg
+{
+	padding-right: 10px;
+}
+
+.loginDlg_confirmationHint
+{
+	font-size: medium !important;
+	white-space: normal;
+}
+
+.loginDlgKeyShieldErrorMessage {}
+.loginDlgKeyShieldPanel        {}
+.loginDlgKeyShieldRefererLink  {}
+.loginDlgKeyShieldRefererPanel {}
+
+
+
+
+
+/* Styles used by the WorkspaceTreeControl. */
+.workspaceTreeBinderAnchor            {color: #353838; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: 13px; padding: 3px 0;}
+.workspaceTreeBinderAnchor_collection {font-size: 14px; padding-left: 2px; color: #000;}
+
+.workspaceTreeBinderAnchor:hover            {color: #036f9f;}
+.workspaceTreeBinderAnchor_collection:hover {color: #036f9f;}
+
+.workspaceTreeBinderExpanderImg            {cursor: pointer; margin-top: 8px; margin-left: 0px;}
+.workspaceTreeBinderExpanderImg_collection {}
+
+.workspaceTreeBinderImg            {padding-right: 2px;}
+.workspaceTreeBinderImg_collection {}
+
+.workspaceTreeBinderSelected            {color: #036f9f; padding-left: 2px;}
+.workspaceTreeBinderSelected_collection {font-size: 14px;}
+
+/* Must match the definition of GwtConstants.WORKSPACE_TREE_WIDTH. */
+.workspaceTreeWidth {width: 250px !important;}
+
+.workspaceTreeControlBorderTop {border-top: 1px solid transparent !important; padding-top: 4px !important;}
+
+.workspaceTreeControl
+{
+	position: relative;
+	background-color: transparent;
+	padding: 0 0 8px;
+	overflow: auto;
+	border-right: 1px solid #e0e0e0;
+}
+
+.workspaceTreeControl_blankContent {display: block; margin: 10px; color: #666666; font-size: 1.1em;}
+
+.workspaceTreeControlBody            {padding-top: 2px;}
+.workspaceTreeControlBody_collection {background-color: white !important; padding-top: 8px; padding-bottom: 5px; border-bottom: 1px solid #e0e0e0;}
+
+.workspaceTreeControlTreeHeader {color: #666; font-size: 10px; margin-top: 0; padding-top: 5px; padding-bottom: 3px; padding-right: 0px; padding-left: 20px; border-bottom: 0px; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; display: inline-block;}
+
+.workspaceTreeControlHeader .workspaceTreeBinderSelected
+{
+	color: #666; padding-top: 3px;
+}
+.workspaceTreeControlHeader td
+{
+	vertical-align: top;
+}
+.workspaceTreeControlHeader_as
+{
+	background: transparent;
+	cursor: default;
+	height: 64px;
+}
+.workspaceTreeControlHeader_as td div
+{
+	font-size: 20px;
+	font-weight: normal;
+/*	text-shadow: 0 2px 8px #949494;  */
+}
+.workspaceTreeControlHeader_base
+{
+	color: #666;
+	font-weight: normal;
+	padding: 5px;
+}
+.workspaceTreeControlHeader_closeA
+{
+	cursor: pointer;
+}
+.workspaceTreeControlHeader_closeButton
+{
+	background: transparent;
+	border: 1px solid transparent;
+	color: #505354;
+	display: inline-block;
+	font-size: 12px !important;
+	margin-top: 5px;
+	padding: 2px 8px !important;
+	text-shadow: 0 0 0 transparent !important;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.workspaceTreeControlHeader_nav
+{
+	background: transparent;
+	cursor: pointer;
+}
+.workspaceTreeControlRow            {padding: 2px !important; margin-bottom: 2px;}
+.workspaceTreeControlRow_collection {margin-left: -10px;}
+
+.workspaceTreeControlRow_configureImg   {padding-top: 0px; cursor: pointer;}
+.workspaceTreeControlRow_configurePanel {display: block; position: absolute;}
+
+.workspaceTreeControlRow:hover            a {color: #036f9f;}
+.workspaceTreeControlRow_collection:hover a {} 
+
+.workspaceTreeControlRowHover            {color: #036f9f; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
+.workspaceTreeControlRowHover_collection {border-radius: 3px; }
+
+.workspaceTreeControlRowSelected            {-moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; background: #ededed; font-weight: bold;}
+.workspaceTreeControlRowSelected_collection {border-radius: 3px; background: #cce9ee !important;}
+
+.workspaceTreeControlRow_unfollowImg   {padding-top: 0px; cursor: pointer;}
+.workspaceTreeControlRow_unfollowPanel {display: block; position: absolute;}
+
+/* */
+.fontSize75em
+{
+	font-size: .8em;
+}
+.fontSize85em
+{
+	font-size: .85em;
+}
+
+/* From Lynn's styles. */
+.head4
+{
+	color: black;
+	font-size: 0.85em;
+	font-weight: bold;
+	margin-bottom: 0.2em;
+	margin-top: 0.5em;
+}
+
+/* From Lynn's styles. */
+.instructions
+{
+	color: #4D6D8B;
+	font-size: 0.8em;
+}
+
+/* Styles for the canvas widget used in the landing page editor. */
+.lpeCanvas
+{
+	background-color: #FFFFFF;
+	border: 1px solid #999999;
+	
+	/* IE6 does not support the min-height attribute.  We have to add the 2 height lines as a workaround. */
+	min-height: 500px;
+	height: auto !important;
+	height: 500px;
+	
+	margin-left: 5px;
+	padding: 15px;
+	position: relative;
+	width: 850px;
+}
+
+/* Styles for the panel that holds the main canvas in the landing page editor. */
+.lpeCanvasWrapperPanel
+{
+	position: relative;
+}
+
+/* Styles used with the actions control found on the main canvas in the landing page editor. */
+.lpeCanvasActionsControl
+{
+	background-color: #EBECA5;
+	border: 1px solid #e0e0e0;
+	padding: 1px;
+	position: absolute;
+	right: 0px;
+	top: -25px;
+	white-space: nowrap;
+}
+
+
+/* Styles for the canvas widget when the user is dragging something over the canvas. */
+.lpeCanvas-highlighted
+{
+	background-color: #CDF3FF;
+}
+
+/* Styles used for the jsp name in a "custom jsp" widget */
+.lpeCustomJspName, .lpeEnhancedViewName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles for the drag proxy widget that is used when the user drags an item from the palette in the landing page editor. */
+.lpeDragProxy
+{
+	background: #EFEEEC url(images/putty_blend3.png) repeat-x scroll 0 0;
+	height: 20px;
+	margin: 3px;
+	padding: 3px;
+	vertical-align: middle;
+	white-space: nowrap;
+	z-index: 130;
+}
+
+/* Styles for the drag proxy popup widget that is used when the user drags an item from the palette in the landing page editor. */
+.lpeDragProxyPopup
+{
+	border: 0px;
+	padding: 0px;
+}
+
+/* Styles used for the drop indicator that shows the user where a dropped widget will be inserted. */
+.lpeDropIndicator
+{
+	background-color: #09F;
+	height: 3px;
+	position: absolute;
+	width: 100px;
+	z-index: 100;
+}
+
+/* Styles for widgets that can be dropped on a drop zone. */
+.lpeDropWidget
+{
+	margin-bottom: .5em;
+	margin-left: .5em;
+	margin-right: .5em;
+}
+
+/* Styles used for the binder name in a "entry" widget */
+.lpeEntryBinderName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles used for the entry name in the "entry" widget */
+.lpeEntryName
+{
+	font-family: Arial,sans-serif;
+	font-size: 11px;
+	font-style: italic;
+}
+
+.noEntrySelected, .noFolderSelected
+{
+	color: graytext;
+}
+
+#gwtLandingPageEditorDiv {
+	margin-top: 15px;
+	}
+
+/* Styles used for the entry name in the "entry" widget when the mouse is not over the name*/
+.lpeEntryName-mouseOut
+{
+	cursor: default;
+	color: #333333;
+}
+
+/* Styles used for the entry name in the "entry" widget when the mouse is over the name*/
+.lpeEntryName-mouseOver
+{
+	cursor: pointer;
+	color: #036f9f;
+}
+
+/* Styles used for the binder name in a "folder" widget */
+.lpeFolderBinderName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles used for the folder  name in the "folder" widget */
+.lpeFolderName
+{
+	font-family: Arial,sans-serif;
+	font-size: 11px;
+	font-style: italic;
+}
+
+/* Styles used for the folder  name in the "folder" widget when the mouse is not over the name. */
+.lpeFolderName-mouseOut
+{
+	cursor: default;
+	color: #333333;
+}
+
+/* Styles used for the folder name in the "folder" widget when the mouse is over the name */
+.lpeFolderName-mouseOver
+{
+	cursor: pointer;
+	color: #036f9f;
+}
+
+/* Styles used for the graphic name in a "graphic" widget */
+.lpeGraphicName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+
+/* Styles for the "Custom Jsp", "Entry", "Folder", "Graphic", "Link to Entry", */
+/* "Link to Folder", "Link to Url", "Utility Element" widgets. */
+.lpeCustomJspWidget, .lpeEntryWidget, .lpeFolderWidget, .lpeGoogleGadgetWidget, .lpeGraphicWidget, .lpeLinkToEntryWidget, .lpeLinkToFolderWidget, .lpeLinkToUrlWidget, .lpeEnhancedViewWidget, .lpeUtilityElementWidget
+{
+	background-color: #ededed;
+	border: 1px solid #e0e0e0;
+	padding: 6px;
+	overflow: hidden;
+	border-radius: 5px;
+}
+
+/* Styles for the "Html" widget. */
+.lpeHtmlWidget
+{
+	border: 1px solid #AEAEAE;
+	padding: 6px;
+}
+
+/* Styles for the landing page editor hint. */
+.lpeHint
+{
+	color: #666;
+	font-size: 14px;
+	margin-bottom: 10px;
+	width: 600px;
+}
+
+/* Styles for the "IFrame" widget. */
+.lpeIFrameWidget
+{
+	border: 1px solid #AEAEAE;
+	overflow: auto;
+	padding: 6px;
+}
+
+/* Styles used for the entry name in the "link to entry" widget */
+.lpeLinkToEntryName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 11px;
+	font-style: italic;
+}
+
+/* Styles used for the title in a "link to entry" widget */
+.lpeLinkToEntryTitle
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles used for the folder name in the "link to folder" widget */
+.lpeLinkToFolderName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 11px;
+	font-style: italic;
+}
+
+/* Styles used for the title in a "link to folder" widget */
+.lpeLinkToFolderTitle
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles used for the title in a "link to url" widget */
+.lpeLinkToUrlTitle
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles used for the url in the "link to url" widget */
+.lpeLinkToUrlUrl
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 11px;
+	font-style: italic;
+}
+
+/* Styles for the List Widget */
+.lpeListDropWidget
+{
+	width: 100%;
+}
+
+/* Styles for the title of the List Widget */
+.lpeListDropWidgetTitle
+{
+	background-color: #EFEEEC;
+}
+
+/* Styles used for a drop zone found in a list. */
+.lpeListDropZone
+{
+	background-color: #FFFFFF;
+	border: 1px solid #999999;
+	
+	/* IE6 does not support the min-height attribute.  We have to add the 2 height lines as a workaround. */
+	min-height: 50px;
+	height: auto !important;
+	height: 50px;
+	
+	width: 100%;
+}
+
+/* Styles used for a drop zone found in a list. */
+.lpeListDropZone-highlighted
+{
+	background-color: #CDF3FF;
+}
+
+/* Styles for the List widget's title. */
+.lpeListTitle
+{
+	cursor: default;
+}
+
+/* Style used to give something a left margin of .5em */
+.lpeMarginLeft1Point5
+{
+	margin-left: 1.5em;
+}
+
+/* Styles for the palette widget used in the landing page editor. */
+.lpePalette
+{
+	border: 1px solid #999999;
+	font-size: 0.8em;
+}
+
+/* Styles for the items that are found on the landing page editor palette. */
+.lpePaletteItem
+{
+	background: #EFEEEC url(images/putty_blend3.png) repeat-x scroll 0 0;
+	cursor: move;
+	height: 20px;
+	margin: 3px;
+	padding: 3px;
+	vertical-align: middle;
+	white-space: nowrap;
+	z-index: 130;
+}
+
+/* Styles for the image used on a palette item. */
+.lpePaletteItemImg
+{
+	margin-right: 2px;
+	vertical-align: text-bottom;
+	z-index: 130;
+}
+
+/* Styles for the image used on a DragProxy widget. */
+.lpeDragProxyImg
+{
+	margin-right: 2px;
+	vertical-align: text-bottom;
+	z-index: 130;
+}
+
+/* Dependent style used to display a border. */
+.lpeShowBorder
+{
+	border: 1px solid #999999;
+}
+
+/* Styles for a table that has been added to the landing page editor. */
+.lpeTable
+{
+	border: 0px;
+	border-collapse: collapse !important;
+	table-layout: fixed;
+}
+
+/* Styles used for a drop zone found in a table. */
+.lpeTableDropZone
+{
+	background-color: #FFFFFF;
+	border: 1px solid #999999;
+	height: 100%;
+	overflow: hidden;
+}
+
+/* Styles used for a drop zone found in a table. */
+.lpeTableDropZone-highlighted
+{
+	background-color: #CDF3FF;
+}
+
+/* Styles used for the utility element name in a "utility element" widget */
+.lpeUtilityElementName
+{
+	cursor: default;
+	color: #333333;
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+}
+
+/* Styles used for the label that identifies a widget, ie Link, Utility Element */
+.lpeWidgetIdentifier
+{
+	cursor: default;
+	font-size: 13px;
+	font-weight: bold;
+	margin-right: .25em;
+}
+
+/* Styles used in the enhanced view dialog */
+.enhancedViewDescLabel
+{
+	color: #949494;
+	font-size: 12px;
+	padding: 5px;
+	width: 375px;
+}
+
+/* Style used for the panel that holds the content control. */
+.mainContentControl, .vibe-viewBase
+{
+	position: relative;
+	top: 8px !important;
+	background-color:#fff;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+}
+
+.mainContentControl iframe.gwt-Frame
+{
+	border-width: 0px;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+}
+
+/* Style used for the content panel in Teaming's main page. */
+.mainContentPanel
+{
+	position: relative;
+}
+
+/* Style used for the WorkspaceTree control found in Teaming's main page. */
+.mainWorkspaceTreeControl
+{
+	left: 8px !important;
+	top:  8px !important;
+	z-index: 100;
+}
+
+/* Styles used by the bread crumb navigator. */
+.breadCrumbTreePopup {
+	overflow: auto !important;
+}
+.mainBreadCrumb_Tree
+{
+	padding: 5px;
+	padding-bottom: 20px;
+	width: auto;
+	overflow-x: auto;
+}
+.mainBreadCrumb_Browser
+{
+	background: url(images/trans50_black.png) repeat transparent !important;
+	border: 0px;
+	padding: 0px !important;
+	margin-top: 1px;
+	right: 20px;
+	z-index: 2000;
+}
+.breadCrumb_Browser
+{
+}
+.breadCrumb_BrowserBinder
+{
+}
+.breadCrumb_BrowserPopup
+{
+	background-color: #f6f6f6;
+	margin: 0 6px 6px;
+	border-top: 1px solid #808384;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+}
+.breadCrumb_CloseA
+{
+	cursor: pointer;
+}
+.breadCrumb_CloseImg
+{
+}
+.breadCrumb_Content
+{
+	color: #FFFFFF;
+	font-size: .85em;
+}
+.breadCrumb_ContentBinder
+{
+	margin-top: -5px;
+}
+.breadCrumb_ContentPopup
+{
+	margin: 0px 20px;
+}
+.breadCrumb_ContentNode
+{
+}
+.breadCrumb_ContentNode_ExpanderImg
+{
+	cursor: pointer;
+	margin-top: 2px;
+	margin-right: 2px;
+}
+.breadCrumb_ContentNode_ExpanderImgSmall
+{
+	height: 10px;
+	width: 10px;
+}
+.breadCrumb_ContentNode_Filr
+{
+	color: #036f9f  !important;
+	cursor: default !important;
+}
+.breadCrumb_ContentNode_Anchor
+{
+	margin-top: 3px;
+	margin-right: 12px;
+}
+.breadCrumb_ContentNode_AnchorBC
+{
+	font-size: .85em;
+}
+.breadCrumb_ContentNode_AnchorTail
+{
+	font-size: 1.3em !important;
+	margin-top: 2px !important;
+	margin-left: 0px !important;
+	margin-right: 5px !important;
+	vertical-align: middle;
+}
+
+.breadCrumb_ContentTail_configureImg {cursor: pointer; margin-left: 5px;}
+.breadCrumb_ContentTail_Img          {margin-right: 3px; vertical-align: middle;}
+.breadCrumb_ContentTail_Panel        {display: block; padding-top: 5px; white-space: nowrap;}
+.breadCrumb_ContentTail_Up           {margin-right: 3px; vertical-align: middle;}
+
+.breadCrumb_TrashLabel
+{
+	color: #036f9f;
+	font-size: large;
+	margin-top: 0px;
+	margin-right: 8px;
+}
+
+/* Styles for the search options. */
+.searchOptions
+{
+	padding: 5px 10px 15px;
+	overflow: auto;
+}
+.searchOptions_Browser
+{
+	background: url(images/trans50_black.png) repeat tranparent !important;
+	border: 0px;
+	padding: 0px !important;
+	z-index: 351;
+}
+.searchOptionsDlg_AdvancedSearchA
+{
+	cursor: pointer;
+	text-decoration: none;
+}
+.searchOptionsDlg_AdvancedSearchLabel
+{
+
+	font-size: 13px;
+	padding: 5px;
+	vertical-align: middle;
+	margin: 0px !important;
+}
+.searchOptionsDlg_AdvancedSearchPanel
+{
+	border-top: 1px solid #e0e0e0;
+	padding-top: 10px;
+}
+.searchOptionsDlg_CloseA
+{
+	cursor: pointer;
+}
+.searchOptionsDlg_CloseImg
+{
+	position: absolute;
+	right: 10px;
+	top: 5px;
+}
+.searchOptionsDlg_Content
+{
+	color: #333 !important;
+	font-size: .85em;
+	background-color: #f6f6f6;
+	margin: 0 6px 6px;
+	border-top: 1px solid #808384;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+	overflow: visible;	
+}
+.searchOptionsDlg_FindersRadio
+{
+	font-size: 1em;
+	padding-right: 4px;
+}
+.searchOptionsDlg_FindersRadioPanel
+{
+}
+.searchOptionsDlg_FinderWidget
+{
+}
+.searchOptionsDlg_Header
+{
+	color: #949494;
+	font-size: 1.1em;
+	font-weight: normal;
+	margin-bottom: 1em;
+	margin-top: 0.3em;
+}
+.searchOptionsDlg_SavedSearchesLabel
+{
+	color: #949494;
+}
+.searchOptionsDlg_SavedSearchesLabelPanel
+{
+	font-size: 1em;
+	border-top: 1px solid #e0e0e0;
+	padding-top: 10px;
+}
+.searchOptionsDlg_SavedSearchesSelect
+{
+}
+.searchOptionsDlg_SavedSearchesSelectPanel
+{
+}
+
+/* Styles for the favorites dialog. */
+	.favoritesDlg          {z-index: 351;}
+	.favoritesDlg_Checkbox {margin-left: 5px;}
+	.favoritesDlg_Grid     {margin-top: 8px;}
+	.favoritesDlg_Label    {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
+	.favoritesDlg_MenuBar  {}
+	.favoritesDlg_MenuItem {}
+/* End:  Styles for the favorites dialog. */
+
+/* Styles for the folder options dialog. */
+	.folderOptionsDlg                   {z-index: 351;}
+	.folderOptionsDlg_Grid              {margin-top: 8px;}
+	.folderOptionsDlg_Label             {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
+	.folderOptionsDlg_MenuItem          {}
+	.folderOptionsDlg_Radio             {margin-left: 5px;}
+	.folderOptionsDlg_SectionHeader     {font-size: 1em; font-weight: bold; padding-top: 8px; padding-bottom: 5px;}
+	.folderOptionsDlg_SectionHeaderCell {}
+	.folderOptionsDlg_SectionHeaderRow  {}
+/* End:  Styles for the folder options dialog. */
+
+/* Styles for the folder column configuration dialog. */
+	.folderColumnsDlg                   {z-index: 351;}
+	.folderColumnsDlg_Grid              {margin: 8px 8px 4px 8px; background-color: #F6F6F6; border-bottom: 0px solid #F6F6F6; border: 1px solid #D2D5D1;}
+	.folderColumnsDlg_Label             {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
+	.folderColumnsDlg_MenuBar           {margin-left: 8px; margin-bottom: 3px; border: 0px; background: transparent;}
+	.folderColumnsDlg_MenuImg           {}
+	.folderColumnsDlg_MenuItem          {white-space: nowrap; color: #1f1f1f !important; background-color: transparent !important; padding: 0px !important;}
+	.folderColumnsDlg_MenuItem_Order    {padding-right: 5px !important;}
+	.folderColumnsDlg_MoveEnabled       {cursor: pointer;}
+	.folderColumnsDlg_OptionsGrid       {margin: 10px 0px;}
+	.folderColumnsDlg_Radio             {margin-left: 5px;}
+	.folderColumnsDlg_RowCell           {padding: 3px 8px; border-bottom: 1px solid #D2D5D1; white-space: nowrap;}
+	.folderColumnsDlg_RowCellCB         {text-align: center;}
+	.folderColumnsDlg_Row-even          {background: white;}
+	.folderColumnsDlg_Row-odd           {background: #F3F7FB;}
+	.folderColumnsDlg_ScrollLimit       {height: 215px;}
+	.folderColumnsDlg_ScrollPanel       {overflow-y: auto !important; overflow-x: hidden !important; padding: 0px; padding-right: 28px; margin: 0px;}
+	.folderColumnsDlg_SectionHeader     {font-size: 1em; font-weight: bold; padding-top: 8px; padding-bottom: 5px;}
+	.folderColumnsDlg_SectionHeaderCell {}
+	.folderColumnsDlg_SectionHeaderRow  {
+		background: transparent url("images/blends/gray_blend8_28.png") repeat-x scroll center;
+		color: #505354;
+		font-size: 0.8em;
+		height: 24px;
+		padding: 0.2em;
+		text-align: left;
+		text-indent: 0.5em;
+		white-space: nowrap;
+	}
+/* End:  Styles for the folder column configuration dialog. */
+
+/* Styles for the manage saved searches dialog. */
+	.manageSavedSearchesDlg                   {z-index: 351;}
+	.manageSavedSearchesDlg_DeleteAnchor      {cursor: pointer;}
+	.manageSavedSearchesDlg_DeleteImg         {margin-top: 2px; margin-left: 5px;}
+	.manageSavedSearchesDlg_Grid              {margin-top: 8px;}
+	.manageSavedSearchesDlg_Label             {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
+	.manageSavedSearchesDlg_Save              {margin-top: 2px; margin-left: 5px; margin-right: 5px;}
+	.manageSavedSearchesDlg_SaveButton        {cursor: pointer; margin-left: 2px;}
+	.manageSavedSearchesDlg_SaveInput         {}
+	.manageSavedSearchesDlg_SearchAnchor      {color: #0000fc; cursor: pointer; font-size: 1em; padding-right: 3px; text-decoration: none;}
+	.manageSavedSearchesDlg_SearchAnchorPanel {padding-top: 1px; width: 90%;}
+	.manageSavedSearchesDlg_SectionHeader     {font-size: 1em; font-weight: bold; padding-top: 8px; padding-bottom: 5px;}
+	.manageSavedSearchesDlg_SectionHeaderCell {}
+	.manageSavedSearchesDlg_SectionHeaderRow  {}
+/* End:  Styles for the manage saved searches dialog. */
+
+/* Styles for the tag this dialog. */
+.tagThisDlg
+{
+	z-index: 351;
+}
+.tagThisDlg_Add
+{
+	margin-top: 2px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+.tagThisDlg_AddButton
+{
+	cursor: pointer;
+	margin-left: 2px;
+}
+.tagThisDlg_AddInput
+{
+}
+.tagThisDlg_DeleteAnchor
+{
+	cursor: pointer;
+}
+.tagThisDlg_DeleteImg
+{
+	margin-top: 2px;
+	margin-left: 5px;
+}
+.tagThisDlg_Grid
+{
+	margin-top: 8px;
+}
+.tagThisDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+.tagThisDlg_SectionHeader
+{
+	font-size: 1em;
+	font-weight: bold;
+	padding-top: 8px;
+	padding-bottom: 5px;
+}
+.tagThisDlg_SectionHeaderCell
+{
+}
+.tagThisDlg_SectionHeaderRow
+{
+}
+.tagThisDlg_TagAnchor
+{
+	color: #0000fc;
+	cursor: pointer;
+	font-size: 1em;
+	padding-right: 3px;
+	text-decoration: none;
+}
+.tagThisDlg_TagAnchorPanel
+{
+	padding-top: 1px;
+	width: 90%;
+}
+
+.tagThisTagTablePanelHeight
+{
+	height: 300px;
+	overflow: auto;
+}
+
+.tagThisDlg_ListOfTagsLabel
+{
+	padding-top: 14px;
+	font-size: 14px;
+}
+
+.tagThisDlg_TitleLabel
+{
+	font-size: 12px;
+	font-weight: bold;
+	padding-bottom: 8px;
+}
+
+.tagThisDlg_TagName
+{
+	color: #036f9f;
+}
+
+.tagThisDlg_TagName:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+
+
+/* Styles for the top ranked dialog. */
+.topRankedDlg
+{
+	z-index: 351;
+}
+.topRankedDlg_Empty
+{
+	margin-top: 8px;
+}
+.topRankedDlg_Grid
+{
+	margin-top: 8px;
+}
+.topRankedDlg_ItemAnchor
+{
+	color: #0000fc;
+	cursor: pointer;
+	font-size: 1em;
+	padding-right: 3px;
+	text-decoration: none;
+}
+.topRankedDlg_ItemStar
+{
+	margin-left: 10px;
+}
+.topRankedDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+	white-space: nowrap;
+}
+.topRankedDlg_SectionBanner
+{
+	font-size: 1em;
+	font-weight: bold;
+	padding-top: 8px;
+	padding-bottom: 5px;
+}
+.topRankedDlg_SectionBannerCell
+{
+}
+.topRankedDlg_SectionBannerRow
+{
+}
+.topRankedDlg_SectionHeaderCell
+{
+	font-size: .9em;
+}
+.topRankedDlg_SectionHeaderCellRating
+{
+	padding-left: 10px;
+	padding-right: 5px;
+}
+.topRankedDlg_SectionHeaderCellTitle
+{
+}
+.topRankedDlg_SectionHeaderRow
+{
+}
+
+/* Style for the main Teaming page. */
+.mainTeamingPage
+{
+	background-color: #fff;
+	font-family: Arial,Helvetica,sans-serif;
+	font-style: normal;
+	font-size: medium;
+	overflow: hidden;
+}
+
+/* Style for the panel that holds the main Teaming page. */
+.mainTeamingPagePanel
+{
+	width: 100%;
+}
+
+
+/* Style used with the mast head */
+.mastHead
+{
+	position: relative;
+	width: 100%;
+	z-index: 0;
+}
+
+.mastHead-LeftEdge
+{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 0px;
+	height: 100%;
+}
+
+/* Style used for the beta text in the masthead. */
+.mastheadBeta
+{
+	color: #FFFFFF;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 0.95em;
+	font-style: italic;
+	left: 500px;
+	letter-spacing: 0.05em;
+	position: absolute;
+	top: 5px;
+	z-index: 21;
+}
+
+/* Style used for licensing errors displayed in the masthead. */
+.mastheadLicenseError
+{
+	background-color: white;
+	border: 1px solid black;
+	color: red;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 1.2em;
+	font-style: italic;
+	font-weight: bold;
+	left: 500px;
+	letter-spacing: 0.05em;
+	padding: 2px;
+	position: absolute;
+	top: 5px;
+	z-index: 21;
+}
+
+.mastheadFilrActionsPanel
+{
+	bottom: 0px;
+	left: 180px;
+	position: absolute;
+}
+
+.mastheadFilr_PeopleImg, .mastheadFilr_WhatsNewImg, .mastheadFilr_BrowseFilrImg
+{
+	color: #FFFFFF;
+	font-size: 12px;
+	margin: 2px 4px 4px;
+	text-align: center;
+}
+	
+.mastheadFilr_PeopleImgPanel, .mastheadFilr_WhatsNewImgPanel, .mastheadFilr_BrowseFilrImgPanel
+{
+	border: 1px solid transparent;
+	color: #FFFFFF;
+	font-size: 12px;
+	margin-left: 5px;
+	margin-right: 5px;
+	padding: 0px;
+	text-align: center;
+}
+
+.mastheadFilr_PeopleImgPanel:hover, .mastheadFilr_WhatsNewImgPanel:hover, .mastheadFilr_BrowseFilrImgPanel:hover
+{
+	background-image: url(images/trans20_91daf2.png);
+	background-repeat: repeat;
+	border: 1px solid #3c4143;
+	cursor: pointer;
+	
+}
+
+.mastheadFilr_PeoplePanel
+{
+	position: absolute;
+	left: 10px;
+	bottom: 0px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;	
+	-webkit-border-top-right-radius: 5px;	
+	z-index: 400;
+}
+
+.mastheadFilr_WhatsNewPanel
+{
+	position: absolute;
+	left: 60px;
+	bottom: 0px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;	
+	-webkit-border-top-right-radius: 5px;	
+	z-index: 400;
+}
+
+.mastheadFilr_BrowseFilrPanel
+{
+	position: absolute;
+	left: 110px;
+	bottom: 0px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;	
+	-webkit-border-top-right-radius: 5px;	
+	z-index: 400;
+}
+
+
+.mastheadFilrSearchComposite
+{
+	bottom: 30px;
+	position: absolute;
+	right: -42px;
+	z-index: 1000;
+}
+
+/* Style used with the panel that holds the global actions in the masthead. */
+.mastheadGlobalActionsPanel
+{
+	color: #FFFFFF;
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	white-space: nowrap;
+	z-index: 20;
+}
+
+/* Style used for the mouse-over hint for the links in the masthead. */
+.mastheadGlobalActionsMouseOverHint
+{
+	font-size: 0.7em;
+	overflow: hidden;
+	position: absolute;
+	right: 0px;
+	text-align: center;
+	top: -15px;
+	width: 150px;
+	z-index: 20;
+}
+
+/* Style used with the panel that holds the logged-in user's name in the masthead. */
+.mastheadUserName
+{
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 0.85em;
+	font-weight: bold;
+	letter-spacing: 0.03em;
+	text-align: right;
+}
+
+.mastheadActionsSeparator
+{
+	color: #b8b8b8;
+    font-size: 11px;
+
+}
+
+.mastheadMenuPanel
+{
+	display: inline;
+}
+
+/* Style used for the branding panel. */
+.brandingPanel
+{
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+	z-index: 0;
+}
+
+/* Style used for the background panel in the branding area. */
+.brandingBgPanel
+{
+	left: 0px;
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	z-index: 1;
+}
+
+/* Style used for the panel that wraps all the content in the branding area. */
+.brandingWrapperPanel
+{
+	background: transparent;
+	left: 0px;
+	position: absolute;
+	top: 0px;
+	width: 100%;
+	z-index: 2;
+}
+
+/* Style used with the panel that holds the graphic that is displayed on the left side of the mast head. */
+.brandingContentPanel
+{
+	font-size: 12px;
+	z-index: 3;
+}
+
+/* Style used for links in the branding area. */
+.brandingLink
+{
+	cursor: pointer;
+	font-size: 1em;
+	letter-spacing: 0.03em;
+	padding: 2px 5px;
+	text-decoration: none;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+
+.brandingLink:hover
+{
+	color: #036f9f;
+	background: #cce9ee;
+	border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+
+.brandingDefaultImg
+{
+	left: 6px;
+	position: absolute;
+	top: 6px;
+	z-index: 0;
+}
+
+.guestLabel
+{
+	font-size: 1em;
+	letter-spacing: 0.03em;
+	padding: 2px 8px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+/* Style used to add padding-top: 2px; */
+.paddingTop2px
+{
+	padding-top: 2px;
+}
+
+/* Style used to add padding-top: 3px; */
+.paddingTop3px
+{
+	padding-top: 3px;
+}
+
+/* Style used to add padding-top: 5px; */
+.paddingTop5px
+{
+	padding-top: 5px;
+}
+
+/* Style used to add padding-top: 8px; */
+.paddingTop8px
+{
+	padding-top: 8px;
+}
+
+/* Style used to add padding-top: 10px; */
+.paddingTop10px
+{
+	padding-top: 10px;
+}
+
+.paddingBottom8px
+{
+	padding-bottom: 8px;
+}
+
+/* */
+.paddingLeft1em
+{
+	padding-left: 1em;
+}
+
+.paddingRight3px
+{
+	padding-right: 3px;
+}
+.paddingRight8px
+{
+	padding-right: 8px;
+}
+
+/* Use this style if you want to set text-decoration: none */
+.noTextDecoration
+{
+	text-decoration: none;
+}
+
+/* Styles for buttons */
+.teamingSmallButton
+{
+	font-size: 8px;
+}
+
+.teamingButton
+{
+	margin-left: 0.5em;
+}
+
+.teamingDlgBoxFooter .gwt-Button {
+	color:#fff;
+ 	font-size: 12px;
+    font-family: Arial, sans-serif !important;
+	background: #949494 none repeat scroll 0 0;
+	margin-right:3px;
+	padding: 2px 10px;
+	text-decoration:none;
+  	cursor: pointer;
+  	white-space: nowrap;
+	border: 1px solid transparent;
+	min-width: 65px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+    text-align: center !important;
+}
+
+.teamingDlgBoxFooter .gwt-Button:hover, 
+.workspaceTreeControlHeader_closeButton:hover
+{
+	color: #036f9f !important;
+    white-space: nowrap !important;
+    text-decoration: none !important;
+	font-size: 12px !important;
+	border: 1px solid #81b2bd;
+	background: #cee9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.gwt-Button {
+	color: #1f1f1f;
+	background: #fafafa;
+	border: 1px solid #b8b8b8;
+	font-weight: normal !important;
+	font-size: 12px;
+	padding: 2px 10px  !important;
+	margin: 0;
+	margin-right: 3px;
+	text-decoration:none;	
+	cursor: pointer !important;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+.gwt-Button:hover {
+	background: #cce9ee;
+	border: 1px solid #81b2bd;
+	font-size: 12px important;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	}
+.gwt-Button:active {}
+.gwt-Button[disabled] {
+  cursor: default;
+  color: #888;
+  border: 1px outset #ccc !important;
+}
+.gwt-Button[disabled]:hover {
+  border: 1px outset #ccc !important;
+}
+
+.gwt-RadioButton {white-space: nowrap;}
+.gwt-RadioButton label {
+	font-size: 13px;
+	padding-top: 4px;
+	padding-left: 2px;
+	padding-right: 8px;
+	display: inline-block;
+}
+
+.gwt-CheckBox label {
+	font-size: 13px !important;
+	padding-top: 4px;
+	padding-left: 2px;
+	padding-right: 8px;
+	display: inline-block;
+	}
+
+.gwt-TextBox, .gwt-PasswordTextBox, .gwt-DateBox, .gwt-FileUpload, .gwt-TextArea {
+	border: 1px solid #b8b8b8;
+	border-radius: 3px;
+	font-size: 13px;
+	padding: 5px;
+	background-color: #fff;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+#loginFormId input {
+	font-size: 15px;
+	}
+
+/* Styles for dialog boxes */
+.teamingDlgBox
+{
+	font-family: Arial,Helvetica,sans-serif;
+	background: url(images/trans30_black.png) repeat;
+	padding: 6px;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+}
+
+.teamingDlgBox_NoClip, .teamingPopupPanel_NoClip
+{
+	clip: rect( -10000px, 10000px, 10000px, 0px) !important; 
+}
+
+.teamingDlgBox_Glass
+{
+	background-color: #000;
+	filter: alpha(opacity=40);
+	opacity: 0.4;
+	overflow: hidden;
+}
+
+.teamingDlgBox_GlassClear
+{
+	background-color: transparent;
+	overflow: hidden;
+}
+
+.teamingDlgBox .popupContent
+{
+	background-color: #fafafa;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+/* Styles for the content of a dialog box. */
+.teamingDlgBoxContent
+{
+	position: relative;
+	margin: 10px;
+}
+
+.teamingDlgBoxContentOverride
+{
+	margin: 0px !important;
+}
+
+.teamingDlgBoxBody
+{
+	position: relative;
+	z-index: 1950;
+}
+
+/* Styles for the footer of a dialog box. */
+.teamingDlgBoxFooter
+{
+	background-color: #fafafa;
+/*	box-shadow: 0px 2px 3px #e0e0e0 inset;  */
+	border-top: 1px solid #e0e0e0;
+	margin-top: 10px;
+	padding: 10px;
+	position: relative;
+	text-align: right;
+	vertical-align: middle;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+	z-index: 1900;
+}
+
+/* Styles for the header in a dialog box. */
+.teamingDlgBoxHeader
+{
+	position: relative;
+	color: #036f9f;
+	font-size: 15px;
+	font-weight: normal;
+	padding: 8px 10px;
+	border-bottom: 1px solid #e0e0e0;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
+	white-space: nowrap;
+	vertical-align: middle;
+	
+	background-color: #fff; /* #81b2bd; */
+	background-image: none;
+/*	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
+}
+
+.teamingDlgBoxHeaderBG_NonIE
+{
+	background-color: #fff; /* #81b2bd; */
+	background-image: none;
+/*	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
+}
+.teamingDlgBoxHeaderBG_IE
+{
+	background-color: #fff; /* #81b2bd; */
+	background-image: none;
+/*	background: url(images/dialog_header_tile3.png) repeat; */
+}
+
+
+.teamingDlgBoxHeader-captionImagePanel {display: inline; vertical-align: bottom}
+.teamingDlgBoxHeader-captionLabel      {display: inline !important;}
+
+.teamingDlgBoxHeader:hover
+{
+	cursor: move;
+}
+
+/* Used by GwtClientHelper.setGridColSpan() to hide a cell in a Grid. */
+.grid_HideCell
+{
+	visibility: hidden;
+	display: none;
+}
+
+/* Styles used to position something in the upper right hand corner of its parent. */
+.upperRight
+{
+	position: absolute;
+	right: 5px;
+	top: 0px;
+}
+
+/* Styles used for rounded corners on things. */
+.roundcorner
+{
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+}
+.roundcornerSM
+{
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+.roundcornerSM-bottom
+{
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+}
+.roundcornerLG
+{
+	border-radius: 40px;
+	-moz-border-radius: 40px;
+	-webkit-border-radius: 40px;
+}
+
+
+/* Styles uses for sub-header and button backgrounds. */
+.btn-bg1
+{
+	border-radius:5px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	background: #f6f6f6;
+	border:1px solid #c4c4c4;
+	font-size:11px;
+	margin-top:5px;
+	padding:2px 5px;
+	text-align:center;
+	position: relative;
+}
+.color-control-bg
+{
+	background-color: #cce9ee;
+}
+.subhead-control-bg1
+{
+/*	background: url(images/trans10_black_blend.png) repeat;
+	background-position:bottom;  */
+}
+.subhead-control-bg2, .btn-bg2, .colorPickerLink:hover
+{
+	color: #FFFFFF;
+	background: #cce9ee;
+}
+.btn-bg3
+{
+	color: #FFFFFF;
+	background: #cce9ee;
+}
+.inside-btn2
+{
+	font-size: 11px;
+	display: inline-block;
+	padding: 4px 8px;
+	vertical-align: middle;
+	margin: 0 5px;
+}
+
+/* Trick used to use a custom image in the place of a "file upload" control */
+.fileUploadTrick1
+{
+	background: transparent url(images/browse_hierarchy.png) no-repeat scroll 0 0;
+	cursor: pointer;
+	display: block;
+	height: 16px;
+	overflow: hidden;
+	width: 16px;
+}
+
+.fileUploadTrick2
+{
+	height: 100%;
+	left: -164px;
+	-mos-opacity: 0;
+	opacity: 0;
+	position: relative;
+	top: 8px;
+	width: auto;
+}
+
+/* general CSS styes */
+
+a.ss_new_thread {
+	color: #036f9f;
+	text-decoration: none;
+	}
+	
+/* Quick View */
+.qViewDlg {
+	position: relative;
+	width: 460px;
+	background:none repeat scroll 0 0 #fff;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.qViewTitleText {
+	color:#036f9f;
+	font-size:20px;
+	letter-spacing:0.02em;
+	overflow:auto;
+	width:auto;
+	font-weight: normal;
+}
+.qViewTitle {
+	padding-left:115px;
+	padding-top: 5px;
+	display:inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 300px;	/* This is based on the 'width: 460px;' seting in qViewDlg. */
+}
+.qViewPresence {
+	display:inline;
+}
+.qViewMain {
+}
+.qViewLeft {
+	margin: -33px 10px 10px;
+	width: 100px;
+}
+.qViewRight {
+	margin:5px 0 0;
+}
+.qViewPhoto {
+	position: relative;
+	margin-bottom: 10px;
+}
+.qViewPhoto_none {
+	background-color: transparent;
+	background-image: url(images/UserPhoto.png);
+	background-repeat: no-repeat;
+	background-position: center;
+}
+.qViewPhoto img {
+	width: 85px;
+	margin-left: 7px;
+	border-radius: 3px;
+}
+.qViewPhotoHeight_No {
+	width: 85px;
+	height: 85px;
+	margin-left: 7px;
+	border-radius: 3px;
+}
+.qViewPhotoDisabled {
+	margin-bottom: 20px;
+}
+.qViewActions {
+}
+.qViewStatus {
+	padding-bottom: 10px;
+}
+.qViewStatusInline {
+	display:inline;
+}
+.qViewStatus-anchor{
+	color:#036f9f !important;
+	margin-left: 5px;
+}
+.qViewFooter {
+}
+.qViewClose {
+	display: inline-block;
+	position:absolute;
+	right:-13px;
+	top:-13px;
+}
+.qViewClose img {
+	background-image:url(images/close_20.png) !important;
+	width: 20px !important;
+	height: 20px !important;
+	cursor: pointer;
+}
+.qViewInfoTable {
+	margin-bottom: 35px;
+}
+.qView-a {
+	color: #353838 !important;
+	font-size:10px;
+	font-style:normal;
+	font-weight:normal;
+	cursor: pointer;
+	display:block;
+}
+.qView-a:hover {
+	color: #036f9f;
+}
+.qView-action  {
+	margin-top:5px;
+	padding:2px 5px;
+	text-align:center;
+	position: relative;
+	border: 1px solid #B8B8B8;
+	background: #f6f6f6;
+	font-weight: normal !important;
+	font-size: 12px;
+	padding: 2px 5px  !important;
+	text-decoration:none;	
+	cursor: pointer !important;
+	white-space: nowrap;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+.qView-action2 {
+	color: #036f9f;
+	background: #cce9ee;
+	border:1px solid #81b2bd;
+}
+.qView-action-following  {
+	-moz-border-radius:5px;
+	border-radius:5px;
+	-webkit-border-radius: 5px;
+	background: #f6f6f6;
+	border:1px solid #b8b8b8;
+	color:#353838;
+	font-size:11px;
+	margin-top:5px;
+	padding:2px 5px;
+	text-align:center;
+}
+.qView-action-following:hover {
+	background: #cce9ee;
+	border:1px solid #81b2bd;
+	color:#036f9f;
+}
+.qView-action-img {
+	background:url("images/trans50_black_arrowleft.png");
+	margin-right: 5px;
+	position: absolute;
+	top: 9px;
+	left: 15px;
+}
+.qView-avatar-btn {
+	width: 200px;
+}
+.presenceImgA {
+	cursor: pointer;
+	padding-right: 5px;
+	padding-left: 5px;
+}
+.qView-follow-label {
+	display: inline;
+}
+.qView-follow-img {
+	vertical-align: middle;
+	padding-right: 1px;
+}
+.qView-arrow {
+left:-25px;
+position:absolute;
+top:100px;
+}
+
+.gwtUI_nowrap
+{
+	white-space: nowrap;	
+}
+.gwtUI_wrapnormal
+{
+	white-space: normal;	
+}
+.gwtUI_vmiddle
+{
+	vertical-align: middle;
+}
+
+.gwtUI_ss_forceHorizontalScroller
+{
+	overflow-x: auto !important;
+}
+.gwtUI_ss_forceBothScrollers
+{
+	overflow: auto !important;
+}
+.gwtUI_ss_forceVerticalScroller
+{
+	overflow-y: auto !important;
+}
+
+.gwtUI_ss_brightest   {opacity: 1.0;}
+.gwtUI_ss_brightestIE {filter: alpha(opacity=100);}
+.gwtUI_ss_brighter    {opacity: 0.8;}
+.gwtUI_ss_brighterIE  {filter: alpha(opacity=80);}
+.gwtUI_ss_bright      {opacity: 0.7;}
+.gwtUI_ss_brightIE    {filter: alpha(opacity=70);}
+.gwtUI_ss_dim         {opacity: 0.6;}
+.gwtUI_ss_dimIE       {filter: alpha(opacity=60);}
+.gwtUI_ss_very_dim    {opacity: 0.4;}
+.gwtUI_ss_very_dimIE  {filter: alpha(opacity=40);}
+
+/* Next and Previous Page buttons */
+
+#viewNextPageOfResults, #viewPreviousPageOfResults, .viewNextDisabledImg, .viewPreviousDisabledImg {
+	vertical-align: top;
+	margin-left: 5px;
+	margin-right: 5px;
+	}
+
+/* Styles for the task disposition dialog. */
+.taskDispositionDlg
+{
+}
+.taskDispositionDlg_Radio
+{
+	margin-left: 5px;
+}
+.taskDispositionDlg_Grid
+{
+	margin-top: 8px;
+}
+.taskDispositionDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+}
+.taskDispositionDlg_Hint
+{
+	width: 400px;
+	margin-top: 5px;
+}
+.taskDispositionDlg_TimePicker
+{
+	margin-left: 5px;
+	margin-right: 3px;
+}
+.taskDispositionDlg_DateTimeTable td
+{
+	vertical-align: middle !important;
+}
+
+/* Styles for the task due date dialog. */
+.taskDueDateDlg
+{
+}
+.taskDueDateDlg_Table
+{
+	margin-top: 8px;
+}
+.taskDueDateDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+}
+.taskDueDateDlg_TaskTitle
+{
+	width: 400px;
+	margin-top: 5px;
+	font-weight: bold;
+}
+
+/* Start:  GWT Task Folder Listing styles. */
+.gwtTaskFilter_div
+{
+	display: block;
+	position: absolute;
+	background-color: white;
+	top: 5px;
+	right: 5px;
+	padding: 0px 5px 1px 5px;
+	border: 1px solid #CCC;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+.gwtTaskFilter_toolbar
+{
+	position: relative;
+}
+.taskHierarchyDisabledDlg_VP
+{
+}
+.taskHierarchyDisabledDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+}
+.taskHierarchyDisabledDlg_LI
+{
+}
+.taskHierarchyDisabledDlg_UL
+{
+}
+.gwtTaskTools
+{
+	background-color:#ededed;
+	display: block;
+	padding:  3px 3px 3px 12px;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 1.25em;
+	position: relative; 
+	white-space: nowrap;
+}
+.gwtTaskTools_ButtonDIV
+{
+	padding-top:    2px;
+	padding-bottom: 2px;
+	vertical-align: middle;
+}
+.gwtTaskTools_LeftDIV
+{
+}
+.gwtTaskTools_LinkageDIV
+{
+	vertical-align: middle;
+}
+.gwtTaskTools_WarningDIV
+{
+	padding-top:    2px;
+	padding-bottom: 2px;
+	vertical-align: middle;
+}
+.gwtTaskTools_WarningAnchor, .gwtTaskTools_WarningAnchor:visited
+{
+	font-size: 12px !important;
+	color: #036f9f;
+}
+.gwtTaskTools_WarningAnchor:hover
+{
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+.gwtTaskTools_Span
+{
+	padding-right: 10px;
+}
+.gwtTaskTools_Order
+{
+	font-size: 0.7em;
+}
+.gwtTaskTools_ViewMenuAnchor
+{
+	cursor: pointer;
+}
+.gwtTaskTools_ViewMenuDIV
+{
+	position: absolute;
+	right: 5px;
+	top: 5px;
+}
+.gwtTaskTools_ViewMenuSpan
+{
+	color: #333333;
+	font-size: 0.6em;
+	padding: 5px;
+}
+
+.gwtTasks
+{
+	width: 100%;
+}
+.gwtTaskListing
+{
+	font-size: 1.35em; 
+	overflow: auto;
+	border: 1px solid #cccccc;
+}
+.gwtTaskListing_IE
+{
+		width: 99%;
+}
+.gwtTaskListing_NonIE
+{
+		width: 100%;
+}
+.gwtTaskList_assigneesList tr td
+{
+	border-bottom: 0px !important;
+	font-size: 1.35em;
+	padding: 0 !important;
+	margin: 0 !important; 
+}
+.gwtTaskList_assignee
+{
+	display: inline;
+	font-size: 1.25em;
+	font-weight: normal;
+	padding-left: 2px !important;
+}
+.gwtTaskList_assigneeEnabled
+{
+	color: #353838;
+}
+.gwtTaskList_assigneeDisabled
+{
+	color: #c4c4c4;
+}
+.gwtTaskList_assigneeHover
+{
+	color: #036f9f;
+	cursor: pointer;
+	background: #cce9ee;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+.gwtTaskList_calculatedDate
+{
+	font-style: italic;
+}
+.gwtTaskList_parentDurationError
+{
+	border: 1px solid red !important;
+}
+.gwtTaskList_loading
+{
+	margin-top: 5px;
+	margin-left: 5px;
+	white-space: nowrap;
+	display: inline;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	position: relative;
+	top: 5px;
+}
+.gwtTaskList_loadingImg
+{
+	vertical-align: middle;
+}
+
+.gwtTaskList_newTaskMenu_Link    {padding-right: 8px;}
+.gwtTaskList_newTaskMenu_LinkImg {}
+
+.gwtTaskList_popupGlass
+{
+	background-color: #000;
+	filter: alpha(opacity=0);
+	opacity: 0.0;
+	z-index: 350;
+}
+.gwtTaskList_processActive
+{
+	font-size: 14px;
+	background-color: #fafad5;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: 5px 10px;
+	position: absolute;
+	top: 50px;
+	z-index: 100;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+.gwtTaskList_showGroupList
+{
+	display: block;
+	font-size: 1.35em;
+}
+.gwtTaskList_showGroupListHidden
+{
+	visibility: hidden;
+	display: none;
+}
+.gwtTaskList_showMoreMembersAnchor
+{
+	cursor: pointer;
+	margin-left: 16px;
+}
+.gwtTaskList_sortImage
+{
+	vertical-align: middle;
+	padding-top: 4px;
+	padding-right: 3px;
+}
+
+/* Note that the following styles were copied from the prototype's hf_teaming.css stylesheet. */
+.gwtTaskList_objlist2  /*   apply to the object list table tag <table class="objlist">  */ 
+{ 
+	background-color: #f6f6f6;
+	border-bottom: 0px solid #f6f6f6;
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+}
+.gwtTaskList_objlist2b  /*   apply to the object list table tag <table class="objlist">  */ 
+{ 
+	margin-top: 0px;
+	padding-bottom: .5em;
+	background-color: #f6f6f6;
+	margin-top: .5em;
+	border-left: 0px solid transparent;
+	border-right: 0px solid transparent;
+	border-bottom: 0px solid transparent;
+}
+.gwtTaskList_objlist2 tr.title  /* apply to the first row in table  <tr class="title"> */
+{
+	color: white;
+	font-weight: bold;
+	font-size: 0.95em;
+	text-align: left;
+	height: 24px;
+	text-indent: .5em;
+	padding: 0.2em;
+	border-top: 1px solid #5aa7e3;
+	background: #85bcc3 url(images/bg/H_bg_blend_teal.png) repeat-x; 
+	background-position: bottom;
+	white-space: nowrap;
+}
+.gwtTaskList_objlist-border
+{
+	border: 1px solid #ccc;
+}
+.gwtTaskList_objlist-filter
+{
+	background-color: #fff;
+	position: absolute;
+	top: 7px;
+	right: 5px;
+	padding: 0px 5px 1px 5px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+.dialog .gwtTaskList_objlist-filter
+{
+	background-color: #fafafa;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	padding: 0px 5px 1px 5px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}	
+.gwtTaskList_objlist2 tr.entry-menu td
+{
+	padding: 3px;
+	background-color: #f6f6f6;
+}	
+.gwtTaskList_objlist2 tr.entry-menu td.nocolor
+{
+	background-color: transparent;
+}	
+.gwtTaskList_objlist2 tr.menu div.menuitem1  /* allows the menu item to wrap if text is longer than the the menu. */ 
+{
+	white-space: normal;
+}
+.gwtTaskList_objlist2 tr.menu a	/* menu style will automaticallly apply to all links within the table row*/ 
+{
+	text-decoration: none; 
+	padding-top: 2px; 
+	padding-bottom: 2px; 
+	padding-right: 6px; 
+	padding-left: 6px; 
+	font-size: 0.85em;
+}
+.gwtTaskList_objlist2 tr.menu td
+{
+	padding: 2px 2px 2px 0;
+}
+.gwtTaskList_objlist2 tr.columnhead td,
+.gwtTaskList_objlist2b tr.columnhead td   /* Apply to the column headings row following the menu <tr class="columnhead"> */
+{ 
+	color: #666; 
+	font-size: 12px; 
+	padding-top: 0.2em; 
+	padding-bottom: 0.2em;
+	padding-left: 0;
+	padding-right: 6px;
+	border-bottom: 1px solid #e0e0e0; 
+	white-space: nowrap;
+	background-color: #ededed;
+}	
+.gwtTaskList_objlist2 tr.columnhead .sortedcol { color: #000000; font-weight: bold;}
+a.sort-column
+{
+	color: inherit !important;
+	text-decoration: none !important;
+	vertical-align: top !important;
+}
+a.sort-column:hover
+{
+	color: #036f9f !important;
+}
+.gwtTaskList_objlist2 tr.regrow td,
+.gwtTaskList_objlist2b tr.regrow td/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
+{ 
+	background-color: #fff;
+	font-size:.6em;
+	padding: 2px 6px 2px 0px;
+	border-bottom: 1px solid #e0e0e0;
+	white-space: nowrap;
+}	
+.gwtTaskList_objlist2 tr.disabled td, .gwtTaskList_objlist2 tr.disabled td a
+{
+	color: #c4c4c4 !important;
+}		
+.gwtTaskList_objlist2 tr.selected td
+{
+	background-color: #e6f2f7 !important;
+}
+.gwtTaskList_objlist2b tr.regrowB td/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
+{ 
+	background-color: transparent;
+	font-size:.75em;
+	padding: 3px;
+	border-bottom: 1px solid #e0e0e0;
+}	
+.gwtTaskList_objlist2 tr.regrow td.related	/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
+{
+	padding: 0px;
+	vertical-align: top;
+}
+.gwtTaskList_objlist2 tr.related-bg td	/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
+{ 
+	background-color: #ffe085;
+	font-size:.75em;
+	padding: 3px 8px;
+	border-bottom: 1px solid #e0e0e0;
+}
+.gwtTaskList_objlist2 tr.regrow td.wrapOK
+{
+	white-space: normal;
+}
+.gwtTaskList_objlist2 tr.regrowB td	/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
+{ 
+	background-color: #fff;
+	font-size:.75em;
+	border-bottom: 1px solid #e0e0e0;
+	vertical-align: top;
+}
+.gwtTaskList_objlist2 tr.footrow td
+{
+	color: #666666;
+	text-align: center;
+	letter-spacing: 0.05em;
+	font-size:0.7em;
+	padding: 5px;
+} /* #babdb6 */
+	
+.gwtTaskList_ckbox
+{
+	display: inline;
+}
+.gwtTaskList_task-strike_Inner
+{
+}
+.gwtTaskList_task-strike_Outer
+{
+	/* background:url(images/strike_marker_blue_repeat.png) repeat-y 18px 2px; */
+}
+.gwtTaskList_task-overdue
+{
+}
+.gwtTaskList_task-overdue-color
+{
+	color: red;
+	font-weight: bold;
+	font-size: 12px;
+}
+	
+.gwtTaskList_task-icon, .gwtTaskList_icon-spacer
+{
+	margin-right: 3px;
+	vertical-align: text-bottom;
+}
+a.gwtTaskList_task-icon:hover
+{
+	background: none !important;
+}
+.gwtTaskList_task-locationAnchor, .gwtTaskList_task-locationAnchor:visited
+{
+	color: #036f9f !important;
+}
+.gwtTaskList_task-locationAnchor:hover
+{
+	background: #cce9ee;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+.gwtTaskList_task-nameAnchor, .gwtTaskList_task-nameAnchor:visited
+{
+	color: #036f9f !important;
+}
+.gwtTaskList_task-nameAnchor:hover
+{
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+.gwtTaskList_task-nameCell
+{
+	white-space: normal !important;
+}
+.gwtTaskList_task-nameMarker
+{
+	left: 0px;
+	top: 0px;
+}
+.gwtTaskList_task-nameMarker_IE
+{
+	display: inline;
+}
+.gwtTaskList_task-nameMarker_NonIE
+{
+	position: absolute;
+}
+.gwtTaskList_task-namePanel
+{
+}
+.gwtTaskList_task-namePanel_IE
+{
+}
+.gwtTaskList_task-namePanel_NonIE
+{
+	position: relative;
+}
+.gwtTaskList_task-orderAnchor, .gwtTaskList_task-orderAnchor:visited
+{
+	color: #036f9f;
+}
+.gwtTaskList_task-orderAnchor:hover
+{
+	background: #cce9ee;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+/* End:  GWT Task Folder Listing styles. */
+
+
+/* Spinner styles. */
+.gwt-ValueSpinner .arrows
+{
+	width: 17px;
+	height: 18px;
+	margin-left: 1px;
+	margin-right: 4px;
+}
+.gwt-ValueSpinner .textBox
+{
+	font-size: 12px;
+	padding: 2px 0px;
+	border: 0px;
+	text-align: center;
+	font-family: sans-serif;
+	font-weight: bold;
+	border: 1px solid #949494;
+}
+.gwt-TimePicker
+{
+	padding: 1px;
+}
+.datePickerWeekendLabel, .datePickerWeekdayLabel {
+	color: #fff;
+	font-weight: bold;
+	background-color: #949494;
+	padding: 2px;
+	}
+.datePickerDay {
+	padding: 5px;
+	font-size: 11px;
+	}	
+.gwt-TimePicker .textBox
+{
+	border: 0px;
+	width: 22px;
+	padding: 3px 0;
+	text-align: center;
+	font-family: sans-serif;
+	font-weight: normal;
+	font-size: 12px;
+	color: #1f1f1f;
+	border: 1px solid #949494;
+	background: #fff url('%background%') repeat-x;
+}
+/* End:  Spinner styles. */
+
+.gwt-DatePicker {
+	border: 0px;
+	padding: 6px;
+	background: url(images/trans30_black.png) repeat;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	-webkit-border-radius: 4px;
+	}
+.dateBoxPopup
+{
+	z-index:  1005;
+}
+
+td.datePickerMonth {
+	color: #1f1f1f;
+	font-size: 1em;
+	}
+.datePickerMonthSelector {
+	background:url(images/blends/gray_blend8_28.png) repeat-x;
+	background-position:bottom;
+	}
+.datePickerPreviousButton,
+.datePickerNextButton {
+	padding: 0 5px;
+	color: #1f1f1f;
+	}
+	
+.vibe-aboutBox {z-index: 1001;}
+
+/* Start:  Add new folder dialog styles. */
+	.vibe-addNewFolderDlg_Grid       {}
+	.vibe-addNewFolderDlg_Label      {}
+	.vibe-addNewFolderDlg_NameInput  {width: 250px;}
+	.vibe-addNewFolderDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-addNewFolderDlg_Panel      {padding: 10px;}
+	.vibe-addNewFolderDlg_TypeLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-addNewFolderDlg_TypeSelect {width: 250px;}
+/* End:  Add new folder dialog styles. */
+
+/* Start:  Proxy identity dialog styles. */
+	.vibe-proxyIdentityDlg_BrowseDN   {margin-bottom: 3px; margin-left: 3px;}
+	.vibe-proxyIdentityDlg_Grid       {}
+	.vibe-proxyIdentityDlg_NameInput  {width: 250px;}
+	.vibe-proxyIdentityDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-proxyIdentityDlg_Panel      {padding: 10px;}
+/* End:  Proxy identity dialog styles. */
+
+/* Start:  Calendar settings dialog styles. */
+	.vibe-calendarSettingsDlg-grid  {}
+	.vibe-calendarSettingsDlg-label {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-calendarSettingsDlg-list  {margin-right: 3px;}
+	.vibe-calendarSettingsDlg-panel {padding: 10px;}
+/* End:  Calendar settings dialog styles. */
+
+/* Start:  Cliboard dialog styles. */
+	.vibe-cbDlg_Anchor          {color: #036f9f; text-decoration: none;}
+	.vibe-cbDlg_Anchor:hover    {color: #036f9f; cursor: pointer; background: #cce9ee; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-cbDlg_Checkbox        {margin-left: 5px;}
+	.vibe-cbDlg_ClearAll        {margin-left: 10px;}
+	.vibe-cbDlg_Grid            {margin: 20px 10px 10px 20px;}
+	.vibe-cbDlg_Label           {}
+	.vibe-cbDlg_MenuBar         {}
+	.vibe-cbDlg_MenuItem        {}
+	.vibe-cbDlg_ReadingPanel    {}
+	.vibe-cbDlg_ReadingLabel    {vertical-align: top; margin-left: 5px;}
+	.vibe-cbDlg_SelectAll       {}
+	.vibe-cbDlg_SelectPanel     {margin-left: 30px; margin-top: 10px; white-space: nowrap;}
+	.vibe-cbDlg_ScrollPanel     {}
+	.vibe-cbDlg_ScrollPanelLimt {height: 150px;}
+/* End:  Cliboard dialog styles. */
+
+/* Start:  Email notification dialog styles. */
+	.vibe-emailNotifDlg_BannerLabel       {width: 400px; padding-right: 15px;}
+	.vibe-emailNotifDlg_Content           {margin: 20px 10px 10px 20px;}
+	.vibe-emailNotifDlg_DescImg           {padding-right: 5px;}
+	.vibe-emailNotifDlg_DescNamePanel     {padding-top: 2px;}
+	.vibe-emailNotifDlg_DescNamePath      {font-size: 11px; color: gray;}
+	.vibe-emailNotifDlg_DescNameTitle     {font-size: 14px; font-weight: bold; color: black;}
+	.vibe-emailNotifDlg_DescPanel         {padding-top: 8px; padding-bottom: 8px;}
+	.vibe-emailNotifDlg_EMACBox           {}
+	.vibe-emailNotifDlg_EMAList           {}
+	.vibe-emailNotifDlg_EMAPanel          {}
+	.vibe-emailNotifDlg_EMARootPanel      {display: block; white-space: nowrap; margin-top: 3px;}
+	.vibe-emailNotifDlg_EMASectionPanel   {background-color: #fff; border: 1px solid #b8b8b8; padding: 5px 5px 5px 0;}
+	.vibe-emailNotifDlg_ExpanderImg       {}
+	.vibe-emailNotifDlg_FooterCheck       {}
+	.vibe-emailNotifDlg_FooterHelp        {margin-left: 10px;}
+	.vibe-emailNotifDlg_FooterHelp:hover  {color: #036f9f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_FooterLabel       {}
+	.vibe-emailNotifDlg_FooterPanel       {display: block; white-space: nowrap; margin-top: 15px; margin-bottom: 10px;}
+	.vibe-emailNotifDlg_LastWidget        {margin-bottom: 10px;}
+	.vibe-emailNotifDlg_MsgTypeHelp       {margin-left: 10px;}
+	.vibe-emailNotifDlg_MsgTypeHelp:hover {color: #036f9f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_MsgTypeLabel      {}
+	.vibe-emailNotifDlg_MsgTypePanel      {display: block; white-space: nowrap;}
+	.vibe-emailNotifDlg_ReadingPanel      {}
+	.vibe-emailNotifDlg_ReadingLabel      {vertical-align: top; margin-left: 5px;}
+	.vibe-emailNotifDlg_SectionLabel      {}
+/* End:  Email notification dialog styles. */
+
+/* Start:  Import iCal dialogs styles. */
+	.vibe-importIcalDlg_Content {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-importIcalDlg_Hint    {margin: 8px 0px 8px 0px; font-size: 11px !important; color: #cccccc;}
+	.vibe-importIcalDlg_Input   {width: 250px;}
+	.vibe-importIcalDlg_Label   {}
+	.vibe-importIcalDlg_Panel   {}
+/* End:  Import iCal dialogs styles. */
+
+/* Start:  Rename entity dialog styles. */
+	.vibe-renameEntityDlg_Label     {}
+	.vibe-renameEntityDlg_NameInput {width: 250px;}
+	.vibe-renameEntityDlg_NameLabel {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-renameEntityDlg_NamePanel {}
+	.vibe-renameEntityDlg_Panel     {padding: 10px;}
+/* End:  Rename entity dialog styles. */
+
+/* The following styles are used with an object list table. */
+.oltHeader
+{
+	border-collapse: separate;
+	border-spacing: 0;
+	color: #666666;
+	white-space: nowrap;
+	background: #ededed;
+}
+.oltHeader td
+{
+	font-size: 11px;
+}
+.oltHeaderPadding, .oltContentPadding
+{
+	padding: 5px 10px 5px 5px;
+}
+
+.oltHeaderBorderBottom, .oltContentBorderBottom
+{
+	border-bottom: 1px solid #D2D5D1;	
+}
+
+.oltHeaderBorderTop
+{
+	border-top: 1px solid #D2D5D1;
+}
+
+.oltBorderLeft
+{
+	border-left: 1px solid #D2D5D1;
+}
+
+.oltBorderRight
+{
+	border-right: 1px solid #D2D5D1;
+}
+
+.oltLastRowBorderBottom
+{
+	border-bottom: 1px solid #D2D5D1;
+}
+/* End of styles used with an object list table */
+
+
+.vibeGlassPanel
+{
+	background-color: #000;
+	bottom: 0;
+	filter: alpha(opacity=50);
+	left: 0;
+	opacity: 0.5;
+	overflow: hidden;
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 1000;
+}
+
+.spinnerPopup
+{
+	border-width: 0px;
+	width:300px;
+	background-color: transparent;
+	text-align: center;
+	padding:10px; z-index: 1999;
+}
+
+/* Start:  Task statistics graph styles. */
+	.taskGraphs-stats            {white-space: nowrap;}
+	.taskGraphs-statsBarSegment  {color: white; font-size: 0.75em; font-weight: bold;}
+	.taskGraphs-statsLegendBar   {white-space: nowrap; display: block;}
+	.taskGraphs-statsLegendBox   {margin-top: 2px; margin-right: 2px; width: 12px; height: 12px; float: left;}
+	.taskGraphs-statsLegendLabel {color: #333333; font-size: 0.9em;}
+	.taskGraphs-statsPriority0   {background-color:#EF5612;}
+	.taskGraphs-statsPriority1   {background-color:#EC9112;}
+	.taskGraphs-statsPriority2   {background-color:#617F9F;}
+	.taskGraphs-statsPriority3   {background-color:#995DB2;}
+	.taskGraphs-statsPriority4   {background-color:#70AE55;}
+	.taskGraphs-statsPriority5   {background-color:#72AF58;}
+	.taskGraphs-statsPriority6   {background-color:#617F9F;}
+	.taskGraphs-statsPriority7   {background-color:#547AA5;}
+	.taskGraphs-statsStatus0     {background-color:#EC9112;}
+	.taskGraphs-statsStatus1     {background-color:#617F9F;}
+	.taskGraphs-statsStatus2     {background-color:#70AE55;}
+	.taskGraphs-statsStatus3     {background-color:#995DB2;}
+/* End:  Task statistics graph styles. */
+
+/* Start:  Milesone statistics graph styles. */
+.milestoneGraphs-stats
+{
+	white-space: nowrap;
+}
+
+.milestoneGraphs-statsBarSegment
+{
+	color: white;
+	font-size: 0.75em;
+	font-weight: bold;
+}
+
+.milestoneGraphs-statsLegendBar
+{
+	white-space: nowrap;
+	display: block;
+}
+
+.milestoneGraphs-statsLegendBox
+{
+	margin-top: 2px;
+	margin-right: 2px;
+	width: 12px;
+	height: 12px;
+	float: left;
+}
+
+.milestoneGraphs-statsLegendLabel
+{
+	color: #333333;
+	font-size: 0.9em;
+}
+
+.milestoneGraphs-statsStatusCompleted
+{
+	background-color:#70AE55;
+}
+
+.milestoneGraphs-statsStatusOpen
+{
+	background-color:#EC9112;
+}
+
+.milestoneGraphs-statsStatusReopened
+{
+	background-color:#617F9F;
+}
+	
+/* End:  Milestone statistics graph styles. */
+
+/* Start:  Progress dialog styles. */
+	.vibe-progressDlg_ProgressBar     {margin-bottom: 5px;}
+	.vibe-progressDlg_ProgressLabel   {margin-left: 3px;}
+	.vibe-progressDlg_ProgressPanel   {white-space: nowrap; font-size: 1.1em; font-weight: bold; padding-top: 10px;}
+	.vibe-progressDlg_ProgressSpinner {}
+	.vibe-progressDlg_RootPanel       {padding: 6px;}
+/* End:  Progress entries dialog styles. */
+
+/* Start:  Progress bar styles. */
+	.gwt-ProgressBar-shell {
+		border: 1px solid #3e6978;
+		background-color: #81b2bd;
+		height: 14pt;
+		width: 98%;
+		border-radius: 15px;
+		padding: 1px;
+	}
+	.gwt-ProgressBar-shell .gwt-ProgressBar-bar {
+		background: #09f; /* old browsers */
+		background: -moz-linear-gradient(bottom,  #1e5799 0%, #207cca 50%, #7db9e8 100%); /* FF3.6+ */
+		background: -webkit-gradient(linear, left bottom, left top, color-stop(0%,#1e5799), color-stop(50%,#207cca), color-stop(100%,#7db9e8)); /* Chrome,Safari4+ */
+		background: -webkit-linear-gradient(bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* Chrome10+,Safari5.1+ */
+		background: -o-linear-gradient(bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* Opera 11.10+ */
+		background: -ms-linear-gradient(bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* IE10+ */
+		background: linear-gradient(bottom,  #1e5799 0%,#207cca 50%,#7db9e8 100%); /* W3C */
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1e5799', endColorstr='#7db9e8',GradientType=0 ); /* IE6-9 */
+		border-radius: 15px;
+	}
+	.gwt-ProgressBar-shell .gwt-ProgressBar-text {
+		padding: 0px;
+		margin: 0px;
+		color: white;
+	}
+/* End:  Progress bar styles. */
+
+/* Start:  Multi-error alert dialog styles. */
+	.vibe-multiErrorAlertDlg-baseError     {font-size: 1.1em;}
+	.vibe-multiErrorAlertDlg-baseErrorCell {padding-bottom: 10px;}
+	.vibe-multiErrorAlertDlg-eachError     {font-size: 1.1em; font-weight: bold;}
+	.vibe-multiErrorAlertDlg-grid          {}
+	.vibe-multiErrorAlertDlg-rootPanel     {padding: 8px;}
+	.vibe-multiErrorAlertDlg-spacer        {}
+	.vibe-multiErrorAlertDlg-warnImg       {padding-bottom:  10px;}
+/* End:  Multi-error alert dialog styles. */
+
+/* Start:  Conformation dialog styles. */
+	.vibe-confirmDlg-confirmationAdditional        {font-size: 1.1em; font-weight: bold;}
+	.vibe-confirmDlg-confirmationTxt               {font-size: 1.2em; width: 450px;}
+	.vibe-confirmDlg-confirmationTxtWithAdditional {padding-bottom: 10px;}
+	.vibe-confirmDlg-rootPanel                     {padding: 8px;}
+/* End:  Conformation dialog styles. */
+
+/* Start:  Who Has Access dialog styles. */
+	.vibe-whoHasAccessDlg-content            {margin: 10px 10px 10px 13px;}
+	.vibe-whoHasAccessDlg-group              {}
+	.vibe-whoHasAccessDlg-group:hover        {cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}	
+	.vibe-whoHasAccessDlg-headerImg          {height: 25px; width: 25p; padding-right: 5px;}
+	.vibe-whoHasAccessDlg-headerLabel        {white-space: nowrap; font-weight: bold;}
+	.vibe-whoHasAccessDlg-headerPanel        {display: inline-block; white-space: nowrap; padding-bottom: 13px; vertical-align: middle;}
+	.vibe-whoHasAccessDlg-label              {}
+	.vibe-whoHasAccessDlg-readingPanel       {}
+	.vibe-whoHasAccessDlg-readingLabel       {vertical-align: top; margin-left: 5px;}
+	.vibe-whoHasAccessDlg-scrollPanelWithImg {white-space: nowrap; display: inline;}
+	.vibe-whoHasAccessDlg-scrollPanel        {overflow-y: auto !important; overflow-x: hidden !important; padding: 3px;}
+	.vibe-whoHasAccessDlg-scrollPanelCell    {border-style: solid solid solid; border-width: 1px; border-color: #e0e0e0; vertical-align: top; width: 225px;}
+	.vibe-whoHasAccessDlg-scrollPanelGroups  {} 
+	.vibe-whoHasAccessDlg-scrollPanelHeader  {white-space: nowrap; font-weight: normal;} 
+	.vibe-whoHasAccessDlg-scrollPanelImg     {height: 25px; width: 25px; margin-right: 5px; margin-bottom: 1px; border-radius: 2px;}
+	.vibe-whoHasAccessDlg-scrollPanelLimit   {background-color: #fff; height: 150px;}
+	.vibe-whoHasAccessDlg-scrollPanelUsers   {} 
+/* End:  Who Has Access dialog styles. */
+
+
+
+
+/* The following styles are used with the group management dialogs. */
+
+.groupManagementBtn, .manageNetFolderRootsDlg_Btn, .manageNetFoldersDlg_Btn, .shareDlg_Btn, .editLdapConfigDlg_Btn
+{
+	cursor: pointer;
+    text-decoration: none;    
+   	display: inline-block;
+	color: #1F1F1F;
+	font-size: 12px;
+	margin-right: 3px;
+	padding: 3px 10px;
+	text-align: center;
+	border: 1px solid #b8b8b8;
+	background: #f6f6f6;    
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.groupManagementDropDown         {}
+.groupManagementDropDownText     {font-size: 12px; vertical-align: middle;}
+.groupManagementDropDownImg      {vertical-align: middle;}
+.groupManagementDropDownImgNonIE {margin-left: 1px;}
+
+.groupManagementBtn:hover, .manageNetFolderRootsDlg_Btn:hover, .manageNetFoldersDlg_Btn:hover, .shareDlg_Btn:hover, .editLdapConfigDlg_Btn:hover
+{
+	color: #036f9f;
+	border: 1px solid #81b2bd;
+	background: #cee9ee;
+
+}
+
+.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel, .manageNetFoldersDlg_MenuPanel, .shareDlg_MenuPanel, .editLdapConfigDlg_MenuPanel, .editLdapServerConfigDlg_MenuPanel, .ldapSyncResultsDlg_MenuPanel
+{
+    background-color: #ededed;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    display: block;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 1.25em;
+    padding: 3px 3px 3px 5px;
+    position: relative;
+    white-space: nowrap;
+}
+
+.shareDlg_MenuPanelOverride
+{
+	position: absolute;
+	top: 0;
+	right: 0;
+	background-color: transparent !important;
+}
+
+.shareDlg_noShareItemsHint
+{
+	color: #949494;
+	font-size: 13px;
+	margin-left: 20px;
+}
+
+.groupTitlePanel, .netFolderRoot_NamePanel, .netFolder_NamePanel, .ldapSource_ServerUrlPanel, .ldapSearch_BaseDnPanel
+{
+	font-size: 14px;
+	vertical-align: middle;
+}
+
+.groupTitle, .netFolderRoot_Name, .netFolder_Name, .ldapSource_ServerUrl, .ldapSearch_BaseDn
+{
+	color: #036f9f;
+	cursor: pointer;
+	padding-right: 10px;
+}
+
+.groupStatus, .ldapSyncStatus, .netFolderStatus
+{
+	color: #949494;
+	font-family: Arial,sans-serif;
+	font-size: 10px;
+	font-style: italic;
+}
+
+.testLdapQueryInProgress, .testConnection_InProgress
+{
+	color: red;
+	font-style: italic;
+}
+
+.dynamicGroupMembership_BrowseDN
+{
+	margin-bottom: 3px;
+	margin-left: 3px;
+}
+
+.noObjectsFound
+{
+	color: #949494;
+	text-align: center;
+	padding: 15px 10px 50px 10px;
+	background: transparent;
+}
+
+.manageGroups_QuickFilterPanel
+{
+	background-color: #fff;
+	border: 1px solid #b8b8b8;
+	height: 20px;
+	margin-top: 1px;
+	padding: 0 0 0 5px;
+	position: absolute;
+	right: 10px;
+	top: 2px;
+	vertical-align: top;
+	white-space: nowrap;
+	border-radius: 15px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+}
+
+.manageNetFoldersDlg_QuickFilterPanel
+{
+	background-color: #fff;
+	border: 1px solid #b8b8b8;
+	height: 20px;
+	margin-right: 5px;
+	margin-top: 2px;
+	padding: 0 0 0 8px;
+	vertical-align: top;
+	white-space: nowrap;
+	border-radius: 15px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+}
+
+.manageNetFoldersDlg_QuickFilterPanel #ss_entryMenuFilterDIV
+{
+	margin-top: -2px;
+}
+.manageNetFoldersDlg_MainFilterPanel
+{
+	position: absolute;
+	right: 10px;
+	top: 2px;
+}
+
+.manageNetFoldersDlg_ListOfNetFoldersPanel
+{
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+/* End of styles used with the group management dialogs */
+
+
+
+/* The following styles are used with TabPanels */
+.vibe-tabPanel .gwt-TabBarFirst
+{
+	display: none;
+}
+ 
+.vibe-tabPanel .gwt-TabPanelBottom
+{
+	border-color: none;
+	border-style: none;
+	border-width: 3px 2px 2px;
+	overflow: visible !important;
+	padding: 15px;
+	margin: 0 -10px -10px;
+	background-color: #f6f6f6;
+	border-radius: 0px 3px 3px 3px;
+	-moz-border-radius: 0px 3px 3px 3px;
+}
+ 
+.vibe-tabPanel .gwt-TabBar
+{
+	border-bottom: 1px solid #c4c4c4;
+	margin: 0 -10px;
+	padding: 0 10px;
+}
+
+.vibe-tabPanel .gwt-TabBarItem-wrapper
+{
+	padding-bottom: 3px;
+}
+ 
+.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem
+{
+	background: none repeat scroll 0 0 transparent;
+	color: #505354;
+	font-weight: normal;
+	padding: 3px 10px;
+	margin-right: 6px;
+	margin-left: 0px;
+	margin-bottom: 4px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+}
+ 
+.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem:hover
+{
+	background-color: #81b2bd;
+	color: #fff;
+}
+ 
+.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem-selected,.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem-selected:hover
+{
+	background: none repeat scroll 0 0 #f6f6f6;
+	background: -webkit-linear-gradient(#fafafa, #f6f6f6);
+	background: -moz-linear-gradient(#FAFAFA, #f6f6f6) repeat scroll 0 0 transparent;
+	background: linear-gradient(#FAFAFA, #f6f6f6) repeat scroll 0 0 transparent;
+	cursor: default;
+	padding: 6px 10px;
+	color: black;
+	font-weight: bold;
+	border-radius: 3px 3px 0px 0px;
+	-moz-border-radius: 3px 3px 0px 0px;
+	-webkit-border-radius: 0px 3px 3px 3px;
+	border-bottom: 3px solid #f6f6f6;
+	border-top: 1px solid #c4c4c4;
+	border-left: 1px solid #c4c4c4;
+	border-right: 1px solid #c4c4c4;
+	margin-bottom: -2px;
+}
+ 
+.vibe-tabPanel .gwt-TabBarItem-wrapper-selected
+{
+	padding-bottom: 0px;
+}
+
+/* End of styles used with TabPanels */
+
+/* ...Start:  Event button styles. */
+	.vibe-eventButton-widgetAnchor       {background: none !important;}
+   a.vibe-eventButton-widgetAnchor:hover {background: none !important;}
+	.vibe-eventButton-widgetImage        {margin-left: 3px; vertical-align: middle;}
+	.vibe-eventButton-widgetText         {background: none repeat scroll 0 0 #949494 !important; color: #FFFFFF !important; font-size: .7em; padding: 2px 12px; text-decoration: none; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-eventButton-widgetTextDisabled {background: none repeat scroll 0 0 #B8B8B8 !important; color: #EDEDED !important;}
+	.vibe-eventButton-widgetTextHover    {background: #81B2BD url(images/slice_blend_teal_27.png) repeat-x !important; color: #FFFFFF !important;}
+/* ...End:  Event button styles. */
+
+/*
+ * Styles used with the blog folder view
+ */
+
+.blogFolderViewRightPanel
+{
+	padding: 10px;
+	border-left: 1px solid #e0e0e0;
+}
+
+/* End */
+ 
+
+
+/*
+ * Styles used with the blog archive control
+ */
+
+.blogArchiveCtrlMainPanel
+{
+}
+
+.blogArchiveCtrlFolderLabel
+{
+	color: #036f9f;
+	margin-left: 12px;
+}
+
+.blogArchiveCtrlMonthLabel
+{
+	color: #036f9f;
+}
+
+.blogArchiveCtrlMonthLabel:hover, .blogArchiveCtrlFolderLabel:hover
+{
+	background: #cce9ee;
+	cursor: pointer;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 12px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.blogArchiveCtrlSelected
+{
+	background: none repeat scroll 0 0 #FFFFFF;
+    border-radius: 3px 3px 3px 3px;
+    font-weight: bold;
+}
+
+.blogArchiveCtrlTitle
+{
+	color: #666666;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 13px !important;
+	font-weight: bold;
+	padding-bottom: 12px;
+}
+
+.vibe-hoverHint      {font-family: Arial, Helvetica, sans-serif; position:absolute; max-width: 600px; border:1px solid #d2d5d1; margin:2px; padding: 2px 10px; background-color: #fafad5; width: auto; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+.vibe-hoverHintLabel {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
+
+/* End */
+
+
+/**
+ * Styles used with the blog global tags control
+ */
+ 
+ .blogGlobalTagsCtrlTitle
+ {
+	color: #666666;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 13px !important;
+	font-weight: bold;
+	padding-bottom: 12px;
+ }
+ 
+ .blogGlobalTagsCtrlTagLabel
+ {
+	color: #036f9f;
+ }
+ 
+ .blogGlobalTagsCtrlTagLabel:hover
+ {
+	background: #cce9ee;
+	cursor: pointer;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 12px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+ 
+.blogGlobalTagsCtrlSelected
+{
+	background: none repeat scroll 0 0 #FFFFFF;
+    border-radius: 3px 3px 3px 3px;
+    font-weight: bold;
+}
+
+/* End */
+ 
+/**
+ * Styles used with the blog page control
+ */
+ 
+ .blogPageCtrl_mainPanel
+ {
+ }
+ 
+ .blogPageCtrl_newPageLink
+ {
+	color: #036f9f;
+ }
+ 
+ .blogPageCtrl_newPageLink:hover
+ {
+	background: #cce9ee;
+	cursor: pointer;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 12px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+ }
+ 
+ .blogPageCtrl_selectPageLabel
+ {
+	color: #666666;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 13px !important;
+	font-weight: bold;
+ }
+ 
+ 
+ 
+/**
+ * Styles used with the FilrActionsCtrl
+ */
+.FilrActionsCtrl_mainPanel
+{
+	left: 200px;
+}
+
+.FilrAction_Img
+{
+	margin: 3px 12px;
+	width: 48px;
+	height: 48px;
+}
+
+.FilrAction_MainPanel
+{
+    border-top: 1px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+    color: #FFFFFF;
+    display: inline-block;
+    font-size: 12px;
+    margin-right: 5px;
+    padding: 3px;
+    text-align: center;
+}
+
+.FilrAction_MainPanel:hover
+{
+	background: url(images/trans20_91daf2.png) repeat;
+    border-top: 1px solid #3C4143;
+    border-left: 1px solid #3C4143;
+    border-right: 1px solid #3C4143;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;	
+	-webkit-border-top-right-radius: 5px;	
+    cursor: pointer;
+}
+
+.FilrAction_Selected
+{
+	background: url(images/trans30_black.png) repeat;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;	
+	-webkit-border-top-right-radius: 5px;	
+/*	box-shadow:	0 1px 1px #000 inset;  */
+}
+
+.FilrAction_Selected .FilrAction_Text
+{
+	color: #ffffff;
+}
+
+.FilrAction_Text
+{
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+/**
+ * Styles used with the "Comments" widget
+ */
+
+.commentsWidget_commentsPanel
+{
+	background-color: #FFFFFF;
+	padding: 10px;
+}
+
+.commentsWidget_commentStylesOverride
+{
+	margin-left: 3px !important;
+}
+
+
+/**
+ * Styles used in the "share send-to" widget
+ */
+.shareSendToWidget_mainLabel
+{
+	color: #036f9f;
+	display: inline-block;
+	padding-left: 5px;
+}
+
+.shareSendToWidget_mainLabel:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+/**
+ * Styles used in the "Modify Net Folder Root" dialog
+ */
+
+.modifyNetFolderRootDlg_SelectPrivelegedUsersHint, .modifyNetFolderDlg_SelectPrincipalsHint, .editLdapServerConfigDlg_ServerUrlHint
+{
+	color: #505354;
+	font-size: 1em;
+	padding-bottom: 10px;
+}
+
+.modifyNetFolderRootDlg_PrivilegedPrincipalsTable
+{
+	width: 550px;
+	table-layout: fixed;
+}
+
+/**
+ * Styles used in the "modify net folder" dialog
+ */
+
+.modifyNetFolderDlg_SyncScheduleCaptionPanel, .modifyNetFolderServerDlg_SyncScheduleCaptionPanel
+{
+}
+
+.modifyNetFolderServerDlg_ScheduleWidget
+{
+}
+
+.modifyNetFolderDlg_ScheduleWidget
+{
+	margin-left: 30px;
+	margin-top: 4px;
+}
+
+.modifyNetFolderServerDlg_ServerPathHint
+{
+	color: #4D6D8B;
+	font-size: 1em;
+	margin-bottom: 0.5em;
+}
+
+.modifyNetFolderServerDlg_BrowseProxyDN
+{
+	margin-bottom: 3px;
+	margin-left: 3px;
+}
+
+.modifyNetFolderServerDlg_FindProxyIdentity
+{
+	display: inline;
+}
+
+.modifyNetFolderServerDlg_PadWithProxyIdentities
+{
+	padding-left: 30px;
+}
+
+.modifyNetFolderServerDlg_ProxyNameHint
+{
+	color: #4D6D8B;
+	font-size: 1em;
+	margin-bottom: 0.5em;
+	width: 80%;
+}
+
+/**
+ * Styles used in the SelectPrincipalsWidget
+ */
+.selectPrincipalsWidget_PrincipalNameLabel
+{
+}
+
+.selectPrincipalsWidget_RemovePrincipalPanel
+{
+	margin-left: 4px;
+}
+
+.selectPrincipalsWidget_PrincipalsTablePanelHeight
+{
+	height: 200px;
+	overflow: auto;
+}
+
+.selectPrincipalsWidget_PrincipalsTablePanel
+{
+	width: 570px;
+}
+
+.selectPrincipalsWidget_PrincipalsTable
+{
+	min-width: 370px;
+}
+
+.selectPrincipals_PrincipalsTable_Cell
+{
+	overflow: hidden;
+	background: #fafafa;
+}
+
+.selectPrincipals_PrincipalsTable_highlightRow
+{
+	background: none repeat scroll 0 0 #CCE9EE;
+}
+
+
+
+/**
+ * Styles used in the Schedule Widget
+ */
+ 
+.scheduleWidget_TimePicker
+{
+	margin-left: 5px;
+}
+
+.scheduleWidget_OnSelectedDaysPanel
+{
+	padding-left: 20px;
+}
+
+.scheduleWidget_DayPanel
+{
+	margin-right: 4px;
+	text-align: center; 
+}
+
+
+/**
+ * Styles used in the Edit Note Wiget
+ */
+.editNoteWidget
+{
+	background-color: #F6F6F6;
+	border: 1px solid #C4C4C4;
+	left: 50px;
+	margin-bottom: 10px;
+	margin-top: .5em;
+	padding: 5px;
+	position: relative;
+	width: 450px;
+}
+
+.editNoteWidget_TextArea
+{
+	background-color: transparent;
+	border: 0 none;
+	color: #353838;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 14px;
+	height: 45px;
+	padding: 5px;
+	resize: none;
+	width: 95%;
+}
+
+.editNoteWidget_Footer
+{
+	margin-bottom: 5px;
+	margin-top: .5em;
+	text-align: right;
+	width: 450px;
+}
+
+.editNoteWidget_Btn
+{
+	background: #949494 none repeat scroll 0 0;
+	color: #FFFFFF;
+	cursor: pointer;
+	font-size: 12px;
+	margin-right: 3px;
+	padding: 2px 10px;
+}
+
+
+/**
+ * Styles used in the Edit Share Note dialog
+ */
+.editShareNoteDlg_table
+{
+}
+
+.editShareNoteDlg_TextArea
+{
+	background-color: #fff;
+	color: #353838;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 14px;
+	height: 70px;
+	padding: 5px;
+	resize: none;
+	width: 290px;
+}
+
+.editShareNoteDlg_TextAreaBorder
+{
+	border: 1px solid #c4c4c4;
+}
+
+.editShareNoteDlg_MainPanel
+{
+}
+
+/**
+ * Styles used in the Edit Share Rights dialog
+ */
+.editShareRightsDlg_CanShareCkbox
+{
+	margin-top: 8px;
+}
+
+.editShareRightsDlg_MainPanel
+{
+}
+
+.editShareRightsDlg_RbPanel
+{
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
+.editShareRightsDlg_accessLabel
+{
+	color: #666666;
+}
+.editShareRightsDlg_reshareLabel
+{
+	color: #666666;
+	margin-top: 5px;
+}
+
+.editShareRightsDlg_AccessRightsInfoImg
+{
+	cursor: pointer;
+	margin-left: 4px;
+	vertical-align: bottom;
+}
+
+/**
+ * Styles used in the "User Actions" popup in the mast head
+ */
+.userActionsPopup
+{
+	z-index: 5000;
+}
+
+.userActionsPopup_OutermostPanel
+{
+	background: url(images/trans30_black.png) repeat scroll 0 0 transparent;
+	border-radius: 6px 6px 6px 6px;
+	border-top: medium none;
+	padding: 7px;
+	z-index: 1100;
+}
+
+.userActionsPopup_ActionsPanel
+{
+}
+
+.userActionsPopup_ActionsPanel_ContentPanel
+{
+	margin-bottom: 25px;
+}
+
+.userActionsPopup_ActionImg
+{
+	margin-right: 5px;
+	vertical-align: middle;
+}
+
+.userActionsPopup_ActionLabel
+{
+	color: #036f9f;
+	padding: 3px 5px;
+}
+
+.userActionsPopup_ActionPanel
+{
+	color: #505354;
+	font-size: 14px;
+	margin-bottom: 5px;
+	margin-left: 18px;
+	margin-right: 18px;
+	white-space: nowrap;
+}
+
+.userActionsPopup_ActionPanel:hover
+{
+	color: #036f9f;
+	background: #cce9ee;
+	border-radius: 2px;
+}
+
+.userActionsPopup_ActionsPanel:hover
+{
+	cursor: pointer;
+}
+
+.userActionsPopup_AllContentPanel
+{
+	background-color: #FFFFFF;
+	border-radius: 3px 3px 3px 3px;
+	overflow: hidden;
+	padding: 5px;
+	position: relative;
+}
+
+.userActionsPopup_AvatarImg
+{
+	border-radius: 3px 3px 3px 3px;
+	height: 50px;
+	width: 50px;
+}
+
+.userActionsPopup_FooterPanel
+{
+	background-color: #FAFAFA;
+/*	box-shadow: 0 2px 2px #CCCCCC inset;  */
+	border-top: 1px solid #cccccc;
+	margin: -10px;
+	padding: 15px 15px 20px;
+	text-align: center;
+}
+
+.userActionsPopup_HeaderTable
+{
+	margin-bottom: 0.5em;
+}
+
+.userActionsPopup_NamePanel
+{
+	color: #353838 !important;
+	font-size: 1.4em;
+	white-space: nowrap;
+}
+
+.userActionsPopup_NamePanel .statsTable
+{
+	margin: .5em .5em .5em 0;
+}
+
+.userActionsPopup_NamePanel .statsTable .gwt-label
+{
+	white-space: nowrap;
+}
+
+.userActionsPopup_TrashInfoButton {cursor: pointer; margin-left: 2px;}
+.userActionsPopup_TrashInfoCell   {border-bottom: 0px !important;}
+.userActionsPopup_TrashInfoDlg    {z-index: 5001 !important;}
+
+.gwt-label
+{
+	color: #666666;
+}
+
+.userActionsPopup_SignOutLabel
+{
+	display: inline-block;
+	border: 1px solid #b8b8b8;
+	color: #036f9f;
+	font-size: 14px;
+	margin-right: 5px;
+	padding: 5px 10px;
+	text-align: center;
+	white-space: nowrap;
+	background-color: #f6f6f6;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+/*	background: -moz-linear-gradient(top,  #ffffff, #E0E0E0); /* FF3.6+ */
+/*	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(110%,#E0E0E0)); /* Chrome,Safari4+ */
+/*	background: -webkit-linear-gradient(top,  #ffffff, #E0E0E0); /* Chrome10+,Safari5.1+ */
+/*	background: -o-linear-gradient(top,  #ffffff 0%, #E0E0E0 100%); /* Opera 11.10+ */
+/*	background: -ms-linear-gradient(top, #ffffff 0%, #E0E0E0 100%); /* IE10+ */
+/*	background: linear-gradient(top,  #ffffff 0%, #E0E0E0 100%); /* W3C */  
+}
+
+.userActionsPopup_SignOutLabel:hover
+{
+	border: 1px solid #81B2BD;
+	color: #036f9f;
+	cursor: pointer;
+	background-color: #cce9ee;
+/*	background: -moz-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
+/*	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
+/*	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
+/*	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
+/*	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
+/*	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
+}
+
+.userActionsPopup_TopImgPanel
+{
+	position: absolute;
+	right: 40px;
+	top: -13px;
+	z-index: 1000;
+}
+
+/* Start:  Desktop application download control styles. */
+	.vibe-desktopAppCtrl-closeImg            {}
+	.vibe-desktopAppCtrl-closePanel          {display: block; position: absolute; top: 1px; right: 6px; cursor: pointer;}
+	.vibe-desktopAppCtrl-control             {display: block; position: relative; background-color: #EBECA5; border-color: #BABDB6; border-style: solid; border-width: 1px; font-size: 12px; margin: 5px 10px; padding: 5px 10px; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-desktopAppCtrl-dontShowLabel       {color: #036f9f;}
+	.vibe-desktopAppCtrl-dontShowLabel:hover {background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-desktopAppCtrl-dontShowPanel       {display: block; position: absolute; top: 10px; right: 40px; text-decoration: none; cursor: pointer;}
+	.vibe-desktopAppCtrl-hintLabel           {}
+	.vibe-desktopAppCtrl-hintPanel           {display: block; margin: 0px; margin-top: 3px !important; padding: 0px; padding-top: 5px !important;}
+/* End:  Desktop application download control styles. */
+
+/* Start:  Manage users dialog styles. */
+	.vibe-manageUsersDlg           {}
+	.vibe-manageUsersDlg-rootPanel {background-color: white;}
+/* End:  Manage users dialog styles. */
+
+/* Start:  Manage teams dialog styles. */
+	.vibe-manageTeamsDlg           {}
+	.vibe-manageTeamsDlg-rootPanel {background-color: white;}
+/* End:  Manage teams dialog styles. */
+
+/* Start:  Manage administrators dialog styles. */
+	.vibe-manageAdministratorsDlg            {}
+	.vibe-manageAdministratorsDlg-findPopup  {background-color: transparent; z-index: 2000; padding: 0px !important;}
+	.vibe-manageAdministratorsDlg-findWidget {margin-top: 2px; display: inline;}
+	.vibe-manageAdministratorsDlg-rootPanel  {background-color: white;}
+/* End:  Manage administrators dialog styles. */
+
+/* Start:  Import profiles dialog styles. */
+	.vibe-importProfilesDlg-content    {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-importProfilesDlg-hint       {color: #036f9f; text-decoration: none; margin: 8px 0px 8px 0px; font-size: 11px !important; cursor: pointer; margin: 3px 10px; font-size: 1em !important;}
+	.vibe-importProfilesDlg-hint:hover {color: #036f9f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-importProfilesDlg-input      {width: 250px;}
+	.vibe-importProfilesDlg-panel      {}
+/* End:  Import profiles dialog styles. */
+
+/* Start:  Limit user visibility dialog styles. */
+	.vibe-limitUserVisibilityDlg            {}
+	.vibe-limitUserVisibilityDlg-rootPanel  {background-color: white;}
+/* End:  Limit user visibility dialog styles. */
+
+/* Start:  Defualt user settings dialog styles. */
+	.vibe-defaultUserSettingsDlg            {}
+	.vibe-defaultUserSettingsDlg-rootPanel  {background-color: white; margin: 10px;}
+/* End:  Defult user settings dialog styles. */
+
+/* Start:  Select CSV delimiter dialog styles. */
+	.vibe-selectCSVDelimiterDlg-content        {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-selectCSVDelimiterDlg_customCSVInput {width: 100px;}
+	.vibe-selectCSVDelimiterDlg-grid           {width: 500px;}
+	.vibe-selectCSVDelimiterDlg-hint           {white-space: normal; color: #505354; font-size: 13px; margin-bottom:  5px;}
+	.vibe-selectCSVDelimiterDlg-hint2          {margin-top:  10px;}
+	.vibe-selectCSVDelimiterDlg-panel          {}
+	.vibe-selectCSVDelimiterDlg-radio          {margin-left: 5px;}
+/* End:  SelectCSVDelimiter dialog styles. */
+
+/* Start:  Telemetry Tier 2 dialog styles. */
+	.vibe-telemetryTier2Dlg-hint  {width: 400px; color: #414648; /* dark grey */ line-height: 1.1em; margin-right: 5px;}
+	.vibe-telemetryTier2Dlg-panel {padding: 10px;}
+/* End:  Telemetry Tier 2 dialog styles. */
+
+/* Start:  Configure Telemetry dialog styles. */
+	.vibe-configureTelemetryDlg-anchor                          {}
+	.vibe-configureTelemetryDlg-checkbox input[type="checkbox"] {vertical-align: top; margin-top: 8px !important;}
+	.vibe-configureTelemetryDlg-checkbox label                  {width: 500px; white-space: normal;}
+	.vibe-configureTelemetryDlg-checkboxPanel                   {}
+	.vibe-configureTelemetryDlg-hint                            {width: 500px; color: #414648; /* dark grey */ line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 1em;}
+	.vibe-configureTelemetryDlg-panel                           {padding: 10px;}
+/* End:  Configure Telemetry dialog styles. */
+
+/* Start:  Configure Anti Virus dialog styles. */
+	.vibe-configureAntiVirusDlg-checkbox      {}
+	.vibe-configureAntiVirusDlg-checkboxPanel {margin-bottom: 10px;}
+	.vibe-configureAntiVirusDlg-label         {margin-right: 3px;}
+	.vibe-configureAntiVirusDlg-panel         {padding: 10px;}
+	.vibe-configureAntiVirusDlg-passwordBox   {width: 250px;}
+	.vibe-configureAntiVirusDlg-table         {}
+	.vibe-configureAntiVirusDlg-testBtn       {margin-top: 10px !important;}
+	.vibe-configureAntiVirusDlg-textBox       {width: 250px;}
+/* End:  Configure Anti Virus dialog styles. */
+
+/* Start:  User properties dialog styles. */
+	.vibe-userPropertiesDlg-aboutMe          {color: #353838; width: 330px;}
+	.vibe-userPropertiesDlg-attrCaption      {color: #949494; padding-right: 3px; display: inline-block; padding-top: 2px; padding-bottom: 3px;}
+	.vibe-userPropertiesDlg-attrImage        {}	
+	.vibe-userPropertiesDlg-attrValue        {color: #353838; font-size: 14px; display: inline-block; padding-top: 2px; padding-bottom: 3px;}
+	.vibe-userPropertiesDlg-avatar           {border-width: 1px; border-style: solid; border-color: #ccc; width: 75px; height: 75px; margin-right: 5px; margin-bottom: 10px; margin-left: 35px;}
+	.vibe-userPropertiesDlg-buttonLook       {
+		border: 1px solid #B8B8B8;
+		font-weight: normal !important;
+		font-size: 11px;
+		padding: 2px 6px  !important;
+		margin-right: 15px;
+		margin-bottom: 3px;
+		text-decoration:none;	
+		white-space: nowrap;
+		text-align: center !important;
+		min-width: 150px;
+		background-color: #ffffff;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+/*		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;   */
+	}
+	.vibe-userPropertiesDlg-buttonLook:hover {
+		font-size: 11px !important;
+	}
+	.vibe-userPropertiesDlg-buttonAct        {cursor: pointer;}
+	.vibe-userPropertiesDlg-buttonNoAct      {
+		color: #b8b8b8;
+		display: inline-block;
+		min-width: 125px !important;
+	}
+	.vibe-userPropertiesDlg-delete           {}
+	.vibe-userPropertiesDlg-grid             {border-spacing: 0; padding: 10px;}
+
+	.vibe-userPropertiesDlg-nfHoverHint      {z-index: 1004;}
+	.vibe-userPropertiesDlg-rootPanel        {}
+	.vibe-userPropertiesDlg-title            {font-size: 20px; font-weight: 200; font-family: Arial, Helvetica, sans-serif; color:#5691A6!important; display: inline-block; padding-left: 35px; padding-top: 5px;}
+	.vibe-userPropertiesDlg-nfRow td         {vertical-align: top;}
+	.vibe-userPropertiesDlg-nfRowScroll      {overflow-y: auto !important; overflow-x: hidden !important;}
+	.vibe-userPropertiesDlg-nfRowScroll td   {border-top: 0px !important;}
+	.vibe-userPropertiesDlg-nfRowScrollLimit {height: 125px;}
+	.vibe-userPropertiesDlg-sectionRow td    {border-top: 1px solid #cccccc; padding-top: 5px;}
+/* End:  User properties dialog styles. */
+
+/* Start:  Share rights dialogs (user and binder) styles. */
+	.vibe-shareRightsDlg-header           {white-space: normal; color: #666;}
+	.vibe-shareRightsDlg-headerCell       {vertical-align: top;}
+	.vibe-shareRightsDlg-headerCell2      {padding-top: 10px;}
+	.vibe-shareRightsDlg-headerCellCenter {text-align: center;}
+	.vibe-shareRightsDlg-headerCellLeft   {text-align: left;}
+	.vibe-shareRightsDlg-headerCellSpacer {border-bottom-color: #cccccc; border-bottom-style: solid; border-bottom-width: 1px; padding-top: 10px;}
+	.vibe-shareRightsDlg-hint             {color: #4D6D8B; font-size: 1em; width: 400px;}
+	.vibe-shareRightsDlg-noZoneSettings   {margin-top: 10px; font-weight: bold;}
+	.vibe-shareRightsDlg-panel            {text-align: left; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
+	.vibe-shareRightsDlg-progressBar      {margin-bottom: 5px; margin-top: 10px;}
+	.vibe-shareRightsDlg-progressLabel    {margin-left: 3px;}
+	.vibe-shareRightsDlg-progressPanel    {white-space: nowrap; font-size: 1.1em; font-weight: bold;}
+	.vibe-shareRightsDlg-progressSpinner  {}
+	.vibe-shareRightsDlg-radio            {}
+	.vibe-shareRightsDlg-radioCell        {text-align: center;}
+	.vibe-shareRightsDlg-row              {color: #666; font-weight: bold;}
+	.vibe-shareRightsDlg-rowCell          {}
+	.vibe-shareRightsDlg-rowCellForward   {width: 150px;}
+	.vibe-shareRightsDlg-table            {}
+/* End:  Share rights dialogs (user and binder) styles. */
+
+
+/* Start: Net Folder Rights widget styles */
+.netFolderRightsWidget_RightsLabel
+{
+	color: #036f9f;
+	padding-left: 4px;
+}
+
+.netFolderRightsWidget_RightsLabel:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+/* End: */
+
+/**
+ * Styles used in the Edit Net Folder Rights dialog
+ */
+
+.editNetFolderRightsDlg_MainPanel		{}
+.editNetFolderRightsDlg_RightsCkbox		{display: inline-block; padding-top: 3px;}	
+.editNetFolderRightsDlg_Instructions
+{
+	color: #353838; 
+	font-size: 14px; 
+	padding-bottom: 10px;
+	margin-left: 4px;
+}
+
+.editNetFolderRightsDlg_Hint
+{
+	color: #4D6D8B; 
+	font-size: 14px; 
+	padding-bottom: 10px;
+	margin-left: 4px;
+	width: 450px;
+}
+/* End */
+
+/**
+ * Styles used by the administration console home page.
+ */
+
+.AdminConsoleHomePage_mainPanel
+{
+	position: absolute;
+	overflow: hidden;
+}
+
+.AdminConsoleInfoWidget_mainPanel
+{
+	position: relative;
+	background-color: #FAFAFA;
+	border: 1px solid #e0e0e0;
+	border-radius: 10px;
+	font-size: 1.15em;
+	margin: 50px;
+	padding: 20px;
+}
+
+.AdminConsoleInfoWidget_header
+{
+	color: #5691A6;
+	font-size: 1.2em;
+	padding-left: 90px;
+}
+
+.AdminConsoleInfoWidget_headImage
+{
+	position: absolute;
+	padding: 15px 20px;
+	left: 0px;
+	top: 0px;
+}
+
+.AdminConsoleInfoWidget_subhead
+{
+	font-size: 13px;
+	color: #949494;
+	padding-left: 90px;
+	padding-top: 4px;
+}
+
+.AdminConsoleInfoWidget_buildInfo, .AdminConsoleInfoWidget_releaseInfo
+{
+	color: #505354;
+}
+
+.AdminConsoleInfoWidget_filrApplianceInfo
+{
+	color: #036f9f !important;
+}
+
+.AdminConsoleInfoWidget_info
+{
+	color: #505354;
+	font-size: 16px;
+	line-height: 20px;
+	margin-top: 15px;
+}	
+
+.AdminConsoleInfoWidget_adminGuideLink
+{
+	color: #036f9f;
+	text-decoration: none;
+	display: inline-block;
+	padding-left: 6px
+}
+
+.AdminConsoleInfoWidget_adminGuideLink:hover, .AdminConsoleInfoWidget_filrApplianceInfo:hover
+{
+	cursor: pointer;
+}
+
+.AdminConsoleInfoWidget_tasksToDo
+{
+	color: #1f1f1f !important;
+	margin-top: 15px;
+	padding: 5px;
+	width: 100%;
+	padding: 0px 5px 10px;
+	background-color: #fafad5;
+	border: 1px solid #e0e0e0;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.AdminConsoleInfoWidget_tasksToDo_td
+{
+	font-size: 13px !important;
+}
+		
+/* End */
+
+
+/**
+ * Styles used in the "Edit Zone Share" dialogs
+ */
+
+.editZoneShareRightsDlg_Instructions 	{color: #353838; font-size: 14px; padding-bottom: 10px;}
+.editZoneShareRightsDlg_RightsCkbox		{display: inline-block; padding-top: 3px;}
+
+.editZoneShareRightsTab_Content              {padding: 5px;}
+.editZoneShareRightsTab_SelectPrincipalsHint {display: inline-block; color: #505354; font-size: 14px; margin-bottom: 15px;}
+
+.editZoneShareListsTab_CleanupPanel      {display: block; padding-top: 10px;}
+.editZoneShareListsTab_CleanupCB label   {font-size: 14px !important; padding-top: 5px; padding-left: 2px; display: inline-block;} 
+.editZoneShareListsTab_Content           {padding: 5px; display: block;}
+.editZoneShareListsTab_DomainPanel       {display: block; padding-top: 10px;}
+.editZoneShareListsTab_EmailAddressPanel {display: block; padding-top: 10px;}
+.editZoneShareListsTab_Header            {font-size: 14px; color: #505354;}
+.editZoneShareListsTab_HeaderPanel       {display: block; width: 400px; white-space: normal;}
+.editZoneShareListsTab_List              {width: 250px;}
+.editZoneShareListsTab_ListButton        {min-width: 60px;}
+.editZoneShareListsTab_ListButtons       {margin-left: 5px;}
+.editZoneShareListsTab_ListHeader        {}
+.editZoneShareListsTab_ListPanel         {padding-top: 3px;}
+.editZoneShareListsTab_ModeHeader        {}
+.editZoneShareListsTab_ModePanel         {display: block; padding-top: 10px;}
+.editZoneShareListsTab_ModeRadio         {margin-left: 10px;}
+.editZoneShareListsTab_ModeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
+.editZoneShareListsTab_SectionHeader     {font-size: 1.1em; font-weight: bold;}
+
+.zoneShareRightsSelectPrincipalsWidget_PrincipalsTablePanelHeight
+{
+	height: 400px;
+	overflow: auto;
+}
+
+.zoneShareRightsWidget_RightsLabel
+{
+	color: #036f9f;
+	padding-left: 4px;
+}
+
+.zoneShareRightsWidget_RightsLabel:hover
+{
+	cursor: pointer;
+	background: #cce9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+/* End */
+
+
+/**
+ * Styles used in the Edit User Zone Share Rights dialog
+ */
+.editUserZoneShareRightsDlg_MainPanel
+{
+}
+
+.editUserZoneShareRightsDlg_RightsCkbox
+{
+}
+
+.editUserZoneShareRightsDlg_Instructions
+{
+	margin-bottom: 6px;
+	margin-left: 4px;
+}
+/* End */
+
+
+
+/**
+ * Style used in the Change Password dialog
+ */
+.changePasswordDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: 1em;
+	margin-bottom: 0.5em;
+	width: 400px;
+}
+
+.changePasswordDlg_Label
+{
+	font-size: .8em;
+	margin-top: 0.7em;
+}
+/* End */
+
+
+/* Start:  Styles used by the find control browser. */
+	.vibe-findBrowser-node                {}
+	.vibe-findBrowser-nodeImg             {padding-right: 2px; height: 16px; width: 16px;}
+	.vibe-findBrowser-nodePanel           {}
+	.vibe-findBrowser-nodePanelActive     {}
+	.vibe-findBrowser-nodePanelInert      {cursor: default !important;}
+	.vibe-findBrowser-nodeTxt             {font-size:  13px;}
+	.vibe-findBrowser-nodeTxtInert        {}
+	.vibe-findBrowser-nodeTxtActive       {}
+	.vibe-findBrowser-nodeTxtActive:hover {
+		background: #cce9ee;
+		cursor: pointer;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+	}
+	.vibe-findBrowser-nodeTxtStart {
+		font-size: 14px !important;
+		font-weight: bold;
+		background: url(images/blends/gray_blend6_28.png) repeat-x;
+		background-position:center;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+	}
+	.vibe-findBrowser-popup       {z-index: 1002; padding: 2px !important;}
+	.vibe-findBrowser-scrollPanel {width: 600px; height: 350px; overflow: auto;}
+	.vibe-findBrowser-tree        {
+		background-color: #f6f6f6;
+		margin: 0px;
+		padding-right: 5px;
+		min-height: 348px;
+		border-top: 1px solid #808384;
+		-moz-border-radius-bottomleft: 3px;
+		-moz-border-radius-bottomright: 3px;
+		border-bottom-left-radius: 3px;
+		border-bottom-right-radius: 3px;
+		-webkit-border-bottom-left-radius: 3px;
+		-webkit-border-bottom-right-radius: 3px;
+	}
+/* End:  Styles used by the find control browser. */
+
+
+/**
+ * Styles used in the "Forgotten Password" dialog
+ */
+
+.forgottenPwdDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: 1em;
+	margin-bottom: 1em;
+	width: 375px;
+}
+
+.forgottenPwdDlg_Instructions
+{
+	color: 353838;
+	font-size: 14px;
+	padding-bottom: 10px;
+	width: 450px;
+}
+
+/* End */
+
+
+/**
+ * Styles used to position the "Powered by Novell Filr" image
+ */
+.poweredByImg
+{
+	position: absolute;
+	right: 30px;
+	top: 30px;
+}
+
+/* End */
+
+
+
+/**
+ * Styles used to in the Admin Info dialog
+ */
+
+.adminInfoDlg_mainPanel
+{
+	height: 400px;
+	overflow: auto;
+}
+
+.adminInfoDlg_docLink
+{
+	color: #036f9f;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+/**
+ * Styles used in the Manage Net Folders dialog
+ */
+.netFolder_syncStatusImg:hover
+{
+	cursor: pointer;
+}
+
+/**
+ * Styles used in the Net Folder Synchronization Statistics dialog
+ */
+ .netFolderSyncStatisticsDlg_StatisticsHeading
+ {
+ 	font-weight: bold;
+ }
+ 
+ .netFolderSyncStatisticsDlg_MiscStatisticsLabel, .netFolderSyncStatisticsDlg_FileStatisticsLabel, .netFolderSyncStatisticsDlg_FolderStatisticsLabel
+ {
+ 	margin-left: 16px;
+ }
+ 
+ .netFolderSyncStatisticsDlg_StatisticsValue
+ {
+ 	margin-right: 12px;
+ }
+ 
+/* End */
+
+
+/**
+ * Styles used in ConfigureFileSyncAppDlg.java
+ */
+.fileSyncAppDlg_List              {width: 400px;}
+.fileSyncAppDlg_ListButton        {min-width: 60px;}
+.fileSyncAppDlg_ListButtons       {margin-left: 5px;}
+.fileSyncAppDlg_ListHeader        {}
+.fileSyncAppDlg_ListHintPanel     {padding-top: 10px; width: 400px; white-space: normal; color: #4D6D8B}
+.fileSyncAppDlg_ListPanel         {padding-top: 3px;}
+.fileSyncAppDlg_ListTable         {}
+.fileSyncAppDlg_ListTableHeader   {font-weight: bold; font-size: 14px;}
+.fileSyncAppDlg_Location          {}
+.fileSyncAppDlg_MacListPanel      {padding-top: 10px;}
+.fileSyncAppDlg_ModeHeader        {}
+.fileSyncAppDlg_ModePanel         {display: block; padding-top: 10px;}
+.fileSyncAppDlg_ModeRadio         {margin-left: 10px;}
+.fileSyncAppDlg_ModeRadio input   {display: inline;} 
+.fileSyncAppDlg_ModeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline;} 
+.fileSyncAppDlg_Radio             {}
+.fileSyncAppDlg_RestoreDefaults   {margin-top: 10px; margin-left: 10px;}
+.fileSyncAppDlg_SectionHeader     {font-size: 13px; font-weight: normal;}
+.fileSyncAppDlg_WindowsListPanel  {padding-top: 0px;}
+
+/**
+ * Styles used in the Edit Ldap Server Config dialog
+ */
+.editLdapServerConfigDlg_Hint, .editLdapSearchDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: .9em;
+}
+
+.editLdapServerConfigDlg_BrowseDN
+{
+	margin-bottom: 3px;
+	margin-left: 3px;
+}
+
+/* End */
+
+/**
+ * Styles used in the Ldap Sync Results dialog
+ */
+.ldapSyncResultsDlg_MainFilterPanel
+{
+}
+
+.ldapSyncResultsDlg_QuickFilterPanel
+{
+	background-color: #fff;
+	border: 1px solid #b8b8b8;
+	border-left: none;
+	height: 19px;
+	margin-right: 4px;
+	margin-top: 1px;
+	padding: 0 0 0 5px;
+	vertical-align: top;
+	white-space: nowrap;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;	
+}
+
+.ldapSyncResultsDlg_FilterPopup
+{
+	font-size: 14px;
+	background-color: #fafad5;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: 5px 10px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	z-index: 1100;
+}
+
+.ldapSyncResultsDlg_closeFilterPopupImg
+{
+	cursor: pointer;
+	position: absolute;
+	right: 10px;
+	top: 5px;
+}
+
+.ldapSyncResultsDlg_PreviewHint
+{
+	color: #4D6D8B;
+	font-size: .9em;
+	width: 500px;
+}
+
+/* End */
+ 
+/* Start:  Alert dialog styles. */
+	.vibe-alertDlg_Grid      {max-width: 500px;}
+	.vibe-alertDlg_NameLabel {color: #414648; font-size: 1em; line-height: 1.1em; margin-right: 8px; white-space: normal;}
+	.vibe-alertDlg_Panel     {padding: 10px;}
+/* End:  Alert dialog styles. */
+
+/* Start:  Prompt dialog styles. */
+	.vibe-promptDlg_Grid       {}
+	.vibe-promptDlg_NameInput  {width: 250px;}
+	.vibe-promptDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-promptDlg_Panel      {padding: 10px;}
+/* End:  Prompt dialog styles. */
+
+/* Start:  MultiPrompt dialog styles. */
+	.vibe-multiPromptDlg_Grid       {}
+	.vibe-multiPromptDlg_NameInput  {width: 250px;}
+	.vibe-multiPromptDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-multiPromptDlg_Panel      {padding: 10px;}
+/* End:  MultiPrompt dialog styles. */
+
+/* Start:  Copy Filters dialog styles. */
+	.vibe-copyFiltersDlg_BrowseButton    {
+		cursor: pointer;
+		border: 1px solid #B8B8B8;
+		font-weight: normal !important;
+		font-size: 12px;
+		margin-left: 3px;
+		padding: 2px 5px  !important;
+		text-decoration:none;	
+		white-space: nowrap;
+		text-align: center !important;
+		width: 35px;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		background: #f6f6f6;
+	}
+	
+	.vibe-copyFiltersDlg_BrowseButton:hover {
+		color: #036f9f !important;
+		border: 1px solid #81b2bd;
+		padding: 2px 5px  !important;
+		background: #cce9ee;
+		border-radius: 5px !important;
+		-moz-border-radius: 5px !important;
+		-webkit-border-radius: 5px !important;
+	}
+
+	.vibe-copyFiltersDlg_BrowseImg            {width: 25px; height: 25px; margin: 0 2px 0 0; border: 0px; vertical-align: middle;}
+	.vibe-copyFiltersDlg-contentPanel         {margin-top: 10px;}
+	.vibe-copyFiltersDlg_filterSectionLabel   {font-size: 14px !important; font-weight: bold !important;}
+	.vibe-copyFiltersDlg-filterSelectCB label {font-size: 12px !important; padding-top: 5px; padding-left: 2px; display: inline-block;}
+	.vibe-copyFiltersDlg-filtersPanel         {color: #505354; font-size: 12px;}
+	.vibe-copyFiltersDlg_findLabel            {color: #505354; }
+	.vibe-copyFiltersDlg_findPanel_Inner      {}
+	.vibe-copyFiltersDlg_findPanel_Outer      {padding-top: 15px;}
+	.vibe-copyFiltersDlg_findWidget           {margin-top: 2px; display: inline;}
+	.vibe-copyFiltersDlg-hint                 {white-space: normal; width: 400px; font-size: 14px;}
+	.vibe-copyFiltersDlg-mainPanel            {margin: 10px 10px 10px 13px;}
+	.vibe-copyFiltersDlg-scrollPanel          {overflow: auto !important; border: 1px solid #C4C4C4; margin-top: 10px;}
+	.vibe-copyFiltersDlg-scrollLimit          {height: 175px;}
+/* End:  Copy Filters dialog styles. */
+
+/* Start:  Copy Public Link dialog styles. */
+	.vibe-copyPublicLinkDlg-contentPanel         {margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-createButton         {}
+	.vibe-copyPublicLinkDlg-headerPanel          {position: relative; margin-bottom: 15px;}
+	.vibe-copyPublicLinkDlg-headerPanel img      {position: absolute; top: 0px; left: 1px;}
+	.vibe-copyPublicLinkDlg-headerNamePanel      {margin-left: 55px; width: 550px;}
+	.vibe-copyPublicLinkDlg-headerNameLabel      {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
+	.vibe-copyPublicLinkDlg-headerPathLabel      {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
+	.vibe-copyPublicLinkDlg-hintPanel            {color: #353838; display: block; width: 600px; white-space: normal; margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-hintStart            {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
+	.vibe-copyPublicLinkDlg-hintTail             {display: inline; font-weight: normal; font-size: 14px;}
+	.vibe-copyPublicLinkDlg-linksHeaderPanel     {position: relative; margin-bottom: 5px; margin-left: 8px; margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-linksHeaderPanel img {position: absolute; top: 2px; left: 0px;}
+	.vibe-copyPublicLinkDlg-linksHeaderNamePanel {margin-left: 30px; width: 540px;}
+	.vibe-copyPublicLinkDlg-linksHeaderNameLabel {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
+	.vibe-copyPublicLinkDlg-linksHeaderPathLabel {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
+	.vibe-copyPublicLinkDlg-linksLabel           {display: block; position: relative; margin-left: 10px; margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-linksLabel2          {margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-linksInput           {width: 95%; background-color: #fff; color: #1f1f1f; overflow: hidden; padding: 2px !important; border: 1px solid #ccc; margin-left: 10px;}
+	.vibe-copyPublicLinkDlg-linksPanel           {color: #505354; font-size: 12px;}
+	.vibe-copyPublicLinkDlg-mainPanel            {margin: 10px 10px 10px 13px;}
+	.vibe-copyPublicLinkDlg-readingImage         {display: inline; padding-right: 5px;}
+	.vibe-copyPublicLinkDlg-readingLabel         {display: inline; font-size: 1.1em; color: #505354;}
+	.vibe-copyPublicLinkDlg-readingPanel         {display: block;}
+	.vibe-copyPublicLinkDlg-scrollPanel          {overflow: auto !important; border: 1px solid #C4C4C4;}
+	.vibe-copyPublicLinkDlg-scrollLimit          {height: 175px;}
+/* End:  Copy Public Link dialog styles. */
+
+/* Start:  Edit Public Link dialog styles. */
+	.vibe-editPublicLinkDlg-actionsPanel          {margin-top: 15px; margin-left: 10px;}
+	.vibe-editPublicLinkDlg-contentPanel          {margin-top: 10px;}
+	.vibe-editPublicLinkDlg-deleteButton          {}
+	.vibe-editPublicLinkDlg-deleteButton:hover    {}
+	.vibe-editPublicLinkDlg-headerNamePanel       {margin-left: 55px; width: 550px;}
+	.vibe-editPublicLinkDlg-headerNameLabel       {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
+	.vibe-editPublicLinkDlg-headerPanel           {position: relative; margin-bottom: 15px;}
+	.vibe-editPublicLinkDlg-headerPanel img       {position: absolute; top: 0px; left: 1px;}
+	.vibe-editPublicLinkDlg-headerPathLabel       {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
+	.vibe-editPublicLinkDlg-hintPanel             {color: #353838; display: block; width: 600px; white-space: normal; margin-top: 10px;}
+	.vibe-editPublicLinkDlg-hintTail              {display: inline; font-weight: normal; font-size: 14px;}
+	.vibe-editPublicLinkDlg-linksHeaderNamePanel  {margin-left: 30px; width: 540px;}
+	.vibe-editPublicLinkDlg-linksHeaderNameLabel  {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
+	.vibe-editPublicLinkDlg-linksHeaderPanel      {position: relative; margin-bottom: 5px; margin-left: 8px; margin-top: 10px;}
+	.vibe-editPublicLinkDlg-linksHeaderPanel img  {position: absolute; top: 2px; left: 0px;}
+	.vibe-editPublicLinkDlg-linksHeaderPathLabel  {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
+	.vibe-editPublicLinkDlg-linksInput            {width: 95%; background-color: #fff; color: #1f1f1f; overflow: hidden; padding: 2px !important; border: 1px solid #ccc; margin-left: 10px;}
+	.vibe-editPublicLinkDlg-linksLabel            {display: block; position: relative; margin-left: 10px; margin-top: 10px;}
+	.vibe-editPublicLinkDlg-linksLabel2           {margin-top: 10px;}
+	.vibe-editPublicLinkDlg-linksPanel            {color: #505354; font-size: 12px;}
+	.vibe-editPublicLinkDlg-mainPanel             {margin: 10px 10px 10px 13px;}
+	.vibe-editPublicLinkDlg-scrollLimit           {height: 175px;}
+	.vibe-editPublicLinkDlg-scrollPanel           {overflow: auto !important; border: 1px solid #C4C4C4;}
+	.vibe-editPublicLinkDlg-shareExpirationTable  {vertical-align: middle;}
+	.vibe-editPublicLinkDlg-shareExpirationWidget {margin-left: 20px; height: auto !important;}
+/* End:  Edit Public Link dialog styles. */
+
+/* Start:  Email Public Link dialog styles. */
+	.vibe-emailPublicLinkDlg-content {margin: 10px 13px;}
+	
+.emailPublicLinkDlg_HeaderPanel
+{
+	position: relative;
+	margin-bottom: 15px;
+}
+
+.emailPublicLinkDlg_HeaderPanel img
+{
+	position: absolute;
+	top: 0px;
+	left: 1px;
+}
+
+.emailPublicLinkDlg_HeaderNamePanel
+{
+	margin-left: 55px;
+	width: 550px;
+}
+
+.emailPublicLinkDlg_HeaderNameLabel
+{
+	font-size: 1.15em;
+	line-height: 1.3em;
+	color: #1f1f1f;
+}
+
+.emailPublicLinkDlg_HeaderPathLabel
+{
+	color: #505354;
+	font-size: 13px;
+	line-height: 16px;
+	overflow: hidden;
+}
+
+.emailPublicLinkDlg_expirationPanel
+{
+	margin-top: 10px;
+}
+
+.emailPublicLinkDlg_Hint
+{
+	color: #353838;
+	font-size: 14px;
+	line-height: 18px;
+	width: 550px;
+	padding-bottom: 5px;
+}
+
+.emailPublicLinkDlg_FloatingHint
+{
+	color: #949494;
+	font-size: 13px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 1000;
+}
+
+.emailPublicLinkDlg_MessageBox
+{
+	padding: 10px !important;
+	font-size: 15px;
+	font-family: Arial, Helvetica, sans-serif;
+	line-height: 18px;
+}
+/* End:  Email Public Link dialog styles. */
+
+/* Start:  Mail To Muliple Public Links Select dialog styles. */
+	.vibe-mailToMultiplePublicLinksSelectDlg                  {width: 800px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-contentPanel     {margin-top: 10px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerLabel      {}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerNameLabel  {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerNamePanel  {margin-left: 55px; width: 700px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerPanel      {position: relative; margin-bottom: 15px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerPanel img  {position: absolute; top: 0px; left: 1px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerPathLabel  {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-hintPanel        {display: block; width: 775px; white-space: normal; margin-top: 10px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-hintStart        {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-hintTail         {display: inline; font-weight: normal; font-size: .9em;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-linksPanel       {color: #505354; font-size: 12px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-mainPanel        {margin: 10px 10px 10px 13px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-scrollPanel      {overflow: auto !important; border: 1px solid #C4C4C4;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-scrollLimit      {height: 175px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableCell        {white-space: nowrap;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableCellExpires {color: red; font-weight: bold;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableCellNote    {white-space: normal !important;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableColumnCell  {white-space: nowrap;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableHeader      {}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink        {white-space: nowrap;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink:hover  {cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableRow         {}
+/* End:  Mail To Muliple Public Links Select dialog styles. */
+
+/* Start: Share Expiration widget styles. */
+.shareExpirationWidget_expirationPanel
+{
+}
+
+.shareExpirationWidget_expiresOnImg:hover
+{
+	cursor: pointer;
+}
+
+/* End: Share Expiration widget styles. */
+
+/* Start:  LDAP browser dialog styles. */
+	.gwNameCell                  {font-size: 13px;}
+	.gwNameCell-empty            {font-size: 13px; font-style: italic;}
+	.gwNameCell-root             {font-size: 14px; border: 0 none !important;}
+	.gwNameCellImg               {padding-right: 3px;}
+	.gwNameCellImg-empty         {padding-right: 3px; width: 16px; height: 16px;}
+	.gwNameCellImg-root          {padding-right: 3px;}
+	.ldapBrowser-browsePanel     {display: inline-block;}
+	.ldapBrowser-mainPanel       {margin: 10px 10px 10px 13px;}
+	.ldapBrowser-scroller        {overflow: auto; height: 250px; width: 600px;}
+	.ldapBrowser-treesPanel      {white-space: nowrap; padding-bottom: 5px;}
+	.ldapBrowser-treeSelect      {}
+	.ldapBrowser-treeSelectLabel {font-size: 13px; color: #000000;}
+/* End:  LDAP browser dialog styles. */
+
+/* Start: Name Completion Settings dialog */
+
+.nameCompletionSettingsDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: .9em;
+	margin-bottom: 6px;
+}
+
+/* End: Name Completion Settings dialog */
+
+/* Start:  Styles used in the 'Configure Password Policy' dialog. */
+	.vibe-configPasswordPolicyDlg                 {}
+	.vibe-configPasswordPolicyDlg-checkPanel      {margin-bottom: 0.5em;}
+	.vibe-configPasswordPolicyDlg-hintLabel       {margin-left: 10px;}
+	.vibe-configPasswordPolicyDlg-hintLabel3of    {margin-left: 20px;}
+	.vibe-configPasswordPolicyDlg-hintLabelHeader {font-size: 16px !important;}
+	.vibe-configPasswordPolicyDlg-hintPanel       {color: #4D6D8B; font-size: 13px; margin-bottom: 0.5em;}
+/* End:  Styles used in the 'Configure Password Policy' dialog. */
+
+/* Start:  Styles used in the 'Configure Update Logs' dialog. */
+	.vibe-configUpdateLogsDlg                 {}
+	.vibe-configUpdateLogsDlg-checkPanel      {margin-bottom: 0.5em;}
+	.vibe-configUpdateLogsDlg-hintLabel       {margin-left: 10px;}
+	.vibe-configUpdateLogsDlg-hintLabelHeader {font-size: 16px !important;}
+	.vibe-configUpdateLogsDlg-hintPanel       {color: #4D6D8B; font-size: 13px; margin-bottom: 0.5em;}
+/* End:  Styles used in the 'Configure Update Logs' dialog. */
+
+/* Start:  Styles used in the "Configure Mobile Applications" dialog. */
+	.configMobileAppsDlg_AndroidPanel {padding-top: 5px; padding-left: 20px;}  
+	.configMobileAppsDlg_IosPanel     {padding-top: 5px; padding-left: 20px;}  
+	.configMobileAppsDlg_List         {width: 250px;}
+	.configMobileAppsDlg_ListButton   {min-width: 60px;}
+	.configMobileAppsDlg_ListButtons  {margin-left: 5px;}
+	.configMobileAppsDlg_ListHeader   {font-size: 13px;}
+	.configMobileAppsDlg_ListPanel    {padding-top: 5px;}
+	.configMobileAppsDlg_OpenInLabel  {font-size: 16px; margin-right: 5px;}
+	.configMobileAppsDlg_OpenInSelect {font-size: 13px;}
+/* End:  Styles used in the "Configure Mobile Applications" dialog. */
+
+
+/* Start:  Styles used in the "Configure Mobile Applications" dialog. */
+
+.editShareWidget_descLabel
+{
+	color: #666666;
+	margin-left: 5px;
+	margin-top: 20px;
+}
+
+.editShareWidget_contentPanel
+{
+    padding: 6px 10px;
+}
+
+.editShareWidget_footerPanel
+{
+	text-align: left;
+	padding-bottom: 10px;
+	padding-left: 6px;
+}
+
+.editShareWidget_headerPanel
+{
+	color: #5691a6;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 8px 2px 4px 2px;
+	white-space: nowrap;
+	overflow: hidden;
+	vertical-align: middle;
+	text-align: center;
+	border-bottom: 1px solid #e0e0e0;
+}
+
+.editShareWidget_mainPanel
+{
+    border-color: #BABDB6;
+    border-radius: 5px;
+    border-style: solid;
+    border-width: 0px; /* changed from 1px */
+}
+
+/* End:  Styles used in the "Edit Share" widget. */
+
+
+/* Start: Styles used in the Net Folder Settings dialog. */
+
+.netFolderSettingsDlg_refreshCachedRightsInterval
+{
+	margin-top: 10px;
+	font-size: 13px;
+}
+
+.netFolderSettingsDlg_useDirRightsHint
+{
+	color: #4D6D8B;
+	font-size: .85em;
+	margin-bottom: 0.5em;
+	margin-left: 44px;
+	margin-top: 4px;
+	width: 65%;
+}
+
+
+/* End: Styles used in the Net Folder Settings dialog. */
+
+
+/* Start: Prompt for external users email address dialog */
+
+.promptForExternalUsersEmailAddressDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: .9em;
+	margin-bottom: 6px;
+}
+
+/* End: Name Completion Settings dialog */
+
+
+
+
+/* Start: Edit KeyShield SSO Configuration dialog */
+
+.editKeyShieldConfigDlg_ConnectorNamesSpacing
+{
+	margin-top: 2px;
+}
+
+.editKeyShieldConfigDlg_Header
+{
+	font-size: 1.1em;
+	font-weight: bold;
+}
+
+.editKeyShieldConfigDlg_HeaderPanel
+{
+}
+
+.editKeyShieldConfigDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: .9em;
+}
+
+.editKeyShieldConfigDlg_MilliSecondsLabel
+{
+	margin-left: 5px;
+}
+
+.editKeyShieldConfigDlg_TestConnectionSpacing
+{
+	margin-top: 8px;
+}
+
+.editKeyShieldDlg_StackTracePanel
+{
+	height: 200px;
+	margin-top: 4px;
+	overflow: auto;
+}
+
+.editKeyShieldDlg_SeeStackTraceLabel
+{
+	color: #036f9f;
+	cursor: pointer;
+	margin-top: 6px;
+	text-decoration: none;
+}
+
+/* End: Edit KeyShield SSO Configuration dialog */
+
+
+
+/* Start: Access Rights Info dialog */
+
+.accessRightsInfoDlg_Section
+{
+	margin-bottom: 10px;
+}
+
+.accessRightsInfoDlg_Label
+{
+	font-weight: bold;
+	margin-right: .5em;
+}
+
+/* End: Access Rights Info dialog */
+
+/* Start:  Edit desktop branding dialog styles. */
+	.vibe-editDesktopBrandingDlg             {}
+	.vibe-editDesktopBrandingDlg-uploadTable {}
+	.vibe-editDesktopBrandingDlg-rootPanel   {background-color: white; padding: 10px;}
+/* End:  Edit desktop branding dialog styles. */
+
+/* Start:  Edit mobile branding dialog styles. */
+	.vibe-editMobileBrandingDlg             {}
+	.vibe-editMobileBrandingDlg-uploadTable {}
+	.vibe-editMobileBrandingDlg-rootPanel   {background-color: white; padding: 10px;}
+/* End:  Edit mobile branding dialog styles. */
+
+/* Start:  Upload site branding composite styles. */
+	.vibe-uploadSiteBranding-label         {white-space: nowrap;}
+	.vibe-uploadSiteBranding-input         {width: 300px;}
+	.vibe-uploadSiteBranding-overwriteHint {font-size: 11px !important; color: #555555; padding-bottom: 10px; width: 500px;}
+	.vibe-uploadSiteBranding-uploadPanel   {}
+/* End:  Upload site branding composite styles. */
+	
+/* End Of File */
