@@ -716,6 +716,7 @@ public interface ObjectKeys {
     public static final String FIELD_ZONE="zoneId";
     public static final String FIELD_INTERNAL="identityInfo.internal";
     public static final String FIELD_INTERNALID="internalId";
+    public static final String FIELD_FROMLDAP="identityInfo.fromLdap";
 
     public static final String FIELD_ENTITY_TITLE="title";
     public static final String FIELD_ENTITY_NORMALIZED_TITLE="normalTitle";
