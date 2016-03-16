@@ -7946,6 +7946,7 @@ public class GwtViewHelper {
 				ai.setPrincipalType(getPrincipalType(user));
 				ai.setAdmin(bs.getAdminModule().testUserAccess(user, AdminOperation.manageFunction));
 				ai.setUserHasLoggedIn(null != user.getFirstLoginDate());
+				ai.setTermsAndConditionsAcceptDate(user.getTermsAndConditionsAcceptDate());
 			}
 			finally {
 				SimpleProfiler.stop("GwtViewHelper.getUserProperties(Gather basic account information)");

@@ -154,7 +154,7 @@ public class UserPropertiesDlg extends DlgBox
 	 * Adds information about the user's account to the grid.
 	 */
 	private void addAccountInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo account, boolean addSectionHeader) {
-		// Add the user's login ID...
+		// Add the user's login ID...	
 		int row = getSectionRow(grid, rf, addSectionHeader);
 		addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_UserId(), account.getLoginId(), false);
 		
@@ -163,6 +163,11 @@ public class UserPropertiesDlg extends DlgBox
 			// ...add the last login date/time stamp...
 			row = grid.getRowCount();
 			addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LastLogin(), account.getLastLogin(), true);
+		}
+		
+		if(account.getTermsAndConditionsAcceptDate()!=null){
+			row = grid.getRowCount();
+			addLabeledText(grid,row,m_messages.userPropertiesDlgLabel_TermsAndConditionsAcceptDate(),account.getTermsAndConditionsAcceptDate().toString(),false);
 		}
 
 		// ...add the type of account...
@@ -1052,7 +1057,7 @@ public class UserPropertiesDlg extends DlgBox
 		RowFormatter		rf = grid.getRowFormatter();
 
 		// ...add the various components of what we know about the
-		// ...user...
+		// ...user...		
 		AccountInfo ai = m_userProperties.getAccountInfo();
 		addIdentityInfo(       grid, cf,     ai                                             );
 		addProfileInfo(        grid, cf, rf, ai, m_userProperties.getProfile(),        false);	// false -> Don't add with a section header.

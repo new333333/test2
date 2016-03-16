@@ -1698,7 +1698,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static ErrorListRpcResponseData completeExternalUserSelfRegistration(AllModulesInjected bs, Long extUserId, String firstName, String lastName, String pwd, String invitationUrl) {
+	public static ErrorListRpcResponseData completeExternalUserSelfRegistration(AllModulesInjected bs, Long extUserId, String firstName, String lastName, String pwd, String invitationUrl,Boolean hasAcceptedTermsAndConditions) {
 		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 		try {
 			// Get the external user.
@@ -1724,6 +1724,9 @@ public class GwtServerHelper {
 				ProfileModule pm = bs.getProfileModule();
 				pm.modifyUserFromPortal( extUser.getId(), updates, null);
 				pm.setLastPasswordChange(extUser,         new Date()   );	// Consider the user's password as having just been changed.
+				if(hasAcceptedTermsAndConditions){
+					pm.setTermsAndConditionsAcceptDate(extUser.getId(), new Date());
+				}
 				
 				ExternalUserUtil.markAsCredentialed(extUser);
 				

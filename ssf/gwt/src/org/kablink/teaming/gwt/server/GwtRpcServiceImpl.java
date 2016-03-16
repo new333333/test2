@@ -550,7 +550,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 																		srCmd.getFirstName(),
 																		srCmd.getLastName(),
 																		srCmd.getPwd(),
-																		srCmd.getInvitationUrl() );
+																		srCmd.getInvitationUrl(),
+																		srCmd.isAcceptedTermsAndConditions());
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -4112,6 +4113,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			SaveZoneShareTermsCmd szsrCmd=(SaveZoneShareTermsCmd)cmd;
 			Boolean result=GwtShareHelper.saveZoneShareTerms(this,szsrCmd.getZoneShareTerms());
+			response=new VibeRpcResponse(new BooleanRpcResponseData(result));
+			return response;
 		}
 		
 		case SEND_FORGOTTEN_PWD_EMAIL:
