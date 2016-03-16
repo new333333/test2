@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
+import org.kablink.teaming.gwt.client.ZoneShareTerms;
 import org.kablink.teaming.gwt.client.datatable.ApplyColumnWidths;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CompleteExternalUserSelfRegistrationCmd;
@@ -57,6 +58,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLoginInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetZoneShareTermsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RequestResetPwdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateCaptchaCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -72,7 +74,9 @@ import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolder
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
@@ -98,8 +102,11 @@ import com.google.gwt.event.dom.client.TouchStartHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -119,11 +126,14 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.SimpleCheckBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -189,6 +199,8 @@ public class LoginDlg extends DlgBox
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private String m_preLoginTitle;
 	private boolean m_captchaAlreadyChecked = false;
+	
+	private ZoneShareTerms m_zoneShareTerms=null;
 	
 	/**
 	 * 
@@ -1191,12 +1203,28 @@ public class LoginDlg extends DlgBox
 			return;
 		}
 		
-		cmd = new CompleteExternalUserSelfRegistrationCmd(
+		final Element acceptTermsCheckBox=Document.get().getElementById("acceptTermsCheckBox");
+		
+		if(m_zoneShareTerms!=null)
+		{
+			cmd = new CompleteExternalUserSelfRegistrationCmd(
 														getExtUserId(),
 														getFirstName(),
 														getLastName(),
 														getPwd1(),
-														GwtTeaming.getMainPage().getLoginInvitationUrl() );
+														GwtTeaming.getMainPage().getLoginInvitationUrl(),
+														Boolean.TRUE );
+		}
+		else
+		{
+			cmd = new CompleteExternalUserSelfRegistrationCmd(
+					getExtUserId(),
+					getFirstName(),
+					getLastName(),
+					getPwd1(),
+					GwtTeaming.getMainPage().getLoginInvitationUrl(),
+					Boolean.FALSE );			
+		}
 		// We want to issue the rpc requests without a user login id so that the GwtRpcController
 		// doesn't think the session has timed out.
 		httpRequestInfo = HttpRequestInfo.createHttpRequestInfo();
@@ -1561,7 +1589,39 @@ public class LoginDlg extends DlgBox
 	 */
 	private void showExternalUserRegistrationUI()
 	{
-		GwtTeamingMessages messages;
+		AsyncCallback<VibeRpcResponse> rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				Window.alert(caught.getMessage());
+				showExternalUserRegistrationUI(false);
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				Object obj;
+				Scheduler.ScheduledCommand cmd;
+				obj = result.getResponseData();
+				if ( obj != null && obj instanceof ZoneShareTerms && ((ZoneShareTerms)obj).getTermsAndConditions()!=null &&  ((ZoneShareTerms)obj).getTermsAndConditions().trim().length()>0)
+				{
+					m_zoneShareTerms = (ZoneShareTerms) obj;
+					showExternalUserRegistrationUI(true);									
+				}
+				else
+				{
+					showExternalUserRegistrationUI(false);
+				}
+			}
+		};
+		GetZoneShareTermsCmd cmd = new GetZoneShareTermsCmd();
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
+	}
+	
+	private void showExternalUserRegistrationUI(boolean showTermsAndConditions)
+	{
+		final GwtTeamingMessages messages;
 		FlowPanel panel;
 		
 		m_mainPanel.clear();
@@ -1600,6 +1660,40 @@ public class LoginDlg extends DlgBox
 			m_registerBtn.setVisible( true );
 			m_registerTouchBtn = new TouchButton( m_registerBtn );
 			
+			final Element termsContainerElement=Document.get().getElementById("termsContainer");
+			final Element termsLabel=Document.get().getElementById("acceptTermsAnchor");
+			final Element acceptTermsCheckBox=Document.get().getElementById("acceptTermsCheckBox");
+			
+			if(showTermsAndConditions){
+				termsContainerElement.getStyle().setDisplay(Display.INLINE_BLOCK);
+				Event.sinkEvents(termsLabel, Event.ONCLICK);
+				Event.setEventListener(termsLabel, new EventListener() {					
+					@Override
+					public void onBrowserEvent(Event event) {
+						String unescapedHtml=new HTML(m_zoneShareTerms.getTermsAndConditions()).getText();
+						openTermsAndConditionsWindow(messages.loginDlg_TermsLabel(),unescapedHtml,messages.loginDlg_TermsPopupBlockMessage());
+					}
+				});
+				
+				m_registerBtn.setEnabled(false);
+				element.removeClassName("gwt-Button");
+				Event.sinkEvents(acceptTermsCheckBox, Event.ONCLICK);
+				Event.setEventListener(acceptTermsCheckBox, new EventListener() {					
+					@Override
+					public void onBrowserEvent(Event event) {
+						if(((InputElement)acceptTermsCheckBox).isChecked())
+						{
+							m_registerBtn.setEnabled(true);							
+							element.addClassName("gwt-Button");
+						}
+						else{
+							m_registerBtn.setEnabled(false);
+							element.removeClassName("gwt-Button");
+						}
+					}
+				});
+			}
+			
 			m_registerBtn.addClickHandler( new ClickHandler()
 			{
 				@Override
@@ -1612,9 +1706,9 @@ public class LoginDlg extends DlgBox
 						{
 							handleClickOnRegisterBtn();
 						}
-					} );
+					});
 				}
-			} );
+			});		
 		}
 
 		// Create a panel that holds the self registration controls
@@ -1635,6 +1729,7 @@ public class LoginDlg extends DlgBox
 			
 			row = 0;
 			table = new FlexTable();
+			table.setWidth("100%");
 			
 			m_selfRegPanel.add( table );
 			
@@ -1699,6 +1794,21 @@ public class LoginDlg extends DlgBox
 				table.setWidget( row, 1, m_pwd2TxtBox );
 				++row;
 			}
+			
+			//Add the terms and conditions txtarea
+			/*if(showTermsAndConditions){
+				label=new InlineLabel(messages.loginDlg_TermsLabel());
+				table.getFlexCellFormatter().setColSpan(row, 0, 2);
+				table.getFlexCellFormatter().addStyleName(row, 0, "loginDlg_TermsLabelHeader");
+				table.setHTML(row, 0, label.getElement().getInnerHTML());
+				++row;
+					
+				FlowPanel termsPanel=new FlowPanel();
+				termsPanel.getElement().setInnerHTML(m_zoneShareTerms.getTermsAndConditions());
+				table.getFlexCellFormatter().setColSpan(row, 0, 2);
+				table.getFlexCellFormatter().addStyleName(row, 0, "loginDlg_TermsTxtarea");
+				table.setWidget(row, 0, termsPanel);
+			}*/
 		}
 		
 		// Hide the user name and password controls that are used for regular authentication
@@ -1739,6 +1849,27 @@ public class LoginDlg extends DlgBox
 
 		m_mainPanel.add( m_formPanel );
 	}
+	
+	public static native void openTermsAndConditionsWindow(String title,String html,String popuBlockErrorMessage) /*-{
+		var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
+	    var dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+	    var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+	    var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height
+	    var w=width/2;
+		var h=height/2;
+	    var left = ((width / 2) - (w / 2)) + dualScreenLeft;
+	    var top = ((height / 2) - (h / 2)) + dualScreenTop;
+		var termsWindow=window.open("","_blank",'scrollbars=yes, width=' + width+ ', height=' + height + ', top=' + top + ', left=' + left);
+		if(termsWindow && termsWindow.top)
+		{
+			termsWindow.document.write(html);
+			termsWindow.focus();
+		}
+		else
+		{
+			alert(popuBlockErrorMessage);
+		}
+	}-*/;
 	
 	/**
 	 * Show the ui needed for an external user to reset their password.

@@ -988,6 +988,8 @@ public interface GwtTeamingMessages extends Messages {
 	String loginDlg_PwdResetFailed();
 	String loginDlg_pwdDoNotMatch();
 	String loginDlg_ReenterPwdLabel();
+	String loginDlg_TermsLabel();
+	String loginDlg_TermsPopupBlockMessage();
 	String loginDlg_Register();
 	String loginDlg_RegisterUsingSelfReg();
 	String loginDlg_ResetPwd();
@@ -3229,6 +3231,7 @@ public interface GwtTeamingMessages extends Messages {
 	String userPropertiesDlgLabel_Home();
 	String userPropertiesDlgLabel_HomePath();
 	String userPropertiesDlgLabel_LastLogin();
+	String userPropertiesDlgLabel_TermsAndConditionsAcceptDate();
 	String userPropertiesDlgLabel_LdapContainer();
 	String userPropertiesDlgLabel_LdapDN();
 	String userPropertiesDlgLabel_NetFolders();
