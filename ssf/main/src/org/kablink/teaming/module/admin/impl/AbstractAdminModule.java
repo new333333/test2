@@ -4247,4 +4247,17 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setExtUserTermsAndConditions(extUserTermsAndConditions);
     }
+    
+    @Override
+    public void setExtUserTermsAndConditionsEnabled(boolean extUserTermsAndConditionsEnabled) {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setExtUserTermsAndConditionsEnabled(extUserTermsAndConditionsEnabled);
+    }
+    
+    @Override
+    public void setExtUserTermsAndConditionsSettings(boolean extUserTermsAndConditionsEnabled, String extUserTermsAndConditions) {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setExtUserTermsAndConditions(extUserTermsAndConditions);
+  		zoneConfig.setExtUserTermsAndConditionsEnabled(extUserTermsAndConditionsEnabled);    	
+    }
 }

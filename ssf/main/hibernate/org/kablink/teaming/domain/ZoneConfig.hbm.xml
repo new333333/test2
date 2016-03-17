@@ -100,5 +100,6 @@
     <property name="telemetryEnabled" access="field" />
     <property name="telemetryTier2Enabled" access="field" />
     <property name="extUserTermsAndConditions" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
+    <property name="extUserTermsAndConditionsOn" access="field" />
   </class>
 </hibernate-mapping>
