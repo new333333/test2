@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -77,6 +78,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
@@ -167,7 +169,9 @@ public class UserPropertiesDlg extends DlgBox
 		
 		if(account.getTermsAndConditionsAcceptDate()!=null){
 			row = grid.getRowCount();
-			addLabeledText(grid,row,m_messages.userPropertiesDlgLabel_TermsAndConditionsAcceptDate(),account.getTermsAndConditionsAcceptDate().toString(),false);
+			Date date=account.getTermsAndConditionsAcceptDate();
+			String formattedDate=DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM).format(date);
+			addLabeledText(grid,row,m_messages.userPropertiesDlgLabel_TermsAndConditionsAcceptDate(),formattedDate,false);
 		}
 
 		// ...add the type of account...

@@ -1604,7 +1604,7 @@ public class LoginDlg extends DlgBox
 				Object obj;
 				Scheduler.ScheduledCommand cmd;
 				obj = result.getResponseData();
-				if ( obj != null && obj instanceof ZoneShareTerms && ((ZoneShareTerms)obj).getTermsAndConditions()!=null &&  ((ZoneShareTerms)obj).getTermsAndConditions().trim().length()>0)
+				if ( obj != null && obj instanceof ZoneShareTerms && ((ZoneShareTerms)obj).isShowTermsAndConditions())
 				{
 					m_zoneShareTerms = (ZoneShareTerms) obj;
 					showExternalUserRegistrationUI(true);									
@@ -1851,15 +1851,9 @@ public class LoginDlg extends DlgBox
 	}
 	
 	public static native void openTermsAndConditionsWindow(String title,String html,String popuBlockErrorMessage) /*-{
-		var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
-	    var dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
-	    var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
-	    var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height
-	    var w=width/2;
-		var h=height/2;
-	    var left = ((width / 2) - (w / 2)) + dualScreenLeft;
-	    var top = ((height / 2) - (h / 2)) + dualScreenTop;
-		var termsWindow=window.open("","_blank",'scrollbars=yes, width=' + width+ ', height=' + height + ', top=' + top + ', left=' + left);
+	    var x=screen.width/2 - 700/2;
+	    var y=screen.width/2 - 450/2;
+		var termsWindow=window.open("",title,'width=700, height=485, top=' + y + ', left=' + x);
 		if(termsWindow && termsWindow.top)
 		{
 			termsWindow.document.write(html);
