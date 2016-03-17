@@ -2052,7 +2052,9 @@ public class GwtShareHelper
 	public static ZoneShareTerms getZoneShareTerms( AllModulesInjected ami )
 	{
 		Long zoneId=RequestContextHolder.getRequestContext().getZoneId();
-		ZoneShareTerms shareTerms=new ZoneShareTerms(ami.getZoneModule().getZoneConfig( zoneId ).getExtUserTermsAndConditions());	
+		String termsAndConditions=ami.getZoneModule().getZoneConfig( zoneId ).getExtUserTermsAndConditions();
+		Boolean showTermsAndConditions=ami.getZoneModule().getZoneConfig(zoneId).isExtUserTermsAndConditionsEnabled();
+		ZoneShareTerms shareTerms=new ZoneShareTerms(termsAndConditions,showTermsAndConditions);	
 		return shareTerms;
 	}	
 
@@ -2801,7 +2803,7 @@ public class GwtShareHelper
 			m_logger.error( "In GwtShareHelper.saveZoneShareTerms(), invalid parameters" );
 			return Boolean.FALSE;
 		}		
-		ami.getAdminModule().setExtUserTermsAndConditions(terms.getTermsAndConditions());		
+		ami.getAdminModule().setExtUserTermsAndConditionsSettings(terms.isShowTermsAndConditions(),terms.getTermsAndConditions());
 		return Boolean.TRUE;
 	}	
 

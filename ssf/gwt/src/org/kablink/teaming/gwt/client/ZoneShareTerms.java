@@ -44,11 +44,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class ZoneShareTerms implements IsSerializable, VibeRpcResponseData {
 	private String m_termsAndConditions;
+	private boolean m_showTermsAndConditions;
 	
 	public ZoneShareTerms(){super();}
 	
-	public ZoneShareTerms(String termsAndConditions){
+	public ZoneShareTerms(String termsAndConditions,Boolean showTermsAndConditions){
 		this.m_termsAndConditions=termsAndConditions;
+		this.m_showTermsAndConditions=showTermsAndConditions;
 	}
 
 	public String getTermsAndConditions() {
@@ -59,5 +61,11 @@ public class ZoneShareTerms implements IsSerializable, VibeRpcResponseData {
 		this.m_termsAndConditions = m_termsAndConditions;
 	}
 	
+	public boolean isShowTermsAndConditions(){
+		return m_showTermsAndConditions;
+	}
 	
+	public void setShowTermsAndConditions(boolean showTermsAndConditions){
+		m_showTermsAndConditions = showTermsAndConditions;
+	}
 }

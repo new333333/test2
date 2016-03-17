@@ -3291,6 +3291,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editZoneShareRightsTab_SavingRights();
 	String editZoneShareRightsTab_SelectPrincipalsHint();
 	String editZoneShareTermsTab_LicensingTerms();
+	String editZoneShareTermsTab_ShowTermsAndConditions();
 	String editZoneShareTermsTab_ReadingLicensingTerms();
 	
 	// Strings used in the 'Edit Zone Share Lists' tab.

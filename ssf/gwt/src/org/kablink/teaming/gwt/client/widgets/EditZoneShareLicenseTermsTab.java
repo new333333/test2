@@ -50,6 +50,7 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -69,9 +70,10 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class EditZoneShareLicenseTermsTab extends EditZoneShareTabBase
 {
 	private TextArea m_termsAndConditionsTxtArea;
+	private CheckBox m_showTermsAndConditionsCheckBox;
 	private EditZoneShareSettingsDlg m_shareDlg;
 	private List<HandlerRegistration> m_registeredEventHandlers;
-	private ZoneShareTerms m_zoneShareTerms;
+	private ZoneShareTerms m_zoneShareTerms;	
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -145,6 +147,13 @@ public class EditZoneShareLicenseTermsTab extends EditZoneShareTabBase
 		table = new FlexTable();
 		cellFormatter = table.getFlexCellFormatter();
 		mainPanel.add( table );
+		
+		m_showTermsAndConditionsCheckBox=new CheckBox(messages.editZoneShareTermsTab_ShowTermsAndConditions());
+		cellFormatter.setColSpan( nextRow, 0, 2 );
+		cellFormatter.setWordWrap( nextRow, 0, false );
+		cellFormatter.addStyleName(nextRow, 0, "editZoneShareListsTab_ShowTermsAndCond");
+		table.setWidget(nextRow, 0, m_showTermsAndConditionsCheckBox);
+		++nextRow;
 		
 		// Add a hint
 		cellFormatter.setColSpan( nextRow, 0, 2 );
@@ -251,7 +260,8 @@ public class EditZoneShareLicenseTermsTab extends EditZoneShareTabBase
 	private void initTermsAndConditions()
 	{
 		if(m_zoneShareTerms == null || m_zoneShareTerms.getTermsAndConditions() == null) return;
-		m_termsAndConditionsTxtArea.setText(new HTML(m_zoneShareTerms.getTermsAndConditions()).getText());			
+		m_termsAndConditionsTxtArea.setText(new HTML(m_zoneShareTerms.getTermsAndConditions()).getText());
+		m_showTermsAndConditionsCheckBox.setValue(m_zoneShareTerms.isShowTermsAndConditions());
 	}
 	
 	/**
@@ -360,6 +370,7 @@ public class EditZoneShareLicenseTermsTab extends EditZoneShareTabBase
 			ZoneShareTerms terms=new ZoneShareTerms();
 			SafeHtml escapedHtml=SafeHtmlUtils.fromString(m_termsAndConditionsTxtArea.getText());
 			terms.setTermsAndConditions(escapedHtml.asString());
+			terms.setShowTermsAndConditions(m_showTermsAndConditionsCheckBox.getValue());
 			cmd.setZoneShareTerms(terms);
 			GwtClientHelper.executeCommand(cmd, rpcCallback);
 		}
