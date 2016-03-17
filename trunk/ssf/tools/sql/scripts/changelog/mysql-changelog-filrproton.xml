@@ -19,4 +19,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="3">
+        <comment>Enable or disable the use of terms and conditions for external user</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="extUserTermsAndConditionsOn" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
