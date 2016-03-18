@@ -10,8 +10,8 @@
     <modules>
         <java-json-client disabled="true"/>
         <java-xml-client disabled="true"/>
-        <jackson1 disabled="true"/>
-        <jackson honorJaxb="true" datatype-detection="passive"/>
+        <jackson disabled="true"/>
+        <jackson1 honorJaxb="true" datatype-detection="passive"/>
         <jaxrs groupBy="annotation"/>
     </modules>
 </enunciate>
