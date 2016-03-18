@@ -1,5 +1,5 @@
 <enunciate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:noNamespaceSchemaLocation="http://enunciate.webcohesion.com/schemas/enunciate-2.3.0.xsd" path-sort-strategy="depth_first">
+           xsi:noNamespaceSchemaLocation="http://enunciate.webcohesion.com/schemas/enunciate-2.3.0.xsd">
     <title>Filr Client REST Interface</title>
     <description>Reference Documentation for the Filr Client REST Interface</description>
     <copyright>Micro Focus International plc</copyright>
@@ -12,6 +12,6 @@
         <java-xml-client disabled="true"/>
         <jackson disabled="true"/>
         <jackson1 honorJaxb="true" datatype-detection="passive"/>
-        <jaxrs groupBy="annotation"/>
+        <jaxrs groupBy="annotation"  path-sort-strategy="depth_first"/>
     </modules>
 </enunciate>
