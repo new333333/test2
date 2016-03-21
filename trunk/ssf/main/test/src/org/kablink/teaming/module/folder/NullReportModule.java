@@ -319,4 +319,11 @@ public class NullReportModule implements ReportModule {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public List<Map<String, Object>> generateExternalUserReport(Set<Long> userIds, Set<Long> userIdsToSkip,
+			Date startDate, Date endDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
