@@ -3491,6 +3491,21 @@ public class GwtServerHelper {
 				reportsCategory.addAdminOption( adminAction );
 			}
 			
+			// Add a "External User"
+			{
+				title = NLT.get( "administration.report.title.externalUser" );
+
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_EXTERNAL_USER_REPORT );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.REPORT_EXTERNAL_USER );
+				
+				// Add this action to the "reports" category
+				reportsCategory.addAdminOption( adminAction );
+			}
+			
 			// Add a "Disk usage report"
 			{
 				title = NLT.get( "administration.report.title.quota" );

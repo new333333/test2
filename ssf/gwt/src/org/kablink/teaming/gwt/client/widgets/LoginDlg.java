@@ -1665,6 +1665,7 @@ public class LoginDlg extends DlgBox
 			final Element acceptTermsCheckBox=Document.get().getElementById("acceptTermsCheckBox");
 			
 			if(showTermsAndConditions){
+				m_registerBtn.removeFromParent();				
 				termsContainerElement.getStyle().setDisplay(Display.INLINE_BLOCK);
 				Event.sinkEvents(termsLabel, Event.ONCLICK);
 				Event.setEventListener(termsLabel, new EventListener() {					
