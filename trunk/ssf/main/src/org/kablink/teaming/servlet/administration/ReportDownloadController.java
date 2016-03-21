@@ -350,16 +350,21 @@ public class ReportDownloadController extends  SAbstractController {
 							ReportModule.SHARE_RECIPIENT_TYPE,
 							ReportModule.SHARE_ROLE};
 				}
-			} else if ("accessByGuest".equals(reportType)) {
-				hasUsers = true;
-				String type = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, ReportModule.REPORT_TYPE_SUMMARY);
-		        User guest = getProfileModule().getGuestUser();
-		        Long userId = guest.getId();
-		        if (!memberIds.isEmpty()) userId = (Long)memberIds.toArray()[0];
-				report = getReportModule().generateAccessReportByUser(userId, startDate, endDate, type);
-				columns = new String[] {ReportModule.ENTITY_TYPE, 
-						ReportModule.BINDER_ID, 
-						ReportModule.ENTITY_PATH};
+			} else if ("externalUser".equals(reportType)) {
+				hasUsers = true;				
+				//Skip the file sync agent since this could contain millions of entries
+				Set userIdsToSkip = new HashSet();
+				User fsa = getProfileModule().getReservedUser(ObjectKeys.FILE_SYNC_AGENT_INTERNALID);
+				if (fsa != null) userIdsToSkip.add(fsa.getId());
+				report = getReportModule().generateExternalUserReport(memberIds, userIdsToSkip, startDate, endDate);
+				columns = new String[] {
+						ReportModule.EXTERNAL_USER_ID,
+						ReportModule.EXTERNAL_USER_FIRSTNAME,
+						ReportModule.EXTERNAL_USER_LASTNAME,
+						ReportModule.EXTERNAL_USER_EMAIL,
+						ReportModule.EXTERNAL_USER_CREATION_DATE,
+						ReportModule.EXTERNAL_USER_TERMS_ACCEPT_DATE
+				};
 			}
 			printReport(response.getOutputStream(), report, columns, hasUsers);
 			response.getOutputStream().flush();
