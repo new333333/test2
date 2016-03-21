@@ -690,6 +690,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case CREATE_EXTERNAL_USER_REPORT:
+		{
+			CreateExternalUserReportCmd cuarCmd = ((CreateExternalUserReportCmd) cmd);
+			StringRpcResponseData responseData = GwtReportsHelper.createExternalUserReport( this, req, cuarCmd.getBegin(), cuarCmd.getEnd(), cuarCmd.getUserIds());
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case DELETE_CUSTOMIZED_EMAIL_TEMPLATES:  {
 			DeleteCustomizedEmailTemplatesCmd dcetCmd = ((DeleteCustomizedEmailTemplatesCmd) cmd);
 			DeleteCustomizedEmailTemplatesRpcResponseData responseData = GwtEmailTemplatesHelper.deleteCustomizedEmailTemplates(this, req, dcetCmd.getEntityIds());

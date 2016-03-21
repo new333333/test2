@@ -3218,6 +3218,13 @@ public interface GwtTeamingMessages extends Messages {
 	String userActivityReportType_All();
 	String userActivityReportType_Summaries();
 	String userActivityReportWarning_UserAlreadySelected(String name);
+	
+	// String used by the 'External User Report'
+	String externalUserReportCaption1();
+	String externalUserReportCaption2();
+	String externalUserReportPeople();
+	String externalUserReportRemove();
+	String externalUserReportRunReport();
 
 	// Strings used by the 'User Properties' dialog.
 	String userPropertiesDlgEdit_HomeFolder();
