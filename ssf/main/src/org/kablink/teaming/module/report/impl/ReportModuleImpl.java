@@ -81,6 +81,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SharingAudit;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowState;
@@ -2166,7 +2167,52 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 		return report;
 	}
-
+	
+	@Override
+	public List<Map<String,Object>> generateExternalUserReport(final Set<Long> userIds, final Set<Long> userIdsToSkip, final Date startDate, final Date endDate) {
+        final User user = RequestContextHolder.getRequestContext().getUser();
+        getAdminModule().checkAccess(AdminOperation.report);
+        LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+        
+		List<User> results = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException {
+				List extUsers = null;
+				try {
+					Criteria crit = session.createCriteria(UserPrincipal.class)
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, user.getZoneId()))
+						//.add(Restrictions.ge("creation", startDate))
+						//.add(Restrictions.le("creation", endDate))
+						.add(Restrictions.eq("internal", "0"));
+						//.add(Restrictions.eq("fromLocal", "0"))
+						//.add(Restrictions.eq("type", "user"));
+					if (!userIdsToSkip.isEmpty()) {
+						crit.add(Restrictions.not(Restrictions.in("id", userIdsToSkip)));
+					}
+					if (!userIds.isEmpty()) crit.add(Restrictions.in("id", userIds));
+					crit.addOrder(Order.asc("id"));
+					extUsers = crit.list();
+				} catch(Exception e) {
+				}
+				return extUsers;
+			}});		
+		
+		if(results!=null){
+			for(int i=0; i< results.size(); i++) {
+				User userPrincipal=results.get(i);
+				HashMap<String,Object> row = new HashMap<String,Object>();
+					row.put(ReportModule.EXTERNAL_USER_ID, (Long)userPrincipal.getId());
+					row.put(ReportModule.EXTERNAL_USER_FIRSTNAME,userPrincipal.getFirstName());
+					row.put(ReportModule.EXTERNAL_USER_LASTNAME, userPrincipal.getLastName());
+					row.put(ReportModule.EXTERNAL_USER_EMAIL, userPrincipal.getEmailAddress());
+					row.put(ReportModule.EXTERNAL_USER_CREATION_DATE, userPrincipal.getCreation().getDate());
+					row.put(ReportModule.EXTERNAL_USER_TERMS_ACCEPT_DATE, userPrincipal.getTermsAndConditionsAcceptDate());
+					report.add(row);
+				}
+		}
+		return report;
+	}	
+	
 	@Override
 	public List<Map<String,Object>> generateUserDiskUsageReport(final UserQuotaOption option) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();

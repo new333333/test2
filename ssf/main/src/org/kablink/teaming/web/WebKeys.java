@@ -363,6 +363,7 @@ public class WebKeys {
     public static final String ADMIN_ACTION_GET_LOG_FILES = "get_log_files";
 	public static final String ACTION_ACTIVITY_REPORT="activity_report";
 	public static final String ACTION_ACTIVITY_REPORT_BY_USER="activity_report_by_user"; 
+	public static final String ACTION_EXTERNAL_USER_REPORT="external_user_report";
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
     public static final String ACTION_ADD_PROFILE_ENTRY="add_profile_entry";
     public static final String ACTION_ADD_BINDER = "add_binder";

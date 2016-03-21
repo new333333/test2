@@ -166,6 +166,13 @@ public interface ReportModule {
 	
 	public static final String LOGIN_REPORT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss zzz";	// Used in GwtViewHelper too to extract a user's last login.
 	
+	public static final String EXTERNAL_USER_ID="userid";
+	public static final String EXTERNAL_USER_FIRSTNAME="firstname";
+	public static final String EXTERNAL_USER_LASTNAME="lastname";
+	public static final String EXTERNAL_USER_EMAIL="emailaddress";
+	public static final String EXTERNAL_USER_CREATION_DATE="creationdate";
+	public static final String EXTERNAL_USER_TERMS_ACCEPT_DATE="termsacceptancedate";
+	
 	public static class ActivityInfo
 	{
 		DefinableEntity whoOrWhat;
@@ -204,6 +211,7 @@ public interface ReportModule {
 	public List<Map<String, Object>> generateReport(Collection ids, boolean byTeamMembers, boolean byAllUsers, Date startDate, Date endDate);
 	public List<Map<String, Object>> generateActivityReport(final Long binderId, final Long entryId);
 	public List<Map<String, Object>> generateActivityReportByUser(final Set<Long> userIds, final Set<Long> userIdsToSkip, final Date startDate, final Date endDate, final String reportType);
+	public List<Map<String, Object>> generateExternalUserReport(final Set<Long> userIds, final Set<Long> userIdsToSkip, final Date startDate, final Date endDate);
 	public Map<String, Object> generateEntryAclReport(final Folder folder);
 	public List<Map<String,Object>> generateLoginReport(Date startDate, Date endDate, String optionType, String sortType, String sortType2, Set memberIds);
 	public List<Map<String,Object>> generateWorkflowStateReport(Collection ids, Date startDate, Date endDate);
