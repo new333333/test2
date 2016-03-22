@@ -427,7 +427,7 @@
 				<div id="termsContainer" class="gwt-CheckBox" style="display:none;float:left;">
 					<div>
 						<input id="acceptTermsCheckBox" type="checkbox" style="float:left;"/>
-						<label id="acceptTermsAnchor" style="position:absolute; margin-top:-2px; cursor:pointer; color:#135c8f">I accept terms and conditions</label>
+						<label id="acceptTermsAnchor" style="position:absolute; margin-top:-2px;">I accept <span style="cursor:pointer; color:#135c8f; text-decoration:underline;">terms and conditions</span></label>
 					</div>
 				</div>
 				<button type="button" class="teamingButton" style="display: none;color:white;" id="loginRegisterBtn"></button>
