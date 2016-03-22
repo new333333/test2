@@ -1677,7 +1677,7 @@ public class LoginDlg extends DlgBox
 				});
 				
 				m_registerBtn.setEnabled(false);
-				element.removeClassName("gwt-Button");
+				m_registerBtn.setStyleName("teamingButton");
 				Event.sinkEvents(acceptTermsCheckBox, Event.ONCLICK);
 				Event.setEventListener(acceptTermsCheckBox, new EventListener() {					
 					@Override
@@ -1685,11 +1685,11 @@ public class LoginDlg extends DlgBox
 						if(((InputElement)acceptTermsCheckBox).isChecked())
 						{
 							m_registerBtn.setEnabled(true);							
-							element.addClassName("gwt-Button");
+							m_registerBtn.addStyleName("gwt-Button");
 						}
 						else{
 							m_registerBtn.setEnabled(false);
-							element.removeClassName("gwt-Button");
+							m_registerBtn.setStyleName("teamingButton");
 						}
 					}
 				});
@@ -1851,19 +1851,28 @@ public class LoginDlg extends DlgBox
 		m_mainPanel.add( m_formPanel );
 	}
 	
-	public static native void openTermsAndConditionsWindow(String title,String html,String popuBlockErrorMessage) /*-{
+	public static native void openTermsAndConditionsWindow(String title,String html,String popuBlockErrorMessage) /*-{		
 	    var x=screen.width/2 - 700/2;
 	    var y=screen.width/2 - 450/2;
-		var termsWindow=window.open("",title,'width=700, height=485, top=' + y + ', left=' + x);
-		if(termsWindow && termsWindow.top)
-		{
-			termsWindow.document.write(html);
-			termsWindow.focus();
+	    if(typeof(termsWindow) != "object")
+	    {
+			termsWindow=window.open("",title,'width=700, height=485, top=' + y + ', left=' + x);
+			if(termsWindow && termsWindow.top)
+			{
+				termsWindow.document.write(html);
+				termsWindow.focus();
+			}
+			else
+			{
+				alert(popuBlockErrorMessage);
+			}
 		}
 		else
 		{
-			alert(popuBlockErrorMessage);
-		}
+			termsWindow=window.open("",title,'width=700, height=485, top=' + y + ', left=' + x);
+			termsWindow.document.write(html);
+			termsWindow.focus();
+		}	
 	}-*/;
 	
 	/**
