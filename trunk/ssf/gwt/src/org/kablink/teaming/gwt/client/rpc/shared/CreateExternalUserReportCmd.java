@@ -45,7 +45,6 @@ public class CreateExternalUserReportCmd extends VibeRpcCmd{
 	private Date		m_begin;		//
 	private Date		m_end;			//
 	private List<Long>	m_userIds;		//
-	private String		m_reportType;	//
 	
 	/**
 	 * Constructor method.
@@ -65,7 +64,7 @@ public class CreateExternalUserReportCmd extends VibeRpcCmd{
 	 * @param userIds
 	 * @param reportType
 	 */
-	public CreateExternalUserReportCmd(Date begin, Date end, List<Long> userIds, String reportType) {
+	public CreateExternalUserReportCmd(Date begin, Date end, List<Long> userIds) {
 		// Initialize this object...
 		super();
 		
@@ -73,7 +72,6 @@ public class CreateExternalUserReportCmd extends VibeRpcCmd{
 		setBegin(     begin     );
 		setEnd(       end       );
 		setUserIds(   userIds   );
-		setReportType(reportType);
 	}
 	
 	/**
@@ -84,7 +82,6 @@ public class CreateExternalUserReportCmd extends VibeRpcCmd{
 	public Date       getBegin()      {return m_begin;     }
 	public Date       getEnd()        {return m_end;       }
 	public List<Long> getUserIds()    {return m_userIds;   }
-	public String     getReportType() {return m_reportType;}
 	
 	/**
 	 * Set'er methods.
@@ -94,7 +91,6 @@ public class CreateExternalUserReportCmd extends VibeRpcCmd{
 	public void setBegin(     Date       begin)      {m_begin      = begin;     }
 	public void setEnd(       Date       end)        {m_end        = end;       }
 	public void setUserIds(   List<Long> userIds)    {m_userIds    = userIds;   }
-	public void setReportType(String     reportType) {m_reportType = reportType;}
 	
 	/**
 	 * Returns the command's enumeration value.
