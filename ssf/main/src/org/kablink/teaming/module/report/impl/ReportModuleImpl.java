@@ -2174,39 +2174,37 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
         getAdminModule().checkAccess(AdminOperation.report);
         LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
         
-		List<User> results = (List)getHibernateTemplate().execute(new HibernateCallback() {
+        List results = null;
+		results = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			@Override
 			public Object doInHibernate(Session session) throws HibernateException {
-				List extUsers = null;
+				List l = null;
 				try {
-					Criteria crit = session.createCriteria(UserPrincipal.class)
-						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, user.getZoneId()))
-						//.add(Restrictions.ge("creation", startDate))
-						//.add(Restrictions.le("creation", endDate))
-						.add(Restrictions.eq("internal", "0"));
-						//.add(Restrictions.eq("fromLocal", "0"))
-						//.add(Restrictions.eq("type", "user"));
-					if (!userIdsToSkip.isEmpty()) {
-						crit.add(Restrictions.not(Restrictions.in("id", userIdsToSkip)));
-					}
-					if (!userIds.isEmpty()) crit.add(Restrictions.in("id", userIds));
-					crit.addOrder(Order.asc("id"));
-					extUsers = crit.list();
+					String sql = "Select w.id, w.firstName, w.lastName, w.emailAddress, w.creation.date,w.termsAndConditionsAcceptDate"
+						+ " FROM org.kablink.teaming.domain.Principal w "
+						+ " WHERE w.zoneId = :zoneId"
+						+ " AND w.type = 'user'"
+						+ " AND w.identityInfo.internal = 0 "
+						+ " AND w.identityInfo.fromLocal = 0 ";
+
+					Query query = session.createQuery(sql).setLong("zoneId", RequestContextHolder.getRequestContext().getZoneId());
+					l = query.list();
 				} catch(Exception e) {
+					System.out.println("Unable to query for quotas: " +  e.getMessage());
 				}
-				return extUsers;
-			}});		
-		
+				return l;
+			}});
+
 		if(results!=null){
 			for(int i=0; i< results.size(); i++) {
-				User userPrincipal=results.get(i);
+				Object[] result = (Object[]) results.get(i);
 				HashMap<String,Object> row = new HashMap<String,Object>();
-					row.put(ReportModule.EXTERNAL_USER_ID, (Long)userPrincipal.getId());
-					row.put(ReportModule.EXTERNAL_USER_FIRSTNAME,userPrincipal.getFirstName());
-					row.put(ReportModule.EXTERNAL_USER_LASTNAME, userPrincipal.getLastName());
-					row.put(ReportModule.EXTERNAL_USER_EMAIL, userPrincipal.getEmailAddress());
-					row.put(ReportModule.EXTERNAL_USER_CREATION_DATE, userPrincipal.getCreation().getDate());
-					row.put(ReportModule.EXTERNAL_USER_TERMS_ACCEPT_DATE, userPrincipal.getTermsAndConditionsAcceptDate());
+					row.put(ReportModule.EXTERNAL_USER_ID, (Long)result[0]);
+					row.put(ReportModule.EXTERNAL_USER_FIRSTNAME,result[1]);
+					row.put(ReportModule.EXTERNAL_USER_LASTNAME, result[2]);
+					row.put(ReportModule.EXTERNAL_USER_EMAIL, result[3]);
+					row.put(ReportModule.EXTERNAL_USER_CREATION_DATE, result[4]);
+					row.put(ReportModule.EXTERNAL_USER_TERMS_ACCEPT_DATE, result[5]);
 					report.add(row);
 				}
 		}
