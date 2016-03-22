@@ -2186,6 +2186,16 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						+ " AND w.type = 'user'"
 						+ " AND w.identityInfo.internal = 0 "
 						+ " AND w.identityInfo.fromLocal = 0 ";
+					if(userIds!=null && userIds.size()>0){
+						sql+=" AND w.id in (";
+						int count=0;
+						for(Long userId:userIds){
+							if(count>0) sql+=",";
+							sql+="'"+userId+"'";
+							count++;
+						}
+						sql+=")";
+					}
 
 					Query query = session.createQuery(sql).setLong("zoneId", RequestContextHolder.getRequestContext().getZoneId());
 					l = query.list();
