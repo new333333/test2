@@ -86,11 +86,7 @@ public class ExternalUserReport extends ReportCompositeBase
 	private FindCtrl	m_userFinder;		// The FindCtrl to select the users to report on.
 	private FormPanel	m_downloadForm;		// The form that will be submitted to download the report.
 	private ListBox		m_userList;			// The ListBox  for tracking the selected users.
-	private String		m_reportType;		// Type type of report being requested (long vs. short.)
 
-	// The types of reports supported.
-	private final static String ACTIVITY_REPORT	= "activity";
-	private final static String SUMMARY_REPORT	= "summary";
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -171,7 +167,7 @@ public class ExternalUserReport extends ReportCompositeBase
 				m_userFinder = findCtrl;
 
 				m_userFinder.setSearchForExternalPrincipals( true );
-				m_userFinder.setSearchForInternalPrincipals( true );
+				m_userFinder.setSearchForInternalPrincipals( false );
 				
 				// ...style it...
 				m_userFinder.addStyleName("vibe-userActivityReportComposite-peopleFind");
@@ -205,34 +201,7 @@ public class ExternalUserReport extends ReportCompositeBase
 		});
 		ft.setWidget(                                  1, 2, removeBtn                     );
 		ft.getFlexCellFormatter().setVerticalAlignment(1, 2, HasVerticalAlignment.ALIGN_TOP);
-		
-		// ...create a radio button for reporting summaries...
-		VerticalPanel vp = new VerticalPanel();
-		vp.addStyleName("vibe-userActivityReportComposite-typePanel");
-		fp.add(vp);
-		RadioButton	rb = new RadioButton("ss_reportFlavor", m_messages.userActivityReportType_Summaries());
-		rb.addStyleName("vibe-userActivityReportComposite-typeRadio");
-		rb.setValue(true);
-		m_reportType = SUMMARY_REPORT;
-		rb.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				m_reportType = SUMMARY_REPORT;
-			}
-		});
-		vp.add(rb);
-
-		// ...create a radio button for reporting everything...
-		rb = new RadioButton("ss_reportFlavor", m_messages.userActivityReportType_All());
-		rb.addStyleName("vibe-userActivityReportComposite-typeRadio");
-		rb.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				m_reportType = ACTIVITY_REPORT;
-			}
-		});
-		vp.add(rb);
-		
+				
 		// ...add the 'Run Report' push button...
 		Button runReportBtn = new Button(m_messages.externalUserReportRunReport());
 		runReportBtn.addStyleName("vibe-reportCompositeBase-buttonBase vibe-reportCompositeBase-runButton");
@@ -273,8 +242,7 @@ public class ExternalUserReport extends ReportCompositeBase
 		CreateExternalUserReportCmd cmd = new CreateExternalUserReportCmd(
 			m_beginDateBox.getValue(),
 			m_endDateBox.getValue(),
-			userIds,
-			m_reportType);
+			userIds);
 
 		// ...and execute the command.
 		GwtClientHelper.executeCommand(
