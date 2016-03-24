@@ -980,6 +980,26 @@ public final class MiscUtil {
 
 		return url;
 	}
+	
+	/**
+	 * Return the url that repairs to the appropriate help
+	 * documentation.
+	 * 
+	 * @param guideName
+	 * @param pageId
+	 * @param sectionId
+	 * 
+	 * @return
+	 */
+	public static String getIdeasPortalUrl() {
+		// Get the vibe/filr ideas portal url from ssf-ext.properties.
+		String vibeIdeasPortalUrl = SPropsUtil.getString("vibe.ideasPortal", "https://ideas.microfocus.com/mfi/novell-vibe");
+		String filrIdeasPortalUrl = SPropsUtil.getString("filr.ideasPortal", "https://ideas.microfocus.com/mfi/novell-filr");
+		if(Utils.checkIfFilr()){
+			return filrIdeasPortalUrl;
+		}
+		return vibeIdeasPortalUrl;
+	}	
 
 	/*
 	 * Return the language code that should be put on the help url.
