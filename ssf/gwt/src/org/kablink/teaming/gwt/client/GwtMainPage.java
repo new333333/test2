@@ -3558,8 +3558,8 @@ public class GwtMainPage extends ResizeComposite
 	public void onInvokeIdeasPortal( InvokeIdeasPortalEvent event )
 	{
 		Window.open(
-			m_requestInfo.getHelpUrl(),
-			"teaming_help_window",
+			m_requestInfo.getIdeasPortalUrl(),
+			"teaming_ideas_window",
 			"resizeable,scrollbars" );
 	}
 	
