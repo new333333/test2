@@ -1438,6 +1438,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case INVOKE_IDEAS_PORTAL:
+				// An InvokeHelpEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof InvokeIdeasPortalEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeIdeasPortalEvent.registerEvent(eventBus, ((InvokeIdeasPortalEvent.Handler) eventHandler));
+				}
+				break;				
+				
 			case INVOKE_IMPORT_ICAL_FILE:
 				// An InvokeImportIcalFileEvent!  Can the event handler
 				// we were given handle that?
