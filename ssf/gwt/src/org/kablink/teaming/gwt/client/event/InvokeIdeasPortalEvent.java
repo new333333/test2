@@ -39,7 +39,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The InvokeIdeasPortalEvent is used to invoke Vibe OnPrem's online help in a
+ * The InvokeIdeasPortalEvent is used to invoke Vibe OnPrem's Ideas Portal in a
  * new window.
  * 
  * @author lokesh.reddy@novell.com
@@ -51,7 +51,7 @@ public class InvokeIdeasPortalEvent extends VibeEventBase<InvokeIdeasPortalEvent
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onInvokeHelp(InvokeIdeasPortalEvent event);
+		void onInvokeIdeasPortal(InvokeIdeasPortalEvent event);
 	}
 	
 	/**
@@ -70,7 +70,7 @@ public class InvokeIdeasPortalEvent extends VibeEventBase<InvokeIdeasPortalEvent
 	 */
     @Override
     protected void doDispatch(Handler handler) {
-        handler.onInvokeHelp(this);
+        handler.onInvokeIdeasPortal(this);
     }
 	
 	/**
