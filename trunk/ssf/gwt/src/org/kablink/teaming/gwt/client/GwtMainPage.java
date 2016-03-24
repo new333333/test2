@@ -357,6 +357,7 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.INVOKE_CHANGE_PASSWORD_DLG,
 		TeamingEvents.INVOKE_DOWNLOAD_DESKTOP_APP,
 		TeamingEvents.INVOKE_HELP,
+		TeamingEvents.INVOKE_IDEAS_PORTAL,
 		TeamingEvents.INVOKE_SIMPLE_PROFILE,
 		TeamingEvents.INVOKE_WORKSPACE_SHARE_RIGHTS,
 		
@@ -3557,6 +3558,7 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onInvokeIdeasPortal( InvokeIdeasPortalEvent event )
 	{
+		Window.alert(m_requestInfo.getIdeasPortalUrl());
 		Window.open(
 			m_requestInfo.getIdeasPortalUrl(),
 			"teaming_ideas_window",
