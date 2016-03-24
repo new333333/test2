@@ -103,6 +103,7 @@ public class EventHelper {
 		case INVOKE_DOWNLOAD_DESKTOP_APP:           reply = new InvokeDownloadDesktopAppEvent();      break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
+		case INVOKE_IDEAS_PORTAL:					reply = new InvokeIdeasPortalEvent();			  break;
 		case INVOKE_IMPORT_PROFILES_DLG:			reply = new InvokeImportProfilesDlgEvent();		  break;
 		case INVOKE_LIMIT_USER_VISIBILITY_DLG:		reply = new InvokeLimitUserVisibilityDlgEvent();  break;
 		case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:	reply = new InvokeNetFolderGlobalSettingsDlgEvent();break;
