@@ -902,6 +902,7 @@ public interface GwtTeamingMessages extends Messages {
 	String downloadVibeDesktopApp();
 	String guest();
 	String helpMenuItem();
+	String ideasPortalMenuItem();
 	String helpHint();
 	String invokeUserListHint();
 	String loginHint();
