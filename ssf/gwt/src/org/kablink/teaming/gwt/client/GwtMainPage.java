@@ -3558,7 +3558,6 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onInvokeIdeasPortal( InvokeIdeasPortalEvent event )
 	{
-		Window.alert(m_requestInfo.getIdeasPortalUrl());
 		Window.open(
 			m_requestInfo.getIdeasPortalUrl(),
 			"teaming_ideas_window",
