@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.InvokeChangePasswordDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDownloadDesktopAppEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
+import org.kablink.teaming.gwt.client.event.InvokeIdeasPortalEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
@@ -420,6 +421,13 @@ public class UserActionsPopup extends TeamingPopupPanel
 							GwtTeaming.getMessages().helpMenuItem(),
 							GwtTeaming.getImageBundle().userActionsPanel_Help(),
 							new InvokeHelpEvent() );
+		m_contentPanel.add( actionPanel );
+		
+		// Add "Idea Portal Link"
+		actionPanel = addAction(
+							GwtTeaming.getMessages().ideasPortalMenuItem(),
+							GwtTeaming.getImageBundle().userActionsPanel_Help(),
+							new InvokeIdeasPortalEvent() );
 		m_contentPanel.add( actionPanel );
 
 		// If the desktop application access in enabled...
