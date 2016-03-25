@@ -336,6 +336,13 @@ public class UserActionsPopup extends TeamingPopupPanel
 												new AdministrationEvent() );
 							m_contentPanel.insert( actionPanel, 0 );
 							
+							// Add "Idea Portal Link"
+							actionPanel = addAction(
+												GwtTeaming.getMessages().ideasPortalMenuItem(),
+												GwtTeaming.getImageBundle().userActionsPanel_Help(),
+												new InvokeIdeasPortalEvent() );
+							m_contentPanel.add( actionPanel );
+							
 							// Add the "Resource Library" menu item
 							if ( GwtClientHelper.isLicenseFilr() == false )
 							{
@@ -421,13 +428,6 @@ public class UserActionsPopup extends TeamingPopupPanel
 							GwtTeaming.getMessages().helpMenuItem(),
 							GwtTeaming.getImageBundle().userActionsPanel_Help(),
 							new InvokeHelpEvent() );
-		m_contentPanel.add( actionPanel );
-		
-		// Add "Idea Portal Link"
-		actionPanel = addAction(
-							GwtTeaming.getMessages().ideasPortalMenuItem(),
-							GwtTeaming.getImageBundle().userActionsPanel_Help(),
-							new InvokeIdeasPortalEvent() );
 		m_contentPanel.add( actionPanel );
 
 		// If the desktop application access in enabled...
