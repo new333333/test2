@@ -403,7 +403,7 @@
 		</copy>
 		<copy todir="${project.dir}/web/docroot/WEB-INF/jsp/custom_jsps">
 			<fileset dir="${app.server.dir}/webapps/ssf/WEB-INF/jsp/custom_jsps">
-				<include name="ss_call_out*"/>
+				<include name="*.jsp"/>
 			</fileset>
 		</copy>
 	</target>
