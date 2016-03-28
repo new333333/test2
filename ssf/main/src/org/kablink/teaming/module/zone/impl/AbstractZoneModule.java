@@ -2245,6 +2245,42 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_INTERNAL_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_ALLOW_FOLDER_SHARING_INTERNAL);
+			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
+			function.setInternalId(ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_INTERNAL_INTERNALID);
+			function.addOperation(WorkAreaOperation.ALLOW_FOLDER_SHARING_INTERNAL);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_EXTERNAL_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_ALLOW_FOLDER_SHARING_EXTERNAL);
+			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
+			function.setInternalId(ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_EXTERNAL_INTERNALID);
+			function.addOperation(WorkAreaOperation.ALLOW_FOLDER_SHARING_EXTERNAL);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_PUBLIC_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_ALLOW_FOLDER_SHARING_PUBLIC);
+			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
+			function.setInternalId(ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_PUBLIC_INTERNALID);
+			function.addOperation(WorkAreaOperation.ALLOW_FOLDER_SHARING_PUBLIC);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+		
 		if ((Utils.checkIfVibe() || Utils.checkIfKablink() || Utils.checkIfFilrAndVibe()) && 
 				!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID)) {
 			//Don't create this role in Filr
