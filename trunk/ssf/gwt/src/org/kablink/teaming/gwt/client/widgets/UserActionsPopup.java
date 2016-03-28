@@ -339,7 +339,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 							// Add "Idea Portal Link"
 							actionPanel = addAction(
 												GwtTeaming.getMessages().ideasPortalMenuItem(),
-												GwtTeaming.getImageBundle().userActionsPanel_Help(),
+												GwtTeaming.getImageBundle().userActionsPanel_IdeasPortal(),
 												new InvokeIdeasPortalEvent() );
 							m_contentPanel.add( actionPanel );
 							
