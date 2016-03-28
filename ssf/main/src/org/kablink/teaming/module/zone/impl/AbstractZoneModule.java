@@ -1721,7 +1721,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				 wao.equals( WorkAreaOperation.ALLOW_SHARING_FORWARD ) == false &&
 				 wao.equals( WorkAreaOperation.ALLOW_SHARING_INTERNAL ) == false &&
 				 wao.equals( WorkAreaOperation.ALLOW_SHARING_PUBLIC ) == false &&
-				 wao.equals( WorkAreaOperation.ALLOW_SHARING_PUBLIC_LINKS ) == false )
+				 wao.equals( WorkAreaOperation.ALLOW_SHARING_PUBLIC_LINKS ) == false &&
+				 wao.equals( WorkAreaOperation.ALLOW_FOLDER_SHARING_INTERNAL ) == false &&
+				 wao.equals( WorkAreaOperation.ALLOW_FOLDER_SHARING_EXTERNAL ) == false &&
+				 wao.equals( WorkAreaOperation.ALLOW_FOLDER_SHARING_PUBLIC ) == false )
 			{
 				function.addOperation( wao );
 			}
