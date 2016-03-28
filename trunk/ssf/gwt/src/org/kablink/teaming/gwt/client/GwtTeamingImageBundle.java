@@ -775,6 +775,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Masthead/help_2.png")
 	public ImageResource userActionsPanel_Help();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/Filr_Ideas_Portal_Icon.png")
+	public ImageResource userActionsPanel_IdeasPortal();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Masthead/personal_prefs_2.png")
