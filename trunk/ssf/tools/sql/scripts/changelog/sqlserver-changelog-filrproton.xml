@@ -28,4 +28,11 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="4">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_allowFolderSharingInt" type="TINYINT"/>
+			<column name="right_allowFolderSharingExt" type="TINYINT"/>
+			<column name="right_allowFolderSharingPublic" type="TINYINT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

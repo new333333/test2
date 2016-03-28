@@ -58,6 +58,9 @@
     	<property name="allowSharingForward" column="right_allowSharingForward" access="field"/>
     	<property name="allowAccessNetFolder" column="right_allowAccessNetFolder" access="field"/>
     	<property name="allowSharingPublicLinks" column="right_allowSharingPublicLinks" access="field"/>
+    	<property name="allowFolderSharingInternal" column="right_allowFolderSharingInt" access="field"/>
+    	<property name="allowFolderSharingExternal" column="right_allowFolderSharingExt" access="field"/>
+    	<property name="allowFolderSharingPublic" column="right_allowFolderSharingPublic" access="field"/>
     	</component> 
   </class>
 </hibernate-mapping>
