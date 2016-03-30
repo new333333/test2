@@ -218,6 +218,12 @@
 		<antcall target="deploy-gwt"/>
 	</target>
 	
+	<target name="deploy-jar-only" depends="jar">
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+	
 	<target name="deploy-gwt" depends="compile-gwt">
   		<property name="web.static.path" value="static/${web.static.dir}" />
 		<mkdir  dir="${app.server.ssf.dir}/${web.static.path}/js/gwt"/>
