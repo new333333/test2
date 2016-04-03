@@ -556,22 +556,27 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					}
 				}
 				break;
-			case allowSharing:
+			case allowSharing:				
 				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING_INTERNAL);
+						binder.isFolderInNetFolder() ? WorkAreaOperation.ALLOW_FOLDER_SHARING_INTERNAL : WorkAreaOperation.ALLOW_SHARING_INTERNAL);
 				break;
 			case allowSharingExternal:
 				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
+						binder.isFolderInNetFolder() ? WorkAreaOperation.ALLOW_FOLDER_SHARING_EXTERNAL : WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
 				break;
 			case allowSharingPublic:
 				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING_PUBLIC);
+						binder.isFolderInNetFolder() ? WorkAreaOperation.ALLOW_FOLDER_SHARING_PUBLIC : WorkAreaOperation.ALLOW_SHARING_PUBLIC);
 				break;
 			case allowSharingPublicLinks:
+				// Currently, the product only supports file link but not folder link.
+				// Until we do, short-circuit this check and always fail.
+				throw new AccessControlException(operation.toString(), new Object[] {});	
+				/*
 				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.ALLOW_SHARING_PUBLIC_LINKS);
 				break;
+				*/
 			case allowSharingForward:
 				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.ALLOW_SHARING_FORWARD);

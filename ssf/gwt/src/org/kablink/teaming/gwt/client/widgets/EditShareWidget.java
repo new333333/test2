@@ -1341,7 +1341,7 @@ public class EditShareWidget extends Composite
 				{
 					AccessRights accessRights;
 
-					accessRights = ShareRights.AccessRights.UNKNOWN;
+					accessRights = ShareRights.AccessRights.NONE;
 
 					if ( value.equalsIgnoreCase( VIEWER ) )
 						accessRights = ShareRights.AccessRights.VIEWER;
@@ -1481,7 +1481,7 @@ public class EditShareWidget extends Composite
 		origShareRights = new ShareRights();
 		origShareRights.copy( shareRights );
 		
-		accessRights = ShareRights.AccessRights.UNKNOWN;
+		accessRights = ShareRights.AccessRights.NONE;
 		
 		if ( m_viewerRb.isVisible() && m_viewerRb.getValue() == true )
 			accessRights = ShareRights.AccessRights.VIEWER;

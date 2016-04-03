@@ -766,7 +766,7 @@ public class EditShareDlg extends DlgBox
 				{
 					AccessRights accessRights;
 
-					accessRights = ShareRights.AccessRights.UNKNOWN;
+					accessRights = ShareRights.AccessRights.NONE;
 
 					if ( value.equalsIgnoreCase( VIEWER ) )
 						accessRights = ShareRights.AccessRights.VIEWER;
@@ -874,7 +874,7 @@ public class EditShareDlg extends DlgBox
 		boolean canShareForward;
 		
 		shareRights = shareItem.getShareRights();
-		accessRights = ShareRights.AccessRights.UNKNOWN;
+		accessRights = ShareRights.AccessRights.NONE;
 		
 		if ( m_viewerRb.isVisible() && m_viewerRb.getValue() == true )
 			accessRights = ShareRights.AccessRights.VIEWER;

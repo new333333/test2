@@ -1362,6 +1362,18 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	}
     }
     
+    /*
+     * Returns true if this binder represents a folder in a net folder (including its top folder).
+     * False otherwise (e.g. a folder in home folder or personal storage, etc.).
+     */
+    public boolean isFolderInNetFolder() {
+    	NetFolderConfig nf = this.getNetFolderConfig();
+    	if(nf != null)
+    		return !nf.isHomeDir();
+    	else
+    		return false;
+    }
+    
     public boolean getAllowDesktopAppToTriggerInitialHomeFolderSync()
     {
     	NetFolderConfig nf = this.getNetFolderConfig();

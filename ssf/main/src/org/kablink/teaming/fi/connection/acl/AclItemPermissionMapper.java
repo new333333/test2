@@ -42,6 +42,16 @@ package org.kablink.teaming.fi.connection.acl;
 public interface AclItemPermissionMapper {
 	
 	/**
+	 * Returns the name of the Vibe role (aka function) that the specified external
+	 * permission maps to as it applies to a folder or a file.
+	 * 
+	 * @param permissionName
+	 * @return
+	 * @throws AclItemPermissionMappingException
+	 */
+	public String toVibeRoleName(String permissionName) throws AclItemPermissionMappingException;
+	
+	/**
 	 * Returns the ID of the Vibe role (aka function) that the specified external
 	 * permission maps to as it applies to a folder or a file.
 	 * <p>
