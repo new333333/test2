@@ -51,15 +51,16 @@ public class ShareRights implements IsSerializable
 	private boolean m_canSharePublicLink;
 	
 	/**
-	 * 
+	 * IMPORTANT: The ordinal number of the enum is significant for this class.
+	 *            We use it for easy comparison of which rights are more or less.
+	 *            So do NOT change the ordering!
 	 */
 	public enum AccessRights implements IsSerializable
 	{
+		NONE,
 		VIEWER,
 		EDITOR,
-		CONTRIBUTOR,
-		
-		UNKNOWN
+		CONTRIBUTOR
 	}
 	
 	/**
@@ -67,7 +68,7 @@ public class ShareRights implements IsSerializable
 	 */
 	public ShareRights()
 	{
-		m_accessRights = AccessRights.UNKNOWN;
+		m_accessRights = AccessRights.NONE;
 		m_canShareWithExternalUsers = false;
 		m_canShareWithInternalUsers = false;
 		m_canShareWithPublic = false;

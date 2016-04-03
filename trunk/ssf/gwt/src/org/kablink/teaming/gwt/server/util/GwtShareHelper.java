@@ -37,7 +37,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -46,7 +48,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -65,6 +69,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
@@ -72,6 +77,10 @@ import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.User.ExtProvState;
+import org.kablink.teaming.fi.connection.ResourceDriverManager;
+import org.kablink.teaming.fi.connection.acl.AclItemPermissionMapper;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
+import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.gwt.client.GwtEmailPublicLinkResults;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtPublic;
@@ -1189,7 +1198,7 @@ public class GwtShareHelper
 	{
 		AccessRights accessRights;
 		
-		accessRights = AccessRights.UNKNOWN;
+		accessRights = AccessRights.NONE;
 		
 		if ( rightSet != null )
 		{
@@ -1200,6 +1209,9 @@ public class GwtShareHelper
 			boolean shareExternal;
 			boolean sharePublic;
 			boolean shareForward;
+			boolean folderShareInternal;
+			boolean folderShareExternal;
+			boolean folderSharePublic;
 
 			// areRightSetsEqual() compares "share internal", "share external", "share public" and "share forward".
 			// That is why we are setting them to false.
@@ -1207,10 +1219,16 @@ public class GwtShareHelper
 			shareExternal = rightSet.isAllowSharingExternal();
 			sharePublic = rightSet.isAllowSharingPublic();
 			shareForward = rightSet.isAllowSharingForward();
+			folderShareInternal = rightSet.isAllowFolderSharingInternal();
+			folderShareExternal = rightSet.isAllowFolderSharingExternal();
+			folderSharePublic = rightSet.isAllowFolderSharingPublic();
 			rightSet.setAllowSharing( false );
 			rightSet.setAllowSharingExternal( false );
 			rightSet.setAllowSharingPublic( false );
 			rightSet.setAllowSharingForward( false );
+			rightSet.setAllowFolderSharingInternal( false );
+			rightSet.setAllowFolderSharingExternal( false );
+			rightSet.setAllowFolderSharingPublic( false );
 
 			viewerRightSet = getViewerRightSet();
 			editorRightSet = getEditorRightSet();
@@ -1240,6 +1258,9 @@ public class GwtShareHelper
 			rightSet.setAllowSharingExternal( shareExternal );
 			rightSet.setAllowSharingPublic( sharePublic );
 			rightSet.setAllowSharingForward( shareForward );
+			rightSet.setAllowFolderSharingInternal( folderShareInternal );
+			rightSet.setAllowFolderSharingExternal( folderShareExternal );
+			rightSet.setAllowFolderSharingPublic( folderSharePublic );
 		}
 		
 		return accessRights;
@@ -1502,19 +1523,14 @@ public class GwtShareHelper
 	}
 	
 	/*
-	 * Return the "highest" share rights the logged-in user has to the given entity
+	 * Get the highest share rights the logged-in user has to this entity
 	 */
-	private static ShareRights getHighestEntityShareRights( AllModulesInjected ami, EntityId entityId )
-	{
-		ShareItemSelectSpec spec;
-		EntityIdentifier entityIdentifier;
+	private static AccessRights getHighestEntityShareRights(AllModulesInjected ami, EntityId entityId) {
 		List<ShareItem> listOfShareItems = null;
 		AccessRights accessRights;
-		ShareRights shareRights;
-		boolean result;
-		
-		shareRights = new ShareRights();
-		
+		EntityIdentifier entityIdentifier;
+		ShareItemSelectSpec spec;
+
 		// Get the current user's acl rights to the given entity.
 		accessRights = getHighestEntityAccessRightsFromACLs( ami, entityId );
 		
@@ -1554,13 +1570,267 @@ public class GwtShareHelper
 					break;
 					
 				case VIEWER:
-				case UNKNOWN:
+				case NONE:
 					accessRights = nextAccessRights;
 					break;
 				}
 			}
 		}
 		
+		return accessRights;
+	}
+	
+	private static AccessRights getNativeAccessRights(Binder binder, AclResourceSession session, AclItemPermissionMapper permissionMapper, Map<String, List<String>> groupIds) {
+		session.setPath(binder.getResourcePath(), binder.getResourceHandle(), Boolean.TRUE);
+		AccessRights accessRights;
+		String permissionName = session.getPermissionName(groupIds);
+		String vibeRoleName;
+		if(permissionName != null)
+			vibeRoleName = permissionMapper.toVibeRoleName(permissionName);
+		else
+			vibeRoleName = null;
+		if(ObjectKeys.ROLE_TITLE_FILR_CONTRIBUTOR.equals(vibeRoleName))
+			accessRights = AccessRights.CONTRIBUTOR;
+		else if(ObjectKeys.ROLE_TITLE_FILR_EDITOR.equals(vibeRoleName))
+			accessRights = AccessRights.EDITOR;
+		else if(ObjectKeys.ROLE_TITLE_FILR_VIEWER.equals(vibeRoleName))
+			accessRights = AccessRights.VIEWER;
+		else
+			accessRights = AccessRights.NONE;
+		return accessRights;
+	}
+	
+	private static class BinderNode {
+		private Binder binder;
+		// The level of native access rights that the logged-in user has on this binder
+		private AccessRights nativeAccessRights;
+		// The share-granted access rights that the logged-in user has on this binder.
+		// This is determined by all the binders shared with the user at this level or
+		// above in the ancestry tree (i.e., it's not just one level thing).
+		private AccessRights shareGrantedAccessRights;
+		// Computed
+		private AccessRights combinedAccessRights;
+		
+		BinderNode(Binder binder, AccessRights nativeAccessRights, AccessRights shareGrantedAccessRights) {
+			this.binder = binder;
+			this.nativeAccessRights = nativeAccessRights;
+			this.shareGrantedAccessRights = shareGrantedAccessRights;
+			this.combinedAccessRights = maxAccessRights(nativeAccessRights, shareGrantedAccessRights);
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder("{");
+			sb.append("folderId=")
+			.append(binder.getId())
+			.append(", nativeAccessRights=")
+			.append(nativeAccessRights)
+			.append(", shareGrantedAccessRights=")
+			.append(shareGrantedAccessRights)
+			.append(", combinedAccessRights=")
+			.append(combinedAccessRights)
+			.append("}");
+			return sb.toString();
+		}
+	}
+	
+	private static AccessRights maxAccessRights(AccessRights ar1, AccessRights ar2) {
+		if(ar1 == null || ar2 == null)
+			throw new IllegalArgumentException("Access rights must be specified");
+		if(ar1.ordinal() >= ar2.ordinal())
+			return ar1;
+		else
+			return ar2;
+	}
+	
+	private static AccessRights minAccessRights(AccessRights ar1, AccessRights ar2) {
+		if(ar1 == null || ar2 == null)
+			throw new IllegalArgumentException("Access rights must be specified");
+		if(ar1.ordinal() <= ar2.ordinal())
+			return ar1;
+		else
+			return ar2;		
+	}
+	
+	/*
+	 * Get the highest share rights the logged-in user has to this entity
+	 */
+	private static AccessRights getHighestEntityShareRightsForNetFolder(AllModulesInjected ami, EntityId entityId, Folder folder) {
+		User currentUser = GwtServerHelper.getCurrentUser();
+
+		// If admin, don't bother computing it. He is all mighty.
+		if(currentUser.isSuper())
+			return AccessRights.CONTRIBUTOR; // Short-circuit and return maximum.
+		
+		Map<String, List<String>> groupIds = null;
+		AclItemPermissionMapper permissionMapper = null;
+		AclResourceSession session = null;
+
+		boolean internalLdapUser = currentUser.getIdentityInfo().isInternal() && currentUser.getIdentityInfo().isFromLdap();
+		if(internalLdapUser) {
+			AclResourceDriver driver = (AclResourceDriver) folder.getResourceDriver();
+			groupIds = AccessUtils.getFileSystemGroupIds(driver);
+			permissionMapper = driver.getAclItemPermissionMapper();
+			session = (AclResourceSession) getResourceDriverManager().getSession(driver);
+		}
+		
+		BinderNode topNode, minNode;
+		
+		AccessRights result;
+		
+		try {
+			LinkedList<BinderNode> list = new LinkedList<BinderNode>(); // queue
+			AccessRights nativeAccessRights;
+			if(session != null)
+				nativeAccessRights = getNativeAccessRights(folder, session, permissionMapper, groupIds);
+			else
+				nativeAccessRights = AccessRights.NONE;
+			AccessRights shareGrantedAccessRights = getShareGrantedAccessRights(ami, folder);
+			BinderNode node = new BinderNode(folder, nativeAccessRights, shareGrantedAccessRights);
+			if(m_logger.isTraceEnabled())
+				m_logger.trace("User='" + currentUser.getName() + "', Top folder=" + folder.getId() + ", Subfolder access=" + node);
+			topNode = minNode = node;
+			result = node.combinedAccessRights;
+			if(result != AccessRights.NONE)
+				list.add(node);
+			boolean stop = false;
+			while(!stop && !list.isEmpty()) {
+				node = list.removeFirst();	
+				List<Binder> children = node.binder.getBinders();
+				for(Binder child:children) {
+					if(session != null)
+						nativeAccessRights = getNativeAccessRights(child, session, permissionMapper, groupIds);
+					else
+						nativeAccessRights = AccessRights.NONE;
+					shareGrantedAccessRights = getShareGrantedAccessRights(ami, node.shareGrantedAccessRights, child);
+					if(m_logger.isTraceEnabled())
+						m_logger.trace("User='" + currentUser.getName() + "', Top folder=" + folder.getId() + ", Subfolder access=" + node);
+					node = new BinderNode(child, nativeAccessRights, shareGrantedAccessRights);
+					result = minAccessRights(result, node.combinedAccessRights);
+					if(result == node.combinedAccessRights)
+						minNode = node;
+					if(result != AccessRights.NONE) {
+						list.add(node);
+					}
+					else {
+						stop = true;
+						break;
+					}
+				}
+			}
+		}
+		finally {
+			if(session != null)
+				session.close();
+		}
+		
+		if(topNode.combinedAccessRights != result) {
+			// This means the user has higher access rights at the top of the tree (= the folder
+			// being considered for sharing) than over the entire tree. Since this is non-typical
+			// situation, we want to log the information here in case Admin needs that info to
+			// trouble shoot or respond to user inquiry.
+			m_logger.info("User '" + currentUser.getName() + "' has access diminished on the folder tree: Top access=" + topNode + ", Least access=" + minNode);
+		}
+		else {
+			// The user has constant level of access on the entire tree.
+			if(m_logger.isDebugEnabled())
+				m_logger.debug("User '" + currentUser.getName() + "' has constant access on the folder tree: Top access=" + topNode);
+		}
+		
+		return result;
+	}
+	
+	/*
+	 * Return share-granted access rights that the logged-in user has at the level
+	 * represented by this binder. This is determined by all the binders shared with
+	 * the user at this level or above in the ancestry hierarchy. 
+	 */
+	private static AccessRights getShareGrantedAccessRights(AllModulesInjected ami, Binder binder) {
+    	// Whether a sharing on a folder applies down recursively or not is controlled
+    	// by the regular Vibe-side inheritance flag. The inheritance flag associated
+    	// with the external ACLs is nothing but an implementation-level optimization
+    	// (to avoid storing same ACLs multiple times) and has NO effect when it comes
+    	// to the scope of sharing. 
+		List<EntityIdentifier> chain = new ArrayList<EntityIdentifier>();
+    	chain.add(binder.getEntityIdentifier());
+    	while(binder.isFunctionMembershipInherited()) {
+    		binder = binder.getParentBinder();
+    		if(binder != null)
+    			chain.add(binder.getEntityIdentifier());
+    	}
+    	
+    	ShareItemSelectSpec spec = new ShareItemSelectSpec();
+    	spec.setRecipientsFromUserMembership(GwtServerHelper.getCurrentUser().getId());
+    	spec.setSharedEntityIdentifiers(chain);
+    	spec.setLatest(true);
+    	
+		AccessRights result = AccessRights.NONE;
+
+		List<ShareItem> listOfShareItems = ami.getSharingModule().getShareItems(spec);
+    	if(listOfShareItems != null && listOfShareItems.size() > 0) {
+    		AccessRights accessRights;
+    		for(ShareItem shareItem:listOfShareItems) {
+    			accessRights = getAccessRightsFromRightSet(shareItem.getRightSet());
+    			if(accessRights.ordinal() > result.ordinal()) {
+    				result = accessRights;
+    				if(AccessRights.CONTRIBUTOR == result)
+    					break; // Maximum reached. No need for further checking
+    			}
+    		}
+    	}
+    	
+    	return result;
+	}
+	
+	private static AccessRights getShareGrantedAccessRights(AllModulesInjected ami, AccessRights shareGrantedAccessRightsForParent, Binder binder) {
+		if(AccessRights.CONTRIBUTOR == shareGrantedAccessRightsForParent)
+			return shareGrantedAccessRightsForParent; // Already have maximum. No need for further checking
+		
+    	ShareItemSelectSpec spec = new ShareItemSelectSpec();
+    	spec.setRecipientsFromUserMembership(GwtServerHelper.getCurrentUser().getId());
+    	spec.setSharedEntityIdentifier(binder.getEntityIdentifier());
+    	spec.setLatest(true);
+    	
+		AccessRights result = shareGrantedAccessRightsForParent;
+		
+		List<ShareItem> listOfShareItems = ami.getSharingModule().getShareItems(spec);
+    	if(listOfShareItems != null && listOfShareItems.size() > 0) {
+    		AccessRights accessRights;
+    		for(ShareItem shareItem:listOfShareItems) {
+    			accessRights = getAccessRightsFromRightSet(shareItem.getRightSet());
+    			if(accessRights.ordinal() > result.ordinal()) {
+    				result = accessRights;
+    				if(AccessRights.CONTRIBUTOR == result)
+    					break; // Maximum reached. No need for further checking
+    			}
+    		}
+    	}
+    	
+    	return result;		
+	}
+	
+	/*
+	 * Return the share rights the logged-in user has to the given entity
+	 */
+	private static ShareRights getEntityShareRights( AllModulesInjected ami, EntityId entityId )
+	{
+		AccessRights accessRights;
+		ShareRights shareRights;
+		boolean result;
+		
+		shareRights = new ShareRights();
+
+		// Does the entity represent a folder in a net folder?
+		Folder folder = null;
+		EntityIdentifier entityIdentifier = getEntityIdentifierFromEntityId(entityId);
+		if(EntityIdentifier.EntityType.folder == entityIdentifier.getEntityType())
+			folder = getFolderDao().loadFolder(entityIdentifier.getEntityId(), null);
+
+		// Get the highest share rights the logged-in user has to this entity
+		if(folder != null && folder.isFolderInNetFolder())
+			accessRights = getHighestEntityShareRightsForNetFolder( ami, entityId, folder );
+		else
+			accessRights = getHighestEntityShareRights( ami, entityId );
 		shareRights.setAccessRights( accessRights );
 		
 		// Determine if the user has "can share with external users" rights.
@@ -1836,7 +2106,10 @@ public class GwtShareHelper
 			rightSet = getViewerRightSet();
 			break;
 			
-		case UNKNOWN:
+		case NONE:
+			rightSet = new RightSet();
+			break;
+			
 		default:
 			rightSet = new RightSet();
 			m_logger.error( "In GwtShareHelper.getRightSet(), unknown share rights" );
@@ -1864,7 +2137,7 @@ public class GwtShareHelper
 		ShareRights shareRights;
 
 		shareRights = new ShareRights();
-		shareRights.setAccessRights( ShareRights.AccessRights.UNKNOWN );
+		shareRights.setAccessRights( ShareRights.AccessRights.NONE );
 
 		if ( rightSet != null )
 		{
@@ -2097,8 +2370,8 @@ public class GwtShareHelper
 				entityName = getEntityName( ami, nextEntityId );
 				sharingInfo.setEntityName( nextEntityId, entityName );
 				
-				// Get the highest share rights the logged-in user has to this entity
-				shareRights = getHighestEntityShareRights( ami, nextEntityId );
+				// Get the share rights the logged-in user has to this entity
+				shareRights = getEntityShareRights( ami, nextEntityId );
 				sharingInfo.setEntityShareRights( nextEntityId, shareRights );
 				
 				// Get the list of GwtShareItem objects for the given user/entity
@@ -2153,8 +2426,8 @@ public class GwtShareHelper
 							
 							entityIdMap.put( key, entityId );
 
-							// Get the highest share rights the logged-in user has to this entity
-							shareRights = getHighestEntityShareRights( ami, entityId );
+							// Get the share rights the logged-in user has to this entity
+							shareRights = getEntityShareRights( ami, entityId );
 							sharingInfo.setEntityShareRights( entityId, shareRights );
 						}
 					}
@@ -3773,5 +4046,13 @@ public class GwtShareHelper
 	public static boolean visibleWithoutShares( AllModulesInjected bs, User user, WorkArea wa )
 	{
 		return bs.getFolderModule().testReadAccess( user, wa, false );	// false -> Don't check access because of sharing.
+	}
+	
+	private static FolderDao getFolderDao() {
+		return (FolderDao) SpringContextUtil.getBean("folderDao");
+	}
+	
+	private static ResourceDriverManager getResourceDriverManager() {
+		return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
 	}
 }

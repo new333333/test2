@@ -361,6 +361,31 @@ public class FileUtils {
 		}
 	}
 
+	public static boolean shouldAccessFileSystemWithExternalAclInUserMode() {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		if(ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) {
+			// The file operation is being requested by admin. We treat admin like Linux root
+			// acccount and grant all accesses to all files.
+			return false; // proxy mode
+		}
+		else if(ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
+			// The file operation is being requested by file sync agent, which ALWAYS accesses
+			// file system in proxy mode regardless of sharing. 
+			return false; // proxy mode
+		}
+		else if(ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(user.getInternalId())) {
+			// The file operation is being requested by background job such as re-indexing
+			// triggered by ACL changes. We need to allow it to access file system in 
+			// proxy mode, which doesn't introduce security risk because even background
+			// jobs are subject to normal ACL checking.
+			return false; // proxy mode
+		}
+		else {
+			return true; // user mode
+		}
+	}
+
 	private static FolderModule getFolderModule() {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
 	}
