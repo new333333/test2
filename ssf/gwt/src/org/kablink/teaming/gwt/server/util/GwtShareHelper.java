@@ -3916,7 +3916,7 @@ public class GwtShareHelper
     	Long zoneId;
     	ZoneConfig zoneConfig;
 
-    	shareRights = new PerEntityShareRightsInfo( false, false, false, false, false );
+    	shareRights = new PerEntityShareRightsInfo( false, false, false, false, false,false, false, false );
 
 		zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		zoneConfig = ami.getZoneModule().getZoneConfig( zoneId );
@@ -3982,6 +3982,36 @@ public class GwtShareHelper
 						// Is sharing with the public enabled at the zone level for this user?
 						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC );
 						shareRights.setAllowPublic( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+					
+					try
+					{
+						// Is sharing with internal users enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL );
+						shareRights.setAllowFolderInternal( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+
+					try
+					{
+						// Is sharing with external users enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL );
+						shareRights.setAllowFolderExternal( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+
+					try
+					{
+						// Is sharing with the public enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC );
+						shareRights.setAllowFolderPublic( true );
 					}
 					catch ( AccessControlException acEx )
 					{
