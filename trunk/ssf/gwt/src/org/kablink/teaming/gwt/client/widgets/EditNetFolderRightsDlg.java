@@ -321,6 +321,9 @@ public class EditNetFolderRightsDlg extends DlgBox
 			if ( m_canShareExternalCkbox.getValue() || m_canShareInternalCkbox.getValue() || m_canSharePublicCkbox.getValue() )
 				enable = true;
 			
+			if ( m_canShareFolderExternalChkbox.getValue() || m_canShareFolderInternalChkbox.getValue() || m_canShareFolderPublicChkbox.getValue())
+				enable = true;
+			
 			m_canGrantReshareCkbox.setEnabled( enable );
 		}
 		
@@ -330,6 +333,11 @@ public class EditNetFolderRightsDlg extends DlgBox
 		{
 			m_canShareInternalCkbox.setEnabled( false );
 			m_canShareExternalCkbox.setEnabled( false );
+		}
+		
+		if ( m_canShareFolderPublicChkbox.getValue() == true ){
+			m_canShareFolderInternalChkbox.setEnabled(false);
+			m_canShareFolderExternalChkbox.setEnabled(false);
 		}
 		
 		// Do we have the rights this user has been given at the zone level?
@@ -349,10 +357,12 @@ public class EditNetFolderRightsDlg extends DlgBox
 			{
 				// No
 				m_canShareInternalCkbox.setValue( Boolean.FALSE );
-				m_canShareInternalCkbox.setEnabled( false );
-				
+				m_canShareInternalCkbox.setEnabled( false );							
+			}
+			
+			if( m_zoneShareRights.isAllowFolderInternal() == false ){
 				m_canShareFolderInternalChkbox.setValue(Boolean.FALSE);
-				m_canShareFolderInternalChkbox.setEnabled( false );
+				m_canShareFolderInternalChkbox.setEnabled( false );				
 			}
 			
 			// Can the user share with external users?
@@ -360,10 +370,12 @@ public class EditNetFolderRightsDlg extends DlgBox
 			{
 				// No
 				m_canShareExternalCkbox.setValue( Boolean.FALSE );
-				m_canShareExternalCkbox.setEnabled( false );
-				
+				m_canShareExternalCkbox.setEnabled( false );							
+			}
+			
+			if ( m_zoneShareRights.isAllowFolderExternal() == false){
 				m_canShareFolderExternalChkbox.setValue(Boolean.FALSE);
-				m_canShareFolderExternalChkbox.setValue( false );
+				m_canShareFolderExternalChkbox.setValue( false );				
 			}
 			
 			// Can the user share with the public?
@@ -371,10 +383,12 @@ public class EditNetFolderRightsDlg extends DlgBox
 			{
 				// No
 				m_canSharePublicCkbox.setValue( Boolean.FALSE );
-				m_canSharePublicCkbox.setEnabled( false );
-				
+				m_canSharePublicCkbox.setEnabled( false );							
+			}
+			
+			if(m_zoneShareRights.isAllowFolderPublic() == false ){
 				m_canShareFolderPublicChkbox.setValue( Boolean.FALSE );
-				m_canShareFolderPublicChkbox.setValue( false );
+				m_canShareFolderPublicChkbox.setValue( false );				
 			}
 			
 			// Can the user share using Filr links?
@@ -436,6 +450,9 @@ public class EditNetFolderRightsDlg extends DlgBox
 				m_rightsInfo.setCanShareInternal( false );
 				m_rightsInfo.setCanSharePublic( false );
 				m_rightsInfo.setCanSharePublicLink( false );
+				m_rightsInfo.setCanShareFolderExternal(false);
+				m_rightsInfo.setCanShareFolderInternal(false);
+				m_rightsInfo.setCanShareFolderPublic(false);
 			}
 
 			// Do we have a handler we should call?
