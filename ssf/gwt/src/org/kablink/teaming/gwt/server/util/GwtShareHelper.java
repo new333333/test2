@@ -4039,6 +4039,9 @@ public class GwtShareHelper
 					shareRights.setAllowExternal( true );
 					shareRights.setAllowPublic( true );
 					shareRights.setAllowPublicLinks( true );
+					shareRights.setAllowFolderInternal(true);
+					shareRights.setAllowFolderExternal(true);
+					shareRights.setAllowFolderPublic(true);
 				}
 			}
 		}
