@@ -2990,10 +2990,13 @@ public interface GwtTeamingMessages extends Messages {
 	// Strings used to represent the different rights.
 	String allowAccess();
 	String externalRights();
+	String folderExternalRights();
 	String forwardingRights();
 	String internalRights();
+	String folderInternalRights();
 	String noRights();
 	String publicRights();
+	String folderPublicRights();
 	String shareLinkRights();
 	String shareWithAllExternalRights();
 	String shareWithAllInternalRights();
@@ -3001,6 +3004,7 @@ public interface GwtTeamingMessages extends Messages {
 	// Strings used in the Edit Net Folder Rights dialog.
 	String editNetFolderRightsDlg_AllowAccessLabel();
 	String editNetFolderRightsDlg_CanShareLabel();
+	String editNetFolderRightsDlg_CanShareFolderLabel();
 	String editNetFolderRightsDlg_Caption();
 	String editNetFolderRightsDlg_ErrorRetrievingZoneShareRights(String error);
 	String editNetFolderRightsDlg_Hint();
