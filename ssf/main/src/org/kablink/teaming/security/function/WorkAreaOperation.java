@@ -112,8 +112,11 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation MANAGE_RESOURCE_DRIVERS = new WorkAreaOperation("manageResourceDrivers", true);
     public final static WorkAreaOperation CREATE_FILESPACE = new WorkAreaOperation("createFilespace", true);
     public final static WorkAreaOperation ENABLE_SHARING_INTERNAL = new WorkAreaOperation("enableSharing", true);
+    public final static WorkAreaOperation ENABLE_FOLDER_SHARING_INTERNAL = new WorkAreaOperation("enableFolderSharingInternal",true);
     public final static WorkAreaOperation ENABLE_SHARING_EXTERNAL = new WorkAreaOperation("enableSharingExternal", true);
+    public final static WorkAreaOperation ENABLE_FOLDER_SHARING_EXTERNAL = new WorkAreaOperation("enableFolderSharingExternal",true);    
     public final static WorkAreaOperation ENABLE_SHARING_PUBLIC = new WorkAreaOperation("enableSharingPublic", true);
+    public final static WorkAreaOperation ENABLE_FOLDER_SHARING_PUBLIC = new WorkAreaOperation("enableFolderSharingPublic",true);    
     public final static WorkAreaOperation ENABLE_SHARING_FORWARD = new WorkAreaOperation("enableSharingForward", true);
     public final static WorkAreaOperation ENABLE_SHARING_ALL_INTERNAL = new WorkAreaOperation("enableSharingAllInternal", true);
     public final static WorkAreaOperation ENABLE_SHARING_ALL_EXTERNAL = new WorkAreaOperation("enableSharingAllExternal", true);
