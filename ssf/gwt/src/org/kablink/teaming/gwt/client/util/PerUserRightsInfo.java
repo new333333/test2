@@ -121,7 +121,7 @@ public class PerUserRightsInfo
 	
 	public boolean canShareFolderInternal(){
 		if ( m_shareRightsInfo != null )
-			return m_shareRightsInfo.isAllowFolderExternal();
+			return m_shareRightsInfo.isAllowFolderInternal();
 		return false;
 	}
 	
@@ -168,46 +168,46 @@ public class PerUserRightsInfo
 			
 			if ( m_shareRightsInfo.isAllowFolderInternal() )
 				if ( rights.length() > 0 )
-					rights.append( "/" );
+					rights.append( " / " );
 				rights.append( GwtTeaming.getMessages().folderInternalRights() );
 			
 			if ( m_shareRightsInfo.isAllowExternal() )
 			{
 				if ( rights.length() > 0 )
-					rights.append( "/" );
+					rights.append( " / " );
 				rights.append( GwtTeaming.getMessages().externalRights() );
 			}
 			
 			if ( m_shareRightsInfo.isAllowFolderExternal() ){
 				if ( rights.length() > 0 )
-					rights.append("/");
+					rights.append(" / ");
 				rights.append( GwtTeaming.getMessages().folderExternalRights() );
 			}
 			
 			if ( m_shareRightsInfo.isAllowPublic() )
 			{
 				if ( rights.length() > 0 )
-					rights.append( "/" );
+					rights.append( " / " );
 				rights.append( GwtTeaming.getMessages().publicRights() );
 			}
 			
 			if ( m_shareRightsInfo.isAllowFolderPublic() ){
 				if ( rights.length() > 0)
-					rights.append("/");
+					rights.append(" / ");
 				rights.append( GwtTeaming.getMessages().folderPublicRights() );
 			}
 			
 			if ( m_shareRightsInfo.isAllowForwarding() )
 			{
 				if ( rights.length() > 0 )
-					rights.append( "/" );
+					rights.append( " / " );
 				rights.append( GwtTeaming.getMessages().forwardingRights() );
 			}
 			
 			if ( m_shareRightsInfo.isAllowPublicLinks() )
 			{
 				if ( rights.length() > 0 )
-					rights.append( "/" );
+					rights.append( " / " );
 				rights.append( GwtTeaming.getMessages().shareLinkRights() );
 			}
 		}
@@ -215,7 +215,7 @@ public class PerUserRightsInfo
 		if ( m_canAccess )
 		{
 			if ( rights.length() > 0 )
-				rights.append( "/" );
+				rights.append( " / " );
 			rights.append( GwtTeaming.getMessages().allowAccess() );
 		}
 
