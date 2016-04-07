@@ -3999,7 +3999,7 @@ public class GwtShareHelper
 					try
 					{
 						// Is sharing with internal users enabled at the zone level for this user?
-						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL );
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_FOLDER_SHARING_INTERNAL );
 						shareRights.setAllowFolderInternal( true );
 					}
 					catch ( AccessControlException acEx )
@@ -4009,7 +4009,7 @@ public class GwtShareHelper
 					try
 					{
 						// Is sharing with external users enabled at the zone level for this user?
-						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL );
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_FOLDER_SHARING_EXTERNAL );
 						shareRights.setAllowFolderExternal( true );
 					}
 					catch ( AccessControlException acEx )
@@ -4019,7 +4019,7 @@ public class GwtShareHelper
 					try
 					{
 						// Is sharing with the public enabled at the zone level for this user?
-						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC );
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_FOLDER_SHARING_PUBLIC );
 						shareRights.setAllowFolderPublic( true );
 					}
 					catch ( AccessControlException acEx )
