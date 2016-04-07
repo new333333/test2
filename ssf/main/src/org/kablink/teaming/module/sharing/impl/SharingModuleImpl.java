@@ -616,12 +616,19 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	                        // Yes!
 	                        reply = true;
 	                    } else {
+	                    	//DO NOT check the parent for two reasons:
+	                    	//1) The above folderModule.testAccess() already works recursively, so this is redundant.
+	                    	//2) If the entity is a file in a net folder and the user has the right to share folders
+	                    	//   but NOT files, then this check on the parent folder will succeed (due to the way
+	                    	//   binderModule.testAccess() is written for share related operations) AND this method
+	                    	//   can falsely return true when the result should be false.
+	                    	/*
 	                    	//Cannot get at the entry directly, so try its parent folder
 	                        if (parentBinderToTest != null) {
 	                            reply = accessControlManager.testOperation(zoneConfig, op.workAreaOperation) &&
 	                                    binderModule.testAccess(parentBinderToTest, op.binderOperation);
 	                        }
-	                    	
+	                        */
 	                    }
 	                    if (reply) {
 	                        break;
