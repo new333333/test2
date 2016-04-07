@@ -166,10 +166,11 @@ public class PerUserRightsInfo
 			if ( m_shareRightsInfo.isAllowInternal() )
 				rights.append( GwtTeaming.getMessages().internalRights() );
 			
-			if ( m_shareRightsInfo.isAllowFolderInternal() )
+			if ( m_shareRightsInfo.isAllowFolderInternal() ){
 				if ( rights.length() > 0 )
 					rights.append( " / " );
 				rights.append( GwtTeaming.getMessages().folderInternalRights() );
+			}
 			
 			if ( m_shareRightsInfo.isAllowExternal() )
 			{
