@@ -53,9 +53,12 @@ public class GwtRole
 	public enum GwtRoleType implements IsSerializable
 	{
 		ShareExternal,
+		ShareFolderExternal,
 		ShareForward,
 		ShareInternal,
+		ShareFolderInternal,
 		SharePublic,
+		ShareFolderPublic,
 		SharePublicLinks,
 		EnableShareExternal,
 		EnableShareForward,
