@@ -375,7 +375,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 			
 			if ( m_zoneShareRights.isAllowFolderExternal() == false){
 				m_canShareFolderExternalChkbox.setValue(Boolean.FALSE);
-				m_canShareFolderExternalChkbox.setValue( false );				
+				m_canShareFolderExternalChkbox.setEnabled( false );				
 			}
 			
 			// Can the user share with the public?
