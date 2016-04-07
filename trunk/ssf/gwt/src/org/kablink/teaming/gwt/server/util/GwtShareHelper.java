@@ -1688,10 +1688,16 @@ public class GwtShareHelper
 			AccessRights shareGrantedAccessRights = getShareGrantedAccessRights(ami, folder);
 			BinderNode node = new BinderNode(folder, nativeAccessRights, shareGrantedAccessRights);
 			if(m_logger.isTraceEnabled())
-				m_logger.trace("User='" + currentUser.getName() + "', Top folder=" + folder.getId() + ", Subfolder access=" + node);
+				m_logger.trace("User='" + currentUser.getName() + "', Top folder=" + folder.getId() + ", Folder access=" + node);
 			topNode = minNode = node;
 			result = node.combinedAccessRights;
-			if(result != AccessRights.NONE)
+			// If the user has NO access at the current node, there's no need to look further
+			// because there's no lesser access than NO access.
+			// Additionally, if the user's highest access rights  to the current node was granted by
+			// a sharing (instead of or in conjunction with native access), there's no need to look 
+			// further down the tree because the user's access will never decrease due to the nature
+			// of the share-granted access. 
+			if(result != AccessRights.NONE && result != shareGrantedAccessRights)
 				list.add(node);
 			boolean stop = false;
 			while(!stop && !list.isEmpty()) {
@@ -1703,13 +1709,13 @@ public class GwtShareHelper
 					else
 						nativeAccessRights = AccessRights.NONE;
 					shareGrantedAccessRights = getShareGrantedAccessRights(ami, node.shareGrantedAccessRights, child);
-					if(m_logger.isTraceEnabled())
-						m_logger.trace("User='" + currentUser.getName() + "', Top folder=" + folder.getId() + ", Subfolder access=" + node);
 					node = new BinderNode(child, nativeAccessRights, shareGrantedAccessRights);
+					if(m_logger.isTraceEnabled())
+						m_logger.trace("User='" + currentUser.getName() + "', Top folder=" + folder.getId() + ", Folder access=" + node);
 					result = minAccessRights(result, node.combinedAccessRights);
 					if(result == node.combinedAccessRights)
 						minNode = node;
-					if(result != AccessRights.NONE) {
+					if(result != AccessRights.NONE && result != shareGrantedAccessRights) {
 						list.add(node);
 					}
 					else {
@@ -1729,7 +1735,7 @@ public class GwtShareHelper
 			// being considered for sharing) than over the entire tree. Since this is non-typical
 			// situation, we want to log the information here in case Admin needs that info to
 			// trouble shoot or respond to user inquiry.
-			m_logger.info("User '" + currentUser.getName() + "' has access diminished on the folder tree: Top access=" + topNode + ", Least access=" + minNode);
+			m_logger.info("User '" + currentUser.getName() + "' with diminishing access: Top access=" + topNode + ", Least access=" + minNode);
 		}
 		else {
 			// The user has constant level of access on the entire tree.
@@ -1809,6 +1815,14 @@ public class GwtShareHelper
     	return result;		
 	}
 	
+	private static Folder getFolderFromEntityId(EntityId entityId) {
+		Folder folder = null;
+		EntityIdentifier entityIdentifier = getEntityIdentifierFromEntityId(entityId);
+		if(EntityIdentifier.EntityType.folder == entityIdentifier.getEntityType())
+			folder = getFolderDao().loadFolder(entityIdentifier.getEntityId(), null);
+		return folder;
+	}
+	
 	/*
 	 * Return the share rights the logged-in user has to the given entity
 	 */
@@ -1821,10 +1835,7 @@ public class GwtShareHelper
 		shareRights = new ShareRights();
 
 		// Does the entity represent a folder in a net folder?
-		Folder folder = null;
-		EntityIdentifier entityIdentifier = getEntityIdentifierFromEntityId(entityId);
-		if(EntityIdentifier.EntityType.folder == entityIdentifier.getEntityType())
-			folder = getFolderDao().loadFolder(entityIdentifier.getEntityId(), null);
+		Folder folder = getFolderFromEntityId(entityId);
 
 		// Get the highest share rights the logged-in user has to this entity
 		if(folder != null && folder.isFolderInNetFolder())
@@ -2116,11 +2127,23 @@ public class GwtShareHelper
 			break;
 		}
 		
-		rightSet.setAllowSharingForward( shareRights.getCanShareForward() );
-		rightSet.setAllowSharing( shareRights.getCanShareWithInternalUsers() );
-		rightSet.setAllowSharingExternal( shareRights.getCanShareWithExternalUsers() );
-		rightSet.setAllowSharingPublic( shareRights.getCanShareWithPublic() );
-		rightSet.setAllowSharingPublicLinks( shareRights.getCanSharePublicLink() );
+		Folder folder = getFolderFromEntityId(gwtShareItem.getEntityId());
+		
+		if(folder != null && folder.isFolderInNetFolder()) {
+			// Sharing a folder from a net folder. This maps to a different set of rights.
+			rightSet.setAllowSharingForward( shareRights.getCanShareForward() );
+			rightSet.setAllowFolderSharingInternal( shareRights.getCanShareWithInternalUsers() );
+			rightSet.setAllowFolderSharingExternal( shareRights.getCanShareWithExternalUsers() );
+			rightSet.setAllowFolderSharingPublic( shareRights.getCanShareWithPublic() );
+		}
+		else {
+			// All other cases.
+			rightSet.setAllowSharingForward( shareRights.getCanShareForward() );
+			rightSet.setAllowSharing( shareRights.getCanShareWithInternalUsers() );
+			rightSet.setAllowSharingExternal( shareRights.getCanShareWithExternalUsers() );
+			rightSet.setAllowSharingPublic( shareRights.getCanShareWithPublic() );
+			rightSet.setAllowSharingPublicLinks( shareRights.getCanSharePublicLink() );
+		}
 	
 		return rightSet;
 	}
@@ -2147,13 +2170,18 @@ public class GwtShareHelper
 			shareRights.setAccessRights( accessRights );
 
 			// Does the RightSet allow "share with external users"?
-			shareRights.setCanShareWithExternalUsers( rightSet.isAllowSharingExternal() );
+			// The rightSet could contain different set of rights depending on whether the rightSet
+			// came from a share associated with a folder in a net folder or not. Instead of actually
+			// checking for that condition, we will simply set the resulting bit on if either right
+			// is present in the righSet with the assumption that the user is working with the 
+			// correct entity associated with the share (hence no possibility of mis-presentation).
+			shareRights.setCanShareWithExternalUsers( rightSet.isAllowSharingExternal() || rightSet.isAllowFolderSharingExternal());
 			
 			// Does the RightSet allow "share with internal users"?
-			shareRights.setCanShareWithInternalUsers( rightSet.isAllowSharing() );
+			shareRights.setCanShareWithInternalUsers( rightSet.isAllowSharing() || rightSet.isAllowFolderSharingInternal() );
 			
 			// Does the RightSet allow "share with public"?
-			shareRights.setCanShareWithPublic( rightSet.isAllowSharingPublic() );
+			shareRights.setCanShareWithPublic( rightSet.isAllowSharingPublic() || rightSet.isAllowFolderSharingPublic() );
 			
 			// Does the RightSet allow "share forward"?
 			shareRights.setCanShareForward( rightSet.isAllowSharingForward() );
