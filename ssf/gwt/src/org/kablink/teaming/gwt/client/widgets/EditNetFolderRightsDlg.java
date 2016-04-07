@@ -388,7 +388,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 			
 			if(m_zoneShareRights.isAllowFolderPublic() == false ){
 				m_canShareFolderPublicChkbox.setValue( Boolean.FALSE );
-				m_canShareFolderPublicChkbox.setValue( false );				
+				m_canShareFolderPublicChkbox.setEnabled( false );				
 			}
 			
 			// Can the user share using Filr links?
