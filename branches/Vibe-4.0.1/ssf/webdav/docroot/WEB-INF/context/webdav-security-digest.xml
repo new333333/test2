@@ -8,6 +8,7 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
+    <!-- ============================== webdav-security-digest.xml ============================ -->
     <!-- ============================== Common beans ============================ -->
 
     <import resource="webdav-security-common.xml"/>
