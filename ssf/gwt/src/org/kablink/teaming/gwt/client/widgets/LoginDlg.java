@@ -573,12 +573,12 @@ public class LoginDlg extends DlgBox
 			if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
 			{
 				// Create a Novell Filr image that will be used in case there is no branding.
-				imgUrl = GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/novell_filr_graphic.png";
+				imgUrl = GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/mf_filr_graphic.png";
 			}
 			else if ( GwtTeaming.m_requestInfo.isNovellTeaming() )
 			{
 				// Create a Novell Teaming image that will be used in case there is no branding.
-				imgUrl = GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/novell_graphic.png";
+				imgUrl = GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/mf_vibe_graphic.png";
 			}
 			else
 			{
