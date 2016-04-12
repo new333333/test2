@@ -35,4 +35,10 @@
 			<column name="right_allowFolderSharingPublic" type="NUMBER(1,0)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="5">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_allowFolderSharingFwd" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

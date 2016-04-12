@@ -1212,6 +1212,7 @@ public class GwtShareHelper
 			boolean folderShareInternal;
 			boolean folderShareExternal;
 			boolean folderSharePublic;
+			boolean folderShareForward;
 
 			// areRightSetsEqual() compares "share internal", "share external", "share public" and "share forward".
 			// That is why we are setting them to false.
@@ -1222,6 +1223,7 @@ public class GwtShareHelper
 			folderShareInternal = rightSet.isAllowFolderSharingInternal();
 			folderShareExternal = rightSet.isAllowFolderSharingExternal();
 			folderSharePublic = rightSet.isAllowFolderSharingPublic();
+			folderShareForward = rightSet.isAllowFolderSharingForward();
 			rightSet.setAllowSharing( false );
 			rightSet.setAllowSharingExternal( false );
 			rightSet.setAllowSharingPublic( false );
@@ -1229,6 +1231,7 @@ public class GwtShareHelper
 			rightSet.setAllowFolderSharingInternal( false );
 			rightSet.setAllowFolderSharingExternal( false );
 			rightSet.setAllowFolderSharingPublic( false );
+			rightSet.setAllowFolderSharingForward( false );
 
 			viewerRightSet = getViewerRightSet();
 			editorRightSet = getEditorRightSet();
@@ -1261,6 +1264,7 @@ public class GwtShareHelper
 			rightSet.setAllowFolderSharingInternal( folderShareInternal );
 			rightSet.setAllowFolderSharingExternal( folderShareExternal );
 			rightSet.setAllowFolderSharingPublic( folderSharePublic );
+			rightSet.setAllowFolderSharingForward( folderShareForward );
 		}
 		
 		return accessRights;
@@ -2131,7 +2135,7 @@ public class GwtShareHelper
 		
 		if(folder != null && folder.isFolderInNetFolder()) {
 			// Sharing a folder from a net folder. This maps to a different set of rights.
-			rightSet.setAllowSharingForward( shareRights.getCanShareForward() );
+			rightSet.setAllowFolderSharingForward( shareRights.getCanShareForward() );
 			rightSet.setAllowFolderSharingInternal( shareRights.getCanShareWithInternalUsers() );
 			rightSet.setAllowFolderSharingExternal( shareRights.getCanShareWithExternalUsers() );
 			rightSet.setAllowFolderSharingPublic( shareRights.getCanShareWithPublic() );
@@ -2184,7 +2188,7 @@ public class GwtShareHelper
 			shareRights.setCanShareWithPublic( rightSet.isAllowSharingPublic() || rightSet.isAllowFolderSharingPublic() );
 			
 			// Does the RightSet allow "share forward"?
-			shareRights.setCanShareForward( rightSet.isAllowSharingForward() );
+			shareRights.setCanShareForward( rightSet.isAllowSharingForward() || rightSet.isAllowFolderSharingForward() );
 			
 			// Does the RightSet allow "share public link"?
 			shareRights.setCanSharePublicLink( rightSet.isAllowSharingPublicLinks() );
