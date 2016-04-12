@@ -244,6 +244,7 @@ public interface GwtTeamingMessages extends Messages {
 	String ok();
 	String oneMomentPlease();
 	String overflowLabel();
+	String overflowShortLabel(String prop);
 	String percent();
 	String publicName();
 	String send();

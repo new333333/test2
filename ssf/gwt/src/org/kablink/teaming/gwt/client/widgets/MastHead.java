@@ -103,7 +103,7 @@ public class MastHead extends Composite
 {
 	// Controls whether or not a beta note is displayed in Vibe's
 	// masthead.
-	private final static boolean SHOW_VIBE_BETA_NOTE = true;
+	private final static boolean SHOW_VIBE_BETA_NOTE = false;
 
 	private BrandingPanel m_siteBrandingPanel = null;
 	private BrandingPanel m_binderBrandingPanel = null;
