@@ -35,4 +35,10 @@
 			<column name="right_allowFolderSharingPublic" type="BIT"/>
         </addColumn>
     </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="5">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_allowFolderSharingFwd" type="BIT"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

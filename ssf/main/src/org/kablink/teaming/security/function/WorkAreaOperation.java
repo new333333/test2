@@ -101,6 +101,7 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation ALLOW_FOLDER_SHARING_INTERNAL = new WorkAreaOperation("allowFolderSharingInternal");
     public final static WorkAreaOperation ALLOW_FOLDER_SHARING_EXTERNAL = new WorkAreaOperation("allowFolderSharingExternal");
     public final static WorkAreaOperation ALLOW_FOLDER_SHARING_PUBLIC = new WorkAreaOperation("allowFolderSharingPublic");
+    public final static WorkAreaOperation ALLOW_FOLDER_SHARING_FORWARD = new WorkAreaOperation("allowFolderSharingForward");
 
     // The following rights should not be used in access management of workareas.
     // Used to give access to zone-wide functions to a group of users
@@ -292,6 +293,7 @@ public class WorkAreaOperation {
 		protected Boolean allowFolderSharingInternal = Boolean.FALSE;
 		protected Boolean allowFolderSharingExternal = Boolean.FALSE;
 		protected Boolean allowFolderSharingPublic = Boolean.FALSE;
+		protected Boolean allowFolderSharingForward = Boolean.FALSE;
 
         public static RightSet and(RightSet set1, RightSet set2) {
             RightSet andSet = new RightSet();
@@ -325,6 +327,7 @@ public class WorkAreaOperation {
             andSet.allowFolderSharingInternal = andRights(set1.allowFolderSharingInternal, set2.allowFolderSharingInternal);
             andSet.allowFolderSharingExternal = andRights(set1.allowFolderSharingExternal, set2.allowFolderSharingExternal);
             andSet.allowFolderSharingPublic = andRights(set1.allowFolderSharingPublic, set2.allowFolderSharingPublic);
+            andSet.allowFolderSharingForward = andRights(set1.allowFolderSharingForward, set2.allowFolderSharingForward);
             return andSet;
         }
 		
@@ -379,6 +382,7 @@ public class WorkAreaOperation {
 			result = 29 * result + (Boolean.TRUE.equals(allowFolderSharingInternal) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(allowFolderSharingExternal) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(allowFolderSharingPublic) ? 1231 : 1237);
+			result = 29 * result + (Boolean.TRUE.equals(allowFolderSharingForward) ? 1231 : 1237);
 			return result;
 		}
 
@@ -418,6 +422,7 @@ public class WorkAreaOperation {
 			if(!equalRights(this.allowFolderSharingInternal, that.allowFolderSharingInternal)) return false;
 			if(!equalRights(this.allowFolderSharingExternal, that.allowFolderSharingExternal)) return false;
 			if(!equalRights(this.allowFolderSharingPublic, that.allowFolderSharingPublic)) return false;
+			if(!equalRights(this.allowFolderSharingForward, that.allowFolderSharingForward)) return false;
 			return true;
 		}
 
@@ -456,6 +461,7 @@ public class WorkAreaOperation {
 			if(!greaterOrEqualRights(this.allowFolderSharingInternal, that.allowFolderSharingInternal)) return false;
 			if(!greaterOrEqualRights(this.allowFolderSharingExternal, that.allowFolderSharingExternal)) return false;
 			if(!greaterOrEqualRights(this.allowFolderSharingPublic, that.allowFolderSharingPublic)) return false;
+			if(!greaterOrEqualRights(this.allowFolderSharingForward, that.allowFolderSharingForward)) return false;
 			return true;
 		}
 
@@ -493,6 +499,7 @@ public class WorkAreaOperation {
 			if(this.allowFolderSharingInternal) rights.add(WorkAreaOperation.ALLOW_FOLDER_SHARING_INTERNAL);
 			if(this.allowFolderSharingExternal) rights.add(WorkAreaOperation.ALLOW_FOLDER_SHARING_EXTERNAL);
 			if(this.allowFolderSharingPublic) rights.add(WorkAreaOperation.ALLOW_FOLDER_SHARING_PUBLIC);
+			if(this.allowFolderSharingForward) rights.add(WorkAreaOperation.ALLOW_FOLDER_SHARING_FORWARD);
 			return rights;
 		}
 
@@ -566,6 +573,7 @@ public class WorkAreaOperation {
 			if(this.allowFolderSharingInternal) rights.add(BinderOperation.allowSharing);
 			if(this.allowFolderSharingExternal) rights.add(BinderOperation.allowSharingExternal);
 			if(this.allowFolderSharingPublic) rights.add(BinderOperation.allowSharingPublic);
+			if(this.allowFolderSharingForward) rights.add(BinderOperation.allowSharingForward);
 			return rights;
 		}
 
@@ -876,6 +884,15 @@ public class WorkAreaOperation {
 			this.allowFolderSharingPublic = allowFolderSharingPublic;
 		}
 
+		public boolean isAllowFolderSharingForward() {
+			if(allowFolderSharingForward == null) return false;
+			return allowFolderSharingForward;
+		}
+
+		public void setAllowFolderSharingForward(boolean allowFolderSharingForward) {
+			this.allowFolderSharingForward = allowFolderSharingForward;
+		}
+		
 		private boolean equalRights(Boolean right1, Boolean right2) {
 			if(right1 == null)
 				right1 = Boolean.FALSE;

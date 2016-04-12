@@ -579,7 +579,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				*/
 			case allowSharingForward:
 				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING_FORWARD);
+						binder.isFolderInNetFolder() ? WorkAreaOperation.ALLOW_FOLDER_SHARING_FORWARD : WorkAreaOperation.ALLOW_SHARING_FORWARD);
 				break;
 			case allowAccessNetFolder:
 				getAccessControlManager().checkOperation(user, binder,
