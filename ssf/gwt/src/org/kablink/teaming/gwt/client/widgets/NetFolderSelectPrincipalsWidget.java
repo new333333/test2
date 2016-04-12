@@ -160,6 +160,10 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 			reshareRole = new GwtRole();
 			reshareRole.setType( GwtRoleType.ShareForward );
 			roles.add( reshareRole );
+			
+			reshareRole = new GwtRole();
+			reshareRole.setType( GwtRoleType.ShareFolderForward );
+			roles.add( reshareRole );			
 
 			shareInternalRole = new GwtRole();
 			shareInternalRole.setType( GwtRoleType.ShareInternal );
@@ -324,7 +328,11 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 							
 						case ShareForward:
 							rightsInfo.setCanReshare( true );
-							break;							
+							break;	
+							
+						case ShareFolderForward:
+							rightsInfo.setCanReshareFolders( true );
+							break;								
 							
 						case ShareInternal:
 							rightsInfo.setCanShareInternal( true );

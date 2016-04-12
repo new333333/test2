@@ -860,6 +860,9 @@ public class GwtNetFolderHelper {
 		role.setType(GwtRoleType.ShareForward);
 		listOfRoles.add(role);
 		role = new GwtRole();
+		role.setType(GwtRoleType.ShareFolderForward);
+		listOfRoles.add(role);
+		role = new GwtRole();
 		role.setType(GwtRoleType.ShareInternal);
 		listOfRoles.add(role);
 		role = new GwtRole();
