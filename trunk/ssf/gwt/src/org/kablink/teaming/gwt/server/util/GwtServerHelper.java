@@ -5027,6 +5027,7 @@ public class GwtServerHelper {
 		case ShareExternal:               fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID;      break;
 		case ShareFolderExternal:		  fnInternalId = ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_EXTERNAL_INTERNALID; break;
 		case ShareForward:                fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID;       break;
+		case ShareFolderForward:		  fnInternalId = ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_FORWARD_INTERNALID; break;
 		case ShareInternal:               fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID;      break;
 		case ShareFolderInternal:		  fnInternalId = ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_INTERNAL_INTERNALID; break;
 		case SharePublic:                 fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID;        break;

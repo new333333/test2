@@ -55,6 +55,7 @@ public class GwtRole
 		ShareExternal,
 		ShareFolderExternal,
 		ShareForward,
+		ShareFolderForward,
 		ShareInternal,
 		ShareFolderInternal,
 		SharePublic,
