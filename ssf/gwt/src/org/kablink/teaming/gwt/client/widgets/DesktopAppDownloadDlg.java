@@ -100,12 +100,6 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	private final static int ANDROID_ROW	= 4;
 	private final static int IOS_ROW		= 5;
 
-	// The URLs to the quick start help for the desktop applications.
-	private final static String	MAC_QUICKSTART_URL_FILR		= "http://www.novell.com/documentation/novell-filr-2-0/filr-2-0_qs_desktopmac/data/filr-2-0_qs_desktopmac.html";
-	private final static String	MAC_QUICKSTART_URL_VIBE		= "http://www.novell.com/documentation/novell-vibe-4-0/vibe-4-0_qs_desktopmac/data/vibe-4-0_qs_desktopmac.html";
-	private final static String	WINDOWS_QUICKSTART_URL_FILR	= "http://www.novell.com/documentation/novell-filr-2-0/filr-2-0_qs_desktop/data/filr-2-0_qs_desktop.html";
-	private final static String	WINDOWS_QUICKSTART_URL_VIBE	= "http://www.novell.com/documentation/novell-vibe-4-0/vibe-4-0_qs_desktop/data/vibe-4-0_qs_desktop.html";
-	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
@@ -253,13 +247,13 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		createProductTitleCell(        m_bodyTable, fcf, WINDOWS_ROW, m_messages.downloadAppDlgProductWindows(m_product));
 		createLogoCell(                m_bodyTable, fcf, WINDOWS_ROW, m_filrImages.logoWindows(), m_messages.downloadAppDlgAlt_WindowsDownloads());
 		createDownloadsCell_Windows(   m_bodyTable, fcf);
-		createInstructionsCell_Windows(m_bodyTable, fcf);
+		createInstructionsCell_Windows(m_bodyTable, fcf, m_desktopAppDownloadInfo);
 		
 		// ...create the MacOS client content...
 		createProductTitleCell(    m_bodyTable, fcf, MAC_ROW, m_messages.downloadAppDlgProductMac(m_product));
 		createLogoCell(            m_bodyTable, fcf, MAC_ROW, m_filrImages.logoMac(), m_messages.downloadAppDlgAlt_MacDownloads());
 		createDownloadsCell_Mac(   m_bodyTable, fcf);
-		createInstructionsCell_Mac(m_bodyTable, fcf);
+		createInstructionsCell_Mac(m_bodyTable, fcf, m_desktopAppDownloadInfo);
 
 		// ...create the Mobile clients content...
 		createProductTitleCell(       m_bodyTable, fcf, MOBILE_ROW, m_messages.downloadAppDlgProductMobile(m_product));
@@ -495,14 +489,14 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	/*
 	 * Creates the instructions cell content for MacOS.
 	 */
-	private void createInstructionsCell_Mac(VibeFlexTable ft, FlexCellFormatter fcf) {
+	private void createInstructionsCell_Mac(VibeFlexTable ft, FlexCellFormatter fcf, DesktopAppDownloadInfoRpcResponseData desktopAppData) {
 		// If we have a Mac client to download...
 		if (m_hasMac) {
 			// ...construct an Anchor for the quick start link...
 			Anchor a = new Anchor();
 			a.addStyleName("vibe-desktopAppPage-instructionAnchor");
 			a.setTarget("_blank");
-			a.setHref(m_isFilr ? MAC_QUICKSTART_URL_FILR : MAC_QUICKSTART_URL_VIBE);
+			a.setHref(desktopAppData.getMacHelpUrl());
 			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadMac2(m_company, m_product));
 	
 			// ...add the instructions...
@@ -555,14 +549,14 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	/*
 	 * Creates the instructions cell content for Windows.
 	 */
-	private void createInstructionsCell_Windows(VibeFlexTable ft, FlexCellFormatter fcf) {
+	private void createInstructionsCell_Windows(VibeFlexTable ft, FlexCellFormatter fcf, DesktopAppDownloadInfoRpcResponseData desktopAppData) {
 		// If we have a Win32 or Win64 client to download...
 		if (m_hasWin32 || m_hasWin64 ) {
 			// ...construct an Anchor for the quick start link...
 			Anchor a = new Anchor();
 			a.addStyleName("vibe-desktopAppPage-instructionAnchor");
 			a.setTarget("_blank");
-			a.setHref(m_isFilr ? WINDOWS_QUICKSTART_URL_FILR : WINDOWS_QUICKSTART_URL_VIBE);
+			a.setHref(m_desktopAppDownloadInfo.getWinHelpUrl());
 			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadWindows2(m_company, m_product));
 
 			// ...add the instructions...
