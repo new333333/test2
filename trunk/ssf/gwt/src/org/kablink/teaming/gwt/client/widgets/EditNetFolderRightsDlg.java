@@ -291,7 +291,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 		mainPanel.add( tmpPanel );
 
 		// Add the "allow grant re-share" checkbox
-		m_canGrantFolderReshareChkbox = new CheckBox( messages.editNetFolderRightsDlg_ReShareLabel() );
+		m_canGrantFolderReshareChkbox = new CheckBox( messages.editNetFolderRightsDlg_ReshareFolderLabel() );
 		m_canGrantFolderReshareChkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
 		tmpPanel = new FlowPanel();
 		tmpPanel.addStyleName( "marginleft1" );
