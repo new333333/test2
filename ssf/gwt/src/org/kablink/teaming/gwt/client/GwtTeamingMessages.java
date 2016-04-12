@@ -3012,6 +3012,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editNetFolderRightsDlg_Hint();
 	String editNetFolderRightsDlg_Instructions();
 	String editNetFolderRightsDlg_ReShareLabel();
+	String editNetFolderRightsDlg_ReshareFolderLabel();
 	String editNetFolderRightsDlg_ShareInternalLabel();
 	String editNetFolderRightsDlg_ShareExternalLabel();
 	String editNetFolderRightsDlg_ShareLinkLabel();

@@ -650,24 +650,24 @@ public class EditShareDlg extends DlgBox
 		switch ( highestRightsPossible.getAccessRights() )
 		{
 		case CONTRIBUTOR:
-			m_viewerRb.setVisible( true );
-			m_editorRb.setVisible( true );
+			m_viewerRb.setEnabled( true );
+			m_editorRb.setEnabled( true );
 			
 			// Show the "contributor" radio button only if we are dealing with a binder.
 			m_contributorRb.setVisible( entityIsBinder );
 			break;
 			
 		case EDITOR:
-			m_viewerRb.setVisible( true );
-			m_editorRb.setVisible( true );
-			m_contributorRb.setVisible( false );
+			m_viewerRb.setEnabled( true );
+			m_editorRb.setEnabled( true );
+			m_contributorRb.setEnabled( false );
 			break;
 			
 		case VIEWER:
 		default:
-			m_viewerRb.setVisible( true );
-			m_editorRb.setVisible( false );
-			m_contributorRb.setVisible( false );
+			m_viewerRb.setEnabled( true );
+			m_editorRb.setEnabled( false );
+			m_contributorRb.setEnabled( false );
 			break;
 		}
 		
