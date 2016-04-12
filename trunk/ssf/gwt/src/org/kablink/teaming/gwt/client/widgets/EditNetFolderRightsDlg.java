@@ -295,7 +295,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 		m_canGrantFolderReshareChkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
 		tmpPanel = new FlowPanel();
 		tmpPanel.addStyleName( "marginleft1" );
-		tmpPanel.add( m_canGrantReshareCkbox );
+		tmpPanel.add( m_canGrantFolderReshareChkbox );
 		mainPanel.add( tmpPanel );
 
 		return mainPanel;
@@ -328,13 +328,17 @@ public class EditNetFolderRightsDlg extends DlgBox
 		{
 			enable = false;
 			
-			if ( m_canShareExternalCkbox.getValue() || m_canShareInternalCkbox.getValue() || m_canSharePublicCkbox.getValue() )
+			if ( m_canShareExternalCkbox.getValue() || m_canShareInternalCkbox.getValue() || m_canSharePublicCkbox.getValue() ) {
 				enable = true;
+				m_canGrantReshareCkbox.setEnabled( enable );
+			}
 			
-			if ( m_canShareFolderExternalChkbox.getValue() || m_canShareFolderInternalChkbox.getValue() || m_canShareFolderPublicChkbox.getValue())
+			if ( m_canShareFolderExternalChkbox.getValue() || m_canShareFolderInternalChkbox.getValue() || m_canShareFolderPublicChkbox.getValue()) {
 				enable = true;
+				m_canGrantFolderReshareChkbox.setEnabled( enable );
+			}
 			
-			m_canGrantReshareCkbox.setEnabled( enable );
+			
 		}
 		
 		// If the "public" checkbox is checked, disable the "internal users"

@@ -206,6 +206,9 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 					
 					if ( rightsInfo.canReshare() )
 						reshareRole.addMember( nextPrincipal );
+					
+					if ( rightsInfo.canReshareFolders() )
+						reshareRole.addMember( nextPrincipal );
 						
 					if ( rightsInfo.canShareExternal() )
 						shareExternalRole.addMember( nextPrincipal );
