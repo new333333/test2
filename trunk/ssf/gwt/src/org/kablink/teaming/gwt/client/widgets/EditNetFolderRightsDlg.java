@@ -71,6 +71,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 	private CheckBox m_canSharePublicCkbox;
 	private CheckBox m_canShareLinkCkbox;
 	private CheckBox m_canGrantReshareCkbox;
+	private CheckBox m_canGrantFolderReshareChkbox;
 	private CheckBox m_canShareFolderExternalChkbox;
 	private CheckBox m_canShareFolderInternalChkbox;
 	private CheckBox m_canShareFolderPublicChkbox;
@@ -224,6 +225,14 @@ public class EditNetFolderRightsDlg extends DlgBox
 		tmpPanel.addStyleName( "marginleft1" );
 		tmpPanel.add( m_canShareLinkCkbox );
 		mainPanel.add( tmpPanel );
+		
+		// Add the "allow grant re-share" checkbox
+		m_canGrantReshareCkbox = new CheckBox( messages.editNetFolderRightsDlg_ReShareLabel() );
+		m_canGrantReshareCkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
+		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName( "marginleft1" );
+		tmpPanel.add( m_canGrantReshareCkbox );
+		mainPanel.add( tmpPanel );
 
 		//Added new UI functionality to support netfolders sharing.
 		// Add the "Allow the recipient to share this item with:" label
@@ -282,10 +291,10 @@ public class EditNetFolderRightsDlg extends DlgBox
 		mainPanel.add( tmpPanel );
 
 		// Add the "allow grant re-share" checkbox
-		m_canGrantReshareCkbox = new CheckBox( messages.editNetFolderRightsDlg_ReShareLabel() );
-		m_canGrantReshareCkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
+		m_canGrantFolderReshareChkbox = new CheckBox( messages.editNetFolderRightsDlg_ReShareLabel() );
+		m_canGrantFolderReshareChkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
 		tmpPanel = new FlowPanel();
-		tmpPanel.addStyleName( "margintop2" );
+		tmpPanel.addStyleName( "marginleft1" );
 		tmpPanel.add( m_canGrantReshareCkbox );
 		mainPanel.add( tmpPanel );
 
@@ -307,6 +316,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 		m_canSharePublicCkbox.setEnabled( enable );
 		m_canShareLinkCkbox.setEnabled( enable );
 		m_canGrantReshareCkbox.setEnabled( enable );
+		m_canGrantFolderReshareChkbox.setEnabled( enable );
 		
 		m_canShareFolderExternalChkbox.setEnabled( enable );
 		m_canShareFolderInternalChkbox.setEnabled( enable );
@@ -398,6 +408,14 @@ public class EditNetFolderRightsDlg extends DlgBox
 				m_canShareLinkCkbox.setValue( Boolean.FALSE );
 				m_canShareLinkCkbox.setEnabled( false );
 			}
+			
+			// Can the user reshare folder?
+			if ( m_zoneShareRights.isAllowFolderForwarding() == false )
+			{
+				// No
+				m_canGrantFolderReshareChkbox.setValue( Boolean.FALSE );
+				m_canGrantFolderReshareChkbox.setEnabled( false );
+			}			
 		}
 	}
 	
@@ -419,7 +437,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 				
 				value = m_canShareExternalCkbox.getValue();
 				m_rightsInfo.setCanShareExternal( value );
-				
+							
 				value = m_canShareFolderExternalChkbox.getValue();
 				m_rightsInfo.setCanShareFolderExternal( value );
 				
@@ -442,10 +460,16 @@ public class EditNetFolderRightsDlg extends DlgBox
 				if ( m_canGrantReshareCkbox.isEnabled() )
 					value = m_canGrantReshareCkbox.getValue();
 				m_rightsInfo.setCanReshare( value );
+				
+				value = false;
+				if( m_canGrantFolderReshareChkbox.isEnabled() )
+					value = m_canGrantFolderReshareChkbox.getValue();
+				m_rightsInfo.setCanReshareFolders( value );
 			}
 			else
 			{
 				m_rightsInfo.setCanReshare( false );
+				m_rightsInfo.setCanReshareFolders( false );
 				m_rightsInfo.setCanShareExternal( false );
 				m_rightsInfo.setCanShareInternal( false );
 				m_rightsInfo.setCanSharePublic( false );
@@ -560,6 +584,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 		m_canSharePublicCkbox.setValue( false );
 		m_canShareLinkCkbox.setValue( false );
 		m_canGrantReshareCkbox.setValue( false );
+		m_canGrantFolderReshareChkbox.setValue( false );
 		m_allowAccessCkbox.setValue( false );
 		
 		m_canShareFolderInternalChkbox.setValue( false );
@@ -574,6 +599,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 			m_canShareLinkCkbox.setValue( m_rightsInfo.canSharePublicLink() );
 			m_canGrantReshareCkbox.setValue( m_rightsInfo.canReshare() );
 			m_allowAccessCkbox.setValue( m_rightsInfo.canAccess() );
+			m_canGrantFolderReshareChkbox.setValue( m_rightsInfo.canReshareFolders());
 			
 			m_canShareFolderExternalChkbox.setValue( m_rightsInfo.canShareFolderExternal() );
 			m_canShareFolderInternalChkbox.setValue( m_rightsInfo.canShareFolderInternal() );

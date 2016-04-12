@@ -2993,6 +2993,7 @@ public interface GwtTeamingMessages extends Messages {
 	String externalRights();
 	String folderExternalRights();
 	String forwardingRights();
+	String folderForwardingRights();
 	String internalRights();
 	String folderInternalRights();
 	String noRights();

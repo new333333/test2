@@ -1439,7 +1439,7 @@ public class EventHelper {
 				break;
 				
 			case INVOKE_IDEAS_PORTAL:
-				// An InvokeHelpEvent!  Can the event handler we were
+				// An InvokeIdeasPortalEvent!  Can the event handler we were
 				// given handle that?
 				if (eventHandler instanceof InvokeIdeasPortalEvent.Handler) {
 					handlerNotDefined = false;
@@ -3193,6 +3193,7 @@ public class EventHelper {
 			case INVOKE_EDIT_USER_ZONE_SHARE_RIGHTS_DLG:	   hasHandler = (eventHandler instanceof InvokeEditUserZoneShareRightsDlgEvent.Handler); 	   break;
 			case INVOKE_EMAIL_NOTIFICATION:         	       hasHandler = (eventHandler instanceof InvokeEmailNotificationEvent.Handler);                break;
 			case INVOKE_HELP:                       	       hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                             break;
+			case INVOKE_IDEAS_PORTAL:                          hasHandler = (eventHandler instanceof InvokeIdeasPortalEvent.Handler);                      break;
 			case INVOKE_IMPORT_ICAL_FILE:           	       hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);                   break;
 			case INVOKE_IMPORT_ICAL_URL:            	       hasHandler = (eventHandler instanceof InvokeImportIcalUrlEvent.Handler);                    break;
 			case INVOKE_IMPORT_PROFILES_DLG:				   hasHandler = (eventHandler instanceof InvokeImportProfilesDlgEvent.Handler);		           break;
