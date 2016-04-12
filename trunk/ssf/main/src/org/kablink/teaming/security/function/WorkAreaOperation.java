@@ -156,7 +156,8 @@ public class WorkAreaOperation {
 	    WorkAreaOperation.ALLOW_SHARING_PUBLIC_LINKS,
 	    WorkAreaOperation.ALLOW_FOLDER_SHARING_INTERNAL,
 	    WorkAreaOperation.ALLOW_FOLDER_SHARING_EXTERNAL,
-	    WorkAreaOperation.ALLOW_FOLDER_SHARING_PUBLIC };
+	    WorkAreaOperation.ALLOW_FOLDER_SHARING_PUBLIC,
+	    WorkAreaOperation.ALLOW_FOLDER_SHARING_FORWARD };
 
 	/**
 	 * Returns a List<WorkAreaOperation> containing the various 'Allow'
