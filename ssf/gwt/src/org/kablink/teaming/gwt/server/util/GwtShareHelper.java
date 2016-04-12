@@ -3957,7 +3957,7 @@ public class GwtShareHelper
     	Long zoneId;
     	ZoneConfig zoneConfig;
 
-    	shareRights = new PerEntityShareRightsInfo( false, false, false, false, false,false, false, false );
+    	shareRights = new PerEntityShareRightsInfo( false, false, false, false, false,false, false, false, false );
 
 		zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		zoneConfig = ami.getZoneModule().getZoneConfig( zoneId );
@@ -3993,6 +3993,16 @@ public class GwtShareHelper
 						// Is share forwarding enabled at the zone level for this user?
 						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD );
 						shareRights.setAllowForwarding( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+			    	
+			    	try
+					{
+						// Is share forwarding enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD );
+						shareRights.setAllowFolderForwarding( true );
 					}
 					catch ( AccessControlException acEx )
 					{
@@ -4076,6 +4086,7 @@ public class GwtShareHelper
 					// if an individual hasn't been given rights at the zone level they won't be able
 					// to perform the share.
 					shareRights.setAllowForwarding( true );
+					shareRights.setAllowFolderForwarding( true );
 					shareRights.setAllowInternal( true );
 					shareRights.setAllowExternal( true );
 					shareRights.setAllowPublic( true );

@@ -50,6 +50,7 @@ public class PerEntityShareRightsInfo implements IsSerializable, VibeRpcResponse
 	private boolean m_allowFolderExternal;
 	private boolean m_allowFolderInternal;
 	private boolean m_allowFolderPublic;
+	private boolean m_allowFolderForwarding;
 	
 	/**
 	 * Constructor method. 
@@ -70,7 +71,7 @@ public class PerEntityShareRightsInfo implements IsSerializable, VibeRpcResponse
 	 * @param allowPublic
 	 * @param allowPublicLinks
 	 */
-	public PerEntityShareRightsInfo(boolean allowExternal, boolean allowForwarding, boolean allowInternal, boolean allowPublic, boolean allowPublicLinks, boolean allowFolderExternal, boolean allowFolderInternal, boolean allowFolderPublic) {
+	public PerEntityShareRightsInfo(boolean allowExternal, boolean allowForwarding, boolean allowInternal, boolean allowPublic, boolean allowPublicLinks, boolean allowFolderExternal, boolean allowFolderInternal, boolean allowFolderPublic, boolean allowFolderForwarding) {
 		// Initialize this object...
 		this();
 
@@ -83,6 +84,7 @@ public class PerEntityShareRightsInfo implements IsSerializable, VibeRpcResponse
 		setAllowFolderExternal( allowFolderExternal );
 		setAllowFolderInternal( allowFolderInternal );
 		setAllowFolderPublic( allowFolderPublic );
+		setAllowFolderForwarding( allowFolderForwarding );
 	}
 
 	/**
@@ -98,6 +100,7 @@ public class PerEntityShareRightsInfo implements IsSerializable, VibeRpcResponse
 	public boolean isAllowFolderExternal() {return m_allowFolderExternal; }
 	public boolean isAllowFolderInternal() {return m_allowFolderInternal; }
 	public boolean isAllowFolderPublic() {return m_allowFolderPublic; }
+	public boolean isAllowFolderForwarding() {return m_allowFolderForwarding; }
 
 	/**
 	 * Set'er methods.
@@ -112,6 +115,7 @@ public class PerEntityShareRightsInfo implements IsSerializable, VibeRpcResponse
 	public void setAllowFolderExternal( boolean allowFolderExternal) {m_allowFolderExternal = allowFolderExternal; }
 	public void setAllowFolderInternal( boolean allowFolderInternal) {m_allowFolderInternal = allowFolderInternal; }
 	public void setAllowFolderPublic( boolean allowFolderPublic) {m_allowFolderPublic = allowFolderPublic;}
+	public void setAllowFolderForwarding( boolean allowFolderForwarding) {m_allowFolderForwarding = allowFolderForwarding; }
 
 	/**
 	 * Returns true if all of the flags are set and false otherwise.
@@ -128,7 +132,7 @@ public class PerEntityShareRightsInfo implements IsSerializable, VibeRpcResponse
 	}
 	
 	public boolean allFolderFlagsSet(){
-		return (m_allowFolderExternal && m_allowFolderInternal && m_allowFolderPublic);
+		return (m_allowFolderExternal && m_allowFolderInternal && m_allowFolderPublic && m_allowFolderForwarding);
 	}
 
 	/**
@@ -146,6 +150,6 @@ public class PerEntityShareRightsInfo implements IsSerializable, VibeRpcResponse
 	}
 	
 	public boolean anyFolderFlagsSet(){
-		return (m_allowFolderExternal || m_allowFolderInternal || m_allowFolderPublic);
+		return (m_allowFolderExternal || m_allowFolderInternal || m_allowFolderPublic || m_allowFolderForwarding);
 	}
 }

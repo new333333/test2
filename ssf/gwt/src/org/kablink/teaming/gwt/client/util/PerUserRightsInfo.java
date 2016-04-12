@@ -94,6 +94,17 @@ public class PerUserRightsInfo
 	/**
 	 * 
 	 */
+	public boolean canReshareFolders()
+	{
+		if ( m_shareRightsInfo != null )
+			return m_shareRightsInfo.isAllowFolderForwarding();
+
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
 	public boolean canShareExternal()
 	{
 		if ( m_shareRightsInfo != null )
@@ -205,6 +216,13 @@ public class PerUserRightsInfo
 				rights.append( GwtTeaming.getMessages().forwardingRights() );
 			}
 			
+			if ( m_shareRightsInfo.isAllowFolderForwarding() )
+			{
+				if ( rights.length() > 0 )
+					rights.append(" / ");
+				rights.append( GwtTeaming.getMessages().folderForwardingRights() );
+			}
+			
 			if ( m_shareRightsInfo.isAllowPublicLinks() )
 			{
 				if ( rights.length() > 0 )
@@ -244,6 +262,17 @@ public class PerUserRightsInfo
 		
 		m_shareRightsInfo.setAllowForwarding( allow );
 	}
+	
+	/**
+	 * 
+	 */
+	public void setCanReshareFolders( boolean allow )
+	{
+		if ( m_shareRightsInfo == null )
+			m_shareRightsInfo = new PerEntityShareRightsInfo();
+		
+		m_shareRightsInfo.setAllowFolderForwarding( allow );
+	}	
 	
 	/**
 	 * 
