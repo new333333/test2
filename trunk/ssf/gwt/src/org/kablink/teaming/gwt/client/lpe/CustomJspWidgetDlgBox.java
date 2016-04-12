@@ -208,7 +208,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 		}
 
 		// Add the size control
-		m_sizeCtrl = new SizeCtrl();
+		m_sizeCtrl = new SizeCtrl(true);
 		mainPanel.add( m_sizeCtrl );
 
 		init( properties );
