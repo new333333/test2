@@ -135,6 +135,7 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 		GwtRole sharePublicRole;
 		GwtRole sharePublicLinkRole;
 		GwtRole reshareRole;
+		GwtRole reshareFolderRole;
 		GwtRole shareFolderInternalRole;
 		GwtRole shareFolderExternalRole;
 		GwtRole shareFolderPublicRole;
@@ -161,9 +162,9 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 			reshareRole.setType( GwtRoleType.ShareForward );
 			roles.add( reshareRole );
 			
-			reshareRole = new GwtRole();
-			reshareRole.setType( GwtRoleType.ShareFolderForward );
-			roles.add( reshareRole );			
+			reshareFolderRole = new GwtRole();
+			reshareFolderRole.setType( GwtRoleType.ShareFolderForward );
+			roles.add( reshareFolderRole );			
 
 			shareInternalRole = new GwtRole();
 			shareInternalRole.setType( GwtRoleType.ShareInternal );
@@ -208,7 +209,7 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 						reshareRole.addMember( nextPrincipal );
 					
 					if ( rightsInfo.canReshareFolders() )
-						reshareRole.addMember( nextPrincipal );
+						reshareFolderRole.addMember( nextPrincipal );
 						
 					if ( rightsInfo.canShareExternal() )
 						shareExternalRole.addMember( nextPrincipal );
