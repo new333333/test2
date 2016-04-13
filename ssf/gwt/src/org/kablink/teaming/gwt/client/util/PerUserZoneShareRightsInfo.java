@@ -45,6 +45,7 @@ public class PerUserZoneShareRightsInfo implements IsSerializable
 {
 	private boolean m_enableShareExternal;
 	private boolean m_enableShareForwarding;
+	private boolean m_enableShareFolderForwarding;
 	private boolean m_enableShareInternal;
 	private boolean m_enableSharePublic;
 	private boolean m_enableShareWithAllExternal;
@@ -76,6 +77,14 @@ public class PerUserZoneShareRightsInfo implements IsSerializable
 	public boolean getIsEnableShareForwarding()
 	{
 		return m_enableShareForwarding;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getIsEnableShareFolderForwarding()
+	{
+		return m_enableShareFolderForwarding;
 	}
 	
 	/**
@@ -151,6 +160,13 @@ public class PerUserZoneShareRightsInfo implements IsSerializable
 			rights.append( GwtTeaming.getMessages().forwardingRights() );
 		}
 		
+		if ( getIsEnableShareFolderForwarding() )
+		{
+			if ( rights.length() > 0 )
+				rights.append( " / " );
+			rights.append( GwtTeaming.getMessages().folderForwardingRights() );
+		}
+		
 		if ( getIsEnableShareWithAllExternal() )
 		{
 			if ( rights.length() > 0 )
@@ -193,6 +209,14 @@ public class PerUserZoneShareRightsInfo implements IsSerializable
 	{
 		m_enableShareForwarding = enabled;
 	}
+	
+	/**
+	 * 
+	 */
+	public void setEnableShareFolderForwarding( boolean enabled )
+	{
+		m_enableShareFolderForwarding = enabled;
+	}	
 
 	/**
 	 * 
