@@ -52,6 +52,7 @@ if (op2 != null && !op2.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING) && !op2.equal
 %><c:set var="ss_windowTitle" value="${ssEntry.title}" scope="request"/><%
 	}
 %>
+<link href="<html:rootPath/>js/gwt/gwtteaming/LegacyJspSupport.css"          rel="stylesheet" type="text/css" />
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <c:set var="showFolderPage" value="true"/>

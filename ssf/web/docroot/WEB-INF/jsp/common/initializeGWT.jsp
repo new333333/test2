@@ -46,3 +46,4 @@
 <link href="<html:rootPath/>js/gwt/gwtteaming/GwtDesktopAppDownloadPage.css" rel="stylesheet" type="text/css" />
 <link href="<html:rootPath/>js/gwt/gwtteaming/GwtReports.css"                rel="stylesheet" type="text/css" />
 <link href="<html:rootPath/>js/gwt/gwtteaming/GwtCalendar.css"               rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>js/gwt/gwtteaming/LegacyJspSupport.css"          rel="stylesheet" type="text/css" />

@@ -79,7 +79,8 @@
     <stylesheet src='VibeCellTable.css'             />		
     <stylesheet src='VibeDataGrid.css'              />
     <stylesheet src='VibeWidgets.css'               />
-	
+    <stylesheet src='LegacyJspSupport.css'          />
+
    	<!-- Limit support of which browsers we compile for.  Speeds up -->
 	<!-- compilation during development.                            -->
 	<inherits name='org.kablink.teaming.gwt.buildBrowsers' />	<!-- Must match definition and usage of ${gwt.browsers.module} in build.xml. -->
