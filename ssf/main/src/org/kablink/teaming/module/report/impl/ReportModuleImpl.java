@@ -2185,7 +2185,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						+ " WHERE w.zoneId = :zoneId"
 						+ " AND w.type = 'user'"
 						+ " AND w.identityInfo.internal = 0 "
-						+ " AND w.identityInfo.fromLocal = 0 ";
+						+ " AND w.deleted = 0 "
+						+ " AND w.disabled = 0 ";
 					if(userIds!=null && userIds.size()>0){
 						sql+=" AND w.id in (";
 						int count=0;
