@@ -63,6 +63,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 /**
  * 
  * @author jwootton
+ * @author lokesh reddy
  *
  */
 public class EditShareDlg extends DlgBox
@@ -622,9 +623,9 @@ public class EditShareDlg extends DlgBox
 		shareRights = shareItem.getShareRights();
 		entityIsBinder = shareItem.getEntityId().isBinder();
 
-		m_viewerRb.setEnabled( false );
-		m_editorRb.setEnabled( false );
-		m_contributorRb.setEnabled( false );
+		m_viewerRb.setVisible( false );
+		m_editorRb.setVisible( false );
+		m_contributorRb.setVisible( false );
 		
 		m_viewerRb.setValue( false );
 		m_editorRb.setValue( false );
@@ -650,24 +651,24 @@ public class EditShareDlg extends DlgBox
 		switch ( highestRightsPossible.getAccessRights() )
 		{
 		case CONTRIBUTOR:
-			m_viewerRb.setEnabled( true );
-			m_editorRb.setEnabled( true );
+			m_viewerRb.setVisible( true );
+			m_editorRb.setVisible( true );
 			
 			// Show the "contributor" radio button only if we are dealing with a binder.
 			m_contributorRb.setVisible( entityIsBinder );
 			break;
 			
 		case EDITOR:
-			m_viewerRb.setEnabled( true );
-			m_editorRb.setEnabled( true );
-			m_contributorRb.setEnabled( false );
+			m_viewerRb.setVisible( true );
+			m_editorRb.setVisible( true );
+			m_contributorRb.setVisible( false );
 			break;
 			
 		case VIEWER:
 		default:
-			m_viewerRb.setEnabled( true );
-			m_editorRb.setEnabled( false );
-			m_contributorRb.setEnabled( false );
+			m_viewerRb.setVisible( true );
+			m_editorRb.setVisible( false );
+			m_contributorRb.setVisible( false );
 			break;
 		}
 		
@@ -676,15 +677,15 @@ public class EditShareDlg extends DlgBox
 		m_canShareLabel.setVisible( canShareForward );
 		
 		// Show/hide the "share internal" checkbox depending on whether the user has "share internal" rights.
-		m_canShareInternalCkbox.setEnabled( canShareForward && highestRightsPossible.getCanShareWithInternalUsers() );
+		m_canShareInternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithInternalUsers() );
 		m_canShareInternalCkbox.setValue( shareRights.getCanShareWithInternalUsers() );
 		
 		// Show/hide the "share external" checkbox depending on whether the user has "share external" rights.
-		m_canShareExternalCkbox.setEnabled( canShareForward && highestRightsPossible.getCanShareWithExternalUsers() );
+		m_canShareExternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithExternalUsers() );
 		m_canShareExternalCkbox.setValue( shareRights.getCanShareWithExternalUsers() );
 		
 		// Show/hide the "share public" checkbox depending on whether the user has "share public" rights.
-		m_canSharePublicCkbox.setEnabled( canShareForward && highestRightsPossible.getCanShareWithPublic() );
+		m_canSharePublicCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithPublic() );
 		m_canSharePublicCkbox.setValue( shareRights.getCanShareWithPublic() );
 	}
 	
