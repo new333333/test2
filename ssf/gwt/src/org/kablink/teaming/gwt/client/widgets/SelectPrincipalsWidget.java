@@ -373,7 +373,7 @@ public class SelectPrincipalsWidget extends Composite
 		int col;
 		int i;
 		RemovePrincipalWidget removeWidget;
-		
+
 		row = m_principalsTable.getRowCount();
 		
 		// Do we have any principals in the table?
