@@ -61,6 +61,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -1105,8 +1106,8 @@ public class EditShareWidget extends Composite
 		if ( shareItem.getEntityId().isEntry() && shareItem.getFolderEntryType() == GwtFolderEntryType.FILE )
 			entityIsFileEntry = true;
 
-		m_viewerRb.setVisible( false );
-		m_editorRb.setVisible( false );
+		m_viewerRb.setEnabled( false );
+		m_editorRb.setEnabled( false );
 		m_contributorRb.setVisible( false );
 		
 		m_viewerRb.setValue( false );
@@ -1129,28 +1130,35 @@ public class EditShareWidget extends Composite
 			break;
 		}
 		
+		m_contributorRb.getElement().getStyle().clearColor();
+		m_editorRb.getElement().getStyle().clearColor();
+		
 		// Hide/show the controls for the rights the user can/cannot give
 		switch ( highestRightsPossible.getAccessRights() )
 		{
 		case CONTRIBUTOR:
-			m_viewerRb.setVisible( true );
-			m_editorRb.setVisible( true );
+			m_viewerRb.setEnabled( true );
+			m_editorRb.setEnabled( true );
 			
 			// Show the "contributor" radio button only if we are dealing with a binder.
 			m_contributorRb.setVisible( entityIsBinder );
+			m_contributorRb.setEnabled( entityIsBinder );
 			break;
 			
 		case EDITOR:
-			m_viewerRb.setVisible( true );
-			m_editorRb.setVisible( true );
-			m_contributorRb.setVisible( false );
+			m_viewerRb.setEnabled( true );
+			m_editorRb.setEnabled( true );
+			m_contributorRb.setEnabled( false );
+			m_contributorRb.getElement().getStyle().setColor("red");
 			break;
 			
 		case VIEWER:
 		default:
-			m_viewerRb.setVisible( true );
-			m_editorRb.setVisible( false );
-			m_contributorRb.setVisible( false );
+			m_viewerRb.setEnabled( true );
+			m_editorRb.setEnabled( false );
+			m_editorRb.getElement().getStyle().setColor("red");
+			m_contributorRb.setEnabled( false );
+			m_contributorRb.getElement().getStyle().setColor("red");
 			break;
 		}
 		
