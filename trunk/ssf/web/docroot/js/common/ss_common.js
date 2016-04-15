@@ -1147,7 +1147,8 @@ function ss_executeJavascriptPhase1(scripts, xmlNode) {
     for (var i = 0; i < scripts.length; i++) {
     	// Is this <script> JavaScript?
         var script = scripts[i];
-        if (script.getAttribute("type") == "text/javascript") {
+		var type = script.getAttribute("type");
+        if (!type || type == "text/javascript") {
         	// Yes!  Does it have a 'src=...' setting?
         	var jsSrc = script.getAttribute("src");
         	if (jsSrc && (null != jsSrc) && (0 < jsSrc.length)) {
@@ -1174,7 +1175,8 @@ function ss_executeJavascriptPhase2(scripts, xmlNode, globalScope) {
     for (var i = 0; i < scripts.length; i++) {
     	// Is this <script> JavaScript?
         var script = scripts[i];
-        if (script.getAttribute("type") == "text/javascript") {
+		var type = script.getAttribute("type");
+		if (!type || type == "text/javascript") {
         	// Yes!  Does it contain anything to execute?
         	var js = script.innerHTML;
         	if ((null != js) && (0 < js.length)) {
