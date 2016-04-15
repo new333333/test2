@@ -329,6 +329,7 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 							
 						case ShareFolderExternal:
 							rightsInfo.setCanShareFolderExternal( true );
+							break;
 							
 						case ShareForward:
 							rightsInfo.setCanReshare( true );
