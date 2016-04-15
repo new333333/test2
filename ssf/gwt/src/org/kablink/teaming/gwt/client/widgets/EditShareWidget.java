@@ -1117,16 +1117,24 @@ public class EditShareWidget extends Composite
 		switch ( shareRights.getAccessRights() )
 		{
 		case CONTRIBUTOR:
-			m_contributorRb.setValue( true );
+			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.CONTRIBUTOR)
+				m_contributorRb.setValue( true );
 			break;
 		
 		case EDITOR:
-			m_editorRb.setValue( true );
+			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.CONTRIBUTOR || 
+					highestRightsPossible.getUnAlteredAccessRights() == AccessRights.EDITOR)
+				m_editorRb.setValue( true );
 			break;
 			
 		case VIEWER:
+			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.CONTRIBUTOR || 
+					highestRightsPossible.getUnAlteredAccessRights() == AccessRights.EDITOR ||
+					highestRightsPossible.getUnAlteredAccessRights() == AccessRights.VIEWER)
+				m_viewerRb.setValue( true );
+			break;
+			
 		default:
-			m_viewerRb.setValue( true );
 			break;
 		}
 		
@@ -1145,7 +1153,7 @@ public class EditShareWidget extends Composite
 			break;
 			
 		case EDITOR:
-			if(!m_contributorRb.getValue())
+			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.CONTRIBUTOR)
 				m_contributorRb.getElement().getStyle().setColor("red");			
 			m_viewerRb.setEnabled( true );
 			m_editorRb.setEnabled( true );
@@ -1153,14 +1161,21 @@ public class EditShareWidget extends Composite
 			break;
 			
 		case VIEWER:
-		default:
-			if(!m_editorRb.getValue())
+			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.EDITOR || highestRightsPossible.getUnAlteredAccessRights() == AccessRights.CONTRIBUTOR)
 				m_editorRb.getElement().getStyle().setColor("red");
-			if(!m_contributorRb.getValue())
-				m_contributorRb.getElement().getStyle().setColor("red");			
-			m_viewerRb.setEnabled( true );
+			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.CONTRIBUTOR)
+				m_contributorRb.getElement().getStyle().setColor("red");		
+			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.NONE){
+				m_viewerRb.getElement().getStyle().setColor("red");
+				m_viewerRb.setEnabled( false );
+			}
+			else
+				m_viewerRb.setEnabled( true );
 			m_editorRb.setEnabled( false );			
 			m_contributorRb.setEnabled( false );
+			break;
+			
+		default:
 			break;
 		}
 		

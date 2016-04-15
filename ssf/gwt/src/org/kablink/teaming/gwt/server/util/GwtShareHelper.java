@@ -1659,6 +1659,46 @@ public class GwtShareHelper
 	/*
 	 * Get the highest share rights the logged-in user has to this entity
 	 */
+	private static AccessRights getEntityShareRightsForNetFolder(AllModulesInjected ami, EntityId entityId, Folder folder) {
+		User currentUser = GwtServerHelper.getCurrentUser();
+
+		// If admin, don't bother computing it. He is all mighty.
+		if(currentUser.isSuper())
+			return AccessRights.CONTRIBUTOR; // Short-circuit and return maximum.
+		
+		Map<String, List<String>> groupIds = null;
+		AclItemPermissionMapper permissionMapper = null;
+		AclResourceSession session = null;
+
+		boolean internalLdapUser = currentUser.getIdentityInfo().isInternal() && currentUser.getIdentityInfo().isFromLdap();
+		if(internalLdapUser) {
+			AclResourceDriver driver = (AclResourceDriver) folder.getResourceDriver();
+			groupIds = AccessUtils.getFileSystemGroupIds(driver);
+			permissionMapper = driver.getAclItemPermissionMapper();
+			session = (AclResourceSession) getResourceDriverManager().getSession(driver);
+		}
+		
+		try {
+			AccessRights nativeAccessRights;
+			if(session != null)
+				nativeAccessRights = getNativeAccessRights(folder, session, permissionMapper, groupIds);
+			else
+				nativeAccessRights = AccessRights.NONE;
+			AccessRights shareGrantedAccessRights = getShareGrantedAccessRights(ami, folder);
+			BinderNode node = new BinderNode(folder, nativeAccessRights, shareGrantedAccessRights);
+			if(m_logger.isTraceEnabled())
+				m_logger.trace("User='" + currentUser.getName() + "', Top folder=" + folder.getId() + ", Folder access=" + node);			
+			return node.combinedAccessRights;
+		}
+		finally {
+			if(session != null)
+				session.close();
+		}
+	}
+	
+	/*
+	 * Get the highest share rights the logged-in user has to this entity
+	 */
 	private static AccessRights getHighestEntityShareRightsForNetFolder(AllModulesInjected ami, EntityId entityId, Folder folder) {
 		User currentUser = GwtServerHelper.getCurrentUser();
 
@@ -1833,6 +1873,7 @@ public class GwtShareHelper
 	private static ShareRights getEntityShareRights( AllModulesInjected ami, EntityId entityId )
 	{
 		AccessRights accessRights;
+		AccessRights unAlteredAccessRights = null;
 		ShareRights shareRights;
 		boolean result;
 		
@@ -1842,11 +1883,15 @@ public class GwtShareHelper
 		Folder folder = getFolderFromEntityId(entityId);
 
 		// Get the highest share rights the logged-in user has to this entity
-		if(folder != null && folder.isFolderInNetFolder())
+		if(folder != null && folder.isFolderInNetFolder()){
 			accessRights = getHighestEntityShareRightsForNetFolder( ami, entityId, folder );
-		else
+			unAlteredAccessRights = getEntityShareRightsForNetFolder(ami, entityId, folder);
+		}
+		else{
 			accessRights = getHighestEntityShareRights( ami, entityId );
+		}
 		shareRights.setAccessRights( accessRights );
+		shareRights.setUnAlteredAccessRights(unAlteredAccessRights);
 		
 		// Determine if the user has "can share with external users" rights.
 		result = canShareWith( ami, entityId, ShareOperation.SHARE_WITH_EXTERNAL_USERS );
