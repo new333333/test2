@@ -381,7 +381,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource mastheadBrowseFilr();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/mast_head_mf_filr_Graphic_2.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr_Mast_Head_MF_Graphic.png")
 	public ImageResource mastHeadFilrGraphic();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -389,7 +389,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource mastHeadKablinkGraphic();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/mast_head_mf_vibe_Graphic.png")
+	@Source("org/kablink/teaming/gwt/public/images/Vibe_Mast_Head_MF_Graphic.png")
 	public ImageResource mastHeadNovellGraphic();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
