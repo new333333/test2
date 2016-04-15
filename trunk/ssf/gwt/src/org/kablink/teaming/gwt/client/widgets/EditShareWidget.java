@@ -1108,7 +1108,7 @@ public class EditShareWidget extends Composite
 
 		m_viewerRb.setEnabled( false );
 		m_editorRb.setEnabled( false );
-		m_contributorRb.setVisible( false );
+		m_contributorRb.setEnabled( false );
 		
 		m_viewerRb.setValue( false );
 		m_editorRb.setValue( false );
@@ -1141,24 +1141,26 @@ public class EditShareWidget extends Composite
 			m_editorRb.setEnabled( true );
 			
 			// Show the "contributor" radio button only if we are dealing with a binder.
-			m_contributorRb.setVisible( entityIsBinder );
 			m_contributorRb.setEnabled( entityIsBinder );
 			break;
 			
 		case EDITOR:
+			if(!m_contributorRb.getValue())
+				m_contributorRb.getElement().getStyle().setColor("red");			
 			m_viewerRb.setEnabled( true );
 			m_editorRb.setEnabled( true );
 			m_contributorRb.setEnabled( false );
-			m_contributorRb.getElement().getStyle().setColor("red");
 			break;
 			
 		case VIEWER:
 		default:
+			if(!m_editorRb.getValue())
+				m_editorRb.getElement().getStyle().setColor("red");
+			if(!m_contributorRb.getValue())
+				m_contributorRb.getElement().getStyle().setColor("red");			
 			m_viewerRb.setEnabled( true );
-			m_editorRb.setEnabled( false );
-			m_editorRb.getElement().getStyle().setColor("red");
+			m_editorRb.setEnabled( false );			
 			m_contributorRb.setEnabled( false );
-			m_contributorRb.getElement().getStyle().setColor("red");
 			break;
 		}
 		
