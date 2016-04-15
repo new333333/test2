@@ -153,11 +153,23 @@ div.entryWidgetDesc_dark a:hover {text-decoration:underline; background: #cce9ee
 	margin-left: 10px;
 }
 
-.entryWidgetTitleLabel, .entryWidgetTitleLabel_dark
+.entryWidgetTitleLabel
 {
 	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
+}
+
+.entryWidgetTitleLabel_dark
+{
+	color: #f6f6f6;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+.entryWidgetTitleLabel_dark:hover
+{
+	color: #036f9f;
 }
 
 .entryWidgetTitleLabel:hover, .entryWidgetTitleLabel_dark:hover
@@ -208,11 +220,23 @@ div.entryWidgetDesc_dark a:hover {text-decoration:underline; background: #cce9ee
 {
 }
 
-.fileFolderWidgetTitleLabel, .fileFolderWidgetTitleLabel_dark
+.fileFolderWidgetTitleLabel
 {
 	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
+}
+
+.fileFolderWidgetTitleLabel_dark
+{
+	color: #f6f6f6;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+.fileFolderWidgetTitleLabel_dark:hover
+{
+	color: #036f9f;
 }
 
 .fileFolderWidgetTitleLabel:hover, .fileFolderWidgetTitleLabel_dark:hover, .fileFolderWidgetLinkToFile:hover, .fileFolderWidgetLinkToFile_dark:hover
@@ -274,11 +298,23 @@ div.entryWidgetDesc_dark a:hover {text-decoration:underline; background: #cce9ee
 	padding-left: 8px;
 }
 
-.folderWidgetTitleLabel, .folderWidgetTitleLabel_dark
+.folderWidgetTitleLabel
 {
 	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
+}
+
+.folderWidgetTitleLabel_dark
+{
+	color: #f6f6f6;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+.folderWidgetTitleLabel_dark:hover
+{
+	color: #036f9f;
 }
 
 .folderWidgetTitleLabel:hover, .folderWidgetTitleLabel_dark:hover, .folderWidgetLinkToEntry:hover, .folderWidgetLinkToEntry_dark:hover
@@ -344,9 +380,16 @@ div.entryWidgetDesc_dark a:hover {text-decoration:underline; background: #cce9ee
 	border-width: 2px;
 }
 
-.iFrameWidgetTitleLabel, .iFrameWidgetTitleLabel_dark
+.iFrameWidgetTitleLabel
 {
 	color: #036f9f;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+.iFrameWidgetTitleLabel_dark
+{
+	color: #f6f6f6;
 	font-size: 14px;
 	line-height: 15px;
 }
@@ -558,11 +601,23 @@ div.entryWidgetDesc_dark a:hover {text-decoration:underline; background: #cce9ee
 {
 }
 
-.taskFolderWidgetTitleLabel, .taskFolderWidgetTitleLabel_dark, .myTasksWidgetTitleLabel, .myTasksWidgetTitleLabel_dark
+.taskFolderWidgetTitleLabel, .myTasksWidgetTitleLabel
 {
 	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
+}
+
+.taskFolderWidgetTitleLabel_dark, .myTasksWidgetTitleLabel_dark
+{
+	color: #f6f6f6;
+	font-size: 14px;
+	line-height: 15px;
+}
+
+.taskFolderWidgetTitleLabel_dark:hover, .myTasksWidgetTitleLabel_dark:hover
+{
+	color: #036f9f;
 }
 
 .taskFolderWidgetTitleLabel:hover, .taskFolderWidgetTitleLabel_dark:hover, .taskFolderWidgetLinkToTask:hover, .taskFolderWidgetLinkToTask_dark:hover, .taskFolderWidgetLinkToLocation:hover, .taskFolderWidgetLinkToLocation_dark:hover
