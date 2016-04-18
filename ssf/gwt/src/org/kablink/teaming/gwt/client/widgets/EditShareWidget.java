@@ -1114,23 +1114,24 @@ public class EditShareWidget extends Composite
 		m_editorRb.setValue( false );
 		m_contributorRb.setValue( false );
 		
+		AccessRights unAlteredAccessRights = highestRightsPossible.getUnAlteredAccessRights();
+		AccessRights highestPossibleRights = highestRightsPossible.getAccessRights();
+		unAlteredAccessRights=(unAlteredAccessRights==null)?shareRights.getAccessRights():unAlteredAccessRights;
+			
 		switch ( shareRights.getAccessRights() )
 		{
 		case CONTRIBUTOR:
-			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.CONTRIBUTOR)
-				m_contributorRb.setValue( true );
+			if(unAlteredAccessRights == AccessRights.CONTRIBUTOR && highestPossibleRights != AccessRights.NONE)
+				m_contributorRb.setValue( true );				
 			break;
 		
 		case EDITOR:
-			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.CONTRIBUTOR || 
-					highestRightsPossible.getUnAlteredAccessRights() == AccessRights.EDITOR)
+			if((unAlteredAccessRights!=null && unAlteredAccessRights == AccessRights.CONTRIBUTOR || unAlteredAccessRights == AccessRights.EDITOR) && highestPossibleRights != AccessRights.NONE)
 				m_editorRb.setValue( true );
 			break;
 			
 		case VIEWER:
-			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.CONTRIBUTOR || 
-					highestRightsPossible.getUnAlteredAccessRights() == AccessRights.EDITOR ||
-					highestRightsPossible.getUnAlteredAccessRights() == AccessRights.VIEWER)
+			if((unAlteredAccessRights == AccessRights.CONTRIBUTOR || unAlteredAccessRights == AccessRights.EDITOR || unAlteredAccessRights == AccessRights.VIEWER) && highestPossibleRights != AccessRights.NONE)
 				m_viewerRb.setValue( true );
 			break;
 			
@@ -1140,7 +1141,8 @@ public class EditShareWidget extends Composite
 		
 		m_contributorRb.getElement().getStyle().clearColor();
 		m_editorRb.getElement().getStyle().clearColor();
-		
+		m_viewerRb.getElement().getStyle().clearColor();		
+			
 		// Hide/show the controls for the rights the user can/cannot give
 		switch ( highestRightsPossible.getAccessRights() )
 		{
@@ -1153,7 +1155,7 @@ public class EditShareWidget extends Composite
 			break;
 			
 		case EDITOR:
-			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.CONTRIBUTOR)
+			if(unAlteredAccessRights == AccessRights.CONTRIBUTOR)
 				m_contributorRb.getElement().getStyle().setColor("red");			
 			m_viewerRb.setEnabled( true );
 			m_editorRb.setEnabled( true );
@@ -1161,11 +1163,11 @@ public class EditShareWidget extends Composite
 			break;
 			
 		case VIEWER:
-			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.EDITOR || highestRightsPossible.getUnAlteredAccessRights() == AccessRights.CONTRIBUTOR)
+			if(unAlteredAccessRights == AccessRights.EDITOR || unAlteredAccessRights == AccessRights.CONTRIBUTOR)
 				m_editorRb.getElement().getStyle().setColor("red");
-			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.CONTRIBUTOR)
+			if(unAlteredAccessRights == AccessRights.CONTRIBUTOR)
 				m_contributorRb.getElement().getStyle().setColor("red");		
-			if(highestRightsPossible.getUnAlteredAccessRights() == AccessRights.NONE){
+			if(unAlteredAccessRights == AccessRights.NONE){
 				m_viewerRb.getElement().getStyle().setColor("red");
 				m_viewerRb.setEnabled( false );
 			}
@@ -1176,6 +1178,18 @@ public class EditShareWidget extends Composite
 			break;
 			
 		default:
+			if(unAlteredAccessRights == AccessRights.CONTRIBUTOR){
+				m_contributorRb.getElement().getStyle().setColor("red");
+				m_editorRb.getElement().getStyle().setColor("red");
+				m_viewerRb.getElement().getStyle().setColor("red");
+			}
+			else if(unAlteredAccessRights == AccessRights.EDITOR){
+				m_editorRb.getElement().getStyle().setColor("red");
+				m_viewerRb.getElement().getStyle().setColor("red");
+			}
+			else if(unAlteredAccessRights == AccessRights.VIEWER){
+				m_viewerRb.getElement().getStyle().setColor("red");
+			}				
 			break;
 		}
 		
