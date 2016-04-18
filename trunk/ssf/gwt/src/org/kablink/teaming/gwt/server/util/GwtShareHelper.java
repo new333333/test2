@@ -1659,52 +1659,17 @@ public class GwtShareHelper
 	/*
 	 * Get the highest share rights the logged-in user has to this entity
 	 */
-	private static AccessRights getEntityShareRightsForNetFolder(AllModulesInjected ami, EntityId entityId, Folder folder) {
+	private static Map<String,AccessRights> getHighestEntityShareRightsForNetFolder(AllModulesInjected ami, EntityId entityId, Folder folder) {
 		User currentUser = GwtServerHelper.getCurrentUser();
+		
+		Map<String,AccessRights> map = new HashMap<String,AccessRights>();
 
 		// If admin, don't bother computing it. He is all mighty.
-		if(currentUser.isSuper())
-			return AccessRights.CONTRIBUTOR; // Short-circuit and return maximum.
-		
-		Map<String, List<String>> groupIds = null;
-		AclItemPermissionMapper permissionMapper = null;
-		AclResourceSession session = null;
-
-		boolean internalLdapUser = currentUser.getIdentityInfo().isInternal() && currentUser.getIdentityInfo().isFromLdap();
-		if(internalLdapUser) {
-			AclResourceDriver driver = (AclResourceDriver) folder.getResourceDriver();
-			groupIds = AccessUtils.getFileSystemGroupIds(driver);
-			permissionMapper = driver.getAclItemPermissionMapper();
-			session = (AclResourceSession) getResourceDriverManager().getSession(driver);
+		if(currentUser.isSuper()) {
+			map.put("topAccessRights", AccessRights.CONTRIBUTOR);
+			map.put("treeAccessRights", AccessRights.CONTRIBUTOR);
+			return map; // Short-circuit and return maximum.
 		}
-		
-		try {
-			AccessRights nativeAccessRights;
-			if(session != null)
-				nativeAccessRights = getNativeAccessRights(folder, session, permissionMapper, groupIds);
-			else
-				nativeAccessRights = AccessRights.NONE;
-			AccessRights shareGrantedAccessRights = getShareGrantedAccessRights(ami, folder);
-			BinderNode node = new BinderNode(folder, nativeAccessRights, shareGrantedAccessRights);
-			if(m_logger.isTraceEnabled())
-				m_logger.trace("User='" + currentUser.getName() + "', Top folder=" + folder.getId() + ", Folder access=" + node);			
-			return node.combinedAccessRights;
-		}
-		finally {
-			if(session != null)
-				session.close();
-		}
-	}
-	
-	/*
-	 * Get the highest share rights the logged-in user has to this entity
-	 */
-	private static AccessRights getHighestEntityShareRightsForNetFolder(AllModulesInjected ami, EntityId entityId, Folder folder) {
-		User currentUser = GwtServerHelper.getCurrentUser();
-
-		// If admin, don't bother computing it. He is all mighty.
-		if(currentUser.isSuper())
-			return AccessRights.CONTRIBUTOR; // Short-circuit and return maximum.
 		
 		Map<String, List<String>> groupIds = null;
 		AclItemPermissionMapper permissionMapper = null;
@@ -1787,7 +1752,10 @@ public class GwtShareHelper
 				m_logger.debug("User '" + currentUser.getName() + "' has constant access on the folder tree: Top access=" + topNode);
 		}
 		
-		return result;
+		map.put("topAccessRights", topNode.combinedAccessRights);
+		map.put("treeAccessRights", result);
+
+		return map;
 	}
 	
 	/*
@@ -1884,11 +1852,13 @@ public class GwtShareHelper
 
 		// Get the highest share rights the logged-in user has to this entity
 		if(folder != null && folder.isFolderInNetFolder()){
-			accessRights = getHighestEntityShareRightsForNetFolder( ami, entityId, folder );
-			unAlteredAccessRights = getEntityShareRightsForNetFolder(ami, entityId, folder);
+			Map<String,AccessRights> map = getHighestEntityShareRightsForNetFolder( ami, entityId, folder );
+			accessRights = map.get("treeAccessRights");
+			unAlteredAccessRights = map.get("topAccessRights");
 		}
 		else{
 			accessRights = getHighestEntityShareRights( ami, entityId );
+			unAlteredAccessRights = accessRights;
 		}
 		shareRights.setAccessRights( accessRights );
 		shareRights.setUnAlteredAccessRights(unAlteredAccessRights);
