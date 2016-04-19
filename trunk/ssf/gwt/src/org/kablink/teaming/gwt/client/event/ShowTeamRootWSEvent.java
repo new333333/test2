@@ -39,18 +39,16 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
 /**
  * The ShowTeamRootWSEvent is used to display the team root workspace
  * 
  * @author jwootton@novell.com
  */
-public class ShowTeamRootWSEvent extends VibeEventBase<ShowTeamRootWSEvent.Handler>
+public class ShowTeamRootWSEvent extends ShowBinderEvent<ShowTeamRootWSEvent.Handler>
 {
 	public static Type<Handler> TYPE = new Type<Handler>();
-
-	private BinderInfo m_binderInfo;
-	private ViewReady m_viewReady;
 
 	/**
 	 * Handler interface for this event.
@@ -66,28 +64,11 @@ public class ShowTeamRootWSEvent extends VibeEventBase<ShowTeamRootWSEvent.Handl
 	 * @param binderInfo
 	 * @param viewReady
 	 */
-	public ShowTeamRootWSEvent( BinderInfo binderInfo, ViewReady viewReady )
+	public ShowTeamRootWSEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady )
 	{
-		super();
-		m_viewReady  = viewReady;
-		m_binderInfo = binderInfo;
+		super(binderInfo, viewPanel, viewReady);
 	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public BinderInfo getBinderInfo()
-	{
-		return m_binderInfo;
-	}
-	
-	public ViewReady getViewReady()
-	{
-		return m_viewReady;
-	}
-	
+
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,73 +31,43 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.widgets;
+package org.kablink.teaming.gwt.client.event;
 
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.ResizeComposite;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import com.google.web.bindery.event.shared.SimpleEventBus;
+import org.kablink.teaming.gwt.client.binderviews.ViewReady;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
 /**
- * This class extends DockLayoutPanel and gives the ability to replace the content
- * of the center panel.
+ * The ShowBlogFolderEvent is used to display a blog folder
  * 
- * @author jwootton
- *
+ * @author jwootton@novell.com
  */
-public class VibeDockLayoutPanel extends DockLayoutPanel
+public abstract class ShowBinderEvent<H extends EventHandler> extends ShowEntityEvent<H>
 {
+	private BinderInfo m_binderInfo;
+
 	/**
+	 * Class constructor.
+	 *
+	 * @param binderInfo
+	 * @param viewReady
+	 */
+	public ShowBinderEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady )
+	{
+		super(viewPanel, viewReady);
+		m_binderInfo = binderInfo;
+	}
+	
+	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public VibeDockLayoutPanel( Style.Unit unit )
+	public BinderInfo getBinderInfo()
 	{
-		super( unit );
-	}
-	
-	
-	/**
-	 * Return the widget that is found in the center panel.
-	 */
-	public Widget getCenter()
-	{
-		return super.getCenter();
-	}
-	
-	/**
-	 * Return the height of the center panel
-	 */
-	public double getCenterHeight()
-	{
-		return super.getCenterHeight();
-	}
-	
-	/**
-	 * Return the width of the center panel
-	 */
-	public double getCenterWidth()
-	{
-		return super.getCenterWidth();
-	}
-	
-	/**
-	 * Replace the widget in the center panel with the given widget.
-	 */
-	public void replaceCenterContent( Widget widget )
-	{
-		Widget currentContent;
-		
-		// Get the widget that is currently in the center panel.
-		currentContent = getCenter();
-		
-		if ( currentContent != null )
-		{
-			remove( currentContent );
-			currentContent.setVisible( false );
-		}
-		
-		// Add the new widget to the center panel.
-		add( widget );
-		widget.setVisible( true );
+		return m_binderInfo;
 	}
 }

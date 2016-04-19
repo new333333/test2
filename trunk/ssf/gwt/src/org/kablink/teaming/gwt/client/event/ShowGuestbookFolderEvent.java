@@ -39,17 +39,15 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
 /**
  * The ShowGuestbookFolderEvent is used to display a guest book.
  * 
  * @author drfoster@novell.com
  */
-public class ShowGuestbookFolderEvent extends VibeEventBase<ShowGuestbookFolderEvent.Handler> {
+public class ShowGuestbookFolderEvent extends ShowBinderEvent<ShowGuestbookFolderEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
-
-	private BinderInfo	m_folderInfo;	//
-	private ViewReady	m_viewReady;	//
 
 	/**
 	 * Handler interface for this event.
@@ -60,39 +58,13 @@ public class ShowGuestbookFolderEvent extends VibeEventBase<ShowGuestbookFolderE
 
 	/**
 	 * Constructor method.
-	 */
-	public ShowGuestbookFolderEvent() {
-		super();
-	}
-	
-	/**
-	 * Constructor method.
 	 * 
 	 * @param folderInfo
 	 * @param viewReady
 	 */
-	public ShowGuestbookFolderEvent(BinderInfo folderInfo, ViewReady viewReady) {
-		this();
-		
-		setViewReady( viewReady );
-		setFolderInfo(folderInfo);
+	public ShowGuestbookFolderEvent(BinderInfo folderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
+		super(folderInfo, viewPanel, viewReady);
 	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public BinderInfo getFolderInfo() {return m_folderInfo;}	
-	public ViewReady  getViewReady()  {return m_viewReady; }
-
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
-	public void setViewReady( ViewReady  viewReady)  {m_viewReady  = viewReady; }
 	
 	/**
 	 * Dispatches this event when one is triggered.

@@ -55,6 +55,7 @@
       <xsd:element name="options" type="optionsType"  minOccurs="0" maxOccurs="1"/>
       <xsd:element name="option_entry_data" type="option_select_dataType" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="jsps" type="jspsType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="folderViews" type="gwtFolderViewsType" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="item" type="itemType" minOccurs="0" maxOccurs="unbounded"/>
 	  <xsd:element name="help" type="xsd:string" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="index" type="indexType"  minOccurs="0" maxOccurs="1"/>
@@ -181,6 +182,18 @@
   </xsd:complexType>
 
   <xsd:complexType name="jspType">
+     <xsd:sequence/>
+    <xsd:attribute name="name" type="xsd:string"/>
+    <xsd:attribute name="value" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="gwtFolderViewsType">
+    <xsd:sequence>
+      <xsd:element name="folderView" type="gwtFolderViewType" minOccurs="0" maxOccurs="unbounded"/>
+   </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="gwtFolderViewType">
      <xsd:sequence/>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="value" type="xsd:string"/>

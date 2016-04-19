@@ -39,17 +39,15 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
 /**
  * The ShowTrashEvent is used to display a trash view.
  * 
  * @author drfoster@novell.com
  */
-public class ShowTrashEvent extends VibeEventBase<ShowTrashEvent.Handler> {
+public class ShowTrashEvent extends ShowBinderEvent<ShowTrashEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
-
-	private BinderInfo	m_binderInfo;	//
-	private ViewReady	m_viewReady;	//
 
 	/**
 	 * Handler interface for this event.
@@ -64,28 +62,9 @@ public class ShowTrashEvent extends VibeEventBase<ShowTrashEvent.Handler> {
 	 * @param binderInfo
 	 * @param viewReady
 	 */
-	public ShowTrashEvent(BinderInfo binderInfo, ViewReady viewReady) {
-		super();
-		
-		setViewReady( viewReady );
-		setBinderInfo(binderInfo);
+	public ShowTrashEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
+		super(binderInfo, viewPanel, viewReady);
 	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public BinderInfo getBinderInfo() {return m_binderInfo;}	
-	public ViewReady  getViewReady()  {return m_viewReady; }
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setBinderInfo(BinderInfo binderInfo) {m_binderInfo = binderInfo;}
-	public void setViewReady( ViewReady  viewReady)  {m_viewReady  = viewReady; }
 	
 	/**
 	 * Dispatches this event when one is triggered.
