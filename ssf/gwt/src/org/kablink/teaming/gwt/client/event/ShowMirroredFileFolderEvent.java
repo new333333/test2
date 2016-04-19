@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
 /**
  * The ShowMirroredFileFolderEvent is used to display a mirrored file
@@ -46,11 +47,8 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * 
  * @author drfoster@novell.com
  */
-public class ShowMirroredFileFolderEvent extends VibeEventBase<ShowMirroredFileFolderEvent.Handler> {
+public class ShowMirroredFileFolderEvent extends ShowBinderEvent<ShowMirroredFileFolderEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
-
-	private BinderInfo m_folderInfo;
-	private ViewReady m_viewReady;
 
 	/**
 	 * Handler interface for this event.
@@ -61,42 +59,14 @@ public class ShowMirroredFileFolderEvent extends VibeEventBase<ShowMirroredFileF
 
 	/**
 	 * Constructor method.
-	 */
-	public ShowMirroredFileFolderEvent() {
-		// Initialize the super class.
-		super();
-	}
-	
-	/**
-	 * Constructor method.
 	 * 
 	 * @param folderInfo
 	 * @param viewReady
 	 */
-	public ShowMirroredFileFolderEvent(BinderInfo folderInfo, ViewReady viewReady) {
+	public ShowMirroredFileFolderEvent(BinderInfo folderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
 		// Initialize this object...
-		this();
-
-		// ...and store the parameters.
-		setFolderInfo(folderInfo);
-		setViewReady( viewReady );
+		super(folderInfo, viewPanel, viewReady);
 	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public BinderInfo getFolderInfo() {return m_folderInfo;}	
-	public ViewReady  getViewReady()  {return m_viewReady; }
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param folderInfo
-	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
-	public void setViewReady( ViewReady  viewReady)  {m_viewReady  = viewReady; }
 	
 	/**
 	 * Dispatches this event when one is triggered.

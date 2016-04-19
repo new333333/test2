@@ -47,6 +47,7 @@ public class DefinitionConfigurationBuilder extends
 		DefaultMergeableXmlClassPathConfigFiles {
 	
 	private Map<String, Map> jspCache = new HashMap<String, Map>();
+	private Map<String, Map> gwtFolderViewCache = new HashMap<String, Map>();
 	private Map<String, Element> itemCache = new HashMap<String, Element>();
 	
     public void afterPropertiesSet() throws Exception {
@@ -58,7 +59,7 @@ public class DefinitionConfigurationBuilder extends
         if (jspCache.isEmpty()) {
         	loadItems();
         }
-        
+
     }
 
     private void loadItems()
@@ -83,6 +84,15 @@ public class DefinitionConfigurationBuilder extends
 				jspsObj.put(nextJsp.attributeValue("name"), nextJsp.attributeValue("value"));
 			}
 			jspCache.put(nameValue, jspsObj);
+
+			Iterator itFolderViews = nextItem.selectNodes("folderViews/folderView").listIterator();
+
+			Map folderViewsObj = new HashMap();
+			while (itFolderViews.hasNext()) {
+				Element nextFolderView = (Element) itFolderViews.next();
+				folderViewsObj.put(nextFolderView.attributeValue("name"), nextFolderView.attributeValue("value"));
+			}
+			gwtFolderViewCache.put(nameValue, folderViewsObj);
 		}
     }
     
@@ -100,6 +110,22 @@ public class DefinitionConfigurationBuilder extends
        		return null;
        	
     }
+
+    public String getItemGwtFolderViewByStyle(Element item, String name, String style)
+    {
+    	//should probably check some version
+
+       		Map folderViewsObj = gwtFolderViewCache.get(name);
+       		if (folderViewsObj != null) {
+       			String folderView = (String)folderViewsObj.get(style);
+       			if (folderView != null) return folderView;
+       			return (String)folderViewsObj.get(Definition.JSP_STYLE_DEFAULT);
+       		}
+
+       		return null;
+
+    }
+
     public Element getItem(Document config, String item) {
        	//should probably check some version
     	return itemCache.get(item);

@@ -5698,17 +5698,24 @@ public class GwtServerHelper {
 	public static FolderType getFolderTypeFromViewDef(AllModulesInjected bs, Folder folder) {
 		// Does the user have a view definition selected for this
 		// folder?
-		Definition def = BinderHelper.getFolderDefinitionFromView(bs, folder);
-		if (null == def) {
-			// No!  Just use it's default view.
-			def = folder.getDefaultViewDef();
-		}
+		Definition def = getDefinitionfromView(bs, folder);
 
 		// Return the FolderType from view definition.
 		String defFamily = BinderHelper.getFamilyNameFromDef(def);
 		return getFolderTypeFromDefFamily(folder, defFamily);
 	}
-	
+
+	public static Definition getDefinitionfromView(AllModulesInjected bs, Folder folder) {
+		// Does the user have a view definition selected for this
+		// folder?
+		Definition def = BinderHelper.getFolderDefinitionFromView(bs, folder);
+		if (null == def) {
+			// No!  Just use it's default view.
+			def = folder.getDefaultViewDef();
+		}
+		return def;
+	}
+
 	/**
 	 * Returns a count of the members of a group.
 	 * 

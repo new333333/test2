@@ -39,17 +39,15 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
 /**
  * The ShowCalendarFolderEvent is used to display a calendar folder.
  * 
  * @author drfoster@novell.com
  */
-public class ShowCalendarFolderEvent extends VibeEventBase<ShowCalendarFolderEvent.Handler> {
+public class ShowCalendarFolderEvent extends ShowBinderEvent<ShowCalendarFolderEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
-
-	private BinderInfo	m_folderInfo;	//
-	private ViewReady	m_viewReady;	//
 
 	/**
 	 * Handler interface for this event.
@@ -57,46 +55,11 @@ public class ShowCalendarFolderEvent extends VibeEventBase<ShowCalendarFolderEve
 	public interface Handler extends EventHandler {
 		void onShowCalendarFolder(ShowCalendarFolderEvent event);
 	}
-	
-	/**
-	 * Class constructor.
-	 */
-	public ShowCalendarFolderEvent() {
-		// Initialize the super class.
-		super();
+
+	public ShowCalendarFolderEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
+		super(binderInfo, viewPanel, viewReady);
 	}
-	
-	/**
-	 * Class constructor.
-	 * 
-	 * @param folderInfo
-	 * @param viewReady
-	 */
-	public ShowCalendarFolderEvent(BinderInfo folderInfo, ViewReady viewReady) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the parameters.
-		setFolderInfo(folderInfo);
-		setViewReady( viewReady );
-	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public BinderInfo getFolderInfo() {return m_folderInfo;}	
-	public ViewReady  getViewReady()  {return m_viewReady; }
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
-	public void setViewReady( ViewReady  viewReady ) {m_viewReady  = viewReady; }
-	
+
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
