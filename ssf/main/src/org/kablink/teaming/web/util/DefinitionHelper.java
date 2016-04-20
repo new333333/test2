@@ -1078,8 +1078,7 @@ public class DefinitionHelper {
 	        				Criteria crit = SearchUtils.tasksForUser(user.getId(), 
 	        									(String[])groupsS.toArray(new String[groupsS.size()]), 
 	        									(String[])teams.toArray(new String[teams.size()]));
-	        				Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults,
-	        						org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.BINDER_ID_FIELD));
+	        				Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults,null);
 
         					mashupMyTaskEntries.addAll((List)results.get(ObjectKeys.SEARCH_ENTRIES));
 
