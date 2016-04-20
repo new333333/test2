@@ -47,7 +47,7 @@
 		    name="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}"
 		    title="<ssf:nlt tag="toolbar.menu.dropBox.title"/>" 
 		    src="<html:rootPath/>js/forum/null.html" 
-		    height="80%" width="96%" style="padding:6px;">Novell Vibe</iframe>
+		    height="80%" width="96%" style="padding:6px;">Micro Focus Vibe</iframe>
 	    <div align="right">
 		  <span class="ss_fineprint"><ssf:nlt tag="file.upload.having_trouble"/></span>
 		  <ssf:showHelp guideName="user" pageId="trouble" sectionId="trouble_fileupload" />
