@@ -186,7 +186,7 @@ ss_createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
   <iframe id="ss_showentryframe" name="ss_showentryframe" 
     src="<html:rootPath/>js/forum/null.html" height="250" width="100%" 
-    frameBorder="0" >Novell Vibe</iframe>
+    frameBorder="0" >Micro Focus Vibe</iframe>
   </ssf:box>
 </div>
 </td></tr>
