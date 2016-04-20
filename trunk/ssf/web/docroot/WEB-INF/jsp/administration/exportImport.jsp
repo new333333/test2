@@ -281,7 +281,7 @@ function ss_folderTree_showId(id, obj, action) {
 
 <iframe id="ss_statusFrame" style="width:200px;height:200px;visibility:hidden;"
   src="<html:rootPath/>js/forum/null.html"
->Novell Vibe</iframe>
+>Micro Focus Vibe</iframe>
 
 </ssf:form>
 </c:if>
