@@ -116,7 +116,7 @@ if (parentFolderViewStyle == null || parentFolderViewStyle.equals("")) parentFol
 		  name="ss_iframe_fileopen${ss_attachments_namespace}" 
 		  src="<html:rootPath/>js/forum/null.html" 
 		  height="1" width="1"
-		  title="<ssf:nlt tag="entry.AttachFilesByWebDav" />" >Novell Vibe</iframe>
+		  title="<ssf:nlt tag="entry.AttachFilesByWebDav" />" >Micro Focus Vibe</iframe>
 	</div>
   </div>
   <c:set var="ss_fileopenDivSeen" value="true" scope="request"/>

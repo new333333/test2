@@ -48,5 +48,5 @@
   src="<html:rootPath/>js/forum/null.html" 
   onLoad="ss_showSignGuestbookIframe('${renderResponse.namespace}', this);" 
   width="100%" frameBorder="0"
-  title="<ssf:nlt tag="guestbook.addEntry"/>">Novell Vibe</iframe>
+  title="<ssf:nlt tag="guestbook.addEntry"/>">Micro Focus Vibe</iframe>
 </div>
