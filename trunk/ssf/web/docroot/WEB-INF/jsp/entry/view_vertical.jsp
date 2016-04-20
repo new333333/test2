@@ -128,7 +128,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 			    display:block; position:relative; left:5px;"
 			    src="<html:rootPath/>js/forum/null.html" height="100" width="100%" 
 			    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="0" 
-			    title="<ssf:nlt tag = "iframe.entry"/>" >Novell Vibe</iframe>
+			    title="<ssf:nlt tag = "iframe.entry"/>" >Micro Focus Vibe</iframe>
 			  </ssf:box>
 			</div>
 			
