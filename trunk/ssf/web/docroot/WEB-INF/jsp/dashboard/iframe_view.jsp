@@ -48,4 +48,4 @@
 	height: <%= ss_height %>px;
   </c:if>
   margin:0px; padding:0px;" frameBorder="0" 
-  title="<ssf:nlt tag="__dashboard.iframe"/>">Novell Vibe</iframe>
+  title="<ssf:nlt tag="__dashboard.iframe"/>">Micro Focus Vibe</iframe>
