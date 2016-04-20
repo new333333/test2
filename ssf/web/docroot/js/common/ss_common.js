@@ -4866,7 +4866,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
     	' src="'+url+'"' +
     	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:10px 10px 10px 20px; padding:0px;" frameBorder="0"' +
     	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\', \''+hoverOverId+'\')"' +
-    	' title="'+ ss_entryFrameTitle +'">Novell Vibe</iframe>' +
+    	' title="'+ ss_entryFrameTitle +'">Micro Focus Vibe</iframe>' +
     	'</div>';
 	tbodyObj.replaceChild(iframeRow, trObj)
 	ss_loadEntryInPlaceLastRowObj = iframeRow;
