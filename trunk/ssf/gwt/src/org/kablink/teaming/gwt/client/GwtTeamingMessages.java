@@ -2756,6 +2756,8 @@ public interface GwtTeamingMessages extends Messages {
 	String editShareRightsDlg_EditorLabel();
 	String editShareRightsDlg_GrantRightsLabel();
 	String editShareRightsDlg_ViewerLabel();
+	String editShareRightsDlg_UnavailableLinkLabel();
+	String editShareRightsDlg_UnavailableLinkUrl();
 
 	// Strings used in the Edit Share dialog.
 	String editShareDlg_accessRightsLabel();
