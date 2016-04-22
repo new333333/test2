@@ -32,24 +32,22 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * Created by david on 4/13/16.
  */
-public class FolderViewJsp extends FolderViewEntry {
-    private String jsp;
+public class BinderViewDefBase implements IsSerializable {
+    private String name;
 
-    public FolderViewJsp() {
+    public BinderViewDefBase() {
     }
 
-    public FolderViewJsp(String jsp) {
-        this.jsp = jsp;
+    public String getName() {
+        return name;
     }
 
-    public String getJsp() {
-        return jsp;
-    }
-
-    public void setJsp(String jsp) {
-        this.jsp = jsp;
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -32,22 +32,24 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by david on 4/13/16.
  */
-public class FolderViewDefBase implements IsSerializable {
-    private String name;
+public class BinderViewContainer extends BinderViewDefBase {
+    private List<BinderViewDefBase> children;
 
-    public FolderViewDefBase() {
+    public BinderViewContainer() {
+        children = new ArrayList<BinderViewDefBase>();
     }
 
-    public String getName() {
-        return name;
+    public List<BinderViewDefBase> getChildren() {
+        return children;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setChildren(List<BinderViewDefBase> children) {
+        this.children = children;
     }
 }

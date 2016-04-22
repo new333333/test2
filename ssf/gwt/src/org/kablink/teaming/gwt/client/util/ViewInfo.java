@@ -53,7 +53,7 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	private Long				m_baseBinderId;			// For all m_viewTypes, any binderId found in the URL.
 	private ViewFolderEntryInfo	m_vfei;					// If m_viewType is FOLDER_ENTRY, a ViewFolderEntryInfo object that describes it.
 	private ViewType			m_viewType;				// The type of the view.
-	private FolderViewContainer m_viewLayout;			// Custom layout information about the folder from the folder definition.
+	private BinderViewContainer m_viewLayout;			// Custom layout information about the folder from the folder definition.
 	
 	/**
 	 * Constructor method.
@@ -98,7 +98,7 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	public String              getOverrideUrl()       {return m_overrideUrl;                                                                                      }
 	public ViewFolderEntryInfo getFolderEntryInfo()   {return m_vfei;                                                                                             }
 	public ViewType            getViewType()          {return m_viewType;                                                                                         }
-	public FolderViewContainer getViewLayout()        {return m_viewLayout;                                                                                       }
+	public BinderViewContainer getViewLayout()        {return m_viewLayout;                                                                                       }
 
 	/**
 	 * Set'er methods.
@@ -115,5 +115,5 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	public void setOverrideUrl(        String              overrideUrl)        {m_overrideUrl        = overrideUrl;       }
 	public void setViewFolderEntryInfo(ViewFolderEntryInfo vfei)               {m_vfei               = vfei;              }
 	public void setViewType(           ViewType            viewType)           {m_viewType           = viewType;          }	
-	public void setViewLayout(         FolderViewContainer viewLayout)         {m_viewLayout         = viewLayout;        }
+	public void setViewLayout(         BinderViewContainer viewLayout)         {m_viewLayout         = viewLayout;        }
 }

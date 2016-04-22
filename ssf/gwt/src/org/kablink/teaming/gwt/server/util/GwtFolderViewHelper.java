@@ -39,9 +39,10 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.util.FolderViewContainer;
-import org.kablink.teaming.gwt.client.util.FolderViewDefBase;
-import org.kablink.teaming.gwt.client.util.FolderViewJsp;
+import org.kablink.teaming.gwt.client.util.BinderViewContainer;
+import org.kablink.teaming.gwt.client.util.BinderViewDefBase;
+import org.kablink.teaming.gwt.client.util.BinderViewJsp;
+import org.kablink.teaming.gwt.client.util.BinderViewLayout;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.web.util.DefinitionHelper;
 
@@ -54,7 +55,7 @@ import java.util.Set;
  * Created by david on 4/13/16.
  */
 public class GwtFolderViewHelper {
-    private static Set<String> folderViewsToSkip = new HashSet<String>() {
+    private static Set<String> binderViewsToSkip = new HashSet<String>() {
         {
             add("folderTitleView");
             add("folderDescriptionView");
@@ -62,17 +63,17 @@ public class GwtFolderViewHelper {
         }
     };
 
-    public static FolderViewContainer buildFolderViewContainer(Folder folder) throws GwtTeamingException {
-        FolderViewContainer container = new FolderViewContainer();
-        List<Node> viewItems = getBinderViewElementNodes(folder);
-        container.setChildren(toFolderViewList(viewItems));
-        return container;
+    public static BinderViewLayout buildBinderViewLayout(Binder binder) throws GwtTeamingException {
+        BinderViewLayout layout = new BinderViewLayout();
+        List<Node> viewItems = getBinderViewElementNodes(binder);
+        layout.setChildren(toBinderViewList(viewItems));
+        return layout;
     }
 
-    private static List<FolderViewDefBase> toFolderViewList(List<Node> viewItems) throws GwtTeamingException {
-        List<FolderViewDefBase> layoutItems = new ArrayList<FolderViewDefBase>(viewItems.size());
+    private static List<BinderViewDefBase> toBinderViewList(List<Node> viewItems) throws GwtTeamingException {
+        List<BinderViewDefBase> layoutItems = new ArrayList<BinderViewDefBase>(viewItems.size());
         for (Node viewItem : viewItems) {
-            FolderViewDefBase layoutItem = factoryFolderViewItem((Element)viewItem);
+            BinderViewDefBase layoutItem = factoryBinderViewItem((Element) viewItem);
             if (layoutItem!=null) {
                 layoutItems.add(layoutItem);
             }
@@ -80,21 +81,21 @@ public class GwtFolderViewHelper {
         return layoutItems;
     }
 
-    public static List<FolderViewDefBase> factoryFolderViewChildren(Element viewItem) throws GwtTeamingException {
+    public static List<BinderViewDefBase> factoryBinderViewChildren(Element viewItem) throws GwtTeamingException {
         List<Node> viewItems = viewItem.selectNodes("item");
-        return toFolderViewList(viewItems);
+        return toBinderViewList(viewItems);
     }
 
-    public static FolderViewDefBase factoryFolderViewItem(Element viewItem) throws GwtTeamingException {
-        FolderViewDefBase folderView = null;
+    public static BinderViewDefBase factoryBinderViewItem(Element viewItem) throws GwtTeamingException {
+        BinderViewDefBase binderView = null;
         String name = viewItem.attributeValue("name");
-        if (!folderViewsToSkip.contains(name)) {
+        if (!binderViewsToSkip.contains(name)) {
             DefinitionConfigurationBuilder configBuilder = DefinitionHelper.getDefinitionBuilderConfig();
             String folderViewClass = configBuilder.getItemGwtFolderViewByStyle(viewItem, name, Definition.JSP_STYLE_DEFAULT);
             if (folderViewClass != null) {
                 try {
-                    folderView = (FolderViewDefBase) Class.forName(folderViewClass).newInstance();
-                    folderView.setName(name);
+                    binderView = (BinderViewDefBase) Class.forName(folderViewClass).newInstance();
+                    binderView.setName(name);
                 } catch (InstantiationException e) {
                     throw new GwtTeamingException(GwtTeamingException.ExceptionType.UNKNOWN, e.getLocalizedMessage());
                 } catch (IllegalAccessException e) {
@@ -102,18 +103,18 @@ public class GwtFolderViewHelper {
                 } catch (ClassNotFoundException e) {
                     throw new GwtTeamingException(GwtTeamingException.ExceptionType.UNKNOWN, e.getLocalizedMessage());
                 }
-                if (folderView instanceof FolderViewContainer) {
-                    ((FolderViewContainer) folderView).setChildren(factoryFolderViewChildren(viewItem));
+                if (binderView instanceof BinderViewContainer) {
+                    ((BinderViewContainer) binderView).setChildren(factoryBinderViewChildren(viewItem));
                 }
             } else {
                 String jsp = configBuilder.getItemJspByStyle(viewItem, name, Definition.JSP_STYLE_DEFAULT);
                 if (jsp != null) {
-                    folderView = new FolderViewJsp(jsp);
-                    folderView.setName(name);
+                    binderView = new BinderViewJsp(jsp);
+                    binderView.setName(name);
                 }
             }
         }
-        return folderView;
+        return binderView;
     }
 
     protected void populateFrom(Element item) throws GwtTeamingException {

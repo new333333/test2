@@ -751,6 +751,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_CreateBlogPageDlg();
 	String codeSplitFailure_CopyMoveEntriesDlg();
 	String codeSplitFailure_CopyPublicLinkDlg();
+	String codeSplitFailure_CustomBinderView();
 	String codeSplitFailure_DefaultUserSettingsDlg();
 	String codeSplitFailure_DeleteSelectedUsersDlg();
 	String codeSplitFailure_DeleteSelectionsDlg();

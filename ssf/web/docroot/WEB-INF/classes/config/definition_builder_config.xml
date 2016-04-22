@@ -817,7 +817,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/folder_list.jsp" />
 		</jsps>
 		<folderViews>
-			<folderView name="default" value="org.kablink.teaming.gwt.client.util.FolderViewFolderListing" />
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewFolderListing" />
 		</folderViews>
 	</item>
 		
@@ -3862,7 +3862,7 @@
 	
 		</jsps>
 		<folderViews>
-			<folderView name="default" value="org.kablink.teaming.gwt.client.util.FolderViewTwoColumnTable" />
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewTwoColumnTable" />
 		</folderViews>
 		<notify velocity="table2.vm" />
 	</item>

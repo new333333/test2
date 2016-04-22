@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.util;
 /**
  * Created by david on 4/13/16.
  */
-public class FolderViewEntry extends FolderViewDefBase {
-    public FolderViewEntry() {
+public class BinderViewFolderListing extends BinderViewEntry {
+    public BinderViewFolderListing() {
     }
 }

@@ -35,7 +35,7 @@ package org.kablink.teaming.gwt.client.util;
 /**
  * Created by david on 4/13/16.
  */
-public class FolderViewTwoColumnTable extends FolderViewContainer {
-    public FolderViewTwoColumnTable() {
+public class BinderViewTwoColumnTable extends BinderViewContainer {
+    public BinderViewTwoColumnTable() {
     }
 }

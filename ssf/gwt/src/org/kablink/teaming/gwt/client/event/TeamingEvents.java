@@ -223,6 +223,7 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_COLLECTION,								// Show a given collection point
 	SHOW_COLLECTION_VIEW,							// Shows a collection view.
 	SHOW_CONTENT_CONTROL,							// Shows the ContentControl.
+	SHOW_CUSTOM_BINDER_VIEW,						// Shows a customized binder view.
 	SHOW_DISCUSSION_FOLDER,							// Shows a discussion folder.
 	SHOW_DISCUSSION_WORKSPACE,						// Shows a discussion workspace.
 	SHOW_FILE_FOLDER,								// Shows a file folder.
