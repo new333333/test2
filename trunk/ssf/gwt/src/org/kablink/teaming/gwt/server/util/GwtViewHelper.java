@@ -9458,8 +9458,8 @@ public class GwtViewHelper {
 					}
 				}
 			} else {
-				vi.setViewLayout(GwtFolderViewHelper.buildFolderViewContainer((Folder) binder));
-				//vi.setViewLayout(new FolderViewContainer());
+				vi.setViewLayout(GwtFolderViewHelper.buildBinderViewLayout(binder));
+				//vi.setViewLayout(new BinderViewContainer());
 				vi.setCustomLayout(true);
 			}
 

@@ -32,24 +32,24 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by david on 4/13/16.
  */
-public class FolderViewContainer extends FolderViewDefBase {
-    private List<FolderViewDefBase> children;
+public class BinderViewJsp extends BinderViewEntry {
+    private String jsp;
 
-    public FolderViewContainer() {
-        children = new ArrayList<FolderViewDefBase>();
+    public BinderViewJsp() {
     }
 
-    public List<FolderViewDefBase> getChildren() {
-        return children;
+    public BinderViewJsp(String jsp) {
+        this.jsp = jsp;
     }
 
-    public void setChildren(List<FolderViewDefBase> children) {
-        this.children = children;
+    public String getJsp() {
+        return jsp;
+    }
+
+    public void setJsp(String jsp) {
+        this.jsp = jsp;
     }
 }
