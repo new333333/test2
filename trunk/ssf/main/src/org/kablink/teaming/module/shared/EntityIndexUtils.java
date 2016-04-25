@@ -331,7 +331,9 @@ public class EntityIndexUtils {
 	        	doc.add(entryParentEntryId);
 	        	Field entryTopEntryId = FieldFactory.createFieldStoredNotAnalyzed(Constants.ENTRY_TOP_ENTRY_ID_FIELD, folderEntry.getTopEntry().getId().toString());
 	        	doc.add(entryTopEntryId);
-	        	String topEntryTitle = folderEntry.getTopEntry().getTitle().toString();
+	        	String topEntryTitle = folderEntry.getTopEntry().getTitle();
+	        	if(topEntryTitle == null)
+	        		topEntryTitle = "";
 	        	if (topEntryTitle.trim().equals("")) topEntryTitle = EntityIndexUtils.DEFAULT_NOTITLE_TITLE;
 	        	Field entryTopEntryTitle = FieldFactory.createFieldStoredNotAnalyzed(Constants.ENTRY_TOP_ENTRY_TITLE_FIELD, topEntryTitle);
 	        	doc.add(entryTopEntryTitle);
