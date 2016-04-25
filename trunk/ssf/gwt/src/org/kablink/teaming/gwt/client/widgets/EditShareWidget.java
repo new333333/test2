@@ -104,6 +104,7 @@ public class EditShareWidget extends Composite
 	private Anchor m_viewerUnavailableLink;
 	private Anchor m_editorUnavailableLink;
 	private Anchor m_contributorUnavailableLink;
+	private Anchor m_rightsUnavailableLink;
 
 	// Data members used with reshare
 	private VerticalPanel m_resharePanelForMultiEdit;
@@ -122,6 +123,7 @@ public class EditShareWidget extends Composite
 	private Label m_canResharePublicLinkLabel;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private ArrayList<GwtShareItem> m_listOfShareItems;
+	private FlexTable mainTable;
 	
 	// Data members used with share expiration
 	private ShareExpirationWidget m_expirationWidget;
@@ -265,8 +267,7 @@ public class EditShareWidget extends Composite
 	 * Create the controls needed for the share note.
 	 */
 	public void createNoteContent( FlowPanel mainPanel )
-	{
-		FlexTable mainTable;
+	{		
 		int row;
 		
 		mainTable = new FlexTable();
@@ -351,11 +352,19 @@ public class EditShareWidget extends Composite
 					tmpPanel.add( img );
 				}
 			}
-
+			ImageResource imageResource=GwtTeaming.getImageBundle().delete16();
+			final Image rightsUnavailableImg=new Image( imageResource );		
+			rightsUnavailableImg.addStyleName( "editShareRightsDlg_AccessRightsInfoImg" );		
+			rightsUnavailableImg.getElement().setAttribute( "title", messages.editShareRightsDlg_UnavailableMessage());
+			
 			m_accessRightsListbox = new ListBox();
 			m_accessRightsListbox.setMultipleSelect( false );
 			m_accessRightsListbox.setVisibleItemCount( 1 );
+			m_rightsUnavailableLink=new Anchor();
+			m_rightsUnavailableLink.getElement().appendChild(rightsUnavailableImg.getElement());
+			m_rightsUnavailableLink.setVisible(false);
 			hPanel.add( m_accessRightsListbox );
+			hPanel.add(m_rightsUnavailableLink);			
 			panel.add( hPanel );
 		}
 		
@@ -883,7 +892,7 @@ public class EditShareWidget extends Composite
 	{
 		// Go through the list of share items and if there are any that are folder entries
 		// get the folder entry type.  When initCheckForRequired() data is finished it will call
-		// initFinish().
+		// initFinish().		
 		initCheckForRequiredData( listOfShareItems, highestRightsPossible, editSuccessfulHandler );
 	}
 	
@@ -1013,7 +1022,7 @@ public class EditShareWidget extends Composite
 		messages = GwtTeaming.getMessages();
 		
 		if ( highestRightsPossible == null )
-			highestRightsPossible = new ShareRights();
+			highestRightsPossible = new ShareRights();			
 		
 		entityIsBinder = true;
 		entityIsFileEntry = true;
@@ -1035,10 +1044,8 @@ public class EditShareWidget extends Composite
 		}
 
 		// Add the appropriate options to the "access rights" listbox.
-		{
-			
+		{			
 			m_accessRightsListbox.clear();
-			
 			switch ( highestRightsPossible.getAccessRights() )
 			{
 			case CONTRIBUTOR:
@@ -1113,9 +1120,12 @@ public class EditShareWidget extends Composite
 					m_canResharePublicLinkListbox.setVisible( canShare );
 					if ( canShare )
 						GwtClientHelper.selectListboxItemByValue( m_canResharePublicLinkListbox, LEAVE_UNCHANGED );
-				}
+				}							
 			}
+			m_expirationWidget.setVisible(highestRightsPossible.getAccessRights() != AccessRights.NONE);
 		}
+		m_rightsUnavailableLink.setVisible(highestRightsPossible.getAccessRights() == AccessRights.NONE && highestRightsPossible.getUnAlteredAccessRights() != AccessRights.NONE);
+		m_noteTextArea.setVisible(highestRightsPossible.getAccessRights() != AccessRights.NONE && highestRightsPossible.getUnAlteredAccessRights() != AccessRights.NONE);
 	}
 	
 	/**
@@ -1132,7 +1142,7 @@ public class EditShareWidget extends Composite
 
 		if ( highestRightsPossible == null )
 			highestRightsPossible = new ShareRights();
-		
+				
 		// Get the share rights from the one share item we are working with.
 		shareRights = shareItem.getShareRights();
 
@@ -1263,6 +1273,9 @@ public class EditShareWidget extends Composite
 			m_canResharePublicLinkCkbox.setValue(false);
 			m_canResharePublicLinkCkbox.setVisible(false);
 		}
+		
+		m_expirationWidget.setVisible(canShareForward && highestPossibleRights != AccessRights.NONE);
+		mainTable.setVisible(canShareForward && highestPossibleRights != AccessRights.NONE);
 	}
 	
 	/**
