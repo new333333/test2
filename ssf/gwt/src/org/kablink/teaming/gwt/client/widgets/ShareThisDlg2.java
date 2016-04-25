@@ -638,6 +638,7 @@ public class ShareThisDlg2 extends DlgBox
 	{
 		ShareRights highestRightsPossible;
 		AccessRights accessRights = AccessRights.CONTRIBUTOR;
+		AccessRights unalteredRights = AccessRights.NONE;
 		boolean canShareForward = true;
 		boolean canShareWithInternalUsers = true;
 		boolean canShareWithExternalUsers = true;
@@ -650,6 +651,7 @@ public class ShareThisDlg2 extends DlgBox
 			{
 				ShareRights shareRights;
 				AccessRights nextAccessRights;
+				AccessRights nextUnalteredRights;
 				
 				shareRights = m_sharingInfo.getShareRights( nextShareItem.getEntityId() );
 				
@@ -669,21 +671,29 @@ public class ShareThisDlg2 extends DlgBox
 					canSharePublicLink = false;
 
 				nextAccessRights = shareRights.getAccessRights();
+				nextUnalteredRights = shareRights.getUnAlteredAccessRights();
 				
 				switch ( accessRights )
 				{
 				case CONTRIBUTOR:
-					if ( nextAccessRights == AccessRights.EDITOR || nextAccessRights == AccessRights.VIEWER )
+					if ( nextAccessRights == AccessRights.EDITOR || nextAccessRights == AccessRights.VIEWER || nextAccessRights == AccessRights.NONE){
 						accessRights = nextAccessRights;
+						unalteredRights = nextUnalteredRights;
+					}
 					break;
 					
 				case EDITOR:
-					if ( nextAccessRights == AccessRights.VIEWER )
+					if ( nextAccessRights == AccessRights.VIEWER || nextAccessRights == AccessRights.NONE){
 						accessRights = nextAccessRights;
+						unalteredRights = nextUnalteredRights;
+					}
 					break;
 				
 				case VIEWER:
-					// Nothing to do we are already at the lowest rights.
+					if ( nextAccessRights == AccessRights.NONE){
+						accessRights = nextAccessRights;
+						unalteredRights = nextUnalteredRights;
+					}
 					break;
 
 				default:
@@ -692,8 +702,17 @@ public class ShareThisDlg2 extends DlgBox
 			}
 		}
 		
+		if(accessRights == AccessRights.NONE){
+			canShareForward=false;
+			canShareWithInternalUsers=false;
+			canShareWithExternalUsers=false;
+			canShareWithPublic=false;
+			canSharePublicLink=false;
+		}
+		
 		highestRightsPossible = new ShareRights();
 		highestRightsPossible.setAccessRights( accessRights );
+		highestRightsPossible.setUnAlteredAccessRights(unalteredRights);
 		highestRightsPossible.setCanShareForward( canShareForward );
 		highestRightsPossible.setCanShareWithInternalUsers( canShareWithInternalUsers );
 		highestRightsPossible.setCanShareWithExternalUsers( canShareWithExternalUsers );
@@ -2385,6 +2404,7 @@ public class ShareThisDlg2 extends DlgBox
 		
 		m_entityIds = entityIds;
 		m_mode = mode;
+		final EntityId entityId=m_entityIds.get(0);
 		
 		updateHeader();
 
@@ -2490,7 +2510,11 @@ public class ShareThisDlg2 extends DlgBox
 					{
 						@Override
 						public void execute() 
-						{
+						{	
+							ShareRights shareRights=sharingInfo.getShareRights(entityId);
+							boolean isRestricted=shareRights!=null && shareRights.getAccessRights() == AccessRights.NONE;
+							m_findCtrl.getFocusWidget().setEnabled(!isRestricted);
+							m_addExternalUserImg.setVisible(!isRestricted);
 							updateSharingInfo( sharingInfo );
 							hideStatusMsg();
 						}
