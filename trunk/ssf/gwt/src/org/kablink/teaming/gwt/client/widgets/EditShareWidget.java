@@ -352,7 +352,7 @@ public class EditShareWidget extends Composite
 					tmpPanel.add( img );
 				}
 			}
-			ImageResource imageResource=GwtTeaming.getImageBundle().delete16();
+			ImageResource imageResource=GwtTeaming.getImageBundle().restricted();
 			final Image rightsUnavailableImg=new Image( imageResource );		
 			rightsUnavailableImg.addStyleName( "editShareRightsDlg_AccessRightsInfoImg" );		
 			rightsUnavailableImg.getElement().setAttribute( "title", messages.editShareRightsDlg_UnavailableMessage());
@@ -547,7 +547,7 @@ public class EditShareWidget extends Composite
 		rbPanel = new FlowPanel();
 		rbPanel.addStyleName( "editShareRightsDlg_RbPanel" );
 		
-		ImageResource imageResource=GwtTeaming.getImageBundle().delete16();
+		ImageResource imageResource=GwtTeaming.getImageBundle().restricted();
 		final Image viewerUnavailableImg=new Image( imageResource );		
 		viewerUnavailableImg.addStyleName( "editShareRightsDlg_AccessRightsInfoImg" );		
 		viewerUnavailableImg.getElement().setAttribute( "title", messages.editShareRightsDlg_UnavailableMessage());
@@ -1170,17 +1170,17 @@ public class EditShareWidget extends Composite
 		switch ( shareRights.getAccessRights() )
 		{
 		case CONTRIBUTOR:
-			if(unAlteredAccessRights == AccessRights.CONTRIBUTOR && highestPossibleRights != AccessRights.NONE)
+			if(unAlteredAccessRights == AccessRights.CONTRIBUTOR)
 				m_contributorRb.setValue( true );				
 			break;
 		
 		case EDITOR:
-			if((unAlteredAccessRights!=null && unAlteredAccessRights == AccessRights.CONTRIBUTOR || unAlteredAccessRights == AccessRights.EDITOR) && highestPossibleRights != AccessRights.NONE)
+			if((unAlteredAccessRights!=null && unAlteredAccessRights == AccessRights.CONTRIBUTOR || unAlteredAccessRights == AccessRights.EDITOR))
 				m_editorRb.setValue( true );
 			break;
 			
 		case VIEWER:
-			if((unAlteredAccessRights == AccessRights.CONTRIBUTOR || unAlteredAccessRights == AccessRights.EDITOR || unAlteredAccessRights == AccessRights.VIEWER) && highestPossibleRights != AccessRights.NONE)
+			if((unAlteredAccessRights == AccessRights.CONTRIBUTOR || unAlteredAccessRights == AccessRights.EDITOR || unAlteredAccessRights == AccessRights.VIEWER) )
 				m_viewerRb.setValue( true );
 			break;
 			
