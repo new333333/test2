@@ -965,6 +965,7 @@ public class ShareThisDlg2 extends DlgBox
 				
 				imageResource = GwtTeaming.getImageBundle().restricted();
 				m_restrictedShareRightsInfoImg = new Image( imageResource );
+				m_restrictedShareRightsInfoImg.setTitle(messages.editShareRightsDlg_UnavailableTextMessage());
 				m_restrictedShareRightsInfoImg.addStyleName("cursorPointer");
 				m_restrictedShareRightsInfoImg.addClickHandler( new ClickHandler() {
 					@Override
@@ -2543,9 +2544,11 @@ public class ShareThisDlg2 extends DlgBox
 							m_findCtrl.getFocusWidget().setEnabled(!isRestricted);
 							if(isRestricted){
 								sharingInfo.setCanShareWithExternalUsers(false);
+								m_shareRightsInfoImg.setVisible(false);
 								m_restrictedShareRightsInfoImg.setVisible(true);
 							}
 							else{
+								m_shareRightsInfoImg.setVisible(true);
 								m_restrictedShareRightsInfoImg.setVisible(false);
 							}
 							m_addExternalUserImg.setVisible(!isRestricted);

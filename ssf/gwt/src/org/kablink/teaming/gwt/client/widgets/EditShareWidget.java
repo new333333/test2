@@ -1239,6 +1239,9 @@ public class EditShareWidget extends Composite
 		}
 		
 		canShareForward = highestRightsPossible.getCanShareForward();
+		m_canReshareInternalCkbox.setEnabled(highestRightsPossible.getAccessRights()!=AccessRights.NONE);
+		m_canReshareExternalCkbox.setEnabled(highestRightsPossible.getAccessRights()!=AccessRights.NONE);
+		m_canResharePublicCkbox.setEnabled(highestRightsPossible.getAccessRights()!=AccessRights.NONE);		
 		
 		m_canShareLabel.setVisible( canShareForward );
 		
@@ -1256,11 +1259,11 @@ public class EditShareWidget extends Composite
 		
 		// Show/hide the "share public link" checkbox depending on whether the user has "share public link" rights.
 		if ( canShareForward && highestRightsPossible.getCanSharePublicLink() && (entityIsBinder == true || entityIsFileEntry == true) )
-			m_canResharePublicLinkCkbox.setVisible( true );
+			m_canResharePublicLinkCkbox.setVisible( true );			
 		else
 			m_canResharePublicLinkCkbox.setVisible( false );
 			
-		m_canResharePublicLinkCkbox.setValue( shareRights.getCanSharePublicLink() );
+		m_canResharePublicLinkCkbox.setValue( shareRights.getCanSharePublicLink() );		
 		
 		if(!m_viewerRb.getValue() && !m_editorRb.getValue() && !m_contributorRb.getValue()){
 			m_canShareLabel.setVisible(false);
@@ -1274,6 +1277,7 @@ public class EditShareWidget extends Composite
 			m_canResharePublicLinkCkbox.setVisible(false);
 		}
 		
+		m_noteTextArea.setVisible(highestRightsPossible.getAccessRights() != AccessRights.NONE && highestRightsPossible.getUnAlteredAccessRights() != AccessRights.NONE);
 		m_expirationWidget.setVisible(canShareForward && highestPossibleRights != AccessRights.NONE);
 		mainTable.setVisible(canShareForward && highestPossibleRights != AccessRights.NONE);
 	}
