@@ -37,9 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * User: david
- * Date: 5/23/12
- * Time: 4:45 PM
+ * Information about a binder's children.  Will contain either a list of children error information, but not both.
  */
 @XmlRootElement
 public class BinderChildren {
@@ -56,6 +54,9 @@ public class BinderChildren {
         this.error = error;
     }
 
+    /**
+     * The ID of the parent binder.
+     */
     @XmlElement(name = "binder_id")
     public Long getBinderId() {
         return binderId;
@@ -65,6 +66,9 @@ public class BinderChildren {
         this.binderId = binderId;
     }
 
+    /**
+     * The binder's children.  A list of BinderBrief and FileProperties objects.  Only applies if no occurred retrieving the children.
+     */
     @XmlElement(name = "children")
     public SearchResultList<SearchableObject> getChildren() {
         return children;
@@ -74,6 +78,9 @@ public class BinderChildren {
         this.children = children;
     }
 
+    /**
+     * An error that occurred retrieving the children.
+     */
     public ErrorInfo getError() {
         return error;
     }

@@ -20,14 +20,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 /**
- * User: david
- * Date: 7/25/12
- * Time: 11:38 AM
+ * A list of BinderChange objects.
  */
 @XmlRootElement(name="binder_changes")
 public class BinderChanges extends SearchResultList<BaseBinderChange> {
     private Date lastChange;
 
+    /**
+     * The date and time that the most recent change in list occurred.
+     */
     @XmlElement(name="last_change_date")
     public Date getLastChange() {
         return lastChange;

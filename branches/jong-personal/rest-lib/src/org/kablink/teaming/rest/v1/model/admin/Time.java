@@ -17,15 +17,20 @@ package org.kablink.teaming.rest.v1.model.admin;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: David
- * Date: 11/20/13
- * Time: 9:40 PM
+ * A time used in Schedules.  This can be either an absolute time (at 14:00) or an interval (every 0 hours and 30 minutes).
+ * <p>
+ * For absolute times, the minute value is restricted to every 5 minutes (00, 05, 10, ..., 55).
+ * Intervals are restricted to 0:15, 0:30, 0:45, 1:00, 2:00, 3:00, 4:00, 6:00, 8:00 and 12:00.
+ * </p>
  */
 @XmlRootElement(name="time")
 public class Time {
     private Integer hour;
     private Integer minute;
 
+    /**
+     * The hour.
+     */
     public Integer getHour() {
         return hour;
     }
@@ -34,6 +39,9 @@ public class Time {
         this.hour = hour;
     }
 
+    /**
+     * The minute.
+     */
     public Integer getMinute() {
         return minute;
     }

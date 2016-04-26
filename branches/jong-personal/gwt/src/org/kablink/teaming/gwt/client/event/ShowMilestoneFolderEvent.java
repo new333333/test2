@@ -39,17 +39,15 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
 /**
  * The ShowMilestoneFolderEvent is used to display a milestone folder.
  * 
  * @author drfoster@novell.com
  */
-public class ShowMilestoneFolderEvent extends VibeEventBase<ShowMilestoneFolderEvent.Handler> {
+public class ShowMilestoneFolderEvent extends ShowBinderEvent<ShowMilestoneFolderEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
-
-	private BinderInfo	m_folderInfo;	//
-	private ViewReady	m_viewReady;	//
 
 	/**
 	 * Handler interface for this event.
@@ -60,39 +58,13 @@ public class ShowMilestoneFolderEvent extends VibeEventBase<ShowMilestoneFolderE
 
 	/**
 	 * Constructor method.
-	 */
-	public ShowMilestoneFolderEvent() {
-		super();
-	}
-	
-	/**
-	 * Constructor method.
 	 * 
 	 * @param folderInfo
 	 * @param viewReady
 	 */
-	public ShowMilestoneFolderEvent(BinderInfo folderInfo, ViewReady viewReady) {
-		this();
-		
-		setViewReady( viewReady );
-		setFolderInfo(folderInfo);
+	public ShowMilestoneFolderEvent(BinderInfo folderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
+		super(folderInfo, viewPanel, viewReady);
 	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public BinderInfo getFolderInfo() {return m_folderInfo;}	
-	public ViewReady  getViewReady()  {return m_viewReady; }
-
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
-	public void setViewReady( ViewReady  viewReady)  {m_viewReady  = viewReady; }
 	
 	/**
 	 * Dispatches this event when one is triggered.

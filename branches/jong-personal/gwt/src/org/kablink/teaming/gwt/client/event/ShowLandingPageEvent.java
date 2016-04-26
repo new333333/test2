@@ -39,18 +39,16 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
 /**
  * The ShowLandingPageEvent is used to display a landing page
  * 
  * @author jwootton@novell.com
  */
-public class ShowLandingPageEvent extends VibeEventBase<ShowLandingPageEvent.Handler>
+public class ShowLandingPageEvent extends ShowBinderEvent<ShowLandingPageEvent.Handler>
 {
 	public static Type<Handler> TYPE = new Type<Handler>();
-
-	private BinderInfo m_binderInfo;
-	private ViewReady m_viewReady;
 
 	/**
 	 * Handler interface for this event.
@@ -66,26 +64,9 @@ public class ShowLandingPageEvent extends VibeEventBase<ShowLandingPageEvent.Han
 	 * @param binderInfo
 	 * @param viewReady
 	 */
-	public ShowLandingPageEvent( BinderInfo binderInfo, ViewReady viewReady )
+	public ShowLandingPageEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady )
 	{
-		super();
-		m_viewReady  = viewReady;
-		m_binderInfo = binderInfo;
-	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public BinderInfo getBinderInfo()
-	{
-		return m_binderInfo;
-	}
-	
-	public ViewReady getViewReady()
-	{
-		return m_viewReady;
+		super(binderInfo, viewPanel, viewReady);
 	}
 	
 	/**

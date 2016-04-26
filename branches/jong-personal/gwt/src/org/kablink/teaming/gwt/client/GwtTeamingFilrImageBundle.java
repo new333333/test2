@@ -92,7 +92,7 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource fileFolder_transparent_72();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/Filr_bg.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr/mf_filr_bg.png")
 	public ImageResource filrBackground();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -436,7 +436,7 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource filrExternalUser96();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/Vibe_bg.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr/mf_vibe_bg.png")
 	public ImageResource vibeBackground();
 	
 }

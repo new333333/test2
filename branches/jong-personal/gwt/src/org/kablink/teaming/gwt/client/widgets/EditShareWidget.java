@@ -61,7 +61,9 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -98,6 +100,11 @@ public class EditShareWidget extends Composite
 	private RadioButton m_viewerRb;
 	private RadioButton m_editorRb;
 	private RadioButton m_contributorRb;
+	
+	private Anchor m_viewerUnavailableLink;
+	private Anchor m_editorUnavailableLink;
+	private Anchor m_contributorUnavailableLink;
+	private Anchor m_rightsUnavailableLink;
 
 	// Data members used with reshare
 	private VerticalPanel m_resharePanelForMultiEdit;
@@ -116,6 +123,7 @@ public class EditShareWidget extends Composite
 	private Label m_canResharePublicLinkLabel;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private ArrayList<GwtShareItem> m_listOfShareItems;
+	private FlexTable mainTable;
 	
 	// Data members used with share expiration
 	private ShareExpirationWidget m_expirationWidget;
@@ -259,8 +267,7 @@ public class EditShareWidget extends Composite
 	 * Create the controls needed for the share note.
 	 */
 	public void createNoteContent( FlowPanel mainPanel )
-	{
-		FlexTable mainTable;
+	{		
 		int row;
 		
 		mainTable = new FlexTable();
@@ -345,11 +352,19 @@ public class EditShareWidget extends Composite
 					tmpPanel.add( img );
 				}
 			}
-
+			ImageResource imageResource=GwtTeaming.getImageBundle().delete16();
+			final Image rightsUnavailableImg=new Image( imageResource );		
+			rightsUnavailableImg.addStyleName( "editShareRightsDlg_AccessRightsInfoImg" );		
+			rightsUnavailableImg.getElement().setAttribute( "title", messages.editShareRightsDlg_UnavailableMessage());
+			
 			m_accessRightsListbox = new ListBox();
 			m_accessRightsListbox.setMultipleSelect( false );
 			m_accessRightsListbox.setVisibleItemCount( 1 );
+			m_rightsUnavailableLink=new Anchor();
+			m_rightsUnavailableLink.getElement().appendChild(rightsUnavailableImg.getElement());
+			m_rightsUnavailableLink.setVisible(false);
 			hPanel.add( m_accessRightsListbox );
+			hPanel.add(m_rightsUnavailableLink);			
 			panel.add( hPanel );
 		}
 		
@@ -532,19 +547,48 @@ public class EditShareWidget extends Composite
 		rbPanel = new FlowPanel();
 		rbPanel.addStyleName( "editShareRightsDlg_RbPanel" );
 		
+		ImageResource imageResource=GwtTeaming.getImageBundle().delete16();
+		final Image viewerUnavailableImg=new Image( imageResource );		
+		viewerUnavailableImg.addStyleName( "editShareRightsDlg_AccessRightsInfoImg" );		
+		viewerUnavailableImg.getElement().setAttribute( "title", messages.editShareRightsDlg_UnavailableMessage());
+		
+		final Image editorUnavailableImg=new Image( imageResource );		
+		editorUnavailableImg.addStyleName( "editShareRightsDlg_AccessRightsInfoImg" );		
+		editorUnavailableImg.getElement().setAttribute( "title", messages.editShareRightsDlg_UnavailableMessage());
+		
+		final Image contributorUnavailableImg=new Image( imageResource );		
+		contributorUnavailableImg.addStyleName( "editShareRightsDlg_AccessRightsInfoImg" );		
+		contributorUnavailableImg.getElement().setAttribute( "title", messages.editShareRightsDlg_UnavailableMessage());		
+		
 		m_viewerRb = new RadioButton( "shareRights", messages.editShareRightsDlg_ViewerLabel() );
+		m_viewerUnavailableLink=new Anchor();
+		m_viewerUnavailableLink.getElement().appendChild(viewerUnavailableImg.getElement());
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_viewerRb );
-		rbPanel.add( tmpPanel );
+		tmpPanel.add(m_viewerUnavailableLink);
+		tmpPanel.getElement().getStyle().setProperty("float", "left");
+		m_viewerUnavailableLink.setVisible(false);
+		rbPanel.add( tmpPanel );		
 
 		m_editorRb = new RadioButton( "shareRights", messages.editShareRightsDlg_EditorLabel() );
+		m_editorUnavailableLink=new Anchor();
+		m_editorUnavailableLink.getElement().appendChild(editorUnavailableImg.getElement());
 		tmpPanel = new FlowPanel();
+		tmpPanel.getElement().getStyle().setProperty("clear", "both");		
 		tmpPanel.add( m_editorRb );
+		tmpPanel.add(m_editorUnavailableLink);
+		tmpPanel.getElement().getStyle().setProperty("float", "left");
+		m_editorUnavailableLink.setVisible(false);
 		rbPanel.add( tmpPanel );
 		
 		m_contributorRb = new RadioButton( "shareRights", messages.editShareRightsDlg_ContributorLabel() );
+		m_contributorUnavailableLink=new Anchor();
+		m_contributorUnavailableLink.getElement().appendChild(contributorUnavailableImg.getElement());
 		tmpPanel = new FlowPanel();
+		tmpPanel.getElement().getStyle().setProperty("clear", "both");	
 		tmpPanel.add( m_contributorRb );
+		tmpPanel.add( m_contributorUnavailableLink );	
+		m_contributorUnavailableLink.setVisible(false);
 		rbPanel.add( tmpPanel );
 		
 		mainPanel.add( rbPanel );
@@ -560,6 +604,7 @@ public class EditShareWidget extends Composite
 		// Add the "allow share internal checkbox.
 		m_canReshareInternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareInternalLabel() );
 		tmpPanel = new FlowPanel();
+		tmpPanel.getElement().getStyle().setProperty("clear", "both");
 		tmpPanel.add( m_canReshareInternalCkbox );
 		rbPanel.add( tmpPanel );
 		
@@ -847,7 +892,7 @@ public class EditShareWidget extends Composite
 	{
 		// Go through the list of share items and if there are any that are folder entries
 		// get the folder entry type.  When initCheckForRequired() data is finished it will call
-		// initFinish().
+		// initFinish().		
 		initCheckForRequiredData( listOfShareItems, highestRightsPossible, editSuccessfulHandler );
 	}
 	
@@ -977,7 +1022,7 @@ public class EditShareWidget extends Composite
 		messages = GwtTeaming.getMessages();
 		
 		if ( highestRightsPossible == null )
-			highestRightsPossible = new ShareRights();
+			highestRightsPossible = new ShareRights();			
 		
 		entityIsBinder = true;
 		entityIsFileEntry = true;
@@ -999,10 +1044,8 @@ public class EditShareWidget extends Composite
 		}
 
 		// Add the appropriate options to the "access rights" listbox.
-		{
-			
+		{			
 			m_accessRightsListbox.clear();
-			
 			switch ( highestRightsPossible.getAccessRights() )
 			{
 			case CONTRIBUTOR:
@@ -1077,9 +1120,12 @@ public class EditShareWidget extends Composite
 					m_canResharePublicLinkListbox.setVisible( canShare );
 					if ( canShare )
 						GwtClientHelper.selectListboxItemByValue( m_canResharePublicLinkListbox, LEAVE_UNCHANGED );
-				}
+				}							
 			}
+			m_expirationWidget.setVisible(highestRightsPossible.getAccessRights() != AccessRights.NONE);
 		}
+		m_rightsUnavailableLink.setVisible(highestRightsPossible.getAccessRights() == AccessRights.NONE && highestRightsPossible.getUnAlteredAccessRights() != AccessRights.NONE);
+		m_noteTextArea.setVisible(highestRightsPossible.getAccessRights() != AccessRights.NONE && highestRightsPossible.getUnAlteredAccessRights() != AccessRights.NONE);
 	}
 	
 	/**
@@ -1096,7 +1142,7 @@ public class EditShareWidget extends Composite
 
 		if ( highestRightsPossible == null )
 			highestRightsPossible = new ShareRights();
-		
+				
 		// Get the share rights from the one share item we are working with.
 		shareRights = shareItem.getShareRights();
 
@@ -1105,52 +1151,90 @@ public class EditShareWidget extends Composite
 		if ( shareItem.getEntityId().isEntry() && shareItem.getFolderEntryType() == GwtFolderEntryType.FILE )
 			entityIsFileEntry = true;
 
-		m_viewerRb.setVisible( false );
-		m_editorRb.setVisible( false );
-		m_contributorRb.setVisible( false );
+		m_viewerRb.setEnabled( false );
+		m_editorRb.setEnabled( false );
+		m_contributorRb.setEnabled( false );
 		
 		m_viewerRb.setValue( false );
 		m_editorRb.setValue( false );
 		m_contributorRb.setValue( false );
 		
+		m_viewerUnavailableLink.setVisible(false);
+		m_editorUnavailableLink.setVisible(false);
+		m_contributorUnavailableLink.setVisible(false);
+		
+		AccessRights unAlteredAccessRights = highestRightsPossible.getUnAlteredAccessRights();
+		AccessRights highestPossibleRights = highestRightsPossible.getAccessRights();
+		unAlteredAccessRights=(unAlteredAccessRights==null)?shareRights.getAccessRights():unAlteredAccessRights;
+			
 		switch ( shareRights.getAccessRights() )
 		{
 		case CONTRIBUTOR:
-			m_contributorRb.setValue( true );
+			if(unAlteredAccessRights == AccessRights.CONTRIBUTOR && highestPossibleRights != AccessRights.NONE)
+				m_contributorRb.setValue( true );				
 			break;
 		
 		case EDITOR:
-			m_editorRb.setValue( true );
+			if((unAlteredAccessRights!=null && unAlteredAccessRights == AccessRights.CONTRIBUTOR || unAlteredAccessRights == AccessRights.EDITOR) && highestPossibleRights != AccessRights.NONE)
+				m_editorRb.setValue( true );
 			break;
 			
 		case VIEWER:
+			if((unAlteredAccessRights == AccessRights.CONTRIBUTOR || unAlteredAccessRights == AccessRights.EDITOR || unAlteredAccessRights == AccessRights.VIEWER) && highestPossibleRights != AccessRights.NONE)
+				m_viewerRb.setValue( true );
+			break;
+			
 		default:
-			m_viewerRb.setValue( true );
 			break;
 		}
-		
+					
 		// Hide/show the controls for the rights the user can/cannot give
 		switch ( highestRightsPossible.getAccessRights() )
 		{
 		case CONTRIBUTOR:
-			m_viewerRb.setVisible( true );
-			m_editorRb.setVisible( true );
+			m_viewerRb.setEnabled( true );
+			m_editorRb.setEnabled( true );
 			
 			// Show the "contributor" radio button only if we are dealing with a binder.
-			m_contributorRb.setVisible( entityIsBinder );
+			m_contributorRb.setEnabled( entityIsBinder );
 			break;
 			
 		case EDITOR:
-			m_viewerRb.setVisible( true );
-			m_editorRb.setVisible( true );
-			m_contributorRb.setVisible( false );
+			if(unAlteredAccessRights == AccessRights.CONTRIBUTOR)
+				m_contributorUnavailableLink.setVisible(true);		
+			m_viewerRb.setEnabled( true );
+			m_editorRb.setEnabled( true );
+			m_contributorRb.setEnabled( false );
 			break;
 			
 		case VIEWER:
+			if(unAlteredAccessRights == AccessRights.EDITOR || unAlteredAccessRights == AccessRights.CONTRIBUTOR)
+				m_editorUnavailableLink.setVisible(true);
+			if(unAlteredAccessRights == AccessRights.CONTRIBUTOR)
+				m_contributorUnavailableLink.setVisible(true);
+			if(unAlteredAccessRights == AccessRights.NONE){
+				m_viewerUnavailableLink.setVisible(true);
+				m_viewerRb.setEnabled( false );
+			}
+			else
+				m_viewerRb.setEnabled( true );
+			m_editorRb.setEnabled( false );			
+			m_contributorRb.setEnabled( false );
+			break;
+			
 		default:
-			m_viewerRb.setVisible( true );
-			m_editorRb.setVisible( false );
-			m_contributorRb.setVisible( false );
+			if(unAlteredAccessRights == AccessRights.CONTRIBUTOR){
+				m_contributorUnavailableLink.setVisible(true);
+				m_editorUnavailableLink.setVisible(true);
+				m_viewerUnavailableLink.setVisible(true);
+			}
+			else if(unAlteredAccessRights == AccessRights.EDITOR){
+				m_editorUnavailableLink.setVisible(true);
+				m_viewerUnavailableLink.setVisible(true);
+			}
+			else if(unAlteredAccessRights == AccessRights.VIEWER){
+				m_viewerUnavailableLink.setVisible(true);
+			}				
 			break;
 		}
 		
@@ -1177,6 +1261,21 @@ public class EditShareWidget extends Composite
 			m_canResharePublicLinkCkbox.setVisible( false );
 			
 		m_canResharePublicLinkCkbox.setValue( shareRights.getCanSharePublicLink() );
+		
+		if(!m_viewerRb.getValue() && !m_editorRb.getValue() && !m_contributorRb.getValue()){
+			m_canShareLabel.setVisible(false);
+			m_canReshareInternalCkbox.setValue(false);
+			m_canReshareInternalCkbox.setVisible(false);
+			m_canReshareExternalCkbox.setValue(false);
+			m_canReshareExternalCkbox.setVisible(false);
+			m_canResharePublicCkbox.setValue(false);
+			m_canResharePublicCkbox.setVisible(false);
+			m_canResharePublicLinkCkbox.setValue(false);
+			m_canResharePublicLinkCkbox.setVisible(false);
+		}
+		
+		m_expirationWidget.setVisible(canShareForward && highestPossibleRights != AccessRights.NONE);
+		mainTable.setVisible(canShareForward && highestPossibleRights != AccessRights.NONE);
 	}
 	
 	/**
@@ -1341,7 +1440,7 @@ public class EditShareWidget extends Composite
 				{
 					AccessRights accessRights;
 
-					accessRights = ShareRights.AccessRights.UNKNOWN;
+					accessRights = ShareRights.AccessRights.NONE;
 
 					if ( value.equalsIgnoreCase( VIEWER ) )
 						accessRights = ShareRights.AccessRights.VIEWER;
@@ -1481,7 +1580,7 @@ public class EditShareWidget extends Composite
 		origShareRights = new ShareRights();
 		origShareRights.copy( shareRights );
 		
-		accessRights = ShareRights.AccessRights.UNKNOWN;
+		accessRights = ShareRights.AccessRights.NONE;
 		
 		if ( m_viewerRb.isVisible() && m_viewerRb.getValue() == true )
 			accessRights = ShareRights.AccessRights.VIEWER;

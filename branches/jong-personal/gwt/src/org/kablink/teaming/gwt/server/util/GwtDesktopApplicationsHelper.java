@@ -83,6 +83,7 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.PropsUtil;
 
 /**
  * Helper methods for the GWT Desktop Application administration
@@ -125,7 +126,13 @@ public class GwtDesktopApplicationsHelper {
 	// the ssf*.properties file.
 	private static final boolean FOLLOW_DESKTOP_APP_DOWNLOAD_URL_REDIRECTS	= true;
 	private static final String  FOLLOW_DESKTOP_APP_DOWNLOAD_URL_KEY		= "follow.desktop.app.download.url.redirects";
-	
+
+	// The URLs to the quick start help for the desktop applications.
+	private final static String	MAC_QUICKSTART_URL_FILR		= "filr.desktop.quickstart.mac";
+	private final static String	MAC_QUICKSTART_URL_VIBE		= "vibe.desktop.quickstart.mac";
+	private final static String	WINDOWS_QUICKSTART_URL_FILR	= "filr.desktop.quickstart.windows";
+	private final static String	WINDOWS_QUICKSTART_URL_VIBE	= "vibe.desktop.quickstart.windows";
+
 	/*
 	 * Class constructor that prevents this class from being
 	 * instantiated.
@@ -349,6 +356,8 @@ public class GwtDesktopApplicationsHelper {
 			appDownloadInfo.setWin32(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE), JSON_TAIL)   );
 			appDownloadInfo.setWin64(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE), JSON_TAIL)   );
 			appDownloadInfo.setWinXP(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WINXP_TAIL_FILR : WINXP_TAIL_VIBE), JSON_XP_TAIL));
+			appDownloadInfo.setMacHelpUrl(PropsUtil.getString(isFilr ? MAC_QUICKSTART_URL_FILR : MAC_QUICKSTART_URL_VIBE));
+			appDownloadInfo.setWinHelpUrl(PropsUtil.getString(isFilr ? WINDOWS_QUICKSTART_URL_FILR : WINDOWS_QUICKSTART_URL_VIBE));
 		}
 		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
@@ -373,6 +382,8 @@ public class GwtDesktopApplicationsHelper {
 				appDownloadInfo.setWin32(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE), JSON_TAIL)   );
 				appDownloadInfo.setWin64(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE), JSON_TAIL)   );
 				appDownloadInfo.setWinXP(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WINXP_TAIL_FILR : WINXP_TAIL_VIBE), JSON_XP_TAIL));
+				appDownloadInfo.setMacHelpUrl(PropsUtil.getString(isFilr ? MAC_QUICKSTART_URL_FILR : MAC_QUICKSTART_URL_VIBE));
+				appDownloadInfo.setWinHelpUrl(PropsUtil.getString(isFilr ? WINDOWS_QUICKSTART_URL_FILR : WINDOWS_QUICKSTART_URL_VIBE));
 			}
 		}
 		catch (Exception ex) {

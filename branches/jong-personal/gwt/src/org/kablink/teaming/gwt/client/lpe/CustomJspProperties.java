@@ -277,11 +277,7 @@ public class CustomJspProperties
 
 		// Add overflow
 		str += ",overflow=";
-		if ( m_overflow == Style.Overflow.AUTO )
-			str += "auto";
-		else
-			str += "hidden";
-
+		str += m_overflow.getCssName();
 		str += ";";
 		
 		return str;

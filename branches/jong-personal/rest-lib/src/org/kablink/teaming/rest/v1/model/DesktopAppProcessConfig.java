@@ -23,9 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * User: David
- * Date: 11/20/13
- * Time: 9:40 PM
+ * Configuration of processes that are allowed to trigger on-demand file downloads on the desktop.
  */
 @XmlRootElement(name="desktop_process_config")
 public class DesktopAppProcessConfig extends BaseRestObject {
@@ -37,6 +35,11 @@ public class DesktopAppProcessConfig extends BaseRestObject {
     public DesktopAppProcessConfig() {
     }
 
+    /**
+     * Defines whether an unlisted process can trigger on-demand downloads.
+     *
+     * <p>An unlisted process is any process that is not included in either the <code>allowed_process</code> or <code>blocked_process</code> lists</p>
+     */
     @XmlElement(name="allow_unlisted_processes")
     public Boolean getAllowUnlistedProcesses() {
         return allowUnlistedProcesses;
@@ -46,6 +49,11 @@ public class DesktopAppProcessConfig extends BaseRestObject {
         this.allowUnlistedProcesses = allowUnlistedProcesses;
     }
 
+    /**
+     * Defines whether a user can override the <code>allow_unlisted_processes</code> setting.  Only applies if
+     * <code>allow_unlisted_processes</code> is false.
+     * <p>When this is true, unlisted processes are blocked until the desktop user indicates that the process should be allowed.</p>
+     */
     @XmlElement(name="allow_unlisted_process_override")
     public Boolean getAllowUnlistedProcessOverride() {
         return allowUnlistedProcessOverride;
@@ -55,6 +63,11 @@ public class DesktopAppProcessConfig extends BaseRestObject {
         this.allowUnlistedProcessOverride = allowUnlistedProcessOverride;
     }
 
+    /**
+     * A list of process names that are allowed to trigger on-demand downloads on the desktop.
+     *
+     * <p>Only applicable when <code>allow_unlisted_processes</code> is false or <code>allow_unlisted_process_override</code> is true.</p>
+     */
     @XmlElementWrapper(name="allowed_processes")
     @XmlElement(name="name")
     public List<String> getAllowedProcesses() {
@@ -65,6 +78,11 @@ public class DesktopAppProcessConfig extends BaseRestObject {
         this.allowedProcesses = allowedProcesses;
     }
 
+    /**
+     * A list of process names that are not allowed to trigger on-demand downloads on the desktop.
+     *
+     * <p>Only applicable when <code>allow_unlisted_processes</code> is true.</p>
+     */
     @XmlElementWrapper(name="blocked_processes")
     @XmlElement(name="name")
     public List<String> getBlockedProcesses() {

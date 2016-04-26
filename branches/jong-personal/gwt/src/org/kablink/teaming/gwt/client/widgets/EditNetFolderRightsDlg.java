@@ -71,6 +71,10 @@ public class EditNetFolderRightsDlg extends DlgBox
 	private CheckBox m_canSharePublicCkbox;
 	private CheckBox m_canShareLinkCkbox;
 	private CheckBox m_canGrantReshareCkbox;
+	private CheckBox m_canGrantFolderReshareChkbox;
+	private CheckBox m_canShareFolderExternalChkbox;
+	private CheckBox m_canShareFolderInternalChkbox;
+	private CheckBox m_canShareFolderPublicChkbox;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private PerUserRightsInfo m_rightsInfo;
 	private PerEntityShareRightsInfo m_zoneShareRights;	// The rights the user has been given at the zone level.
@@ -221,14 +225,77 @@ public class EditNetFolderRightsDlg extends DlgBox
 		tmpPanel.addStyleName( "marginleft1" );
 		tmpPanel.add( m_canShareLinkCkbox );
 		mainPanel.add( tmpPanel );
-
-
+		
 		// Add the "allow grant re-share" checkbox
 		m_canGrantReshareCkbox = new CheckBox( messages.editNetFolderRightsDlg_ReShareLabel() );
 		m_canGrantReshareCkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
 		tmpPanel = new FlowPanel();
-		tmpPanel.addStyleName( "margintop2" );
+		tmpPanel.addStyleName( "marginleft1" );
 		tmpPanel.add( m_canGrantReshareCkbox );
+		mainPanel.add( tmpPanel );
+
+		//Added new UI functionality to support netfolders sharing.
+		// Add the "Allow the recipient to share this item with:" label
+		label = new Label( messages.editNetFolderRightsDlg_CanShareFolderLabel() );
+		label.addStyleName( "margintop2" );
+		mainPanel.add( label );
+
+		// Add the "allow share internal" checkbox.
+		m_canShareFolderInternalChkbox = new CheckBox( messages.editNetFolderRightsDlg_ShareInternalLabel() );
+		m_canShareFolderInternalChkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
+		m_canShareFolderInternalChkbox.addClickHandler( clickHandler );
+		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName( "marginleft1" );
+		tmpPanel.add( m_canShareFolderInternalChkbox );
+		mainPanel.add( tmpPanel );
+		
+		// Add the "allow share external" checkbox.
+		m_canShareFolderExternalChkbox = new CheckBox( messages.editNetFolderRightsDlg_ShareExternalLabel() );
+		m_canShareFolderExternalChkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
+		m_canShareFolderExternalChkbox.addClickHandler( clickHandler );
+		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName( "marginleft1" );
+		tmpPanel.add( m_canShareFolderExternalChkbox );
+		mainPanel.add( tmpPanel );
+
+		// Add the "allow share public" checkbox.
+		m_canShareFolderPublicChkbox = new CheckBox( messages.editNetFolderRightsDlg_SharePublicLabel() );
+		m_canShareFolderPublicChkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
+		m_canShareFolderPublicChkbox.addClickHandler( new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						if ( m_canShareFolderPublicChkbox.getValue() == true )
+						{
+							m_canShareFolderInternalChkbox.setValue( Boolean.TRUE );
+							m_canShareFolderExternalChkbox.setValue( Boolean.TRUE );
+						}
+						
+						danceDlg();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		} );
+		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName( "marginleft1" );
+		tmpPanel.add( m_canShareFolderPublicChkbox );
+		mainPanel.add( tmpPanel );
+
+		// Add the "allow grant re-share" checkbox
+		m_canGrantFolderReshareChkbox = new CheckBox( messages.editNetFolderRightsDlg_ReshareFolderLabel() );
+		m_canGrantFolderReshareChkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
+		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName( "marginleft1" );
+		tmpPanel.add( m_canGrantFolderReshareChkbox );
 		mainPanel.add( tmpPanel );
 
 		return mainPanel;
@@ -249,6 +316,11 @@ public class EditNetFolderRightsDlg extends DlgBox
 		m_canSharePublicCkbox.setEnabled( enable );
 		m_canShareLinkCkbox.setEnabled( enable );
 		m_canGrantReshareCkbox.setEnabled( enable );
+		m_canGrantFolderReshareChkbox.setEnabled( enable );
+		
+		m_canShareFolderExternalChkbox.setEnabled( enable );
+		m_canShareFolderInternalChkbox.setEnabled( enable );
+		m_canShareFolderPublicChkbox.setEnabled( enable );
 		
 		// Enable/disable the "Allow the recipient to grant re-share privileges" checkbox 
 		// depending on whether sharing is turned on for either internal, external or public.
@@ -256,10 +328,17 @@ public class EditNetFolderRightsDlg extends DlgBox
 		{
 			enable = false;
 			
-			if ( m_canShareExternalCkbox.getValue() || m_canShareInternalCkbox.getValue() || m_canSharePublicCkbox.getValue() )
+			if ( m_canShareExternalCkbox.getValue() || m_canShareInternalCkbox.getValue() || m_canSharePublicCkbox.getValue() ) {
 				enable = true;
+				m_canGrantReshareCkbox.setEnabled( enable );
+			}
 			
-			m_canGrantReshareCkbox.setEnabled( enable );
+			if ( m_canShareFolderExternalChkbox.getValue() || m_canShareFolderInternalChkbox.getValue() || m_canShareFolderPublicChkbox.getValue()) {
+				enable = true;
+				m_canGrantFolderReshareChkbox.setEnabled( enable );
+			}
+			
+			
 		}
 		
 		// If the "public" checkbox is checked, disable the "internal users"
@@ -268,6 +347,11 @@ public class EditNetFolderRightsDlg extends DlgBox
 		{
 			m_canShareInternalCkbox.setEnabled( false );
 			m_canShareExternalCkbox.setEnabled( false );
+		}
+		
+		if ( m_canShareFolderPublicChkbox.getValue() == true ){
+			m_canShareFolderInternalChkbox.setEnabled(false);
+			m_canShareFolderExternalChkbox.setEnabled(false);
 		}
 		
 		// Do we have the rights this user has been given at the zone level?
@@ -287,7 +371,12 @@ public class EditNetFolderRightsDlg extends DlgBox
 			{
 				// No
 				m_canShareInternalCkbox.setValue( Boolean.FALSE );
-				m_canShareInternalCkbox.setEnabled( false );
+				m_canShareInternalCkbox.setEnabled( false );							
+			}
+			
+			if( m_zoneShareRights.isAllowFolderInternal() == false ){
+				m_canShareFolderInternalChkbox.setValue(Boolean.FALSE);
+				m_canShareFolderInternalChkbox.setEnabled( false );				
 			}
 			
 			// Can the user share with external users?
@@ -295,7 +384,12 @@ public class EditNetFolderRightsDlg extends DlgBox
 			{
 				// No
 				m_canShareExternalCkbox.setValue( Boolean.FALSE );
-				m_canShareExternalCkbox.setEnabled( false );
+				m_canShareExternalCkbox.setEnabled( false );							
+			}
+			
+			if ( m_zoneShareRights.isAllowFolderExternal() == false){
+				m_canShareFolderExternalChkbox.setValue(Boolean.FALSE);
+				m_canShareFolderExternalChkbox.setEnabled( false );				
 			}
 			
 			// Can the user share with the public?
@@ -303,7 +397,12 @@ public class EditNetFolderRightsDlg extends DlgBox
 			{
 				// No
 				m_canSharePublicCkbox.setValue( Boolean.FALSE );
-				m_canSharePublicCkbox.setEnabled( false );
+				m_canSharePublicCkbox.setEnabled( false );							
+			}
+			
+			if(m_zoneShareRights.isAllowFolderPublic() == false ){
+				m_canShareFolderPublicChkbox.setValue( Boolean.FALSE );
+				m_canShareFolderPublicChkbox.setEnabled( false );				
 			}
 			
 			// Can the user share using Filr links?
@@ -313,6 +412,14 @@ public class EditNetFolderRightsDlg extends DlgBox
 				m_canShareLinkCkbox.setValue( Boolean.FALSE );
 				m_canShareLinkCkbox.setEnabled( false );
 			}
+			
+			// Can the user reshare folder?
+			if ( m_zoneShareRights.isAllowFolderForwarding() == false )
+			{
+				// No
+				m_canGrantFolderReshareChkbox.setValue( Boolean.FALSE );
+				m_canGrantFolderReshareChkbox.setEnabled( false );
+			}			
 		}
 	}
 	
@@ -334,12 +441,21 @@ public class EditNetFolderRightsDlg extends DlgBox
 				
 				value = m_canShareExternalCkbox.getValue();
 				m_rightsInfo.setCanShareExternal( value );
+							
+				value = m_canShareFolderExternalChkbox.getValue();
+				m_rightsInfo.setCanShareFolderExternal( value );
 				
 				value = m_canShareInternalCkbox.getValue();
 				m_rightsInfo.setCanShareInternal( value );
 				
+				value = m_canShareFolderInternalChkbox.getValue();
+				m_rightsInfo.setCanShareFolderInternal( value );
+				
 				value = m_canSharePublicCkbox.getValue();
 				m_rightsInfo.setCanSharePublic( value );
+				
+				value = m_canShareFolderPublicChkbox.getValue();
+				m_rightsInfo.setCanShareFolderPublic( value );
 
 				value = m_canShareLinkCkbox.getValue();
 				m_rightsInfo.setCanSharePublicLink( value );
@@ -348,14 +464,23 @@ public class EditNetFolderRightsDlg extends DlgBox
 				if ( m_canGrantReshareCkbox.isEnabled() )
 					value = m_canGrantReshareCkbox.getValue();
 				m_rightsInfo.setCanReshare( value );
+				
+				value = false;
+				if( m_canGrantFolderReshareChkbox.isEnabled() )
+					value = m_canGrantFolderReshareChkbox.getValue();
+				m_rightsInfo.setCanReshareFolders( value );
 			}
 			else
 			{
 				m_rightsInfo.setCanReshare( false );
+				m_rightsInfo.setCanReshareFolders( false );
 				m_rightsInfo.setCanShareExternal( false );
 				m_rightsInfo.setCanShareInternal( false );
 				m_rightsInfo.setCanSharePublic( false );
 				m_rightsInfo.setCanSharePublicLink( false );
+				m_rightsInfo.setCanShareFolderExternal(false);
+				m_rightsInfo.setCanShareFolderInternal(false);
+				m_rightsInfo.setCanShareFolderPublic(false);
 			}
 
 			// Do we have a handler we should call?
@@ -463,7 +588,12 @@ public class EditNetFolderRightsDlg extends DlgBox
 		m_canSharePublicCkbox.setValue( false );
 		m_canShareLinkCkbox.setValue( false );
 		m_canGrantReshareCkbox.setValue( false );
+		m_canGrantFolderReshareChkbox.setValue( false );
 		m_allowAccessCkbox.setValue( false );
+		
+		m_canShareFolderInternalChkbox.setValue( false );
+		m_canShareFolderExternalChkbox.setValue( false );
+		m_canShareFolderPublicChkbox.setValue( false );
 
 		if ( m_rightsInfo != null )
 		{
@@ -473,6 +603,11 @@ public class EditNetFolderRightsDlg extends DlgBox
 			m_canShareLinkCkbox.setValue( m_rightsInfo.canSharePublicLink() );
 			m_canGrantReshareCkbox.setValue( m_rightsInfo.canReshare() );
 			m_allowAccessCkbox.setValue( m_rightsInfo.canAccess() );
+			m_canGrantFolderReshareChkbox.setValue( m_rightsInfo.canReshareFolders());
+			
+			m_canShareFolderExternalChkbox.setValue( m_rightsInfo.canShareFolderExternal() );
+			m_canShareFolderInternalChkbox.setValue( m_rightsInfo.canShareFolderInternal() );
+			m_canShareFolderPublicChkbox.setValue( m_rightsInfo.canShareFolderPublic() );
 		}
 		
 		// Get the zone share settings for the given user

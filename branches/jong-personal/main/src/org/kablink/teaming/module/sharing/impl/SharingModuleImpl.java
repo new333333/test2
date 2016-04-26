@@ -338,7 +338,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
 				//If this is a Filr Net Folder, check if sharing is allowed at the folder level
 				if (binder.isAclExternallyControlled() && 
-						!SPropsUtil.getBoolean("sharing.netFolders.allowed", false)) {
+						!SPropsUtil.getBoolean("sharing.netFolders.allowed", true)) {
 					//See if this Filr folder is in the user's personal workspace. We allow sharing of the home folder
 					if (!Utils.isWorkareaInProfilesTree(binder)) {
 						throw new AccessControlException("errorcode.sharing.netfolders.notAllowed", new Object[] {});
@@ -616,12 +616,19 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	                        // Yes!
 	                        reply = true;
 	                    } else {
+	                    	//DO NOT check the parent for two reasons:
+	                    	//1) The above folderModule.testAccess() already works recursively, so this is redundant.
+	                    	//2) If the entity is a file in a net folder and the user has the right to share folders
+	                    	//   but NOT files, then this check on the parent folder will succeed (due to the way
+	                    	//   binderModule.testAccess() is written for share related operations) AND this method
+	                    	//   can falsely return true when the result should be false.
+	                    	/*
 	                    	//Cannot get at the entry directly, so try its parent folder
 	                        if (parentBinderToTest != null) {
 	                            reply = accessControlManager.testOperation(zoneConfig, op.workAreaOperation) &&
 	                                    binderModule.testAccess(parentBinderToTest, op.binderOperation);
 	                        }
-	                    	
+	                        */
 	                    }
 	                    if (reply) {
 	                        break;
@@ -638,7 +645,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	                //Also check that the folder isn't a Net Folder.
 	                //Sharing Net Folders is not allowed unless it is in the user's own user workspace
 	                if (!binder.isAclExternallyControlled() ||
-	                        SPropsUtil.getBoolean("sharing.netFolders.allowed", false) ||
+	                        SPropsUtil.getBoolean("sharing.netFolders.allowed", true) ||
 	                        Utils.isWorkareaInProfilesTree(binder)) {
 	                    for (ShareOp op : ops) {
 	                        if (accessControlManager.testOperation(zoneConfig, op.workAreaOperation) &&

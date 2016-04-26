@@ -1,23 +1,17 @@
 <enunciate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:noNamespaceSchemaLocation="http://enunciate.webcohesion.com/schemas/enunciate-2.3.0.xsd" path-sort-strategy="depth_first">
-    <!--<api-classes>-->
-        <!--<include pattern="org.kablink.teaming.remoting.rest.v1.resource.*"/>-->
-        <!--<include pattern="org.kablink.teaming.remoting.rest.v1.resource.admin.*"/>-->
-        <!--<include pattern="org.kablink.teaming.rest.v1.model.*"/>-->
-        <!--<include pattern="org.kablink.teaming.rest.v1.model.admin.*"/>-->
-    <!--</api-classes>-->
+           xsi:noNamespaceSchemaLocation="http://enunciate.webcohesion.com/schemas/enunciate-2.3.0.xsd">
     <title>Filr Admin REST Interface</title>
     <description>Reference Documentation for the Filr Administration REST Interface</description>
     <copyright>Micro Focus International plc</copyright>
     <facets>
         <!-- Don't document unsupported APIs -->
-        <exclude name="http://kablink.org/facets#unupported"/>
+        <exclude name="http://kablink.org/facets#unsupported"/>
     </facets>
     <modules>
         <java-json-client disabled="true"/>
         <java-xml-client disabled="true"/>
-        <jackson1 disabled="true"/>
-        <jackson honorJaxb="true" datatype-detection="passive"/>
-        <jaxrs groupBy="annotation"/>
+        <jackson disabled="true"/>
+        <jackson1 honorJaxb="true" datatype-detection="passive" />
+        <jaxrs groupBy="annotation"  path-sort-strategy="depth_first"/>
     </modules>
 </enunciate>

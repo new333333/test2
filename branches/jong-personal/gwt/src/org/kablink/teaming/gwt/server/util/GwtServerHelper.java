@@ -1698,7 +1698,7 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static ErrorListRpcResponseData completeExternalUserSelfRegistration(AllModulesInjected bs, Long extUserId, String firstName, String lastName, String pwd, String invitationUrl) {
+	public static ErrorListRpcResponseData completeExternalUserSelfRegistration(AllModulesInjected bs, Long extUserId, String firstName, String lastName, String pwd, String invitationUrl,Boolean hasAcceptedTermsAndConditions) {
 		ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
 		try {
 			// Get the external user.
@@ -1724,6 +1724,9 @@ public class GwtServerHelper {
 				ProfileModule pm = bs.getProfileModule();
 				pm.modifyUserFromPortal( extUser.getId(), updates, null);
 				pm.setLastPasswordChange(extUser,         new Date()   );	// Consider the user's password as having just been changed.
+				if(hasAcceptedTermsAndConditions){
+					pm.setTermsAndConditionsAcceptDate(extUser.getId(), new Date());
+				}
 				
 				ExternalUserUtil.markAsCredentialed(extUser);
 				
@@ -3488,6 +3491,21 @@ public class GwtServerHelper {
 				reportsCategory.addAdminOption( adminAction );
 			}
 			
+			// Add a "External User"
+			{
+				title = NLT.get( "administration.report.title.externalUser" );
+
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_EXTERNAL_USER_REPORT );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.REPORT_EXTERNAL_USER );
+				
+				// Add this action to the "reports" category
+				reportsCategory.addAdminOption( adminAction );
+			}
+			
 			// Add a "Disk usage report"
 			{
 				title = NLT.get( "administration.report.title.quota" );
@@ -5007,9 +5025,13 @@ public class GwtServerHelper {
 		String fnInternalId = null;
 		switch (role.getType()) {
 		case ShareExternal:               fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID;      break;
+		case ShareFolderExternal:		  fnInternalId = ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_EXTERNAL_INTERNALID; break;
 		case ShareForward:                fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID;       break;
+		case ShareFolderForward:		  fnInternalId = ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_FORWARD_INTERNALID; break;
 		case ShareInternal:               fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID;      break;
+		case ShareFolderInternal:		  fnInternalId = ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_INTERNAL_INTERNALID; break;
 		case SharePublic:                 fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID;        break;
+		case ShareFolderPublic:			  fnInternalId = ObjectKeys.FUNCTION_ALLOW_FOLDER_SHARING_PUBLIC_INTERNALID; break;
 		case SharePublicLinks:            fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_LINKS_INTERNALID;  break;
 		case AllowAccess:                 fnInternalId = ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID;     break;
 		case EnableShareExternal:         fnInternalId = ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID;     break;
@@ -5676,17 +5698,24 @@ public class GwtServerHelper {
 	public static FolderType getFolderTypeFromViewDef(AllModulesInjected bs, Folder folder) {
 		// Does the user have a view definition selected for this
 		// folder?
-		Definition def = BinderHelper.getFolderDefinitionFromView(bs, folder);
-		if (null == def) {
-			// No!  Just use it's default view.
-			def = folder.getDefaultViewDef();
-		}
+		Definition def = getDefinitionfromView(bs, folder);
 
 		// Return the FolderType from view definition.
 		String defFamily = BinderHelper.getFamilyNameFromDef(def);
 		return getFolderTypeFromDefFamily(folder, defFamily);
 	}
-	
+
+	public static Definition getDefinitionfromView(AllModulesInjected bs, Folder folder) {
+		// Does the user have a view definition selected for this
+		// folder?
+		Definition def = BinderHelper.getFolderDefinitionFromView(bs, folder);
+		if (null == def) {
+			// No!  Just use it's default view.
+			def = folder.getDefaultViewDef();
+		}
+		return def;
+	}
+
 	/**
 	 * Returns a count of the members of a group.
 	 * 
@@ -10171,6 +10200,7 @@ public class GwtServerHelper {
 		case GET_ZIP_DOWNLOAD_FILES_URL:
 		case GET_ZIP_DOWNLOAD_FOLDER_URL:
 		case GET_ZONE_SHARE_RIGHTS:
+		case GET_ZONE_SHARE_TERMS:
 		case GET_SHARED_VIEW_STATE:
 		case GET_SHARE_LISTS:
 		case GET_SHARING_INFO:
@@ -10301,6 +10331,7 @@ public class GwtServerHelper {
 		case SAVE_WEBACCESS_SETTING:
 		case SAVE_WHATS_NEW_SETTINGS:
 		case SAVE_ZONE_SHARE_RIGHTS:
+		case SAVE_ZONE_SHARE_TERMS:
 		case SEND_FORGOTTEN_PWD_EMAIL:
 		case SEND_SHARE_NOTIFICATION_EMAIL:
 		case SET_ANTIVIRUS_SETTINGS:

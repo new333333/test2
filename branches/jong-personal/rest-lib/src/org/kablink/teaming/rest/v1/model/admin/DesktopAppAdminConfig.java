@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Data type representing the desktop application system settings.
+ * The desktop application system settings.
  */
 @XmlRootElement(name="admin_desktop_app_config")
 public class DesktopAppAdminConfig extends BaseRestObject {

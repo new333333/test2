@@ -37,6 +37,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.dom.client.Style;
@@ -52,7 +53,7 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * @author jwootton
  *
  */
-public class MainContentLayoutPanel extends VibeDockLayoutPanel
+public class MainContentLayoutPanel extends VibeDockLayoutPanel implements VibeEntityViewPanel
 {
 	private VibeFlowPanel m_contentFlowPanel = null;
 	private ContentControl m_contentCtrl;

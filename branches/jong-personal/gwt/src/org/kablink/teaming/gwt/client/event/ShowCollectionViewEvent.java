@@ -39,17 +39,15 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
 /**
  * The ShowCollectionEvent is used to display a collection view.
  * 
  * @author drfoster@novell.com
  */
-public class ShowCollectionViewEvent extends VibeEventBase<ShowCollectionViewEvent.Handler> {
+public class ShowCollectionViewEvent extends ShowBinderEvent<ShowCollectionViewEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
-
-	private BinderInfo	m_binderInfo;	//
-	private ViewReady	m_viewReady;	//
 
 	/**
 	 * Handler interface for this event.
@@ -60,42 +58,14 @@ public class ShowCollectionViewEvent extends VibeEventBase<ShowCollectionViewEve
 	
 	/**
 	 * Class constructor.
-	 */
-	public ShowCollectionViewEvent() {
-		// Initialize the super class.
-		super();
-	}
-	
-	/**
-	 * Class constructor.
 	 * 
 	 * @param binderInfo
 	 * @param viewReady
 	 */
-	public ShowCollectionViewEvent(BinderInfo binderInfo, ViewReady viewReady) {
+	public ShowCollectionViewEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
 		// Initialize this object...
-		this();
-		
-		// ...and store the parameters.
-		setBinderInfo(binderInfo);
-		setViewReady( viewReady );
+		super(binderInfo, viewPanel, viewReady);
 	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public BinderInfo getBinderInfo() {return m_binderInfo;}	
-	public ViewReady  getViewReady()  {return m_viewReady; }
-	
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param
-	 */
-	public void setBinderInfo(BinderInfo binderInfo) {m_binderInfo = binderInfo;}
-	public void setViewReady( ViewReady  viewReady ) {m_viewReady  = viewReady; }
 	
 	/**
 	 * Dispatches this event when one is triggered.

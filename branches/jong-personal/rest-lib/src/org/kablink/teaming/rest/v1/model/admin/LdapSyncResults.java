@@ -21,9 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * User: david
- * Date: 7/25/12
- * Time: 11:38 AM
+ * The results of performing an LDAP sync.
  */
 @XmlRootElement(name="ldap_sync_results")
 public class LdapSyncResults {
@@ -37,6 +35,19 @@ public class LdapSyncResults {
     private List<String> deletedGroups;
     private String error;
 
+    /**
+     * The final status of the LDAP sync job.
+     *
+     * <p>Possible values are:
+     * <ul>
+     *     <li>STATUS_COLLECT_RESULTS</li>
+     *     <li>STATUS_COMPLETED</li>
+     *     <li>STATUS_STOP_COLLECTING_RESULTS</li>
+     *     <li>STATUS_ABORTED_BY_ERROR</li>
+     *     <li>STATUS_SYNC_ALREADY_IN_PROGRESS</li>
+     * </ul>
+     * </p>
+     */
     public String getStatus() {
         return status;
     }
@@ -45,6 +56,9 @@ public class LdapSyncResults {
         this.status = status;
     }
 
+    /**
+     * The new users that have been found in the LDAP directory.
+     */
     @XmlElementWrapper(name="added_users")
     @XmlElement(name="user")
     public List<String> getAddedUsers() {
@@ -55,6 +69,9 @@ public class LdapSyncResults {
         this.addedUsers = addedUsers;
     }
 
+    /**
+     * The users that have been modified.
+     */
     @XmlElementWrapper(name="modified_users")
     @XmlElement(name="user")
     public List<String> getModifiedUsers() {
@@ -65,6 +82,9 @@ public class LdapSyncResults {
         this.modifiedUsers = modifiedUsers;
     }
 
+    /**
+     * The users that have been deleted because they could no longer be found in the LDAP directory.
+     */
     @XmlElementWrapper(name="deleted_users")
     @XmlElement(name="user")
     public List<String> getDeletedUsers() {
@@ -75,6 +95,9 @@ public class LdapSyncResults {
         this.deletedUsers = deletedUsers;
     }
 
+    /**
+     * The users that have been disabled because they could no longer be found in the LDAP directory.
+     */
     @XmlElementWrapper(name="disabled_users")
     @XmlElement(name="user")
     public List<String> getDisabledUsers() {
@@ -85,6 +108,9 @@ public class LdapSyncResults {
         this.disabledUsers = disabledUsers;
     }
 
+    /**
+     * The new groups that have been found in the LDAP directory.
+     */
     @XmlElementWrapper(name="added_groups")
     @XmlElement(name="group")
     public List<String> getAddedGroups() {
@@ -95,6 +121,9 @@ public class LdapSyncResults {
         this.addedGroups = addedGroups;
     }
 
+    /**
+     * The groups that have been modified.
+     */
     @XmlElementWrapper(name="modified_groups")
     @XmlElement(name="group")
     public List<String> getModifiedGroups() {
@@ -105,6 +134,9 @@ public class LdapSyncResults {
         this.modifiedGroups = modifiedGroups;
     }
 
+    /**
+     * The groups that have been deleted because they could no longer be found in the LDAP directory.
+     */
     @XmlElementWrapper(name="deleted_groups")
     @XmlElement(name="group")
     public List<String> getDeletedGroups() {
@@ -115,6 +147,11 @@ public class LdapSyncResults {
         this.deletedGroups = deletedGroups;
     }
 
+    /**
+     * An message indicating the reason for failure, if an error occurred during LDAP sync.
+     *
+     * <p>This message may or may not be localized and is generally not suitable to be displayed to the end user.</p>
+     **/
     public String getError() {
         return error;
     }

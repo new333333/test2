@@ -1022,4 +1022,10 @@ public interface ProfileModule {
 	 */
 	public void setDefaultUserSettings(String timeZone, String locale, String timeZoneExt, String localeExt, Long zoneId);
 	public void setDefaultUserSettings(String timeZone, String locale, String timeZoneExt, String localeExt             );	// Default -> Current zone.
+	
+	/**
+	 * Sets the termsAndConditionsAcceptDate for the external user.
+	 * If the user is not an external user, it will throw <code>IllegalArgumentException</code>.
+	 */
+	public void setTermsAndConditionsAcceptDate(Long userId, Date date);
 }

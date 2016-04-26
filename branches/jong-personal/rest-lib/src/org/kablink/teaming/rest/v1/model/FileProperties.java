@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,7 +45,9 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-//This annotation is necessary not only for XML but also for JSON representation.
+/**
+ * File metadata.
+ */
 @XmlRootElement(name="file")
 public class FileProperties extends BaseFileProperties {
 
@@ -72,6 +76,9 @@ public class FileProperties extends BaseFileProperties {
         this.additionalPermaLinks = orig.additionalPermaLinks;
     }
 
+    /**
+     * Entity to which the file belongs.
+     */
     @XmlElement(name="owning_entity")
     public EntityId getOwningEntity() {
         return owningEntity;
@@ -81,6 +88,9 @@ public class FileProperties extends BaseFileProperties {
         this.owningEntity = owningEntity;
     }
 
+    /**
+     * The parent folder where the file resides.
+     */
     @XmlElement(name="parent_binder")
     public ParentBinder getBinder() {
         return binder;
@@ -90,6 +100,9 @@ public class FileProperties extends BaseFileProperties {
         this.binder = binder;
     }
 
+    /**
+     * The file name.
+     */
     public String getName() {
 		return name;
 	}
@@ -98,6 +111,7 @@ public class FileProperties extends BaseFileProperties {
 		this.name = name;
 	}
 
+    @Undocumented
     @XmlElement(name="locked_by")
 	public Long getLockedBy() {
 		return lockedBy;
@@ -107,6 +121,7 @@ public class FileProperties extends BaseFileProperties {
 		this.lockedBy = lockedBy;
 	}
 
+    @Undocumented
     @XmlElement(name="lock_expiration")
 	public Calendar getLockExpiration() {
 		return lockExpiration;
@@ -116,6 +131,9 @@ public class FileProperties extends BaseFileProperties {
 		this.lockExpiration = lockExpiration;
 	}
 
+    /**
+     * The web application URL of the file.
+     */
     @XmlElement(name="permalink")
     public String getPermaLink() {
         return permaLink;
@@ -125,6 +143,7 @@ public class FileProperties extends BaseFileProperties {
         this.permaLink = permaLink;
     }
 
+    @Undocumented
     public List<Link> getAdditionalPermaLinks() {
         return additionalPermaLinks;
     }

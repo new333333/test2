@@ -39,17 +39,15 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
 /**
  * The ShowTaskFolderEvent is used to display a task folder.
  * 
  * @author drfoster@novell.com
  */
-public class ShowTaskFolderEvent extends VibeEventBase<ShowTaskFolderEvent.Handler> {
+public class ShowTaskFolderEvent extends ShowBinderEvent<ShowTaskFolderEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
-
-	private BinderInfo m_binderInfo;
-	private ViewReady m_viewReady;
 
 	/**
 	 * Handler interface for this event.
@@ -64,19 +62,9 @@ public class ShowTaskFolderEvent extends VibeEventBase<ShowTaskFolderEvent.Handl
 	 * @param binderInfo
 	 * @param viewReady
 	 */
-	public ShowTaskFolderEvent(BinderInfo binderInfo, ViewReady viewReady) {
-		super();
-		m_viewReady  = viewReady;
-		m_binderInfo = binderInfo;
+	public ShowTaskFolderEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
+		super(binderInfo, viewPanel, viewReady);
 	}
-	
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public BinderInfo getBinderInfo() {return m_binderInfo;}	
-	public ViewReady  getViewReady()  {return m_viewReady; }
 	
 	/**
 	 * Dispatches this event when one is triggered.

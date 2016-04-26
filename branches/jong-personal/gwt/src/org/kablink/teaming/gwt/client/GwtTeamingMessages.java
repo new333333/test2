@@ -244,6 +244,7 @@ public interface GwtTeamingMessages extends Messages {
 	String ok();
 	String oneMomentPlease();
 	String overflowLabel();
+	String overflowShortLabel(String prop);
 	String percent();
 	String publicName();
 	String send();
@@ -572,6 +573,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_GetXsrfToken();
 	String rpcFailure_GetZipDownloadUrl();
 	String rpcFailure_GetZoneShareRights();
+	String rpcFailure_GetZoneShareTerms();
 	String rpcFailure_HideShares();
 	String rpcFailure_ImportIcalByUrl();
 	String rpcFailure_InvalidateSession();
@@ -648,6 +650,7 @@ public interface GwtTeamingMessages extends Messages {
 	String rpcFailure_SaveUserListStatus();
 	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_SaveZoneShareRights();
+	String rpcFailure_SaveZoneShareTerms();
 	String rpcFailure_Search();
 	String rpcFailure_SendForgottenPwdEmail();
 	String rpcFailure_SendNotificationEmail();
@@ -748,6 +751,7 @@ public interface GwtTeamingMessages extends Messages {
 	String codeSplitFailure_CreateBlogPageDlg();
 	String codeSplitFailure_CopyMoveEntriesDlg();
 	String codeSplitFailure_CopyPublicLinkDlg();
+	String codeSplitFailure_CustomBinderView();
 	String codeSplitFailure_DefaultUserSettingsDlg();
 	String codeSplitFailure_DeleteSelectedUsersDlg();
 	String codeSplitFailure_DeleteSelectionsDlg();
@@ -901,6 +905,8 @@ public interface GwtTeamingMessages extends Messages {
 	String guest();
 	String helpMenuItem();
 	String helpHint();
+	String ideasPortalMenuItem();
+	String ideasPortalMenuItemItem();	
 	String invokeUserListHint();
 	String loginHint();
 	String logoutHint();
@@ -986,6 +992,8 @@ public interface GwtTeamingMessages extends Messages {
 	String loginDlg_PwdResetFailed();
 	String loginDlg_pwdDoNotMatch();
 	String loginDlg_ReenterPwdLabel();
+	String loginDlg_TermsLabel();
+	String loginDlg_TermsPopupBlockMessage();
 	String loginDlg_Register();
 	String loginDlg_RegisterUsingSelfReg();
 	String loginDlg_ResetPwd();
@@ -2749,6 +2757,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editShareRightsDlg_EditorLabel();
 	String editShareRightsDlg_GrantRightsLabel();
 	String editShareRightsDlg_ViewerLabel();
+	String editShareRightsDlg_UnavailableMessage();
 
 	// Strings used in the Edit Share dialog.
 	String editShareDlg_accessRightsLabel();
@@ -2984,10 +2993,14 @@ public interface GwtTeamingMessages extends Messages {
 	// Strings used to represent the different rights.
 	String allowAccess();
 	String externalRights();
+	String folderExternalRights();
 	String forwardingRights();
+	String folderForwardingRights();
 	String internalRights();
+	String folderInternalRights();
 	String noRights();
 	String publicRights();
+	String folderPublicRights();
 	String shareLinkRights();
 	String shareWithAllExternalRights();
 	String shareWithAllInternalRights();
@@ -2995,11 +3008,13 @@ public interface GwtTeamingMessages extends Messages {
 	// Strings used in the Edit Net Folder Rights dialog.
 	String editNetFolderRightsDlg_AllowAccessLabel();
 	String editNetFolderRightsDlg_CanShareLabel();
+	String editNetFolderRightsDlg_CanShareFolderLabel();
 	String editNetFolderRightsDlg_Caption();
 	String editNetFolderRightsDlg_ErrorRetrievingZoneShareRights(String error);
 	String editNetFolderRightsDlg_Hint();
 	String editNetFolderRightsDlg_Instructions();
 	String editNetFolderRightsDlg_ReShareLabel();
+	String editNetFolderRightsDlg_ReshareFolderLabel();
 	String editNetFolderRightsDlg_ShareInternalLabel();
 	String editNetFolderRightsDlg_ShareExternalLabel();
 	String editNetFolderRightsDlg_ShareLinkLabel();
@@ -3214,6 +3229,13 @@ public interface GwtTeamingMessages extends Messages {
 	String userActivityReportType_All();
 	String userActivityReportType_Summaries();
 	String userActivityReportWarning_UserAlreadySelected(String name);
+	
+	// String used by the 'External User Report'
+	String externalUserReportCaption1();
+	String externalUserReportCaption2();
+	String externalUserReportPeople();
+	String externalUserReportRemove();
+	String externalUserReportRunReport();
 
 	// Strings used by the 'User Properties' dialog.
 	String userPropertiesDlgEdit_HomeFolder();
@@ -3227,6 +3249,7 @@ public interface GwtTeamingMessages extends Messages {
 	String userPropertiesDlgLabel_Home();
 	String userPropertiesDlgLabel_HomePath();
 	String userPropertiesDlgLabel_LastLogin();
+	String userPropertiesDlgLabel_TermsAndConditionsAcceptDate();
 	String userPropertiesDlgLabel_LdapContainer();
 	String userPropertiesDlgLabel_LdapDN();
 	String userPropertiesDlgLabel_NetFolders();
@@ -3277,6 +3300,7 @@ public interface GwtTeamingMessages extends Messages {
 	String editZoneShareSettingsDlg_Header();
 	String editZoneShareSettingsDlg_Lists();
 	String editZoneShareSettingsDlg_Rights();
+	String editZoneShareSettingsDlg_Terms();
 	
 	// Strings used in the 'Edit Zone Share Rights' tab.
 	String editZoneShareRightsTab_AllowShareWithLdapGroups_NoExternal();
@@ -3284,6 +3308,9 @@ public interface GwtTeamingMessages extends Messages {
 	String editZoneShareRightsTab_ReadingRights();
 	String editZoneShareRightsTab_SavingRights();
 	String editZoneShareRightsTab_SelectPrincipalsHint();
+	String editZoneShareTermsTab_LicensingTerms();
+	String editZoneShareTermsTab_ShowTermsAndConditions();
+	String editZoneShareTermsTab_ReadingLicensingTerms();
 	
 	// Strings used in the 'Edit Zone Share Lists' tab.
 	String editZoneShareListsTab_Add();

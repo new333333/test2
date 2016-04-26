@@ -35,6 +35,8 @@ package org.kablink.teaming.remoting.rest.v1.resource.admin;
 import com.sun.jersey.spi.resource.Singleton;
 import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import com.webcohesion.enunciate.metadata.rs.ResourceLabel;
+import com.webcohesion.enunciate.metadata.rs.ResponseCode;
+import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderState;
@@ -69,6 +71,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
+/**
+ * Resources for managing Net Folders
+ */
 @Path("/admin/net_folders")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -76,6 +81,14 @@ import java.util.List;
 @ResourceLabel("Net Folder Resource")
 public class AdminNetFolderResource extends AbstractAdminResource {
 
+    /**
+     * Lists Net Folders.
+     * <p>By default, all Net Folders are returned.  To only get home directory Net Folders use the type=home query parameter.
+     * To exclude home directory Net Folders, use the type=net query parameter.</p>
+     * @param fullDetails  If true, the NetFolder objects will include the sync_schedule and assigned_rights fields.  Otherwise, those fields are not included.
+     * @param type  Can be <code>net</code> or <code>home</code>.
+     * @return A SearchResultList of NetFolder objects.
+     */
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	public SearchResultList<NetFolder> getNetFolders(@QueryParam("include_full_details") @DefaultValue("false") boolean fullDetails,
@@ -101,25 +114,59 @@ public class AdminNetFolderResource extends AbstractAdminResource {
         return results;
     }
 
+    /**
+     * Creates a new Net Folder.
+     * <p>
+     * The following Net Folder fields are mandatory in the request body:
+     * <ul>
+     *     <li>name</li>
+     *     <li>server</li>
+     * </ul>
+     * </p>
+     * @param netFolder The Net Folder object to create.
+     * @return  The full newly-created Net Folder object.
+     */
     @POST
    	@Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(NET_FOLDER_SERVER_NOT_FOUND) No Net Folder Server exists with the specified ID."),
+            @ResponseCode(code=409, condition="(TITLE_EXISTS) A Net Folder already exists with the specified name.")
+    })
    	public NetFolder createNetFolder(NetFolder netFolder) throws WriteFilesException, WriteEntryDataException {
         validateMandatoryField(netFolder, "getServer", "getId");
         ResourceDriverConfig driverConfig = getResourceDriverModule().getResourceDriverConfig(netFolder.getServer().getId());
         return _createNetFolder(netFolder, driverConfig);
    	}
 
+    /**
+     * Retrieves a Net Folder.
+     * @param id
+     * @return  The Net Folder with the specified ID.
+     */
     @GET
     @Path("{id}")
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) No Net Folder exists with the specified ID."),
+    })
     public NetFolder getNetFolder(@PathParam("id") Long id) {
         Folder folder = lookupNetFolder(id);
         return AdminResourceUtil.buildNetFolder(folder.getNetFolderConfig(), this, true);
     }
 
+    /**
+     * Updates a Net Folder.  Only the fields that are included in the request body are updated.
+     * @param id
+     * @param netFolder
+     * @return  The updated Net Folder.
+     */
     @PUT
     @Path("{id}")
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) No Net Folder exists with the specified ID."),
+            @ResponseCode(code=404, condition="(NET_FOLDER_SERVER_NOT_FOUND) No Net Folder Server exists with the specified ID."),
+    })
     public NetFolder updateNetFolder(@PathParam("id") Long id, NetFolder netFolder) throws WriteFilesException, WriteEntryDataException {
         Folder folder = lookupNetFolder(id);
         netFolder.setId(id);
@@ -129,16 +176,31 @@ public class AdminNetFolderResource extends AbstractAdminResource {
         return _modifyNetFolder(netFolder, driverConfig);
     }
 
+    /**
+     * Deletes the Net Folder.
+     * @param id
+     */
     @DELETE
     @Path("{id}")
+    @StatusCodes({
+            @ResponseCode(code=204, condition="The Net Folder is deleted successfully"),
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) No Net Folder exists with the specified ID."),
+    })
     public void deleteNetFolderServer(@PathParam("id") Long id) {
         Folder folder = lookupNetFolder(id);
         NetFolderHelper.deleteNetFolder(getNetFolderModule(), id, false);
     }
 
-
+    /**
+     * Retrieves the Net Folder sync status.
+     * @param id
+     * @return The sync status.
+     */
     @GET
     @Path("{id}/sync")
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) No Net Folder exists with the specified ID."),
+    })
     public NetFolderSyncStatus getSyncStatus(@PathParam("id") Long id) {
         Folder netFolder = lookupNetFolder(id);
         BinderState binderState = getBinderState(id);
@@ -154,9 +216,18 @@ public class AdminNetFolderResource extends AbstractAdminResource {
         return status;
     }
 
+    /**
+     * Kick off a sync of the Net Folder.
+     * @param id
+     * @param waitForCompletion     If true, the HTTP request will block until the sync completes.
+     * @return  The Net Folder sync status.
+     */
     @POST
     @Path("{id}/sync")
     @Consumes({"*/*"})
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) No Net Folder exists with the specified ID."),
+    })
     public NetFolderSyncStatus syncNetFolder(@PathParam("id") Long id,
                                              @QueryParam("wait") @DefaultValue("false") boolean waitForCompletion)
             throws InterruptedException {
@@ -168,9 +239,21 @@ public class AdminNetFolderResource extends AbstractAdminResource {
         return getSyncStatus(id);
     }
 
+    /**
+     * Cancel the in-progess sync of the Net Folder.
+     *
+     * <p>By default, the in-progress sync is notified and the HTTP request completes without waiting for the sync job to exit.</p>
+     *
+     * @param id
+     * @param waitForCompletion If true, the HTTP request will block until the in-progress sync cancellation is complete.
+     * @return The Net Folder sync status.
+     */
     @DELETE
     @Path("{id}/sync")
     @Consumes({"*/*"})
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) No Net Folder exists with the specified ID."),
+    })
     public NetFolderSyncStatus cancelNetFolderSync(@PathParam("id") Long id,
                                                    @QueryParam("wait") @DefaultValue("false") boolean waitForCompletion) throws InterruptedException {
         Folder netFolder = lookupNetFolder(id);

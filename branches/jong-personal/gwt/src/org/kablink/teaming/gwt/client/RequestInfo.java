@@ -329,6 +329,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Return the URL used for the ideas portal system.
+	 * 
+	 * @return
+	 */
+	public final native String getIdeasPortalUrl()
+	/*-{
+		return this.ideasPortalUrl;
+	}-*/;	
+	
+	/**
 	 * Return the path to Teaming's images.
 	 * 
 	 * @return

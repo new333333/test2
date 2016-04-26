@@ -83,6 +83,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.util.cache.ThreadBoundSimpleCache;
 import org.kablink.util.search.Constants;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -201,14 +202,28 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	}
 	
 	@Override
+	// IMPORTANT: All overloaded public testOperation methods MUST delegate to this method as a single entry point.
 	public boolean testOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation, boolean checkSharing) {
 		long begin = System.nanoTime();
 		
-		boolean result = testOperationRecursive(user, workArea, workArea, workAreaOperation, checkSharing);
+		boolean result;
+		
+		Object[] key = new Object[] {"testOperation", user.getId(), workArea.getWorkAreaType(), workArea.getWorkAreaId(), workAreaOperation.getName(), Boolean.valueOf(checkSharing)};
+		
+		Boolean cachedResult = ThreadBoundSimpleCache.get(Boolean.class, key);
+		
+		if(cachedResult != null) {
+			result = cachedResult.booleanValue();
+		}
+		else {
+			result = testOperationRecursive(user, workArea, workArea, workAreaOperation, checkSharing);
+			ThreadBoundSimpleCache.put(Boolean.valueOf(result), key);
+		}
 
 		if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0; // millisecond
 			logger.debug("testOperation: result=" + result + 
+					" from-cache=" + ((cachedResult != null)? true:false) +
 					" user=" + user.getName() +
 					" operation=" + workAreaOperation.getName() +
 					" wa-type=" + workArea.getWorkAreaType() +
@@ -641,7 +656,34 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 
     @Override
     public boolean testRightGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) {
-    	return testRightGrantedBySharing(user, workArea, workAreaOperation, null);
+		long begin = System.nanoTime();
+
+    	boolean result;
+    	
+    	Object[] key = new Object[] {"testRightGrantedBySharing", user.getId(), workArea.getWorkAreaType(), workArea.getWorkAreaId(), workAreaOperation.getName()};
+    	
+		Boolean cachedResult = ThreadBoundSimpleCache.get(Boolean.class, key);
+		
+		if(cachedResult != null) {
+			result = cachedResult.booleanValue();
+		}
+		else {
+			result = testRightGrantedBySharing(user, workArea, workAreaOperation, null);
+			ThreadBoundSimpleCache.put(Boolean.valueOf(result), key);
+		}
+ 	
+		if(logger.isDebugEnabled()) {
+			double diff = (System.nanoTime() - begin)/1000000.0; // millisecond
+			logger.debug("testRightGrantedBySharing: result=" + result + 
+					" from-cache=" + ((cachedResult != null)? true:false) +
+					" user=" + user.getName() +
+					" operation=" + workAreaOperation.getName() +
+					" wa-type=" + workArea.getWorkAreaType() +
+					" wa-id=" + workArea.getWorkAreaId() + 
+					" time=" + diff); 
+		}
+		
+    	return result;
     }
 
     private boolean testRightGrantedBySharing(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers) {

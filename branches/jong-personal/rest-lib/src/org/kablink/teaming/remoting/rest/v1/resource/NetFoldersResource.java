@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.remoting.rest.v1.util.NetFolderBriefBuilder;
@@ -60,14 +61,21 @@ import java.util.Map;
 import static org.kablink.util.search.Restrictions.in;
 
 /**
- * User: david
- * Date: 9/5/12
- * Time: 3:01 PM
  */
 @Path("/net_folders")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@ResourceGroup("Net Folders")
 public class NetFoldersResource extends AbstractResource {
+    /**
+     * List the net folders that the authenticated user has access to.
+     * <p>The optional <code>title</code> query parameter limits the results to the net folder with the specified name.  Wildcards are not supported.</p>
+     * @param name  The name of the net folder.
+     * @param descriptionFormatStr The desired format for the children descriptions.  Can be "html" or "text".
+     * @param offset
+     * @param maxCount
+     * @return
+     */
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<NetFolderBrief> getNetFolders(@QueryParam("title") String name,
@@ -79,6 +87,21 @@ public class NetFoldersResource extends AbstractResource {
         return _getNetFolders(name, toDomainFormat(descriptionFormatStr), offset, maxCount, "/net_folders", nextParams);
     }
 
+    /**
+     * Search for entities by keyword.
+     * @param recursive Whether to search the immediate folder (false) or all subfolders (true).
+     * @param includeBinders    Whether to include binders in the results.
+     * @param includeFolderEntries  Whether to include folder entries in the results.
+     * @param includeFiles  Whether to include files in the results.
+     * @param includeReplies    Whether to include replies in the results.
+     * @param includeParentPaths    Whether to include the parent binder path with each entity.
+     * @param keyword   A search term.  May include wildcards, but cannot begin with a wildcard.  For example, "keyword=D*d" is
+     *                  allowed but "keyword=*d" is not.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObject resources (BinderBrief, FolderEntryBrief, FileProperties, ReplyBrief).
+     */
     @GET
     @Path("/library_entities")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -114,6 +137,14 @@ public class NetFoldersResource extends AbstractResource {
         return results;
     }
 
+    /**
+     * List recently changed folder entries in Net Folders.
+     * @param includeParentPaths    Whether to include the parent binder path with each entry.
+     * @param descriptionFormatStr The desired format for the folder entry description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of RecentActivityEntry resources.
+     */
     @GET
     @Path("/recent_activity")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

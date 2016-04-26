@@ -37,14 +37,15 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 1/16/13
- * Time: 1:53 PM
+ * A recently modified Folder Entry.
  */
 @XmlRootElement(name = "recent_activity_entry")
 public class RecentActivityEntry extends FolderEntryBrief {
     private ReplyBrief [] replies;
 
+    /**
+     * Recent replies to the Folder Entry.
+     */
     @XmlElementWrapper(name="replies")
     @XmlElement(name="reply")
     public ReplyBrief[] getReplies() {

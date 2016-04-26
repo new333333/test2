@@ -381,7 +381,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource mastheadBrowseFilr();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/mast_head_filr_graphic.png")
+	@Source("org/kablink/teaming/gwt/public/images/Filr_Mast_Head_MF_Graphic.png")
 	public ImageResource mastHeadFilrGraphic();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -389,7 +389,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource mastHeadKablinkGraphic();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/mast_head_novell_graphic.png")
+	@Source("org/kablink/teaming/gwt/public/images/Vibe_Mast_Head_MF_Graphic.png")
 	public ImageResource mastHeadNovellGraphic();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -775,6 +775,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Masthead/help_2.png")
 	public ImageResource userActionsPanel_Help();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/Filr_Ideas_Portal_Icon.png")
+	public ImageResource userActionsPanel_IdeasPortal();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Masthead/personal_prefs_2.png")

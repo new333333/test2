@@ -39,13 +39,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: david
- * Date: 5/16/12
- * Time: 12:43 PM
+ * A base class for many of the REST data types.
  */
 public abstract class BaseRestObject {
+    /**
+     * The path to this resource object.  This is relative to the root of the REST API (https://serveraddress/rest).
+     */
     @XmlElement(name="href")
     private String link;
+    /**
+     * Links to related resources.  These should be used to navigate the REST API (instead of hard-coding the URLs)
+     */
     @XmlElementWrapper(name="links")
     @XmlElement(name="link")
     private List<Link> additionalLinks;

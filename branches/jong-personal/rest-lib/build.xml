@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="slide-webdavclient" basedir="." default="compile">
+<project name="rest-lib" basedir="." default="compile">
 	<import file="../build-common.xml" />
 	<import file="../deploy-support.xml" />
 		
@@ -77,6 +77,7 @@
 		<enunciate basedir="src" buildDir="doc/admin"  configFile="enunciate/rest-admin-doc.xml">
 			<include name="org/kablink/teaming/remoting/rest/v1/resource/admin/*.java"/>
 			<include name="org/kablink/teaming/rest/v1/model/admin/*.java"/>
+			<include name="org/kablink/teaming/rest/v1/model/*.java"/>
 			<classpath refid="enunciate.classpath"/>
 			<export artifactId="docs" destination="doc/kablink-rest-admin-doc.zip" />
 		</enunciate>

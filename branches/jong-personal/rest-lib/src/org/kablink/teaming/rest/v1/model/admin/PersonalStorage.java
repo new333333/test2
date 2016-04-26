@@ -22,9 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * User: David
- * Date: 11/20/13
- * Time: 9:40 PM
+ * The Personal Storage settings.
  */
 @XmlRootElement(name="personal_storage")
 public class PersonalStorage extends BaseRestObject {

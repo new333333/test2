@@ -109,6 +109,8 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Integer cachedRightsRefreshInterval;
 	private Boolean telemetryEnabled;
 	private Boolean telemetryTier2Enabled;
+	private String extUserTermsAndConditions;
+	private Boolean extUserTermsAndConditionsOn;
 
 	public ZoneConfig()
 	{
@@ -856,5 +858,23 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	}
 	public void setTelemetryTier2Enabled(boolean telemetryOptinEnabled) {
 		this.telemetryTier2Enabled = Boolean.valueOf(telemetryOptinEnabled);
+	}
+	
+	public String getExtUserTermsAndConditions() {
+		return extUserTermsAndConditions;
+	}
+	public void setExtUserTermsAndConditions(String extUserTermsAndConditions) {
+		this.extUserTermsAndConditions = extUserTermsAndConditions;
+	}
+	
+	public boolean isExtUserTermsAndConditionsEnabled() {
+		if(extUserTermsAndConditionsOn == null)
+			return false; // off by default
+		else
+			return extUserTermsAndConditionsOn.booleanValue();
+	}
+	
+	public void setExtUserTermsAndConditionsEnabled(boolean on) {
+		this.extUserTermsAndConditionsOn = Boolean.valueOf(on);
 	}
 }

@@ -22,9 +22,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * User: David
- * Date: 11/20/13
- * Time: 9:40 PM
+ * The general LDAP User Source synchronization settings that apply across all LDAP Sources.
  */
 @XmlRootElement(name="user_source_synchronization")
 public class UserSourceSynchronization extends BaseRestObject {
@@ -32,6 +30,9 @@ public class UserSourceSynchronization extends BaseRestObject {
     private GroupSynchronization groups;
     private Schedule schedule;
 
+    /**
+     * User synchronization settings.
+     */
     public UserSynchronization getUsers() {
         return users;
     }
@@ -40,6 +41,9 @@ public class UserSourceSynchronization extends BaseRestObject {
         this.users = users;
     }
 
+    /**
+     * Group settings.
+     */
     public GroupSynchronization getGroups() {
         return groups;
     }
@@ -48,6 +52,9 @@ public class UserSourceSynchronization extends BaseRestObject {
         this.groups = groups;
     }
 
+    /**
+     * Synchronization schedule.
+     */
     public Schedule getSchedule() {
         return schedule;
     }

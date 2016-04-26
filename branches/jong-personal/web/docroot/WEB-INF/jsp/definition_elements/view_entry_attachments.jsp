@@ -153,7 +153,7 @@ function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
     style="text-align:center;font-weight:bold;display:block;width:100%;"><ssf:nlt tag="Loading"/></div>
   <iframe id="viewEntryHistory${ss_tabDivCount}Iframe" name="viewEntryHistory${ss_tabDivCount}Iframe" 
     onLoad="ss_resizeEntryHistoryIframe('viewEntryHistory${ss_tabDivCount}Iframe', 'viewEntryHistory${ss_tabDivCount}loading')" 
-    src="<html:rootPath/>js/forum/null.html" class="wg-tab-iframe" >Novell Vibe</iframe>
+    src="<html:rootPath/>js/forum/null.html" class="wg-tab-iframe" >Micro Focus Vibe</iframe>
 </div>
 <script type="text/javascript">
 ss_createOnLayoutChangeObj('ss_resizeEntryHistoryIframe${ss_divCounter}',

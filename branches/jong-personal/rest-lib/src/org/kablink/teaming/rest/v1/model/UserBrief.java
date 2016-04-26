@@ -32,13 +32,14 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 5/18/12
- * Time: 1:10 PM
+ * Minimal information about a User.  Brief objects
+ * are typically returned in list results because they are more efficient to build than their full counterparts.
  */
 @XmlRootElement (name="user_brief")
 public class UserBrief extends PrincipalBrief {
@@ -65,6 +66,7 @@ public class UserBrief extends PrincipalBrief {
         return new UserBrief(this);
     }
 
+    @Undocumented
     public Boolean getPerson() {
         return person;
     }
@@ -73,6 +75,9 @@ public class UserBrief extends PrincipalBrief {
         this.person = person;
     }
 
+    /**
+     * The user's first name.
+     */
     @XmlElement(name = "first_name")
 	public String getFirstName() {
 		return firstName;
@@ -80,6 +85,10 @@ public class UserBrief extends PrincipalBrief {
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
+
+    /**
+     * The user's last name.
+     */
     @XmlElement(name = "last_name")
 	public String getLastName() {
 		return lastName;
@@ -87,6 +96,10 @@ public class UserBrief extends PrincipalBrief {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+
+    /**
+     * The user's middle name.
+     */
     @XmlElement(name = "middle_name")
 	public String getMiddleName() {
 		return middleName;
@@ -95,6 +108,15 @@ public class UserBrief extends PrincipalBrief {
 		this.middleName = middleName;
 	}
 
+    /**
+     * Information about the user's avatar (profile picture).  It has three related links:
+     * <ul>
+     *     <li><code>content</code>: the HRef used to download the full image</li>
+     *     <li><code>thumbnail</code>: the HRef used to download a square thumbnail of the image</li>
+     *     <li><code>scaled_image</code>: the HRef used to download the a scaled, small version of image</li>
+     * </ul>
+     *
+     */
     @XmlElement(name="avatar")
     public StringIdLinkPair getAvatar() {
         return avatar;

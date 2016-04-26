@@ -15,6 +15,8 @@
 
 package org.kablink.teaming.rest.v1.model.admin;
 
+import com.webcohesion.enunciate.metadata.DocumentationExample;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.BaseRestObject;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -23,9 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 /**
- * User: david
- * Date: 7/25/12
- * Time: 11:38 AM
+ * The metadata of a Net Folder Server
  */
 @XmlRootElement(name="net_folder_server")
 public class NetFolderServer extends BaseRestObject {
@@ -66,6 +66,9 @@ public class NetFolderServer extends BaseRestObject {
         jitsMaxACLAge = (jitsMaxACLAge==null) ? server.jitsMaxACLAge : jitsMaxACLAge;
     }
 
+    /**
+     * The ID of the Net Folder Server.
+     */
     public Long getId() {
         return id;
     }
@@ -74,6 +77,11 @@ public class NetFolderServer extends BaseRestObject {
         this.id = id;
     }
 
+    /**
+     * The name of the Net Folder Server.
+     *
+     * <p>The name must be unique and cannot be changed once the Net Folder Server has been created.</p>
+     */
     public String getName() {
         return name;
     }
@@ -82,6 +90,19 @@ public class NetFolderServer extends BaseRestObject {
         this.name = name;
     }
 
+    /**
+     * The type of server.
+     *
+     * <p>Can be one of:
+     * <ul>
+     *     <li>windows_server</li>
+     *     <li>oes</li>
+     *     <li>oes2015</li>
+     *     <li>netware</li>
+     *     <li>share_point_2013</li>
+     * </ul>
+     * </p>
+     */
     @XmlElement(name="driver_type")
     public String getDriverType() {
         return driverType;
@@ -91,6 +112,7 @@ public class NetFolderServer extends BaseRestObject {
         this.driverType = driverType;
     }
 
+    @Undocumented
     @XmlElement(name="only_sync_dirs")
     public Boolean getFullSyncDirOnly() {
         return fullSyncDirOnly!=null && fullSyncDirOnly;
@@ -100,6 +122,10 @@ public class NetFolderServer extends BaseRestObject {
         this.fullSyncDirOnly = fullSyncDirOnly;
     }
 
+    /**
+     * Base UNC path for this Net Folder Server.
+     */
+    @DocumentationExample("\\\\151.155.136.130\\c\\base")
     @XmlElement(name="server_path")
     public String getRootPath() {
         return rootPath;
@@ -109,6 +135,10 @@ public class NetFolderServer extends BaseRestObject {
         this.rootPath = rootPath;
     }
 
+    /**
+     * Proxy user used to authenticate to the file server.
+     * <p>Ignored if <code>proxy_use_identity==true</code></p>
+     */
     @XmlElement(name="proxy_dn")
     public String getAccountName() {
         return accountName;
@@ -118,6 +148,10 @@ public class NetFolderServer extends BaseRestObject {
         this.accountName = accountName;
     }
 
+    /**
+     * Password for the proxy user.
+     * <p>Ignored if <code>proxy_use_identity==true</code></p>
+     */
     @XmlElement(name="proxy_password")
     public String getPassword() {
         return password;
@@ -127,6 +161,10 @@ public class NetFolderServer extends BaseRestObject {
         this.password = password;
     }
 
+    /**
+     * Flag indicating whether to use a Proxy Identity or a proxy usernama and password to authenticate to the file server.
+     * <p>If true, <code>proxy_identity_id</code> must be set.  If false, <code>proxy_dn</code> and <code>proxy_password</code> must be set.</p>
+     */
     @XmlElement(name="proxy_use_identity")
     public Boolean getUseProxyIdentity() {
     	if (null == useProxyIdentity) {
@@ -139,6 +177,10 @@ public class NetFolderServer extends BaseRestObject {
         this.useProxyIdentity = useProxyIdentity;
     }
 
+    /**
+     * Password for the proxy user.
+     * <p>Ignored if <code>proxy_use_identity==false</code></p>
+     */
     @XmlElement(name="proxy_identity_id")
     public Long getProxyIdentityId() {
         return proxyIdentityId;
@@ -148,6 +190,9 @@ public class NetFolderServer extends BaseRestObject {
         this.proxyIdentityId = proxyIdentityId;
     }
 
+    /**
+     * Date and time when the Net Folder Server object was last modified.
+     */
     @XmlElement(name="last_modified")
     public Date getModifiedOn() {
         return modifiedOn;
@@ -157,6 +202,7 @@ public class NetFolderServer extends BaseRestObject {
         this.modifiedOn = modifiedOn;
     }
 
+    @Undocumented
     @XmlElement(name="change_detection_mechanism")
     public String getChangeDetectionMechanism() {
         return changeDetectionMechanism;
@@ -166,6 +212,17 @@ public class NetFolderServer extends BaseRestObject {
         this.changeDetectionMechanism = changeDetectionMechanism;
     }
 
+    /**
+     * Strategy to use when authenticating to the file server.
+     *
+     * <p>Allowed values are:
+     * <ul>
+     * <li>kerberos</li>
+     * <li>ntlm</li>
+     * <li>kerberos_then_ntlm</li>
+     * </ul>
+     * </p>
+     */
     @XmlElement(name="auth_type")
     public String getAuthenticationType() {
         return authenticationType;
@@ -175,6 +232,9 @@ public class NetFolderServer extends BaseRestObject {
         this.authenticationType = authenticationType;
     }
 
+    /**
+     * Synchronization schedule
+     */
     @XmlElement(name="sync_schedule")
     public Schedule getSyncSchedule() {
         return syncSchedule;
@@ -184,6 +244,9 @@ public class NetFolderServer extends BaseRestObject {
         this.syncSchedule = syncSchedule;
     }
 
+    /**
+     * Flag indicating whether to index the content of files in the Net Folders.
+     */
     @XmlElement(name="index_content")
     public Boolean getIndexContent() {
         return indexContent==null ? Boolean.FALSE : indexContent;
@@ -193,6 +256,9 @@ public class NetFolderServer extends BaseRestObject {
         this.indexContent = indexContent;
     }
 
+    /**
+     * Flag indicating whether Just-in-Time synchronization is enabled.
+     */
     @XmlElement(name="jits_enabled")
     public Boolean getJitsEnabled() {
         return jitsEnabled;
@@ -202,6 +268,9 @@ public class NetFolderServer extends BaseRestObject {
         this.jitsEnabled = jitsEnabled;
     }
 
+    /**
+     * Maximum age for JITS results, in seconds.
+     */
     @XmlElement(name="jits_max_age")
     public Long getJitsMaxAge() {
         return jitsMaxAge;
@@ -211,6 +280,9 @@ public class NetFolderServer extends BaseRestObject {
         this.jitsMaxAge = jitsMaxAge;
     }
 
+    /**
+     * Maximum age for ACL JITS results, in seconds.
+     */
     @XmlElement(name="jits_max_acl_age")
     public Long getJitsMaxACLAge() {
         return jitsMaxACLAge;
@@ -220,6 +292,9 @@ public class NetFolderServer extends BaseRestObject {
         this.jitsMaxACLAge = jitsMaxACLAge;
     }
 
+    /**
+     * Flag indicating whether the desktop application can trigger the initial sync of home directory Net Folders.
+     */
     @XmlElement(name="allow_client_initiated_sync")
     public Boolean getAllowClientInitiatedSync() {
         return allowClientInitiatedSync;

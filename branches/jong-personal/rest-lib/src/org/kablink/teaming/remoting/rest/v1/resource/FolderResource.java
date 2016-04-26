@@ -33,6 +33,9 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
+import com.webcohesion.enunciate.metadata.rs.ResponseCode;
+import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Attachment;
@@ -60,6 +63,7 @@ import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FolderEntry;
@@ -96,13 +100,20 @@ import java.util.*;
 @Path("/folders")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@ResourceGroup("Folders")
 public class FolderResource extends AbstractBinderResource {
 
     protected String getBasePath() {
         return "/folders/";
     }
 
-    // Read sub-folders
+    /**
+     * Get folders by ID.
+     *
+     * @param ids   The ID of a folder.  Can be specified multiple times.
+     * @param descriptionFormatStr The desired format for the binder descriptions.  Can be "html" or "text".
+     * @return A SearchResultList of BinderBrief objects.
+     */
     @GET
     public SearchResultList<BinderBrief> getFolders(@QueryParam("id") Set<Long> ids,
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -126,9 +137,9 @@ public class FolderResource extends AbstractBinderResource {
         return results;
     }
 
-
     @POST
     @Path("/legacy_query")
+    @Undocumented
    	public SearchResultList<BinderBrief> getFoldersViaLegacyQuery(@Context HttpServletRequest request,
                                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -144,11 +155,12 @@ public class FolderResource extends AbstractBinderResource {
     }
 
     /**
-     * Returns a list of all access-control related operations that can be performed on a folder.
+     * List all access-control related operations that can be performed on a folder.
      * @return A list of Operation objects
      */
     @GET
     @Path("operations")
+    @Undocumented
     public SearchResultList<Operation> getOperations() {
         SearchResultList<Operation> results = new SearchResultList<Operation>();
         for (BinderModule.BinderOperation operation : BinderModule.BinderOperation.values()) {
@@ -164,6 +176,7 @@ public class FolderResource extends AbstractBinderResource {
 
     @GET
     @Path("operations/{name}")
+    @Undocumented
     public Operation getOperation(@PathParam("name") String id) {
         BinderModule.BinderOperation binderOp = getBinderOperation(id);
         if (binderOp!=null) {
@@ -177,13 +190,14 @@ public class FolderResource extends AbstractBinderResource {
     }
 
     /**
-     * Tests whether the authenticated user has permission to perform the specified operation on one or more folders.
+     * Test whether the authenticated user has permission to perform the specified operation on one or more folders.
      * @param id    The name of the operation
      * @param folderIds One or more folder IDs to test.
      * @return A list of Permission objects
      */
     @GET
     @Path("operations/{name}/permissions")
+    @Undocumented
     public SearchResultList<Permission> testPermissions(@PathParam("name") String id, @QueryParam("folder")List<Long> folderIds) {
         BinderModule.BinderOperation binderOp = getBinderOperation(id);
         if (binderOp!=null) {
@@ -197,13 +211,14 @@ public class FolderResource extends AbstractBinderResource {
     }
 
     /**
-     * Gets a list of child binders contained in the specified binder.
+     * Get a list of child binders contained in the specified binder.
      * @param id The id of the parent binder
      * @return Returns a list of BinderBrief objects.
      */
     @GET
     @Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public Response getSubBinders(@PathParam("id") long id,
                                   @QueryParam("title") String name,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -225,6 +240,7 @@ public class FolderResource extends AbstractBinderResource {
     @GET
     @Path("{id}/children")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public Response getChildren(@PathParam("id") long id,
                                 @QueryParam("title") String name,
                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -248,6 +264,7 @@ public class FolderResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
 	public Response getSubFolders(@PathParam("id") long id,
                                   @QueryParam("title") String name,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -266,6 +283,7 @@ public class FolderResource extends AbstractBinderResource {
         return Response.ok(subBinders).lastModified(lastModified).build();
 	}
 
+    @Undocumented
     @POST
    	@Path("{id}/folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -287,6 +305,7 @@ public class FolderResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/entries")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
 	public SearchResultList<FolderEntryBrief> getFolderEntries(@PathParam("id") long id,
                                                                @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -331,6 +350,7 @@ public class FolderResource extends AbstractBinderResource {
    	@Path("{id}/entries")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
    	public FolderEntry createFolderEntry(@PathParam("id") long id,
                                          @QueryParam("file_entry") @DefaultValue("false") boolean fileEntry,
                                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -364,11 +384,26 @@ public class FolderResource extends AbstractBinderResource {
         return ResourceUtil.buildFolderEntry(result, true, toDomainFormat(descriptionFormatStr));
     }
 
-// Read entries
+    /**
+     * Search for entities by keyword.
+     * @param id    The ID of the folder to search.
+     * @param recursive Whether to search the immediate folder (false) or all subfolders (true).
+     * @param includeBinders    Whether to include binders in the results.
+     * @param includeFolderEntries  Whether to include folder entries in the results.
+     * @param includeFiles  Whether to include files in the results.
+     * @param includeReplies    Whether to include replies in the results.
+     * @param includeParentPaths    Whether to include the parent binder path with each entity.
+     * @param keyword   A search term.  May include wildcards, but cannot begin with a wildcard.  For example, "keyword=D*d" is
+     *                  allowed but "keyword=*d" is not.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObject resources (BinderBrief, FolderEntryBrief, FileProperties, ReplyBrief).
+     */
 	@GET
 	@Path("{id}/library_entities")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<SearchableObject> getLibraryFiles(@PathParam("id") long id,
+	public SearchResultList<SearchableObject> getLibraryEntities(@PathParam("id") long id,
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                   @QueryParam("binders") @DefaultValue("true") boolean includeBinders,
                                                   @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,
@@ -385,10 +420,25 @@ public class FolderResource extends AbstractBinderResource {
                 "/folders/" + id + "/library_entities");
 	}
 
+    /**
+     * Copy a file into the specified folder.
+     *
+     * <p>The Content-Type must be <code>application/x-www-form-urlencoded</code>.  The parameter values in the form data should
+     * be URL-encoded UTF-8 strings.  For example: <code>source_id=09c1c3fb530f562401531070137b000e&file_name=H%C3%B6wdy</code>.</p>
+     * @param id          The ID of the target folder.
+     * @param fileName    The name of the new file.
+     * @param sourceId    The ID of the source file to copy.
+     * @return  The new file metadata.
+     */
     @POST
     @Path("{id}/library_files")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) The target folder does not exist."),
+            @ResponseCode(code=404, condition="(FILE_NOT_FOUND) The source file does not exist."),
+            @ResponseCode(code=409, condition="(FILE_EXISTS) A file with the specified name already exists in the target folder."),
+    })
     public FileProperties copyFile(@PathParam("id") long id,
                                    @FormParam("file_name") String fileName,
                                    @FormParam("source_id") String sourceId,
@@ -413,10 +463,26 @@ public class FolderResource extends AbstractBinderResource {
         return null;
     }
 
+    /**
+     * Add a file to the specified folder.  This is the multipart form version.  The Content-Type must be <code>multipart/form-data</code>.
+     * See <a>https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2</a>.
+     *
+     * @param id    The ID of the folder where the file is to be added.
+     * @param fileName  The name of the file to create.
+     * @param modDateISO8601    The desired last modified time for the new file.
+     * @param expectedMd5       The MD5 checksum of the file.  If specified, the REST interface returns an error if the
+     *                          MD5 checksum of the uploaded content does not match the expected value.
+     * @param overwriteExisting     If a file already exists with the specified name, this specifies whether to overwrite the file (true) or fail with an error (false).
+     */
+    @Undocumented
     @POST
     @Path("{id}/library_files")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) The target folder does not exist."),
+            @ResponseCode(code=409, condition="(FILE_EXISTS) A file with the specified name already exists in the target folder (if overwrite_existing is false."),
+    })
     public FileProperties addLibraryFileFromMultipart(@PathParam("id") long id,
                                          @QueryParam("file_name") String fileName,
                                          @QueryParam("mod_date") String modDateISO8601,
@@ -428,10 +494,27 @@ public class FolderResource extends AbstractBinderResource {
         return createEntryWithAttachment(folder, fileName, modDateISO8601, expectedMd5, overwriteExisting, is);
     }
 
+    /**
+     * Add a file to the specified folder.  The request Content-Type can be anything except <code>x-www-form-urlencoded</code>.
+     * Supports <code>multipart/form-data</code> posts (see <a href="https://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.2">here</a>).
+     * If another Content-Type is specified (<code>application/octet-stream</code>, for example), the raw bytes of the request body
+     * are read and stored as the file content.
+     *
+     * @param id    The ID of the folder where the file is to be added.
+     * @param fileName  The name of the file to create.
+     * @param modDateISO8601    The desired last modified time for the new file.
+     * @param expectedMd5       The MD5 checksum of the file.  If specified, the REST interface returns an error if the
+     *                          MD5 checksum of the uploaded content does not match the expected value.
+     * @param overwriteExisting     If a file already exists with the specified name, this specifies whether to overwrite the file (true) or fail with an error (false).
+     */
     @POST
     @Path("{id}/library_files")
     @Consumes("*/*")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) The target folder does not exist."),
+            @ResponseCode(code=409, condition="(FILE_EXISTS) A file with the specified name already exists in the target folder (if overwrite_existing is false."),
+    })
     public FileProperties addLibraryFile(@PathParam("id") long id,
                                          @QueryParam("file_name") String fileName,
                                          @QueryParam("mod_date") String modDateISO8601,

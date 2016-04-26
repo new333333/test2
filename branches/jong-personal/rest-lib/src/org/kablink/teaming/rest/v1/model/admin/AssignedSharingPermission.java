@@ -20,7 +20,7 @@ import org.kablink.teaming.rest.v1.model.SharingPermission;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Data type representing sharing permissions that have been granted to a recipient.
+ * The sharing permissions that have been granted to a recipient.
  *
  * <p>The recipient can be a user or a group.</p>
  */

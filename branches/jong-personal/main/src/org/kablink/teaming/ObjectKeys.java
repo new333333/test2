@@ -185,6 +185,14 @@ public interface ObjectKeys {
 	public static final String FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID="402883b90d0de1f3010d0df5582b0044";
 	//reserved id for _enableLinkSharing pseudo role 
 	public static final String FUNCTION_ENABLE_LINK_SHARING_INTERNALID="402883b90d0de1f3010d0df5582b0045";
+	//reserved id for _allowFolderSharingInternal pseudo role  
+	public static final String FUNCTION_ALLOW_FOLDER_SHARING_INTERNAL_INTERNALID="402883b90d0de1f3010d0df5582b0060";
+	//reserved id for _allowFolderSharingExternal pseudo role 
+	public static final String FUNCTION_ALLOW_FOLDER_SHARING_EXTERNAL_INTERNALID="402883b90d0de1f3010d0df5582b0061";
+	//reserved id for _allowFolderSharingPublic pseudo role
+	public static final String FUNCTION_ALLOW_FOLDER_SHARING_PUBLIC_INTERNALID="402883b90d0de1f3010d0df5582b0062";
+	//reserved id for _allowFolderSharingForward pseudo role
+	public static final String FUNCTION_ALLOW_FOLDER_SHARING_FORWARD_INTERNALID="402883b90d0de1f3010d0df5582b0063";
 
 	//reserved id for View Binder Title role
 	public static final String FUNCTION_VIEW_BINDER_TITLE_INTERNALID="402883b90d0de1f3010d0df5582b0033";
@@ -323,6 +331,10 @@ public interface ObjectKeys {
     public static final String ROLE_ALLOW_SHARING_FORWARD="__role.allowSharingForward";
     public static final String ROLE_ALLOW_ACCESS_NET_FOLDER="__role.allowAccessNetFolder";
     public static final String ROLE_ENABLE_LINK_SHARING="__role.enableLinkSharing";
+    public static final String ROLE_ALLOW_FOLDER_SHARING_INTERNAL="__role.allowFolderSharingInternal";
+    public static final String ROLE_ALLOW_FOLDER_SHARING_EXTERNAL="__role.allowFolderSharingExternal";
+    public static final String ROLE_ALLOW_FOLDER_SHARING_PUBLIC="__role.allowFolderSharingPublic";
+    public static final String ROLE_ALLOW_FOLDER_SHARING_FORWARD="__role.allowFolderSharingForward";
 
     //map keys from admin/sendMail
     public static final String SENDMAIL_ERRORS="errors";
@@ -716,6 +728,7 @@ public interface ObjectKeys {
     public static final String FIELD_ZONE="zoneId";
     public static final String FIELD_INTERNAL="identityInfo.internal";
     public static final String FIELD_INTERNALID="internalId";
+    public static final String FIELD_FROMLDAP="identityInfo.fromLdap";
 
     public static final String FIELD_ENTITY_TITLE="title";
     public static final String FIELD_ENTITY_NORMALIZED_TITLE="normalTitle";

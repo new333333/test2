@@ -53,6 +53,7 @@ if (op2 != null && !op2.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING) && !op2.equal
 	}
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <c:set var="showFolderPage" value="true"/>
 <c:if test="${!ss_snippet}">

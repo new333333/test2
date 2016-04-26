@@ -49,7 +49,6 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
-import org.kablink.teaming.cache.impl.HashMapCache;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -93,6 +92,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.util.Validator;
+import org.kablink.util.cache.HashMapCache;
 import org.kablink.util.search.Constants;
 
 /**

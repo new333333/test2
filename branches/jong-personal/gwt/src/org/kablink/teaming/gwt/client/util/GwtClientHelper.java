@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.safehtml.shared.UriUtils;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
@@ -417,6 +418,36 @@ public class GwtClientHelper {
 	
 	public static Anchor buildAnchor() {
 		return buildAnchor("cursorPointer");
+	}
+
+	public static Image buildImage(TreeInfo ti, BinderIconSize iconSize, ImageResource defaultImg) {
+		SafeUri uri = null;
+		String binderIcon = ti.getBinderIcon(iconSize);
+		if ((!(ti.getBinderInfo().isFolderHome())) && (!(ti.getBinderInfo().isFolderMyFilesStorage())) && GwtClientHelper.hasString(binderIcon)) {
+			String url;
+			// Yes!  Set its URL into the Image.
+			if (binderIcon.startsWith("/"))
+				url = getImagesPath() + binderIcon.substring(1);
+			else url = getImagesPath() + binderIcon;
+			uri = UriUtils.unsafeCastFromUntrustedString(url);
+		}
+
+		else {
+			// No, the TreeInfo doesn't have the name of an icon to
+			// use!  Does it have an ImageResource to use?
+			ImageResource binderImgRes = ti.getBinderImage(iconSize);
+			if (null == binderImgRes) {
+				// No!  Use the default ImageResource.
+				binderImgRes = defaultImg;
+			}
+
+			// We always display images via their URL so that they
+			// can be scaled when necessary.
+			if (binderImgRes != null) {
+				uri = binderImgRes.getSafeUri();
+			}
+		}
+		return uri==null ? null : buildImage(uri);
 	}
 
 	/**

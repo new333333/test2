@@ -204,7 +204,7 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
         <ssf:param name="namespace" value="${renderResponse.namespace}"/>
         </ssf:url>" 
 	onLoad="ss_setAdministrationIframeSize${renderResponse.namespace}();" 
-	frameBorder="0" title="<ssf:nlt tag="toolbar.menu.siteAdministration"/>">Novell Vibe</iframe>
+	frameBorder="0" title="<ssf:nlt tag="toolbar.menu.siteAdministration"/>">Micro Focus Vibe</iframe>
 
 </ssf:ifnotadapter>
 

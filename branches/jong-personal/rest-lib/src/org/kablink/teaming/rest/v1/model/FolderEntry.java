@@ -32,10 +32,16 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-// This annotation is necessary not only for XML but also for JSON representation.
+/**
+ * An entry in a folder.
+ *
+ * <p>In Filr, this is a wrapper around a file.</p>
+ */
 @XmlRootElement (name="folder_entry")
 public class FolderEntry extends BaseFolderEntry {
     private HistoryStamp reservation;
@@ -48,6 +54,7 @@ public class FolderEntry extends BaseFolderEntry {
         this.reservation = orig.reservation;
     }
 
+    @Undocumented
     public HistoryStamp getReservation() {
         return reservation;
     }

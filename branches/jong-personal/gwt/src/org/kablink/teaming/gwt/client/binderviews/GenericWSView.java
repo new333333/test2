@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.LandingPageWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -58,6 +59,7 @@ public class GenericWSView extends WorkspaceViewBase implements ToolPanelReady
 	private VibeFlowPanel m_mainPanel;
 	private VibeFlowPanel m_breadCrumbPanel;
 	private VibeFlowPanel m_descPanel;
+	private VibeFlowPanel m_lpPanel;
 	private VibeFlowPanel m_accessoriesPanel;
 	private VibeFlowPanel m_footerPanel;
 	private VibeFlowPanel m_htmlElementPanel;
@@ -132,6 +134,29 @@ public class GenericWSView extends WorkspaceViewBase implements ToolPanelReady
 		// If we're not in Filr mode...
 		if ( ! ( GwtClientHelper.isLicenseFilr() ) )
 		{
+			// Add a place for landing page elements.  The LandingPage widget will display the description
+			// if there is one.
+			{
+				m_lpPanel = new VibeFlowPanel();
+				m_lpPanel.addStyleName( "vibe-teamWSView_LPPanel" );
+				m_mainPanel.add( m_lpPanel );
+
+				LandingPageWidget.createAsync( getBinderInfo(), new LandingPageWidget.LandingPageWidgetClient()
+				{
+					@Override
+					public void onUnavailable()
+					{
+						// Nothing to do.  Error handled in asynchronous provider.
+					}
+
+					@Override
+					public void onSuccess( LandingPageWidget landingPage )
+					{
+						m_lpPanel.add( landingPage );
+					}
+				} );
+			}
+
 			// ...add a place for the accessories.
 			m_accessoriesPanel = new VibeFlowPanel();
 			m_accessoriesPanel.addStyleName( "vibe-genericWSView_AccessoriesPanel" );

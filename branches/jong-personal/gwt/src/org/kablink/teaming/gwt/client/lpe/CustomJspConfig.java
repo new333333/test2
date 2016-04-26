@@ -212,6 +212,8 @@ public class CustomJspConfig extends ConfigItem
 							{
 								if ( value.equalsIgnoreCase( "auto" ) )
 									m_properties.setOverflow( Style.Overflow.AUTO );
+								else if ( value.equalsIgnoreCase( "visible" ) )
+									m_properties.setOverflow( Style.Overflow.VISIBLE );
 								else if ( value.equalsIgnoreCase( "hidden" ) )
 									m_properties.setOverflow( Style.Overflow.HIDDEN );
 							}

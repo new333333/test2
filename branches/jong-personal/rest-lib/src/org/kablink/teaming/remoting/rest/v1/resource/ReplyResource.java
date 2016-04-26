@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import org.dom4j.Document;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
@@ -86,10 +87,18 @@ import java.util.Set;
 @Path("/replies")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@ResourceGroup("Comments")
 public class ReplyResource extends AbstractFolderEntryResource {
 
+    /**
+     * Get replies by ID.
+     *
+     * @param ids   The ID of a reply.  Can be specified multiple times.
+     * @param descriptionFormatStr The desired format for the reply descriptions.  Can be "html" or "text".
+     * @return A SearchResultList of ReplyBrief objects.
+     */
 	@GET
-	public SearchResultList<ReplyBrief> getReply(@QueryParam("id") Set<Long> ids,
+	public SearchResultList<ReplyBrief> getRepliesById(@QueryParam("id") Set<Long> ids,
                                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                  @QueryParam("first") @DefaultValue("0") Integer offset,
 			                                     @QueryParam("count") @DefaultValue("100") Integer maxCount) {
@@ -112,7 +121,13 @@ public class ReplyResource extends AbstractFolderEntryResource {
         return results;
 	}
 
-	// Read folder entry
+    /**
+     * Get a reply.
+     * @param id   The ID of the repy.
+     * @param includeAttachments    Whether to include file attachment metadata in the response.
+     * @param descriptionFormatStr The desired format for the reply description.  Can be "html" or "text".
+     * @return
+     */
 	@GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -124,7 +139,13 @@ public class ReplyResource extends AbstractFolderEntryResource {
 		return ResourceUtil.buildReply(hEntry, includeAttachments, toDomainFormat(descriptionFormatStr));
 	}
 
-    // Update folder entry
+    /**
+     * Update the reply.
+     * @param id    The ID of the reply.
+     * @param entry The updated Reply object.
+     * @param descriptionFormatStr The desired format for the reply description in the response.  Can be "html" or "text".
+     * @return  The updated Reply object.
+     */
 	@PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -141,6 +162,62 @@ public class ReplyResource extends AbstractFolderEntryResource {
         SimpleProfiler.stop("folderService_modifyEntry");
         return ResourceUtil.buildReply((org.kablink.teaming.domain.FolderEntry) dEntry, true, toDomainFormat(descriptionFormatStr));
 	}
+
+    /**
+     * Delete the specified reply and its child replies.
+     *
+     * @param id    The ID of the folder entry.
+     */
+    @DELETE
+    @Path("{id}")
+    public void deleteReply(@PathParam("id") long id) throws Exception {
+        _deleteFolderEntry(id, true, null);
+    }
+
+    /**
+     * Get a tree structure with all of the replies to this reply.
+     * @param id    The ID of the reply.
+     * @param descriptionFormatStr The desired format for the reply descriptions in the response.  Can be "html" or "text".
+     * @return A SearchResultTree of Reply objects.
+     */
+    @GET
+    @Path("{id}/reply_tree")
+    public SearchResultTree<Reply> getReplyTree(@PathParam("id") Long id,
+                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        return _getReplyTree(id, descriptionFormatStr);
+    }
+
+    /**
+     * List the first level of replies to this reply.
+     *
+     * @param id    The ID of the reply.
+     * @param descriptionFormatStr The desired format for the reply description in the response.  Can be "html" or "text".
+     * @return A SearchResultList of Reply objects.
+     */
+    @GET
+    @Path("{id}/replies")
+    public SearchResultList<Reply> getReplies(@PathParam("id") Long id,
+                                              @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        return _getReplies(id, descriptionFormatStr);
+    }
+
+    /**
+     * Add a reply to the specified reply.
+     * @param id    The ID of the reply.
+     * @param entry  The reply to add.  The description text must be specified in the Reply object.  The title is optional.
+     * @param descriptionFormatStr The desired format for the folder entry description in the response.  Can be "html" or "text".
+     * @return The new Reply object.
+     */
+    @POST
+    @Path("{id}/replies")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Reply addReply(@PathParam("id") Long id,
+                          Reply entry,
+                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
+            throws WriteFilesException, WriteEntryDataException {
+        return _addReply(id, entry, descriptionFormatStr);
+    }
 
     protected org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id) {
         org.kablink.teaming.domain.FolderEntry hEntry = getFolderModule().getEntry(null, id);

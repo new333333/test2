@@ -18,9 +18,7 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 7/25/12
- * Time: 11:38 AM
+ * A change that occurred to a folder entry.
  */
 @XmlRootElement(name="entry_change")
 public class FolderEntryChange extends BaseBinderChange {
@@ -31,6 +29,9 @@ public class FolderEntryChange extends BaseBinderChange {
         setType(Type.folder_entry.name());
     }
 
+    /**
+     * The ID of the folder entry.
+     */
     public Long getId() {
         return id;
     }
@@ -39,6 +40,9 @@ public class FolderEntryChange extends BaseBinderChange {
         this.id = id;
     }
 
+    /**
+     * The latest version of the folder entry.  Only applies to <code>add</code> and <code>modify</code> changes.
+     */
     public FolderEntry getEntry() {
         return entry;
     }

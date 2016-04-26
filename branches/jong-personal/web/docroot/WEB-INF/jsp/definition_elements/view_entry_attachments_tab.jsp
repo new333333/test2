@@ -201,7 +201,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 				  src="<html:rootPath/>js/forum/null.html" 
 				  height="180" width="95%" 
 				  onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
-				>Novell Vibe</iframe>
+				>Micro Focus Vibe</iframe>
 				<div align="right" style="padding:10px;">
 				  <span class="ss_fineprint"><ssf:nlt tag="file.upload.having_trouble"/></span>
 				  <ssf:showHelp guideName="user" pageId="trouble" sectionId="trouble_fileupload" />
@@ -222,7 +222,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 					id="ss_iframe_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 					name="ss_iframe_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 					src="<html:rootPath/>js/attachments/entry_attachment_browse.html" 
-					height="150" width="95%">Novell Vibe</iframe>
+					height="150" width="95%">Micro Focus Vibe</iframe>
 			</div>	
 		</div>					
 	</td>	

@@ -45,6 +45,7 @@ public class CompleteExternalUserSelfRegistrationCmd extends VibeRpcCmd
 	private String m_lastName;
 	private String m_pwd;
 	private String m_invitationUrl;
+	private Boolean m_hasAcceptedTermsAndConditions;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -62,13 +63,15 @@ public class CompleteExternalUserSelfRegistrationCmd extends VibeRpcCmd
 		String firstName,
 		String lastName,
 		String pwd,
-		String permaLink )
+		String permaLink,
+		Boolean hasAcceptedTermsAndConditions)
 	{
 		m_extUserId = extUserId;
 		m_firstName = firstName;
 		m_lastName = lastName;
 		m_pwd = pwd;
 		m_invitationUrl = permaLink;
+		m_hasAcceptedTermsAndConditions = hasAcceptedTermsAndConditions;
 	}
 	
 	/**
@@ -123,4 +126,19 @@ public class CompleteExternalUserSelfRegistrationCmd extends VibeRpcCmd
 	{
 		return m_pwd;
 	}
+	
+	/**
+	 * 
+	 */
+	public Boolean isAcceptedTermsAndConditions(){
+		return m_hasAcceptedTermsAndConditions;
+	}
+	 
+	
+	/**
+	 * 
+	 */
+	public void setAcceptedTermsAndConditions(Boolean hasAcceptedTermsAndConditions){
+		m_hasAcceptedTermsAndConditions = hasAcceptedTermsAndConditions;
+	}	
 }

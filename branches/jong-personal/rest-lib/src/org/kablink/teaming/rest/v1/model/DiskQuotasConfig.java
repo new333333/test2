@@ -36,9 +36,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 5/16/12
- * Time: 2:51 PM
+ * Global disk quota settings.  The authenticated user might have different settings.
+ * <p>Disk quota only applies to personal storage.</p>
  */
 @XmlRootElement(name = "disk_quotas_config")
 public class DiskQuotasConfig {
@@ -46,6 +45,9 @@ public class DiskQuotasConfig {
    	private Integer userDefault;
    	private Integer highwaterPercentage;
 
+    /**
+     * Whether disk quota limits are turned on.  If false, users can have unlimited personal storage.
+     */
     @XmlElement(name="enabled")
     public Boolean isEnabled() {
         return enabled;
@@ -55,6 +57,10 @@ public class DiskQuotasConfig {
         this.enabled = enabled;
     }
 
+
+    /**
+     * Threshold when user should be warned about being close to exceeding his or her disk quota.
+     */
     @XmlElement(name="highwater_percentage")
     public Integer getHighwaterPercentage() {
         return highwaterPercentage;
@@ -64,6 +70,9 @@ public class DiskQuotasConfig {
         this.highwaterPercentage = highwaterPercentage;
     }
 
+    /**
+     * Default user disk quota in megabytes.
+     */
     @XmlElement(name="user_default")
     public Integer getUserDefault() {
         return userDefault;

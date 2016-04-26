@@ -36,9 +36,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 5/30/12
- * Time: 4:29 PM
+ * Reference to the recipient of a shared item.
+ *
+ * <p>
+ * Type can be one of <code>user</code>, <code>group</code>. <code>external_user</code>, <code>public</code>. <code>public_link</code>.
+ * If type is <code>public</code> or <code>public_link</code>, ID and hrek are not applicable.
+ * </p>
+ *
  */
 @XmlRootElement(name = "share_recipient")
 public class ShareRecipient extends Recipient {
@@ -59,6 +63,9 @@ public class ShareRecipient extends Recipient {
         this.emailAddress = email;
     }
 
+    /**
+     * The email address of the recipient.  Only applies when <code>type</code> is <code>external_user</code>.
+     */
     @XmlElement(name="email")
     public String getEmailAddress() {
         return emailAddress;

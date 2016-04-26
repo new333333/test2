@@ -36,9 +36,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 5/23/12
- * Time: 4:45 PM
+ * An ID and HRef which references another resource object.
  */
 @XmlRootElement(name = "ids_link")
 public class StringIdLinkPair extends BaseRestObject {
@@ -52,6 +50,9 @@ public class StringIdLinkPair extends BaseRestObject {
         this.id = id;
     }
 
+    /**
+     * The ID of the resource.
+     */
     public String getId() {
         return id;
     }

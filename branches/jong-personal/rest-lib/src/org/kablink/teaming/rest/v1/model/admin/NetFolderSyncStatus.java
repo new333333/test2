@@ -19,9 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 /**
- * User: David
- * Date: 12/2/13
- * Time: 1:22 PM
+ * The current sync status of a Net Folder.
  */
 @XmlRootElement(name="net_folder_sync_status")
 public class NetFolderSyncStatus {
@@ -46,6 +44,23 @@ public class NetFolderSyncStatus {
     private Integer failures;
     private Integer foldersProcessed;
 
+    /**
+     * The status of the most recent Net Folder sync job.
+     *
+     * <p>Possible values are:
+     * <ul>
+     *     <li>none</li>
+     *     <li>ready</li>
+     *     <li>taken</li>
+     *     <li>started</li>
+     *     <li>stopped</li>
+     *     <li>finished</li>
+     *     <li>aborted</li>
+     *     <li>canceled</li>
+     *     <li>deleting</li>
+     * </ul>
+     * </p>
+     */
     public String getStatus() {
         return status;
     }
@@ -54,6 +69,9 @@ public class NetFolderSyncStatus {
         this.status = status;
     }
 
+    /**
+     * IP Address of the server node executing the most recent sync of the Net Folder.
+     */
     @XmlElement(name="node_ip_address")
     public String getNodeIPAddress() {
         return nodeIPAddress;
@@ -63,6 +81,9 @@ public class NetFolderSyncStatus {
         this.nodeIPAddress = nodeIPAddress;
     }
 
+    /**
+     * Date/time when the most recent sync began.
+     */
     @XmlElement(name="start_date")
     public Date getStartDate() {
         return startDate;
@@ -72,6 +93,9 @@ public class NetFolderSyncStatus {
         this.startDate = startDate;
     }
 
+    /**
+     * Date/time when the most recent sync ended.
+     */
     @XmlElement(name="end_date")
     public Date getEndDate() {
         return endDate;
@@ -81,6 +105,9 @@ public class NetFolderSyncStatus {
         this.endDate = endDate;
     }
 
+    /**
+     * Flag indicating whether the most recent sync only scanned directories or directories and files.
+     */
     @XmlElement(name="directory_only")
     public Boolean getDirectoryOnly() {
         return directoryOnly;
@@ -90,6 +117,9 @@ public class NetFolderSyncStatus {
         this.directoryOnly = directoryOnly;
     }
 
+    /**
+     * Flag indicating whether an error occurred attempting to enumerate a directory.
+     */
     @XmlElement(name="directory_enumeration_failure")
     public Boolean getDirectoryEnumerationFailure() {
         return directoryEnumerationFailure;
@@ -99,6 +129,9 @@ public class NetFolderSyncStatus {
         this.directoryEnumerationFailure = directoryEnumerationFailure;
     }
 
+    /**
+     * The total number of files found.
+     */
     @XmlElement(name="files_found")
     public Integer getFilesFound() {
         return filesFound;
@@ -108,6 +141,9 @@ public class NetFolderSyncStatus {
         this.filesFound = filesFound;
     }
 
+    /**
+     * The number of new files found.
+     */
     @XmlElement(name="files_added")
     public Integer getFilesAdded() {
         return filesAdded;
@@ -117,6 +153,9 @@ public class NetFolderSyncStatus {
         this.filesAdded = filesAdded;
     }
 
+    /**
+     * The number of files that were removed because they no longer exist.
+     */
     @XmlElement(name="files_expunged")
     public Integer getFilesExpunged() {
         return filesExpunged;
@@ -126,6 +165,9 @@ public class NetFolderSyncStatus {
         this.filesExpunged = filesExpunged;
     }
 
+    /**
+     * The number of updated files found.
+     */
     @XmlElement(name="files_modified")
     public Integer getFilesModified() {
         return filesModified;
@@ -135,6 +177,9 @@ public class NetFolderSyncStatus {
         this.filesModified = filesModified;
     }
 
+    /**
+     * The number of files with modified ACLs.
+     */
     @XmlElement(name="files_with_modified_acl")
     public Integer getFilesWithModifiedACL() {
         return filesWithModifiedACL;
@@ -144,6 +189,9 @@ public class NetFolderSyncStatus {
         this.filesWithModifiedACL = filesWithModifiedACL;
     }
 
+    /**
+     * The number of files with a different owner.
+     */
     @XmlElement(name="files_with_modified_owner")
     public Integer getFilesWithModifiedOwner() {
         return filesWithModifiedOwner;
@@ -153,6 +201,9 @@ public class NetFolderSyncStatus {
         this.filesWithModifiedOwner = filesWithModifiedOwner;
     }
 
+    /**
+     * The total number of folders found.
+     */
     @XmlElement(name="folders_found")
     public Integer getFoldersFound() {
         return foldersFound;
@@ -162,6 +213,9 @@ public class NetFolderSyncStatus {
         this.foldersFound = foldersFound;
     }
 
+    /**
+     * The number of new folders found.
+     */
     @XmlElement(name="folders_added")
     public Integer getFoldersAdded() {
         return foldersAdded;
@@ -171,6 +225,9 @@ public class NetFolderSyncStatus {
         this.foldersAdded = foldersAdded;
     }
 
+    /**
+     * The number of folders that were removed because they no longer exist.
+     */
     @XmlElement(name="folders_expunged")
     public Integer getFoldersExpunged() {
         return foldersExpunged;
@@ -180,6 +237,9 @@ public class NetFolderSyncStatus {
         this.foldersExpunged = foldersExpunged;
     }
 
+    /**
+     * The number of folders with modified ACLs.
+     */
     @XmlElement(name="folders_with_modified_acl")
     public Integer getFoldersWithModifiedACL() {
         return foldersWithModifiedACL;
@@ -189,6 +249,9 @@ public class NetFolderSyncStatus {
         this.foldersWithModifiedACL = foldersWithModifiedACL;
     }
 
+    /**
+     * The number of folders with a different owner.
+     */
     @XmlElement(name="folders_with_modified_owner")
     public Integer getFoldersWithModifiedOwner() {
         return foldersWithModifiedOwner;
@@ -198,6 +261,9 @@ public class NetFolderSyncStatus {
         this.foldersWithModifiedOwner = foldersWithModifiedOwner;
     }
 
+    /**
+     * The number of folder entries that were removed.
+     */
     @XmlElement(name="entries_expunged")
     public Integer getEntriesExpunged() {
         return entriesExpunged;
@@ -207,6 +273,9 @@ public class NetFolderSyncStatus {
         this.entriesExpunged = entriesExpunged;
     }
 
+    /**
+     * The number of failures that occurred.
+     */
     @XmlElement(name="failures")
     public Integer getFailures() {
         return failures;
@@ -216,6 +285,9 @@ public class NetFolderSyncStatus {
         this.failures = failures;
     }
 
+    /**
+     * The number of folders that were processed.
+     */
     @XmlElement(name="folders_processed")
     public Integer getFoldersProcessed() {
         return foldersProcessed;

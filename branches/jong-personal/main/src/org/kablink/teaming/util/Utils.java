@@ -56,7 +56,6 @@ import org.dom4j.Element;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
-import org.kablink.teaming.cache.impl.HashMapCache;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -86,6 +85,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.cache.HashMapCache;
 
 /**
  * ?

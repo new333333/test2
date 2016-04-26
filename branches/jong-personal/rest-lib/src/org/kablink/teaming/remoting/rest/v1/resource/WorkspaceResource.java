@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import org.dom4j.Document;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Description;
@@ -49,6 +50,7 @@ import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.Folder;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
@@ -78,12 +80,20 @@ import java.util.*;
 @Path("/workspaces")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@ResourceGroup("Workspaces")
 public class WorkspaceResource extends AbstractBinderResource {
 
     protected String getBasePath() {
         return "/workspaces/";
     }
 
+    /**
+     * Get workspaces by ID.
+     *
+     * @param ids   The ID of a folder.  Can be specified multiple times.
+     * @param descriptionFormatStr The desired format for the binder descriptions.  Can be "html" or "text".
+     * @return A SearchResultList of BinderBrief objects.
+     */
     @GET
     public SearchResultList<BinderBrief> getWorkspaces(@QueryParam("id") Set<Long> ids,
                                                        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -110,6 +120,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 
     @POST
     @Path("/legacy_query")
+    @Undocumented
    	public SearchResultList<BinderBrief> getWorkspacesViaLegacyQuery(@Context HttpServletRequest request,
                                                                      @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                      @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -133,6 +144,7 @@ public class WorkspaceResource extends AbstractBinderResource {
     @GET
     @Path("{id}/binders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public Response getSubBinders(@PathParam("id") long id,
                                   @QueryParam("title") String name,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -155,6 +167,7 @@ public class WorkspaceResource extends AbstractBinderResource {
     @GET
     @Path("{id}/children")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
     public Response getChildren(@PathParam("id") long id,
                                 @QueryParam("allow_jits") @DefaultValue("true") Boolean allowJits,
                                 @QueryParam("title") String name,
@@ -176,6 +189,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 
     @GET
     @Path("/{id}/workspaces/{title}")
+    @Undocumented
     public Workspace getWorkspace(@PathParam("id") long parentId, @PathParam("title") String name) {
         org.kablink.teaming.domain.Workspace parent = _getWorkspace(parentId);
         Binder binder = getFolderByName(parentId, name);
@@ -189,6 +203,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/workspaces")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
 	public Response getSubWorkspaces(@PathParam("id") long id,
                                      @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
 			                         @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -211,6 +226,7 @@ public class WorkspaceResource extends AbstractBinderResource {
    	@Path("{id}/workspaces")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
    	public org.kablink.teaming.rest.v1.model.Workspace createSubWorkspace(@PathParam("id") long id, org.kablink.teaming.rest.v1.model.Workspace workspace,
                                                                           @QueryParam("template") Long templateId,
                                                                           @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
@@ -228,6 +244,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 	@GET
 	@Path("{id}/folders")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
 	public Response getSubFolders(@PathParam("id") long id,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
 			                      @QueryParam("first") @DefaultValue("0") int offset,
@@ -250,6 +267,7 @@ public class WorkspaceResource extends AbstractBinderResource {
    	@Path("{id}/folders")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Undocumented
    	public org.kablink.teaming.rest.v1.model.Folder createSubFolder(@PathParam("id") long id,
                                                                     org.kablink.teaming.rest.v1.model.Binder binder,
                                                                     @QueryParam("template") Long templateId,
@@ -267,6 +285,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 
     @GET
     @Path("/{id}/folders/{title}")
+    @Undocumented
     public Folder getFolderByTitle(@PathParam("id") long parentId, @PathParam("title") String name) {
         _getWorkspace(parentId);
         Binder binder = getFolderByName(parentId, name);
@@ -276,11 +295,26 @@ public class WorkspaceResource extends AbstractBinderResource {
         throw new NoWorkspaceByTheNameException(name);
     }
 
-    // Read entries
+    /**
+     * Search for entities by keyword.
+     * @param id    The ID of the folder to search.
+     * @param recursive Whether to search the immediate folder (false) or all subfolders (true).
+     * @param includeBinders    Whether to include binders in the results.
+     * @param includeFolderEntries  Whether to include folder entries in the results.
+     * @param includeFiles  Whether to include files in the results.
+     * @param includeReplies    Whether to include replies in the results.
+     * @param includeParentPaths    Whether to include the parent binder path with each entity.
+     * @param keyword   A search term.  May include wildcards, but cannot begin with a wildcard.  For example, "keyword=D*d" is
+     *                  allowed but "keyword=*d" is not.
+     * @param descriptionFormatStr The desired format for the binder description.  Can be "html" or "text".
+     * @param offset    The index of the first result to return.
+     * @param maxCount  The maximum number of results to return.
+     * @return  A SearchResultList of SearchableObject resources (BinderBrief, FolderEntryBrief, FileProperties, ReplyBrief).
+     */
 	@GET
 	@Path("{id}/library_entities")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-	public SearchResultList<SearchableObject> getLibraryFiles(@PathParam("id") long id,
+	public SearchResultList<SearchableObject> getLibraryEntities(@PathParam("id") long id,
                                                   @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                   @QueryParam("binders") @DefaultValue("true") boolean includeBinders,
                                                   @QueryParam("folder_entries") @DefaultValue("true") boolean includeFolderEntries,

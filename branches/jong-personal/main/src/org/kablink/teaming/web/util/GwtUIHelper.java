@@ -1385,6 +1385,15 @@ public class GwtUIHelper {
 	public static String getHelpUrl() {
 		return MiscUtil.getHelpUrl("user", null, null);
 	}
+	
+	/**
+	 * Returns the URL for the GWT UI to use to bring ideas portal.
+	 * 
+	 * @return
+	 */
+	public static String getIdeasPortalUrl() {
+		return MiscUtil.getIdeasPortalUrl();
+	}
 
 	/**
 	 * Based on information in the request, returns the product Vibe is
@@ -1626,6 +1635,9 @@ public class GwtUIHelper {
 			
 		// Put out the main help URL for Vibe.
 		model.put(WebKeys.URL_HELPURL, getHelpUrl());
+		
+		// Put out the ideas portal URL.
+		model.put(WebKeys.URL_IDEASPORTAL_URL, getIdeasPortalUrl());
 
 		// Put out the ID of the top Vibe workspace.
 		String topWSId = getTopWSIdSafely(bs);

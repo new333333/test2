@@ -35,6 +35,9 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * A link to a related resource.
+ */
 @XmlRootElement(name = "link")
 public class Link {
     private String rel;
@@ -48,6 +51,9 @@ public class Link {
         this.href = uri;
     }
 
+    /**
+     * The path to the resource.  This is relative to the root of the REST API (https://serveraddress/rest).
+     */
     public String getHref() {
         return href;
     }
@@ -56,6 +62,9 @@ public class Link {
         this.href = href;
     }
 
+    /**
+     * The named relationship of the related link.
+     */
     public String getRel() {
         return rel;
     }

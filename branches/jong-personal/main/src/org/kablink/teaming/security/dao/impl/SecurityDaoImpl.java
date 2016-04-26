@@ -49,7 +49,6 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.kablink.teaming.NoObjectByTheIdException;
-import org.kablink.teaming.cache.impl.ThreadBoundLRUCache;
 import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.domain.NoRoleByTheIdException;
 import org.kablink.teaming.domain.NoRoleConditionByTheIdException;
@@ -62,6 +61,7 @@ import org.kablink.teaming.security.dao.SecurityDao;
 import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
+import org.kablink.util.cache.ThreadBoundLRUCache;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -313,7 +313,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 		// zoneId from the cache key to keep it as simple/short as we can.
 		List<WorkAreaFunctionMembership> cachedValue = ThreadBoundLRUCache.get(List.class, "findWorkAreaFunctionMembershipsByOperation", workAreaId,workAreaType,workAreaOperationName);
 		if(cachedValue != null)
-			return cachedValue;
+			return new ArrayList(cachedValue); // Return a copy
 		
 		int retryCount = 0;
 		//The loop will retry up to 5 times if it fails the first time
@@ -334,7 +334,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 		                }
 		            );
 		    	ThreadBoundLRUCache.put(matches, "findWorkAreaFunctionMembershipsByOperation", workAreaId,workAreaType,workAreaOperationName);
-		    	return matches;
+		    	return new ArrayList(matches); // Return a copy
 	    	} catch (org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException ol) {
 				++retryCount;
 				if (retryCount >= 5) {

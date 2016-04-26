@@ -67,7 +67,7 @@
       name="ss_showpopupframe" style="display:block;"
       src="<html:rootPath/>js/forum/null.html" 
       onLoad="ss_popupFrameLoaded();"
-      frameBorder="0" >Novell Vibe</iframe>
+      frameBorder="0" >Micro Focus Vibe</iframe>
 </div>
 <script type="text/javascript">
 ss_createOnResizeObj("ss_showpopupdiv", function(){setTimeout("ss_resizePopupDiv();", 100);});

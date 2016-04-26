@@ -14,15 +14,14 @@
  */
 package org.kablink.teaming.rest.v1.model.admin;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.BaseRestObject;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: David
- * Date: 11/20/13
- * Time: 9:40 PM
+ * The Web Application settings.
  */
 @XmlRootElement(name="web_app_config")
 public class WebAppConfig extends BaseRestObject {
@@ -35,6 +34,9 @@ public class WebAppConfig extends BaseRestObject {
     public WebAppConfig() {
     }
 
+    /**
+     * Whether or not the web application is enabled.
+     */
     public Boolean getEnabled() {
         return enabled;
     }
@@ -43,6 +45,9 @@ public class WebAppConfig extends BaseRestObject {
         this.enabled = enabled;
     }
 
+    /**
+     * Whether or not guest access is enabled.  Must be true for users to share publicly.
+     */
     @XmlElement(name="allow_guest_access")
     public Boolean getAllowGuestAccess() {
         return allowGuestAccess;
@@ -52,6 +57,9 @@ public class WebAppConfig extends BaseRestObject {
         this.allowGuestAccess = allowGuestAccess;
     }
 
+    /**
+     * Whether or not guest access is limited to read-only.
+     */
     @XmlElement(name="read_only_guest")
     public Boolean getReadOnlyGuest() {
         return readOnlyGuest;
@@ -61,6 +69,7 @@ public class WebAppConfig extends BaseRestObject {
         this.readOnlyGuest = readOnlyGuest;
     }
 
+    @Undocumented
     @XmlElement(name="allow_open_id")
     public Boolean getAllowOpenId() {
         return allowOpenId;
@@ -70,6 +79,9 @@ public class WebAppConfig extends BaseRestObject {
         this.allowOpenId = allowOpenId;
     }
 
+    /**
+     * Whether or not users can download files from the web application.
+     */
     @XmlElement(name="allow_downloads")
     public Boolean getAllowDownloads() {
         return allowDownloads;

@@ -93,7 +93,7 @@
 	    style="width:100%; display:block; background-color:#fff;"
 	    src="<html:rootPath/>js/forum/null.html" 
 	    onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
-	    frameBorder="0" >Novell Vibe</iframe>
+	    frameBorder="0" >Micro Focus Vibe</iframe>
 	  </div>
 	  </ssf:box>
   </c:if>
@@ -122,7 +122,7 @@
 		      style="width:100%; display:block; background-color:#fff;"
 		      src="<html:rootPath/>js/forum/null.html" 
 		      onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
-		      frameBorder="0" >Novell Vibe</iframe>
+		      frameBorder="0" >Micro Focus Vibe</iframe>
 	    </div>
 	  </div>
   </c:if>

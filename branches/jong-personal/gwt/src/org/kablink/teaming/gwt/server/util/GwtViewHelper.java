@@ -162,49 +162,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseD
 import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.WhoHasAccessInfoRpcResponseData.AccessInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.ZipDownloadUrlRpcResponseData;
-import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
-import org.kablink.teaming.gwt.client.util.BinderFilter;
-import org.kablink.teaming.gwt.client.util.BinderIconSize;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.BinderType;
-import org.kablink.teaming.gwt.client.util.CloudFolderAuthentication;
-import org.kablink.teaming.gwt.client.util.CloudFolderType;
-import org.kablink.teaming.gwt.client.util.CollectionType;
-import org.kablink.teaming.gwt.client.util.CommentsInfo;
-import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
-import org.kablink.teaming.gwt.client.util.EntryEventInfo;
-import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.EntityRights;
-import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
-import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
-import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails.ShareInfo;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails.UserInfo;
-import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
-import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
-import org.kablink.teaming.gwt.client.util.PrincipalAdminType;
-import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
-import org.kablink.teaming.gwt.client.util.SelectionDetails;
-import org.kablink.teaming.gwt.client.util.SharedViewState;
-import org.kablink.teaming.gwt.client.util.FolderType;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.ManageUsersState;
-import org.kablink.teaming.gwt.client.util.ShareAccessInfo;
-import org.kablink.teaming.gwt.client.util.ShareDateInfo;
-import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
-import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
-import org.kablink.teaming.gwt.client.util.ShareStringValue;
-import org.kablink.teaming.gwt.client.util.PrincipalInfo;
-import org.kablink.teaming.gwt.client.util.PrincipalType;
-import org.kablink.teaming.gwt.client.util.ShareRights;
-import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
-import org.kablink.teaming.gwt.client.util.ViewFileInfo;
-import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
-import org.kablink.teaming.gwt.client.util.ViewType;
-import org.kablink.teaming.gwt.client.util.WorkspaceType;
-import org.kablink.teaming.gwt.client.util.ViewInfo;
 import org.kablink.teaming.gwt.server.util.GwtPerShareInfo.PerShareInfoComparator;
 import org.kablink.teaming.gwt.server.util.GwtSharedMeItem.SharedMeEntriesMapComparator;
 import org.kablink.teaming.lucene.util.SearchFieldResult;
@@ -7741,7 +7703,7 @@ public class GwtViewHelper {
 			else {
 				switch (rights.getAccessRights()) {
 				default:
-				case UNKNOWN:      access = "";                                        break;
+				case NONE:      access = "";                                        break;
 				case CONTRIBUTOR:  access = NLT.get("collections.access.contributor"); break;
 				case EDITOR:       access = NLT.get("collections.access.editor");      break;
 				case VIEWER:       access = NLT.get("collections.access.viewer");      break;
@@ -7946,6 +7908,7 @@ public class GwtViewHelper {
 				ai.setPrincipalType(getPrincipalType(user));
 				ai.setAdmin(bs.getAdminModule().testUserAccess(user, AdminOperation.manageFunction));
 				ai.setUserHasLoggedIn(null != user.getFirstLoginDate());
+				ai.setTermsAndConditionsAcceptDate(user.getTermsAndConditionsAcceptDate());
 			}
 			finally {
 				SimpleProfiler.stop("GwtViewHelper.getUserProperties(Gather basic account information)");
@@ -9494,7 +9457,12 @@ public class GwtViewHelper {
 						bi = GwtServerHelper.getBinderInfo(bs, request, userWS.getId());
 					}
 				}
+			} else {
+				vi.setViewLayout(GwtFolderViewHelper.buildBinderViewLayout(binder));
+				//vi.setViewLayout(new BinderViewContainer());
+				vi.setCustomLayout(true);
 			}
+
 		}
 		
 		// Store any BinderInfo change we made in the ViewInfo.

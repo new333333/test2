@@ -57,7 +57,7 @@
 <iframe id="${renderResponse.namespace}_ss_googleWidget${ssComponentId}" 
   name="${renderResponse.namespace}_ss_googleWidget${ssComponentId}" style="width: 99%;
   height: ${ssDashboard.dashboard.components[ssComponentId].data.height};
-  margin:0px; padding:0px;" frameBorder="0" >Novell Vibe</iframe>
+  margin:0px; padding:0px;" frameBorder="0" >Micro Focus Vibe</iframe>
 
 <script type="text/javascript">
 function ss_initGoogleWidget${renderResponse.namespace}${ssComponentId}() {

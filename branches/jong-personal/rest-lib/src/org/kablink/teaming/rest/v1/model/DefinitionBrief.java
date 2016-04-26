@@ -36,9 +36,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 5/25/12
- * Time: 12:18 PM
  */
 @XmlRootElement(name = "definition_brief")
 public class DefinitionBrief extends BaseRestObject {

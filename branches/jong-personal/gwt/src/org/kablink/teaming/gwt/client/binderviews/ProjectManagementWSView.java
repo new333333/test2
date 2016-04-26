@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.widgets.LandingPageWidget;
 import org.kablink.teaming.gwt.client.widgets.ProjectInfoWidget;
 import org.kablink.teaming.gwt.client.widgets.ProjectStatsWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -59,6 +60,7 @@ public class ProjectManagementWSView extends WorkspaceViewBase implements ToolPa
 	private VibeFlowPanel m_mainPanel;
 	private VibeFlowPanel m_breadCrumbPanel;
 	private VibeFlowPanel m_descPanel;
+	private VibeFlowPanel m_lpPanel;
 	private VibeFlowPanel m_accessoriesPanel;
 	private VibeFlowPanel m_projectInfoPanel;
 	private VibeFlowPanel m_projectStatsPanel;
@@ -130,6 +132,29 @@ public class ProjectManagementWSView extends WorkspaceViewBase implements ToolPa
 				public void onSuccess( ToolPanelBase tpb )
 				{
 					m_descPanel.add( tpb );
+				}
+			} );
+		}
+
+		// Add a place for landing page elements.  The LandingPage widget will display the description
+		// if there is one.
+		{
+			m_lpPanel = new VibeFlowPanel();
+			m_lpPanel.addStyleName( "vibe-teamWSView_LPPanel" );
+			m_mainPanel.add( m_lpPanel );
+
+			LandingPageWidget.createAsync( getBinderInfo(), new LandingPageWidget.LandingPageWidgetClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+
+				@Override
+				public void onSuccess( LandingPageWidget landingPage )
+				{
+					m_lpPanel.add( landingPage );
 				}
 			} );
 		}

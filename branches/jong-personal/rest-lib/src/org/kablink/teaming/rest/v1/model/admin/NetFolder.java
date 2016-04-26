@@ -15,6 +15,7 @@
 
 package org.kablink.teaming.rest.v1.model.admin;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
 import org.kablink.teaming.rest.v1.model.BaseRestObject;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 
@@ -25,9 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * User: david
- * Date: 7/25/12
- * Time: 11:38 AM
+ * The metadata of a Net Folder
  */
 @XmlRootElement(name="net_folder")
 public class NetFolder extends BaseRestObject {
@@ -73,6 +72,9 @@ public class NetFolder extends BaseRestObject {
         inheritSyncSchedule = (inheritSyncSchedule==null) ? folder.inheritSyncSchedule : inheritSyncSchedule;
     }
 
+    /**
+     * The ID of the Net Folder
+     */
     public Long getId() {
         return id;
     }
@@ -81,6 +83,10 @@ public class NetFolder extends BaseRestObject {
         this.id = id;
     }
 
+    /**
+     * The name of the Net Folder,
+     * <p>This must be unique.</p>
+     */
     public String getName() {
         return name;
     }
@@ -89,6 +95,9 @@ public class NetFolder extends BaseRestObject {
         this.name = name;
     }
 
+    /**
+     * The ID and HRef of the Net Folder Server associated with this Net Folder.
+     */
     public LongIdLinkPair getServer() {
         return server;
     }
@@ -97,6 +106,11 @@ public class NetFolder extends BaseRestObject {
         this.server = server;
     }
 
+    /**
+     * The path to this Net Folder.
+     *
+     * <p>This path is relative to the base path defined in the associated Net Folder Server.</p>
+     */
     @XmlElement(name="relative_path")
     public String getRelativePath() {
         if (relativePath==null) {
@@ -110,6 +124,9 @@ public class NetFolder extends BaseRestObject {
         this.relativePath = relativePath;
     }
 
+    /**
+     * True if this is a user's home directory Net Folder.
+     */
     @XmlElement(name="home_dir")
     public Boolean getHomeDir() {
         return homeDir;
@@ -119,6 +136,11 @@ public class NetFolder extends BaseRestObject {
         this.homeDir = homeDir;
     }
 
+    /**
+     * True if the file content in the net folder is indexed.
+     *
+     * <p>This attribute is ignored if <code>inherit_index_content==true</code></p>
+     */
     @XmlElement(name="index_content")
     public Boolean getIndexContent() {
         return indexContent==null ? Boolean.FALSE : indexContent;
@@ -128,6 +150,9 @@ public class NetFolder extends BaseRestObject {
         this.indexContent = indexContent;
     }
 
+    /**
+     * Flag indicating whether the <code>index_content</code> setting should be inherited from the Net Folder Server.
+     */
     @XmlElement(name="inherit_index_content")
     public Boolean getInheritIndexContent() {
         return inheritIndexContent==null ? Boolean.TRUE : inheritIndexContent;
@@ -137,6 +162,9 @@ public class NetFolder extends BaseRestObject {
         this.inheritIndexContent = inherit;
     }
 
+    /**
+     * Flag indicating whether the JITS settings should be inherited from the Net Folder Server.
+     */
     @XmlElement(name="inherit_jits_settings")
     public Boolean getInheritJitsSettings() {
         return inheritJitsSettings==null ? Boolean.TRUE : inheritJitsSettings;
@@ -146,6 +174,11 @@ public class NetFolder extends BaseRestObject {
         this.inheritJitsSettings = inherit;
     }
 
+    /**
+     * Flag indicating whether JITS is enabled for this Net Folder
+     *
+     * <p>This attribute is ignored if <code>inherit_jits_settings==true</code></p>
+     */
     @XmlElement(name="jits_enabled")
     public Boolean getJitsEnabled() {
         return jitsEnabled==null ? Boolean.FALSE : jitsEnabled;
@@ -155,6 +188,11 @@ public class NetFolder extends BaseRestObject {
         this.jitsEnabled = jitsEnabled;
     }
 
+    /**
+     * Maximum age for JITS results, in seconds.
+     *
+     * <p>This attribute is ignored if <code>inherit_jits_settings==true</code></p>
+     */
     @XmlElement(name="jits_max_age")
     public Long getJitsMaxAge() {
         return jitsMaxAge==null ? 30L : jitsMaxAge;
@@ -164,6 +202,11 @@ public class NetFolder extends BaseRestObject {
         this.jitsMaxAge = jitsMaxAge;
     }
 
+    /**
+     * Maximum age for ACL JITS results, in seconds.
+     *
+     * <p>This attribute is ignored if <code>inherit_jits_settings==true</code></p>
+     */
     @XmlElement(name="jits_max_acl_age")
     public Long getJitsMaxACLAge() {
         return jitsMaxACLAge==null ? 60L : jitsMaxACLAge;
@@ -173,6 +216,7 @@ public class NetFolder extends BaseRestObject {
         this.jitsMaxACLAge = jitsMaxACLAge;
     }
 
+    @Undocumented
     @XmlElement(name="only_sync_dirs")
     public Boolean getFullSyncDirOnly() {
         return fullSyncDirOnly;
@@ -182,6 +226,9 @@ public class NetFolder extends BaseRestObject {
         this.fullSyncDirOnly = fullSyncDirOnly;
     }
 
+    /**
+     * Flag indicating whether the desktop application can sync files in the Net Folder.
+     */
     @XmlElement(name="allow_desktop_sync")
     public Boolean getAllowDesktopSync() {
         return allowDesktopSync==null ? Boolean.FALSE : allowDesktopSync;
@@ -191,6 +238,7 @@ public class NetFolder extends BaseRestObject {
         this.allowDesktopSync = allowDesktopSync;
     }
 
+    @Undocumented
     @XmlElement(name="inherit_client_sync_settings")
     public Boolean getInheritClientSyncSettings() {
         return inheritClientSyncSettings==null ? Boolean.TRUE : inheritClientSyncSettings;
@@ -200,6 +248,7 @@ public class NetFolder extends BaseRestObject {
         this.inheritClientSyncSettings = inheritClientSyncSettings;
     }
 
+    @Undocumented
     @XmlElement(name="allow_client_initiated_sync")
     public Boolean getAllowClientInitiatedSync() {
         return allowClientInitiatedSync;
@@ -209,6 +258,9 @@ public class NetFolder extends BaseRestObject {
         this.allowClientInitiatedSync = allowClientInitiatedSync;
     }
 
+    /**
+     * Flag indicating whether the synchronization schedule should be inherited from the Net Folder Server.
+     */
     @XmlElement(name="inherit_sync_schedule")
     public Boolean getInheritSyncSchedule() {
         return inheritSyncSchedule==null ? Boolean.FALSE : inheritSyncSchedule;
@@ -218,6 +270,11 @@ public class NetFolder extends BaseRestObject {
         this.inheritSyncSchedule = inheritSyncSchedule;
     }
 
+    /**
+     * The synchronization schedule.
+     *
+     * <p>This attribute is ignored if <code>inherit_sync_schedule==true</code></p>
+     */
     @XmlElement(name="sync_schedule")
     public Schedule getSyncSchedule() {
         return syncSchedule;
@@ -227,6 +284,11 @@ public class NetFolder extends BaseRestObject {
         this.syncSchedule = syncSchedule;
     }
 
+    /**
+     * List of users or groups that are allowed to access the Net Folder.
+     *
+     * <p>The only supported role in the AssignedRight Access object is <code>ACCESS</code></p>
+     */
     @XmlElementWrapper(name="assigned_rights")
     @XmlElement(name="assigned_right")
     public List<AssignedRight> getAssignedRights() {

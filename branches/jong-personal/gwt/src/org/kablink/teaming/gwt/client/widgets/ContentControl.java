@@ -68,73 +68,15 @@ import org.kablink.teaming.gwt.client.binderviews.WikiFolderView;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
-import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.*;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
-import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
-import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
-import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
-import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
-import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
-import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent;
-import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
-import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
-import org.kablink.teaming.gwt.client.event.InvokeEmailNotificationEvent;
-import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.SetFilrActionFromCollectionTypeEvent;
-import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.ShowBlogFolderEvent;
-import org.kablink.teaming.gwt.client.event.ShowCalendarFolderEvent;
-import org.kablink.teaming.gwt.client.event.ShowCollectionViewEvent;
-import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
-import org.kablink.teaming.gwt.client.event.ShowDiscussionFolderEvent;
-import org.kablink.teaming.gwt.client.event.ShowDiscussionWSEvent;
-import org.kablink.teaming.gwt.client.event.ShowFileFolderEvent;
-import org.kablink.teaming.gwt.client.event.ShowFolderEntryEvent;
-import org.kablink.teaming.gwt.client.event.ShowGenericWSEvent;
-import org.kablink.teaming.gwt.client.event.ShowGlobalWSEvent;
-import org.kablink.teaming.gwt.client.event.ShowGuestbookFolderEvent;
-import org.kablink.teaming.gwt.client.event.ShowHomeWSEvent;
-import org.kablink.teaming.gwt.client.event.ShowLandingPageEvent;
-import org.kablink.teaming.gwt.client.event.ShowMicroBlogFolderEvent;
-import org.kablink.teaming.gwt.client.event.ShowMilestoneFolderEvent;
-import org.kablink.teaming.gwt.client.event.ShowMirroredFileFolderEvent;
-import org.kablink.teaming.gwt.client.event.ShowNetFoldersWSEvent;
-import org.kablink.teaming.gwt.client.event.ShowPersonalWorkspaceEvent;
-import org.kablink.teaming.gwt.client.event.ShowPersonalWorkspacesEvent;
-import org.kablink.teaming.gwt.client.event.ShowPhotoAlbumFolderEvent;
-import org.kablink.teaming.gwt.client.event.ShowProjectManagementWSEvent;
-import org.kablink.teaming.gwt.client.event.ShowSurveyFolderEvent;
-import org.kablink.teaming.gwt.client.event.ShowTaskFolderEvent;
-import org.kablink.teaming.gwt.client.event.ShowTeamRootWSEvent;
-import org.kablink.teaming.gwt.client.event.ShowTrashEvent;
-import org.kablink.teaming.gwt.client.event.ShowWikiFolderEvent;
-import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.ShowTeamWSEvent;
-import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetParentBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.BinderType;
-import org.kablink.teaming.gwt.client.util.CollectionType;
-import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.FolderType;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HistoryHelper;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
-import org.kablink.teaming.gwt.client.util.ViewInfo;
-import org.kablink.teaming.gwt.client.util.ViewType;
-import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -791,6 +733,7 @@ public class ContentControl extends Composite
 				@Override
 				public void onFailure( Throwable t )
 				{
+					GwtClientHelper.deferredAlert("GetViewInfoCmd failed (" + t.getClass().getName() + "): " + t.getMessage());
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						GwtTeaming.getMessages().rpcFailure_GetViewInfo(),
@@ -799,7 +742,7 @@ public class ContentControl extends Composite
 				
 				@Override
 				public void onSuccess( VibeRpcResponse response )
-				{				
+				{
 					// Show the context asynchronously so that we can
 					// release the AJAX request ASAP.
 					String targetUrl;
@@ -810,6 +753,7 @@ public class ContentControl extends Composite
 					}
 					else
 					{
+						//GwtClientHelper.deferredAlert("GetViewInfoCmd custom layout: " + vi.isCustomLayout());
 						String overrideUrl = vi.getOverrideUrl();
 						if ( GwtClientHelper.hasString( overrideUrl ) )
 						     targetUrl = overrideUrl;
@@ -928,259 +872,8 @@ public class ContentControl extends Composite
 							} );
 						}//end viewReady()
 					};
-					
-					// What type of binder is it?
-					BinderType bt = bi.getBinderType();
-					switch ( bt )
-					{
-					case COLLECTION:
-						GwtTeaming.fireEvent( new ShowCollectionViewEvent( bi, viewReady ) );
-						m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-						break;
-						
-						
-					case FOLDER:
-						// What type of folder is it?
-						FolderType ft = bi.getFolderType();
-						switch ( ft )
-						{
-						case CALENDAR:
-							GwtTeaming.fireEvent( new ShowCalendarFolderEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-	
-							
-						case BLOG:
-						{
-							GwtTeaming.fireEvent( new ShowBlogFolderEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-						}
-							
-						case DISCUSSION:
-							GwtTeaming.fireEvent( new ShowDiscussionFolderEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-							
-							
-						case FILE:
-							GwtTeaming.fireEvent( new ShowFileFolderEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-							
-							
-						case GUESTBOOK:
-							GwtTeaming.fireEvent( new ShowGuestbookFolderEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-							
-							
-						case MILESTONE:
-							GwtTeaming.fireEvent( new ShowMilestoneFolderEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-	
-							
-						case MINIBLOG:
-							GwtTeaming.fireEvent( new ShowMicroBlogFolderEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-	
-							
-						case MIRROREDFILE:
-							GwtTeaming.fireEvent( new ShowMirroredFileFolderEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-							
-							
-						case SURVEY:
-							GwtTeaming.fireEvent( new ShowSurveyFolderEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-	
-							
-						case TASK:
-							GwtTeaming.fireEvent( new ShowTaskFolderEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-	
-							
-						case TRASH:
-							GwtTeaming.fireEvent( new ShowTrashEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-							
-	
-						case PHOTOALBUM:
-							boolean showGwtPA = PhotoAlbumFolderView.SHOW_GWT_PHOTO_ALBUM;	//! DRF (20150318)
-							if (showGwtPA) {
-								GwtTeaming.fireEvent( new ShowPhotoAlbumFolderEvent( bi, viewReady ) );
-								m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							}
-							break;
-	
-							
-						case WIKI:
-							boolean showGwtWiki = WikiFolderView.SHOW_GWT_WIKI;	//! DRF (20150326)
-							if (showGwtWiki) {
-								GwtTeaming.fireEvent( new ShowWikiFolderEvent( bi, viewReady ) );
-								m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							}
-							break;
-							
-						default:
-							// Something we don't know how to handle!
-							GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled FolderType:  " + ft.name() + " )" );
-							break;
-						}
-						break;
-						
-					case WORKSPACE:
-						// What type of workspace is it?
-						WorkspaceType wt = bi.getWorkspaceType(); 
-						switch ( wt )
-						{
-						case LANDING_PAGE:
-						{
-							// Fire the event that will display the landing page.
-							GwtTeaming.fireEvent( new ShowLandingPageEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-						}
-							
-						case DISCUSSIONS:
-						{
-							// Fire the event that will display the Discussion workspace.
-							GwtTeaming.fireEvent( new ShowDiscussionWSEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-						}
-							
-						case TEAM:
-						{
-							// Fire the event that will display the Team workspace.
-							GwtTeaming.fireEvent( new ShowTeamWSEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-						}
-							
-						case WORKSPACE:
-						{
-							// Fire the event that will display the generic workspace.
-							GwtTeaming.fireEvent( new ShowGenericWSEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-						}
-							
-						case TRASH:
-							GwtTeaming.fireEvent( new ShowTrashEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-	
-							
-						case GLOBAL_ROOT:
-						{
-							// Fire the event that will display the Global workspace.
-							GwtTeaming.fireEvent( new ShowGlobalWSEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-						}
-							
-						case TEAM_ROOT:
-						{
-							// Fire the event that will display the Team root workspace.
-							GwtTeaming.fireEvent( new ShowTeamRootWSEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-						}
 
-						case TOP:
-						{
-							// Fire the event that will display the home (top) workspace.
-							GwtTeaming.fireEvent( new ShowHomeWSEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-						}
-							
-						case PROJECT_MANAGEMENT:
-						{
-							// Fire the event that will display the project management workspace.
-							GwtTeaming.fireEvent( new ShowProjectManagementWSEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-						}
-							
-						case PROFILE_ROOT:
-						case PROFILE_ROOT_MANAGEMENT:
-						{
-							// Fire the event that will display the profile root workspace.
-							GwtTeaming.fireEvent( new ShowPersonalWorkspacesEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-						}
-
-						case NET_FOLDERS_ROOT:
-						{
-							// Fire the event that will display the
-							// root Net Folders workspace.
-							GwtTeaming.fireEvent( new ShowNetFoldersWSEvent( bi, viewReady ) );
-							m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							break;
-						}
-							
-						case USER:
-							boolean showGwtPWS = PersonalWorkspaceView.SHOW_GWT_PERSONAL_WORKSPACE;	//! DRF (20150318)
-							if (showGwtPWS) {
-								// Fire the event that will display the
-								// Personal Workspace view.
-								GwtTeaming.fireEvent( new ShowPersonalWorkspaceEvent( bi, viewReady ) );
-								m_viewMode = ViewMode.GWT_CONTENT_VIEW;
-							}
-							break;
-						
-						default:
-							// Something we don't know how to handle!  
-							GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled WorkspaceType:  " + wt.name() + " )" );
-							break;
-						}
-						break;
-					
-					case OTHER:
-					default:
-						// If we're navigating to a binder that's not
-						// accessible...
-						boolean binderInaccessible = (!(bi.isBinderAccessible()));
-						if (ViewType.BINDER.equals(vt) && binderInaccessible) {
-							// ...and we're not going to run the login
-							// ...dialog...
-							RequestInfo ri = GwtClientHelper.getRequestInfo();
-							if (ri.isUserLoggedIn() || (!(ri.promptForLogin()))) {
-								// ...tell the user about the
-								// ...inaccessible binder...
-								GwtClientHelper.alertViaDlg(GwtTeaming.getMessages().cantAccessFolder());
-								
-								// ...and if they have access to their
-								// ...own personal workspace...
-								if (ri.getMyWorkspaceAccessible()) {
-									// ...navigate to it.
-									GotoMyWorkspaceEvent.fireOneAsync();
-								}
-							}
-							return;
-						}
-
-						// If we're viewing an entry and don't have
-						// access to the binder, we don't want to
-						// display an error.  Otherwise...
-						boolean noError = ( ViewType.BINDER_WITH_ENTRY_VIEW.equals( vt ) && binderInaccessible );
-						if ( ! noError )
-						{
-							// ...it's something we don't know how to
-							// ...handle!
-							GwtClientHelper.debugAlert( "ContentControl.setViewNow( Unhandled BinderType:  " + bt.name() + " )" );
-						}
-						break;
-					}
+					m_viewMode = this.layoutBinder(bi, vt, viewReady, m_mainPage.getMainContentLayoutPanel());
 					break;
 				
 				case FOLDER_ENTRY:
@@ -1302,65 +995,63 @@ public class ContentControl extends Composite
 					break;
 				}			
 			}
-	
-			// What view mode are we using?
-			switch (m_viewMode) {
-			case GWT_CONTENT_VIEW:
-				// A GWT view!  Hide any entry <DIV>'s that are visible...
-				GwtClientHelper.jsHideEntryPopupDiv();
-				GwtClientHelper.jsHideNewPageEntryViewDIV();
-				
-				// ...and clear out the content of the IFRAME.
-				setContentFrameUrl( "", instigator );
-				clear();
-				
-				break;
-			
-			case JSP_CONTENT_VIEW:
-				// A JSP view!  Load the URL into the content frame...
-				setContentFrameUrl( url, instigator );
-				
-				// ...tell the main content layout panel to not show a
-				// ...GWT widget it may have...
-				m_mainPage.getMainContentLayoutPanel().showWidget( null );
-				
-				// ...make sure the ContentControl is showing...
-				ShowContentControlEvent.fireOne();
 
-				// ...if we're navigating from the history, make sure
-				// ...the masthead matches what was there.  Otherwise,
-				// ...push the URL into the history cache.
-				if ( historyAction )
-				     GwtTeaming.fireEventAsync( new SetFilrActionFromCollectionTypeEvent( historySelectedMastheadCollection ) );
-				else HistoryHelper.pushHistoryInfoAsync( url, instigator );
-				
-				// ...if requested invoke the share and/or subscribe
-				// ...dialogs on the view.
-				if ( vi.isInvokeShare() )
-				{
-					if ( vi.isInvokeShareEnabled() )
-					{
-						GwtTeaming.fireEventAsync(
-							new InvokeShareBinderEvent(
-								vi.getBinderInfo().getBinderId() ) );
-					}
-					else
-					{
-						GwtClientHelper.deferredAlert(GwtTeaming.getMessages().contentControl_Warning_ShareNoRights());
-					}
-				}
-				if ( vi.isInvokeSubscribe() )
-				{
-					InvokeEmailNotificationEvent.fireOneAsync();
-				}
-				
-				break;
+			if (m_viewMode!=null) {
 
-			case JSP_ENTRY_VIEW:
-			case POPUP_VIEW:
-				// A JSP entry view or a popup view!  No further
-				// processing is necessary.
-				break;
+				// What view mode are we using?
+				switch (m_viewMode) {
+					case GWT_CONTENT_VIEW:
+						// A GWT view!  Hide any entry <DIV>'s that are visible...
+						GwtClientHelper.jsHideEntryPopupDiv();
+						GwtClientHelper.jsHideNewPageEntryViewDIV();
+
+						// ...and clear out the content of the IFRAME.
+						setContentFrameUrl("", instigator);
+						clear();
+
+						break;
+
+					case JSP_CONTENT_VIEW:
+						// A JSP view!  Load the URL into the content frame...
+						setContentFrameUrl(url, instigator);
+
+						// ...tell the main content layout panel to not show a
+						// ...GWT widget it may have...
+						m_mainPage.getMainContentLayoutPanel().showWidget(null);
+
+						// ...make sure the ContentControl is showing...
+						ShowContentControlEvent.fireOne();
+
+						// ...if we're navigating from the history, make sure
+						// ...the masthead matches what was there.  Otherwise,
+						// ...push the URL into the history cache.
+						if (historyAction)
+							GwtTeaming.fireEventAsync(new SetFilrActionFromCollectionTypeEvent(historySelectedMastheadCollection));
+						else HistoryHelper.pushHistoryInfoAsync(url, instigator);
+
+						// ...if requested invoke the share and/or subscribe
+						// ...dialogs on the view.
+						if (vi.isInvokeShare()) {
+							if (vi.isInvokeShareEnabled()) {
+								GwtTeaming.fireEventAsync(
+										new InvokeShareBinderEvent(
+												vi.getBinderInfo().getBinderId()));
+							} else {
+								GwtClientHelper.deferredAlert(GwtTeaming.getMessages().contentControl_Warning_ShareNoRights());
+							}
+						}
+						if (vi.isInvokeSubscribe()) {
+							InvokeEmailNotificationEvent.fireOneAsync();
+						}
+
+						break;
+
+					case JSP_ENTRY_VIEW:
+					case POPUP_VIEW:
+						// A JSP entry view or a popup view!  No further
+						// processing is necessary.
+						break;
+				}
 			}
 		}
 		
@@ -1371,7 +1062,7 @@ public class ContentControl extends Composite
 			pushContentHistoryUrl( url );
 		}
 	}// end setViewNow()
-	
+
 	/**
 	 * Handles ChangeContextEvent's received by this class.
 	 * 
@@ -1760,7 +1451,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase blogFolderView )
 			{
 				blogFolderView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( blogFolderView );
+				event.getViewPanel().showWidget( blogFolderView );
 			}
 		};
 		
@@ -1780,7 +1471,7 @@ public class ContentControl extends Composite
 	{
 		// Create a CalendarFolderView widget for the selected binder.
 		CalendarFolderView.createAsync(
-				event.getFolderInfo(),
+				event.getBinderInfo(),
 				event.getViewReady(),
 				new ViewClient()
 		{
@@ -1794,7 +1485,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase tfView )
 			{
 				tfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( tfView );
+				event.getViewPanel().showWidget( tfView );
 			}// end onSuccess()
 		});
 	}// end onShowCalendarFolder()
@@ -1825,7 +1516,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase cView )
 			{
 				cView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( cView );
+				event.getViewPanel().showWidget( cView );
 			}// end onSuccess()
 		});
 	}// end onShowCollection()
@@ -1856,7 +1547,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase dfView )
 			{
 				dfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( dfView );
+				event.getViewPanel().showWidget( dfView );
 			}// end onSuccess()
 		});
 	}// end onShowDiscussionFolder()
@@ -1867,7 +1558,7 @@ public class ContentControl extends Composite
 	 * Implements the ShowDiscussionWSEvent.Handler.onShowDiscussionWS() method.
 	 */
 	@Override
-	public void onShowDiscussionWS( ShowDiscussionWSEvent event )
+	public void onShowDiscussionWS(final ShowDiscussionWSEvent event )
 	{
 		// Display a Discussion Workspace for the given binder id.
 		ViewClient vClient;
@@ -1884,7 +1575,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase discussionWS )
 			{
 				discussionWS.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( discussionWS );
+				event.getViewPanel().showWidget( discussionWS );
 			}
 		};
 		
@@ -1918,7 +1609,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase ffView )
 			{
 				ffView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( ffView );
+				event.getViewPanel().showWidget( ffView );
 			}// end onSuccess()
 		});
 	}// end onShowFileFolder()
@@ -1931,7 +1622,7 @@ public class ContentControl extends Composite
 	 * @param event
 	 */
 	@Override
-	public void onShowFolderEntry( ShowFolderEntryEvent event )
+	public void onShowFolderEntry(final ShowFolderEntryEvent event )
 	{
 		// Are we running the folder entry viewer as content view or a
 		// dialog?
@@ -2001,7 +1692,7 @@ public class ContentControl extends Composite
 	 * Implements the ShowGenericWSEvent.Handler.onShowGenericWS() method.
 	 */
 	@Override
-	public void onShowGenericWS( ShowGenericWSEvent event )
+	public void onShowGenericWS(final ShowGenericWSEvent event )
 	{
 		ViewClient vClient;
 		
@@ -2018,7 +1709,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase genericWS )
 			{
 				genericWS.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( genericWS );
+				event.getViewPanel().showWidget( genericWS );
 			}
 		};
 		
@@ -2032,7 +1723,7 @@ public class ContentControl extends Composite
 	 * Implements the ShowGlobalWSEvent.Handler.onShowGlobalWS() method.
 	 */
 	@Override
-	public void onShowGlobalWS( ShowGlobalWSEvent event )
+	public void onShowGlobalWS(final ShowGlobalWSEvent event )
 	{
 		ViewClient vClient;
 		
@@ -2049,7 +1740,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase genericWS )
 			{
 				genericWS.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( genericWS );
+				event.getViewPanel().showWidget( genericWS );
 			}
 		};
 		
@@ -2070,7 +1761,7 @@ public class ContentControl extends Composite
 	{
 		// Create a GuestbookFolderView widget for the selected binder.
 		GuestbookFolderView.createAsync(
-				event.getFolderInfo(),
+				event.getBinderInfo(),
 				event.getViewReady(),
 				new ViewClient()
 		{
@@ -2084,7 +1775,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase gbfView )
 			{
 				gbfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( gbfView );
+				event.getViewPanel().showWidget( gbfView );
 			}// end onSuccess()
 		});
 	}// end onShowGuestbookFolder()
@@ -2095,7 +1786,7 @@ public class ContentControl extends Composite
 	 * Implements the ShowHomeWSEvent.Handler.onShowHomeWS() method.
 	 */
 	@Override
-	public void onShowHomeWS( ShowHomeWSEvent event )
+	public void onShowHomeWS(final ShowHomeWSEvent event )
 	{
 		ViewClient vClient;
 		
@@ -2112,7 +1803,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase homeWS )
 			{
 				homeWS.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( homeWS );
+				event.getViewPanel().showWidget( homeWS );
 			}
 		};
 		
@@ -2126,7 +1817,7 @@ public class ContentControl extends Composite
 	 * Implements the ShowLandingPageEvent.Handler.onShowLandingPage() method.
 	 */
 	@Override
-	public void onShowLandingPage( ShowLandingPageEvent event )
+	public void onShowLandingPage(final ShowLandingPageEvent event )
 	{
 		// Display a landing page for the given binder id.
 		ViewClient vClient;
@@ -2143,7 +1834,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase landingPage )
 			{
 				landingPage.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( landingPage );
+				event.getViewPanel().showWidget( landingPage );
 			}// end onSuccess()
 		};
 		
@@ -2177,7 +1868,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase mbfView )
 			{
 				mbfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( mbfView );
+				event.getViewPanel().showWidget( mbfView );
 			}// end onSuccess()
 		});
 	}// end onShowMicroBlogFolder()
@@ -2194,7 +1885,7 @@ public class ContentControl extends Composite
 	{
 		// Create a MilestoneFolderView widget for the selected binder.
 		MilestoneFolderView.createAsync(
-				event.getFolderInfo(),
+				event.getBinderInfo(),
 				event.getViewReady(),
 				new ViewClient()
 		{
@@ -2208,7 +1899,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase msfView )
 			{
 				msfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( msfView );
+				event.getViewPanel().showWidget( msfView );
 			}// end onSuccess()
 		});
 	}// end onShowMilestoneFolder()
@@ -2226,7 +1917,7 @@ public class ContentControl extends Composite
 		// Create a MirroredFileFolderView widget for the selected
 		// binder.
 		MirroredFileFolderView.createAsync(
-				event.getFolderInfo(),
+				event.getBinderInfo(),
 				event.getViewReady(),
 				new ViewClient()
 		{
@@ -2240,7 +1931,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase mffView )
 			{
 				mffView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( mffView );
+				event.getViewPanel().showWidget( mffView );
 			}// end onSuccess()
 		});
 	}// end onShowMirroredFileFolder()
@@ -2251,7 +1942,7 @@ public class ContentControl extends Composite
 	 * Implements the ShowNetFoldersWSEvent.Handler.onShowNetFoldersWS() method.
 	 */
 	@Override
-	public void onShowNetFoldersWS( ShowNetFoldersWSEvent event )
+	public void onShowNetFoldersWS(final ShowNetFoldersWSEvent event )
 	{
 		ViewClient vClient;
 		
@@ -2268,7 +1959,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase genericWS )
 			{
 				genericWS.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( genericWS );
+				event.getViewPanel().showWidget( genericWS );
 			}
 		};
 		
@@ -2282,7 +1973,7 @@ public class ContentControl extends Composite
 	 * Implements the ShowPersonalWorkspaceEvent.Handler.onShowPersonalWorkspace() method.
 	 */
 	@Override
-	public void onShowPersonalWorkspace( ShowPersonalWorkspaceEvent event )
+	public void onShowPersonalWorkspace(final ShowPersonalWorkspaceEvent event )
 	{
 		// Create a PersonalWorkspaceView widget for the selected
 		// binder.
@@ -2301,7 +1992,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase pwsView )
 			{
 				pwsView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( pwsView );
+				event.getViewPanel().showWidget( pwsView );
 			}// end onSuccess()
 		} );
 	}// end onShowPersonalWorkspace()
@@ -2312,7 +2003,7 @@ public class ContentControl extends Composite
 	 * Implements the ShowPersonalWorkspacesEvent.Handler.onShowPersonalWorkspaces() method.
 	 */
 	@Override
-	public void onShowPersonalWorkspaces( ShowPersonalWorkspacesEvent event )
+	public void onShowPersonalWorkspaces(final ShowPersonalWorkspacesEvent event )
 	{
 		// Create a PersonalWorkspacesView widget for the selected
 		// binder.
@@ -2331,7 +2022,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase pwsView )
 			{
 				pwsView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( pwsView );
+				event.getViewPanel().showWidget( pwsView );
 			}// end onSuccess()
 		} );
 	}// end onShowPersonalWorkspaces()
@@ -2363,7 +2054,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase tfView )
 			{
 				tfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( tfView );
+				event.getViewPanel().showWidget( tfView );
 			}// end onSuccess()
 		});
 	}// end onShowPhotoAlbumFolder()
@@ -2374,7 +2065,7 @@ public class ContentControl extends Composite
 	 * Implements the ShowProjectManagementWSEvent.Handler.onShowProjectManagementWS() method.
 	 */
 	@Override
-	public void onShowProjectManagementWS( ShowProjectManagementWSEvent event )
+	public void onShowProjectManagementWS(final ShowProjectManagementWSEvent event )
 	{
 		ViewClient vClient;
 		
@@ -2391,7 +2082,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase projectManagementWS )
 			{
 				projectManagementWS.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( projectManagementWS );
+				event.getViewPanel().showWidget( projectManagementWS );
 			}
 		};
 		
@@ -2411,7 +2102,7 @@ public class ContentControl extends Composite
 	{
 		// Create a SurveyFolderView widget for the selected binder.
 		SurveyFolderView.createAsync(
-				event.getFolderInfo(),
+				event.getBinderInfo(),
 				event.getViewReady(),
 				new ViewClient()
 		{
@@ -2425,7 +2116,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase sfView )
 			{
 				sfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( sfView );
+				event.getViewPanel().showWidget( sfView );
 			}// end onSuccess()
 		});
 	}// end onShowSurveyFolder()
@@ -2456,7 +2147,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase tfView )
 			{
 				tfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( tfView );
+				event.getViewPanel().showWidget( tfView );
 			}// end onSuccess()
 		});
 	}// end onShowTaskFolder()
@@ -2467,7 +2158,7 @@ public class ContentControl extends Composite
 	 * Implements the ShowTeamRootWSEvent.Handler.onShowTeamRootWS() method.
 	 */
 	@Override
-	public void onShowTeamRootWS( ShowTeamRootWSEvent event )
+	public void onShowTeamRootWS(final ShowTeamRootWSEvent event )
 	{
 		ViewClient vClient;
 		
@@ -2484,7 +2175,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase genericWS )
 			{
 				genericWS.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( genericWS );
+				event.getViewPanel().showWidget( genericWS );
 			}
 		};
 		
@@ -2498,7 +2189,7 @@ public class ContentControl extends Composite
 	 * Implements the ShowTeamWSEvent.Handler.onShowTeamWS() method.
 	 */
 	@Override
-	public void onShowTeamWS( ShowTeamWSEvent event )
+	public void onShowTeamWS(final ShowTeamWSEvent event )
 	{
 		ViewClient vClient;
 		
@@ -2515,7 +2206,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase teamWS )
 			{
 				teamWS.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( teamWS );
+				event.getViewPanel().showWidget( teamWS );
 			}
 		};
 		
@@ -2549,7 +2240,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase tView )
 			{
 				tView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( tView );
+				event.getViewPanel().showWidget( tView );
 			}// end onSuccess()
 		});
 	}// end onShowTrash()
@@ -2581,7 +2272,7 @@ public class ContentControl extends Composite
 			public void onSuccess( ViewBase tfView )
 			{
 				tfView.setViewSize();
-				m_mainPage.getMainContentLayoutPanel().showWidget( tfView );
+				event.getViewPanel().showWidget( tfView );
 			}// end onSuccess()
 		});
 	}// end onShowWikiFolder()
@@ -2693,7 +2384,56 @@ public class ContentControl extends Composite
 			}
 		} );
 	}
-	
+
+	public static ViewMode layoutBinder(BinderInfo bi, ViewType vt, ViewReady viewReady, VibeEntityViewPanel parent) {
+		ViewMode viewMode;
+
+		ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, vt, viewReady, parent);
+
+		if (viewEvent!=null) {
+			GwtTeaming.fireEvent(viewEvent);
+			viewMode = ViewMode.GWT_CONTENT_VIEW;
+		} else {
+			viewMode = ViewMode.JSP_CONTENT_VIEW;
+			BinderType bt = bi.getBinderType();
+			if (bt==BinderType.OTHER) {
+				// If we're navigating to a binder that's not
+				// accessible...
+				boolean binderInaccessible = (!(bi.isBinderAccessible()));
+				if (ViewType.BINDER.equals(vt) && binderInaccessible) {
+					// ...and we're not going to run the login
+					// ...dialog...
+					RequestInfo ri = GwtClientHelper.getRequestInfo();
+					if (ri.isUserLoggedIn() || (!(ri.promptForLogin()))) {
+						// ...tell the user about the
+						// ...inaccessible binder...
+						GwtClientHelper.alertViaDlg(GwtTeaming.getMessages().cantAccessFolder());
+
+						// ...and if they have access to their
+						// ...own personal workspace...
+						if (ri.getMyWorkspaceAccessible()) {
+							// ...navigate to it.
+							GotoMyWorkspaceEvent.fireOneAsync();
+						}
+					}
+					viewMode = null;
+				} else {
+
+					// If we're viewing an entry and don't have
+					// access to the binder, we don't want to
+					// display an error.  Otherwise...
+					boolean noError = (ViewType.BINDER_WITH_ENTRY_VIEW.equals(vt) && binderInaccessible);
+					if (!noError) {
+						// ...it's something we don't know how to
+						// ...handle!
+						GwtClientHelper.debugAlert("ContentControl.setViewNow( Unhandled BinderType:  " + bt.name() + " )");
+					}
+				}
+			}
+		}
+		return viewMode;
+	}
+
 	/**
 	 * Put clear() behind a split point
 	 */

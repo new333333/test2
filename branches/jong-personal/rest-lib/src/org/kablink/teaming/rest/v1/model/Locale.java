@@ -36,9 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * User: david
- * Date: 5/16/12
- * Time: 4:36 PM
+ * A locale, consisting of a language code and a country code ("en_US").
  */
 @XmlRootElement(name = "locale")
 public class Locale {

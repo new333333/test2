@@ -1455,8 +1455,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				RequestContextHolder.getRequestContext()
 				.getZoneId());
    		if (zoneConf.isDiskQuotaEnabled()) {
-			User user = getProfileDao().loadUser(va.getCreation().getPrincipal().getId(), 
-					RequestContextHolder.getRequestContext().getZoneName());
+   			User user = getProfileDao().loadUserDeadOrAlive(va.getCreation().getPrincipal().getId(), 
+					RequestContextHolder.getRequestContext().getZoneId());
 			user.decrementDiskSpaceUsed(va.getFileItem().getLength());
    		}
    		if (zoneConf.isBinderQuotaInitialized()) {

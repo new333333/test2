@@ -32,13 +32,10 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 5/30/12
- * Time: 4:29 PM
+ * A reference to a user or group that is the recipient of a share or assigned permission.
  */
 @XmlRootElement(name = "recipient")
 public class Recipient extends LongIdLinkPair {
@@ -57,6 +54,26 @@ public class Recipient extends LongIdLinkPair {
         this.type = type;
     }
 
+    /**
+     * Type of the recipient.
+     * <p>
+     * For assigned permissions, allowed values are:
+     * <ul>
+     *     <li><code>user</code></li>
+     *     <li><code>group</code></li>
+     * </ul>
+     * </p>
+     * <p>
+     * For share recipients, allowed values are:
+     * <ul>
+     *     <li><code>user</code></li>
+     *     <li><code>group</code></li>
+     *     <li><code>external_user</code></li>
+     *     <li><code>public</code></li>
+     *     <li><code>public_link</code></li>
+     * </ul>
+     * </p>
+     */
     public String getType() {
         return type;
     }
