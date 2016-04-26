@@ -367,6 +367,16 @@ public class RunAReportDlg extends DlgBox
 	}
 	
 	/*
+	 * Constructs a widget for running a external user report and
+	 * stores it in the report panel.
+	 */
+	private void buildExternalUserReport() {
+		ExternalUserReport eur = new ExternalUserReport();
+		m_reportScrollPanel.setWidget(eur);
+		m_reportWidgets.put(AdminAction.REPORT_EXTERNAL_USER, eur);
+	}
+	
+	/*
 	 * Constructs a widget for running a system error log report and
 	 * stores it in the report panel.
 	 */
@@ -587,6 +597,7 @@ public class RunAReportDlg extends DlgBox
 			// No!  Display the newly selected report.
 			switch (reportAction) {
 			case REPORT_ACTIVITY_BY_USER:               buildUserActivityReport();               break;
+			case REPORT_EXTERNAL_USER:					buildExternalUserReport();				 break;
 			case REPORT_DATA_QUOTA_EXCEEDED:            buildDataQuotaExceededReport();          break;
 			case REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED:  buildDataQuotaHighwaterExceededReport(); break;
 			case REPORT_DISK_USAGE:                     buildDiskUsageReport();                  break;

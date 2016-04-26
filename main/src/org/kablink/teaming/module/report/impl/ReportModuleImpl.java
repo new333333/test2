@@ -81,6 +81,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SharingAudit;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowState;
@@ -2166,7 +2167,61 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 		return report;
 	}
+	
+	@Override
+	public List<Map<String,Object>> generateExternalUserReport(final Set<Long> userIds, final Set<Long> userIdsToSkip, final Date startDate, final Date endDate) {
+        final User user = RequestContextHolder.getRequestContext().getUser();
+        getAdminModule().checkAccess(AdminOperation.report);
+        LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+        
+        List results = null;
+		results = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException {
+				List l = null;
+				try {
+					String sql = "Select w.id, w.firstName, w.lastName, w.emailAddress, w.creation.date,w.termsAndConditionsAcceptDate"
+						+ " FROM org.kablink.teaming.domain.Principal w "
+						+ " WHERE w.zoneId = :zoneId"
+						+ " AND w.type = 'user'"
+						+ " AND w.identityInfo.internal = 0 "
+						+ " AND w.deleted = 0 "
+						+ " AND w.disabled = 0 ";
+					if(userIds!=null && userIds.size()>0){
+						sql+=" AND w.id in (";
+						int count=0;
+						for(Long userId:userIds){
+							if(count>0) sql+=",";
+							sql+="'"+userId+"'";
+							count++;
+						}
+						sql+=")";
+					}
 
+					Query query = session.createQuery(sql).setLong("zoneId", RequestContextHolder.getRequestContext().getZoneId());
+					l = query.list();
+				} catch(Exception e) {
+					System.out.println("Unable to query for quotas: " +  e.getMessage());
+				}
+				return l;
+			}});
+
+		if(results!=null){
+			for(int i=0; i< results.size(); i++) {
+				Object[] result = (Object[]) results.get(i);
+				HashMap<String,Object> row = new HashMap<String,Object>();
+					row.put(ReportModule.EXTERNAL_USER_ID, (Long)result[0]);
+					row.put(ReportModule.EXTERNAL_USER_FIRSTNAME,result[1]);
+					row.put(ReportModule.EXTERNAL_USER_LASTNAME, result[2]);
+					row.put(ReportModule.EXTERNAL_USER_EMAIL, result[3]);
+					row.put(ReportModule.EXTERNAL_USER_CREATION_DATE, result[4]);
+					row.put(ReportModule.EXTERNAL_USER_TERMS_ACCEPT_DATE, result[5]);
+					report.add(row);
+				}
+		}
+		return report;
+	}	
+	
 	@Override
 	public List<Map<String,Object>> generateUserDiskUsageReport(final UserQuotaOption option) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();

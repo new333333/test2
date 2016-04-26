@@ -42,7 +42,6 @@ import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
 import org.kablink.teaming.rest.v1.annotations.Undocumented;
-import org.kablink.teaming.rest.v1.model.RootRestObject;
 import org.kablink.teaming.rest.v1.model.admin.*;
 import org.kablink.teaming.rest.v1.model.ExternalSharingRestrictions;
 import org.kablink.teaming.util.DesktopApplicationsLists;
@@ -75,8 +74,8 @@ public class MainAdminResource extends AbstractAdminResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @ResourceGroup("Admin Root")
-   	public RootRestObject getRootObject() {
-        RootRestObject obj = new RootRestObject();
+   	public RootAdminObject getRootObject() {
+        RootAdminObject obj = new RootAdminObject();
         obj.addAdditionalLink("desktop_application", "/admin/desktop_application");
         obj.addAdditionalLink("net_folder_servers", "/admin/net_folder_servers");
         obj.addAdditionalLink("net_folders", "/admin/net_folders");
@@ -92,8 +91,8 @@ public class MainAdminResource extends AbstractAdminResource {
    	}
 
     /**
-     * Gets the current personal storage settings.
-     * @return The personal storage settings
+     * Gets the current Personal Storage settings.
+     * @return The Personal Storage settings
      */
     @GET
     @Path("/personal_storage")
@@ -107,8 +106,8 @@ public class MainAdminResource extends AbstractAdminResource {
     }
 
     /**
-     * Updates the personal storage settings.
-     * @return The updated personal settings
+     * Updates the Personal Storage settings.
+     * @return The updated Personal Storage settings
      */
     @PUT
     @Path("/personal_storage")
@@ -121,8 +120,8 @@ public class MainAdminResource extends AbstractAdminResource {
     }
 
     /**
-     * Gets the current web application settings.
-     * @return The web application settings
+     * Gets the current Web Application settings.
+     * @return The Web Application settings
      */
     @GET
     @Path("/web_application")
@@ -143,9 +142,9 @@ public class MainAdminResource extends AbstractAdminResource {
     }
 
     /**
-     * Updates the web application settings.
+     * Updates the Web Application settings.
      * Only the fields that are included in the request body will be updated.
-     * @return The web application settings
+     * @return The Web Application settings
      */
     @PUT
     @Path("/web_application")
@@ -181,8 +180,8 @@ public class MainAdminResource extends AbstractAdminResource {
     }
 
     /**
-     * Gets the current desktop application settings.
-     * @return The desktop application settings
+     * Gets the current Desktop Application settings.
+     * @return The Desktop Application settings
      */
     @GET
     @Path("/desktop_application")
@@ -202,9 +201,9 @@ public class MainAdminResource extends AbstractAdminResource {
     }
 
     /**
-     * Updates the desktop application settings.  Only the fields that are included in the request body are modified.
+     * Updates the Desktop Application settings.  Only the fields that are included in the request body are modified.
      * Any fields left out will remain unchanged.
-     * @return The full desktop appication settings.
+     * @return The full Desktop Appication settings.
      */
     @PUT
     @Path("/desktop_application")
@@ -309,8 +308,8 @@ public class MainAdminResource extends AbstractAdminResource {
     }
 
     /**
-     * Gets the current share settings
-     * @return The share settings
+     * Gets the current Share Settings
+     * @return The Share Settings
      */
     @GET
     @Path("/share_settings")
@@ -328,10 +327,10 @@ public class MainAdminResource extends AbstractAdminResource {
     }
 
     /**
-     * Updates the current share settings.  Only the fields that are included in the request body will be updated.
+     * Updates the current Share Settings.  Only the fields that are included in the request body will be updated.
      * For example, if the request body is <code>{"allow_sharing_with_ldap_groups":false}</code>, the permissions and
      * external restrictions settings will not change.  Only the "Allow sharing with LDAP groups" setting will be updated.
-     * @return The share settings
+     * @return The Share Settings
      */
     @PUT
     @Path("/share_settings")
@@ -355,7 +354,7 @@ public class MainAdminResource extends AbstractAdminResource {
 
     /**
      * Gets the list of sharing permissions that have been configured.
-     * @return  A list of assigned sharing permissions
+     * @return  A list of AssignedSharingPermission objects
      */
     @GET
     @Path("/share_settings/permissions")
@@ -370,7 +369,7 @@ public class MainAdminResource extends AbstractAdminResource {
     }
 
     /**
-     * Assigned sharing permission for a particular user or group.  If the user or group has already been assigned
+     * Assign sharing permissions for a particular user or group.  If the user or group has already been assigned
      * sharing permissions, those permissions will be replaced.  If not, a new assigned sharing permission will be added.
      * @return The full list of assigned sharing permissions
      */

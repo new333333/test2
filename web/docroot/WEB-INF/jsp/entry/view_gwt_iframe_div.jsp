@@ -93,7 +93,7 @@
 		    style="width:100%; display:block; background-color:#fff;"
 		    src="<html:rootPath/>js/forum/null.html" 
 		    onLoad="ss_setEntryDivHeightOnload();" 
-		    frameBorder="0" >Novell Vibe</iframe>
+		    frameBorder="0" >Micro Focus Vibe</iframe>
 		  </div>
 	  </ssf:box>
   </c:if>
@@ -127,7 +127,7 @@
 	        display:block; background-color:#fff;"
 	        src="<html:rootPath/>js/forum/null.html" 
 	        onLoad="ss_setEntryDivHeightOnload();" 
-	        frameBorder="0" >Novell Vibe</iframe>
+	        frameBorder="0" >Micro Focus Vibe</iframe>
 	    </div>
 	  </div>
   </c:if>

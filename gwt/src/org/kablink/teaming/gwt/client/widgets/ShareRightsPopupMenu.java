@@ -139,7 +139,7 @@ public class ShareRightsPopupMenu extends PopupMenu
 			setMenuItemCheckedState(m_viewMenuItem, true );
 			break;
 			
-		case UNKNOWN:
+		case NONE:
 		default:
 			break;
 		}

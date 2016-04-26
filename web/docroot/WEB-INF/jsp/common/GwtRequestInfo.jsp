@@ -77,6 +77,7 @@
 		guestId:							'${guestId}',
 		hasRootDirAccess:					'${hasRootDirAccess}',
 		helpUrl:							'<ssf:escapeJavaScript>${ss_helpUrl}</ssf:escapeJavaScript>',
+		ideasPortalUrl:						'<ssf:escapeJavaScript>${ss_ideasPortalUrl}</ssf:escapeJavaScript>',
 		imagesPath:							'<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
 		isBinderAdmin:						'${ss_isBinderAdmin}',
 		isDiskQuotaHighWaterMarkExceeded:	'${ss_diskQuotaHighWaterMarkExceeded}',

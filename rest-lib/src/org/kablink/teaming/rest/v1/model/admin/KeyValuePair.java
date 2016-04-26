@@ -19,7 +19,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Data type representing a key/value pair.
+ * A generic key/value pair.
+ *
+ * <p>Used to represent LDAP attribute mappings in LDAP User Source configurations</p>
  */
 @XmlRootElement(name="pair")
 public class KeyValuePair {

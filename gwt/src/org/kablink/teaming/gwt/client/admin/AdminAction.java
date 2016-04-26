@@ -89,6 +89,7 @@ public enum AdminAction implements IsSerializable {
 	MANAGE_WORKSPACE_AND_FOLDER_TEMPLATES("Manage workspace and folder templates"),
 	MANAGE_ZONES("Manage zones"),
 	REPORT_ACTIVITY_BY_USER("Report: activity by user"),
+	REPORT_EXTERNAL_USER("Report: External user"),
 	REPORT_CREDITS("Report: credits"),
 	REPORT_DATA_QUOTA_EXCEEDED("Report: data quota exceeded"),
 	REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED("Report: data quota highwater exceeded"),

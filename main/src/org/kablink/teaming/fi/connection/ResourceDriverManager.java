@@ -75,8 +75,45 @@ public interface ResourceDriverManager {
 	public ResourceDriverConfig getDriverConfig(String driverName);
 	public ResourceDriverConfig getDriverConfig(Long id);
 
+	/**
+	 * Open a session so that the application can subsequently perform the specified file 
+	 * operation on the specified entity/entities.
+	 * 
+	 * If the calling user is one of the authorized Filr system-level super users 
+	 * (such as admin, file sync agent, background job processor), the session is 
+	 * open in proxy mode.
+	 * 
+	 * If the calling user is one of the regular Filr users, the system first checks
+	 * if there exists at least one sharing that grants the user the right to perform
+	 * the specified operation on the specified entity/entities. If so, it opens the
+	 * session in proxy mode. In all other cases, the session is open in user mode.
+	 * 
+	 * @param driver
+	 * @param fileOperation
+	 * @param entitiesToCheckPermissionOn
+	 * @return
+	 * @throws FIException
+	 * @throws UncheckedIOException
+	 */
 	public ResourceSession getSession(ResourceDriver driver, FileOperation fileOperation, DefinableEntity ... entitiesToCheckPermissionOn)
 	throws FIException, UncheckedIOException;
+	
+	/**
+	 * Open a session.
+	 * 
+	 * If the calling user is one of the authorized Filr system-level super users 
+	 * (such as admin, file sync agent, background job processor), the session is 
+	 * open in proxy mode.
+	 * 
+	 * If the calling user is one of the regular Filr users, the session is open
+	 * in user mode.
+	 * 
+	 * @param driver
+	 * @return
+	 * @throws FIException
+	 * @throws UncheckedIOException
+	 */
+	public ResourceSession getSession(ResourceDriver driver) throws FIException, UncheckedIOException;
 	
 	/**
 	 * Returns normalized resource path of the child.

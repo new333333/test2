@@ -23,9 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
- * User: David
- * Date: 11/20/13
- * Time: 9:40 PM
  */
 @Undocumented
 @XmlRootElement(name="admin_desktop_process_config")

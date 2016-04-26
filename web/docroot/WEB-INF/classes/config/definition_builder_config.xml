@@ -1,4 +1,3 @@
-
 <!--
 	Concepts
 	
@@ -817,6 +816,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/folder_list.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewFolderListing" />
+		</folderViews>
 	</item>
 		
 
@@ -903,7 +905,8 @@
 		</jsps>
 	</item>
 
-<!-- Group definition: we don't allow creation of new groups.  This is here so common code works-->
+<!-- Group definition: we don't allow creation of new groups.  This is here so common code works
+-->
 	<item name="groupEntryViewType" definitionType="11" caption="__group_entry_view">		
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
@@ -954,7 +957,8 @@
 		</jsps>
 	</item>
 	
-<!-- Application definition: we don't allow creation of new application definitions.  This is here so common code works-->
+<!-- Application definition: we don't allow creation of new application definitions.  This is here so common code works
+-->
 	<item name="applicationEntryViewType" definitionType="13" caption="__application_entry_view">		
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
@@ -1005,7 +1009,8 @@
 		</jsps>
 	</item>
 	
-<!-- Application group definition: we don't allow creation of application group definitions.  This is here so common code works-->
+<!-- Application group definition: we don't allow creation of application group definitions.  This is here so common code works
+-->
 	<item name="applicationGroupEntryViewType" definitionType="14" caption="__application_group_entry_view">		
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
@@ -3856,6 +3861,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
 	
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewTwoColumnTable" />
+		</folderViews>
 		<notify velocity="table2.vm" />
 	</item>
 	<item name="table3" caption="__three_column_table" category="generalLayout" display="form">

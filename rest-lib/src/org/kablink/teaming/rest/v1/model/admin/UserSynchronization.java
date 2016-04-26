@@ -14,13 +14,13 @@
  */
 package org.kablink.teaming.rest.v1.model.admin;
 
+import com.webcohesion.enunciate.metadata.DocumentationExample;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: David
- * Date: 11/20/13
- * Time: 9:40 PM
+ * The LDAP User synchronization settings.
  */
 @XmlRootElement(name="user_synchronization")
 public class UserSynchronization {
@@ -36,6 +36,9 @@ public class UserSynchronization {
     private String defaultTimezone;
     private String defaultLocale;
 
+    /**
+     * Register user profiles automatically.
+     */
     public Boolean getRegister() {
         return register;
     }
@@ -44,6 +47,9 @@ public class UserSynchronization {
         this.register = register;
     }
 
+    /**
+     * Synchronize user profiles.
+     */
     @XmlElement(name="sync_profiles")
     public Boolean getSyncProfiles() {
         return syncProfiles;
@@ -53,6 +59,11 @@ public class UserSynchronization {
         this.syncProfiles = syncProfiles;
     }
 
+    /**
+     * Action to perform for user accounts provisioned from LDAP that are no longer in LDAP.
+     * Value must be one of <code>disable</code> and <code>delete</code>.
+     */
+    @DocumentationExample("disable")
     @XmlElement(name="removed_account_action")
     public String getRemovedAccountAction() {
         return removedAccountAction;
@@ -62,6 +73,10 @@ public class UserSynchronization {
         this.removedAccountAction = removedAccountAction;
     }
 
+    /**
+     * Whether to delete the user's workspace when deleting users that are no longer in LDAP.  Only applicable if
+     * <code>removed_account_action</code> is <code>delete</code>
+     */
     @XmlElement(name="delete_workspace")
     public Boolean getDeleteWorkspace() {
         return deleteWorkspace;
@@ -71,6 +86,10 @@ public class UserSynchronization {
         this.deleteWorkspace = deleteWorkspace;
     }
 
+    /**
+     * Timezone to use when creating new users.
+     */
+    @DocumentationExample("GMT")
     @XmlElement(name="default_timezone")
     public String getDefaultTimezone() {
         return defaultTimezone;
@@ -80,6 +99,10 @@ public class UserSynchronization {
         this.defaultTimezone = defaultTimezone;
     }
 
+    /**
+     * Locale to use when creating new users.
+     */
+    @DocumentationExample("en_US")
     @XmlElement(name="default_locale")
     public String getDefaultLocale() {
         return defaultLocale;

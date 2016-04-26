@@ -145,6 +145,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             NetFolderSyncStatus.class,
             PersonalStorage.class,
             ProcessInfo.class,
+            RootAdminObject.class,
             Schedule.class,
             SelectedDays.class,
             ShareSettings.class,

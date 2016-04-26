@@ -136,6 +136,12 @@ public class ReportDownloadController extends  SAbstractController {
 		columnNames.put(ReportModule.DEFAULT_QUOTA, "report.columns.defaultquota");
 		columnNames.put(ReportModule.MAX_GROUPS_QUOTA, "report.columns.maxgroupsquota");
 		columnNames.put(ReportModule.CREATIONDATE, "report.columns.creationDate");
+		columnNames.put(ReportModule.EXTERNAL_USER_ID, "report.columns.external.userid");
+		columnNames.put(ReportModule.EXTERNAL_USER_FIRSTNAME, "report.columns.external.firstname");
+		columnNames.put(ReportModule.EXTERNAL_USER_LASTNAME, "report.columns.external.lastname");
+		columnNames.put(ReportModule.EXTERNAL_USER_EMAIL, "report.columns.external.email");
+		columnNames.put(ReportModule.EXTERNAL_USER_CREATION_DATE, "report.columns.external.creationDate");
+		columnNames.put(ReportModule.EXTERNAL_USER_TERMS_ACCEPT_DATE, "report.columns.external.termsAcceptanceDate");
 	}
 
 	static private boolean isUserColumn(String column) {
@@ -350,16 +356,21 @@ public class ReportDownloadController extends  SAbstractController {
 							ReportModule.SHARE_RECIPIENT_TYPE,
 							ReportModule.SHARE_ROLE};
 				}
-			} else if ("accessByGuest".equals(reportType)) {
-				hasUsers = true;
-				String type = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, ReportModule.REPORT_TYPE_SUMMARY);
-		        User guest = getProfileModule().getGuestUser();
-		        Long userId = guest.getId();
-		        if (!memberIds.isEmpty()) userId = (Long)memberIds.toArray()[0];
-				report = getReportModule().generateAccessReportByUser(userId, startDate, endDate, type);
-				columns = new String[] {ReportModule.ENTITY_TYPE, 
-						ReportModule.BINDER_ID, 
-						ReportModule.ENTITY_PATH};
+			} else if ("externalUser".equals(reportType)) {
+				hasUsers = true;				
+				//Skip the file sync agent since this could contain millions of entries
+				Set userIdsToSkip = new HashSet();
+				User fsa = getProfileModule().getReservedUser(ObjectKeys.FILE_SYNC_AGENT_INTERNALID);
+				if (fsa != null) userIdsToSkip.add(fsa.getId());
+				report = getReportModule().generateExternalUserReport(memberIds, userIdsToSkip, startDate, endDate);
+				columns = new String[] {
+						ReportModule.EXTERNAL_USER_ID,
+						ReportModule.EXTERNAL_USER_FIRSTNAME,
+						ReportModule.EXTERNAL_USER_LASTNAME,
+						ReportModule.EXTERNAL_USER_EMAIL,
+						ReportModule.EXTERNAL_USER_CREATION_DATE,
+						ReportModule.EXTERNAL_USER_TERMS_ACCEPT_DATE
+				};
 			}
 			printReport(response.getOutputStream(), report, columns, hasUsers);
 			response.getOutputStream().flush();
@@ -587,7 +598,9 @@ public class ReportDownloadController extends  SAbstractController {
 							row.put(ReportModule.ENTRY_TITLE, deletedBinderTitles.get(row.get(ReportModule.BINDER_ID)));
 						}
 					}
-				} catch(Exception e) {}
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
 			FolderEntry entry;
 			if (row.containsKey(ReportModule.ENTRY_ID) && 
@@ -609,7 +622,9 @@ public class ReportDownloadController extends  SAbstractController {
 					} else if (deletedEntryTitles.containsKey(row.get(ReportModule.ENTRY_ID))) {
 						row.put(ReportModule.ENTRY_TITLE, deletedEntryTitles.get(row.get(ReportModule.ENTRY_ID)));
 					}
-				} catch(Exception e) {}
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
 			for(int i = 0; i < columns.length; i++) {
 				String name = columns[i];
@@ -626,7 +641,7 @@ public class ReportDownloadController extends  SAbstractController {
 						if ( row.get(name) instanceof Date ) {
 							colValue = dateFormat.format( (Date) row.get(name) );
 						} else {
-							colValue = row.get(name).toString();
+							colValue = (row.get(name)==null)?"":row.get(name).toString();
 						}
 						
 						//Translate the "type"
@@ -745,6 +760,9 @@ public class ReportDownloadController extends  SAbstractController {
 			out.write("\n".getBytes());
 		}
 		out.flush();
-	} catch (IOException ioe) {}
+	} catch (IOException ioe) {
+		//exception here
+		ioe.printStackTrace();
+	}
 	}
 }

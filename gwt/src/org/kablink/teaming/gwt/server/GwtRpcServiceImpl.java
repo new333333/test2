@@ -115,6 +115,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.ZoneShareRights;
+import org.kablink.teaming.gwt.client.ZoneShareTerms;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
@@ -549,7 +550,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 																		srCmd.getFirstName(),
 																		srCmd.getLastName(),
 																		srCmd.getPwd(),
-																		srCmd.getInvitationUrl() );
+																		srCmd.getInvitationUrl(),
+																		srCmd.isAcceptedTermsAndConditions());
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -684,6 +686,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			CreateUserActivityReportCmd cuarCmd = ((CreateUserActivityReportCmd) cmd);
 			StringRpcResponseData responseData = GwtReportsHelper.createUserActivityReport( this, req, cuarCmd.getBegin(), cuarCmd.getEnd(), cuarCmd.getUserIds(), cuarCmd.getReportType() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case CREATE_EXTERNAL_USER_REPORT:
+		{
+			CreateExternalUserReportCmd cuarCmd = ((CreateExternalUserReportCmd) cmd);
+			StringRpcResponseData responseData = GwtReportsHelper.createExternalUserReport( this, req, cuarCmd.getBegin(), cuarCmd.getEnd(), cuarCmd.getUserIds());
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -2776,6 +2786,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ZONE_SHARE_TERMS:
+		{	
+			ZoneShareTerms shareTerms = GwtShareHelper.getZoneShareTerms( this );
+			response = new VibeRpcResponse( shareTerms );
+			return response;
+		}
+		
 		case GET_SHARED_VIEW_STATE:
 		{
 			GetSharedViewStateCmd gsvsCmd = ((GetSharedViewStateCmd) cmd);
@@ -4097,6 +4114,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			szsrCmd = (SaveZoneShareRightsCmd) cmd;
 			result = GwtShareHelper.saveZoneShareRights( this, szsrCmd.getRights() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
+		case SAVE_ZONE_SHARE_TERMS:
+		{
+			SaveZoneShareTermsCmd szsrCmd=(SaveZoneShareTermsCmd)cmd;
+			Boolean result=GwtShareHelper.saveZoneShareTerms(this,szsrCmd.getZoneShareTerms());
+			response=new VibeRpcResponse(new BooleanRpcResponseData(result));
 			return response;
 		}
 		

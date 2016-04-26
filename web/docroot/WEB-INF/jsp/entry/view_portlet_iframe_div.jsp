@@ -105,7 +105,7 @@
     src="<html:rootPath/>js/forum/null.html" 
     height="95%" width="100%" 
     onLoad="if (self.ss_setEntryDivHeight && ss_selectedDiv != null && ss_selectedDiv.style.display != 'none') ss_setEntryDivHeight();" 
-    frameBorder="0" title="<ssf:nlt tag = "iframe.entry"/>" >Novell Vibe</iframe>
+    frameBorder="0" title="<ssf:nlt tag = "iframe.entry"/>" >Micro Focus Vibe</iframe>
   </ssf:box>
 </div>
 

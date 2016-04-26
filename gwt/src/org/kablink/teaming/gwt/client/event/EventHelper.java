@@ -103,6 +103,7 @@ public class EventHelper {
 		case INVOKE_DOWNLOAD_DESKTOP_APP:           reply = new InvokeDownloadDesktopAppEvent();      break;
 		case INVOKE_EMAIL_NOTIFICATION:         	reply = new InvokeEmailNotificationEvent();       break;
 		case INVOKE_HELP:                       	reply = new InvokeHelpEvent();                    break;
+		case INVOKE_IDEAS_PORTAL:					reply = new InvokeIdeasPortalEvent();			  break;
 		case INVOKE_IMPORT_PROFILES_DLG:			reply = new InvokeImportProfilesDlgEvent();		  break;
 		case INVOKE_LIMIT_USER_VISIBILITY_DLG:		reply = new InvokeLimitUserVisibilityDlgEvent();  break;
 		case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:	reply = new InvokeNetFolderGlobalSettingsDlgEvent();break;
@@ -1436,6 +1437,15 @@ public class EventHelper {
 					registrationHandler = InvokeHelpEvent.registerEvent(eventBus, ((InvokeHelpEvent.Handler) eventHandler));
 				}
 				break;
+				
+			case INVOKE_IDEAS_PORTAL:
+				// An InvokeIdeasPortalEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof InvokeIdeasPortalEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeIdeasPortalEvent.registerEvent(eventBus, ((InvokeIdeasPortalEvent.Handler) eventHandler));
+				}
+				break;				
 				
 			case INVOKE_IMPORT_ICAL_FILE:
 				// An InvokeImportIcalFileEvent!  Can the event handler
@@ -3183,6 +3193,7 @@ public class EventHelper {
 			case INVOKE_EDIT_USER_ZONE_SHARE_RIGHTS_DLG:	   hasHandler = (eventHandler instanceof InvokeEditUserZoneShareRightsDlgEvent.Handler); 	   break;
 			case INVOKE_EMAIL_NOTIFICATION:         	       hasHandler = (eventHandler instanceof InvokeEmailNotificationEvent.Handler);                break;
 			case INVOKE_HELP:                       	       hasHandler = (eventHandler instanceof InvokeHelpEvent.Handler);                             break;
+			case INVOKE_IDEAS_PORTAL:                          hasHandler = (eventHandler instanceof InvokeIdeasPortalEvent.Handler);                      break;
 			case INVOKE_IMPORT_ICAL_FILE:           	       hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);                   break;
 			case INVOKE_IMPORT_ICAL_URL:            	       hasHandler = (eventHandler instanceof InvokeImportIcalUrlEvent.Handler);                    break;
 			case INVOKE_IMPORT_PROFILES_DLG:				   hasHandler = (eventHandler instanceof InvokeImportProfilesDlgEvent.Handler);		           break;

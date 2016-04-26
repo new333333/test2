@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.InvokeChangePasswordDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDownloadDesktopAppEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
+import org.kablink.teaming.gwt.client.event.InvokeIdeasPortalEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
@@ -334,6 +335,13 @@ public class UserActionsPopup extends TeamingPopupPanel
 												GwtTeaming.getImageBundle().userActionsPanel_Admin(),
 												new AdministrationEvent() );
 							m_contentPanel.insert( actionPanel, 0 );
+							
+							// Add "Idea Portal Link"
+							actionPanel = addAction(
+												GwtTeaming.getMessages().ideasPortalMenuItem(),
+												GwtTeaming.getImageBundle().userActionsPanel_IdeasPortal(),
+												new InvokeIdeasPortalEvent() );
+							m_contentPanel.add( actionPanel );
 							
 							// Add the "Resource Library" menu item
 							if ( GwtClientHelper.isLicenseFilr() == false )

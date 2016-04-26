@@ -339,6 +339,7 @@ public class WebKeys {
 	public static final String URL_UPLOAD_REQUEST_UID = "ss_upload_request_uid";
 	public static final String URL_PURGE_MIRRORED_SOURCES = "purgeMirroredSources";
 	public static final String URL_HELPURL = "ss_helpUrl";
+	public static final String URL_IDEASPORTAL_URL = "ss_ideasPortalUrl";
 		
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
@@ -363,6 +364,7 @@ public class WebKeys {
     public static final String ADMIN_ACTION_GET_LOG_FILES = "get_log_files";
 	public static final String ACTION_ACTIVITY_REPORT="activity_report";
 	public static final String ACTION_ACTIVITY_REPORT_BY_USER="activity_report_by_user"; 
+	public static final String ACTION_EXTERNAL_USER_REPORT="external_user_report";
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
     public static final String ACTION_ADD_PROFILE_ENTRY="add_profile_entry";
     public static final String ACTION_ADD_BINDER = "add_binder";

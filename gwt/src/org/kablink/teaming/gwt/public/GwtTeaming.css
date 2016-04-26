@@ -5874,6 +5874,13 @@ td.datePickerMonth {
 .editZoneShareListsTab_ModeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
 .editZoneShareListsTab_SectionHeader     {font-size: 1.1em; font-weight: bold;}
 
+.editZoneShareListsTab_ShowTermsAndCond label   {font-size: 14px !important; padding-top: 5px; padding-bottom:25px; padding-left: 2px; display: inline-block;} 
+.editZoneShareTermsTab_Header            {font-size: 14px; color: #505354; margin-bottom:4px;}
+.editZoneShareTermsTab_SectionHeader     {font-size: 1.1em; font-weight: bold; padding-bottom:5px;}
+
+.loginDlg_TermsLabelHeader				 {padding-top:25px; font-size: 1.1em; font-weight: bold; text-align:center;}
+.loginDlg_TermsTxtarea					 {border: 2px solid#ccc;padding: 10px;margin: 0 auto;width: 100%;height: 150px;overflow: scroll;}
+
 .zoneShareRightsSelectPrincipalsWidget_PrincipalsTablePanelHeight
 {
 	height: 400px;

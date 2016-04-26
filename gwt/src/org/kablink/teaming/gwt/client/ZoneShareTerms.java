@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,30 +30,42 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.cache.impl;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+package org.kablink.teaming.gwt.client;
+
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * Simple LRU cache.
+ * Class used in GWT RPC calls to hold zone terms and conditions.
  * 
- * @author Jong
- *
+ * @author lokesh reddy
  */
-public class LRUCache extends LinkedHashMap<String,Object> {
-
-	private static final long serialVersionUID = 1L;
+public class ZoneShareTerms implements IsSerializable, VibeRpcResponseData {
+	private String m_termsAndConditions;
+	private boolean m_showTermsAndConditions;
 	
-	private int maxEntries;
+	public ZoneShareTerms(){super();}
+	
+	public ZoneShareTerms(String termsAndConditions,Boolean showTermsAndConditions){
+		this.m_termsAndConditions=termsAndConditions;
+		this.m_showTermsAndConditions=showTermsAndConditions;
+	}
 
-	public LRUCache(int maxEntries) {
-		super(maxEntries+1, 0.75f, true);
-		this.maxEntries = maxEntries;
+	public String getTermsAndConditions() {
+		return m_termsAndConditions;
+	}
+
+	public void setTermsAndConditions(String m_termsAndConditions) {
+		this.m_termsAndConditions = m_termsAndConditions;
 	}
 	
-	@Override    
-	protected boolean removeEldestEntry(Map.Entry<String,Object> eldest) {
-		return size() > maxEntries;
-    }
+	public boolean isShowTermsAndConditions(){
+		return m_showTermsAndConditions;
+	}
+	
+	public void setShowTermsAndConditions(boolean showTermsAndConditions){
+		m_showTermsAndConditions = showTermsAndConditions;
+	}
 }

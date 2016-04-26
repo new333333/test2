@@ -74,6 +74,7 @@ import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeChangePasswordDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDownloadDesktopAppEvent;
 import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
+import org.kablink.teaming.gwt.client.event.InvokeIdeasPortalEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSimpleProfileEvent;
 import org.kablink.teaming.gwt.client.event.InvokeWorkspaceShareRightsEvent;
@@ -245,6 +246,7 @@ public class GwtMainPage extends ResizeComposite
 		InvokeChangePasswordDlgEvent.Handler,
 		InvokeDownloadDesktopAppEvent.Handler,
 		InvokeHelpEvent.Handler,
+		InvokeIdeasPortalEvent.Handler,
 		InvokeSimpleProfileEvent.Handler,
 		InvokeShareBinderEvent.Handler,
 		InvokeWorkspaceShareRightsEvent.Handler,
@@ -355,6 +357,7 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.INVOKE_CHANGE_PASSWORD_DLG,
 		TeamingEvents.INVOKE_DOWNLOAD_DESKTOP_APP,
 		TeamingEvents.INVOKE_HELP,
+		TeamingEvents.INVOKE_IDEAS_PORTAL,
 		TeamingEvents.INVOKE_SIMPLE_PROFILE,
 		TeamingEvents.INVOKE_WORKSPACE_SHARE_RIGHTS,
 		
@@ -3542,6 +3545,22 @@ public class GwtMainPage extends ResizeComposite
 		Window.open(
 			m_requestInfo.getHelpUrl(),
 			"teaming_help_window",
+			"resizeable,scrollbars" );
+	}
+	
+	/**
+	 * Handles InvokeIdeasPortalEvent's received by this class.
+	 * 
+	 * Implements the InvokeHelpEvent.Handler.onInvokeIdeasPortal() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeIdeasPortal( InvokeIdeasPortalEvent event )
+	{
+		Window.open(
+			m_requestInfo.getIdeasPortalUrl(),
+			"teaming_ideas_window",
 			"resizeable,scrollbars" );
 	}
 	

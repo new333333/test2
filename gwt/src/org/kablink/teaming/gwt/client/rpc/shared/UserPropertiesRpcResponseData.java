@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
@@ -75,6 +76,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		private String			m_ldapDN;			//
 		private String			m_loginId;			//
 		private PrincipalType	m_principalType;	//
+		private Date			m_termsAndConditionsAcceptDate;
 		
 		/**
 		 * Constructor method.
@@ -113,6 +115,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		public String        getLdapDN()          {return m_ldapDN;                        }
 		public String        getLoginId()         {return m_loginId;                       }
 		public PrincipalType getPrincipalType()   {return m_principalType;                 }
+		public Date			 getTermsAndConditionsAcceptDate()	{return m_termsAndConditionsAcceptDate;	}
 		
 		/**
 		 * Set'er methods.
@@ -134,6 +137,7 @@ public class UserPropertiesRpcResponseData implements IsSerializable, VibeRpcRes
 		public void setLdapDN(          String        ldapDN)           {m_ldapDN           = ldapDN;          }
 		public void setLoginId(         String        loginId)          {m_loginId          = loginId;         }
 		public void setPrincipalType(   PrincipalType principalType)    {m_principalType    = principalType;   }
+		public void setTermsAndConditionsAcceptDate(	Date termsAndConditionsAcceptDate)	{m_termsAndConditionsAcceptDate	= termsAndConditionsAcceptDate;}
 	}
 	
 	/**

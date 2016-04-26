@@ -32,12 +32,12 @@
  */
 package org.kablink.teaming.module.zone;
 
-import org.kablink.teaming.cache.impl.HashMapCache;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.util.cache.HashMapCache;
 
 public class ZoneUtil {
 

@@ -116,6 +116,6 @@
   name="${renderResponse.namespace}ss_blog_add_reply_iframe_${ssDefinitionEntry._docId}"
   src="<html:rootPath/>js/forum/null.html" 
   onLoad="if (ss_showBlogReplyIframe) ss_showBlogReplyIframe(this, '${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntry._docId}');" 
-  width="100%" frameBorder="0">Novell Vibe</iframe>
+  width="100%" frameBorder="0">Micro Focus Vibe</iframe>
 </div>
 </c:if>

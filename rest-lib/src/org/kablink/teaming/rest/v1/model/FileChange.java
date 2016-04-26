@@ -18,9 +18,7 @@ package org.kablink.teaming.rest.v1.model;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: david
- * Date: 7/25/12
- * Time: 11:38 AM
+ * A change that occurred to a file.
  */
 @XmlRootElement(name="file_change")
 public class FileChange extends BaseBinderChange {
@@ -31,6 +29,9 @@ public class FileChange extends BaseBinderChange {
         setType(Type.file.name());
     }
 
+    /**
+     * The ID of the file.
+     */
     public String getId() {
         return id;
     }
@@ -39,6 +40,9 @@ public class FileChange extends BaseBinderChange {
         this.id = id;
     }
 
+    /**
+     * The latest version of the file.  Only applies to <code>add</code> and <code>modify</code> changes.
+     */
     public FileProperties getFile() {
         return file;
     }

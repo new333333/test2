@@ -773,4 +773,7 @@ SPAN.ss_cpTodayTextDisabled
 	border: 1px solid black;
 }
 
-
+#loginRegisterBtn[disabled], #loginRegisterBtn[disabled]:hover{
+	color:#949494 !important;
+	background:rgba(148,148,148,0.7);
+}

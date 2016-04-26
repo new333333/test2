@@ -21,7 +21,7 @@ import org.kablink.teaming.rest.v1.model.ShareRecipient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Data type representing a right that has been assigned to a recipient.
+ * A right that has been assigned to a recipient.
  *
  * <p>The recipient can be a user or a group.</p>
  */

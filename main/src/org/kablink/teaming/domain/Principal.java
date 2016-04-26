@@ -92,6 +92,7 @@ public abstract class Principal extends Entry implements IPrincipal {
     // these collections are loaded for quicker indexing, hibernate will not persist them
     protected Map<String,EmailAddress> iEmailAddresses;
 	protected IdentityInfo identityInfo;
+	protected Date termsAndConditionsAcceptDate;
 
     public EntityIdentifier.EntityType getEntityType() {
     	return EntityIdentifier.EntityType.valueOf(getType());
@@ -362,6 +363,12 @@ public abstract class Principal extends Entry implements IPrincipal {
 		this.netbiosName = netbiosName;
 	}
 
+	public Date getTermsAndConditionsAcceptDate() {
+		return termsAndConditionsAcceptDate;
+	}
+	public void setTermsAndConditionsAcceptDate(Date termsAndConditionsAcceptDate) {
+		this.termsAndConditionsAcceptDate = termsAndConditionsAcceptDate;
+	}
 	
 	/**
      * This method will return true if this object is a "local" principal.  In other words, this

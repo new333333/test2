@@ -94,11 +94,28 @@ public class PerUserRightsInfo
 	/**
 	 * 
 	 */
+	public boolean canReshareFolders()
+	{
+		if ( m_shareRightsInfo != null )
+			return m_shareRightsInfo.isAllowFolderForwarding();
+
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
 	public boolean canShareExternal()
 	{
 		if ( m_shareRightsInfo != null )
 			return m_shareRightsInfo.isAllowExternal();
 
+		return false;
+	}
+	
+	public boolean canShareFolderExternal(){
+		if( m_shareRightsInfo != null )
+			return m_shareRightsInfo.isAllowFolderExternal();
 		return false;
 	}
 	
@@ -113,6 +130,12 @@ public class PerUserRightsInfo
 		return false;
 	}
 	
+	public boolean canShareFolderInternal(){
+		if ( m_shareRightsInfo != null )
+			return m_shareRightsInfo.isAllowFolderInternal();
+		return false;
+	}
+	
 	/**
 	 * 
 	 */
@@ -121,6 +144,12 @@ public class PerUserRightsInfo
 		if ( m_shareRightsInfo != null )
 			return m_shareRightsInfo.isAllowPublic();
 
+		return false;
+	}
+	
+	public boolean canShareFolderPublic(){
+		if ( m_shareRightsInfo != null )
+			return m_shareRightsInfo.isAllowFolderPublic();
 		return false;
 	}
 	
@@ -148,31 +177,56 @@ public class PerUserRightsInfo
 			if ( m_shareRightsInfo.isAllowInternal() )
 				rights.append( GwtTeaming.getMessages().internalRights() );
 			
+			if ( m_shareRightsInfo.isAllowFolderInternal() ){
+				if ( rights.length() > 0 )
+					rights.append( " / " );
+				rights.append( GwtTeaming.getMessages().folderInternalRights() );
+			}
+			
 			if ( m_shareRightsInfo.isAllowExternal() )
 			{
 				if ( rights.length() > 0 )
-					rights.append( "/" );
+					rights.append( " / " );
 				rights.append( GwtTeaming.getMessages().externalRights() );
+			}
+			
+			if ( m_shareRightsInfo.isAllowFolderExternal() ){
+				if ( rights.length() > 0 )
+					rights.append(" / ");
+				rights.append( GwtTeaming.getMessages().folderExternalRights() );
 			}
 			
 			if ( m_shareRightsInfo.isAllowPublic() )
 			{
 				if ( rights.length() > 0 )
-					rights.append( "/" );
+					rights.append( " / " );
 				rights.append( GwtTeaming.getMessages().publicRights() );
+			}
+			
+			if ( m_shareRightsInfo.isAllowFolderPublic() ){
+				if ( rights.length() > 0)
+					rights.append(" / ");
+				rights.append( GwtTeaming.getMessages().folderPublicRights() );
 			}
 			
 			if ( m_shareRightsInfo.isAllowForwarding() )
 			{
 				if ( rights.length() > 0 )
-					rights.append( "/" );
+					rights.append( " / " );
 				rights.append( GwtTeaming.getMessages().forwardingRights() );
+			}
+			
+			if ( m_shareRightsInfo.isAllowFolderForwarding() )
+			{
+				if ( rights.length() > 0 )
+					rights.append(" / ");
+				rights.append( GwtTeaming.getMessages().folderForwardingRights() );
 			}
 			
 			if ( m_shareRightsInfo.isAllowPublicLinks() )
 			{
 				if ( rights.length() > 0 )
-					rights.append( "/" );
+					rights.append( " / " );
 				rights.append( GwtTeaming.getMessages().shareLinkRights() );
 			}
 		}
@@ -180,7 +234,7 @@ public class PerUserRightsInfo
 		if ( m_canAccess )
 		{
 			if ( rights.length() > 0 )
-				rights.append( "/" );
+				rights.append( " / " );
 			rights.append( GwtTeaming.getMessages().allowAccess() );
 		}
 
@@ -212,12 +266,29 @@ public class PerUserRightsInfo
 	/**
 	 * 
 	 */
+	public void setCanReshareFolders( boolean allow )
+	{
+		if ( m_shareRightsInfo == null )
+			m_shareRightsInfo = new PerEntityShareRightsInfo();
+		
+		m_shareRightsInfo.setAllowFolderForwarding( allow );
+	}	
+	
+	/**
+	 * 
+	 */
 	public void setCanShareExternal( boolean allow )
 	{
 		if ( m_shareRightsInfo == null )
 			m_shareRightsInfo = new PerEntityShareRightsInfo();
 		
 		m_shareRightsInfo.setAllowExternal( allow );
+	}
+	
+	public void setCanShareFolderExternal( boolean allow ){
+		if (m_shareRightsInfo == null )
+			m_shareRightsInfo = new PerEntityShareRightsInfo();
+		m_shareRightsInfo.setAllowFolderExternal( allow );
 	}
 	
 	/**
@@ -231,6 +302,12 @@ public class PerUserRightsInfo
 		m_shareRightsInfo.setAllowInternal( allow );
 	}
 	
+	public void setCanShareFolderInternal( boolean allow ){
+		if (m_shareRightsInfo == null )
+			m_shareRightsInfo = new PerEntityShareRightsInfo();
+		m_shareRightsInfo.setAllowFolderInternal( allow );
+	}
+	
 	/**
 	 * 
 	 */
@@ -240,6 +317,12 @@ public class PerUserRightsInfo
 			m_shareRightsInfo = new PerEntityShareRightsInfo();
 		
 		m_shareRightsInfo.setAllowPublic( allow );
+	}
+	
+	public void setCanShareFolderPublic( boolean allow ){
+		if (m_shareRightsInfo == null )
+			m_shareRightsInfo = new PerEntityShareRightsInfo();
+		m_shareRightsInfo.setAllowFolderPublic( allow );
 	}
 	
 	/**

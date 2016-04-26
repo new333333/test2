@@ -581,4 +581,19 @@ public interface AdminModule {
      * @param telemetryTier2Enabled
      */
     public void setTelemetrySettings(boolean telemetryTier2Enabled, boolean telemetryEnabled);
+    
+    /**
+     * Sets external user terms and conditions text in the zone config.
+     */
+    public void setExtUserTermsAndConditions(String extUserTermsAndConditions);
+    
+    /**
+     * Enable/disable the use of terms and conditions for external user registration.
+     */
+    public void setExtUserTermsAndConditionsEnabled(boolean extUserTermsAndConditionsEnabled);
+    
+    /**
+     * Stores the settings associated with the terms and conditions used for external user registration.
+     */
+    public void setExtUserTermsAndConditionsSettings(boolean extUserTermsAndConditionsEnabled, String extUserTermsAndConditions);
  }

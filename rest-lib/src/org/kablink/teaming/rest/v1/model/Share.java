@@ -15,18 +15,19 @@
 
 package org.kablink.teaming.rest.v1.model;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
- * User: david
- * Date: 7/25/12
- * Time: 11:38 AM
+ * Information about a file or folder that has been shared.
  */
 @XmlRootElement(name="share")
 public class Share extends BaseRestObject {
@@ -41,10 +42,17 @@ public class Share extends BaseRestObject {
     private String role;
     private Boolean canShare;
     private Access access;
+
+    /**
+     * The shared item's public URLs.
+     */
     @XmlElementWrapper(name="permalinks")
     @XmlElement(name="permalink")
     private List<Link> additionalPermaLinks;
 
+    /**
+     * Note entered by the sharer.
+     */
     public String getComment() {
         return comment;
     }
@@ -53,6 +61,9 @@ public class Share extends BaseRestObject {
         this.comment = comment;
     }
 
+    /**
+     * A reference to the user who shared the item.
+     */
     public LongIdLinkPair getSharer() {
 		return sharer;
 	}
@@ -61,6 +72,9 @@ public class Share extends BaseRestObject {
 		this.sharer = sharer;
 	}
 
+    /**
+     * The date the item was shared.
+     */
     @XmlElement(name = "sharing_date")
     public Date getStartDate() {
 		return startDate;
@@ -70,6 +84,11 @@ public class Share extends BaseRestObject {
 		this.startDate = startDate;
 	}
 
+    /**
+     * Days until the share expires.  This is the initial value set by the sharer, not necessarily the current number of days remaining.
+     * When posting a share with <code>days_to_expire</code> to the REST API, the server calculates the expiration date and sets <code>expiration</code>
+     * accordingly
+     */
     @XmlElement(name = "days_to_expire")
     public Integer getDaysToExpire() {
         return daysToExpire;
@@ -79,6 +98,10 @@ public class Share extends BaseRestObject {
         this.daysToExpire = daysToExpire;
     }
 
+    /**
+     * Date and time when the share expires.  When posting a share to the REST API, only one of <code>days_to_expire</code> and <code>expiration</code>
+     * should be specified.
+     */
     @XmlElement(name = "expiration")
     public Date getEndDate() {
         return endDate;
@@ -88,6 +111,9 @@ public class Share extends BaseRestObject {
         this.endDate = endDate;
     }
 
+    /**
+     * ID of the share.
+     */
     public Long getId() {
         return id;
     }
@@ -96,6 +122,9 @@ public class Share extends BaseRestObject {
         this.id = id;
     }
 
+    /**
+     * Reference to the recipient of the shared item.
+     */
     public ShareRecipient getRecipient() {
         return recipient;
     }
@@ -104,6 +133,10 @@ public class Share extends BaseRestObject {
         this.recipient = recipient;
     }
 
+    /**
+     * Reference to the shared item.
+     * @return
+     */
     @XmlElement(name = "shared_entity")
     public EntityId getSharedEntity() {
         return sharedEntity;
@@ -113,6 +146,7 @@ public class Share extends BaseRestObject {
         this.sharedEntity = sharedEntity;
     }
 
+    @Undocumented
     public String getRole() {
         return role;
     }
@@ -121,6 +155,7 @@ public class Share extends BaseRestObject {
         this.role = role;
     }
 
+    @Undocumented
     @XmlElement(name = "can_share")
     public Boolean isCanShare() {
         return canShare;
@@ -130,6 +165,9 @@ public class Share extends BaseRestObject {
         this.canShare = canShare;
     }
 
+    /**
+     * The access granted to the recipient.
+     */
     @XmlElement(name = "access")
     public Access getAccess() {
         return access;
@@ -139,6 +177,7 @@ public class Share extends BaseRestObject {
         this.access = access;
     }
 
+    @XmlTransient
     public List<Link> getAdditionalPermaLinks() {
         return additionalPermaLinks;
     }

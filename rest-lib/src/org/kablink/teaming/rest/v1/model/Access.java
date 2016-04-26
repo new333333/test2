@@ -20,10 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;
 
 /**
- * Data type representing the granted access that a user can have on a resource.
- * User: david
- * Date: 7/25/12
- * Time: 11:38 AM
+ * The access a user or group has to a resource.
  */
 @XmlRootElement(name="access")
 public class Access extends BaseRestObject {
@@ -42,7 +39,8 @@ public class Access extends BaseRestObject {
     private SharingPermission sharing;
 
     /**
-     * Getter: One of NONE, VIEWER, EDITOR, CONTRIBUTOR and ACCESS
+     * Allowed values are <code>NONE</code>, <code>VIEWER</code>, <code>EDITOR</code>, <code>CONTRIBUTOR</code> and <code>ACCESS</code>.
+     * Not all values are allowed in every context where Access objects are used.
      */
     public String getRole() {
         return role;
@@ -52,6 +50,9 @@ public class Access extends BaseRestObject {
         this.role = role;
     }
 
+    /**
+     * The sharing permissions assigned to the user or group.
+     */
     public SharingPermission getSharing() {
         return sharing;
     }

@@ -36,6 +36,7 @@
 
 <% // The main workspace view  %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp" %>
 <c:set var="ss_windowTitle" value="${ssBinder.title}" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>

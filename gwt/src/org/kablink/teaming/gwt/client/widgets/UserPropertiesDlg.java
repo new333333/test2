@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -77,6 +78,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
@@ -154,7 +156,7 @@ public class UserPropertiesDlg extends DlgBox
 	 * Adds information about the user's account to the grid.
 	 */
 	private void addAccountInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, AccountInfo account, boolean addSectionHeader) {
-		// Add the user's login ID...
+		// Add the user's login ID...	
 		int row = getSectionRow(grid, rf, addSectionHeader);
 		addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_UserId(), account.getLoginId(), false);
 		
@@ -163,6 +165,13 @@ public class UserPropertiesDlg extends DlgBox
 			// ...add the last login date/time stamp...
 			row = grid.getRowCount();
 			addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LastLogin(), account.getLastLogin(), true);
+		}
+		
+		if(account.getTermsAndConditionsAcceptDate()!=null){
+			row = grid.getRowCount();
+			Date date=account.getTermsAndConditionsAcceptDate();
+			String formattedDate=DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_MEDIUM).format(date);
+			addLabeledText(grid,row,m_messages.userPropertiesDlgLabel_TermsAndConditionsAcceptDate(),formattedDate,false);
 		}
 
 		// ...add the type of account...
@@ -1052,7 +1061,7 @@ public class UserPropertiesDlg extends DlgBox
 		RowFormatter		rf = grid.getRowFormatter();
 
 		// ...add the various components of what we know about the
-		// ...user...
+		// ...user...		
 		AccountInfo ai = m_userProperties.getAccountInfo();
 		addIdentityInfo(       grid, cf,     ai                                             );
 		addProfileInfo(        grid, cf, rf, ai, m_userProperties.getProfile(),        false);	// false -> Don't add with a section header.

@@ -32,19 +32,14 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import com.google.gwt.user.client.ui.*;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Overflow;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextBox;
 
 
 /**
@@ -61,11 +56,17 @@ public class SizeCtrl extends VibeWidget
 	private InlineLabel m_heightPxLabel = null;
 	private ListBox m_widthUnitListBox = null;
 	private CheckBox m_overflowCheckbox = null;
+	private InlineLabel m_overflowLabel = null;
+	private ListBox m_overflowListBox = null;
+
+	public SizeCtrl() {
+		this(false);
+	}
 
 	/**
 	 * 
 	 */
-	public SizeCtrl()
+	public SizeCtrl(boolean fullOverflowDetails)
 	{
 		VibeFlowPanel mainPanel;
 		
@@ -110,14 +111,29 @@ public class SizeCtrl extends VibeWidget
 			m_heightPxLabel = new InlineLabel( GwtTeaming.getMessages().pxLabel() );
 			sizeTable.setWidget( 1, 2, m_heightPxLabel );
 		}
-		
+
+		if (fullOverflowDetails)
+		{
+			m_overflowLabel = new InlineLabel( GwtTeaming.getMessages().overflowShortLabel("overflow") );
+			sizeTable.getFlexCellFormatter().setColSpan( 2, 0, 2 );
+			sizeTable.setWidget( 2, 0, m_overflowLabel );
+			m_overflowListBox = new ListBox(false);
+			m_overflowListBox.setVisibleItemCount(1);
+			m_overflowListBox.addItem( "auto", "auto");
+			m_overflowListBox.addItem( "hidden", "hidden");
+			m_overflowListBox.addItem( "scroll", "scroll");
+			m_overflowListBox.addItem( "visible", "visible");
+			sizeTable.setWidget( 2, 1, m_overflowListBox);
+		}
+		else
 		// Add the "Show scroll bars when necessary"
 		{
 			m_overflowCheckbox = new CheckBox( GwtTeaming.getMessages().overflowLabel() );
 			sizeTable.getFlexCellFormatter().setColSpan( 2, 0, 3 );
 			sizeTable.setWidget( 2, 0, m_overflowCheckbox );
+
 		}
-		
+
 		mainPanel.add( sizeTable );
 		
 		initWidget( mainPanel );
@@ -168,10 +184,18 @@ public class SizeCtrl extends VibeWidget
 	 */
 	public Style.Overflow getOverflow()
 	{
-		if ( m_overflowCheckbox.getValue() == Boolean.TRUE )
+		if (m_overflowListBox!=null) {
+			String value = m_overflowListBox.getSelectedValue();
+			for (Style.Overflow overflow : Overflow.values()) {
+				if (value.equals(overflow.getCssName())) {
+					return overflow;
+				}
+			}
+		} else if (m_overflowCheckbox!=null && m_overflowCheckbox.getValue() == Boolean.TRUE) {
 			return Style.Overflow.AUTO;
-		
-		return Style.Overflow.HIDDEN;
+		}
+		return Overflow.HIDDEN;
+
 	}
 	
 	/**
@@ -242,6 +266,10 @@ public class SizeCtrl extends VibeWidget
 	{
 		if ( m_overflowCheckbox != null )
 			m_overflowCheckbox.setVisible( false );
+		if (m_overflowListBox!=null) {
+			m_overflowLabel.setVisible(false);
+			m_overflowListBox.setVisible( false );
+		}
 	}
 	
 	/**
@@ -251,11 +279,25 @@ public class SizeCtrl extends VibeWidget
 	{
 		initWidthControls( width, widthUnits );
 		initHeightControls( height, heightUnits );
-		
-		if ( overflow == Overflow.AUTO )
-			m_overflowCheckbox.setValue( true );
-		else
-			m_overflowCheckbox.setValue( false );
+
+		if (m_overflowCheckbox!=null) {
+			if ( overflow == Overflow.AUTO )
+				m_overflowCheckbox.setValue( true );
+			else
+				m_overflowCheckbox.setValue( false );
+		} else {
+			String overflowStr = overflow.getCssName();
+			// Select the appropriate value in the listbox.
+			for (int i = 0; i < m_overflowListBox.getItemCount(); ++i) {
+				String nextValue;
+
+				nextValue = m_overflowListBox.getValue(i);
+				if (nextValue != null && nextValue.equalsIgnoreCase(overflowStr)) {
+					m_overflowListBox.setSelectedIndex(i);
+					break;
+				}
+			}
+		}
 	}
 	
 	/**

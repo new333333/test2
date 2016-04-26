@@ -568,7 +568,7 @@ public interface BinderModule {
       * @param binderId
       * @return Set of binderIds indexed
       */
- 	public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads, boolean skipFileContentIndexing, Integer cacheSizeLimit) throws AccessControlException;
+ 	public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads, boolean skipFileContentIndexing) throws AccessControlException;
    
     /**
      * Validate the binder quota values for a set of binder trees

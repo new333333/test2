@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+import com.webcohesion.enunciate.metadata.rs.ResourceGroup;
 import org.dom4j.Document;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -50,14 +51,8 @@ import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
-import org.kablink.teaming.rest.v1.model.Access;
-import org.kablink.teaming.rest.v1.model.FolderEntry;
-import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
-import org.kablink.teaming.rest.v1.model.HistoryStamp;
-import org.kablink.teaming.rest.v1.model.Operation;
-import org.kablink.teaming.rest.v1.model.Permission;
-import org.kablink.teaming.rest.v1.model.SearchResultList;
-import org.kablink.teaming.rest.v1.model.Share;
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
+import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.Pair;
@@ -88,8 +83,39 @@ import java.util.Set;
 @Path("/folder_entries")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@ResourceGroup("Folder Entries")
 public class FolderEntryResource extends AbstractFolderEntryResource {
 
+
+    /**
+     * Get all of the parent binders of the folder entry.  The top workspace is the first item and the entry's parent binder is the
+     * last item.
+     *
+     * <p>For example, the ancestry of an entry in "/Home Workspace/Personal Workspaces/Bob Barker (bbarker)/A/B" is:
+     * <ul>
+     *     <li>/Home Workspace</li>
+     *     <li>/Home Workspace/Personal Workspaces</li>
+     *     <li>/Home Workspace/Personal Workspaces/Bob Barker (bbarker)</li>
+     *     <li>/Home Workspace/Personal Workspaces/Bob Barker (bbarker)/A</li>
+     *     <li>/Home Workspace/Personal Workspaces/Bob Barker (bbarker)/A/B</li>
+     * </ul>
+     * @param id    The ID of the folder entry.
+     * @return  A list of BinderBrief objects.
+     */
+    @GET
+    @Path("{id}/ancestry")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public BinderBrief [] getAncestry(@PathParam("id") long id) {
+        return _getAncestry(id);
+    }
+
+    /**
+     * Get folder entries by ID.
+     *
+     * @param ids   The ID of a folder entry.  Can be specified multiple times.
+     * @param descriptionFormatStr The desired format for the folder entry descriptions.  Can be "html" or "text".
+     * @return A SearchResultList of FolderEntryBrief objects.
+     */
 	@GET
 	public SearchResultList<FolderEntryBrief> getFolderEntries(@QueryParam("id") Set<Long> ids,
                                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
@@ -115,6 +141,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
 	@POST
     @Path("legacy_query")
+    @Undocumented
 	public SearchResultList<FolderEntryBrief> getFolderEntriesViaLegacyQuery(@Context HttpServletRequest request,
                                                                              @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
@@ -132,6 +159,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @GET
     @Path("operations")
+    @Undocumented
     public SearchResultList<Operation> getOperations() {
         SearchResultList<Operation> results = new SearchResultList<Operation>();
         for (FolderModule.FolderOperation operation : FolderModule.FolderOperation.values()) {
@@ -144,6 +172,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @GET
     @Path("operations/{name}")
+    @Undocumented
     public Operation getOperation(@PathParam("name") String id) {
         FolderModule.FolderOperation folderOp = getFolderOperation(id);
         if (folderOp!=null) {
@@ -154,6 +183,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @GET
     @Path("operations/{name}/permissions")
+    @Undocumented
     public SearchResultList<Permission> testPermissions(@PathParam("name") String id, @QueryParam("entry")List<Long> entryIds) {
         FolderModule.FolderOperation folderOp = getFolderOperation(id);
         if (folderOp!=null && folderOp.appliesToEntries()) {
@@ -162,7 +192,13 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         throw new NotFoundException(ApiErrorCode.BAD_INPUT, "Checking permissions is not supported for the operation: " + id);
     }
 
-	// Read folder entry
+    /**
+     * Get a folder entry.
+     * @param id   The ID of the folder entry.
+     * @param includeAttachments    Whether to include file attachment metadata in the response.
+     * @param descriptionFormatStr The desired format for the folder entry description.  Can be "html" or "text".
+     * @return
+     */
 	@GET
     @Path("{id}")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -174,7 +210,13 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 		return ResourceUtil.buildFolderEntry(hEntry, includeAttachments, toDomainFormat(descriptionFormatStr));
 	}
 
-    // Update folder entry
+    /**
+     * Update the folder entry.
+     * @param id    The ID of the folder entry.
+     * @param entry The updated FolderEntry object.
+     * @param descriptionFormatStr The desired format for the folder entry description in the response.  Can be "html" or "text".
+     * @return  The updated FolderEntry object.
+     */
 	@PUT
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -192,6 +234,16 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         return ResourceUtil.buildFolderEntry((org.kablink.teaming.domain.FolderEntry) dEntry, true, toDomainFormat(descriptionFormatStr));
 	}
 
+    /**
+     * Request that the server synchronize the file attachment metadata of the specified folder entry.  This means the
+     * server will check the file content in the file's storage area and update the metadata if it is out of date.
+     * <p>The Content-Type must be <code>application/x-www-form-urlencoded</code>.
+     * The value of the file_name form parameter in the request body should be a UTF-8 string that has been URL encoded.</p>
+     * @param id    The ID of the folder entry.
+     * @param sync  If true, the file attachment metadata will be synced with the file in the storage area.
+     * @param descriptionFormatStr The desired format for the folder entry description in the response.  Can be "html" or "text".
+     * @return  The updated FolderEntry resource.
+     */
     @POST
     @Path("{id}")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
@@ -209,14 +261,85 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         return null;
     }
 
+    /**
+     * Delete the specified folder entry.
+
+     * <p>Entries in personal storage folders are moved to the trash by default.  <code>purge=true</code> will delete the entry
+     * permanently instead.  Entries in external storage folders (net folders, mirrored folders) are always deleted permanantly.</p>
+     *
+     * @param id    The ID of the folder entry.
+     * @param purge Whether the folder entry will be deleted permanently (true) or moved to the trash (false).
+     * @param lastVersionNumber Only delete the entry if the current version of the entry's primary file attachment matches this version.
+     * @throws Exception
+     */
+    @DELETE
+    @Path("{id}")
+    public void deleteFolderEntry(@PathParam("id") long id,
+                                  @QueryParam("purge") @DefaultValue("false") boolean purge,
+                                  @QueryParam("version") Integer lastVersionNumber
+    ) throws Exception {
+        _deleteFolderEntry(id, purge, lastVersionNumber);
+    }
+
+    /**
+     * Get a tree structure with all of the replies to this folder entry.
+     * @param id    The ID of the folder entry.
+     * @param descriptionFormatStr The desired format for the reply descriptions in the response.  Can be "html" or "text".
+     * @return A SearchResultTree of Reply objects.
+     */
+    @GET
+    @Path("{id}/reply_tree")
+    public SearchResultTree<Reply> getReplyTree(@PathParam("id") Long id,
+                                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        return _getReplyTree(id, descriptionFormatStr);
+    }
+
+    /**
+     * List the first level of replies to the specified folder entry.
+     *
+     * @param id    The ID of the folder entry.
+     * @param descriptionFormatStr The desired format for the folder entry description in the response.  Can be "html" or "text".
+     * @return A SearchResultList of Reply objects.
+     */
+    @GET
+    @Path("{id}/replies")
+    public SearchResultList<Reply> getReplies(@PathParam("id") Long id,
+                                              @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        return _getReplies(id, descriptionFormatStr);
+    }
+
+    /**
+     * Add a reply to the specified folder entry.
+     * @param id    The ID of the folder entry.
+     * @param entry  The reply to add.  The description text must be specified in the Reply object.  The title is optional.
+     * @param descriptionFormatStr The desired format for the folder entry description in the response.  Can be "html" or "text".
+     * @return The new Reply object.
+     */
+    @POST
+    @Path("{id}/replies")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Reply addReply(@PathParam("id") Long id,
+                          Reply entry,
+                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr)
+            throws WriteFilesException, WriteEntryDataException {
+        return _addReply(id, entry, descriptionFormatStr);
+    }
+
     @GET
     @Path("{id}/reservation")
-    public HistoryStamp getReservation(@PathParam("id") Long id) {
+    @Undocumented
+    public org.kablink.teaming.rest.v1.model.HistoryStamp getReservation(@PathParam("id") Long id) {
         org.kablink.teaming.domain.FolderEntry hEntry = _getFolderEntry(id);
         org.kablink.teaming.domain.HistoryStamp reservation = hEntry.getReservation();
         return ResourceUtil.buildHistoryStamp(reservation);
     }
 
+    /**
+     * Get the access that the authenticated user has to the specified folder entry.
+     * @param id    The ID of the file.
+     * @return  An Access resource.
+     */
     @GET
     @Path("{id}/access")
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
@@ -227,6 +350,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @PUT
     @Path("{id}/reservation")
+    @Undocumented
     public HistoryStamp reserve(@PathParam("id") Long id) {
         _getFolderEntry(id);
         org.kablink.teaming.domain.HistoryStamp reservation = getFolderModule().reserveEntry(null, id);
@@ -235,10 +359,16 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     @DELETE
     @Path("{id}/reservation")
+    @Undocumented
     public void unreserve(@PathParam("id") Long id) {
         getFolderModule().unreserveEntry(null, id);
     }
 
+    /**
+     * Get information about the users and groups with whom the authenticated user has shared the folder entry.
+     * @param id    The ID of the folder entry.
+     * @return A SearchResultList of Share resources.
+     */
     @GET
     @Path("{id}/shares")
     public SearchResultList<Share> getShares(@PathParam("id") Long id) {
@@ -257,6 +387,17 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         return results;
     }
 
+    /**
+     * Share the specified folder entry with another user or group.  Minimally, you must specify the Share recipient and access role.
+     *
+     * <p>If the authenticated user has already shared the folder entry with the specified recipient, this will overwrite
+     * the previous share settings.</p>
+     * @param id    The ID of the folder entry.
+     * @param notifyRecipient   If true, the recipient will be notified by email.
+     * @param notifyAddresses   An email address to notify, if the recipient type is <code>public_link</code>.  May be specified multiple times.
+     * @param share The share object to create.
+     * @return The newly created Share resource.
+     */
     @POST
     @Path("{id}/shares")
     public Share shareEntity(@PathParam("id") Long id,

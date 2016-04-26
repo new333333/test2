@@ -32,14 +32,15 @@
  */
 package org.kablink.teaming.rest.v1.model;
 
+import org.kablink.teaming.rest.v1.annotations.Undocumented;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * User: david
- * Date: 5/17/12
- * Time: 3:54 PM
+ * Minimal information about a binder.  BinderBrief objects are typically returned in list results because they are
+ * more efficient to build than full Binder objects.
  */
 @XmlRootElement(name = "binder_brief")
 public class BinderBrief extends DefinableEntityBrief {
@@ -58,6 +59,10 @@ public class BinderBrief extends DefinableEntityBrief {
         super(orig);
     }
 
+    /**
+     * Whether this is library binder.  Library folders require that all of the files in the folder have unique file names.
+     * @return
+     */
     public Boolean getLibrary() {
         return library;
     }
@@ -66,6 +71,9 @@ public class BinderBrief extends DefinableEntityBrief {
         this.library = library;
     }
 
+    /**
+     * Whether this is a mirrored binder.  These are folders that are synced with an external source such as a file server.
+     */
     public Boolean getMirrored() {
         return mirrored;
     }
@@ -74,6 +82,9 @@ public class BinderBrief extends DefinableEntityBrief {
         this.mirrored = mirrored;
     }
 
+    /**
+     * Whether this folder represents a user's home directory on an external file server.
+     */
     public Boolean getHomeDir() {
 		return homeDir;
 	}
@@ -83,6 +94,7 @@ public class BinderBrief extends DefinableEntityBrief {
 		this.homeDir = homeDir;
 	}
 
+    @Undocumented
     public Boolean getMyFilesDir() {
 		return myFilesDir;
 	}
@@ -96,10 +108,16 @@ public class BinderBrief extends DefinableEntityBrief {
         return path;
     }
 
+    /**
+     * The binder's absolute path.
+     */
     public void setPath(String path) {
         this.path = path;
     }
 
+    /**
+     * Library information about the binder.
+     */
     @XmlElement(name = "library_info")
     public LibraryInfo getLibraryInfo() {
         return libraryInfo;

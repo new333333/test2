@@ -17,9 +17,7 @@ package org.kablink.teaming.rest.v1.model.admin;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User: David
- * Date: 11/20/13
- * Time: 9:40 PM
+ * The selected days on which a schedule will activate.
  */
 @XmlRootElement(name="selected_days")
 public class SelectedDays {

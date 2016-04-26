@@ -44,6 +44,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ShareRights implements IsSerializable
 {
 	private AccessRights m_accessRights;
+	private AccessRights m_unAlteredAccessRights;
 	private boolean m_canShareForward;
 	private boolean m_canShareWithExternalUsers;
 	private boolean m_canShareWithInternalUsers;
@@ -51,15 +52,16 @@ public class ShareRights implements IsSerializable
 	private boolean m_canSharePublicLink;
 	
 	/**
-	 * 
+	 * IMPORTANT: The ordinal number of the enum is significant for this class.
+	 *            We use it for easy comparison of which rights are more or less.
+	 *            So do NOT change the ordering!
 	 */
 	public enum AccessRights implements IsSerializable
 	{
+		NONE,
 		VIEWER,
 		EDITOR,
-		CONTRIBUTOR,
-		
-		UNKNOWN
+		CONTRIBUTOR
 	}
 	
 	/**
@@ -67,7 +69,8 @@ public class ShareRights implements IsSerializable
 	 */
 	public ShareRights()
 	{
-		m_accessRights = AccessRights.UNKNOWN;
+		m_accessRights = AccessRights.NONE;
+		m_unAlteredAccessRights = AccessRights.NONE;
 		m_canShareWithExternalUsers = false;
 		m_canShareWithInternalUsers = false;
 		m_canShareWithPublic = false;
@@ -84,6 +87,7 @@ public class ShareRights implements IsSerializable
 			return;
 		
 		setAccessRights( rights.getAccessRights() );
+		setUnAlteredAccessRights( rights.getUnAlteredAccessRights() );
 		setCanShareForward( rights.getCanShareForward() );
 		setCanSharePublicLink( rights.getCanSharePublicLink() );
 		setCanShareWithExternalUsers( rights.getCanShareWithExternalUsers() );
@@ -100,6 +104,9 @@ public class ShareRights implements IsSerializable
 			return false;
 		
 		if ( getAccessRights() != rights.getAccessRights() )
+			return false;
+		
+		if ( getUnAlteredAccessRights() != rights.getUnAlteredAccessRights() )
 			return false;
 		
 		if ( getCanShareForward() != rights.getCanShareForward() )
@@ -126,6 +133,14 @@ public class ShareRights implements IsSerializable
 	public AccessRights getAccessRights()
 	{
 		return m_accessRights;
+	}
+	
+	/**
+	 * 
+	 */
+	public AccessRights getUnAlteredAccessRights()
+	{
+		return m_unAlteredAccessRights;
 	}
 	
 	/**
@@ -232,6 +247,14 @@ public class ShareRights implements IsSerializable
 	public void setAccessRights( AccessRights accessRights )
 	{
 		m_accessRights = accessRights;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setUnAlteredAccessRights( AccessRights unAlteredAccessRights )
+	{
+		m_unAlteredAccessRights = unAlteredAccessRights;
 	}
 	
 	/**

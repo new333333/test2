@@ -1147,7 +1147,8 @@ function ss_executeJavascriptPhase1(scripts, xmlNode) {
     for (var i = 0; i < scripts.length; i++) {
     	// Is this <script> JavaScript?
         var script = scripts[i];
-        if (script.getAttribute("type") == "text/javascript") {
+		var type = script.getAttribute("type");
+        if (!type || type == "text/javascript") {
         	// Yes!  Does it have a 'src=...' setting?
         	var jsSrc = script.getAttribute("src");
         	if (jsSrc && (null != jsSrc) && (0 < jsSrc.length)) {
@@ -1174,7 +1175,8 @@ function ss_executeJavascriptPhase2(scripts, xmlNode, globalScope) {
     for (var i = 0; i < scripts.length; i++) {
     	// Is this <script> JavaScript?
         var script = scripts[i];
-        if (script.getAttribute("type") == "text/javascript") {
+		var type = script.getAttribute("type");
+		if (!type || type == "text/javascript") {
         	// Yes!  Does it contain anything to execute?
         	var js = script.innerHTML;
         	if ((null != js) && (0 < js.length)) {
@@ -4864,7 +4866,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
     	' src="'+url+'"' +
     	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:10px 10px 10px 20px; padding:0px;" frameBorder="0"' +
     	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\', \''+hoverOverId+'\')"' +
-    	' title="'+ ss_entryFrameTitle +'">Novell Vibe</iframe>' +
+    	' title="'+ ss_entryFrameTitle +'">Micro Focus Vibe</iframe>' +
     	'</div>';
 	tbodyObj.replaceChild(iframeRow, trObj)
 	ss_loadEntryInPlaceLastRowObj = iframeRow;

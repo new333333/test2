@@ -73,6 +73,7 @@ import org.apache.commons.httpclient.HttpURL;
 import org.apache.commons.httpclient.HttpsURL;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.lucene.document.DateTools;
 
 import org.dom4j.Document;
@@ -1267,6 +1268,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		String errorMsg = PortletRequestUtils.getStringParameter(request, WebKeys.URL_VALUE, "");
+		// 4/14/2016 JK (bug 966046) Escape angle brackets.
+		if(errorMsg != null) {
+			errorMsg = errorMsg.replace("<", "&lt;");
+			errorMsg = errorMsg.replaceAll(">", "&gt;");
+		}
 		model.put(WebKeys.ERROR_MESSAGE, NLT.get("general.error.anErrorOccurred") + ": " + errorMsg);
 		response.setContentType("text/html");
 		return new ModelAndView("forum/error_return", model);

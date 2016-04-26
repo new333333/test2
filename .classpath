@@ -137,7 +137,7 @@
 	<classpathentry kind="lib" path="lib/lib-gwt-file.jar"/>
 	<classpathentry kind="lib" path="lib/gwt-tour.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-dbcp.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javaxt-core.jar" sourcepath="/usr/local/javaxt-core/src"/>
+	<classpathentry exported="true" kind="lib" path="lib/javaxt-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/lucene-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jtidy.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portlet-api-2.0.jar"/>
@@ -162,7 +162,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/milton-servlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/groovy-all.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-config.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap.jar" sourcepath="/home/jwootton/Notes/Spring/Security/spring-security-3.1.x/ldap/src/main/java/org/springframework/security/ldap"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-openid.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-web.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-jaxrs.jar"/>
@@ -172,7 +172,7 @@
 	<classpathentry kind="lib" path="tools/gwt/gwt-user.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/gwt-dev.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA-sources.jar"/>
-	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA.jar" sourcepath="tools/gwt/validation-api-1.0.0.GA-sources.jar"/>
+	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/openid4java.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/tomcat-jdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-aop.jar"/>
@@ -204,5 +204,11 @@
 	<classpathentry exported="true" kind="lib" path="lib/bcprov-jdk15on.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpmime.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/enunciate-core-annotations.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-client-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-client-bindings.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-client-impl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-commons-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-commons-impl.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

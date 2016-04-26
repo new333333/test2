@@ -57,7 +57,7 @@
 			</td>
 			<td valign="middle" align="center">
 			  <div id="mastHeadTitle" class="masthead-title">
-			  Novell Vibe
+			  Micro Focus Vibe
 			  </div>
 			</td>
 			<td valign="top" align="right" width="1%">

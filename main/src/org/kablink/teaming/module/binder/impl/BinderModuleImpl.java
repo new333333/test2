@@ -71,7 +71,6 @@ import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
-import org.kablink.teaming.cache.impl.ThreadBoundLRUCache;
 import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContext;
@@ -179,6 +178,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.cache.ThreadBoundLRUCache;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Junction;
@@ -556,25 +556,30 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					}
 				}
 				break;
-			case allowSharing:
+			case allowSharing:				
 				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING_INTERNAL);
+						binder.isFolderInNetFolder() ? WorkAreaOperation.ALLOW_FOLDER_SHARING_INTERNAL : WorkAreaOperation.ALLOW_SHARING_INTERNAL);
 				break;
 			case allowSharingExternal:
 				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
+						binder.isFolderInNetFolder() ? WorkAreaOperation.ALLOW_FOLDER_SHARING_EXTERNAL : WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
 				break;
 			case allowSharingPublic:
 				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING_PUBLIC);
+						binder.isFolderInNetFolder() ? WorkAreaOperation.ALLOW_FOLDER_SHARING_PUBLIC : WorkAreaOperation.ALLOW_SHARING_PUBLIC);
 				break;
 			case allowSharingPublicLinks:
+				// Currently, the product only supports file link but not folder link.
+				// Until we do, short-circuit this check and always fail.
+				throw new AccessControlException(operation.toString(), new Object[] {});	
+				/*
 				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.ALLOW_SHARING_PUBLIC_LINKS);
 				break;
+				*/
 			case allowSharingForward:
 				getAccessControlManager().checkOperation(user, binder,
-						WorkAreaOperation.ALLOW_SHARING_FORWARD);
+						binder.isFolderInNetFolder() ? WorkAreaOperation.ALLOW_FOLDER_SHARING_FORWARD : WorkAreaOperation.ALLOW_SHARING_FORWARD);
 				break;
 			case allowAccessNetFolder:
 				getAccessControlManager().checkOperation(user, binder,
@@ -793,17 +798,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
 			String[] nodeNames) {
 		IndexErrors errors = new IndexErrors();
-		return indexTree(binderIds, statusTicket, nodeNames, errors, false, false, null);
+		return indexTree(binderIds, statusTicket, nodeNames, errors, false, false);
 	}
 
 	@Override
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
-			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads, boolean skipFileContentIndexing, Integer cacheSizeLimit) {
-		return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads, skipFileContentIndexing, cacheSizeLimit);				
+			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads, boolean skipFileContentIndexing) {
+		return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads, skipFileContentIndexing);				
 	}
 
 	private Set<Long> indexTreeWithHelper(Collection binderIds, StatusTicket statusTicket,
-			String[] nodeNames, IndexErrors errors, boolean canUseHelperThreads, boolean skipFileContentIndexing, Integer cacheSizeLimit) {
+			String[] nodeNames, IndexErrors errors, boolean canUseHelperThreads, boolean skipFileContentIndexing) {
 		long startTime = System.nanoTime();
 		getCoreDao().flush(); // just incase
 		if(statusTicket != null && canUseHelperThreads) {
@@ -914,7 +919,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 			  		// If there are branches that we can process in parallel, try executing them as concurrently as we can.
 					if(!concurrentBinderIds.isEmpty()) {
-						done.addAll(indexTreeConcurrent(concurrentBinderIds, done, (ConcurrentStatusTicket) statusTicket, nodeNames, errors, skipFileContentIndexing, cacheSizeLimit));
+						done.addAll(indexTreeConcurrent(concurrentBinderIds, done, (ConcurrentStatusTicket) statusTicket, nodeNames, errors, skipFileContentIndexing));
 					}
 					
 					// The rest of the binders must be processed synchronously and sequentially.
@@ -1109,7 +1114,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return binderIds;
 	}
 	
-	private Collection<Long> indexTreeConcurrent(List<Long> binderIds, Collection<Long> done, ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean skipFileContentIndexing, Integer cacheSizeLimit) {
+	private Collection<Long> indexTreeConcurrent(List<Long> binderIds, Collection<Long> done, ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean skipFileContentIndexing) {
 		int threadsSize = SPropsUtil.getInt("index.tree.helper.threads.size", 5);
 		
 		// Set up a queue and pre-populate it fully.
@@ -1134,7 +1139,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if(logger.isDebugEnabled())
 			logger.debug("Creating a queue with size " + queue.getPutCount() + " and " + threadsSize + " helper threads");
 		for(int i = 0; i < threadsSize; i++) {
-			helperThread = new Thread(new IndexHelper(statusTicket, nodeNames, errors, queue, RequestContextHolder.getRequestContext(), done, skipFileContentIndexing, cacheSizeLimit),
+			helperThread = new Thread(new IndexHelper(statusTicket, nodeNames, errors, queue, RequestContextHolder.getRequestContext(), done, skipFileContentIndexing),
 					Thread.currentThread().getName() + "-(" + (i+1) + "-" + now + ")");
 			helperThreads[i] = helperThread;
 			helperThread.start();
@@ -5023,9 +5028,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// This must be guarded by itself.
 		private Collection<Long> done;
 		private boolean skipFileContentIndexing;
-		Integer cacheSizeLimit;
+		int cacheSizeLimit;
 		
-		IndexHelper(ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext, Collection<Long> done, boolean skipFileContentIndexing, Integer cacheSizeLimit) {
+		IndexHelper(ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext, Collection<Long> done, boolean skipFileContentIndexing) {
 			this.statusTicket = statusTicket;
 			this.nodeNames = nodeNames;
 			this.errors = errors;
@@ -5033,7 +5038,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			this.parentRequestContext = parentRequestContext;
 			this.done = done;
 			this.skipFileContentIndexing = skipFileContentIndexing;
-			this.cacheSizeLimit = cacheSizeLimit;
+			this.cacheSizeLimit = SPropsUtil.getInt("indexHelper.threadBoundLRUCache.sizeLimit", 100);
 		}
 
 		@Override
@@ -5053,8 +5058,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}	
 		
 		private void doRun() {
-			if(cacheSizeLimit != null)
-				ThreadBoundLRUCache.initialize(cacheSizeLimit.intValue());
+			if(cacheSizeLimit > 0)
+				ThreadBoundLRUCache.initialize(cacheSizeLimit);
 			try {
 				if(logger.isTraceEnabled())
 					logger.trace("Setting up Hibernate session");
@@ -5125,7 +5130,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				}
 			}
 			finally {
-				if(cacheSizeLimit != null)
+				if(cacheSizeLimit > 0)
 					ThreadBoundLRUCache.destroy();
 			}
 		}	

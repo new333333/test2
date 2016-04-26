@@ -39,9 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User: david
- * Date: 5/24/12
- * Time: 11:06 AM
+ * Node in a <code>SearchResultTree</code>.
  */
 @XmlRootElement(name = "node")
 public class SearchResultTreeNode<T> {
@@ -59,6 +57,10 @@ public class SearchResultTreeNode<T> {
         copyItems(node);
     }
 
+    /**
+     * Child nodes.
+     * @return
+     */
     @XmlElementWrapper(name = "children")
     @XmlElement(name = "node")
     public List<SearchResultTreeNode<T>> getChildren() {
@@ -81,6 +83,9 @@ public class SearchResultTreeNode<T> {
         return child;
     }
 
+    /**
+     * The SearchableObject.
+     */
     @XmlElement(name="item")
     public T getItem() {
         return item;
