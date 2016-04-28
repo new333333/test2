@@ -1122,10 +1122,8 @@ public class EditShareWidget extends Composite
 						GwtClientHelper.selectListboxItemByValue( m_canResharePublicLinkListbox, LEAVE_UNCHANGED );
 				}							
 			}
-			m_expirationWidget.setVisible(highestRightsPossible.getAccessRights() != AccessRights.NONE);
 		}
 		m_rightsUnavailableLink.setVisible(highestRightsPossible.getAccessRights() == AccessRights.NONE && highestRightsPossible.getUnAlteredAccessRights() != AccessRights.NONE);
-		m_noteTextArea.setVisible(highestRightsPossible.getAccessRights() != AccessRights.NONE && highestRightsPossible.getUnAlteredAccessRights() != AccessRights.NONE);
 	}
 	
 	/**
@@ -1239,9 +1237,6 @@ public class EditShareWidget extends Composite
 		}
 		
 		canShareForward = highestRightsPossible.getCanShareForward();
-		m_canReshareInternalCkbox.setEnabled(highestRightsPossible.getAccessRights()!=AccessRights.NONE);
-		m_canReshareExternalCkbox.setEnabled(highestRightsPossible.getAccessRights()!=AccessRights.NONE);
-		m_canResharePublicCkbox.setEnabled(highestRightsPossible.getAccessRights()!=AccessRights.NONE);		
 		
 		m_canShareLabel.setVisible( canShareForward );
 		
@@ -1263,23 +1258,7 @@ public class EditShareWidget extends Composite
 		else
 			m_canResharePublicLinkCkbox.setVisible( false );
 			
-		m_canResharePublicLinkCkbox.setValue( shareRights.getCanSharePublicLink() );		
-		
-		if(!m_viewerRb.getValue() && !m_editorRb.getValue() && !m_contributorRb.getValue()){
-			m_canShareLabel.setVisible(false);
-			m_canReshareInternalCkbox.setValue(false);
-			m_canReshareInternalCkbox.setVisible(false);
-			m_canReshareExternalCkbox.setValue(false);
-			m_canReshareExternalCkbox.setVisible(false);
-			m_canResharePublicCkbox.setValue(false);
-			m_canResharePublicCkbox.setVisible(false);
-			m_canResharePublicLinkCkbox.setValue(false);
-			m_canResharePublicLinkCkbox.setVisible(false);
-		}
-		
-		m_noteTextArea.setVisible(highestRightsPossible.getAccessRights() != AccessRights.NONE && highestRightsPossible.getUnAlteredAccessRights() != AccessRights.NONE);
-		m_expirationWidget.setVisible(canShareForward && highestPossibleRights != AccessRights.NONE);
-		mainTable.setVisible(canShareForward && highestPossibleRights != AccessRights.NONE);
+		m_canResharePublicLinkCkbox.setValue( shareRights.getCanSharePublicLink() );					
 	}
 	
 	/**
