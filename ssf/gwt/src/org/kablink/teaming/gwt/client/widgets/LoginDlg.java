@@ -199,6 +199,7 @@ public class LoginDlg extends DlgBox
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private String m_preLoginTitle;
 	private boolean m_captchaAlreadyChecked = false;
+	private boolean m_isLoginBranded = false;
 	
 	private ZoneShareTerms m_zoneShareTerms=null;
 	
@@ -421,11 +422,18 @@ public class LoginDlg extends DlgBox
 	{
 		Element formElement;
 
-		if ( m_formPanel != null )
-			return;
+		/*if ( m_formPanel != null )
+			return;*/
 		
 		// Get the <form ...> element that was created by GwtMainPage.jsp
-		formElement = Document.get().getElementById( "loginFormId" );
+		if(m_isLoginBranded)
+		{
+			formElement = Document.get().getElementById( "genericLoginFormId" );
+		}
+		else
+		{
+			formElement = Document.get().getElementById( "microFocusLoginFormId" );			
+		}
 		m_formPanel = new LoginFormPanel( formElement );
 		m_formPanel.setVisible( true );
 		
@@ -1483,10 +1491,105 @@ public class LoginDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void showDlg( boolean allowCancel, LoginStatus loginStatus, Long loginUserId )
+	public void showDlg( final boolean allowCancel, final LoginStatus loginStatus, final Long loginUserId )
 	{
 		debugAlert( "In LoginDlg.showDlg()" );
+		// Create the callback that will be used when we issue an ajax call to get the site branding
+		AsyncCallback<VibeRpcResponse> getSiteBrandingCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( final Throwable t )
+			{
+				GwtClientHelper.deferCommand( new ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						// Don't call GwtClientHelper.handleGwtRPCFailure() like we would normally do.  If the
+						// session has expired, handleGwtRPCFailure() will invoke this login dialog again
+						// and we will be in an infinite loop.
+						m_isLoginBranded=false;
+						Document.get().getElementById("genericLoginPage").removeFromParent();
+						handleLoginFormPanel(allowCancel,loginStatus,loginUserId);						
+						createHeaderNow( null );
+					}
+				} );
+			}
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				
+				final GwtBrandingData brandingData = (GwtBrandingData) response.getResponseData();
 
+				GwtClientHelper.deferCommand( new ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						m_isLoginBranded=isLoginDlgBranded(brandingData);
+						if(m_isLoginBranded){
+							Document.get().getElementById("microFocusLoginPage").removeFromParent();
+						}
+						else
+						{
+							Document.get().getElementById("genericLoginPage").removeFromParent();
+						}
+						handleLoginFormPanel(allowCancel,loginStatus,loginUserId);						
+						createHeaderNow( brandingData );
+					}
+				} );				
+			}
+		};
+		
+		// Issue an ajax request to get the site branding data.
+		GetSiteBrandingCmd cmd = new GetSiteBrandingCmd();
+		// We want to issue the rpc requests without a user login id so that the GwtRpcController
+		// doesn't think the session has timed out.
+		HttpRequestInfo httpRequestInfo = HttpRequestInfo.createHttpRequestInfo();
+		httpRequestInfo.setUserLoginId( null );
+		GwtClientHelper.executeCommand( cmd, httpRequestInfo, getSiteBrandingCallback );
+	}
+	
+	private boolean isLoginDlgBranded(GwtBrandingData brandingData)
+	{	
+		String imgName=brandingData.getLoginDlgImageName();
+		boolean useDefaultImg = true;
+		// Do we have an image name to use
+		if ( imgName != null && imgName.length() > 0 )
+		{
+			// Yes
+			// Is the branding image name "__default teaming image__"?
+			if ( imgName.equalsIgnoreCase( BrandingPanel.DEFAULT_TEAMING_IMAGE ) )
+			{
+				// Yes
+				useDefaultImg = true;
+			}
+			// Is the branding image name "__no image__"?
+			else if ( imgName.equalsIgnoreCase( BrandingPanel.NO_IMAGE ) )
+			{
+				// Yes
+				useDefaultImg = false;
+			}
+			else
+			{
+				String imgUrl = brandingData.getLoginDlgImageUrl();
+				if ( imgUrl != null && imgUrl.length() > 0 )
+					useDefaultImg = false;
+			}
+		}	
+		return useDefaultImg?false:true;
+	}
+	
+	private void handleLoginFormPanel(boolean allowCancel, LoginStatus loginStatus, Long loginUserId)
+	{
 		if ( m_initialized )
 		{
 			centerAndShow();
@@ -1533,11 +1636,9 @@ public class LoginDlg extends DlgBox
 
 		// Create the header.  getSiteBrandingDataThenCreateHeader() will show the dialog when it is finished.
 		m_initialized = true;
-		getSiteBrandingDataThenCreateHeader();
-
 		// Issue an ajax request to get self registration info and a list of open id providers
-		getLoginInfoFromServer( loginStatus );
-	}
+		getLoginInfoFromServer( loginStatus );	
+	}	
 	
 	/**
 	 * 
