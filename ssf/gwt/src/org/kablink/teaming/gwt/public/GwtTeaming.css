@@ -3343,6 +3343,44 @@ body, table td, select
 	-webkit-border-radius: 5px;
 }
 
+.mfteamingDlgBox
+{
+	font-family: Arial,Helvetica,sans-serif;
+	padding: 6px;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	color: #fff !important;
+	width:350px;
+}
+
+.mfteamingDlgBox .popupContent
+{
+	background-color: #3973b9;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.mfteamingDlgBoxFooter
+{
+	background-color: #3973b9;
+/*	box-shadow: 0px 2px 3px #e0e0e0 inset;  */
+	border-top: 1px solid #e0e0e0;
+	margin-top: 10px;
+	padding: 10px;
+	position: relative;
+	text-align: right;
+	vertical-align: middle;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+	z-index: 1900;
+}
+
 /* Styles for the content of a dialog box. */
 .teamingDlgBoxContent
 {
