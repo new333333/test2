@@ -1,21 +1,20 @@
 <!--  This form is used for logging in. -->
-<div id="microFocusLoginPage" style="display: none">
+<div id="microFocusLoginPage" style="display: visible">
+<p>MF Login Page</p>
 	<form name="loginFormName" id="microFocusLoginFormId" method="post"
 		action="<c:out value="${ss_loginPostUrl}" escapeXml="true"/>"
 		style="display: none;" accept-charset="UTF-8">
-		<table cellspacing="4" class="dlgContent" style="margin: 10px;">
+		<table cellspacing="4" class="dlgContent" style="margin: 0 auto; width: 80%">
 			<colgroup>
 				<col>
 			</colgroup>
 			<tbody>
 				<tr>
-					<td><span id="userIdLabel"></span></td>
-					<td><input type="text" size="20" id="j_usernameId"
+					<td colspan="2"><input type="text" size="20" id="j_usernameId"
 						name="j_username" class="gwt-TextBox"></td>
 				</tr>
 				<tr>
-					<td><span id="pwdLabel"></span></td>
-					<td><input type="password" size="20" id="j_passwordId"
+					<td colspan="2"><input type="password" size="20" id="j_passwordId"
 						name="j_password" class="gwt-PasswordTextBox"></td>
 				</tr>
 				<tr>
