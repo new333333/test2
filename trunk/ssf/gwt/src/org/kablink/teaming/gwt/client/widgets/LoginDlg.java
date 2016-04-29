@@ -422,8 +422,8 @@ public class LoginDlg extends DlgBox
 	{
 		Element formElement;
 
-		/*if ( m_formPanel != null )
-			return;*/
+		if ( m_formPanel != null )
+			return;
 		
 		// Get the <form ...> element that was created by GwtMainPage.jsp
 		if(m_isLoginBranded)
@@ -432,7 +432,7 @@ public class LoginDlg extends DlgBox
 		}
 		else
 		{
-			formElement = Document.get().getElementById( "microFocusLoginFormId" );			
+			formElement = Document.get().getElementById( "microFocusLoginFormId" );		
 		}
 		m_formPanel = new LoginFormPanel( formElement );
 		m_formPanel.setVisible( true );
@@ -1512,6 +1512,7 @@ public class LoginDlg extends DlgBox
 						// session has expired, handleGwtRPCFailure() will invoke this login dialog again
 						// and we will be in an infinite loop.
 						m_isLoginBranded=false;
+						//setDialogStyle(false);
 						Document.get().getElementById("genericLoginPage").removeFromParent();
 						handleLoginFormPanel(allowCancel,loginStatus,loginUserId);						
 						createHeaderNow( null );
@@ -1535,15 +1536,18 @@ public class LoginDlg extends DlgBox
 					public void execute()
 					{
 						m_isLoginBranded=isLoginDlgBranded(brandingData);
+						setDialogStyle(m_isLoginBranded);
 						if(m_isLoginBranded){
 							Document.get().getElementById("microFocusLoginPage").removeFromParent();
+							handleLoginFormPanel(allowCancel,loginStatus,loginUserId);
+							createHeaderNow( brandingData );
 						}
 						else
 						{
 							Document.get().getElementById("genericLoginPage").removeFromParent();
-						}
-						handleLoginFormPanel(allowCancel,loginStatus,loginUserId);						
-						createHeaderNow( brandingData );
+							handleLoginFormPanel(allowCancel,loginStatus,loginUserId);
+							centerAndShow();
+						}																	
 					}
 				} );				
 			}
@@ -1556,6 +1560,13 @@ public class LoginDlg extends DlgBox
 		HttpRequestInfo httpRequestInfo = HttpRequestInfo.createHttpRequestInfo();
 		httpRequestInfo.setUserLoginId( null );
 		GwtClientHelper.executeCommand( cmd, httpRequestInfo, getSiteBrandingCallback );
+	}
+	
+	private void setDialogStyle(boolean isBranded){
+		if(!isBranded){			
+			setStyleName("mfteamingDlgBox");
+			//getFooterPanel().setStyleName("mfteamingDlgBoxFooter");
+		}
 	}
 	
 	private boolean isLoginDlgBranded(GwtBrandingData brandingData)
@@ -2189,10 +2200,14 @@ public class LoginDlg extends DlgBox
 			String userName;
 			
 			m_userIdLabelElement = Document.get().getElementById( "userIdLabel" );
-			m_userIdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgUserId() );
+			if(m_userIdLabelElement!=null)	
+				m_userIdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgUserId() );
 			
 			userIdElement = Document.get().getElementById( "j_usernameId" );
 			m_userIdTxtBox = TextBox.wrap( userIdElement );
+			
+			if(!m_isLoginBranded)
+				m_userIdTxtBox.getElement().setAttribute("placeholder", GwtTeaming.getMessages().loginDlgUserId());
 			
 			// Do we have the user name for an external user trying to log in for the first time?
 			userName = GwtTeaming.getMainPage().getLoginExternalUserName();
@@ -2205,10 +2220,14 @@ public class LoginDlg extends DlgBox
 			Element pwdTxtBoxElement;
 			
 			m_pwdLabelElement = Document.get().getElementById( "pwdLabel" );
-			m_pwdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgPassword() );
+			if(m_pwdLabelElement!=null)
+				m_pwdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgPassword() );
 			
 			pwdTxtBoxElement = Document.get().getElementById( "j_passwordId" );
 			m_pwdTxtBox = PasswordTextBox.wrap( pwdTxtBoxElement );
+			
+			if(!m_isLoginBranded)
+				m_pwdTxtBox.getElement().setAttribute("placeholder", GwtTeaming.getMessages().loginDlgPassword());
 		}
 		
 		// Add the controls needed for captcha
