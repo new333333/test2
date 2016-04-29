@@ -1,5 +1,6 @@
 <!--  This form is used for logging in. -->
 <div id="genericLoginPage" style="display: none">
+<p>Generic Login Page</p>
 	<form name="loginFormName" id="genericLoginFormId" method="post"
 		action="<c:out value="${ss_loginPostUrl}" escapeXml="true"/>"
 		style="display: none;" accept-charset="UTF-8">
