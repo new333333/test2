@@ -3365,8 +3365,6 @@ body, table td, select
 .mfteamingDlgBoxFooter
 {
 	background-color: #3973b9;
-/*	box-shadow: 0px 2px 3px #e0e0e0 inset;  */
-	border-top: 1px solid #e0e0e0;
 	margin-top: 10px;
 	padding: 10px;
 	position: relative;
@@ -3379,6 +3377,59 @@ body, table td, select
 	-webkit-border-bottom-left-radius: 3px;
 	-webkit-border-bottom-right-radius: 3px;
 	z-index: 1900;
+}
+
+.loginContainer .loginFormFields{
+	background-color:#3973b9;	
+	color:#fff !important;
+	display:block;
+	margin:0 auto;
+	width:75%;
+	padding:8px;
+	padding-left: 35px;	
+}
+
+.loginContainer .loginUserField{
+	border:2px solid #50BEED;
+	border-bottom:0;
+	background: url(images/username-user-icon.png) no-repeat scroll 10px center transparent;	
+	-webkit-autofill { background-color: #fff !important;
+}
+}
+
+.loginContainer .loginPasswordField{
+	border:2px solid #50BEED;
+	background: url(images/password-lock-icon.png) no-repeat scroll 10px center transparent;
+	-webkit-autofill { background-color: #fff !important;	
+}
+
+.loginFailedMsgDiv, .authenticatingDiv{
+	width:250px;
+	font-size:small;
+	margin: 0 auto;
+	margin-top:16px;
+	color:#fff;
+}
+
+.forgotPasswordStyle, .createNewAccountStyle{
+	color: #fff !important;	
+	display:block;
+	width:95%;
+	text-align:right;
+	font-size:10px;
+}
+
+.forgotPasswordStyle:hover, .createNewAccountStyle:hover{}
+
+.signInBtnContainer .signInBtn{
+	display:block;
+	background-color: #2a3d44;
+	border-radius:25px;
+	width:75%;
+	padding:8px !important;
+	color:#fff;
+	border:0px;
+	margin:0 auto;
 }
 
 /* Styles for the content of a dialog box. */
