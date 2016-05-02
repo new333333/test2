@@ -1546,7 +1546,7 @@ public class LoginDlg extends DlgBox
 						{
 							Document.get().getElementById("genericLoginPage").removeFromParent();
 							handleLoginFormPanel(allowCancel,loginStatus,loginUserId);
-							centerAndShow();
+							createHeaderNow( brandingData );
 						}																	
 					}
 				} );				
