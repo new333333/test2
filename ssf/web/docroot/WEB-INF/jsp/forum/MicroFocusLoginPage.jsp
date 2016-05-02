@@ -1,98 +1,57 @@
 <!--  This form is used for logging in. -->
 <div id="microFocusLoginPage" style="display: visible">
-<p>MF Login Page</p>
-	<form name="loginFormName" id="microFocusLoginFormId" method="post"
-		action="<c:out value="${ss_loginPostUrl}" escapeXml="true"/>"
+	<form name="loginFormName" id="microFocusLoginFormId" method="post" autocomplete="off" action="<c:out value="${ss_loginPostUrl}" escapeXml="true"/>"
 		style="display: none;" accept-charset="UTF-8">
-		<table cellspacing="4" class="dlgContent" style="margin: 0 auto; width: 80%">
-			<colgroup>
-				<col>
-			</colgroup>
-			<tbody>
-				<tr>
-					<td colspan="2"><input type="text" size="20" id="j_usernameId"
-						name="j_username" class="gwt-TextBox"></td>
-				</tr>
-				<tr>
-					<td colspan="2"><input type="password" size="20" id="j_passwordId"
-						name="j_password" class="gwt-PasswordTextBox"></td>
-				</tr>
-				<tr>
-					<td align="right"></td>
-					<td>
-						<div class="gwt-Label margintop3 loginDlgKeyShieldPanel"
-							style="display: none; width: 300px; white-space: normal !important;"
-							id="loginDlgKeyShieldPanel">
-							<span class="gwt-InlineLabel loginDlgKeyShieldErrorMessage"
-								id="loginDlgKeyShieldErrorMessage"></span>
-							<div class="gwt-Label loginDlgKeyShieldRefererPanel"
-								id="loginDlgKeyShieldRefererPanel">
-								<a class="gwt-Anchor loginDlgKeyShieldRefererLink" href="#"
-									target="_top" id="loginDlgKeyShieldRefererLink"><ssf:nlt
-										tag="loginDlg.keyShieldRefererLink" /></a>
-							</div>
-						</div>
-					</td>
-				</tr>
-				<tr>
-					<td align="right"></td>
-					<td>
-						<div class="gwt-Label loginFailedMsg"
-							style="display: none; width: 250px;" id="loginFailedMsgDiv"></div>
-					</td>
-				</tr>
-				<tr>
-					<td align="right"></td>
-					<td>
-						<div class="gwt-Label loginAuthenticatingMsg"
-							style="display: none;" id="authenticatingDiv"></div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+		<div class="dlgContent" style="margin: 0 auto; width: 100%">
+			<div class="loginBrandingContainer">
+				<img id="brandingImage"/>				
+			</div>
+			<div class="loginContainer" style="padding-top:40px;">
+				<div>
+					<input type="text" id="j_usernameId" name="j_username" autocomplete="off" class="loginFormFields loginUserField">
+				</div>
+				<div>
+					<input type="password" id="j_passwordId" name="j_password" autocomplete="off" class="loginFormFields loginPasswordField">
+				</div>
+			</div>
+			<div class="gwt-Label margintop3 loginDlgKeyShieldPanel" style="display: none; width: 300px; white-space: normal !important;" id="loginDlgKeyShieldPanel">
+				<span class="gwt-InlineLabel loginDlgKeyShieldErrorMessage" id="loginDlgKeyShieldErrorMessage"></span>
+				<div class="gwt-Label loginDlgKeyShieldRefererPanel" id="loginDlgKeyShieldRefererPanel">
+					<a class="gwt-Anchor loginDlgKeyShieldRefererLink" href="#" target="_top" id="loginDlgKeyShieldRefererLink">
+						<ssf:nlt tag="loginDlg.keyShieldRefererLink" />
+					</a>
+				</div>
+			</div>
+			<div class="gwt-Label loginFailedMsg" id="loginFailedMsgDiv"></div>
+			<div class="gwt-Label loginAuthenticatingMsg" id="authenticatingDiv"></div>
+		</div>
 
 		<!-- If needed, show the Text Verification controls. -->
-		<%@ include
-			file="/WEB-INF/jsp/definition_elements/textVerification.jsp"%>
+		<%@ include file="/WEB-INF/jsp/definition_elements/textVerification.jsp"%>
 
-		<table cellspacing="4" class="dlgContent" style="margin: 10px;">
-			<colgroup>
-				<col>
-			</colgroup>
-			<tbody>
-				<tr>
-					<td><span
-						class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2"
-						style="display: none;" id="forgottenPwdSpan"></span></td>
-					<td><span
-						class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2"
-						style="display: none;" id="createNewAccountSpan"></span></td>
-				</tr>
-			</tbody>
-		</table>
-
-		<div class="teamingDlgBoxFooter" id="loginDlgFooterId"
-			style="margin: 0px !important;">
-			<button type="submit" class="gwt-Button teamingButton"
-				id="loginOkBtn"></button>
+		<div class="mfteamingDlgBoxFooter" id="loginDlgFooterId" style="margin: 0px !important;">
+			<div class="signInBtnContainer">
+				<button type="submit" class="signInBtn" id="loginOkBtn"></button>
+			</div>
 			<div id="termsBlock">
-				<div id="termsContainer" class="gwt-CheckBox"
-					style="display: none; float: left;">
+				<div id="termsContainer" class="gwt-CheckBox" style="display: none; float: left;">
 					<div>
-						<input id="acceptTermsCheckBox" type="checkbox"
-							style="float: left;" /> <label id="acceptTermsAnchor"
-							style="position: absolute; margin-top: -2px;">I accept <span
-							style="cursor: pointer; color: #135c8f; text-decoration: underline;">terms
-								and conditions</span></label>
+						<input id="acceptTermsCheckBox" type="checkbox" style="float: left;" /> 
+						<label id="acceptTermsAnchor" style="position: absolute; margin-top: -2px;">I accept <span style="cursor: pointer; color: #135c8f; text-decoration: underline;">terms and conditions</span></label>
 					</div>
 				</div>
-				<button type="button" class="teamingButton"
-					style="display: none; color: white;" id="loginRegisterBtn"></button>
+				<button type="button" class="teamingButton" style="display: none; color: white;" id="loginRegisterBtn"></button>
 			</div>
-			<button type="button" class="gwt-Button teamingButton"
-				style="display: none;" id="resetPwdBtn"></button>
-			<button type="button" class="gwt-Button teamingButton" style=""
-				id="loginCancelBtn"></button>
-		</div>
+			<button type="button" class="gwt-Button teamingButton" style="display: none;" id="resetPwdBtn"></button>
+			<button type="button" class="gwt-Button teamingButton" style="" id="loginCancelBtn"></button>
+			<div class="dlgContent" style="margin: 10px;">
+				<div>
+					<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2 forgotPasswordStyle" style="display: none;" id="forgottenPwdSpan"></span>
+				</div>
+				<div>
+					<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2 createNewAccountStyle" style="display: none;" id="createNewAccountSpan">
+				</div>
+			</div>
+		</div>		
 	</form>
 </div>
