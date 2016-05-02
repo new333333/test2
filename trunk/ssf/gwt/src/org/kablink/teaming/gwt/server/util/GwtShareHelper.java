@@ -2243,22 +2243,13 @@ public class GwtShareHelper
 		role.setType( GwtRoleType.EnableShareExternal );
 		listOfRoles.add( role );
 		role = new GwtRole();
-		role.setType( GwtRoleType.EnableShareFolderExternal );
-		listOfRoles.add( role );
-		role = new GwtRole();
 		role.setType( GwtRoleType.EnableShareForward );
 		listOfRoles.add( role );
 		role = new GwtRole();
 		role.setType( GwtRoleType.EnableShareInternal );
 		listOfRoles.add( role );
 		role = new GwtRole();
-		role.setType( GwtRoleType.EnableShareFolderInternal );
-		listOfRoles.add( role );
-		role = new GwtRole();
 		role.setType( GwtRoleType.EnableSharePublic );
-		listOfRoles.add( role );
-		role = new GwtRole();
-		role.setType( GwtRoleType.EnableShareFolderPublic );
 		listOfRoles.add( role );
 		if (Utils.checkIfKablink() || Utils.checkIfVibe()) {
 			role = new GwtRole();
