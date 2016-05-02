@@ -2432,7 +2432,6 @@ public class ShareThisDlg2 extends DlgBox
 		
 		m_entityIds = entityIds;
 		m_mode = mode;
-		final EntityId entityId=m_entityIds.get(0);
 		
 		updateHeader();
 
@@ -2538,20 +2537,34 @@ public class ShareThisDlg2 extends DlgBox
 					{
 						@Override
 						public void execute() 
-						{	
-							ShareRights shareRights=sharingInfo.getShareRights(entityId);
-							boolean isRestricted=shareRights!=null && shareRights.getAccessRights() == AccessRights.NONE;
-							m_findCtrl.getFocusWidget().setEnabled(!isRestricted);
-							if(isRestricted){
-								sharingInfo.setCanShareWithExternalUsers(false);
-								m_shareRightsInfoImg.setVisible(false);
-								m_restrictedShareRightsInfoImg.setVisible(true);
+						{								
+							if(sharingInfo.getListOfShareItems()!=null && sharingInfo.getListOfShareItems().size()>0){
+								ShareRights shareRights=sharingInfo.getShareRights(sharingInfo.getListOfShareItems().get(0).getEntityId());
+								if(shareRights!=null){
+									boolean isRestricted=shareRights.getAccessRights() == AccessRights.NONE;
+									m_findCtrl.getFocusWidget().setEnabled(!isRestricted);
+									if(isRestricted){
+										sharingInfo.setCanShareWithExternalUsers(false);
+										m_shareRightsInfoImg.setVisible(false);
+										m_restrictedShareRightsInfoImg.setVisible(true);
+									}
+									else{
+										m_shareRightsInfoImg.setVisible(true);
+										m_restrictedShareRightsInfoImg.setVisible(false);
+									}
+									m_addExternalUserImg.setVisible(!isRestricted);
+								}
+								else{
+									m_shareRightsInfoImg.setVisible(true);
+									m_restrictedShareRightsInfoImg.setVisible(false);
+									m_addExternalUserImg.setVisible(true);
+								}
 							}
 							else{
 								m_shareRightsInfoImg.setVisible(true);
 								m_restrictedShareRightsInfoImg.setVisible(false);
+								m_addExternalUserImg.setVisible(true);
 							}
-							m_addExternalUserImg.setVisible(!isRestricted);
 							updateSharingInfo( sharingInfo );
 							hideStatusMsg();
 						}
