@@ -1529,8 +1529,31 @@ body, table td, select
 	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
 	background-color: transparent;
 }
+
+.mfteamingDlgBox span.forgotPasswordStyle, .mfteamingDlgBox span.createNewAccountStyle,.mfteamingDlgBox span.forgotPasswordStyle:hover, .mfteamingDlgBox span.createNewAccountStyle:hover, .mfteamingDlgBox  #forgottenPwdSpan:hover{
+	color: #fff !important;		
+	width:95% !important;
+	text-align:right !important;
+	font-size:10px !important;
+	cursor: pointer !important;
+	margin-right:20px;
+}
+
+.mfteamingDlgBox .copyright span{
+	margin: 0 auto;
+    display: block;
+    width: 75%%;
+    text-align: left;
+    font-size: 10px;
+    padding: 25px;
+    padding-top: 50px;
+}
+
+.mfteamingDlgBox .popupContent img{
+	width:99% !important;	
+}
 	
-.editBrandingBrowseLink:hover, .editBrandingAdvancedLink:hover, .addAttachmentLink:hover, .colorPickerLink:hover, #forgottenPwdSpan:hover
+.editBrandingBrowseLink:hover, .editBrandingAdvancedLink:hover, .addAttachmentLink:hover, .colorPickerLink:hover, .teamingDlgBox #forgottenPwdSpan:hover
 {
 	color: #036f9f !important;
 	border: 1px solid #81b2bd;
@@ -3356,7 +3379,7 @@ body, table td, select
 
 .mfteamingDlgBox .popupContent
 {
-	background-color: #3973b9;
+	background-color: #0078ef;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -3364,7 +3387,7 @@ body, table td, select
 
 .mfteamingDlgBoxFooter
 {
-	background-color: #3973b9;
+	background-color: #0078ef;
 	margin-top: 10px;
 	padding: 10px;
 	position: relative;
@@ -3379,8 +3402,23 @@ body, table td, select
 	z-index: 1900;
 }
 
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #fff;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #fff;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #fff;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    #fff;
+}
+
 .loginContainer .loginFormFields{
-	background-color:#3973b9;	
+	background-color:#0078ef;	
 	color:#fff !important;
 	display:block;
 	margin:0 auto;
@@ -3390,17 +3428,16 @@ body, table td, select
 }
 
 .loginContainer .loginUserField{
-	border:2px solid #50BEED;
+	border:2px solid #38c1ff;
 	border-bottom:0;
 	background: url(images/username-user-icon.png) no-repeat scroll 10px center transparent;	
-	-webkit-autofill { background-color: #fff !important;
-}
+	-webkit-autofill: background-color: #fff !important;
 }
 
 .loginContainer .loginPasswordField{
-	border:2px solid #50BEED;
+	border:2px solid #38c1ff;
 	background: url(images/password-lock-icon.png) no-repeat scroll 10px center transparent;
-	-webkit-autofill { background-color: #fff !important;	
+	-webkit-autofill: background-color: #fff !important;	
 }
 
 .loginFailedMsgDiv, .authenticatingDiv{
@@ -3411,25 +3448,12 @@ body, table td, select
 	color:#fff;
 }
 
-.forgotPasswordStyle, .createNewAccountStyle{
-	color: #fff !important;	
-	display:block;
-	width:95%;
-	text-align:right;
-	font-size:10px;
-}
-
-.forgotPasswordStyle:hover, .createNewAccountStyle:hover{}
-
-.signInBtnContainer .signInBtn{
-	display:block;
-	background-color: #2a3d44;
-	border-radius:25px;
-	width:75%;
-	padding:8px !important;
-	color:#fff;
-	border:0px;
-	margin:0 auto;
+.mfteamingDlgBox .loginFailedMsg, .mfteamingDlgBox .loginAuthenticatingMsg{
+	color: white;
+    width: 75%;
+    padding-left: 24px;
+    padding-top: 10px;
+    font-size: 12px;
 }
 
 /* Styles for the content of a dialog box. */
