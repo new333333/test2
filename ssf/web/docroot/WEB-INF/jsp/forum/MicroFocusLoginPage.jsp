@@ -6,7 +6,7 @@
 			<div class="loginBrandingContainer">
 				<img id="brandingImage"/>				
 			</div>
-			<div class="loginContainer" style="padding-top:40px;">
+			<div class="loginContainer" style="margin-top:20px;">
 				<div>
 					<input type="text" id="j_usernameId" name="j_username" autocomplete="off" class="loginFormFields loginUserField">
 				</div>
@@ -46,11 +46,14 @@
 			<button type="button" class="gwt-Button teamingButton" style="" id="loginCancelBtn"></button>
 			<div class="dlgContent" style="margin: 10px;">
 				<div>
-					<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2 forgotPasswordStyle" style="display: none;" id="forgottenPwdSpan"></span>
+					<span class="gwt-InlineLabel margintop3 forgotPasswordStyle" style="display: none;" id="forgottenPwdSpan"></span>
 				</div>
 				<div>
 					<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2 createNewAccountStyle" style="display: none;" id="createNewAccountSpan">
 				</div>
+			</div>
+			<div class="copyright">
+				<span class="copyright">&copy; 2016 Micro Focus Inc. All rights reserved.</span>
 			</div>
 		</div>		
 	</form>
