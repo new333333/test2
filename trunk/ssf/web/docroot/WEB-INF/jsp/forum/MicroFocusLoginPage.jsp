@@ -34,13 +34,15 @@
 				<button type="submit" class="signInBtn" id="loginOkBtn"></button>
 			</div>
 			<div id="termsBlock">
+				<div>
+					<button type="button" class="registerBtn" style="display: none; color: white;" id="loginRegisterBtn"></button>
+				</div>
 				<div id="termsContainer" class="gwt-CheckBox" style="display: none; float: left;">
 					<div>
 						<input id="acceptTermsCheckBox" type="checkbox" style="float: left;" /> 
 						<label id="acceptTermsAnchor" style="position: absolute; margin-top: -2px;">I accept <span style="cursor: pointer; color: #135c8f; text-decoration: underline;">terms and conditions</span></label>
 					</div>
 				</div>
-				<button type="button" class="teamingButton" style="display: none; color: white;" id="loginRegisterBtn"></button>
 			</div>
 			<button type="button" class="gwt-Button teamingButton" style="display: none;" id="resetPwdBtn"></button>
 			<button type="button" class="gwt-Button teamingButton" style="" id="loginCancelBtn"></button>
