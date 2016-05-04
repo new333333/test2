@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.MainContentLayoutPanel;
 
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 /**
  * Base class that binder views MUST extend so that they'll say when
@@ -52,7 +53,7 @@ public abstract class ViewBase extends ResizeComposite
 		// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler
 {
-	private   final        ViewReady			m_viewReady;							// Stores a ViewReady created for the classes that extends it.
+	protected   final        ViewReady			m_viewReady;							// Stores a ViewReady created for the classes that extends it.
 	protected final static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized string resource.
 
 	// The following are used when setting the view's size to account
@@ -106,6 +107,7 @@ public abstract class ViewBase extends ResizeComposite
 	 */
 	@Override
 	protected void initWidget(Widget widget) {
+		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ": initWidget() for " + widget.getClass().getSimpleName());
 		super.initWidget(widget);
 		addStyleName("vibe-viewBase");
 	}
