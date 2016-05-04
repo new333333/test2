@@ -9457,9 +9457,8 @@ public class GwtViewHelper {
 						bi = GwtServerHelper.getBinderInfo(bs, request, userWS.getId());
 					}
 				}
-			} else {
+			} else if (GwtFolderViewHelper.hasCustomView(bs, binder)) {
 				vi.setViewLayout(GwtFolderViewHelper.buildBinderViewLayout(binder));
-				//vi.setViewLayout(new BinderViewContainer());
 				vi.setCustomLayout(true);
 			}
 

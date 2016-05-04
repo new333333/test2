@@ -1697,6 +1697,10 @@ public class GwtClientHelper {
 		}
 		return reply;
 	}
+
+	public static native void consoleLog(String msg) /*-{
+		console.log(msg);
+	}-*/;
 	
 	/**
 	 * Returns true if the browser supports the HTML5 file APIs and false

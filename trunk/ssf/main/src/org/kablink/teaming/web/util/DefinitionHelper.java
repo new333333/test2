@@ -2011,4 +2011,16 @@ public class DefinitionHelper {
 		} catch(Exception e) {}
 		return text;
 	}
+
+	public static Map<String, String> getDefinitionProperties(Element itemDefinition) {
+		List<Element> propNodes = itemDefinition.selectNodes("properties/property");
+		Map<String, String> props = new HashMap<String, String>();
+		for (Element property : propNodes) {
+			String propertyName = property.attributeValue("name", "");
+			if (!Validator.isNull(propertyName)) {
+				props.put(propertyName, property.attributeValue("value", ""));
+			}
+		}
+		return props;
+	}
 }

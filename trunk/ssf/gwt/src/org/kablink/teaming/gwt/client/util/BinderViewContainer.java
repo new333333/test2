@@ -40,6 +40,7 @@ import java.util.List;
  */
 public class BinderViewContainer extends BinderViewDefBase {
     private List<BinderViewDefBase> children;
+    private Width width;
 
     public BinderViewContainer() {
         children = new ArrayList<BinderViewDefBase>();
@@ -51,5 +52,13 @@ public class BinderViewContainer extends BinderViewDefBase {
 
     public void setChildren(List<BinderViewDefBase> children) {
         this.children = children;
+    }
+
+    public Width getWidth() {
+        return width;
+    }
+
+    public void setWidth(Width width) {
+        this.width = width;
     }
 }

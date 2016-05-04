@@ -33,7 +33,9 @@
 
 package org.kablink.teaming.gwt.client;
 
+import com.google.gwt.user.client.ui.Widget;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
@@ -121,8 +123,9 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel implements VibeE
 	/**
 	 * Show a widget other than m_contentCtrl and m_activityStreamCtrl
 	 */
-	public void showWidget( ResizeComposite composite )
+	public void showWidget( Widget composite )
 	{
+		GwtClientHelper.consoleLog("MainContentLayoutPanel: showWidget() for " + composite.getClass().getName());
 		// Do we have a widget to show?
 		if ( composite != null )
 		{
@@ -135,7 +138,7 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel implements VibeE
 		if ( m_miscWidget != null )
 			m_contentFlowPanel.remove( m_miscWidget );
 
-		m_miscWidget = composite;
+		m_miscWidget = (ResizeComposite) composite;
 
 		// Add the new widget
 		if ( composite != null )

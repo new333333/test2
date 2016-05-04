@@ -32,29 +32,70 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * Created by david on 4/13/16.
  */
-public class BinderViewTwoColumnTable extends BinderViewContainer {
-    private Width column1Width;
-    private Width column2Width;
+public class Width implements IsSerializable {
+    public enum Unit implements IsSerializable {
+        pixels,
+        percentage
+    }
+    private int value;
+    private Unit unit;
 
-    public BinderViewTwoColumnTable() {
+    public static Width parseWidth(String widthStr) {
+        Width width = null;
+        if (widthStr!=null) {
+            widthStr = widthStr.trim();
+            try {
+                if (widthStr.endsWith("%")) {
+                    if (widthStr.length() > 1) {
+                        width = new Width(Integer.parseInt(widthStr.substring(0, widthStr.length() - 1)), Unit.percentage);
+                    }
+                } else if (widthStr.endsWith("px")) {
+                    if (widthStr.length() > 2) {
+                        width = new Width(Integer.parseInt(widthStr.substring(0, widthStr.length() - 2)), Unit.pixels);
+                    }
+                } else {
+                    width = new Width(Integer.parseInt(widthStr), Unit.pixels);
+                }
+            } catch (NumberFormatException e) {
+            }
+        }
+        return width;
     }
 
-    public Width getColumn1Width() {
-        return column1Width;
+    public Width() {
     }
 
-    public void setColumn1Width(Width column1Width) {
-        this.column1Width = column1Width;
+    public Width(int value, Unit unit) {
+        this.value = value;
+        this.unit = unit;
     }
 
-    public Width getColumn2Width() {
-        return column2Width;
+    public Unit getUnit() {
+        return unit;
     }
 
-    public void setColumn2Width(Width column2Width) {
-        this.column2Width = column2Width;
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        if (unit==Unit.percentage) {
+            return Integer.toString(value) + "%";
+        }
+        return Integer.toString(value);
     }
 }
