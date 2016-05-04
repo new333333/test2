@@ -703,8 +703,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
   		margin-right: 1px;
 	</c:if>
 	}	
-.mfteamingDlgBox button.signInBtn, .mfteamingDlgBox button.signInBtn:hover{
-	display:block !important;
+.mfteamingDlgBox button.signInBtn, .mfteamingDlgBox button.signInBtn:hover, .mfteamingDlgBox button.registerBtn, .mfteamingDlgBox button.registerBtn:hover{
 	background-color: #2a3d44 !important;
 	border-radius:25px !important;
 	width:75% !important;
