@@ -713,6 +713,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 	margin:0 auto !important;
 	margin-top: 40px !important;
 	margin-bottom: 12px !important;
+	display:block;
 }	
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
 	color: #036f9f !important;
