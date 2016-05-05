@@ -1484,6 +1484,11 @@ public class NetFolderHelper
         listOfRoles.add(AssignedRole.RoleType.ShareForward);
         listOfRoles.add(AssignedRole.RoleType.ShareInternal);
         listOfRoles.add( AssignedRole.RoleType.SharePublic );
+        listOfRoles.add( AssignedRole.RoleType.SharePublicLinks );
+        listOfRoles.add(AssignedRole.RoleType.ShareFolderExternal);
+        listOfRoles.add(AssignedRole.RoleType.ShareFolderForward);
+        listOfRoles.add(AssignedRole.RoleType.ShareFolderInternal);
+        listOfRoles.add( AssignedRole.RoleType.ShareFolderPublic );
 
         return AdminHelper.getAssignedRights(ami, binder, listOfRoles);
     }

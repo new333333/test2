@@ -12,7 +12,7 @@
  * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
  * CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS IN THE WORK.
  */
-package org.kablink.teaming.rest.v1.model;
+package org.kablink.teaming.rest.v1.model.admin;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -20,10 +20,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Sharing permissions
  */
-@XmlRootElement(name="sharing_permission")
-public class SharingPermission {
+@XmlRootElement(name="system_sharing_permission")
+public class SystemSharingPermission {
     private Boolean internal;
     private Boolean external;
+    private Boolean allInternal;
+    private Boolean allExternal;
     private Boolean public_;
     private Boolean publicLink;
     private Boolean grantReshare;
@@ -50,6 +52,30 @@ public class SharingPermission {
 
     public void setInternal(Boolean internal) {
         this.internal = internal;
+    }
+
+    /**
+     * Whether or not sharing with the All Internal Users group is allowed.
+     */
+    @XmlElement(name = "all_internal")
+    public Boolean getAllInternal() {
+        return allInternal;
+    }
+
+    public void setAllInternal(Boolean allInternal) {
+        this.allInternal = allInternal;
+    }
+
+    /**
+     * Whether or not sharing with the All External Users group is allowed.
+     */
+    @XmlElement(name = "all_external")
+    public Boolean getAllExternal() {
+        return allExternal;
+    }
+
+    public void setAllExternal(Boolean allExternal) {
+        this.allExternal = allExternal;
     }
 
     /**
@@ -86,23 +112,5 @@ public class SharingPermission {
 
     public void setGrantReshare(Boolean grantReshare) {
         this.grantReshare = grantReshare;
-    }
-
-    public void mergeIn(SharingPermission fileSharing) {
-        if (fileSharing.internal!=null) {
-            internal = fileSharing.internal;
-        }
-        if (fileSharing.external!=null) {
-            internal = fileSharing.external;
-        }
-        if (fileSharing.public_!=null) {
-            internal = fileSharing.public_;
-        }
-        if (fileSharing.publicLink!=null) {
-            internal = fileSharing.publicLink;
-        }
-        if (fileSharing.grantReshare!=null) {
-            internal = fileSharing.grantReshare;
-        }
     }
 }

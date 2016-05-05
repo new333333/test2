@@ -28,8 +28,7 @@ public class Access extends BaseRestObject {
         NONE,
         VIEWER,
         EDITOR,
-        CONTRIBUTOR,
-        ACCESS
+        CONTRIBUTOR
     }
 
     /**
@@ -39,8 +38,7 @@ public class Access extends BaseRestObject {
     private SharingPermission sharing;
 
     /**
-     * Allowed values are <code>NONE</code>, <code>VIEWER</code>, <code>EDITOR</code>, <code>CONTRIBUTOR</code> and <code>ACCESS</code>.
-     * Not all values are allowed in every context where Access objects are used.
+     * Allowed values are <code>NONE</code>, <code>VIEWER</code>, <code>EDITOR</code>, and <code>CONTRIBUTOR</code>
      */
     public String getRole() {
         return role;

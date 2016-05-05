@@ -38,25 +38,20 @@ import com.webcohesion.enunciate.metadata.rs.ResourceLabel;
 import com.webcohesion.enunciate.metadata.rs.ResponseCode;
 import com.webcohesion.enunciate.metadata.rs.StatusCodes;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NetFolderConfig;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
-import org.kablink.teaming.remoting.rest.v1.resource.AbstractResource;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
+import org.kablink.teaming.rest.v1.model.Recipient;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.admin.NetFolder;
-import org.kablink.teaming.rest.v1.model.admin.NetFolderServer;
+import org.kablink.teaming.rest.v1.model.admin.NetFolderAssignedRight;
 import org.kablink.teaming.rest.v1.model.admin.NetFolderSyncStatus;
-import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.web.util.AssignedRole;
 import org.kablink.teaming.web.util.NetFolderHelper;
-import org.kablink.util.api.ApiErrorCode;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -69,6 +64,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -186,9 +182,118 @@ public class AdminNetFolderResource extends AbstractAdminResource {
             @ResponseCode(code=204, condition="The Net Folder is deleted successfully"),
             @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) No Net Folder exists with the specified ID."),
     })
-    public void deleteNetFolderServer(@PathParam("id") Long id) {
+    public void deleteNetFolder(@PathParam("id") Long id) {
         Folder folder = lookupNetFolder(id);
         NetFolderHelper.deleteNetFolder(getNetFolderModule(), id, false);
+    }
+
+    /**
+     * Retrieves the assigned rights of a Net Folder.
+     * @param id
+     * @return  The assigned rights of the Net Folder.
+     */
+    @GET
+    @Path("{id}/assigned_rights")
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) No Net Folder exists with the specified ID."),
+    })
+    public List<NetFolderAssignedRight> getNetFolderAssignedRights(@PathParam("id") Long id) {
+        NetFolder folder = getNetFolder(id);
+        return folder.getAssignedRights();
+    }
+
+    /**
+     * Grant a user or group rights to the Net Folder.  To remove rights from a user or group, set the Net Folder Access role to "NONE".
+     * @param id    The ID of the Net Folder
+     * @param assignedRight The rights to assign.
+     * @return  The full AssignedRight for the user or group.
+     * @throws WriteFilesException
+     * @throws WriteEntryDataException
+     */
+    @POST
+    @Path("{id}/assigned_rights")
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) No Net Folder exists with the specified ID."),
+    })
+    public NetFolderAssignedRight addNetFolderAssignedRight(@PathParam("id") Long id, NetFolderAssignedRight assignedRight)
+            throws WriteFilesException, WriteEntryDataException {
+        validateMandatoryField(assignedRight, "getPrincipal", "getId");
+        validateMandatoryField(assignedRight, "getPrincipal", "getType");
+        validateMandatoryField(assignedRight, "getAccess");
+
+        toEnum(Recipient.RecipientType.class, "recipient.type", assignedRight.getPrincipal().getType());
+
+        NetFolder folder = getNetFolder(id);
+
+        List<NetFolderAssignedRight> currentRights = folder.getAssignedRights();
+        NetFolderAssignedRight foundRight = null;
+
+        for (NetFolderAssignedRight currentRight : currentRights) {
+            if (currentRight.getPrincipal().equals(assignedRight.getPrincipal())) {
+                foundRight = currentRight;
+                break;
+            }
+        }
+
+        if (foundRight!=null) {
+            foundRight.getAccess().mergeIn(assignedRight.getAccess());
+        } else {
+            currentRights.add(assignedRight);
+        }
+        folder = updateNetFolder(id, folder);
+
+        currentRights = folder.getAssignedRights();
+        foundRight = null;
+
+        for (NetFolderAssignedRight currentRight : currentRights) {
+            if (currentRight.getPrincipal().equals(assignedRight.getPrincipal())) {
+                foundRight = currentRight;
+                break;
+            }
+        }
+        if (foundRight==null) {
+            foundRight = new NetFolderAssignedRight();
+
+        }
+        return foundRight;
+    }
+
+    /**
+     * Sets the Net Folder assigned rights.
+     * @param id    The ID of the Net Folder
+     * @param assignedRights    The rights to assign.
+     * @return  The updated list of assigned rights.
+     * @throws WriteFilesException
+     * @throws WriteEntryDataException
+     */
+    @PUT
+    @Path("{id}/assigned_rights")
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @StatusCodes({
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) No Net Folder exists with the specified ID."),
+    })
+    public List<NetFolderAssignedRight> setNetFolderAssignedRights(@PathParam("id") Long id, List<NetFolderAssignedRight> assignedRights)
+            throws WriteFilesException, WriteEntryDataException {
+        NetFolder folder = getNetFolder(id);
+        List<AssignedRole> assignedRoles = toNetFolderRoles(assignedRights);
+        NetFolderHelper.setNetFolderRights(this, folder.getId(), assignedRoles);
+        return getNetFolder(id).getAssignedRights();
+    }
+
+    /**
+     * Removes all assigned rights for the Net Folder
+     * @param id    The ID of the Net Folder.
+     */
+    @DELETE
+    @Path("{id}/assigned_rights")
+    @StatusCodes({
+            @ResponseCode(code=204, condition="The rights were removed successfully."),
+            @ResponseCode(code=404, condition="(FOLDER_NOT_FOUND) No Net Folder exists with the specified ID."),
+    })
+    public void removeNetFolderAssignedRights(@PathParam("id") Long id) {
+        NetFolder folder = getNetFolder(id);
+        NetFolderHelper.setNetFolderRights(this, folder.getId(), new ArrayList<AssignedRole>());
     }
 
     /**

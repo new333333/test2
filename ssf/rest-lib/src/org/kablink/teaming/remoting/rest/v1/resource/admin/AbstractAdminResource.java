@@ -3,26 +3,19 @@ package org.kablink.teaming.remoting.rest.v1.resource.admin;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.resource.AbstractResource;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
 import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.Recipient;
 import org.kablink.teaming.rest.v1.model.SharingPermission;
-import org.kablink.teaming.rest.v1.model.admin.AssignedRight;
-import org.kablink.teaming.rest.v1.model.admin.AssignedSharingPermission;
-import org.kablink.teaming.rest.v1.model.admin.NetFolder;
-import org.kablink.teaming.rest.v1.model.admin.Schedule;
-import org.kablink.teaming.rest.v1.model.admin.SelectedDays;
-import org.kablink.teaming.rest.v1.model.admin.Time;
+import org.kablink.teaming.rest.v1.model.admin.*;
 import org.kablink.teaming.web.util.AssignedRole;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.api.ApiErrorCode;
@@ -178,30 +171,30 @@ public class AbstractAdminResource extends AbstractResource {
         return schInfo;
     }
 
-    protected List<AssignedRole> toNetFolderRoles(List<AssignedRight> rights) {
+    protected List<AssignedRole> toNetFolderRoles(List<NetFolderAssignedRight> rights) {
         List<AssignedRole> roles = null;
         if (rights!=null) {
             roles = new ArrayList<AssignedRole>();
-            for (AssignedRight right : rights) {
+            for (NetFolderAssignedRight right : rights) {
                 roles.add(toNetFolderRole(right));
             }
         }
         return roles;
     }
 
-    protected AssignedRole toNetFolderRole(AssignedRight right) {
+    protected AssignedRole toNetFolderRole(NetFolderAssignedRight right) {
         validateMandatoryField(right, "getPrincipal", "getId");
         validateMandatoryField(right, "getPrincipal", "getType");
         validateMandatoryField(right, "getAccess", "getRole");
         Recipient.RecipientType recipientType = toEnum(Recipient.RecipientType.class, "'principal'.'type'", right.getPrincipal().getType());
-        Access.RoleType roleType = toEnum(Access.RoleType.class, "'access'.'role'", right.getAccess().getRole());
+        NetFolderAccess.RoleType roleType = toEnum(NetFolderAccess.RoleType.class, "'access'.'role'", right.getAccess().getRole());
         Principal p = getProfileModule().getEntry(right.getPrincipal().getId());
 
         AssignedRole role = new AssignedRole(p);
-        if (roleType != Access.RoleType.NONE ) {
+        if (roleType != NetFolderAccess.RoleType.NONE ) {
             role.addRole(AssignedRole.RoleType.AllowAccess);
         }
-        SharingPermission perms = right.getAccess().getSharing();
+        SharingPermission perms = right.getAccess().getFileSharing();
         if (perms!=null) {
             if (Boolean.TRUE.equals(perms.getInternal())) {
                 role.addRole(AssignedRole.RoleType.ShareInternal);
@@ -217,6 +210,21 @@ public class AbstractAdminResource extends AbstractResource {
             }
             if (Boolean.TRUE.equals(perms.getGrantReshare())) {
                 role.addRole(AssignedRole.RoleType.ShareForward);
+            }
+        }
+        perms = right.getAccess().getFolderSharing();
+        if (perms!=null) {
+            if (Boolean.TRUE.equals(perms.getInternal())) {
+                role.addRole(AssignedRole.RoleType.ShareFolderInternal);
+            }
+            if (Boolean.TRUE.equals(perms.getExternal())) {
+                role.addRole(AssignedRole.RoleType.ShareFolderExternal);
+            }
+            if (Boolean.TRUE.equals(perms.getPublic())) {
+                role.addRole(AssignedRole.RoleType.ShareFolderPublic);
+            }
+            if (Boolean.TRUE.equals(perms.getGrantReshare())) {
+                role.addRole(AssignedRole.RoleType.ShareFolderForward);
             }
         }
         return role;
@@ -240,7 +248,7 @@ public class AbstractAdminResource extends AbstractResource {
         Principal p = getProfileModule().getEntry(permission.getPrincipal().getId());
 
         AssignedRole role = new AssignedRole(p);
-        SharingPermission perms = permission.getSharing();
+        SystemSharingPermission perms = permission.getSharing();
         if (perms!=null) {
             if (Boolean.TRUE.equals(perms.getInternal())) {
                 role.addRole(AssignedRole.RoleType.EnableShareInternal);
