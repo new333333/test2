@@ -32,15 +32,14 @@ public class NetFolderAccess extends BaseRestObject {
     }
 
     /**
-     * One of NONE, VIEWER, EDITOR, CONTRIBUTOR and ACCESS
+     * One of NONE and ACCESS
      */
     private String role;
     private SharingPermission fileSharing;
     private SharingPermission folderSharing;
 
     /**
-     * Allowed values are <code>NONE</code>, <code>VIEWER</code>, <code>EDITOR</code>, <code>CONTRIBUTOR</code> and <code>ACCESS</code>.
-     * Not all values are allowed in every context where Access objects are used.
+     * Allowed values are <code>NONE</code> and <code>ACCESS</code>.
      */
     public String getRole() {
         return role;
