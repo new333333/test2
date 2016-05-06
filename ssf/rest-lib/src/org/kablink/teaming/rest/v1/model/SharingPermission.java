@@ -22,11 +22,25 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="sharing_permission")
 public class SharingPermission {
+    private String maxRole;
     private Boolean internal;
     private Boolean external;
     private Boolean public_;
     private Boolean publicLink;
     private Boolean grantReshare;
+
+    /**
+     * The maximum role that the user is allowed to grant where sharing an item with another user.
+     * <p></p>One of <code>NONE</code>, <code>VIEWER</code>, <code>EDITOR</code>, and <code>CONTRIBUTOR</code>.</p>
+     */
+    @XmlElement(name = "max_role")
+    public String getMaxRole() {
+        return maxRole;
+    }
+
+    public void setMaxRole(String maxRole) {
+        this.maxRole = maxRole;
+    }
 
     /**
      * Whether or not sharing with external users is allowed.
