@@ -31,9 +31,6 @@ public class Access extends BaseRestObject {
         CONTRIBUTOR
     }
 
-    /**
-     * One of NONE, VIEWER, EDITOR, CONTRIBUTOR and ACCESS
-     */
     private String role;
     private SharingPermission sharing;
 
