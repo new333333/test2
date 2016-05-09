@@ -648,24 +648,24 @@
 	<target name="import-deployed-files" description="Import customizations from existing Kablink server.">
 		<propertycopy name="app.server.dir" from="app.server.${portal.type}.${app.server.type}.dir" />
 		<echo>Importing deployed files from ${app.server.dir} to ${project.dir}</echo>
-		<copy todir="${project.dir}/docroot/WEB-INF/classes/config">
+		<copy todir="${project.dir}/web/docroot/WEB-INF/classes/config">
 			<fileset dir="${app.server.dir}/webapps/ssf/WEB-INF/classes/config">
 				<include name="ssf-ext.properties"/>
 				<include name="zone-ext.cfg.xml"/>
 				<include name="hibernate-ext.cfg.xml"/>
 			</fileset>
 		</copy>
-		<copy todir="${project.dir}/docroot/WEB-INF/context">
+		<copy todir="${project.dir}/web/docroot/WEB-INF/context">
 			<fileset dir="${app.server.dir}/webapps/ssf/WEB-INF/context">
 				<include name="applicationContext-ext.xml"/>
 			</fileset>
 		</copy>
-		<copy todir="${project.dir}/docroot/WEB-INF/messages">
+		<copy todir="${project.dir}/web/docroot/WEB-INF/messages">
 			<fileset dir="${app.server.dir}/webapps/ssf/WEB-INF/messages">
 				<include name="messages-ext.properties"/>
 			</fileset>
 		</copy>
-		<copy todir="${project.dir}/docroot/WEB-INF/jsp/custom_jsps">
+		<copy todir="${project.dir}/web/docroot/WEB-INF/jsp/custom_jsps">
 			<fileset dir="${app.server.dir}/webapps/ssf/WEB-INF/jsp/custom_jsps">
 				<include name="**/*.jsp"/>
 				<exclude name="samples/**"/>
