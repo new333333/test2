@@ -2,10 +2,7 @@
 <div id="microFocusLoginPage" style="display: visible">
 	<form name="loginFormName" id="microFocusLoginFormId" method="post" autocomplete="off" action="<c:out value="${ss_loginPostUrl}" escapeXml="true"/>"
 		style="display: none;" accept-charset="UTF-8">
-		<div class="dlgContent" style="margin: 0 auto; width: 100%">
-			<div class="loginBrandingContainer">
-				<img id="brandingImage"/>				
-			</div>
+		<div class="dlgContent" id="dlgContent" style="margin: 0 auto; width: 100%; display:none;">
 			<div class="loginContainer" style="margin-top:20px;">
 				<div>
 					<input type="text" id="j_usernameId" name="j_username" autocomplete="off" class="loginFormFields loginUserField">
@@ -32,6 +29,8 @@
 		<div class="mfteamingDlgBoxFooter" id="loginDlgFooterId" style="margin: 0px !important;">
 			<div class="signInBtnContainer">
 				<button type="submit" class="signInBtn" id="loginOkBtn"></button>
+				<button type="button" class="signInBtn" style="display: none;" id="resetPwdBtn"></button>
+				<button type="button" class="signInBtn" style="display: none;" id="loginCancelBtn"></button>
 			</div>
 			<div id="termsBlock">
 				<div>
@@ -40,12 +39,10 @@
 				<div id="termsContainer" class="gwt-CheckBox" style="display: none; float: left;">
 					<div>
 						<input id="acceptTermsCheckBox" type="checkbox" style="float: left;" /> 
-						<label id="acceptTermsAnchor" style="position: absolute; margin-top: -2px;">I accept <span style="cursor: pointer; color: #135c8f; text-decoration: underline;">terms and conditions</span></label>
+						<label id="acceptTermsAnchor" style="position: absolute; margin-top: -2px;">I accept <span style="cursor: pointer; color: #fff; text-decoration: underline;">terms and conditions</span></label>
 					</div>
 				</div>
 			</div>
-			<button type="button" class="gwt-Button teamingButton" style="display: none;" id="resetPwdBtn"></button>
-			<button type="button" class="gwt-Button teamingButton" style="" id="loginCancelBtn"></button>
 			<div class="dlgContent" style="margin: 10px;">
 				<div>
 					<span class="gwt-InlineLabel margintop3 forgotPasswordStyle" style="display: none;" id="forgottenPwdSpan"></span>
