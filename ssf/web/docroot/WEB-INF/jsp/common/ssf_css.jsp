@@ -711,7 +711,6 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 	color:#fff !important;
 	border:0px !important;
 	margin:0 auto !important;
-	margin-top: 40px !important;
 	margin-bottom: 12px !important;
 	display:block;
 }	
