@@ -632,6 +632,7 @@ public class LoginDlg extends DlgBox
 					} );
 				}
 			} );
+			m_headerPanel.clear();
 			m_headerPanel.add( img );
 
 			// Set the dialog to be hidden and show it.  This will add everything into the DOM
@@ -1538,16 +1539,20 @@ public class LoginDlg extends DlgBox
 						m_isLoginBranded=isLoginDlgBranded(brandingData);
 						setDialogStyle(m_isLoginBranded);
 						if(m_isLoginBranded){
-							Document.get().getElementById("microFocusLoginPage").removeFromParent();
-							handleLoginFormPanel(allowCancel,loginStatus,loginUserId);
-							createHeaderNow( brandingData );
+							Element element=Document.get().getElementById("microFocusLoginPage");
+							if(element!=null){
+								element.removeFromParent();
+							}
 						}
 						else
 						{
-							Document.get().getElementById("genericLoginPage").removeFromParent();
-							handleLoginFormPanel(allowCancel,loginStatus,loginUserId);
-							createHeaderNow( brandingData );
-						}																	
+							Element element=Document.get().getElementById("genericLoginPage");
+							if(element!=null){
+								element.removeFromParent();								
+							}
+						}	
+						handleLoginFormPanel(allowCancel,loginStatus,loginUserId);
+						createHeaderNow( brandingData );
 					}
 				} );				
 			}
@@ -1788,7 +1793,7 @@ public class LoginDlg extends DlgBox
 				});
 				
 				m_registerBtn.setEnabled(false);
-				m_registerBtn.setStyleName("teamingButton");
+				//m_registerBtn.setStyleName("teamingButton");
 				Event.sinkEvents(acceptTermsCheckBox, Event.ONCLICK);
 				Event.setEventListener(acceptTermsCheckBox, new EventListener() {					
 					@Override
@@ -1796,11 +1801,11 @@ public class LoginDlg extends DlgBox
 						if(((InputElement)acceptTermsCheckBox).isChecked())
 						{
 							m_registerBtn.setEnabled(true);							
-							m_registerBtn.addStyleName("gwt-Button");
+							//m_registerBtn.addStyleName("gwt-Button");
 						}
 						else{
 							m_registerBtn.setEnabled(false);
-							m_registerBtn.setStyleName("teamingButton");
+							//m_registerBtn.setStyleName("teamingButton");
 						}
 					}
 				});
@@ -2196,8 +2201,11 @@ public class LoginDlg extends DlgBox
 		
 		// Add a row for the "user id" controls.
 		{
+			Element dlgContentElement=Document.get().getElementById("dlgContent");
+			if(dlgContentElement!=null) dlgContentElement.getStyle().setDisplay(Display.BLOCK);
+			
 			Element userIdElement;
-			String userName;
+			String userName;		
 			
 			m_userIdLabelElement = Document.get().getElementById( "userIdLabel" );
 			if(m_userIdLabelElement!=null)	
@@ -2273,6 +2281,10 @@ public class LoginDlg extends DlgBox
 		{
 			Element okElement;
 			Element cancelElement;
+			
+			final Element element = Document.get().getElementById( "loginRegisterBtn" );
+			m_registerBtn = Button.wrap( element );
+			m_registerBtn.setVisible( false );
 			
 			okElement = Document.get().getElementById( "loginOkBtn" );
 			m_okBtn = Button.wrap( okElement );
