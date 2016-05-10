@@ -1539,6 +1539,11 @@ body, table td, select
 	margin-right:20px;
 }
 
+.mfteamingDlgBox .dlgContent
+{
+	margin-bottom: 40px !important;
+}
+
 .mfteamingDlgBox .copyright span{
 	margin: 0 auto;
     display: block;
@@ -3383,6 +3388,26 @@ body, table td, select
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+}
+
+.mfteamingDlgBox .loginDlg_RegistrationRequiredPanel
+{
+	margin:8px !important;
+}
+
+.mfteamingDlgBox .loginDlg_extUserSelfRegHint{
+	width:100% !important;
+	margin:16px !important;
+}
+
+.mfteamingDlgBox .loginDlg_RegistrationRequiredPanel table
+{
+	margin:16px !important;
+}
+
+.mfteamingDlgBox #termsContainer{
+	margin-left:50px;
+	margin-top:8px;
 }
 
 .mfteamingDlgBoxFooter
