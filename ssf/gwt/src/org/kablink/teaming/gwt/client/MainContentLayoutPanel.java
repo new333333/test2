@@ -125,7 +125,7 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel implements VibeE
 	 */
 	public void showWidget( Widget composite )
 	{
-		GwtClientHelper.consoleLog("MainContentLayoutPanel: showWidget() for " + composite.getClass().getName());
+		//GwtClientHelper.consoleLog("MainContentLayoutPanel: showWidget() for " + composite.getClass().getName());
 		// Do we have a widget to show?
 		if ( composite != null )
 		{
