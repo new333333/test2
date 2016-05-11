@@ -1309,7 +1309,7 @@ public class GwtShareHelper
 		
 		shareRights = new ShareRights();
 
-		ShareHelper.EntityShareRights highestRights = ShareHelper.calculateHighestEntityShareRights(ami, getEntityIdentifierFromEntityId(entityId));
+		SharingModule.EntityShareRights highestRights = ami.getSharingModule().calculateHighestEntityShareRights(getEntityIdentifierFromEntityId(entityId));
 
 		shareRights.setAccessRights( buildAccessRightsFromShareItemRole(highestRights.getMaxGrantRole()) );
 		shareRights.setUnAlteredAccessRights(buildAccessRightsFromShareItemRole(highestRights.getTopRole()));

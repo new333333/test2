@@ -1647,7 +1647,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     protected Access getAccessRole(org.kablink.teaming.domain.DefinableEntity definableEntity) {
-        ShareHelper.EntityShareRights shareRights = ShareHelper.calculateHighestEntityShareRights(this, definableEntity.getEntityIdentifier());
+        SharingModule.EntityShareRights shareRights = getSharingModule().calculateHighestEntityShareRights(definableEntity.getEntityIdentifier());
 
         Access access = new Access();
         access.setRole(shareRights.getTopRole().name());
