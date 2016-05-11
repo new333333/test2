@@ -22,7 +22,6 @@ import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -52,7 +51,7 @@ public class NetFolder extends BaseRestObject {
     private Boolean allowClientInitiatedSync;
     private Boolean inheritSyncSchedule;
     private Schedule syncSchedule;
-    private List<AssignedRight> assignedRights;
+    private List<NetFolderAssignedRight> assignedRights;
 
     public void replaceNullValues(NetFolder folder) {
         id = (id==null) ? folder.id : id;
@@ -291,11 +290,11 @@ public class NetFolder extends BaseRestObject {
      */
     @XmlElementWrapper(name="assigned_rights")
     @XmlElement(name="assigned_right")
-    public List<AssignedRight> getAssignedRights() {
+    public List<NetFolderAssignedRight> getAssignedRights() {
         return assignedRights;
     }
 
-    public void setAssignedRights(List<AssignedRight> assignedRights) {
+    public void setAssignedRights(List<NetFolderAssignedRight> assignedRights) {
         this.assignedRights = assignedRights;
     }
 }

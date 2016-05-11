@@ -352,7 +352,7 @@ public class EditShareWidget extends Composite
 					tmpPanel.add( img );
 				}
 			}
-			ImageResource imageResource=GwtTeaming.getImageBundle().delete16();
+			ImageResource imageResource=GwtTeaming.getImageBundle().restricted();
 			final Image rightsUnavailableImg=new Image( imageResource );		
 			rightsUnavailableImg.addStyleName( "editShareRightsDlg_AccessRightsInfoImg" );		
 			rightsUnavailableImg.getElement().setAttribute( "title", messages.editShareRightsDlg_UnavailableMessage());
@@ -547,7 +547,7 @@ public class EditShareWidget extends Composite
 		rbPanel = new FlowPanel();
 		rbPanel.addStyleName( "editShareRightsDlg_RbPanel" );
 		
-		ImageResource imageResource=GwtTeaming.getImageBundle().delete16();
+		ImageResource imageResource=GwtTeaming.getImageBundle().restricted();
 		final Image viewerUnavailableImg=new Image( imageResource );		
 		viewerUnavailableImg.addStyleName( "editShareRightsDlg_AccessRightsInfoImg" );		
 		viewerUnavailableImg.getElement().setAttribute( "title", messages.editShareRightsDlg_UnavailableMessage());
@@ -1122,10 +1122,8 @@ public class EditShareWidget extends Composite
 						GwtClientHelper.selectListboxItemByValue( m_canResharePublicLinkListbox, LEAVE_UNCHANGED );
 				}							
 			}
-			m_expirationWidget.setVisible(highestRightsPossible.getAccessRights() != AccessRights.NONE);
 		}
 		m_rightsUnavailableLink.setVisible(highestRightsPossible.getAccessRights() == AccessRights.NONE && highestRightsPossible.getUnAlteredAccessRights() != AccessRights.NONE);
-		m_noteTextArea.setVisible(highestRightsPossible.getAccessRights() != AccessRights.NONE && highestRightsPossible.getUnAlteredAccessRights() != AccessRights.NONE);
 	}
 	
 	/**
@@ -1170,17 +1168,17 @@ public class EditShareWidget extends Composite
 		switch ( shareRights.getAccessRights() )
 		{
 		case CONTRIBUTOR:
-			if(unAlteredAccessRights == AccessRights.CONTRIBUTOR && highestPossibleRights != AccessRights.NONE)
+			if(unAlteredAccessRights == AccessRights.CONTRIBUTOR)
 				m_contributorRb.setValue( true );				
 			break;
 		
 		case EDITOR:
-			if((unAlteredAccessRights!=null && unAlteredAccessRights == AccessRights.CONTRIBUTOR || unAlteredAccessRights == AccessRights.EDITOR) && highestPossibleRights != AccessRights.NONE)
+			if((unAlteredAccessRights!=null && unAlteredAccessRights == AccessRights.CONTRIBUTOR || unAlteredAccessRights == AccessRights.EDITOR))
 				m_editorRb.setValue( true );
 			break;
 			
 		case VIEWER:
-			if((unAlteredAccessRights == AccessRights.CONTRIBUTOR || unAlteredAccessRights == AccessRights.EDITOR || unAlteredAccessRights == AccessRights.VIEWER) && highestPossibleRights != AccessRights.NONE)
+			if((unAlteredAccessRights == AccessRights.CONTRIBUTOR || unAlteredAccessRights == AccessRights.EDITOR || unAlteredAccessRights == AccessRights.VIEWER) )
 				m_viewerRb.setValue( true );
 			break;
 			
@@ -1256,26 +1254,11 @@ public class EditShareWidget extends Composite
 		
 		// Show/hide the "share public link" checkbox depending on whether the user has "share public link" rights.
 		if ( canShareForward && highestRightsPossible.getCanSharePublicLink() && (entityIsBinder == true || entityIsFileEntry == true) )
-			m_canResharePublicLinkCkbox.setVisible( true );
+			m_canResharePublicLinkCkbox.setVisible( true );			
 		else
 			m_canResharePublicLinkCkbox.setVisible( false );
 			
-		m_canResharePublicLinkCkbox.setValue( shareRights.getCanSharePublicLink() );
-		
-		if(!m_viewerRb.getValue() && !m_editorRb.getValue() && !m_contributorRb.getValue()){
-			m_canShareLabel.setVisible(false);
-			m_canReshareInternalCkbox.setValue(false);
-			m_canReshareInternalCkbox.setVisible(false);
-			m_canReshareExternalCkbox.setValue(false);
-			m_canReshareExternalCkbox.setVisible(false);
-			m_canResharePublicCkbox.setValue(false);
-			m_canResharePublicCkbox.setVisible(false);
-			m_canResharePublicLinkCkbox.setValue(false);
-			m_canResharePublicLinkCkbox.setVisible(false);
-		}
-		
-		m_expirationWidget.setVisible(canShareForward && highestPossibleRights != AccessRights.NONE);
-		mainTable.setVisible(canShareForward && highestPossibleRights != AccessRights.NONE);
+		m_canResharePublicLinkCkbox.setValue( shareRights.getCanSharePublicLink() );					
 	}
 	
 	/**

@@ -90,10 +90,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
-import org.kablink.teaming.web.util.AdminHelper;
-import org.kablink.teaming.web.util.DateHelper;
-import org.kablink.teaming.web.util.EmailHelper;
-import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.*;
 import org.kablink.util.HttpHeaders;
 import org.kablink.util.Pair;
 import org.kablink.util.api.ApiErrorCode;
@@ -1649,65 +1646,19 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return binder;
     }
 
-    protected Access getAccessRole(org.kablink.teaming.domain.FolderEntry entry) {
-        AccessControlManager accessControlManager = getAccessControlManager();
-        User loggedInUser = getLoggedInUser();
-
-        ShareItem.Role foundRole = ShareItem.Role.NONE;
-        ShareItem.Role [] roles = new ShareItem.Role[] {ShareItem.Role.EDITOR, ShareItem.Role.VIEWER};
-        for (ShareItem.Role role : roles) {
-            WorkAreaOperation[] rights = role.getWorkAreaOperations();
-            boolean match = true;
-            for (WorkAreaOperation operation : rights) {
-                if (!ignoredOperations.contains(operation) && !testOperation(loggedInUser, entry, operation)) {
-                    match = false;
-                    break;
-                }
-            }
-            if (match) {
-                foundRole = role;
-                break;
-            }
-        }
+    protected Access getAccessRole(org.kablink.teaming.domain.DefinableEntity definableEntity) {
+        ShareHelper.EntityShareRights shareRights = ShareHelper.calculateHighestEntityShareRights(this, definableEntity.getEntityIdentifier());
 
         Access access = new Access();
-        access.setRole(foundRole.name());
-        access.setSharing(getSharingPermission(entry, foundRole));
-
-        return access;
-    }
-
-    protected Access getAccessRole(org.kablink.teaming.domain.Binder binder) {
-        AccessControlManager accessControlManager = getAccessControlManager();
-        User loggedInUser = getLoggedInUser();
-
-        ShareItem.Role foundRole = ShareItem.Role.NONE;
-        ShareItem.Role [] roles = new ShareItem.Role[] {ShareItem.Role.CONTRIBUTOR, ShareItem.Role.EDITOR, ShareItem.Role.VIEWER};
-        for (ShareItem.Role role : roles) {
-            WorkAreaOperation[] rights = role.getWorkAreaOperations();
-            boolean match = true;
-            for (WorkAreaOperation operation : rights) {
-                if (!ignoredOperations.contains(operation) &&
-                        !accessControlManager.testOperation(loggedInUser, binder, operation)) {
-                    match = false;
-                    break;
-                }
-            }
-            if (match) {
-                foundRole = role;
-                break;
-            }
-        }
-
-        Access access = new Access();
-        access.setRole(foundRole.name());
-        access.setSharing(getSharingPermission(binder, foundRole));
+        access.setRole(shareRights.getTopRole().name());
+        access.setSharing(getSharingPermission(definableEntity, shareRights.getMaxGrantRole()));
 
         return access;
     }
 
     private SharingPermission getSharingPermission(org.kablink.teaming.domain.DefinableEntity entity, ShareItem.Role role) {
         SharingPermission sharing = new SharingPermission();
+        sharing.setMaxRole(role.name());
         if (role != ShareItem.Role.NONE) {
             SharingModule sharingModule = getSharingModule();
             sharing.setInternal(sharingModule.testAddShareEntityInternal(entity));

@@ -1529,8 +1529,36 @@ body, table td, select
 	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
 	background-color: transparent;
 }
+
+.mfteamingDlgBox span.forgotPasswordStyle, .mfteamingDlgBox span.createNewAccountStyle,.mfteamingDlgBox span.forgotPasswordStyle:hover, .mfteamingDlgBox span.createNewAccountStyle:hover, .mfteamingDlgBox  #forgottenPwdSpan:hover{
+	color: #fff !important;		
+	width:95% !important;
+	text-align:right !important;
+	font-size:10px !important;
+	cursor: pointer !important;
+	margin-right:20px;
+}
+
+.mfteamingDlgBox .dlgContent
+{
+	margin-bottom: 40px !important;
+}
+
+.mfteamingDlgBox .copyright span{
+	margin: 0 auto;
+    display: block;
+    width: 75%%;
+    text-align: left;
+    font-size: 10px;
+    padding: 25px;
+    padding-top: 50px;
+}
+
+.mfteamingDlgBox .popupContent img{
+	width:99% !important;	
+}
 	
-.editBrandingBrowseLink:hover, .editBrandingAdvancedLink:hover, .addAttachmentLink:hover, .colorPickerLink:hover, #forgottenPwdSpan:hover
+.editBrandingBrowseLink:hover, .editBrandingAdvancedLink:hover, .addAttachmentLink:hover, .colorPickerLink:hover, .teamingDlgBox #forgottenPwdSpan:hover
 {
 	color: #036f9f !important;
 	border: 1px solid #81b2bd;
@@ -3341,6 +3369,116 @@ body, table td, select
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+}
+
+.mfteamingDlgBox
+{
+	font-family: Arial,Helvetica,sans-serif;
+	padding: 6px;
+	border-radius: 2px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	color: #fff !important;
+	width:350px;
+}
+
+.mfteamingDlgBox .popupContent
+{
+	background-color: #0078ef;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.mfteamingDlgBox .loginDlg_RegistrationRequiredPanel
+{
+	margin:8px !important;
+}
+
+.mfteamingDlgBox .loginDlg_extUserSelfRegHint{
+	width:100% !important;
+	margin:16px !important;
+}
+
+.mfteamingDlgBox .loginDlg_RegistrationRequiredPanel table
+{
+	margin:16px !important;
+}
+
+.mfteamingDlgBox #termsContainer{
+	margin-left:50px;
+	margin-top:8px;
+}
+
+.mfteamingDlgBoxFooter
+{
+	background-color: #0078ef;
+	margin-top: 10px;
+	padding: 10px;
+	position: relative;
+	text-align: right;
+	vertical-align: middle;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+	z-index: 1900;
+}
+
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #fff;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #fff;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #fff;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    #fff;
+}
+
+.loginContainer .loginFormFields{
+	background-color:#0078ef;	
+	color:#fff !important;
+	display:block;
+	margin:0 auto;
+	width:75%;
+	padding:8px;
+	padding-left: 35px;	
+}
+
+.loginContainer .loginUserField{
+	border:2px solid #38c1ff;
+	border-bottom:0;
+	background: url(images/username-user-icon.png) no-repeat scroll 10px center transparent;	
+	-webkit-autofill: background-color: #fff !important;
+}
+
+.loginContainer .loginPasswordField{
+	border:2px solid #38c1ff;
+	background: url(images/password-lock-icon.png) no-repeat scroll 10px center transparent;
+	-webkit-autofill: background-color: #fff !important;	
+}
+
+.loginFailedMsgDiv, .authenticatingDiv{
+	width:250px;
+	font-size:small;
+	margin: 0 auto;
+	margin-top:16px;
+	color:#fff;
+}
+
+.mfteamingDlgBox .loginFailedMsg, .mfteamingDlgBox .loginAuthenticatingMsg{
+	color: white;
+    width: 75%;
+    padding-left: 24px;
+    padding-top: 10px;
+    font-size: 12px;
 }
 
 /* Styles for the content of a dialog box. */

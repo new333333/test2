@@ -15,7 +15,6 @@
 package org.kablink.teaming.rest.v1.model.admin;
 
 import org.kablink.teaming.rest.v1.model.Recipient;
-import org.kablink.teaming.rest.v1.model.SharingPermission;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -27,12 +26,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="assigned_sharing_permission")
 public class AssignedSharingPermission {
     private Recipient principal;
-    private SharingPermission sharing;
+    private SystemSharingPermission sharing;
 
     public AssignedSharingPermission() {
     }
 
-    public AssignedSharingPermission(Recipient principal, SharingPermission sharing) {
+    public AssignedSharingPermission(Recipient principal, SystemSharingPermission sharing) {
         this.principal = principal;
         this.sharing = sharing;
     }
@@ -51,11 +50,11 @@ public class AssignedSharingPermission {
     /**
      * The sharing permission that is granted to the recipient.
      */
-    public SharingPermission getSharing() {
+    public SystemSharingPermission getSharing() {
         return sharing;
     }
 
-    public void setSharing(SharingPermission sharing) {
+    public void setSharing(SystemSharingPermission sharing) {
         this.sharing = sharing;
     }
 }

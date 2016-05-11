@@ -39,6 +39,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderViewLayout;
+import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
 /**
@@ -51,10 +52,12 @@ public class ShowCustomBinderViewEvent extends ShowBinderEvent<ShowCustomBinderV
 	public static Type<Handler> TYPE = new Type<Handler>();
 
 	private BinderViewLayout m_viewLayout;
+	private ViewType m_viewType;
 
-	public ShowCustomBinderViewEvent(BinderInfo binderInfo, BinderViewLayout viewLayout, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
+	public ShowCustomBinderViewEvent(BinderInfo binderInfo, ViewType viewType, BinderViewLayout viewLayout, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
 		super(binderInfo, viewPanel, viewReady);
 		m_viewLayout = viewLayout;
+		m_viewType = viewType;
 	}
 
 	/**
@@ -117,5 +120,13 @@ public class ShowCustomBinderViewEvent extends ShowBinderEvent<ShowCustomBinderV
 	public static HandlerRegistration registerEvent( SimpleEventBus eventBus, Handler handler )
 	{
 		return eventBus.addHandler( TYPE, handler );
+	}
+
+	public BinderViewLayout getViewLayout() {
+		return m_viewLayout;
+	}
+
+	public ViewType getViewType() {
+		return m_viewType;
 	}
 }

@@ -26,14 +26,14 @@ import javax.xml.bind.annotation.XmlRootElement;
  * <p>The recipient can be a user or a group.</p>
  */
 @XmlRootElement(name="assigned_right")
-public class AssignedRight {
+public class NetFolderAssignedRight {
     private Recipient principal;
-    private Access access;
+    private NetFolderAccess access;
 
-    public AssignedRight() {
+    public NetFolderAssignedRight() {
     }
 
-    public AssignedRight(ShareRecipient principal, Access access) {
+    public NetFolderAssignedRight(ShareRecipient principal, NetFolderAccess access) {
         this.principal = principal;
         this.access = access;
     }
@@ -52,11 +52,11 @@ public class AssignedRight {
     /**
      * The access right granted to the recipient.
      */
-    public Access getAccess() {
+    public NetFolderAccess getAccess() {
         return access;
     }
 
-    public void setAccess(Access access) {
+    public void setAccess(NetFolderAccess access) {
         this.access = access;
     }
 }

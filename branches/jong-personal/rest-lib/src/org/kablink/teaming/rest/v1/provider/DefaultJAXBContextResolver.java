@@ -129,7 +129,6 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             ZoneConfig.class,
 
             // Admin model objects
-            AssignedRight.class,
             AssignedSharingPermission.class,
             DesktopAppAdminConfig.class,
             DesktopProcessConfig.class,
@@ -141,6 +140,8 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             LdapSyncResults.class,
             LdapUserSource.class,
             NetFolder.class,
+            NetFolderAccess.class,
+			NetFolderAssignedRight.class,
             NetFolderServer.class,
             NetFolderSyncStatus.class,
             PersonalStorage.class,
@@ -149,6 +150,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             Schedule.class,
             SelectedDays.class,
             ShareSettings.class,
+			SystemSharingPermission.class,
             Time.class,
             UserSynchronization.class,
             UserSourceSynchronization.class,

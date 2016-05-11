@@ -45,24 +45,8 @@ import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
-import org.kablink.teaming.rest.v1.model.Access;
-import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
-import org.kablink.teaming.rest.v1.model.Recipient;
-import org.kablink.teaming.rest.v1.model.Share;
-import org.kablink.teaming.rest.v1.model.ShareRecipient;
-import org.kablink.teaming.rest.v1.model.SharingPermission;
-import org.kablink.teaming.rest.v1.model.admin.AssignedRight;
-import org.kablink.teaming.rest.v1.model.admin.AssignedSharingPermission;
-import org.kablink.teaming.rest.v1.model.admin.KeyValuePair;
-import org.kablink.teaming.rest.v1.model.admin.LdapHomeDirConfig;
-import org.kablink.teaming.rest.v1.model.admin.LdapSearchInfo;
-import org.kablink.teaming.rest.v1.model.admin.LdapUserSource;
-import org.kablink.teaming.rest.v1.model.admin.NetFolder;
-import org.kablink.teaming.rest.v1.model.admin.NetFolderServer;
-import org.kablink.teaming.rest.v1.model.admin.NetFolderSyncStatus;
-import org.kablink.teaming.rest.v1.model.admin.Schedule;
-import org.kablink.teaming.rest.v1.model.admin.SelectedDays;
-import org.kablink.teaming.rest.v1.model.admin.Time;
+import org.kablink.teaming.rest.v1.model.*;
+import org.kablink.teaming.rest.v1.model.admin.*;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.web.util.AssignedRole;
 import org.kablink.teaming.web.util.NetFolderHelper;
@@ -149,6 +133,7 @@ public class AdminResourceUtil {
 
         model.setLink(AdminLinkUriUtil.getNetFolderLinkUri(nfc.getTopFolderId()));
         model.addAdditionalLink("sync", model.getLink() + "/sync");
+        model.addAdditionalLink("assigned_rights", model.getLink() + "/assigned_rights");
 
         return model;
     }
@@ -270,10 +255,10 @@ public class AdminResourceUtil {
         return model;
     }
 
-    public static List<AssignedRight> buildAssignedRights(List<AssignedRole> roles) {
-        List<AssignedRight> model = new ArrayList<AssignedRight>();
+    public static List<NetFolderAssignedRight> buildAssignedRights(List<AssignedRole> roles) {
+        List<NetFolderAssignedRight> model = new ArrayList<NetFolderAssignedRight>();
         for (AssignedRole role : roles) {
-            AssignedRight right = buildAssignedRight(role);
+            NetFolderAssignedRight right = buildAssignedRight(role);
             if (right!=null) {
                 model.add(right);
             }
@@ -281,8 +266,8 @@ public class AdminResourceUtil {
         return model;
     }
 
-    public static AssignedRight buildAssignedRight(AssignedRole role) {
-        AssignedRight model = new AssignedRight();
+    public static NetFolderAssignedRight buildAssignedRight(AssignedRole role) {
+        NetFolderAssignedRight model = new NetFolderAssignedRight();
         Principal principal = role.getPrincipal();
         Recipient recipient = buildRecipient(principal);
         if (recipient == null) {
@@ -291,18 +276,25 @@ public class AdminResourceUtil {
         model.setPrincipal(recipient);
 
         Set<AssignedRole.RoleType> roles = role.getRoles();
-        Access access = new Access();
+        NetFolderAccess access = new NetFolderAccess();
         if (roles.contains(AssignedRole.RoleType.AllowAccess)) {
-            access.setRole(Access.RoleType.ACCESS.name());
-            SharingPermission permission = new SharingPermission();
-            permission.setInternal(roles.contains(AssignedRole.RoleType.ShareInternal));
-            permission.setExternal(roles.contains(AssignedRole.RoleType.ShareExternal));
-            permission.setPublic(roles.contains(AssignedRole.RoleType.SharePublic));
-            permission.setPublicLink(roles.contains(AssignedRole.RoleType.SharePublicLinks));
-            permission.setGrantReshare(roles.contains(AssignedRole.RoleType.ShareForward));
-            access.setSharing(permission);
+            access.setRole(NetFolderAccess.RoleType.ACCESS.name());
+            SharingPermission fileSharing = new SharingPermission();
+            fileSharing.setInternal(roles.contains(AssignedRole.RoleType.ShareInternal));
+            fileSharing.setExternal(roles.contains(AssignedRole.RoleType.ShareExternal));
+            fileSharing.setPublic(roles.contains(AssignedRole.RoleType.SharePublic));
+            fileSharing.setPublicLink(roles.contains(AssignedRole.RoleType.SharePublicLinks));
+            fileSharing.setGrantReshare(roles.contains(AssignedRole.RoleType.ShareForward));
+            access.setFileSharing(fileSharing);
+
+            SharingPermission folderSharing = new SharingPermission();
+            folderSharing.setInternal(roles.contains(AssignedRole.RoleType.ShareFolderInternal));
+            folderSharing.setExternal(roles.contains(AssignedRole.RoleType.ShareFolderExternal));
+            folderSharing.setPublic(roles.contains(AssignedRole.RoleType.ShareFolderPublic));
+            folderSharing.setGrantReshare(roles.contains(AssignedRole.RoleType.ShareFolderForward));
+            access.setFolderSharing(folderSharing);
         } else {
-            access.setRole(Access.RoleType.NONE.name());
+            access.setRole(NetFolderAccess.RoleType.NONE.name());
         }
         model.setAccess(access);
         return model;
@@ -318,7 +310,7 @@ public class AdminResourceUtil {
         model.setPrincipal(recipient);
 
         Set<AssignedRole.RoleType> roles = role.getRoles();
-        SharingPermission permission = new SharingPermission();
+        SystemSharingPermission permission = new SystemSharingPermission();
         permission.setInternal(roles.contains(AssignedRole.RoleType.EnableShareInternal));
         permission.setExternal(roles.contains(AssignedRole.RoleType.EnableShareExternal));
         permission.setAllInternal(roles.contains(AssignedRole.RoleType.EnableShareWithAllInternal));
@@ -330,7 +322,7 @@ public class AdminResourceUtil {
         return model;
     }
 
-    private static Recipient buildRecipient(Principal principal) {
+    public static Recipient buildRecipient(Principal principal) {
         Recipient recipient = new Recipient();
         if (principal instanceof User) {
             recipient.setType(Recipient.RecipientType.user.name());

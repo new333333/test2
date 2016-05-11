@@ -173,6 +173,7 @@ public class ShareThisDlg2 extends DlgBox
 	private FindCtrl m_manageSharesFindCtrl;
 	private Image m_addExternalUserImg;
 	private Image m_shareRightsInfoImg;
+	private Image m_restrictedShareRightsInfoImg;
 	private FlowPanel m_mainPanel;
 	private Label m_noShareItemsEnterNameHint;
 	private Label m_noShareItemsToManageHint;
@@ -772,7 +773,7 @@ public class ShareThisDlg2 extends DlgBox
 	 */
 	private void createShareControls()
 	{
-		GwtTeamingMessages messages;
+		final GwtTeamingMessages messages;
 		int tableWidth = 330;
 		
 		messages = GwtTeaming.getMessages();
@@ -956,6 +957,33 @@ public class ShareThisDlg2 extends DlgBox
 				findCellFormatter.getElement( 0, col ).getStyle().setPaddingTop( 8, Unit.PX );
 				++col;
 			}
+			
+			// Add an info image that will display why the user is not able to share
+			{
+				ImageResource imageResource;
+				FlexCellFormatter findCellFormatter;
+				
+				imageResource = GwtTeaming.getImageBundle().restricted();
+				m_restrictedShareRightsInfoImg = new Image( imageResource );
+				m_restrictedShareRightsInfoImg.setTitle(messages.editShareRightsDlg_UnavailableTextMessage());
+				m_restrictedShareRightsInfoImg.addStyleName("cursorPointer");
+				m_restrictedShareRightsInfoImg.addClickHandler( new ClickHandler() {
+					@Override
+					public void onClick( ClickEvent event )
+					{
+						showShareRightsInfoAsync(
+							m_restrictedShareRightsInfoImg,
+							messages.editShareRightsDlg_UnavailableTextMessage() );
+					}
+				} );
+				
+				m_shareRightsInfoImg.getElement().setAttribute( "title", "" );
+				findTable.setWidget( 0, col, m_restrictedShareRightsInfoImg );
+				findCellFormatter = findTable.getFlexCellFormatter();
+				findCellFormatter.getElement( 0, col ).getStyle().setPaddingTop( 8, Unit.PX );
+				m_restrictedShareRightsInfoImg.setVisible(false);
+				++col;
+			}			
 		}
 		
 		// Create a table to hold the list of shares
@@ -2404,7 +2432,6 @@ public class ShareThisDlg2 extends DlgBox
 		
 		m_entityIds = entityIds;
 		m_mode = mode;
-		final EntityId entityId=m_entityIds.get(0);
 		
 		updateHeader();
 
@@ -2510,11 +2537,34 @@ public class ShareThisDlg2 extends DlgBox
 					{
 						@Override
 						public void execute() 
-						{	
-							ShareRights shareRights=sharingInfo.getShareRights(entityId);
-							boolean isRestricted=shareRights!=null && shareRights.getAccessRights() == AccessRights.NONE;
-							m_findCtrl.getFocusWidget().setEnabled(!isRestricted);
-							m_addExternalUserImg.setVisible(!isRestricted);
+						{								
+							if(sharingInfo.getListOfShareItems()!=null && sharingInfo.getListOfShareItems().size()>0){
+								ShareRights shareRights=sharingInfo.getShareRights(sharingInfo.getListOfShareItems().get(0).getEntityId());
+								if(shareRights!=null){
+									boolean isRestricted=shareRights.getAccessRights() == AccessRights.NONE;
+									m_findCtrl.getFocusWidget().setEnabled(!isRestricted);
+									if(isRestricted){
+										sharingInfo.setCanShareWithExternalUsers(false);
+										m_shareRightsInfoImg.setVisible(false);
+										m_restrictedShareRightsInfoImg.setVisible(true);
+									}
+									else{
+										m_shareRightsInfoImg.setVisible(true);
+										m_restrictedShareRightsInfoImg.setVisible(false);
+									}
+									m_addExternalUserImg.setVisible(!isRestricted);
+								}
+								else{
+									m_shareRightsInfoImg.setVisible(true);
+									m_restrictedShareRightsInfoImg.setVisible(false);
+									m_addExternalUserImg.setVisible(true);
+								}
+							}
+							else{
+								m_shareRightsInfoImg.setVisible(true);
+								m_restrictedShareRightsInfoImg.setVisible(false);
+								m_addExternalUserImg.setVisible(true);
+							}
 							updateSharingInfo( sharingInfo );
 							hideStatusMsg();
 						}
@@ -3138,7 +3188,7 @@ public class ShareThisDlg2 extends DlgBox
 		if ( sharingInfo != null )
 		{
 			ArrayList<GwtShareItem> listOfShareItems;
-
+			
 			// Is sharing with an external user available?
 			if ( sharingInfo.getCanShareWithExternalUsers() == false )
 			{

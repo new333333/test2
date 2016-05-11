@@ -27,3 +27,7 @@ For Vibe, this is the first release where database schema management is done via
 6. *-changelog-filraxion.xml - 
 
 The schema changes for Filr Axion (2.0) and Vibe 4.0.1 releases.
+
+7. *-changelog-filrproton.xml - 
+
+The schema changes for Filr Proton release.
