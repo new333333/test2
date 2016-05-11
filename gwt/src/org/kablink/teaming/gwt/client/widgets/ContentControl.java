@@ -35,39 +35,11 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.binderviews.BlogFolderView;
-import org.kablink.teaming.gwt.client.binderviews.CalendarFolderView;
-import org.kablink.teaming.gwt.client.binderviews.CollectionView;
-import org.kablink.teaming.gwt.client.binderviews.DiscussionFolderView;
-import org.kablink.teaming.gwt.client.binderviews.DiscussionWSView;
-import org.kablink.teaming.gwt.client.binderviews.FileFolderView;
-import org.kablink.teaming.gwt.client.binderviews.FolderEntryDlg;
+import org.kablink.teaming.gwt.client.binderviews.*;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryDlg.FolderEntryDlgClient;
-import org.kablink.teaming.gwt.client.binderviews.FolderEntryView;
-import org.kablink.teaming.gwt.client.binderviews.GenericWSView;
-import org.kablink.teaming.gwt.client.binderviews.GlobalWorkspacesView;
-import org.kablink.teaming.gwt.client.binderviews.GuestbookFolderView;
-import org.kablink.teaming.gwt.client.binderviews.HomeWSView;
-import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
-import org.kablink.teaming.gwt.client.binderviews.MicroBlogFolderView;
-import org.kablink.teaming.gwt.client.binderviews.MilestoneFolderView;
-import org.kablink.teaming.gwt.client.binderviews.MirroredFileFolderView;
-import org.kablink.teaming.gwt.client.binderviews.NetFoldersWSView;
-import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspaceView;
-import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspacesView;
-import org.kablink.teaming.gwt.client.binderviews.PhotoAlbumFolderView;
-import org.kablink.teaming.gwt.client.binderviews.ProjectManagementWSView;
-import org.kablink.teaming.gwt.client.binderviews.SurveyFolderView;
-import org.kablink.teaming.gwt.client.binderviews.TaskFolderView;
-import org.kablink.teaming.gwt.client.binderviews.TeamWSView;
-import org.kablink.teaming.gwt.client.binderviews.TeamWorkspacesView;
-import org.kablink.teaming.gwt.client.binderviews.TrashView;
-import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
-import org.kablink.teaming.gwt.client.binderviews.WikiFolderView;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
-import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.*;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
@@ -113,6 +85,7 @@ public class ContentControl extends Composite
 		ShowBlogFolderEvent.Handler,
 		ShowCalendarFolderEvent.Handler,
 		ShowCollectionViewEvent.Handler,
+		ShowCustomBinderViewEvent.Handler,
 		ShowDiscussionFolderEvent.Handler,
 		ShowDiscussionWSEvent.Handler,
 		ShowFileFolderEvent.Handler,
@@ -170,6 +143,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_BLOG_FOLDER,
 		TeamingEvents.SHOW_CALENDAR_FOLDER,
 		TeamingEvents.SHOW_COLLECTION_VIEW,
+		TeamingEvents.SHOW_CUSTOM_BINDER_VIEW,
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_WORKSPACE,
 		TeamingEvents.SHOW_FILE_FOLDER,
@@ -873,7 +847,7 @@ public class ContentControl extends Composite
 						}//end viewReady()
 					};
 
-					m_viewMode = this.layoutBinder(bi, vt, viewReady, m_mainPage.getMainContentLayoutPanel());
+					m_viewMode = this.layoutBinder(vi, viewReady, m_mainPage.getMainContentLayoutPanel());
 					break;
 				
 				case FOLDER_ENTRY:
@@ -1520,7 +1494,41 @@ public class ContentControl extends Composite
 			}// end onSuccess()
 		});
 	}// end onShowCollection()
-	
+
+	/**
+	 * Handles onShowCustomBinderView's received by this class.
+	 *
+	 * Implements the ShowCustomBinderViewEvent.Handler.onShowCustomBinderView() method.
+	 *
+	 * @param event
+	 */
+	@Override
+	public void onShowCustomBinderView(final ShowCustomBinderViewEvent event) {
+		// Create a DiscussionFolderView widget for the selected binder.
+		CustomBinderView.createAsync(
+				event.getBinderInfo(),
+				event.getViewType(),
+				event.getViewLayout(),
+				event.getViewReady(),
+				new ViewClient()
+				{
+					@Override
+					public void onUnavailable()
+					{
+						GwtClientHelper.consoleLog("Failed to create CustomBinderView");
+						// Nothing to do.  Error handled in asynchronous provider.
+					}// end onUnavailable()
+
+					@Override
+					public void onSuccess( ViewBase dfView )
+					{
+						GwtClientHelper.consoleLog("Successfully created CustomBinderView.  ViewPanel: " + event.getViewPanel().getClass().getSimpleName());
+						dfView.setViewSize();
+						event.getViewPanel().showWidget( dfView );
+					}// end onSuccess()
+				});
+	}
+
 	/**
 	 * Handles ShowDiscussionFolderEvent's received by this class.
 	 * 
@@ -1540,12 +1548,14 @@ public class ContentControl extends Composite
 			@Override
 			public void onUnavailable()
 			{
+				GwtClientHelper.consoleLog("Failed to create DiscussionFolderView");
 				// Nothing to do.  Error handled in asynchronous provider.
 			}// end onUnavailable()
 
 			@Override
 			public void onSuccess( ViewBase dfView )
 			{
+				GwtClientHelper.consoleLog("Successfully created DiscussionFolderView.  ViewPanel: " + event.getViewPanel().getClass().getSimpleName());
 				dfView.setViewSize();
 				event.getViewPanel().showWidget( dfView );
 			}// end onSuccess()
@@ -2385,10 +2395,18 @@ public class ContentControl extends Composite
 		} );
 	}
 
-	public static ViewMode layoutBinder(BinderInfo bi, ViewType vt, ViewReady viewReady, VibeEntityViewPanel parent) {
+	public static ViewMode layoutBinder(ViewInfo vi, ViewReady viewReady, VibeEntityViewPanel parent) {
 		ViewMode viewMode;
 
-		ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, vt, viewReady, parent);
+		BinderInfo bi = vi.getBinderInfo();
+		ViewType vt = vi.getViewType();
+
+		ShowBinderEvent viewEvent;
+		if (vi.isCustomLayout() && vi.getViewLayout()!=null) {
+			viewEvent = new ShowCustomBinderViewEvent(bi, vt, vi.getViewLayout(), parent, viewReady);
+		} else {
+			viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, vt, parent, viewReady);
+		}
 
 		if (viewEvent!=null) {
 			GwtTeaming.fireEvent(viewEvent);

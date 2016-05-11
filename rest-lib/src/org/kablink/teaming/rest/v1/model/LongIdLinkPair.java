@@ -40,8 +40,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class LongIdLinkPair {
-    private Long id;
-    private String link;
+    protected Long id;
+    protected String link;
 
     public LongIdLinkPair() {
     }

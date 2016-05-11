@@ -39,17 +39,13 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.util.BinderViewContainer;
-import org.kablink.teaming.gwt.client.util.BinderViewDefBase;
-import org.kablink.teaming.gwt.client.util.BinderViewJsp;
-import org.kablink.teaming.gwt.client.util.BinderViewLayout;
+import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
+import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by david on 4/13/16.
@@ -103,8 +99,21 @@ public class GwtFolderViewHelper {
                 } catch (ClassNotFoundException e) {
                     throw new GwtTeamingException(GwtTeamingException.ExceptionType.UNKNOWN, e.getLocalizedMessage());
                 }
+                Map<String, String> properties = DefinitionHelper.getDefinitionProperties(viewItem);
                 if (binderView instanceof BinderViewContainer) {
                     ((BinderViewContainer) binderView).setChildren(factoryBinderViewChildren(viewItem));
+                    if (binderView instanceof BinderViewTwoColumnTable) {
+                        BinderViewTwoColumnTable tableView = (BinderViewTwoColumnTable) binderView;
+                        tableView.setWidth(Width.parseWidth(properties.get("tableWidth")));
+                        tableView.setColumn1Width(Width.parseWidth(properties.get("width1")));
+                        tableView.setColumn2Width(Width.parseWidth(properties.get("width2")));
+                    } else if (binderView instanceof BinderViewThreeColumnTable) {
+                        BinderViewThreeColumnTable tableView = (BinderViewThreeColumnTable) binderView;
+                        tableView.setWidth(Width.parseWidth(properties.get("tableWidth")));
+                        tableView.setColumn1Width(Width.parseWidth(properties.get("width1")));
+                        tableView.setColumn2Width(Width.parseWidth(properties.get("width2")));
+                        tableView.setColumn3Width(Width.parseWidth(properties.get("width3")));
+                    }
                 }
             } else {
                 String jsp = configBuilder.getItemJspByStyle(viewItem, name, Definition.JSP_STYLE_DEFAULT);
@@ -117,9 +126,12 @@ public class GwtFolderViewHelper {
         return binderView;
     }
 
-    protected void populateFrom(Element item) throws GwtTeamingException {
-
+    public static boolean hasCustomView(AllModulesInjected ami, Binder binder) {
+//        Definition def2 = binder.getDefaultViewDef();
+//        return !def2.getName().startsWith("_");
+        return false;
     }
+
     /*
      * Returns a List<Node> of the <item>'s from a binder's view
      * definition.

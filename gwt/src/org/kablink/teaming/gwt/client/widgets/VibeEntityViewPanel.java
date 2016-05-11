@@ -32,11 +32,11 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Created by david on 4/19/16.
  */
 public interface VibeEntityViewPanel {
-    public void showWidget( ResizeComposite composite );
+    public void showWidget(Widget widget);
 }

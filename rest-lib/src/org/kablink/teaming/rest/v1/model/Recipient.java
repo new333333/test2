@@ -81,4 +81,15 @@ public class Recipient extends LongIdLinkPair {
     public void setType(String type) {
         this.type = type;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Recipient recipient = (Recipient) o;
+
+        return type.equals(recipient.type) && id.equals(recipient.id);
+    }
+
 }

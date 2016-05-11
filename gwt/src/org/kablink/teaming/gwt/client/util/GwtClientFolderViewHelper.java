@@ -44,7 +44,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
  */
 public class GwtClientFolderViewHelper {
 
-    public static ShowBinderEvent buildGwtBinderLayoutEvent(BinderInfo bi, ViewType vt, ViewReady viewReady, VibeEntityViewPanel parent) {
+    public static ShowBinderEvent buildGwtBinderLayoutEvent(BinderInfo bi, ViewType vt, VibeEntityViewPanel parent, ViewReady viewReady) {
         ShowBinderEvent event = null;
         // What type of binder is it?
         BinderType bt = bi.getBinderType();
@@ -56,6 +56,7 @@ public class GwtClientFolderViewHelper {
             case FOLDER:
                 // What type of folder is it?
                 FolderType ft = bi.getFolderType();
+                GwtClientHelper.consoleLog("GwtClientFolderViewHelper: buildGwtBinderLayoutEvent() for folder " + ft.name() + " with parent " + parent.getClass().getName());
                 switch ( ft )
                 {
                     case CALENDAR:
@@ -114,6 +115,7 @@ public class GwtClientFolderViewHelper {
             case WORKSPACE:
                 // What type of workspace is it?
                 WorkspaceType wt = bi.getWorkspaceType();
+                GwtClientHelper.consoleLog("GwtClientFolderViewHelper: buildGwtBinderLayoutEvent() for workspace " + wt.name() + " with parent " + parent.getClass().getName());
                 switch ( wt )
                 {
                     case LANDING_PAGE:

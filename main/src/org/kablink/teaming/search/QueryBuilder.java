@@ -46,6 +46,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
@@ -466,6 +467,8 @@ public class QueryBuilder {
 			fieldName = null;
 		
 		String exactPhrase = element.attributeValue(EXACT_PHRASE_ATTRIBUTE);
+		
+		String valueType = element.attributeValue(VALUE_TYPE_ATTRIBUTE);
 
 		// Deal with exactphrase attribute. The name of the attribute is slightly mis-leading for
 		// historical reason, but regardless of that, here's the semantics as currently defined:
@@ -495,7 +498,25 @@ public class QueryBuilder {
 				// to default it to "some" field rather than throwing an error.
 				if(fieldName == null || fieldName.equals(""))
 					fieldName = Constants.GENERAL_TEXT_FIELD;
-				query = new TermQuery(new Term(fieldName, text));
+				// 4/27/2016 JK (bug 971209) This logic goes with FieldBuilderUtil.mapBasicFieldToNumericField().
+				if("number".equals(valueType)) {
+					// Given the way things are written, there's no guarantee that the field
+					// was necessarily indexed as numeric field or the search value given is
+					// a numeric value. So for maximum generality, combine both numeric and 
+					// string search.
+					query = new TermQuery(new Term(fieldName, text));
+					try {
+						Double dValue = Double.parseDouble(text);
+						BooleanQuery bq = new BooleanQuery();
+						bq.add(query, BooleanClause.Occur.SHOULD);
+						bq.add(NumericRangeQuery.newDoubleRange(fieldName, dValue, dValue, true, true), BooleanClause.Occur.SHOULD);
+						query = bq;
+					}
+					catch(Exception ignore) {}
+				}
+				else {
+					query = new TermQuery(new Term(fieldName, text));
+				}
 			} else {
 				String queryStr;
 				if(fieldName != null && !fieldName.equals(""))

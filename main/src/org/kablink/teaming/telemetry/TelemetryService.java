@@ -79,6 +79,7 @@ import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SiteBrandingHelper;
 import org.kablink.teaming.util.Utils;
 import org.kablink.util.Validator;
 import org.kablink.util.dao.hibernate.DynamicDialect;
@@ -293,6 +294,19 @@ public class TelemetryService extends HibernateDaoSupport {
 			tier2.setJava(java);
 			java.setVersion(System.getProperty("java.version"));
 			java.setVmVendor(System.getProperty("java.vm.vendor"));
+			
+			// Branding info
+			Branding.Mobile mobileBranding = new Branding.Mobile(
+					(SiteBrandingHelper.getAndroidMobileApplicationBrandingInfo() != null),
+					(SiteBrandingHelper.getIosMobileApplicationBrandingInfo() != null),
+					(SiteBrandingHelper.getWindowsMobileApplicationBrandingInfo() != null)
+					);
+			Branding.Desktop desktopBranding = new Branding.Desktop(
+					(SiteBrandingHelper.getMacDesktopApplicationBrandingInfo() != null),
+					(SiteBrandingHelper.getWindowsDesktopApplicationBrandingInfo() != null)
+					);
+			Branding branding = new Branding(mobileBranding, desktopBranding);
+			tier2.setBranding(branding);
 		}
 		
 		String dirPath = getTelemetryDataDirPath();
@@ -889,6 +903,8 @@ public class TelemetryService extends HibernateDaoSupport {
 		NetFolder netFolder;
 		@JsonProperty("device")
 		Device device;
+		@JsonProperty("branding")
+		Branding branding;
 
 		public IndexService getIndexService() {
 			return indexService;
@@ -955,6 +971,12 @@ public class TelemetryService extends HibernateDaoSupport {
 		}
 		public void setJava(Java java) {
 			this.java = java;
+		}
+		public Branding getBranding() {
+			return branding;
+		}
+		public void setBranding(Branding branding) {
+			this.branding = branding;
 		}
 	}
 	
@@ -1207,6 +1229,45 @@ public class TelemetryService extends HibernateDaoSupport {
 		}
 		public void setFolderCounts(List<Long> folderCounts) {
 			this.folderCounts = folderCounts;
+		}
+	}
+	
+	static class Branding {
+		@JsonProperty("mobile")
+		Mobile mobile;
+		@JsonProperty("desktop")
+		Desktop desktop;
+		
+		Branding(Mobile mobile, Desktop desktop) {
+			this.mobile = mobile;
+			this.desktop = desktop;
+		}
+		
+		static class Mobile {
+			@JsonProperty("Android")
+			boolean android;
+			@JsonProperty("iOS")
+			boolean ios;
+			@JsonProperty("Windows")
+			boolean windows;
+			
+			Mobile(boolean android, boolean ios, boolean windows) {
+				this.android = android;
+				this.ios = ios;
+				this.windows = windows;
+			}
+		}
+		
+		static class Desktop {
+			@JsonProperty("Mac")
+			boolean mac;
+			@JsonProperty("Windows")
+			boolean windows;	
+			
+			Desktop(boolean mac, boolean windows) {
+				this.mac = mac;
+				this.windows = windows;
+			}
 		}
 	}
 	

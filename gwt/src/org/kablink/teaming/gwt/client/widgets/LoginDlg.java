@@ -199,6 +199,7 @@ public class LoginDlg extends DlgBox
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private String m_preLoginTitle;
 	private boolean m_captchaAlreadyChecked = false;
+	private boolean m_isLoginBranded = false;
 	
 	private ZoneShareTerms m_zoneShareTerms=null;
 	
@@ -425,7 +426,14 @@ public class LoginDlg extends DlgBox
 			return;
 		
 		// Get the <form ...> element that was created by GwtMainPage.jsp
-		formElement = Document.get().getElementById( "loginFormId" );
+		if(m_isLoginBranded)
+		{
+			formElement = Document.get().getElementById( "genericLoginFormId" );
+		}
+		else
+		{
+			formElement = Document.get().getElementById( "microFocusLoginFormId" );		
+		}
 		m_formPanel = new LoginFormPanel( formElement );
 		m_formPanel.setVisible( true );
 		
@@ -624,6 +632,7 @@ public class LoginDlg extends DlgBox
 					} );
 				}
 			} );
+			m_headerPanel.clear();
 			m_headerPanel.add( img );
 
 			// Set the dialog to be hidden and show it.  This will add everything into the DOM
@@ -1483,10 +1492,120 @@ public class LoginDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void showDlg( boolean allowCancel, LoginStatus loginStatus, Long loginUserId )
+	public void showDlg( final boolean allowCancel, final LoginStatus loginStatus, final Long loginUserId )
 	{
 		debugAlert( "In LoginDlg.showDlg()" );
+		// Create the callback that will be used when we issue an ajax call to get the site branding
+		AsyncCallback<VibeRpcResponse> getSiteBrandingCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( final Throwable t )
+			{
+				GwtClientHelper.deferCommand( new ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						// Don't call GwtClientHelper.handleGwtRPCFailure() like we would normally do.  If the
+						// session has expired, handleGwtRPCFailure() will invoke this login dialog again
+						// and we will be in an infinite loop.
+						m_isLoginBranded=false;
+						//setDialogStyle(false);
+						Document.get().getElementById("genericLoginPage").removeFromParent();
+						handleLoginFormPanel(allowCancel,loginStatus,loginUserId);						
+						createHeaderNow( null );
+					}
+				} );
+			}
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				
+				final GwtBrandingData brandingData = (GwtBrandingData) response.getResponseData();
 
+				GwtClientHelper.deferCommand( new ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						m_isLoginBranded=isLoginDlgBranded(brandingData);
+						setDialogStyle(m_isLoginBranded);
+						if(m_isLoginBranded){
+							Element element=Document.get().getElementById("microFocusLoginPage");
+							if(element!=null){
+								element.removeFromParent();
+							}
+						}
+						else
+						{
+							Element element=Document.get().getElementById("genericLoginPage");
+							if(element!=null){
+								element.removeFromParent();								
+							}
+						}	
+						handleLoginFormPanel(allowCancel,loginStatus,loginUserId);
+						createHeaderNow( brandingData );
+					}
+				} );				
+			}
+		};
+		
+		// Issue an ajax request to get the site branding data.
+		GetSiteBrandingCmd cmd = new GetSiteBrandingCmd();
+		// We want to issue the rpc requests without a user login id so that the GwtRpcController
+		// doesn't think the session has timed out.
+		HttpRequestInfo httpRequestInfo = HttpRequestInfo.createHttpRequestInfo();
+		httpRequestInfo.setUserLoginId( null );
+		GwtClientHelper.executeCommand( cmd, httpRequestInfo, getSiteBrandingCallback );
+	}
+	
+	private void setDialogStyle(boolean isBranded){
+		if(!isBranded){			
+			setStyleName("mfteamingDlgBox");
+			//getFooterPanel().setStyleName("mfteamingDlgBoxFooter");
+		}
+	}
+	
+	private boolean isLoginDlgBranded(GwtBrandingData brandingData)
+	{	
+		String imgName=brandingData.getLoginDlgImageName();
+		boolean useDefaultImg = true;
+		// Do we have an image name to use
+		if ( imgName != null && imgName.length() > 0 )
+		{
+			// Yes
+			// Is the branding image name "__default teaming image__"?
+			if ( imgName.equalsIgnoreCase( BrandingPanel.DEFAULT_TEAMING_IMAGE ) )
+			{
+				// Yes
+				useDefaultImg = true;
+			}
+			// Is the branding image name "__no image__"?
+			else if ( imgName.equalsIgnoreCase( BrandingPanel.NO_IMAGE ) )
+			{
+				// Yes
+				useDefaultImg = false;
+			}
+			else
+			{
+				String imgUrl = brandingData.getLoginDlgImageUrl();
+				if ( imgUrl != null && imgUrl.length() > 0 )
+					useDefaultImg = false;
+			}
+		}	
+		return useDefaultImg?false:true;
+	}
+	
+	private void handleLoginFormPanel(boolean allowCancel, LoginStatus loginStatus, Long loginUserId)
+	{
 		if ( m_initialized )
 		{
 			centerAndShow();
@@ -1533,11 +1652,9 @@ public class LoginDlg extends DlgBox
 
 		// Create the header.  getSiteBrandingDataThenCreateHeader() will show the dialog when it is finished.
 		m_initialized = true;
-		getSiteBrandingDataThenCreateHeader();
-
 		// Issue an ajax request to get self registration info and a list of open id providers
-		getLoginInfoFromServer( loginStatus );
-	}
+		getLoginInfoFromServer( loginStatus );	
+	}	
 	
 	/**
 	 * 
@@ -1676,7 +1793,7 @@ public class LoginDlg extends DlgBox
 				});
 				
 				m_registerBtn.setEnabled(false);
-				m_registerBtn.setStyleName("teamingButton");
+				//m_registerBtn.setStyleName("teamingButton");
 				Event.sinkEvents(acceptTermsCheckBox, Event.ONCLICK);
 				Event.setEventListener(acceptTermsCheckBox, new EventListener() {					
 					@Override
@@ -1684,11 +1801,11 @@ public class LoginDlg extends DlgBox
 						if(((InputElement)acceptTermsCheckBox).isChecked())
 						{
 							m_registerBtn.setEnabled(true);							
-							m_registerBtn.addStyleName("gwt-Button");
+							//m_registerBtn.addStyleName("gwt-Button");
 						}
 						else{
 							m_registerBtn.setEnabled(false);
-							m_registerBtn.setStyleName("teamingButton");
+							//m_registerBtn.setStyleName("teamingButton");
 						}
 					}
 				});
@@ -2084,14 +2201,21 @@ public class LoginDlg extends DlgBox
 		
 		// Add a row for the "user id" controls.
 		{
+			Element dlgContentElement=Document.get().getElementById("dlgContent");
+			if(dlgContentElement!=null) dlgContentElement.getStyle().setDisplay(Display.BLOCK);
+			
 			Element userIdElement;
-			String userName;
+			String userName;		
 			
 			m_userIdLabelElement = Document.get().getElementById( "userIdLabel" );
-			m_userIdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgUserId() );
+			if(m_userIdLabelElement!=null)	
+				m_userIdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgUserId() );
 			
 			userIdElement = Document.get().getElementById( "j_usernameId" );
 			m_userIdTxtBox = TextBox.wrap( userIdElement );
+			
+			if(!m_isLoginBranded)
+				m_userIdTxtBox.getElement().setAttribute("placeholder", GwtTeaming.getMessages().loginDlgUserId());
 			
 			// Do we have the user name for an external user trying to log in for the first time?
 			userName = GwtTeaming.getMainPage().getLoginExternalUserName();
@@ -2104,10 +2228,14 @@ public class LoginDlg extends DlgBox
 			Element pwdTxtBoxElement;
 			
 			m_pwdLabelElement = Document.get().getElementById( "pwdLabel" );
-			m_pwdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgPassword() );
+			if(m_pwdLabelElement!=null)
+				m_pwdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgPassword() );
 			
 			pwdTxtBoxElement = Document.get().getElementById( "j_passwordId" );
 			m_pwdTxtBox = PasswordTextBox.wrap( pwdTxtBoxElement );
+			
+			if(!m_isLoginBranded)
+				m_pwdTxtBox.getElement().setAttribute("placeholder", GwtTeaming.getMessages().loginDlgPassword());
 		}
 		
 		// Add the controls needed for captcha
@@ -2153,6 +2281,10 @@ public class LoginDlg extends DlgBox
 		{
 			Element okElement;
 			Element cancelElement;
+			
+			final Element element = Document.get().getElementById( "loginRegisterBtn" );
+			m_registerBtn = Button.wrap( element );
+			m_registerBtn.setVisible( false );
 			
 			okElement = Document.get().getElementById( "loginOkBtn" );
 			m_okBtn = Button.wrap( okElement );

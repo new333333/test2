@@ -702,7 +702,18 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
   		margin-left: 1px; 
   		margin-right: 1px;
 	</c:if>
-	}
+	}	
+.mfteamingDlgBox button.signInBtn, .mfteamingDlgBox button.signInBtn:hover, .mfteamingDlgBox button.registerBtn, .mfteamingDlgBox button.registerBtn:hover{
+	background-color: #2a3d44 !important;
+	border-radius:25px !important;
+	width:75% !important;
+	padding:12px !important;
+	color:#fff !important;
+	border:0px !important;
+	margin:0 auto !important;
+	margin-bottom: 12px !important;
+	display:block;
+}	
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
 	color: #036f9f !important;
     text-align: center !important;

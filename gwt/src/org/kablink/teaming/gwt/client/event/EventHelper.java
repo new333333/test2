@@ -2335,7 +2335,16 @@ public class EventHelper {
 					registrationHandler = ShowContentControlEvent.registerEvent(eventBus, ((ShowContentControlEvent.Handler) eventHandler));
 				}
 				break;
-			
+
+			case SHOW_CUSTOM_BINDER_VIEW:
+				// A ShowCustomBinderViewEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowCustomBinderViewEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowCustomBinderViewEvent.registerEvent(eventBus, ((ShowCustomBinderViewEvent.Handler) eventHandler));
+				}
+				break;
+
 			case SHOW_DISCUSSION_FOLDER:
 				// A ShowDiscussionFolderEvent!  Can the event handler
 				// we were given handle that?

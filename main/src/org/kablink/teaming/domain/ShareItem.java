@@ -379,19 +379,21 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	//****IMPORTANT****
 	//These lists should be kept in sync with the fillFilrRoleViewer, fillFilrRoleEditor, 
 	//    and fillFilrRoleContributor routines in AbstractZoneModule
+	// The ordinalCode value is used to compare roles.
+	// It's important that CONTRIBUTOR.ordinalCode > EDITOR.ordinalCode > VIEWER.ordinalCode > NONE.ordinalCode
 	public static enum Role {
-		VIEWER("share.role.title.viewer", 
+		VIEWER(1, "share.role.title.viewer",
 				new WorkAreaOperation[] {
 				WorkAreaOperation.READ_ENTRIES,
 				WorkAreaOperation.ADD_REPLIES
 				}),
-		EDITOR("share.role.title.editor",
+		EDITOR(2, "share.role.title.editor",
 				new WorkAreaOperation[] {
 				WorkAreaOperation.READ_ENTRIES, 
 				WorkAreaOperation.ADD_REPLIES,
 				WorkAreaOperation.MODIFY_ENTRIES 
 				}),
-		CONTRIBUTOR("share.role.title.contributor",
+		CONTRIBUTOR(3, "share.role.title.contributor",
 				new WorkAreaOperation[] {
 				WorkAreaOperation.READ_ENTRIES, 
 				WorkAreaOperation.ADD_REPLIES, 
@@ -404,17 +406,23 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 				WorkAreaOperation.ADD_COMMUNITY_TAGS, 
 				WorkAreaOperation.GENERATE_REPORTS
 				}),
-		NONE("share.role.title.none",
+		NONE(0, "share.role.title.none",
 				new WorkAreaOperation[] {}),
-		CUSTOM("share.role.title.custom",
+		CUSTOM(-1, "share.role.title.custom",
 				new WorkAreaOperation[] {});
-		
+
+		private int ordinalCode;
 		private String titleCode;
 		private WorkAreaOperation[] workAreaOperations;
 		
-		private Role(String titleCode, WorkAreaOperation[] workAreaOperations) {
+		private Role(int ordinalCode, String titleCode, WorkAreaOperation[] workAreaOperations) {
+			this.ordinalCode = ordinalCode;
 			this.titleCode = titleCode;
 			this.workAreaOperations = workAreaOperations;
+		}
+
+		public int ordinalCode() {
+			return ordinalCode;
 		}
 		
 		public String getTitle() {

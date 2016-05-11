@@ -37,6 +37,8 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import org.kablink.teaming.gwt.client.BlogArchiveFolder;
 import org.kablink.teaming.gwt.client.BlogArchiveMonth;
@@ -49,6 +51,9 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData
 import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.VibeGrid;
 
 import java.util.ArrayList;
 
@@ -57,20 +62,22 @@ import java.util.ArrayList;
  * 
  * @author david
  */
-public class CustomBinderView extends WorkspaceViewBase
+public class CustomBinderView extends WorkspaceViewBase implements VibeEntityViewPanel
 {
 	private BinderViewLayout m_viewLayout;
+	private ViewType m_viewType;
 	/**
 	 * Constructor method.
 	 *
 	 * @param binderInfo
 	 * @param viewReady
 	 */
-	private CustomBinderView(BinderInfo binderInfo, BinderViewLayout viewLayout, ViewReady viewReady)
+	private CustomBinderView(BinderInfo binderInfo, ViewType viewType, BinderViewLayout viewLayout, ViewReady viewReady)
 	{
 		// Simply initialize the super class.
 		super( binderInfo, viewReady);
 		m_viewLayout = viewLayout;
+		m_viewType = viewType;
 		constructView();
 	}
 	
@@ -79,6 +86,75 @@ public class CustomBinderView extends WorkspaceViewBase
 	 */
 	public void constructView()
 	{
+		GwtClientHelper.consoleLog("CustomBinderView: constructView()");
+		this.addChildControls(m_viewLayout , this);
+	}
+
+	public void addChildControls(BinderViewContainer parentDef, VibeEntityViewPanel parentWidget) {
+		GwtClientHelper.consoleLog("CustomBinderView: addChildControls() for " + parentDef.getClass().getName());
+		for (BinderViewDefBase child : parentDef.getChildren()) {
+			addControl(child, parentWidget);
+		}
+	}
+
+	public void addControl(BinderViewDefBase viewDef, VibeEntityViewPanel parentWidget) {
+		GwtClientHelper.consoleLog("CustomBinderView: addControl() for " + viewDef.getClass().getName());
+		if (viewDef instanceof BinderViewContainer) {
+			VibeEntityViewPanel viewPanel;
+			if (viewDef instanceof BinderViewTwoColumnTable) {
+				BinderViewTwoColumnTable tableDef = (BinderViewTwoColumnTable) viewDef;
+				VibeGrid viewGrid = new VibeGrid(1,2);
+				viewGrid.addStyleName("vibe-grid");
+				if (tableDef.getWidth() != null) {
+					viewGrid.setWidth(tableDef.getWidth().toString());
+				}
+				if (tableDef.getColumn1Width()!=null) {
+					viewGrid.getColumnFormatter().setWidth(1, tableDef.getColumn1Width().toString());
+				}
+				if (tableDef.getColumn2Width()!=null) {
+					viewGrid.getColumnFormatter().setWidth(2, tableDef.getColumn2Width().toString());
+				}
+				viewPanel = viewGrid;
+			} else if (viewDef instanceof BinderViewThreeColumnTable) {
+				BinderViewThreeColumnTable tableDef = (BinderViewThreeColumnTable) viewDef;
+				VibeGrid viewGrid = new VibeGrid(1,3);
+				viewGrid.addStyleName("vibe-grid");
+				if (tableDef.getWidth()!=null) {
+					viewGrid.setWidth(tableDef.getWidth().toString());
+				}
+				if (tableDef.getColumn1Width()!=null) {
+					viewGrid.getColumnFormatter().setWidth(1, tableDef.getColumn1Width().toString());
+				}
+				if (tableDef.getColumn2Width()!=null) {
+					viewGrid.getColumnFormatter().setWidth(2, tableDef.getColumn2Width().toString());
+				}
+				if (tableDef.getColumn3Width()!=null) {
+					viewGrid.getColumnFormatter().setWidth(3, tableDef.getColumn2Width().toString());
+				}
+				viewPanel = viewGrid;
+			} else {
+				BinderViewContainer containerDef = (BinderViewContainer) viewDef;
+				VibeFlowPanel flowPanel = new VibeFlowPanel();
+				flowPanel.addStyleName("vibe-flow");
+				if (containerDef.getWidth()!=null) {
+					flowPanel.setWidth(containerDef.getWidth().toString());
+				}
+				viewPanel = flowPanel;
+			}
+			parentWidget.showWidget((Widget) viewPanel);
+			addChildControls((BinderViewContainer) viewDef, viewPanel);
+		} else {
+			if (viewDef instanceof BinderViewFolderListing) {
+				BinderInfo bi = getBinderInfo();
+				ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, m_viewType, parentWidget, null);
+				if (viewEvent!=null) {
+					GwtTeaming.fireEvent(viewEvent);
+				}
+			} else {
+				VibeEntityViewPanel viewPanel = new VibeFlowPanel();
+				parentWidget.showWidget((Widget)viewPanel);
+			}
+		}
 	}
 
 	/**
@@ -89,17 +165,17 @@ public class CustomBinderView extends WorkspaceViewBase
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo folderInfo, final BinderViewLayout viewLayout, final ViewReady viewReady, final ViewClient vClient )
+	public static void createAsync( final BinderInfo folderInfo, final ViewType viewType, final BinderViewLayout viewLayout, final ViewReady viewReady, final ViewClient vClient )
 	{
 		GWT.runAsync( CustomBinderView.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				CustomBinderView blogFolderView;
+				CustomBinderView customBinderView;
 				
-				blogFolderView = new CustomBinderView( folderInfo, viewLayout, viewReady );
-				vClient.onSuccess( blogFolderView );
+				customBinderView = new CustomBinderView( folderInfo, viewType, viewLayout, viewReady );
+				vClient.onSuccess( customBinderView );
 			}
 			
 			@Override
@@ -109,5 +185,11 @@ public class CustomBinderView extends WorkspaceViewBase
 				vClient.onUnavailable();
 			}
 		});
+	}
+
+	@Override
+	public void showWidget(Widget widget) {
+		GwtClientHelper.consoleLog("CustomBinderView: showWidget() for " + widget.getClass().getName());
+		this.initWidget(widget);
 	}
 }
