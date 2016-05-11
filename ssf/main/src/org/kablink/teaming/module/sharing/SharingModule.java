@@ -79,7 +79,26 @@ public interface SharingModule {
 		public boolean isInvalid()            {return (!(isValid()));                                           }
 		public boolean isValid()              {return valid.equals(               this);                        }
 	}
-	
+
+	public static class EntityShareRights {
+		private ShareItem.Role topRole;
+		private ShareItem.Role maxGrantRole;
+
+		public EntityShareRights(ShareItem.Role topRole, ShareItem.Role maxGrantRole) {
+			this.topRole = topRole;
+			this.maxGrantRole = maxGrantRole;
+		}
+
+		public ShareItem.Role getMaxGrantRole() {
+			return maxGrantRole;
+		}
+
+		public ShareItem.Role getTopRole() {
+			return topRole;
+		}
+	}
+
+
 	public void checkAccess(ShareItem shareItem, SharingOperation operation)
     	throws AccessControlException;
 	public void checkAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, SharingOperation operation)
@@ -99,7 +118,9 @@ public interface SharingModule {
 	public boolean isSharingEnabled();
 	public boolean isSharingPublicLinksEnabled();
 
-    /**
+	public EntityShareRights calculateHighestEntityShareRights(EntityIdentifier entityId);
+
+	/**
      * Add a new share by adding a share item.
      * 
      * @param shareItem

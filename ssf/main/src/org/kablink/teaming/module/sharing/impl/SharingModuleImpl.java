@@ -32,14 +32,7 @@
  */
 package org.kablink.teaming.module.sharing.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 import org.kablink.teaming.InvalidEmailAddressException;
 import org.kablink.teaming.NotSupportedException;
@@ -50,6 +43,9 @@ import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
+import org.kablink.teaming.fi.connection.acl.AclItemPermissionMapper;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
+import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.jobs.ExpiredShareHandler;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -70,17 +66,10 @@ import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.AccessControlNonCodedException;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.util.GangliaMonitoring;
-import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.ShareLists;
-import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.TagUtil;
-import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.*;
 import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.util.api.ApiErrorCode;
+import org.kablink.teaming.web.util.ShareHelper;
 
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -132,15 +121,31 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	@SuppressWarnings("unchecked")
 	public void checkAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, SharingOperation operation)
 	    	throws AccessControlException {
-    	User user = RequestContextHolder.getRequestContext().getUser();
-    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
-		AccessControlManager accessControlManager = getAccessControlManager();
-		if (accessControlManager == null) {
-			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+        checkAccess(shareItem, entityIdentifier, operation, true);
+    }
+
+	private void checkAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, SharingOperation operation, boolean checkRole)
+	    	throws AccessControlException {
+		Principal recipient = getRecipient(shareItem);
+
+		switch (operation) {
+		case addShareItem:
+			checkAddShareItemAccess(shareItem, entityIdentifier, recipient, checkRole);
+			return;
+		case modifyShareItem:
+			checkModifyShareItemAccess(shareItem, entityIdentifier, recipient, checkRole);
+			return;
+		case deleteShareItem:
+			checkDeleteShareItemAccess(shareItem, entityIdentifier, recipient);
+			return;
+		default:
+			throw new NotSupportedException(operation.toString(),
+					"checkAccess");
 		}
-    	Long allUsersId = Utils.getAllUsersGroupId();
-    	Long allExtUsersId = Utils.getAllExtUsersGroupId();
+	}
+
+	private Principal getRecipient(ShareItem shareItem) {
+		Long userId = RequestContextHolder.getRequestContext().getUserId();
 
 		Principal recipient = null;
 		if (shareItem.getRecipientType().equals(RecipientType.group)) {
@@ -149,7 +154,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                 throw new NoGroupByTheIdException(shareItem.getRecipientId());
             }
    		} else if (shareItem.getRecipientType().equals(RecipientType.user)) {
-            if (shareItem.getRecipientId().equals(user.getId())) {
+            if (shareItem.getRecipientId().equals(userId)) {
                 throw new InvalidRecipientException("Can't share with yourself.");
             }
             recipient = getProfileModule().getEntry(shareItem.getRecipientId());
@@ -157,299 +162,362 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                 throw new NoUserByTheIdException(shareItem.getRecipientId());
             }
         }
+		return recipient;
+	}
 
-		switch (operation) {
-		case addShareItem:
-			//Make sure sharing is enabled at the zone level for this type of user
-			if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
-				if (allUsersId.equals(recipient.getId())) {
-					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_ALL_INTERNAL);
-				} else if (allExtUsersId.equals(recipient.getId())) {
-					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_ALL_EXTERNAL);
-				}
-
-				//Distinguish between internal and external groups
-				if (recipient.getIdentityInfo().isInternal()) {
-					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL);
-				} else {
-					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL);
-				}
-			} else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
-				//Users can be guest (i.e., shared), internal, or external
-				if (((User)recipient).isShared()) {
-					if (!zoneConfig.getAuthenticationConfig().isAllowAnonymousAccess()) {
-						//Anonymous has not been enabled by the administrator
-						throw new AccessControlException();
-					}
-					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC);
-					//Also make sure the rights being given out are no more than Viewer
-					if (!validateGuestAccessRights(shareItem)) {
-						//There are rights that are not allowed for sharing with guest. Throw an error
-						throw new AccessControlException();
-					}
-				} else if (recipient.getIdentityInfo().isInternal()) {
-					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL);
-				} else {
-					accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL);
-				}
-			} else if (shareItem.getRecipientType().equals(RecipientType.team)) {
-				//Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
-				throw new AccessControlException();
-			} else if (shareItem.getRecipientType().equals(RecipientType.publicLink)) {
-				//Check that the current user is enabled for this at the zone level
-				accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_LINK_SHARING);
-			}
-			
-			//Check the setting of the Share Forward right
-			boolean tryingToAllowShareForward = shareItem.getRightSet().getRight(WorkAreaOperation.ALLOW_SHARING_FORWARD);
-			if (tryingToAllowShareForward) {
-				//The share item is trying to give out the share forward right. See if the user is allowed to do this
-				accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD);
-			}
-
-			//Check that the user has the right to share this entity
-			if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
-				FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
-				//First, see if this is an entry in a Net Folder. If so, we must test the root level permissions.
-				if (fe.isAclExternallyControlled()) {
-					//This is in a net folder. we must check if the admin allows the requested operation at the root level.
-					Binder topFolder = fe.getParentBinder();
-					while (topFolder != null) {
-						if (topFolder.getParentBinder() != null &&
-								!topFolder.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
-							//We have found the top folder (i.e., the net folder root)
-							break;
-						}
-						topFolder = topFolder.getParentBinder();
-					}
-					//Now check if the root folder allows the requested operation
-					if (topFolder != null) {
-						//Check if the binder allows share forward
-						if (tryingToAllowShareForward) {
-							//Test if entry allows sharing forward
-							if (!accessControlManager.testRightGrantedBySharing(user, 
-									(WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_FORWARD)) {
-								//The entry didn't have the right due to sharing, so now check the parent folder
-								if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingForward)) {
-									throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
-								}
-							}
-						}
-						if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
-							if (recipient.getIdentityInfo().isInternal()) {
-								if (!accessControlManager.testRightGrantedBySharing(user, 
-										(WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_INTERNAL)) {
-									if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
-										throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
-									}
-								}
-							} else {
-								if (!accessControlManager.testRightGrantedBySharing(user, 
-										(WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_EXTERNAL)) {
-									if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
-										throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
-									}
-								}
-							}
-						} else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
-							if (((User)recipient).isShared()) {
-								if (!accessControlManager.testRightGrantedBySharing(user, 
-										(WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_PUBLIC)) {
-									if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingPublic)) {
-										throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
-									}
-								}
-							} else if (recipient.getIdentityInfo().isInternal()) {
-								if (!accessControlManager.testRightGrantedBySharing(user, 
-										(WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_INTERNAL)) {
-									if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
-										throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
-									}
-								}
-							} else {
-								if (!accessControlManager.testRightGrantedBySharing(user, 
-										(WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_EXTERNAL)) {
-									if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
-										throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
-									}
-								}
-							}
-						} else if (shareItem.getRecipientType().equals(RecipientType.team)) {
-							//Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
-							throw new AccessControlException();
-						}
-					} else {
-						//The root folder does not exist
-						throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
-					}
-				}
-				//Check if the entry allows share forward
-				if (tryingToAllowShareForward) {
-					//Test if entry allows sharing forward
-					if (!folderModule.testAccess(fe, FolderOperation.allowSharingForward)) {
-						throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
-					}
-				}
-				//Now check that the entry itself allows the requested operation
-				//First test if the user is allowed to do all of the rights in the rights list
-				List<FolderOperation> ops = shareItem.getRightSet().getFolderEntryRights();
-				for (FolderOperation op : ops) {
-					folderModule.checkAccess(fe, op);
-				}
-				if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
-					if (recipient.getIdentityInfo().isInternal()) {
-						if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
-							return;
-						}
-					} else {
-						if (folderModule.testAccess(fe, FolderOperation.allowSharingExternal)) {
-							return;
-						}
-					}
-				} else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
-					if (((User)recipient).isShared()) {
-						if (folderModule.testAccess(fe, FolderOperation.allowSharingPublic)) {
-							return;
-						}
-					} else if (recipient.getIdentityInfo().isInternal()) {
-						if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
-							return;
-						}
-					} else {
-						if (folderModule.testAccess(fe, FolderOperation.allowSharingExternal)) {
-							return;
-						}
-					}
-				} else if (shareItem.getRecipientType().equals(RecipientType.team)) {
-					//Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
-					throw new AccessControlException();
-				}
-				else if ( shareItem.getRecipientType().equals( RecipientType.publicLink ) )
-				{
-					// Is sharing with the public enabled?
-					if ( folderModule.testAccess( fe, FolderOperation.allowSharingPublicLinks ) )
-					{
-						// Yes
-						return;
-					}
-				}
-			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
-					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
-				Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
-				//If this is a Filr Net Folder, check if sharing is allowed at the folder level
-				if (binder.isAclExternallyControlled() && 
-						!SPropsUtil.getBoolean("sharing.netFolders.allowed", true)) {
-					//See if this Filr folder is in the user's personal workspace. We allow sharing of the home folder
-					if (!Utils.isWorkareaInProfilesTree(binder)) {
-						throw new AccessControlException("errorcode.sharing.netfolders.notAllowed", new Object[] {});
-					}
-				}
-				//Check if the binder allows share forward
-				if (tryingToAllowShareForward) {
-					//Test if entry allows sharing forward
-					if (!binderModule.testAccess(binder, BinderOperation.allowSharingForward)) {
-						throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
-					}
-				}
-				//Now check the access to the binder
-				//First test if the user is allowed to do all of the rights in the rights list
-				List<Object> ops = shareItem.getRightSet().getFolderRights();
-				for (Object op : ops) {
-					if (op instanceof WorkAreaOperation) {
-						accessControlManager.checkOperation(binder, (WorkAreaOperation)op);
-					} else if (op instanceof BinderOperation) {
-						binderModule.checkAccess(binder, (BinderOperation)op);
-					} else if (op instanceof FolderOperation && binder instanceof Folder) {
-						folderModule.checkAccess((Folder)binder, (FolderOperation)op);
-					} else {
-						throw new AccessControlException();
-					}
-				}
-				if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
-					if (recipient.getIdentityInfo().isInternal()) {
-						if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
-							return;
-						}
-					} else {
-						if (binderModule.testAccess(binder, BinderOperation.allowSharingExternal)) {
-							return;
-						}
-					}
-				} else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
-					if (((User)recipient).isShared()) {
-						if (binderModule.testAccess(binder, BinderOperation.allowSharingPublic)) {
-							return;
-						}
-					} else if (recipient.getIdentityInfo().isInternal()) {
-						if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
-							return;
-						}
-					} else {
-						if (binderModule.testAccess(binder, BinderOperation.allowSharingExternal)) {
-							return;
-						}
-					}
-				} else if (shareItem.getRecipientType().equals(RecipientType.team)) {
-					//Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
-					throw new AccessControlException();
-				}
-			}
-			break;
-		case modifyShareItem:
-			//The share creator and the entity owner can modify a shareItem
-			if (!user.getId().equals(shareItem.getSharerId()))
-			{
-				//The user is not the creator of the share. Only the share item creator is allowed to modify it
-				// Check for site administrator.  It is ok if the admin changes a share item he didn't create.
-				if ( accessControlManager.testOperation( user, zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION ) == false )
-				{
-					// User is not a site administrator
-					throw new AccessControlException();
-				}
-			}
-			//Now check if this user is still allowed to add a share of this entity
-			checkAccess(shareItem, SharingOperation.addShareItem);
-			return;
-		case deleteShareItem:
-			//The share creator, the entity owner, or the site admin can delete a shareItem
-			if (user.getId().equals(shareItem.getSharerId())) {
-				//The user is the creator of the share
-				return;
-			}
-			//Check if this is the owner of the entity
-			if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
-				FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
-				if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
-					//This is the owner of the entry. Allow the modification.
-					if (folderModule.testAccess(fe, FolderOperation.changeACL)) {
-						return;
-					}
-				}
-			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
-					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
-				Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
-				if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
-					//This is the owner of the binder. Allow the modification.
-					if (binderModule.testAccess(binder, BinderOperation.changeACL)) {
-						return;
-					}
-				}
-			}
-			//Check for site administrator
-			if (accessControlManager.testOperation(user, zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION)) {
-				//This is a site administrator
-				return;
-			}
-			break;
-		default:
-			throw new NotSupportedException(operation.toString(),
-					"checkAccess");
+	@Override
+	public AccessControlManager getAccessControlManager() {
+		AccessControlManager accessControlManager = super.getAccessControlManager();
+		if (accessControlManager == null) {
+			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
 		}
+		return accessControlManager;
+	}
+
+	private void checkSharingAccessToBinder(ShareItem shareItem, EntityIdentifier entityIdentifier, Principal recipient, boolean tryingToAllowShareForward, boolean checkRole) {
+		Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
+		AccessControlManager accessControlManager = getAccessControlManager();
+		//If this is a Filr Net Folder, check if sharing is allowed at the folder level
+		if (binder.isAclExternallyControlled() &&
+                !SPropsUtil.getBoolean("sharing.netFolders.allowed", true)) {
+            //See if this Filr folder is in the user's personal workspace. We allow sharing of the home folder
+            if (!Utils.isWorkareaInProfilesTree(binder)) {
+                throw new AccessControlException("errorcode.sharing.netfolders.notAllowed", new Object[] {});
+            }
+        }
+		//Check if the binder allows share forward
+		if (tryingToAllowShareForward) {
+            //Test if entry allows sharing forward
+            if (!binderModule.testAccess(binder, BinderOperation.allowSharingForward)) {
+                throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
+            }
+        }
+		//Check to see if the user can grant the specified role
+        if (checkRole) {
+            checkRoleToGrant(shareItem, entityIdentifier);
+        }
+
+		//Now check the access to the binder
+		//First test if the user is allowed to do all of the rights in the rights list
+		List<Object> ops = shareItem.getRightSet().getFolderRights();
+		for (Object op : ops) {
+            if (op instanceof WorkAreaOperation) {
+                accessControlManager.checkOperation(binder, (WorkAreaOperation)op);
+            } else if (op instanceof BinderOperation) {
+                binderModule.checkAccess(binder, (BinderOperation)op);
+            } else if (op instanceof FolderOperation && binder instanceof Folder) {
+                folderModule.checkAccess((Folder)binder, (FolderOperation)op);
+            } else {
+                throw new AccessControlException();
+            }
+        }
+		if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
+            if (recipient.getIdentityInfo().isInternal()) {
+                if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
+					return;
+                }
+            } else {
+                if (binderModule.testAccess(binder, BinderOperation.allowSharingExternal)) {
+					return;
+                }
+            }
+        } else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
+            if (((User)recipient).isShared()) {
+                if (binderModule.testAccess(binder, BinderOperation.allowSharingPublic)) {
+					return;
+                }
+            } else if (recipient.getIdentityInfo().isInternal()) {
+                if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
+					return;
+                }
+            } else {
+                if (binderModule.testAccess(binder, BinderOperation.allowSharingExternal)) {
+					return;
+                }
+            }
+        } else if (shareItem.getRecipientType().equals(RecipientType.team)) {
+            //Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
+            throw new AccessControlException();
+        }
+		throw new AccessControlException();
+	}
+
+	private void checkRoleToGrant(ShareItem shareItem, EntityIdentifier entityIdentifier) {
+        EntityShareRights shareRights = calculateHighestEntityShareRights(entityIdentifier);
+        if (shareRights.getMaxGrantRole().isLessThan(shareItem.getRole())) {
+            throw new AccessControlException("errorcode.sharing.role.notAllowed", new Object[]{shareItem.getRole().getTitle()});
+        }
+	}
+
+	private void checkSharingAccessToFolderEntry(ShareItem shareItem, EntityIdentifier entityIdentifier, Principal recipient, boolean tryingToAllowShareForward) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		AccessControlManager accessControlManager = getAccessControlManager();
+		FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
+		//First, see if this is an entry in a Net Folder. If so, we must test the root level permissions.
+		if (fe.isAclExternallyControlled()) {
+            //This is in a net folder. we must check if the admin allows the requested operation at the root level.
+            Binder topFolder = fe.getParentBinder();
+            while (topFolder != null) {
+                if (topFolder.getParentBinder() != null &&
+                        !topFolder.getParentBinder().getEntityType().name().equals(EntityType.folder.name())) {
+                    //We have found the top folder (i.e., the net folder root)
+                    break;
+                }
+                topFolder = topFolder.getParentBinder();
+            }
+            //Now check if the root folder allows the requested operation
+            if (topFolder != null) {
+                //Check if the binder allows share forward
+                if (tryingToAllowShareForward) {
+                    //Test if entry allows sharing forward
+                    if (!accessControlManager.testRightGrantedBySharing(user,
+                            (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_FORWARD)) {
+                        //The entry didn't have the right due to sharing, so now check the parent folder
+                        if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingForward)) {
+                            throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
+                        }
+                    }
+                }
+                if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
+                    if (recipient.getIdentityInfo().isInternal()) {
+                        if (!accessControlManager.testRightGrantedBySharing(user,
+                                (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_INTERNAL)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
+                                throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+                            }
+                        }
+                    } else {
+                        if (!accessControlManager.testRightGrantedBySharing(user,
+                                (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_EXTERNAL)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
+                                throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+                            }
+                        }
+                    }
+                } else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
+                    if (((User)recipient).isShared()) {
+                        if (!accessControlManager.testRightGrantedBySharing(user,
+                                (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_PUBLIC)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingPublic)) {
+                                throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+                            }
+                        }
+                    } else if (recipient.getIdentityInfo().isInternal()) {
+                        if (!accessControlManager.testRightGrantedBySharing(user,
+                                (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_INTERNAL)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
+                                throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+                            }
+                        }
+                    } else {
+                        if (!accessControlManager.testRightGrantedBySharing(user,
+                                (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_EXTERNAL)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
+                                throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+                            }
+                        }
+                    }
+                } else if (shareItem.getRecipientType().equals(RecipientType.team)) {
+                    //Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
+                    throw new AccessControlException();
+                }
+            } else {
+                //The root folder does not exist
+                throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
+            }
+        }
+		//Check if the entry allows share forward
+		if (tryingToAllowShareForward) {
+            //Test if entry allows sharing forward
+            if (!folderModule.testAccess(fe, FolderOperation.allowSharingForward)) {
+                throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
+            }
+        }
+
+		//Check to see if the user can grant the specified role
+		checkRoleToGrant(shareItem, entityIdentifier);
+
+		//Now check that the entry itself allows the requested operation
+		//First test if the user is allowed to do all of the rights in the rights list
+		List<FolderOperation> ops = shareItem.getRightSet().getFolderEntryRights();
+		for (FolderOperation op : ops) {
+            folderModule.checkAccess(fe, op);
+        }
+		if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
+            if (recipient.getIdentityInfo().isInternal()) {
+                if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
+					return;
+                }
+            } else {
+                if (folderModule.testAccess(fe, FolderOperation.allowSharingExternal)) {
+					return;
+                }
+            }
+        } else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
+            if (((User)recipient).isShared()) {
+                if (folderModule.testAccess(fe, FolderOperation.allowSharingPublic)) {
+					return;
+                }
+            } else if (recipient.getIdentityInfo().isInternal()) {
+                if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
+					return;
+                }
+            } else {
+                if (folderModule.testAccess(fe, FolderOperation.allowSharingExternal)) {
+					return;
+                }
+            }
+        } else if (shareItem.getRecipientType().equals(RecipientType.team)) {
+            //Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
+            throw new AccessControlException();
+        }
+        else if ( shareItem.getRecipientType().equals( RecipientType.publicLink ) )
+        {
+            // Is sharing with the public enabled?
+            if ( folderModule.testAccess( fe, FolderOperation.allowSharingPublicLinks ) )
+            {
+                // Yes
+				return;
+            }
+        }
+		throw new AccessControlException();
+	}
+
+	private void checkZoneWideSharingEnabled(ShareItem shareItem, Principal recipient) {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		AccessControlManager accessControlManager = getAccessControlManager();
+
+		Long allUsersId = Utils.getAllUsersGroupId();
+		Long allExtUsersId = Utils.getAllExtUsersGroupId();
+		//Make sure sharing is enabled at the zone level for this type of user
+		if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
+            if (allUsersId.equals(recipient.getId())) {
+                accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_ALL_INTERNAL);
+            } else if (allExtUsersId.equals(recipient.getId())) {
+                accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_ALL_EXTERNAL);
+            }
+
+            //Distinguish between internal and external groups
+            if (recipient.getIdentityInfo().isInternal()) {
+                accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL);
+            } else {
+                accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL);
+            }
+        } else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
+            //Users can be guest (i.e., shared), internal, or external
+            if (((User)recipient).isShared()) {
+                if (!zoneConfig.getAuthenticationConfig().isAllowAnonymousAccess()) {
+                    //Anonymous has not been enabled by the administrator
+                    throw new AccessControlException();
+                }
+                accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC);
+                //Also make sure the rights being given out are no more than Viewer
+                if (!validateGuestAccessRights(shareItem)) {
+                    //There are rights that are not allowed for sharing with guest. Throw an error
+                    throw new AccessControlException();
+                }
+            } else if (recipient.getIdentityInfo().isInternal()) {
+                accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL);
+            } else {
+                accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL);
+            }
+        } else if (shareItem.getRecipientType().equals(RecipientType.team)) {
+            //Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
+            throw new AccessControlException();
+        } else if (shareItem.getRecipientType().equals(RecipientType.publicLink)) {
+            //Check that the current user is enabled for this at the zone level
+            accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_LINK_SHARING);
+        }
+	}
+
+	private void checkAddShareItemAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, Principal recipient, boolean checkRole) {
+		AccessControlManager accessControlManager = getAccessControlManager();
+
+		checkZoneWideSharingEnabled(shareItem, recipient);
+
+		//Check the setting of the Share Forward right
+		boolean tryingToAllowShareForward = shareItem.getRightSet().getRight(WorkAreaOperation.ALLOW_SHARING_FORWARD);
+		if (tryingToAllowShareForward) {
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+
+			//The share item is trying to give out the share forward right. See if the user is allowed to do this
+			accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD);
+		}
+
+		//Check that the user has the right to share this entity
+		if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
+			checkSharingAccessToFolderEntry(shareItem, entityIdentifier, recipient, tryingToAllowShareForward);
+		} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
+				entityIdentifier.getEntityType().equals(EntityType.workspace)) {
+			checkSharingAccessToBinder(shareItem, entityIdentifier, recipient, tryingToAllowShareForward, checkRole);
+		} else {
+			//No access was found
+			throw new AccessControlException();
+		}
+	}
+
+	private void checkModifyShareItemAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, Principal recipient, boolean checkRole) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		AccessControlManager accessControlManager = getAccessControlManager();
+
+		//The share creator and the entity owner can modify a shareItem
+		if (!user.getId().equals(shareItem.getSharerId()))
+        {
+            //The user is not the creator of the share. Only the share item creator is allowed to modify it
+            // Check for site administrator.  It is ok if the admin changes a share item he didn't create.
+            if ( accessControlManager.testOperation( user, zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION ) == false )
+            {
+                // User is not a site administrator
+                throw new AccessControlException();
+            }
+        }
+		//Now check if this user is still allowed to add a share of this entity
+		checkAddShareItemAccess(shareItem, entityIdentifier, recipient, checkRole);
+	}
+
+	private void checkDeleteShareItemAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, Principal recipient) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		AccessControlManager accessControlManager = getAccessControlManager();
+		//The share creator, the entity owner, or the site admin can delete a shareItem
+		if (user.getId().equals(shareItem.getSharerId())) {
+            //The user is the creator of the share
+			return;
+        }
+		//Check if this is the owner of the entity
+		if (entityIdentifier.getEntityType().equals(EntityType.folderEntry)) {
+            FolderEntry fe = getFolderModule().getEntry(null, entityIdentifier.getEntityId());
+            if (user.getId().equals(fe.getCreation().getPrincipal().getId())) {
+                //This is the owner of the entry. Allow the modification.
+                if (folderModule.testAccess(fe, FolderOperation.changeACL)) {
+					return;
+                }
+            }
+        } else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
+                entityIdentifier.getEntityType().equals(EntityType.workspace)) {
+            Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
+            if (user.getId().equals(binder.getCreation().getPrincipal().getId())) {
+                //This is the owner of the binder. Allow the modification.
+                if (binderModule.testAccess(binder, BinderOperation.changeACL)) {
+					return;
+                }
+            }
+        }
+		//Check for site administrator
+		if (accessControlManager.testOperation(user, zoneConfig, WorkAreaOperation.ZONE_ADMINISTRATION)) {
+            //This is a site administrator
+			return;
+        }
 		//No access was found
 		throw new AccessControlException();
 	}
 
-    @Override
+	@Override
 	public boolean testAccess(ShareItem shareItem, SharingOperation operation) {
 		EntityIdentifier entityIdentifier = shareItem.getSharedEntityIdentifier();
     	return testAccess(shareItem, entityIdentifier, operation);
@@ -579,10 +647,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	            Long					zoneId               = RequestContextHolder.getRequestContext().getZoneId();
 	            ZoneConfig				zoneConfig           = getCoreDao().loadZoneConfig(zoneId);
 	            AccessControlManager	accessControlManager = getAccessControlManager();
-	            if (null == accessControlManager) {
-	                accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
-	            }
-	
+
 	            // Is the entity a folder entry?
 	            if (de.getEntityType().equals(EntityType.folderEntry)) {
 	                // Yes!  Does the user have "share internal" rights on it and is the user enabled for doing this?
@@ -812,9 +877,17 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			throw new IllegalArgumentException("Latest share item must be transient");
 
         determineExpiration(latestShareItem);
-		
+
+        ShareItem previousShareItem = getProfileDao().loadShareItem(previousShareItemId);
+
+        boolean checkRole = true;
+        if (previousShareItem.getRole()==latestShareItem.getRole()) {
+            //We're not modifying the role, so we'll bys
+            checkRole = false;
+        }
+
 		// Access check (throws error if not allowed)
-		checkAccess(latestShareItem, SharingOperation.modifyShareItem);
+		checkAccess(latestShareItem, latestShareItem.getSharedEntityIdentifier(), SharingOperation.modifyShareItem, checkRole);
 
         ShareItem retItem = getTransactionTemplate().execute(new TransactionCallback<ShareItem>() {
 			@Override
@@ -825,8 +898,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					// No
 					// Update previous snapshot
 					try {
-						ShareItem previousShareItem = getProfileDao().loadShareItem(previousShareItemId);
-						
+                        ShareItem previousShareItem = getProfileDao().loadShareItem(previousShareItemId);
+
 						previousShareItem.setLatest(false);
 
 						getCoreDao().update(previousShareItem);
@@ -2032,4 +2105,554 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     		SimpleProfiler.stop("SharingModuleImpl.invalidateShareItemSubscriptions()");
     	}
 	}
+
+	private Folder getFolderFromEntityId(EntityIdentifier entityIdentifier) {
+		Folder folder = null;
+		if(EntityIdentifier.EntityType.folder == entityIdentifier.getEntityType())
+			folder = getFolderDao().loadFolder(entityIdentifier.getEntityId(), null);
+		return folder;
+	}
+
+	public EntityShareRights calculateHighestEntityShareRights(EntityIdentifier entityId) {
+		EntityShareRights highestRights;
+		// Does the entity represent a folder in a net folder?
+		Folder folder = getFolderFromEntityId(entityId);
+
+		// Get the highest share rights the logged-in user has to this entity
+		if(folder != null && folder.isFolderInNetFolder()){
+			highestRights = calculateHighestEntityShareRightsForNetFolder( folder );
+		}
+		else{
+			highestRights = calculateHighestEntityShareRightsForEntity( entityId );
+		}
+		return highestRights;
+	}
+
+
+	/*
+	 * Get the highest share rights the logged-in user has to this entity
+	 */
+	public EntityShareRights calculateHighestEntityShareRightsForEntity(EntityIdentifier entityId) {
+		List<ShareItem> listOfShareItems = null;
+		ShareItem.Role accessRights;
+		ShareItemSelectSpec spec;
+
+		// Get the current user's acl rights to the given entity.
+		accessRights = getHighestEntityAccessRightsFromACLs( entityId );
+
+		spec = new ShareItemSelectSpec();
+		spec.setRecipients( RequestContextHolder.getRequestContext().getUserId(), null, null );
+		spec.setSharedEntityIdentifier( entityId );
+		spec.setLatest( true );
+
+		try
+		{
+			listOfShareItems = getShareItems(spec);
+		}
+		catch ( Exception ex )
+		{
+			logger.error( "In getHighestEntityShareRights(), sharingModule.getShareItems() failed: " + ex.toString() );
+		}
+
+		// Has the given entity been shared with the current user?
+		if ( listOfShareItems != null && listOfShareItems.size() > 0 )
+		{
+			// Yes
+			// Get the "highest" rights that have been given to the current user via a share.
+			for ( ShareItem nextShareItem : listOfShareItems )
+			{
+				ShareItem.Role nextAccessRights;
+
+				nextAccessRights = ShareHelper.getAccessRightsFromRightSet( nextShareItem.getRightSet() );
+
+				switch( accessRights )
+				{
+					case EDITOR:
+						if ( nextAccessRights == ShareItem.Role.CONTRIBUTOR )
+							accessRights = nextAccessRights;
+						break;
+
+					case VIEWER:
+					case NONE:
+						accessRights = nextAccessRights;
+						break;
+				}
+			}
+		}
+
+		return new EntityShareRights(accessRights, accessRights);
+	}
+
+
+	/*
+	 * Get the highest share rights the logged-in user has to this entity
+	 */
+	public EntityShareRights calculateHighestEntityShareRightsForNetFolder(Folder folder) {
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+
+		ShareItem.Role role;
+
+		// If admin, don't bother computing it. He is all mighty.
+		if(currentUser.isSuper()) {
+			return new EntityShareRights(ShareItem.Role.CONTRIBUTOR, ShareItem.Role.CONTRIBUTOR);
+		}
+
+		Map<String, List<String>> groupIds = null;
+		AclItemPermissionMapper permissionMapper = null;
+		AclResourceSession session = null;
+
+		boolean internalLdapUser = currentUser.getIdentityInfo().isInternal() && currentUser.getIdentityInfo().isFromLdap();
+		if(internalLdapUser) {
+			AclResourceDriver driver = (AclResourceDriver) folder.getResourceDriver();
+			groupIds = AccessUtils.getFileSystemGroupIds(driver);
+			permissionMapper = driver.getAclItemPermissionMapper();
+			session = (AclResourceSession) getResourceDriverManager().getSession(driver);
+		}
+
+		BinderNode topNode, minNode;
+
+		ShareItem.Role result;
+
+		try {
+			LinkedList<BinderNode> list = new LinkedList<BinderNode>(); // queue
+			ShareItem.Role nativeAccessRights;
+			if(session != null)
+				nativeAccessRights = getNativeAccessRights(folder, session, permissionMapper, groupIds);
+			else
+				nativeAccessRights = ShareItem.Role.NONE;
+			ShareItem.Role shareGrantedAccessRights = getShareGrantedAccessRights(folder);
+			BinderNode node = new BinderNode(folder, nativeAccessRights, shareGrantedAccessRights);
+			if(logger.isTraceEnabled())
+				logger.trace("User='" + currentUser.getName() + "', Top folder=" + folder.getId() + ", Folder access=" + node);
+			topNode = minNode = node;
+			result = node.combinedAccessRights;
+			// If the user has NO access at the current node, there's no need to look further
+			// because there's no lesser access than NO access.
+			// Additionally, if the user's highest access rights  to the current node was granted by
+			// a sharing (instead of or in conjunction with native access), there's no need to look
+			// further down the tree because the user's access will never decrease due to the nature
+			// of the share-granted access.
+			if(result != ShareItem.Role.NONE && result != shareGrantedAccessRights)
+				list.add(node);
+			boolean stop = false;
+			while(!stop && !list.isEmpty()) {
+				node = list.removeFirst();
+				List<Binder> children = node.binder.getBinders();
+				for(Binder child:children) {
+					if(session != null)
+						nativeAccessRights = getNativeAccessRights(child, session, permissionMapper, groupIds);
+					else
+						nativeAccessRights = ShareItem.Role.NONE;
+					shareGrantedAccessRights = getShareGrantedAccessRights(node.shareGrantedAccessRights, child);
+					node = new BinderNode(child, nativeAccessRights, shareGrantedAccessRights);
+					if(logger.isTraceEnabled())
+						logger.trace("User='" + currentUser.getName() + "', Top folder=" + folder.getId() + ", Folder access=" + node);
+					result = minAccessRights(result, node.combinedAccessRights);
+					if(result == node.combinedAccessRights)
+						minNode = node;
+					if(result != ShareItem.Role.NONE && result != shareGrantedAccessRights) {
+						list.add(node);
+					}
+					else {
+						stop = true;
+						break;
+					}
+				}
+			}
+		}
+		finally {
+			if(session != null)
+				session.close();
+		}
+
+		if(topNode.combinedAccessRights != result) {
+			// This means the user has higher access rights at the top of the tree (= the folder
+			// being considered for sharing) than over the entire tree. Since this is non-typical
+			// situation, we want to log the information here in case Admin needs that info to
+			// trouble shoot or respond to user inquiry.
+			logger.info("User '" + currentUser.getName() + "' with diminishing access: Top access=" + topNode + ", Least access=" + minNode);
+		}
+		else {
+			// The user has constant level of access on the entire tree.
+			if(logger.isDebugEnabled())
+				logger.debug("User '" + currentUser.getName() + "' has constant access on the folder tree: Top access=" + topNode);
+		}
+
+		return new EntityShareRights(topNode.combinedAccessRights, result);
+	}
+
+	/*
+	 * Return the "highest" access rights based on acls the logged-in user has to the given entity
+	 */
+	private ShareItem.Role getHighestEntityAccessRightsFromACLs(
+			EntityIdentifier entityId )
+	{
+		ShareItem.Role accessRights;
+
+		accessRights = ShareItem.Role.VIEWER;
+
+		if ( entityId.getEntityType().isBinder() )
+		{
+			boolean access;
+			WorkArea workArea;
+			AccessControlManager accessControlManager;
+			User currentUser = RequestContextHolder.getRequestContext().getUser();
+
+			accessControlManager = AccessUtils.getAccessControlManager();
+
+			workArea = getBinderModule().getBinder( entityId.getEntityId() );
+
+			// See if the user has editor rights
+			access = true;
+			for ( WorkAreaOperation nextOperation : ShareItem.Role.EDITOR.getWorkAreaOperations() )
+			{
+				if ( accessControlManager.testOperation( currentUser, workArea, nextOperation ) == false )
+				{
+					access = false;
+					break;
+				}
+			}
+
+			if ( access )
+			{
+				accessRights = ShareItem.Role.EDITOR;
+			}
+
+			// Does the user have "contributor" rights?
+			access = true;
+			for ( WorkAreaOperation nextOperation : ShareItem.Role.CONTRIBUTOR.getWorkAreaOperations() )
+			{
+				if ( accessControlManager.testOperation( currentUser, workArea, nextOperation ) == false )
+				{
+					access = false;
+					break;
+				}
+			}
+
+			if ( access )
+			{
+				accessRights = ShareItem.Role.CONTRIBUTOR;
+			}
+		}
+		else
+		{
+			FolderModule folderModule;
+			FolderEntry folderEntry;
+
+			folderModule = getFolderModule();
+			folderEntry = folderModule.getEntry(null, entityId.getEntityId());
+
+			// Does the user have "editor" rights?
+			if ( folderModule.testAccess( folderEntry, FolderModule.FolderOperation.readEntry ) &&
+					folderModule.testAccess( folderEntry, FolderModule.FolderOperation.modifyEntry ) &&
+					folderModule.testAccess( folderEntry, FolderModule.FolderOperation.addReply ) )
+			{
+				accessRights = ShareItem.Role.EDITOR;
+			}
+		}
+/**
+ if ( accessControlManager.testRightsGrantedBySharing(
+ GwtServerHelper.getCurrentUser(),
+ workArea,
+ ShareItem.Role.EDITOR.getWorkAreaOperations() ) )
+ {
+ accessRights = ShareItem.Role.EDITOR;
+ }
+
+ if ( entityId.isBinder() )
+ {
+ if ( accessControlManager.testRightsGrantedBySharing(
+ GwtServerHelper.getCurrentUser(),
+ workArea,
+ ShareItem.Role.CONTRIBUTOR.getWorkAreaOperations() ) )
+ {
+ accessRights = ShareItem.Role.CONTRIBUTOR;
+ }
+ }
+ */
+		return accessRights;
+	}
+
+	private static ShareItem.Role getNativeAccessRights(Binder binder, AclResourceSession session, AclItemPermissionMapper permissionMapper, Map<String, List<String>> groupIds) {
+		session.setPath(binder.getResourcePath(), binder.getResourceHandle(), Boolean.TRUE);
+		ShareItem.Role accessRights;
+		String permissionName = session.getPermissionName(groupIds);
+		String vibeRoleName;
+		if(permissionName != null)
+			vibeRoleName = permissionMapper.toVibeRoleName(permissionName);
+		else
+			vibeRoleName = null;
+		if(ObjectKeys.ROLE_TITLE_FILR_CONTRIBUTOR.equals(vibeRoleName))
+			accessRights = ShareItem.Role.CONTRIBUTOR;
+		else if(ObjectKeys.ROLE_TITLE_FILR_EDITOR.equals(vibeRoleName))
+			accessRights = ShareItem.Role.EDITOR;
+		else if(ObjectKeys.ROLE_TITLE_FILR_VIEWER.equals(vibeRoleName))
+			accessRights = ShareItem.Role.VIEWER;
+		else
+			accessRights = ShareItem.Role.NONE;
+		return accessRights;
+	}
+
+	/*
+	 * Return share-granted access rights that the logged-in user has at the level
+	 * represented by this binder. This is determined by all the binders shared with
+	 * the user at this level or above in the ancestry hierarchy.
+	 */
+	private ShareItem.Role getShareGrantedAccessRights(Binder binder) {
+		// Whether a sharing on a folder applies down recursively or not is controlled
+		// by the regular Vibe-side inheritance flag. The inheritance flag associated
+		// with the external ACLs is nothing but an implementation-level optimization
+		// (to avoid storing same ACLs multiple times) and has NO effect when it comes
+		// to the scope of sharing.
+		List<EntityIdentifier> chain = new ArrayList<EntityIdentifier>();
+		chain.add(binder.getEntityIdentifier());
+		while(binder.isFunctionMembershipInherited()) {
+			binder = binder.getParentBinder();
+			if(binder != null)
+				chain.add(binder.getEntityIdentifier());
+		}
+
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		ShareItemSelectSpec spec = new ShareItemSelectSpec();
+		spec.setRecipientsFromUserMembership(currentUser.getId());
+		spec.setSharedEntityIdentifiers(chain);
+		spec.setLatest(true);
+
+		ShareItem.Role result = ShareItem.Role.NONE;
+
+		List<ShareItem> listOfShareItems = getShareItems(spec);
+		if(listOfShareItems != null && listOfShareItems.size() > 0) {
+			ShareItem.Role accessRights;
+			for(ShareItem shareItem:listOfShareItems) {
+				accessRights = getAccessRightsFromRightSet(shareItem.getRightSet());
+				if(accessRights.ordinalCode() > result.ordinalCode()) {
+					result = accessRights;
+					if(ShareItem.Role.CONTRIBUTOR == result)
+						break; // Maximum reached. No need for further checking
+				}
+			}
+		}
+
+		return result;
+	}
+
+	private ShareItem.Role getShareGrantedAccessRights(ShareItem.Role shareGrantedAccessRightsForParent, Binder binder) {
+		if(ShareItem.Role.CONTRIBUTOR == shareGrantedAccessRightsForParent)
+			return shareGrantedAccessRightsForParent; // Already have maximum. No need for further checking
+
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		ShareItemSelectSpec spec = new ShareItemSelectSpec();
+		spec.setRecipientsFromUserMembership(currentUser.getId());
+		spec.setSharedEntityIdentifier(binder.getEntityIdentifier());
+		spec.setLatest(true);
+
+		ShareItem.Role result = shareGrantedAccessRightsForParent;
+
+		List<ShareItem> listOfShareItems = getShareItems(spec);
+		if(listOfShareItems != null && listOfShareItems.size() > 0) {
+			ShareItem.Role accessRights;
+			for(ShareItem shareItem:listOfShareItems) {
+				accessRights = getAccessRightsFromRightSet(shareItem.getRightSet());
+				if(accessRights.ordinalCode() > result.ordinalCode()) {
+					result = accessRights;
+					if(ShareItem.Role.CONTRIBUTOR == result)
+						break; // Maximum reached. No need for further checking
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Get AccessRights that corresponds to the given RightSet
+	 *
+	 * @param rightSet
+	 *
+	 * @return
+	 */
+	public static ShareItem.Role getAccessRightsFromRightSet( WorkAreaOperation.RightSet rightSet )
+	{
+		ShareItem.Role accessRights;
+
+		accessRights = ShareItem.Role.NONE;
+
+		if ( rightSet != null )
+		{
+			WorkAreaOperation.RightSet viewerRightSet;
+			WorkAreaOperation.RightSet editorRightSet;
+			WorkAreaOperation.RightSet contributorRightSet;
+			boolean shareInternal;
+			boolean shareExternal;
+			boolean sharePublic;
+			boolean shareForward;
+			boolean folderShareInternal;
+			boolean folderShareExternal;
+			boolean folderSharePublic;
+			boolean folderShareForward;
+
+			// areRightSetsEqual() compares "share internal", "share external", "share public" and "share forward".
+			// That is why we are setting them to false.
+			shareInternal = rightSet.isAllowSharing();
+			shareExternal = rightSet.isAllowSharingExternal();
+			sharePublic = rightSet.isAllowSharingPublic();
+			shareForward = rightSet.isAllowSharingForward();
+			folderShareInternal = rightSet.isAllowFolderSharingInternal();
+			folderShareExternal = rightSet.isAllowFolderSharingExternal();
+			folderSharePublic = rightSet.isAllowFolderSharingPublic();
+			folderShareForward = rightSet.isAllowFolderSharingForward();
+			rightSet.setAllowSharing( false );
+			rightSet.setAllowSharingExternal( false );
+			rightSet.setAllowSharingPublic( false );
+			rightSet.setAllowSharingForward( false );
+			rightSet.setAllowFolderSharingInternal( false );
+			rightSet.setAllowFolderSharingExternal( false );
+			rightSet.setAllowFolderSharingPublic( false );
+			rightSet.setAllowFolderSharingForward( false );
+
+			viewerRightSet = getViewerRightSet();
+			editorRightSet = getEditorRightSet();
+			contributorRightSet = getContributorRightSet();
+
+			// Is the given RightSet equal to the "View" RightSet
+			if ( areRightSetsGreaterOrEqual( rightSet, viewerRightSet ) )
+			{
+				// Yes
+				accessRights = ShareItem.Role.VIEWER;
+			}
+			// Is the given RightSet equal to the "Editor" RightSet
+			if ( areRightSetsGreaterOrEqual( rightSet, editorRightSet ) )
+			{
+				// Yes
+				accessRights = ShareItem.Role.EDITOR;
+			}
+			// Is the given RightSet equal to the "Contributor" RightSet
+			if ( areRightSetsGreaterOrEqual( rightSet, contributorRightSet ) )
+			{
+				// Yes
+				accessRights = ShareItem.Role.CONTRIBUTOR;
+			}
+
+			// Restore the values we set to false.
+			rightSet.setAllowSharing( shareInternal );
+			rightSet.setAllowSharingExternal( shareExternal );
+			rightSet.setAllowSharingPublic( sharePublic );
+			rightSet.setAllowSharingForward( shareForward );
+			rightSet.setAllowFolderSharingInternal( folderShareInternal );
+			rightSet.setAllowFolderSharingExternal( folderShareExternal );
+			rightSet.setAllowFolderSharingPublic( folderSharePublic );
+			rightSet.setAllowFolderSharingForward( folderShareForward );
+		}
+
+		return accessRights;
+	}
+
+	/*
+	 * Return the RightSet that corresponds to the "Contributor" rights
+	 */
+	public static WorkAreaOperation.RightSet getContributorRightSet()
+	{
+		WorkAreaOperation.RightSet rightSet;
+		List<WorkAreaOperation> operations;
+
+		operations = ShareItem.Role.CONTRIBUTOR.getRightSet().getRights();
+		rightSet = new WorkAreaOperation.RightSet( operations.toArray( new WorkAreaOperation[ operations.size() ] ) );
+
+		return rightSet;
+	}
+
+	/*
+	 * Return the RightSet that corresponds to the "Editor" rights
+	 */
+	public static WorkAreaOperation.RightSet getEditorRightSet()
+	{
+		WorkAreaOperation.RightSet rightSet;
+		List<WorkAreaOperation> operations;
+
+		operations = ShareItem.Role.EDITOR.getRightSet().getRights();
+		rightSet = new WorkAreaOperation.RightSet( operations.toArray( new WorkAreaOperation[ operations.size() ] ) );
+
+		return rightSet;
+	}
+
+	/*
+	 * Return the RightSet that corresponds to the "Viewer" rights
+	 */
+	public static WorkAreaOperation.RightSet getViewerRightSet()
+	{
+		WorkAreaOperation.RightSet rightSet;
+		List<WorkAreaOperation> operations;
+
+		operations = ShareItem.Role.VIEWER.getRightSet().getRights();
+		rightSet = new WorkAreaOperation.RightSet( operations.toArray( new WorkAreaOperation[ operations.size() ] ) );
+
+		return rightSet;
+	}
+
+	private static ShareItem.Role maxAccessRights(ShareItem.Role ar1, ShareItem.Role ar2) {
+		if(ar1 == null || ar2 == null)
+			throw new IllegalArgumentException("Access rights must be specified");
+		if(ar1.ordinalCode() >= ar2.ordinalCode())
+			return ar1;
+		else
+			return ar2;
+	}
+
+	private static ShareItem.Role minAccessRights(ShareItem.Role ar1, ShareItem.Role ar2) {
+		if(ar1 == null || ar2 == null)
+			throw new IllegalArgumentException("Access rights must be specified");
+		if(ar1.ordinalCode() <= ar2.ordinalCode())
+			return ar1;
+		else
+			return ar2;
+	}
+
+	/*
+	 * Compare the 2 RightSet objects to see if they have the same or
+	 * greater rights.
+	 */
+	private static boolean areRightSetsGreaterOrEqual(WorkAreaOperation.RightSet rightSet1, WorkAreaOperation.RightSet rightSet2 )
+	{
+		if ( rightSet1 == null || rightSet2 == null )
+		{
+			return false;
+		}
+
+		return rightSet1.greaterOrEqual( rightSet2 );
+	}
+
+	private static class BinderNode {
+		private Binder binder;
+		// The level of native access rights that the logged-in user has on this binder
+		private ShareItem.Role nativeAccessRights;
+		// The share-granted access rights that the logged-in user has on this binder.
+		// This is determined by all the binders shared with the user at this level or
+		// above in the ancestry tree (i.e., it's not just one level thing).
+		private ShareItem.Role shareGrantedAccessRights;
+		// Computed
+		private ShareItem.Role combinedAccessRights;
+
+		BinderNode(Binder binder, ShareItem.Role nativeAccessRights, ShareItem.Role shareGrantedAccessRights) {
+			this.binder = binder;
+			this.nativeAccessRights = nativeAccessRights;
+			this.shareGrantedAccessRights = shareGrantedAccessRights;
+			this.combinedAccessRights = maxAccessRights(nativeAccessRights, shareGrantedAccessRights);
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder("{");
+			sb.append("folderId=")
+					.append(binder.getId())
+					.append(", nativeAccessRights=")
+					.append(nativeAccessRights)
+					.append(", shareGrantedAccessRights=")
+					.append(shareGrantedAccessRights)
+					.append(", combinedAccessRights=")
+					.append(combinedAccessRights)
+					.append("}");
+			return sb.toString();
+		}
+	}
 }
+
