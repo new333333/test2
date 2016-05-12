@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -2537,34 +2538,41 @@ public class ShareThisDlg2 extends DlgBox
 					{
 						@Override
 						public void execute() 
-						{								
-							if(sharingInfo.getListOfShareItems()!=null && sharingInfo.getListOfShareItems().size()>0){
-								ShareRights shareRights=sharingInfo.getShareRights(sharingInfo.getListOfShareItems().get(0).getEntityId());
-								if(shareRights!=null){
-									boolean isRestricted=shareRights.getAccessRights() == AccessRights.NONE;
-									m_findCtrl.getFocusWidget().setEnabled(!isRestricted);
-									if(isRestricted){
-										sharingInfo.setCanShareWithExternalUsers(false);
-										m_shareRightsInfoImg.setVisible(false);
-										m_restrictedShareRightsInfoImg.setVisible(true);
+						{		
+							ShareRights shareRights=null;
+							
+							for(EntityId entityId:m_entityIds){
+								ShareRights leastRights=sharingInfo.getShareRights(entityId);
+								if(shareRights==null){
+									shareRights=leastRights;
+								}
+								else{
+									if(leastRights.getAccessRights().ordinal() < shareRights.getAccessRights().ordinal()){
+										shareRights=leastRights;
 									}
-									else{
-										m_shareRightsInfoImg.setVisible(true);
-										m_restrictedShareRightsInfoImg.setVisible(false);
-									}
-									m_addExternalUserImg.setVisible(!isRestricted);
+								}
+							}								
+							
+							if(shareRights!=null){
+								boolean isRestricted=shareRights.getAccessRights() == AccessRights.NONE;
+								m_findCtrl.getFocusWidget().setEnabled(!isRestricted);
+								if(isRestricted){
+									sharingInfo.setCanShareWithExternalUsers(false);
+									m_shareRightsInfoImg.setVisible(false);
+									m_restrictedShareRightsInfoImg.setVisible(true);
 								}
 								else{
 									m_shareRightsInfoImg.setVisible(true);
 									m_restrictedShareRightsInfoImg.setVisible(false);
-									m_addExternalUserImg.setVisible(true);
 								}
+								m_addExternalUserImg.setVisible(!isRestricted);
 							}
 							else{
 								m_shareRightsInfoImg.setVisible(true);
 								m_restrictedShareRightsInfoImg.setVisible(false);
 								m_addExternalUserImg.setVisible(true);
 							}
+							
 							updateSharingInfo( sharingInfo );
 							hideStatusMsg();
 						}
