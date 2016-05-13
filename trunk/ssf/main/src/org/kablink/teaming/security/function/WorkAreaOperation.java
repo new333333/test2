@@ -138,7 +138,10 @@ public class WorkAreaOperation {
 		WorkAreaOperation.CREATOR_MODIFY, 
 		WorkAreaOperation.CREATOR_RENAME, 
 		WorkAreaOperation.CREATOR_DELETE,
-		WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS };
+		WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS,
+		WorkAreaOperation.BINDER_ADMINISTRATION,
+		WorkAreaOperation.ADD_COMMUNITY_TAGS,
+		WorkAreaOperation.GENERATE_REPORTS};
 	
 	// This list is immutable
 	public static List<WorkAreaOperation> EXTERNALLY_CONTROLLED_RIGHTS_DEFAULT_AS_LIST = Collections.unmodifiableList(Arrays.asList(EXTERNALLY_CONTROLLED_RIGHTS_DEFAULT));
