@@ -179,6 +179,7 @@ import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.cache.ThreadBoundLRUCache;
+import org.kablink.util.cache.ThreadBoundSimpleCache;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Junction;
@@ -3445,7 +3446,24 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	// return binders this user is a team_member of
 	@Override
 	public List<Map> getTeamMemberships(Long userId, List<String> fieldNames) {
+		List<Map> result;
 
+		Object[] key = (fieldNames != null)? new Object[] {"teamMemberships", userId, fieldNames} : new Object[] {"teamMemberships", userId};
+		List<Map> cachedResult = ThreadBoundSimpleCache.get(List.class, key);
+		
+		if(cachedResult != null) {
+			result = cachedResult;
+		}
+		else {
+			result = _getTeamMemberships(userId, fieldNames);
+			ThreadBoundSimpleCache.put(result, key);
+		}
+		
+		return result;
+	}
+	
+	// return binders this user is a team_member of
+	private List<Map> _getTeamMemberships(Long userId, List<String> fieldNames) {
 		// We use search engine to get the list of binders.
 		Criteria crit = new Criteria().add(
 				eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER))
