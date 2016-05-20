@@ -4769,8 +4769,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				try {
 					return session.isVisible(AccessUtils.getFileSystemGroupIds(binder.getResourceDriver()));
 				} catch (Exception e) {
-					logger.error("Error checking visibility on folder resource [" + binder.getResourcePath() + "]", e);
-					return false; // fails the test
+					throw new InternalException("Error checking visibility on folder resource [" + binder.getResourcePath() + "]", e);
 				}
 			}
 			finally {
