@@ -49,10 +49,13 @@ public class GwtFileSyncAppConfiguration implements IsSerializable, VibeRpcRespo
 	private boolean						m_useLocalApps;				//
 	private boolean						m_useRemoteApps = true;		//
 	private boolean						m_localAppsExist;			//
+	private boolean						m_isCachedFilesEnabled = true;
+	private boolean						m_allowCacheLifetimeChange = true;	// allow desktop user to override settings
 	private GwtDesktopApplicationsLists	m_desktopApplicationsLists;	//
 	private int							m_maxFileSize;				//
 	private int							m_syncInterval = 15;		//
 	private String						m_autoUpdateUrl;			//
+	private int							m_cachedFilesLifetime = 30;	// in days
 	
 	/**
 	 * Constructor method.
@@ -75,9 +78,12 @@ public class GwtFileSyncAppConfiguration implements IsSerializable, VibeRpcRespo
 	public boolean                     getUseLocalApps()                {return m_useLocalApps;            }
 	public boolean                     getUseRemoteApps()               {return m_useRemoteApps;           }
 	public boolean                     getLocalAppsExist()              {return m_localAppsExist;          }
+	public boolean					   getIsCachedFilesEnabled()		{return m_isCachedFilesEnabled;	   }
+	public boolean                     getAllowCacheLifetimeChange()    {return m_allowCacheLifetimeChange;}
 	public GwtDesktopApplicationsLists getGwtDesktopApplicationsLists() {return m_desktopApplicationsLists;}
 	public int                         getMaxFileSize()                 {return m_maxFileSize;             }
 	public int                         getSyncInterval()                {return m_syncInterval;            }
+	public int						   getCachedFilesLifetime()			{return m_cachedFilesLifetime;	   }
 	public String                      getAutoUpdateUrl()               {return m_autoUpdateUrl;           }
 	
 	/**
@@ -91,8 +97,11 @@ public class GwtFileSyncAppConfiguration implements IsSerializable, VibeRpcRespo
 	public void setUseLocalApps(               boolean                     useLocalApps)             {m_useLocalApps             = useLocalApps;            }
 	public void setUseRemoteApps(              boolean                     useRemoteApps)            {m_useRemoteApps            = useRemoteApps;           }
 	public void setLocalAppsExist(             boolean                     localAppsExist)           {m_localAppsExist           = localAppsExist;          }
+	public void setIsCachedFilesEnabled(	   boolean 					   enabled)					 {m_isCachedFilesEnabled 	 = enabled;					}
+	public void setAllowCacheLifetimeChange(   boolean                     override)                 {m_allowCacheLifetimeChange = override;                }
 	public void setGwtDesktopApplicationsLists(GwtDesktopApplicationsLists desktopApplicationsLists) {m_desktopApplicationsLists = desktopApplicationsLists;}
 	public void setMaxFileSize(                int                         size)                     {m_maxFileSize              = size;                    }
 	public void setSyncInterval(               int                         intervalInMinutes)        {m_syncInterval             = intervalInMinutes;       }
+	public void setCachedFilesLifetime(		   int						   lifeTimeDays)			 {m_cachedFilesLifetime		 = lifeTimeDays;			}
 	public void setAutoUpdateUrl(              String                      url)                      {m_autoUpdateUrl            = url;                     }
 }

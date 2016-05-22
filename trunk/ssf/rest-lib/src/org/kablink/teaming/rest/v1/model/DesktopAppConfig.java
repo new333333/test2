@@ -50,6 +50,9 @@ public class DesktopAppConfig {
    	private Integer syncInterval;
    	private String autoUpdateUrl;
    	private Long maxFileSize;
+   	private Boolean cachedFilesEnabled;
+   	private Boolean overrideCachedFileSettings;
+   	private Integer cachedFilesLifetime;
     private List<NameHrefPair> branding;
     private DesktopAppProcessConfig processConfig;
 
@@ -112,6 +115,36 @@ public class DesktopAppConfig {
 
     public void setSyncInterval(Integer syncInterval) {
         this.syncInterval = syncInterval;
+    }
+    
+    /**
+     * How often, in days, that the desktop application should clean up cached files
+     */
+    @XmlElement(name="cached_files_enabled")
+    public Boolean getCachedFilesEnabled() {
+    	return cachedFilesEnabled;
+    }
+    
+    public void setCachedFilesEnabled(Boolean cachedFilesEnabled) {
+    	this.cachedFilesEnabled = cachedFilesEnabled;
+    }
+    
+    @XmlElement(name="override_cached_files_settings")
+    public Boolean getOverrideCachedFilesSettings() {
+    	return overrideCachedFileSettings;
+    }
+    
+    public void setOverrideCachedFilesSettings(Boolean overrideCachedFileSettings) {
+    	this.overrideCachedFileSettings = overrideCachedFileSettings;
+    }
+    
+    @XmlElement(name="cached_files_lifetime")
+    public Integer getCachedFilesLifeTime() {
+    	return cachedFilesLifetime;
+    }
+    
+    public void setCachedFilesLifeTime(Integer cachedFilesLifetime) {
+    	this.cachedFilesLifetime = cachedFilesLifetime;
     }
 
     @Undocumented

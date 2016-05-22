@@ -211,7 +211,7 @@ public class MainAdminResource extends AbstractAdminResource {
     @ResourceGroup("Desktop Application")
     public DesktopAppAdminConfig updateDesktopAppSettings(DesktopAppAdminConfig settings) {
         getAdminModule().setFileSynchAppSettings(settings.getEnabled(), settings.getSyncFrequencyInMinutes(), null, null,
-                null, settings.getAllowCachedPassword(), settings.getMaxSyncSizeInMBs(), null);
+                null, settings.getAllowCachedPassword(), settings.getMaxSyncSizeInMBs(), null, null, null, null);
 
         return getDesktopApplicationSettings();
     }
@@ -266,7 +266,7 @@ public class MainAdminResource extends AbstractAdminResource {
             populateAppList(appLists.getWindowsWhitelist(), win.getAllowedProcesses());
             populateAppList(appLists.getWindowsBlacklist(), win.getBlockedProcesses());
         }
-        getAdminModule().setFileSynchAppSettings(null, null, null, null, null, null, null, appLists);
+        getAdminModule().setFileSynchAppSettings(null, null, null, null, null, null, null, appLists, null, null, null);
         return getDesktopProcessConfig();
     }
 
