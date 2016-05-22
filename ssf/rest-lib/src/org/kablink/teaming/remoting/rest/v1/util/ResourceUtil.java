@@ -619,6 +619,14 @@ public class ResourceUtil {
             desktopAppConfig.addBrandingHref(getDesktopBrandingHref(DesktopPlatform.mac));
             desktopAppConfig.addBrandingHref(getDesktopBrandingHref(DesktopPlatform.windows));
         }
+        desktopAppConfig.setCachedFilesEnabled(config.getFsaCachedFilesEnabled());
+        desktopAppConfig.setOverrideCachedFilesSettings(config.getFsaOverrideCachedFileSetting());
+        if(config.getFsaCachedFilesLifetime() > 0) {
+        	desktopAppConfig.setCachedFilesLifeTime(config.getFsaCachedFilesLifetime());
+        }
+        else {
+        	desktopAppConfig.setCachedFilesLifeTime(30);
+        }
         return desktopAppConfig;
     }
 

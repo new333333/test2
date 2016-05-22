@@ -49,4 +49,19 @@
             <append value=" NOT NULL"/>
         </modifySql>
     </changeSet>
+    
+    <changeSet author="girish" context="schema" failOnError="true" id="7">
+        <comment>Desktop client cached files settings</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="fsaCachedFilesEnabled" type="NUMBER(1,0)">
+				<constraints nullable="true" />
+			</column>
+			<column name="fsaOverrideCachedFileSettings" type="NUMBER(1,0)">
+				<constraints nullable="true" />
+			</column>
+			<column name="fsaCachedFilesLifetime" type="NUMBER(10,0)">
+				<constraints nullable="true" />
+			</column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

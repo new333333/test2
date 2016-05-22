@@ -519,6 +519,15 @@ public class GwtDesktopApplicationsHelper {
 		// Get the File Sync Application sync interval.
 		fileSyncAppConfiguration.setSyncInterval(zoneConfig.getFsaSynchInterval());
 		
+		// Get whether the File Sync File Caching is enabled.
+		fileSyncAppConfiguration.setIsCachedFilesEnabled(zoneConfig.getFsaCachedFilesEnabled());
+		
+		// Get number of days after which cached files to be removed.
+		fileSyncAppConfiguration.setCachedFilesLifetime(zoneConfig.getFsaCachedFilesLifetime());
+		
+		// Get can File Sync Application override server settings. 
+		fileSyncAppConfiguration.setAllowCacheLifetimeChange(zoneConfig.getFsaOverrideCachedFileSetting());
+		
 		// Get the auto-update URL.
 		fileSyncAppConfiguration.setAutoUpdateUrl(zoneConfig.getFsaAutoUpdateUrl());
 		
@@ -741,11 +750,14 @@ public class GwtDesktopApplicationsHelper {
 	 * @throws GwtTeamingException
 	 */
 	public static Boolean saveFileSyncAppConfiguration(AllModulesInjected bs, GwtFileSyncAppConfiguration fsaConfiguration) throws GwtTeamingException {
-		Boolean	allowCachePwd = new Boolean(fsaConfiguration.getAllowCachePwd()       );
-		Boolean	deployEnabled = new Boolean(fsaConfiguration.getIsDeploymentEnabled() );
-		Boolean	enabled       = new Boolean(fsaConfiguration.getIsFileSyncAppEnabled());
-		Integer	interval      = new Integer(fsaConfiguration.getSyncInterval()        );
-		Integer	maxFileSize   = new Integer(fsaConfiguration.getMaxFileSize()         );
+		Boolean	allowCachePwd 			   = new Boolean(fsaConfiguration.getAllowCachePwd()           );
+		Boolean	deployEnabled 			   = new Boolean(fsaConfiguration.getIsDeploymentEnabled()     );
+		Boolean	enabled       			   = new Boolean(fsaConfiguration.getIsFileSyncAppEnabled()    );
+		Boolean allowCachedFiles           = new Boolean(fsaConfiguration.getIsCachedFilesEnabled()    );
+		Boolean overrideCachedFilesSetting = new Boolean(fsaConfiguration.getAllowCacheLifetimeChange());
+		Integer cachedFilesLifeTime 	   = new Integer(fsaConfiguration.getCachedFilesLifetime()     );
+		Integer	interval      			   = new Integer(fsaConfiguration.getSyncInterval()            );
+		Integer	maxFileSize   			   = new Integer(fsaConfiguration.getMaxFileSize()             );		
 		
 		// Does the user entered auto update url need to be validated?
 		Boolean	useRemoteApps = fsaConfiguration.getUseRemoteApps();
@@ -777,7 +789,10 @@ public class GwtDesktopApplicationsHelper {
 			fsaConfiguration.getUseLocalApps(),
 			allowCachePwd,
 			maxFileSize,
-			domainDALists);
+			domainDALists,
+			allowCachedFiles,
+			overrideCachedFilesSetting,
+			cachedFilesLifeTime);
 
 		return Boolean.TRUE;
 	}

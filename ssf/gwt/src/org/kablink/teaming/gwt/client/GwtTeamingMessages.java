@@ -1886,6 +1886,8 @@ public interface GwtTeamingMessages extends Messages {
 	String fileSyncAppMaxFileSizeLabel();
 	String fileSyncAppMBLabel();
 	String fileSyncAppMinutesLabel();
+	String fileSyncAppCleanUpLabel();
+	String fileSyncApppDaysLabel();
 	String fileSyncApp_Add();
 	String fileSyncApp_Delete();
 	String fileSyncApp_Description();

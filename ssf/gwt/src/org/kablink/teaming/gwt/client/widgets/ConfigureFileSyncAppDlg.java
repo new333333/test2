@@ -120,6 +120,9 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 	private TextBox				m_autoUpdateUrlTextBox_UrlOnly;	//
 	private TextBox				m_maxFileSizeTextBox;			//
 	private TextBox				m_syncIntervalTextBox;			//
+	private CheckBox			m_allowCachedFilesCleanUp;
+	private TextBox				m_cachedFilesCleanUpIntervalTextBox;
+	private CheckBox			m_allowCachedFilesCleanUpIntervalModificationCB;
 	
 	private final static int	DESCRIPTION_INDEX	= 1;
 	private final static int	PROCESS_NAME_INDEX	= 0;
@@ -360,7 +363,44 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		tmpTable.setWidget(0, 2, label);
 
 		mainPanel.add(tmpTable);
+		
+		// Create the controls for the cached file lifetime
+		FlexTable tmpTable2 = new FlexTable();
+		tmpTable2.addStyleName("marginleftPoint75em");
+		tmpTable2.setCellSpacing(4);
+		
+		m_allowCachedFilesCleanUp = new CheckBox(m_messages.fileSyncAppCleanUpLabel());
+		tmpTable2.setWidget(0, 0, m_allowCachedFilesCleanUp);
+		
+		m_cachedFilesCleanUpIntervalTextBox = new TextBox();
+		m_cachedFilesCleanUpIntervalTextBox.addKeyPressHandler(this);
+		m_cachedFilesCleanUpIntervalTextBox.setVisibleLength(3);
+		tmpTable2.setWidget(0, 1, m_cachedFilesCleanUpIntervalTextBox);		
+		
+		label = new InlineLabel(m_messages.fileSyncApppDaysLabel());
+		label.addStyleName("gray3");
+		tmpTable2.setWidget(0, 2, label);
+		
+		m_allowCachedFilesCleanUp.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				boolean checked = !((CheckBox) event.getSource()).getValue();
+				m_cachedFilesCleanUpIntervalTextBox.setReadOnly(checked);
+			}
+		});
+		
+		mainPanel.add(tmpTable2);
 
+		// Add the controls for enable/disable cache interval modification by user.
+		FlowPanel ckboxPanel2 = new FlowPanel();
+		ckboxPanel2.addStyleName("marginleft1 margintop2");
+		mainPanel.add(ckboxPanel2);
+
+		m_allowCachedFilesCleanUpIntervalModificationCB = new CheckBox("Allow user to modify cached files lifetime");
+		FlowPanel tmpPanel2 = new FlowPanel();
+		tmpPanel2.add(m_allowCachedFilesCleanUpIntervalModificationCB);
+		ckboxPanel2.add(tmpPanel2);
+				
 		// Create the application whitelist / blacklist widgets.
 		createAppListContent(mainPanel);
 
@@ -812,6 +852,15 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		
 		// Get the max file size the file sync application can sync.
 		fileSyncAppConfig.setMaxFileSize(getMaxFileSize());
+		
+		// Get the file sync application can cache the files.
+		fileSyncAppConfig.setIsCachedFilesEnabled(getIsCachedFilesEnabled());
+		
+		// Get the number of days required for cached files.
+		fileSyncAppConfig.setCachedFilesLifetime(getCachedFilesLifetime());
+		
+		// Get the user override flag to set cached files lifetime.
+		fileSyncAppConfig.setAllowCacheLifetimeChange(getAllowCachedFileLifetimeChange());
 
 		// If the 'allow deployment...' checkbox is checked the user
 		// must have an auto-update URL.
@@ -912,6 +961,24 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		return max;
 	}
 	
+	private boolean getIsCachedFilesEnabled() {
+		return m_allowCachedFilesCleanUp.getValue();
+	}
+	
+	private int getCachedFilesLifetime() {
+		String lifetimeStr = m_cachedFilesCleanUpIntervalTextBox.getValue();
+		int lifetime;
+		if(GwtClientHelper.hasString(lifetimeStr))
+			lifetime = Integer.parseInt(lifetimeStr);
+		else
+			lifetime = (-1);
+		return lifetime;
+	}
+	
+	private boolean getAllowCachedFileLifetimeChange() {
+		return m_allowCachedFilesCleanUpIntervalModificationCB.getValue();
+	}
+	
 	/**
 	 * Initialize the controls in the dialog with the values from the
 	 * given values.
@@ -961,6 +1028,17 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		     value = "";
 		else value = String.valueOf(size);
 		m_maxFileSizeTextBox.setText(value);
+		
+		// Initialize the cache cleanup check box.		
+		m_allowCachedFilesCleanUp.setValue(fileSyncAppConfiguration.getIsCachedFilesEnabled());
+		
+		// Initialize the lifetime text box		
+		int lifetime = fileSyncAppConfiguration.getCachedFilesLifetime();
+		m_cachedFilesCleanUpIntervalTextBox.setText(String.valueOf(lifetime));
+		m_cachedFilesCleanUpIntervalTextBox.setReadOnly(!fileSyncAppConfiguration.getIsCachedFilesEnabled());
+		
+		//Initialize the allow user to modify clean up lifetime check box.
+		m_allowCachedFilesCleanUpIntervalModificationCB.setValue(fileSyncAppConfiguration.getAllowCacheLifetimeChange());
 
 		// Initialize the application list widgets.
 		initAppLists(fileSyncAppConfiguration.getGwtDesktopApplicationsLists());
