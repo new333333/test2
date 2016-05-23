@@ -1024,7 +1024,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             maxCount = -1;
         }
         crit.add(SearchUtils.buildBindersCriterion());
-        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount, null);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         results.setLastModified(lastModified);
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
@@ -1065,7 +1065,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 .add(SearchUtils.buildBindersCriterion()).add(criterion);
         Criteria crit = new Criteria();
         crit.add(outerCriterion);
-        return getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1, null);
+        return getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1, null);
     }
 
     protected void fillPathMap(Map<Long, String> binderPaths, Map resultMap) {
