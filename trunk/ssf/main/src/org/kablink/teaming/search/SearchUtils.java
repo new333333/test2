@@ -1088,7 +1088,7 @@ public class SearchUtils {
 		crit.add(in(Constants.IS_MYFILES_DIR_FIELD, new String[]{Constants.TRUE        }));
 
 		// Can we find any?
-		Map        searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, Integer.MAX_VALUE,
+		Map        searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, Integer.MAX_VALUE,
 				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 		List<Map>  searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
 		List<Long> reply         = new ArrayList<Long>();
