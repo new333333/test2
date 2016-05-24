@@ -3487,24 +3487,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		QueryBuilder qb = new QueryBuilder(true, false);
 		SearchObject so = qb.buildQuery(crit.toQuery());
 
-    	int queryBatchSize = SPropsUtil.getInt("team.membership.query.batch.size", 1000); 
-		List result = new ArrayList();
-		int offset = 0;
-		while(true) {
-			Hits hits = executeLuceneQueryInternal(so, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, queryBatchSize, fieldNames);
-			List batch = SearchUtils.getSearchEntries(hits);
-			result.addAll(batch);
-			if(batch.size() < queryBatchSize) {
-				// There's no more. The last query covered everything.
-				break;
-			}
-			else {
-				// There might be more. So we should continue.
-				offset += queryBatchSize;				
-			}
-		}
-		
-		return result;
+		Hits hits = executeLuceneQueryInternal(so, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, Integer.MAX_VALUE, fieldNames);
+		if (hits == null)
+			return new ArrayList();
+		return SearchUtils.getSearchEntries(hits);
 	}
 	
     //inside write transaction    	
