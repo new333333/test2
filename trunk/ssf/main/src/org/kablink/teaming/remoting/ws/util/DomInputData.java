@@ -34,10 +34,7 @@ package org.kablink.teaming.remoting.ws.util;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -47,6 +44,7 @@ import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.DateUtil;
+import org.kablink.teaming.util.stringcheck.CheckedInputDataAccessor;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 
 import net.fortuna.ical4j.data.ParserException;
@@ -59,7 +57,7 @@ import net.fortuna.ical4j.data.ParserException;
  * @author jong
  *
  */
-public class DomInputData implements InputDataAccessor {
+public class DomInputData extends CheckedInputDataAccessor {
 
 	private Document doc;
 	private Element root;
@@ -83,9 +81,9 @@ public class DomInputData implements InputDataAccessor {
 		Element valueElem = (Element) root.selectSingleNode("attribute[@name='" + key + "']/value");
 		
 		if(valueElem != null) {
-			return StringCheckUtil.check(valueElem.getText());
+			return checkValue(key, valueElem.getText());
 		} else if(elem != null) {
-			return StringCheckUtil.check(elem.getText());
+			return checkValue(key, elem.getText());
 		}
 		else {
 			return null;
@@ -128,7 +126,7 @@ public class DomInputData implements InputDataAccessor {
 		Element elem = (Element) root.selectSingleNode("attribute[@name='" + key + "']");
 		
 		if (elem != null) {
-			String text = StringCheckUtil.check(elem.getText());
+			String text = checkValue(key, elem.getText());
 			String format = elem.attributeValue("format", String.valueOf(Description.FORMAT_HTML));
 			return new Description(text, Integer.valueOf(format));
 		} else {
@@ -146,7 +144,7 @@ public class DomInputData implements InputDataAccessor {
 		if(size > 0) {
 			String[] values = new String[size];
 			for(int i = 0; i < size; i++) {
-				values[i] = StringCheckUtil.check(((Element) nodes.get(i)).getText());
+				values[i] = checkValue(key, ((Element) nodes.get(i)).getText());
 			}
 			return values;
 		}
