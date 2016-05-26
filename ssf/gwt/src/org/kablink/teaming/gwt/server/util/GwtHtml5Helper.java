@@ -393,6 +393,13 @@ public class GwtHtml5Helper {
 	@SuppressWarnings("unchecked")
 	public static StringRpcResponseData uploadFileBlob(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, FileBlob fileBlob, boolean lastBlob) throws GwtTeamingException {
 		try {
+			// (bug 981245) We must validate the specified file name to guard against potential attack.
+			String inputFileName = fileBlob.getFileName();
+			if(inputFileName != null && (inputFileName.contains("/") || inputFileName.contains("\\"))) {
+				// Don't allow file name to contain path delimiter.
+				throw new IllegalArgumentException("Illegal file name '" + inputFileName + "'");
+			}
+			
 			// Trace what we read to the log.
 			debugTraceBlob(fileBlob, "uploadFileBlob", "Uploaded", lastBlob);
 
