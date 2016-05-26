@@ -74,7 +74,6 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -84,7 +83,6 @@ import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.FileUploadItem;
-import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -142,9 +140,11 @@ public class MarkupUtil {
 	protected final static Pattern m_imgAttachmentUrlPattern = Pattern.compile( "((<img[^>]*)(src=\"\\{\\{attachmentUrl: ([^}]*)\\}\\})([^>]*>))", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern m_dataMceSrcPattern = Pattern.compile( "((data-mce-src=\")([^\"]*))", Pattern.CASE_INSENSITIVE );
 
-	protected final static Pattern attachmentUrlPattern = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern attachmentUrlPattern = Pattern.compile("(cid:\\{\\{attachmentUrl: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern v2AttachmentUrlPattern = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern v1AttachmentFileIdPattern = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern titleUrlPattern = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern titleUrlPattern = Pattern.compile("(cid:\\{\\{titleUrl: ([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern v2TitleUrlPattern = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern titleUrlBinderPattern = Pattern.compile("binderId=([^\\s]*)", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern titleUrlBinderPattern2 = Pattern.compile("binderId%3d([^\\s]*)", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern titleUrlZoneUUIDPattern = Pattern.compile("zoneUUID=([^\\s]*)", Pattern.CASE_INSENSITIVE );
@@ -163,11 +163,39 @@ public class MarkupUtil {
 	protected final static Pattern httpPattern =Pattern.compile("^https*://[^/]*(/[^/]*)/s/readFile/(.*)$", Pattern.CASE_INSENSITIVE );
 	protected static Integer youtubeDivId = 0;
 
-	protected final static Pattern vibeFunctionPattern = Pattern.compile("(\\{\\{vibe:([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern vibeFunctionPattern = Pattern.compile("(cid:\\{\\{vibe:([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern v2VibeFunctionPattern = Pattern.compile("(\\{\\{vibe:([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
 
-	private static BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
-	private static FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
-	private static DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
+	private static BinderModule binderModule;
+	private static FolderModule folderModule;
+	private static DefinitionModule definitionModule;
+
+	private static void initializeBeans() {
+		binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
+		folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
+		definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
+	}
+
+	private static BinderModule getBinderModule() {
+		if (binderModule==null) {
+			initializeBeans();
+		}
+		return binderModule;
+	}
+
+	private static DefinitionModule getDefinitionModule() {
+		if (definitionModule==null) {
+			initializeBeans();
+		}
+		return definitionModule;
+	}
+
+	private static FolderModule getFolderModule() {
+		if (folderModule==null) {
+			initializeBeans();
+		}
+		return folderModule;
+	}
 
 	/**
 	 * Parse a description looking for uploaded file references
@@ -177,197 +205,215 @@ public class MarkupUtil {
 	 * @return 
 	 */
 	public static void scanDescriptionForUploadFiles(Description description, String fieldName, List fileData) {
-		if (Validator.isNull(description.getText())) return;
-     	Matcher m = uploadImagePattern.matcher(description.getText());
-    	int loopDetector = 0;
-    	while (m.find()) {
-    		if (loopDetector++ > 2000) {
-	        	logger.error("Error processing markup [1]: " + description.getText());
-    			break;
-    		}
-    		String fileHandle = "";
-    		String img = m.group();
-         	Matcher m2 = fileIdPattern.matcher(img);
-        	if (m2.find() && m2.groupCount() >= 1) fileHandle = Http.decodeURL(m2.group(1));
+		try {
+			description.setText(replaceAttachmentUrlMacroForUploadFiles(description.getText(), fieldName, fileData));
+		} catch (IOException e) {
+		}
+	}
 
-	    	if (Validator.isNotNull(fileHandle)) {
-	    		MultipartFile myFile = null;
-		    	try {
-		    		myFile = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
-		    	} catch(IOException e) {
-		    		return;
-		    	}
-		    	if (myFile != null) {
-		    		String fileName = myFile.getOriginalFilename();
-			    	if (Validator.isNull(fileName)) continue;
-			    	// Different repository can be specified for each file uploaded.
-			    	// If not specified, use the statically selected one.  
-			    	String repositoryName = RepositoryUtil.getDefaultRepositoryName();
-			    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
-			    	//flag as used in markup, for further processing after files are saved
-			    	fui.setMarkup(true);
-			    	fui.setMarkupFieldName(fieldName);
-			    	fileData.add(fui);
-		    	}
-	    	}
-	    	//Now, replace the url with special markup version
-	    	Matcher m3 = urlSrcPattern.matcher(img);
-        	if (m3.find()) {
-        		String fileName = WebHelper.getFileName(fileHandle);
-        		try {
-        			//re-encode the file name
-        			URI uri = new URI(null, null, fileName, null); //encode as editor does after a modify, so always looks the same
-        			fileName = uri.getRawPath();
-        		} catch (Exception ex) {};
-        		img = m3.replaceFirst(" src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
-        		
-       			img = img.replaceAll(uploadImageViewTypePattern, "");
-        		
-        		description.setText(m.replaceFirst(img.replace("$", "\\$"))); //remove special chars from replacement string
-        		m = uploadImagePattern.matcher(description.getText());
-        	}
+	public static String replaceAttachmentUrlMacroForUploadFiles(String text, String fieldName, List fileData) throws IOException {
+		if (Validator.isNotNull(text)) {
+			Matcher m = uploadImagePattern.matcher(text);
+			int loopDetector = 0;
+			while (m.find()) {
+				if (loopDetector++ > 2000) {
+					logger.error("Error processing markup [1]: " + text);
+					break;
+				}
+				String fileHandle = "";
+				String img = m.group();
+				Matcher m2 = fileIdPattern.matcher(img);
+				if (m2.find() && m2.groupCount() >= 1) fileHandle = Http.decodeURL(m2.group(1));
+
+				if (Validator.isNotNull(fileHandle)) {
+					MultipartFile myFile = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
+					if (myFile != null) {
+						String fileName = myFile.getOriginalFilename();
+						if (Validator.isNull(fileName)) continue;
+						// Different repository can be specified for each file uploaded.
+						// If not specified, use the statically selected one.
+						String repositoryName = RepositoryUtil.getDefaultRepositoryName();
+						FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
+						//flag as used in markup, for further processing after files are saved
+						fui.setMarkup(true);
+						fui.setMarkupFieldName(fieldName);
+						fileData.add(fui);
+					}
+				}
+				//Now, replace the url with special markup version
+				Matcher m3 = urlSrcPattern.matcher(img);
+				if (m3.find()) {
+					String fileName = WebHelper.getFileName(fileHandle);
+					try {
+						//re-encode the file name
+						URI uri = new URI(null, null, fileName, null); //encode as editor does after a modify, so always looks the same
+						fileName = uri.getRawPath();
+					} catch (Exception ex) {
+					}
+					;
+					img = m3.replaceFirst(" src=\"cid:{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
+
+					img = img.replaceAll(uploadImageViewTypePattern, "");
+
+					text = m.replaceFirst(img.replace("$", "\\$")); //remove special chars from replacement string
+					m = uploadImagePattern.matcher(text);
+				}
+			}
     	}
+		return text;
 	}
 
 	//converts back to markup.  Would happen after modify
 	public static void scanDescriptionForAttachmentFileUrls(Description description) {
-		if (Validator.isNull(description.getText())) return;
-    	Matcher m = v1AttachmentUrlPattern.matcher(description.getText());
-    	int loopDetector = 0;
-     	while (m.find()) {
-    		if (loopDetector++ > 2000) {
-	        	logger.error("Error processing markup [2]: " + description.getText());
-    			break;
-    		}
-    		String fileId = "";
-    		String img = m.group();
-        	Matcher fieldMatcher = fileIdPattern.matcher(img);
-        	if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) fileId = fieldMatcher.group(1).trim();
-    		//the old url had binderId, entryId and entityType, but you could only point to a file in the same entry
-        	//so these are not needed - this needs to be replaced with readFile url.
-        	//This code is here to capture old urls that are lingering
-	    	if (Validator.isNotNull(fileId)) {
-		    	//Now, replace the url with special markup version
-		    	Matcher m1 = urlSrcPattern.matcher(img);
-	        	if (m1.find()) {
-	        		//not sure what this specialAmp is about, but leave as is from v1
-	        		img = m1.replaceFirst(" src=\"{{attachmentFileId: fileId=" + fileId + "}}\"");
-	        		description.setText(m.replaceFirst(img.replace("$", "\\$"))); //remove regex special char
-	        		m = v1AttachmentUrlPattern.matcher(description.getText());
-	        	}
-	    	}
-    	}
-
-     	// Replace all instances of:
-     	// <img class=" ss_addimage_att " src="some-file-name" alt=" " data-mce-src="http://jwootton3.provo.novell.com:8080/ssf/s/readFile/workspace/1/-/1407854576062/last/some-file-name">
-     	// with:
-     	// <img class=" ss_addimage_att " src="{{attachmentUrl: some-file-name}}" alt=" " data-mce-src="http://jwootton3.provo.novell.com:8080/ssf/s/readFile/workspace/1/-/1407854576062/last/some-file-name">
-     	{
-     		StringBuffer outputBuff;
-     		
-     		outputBuff = new StringBuffer( description.getText());
-     		
-	    	m = readFileImagePattern.matcher( outputBuff.toString() );
-	    	loopDetector = 0;
-	    	if ( m.find() )
-	    	{
-	    		outputBuff = new StringBuffer();
-	    		
-	    		do
-		    	{
-		    		if (loopDetector++ > 2000) {
-			        	logger.error("Error processing markup [2.1]: " + description.getText());
-		    			break;
-		    		}
-		    		String url = "";
-		    		String img = m.group(0);
-		        	Matcher m2 = readFilePathPattern.matcher(img);
-		        	
-		        	if (m2.find())
-		        		url = m2.group().trim();
-		    		
-		        	String[] args = url.split(org.kablink.teaming.util.Constants.SLASH);
-		 
-			    	if (args.length == 8) {
-				    	//Now, replace the url with special markup version
-				    	Matcher m1 = urlSrcPattern.matcher(img);
-			        	if (m1.find()) {
-			        		String imgReplacement;
-			        		String fileName = args[WebUrlUtil.FILE_URL_NAME];
-			 
-			        		img = m1.replaceFirst(" src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
-			        		imgReplacement = img.replace("$", "\\$");
-			        		m.appendReplacement( outputBuff, imgReplacement );
-			        	}
-			    	}
-		    	}
-	    		while ( m.find() );
-	    		
-	    		m.appendTail( outputBuff );
-	    	}
-	    	
-	    	description.setText( outputBuff.toString() );
-     	}
-
-    	m = attachedImagePattern.matcher(description.getText());
-    	loopDetector = 0;
-    	while (m.find()) {
-    		if (loopDetector++ > 2000) {
-	        	logger.error("Error processing markup [2.2]: " + description.getText());
-    			break;
-    		}
-    		String url = "";
-    		String img = m.group(0);
-    		String origImg;
-
-    		origImg = img;
-    		
-	    	//See if this has already been fixed up
-    		Matcher m2 = attachmentUrlPattern.matcher(img);
-        	if (m2.find()) continue;
-
-	    	//Now, replace the url with special markup version
-	    	Matcher m1 = urlSrcPattern.matcher(img);
-        	if (m1.find()) {
-        		String fileName = m1.group(1);
-        		String markedUpImg;
-        		String desc;
-        		int start;
-        		int end;
-        		
-        		//See if this is a full file spec that needs to be trimmed back to just the file name
-        		String correctedFileName = fileName;
-    			String ctx = SPropsUtil.getString(SPropsUtil.SSF_CTX, "/ssf");
-        		Matcher m3 = httpPattern.matcher(correctedFileName);
-        		if (m3.find() && ctx.equals(m3.group(1))) correctedFileName = m3.group(2);
-        		String[] urlArgs = correctedFileName.split("/");
-        		if (urlArgs.length >= WebUrlUtil.FILE_URL_ARG_LENGTH - 3) {
-        			fileName = "";
-        			for (int i = 5; i < urlArgs.length; i++) fileName += urlArgs[i];
-        		}
-
-        		// Change the text from <img class="ss_addimage_att src="some file name" alt=" " />
-        		// to <img class="ss_addimage_att src="{{attachmentUrl: some file name"}}" alt=" " />
-        		img = m1.replaceFirst(" src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
-        		markedUpImg = img.replace( "$", "\\$" );	// remove regex special char
-        		desc = description.getText();
-        		desc = desc.replaceFirst( origImg, markedUpImg );
-        		description.setText( desc );
-        		//~JW:  description.setText( m.replaceFirst( markedUp ) );
-
-        		// Start searching after the <img class="ss_addimage_att" src="{{attachmentUrl: some name}}" alt=" ">
-        		// we just added.
-        		desc = description.getText();
-        		start = desc.lastIndexOf( markedUpImg ) + markedUpImg.length();
-        		end = desc.length();
-
-        		m = attachedImagePattern.matcher( desc );
-        		m.region( start, end );
-        	}
-    	}
+		description.setText(replaceAllAttachmentFileUrls(description.getText()));
 	}
 
-	
+	static String replaceAllAttachmentFileUrls(String text) {
+		if (Validator.isNotNull(text)) {
+			text = replaceV1AttachmentFileUrls(text);
+			text = replaceReadFileAttachmentFileUrls(text);
+			text = replaceAttachedImageAttachmentFileUrls(text);
+		}
+		return text;
+	}
+
+	static String replaceAttachedImageAttachmentFileUrls(String text) {
+		if (Validator.isNotNull(text)) {
+			Matcher m = attachedImagePattern.matcher(text);
+			int loopDetector = 0;
+			while (m.find()) {
+				if (loopDetector++ > 2000) {
+					logger.error("Error processing markup [2.2]: " + text);
+					break;
+				}
+				String url = "";
+				String img = m.group(0);
+				String origImg;
+
+				origImg = img;
+
+				//See if this has already been fixed up
+				Matcher m2 = attachmentUrlPattern.matcher(img);
+				if (m2.find()) continue;
+
+				//Now, replace the url with special markup version
+				Matcher m1 = urlSrcPattern.matcher(img);
+				if (m1.find()) {
+					String fileName = m1.group(1);
+					String markedUpImg;
+					String desc;
+					int start;
+					int end;
+
+					//See if this is a full file spec that needs to be trimmed back to just the file name
+					String correctedFileName = fileName;
+					String ctx = SPropsUtil.getString(SPropsUtil.SSF_CTX, "/ssf");
+					Matcher m3 = httpPattern.matcher(correctedFileName);
+					if (m3.find() && ctx.equals(m3.group(1))) correctedFileName = m3.group(2);
+					String[] urlArgs = correctedFileName.split("/");
+					if (urlArgs.length >= WebUrlUtil.FILE_URL_ARG_LENGTH - 3) {
+						fileName = "";
+						for (int i = 5; i < urlArgs.length; i++) fileName += urlArgs[i];
+					}
+
+					// Change the text from <img class="ss_addimage_att src="some file name" alt=" " />
+					// to <img class="ss_addimage_att src="{{attachmentUrl: some file name"}}" alt=" " />
+					img = m1.replaceFirst(" src=\"cid:{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
+					markedUpImg = img.replace("$", "\\$");    // remove regex special char
+					text = text.replaceFirst(origImg, markedUpImg);
+
+					// Start searching after the <img class="ss_addimage_att" src="{{attachmentUrl: some name}}" alt=" ">
+					// we just added.
+					start = text.lastIndexOf(markedUpImg) + markedUpImg.length();
+					end = text.length();
+
+					m = attachedImagePattern.matcher(text);
+					m.region(start, end);
+				}
+			}
+		}
+		return text;
+	}
+
+	static String replaceReadFileAttachmentFileUrls(String text) {
+		// Replace all instances of:
+		// <img class=" ss_addimage_att " src="some-file-name" alt=" " data-mce-src="http://jwootton3.provo.novell.com:8080/ssf/s/readFile/workspace/1/-/1407854576062/last/some-file-name">
+		// with:
+		// <img class=" ss_addimage_att " src="{{attachmentUrl: some-file-name}}" alt=" " data-mce-src="http://jwootton3.provo.novell.com:8080/ssf/s/readFile/workspace/1/-/1407854576062/last/some-file-name">
+		StringBuffer outputBuff = new StringBuffer(text);
+		Matcher m = readFileImagePattern.matcher(outputBuff.toString());
+		int loopDetector = 0;
+		if (m.find()) {
+            outputBuff = new StringBuffer();
+
+            do {
+                if (loopDetector++ > 2000) {
+                    logger.error("Error processing markup [2.1]: " + text);
+                    break;
+                }
+                String url = "";
+                String img = m.group(0);
+                Matcher m2 = readFilePathPattern.matcher(img);
+
+                if (m2.find())
+                    url = m2.group().trim();
+
+                String[] args = url.split(org.kablink.teaming.util.Constants.SLASH);
+
+                if (args.length == 8) {
+                    //Now, replace the url with special markup version
+                    Matcher m1 = urlSrcPattern.matcher(img);
+                    if (m1.find()) {
+                        String imgReplacement;
+                        String fileName = args[WebUrlUtil.FILE_URL_NAME];
+
+                        img = m1.replaceFirst(" src=\"cid:{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
+                        imgReplacement = img.replace("$", "\\$");
+                        m.appendReplacement(outputBuff, imgReplacement);
+                    }
+                }
+            }
+            while (m.find());
+
+            m.appendTail(outputBuff);
+        }
+
+		text = outputBuff.toString();
+		return text;
+	}
+
+	static String replaceV1AttachmentFileUrls(String text) {
+		if (Validator.isNotNull(text)) {
+			Matcher m = v1AttachmentUrlPattern.matcher(text);
+			int loopDetector = 0;
+			while (m.find()) {
+				if (loopDetector++ > 2000) {
+					logger.error("Error processing markup [2]: " + text);
+					break;
+				}
+				String fileId = "";
+				String img = m.group();
+				Matcher fieldMatcher = fileIdPattern.matcher(img);
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) fileId = fieldMatcher.group(1).trim();
+				//the old url had binderId, entryId and entityType, but you could only point to a file in the same entry
+				//so these are not needed - this needs to be replaced with readFile url.
+				//This code is here to capture old urls that are lingering
+				if (Validator.isNotNull(fileId)) {
+					//Now, replace the url with special markup version
+					Matcher m1 = urlSrcPattern.matcher(img);
+					if (m1.find()) {
+						//not sure what this specialAmp is about, but leave as is from v1
+						img = m1.replaceFirst(" src=\"cid:{{attachmentFileId: fileId=" + fileId + "}}\"");
+						text = m.replaceFirst(img.replace("$", "\\$")); //remove regex special char
+						m = v1AttachmentUrlPattern.matcher(text);
+					}
+				}
+			}
+		}
+		return text;
+	}
+
+
 	public static void scanDescriptionForICLinks(Description description) {
 		if (Validator.isNull(description.getText())) return;
     	Matcher m = iceCoreLinkPattern.matcher(description.getText());
@@ -391,7 +437,7 @@ public class MarkupUtil {
 
         	if (Validator.isNotNull(linkArgs)) {
         		linkArgs = linkArgs.replaceFirst(titleUrlTextPattern.toString(), "");
-        		description.setText(m.replaceFirst("{{titleUrl: " + linkArgs.replaceAll("%2B", "+") + " text=" + Html.stripHtml(titleText) + "}}" + remainderText));
+        		description.setText(m.replaceFirst("cid:{{titleUrl: " + linkArgs.replaceAll("%2B", "+") + " text=" + Html.stripHtml(titleText) + "}}" + remainderText));
         		m = iceCoreLinkPattern.matcher(description.getText());
 	    	}
     	}
@@ -493,7 +539,7 @@ public class MarkupUtil {
 				} else if (WebKeys.MARKUP_RSS.equals(type)) {
 					String entityType = (String)searchResults.get(org.kablink.util.search.Constants.ENTITY_FIELD);
 					String entityId = (String)searchResults.get(org.kablink.util.search.Constants.DOCID_FIELD);
-					return "{{RSSattachmentUrl: entityId=" + String.valueOf(entityId) + 
+					return "{{RSSattachmentUrl: entityId=" + String.valueOf(entityId) +
 							" entityType=" +entityType + " fileName=" + fileName + "}}";
 				} else {
 					return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, searchResults, fileName);
@@ -838,7 +884,7 @@ public class MarkupUtil {
 					//need permalink
 					return PermaLinkUtil.getFilePermalink(entity, fileName);
 				} else if (WebKeys.MARKUP_RSS.equals(type)) {
-					return "{{RSSattachmentUrl: entityId=" + String.valueOf(entity.getId()) + 
+					return "{{RSSattachmentUrl: entityId=" + String.valueOf(entity.getId()) +
 							" entityType=" +entity.getEntityType().name() + " fileName=" + fileName + "}}";
 				} else {
 					return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, entity, fileName);
@@ -1034,7 +1080,7 @@ public class MarkupUtil {
 			String entityId, String entityType, String inputString, String type, Boolean isMobile) {
 		if (Validator.isNull(inputString)) return inputString;  //don't waste time
 		StringBuffer outputBuf = new StringBuffer(inputString);
-		
+
 //why?		outputString = outputString.replaceAll("%20", " ");
 //		outputString = outputString.replaceAll("%7B", "{");
 //		outputString = outputString.replaceAll("%7D", "}");
@@ -1074,262 +1120,32 @@ public class MarkupUtil {
 					matcher.appendTail(outputBuf);
 				}
 			}
-			
-			//Replace the markup urls with real urls {{attachmentUrl: tempFileHandle}}
-			matcher = attachmentUrlPattern.matcher(outputBuf);
-			if (matcher.find()) {
-				loopDetector = 0;
-				outputBuf = new StringBuffer();
-				do {
-					if (loopDetector++ > 2000) {
-						logger.error("Error processing markup [4.1]: " + inputString);
-						return outputBuf.toString();
-					}
-					if (matcher.groupCount() >= 2) {
-						String fileName = matcher.group(2);
-						//remove escaping that timyMce for html escaping - get here if someone typed {{att.. }}themselves
-						fileName = StringEscapeUtils.unescapeHtml(fileName);
-		           		try {
-							//remove escaping for urls which are left in the text after modify or add file
-		        			URI uri = new URI(fileName);
-		        			fileName = uri.getPath();
-		        		} catch (Exception ex) {};
-	
-						String webUrl = builder.getFileUrlByName(fileName);
-						matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(webUrl));
-					}
-				} while (matcher.find());
-				matcher.appendTail(outputBuf);
-	    	}
-	    	
+
+			//Replace the markup urls with real urls "cid:{{attachmentUrl: tempFileHandle}}"
+			outputBuf = markupReplaceAttachmentReference(outputBuf, attachmentUrlPattern, builder);
+			//Replace the markup urls with real urls "{{attachmentUrl: tempFileHandle}}"
+			outputBuf = markupReplaceAttachmentReference(outputBuf, v2AttachmentUrlPattern, builder);
+
+
 	    	//Replace the markup v1 attachmentFileIds {{attachmentFileId: binderId=xxx entryId=xxx fileId=xxx entityType=xxx}}
 			//with v2 urls 
 			//  from the fileId, we can get the fileName and use the new URLS.
-			matcher = v1AttachmentFileIdPattern.matcher(outputBuf);
-			if (matcher.find()) {
-				loopDetector = 0;
-				outputBuf = new StringBuffer();
-				do {
-					if (loopDetector++ > 2000) {
-						logger.error("Error processing markup [4.2]: " + inputString);
-						return outputBuf.toString();
-			    	}
-					if (matcher.groupCount() >= 2) {
-						String fileIds = matcher.group(2).trim();
-				   		String fileId = "";
-			        	Matcher fieldMatcher = fileIdPattern.matcher(fileIds);
-			        	if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) fileId = fieldMatcher.group(1).trim();
-			    		//the old url had binderId, entryId and entityType, but you could only point to a file in the same entry
-			        	//so these are not needed - this needs to be replaced with readFile url.
-			        	//This code is here to capture old urls that are lingering
-				    	if (Validator.isNotNull(fileId)) {
-				    		String webUrl = builder.getFileUrlById(fileId);
-				    		if (webUrl == null || webUrl.equals("")) {
-				    			//Not found, just build a url using just the file id
-				    			webUrl = builder.getRootServletUrl() + WebKeys.SERVLET_VIEW_FILE + "?" +
-				    				WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + 
-				    				"&" + WebKeys.URL_FILE_ID + "=" + fileId; 
-				    		}
-				    		matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(webUrl));
-				    	}
-					}
-				} while (matcher.find());
-				matcher.appendTail(outputBuf);
-			}
+			outputBuf = markupReplaceFileIdReference(outputBuf, v1AttachmentFileIdPattern, builder);
+
 	    	//Replace the markup {{titleUrl}} with real urls {{titleUrl: binderId=xxx title=xxx text=yyy}}
 			//   In the "titleUrl": xxx is the normalized title of the entry. If null, it is a link to a folder.
 			//       And yyy is the link text (e.g., <a ...>yyy</a>
-			matcher = titleUrlPattern.matcher(outputBuf.toString());
-			if (matcher.find()) {
-				loopDetector = 0;
-				outputBuf = new StringBuffer();
-				do {
-					if (loopDetector++ > 2000) {
-						logger.error("Error processing markup [5]: " + inputString);
-						return outputBuf.toString();
-					}
-					if (matcher.groupCount() < 2) continue;
-					String urlParts = matcher.group(2).trim();
-					String s_binderId = "";
-					Matcher fieldMatcher = titleUrlBinderPattern.matcher(urlParts);
-					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1).trim();
-			    		
-					String s_zoneUUID = "";
-					fieldMatcher = titleUrlZoneUUIDPattern.matcher(urlParts);
-					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_zoneUUID = fieldMatcher.group(1).trim();
-			    		
-					String normalizedTitle = "";
-					fieldMatcher = titleUrlTitlePattern.matcher(urlParts);
-					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) normalizedTitle = fieldMatcher.group(1).trim();
-			        	
-					String title = "";
-					fieldMatcher = titleUrlTextPattern.matcher(urlParts); //html stripped on input
-					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) title = fieldMatcher.group(1).trim();
-					if (title.equals("")) title = normalizedTitle;
-			        	
-					//build the link
-		    		StringBuffer titleLink = new StringBuffer();
-			    	if (type.equals(WebKeys.MARKUP_FORM)) {
-			        	titleLink.append("<a href=\"#\" class=\"ss_icecore_link\" rel=\"binderId=");
-			        	titleLink.append(s_binderId);
-			        	if (!s_zoneUUID.equals("")) titleLink.append(" zoneUUID=" + s_zoneUUID);
-			        	titleLink.append(" title=");
-			        	titleLink.append(Html.stripHtml(normalizedTitle));
-			        	titleLink.append(" text=");
-			        	titleLink.append(Html.stripHtml(title));
-			        	titleLink.append("\">");
-			        	titleLink.append(title).append("</a>");
-			    	} else if (type.equals(WebKeys.MARKUP_VIEW)){
-			    		String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID,
-			    				WebHelper.getNormalizedTitle(normalizedTitle), title, isMobile);
-			    		String showInParent = "false";
-			    		if (normalizedTitle == null || normalizedTitle.equals("")) showInParent = "true";
-			    		titleLink.append("<a href=\"").append(webUrl);
-			    		titleLink.append("\" onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this, "+showInParent+");\">");
-			    		titleLink.append("<span class=\"ss_title_link\">").append(title).append("</span></a>");
-			    	} else {
-			    		String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID,
-			    				WebHelper.getNormalizedTitle(normalizedTitle), title, isMobile);
-			    		titleLink.append("<a href=\"").append(webUrl).append("\">").append(title).append("</a>");
-			    		
-			    	}
-	    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(titleLink.toString()));
-		    	} while (matcher.find());
-				matcher.appendTail(outputBuf);
-			}
-		    	
+			outputBuf = markupReplaceTitleUrlReference(outputBuf, titleUrlPattern, builder, type, isMobile);
+			outputBuf = markupReplaceTitleUrlReference(outputBuf, v2TitleUrlPattern, builder, type, isMobile);
+
 	    	//Replace the markup {{youTubeUrl}} with real urls {{youTubeUrl: url=xxx width=www height=hhh}}
-			matcher = youtubeUrlPattern.matcher(outputBuf.toString());
-			if (matcher.find()) {
-				loopDetector = 0;
-				outputBuf = new StringBuffer();
-				do {
-					if (loopDetector++ > 2000) {
-						logger.error("Error processing markup [5.1]: " + inputString);
-						return outputBuf.toString();
-					}
-					if (matcher.groupCount() < 2) continue;
-					String urlParts = matcher.group(2).trim();
-					String s_url = "";
-					Matcher fieldMatcher = youtubeUrlUrlPattern.matcher(urlParts);
-					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_url = fieldMatcher.group(1).trim();
-			    		
-					String s_width = "";
-					fieldMatcher = youtubeUrlWidthPattern.matcher(urlParts);
-					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_width = fieldMatcher.group(1).trim();
-			    		
-					String s_height = "";
-					fieldMatcher = youtubeUrlHeightPattern.matcher(urlParts);
-					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_height = fieldMatcher.group(1).trim();
-			    		
-					//build the link
-		    		StringBuffer titleLink = new StringBuffer();
-			    	if (type.equals(WebKeys.MARKUP_FORM)) {
-			        	titleLink.append("<a class=\"ss_youtube_link\" rel=\"url=");
-			        	titleLink.append(s_url);
-			        	if (!s_width.equals("")) titleLink.append(" width=" + s_width);
-			        	if (!s_height.equals("")) titleLink.append(" height=" + s_height);
-			        	titleLink.append("\" style=\"padding:12px 12px; background:url(");
-			        	titleLink.append(builder.getImagesRootUrl()).append("pics/media.gif) no-repeat center;\">");
-			        	titleLink.append("&nbsp;</a>");
-			        	titleLink.append("</a>");
-			    	} else if (s_url.startsWith("http://www.youtube.com/") || s_url.startsWith("https://www.youtube.com/")) {
-			    		if (checkIfMobile(req, httpReq)) {
-				    		titleLink.append("<div>\n");
-				    		titleLink.append("<a href=\"");
-				    		titleLink.append(s_url.replaceFirst("www.youtube.com", "m.youtube.com"));
-				    		titleLink.append("\"><img width=\"60\" height=\"38\" src=\"");
-				    		titleLink.append(builder.getImagesRootUrl());
-				    		titleLink.append("pics/yt_powered_by_black.png").append("\"/></a>\n");
-				    		titleLink.append("</div>\n");
-			    			
-			    		} else {
-				    		/*
-								<div id="ytapiplayer">
-	    							You need Flash player 8+ and JavaScript enabled to view this video.
-	  							</div>
-	                            <script type="text/javascript">
-								    var params = { allowScriptAccess: "always" };
-								    var atts = { id: "myytplayer" };
-								    swfobject.embedSWF("http://www.youtube.com/v/VIDEO_ID?enablejsapi=1&playerapiid=ytplayer", 
-								                       "ytapiplayer", "425", "356", "8", null, null, params, atts);
-								</script>
-				    		 */
-				    		Integer id = ++youtubeDivId;
-				    		String ytUrl = s_url.replaceFirst("youtube.com/watch\\?v=", "youtube.com/v/");
-				    		ytUrl = ytUrl.replaceFirst("youtube.com\\?v=", "youtube.com/v/");
-				    		if (youtubeDivId > 1000000) youtubeDivId = 0;
-				    		titleLink.append("<div id=\"ss_videoDiv"+id.toString()+"\" class=\"ss_videoDiv\">\n");
-				    		titleLink.append("<div id=\"ytapiplayer"+id.toString()+"\">\n");
-				    		titleLink.append("");
-				    		titleLink.append("</div>\n");
-				    		titleLink.append("<div>\n");
-				    		titleLink.append("<a href=\"" + s_url + "\"><img width=\"60\" height=\"38\" src=\"");
-				    		titleLink.append(builder.getImagesRootUrl());
-				    		titleLink.append("pics/yt_powered_by_black.png").append("\"/></a>\n");
-				    		titleLink.append("</div>\n");
-				    		titleLink.append("</div>\n");
-				    		titleLink.append("<script type=\"text/javascript\">\n");
-				    		titleLink.append("var params = { allowScriptAccess: \"always\", wmode: \"opaque\" };\n");
-				    		titleLink.append("var atts = { id: \"myytplayer\" };\n");
-				    		titleLink.append("swfobject.embedSWF(\"").append(ytUrl);
-				    		titleLink.append("?enablejsapi=1&playerapiid=ytplayer\",");
-				    		titleLink.append(" \"ytapiplayer"+id.toString()+"\", \"").append(s_width).append("\", ");
-				    		titleLink.append("\"").append(s_height).append("\", \"8\", null, null, params, atts);\n");
-				    		titleLink.append("//ss_createSpannedAreaObj(\"ss_videoDiv"+id.toString()+"\");\n");
-				    		titleLink.append("</script>\n");
-			    		}
-			    	} else if (s_url.startsWith("http://youtu.be/") || s_url.startsWith("https://youtu.be/")) {
-			    		Integer id = ++youtubeDivId;
-			    		//Make this into an embed URL
-			    		if (s_url.startsWith("http://youtu.be/")) {
-			    			s_url = s_url.replaceFirst("http://youtu.be/", "http://www.youtube.com/embed/");
-			    		} else {
-			    			s_url = s_url.replaceFirst("https://youtu.be/", "https://www.youtube.com/embed/");
-			    		}
-			    		titleLink.append("<div id=\"youTubeIFrame" + id.toString() + "\"></div>");
-			        	//We have to set the iframe src after the page loads to avoid youtube wiping out following content
-			        	titleLink.append("\n<script type=\"text/javascript\">\n");
-			        	titleLink.append("ss_createOnLoadObj(\"youTubeFixup" + id.toString() + "\", function() {\n");
-			        	titleLink.append("var divObj = document.getElementById(\"youTubeIFrame" + id.toString() + "\");\n");
-			        	titleLink.append("divObj.innerHTML = '");
-			    		titleLink.append("<iframe src=\"" + s_url + "\" width=\"" + s_width + "\" height=\"" + s_height + "\" ");
-			        	titleLink.append(" frameborder=\"0\" allowfullscreen</iframe>");
-			        	titleLink.append("';\n");
-			        	titleLink.append("});\n");
-			        	titleLink.append("</script>\n");
-			    	} else {
-			        	titleLink.append("<a target=\"_blank\" src=\"");
-			        	titleLink.append(s_url);
-			        	titleLink.append("\">");
-			        	titleLink.append(s_url).append("</a>");
-			    	}
-	    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(titleLink.toString()));
-		    	} while (matcher.find());
-				matcher.appendTail(outputBuf);
-			}
-		    	
+			outputBuf = markupReplaceYouTubeUrlReference(outputBuf, youtubeUrlPattern, builder, type, checkIfMobile(req, httpReq));
+
 	    	//Replace vibe parser functions markup {{vibe: xxx | yyy| zzz}} with the desired text
 			if (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_VIEW_TEXT) || type.equals(WebKeys.MARKUP_EMAIL)) {
 				//Only do this when viewing the entry. Leave the markup in for forms and export.
-				matcher = vibeFunctionPattern.matcher(outputBuf.toString());
-				if (matcher.find()) {
-					loopDetector = 0;
-					outputBuf = new StringBuffer();
-					do {
-						if (loopDetector++ > 2000) {
-							logger.error("Error processing markup [6]: " + inputString);
-							return outputBuf.toString();
-						}
-						if (matcher.groupCount() < 2) continue;
-						String functionString = matcher.group(2).trim();
-						//Parse and execute the vibe function
-						String replacementText = builder.getVibeFunctionResult(functionString);
-						
-		    			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(replacementText));
-			    	} while (matcher.find());
-					matcher.appendTail(outputBuf);
-				}
+				outputBuf = markupReplaceVibeFunctionReference(outputBuf, vibeFunctionPattern, builder);
+				outputBuf = markupReplaceVibeFunctionReference(outputBuf, v2VibeFunctionPattern, builder);
 			}
 		    	
 	    	//When viewing the string, replace the markup title links with real links    [[page title]]
@@ -1374,7 +1190,276 @@ public class MarkupUtil {
 		}
      	return outputBuf.toString();
 	}
-	
+
+	static StringBuffer markupReplaceAttachmentReference(StringBuffer inputBuf, Pattern pattern, UrlBuilder builder) {
+		//Replace the markup urls with real urls "cid:{{attachmentUrl: tempFileHandle}}"
+		StringBuffer outputBuf = inputBuf;
+		Matcher matcher = pattern.matcher(inputBuf);
+		if (matcher.find()) {
+			int loopDetector = 0;
+			outputBuf = new StringBuffer();
+			do {
+				if (loopDetector++ > 2000) {
+					logger.error("Error processing markup [4.1]: " + inputBuf);
+					return outputBuf;
+				}
+				if (matcher.groupCount() >= 2) {
+					String fileName = matcher.group(2);
+					//remove escaping that timyMce for html escaping - get here if someone typed {{att.. }}themselves
+					fileName = StringEscapeUtils.unescapeHtml(fileName);
+					try {
+						//remove escaping for urls which are left in the text after modify or add file
+						URI uri = new URI(fileName);
+						fileName = uri.getPath();
+					} catch (Exception ex) {};
+
+					String webUrl = builder.getFileUrlByName(fileName);
+					matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(webUrl));
+				}
+			} while (matcher.find());
+			matcher.appendTail(outputBuf);
+		}
+		return outputBuf;
+	}
+
+	static StringBuffer markupReplaceFileIdReference(StringBuffer inputBuf, Pattern pattern, UrlBuilder builder) {
+		//Replace the markup v1 attachmentFileIds {{attachmentFileId: binderId=xxx entryId=xxx fileId=xxx entityType=xxx}}
+		//with v2 urls
+		//  from the fileId, we can get the fileName and use the new URLS.
+		StringBuffer outputBuf = inputBuf;
+		Matcher matcher = v1AttachmentFileIdPattern.matcher(inputBuf);
+		if (matcher.find()) {
+			int loopDetector = 0;
+			outputBuf = new StringBuffer();
+			do {
+				if (loopDetector++ > 2000) {
+					logger.error("Error processing markup [4.2]: " + inputBuf);
+					return outputBuf;
+				}
+				if (matcher.groupCount() >= 2) {
+					String fileIds = matcher.group(2).trim();
+					String fileId = "";
+					Matcher fieldMatcher = fileIdPattern.matcher(fileIds);
+					if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) fileId = fieldMatcher.group(1).trim();
+					//the old url had binderId, entryId and entityType, but you could only point to a file in the same entry
+					//so these are not needed - this needs to be replaced with readFile url.
+					//This code is here to capture old urls that are lingering
+					if (Validator.isNotNull(fileId)) {
+						String webUrl = builder.getFileUrlById(fileId);
+						if (webUrl == null || webUrl.equals("")) {
+							//Not found, just build a url using just the file id
+							webUrl = builder.getRootServletUrl() + WebKeys.SERVLET_VIEW_FILE + "?" +
+									WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE +
+									"&" + WebKeys.URL_FILE_ID + "=" + fileId;
+						}
+						matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(webUrl));
+					}
+				}
+			} while (matcher.find());
+			matcher.appendTail(outputBuf);
+		}
+		return outputBuf;
+	}
+
+	static StringBuffer markupReplaceTitleUrlReference(StringBuffer inputBuf, Pattern pattern, UrlBuilder builder, String type, Boolean isMobile) {
+		//Replace the markup {{titleUrl}} with real urls {{titleUrl: binderId=xxx title=xxx text=yyy}}
+		//   In the "titleUrl": xxx is the normalized title of the entry. If null, it is a link to a folder.
+		//       And yyy is the link text (e.g., <a ...>yyy</a>
+		StringBuffer outputBuf = inputBuf;
+		Matcher matcher = pattern.matcher(inputBuf.toString());
+		if (matcher.find()) {
+			int loopDetector = 0;
+			outputBuf = new StringBuffer();
+			do {
+				if (loopDetector++ > 2000) {
+					logger.error("Error processing markup [5]: " + inputBuf);
+					return outputBuf;
+				}
+				String s_binderId = "";
+				String s_zoneUUID = "";
+				String normalizedTitle = "";
+				String title = "";
+
+				if (matcher.groupCount() < 2) continue;
+				String urlParts = matcher.group(2).trim();
+				TitleMacroParameters params = TitleMacroParameters.find(urlParts);
+
+				if (params!=null) {
+					s_binderId = params.binderId;
+					s_zoneUUID = params.zoneUUID;
+					normalizedTitle = params.normalizedTitle;
+					title = params.title;
+				}
+
+				//build the link
+				StringBuffer titleLink = new StringBuffer();
+				if (type.equals(WebKeys.MARKUP_FORM)) {
+					titleLink.append("<a href=\"#\" class=\"ss_icecore_link\" rel=\"binderId=");
+					titleLink.append(s_binderId);
+					if (!s_zoneUUID.equals("")) titleLink.append(" zoneUUID=" + s_zoneUUID);
+					titleLink.append(" title=");
+					titleLink.append(Html.stripHtml(normalizedTitle));
+					titleLink.append(" text=");
+					titleLink.append(Html.stripHtml(title));
+					titleLink.append("\">");
+					titleLink.append(title).append("</a>");
+				} else if (type.equals(WebKeys.MARKUP_VIEW)){
+					String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID,
+							WebHelper.getNormalizedTitle(normalizedTitle), title, isMobile);
+					String showInParent = "false";
+					if (normalizedTitle == null || normalizedTitle.equals("")) showInParent = "true";
+					titleLink.append("<a href=\"").append(webUrl);
+					titleLink.append("\" onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this, "+showInParent+");\">");
+					titleLink.append("<span class=\"ss_title_link\">").append(title).append("</span></a>");
+				} else {
+					String webUrl = builder.getTitleUrl(s_binderId, s_zoneUUID,
+							WebHelper.getNormalizedTitle(normalizedTitle), title, isMobile);
+					titleLink.append("<a href=\"").append(webUrl).append("\">").append(title).append("</a>");
+
+				}
+				matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(titleLink.toString()));
+			} while (matcher.find());
+			matcher.appendTail(outputBuf);
+		}
+		return outputBuf;
+	}
+
+	static StringBuffer markupReplaceYouTubeUrlReference(StringBuffer inputBuf, Pattern pattern, UrlBuilder builder, String type, boolean isMobile) {
+		//Replace the markup {{youTubeUrl}} with real urls {{youTubeUrl: url=xxx width=www height=hhh}}
+		StringBuffer outputBuf = inputBuf;
+		Matcher matcher = pattern.matcher(inputBuf.toString());
+		if (matcher.find()) {
+			int loopDetector = 0;
+			outputBuf = new StringBuffer();
+			do {
+				if (loopDetector++ > 2000) {
+					logger.error("Error processing markup [5.1]: " + inputBuf);
+					return outputBuf;
+				}
+				String s_url = "";
+				String s_width = "";
+				String s_height = "";
+				if (matcher.groupCount() < 2) continue;
+				String urlParts = matcher.group(2).trim();
+				YoutubeMacroParameters uwh = YoutubeMacroParameters.find(urlParts);
+				if (uwh!=null) {
+					s_url = uwh.url;
+					s_width = uwh.width;
+					s_height = uwh.height;
+				}
+
+				//build the link
+				StringBuffer titleLink = new StringBuffer();
+				if (type.equals(WebKeys.MARKUP_FORM)) {
+					titleLink.append("<a class=\"ss_youtube_link\" rel=\"url=");
+					titleLink.append(s_url);
+					if (!s_width.equals("")) titleLink.append(" width=" + s_width);
+					if (!s_height.equals("")) titleLink.append(" height=" + s_height);
+					titleLink.append("\" style=\"padding:12px 12px; background:url(");
+					titleLink.append(builder.getImagesRootUrl()).append("pics/media.gif) no-repeat center;\">");
+					titleLink.append("&nbsp;</a>");
+					titleLink.append("</a>");
+				} else if (s_url.startsWith("http://www.youtube.com/") || s_url.startsWith("https://www.youtube.com/")) {
+					if (isMobile) {
+						titleLink.append("<div>\n");
+						titleLink.append("<a href=\"");
+						titleLink.append(s_url.replaceFirst("www.youtube.com", "m.youtube.com"));
+						titleLink.append("\"><img width=\"60\" height=\"38\" src=\"");
+						titleLink.append(builder.getImagesRootUrl());
+						titleLink.append("pics/yt_powered_by_black.png").append("\"/></a>\n");
+						titleLink.append("</div>\n");
+
+					} else {
+				    		/*
+								<div id="ytapiplayer">
+	    							You need Flash player 8+ and JavaScript enabled to view this video.
+	  							</div>
+	                            <script type="text/javascript">
+								    var params = { allowScriptAccess: "always" };
+								    var atts = { id: "myytplayer" };
+								    swfobject.embedSWF("http://www.youtube.com/v/VIDEO_ID?enablejsapi=1&playerapiid=ytplayer",
+								                       "ytapiplayer", "425", "356", "8", null, null, params, atts);
+								</script>
+				    		 */
+						Integer id = ++youtubeDivId;
+						String ytUrl = s_url.replaceFirst("youtube.com/watch\\?v=", "youtube.com/v/");
+						ytUrl = ytUrl.replaceFirst("youtube.com\\?v=", "youtube.com/v/");
+						if (youtubeDivId > 1000000) youtubeDivId = 0;
+						titleLink.append("<div id=\"ss_videoDiv"+id.toString()+"\" class=\"ss_videoDiv\">\n");
+						titleLink.append("<div id=\"ytapiplayer"+id.toString()+"\">\n");
+						titleLink.append("");
+						titleLink.append("</div>\n");
+						titleLink.append("<div>\n");
+						titleLink.append("<a href=\"" + s_url + "\"><img width=\"60\" height=\"38\" src=\"");
+						titleLink.append(builder.getImagesRootUrl());
+						titleLink.append("pics/yt_powered_by_black.png").append("\"/></a>\n");
+						titleLink.append("</div>\n");
+						titleLink.append("</div>\n");
+						titleLink.append("<script type=\"text/javascript\">\n");
+						titleLink.append("var params = { allowScriptAccess: \"always\", wmode: \"opaque\" };\n");
+						titleLink.append("var atts = { id: \"myytplayer\" };\n");
+						titleLink.append("swfobject.embedSWF(\"").append(ytUrl);
+						titleLink.append("?enablejsapi=1&playerapiid=ytplayer\",");
+						titleLink.append(" \"ytapiplayer"+id.toString()+"\", \"").append(s_width).append("\", ");
+						titleLink.append("\"").append(s_height).append("\", \"8\", null, null, params, atts);\n");
+						titleLink.append("//ss_createSpannedAreaObj(\"ss_videoDiv"+id.toString()+"\");\n");
+						titleLink.append("</script>\n");
+					}
+				} else if (s_url.startsWith("http://youtu.be/") || s_url.startsWith("https://youtu.be/")) {
+					Integer id = ++youtubeDivId;
+					//Make this into an embed URL
+					if (s_url.startsWith("http://youtu.be/")) {
+						s_url = s_url.replaceFirst("http://youtu.be/", "http://www.youtube.com/embed/");
+					} else {
+						s_url = s_url.replaceFirst("https://youtu.be/", "https://www.youtube.com/embed/");
+					}
+					titleLink.append("<div id=\"youTubeIFrame" + id.toString() + "\"></div>");
+					//We have to set the iframe src after the page loads to avoid youtube wiping out following content
+					titleLink.append("\n<script type=\"text/javascript\">\n");
+					titleLink.append("ss_createOnLoadObj(\"youTubeFixup" + id.toString() + "\", function() {\n");
+					titleLink.append("var divObj = document.getElementById(\"youTubeIFrame" + id.toString() + "\");\n");
+					titleLink.append("divObj.innerHTML = '");
+					titleLink.append("<iframe src=\"" + s_url + "\" width=\"" + s_width + "\" height=\"" + s_height + "\" ");
+					titleLink.append(" frameborder=\"0\" allowfullscreen</iframe>");
+					titleLink.append("';\n");
+					titleLink.append("});\n");
+					titleLink.append("</script>\n");
+				} else {
+					titleLink.append("<a target=\"_blank\" src=\"");
+					titleLink.append(s_url);
+					titleLink.append("\">");
+					titleLink.append(s_url).append("</a>");
+				}
+				matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(titleLink.toString()));
+			} while (matcher.find());
+			matcher.appendTail(outputBuf);
+		}
+		return outputBuf;
+	}
+
+	static StringBuffer markupReplaceVibeFunctionReference(StringBuffer inputBuf, Pattern pattern, UrlBuilder builder) {
+		StringBuffer outputBuf = inputBuf;
+		Matcher matcher = pattern.matcher(inputBuf.toString());
+		if (matcher.find()) {
+			int loopDetector = 0;
+			outputBuf = new StringBuffer();
+			do {
+				if (loopDetector++ > 2000) {
+					logger.error("Error processing markup [6]: " + inputBuf);
+					return outputBuf;
+				}
+				if (matcher.groupCount() < 2) continue;
+				String functionString = matcher.group(2).trim();
+				//Parse and execute the vibe function
+				String replacementText = builder.getVibeFunctionResult(functionString);
+
+				matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(replacementText));
+			} while (matcher.find());
+			matcher.appendTail(outputBuf);
+		}
+		return outputBuf;
+	}
+
 	//Routine to fix up descriptions before exporting them
 	public static String markupStringReplacementForExport(String inputString) {
     	//Fixup the markup {{titleUrl}} with zoneUUID {{titleUrl: binderId=xxx zoneUUID=xxx title=xxx text=xxx}}
@@ -1437,7 +1522,7 @@ public class MarkupUtil {
 				}
 		        	
 				//rebuild the link
-	    		String titleLink = "{{titleUrl: binderId" + s_binderIdEquals + s_binderId + " zoneUUID" + s_zoneUUIDEquals + s_zoneUUID + 
+	    		String titleLink = "cid:{{titleUrl: binderId" + s_binderIdEquals + s_binderId + " zoneUUID" + s_zoneUUIDEquals + s_zoneUUID +
 	    			" title" + normalizedTitleEquals + normalizedTitle + " text" + titleEquals + Html.stripHtml(title) + "}}";
     			matcher.appendReplacement(outputBuf, Matcher.quoteReplacement(titleLink));
 	    	} while (matcher.find());
@@ -1902,12 +1987,12 @@ public class MarkupUtil {
 				return "export";
 			}
 		};
-		definitionModule.walkDefinition(entity, visitor, null);
+		getDefinitionModule().walkDefinition(entity, visitor, null);
 		if (!data.isEmpty()) {
 			//Save any changes
 			if (EntityType.folderEntry.equals(entity.getEntityType())) {
 				try {
-					folderModule.modifyEntry(entity.getParentBinder().getId(), entity.getId(), 
+					getFolderModule().modifyEntry(entity.getParentBinder().getId(), entity.getId(),
 						new MapInputData(data), null, null, null, null);
 				} catch(Exception e) {
 					logger.error(e.getLocalizedMessage());
@@ -1915,7 +2000,7 @@ public class MarkupUtil {
 			} else if (EntityType.workspace.equals(entity.getEntityType()) ||
 					EntityType.folder.equals(entity.getEntityType())) {
 				try {
-					binderModule.modifyBinder(entity.getId(), new MapInputData(data), null, null, null);
+					getBinderModule().modifyBinder(entity.getId(), new MapInputData(data), null, null, null);
 				} catch(Exception e) {
 					logger.error(e.getLocalizedMessage());
 				}
@@ -2102,4 +2187,92 @@ public class MarkupUtil {
 		
 		return outputBuf.toString();
 	}
+
+	static class YoutubeMacroParameters {
+		private String url;
+		private String width;
+		private String height;
+
+		public YoutubeMacroParameters(String url, String width, String height) {
+			this.url = url;
+			this.width = width;
+			this.height = height;
+		}
+
+		static YoutubeMacroParameters find(String macroWithParams) {
+			String decoded = StringEscapeUtils.unescapeHtml(macroWithParams);
+			YoutubeMacroParameters uwh = _find(decoded);
+			if (uwh==null) {
+				uwh = _find(macroWithParams);
+			}
+			return uwh;
+		}
+
+		static YoutubeMacroParameters _find(String macroWithParams) {
+			String s_url = null;
+			Matcher fieldMatcher = youtubeUrlUrlPattern.matcher(macroWithParams);
+			if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_url = fieldMatcher.group(1).trim();
+
+			String s_width = null;
+			fieldMatcher = youtubeUrlWidthPattern.matcher(macroWithParams);
+			if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_width = fieldMatcher.group(1).trim();
+
+			String s_height = null;
+			fieldMatcher = youtubeUrlHeightPattern.matcher(macroWithParams);
+			if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_height = fieldMatcher.group(1).trim();
+
+			if (s_url!=null) {
+				return new YoutubeMacroParameters(s_url, s_width, s_height);
+			}
+			return null;
+		}
+	}
+
+	static class TitleMacroParameters {
+		private String binderId;
+		private String zoneUUID;
+		private String normalizedTitle;
+		private String title;
+
+		public TitleMacroParameters(String binderId, String zoneUUID, String normalizedTitle, String title) {
+			this.binderId = binderId;
+			this.zoneUUID = zoneUUID;
+			this.normalizedTitle = normalizedTitle;
+			this.title = title;
+		}
+
+		static TitleMacroParameters find(String macroWithParams) {
+			String decoded = StringEscapeUtils.unescapeHtml(macroWithParams);
+			TitleMacroParameters uwh = _find(decoded);
+			if (uwh==null) {
+				uwh = _find(macroWithParams);
+			}
+			return uwh;
+		}
+
+		static TitleMacroParameters _find(String macroWithParams) {
+			String s_binderId = "";
+			Matcher fieldMatcher = titleUrlBinderPattern.matcher(macroWithParams);
+			if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_binderId = fieldMatcher.group(1).trim();
+
+			String s_zoneUUID = "";
+			fieldMatcher = titleUrlZoneUUIDPattern.matcher(macroWithParams);
+			if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_zoneUUID = fieldMatcher.group(1).trim();
+
+			String normalizedTitle = "";
+			fieldMatcher = titleUrlTitlePattern.matcher(macroWithParams);
+			if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) normalizedTitle = fieldMatcher.group(1).trim();
+
+			String title = "";
+			fieldMatcher = titleUrlTextPattern.matcher(macroWithParams); //html stripped on input
+			if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) title = fieldMatcher.group(1).trim();
+			if (title.equals("")) title = normalizedTitle;
+
+			if (!"".equals(s_binderId)) {
+				return new TitleMacroParameters(s_binderId, s_zoneUUID, normalizedTitle, title);
+			}
+			return null;
+		}
+	}
+
 }

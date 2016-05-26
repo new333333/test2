@@ -2031,7 +2031,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			if (contentId != null && !"".equals(contentId)) {
     			String description = entry.getDescription().getText();
     			if (description != null && description.indexOf(contentId) > -1) {
-    				description = description.replaceAll("\"cid:[\\s]*" + Pattern.quote(contentId) + "\"", "\"{{attachmentUrl: " + fAtt.getFileItem().getName() + "}}\"");
+    				description = description.replaceAll("\"cid:[\\s]*" + Pattern.quote(contentId) + "\"", "\"#{{attachmentUrl: " + fAtt.getFileItem().getName() + "}}\"");
     				entry.getDescription().setText(description);
     			}
 			}
