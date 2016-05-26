@@ -2750,7 +2750,7 @@ public class ShareThisDlg2 extends DlgBox
 		if ( saveEditShareWidgetSettings( false ) == false )
 			return;
 		
-		ShareRights highestRightsPossible;
+		ShareRights highestRightsPossible, highestRights;
 		GwtShareItem shareItem;
 		boolean recipientIsExternal = false;
 		boolean recipientIsPublic = false;
@@ -2803,6 +2803,8 @@ public class ShareThisDlg2 extends DlgBox
 				}
 			}
 		}
+		
+		highestRights = highestRightsPossible;
 
 		// Is the recipient the public user or a public link?
 		if ( recipientIsPublic || isPublicLink )
@@ -2810,6 +2812,7 @@ public class ShareThisDlg2 extends DlgBox
 			// Yes, the public can only have "Viewer" rights.
 			highestRightsPossible = new ShareRights();
 			highestRightsPossible.setAccessRights( AccessRights.VIEWER );
+			highestRightsPossible.setUnAlteredAccessRights(AccessRights.VIEWER);
 			highestRightsPossible.setCanShareForward( false );
 			highestRightsPossible.setCanShareWithExternalUsers( false );
 			highestRightsPossible.setCanShareWithInternalUsers( false );
@@ -2826,6 +2829,7 @@ public class ShareThisDlg2 extends DlgBox
 			// Yes, don't let the external user do any re-share
 			highestRightsPossible = new ShareRights();
 			highestRightsPossible.setAccessRights( accessRights );
+			highestRightsPossible.setUnAlteredAccessRights(highestRights.getUnAlteredAccessRights());
 			highestRightsPossible.setCanShareForward( false );
 			highestRightsPossible.setCanShareWithExternalUsers( false );
 			highestRightsPossible.setCanShareWithInternalUsers( false );
