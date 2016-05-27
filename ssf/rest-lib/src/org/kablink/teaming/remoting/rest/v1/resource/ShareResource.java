@@ -193,7 +193,7 @@ public class ShareResource extends AbstractResource {
             access.setRole(ShareItem.Role.VIEWER.name());
             share.setAccess(access);
         }
-        ShareItem newShareItem = toShareItem(share);
+        ShareItem newShareItem = toShareItem(getSharedEntity(item, false), share);
         ShareItem shareItem = null;
         for (Pair<ShareItem, DefinableEntity> pair : origItems) {
             ShareItem origItem = pair.getA();
