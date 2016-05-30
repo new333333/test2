@@ -1,4 +1,4 @@
-package src.org.kablink.teaming.util.stringcheck;
+package org.kablink.teaming.util.stringcheck;
 
 import junit.framework.TestCase;
 import org.kablink.teaming.util.SPropsUtil;
