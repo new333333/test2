@@ -1556,7 +1556,9 @@ body, table td, select
 }
 
 .mfteamingDlgBox .popupContent img{
-	width:99% !important;	
+	width:96% !important;
+	margin:0 auto;
+	display:block;	
 }
 	
 .editBrandingBrowseLink:hover, .editBrandingAdvancedLink:hover, .addAttachmentLink:hover, .colorPickerLink:hover, .teamingDlgBox #forgottenPwdSpan:hover
