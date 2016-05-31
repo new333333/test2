@@ -2541,17 +2541,19 @@ public class ShareThisDlg2 extends DlgBox
 						{		
 							ShareRights shareRights=null;
 							
-							for(EntityId entityId:m_entityIds){
-								ShareRights leastRights=sharingInfo.getShareRights(entityId);
-								if(shareRights==null){
-									shareRights=leastRights;
-								}
-								else{
-									if(leastRights.getAccessRights().ordinal() < shareRights.getAccessRights().ordinal()){
+							if(m_entityIds!=null){
+								for(EntityId entityId:m_entityIds){
+									ShareRights leastRights=sharingInfo.getShareRights(entityId);
+									if(shareRights==null){
 										shareRights=leastRights;
 									}
-								}
-							}								
+									else{
+										if(leastRights.getAccessRights().ordinal() < shareRights.getAccessRights().ordinal()){
+											shareRights=leastRights;
+										}
+									}
+								}		
+							}
 							
 							if(shareRights!=null){
 								boolean isRestricted=shareRights.getAccessRights() == AccessRights.NONE;
