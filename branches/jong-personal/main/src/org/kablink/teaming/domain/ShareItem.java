@@ -421,6 +421,10 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 			this.workAreaOperations = workAreaOperations;
 		}
 
+		public boolean isLessThan(Role role) {
+			return ordinalCode<role.ordinalCode;
+		}
+
 		public int ordinalCode() {
 			return ordinalCode;
 		}

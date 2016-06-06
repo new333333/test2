@@ -56,6 +56,7 @@ public class PropsUtil {
 			throw new IllegalStateException("PropsUtil is a singleton class");
 		
 		instance = this;
+		props = new Properties();
 	}
 	
     public void setProperties(Properties props) {
@@ -200,6 +201,9 @@ public class PropsUtil {
 	}
 	
     private static PropsUtil getInstance() {
+		if (instance==null) {
+			instance = new PropsUtil();
+		}
     	return instance;
     }
     

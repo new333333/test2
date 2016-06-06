@@ -619,6 +619,14 @@ public class ResourceUtil {
             desktopAppConfig.addBrandingHref(getDesktopBrandingHref(DesktopPlatform.mac));
             desktopAppConfig.addBrandingHref(getDesktopBrandingHref(DesktopPlatform.windows));
         }
+        desktopAppConfig.setCachedFilesEnabled(config.getFsaCachedFilesEnabled());
+        desktopAppConfig.setOverrideCachedFilesSettings(config.getFsaOverrideCachedFileSetting());
+        if(config.getFsaCachedFilesLifetime() > 0) {
+        	desktopAppConfig.setCachedFilesLifeTime(config.getFsaCachedFilesLifetime());
+        }
+        else {
+        	desktopAppConfig.setCachedFilesLifeTime(30);
+        }
         return desktopAppConfig;
     }
 
@@ -1092,11 +1100,20 @@ public class ResourceUtil {
         SharingPermission sharing = new SharingPermission();
         access.setSharing(sharing);
         WorkAreaOperation.RightSet rightSet = shareItem.getRightSet();
-        sharing.setInternal(rightSet.isAllowSharing());
-        sharing.setExternal(rightSet.isAllowSharingExternal());
-        sharing.setPublic(rightSet.isAllowSharingPublic() && guestEnabled);
-        sharing.setPublicLink(rightSet.isAllowSharingPublicLinks());
-        sharing.setGrantReshare(rightSet.isAllowSharingForward());
+        boolean setFolderSharePermissions = (sharedEntity instanceof org.kablink.teaming.domain.Folder) && ((org.kablink.teaming.domain.Folder)sharedEntity).isFolderInNetFolder();
+        if (setFolderSharePermissions) {
+            sharing.setInternal(rightSet.isAllowFolderSharingInternal());
+            sharing.setExternal(rightSet.isAllowFolderSharingExternal());
+            sharing.setPublic(rightSet.isAllowFolderSharingPublic() && guestEnabled);
+            sharing.setPublicLink(false);
+            sharing.setGrantReshare(rightSet.isAllowFolderSharingForward());
+        } else {
+            sharing.setInternal(rightSet.isAllowSharing());
+            sharing.setExternal(rightSet.isAllowSharingExternal());
+            sharing.setPublic(rightSet.isAllowSharingPublic() && guestEnabled);
+            sharing.setPublicLink(rightSet.isAllowSharingPublicLinks());
+            sharing.setGrantReshare(rightSet.isAllowSharingForward());
+        }
         model.setAccess(access);
         model.setRole(access.getRole());
         model.setCanShare(sharing.getPublic() || sharing.getPublicLink() || sharing.getExternal() || sharing.getInternal());

@@ -41,4 +41,27 @@
 			<column name="right_allowFolderSharingFwd" type="NUMBER(1,0)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="dhivya" context="schema" failOnError="true" id="6">
+        <comment>Increase name column size from 64 to 128 characters</comment>
+        <modifyDataType tableName="SS_NetFolderConfig" columnName="name" newDataType="VARCHAR2(128 CHAR)"/>
+        <modifySql dbms="oracle">
+            <append value=" NOT NULL"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="girish" context="schema" failOnError="true" id="7">
+        <comment>Desktop client cached files settings</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="fsaCachedFilesEnabled" type="NUMBER(1,0)">
+				<constraints nullable="true" />
+			</column>
+			<column name="fsaOverrideCachedFileSettings" type="NUMBER(1,0)">
+				<constraints nullable="true" />
+			</column>
+			<column name="fsaCachedFilesLifetime" type="NUMBER(10,0)">
+				<constraints nullable="true" />
+			</column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
