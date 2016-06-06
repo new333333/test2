@@ -68,7 +68,7 @@ public class BaseAdminModule extends AbstractAdminModule {
 	}
 	
 	@Override
-	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean deployLocalApps, Boolean allowCachePwd, Integer maxFileSize, DesktopApplicationsLists daLists ) {
+	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean deployLocalApps, Boolean allowCachePwd, Integer maxFileSize, DesktopApplicationsLists daLists, Boolean allowCachedFiles, Boolean overrideCachedFilesSetting, Integer cachedFilesLifeTime ) {
 		// Noop
 	}
 

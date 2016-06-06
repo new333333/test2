@@ -9904,7 +9904,7 @@ public class GwtServerHelper {
 			}
 			value = cgCmd.getDesc();
 			if (MiscUtil.hasString(value)) {
-				cgCmd.setDesc(StringCheckUtil.check(value));
+				cgCmd.setDesc(StringCheckUtil.checkHtml(value));
 			}
 			value = cgCmd.getTitle();
 			if (MiscUtil.hasString(value)) {
@@ -9921,7 +9921,7 @@ public class GwtServerHelper {
 			}
 			String desc = eeCmd.getDescription();
 			if (MiscUtil.hasString(desc)) {
-				eeCmd.setDescription(StringCheckUtil.check(desc));
+				eeCmd.setDescription(StringCheckUtil.checkHtml(desc));
 			}
 			break;
 		}
@@ -9930,7 +9930,7 @@ public class GwtServerHelper {
 			MarkupStringReplacementCmd msrCmd = ((MarkupStringReplacementCmd) cmd);
 			String html = msrCmd.getHtml();
 			if (MiscUtil.hasString(html)) {
-				msrCmd.setHtml(StringCheckUtil.check(html));
+				msrCmd.setHtml(StringCheckUtil.checkHtml(html));
 			}
 			break;
 		}
@@ -9940,7 +9940,7 @@ public class GwtServerHelper {
 			ModifyGroupCmd mgCmd = ((ModifyGroupCmd) cmd);
 			String value = mgCmd.getDesc();
 			if (MiscUtil.hasString(value)) {
-				mgCmd.setDesc(StringCheckUtil.check(value));
+				mgCmd.setDesc(StringCheckUtil.checkHtml(value));
 			}
 			value = mgCmd.getTitle();
 			if (MiscUtil.hasString(value)) {
@@ -9954,7 +9954,7 @@ public class GwtServerHelper {
 			GwtBrandingData bd = sbCmd.getBrandingData(); 
 			String html = bd.getBranding();
 			if (MiscUtil.hasString(html)) {
-				bd.setBranding(StringCheckUtil.check(html));
+				bd.setBranding(StringCheckUtil.checkHtml(html));
 			}
 			break;
 		}
@@ -9976,7 +9976,7 @@ public class GwtServerHelper {
 			}
 			String desc = rteCmd.getDescription();
 			if (MiscUtil.hasString(desc)) {
-				rteCmd.setDescription(StringCheckUtil.check(desc));
+				rteCmd.setDescription(StringCheckUtil.checkHtml(desc));
 			}
 			break;
 		}

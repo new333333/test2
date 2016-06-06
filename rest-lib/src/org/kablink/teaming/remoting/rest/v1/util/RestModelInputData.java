@@ -37,7 +37,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.module.ical.IcalModule;
-import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.rest.v1.model.CustomField;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.Description;
@@ -47,7 +46,7 @@ import org.kablink.teaming.util.DateUtil;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.teaming.util.stringcheck.CheckedInputDataAccessor;
 import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 
@@ -59,7 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RestModelInputData implements InputDataAccessor {
+public class RestModelInputData extends CheckedInputDataAccessor {
 
 	private static Log logger = LogFactory.getLog(RestModelInputData.class);
 
@@ -139,9 +138,9 @@ public class RestModelInputData implements InputDataAccessor {
                 obj = ((Locale)obj).getCode();
             }
 
-			if (obj instanceof String) return StringCheckUtil.check((String)obj);
+			if (obj instanceof String) return checkValue(key, (String)obj);
 			if (obj instanceof String[]) {
-				return doStringCheck((String[])obj);
+				return doStringCheck(key, (String[])obj);
 			}
 			return obj;
 		}
@@ -149,10 +148,10 @@ public class RestModelInputData implements InputDataAccessor {
             CustomField field = entity.findField(key);
             if(field != null) {
                 if (field.isMultiValued()) {
-                    return doStringCheck(field.getValues());
+                    return doStringCheck(key, field.getValues());
                 } else {
                     Object val = field.getValue();
-                    return (val instanceof String) ? StringCheckUtil.check((String)val) : val;
+                    return (val instanceof String) ? checkValue(key, (String)val) : val;
                 }
             }
 	    	// None prevailed. Let's try if interpreting the key as a graph representation can locate the data.
@@ -183,12 +182,12 @@ public class RestModelInputData implements InputDataAccessor {
 	    }	    	
 	}
 
-	private Object[] doStringCheck(Object[] strs) {
+	private Object[] doStringCheck(String key, Object[] strs) {
 		//need new array
         Object[] newVals = new Object[strs.length];
     	for (int i=0; i<strs.length; ++i) {
             if (strs[i] instanceof String) {
-    		    newVals[i] = StringCheckUtil.check((String)strs[i]);
+    		    newVals[i] = checkValue(key, (String)strs[i]);
             }
     	}
     	return newVals;

@@ -353,7 +353,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		getIndexingResource().getCommitStat().update(1);
 		commitThread.someDocsProcessed();
 
-		end(startTime, "deleteDocuments(Term)");
+		end(startTime, "deleteDocuments()");
 	}
 
 	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
@@ -379,6 +379,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 					purgeOldDocument(uidField, doc);
 					String tastingText = getTastingText(doc);
 					getIndexingResource().getIndexWriter().addDocument(doc, getAnalyzer(tastingText));
+					if(logger.isTraceEnabled())
+						logTrace("Called addDocument2 on writer with doc [" + doc.toString() + "]");
 				} catch (IOException e) {
 					throw newLuceneException("Could not add document to the index", e);					
 				} catch (OutOfMemoryError e) {
@@ -392,6 +394,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				Term term = (Term) obj;
 				try {
 					getIndexingResource().getIndexWriter().deleteDocuments(term);
+					if(logger.isTraceEnabled())
+						logTrace("Called deleteDocuments2 on writer with term [" + term.toString() + "]");
 				} catch (IOException e) {
 					throw newLuceneException(
 							"Could not delete documents from the index", e);
@@ -891,69 +895,56 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			if (sort == null) {
 				if(offset == 0 && size == Integer.MAX_VALUE && 
 						fieldNames != null && fieldNames.size() == 1 && Constants.ENTITY_ID_FIELD.equals(fieldNames.get(0))) {
-					// This is the only unsorted unbounded search that we currently recognize and permit without suspicion.
+					// This unsorted and unbounded search is used during ACL update on the appserver side,
+					// and implemented on this side using a lower-level search API and a custom collector.
+					// That allows us to avoid loading matching documents into memory, which results in 
+					// significant reduction in needed memory consumption.
+					// This optimization was made for the bug 954089 and 952882.
 					EntityIdCollector entityIdCollector = new EntityIdCollector();
 					indexSearcherHandle.getIndexSearcher().search(query, aclFilter, entityIdCollector);
 					List<Long> entityIds = entityIdCollector.getCollectedEntityIds();					
 					tempHits = org.kablink.teaming.lucene.Hits.transfer(entityIds, totalHitsApproximate);
 				}
 				else {
-					if(size == Integer.MAX_VALUE) {
+					if(size == Integer.MAX_VALUE) { // Unsorted and unbounded search
 		        		// Going into unbounded search has the potential of triggering a critical OOM error.
-			        	// So we want to know about it via debug/trace logging even though we (reluctantly) permit it.
+			        	// So we want to know about it via debug/trace logging even though we permit it.
 			        	if(PropsUtil.getBoolean("lucene.unbounded.unsorted.search.debug", false) && logger.isDebugEnabled()) {
 				        	logger.debug("UNBOUNDED UNSORTED SEARCH REQUEST: " + context);
 						}	
 			        	else if(PropsUtil.getBoolean("lucene.unbounded.unsorted.search.trace", false) && logger.isTraceEnabled()) {
 				        	logger.trace("UNBOUNDED UNSORTED SEARCH REQUEST: " + context);
 						}	
+						topDocs = executeUnboundedSearch(indexSearcherHandle.getIndexSearcher(), query, aclFilter, null);				
 					}
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);				
+					else { // Unsorted and bounded search
+						topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);		
+					}
 				}			
 			}
 			else {
-				// By default we (reluctantly) permit unbounded search when sort is specified. 
-				if(size == Integer.MAX_VALUE) {
+				if(size == Integer.MAX_VALUE) { // Sorted and unbounded search
+	        		// Going into unbounded search has the potential of triggering a critical OOM error.
+		        	// So we want to know about it via debug/trace logging even though we permit it.
 		        	if(PropsUtil.getBoolean("lucene.unbounded.sorted.search.debug", false) && logger.isDebugEnabled()) {
 			        	logger.debug("UNBOUNDED SORTED SEARCH REQUEST: " + context);
 					}	
 		        	else if(PropsUtil.getBoolean("lucene.unbounded.sorted.search.trace", false) && logger.isTraceEnabled()) {
 			        	logger.trace("UNBOUNDED SORTED SEARCH REQUEST: " + context);
 					}	
+		        	topDocs = executeUnboundedSearch(indexSearcherHandle.getIndexSearcher(), query, aclFilter, sort);
 				}
-				try {
+				else { // Sorted and bounded search
 					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize, sort);
-				} catch (Exception ex) {
-					topDocs = indexSearcherHandle.getIndexSearcher().search(query, aclFilter, searchMaxSize);
 				}
 			}
 			
 			if(tempHits == null) {
-				/// BEGIN: Debug
-				int hitsThreshold = PropsUtil.getInt("lucene.hits.threshold", 100000);
-		    	int length = topDocs.totalHits;
-		        length = Math.min(length - offset, size);
+				int hitsThreshold = PropsUtil.getInt("lucene.hits.threshold", 100_000);
+		    	int length = topDocs.scoreDocs.length;
 		        Long hitsTransferBegin = null;
-		        if(length > hitsThreshold) {
-		        	hitsTransferBegin = System.nanoTime();
-		        	String log = "TOO LARGE HITS: transferred hits=" + length +
-		        			", hits threshold=" + hitsThreshold +
-		        			", total hits=" + topDocs.totalHits +
-		        			", contextUserId=" + contextUserId + 
-							", aclQueryStr=[" + ((aclQueryStr==null)? "" : aclQueryStr) + 
-							"], mode=" + mode + 
-							", query=[" + ((query==null)? "" : query.toString()) + 
-							"], sort=[" + ((sort==null)? "" : sort.toString()) + 
-							"], offset=" + offset +
-							", size=" + size +
-							", alternateAclFilter=[" + ((alternateAclFilter==null)? "" : alternateAclFilter.toString()) +
-							"]";
-		        	logger.warn(log);
-		        	if(PropsUtil.getBoolean("lucene.hits.threshold.exceeded.is.error", false)) {
-		        		throw new LuceneException(log);
-		        	}
-		        }
-		        /// END: Debug			
+		        if(length > hitsThreshold)
+		        	hitsTransferBegin = System.nanoTime();	
 					        
 				tempHits = org.kablink.teaming.lucene.Hits
 						.transfer(indexSearcherHandle.getIndexSearcher(), 
@@ -965,11 +956,13 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 								(aclInheritingAccessibleEntriesFilter == null)? null : aclInheritingAccessibleEntriesFilter.getNoIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds(),
 								totalHitsApproximate);
 				
-				/// BEGIN: Debug
-				if(hitsTransferBegin != null) {
-					logger.warn("TOO LARGE HITS: took " + (elapsedTimeInMs(hitsTransferBegin) / 1000.0) + " seconds for hits transfer");
-				}
-				/// END: Debug
+				if(hitsTransferBegin != null)
+					logger.warn("LARGE HITS: " + elapsedTimeInMs(hitsTransferBegin) + " ms for xfer" +
+		        		", hitsThreshold=" + hitsThreshold + // Maximum allowed hits returned for a single query
+						", topHits=" + topDocs.scoreDocs.length + // Number of hits actually returned
+						", totalHits=" + topDocs.totalHits + // Total number of hits available for the query
+						", resultSize=" + tempHits.length() + // Number of hits to be actually transferred to the client (= topHits - offset)
+						", " + context);
 			}
 
 			end(startTime, "searchInternal", contextUserId, aclQueryStr, mode, query, sort, offset, size, tempHits);
@@ -985,6 +978,40 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		} finally {
 			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
+	}
+
+	private TopDocs executeUnboundedSearch(IndexSearcher indexSearcher, Query query, Filter filter, Sort sort) throws IOException {
+		// If we call IndexSearcher.search() method specifying Integer.MAX_VALUE as the size,
+		// it ends up allocating an array whose size is equal to the total number of documents
+		// in the index. Additionally, if sort is specified, it creates the same number of
+		// ScoreDoc instances, regardless of the actual number of documents matching the query. 
+		// So for example, if the index contains 10 million documents, but the query matches 
+		// only 10 documents, then it results in enormous waste in memory consumption.
+		// To avoid such exponential waste, we employ the following technique where first "taster"
+		// search is made requesting only one top document matching the query. From the result of 
+		// this execution, we can learn about the total number of documents matching this query
+		// (i.e., total hits). And then subsequently run another search with the same query 
+		// requesting the full total hits. This way, the library will never have to allocate
+		// an array larger than the actual size of the result (e.g. reducing the array size
+		// from 10 million to 10 with the above example).
+		// This optimization is made for the bug 976300.
+		
+		// Execute taster query to learn about the total number of hits. There is no need to
+		// apply the sort criteria in this case, since it will serve nothing but make the
+		// query significantly more expensive to execute.
+		TopDocs tasterTopDocs = indexSearcher.search(query, filter, 1);
+		
+		TopDocs resultTopDocs;
+		if(tasterTopDocs.totalHits > tasterTopDocs.scoreDocs.length) {
+			// Execute real query passing in the total number of hits as the request size.
+			resultTopDocs = (sort != null)? indexSearcher.search(query, filter, tasterTopDocs.totalHits, sort) : indexSearcher.search(query, filter, tasterTopDocs.totalHits);
+		}
+		else {
+			// No need for real query. The taster result is already complete.
+			resultTopDocs = tasterTopDocs;
+		}
+		
+		return resultTopDocs;
 	}
 
 	public ArrayList getTags(String aclQueryStr, String tag, String type, String userId, boolean isSuper)
@@ -1391,7 +1418,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	private void end(long begin, String methodName, int length) {
 		endStat(begin, methodName);
 		if(logger.isDebugEnabled()) {
-			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", input=" + length);
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", inputSize=" + length);
 		}
 	}
 	
@@ -1466,18 +1493,22 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		int resultLength = hits.length();
 		if(logger.isTraceEnabled()) {
 			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", resultSize=" + resultLength + 
-					", result=" + hits.getDocuments() + 
 					", contextUserId=" + contextUserId + 
 					", aclQueryStr=[" + aclQueryStr + 
 					"], mode=" + mode + 
 					", query=[" + ((query==null)? "" : query.toString()) + 
 					"], sort=[" + ((sort==null)? "" : sort.toString()) + 
 					"], offset=" + offset +
-					", size=" + size);
+					", size=" + size +
+					", result=" + hits.getDocuments()); 
 		}
 		else if(logger.isDebugEnabled()) {
-			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength + 					
-					", offset=" + offset +
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", resultSize=" + resultLength + 
+					", contextUserId=" + contextUserId + 
+					", mode=" + mode + 
+					", query=[" + ((query==null)? "" : query.toString()) + 
+					"], sort=[" + ((sort==null)? "" : sort.toString()) + 
+					"], offset=" + offset +
 					", size=" + size);
 		}
 	}
@@ -1487,18 +1518,22 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		int resultLength = hits.length();
 		if(logger.isTraceEnabled()) {
 			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", resultSize=" + resultLength + 
-					", result=" + hits.getDocuments() + 
 					", contextUserId=" + contextUserId + 
 					", aclQueryStr=[" + aclQueryStr + 
 					"], titles=" + titles +
 					", query=[" + ((query==null)? "" : query.toString()) + 
 					"], sort=[" + ((sort==null)? "" : sort.toString()) + 
 					"], offset=" + offset +
-					", size=" + size);
+					", size=" + size +
+					", result=" + hits.getDocuments()); 
 		}
 		else if(logger.isDebugEnabled()) {
-			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + resultLength + 					
-					", offset=" + offset +
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", resultSize=" + resultLength + 
+					", contextUserId=" + contextUserId + 
+					", titles=" + titles +
+					", query=[" + ((query==null)? "" : query.toString()) + 
+					"], sort=[" + ((sort==null)? "" : sort.toString()) + 
+					"], offset=" + offset +
 					", size=" + size);
 		}
 	}

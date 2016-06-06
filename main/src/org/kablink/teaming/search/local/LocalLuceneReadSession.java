@@ -46,6 +46,7 @@ import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.LuceneProvider;
 import org.kablink.teaming.search.AbstractLuceneReadSession;
 import org.kablink.teaming.search.LuceneReadSession;
+import org.kablink.teaming.util.SPropsUtil;
 
 /**
  * This implementation provides access to local Lucene index.
@@ -64,7 +65,35 @@ public class LocalLuceneReadSession extends AbstractLuceneReadSession implements
 
 	@Override
 	protected Hits invokeSearch(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort, int offset, int size) {
-		return luceneProvider.search(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size);
+		/* Used for trouble shooting CoT issue (bug 976300)
+		if(size < 0 || size > SPropsUtil.getInt("cot.query.size.threshold", 10000)) {
+			String msg = "$COTWATCH_BEGIN: " +
+					"contextUserId=" + contextUserId + 
+					", mode=" + mode + 
+					", offset=" + offset +
+					", size=" + size +
+					", baseAclQueryStr=[" + baseAclQueryStr + 
+					"], extendedAclQueryStr=[" + extendedAclQueryStr + 
+					"], query=[" + query + 
+					"], fieldNames=[" + fieldNames + 
+					"], sort=[" + sort + 
+					"]";
+			//logger.warn(msg, new RuntimeException());
+			logger.warn(msg);
+		}
+		*/
+
+		Hits hits = luceneProvider.search(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size);
+		
+		/*
+		if(size < 0 || size > SPropsUtil.getInt("cot.query.size.threshold", 10000)) {
+			logger.warn("$COTWATCH_END: " + 
+					"size=" + hits.length() +
+					", totalHits=" + hits.getTotalHits());
+		}
+		*/
+
+		return hits;
 	}
 	
 	@Override

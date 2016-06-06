@@ -53,12 +53,16 @@ public class StringCheckUtil implements InitializingBean {
 	private static StringCheckUtil instance; // A singleton instance
 	
 	private static StringCheck[] checkers;
+
+	private static HtmlSanitizerCheck htmlChecker = new HtmlSanitizerCheck();
 	
 	public StringCheckUtil() {
 		if(instance != null)
 			throw new SingletonViolationException(StringCheckUtil.class);
 		
 		instance = this;
+		checkers = new StringCheck[] {
+		};
 	}
 	
 	public void afterPropertiesSet() throws Exception {
@@ -69,11 +73,19 @@ public class StringCheckUtil implements InitializingBean {
 		for(int i = 0; i < classNames.length; i++) {
 			checkers[i] = (StringCheck) ReflectHelper.getInstance(classNames[i]);
 		}
+
 	}
 
     private static StringCheckUtil getInstance() {
+		if (instance==null) {
+			instance = new StringCheckUtil();
+		}
     	return instance;
     }
+
+	public static String checkHtml(String htmlInput) throws StringCheckException {
+		return htmlChecker.check(htmlInput);
+	}
 
 	public static String check(String input) throws StringCheckException {
 		return getInstance().checkAll(input, false);
@@ -134,7 +146,7 @@ public class StringCheckUtil implements InitializingBean {
 	
 	public static Description check(Description desc) throws StringCheckException {
 		if (desc != null) {
-			desc.setText(getInstance().checkAll(desc.getText(), false));
+			desc.setText(checkHtml(desc.getText()));
 		}
 		return desc;
 	}

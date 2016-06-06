@@ -78,6 +78,9 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private String fsaAutoUpdateUrl;
 	private Integer fsaMaxFileSize;
     private String fsaApplicationsBlob;
+    private Boolean fsaCachedFilesEnabled;
+    private Boolean fsaOverrideCachedFileSettings;
+    private Integer fsaCachedFilesLifetime;
 	private OpenIDConfig openIDConfig;
 	private Boolean externalUserEnabled;
 	private String localeLanguage;
@@ -418,6 +421,39 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	public void setFsaMaxFileSize( int fsaMaxFileSize) {
 		// In this version of Vibe, this field is NOT persisted to database. So, this method shouldn't be used.
 		this.fsaMaxFileSize = fsaMaxFileSize;
+	}
+	
+	public boolean getFsaCachedFilesEnabled() {
+		if(fsaCachedFilesEnabled == null)
+			return SPropsUtil.getBoolean("fsa.cached.files.enabled.default", true);
+		else
+			return fsaCachedFilesEnabled.booleanValue();
+	}
+	
+	public void setFsaCachedFilesEnabled(boolean fsaCachedFilesEnabled) {
+		this.fsaCachedFilesEnabled = Boolean.valueOf(fsaCachedFilesEnabled);
+	}
+	
+	public boolean getFsaOverrideCachedFileSetting() {
+		if(fsaOverrideCachedFileSettings == null)
+			return SPropsUtil.getBoolean("fsa.cached.files.client.override.default", true);
+		else
+			return fsaOverrideCachedFileSettings.booleanValue();
+	}
+	
+	public void setFsaOverrideCachedFileSetting(boolean fsaOverrideCachedFileSettings) {
+		this.fsaOverrideCachedFileSettings = Boolean.valueOf(fsaOverrideCachedFileSettings);
+	}
+	
+	public int getFsaCachedFilesLifetime() {
+		if(fsaCachedFilesLifetime == null)
+			return SPropsUtil.getInt("fsa.cached.files.lifetime", 30);
+		else
+			return fsaCachedFilesLifetime;
+	}
+	
+	public void setFsaCachedFilesLifetime(int fsaCachedFilesLifetime) {
+		this.fsaCachedFilesLifetime = fsaCachedFilesLifetime;
 	}
 
 	/**

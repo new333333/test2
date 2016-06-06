@@ -41,4 +41,27 @@
 			<column name="right_allowFolderSharingFwd" type="TINYINT"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="dhivya" context="schema" failOnError="true" id="6">
+        <comment>Increase name column size from 64 to 128 characters</comment>
+        <modifyDataType tableName="SS_NetFolderConfig" columnName="name" newDataType="NVARCHAR(128)"/>
+        <modifySql dbms="mssql">
+            <append value=" NOT NULL"/>
+        </modifySql>
+    </changeSet>
+    
+    <changeSet author="girish" context="schema" failOnError="true" id="7">
+        <comment>Desktop client cached files settings</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="fsaCachedFilesEnabled" type="TINYINT">
+				<constraints nullable="true" />
+			</column>
+			<column name="fsaOverrideCachedFileSettings" type="TINYINT">
+				<constraints nullable="true" />
+			</column>
+			<column name="fsaCachedFilesLifetime" type="INT">
+				<constraints nullable="true" />
+			</column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

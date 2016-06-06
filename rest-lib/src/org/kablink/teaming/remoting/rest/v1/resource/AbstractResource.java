@@ -527,7 +527,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     protected Share shareEntity(org.kablink.teaming.domain.DefinableEntity entity, Share share,
                                 boolean notifyRecipient, Set<String> notifyAddresses) {
         share.setSharedEntity(new EntityId(entity.getId(), entity.getEntityType().name(), null));
-        ShareItem shareItem = toShareItem(share);
+        ShareItem shareItem = toShareItem(entity, share);
         validateNotifyParameters(notifyRecipient, notifyAddresses, shareItem);
         List<ShareItem> shareItems = new ArrayList<ShareItem>(2);
         shareItems.add(shareItem);
@@ -761,7 +761,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return queryDoc;
     }
 
-    protected ShareItem toShareItem(Share share) {
+    protected ShareItem toShareItem(org.kablink.teaming.domain.DefinableEntity entity, Share share) {
         if (share==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The request body must contain a 'Share' object.");
         }
@@ -848,7 +848,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         } catch (IllegalArgumentException e) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "The shared_entity.type value must be one of the following: folder, workspace, folderEntry");
         }
-        EntityIdentifier entity = new EntityIdentifier(sharedEntity.getId(), entityType);
+        EntityIdentifier entityId = new EntityIdentifier(sharedEntity.getId(), entityType);
         ShareItem.RecipientType recType = null;
         if (type.equals(ShareRecipient.TEAM)) {
             recType = ShareItem.RecipientType.team;
@@ -869,7 +869,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             recType = ShareItem.RecipientType.publicLink;
             recipient.setId(0L);
 
-            if (entity.getEntityType() != EntityIdentifier.EntityType.folderEntry) {
+            if (entityId.getEntityType() != EntityIdentifier.EntityType.folderEntry) {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.type' of 'public_link' is only valid for 'folderEntry' recipients.");
             }
         }
@@ -892,23 +892,41 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         WorkAreaOperation.RightSet rights = (WorkAreaOperation.RightSet) role.getRightSet().clone();
         SharingPermission sharing = access.getSharing();
         if (sharing!=null) {
-            if (Boolean.TRUE.equals(sharing.getInternal())) {
-                rights.setAllowSharing(true);
-            }
-            if (Boolean.TRUE.equals(sharing.getExternal())) {
-                rights.setAllowSharingExternal(true);
-            }
-            if (Boolean.TRUE.equals(sharing.getPublic())) {
-                rights.setAllowSharingPublic(true);
-            }
-            if (Boolean.TRUE.equals(sharing.getPublicLink())) {
-                rights.setAllowSharingPublicLinks(true);
-            }
-            if (rights.isAllowSharing() || rights.isAllowSharingExternal() || rights.isAllowSharingPublic()) {
-                rights.setAllowSharingForward(true);
+            boolean setFolderSharePermissions = (entity instanceof Folder) && ((Folder)entity).isFolderInNetFolder();
+            if (setFolderSharePermissions) {
+                if (Boolean.TRUE.equals(sharing.getInternal())) {
+                    rights.setAllowFolderSharingInternal(true);
+                }
+                if (Boolean.TRUE.equals(sharing.getExternal())) {
+                    rights.setAllowFolderSharingExternal(true);
+                }
+                if (Boolean.TRUE.equals(sharing.getPublic())) {
+                    rights.setAllowFolderSharingPublic(true);
+                }
+                if (Boolean.TRUE.equals(sharing.getGrantReshare()) &&
+                        (rights.isAllowFolderSharingInternal() || rights.isAllowFolderSharingExternal() || rights.isAllowFolderSharingPublic())) {
+                    rights.setAllowFolderSharingForward(true);
+                }
+            } else {
+                if (Boolean.TRUE.equals(sharing.getInternal())) {
+                    rights.setAllowSharing(true);
+                }
+                if (Boolean.TRUE.equals(sharing.getExternal())) {
+                    rights.setAllowSharingExternal(true);
+                }
+                if (Boolean.TRUE.equals(sharing.getPublic())) {
+                    rights.setAllowSharingPublic(true);
+                }
+                if (Boolean.TRUE.equals(sharing.getPublicLink())) {
+                    rights.setAllowSharingPublicLinks(true);
+                }
+                if (Boolean.TRUE.equals(sharing.getGrantReshare()) &&
+                        (rights.isAllowSharing() || rights.isAllowSharingExternal() || rights.isAllowSharingPublic())) {
+                    rights.setAllowSharingForward(true);
+                }
             }
         }
-        ShareItem shareItem = new ShareItem(getLoggedInUserId(), entity, share.getComment(), share.getEndDate(), recType, recipient.getId(), rights);
+        ShareItem shareItem = new ShareItem(getLoggedInUserId(), entityId, share.getComment(), share.getEndDate(), recType, recipient.getId(), rights);
         if (share.getDaysToExpire()!=null) {
             shareItem.setDaysToExpire(share.getDaysToExpire());
         }
@@ -1021,7 +1039,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             maxCount = -1;
         }
         crit.add(SearchUtils.buildBindersCriterion());
-        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount, null);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         results.setLastModified(lastModified);
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
@@ -1062,7 +1080,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 .add(SearchUtils.buildBindersCriterion()).add(criterion);
         Criteria crit = new Criteria();
         crit.add(outerCriterion);
-        return getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1, null);
+        return getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1, null);
     }
 
     protected void fillPathMap(Map<Long, String> binderPaths, Map resultMap) {
@@ -1647,7 +1665,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     protected Access getAccessRole(org.kablink.teaming.domain.DefinableEntity definableEntity) {
-        ShareHelper.EntityShareRights shareRights = ShareHelper.calculateHighestEntityShareRights(this, definableEntity.getEntityIdentifier());
+        SharingModule.EntityShareRights shareRights = getSharingModule().calculateHighestEntityShareRights(definableEntity.getEntityIdentifier());
 
         Access access = new Access();
         access.setRole(shareRights.getTopRole().name());

@@ -1032,10 +1032,12 @@ Application exception overridden by commit exception
 			<bean class="org.kablink.teaming.module.sharing.impl.SharingModuleImpl">
 				<property name="coreDao"><ref bean="coreDao"/></property>
 				<property name="profileDao"><ref bean="profileDao"/></property>
+				<property name="folderDao"><ref bean="folderDao"/></property>
 				<property name="folderModule"><ref bean="folderModule"/></property>
 				<property name="binderModule"><ref bean="binderModule"/></property>
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 				<property name="processorManager"><ref bean="modelProcessorManager"/></property>				
+				<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
 			</bean>
 		</property>
 		<!-- Transaction is managed using transactionTemplate -->
