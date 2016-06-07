@@ -66,6 +66,7 @@ import org.hibernate.exception.LockAcquisitionException;
 
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.IllegalCharacterInNameException;
+import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -1756,7 +1757,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	copyBinder_setCtx(source, destination, ctx);
 		//Make sure there is no other binder with the same name in the parent.
      	String newTitle = BinderHelper.getUniqueBinderTitleInParent(source.getTitle(), destination, (options==null)?null:(String)options.get(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE));
+     	// Create and persist a binder.
      	final Binder binder = copyBinder_create(source, destination, newTitle, ctx);
+     	// (bug 975965) Somebody removed stuff too aggressively. Bring the following pieces back.
+        // The following part requires update database transaction.
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+                copyBinder_postSave(source, destination, binder, ctx);
+                return null;
+        	}
+        });
+ 		copyBinder_index(binder, ctx);
  		return binder;
     }
     //no transaction    
@@ -1801,6 +1812,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        Binder binder = null;
        try {
 			binder = addBinder(destination, sampleDef, sampleBinderClass, inputData, null, null);
+			
 			if (!(destination.getOwnerId().equals(binder.getOwnerId()))) {
 				// Bugzilla:  926037 and 926033:
 				//    We want to make the owner of the copied binder
@@ -1821,39 +1833,29 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				}
 			}
 			
-	        // Bugzilla 955689:
+		    // Bugzilla 955689:
 			//    If the source folder contains task linkage...
-	        Map serializationMap = ((Map) source.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
-	        if (null != serializationMap) {
-	    	   // ...copy it to the destination folder.
-	    	   binder.setProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE, serializationMap);
-	        }
-	        
+		    Map serializationMap = ((Map) source.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
+		    if (null != serializationMap) {
+			   // ...copy it to the destination folder.
+			   binder.setProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE, serializationMap);
+		    }
+		    
+		    // (bug 975965)
+		    binder.setWorkflowAssociations(source.getWorkflowAssociations());
+		    binder.setDefinitionsInherited(source.isDefinitionsInherited());
+		    binder.setFunctionMembershipInherited(source.isFunctionMembershipInherited()); // The actual ACL will be copied later on.
+		    binder.setTeamMembershipInherited(source.isTeamMembershipInherited());
+		    
 			getCoreDao().flush();
-       } catch (Exception e) {}
+       } catch (Exception e) {
+    	   throw new InternalException("Error copying '" + source + "' into '" + destination + "' with title '" + title + "'", e);
+       }
 
        return binder;
    }
 
-   //inside write transaction    
-   protected void copyBinder_fillIn(Binder source, Binder parent, Binder binder, Map ctx) {  
-       binder.setLogVersion(Long.valueOf(1));
-       binder.setPathName(parent.getPathName() + "/" + binder.getTitle());
-
-   	//force a lock so contention on the sortKey is reduced
-       Object lock = ctx.get(ObjectKeys.INPUT_OPTION_FORCE_LOCK);
-       if (Boolean.TRUE.equals(lock)) {
-           getCoreDao().lock(parent);
-       } 
-       parent.addBinder(binder);
-		if(binder.isMirrored())
- 			binder.setLibrary(true);
-   }
-   protected void copyBinder_preSave(Binder source, Binder parent, Binder binder, Map ctx) {  
-   }
-   protected void copyBinder_save(Binder source, Binder parent, Binder binder, Map ctx) {   
-	   getCoreDao().save(binder);
-   }
+   //inside write transaction
    protected void copyBinder_postSave(Binder source, Binder parent, Binder binder, Map ctx) {   
 		EntityDashboard dashboard = getCoreDao().loadEntityDashboard(source.getEntityIdentifier());
 		if (dashboard != null) {
@@ -1875,10 +1877,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
   			}
   			getCoreDao().save(tCopy);
   		}
-  		
     }
    
-    //inside write transaction    
+    //no transaction    
     protected void copyBinder_index(Binder binder, Map ctx) {  
 		getCoreDao().flush(); //get updates out 
 		//entries should be indexed already
