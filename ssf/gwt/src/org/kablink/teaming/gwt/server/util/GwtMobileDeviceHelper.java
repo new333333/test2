@@ -283,7 +283,7 @@ public class GwtMobileDeviceHelper {
 			for (MobileDevice md:  mdList) {
 				ListUtil.addLongToListLongIfUnique(userIds, md.getUserId());
 			}
-			List<Principal> pList = ResolveIds.getPrincipals(userIds);
+			List<Principal> pList = ResolveIds.getPrincipals(userIds, false);
 			
 			// ...and track them by ID.
 			Map<Long, User> userMap = new HashMap<Long, User>();
