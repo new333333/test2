@@ -393,7 +393,7 @@ public class GwtHtml5Helper {
 	@SuppressWarnings("unchecked")
 	public static StringRpcResponseData uploadFileBlob(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, FileBlob fileBlob, boolean lastBlob) throws GwtTeamingException {
 		try {
-			// (bug 981245) We must validate the specified file name to guard against potential attack.
+			// (bug 981245, 981383) We must validate the specified file name to guard against potential attack.
 			String inputFileName = fileBlob.getFileName();
 			if(inputFileName != null && (inputFileName.contains("/") || inputFileName.contains("\\"))) {
 				// Don't allow file name to contain path delimiter.
@@ -542,7 +542,7 @@ public class GwtHtml5Helper {
 					String          fileName = fileBlob.getFileName();
 			    	FileInputStream fi       = new FileInputStream(tempFile);
 					try {
-						GwtEmailTemplatesHelper.copyCustomizedEmailTemplate(fi, fileName);
+						GwtEmailTemplatesHelper.copyCustomizedEmailTemplate(bs, fi, fileName);
 					}
 					
 	    	    	catch (Exception ex) {
