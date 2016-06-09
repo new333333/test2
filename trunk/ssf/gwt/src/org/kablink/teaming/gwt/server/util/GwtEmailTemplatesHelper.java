@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.UploadInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.EmailTemplatesHelper;
 import org.kablink.teaming.util.FileIconsHelper;
@@ -162,7 +163,11 @@ public class GwtEmailTemplatesHelper {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static void copyCustomizedEmailTemplate(FileInputStream fis, String fileName) throws FileNotFoundException, IOException {
+	public static void copyCustomizedEmailTemplate(AllModulesInjected bs, FileInputStream fis, String fileName) throws FileNotFoundException, IOException {
+		// (bug 981245, 981383) This checking is necessary to ensure that the user
+		// has the right to upload custom email template.
+		bs.getAdminModule().checkAccess(AdminOperation.manageFunction);
+		
 		String filePath = (EmailTemplatesHelper.getEmailTemplatesCustomizedPath(true) + fileName);
 		File fo = new File(filePath);
 		FileOutputStream fos = null;
