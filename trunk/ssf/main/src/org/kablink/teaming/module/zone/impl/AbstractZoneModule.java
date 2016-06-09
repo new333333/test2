@@ -1073,7 +1073,18 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 		//make sure allUsers exists
 		try {
-			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
+			Group allIntUsers = getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
+			// (bug 974790) Make sure that the title of this group is consistent across new and upgraded systems.
+			String currentTitle = allIntUsers.getTitle();
+			String expectedTitle = NLT.get("administration.initial.group.alluser.title", "allUsers");
+			if(!expectedTitle.equals(currentTitle)) {
+				logger.info("Changing the title of 'allUsers' group from '" + currentTitle + "' to '" + expectedTitle + "'");
+				allIntUsers.setTitle(expectedTitle);
+				getCoreDao().merge(allIntUsers);
+				getCoreDao().flush();
+				getProfileModule().indexEntry(allIntUsers);
+			}
+			
 		} catch (NoGroupByTheNameException nu) {
 			//need to add it
 			Group g = addAllUserGroup(superU.getParentBinder(), new HistoryStamp(superU));
