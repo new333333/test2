@@ -1605,6 +1605,11 @@ public class GwtShareHelper
 			rightSet.setAllowFolderSharingInternal( shareRights.getCanShareWithInternalUsers() );
 			rightSet.setAllowFolderSharingExternal( shareRights.getCanShareWithExternalUsers() );
 			rightSet.setAllowFolderSharingPublic( shareRights.getCanShareWithPublic() );
+			rightSet.setAllowSharingForward( shareRights.getCanShareForward() );
+			rightSet.setAllowSharing( shareRights.getCanShareWithInternalUsers() );
+			rightSet.setAllowSharingExternal( shareRights.getCanShareWithExternalUsers() );
+			rightSet.setAllowSharingPublic( shareRights.getCanShareWithPublic() );
+			rightSet.setAllowSharingPublicLinks( shareRights.getCanSharePublicLink() );
 		}
 		else {
 			// All other cases.
