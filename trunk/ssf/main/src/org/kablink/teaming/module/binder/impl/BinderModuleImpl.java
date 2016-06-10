@@ -2877,7 +2877,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     			}
     			catch ( Exception ex )
     			{
-    				logger.error( "In getTeamGroup() unable to get the group for the binder: " + binder.getTitle(), ex );
+    				logger.error( "In getTeamGroup() unable to get the group(id=" + groupId + ") for the binder: " + binder.getTitle(), ex );
     			}
     		}
     	}
@@ -3316,17 +3316,28 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 		}
 		else
-		{
+		{			
 			// No members
 			// Do we have a team group?
 			if ( teamGroup != null )
 			{
-				// Yes, because there are no members we don't need the group.  Delete the team group
-				deleteTeamGroup( binder, teamGroup );
-				teamGroup = null;
+				// (bug 977874) The code used to delete the group if there's no members, which was
+				// for some reason problematic. Instead, simply empty the group to avoid the issue.
+				Map updates = new HashMap() {
+					{
+						put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, Collections.emptySet());
+					}
+				};
+				try
+				{
+					getProfileModule().modifyEntry( teamGroup.getId(), new MapInputData( updates ) );
+				}
+	   			catch ( Exception ex )
+	   			{
+	   				logger.error( "Error emptying team membership for group: " + teamGroup.getName(), ex );
+	   				result = false;
+	   			}
 			}
-			
-			result = true;
 		}
 		
 		return result;
