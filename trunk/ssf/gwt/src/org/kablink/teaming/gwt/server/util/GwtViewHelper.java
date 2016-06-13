@@ -3633,14 +3633,13 @@ public class GwtViewHelper {
 		try {
 			Binder binder = bs.getBinderModule().getBinder(binderInfo.getBinderIdAsLong());
 			boolean showUserList    = ((binder instanceof Folder) ? GwtUserListHelper.getFolderHasUserList((Folder) binder) : false);
-			boolean showHtmlElement = GwtHtmlElementHelper.getBinderHasHtmlElement(binder);
-			return new HasOtherComponentsRpcResponseData(showUserList, showHtmlElement);
+			return new HasOtherComponentsRpcResponseData(showUserList);
 		}
 		
 		catch (Exception e) {
 			// Log the error and assume there are no user_list's.
 			GwtLogHelper.error(m_logger, "GwtViewHelper.getBinderHasOtherComponents( SOURCE EXCEPTION ):  ", e);
-			return new HasOtherComponentsRpcResponseData(false, false);
+			return new HasOtherComponentsRpcResponseData(false);
 		}
 		
 		finally {
@@ -4898,11 +4897,6 @@ public class GwtViewHelper {
 				folderIsMyFilesStorage = false;
 			}
 
-			// Does the Binder have any HTML elements? 
-			boolean showHtmlElement = (
-				GwtHtmlElementHelper.getBinderHasHtmlElement(binder) &&
-				GwtHtmlElementHelper.getHtmlElementStatus(bs, request, folderId));
-
 			// Finally, use the data we obtained to create a
 			// FolderDisplayDataRpcResponseData and return that. 
 			return
@@ -4914,7 +4908,6 @@ public class GwtViewHelper {
 					cwData.getColumnWidths(),
 					folderSupportsPinning,
 					showUserList,
-					showHtmlElement,
 					viewPinnedEntries,
 					viewSharedFiles,
 					folderOwnedByCurrentUser,

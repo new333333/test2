@@ -49,7 +49,6 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	private boolean				m_folderOwnedByCurrentUser;	//
 	private boolean				m_folderSortDescend;		//
 	private boolean				m_folderSupportsPinning;	//
-	private boolean				m_showHtmlElement;			//
 	private boolean				m_showUserList;				//
 	private boolean				m_viewPinnedEntries;		//
 	private boolean				m_viewSharedFiles;			//
@@ -84,7 +83,7 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	 * @param folderOwnedByCurrentUser
 	 * @param fileLinkAction
 	 */
-	public FolderDisplayDataRpcResponseData(boolean folderIsMyFilesStorage, String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths, boolean folderSupportsPinning, boolean showUserList, boolean showHtmlElement, boolean viewPinnedEntries, boolean viewSharedFiles, boolean folderOwnedByCurrentUser, GwtFileLinkAction fileLinkAction) {
+	public FolderDisplayDataRpcResponseData(boolean folderIsMyFilesStorage, String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths, boolean folderSupportsPinning, boolean showUserList, boolean viewPinnedEntries, boolean viewSharedFiles, boolean folderOwnedByCurrentUser, GwtFileLinkAction fileLinkAction) {
 		// Initialize this object...
 		this();
 		
@@ -95,7 +94,6 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 		setFolderPageSize(          folderPageSize          );
 		setFolderColumnWidths(      folderColumnWidths      );
 		setFolderSupportsPinning(   folderSupportsPinning   );
-		setShowHtmlElement(         showHtmlElement         );
 		setShowUserList(            showUserList            );
 		setViewPinnedEntries(       viewPinnedEntries       );
 		setViewSharedFiles(         viewSharedFiles         );
@@ -112,7 +110,6 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	public boolean             getFolderOwnedByCurrentUser() {return m_folderOwnedByCurrentUser;}
 	public boolean             getFolderSortDescend()        {return m_folderSortDescend;       }
 	public boolean             getFolderSupportsPinning()    {return m_folderSupportsPinning;   }
-	public boolean             getShowHtmlElement()          {return m_showHtmlElement;         }
 	public boolean             getShowUserList()             {return m_showUserList;            }
 	public boolean             getViewPinnedEntries()        {return m_viewPinnedEntries;       }
 	public boolean             getViewSharedFiles()          {return m_viewSharedFiles;         }
@@ -130,7 +127,6 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	public void setFolderOwnedByCurrentUser(boolean             folderOwnedByCurrentUser) {m_folderOwnedByCurrentUser = folderOwnedByCurrentUser;}
 	public void setFolderSortDescend(       boolean             folderSortDescend)        {m_folderSortDescend        = folderSortDescend;       }
 	public void setFolderSupportsPinning(   boolean             folderSupportsPinning)    {m_folderSupportsPinning    = folderSupportsPinning;   }
-	public void setShowHtmlElement(         boolean             showHtmlElement)          {m_showHtmlElement          = showHtmlElement;         }
 	public void setShowUserList(            boolean             showUserList)             {m_showUserList             = showUserList;            }
 	public void setViewPinnedEntries(       boolean             viewPinnedEntries)        {m_viewPinnedEntries        = viewPinnedEntries;       }
 	public void setViewSharedFiles(         boolean             viewSharedFiles)          {m_viewSharedFiles          = viewSharedFiles;         }
