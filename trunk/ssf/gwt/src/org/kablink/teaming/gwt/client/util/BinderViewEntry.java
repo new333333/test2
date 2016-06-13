@@ -36,6 +36,16 @@ package org.kablink.teaming.gwt.client.util;
  * Created by david on 4/13/16.
  */
 public class BinderViewEntry extends BinderViewDefBase {
+    private String itemId;
+
     public BinderViewEntry() {
+    }
+
+    public String getItemId() {
+        return itemId;
+    }
+
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
     }
 }

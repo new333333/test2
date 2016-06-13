@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -60,6 +61,7 @@ public abstract class ViewBase extends ResizeComposite
 	// for padding, ...
 	private int m_contentHeightAdjust	= GwtConstants.CONTENT_HEIGHT_ADJUST;
 	private int m_contentWidthAdjust	= GwtConstants.CONTENT_WIDTH_ADJUST;
+	private UIObject m_parent;
 
 	/**
 	 * Callback interface used to interact with a view asynchronously
@@ -133,13 +135,20 @@ public abstract class ViewBase extends ResizeComposite
 		setViewSize();
 	}
 
+	public void setParent(UIObject parent) {
+		m_parent = parent;
+	}
+
 	/**
 	 * Sets the size of the view based on the MainContentLayoutPanel
 	 * that holds it.
 	 */
 	public void setViewSize() {
-		MainContentLayoutPanel clp = GwtTeaming.getMainPage().getMainContentLayoutPanel();
-		setPixelSize((clp.getOffsetWidth() + m_contentWidthAdjust), (clp.getOffsetHeight() + m_contentHeightAdjust));
+		UIObject parent = m_parent;
+		if (parent==null) {
+			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
+		}
+		setPixelSize((parent.getOffsetWidth() + m_contentWidthAdjust), (parent.getOffsetHeight() + m_contentHeightAdjust));
 	}
 	
 	/**
