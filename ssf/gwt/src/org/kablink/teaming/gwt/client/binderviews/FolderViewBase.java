@@ -119,7 +119,6 @@ public abstract class FolderViewBase extends ViewBase
 	private boolean								m_viewReady;					// Set true once the view and all its components are ready.
 	private boolean								m_pinning;						// true -> We're showing pinned items.                      false -> We're not.
 	private boolean								m_sharedFiles;					// true -> We're showing shared only shared files.          false -> We're not.
-	private boolean								m_showHtmlElement;				// true -> We're showing the HtmlElementPanel in the view.  false -> We're not.
 	private boolean								m_showUserList;					// true -> We're showing the UserListPanel in the view.     false -> We're not.
 	private CalendarDisplayDataProvider			m_calendarDisplayDataProvider;	// A CalendarDisplayDataProvider to use to obtain a CalendarDisplayDataRpcResponseData object.
 	private CanAddEntitiesRpcResponseData		m_canAddEntities;				// Contains information about the user's rights to add entities to the current folder.
@@ -167,11 +166,10 @@ public abstract class FolderViewBase extends ViewBase
 	public final static int FILTER_PANEL_INDEX				=  6;
 	public final static int BINDER_OWNER_AVATAR_PANEL_INDEX	=  7;
 	public final static int USER_LIST_PANEL_INDEX			=  8;
-	public final static int HTML_ELEMENT_PANEL_INDEX		=  9;
-	public final static int ENTRY_MENU_PANEL_INDEX			= 10;
-	public final static int CALENDAR_NAVIGATION_PANEL_INDEX	= 11;
-	public final static int VIEW_CONTENT_PANEL_INDEX		= 12;
-	public final static int FOOTER_PANEL_INDEX				= 13;
+	public final static int ENTRY_MENU_PANEL_INDEX			=  9;
+	public final static int CALENDAR_NAVIGATION_PANEL_INDEX	= 10;
+	public final static int VIEW_CONTENT_PANEL_INDEX		= 11;
+	public final static int FOOTER_PANEL_INDEX				= 12;
 
 	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
 	private final static int NO_VSCROLL_ADJUST			=  20;	// Height adjustment required so there's no vertical scroll bar by default.
@@ -190,7 +188,6 @@ public abstract class FolderViewBase extends ViewBase
 		FILTER,
 		BINDER_OWNER_AVATAR,
 		USER_LIST,
-		HTML_ELEMENT,
 		ENTRY_MENU,
 		CALENDAR_NAVIGATION,
 		FOOTER,
@@ -656,7 +653,6 @@ public abstract class FolderViewBase extends ViewBase
 		case CALENDAR_NAVIGATION:
 		case TASK_GRAPHS:   reply = false;             break;
 		case USER_LIST:     reply = m_showUserList;    break;
-		case HTML_ELEMENT:  reply = m_showHtmlElement; break;
 		default:            reply = true;              break;
 		}
 		return reply;
@@ -813,7 +809,6 @@ public abstract class FolderViewBase extends ViewBase
 					// to construct itself.
 					HasOtherComponentsRpcResponseData reply = ((HasOtherComponentsRpcResponseData) response.getResponseData());
 					m_showUserList    = reply.getShowUserList();
-					m_showHtmlElement = reply.getShowHtmlElement();
 					loadPart4Async();
 				}
 			});
@@ -840,7 +835,6 @@ public abstract class FolderViewBase extends ViewBase
 					m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
 					m_pinning           = m_folderDisplayData.getViewPinnedEntries();
 					m_sharedFiles       = m_folderDisplayData.getViewSharedFiles();
-					m_showHtmlElement   = m_folderDisplayData.getShowHtmlElement();
 					m_showUserList      = m_folderDisplayData.getShowUserList();
 					loadPart4Async();
 				}
@@ -1328,10 +1322,10 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	private void loadPart15Async() {
 		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.HTML_ELEMENT))) {
+		if (!(includePanel(FolderPanels.CALENDAR_NAVIGATION))) {
 			// ...we don't show the calendar navigation panel.
-			insertToolPanelPlaceholder(HTML_ELEMENT_PANEL_INDEX);
-			loadPart16Async();
+			insertToolPanelPlaceholder(CALENDAR_NAVIGATION_PANEL_INDEX);
+			constructViewAsync();
 			return;
 		}
 		
@@ -1347,45 +1341,6 @@ public abstract class FolderViewBase extends ViewBase
 	 * Synchronously loads the next part of the view.
 	 */
 	private void loadPart15Now() {
-		HtmlElementPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, FolderViewBase.HTML_ELEMENT_PANEL_INDEX);
-				loadPart16Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 */
-	private void loadPart16Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.CALENDAR_NAVIGATION))) {
-			// ...we don't show the calendar navigation panel.
-			insertToolPanelPlaceholder(CALENDAR_NAVIGATION_PANEL_INDEX);
-			constructViewAsync();
-			return;
-		}
-		
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart16Now();
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously loads the next part of the view.
-	 */
-	private void loadPart16Now() {
 		CalendarNavigationPanel.createAsync(this, m_calendarDisplayDataProvider, getFolderInfo(), this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
