@@ -847,7 +847,7 @@ public class GwtReportsHelper {
 				@Override
 				public void close() {}  // FileCopyUtils will try to close this too soon
 			};
-			File logDirectory = new File(SpringContextUtil.getServletContext().getRealPath("/../../logs"));
+			File logDirectory = new File(SpringContextUtil.getServletContext().getRealPath(""), "/../../logs");
 			for (String logFile:  logDirectory.list(
 					new FilenameFilter() {
 						@Override
