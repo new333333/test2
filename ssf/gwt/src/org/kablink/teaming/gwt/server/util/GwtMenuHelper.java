@@ -273,10 +273,10 @@ public class GwtMenuHelper {
 	 */
 	private static ToolbarItem buildEditInPlaceToolbarItem(AllModulesInjected bs, HttpServletRequest request, FolderEntry fe, boolean isFilr) {
 		// If NPAPI isn't supported on the browser...
-		if (!(MiscUtil.isNPAPISupported(request))) {
+		/*if (!(MiscUtil.isNPAPISupported(request))) {
 			// ...there can be no applets and hence no edit-in-place.
 			return null;
-		}
+		}*/
 		
 		// Is the entry unlock and does the user have rights to
 		// modify it?
