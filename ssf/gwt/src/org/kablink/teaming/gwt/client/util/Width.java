@@ -96,6 +96,6 @@ public class Width implements IsSerializable {
         if (unit==Unit.percentage) {
             return Integer.toString(value) + "%";
         }
-        return Integer.toString(value);
+        return Integer.toString(value) + "px";
     }
 }

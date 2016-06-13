@@ -113,8 +113,11 @@ public class CustomBinderView extends WorkspaceViewBase implements VibeEntityVie
 				GwtClientHelper.consoleLog("CustomBinderView: constructing 2 column VibeGrid");
 				VibeGrid viewGrid = new VibeGrid(1,2);
 				viewGrid.addStyleName("vibe-grid");
+				viewGrid.setHeight("100%");
 				if (tableDef.getWidth() != null) {
 					viewGrid.setWidth(tableDef.getWidth().toString());
+				} else {
+					viewGrid.setWidth("100%");
 				}
 				if (tableDef.getColumn1Width()!=null) {
 					viewGrid.getColumnFormatter().setWidth(0, tableDef.getColumn1Width().toString());
@@ -128,8 +131,11 @@ public class CustomBinderView extends WorkspaceViewBase implements VibeEntityVie
 				GwtClientHelper.consoleLog("CustomBinderView: constructing 3 column VibeGrid");
 				VibeGrid viewGrid = new VibeGrid(1,3);
 				viewGrid.addStyleName("vibe-grid");
+				viewGrid.setHeight("100%");
 				if (tableDef.getWidth()!=null) {
 					viewGrid.setWidth(tableDef.getWidth().toString());
+				} else {
+					viewGrid.setWidth("100%");
 				}
 				if (tableDef.getColumn1Width()!=null) {
 					viewGrid.getColumnFormatter().setWidth(0, tableDef.getColumn1Width().toString());
@@ -146,8 +152,11 @@ public class CustomBinderView extends WorkspaceViewBase implements VibeEntityVie
 				GwtClientHelper.consoleLog("CustomBinderView: constructing VibeFlowPanel");
 				VibeFlowPanel flowPanel = new VibeFlowPanel();
 				flowPanel.addStyleName("vibe-flow");
+				flowPanel.setHeight("100%");
 				if (containerDef.getWidth()!=null) {
 					flowPanel.setWidth(containerDef.getWidth().toString());
+				} else {
+					flowPanel.setWidth("100%");
 				}
 				viewPanel = flowPanel;
 			}
@@ -157,6 +166,8 @@ public class CustomBinderView extends WorkspaceViewBase implements VibeEntityVie
 		} else {
 			VibeFlowPanel flowPanel = new VibeFlowPanel();
 			flowPanel.addStyleName("vibe-flow");
+			flowPanel.setWidth("100%");
+			flowPanel.setHeight("100%");
 			parentWidget.showWidget(flowPanel);
 			if (viewDef instanceof BinderViewFolderListing) {
 				BinderInfo bi = getBinderInfo();

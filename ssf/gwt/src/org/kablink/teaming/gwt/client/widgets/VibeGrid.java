@@ -84,11 +84,17 @@ public class VibeGrid extends Grid
      */
     private void onResizeNow()
     {
+        GwtClientHelper.consoleLog("VibeGrid.onResizeNow(): numRows=" + numRows + "; numCols=" + numColumns);
         for (int row=0; row<numRows; row++) {
             for (int col=0; col<numColumns; col++) {
                 Widget child = this.getWidget(row, col);
                 if (child!=null && child instanceof RequiresResize) {
+                    GwtClientHelper.consoleLog("Calling onResize() for child: " + child.getClass().getSimpleName());
                     ((RequiresResize) child).onResize();
+                } else if (child!=null) {
+                    GwtClientHelper.consoleLog("Won't call onResize() for child because it doesn't implement RequiresResize: " + child.getClass().getSimpleName());
+                } else {
+                    GwtClientHelper.consoleLog("Child is null: row=" + row + "; col=" + col);
                 }
             }
         }
