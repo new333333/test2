@@ -95,7 +95,7 @@ public class FileOpen extends JApplet implements Runnable {
         isLicenseRequiredEdition = Boolean.parseBoolean(getParameter("isLicenseRequiredEdition"));
         isOfficeAddInAllowed = Boolean.parseBoolean(getParameter("isOfficeAddInAllowed"));
 		try {
-			boolean ifEditIsClicked = checkEditClicked();
+			boolean ifEditIsClicked = true; //checkEditClicked();
 			resetEditClicked();
 			String [] strEditorType = strEditorTypes.split(",");
 			
@@ -133,6 +133,7 @@ public class FileOpen extends JApplet implements Runnable {
                         // alert(...) for the data from the stdout and
                         // stderr streams if the application returns a
                         // non-0 exit code.
+                        System.out.println("Executing command "+command);
                         Process p = Runtime.getRuntime().exec(command);
                         p.waitFor();
                         int exitValue = p.exitValue();
@@ -196,6 +197,7 @@ public class FileOpen extends JApplet implements Runnable {
     	}
     	finally {
     		strFileName = "";
+    		System.exit(0);
     	}
     }
 
