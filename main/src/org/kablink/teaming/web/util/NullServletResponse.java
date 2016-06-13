@@ -257,4 +257,9 @@ public class NullServletResponse implements HttpServletResponse {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public void setContentLengthLong(long length) {
+		throw new UnsupportedOperationException();
+	}
+
 }
