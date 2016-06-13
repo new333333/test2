@@ -2197,8 +2197,8 @@ public class ContentControl extends Composite
 		@Override
 		public void onSuccess( ViewBase view )
 		{
-			view.setViewSize();
 			view.setParent((UIObject) event.getViewPanel());
+			view.setViewSize();
 			event.getViewPanel().showWidget( view );
 		}
 	};
