@@ -52,8 +52,9 @@ public enum VibeJspHtmlType implements IsSerializable {
 	ADMIN_REPORT_DISK_USAGE,
 	ADMIN_REPORT_XSS,
 	
+	BUILT_IN_JSP,
 	CUSTOM_JSP,
-	
+
 	UNDEFINED;
 
 	/**

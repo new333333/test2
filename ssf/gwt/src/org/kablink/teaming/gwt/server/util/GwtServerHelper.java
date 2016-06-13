@@ -1918,6 +1918,10 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static String executeLandingPageJsp(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String binderId, String jspName, String configStr) {
+		return executeLandingPageJsp(bs, request, response, servletContext, binderId, jspName, configStr, null);
+	}
+
+	public static String executeLandingPageJsp(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, ServletContext servletContext, String binderId, String jspName, String configStr, Map<String, Object> model) {
 		RequestDispatcher     reqDispatcher = request.getRequestDispatcher(jspName);
 		StringServletResponse ssResponse    = new StringServletResponse(response);
 
@@ -1928,33 +1932,35 @@ public class GwtServerHelper {
 			// WorkspaceTreeHelper.setupWorkspaceBeans().
 			String portletName = "ss_forum";
 			PortletInfo portletInfo = ((PortletInfo) AdaptedPortlets.getPortletInfo(portletName));
-			
+
 			RenderRequestImpl renderReq = new RenderRequestImpl(request, portletInfo, AdaptedPortlets.getPortletContext());
-			
+
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put(KeyNames.PORTLET_URL_PORTLET_NAME, new String[] {portletName});
 			params.put(WebKeys.URL_BINDER_ID, binderId);
 			renderReq.setRenderParameters(params);
-			
+
 			RenderResponseImpl renderRes = new RenderResponseImpl(renderReq, response, portletName);
 			String charEncoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
 			renderRes.setContentType("text/html; charset=" + charEncoding);
 			renderReq.defineObjects(portletInfo.getPortletConfig(), renderRes);
-			
+
 			renderReq.setAttribute(PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE);
-			
-			Map<String, Object> model = new HashMap<String, Object>();
+
+			if (model==null) {
+				model = new HashMap<String, Object>();
+			}
 			Long binderIdL = Long.valueOf(binderId);
-			
+
 			WorkspaceTreeHelper.setupWorkspaceBeans(bs, binderIdL, renderReq, renderRes, model, false);
-			
+
 			// Put the data that setupWorkspaceBeans() put in model
 			// into the request.
 			for (String key:  model.keySet()) {
 				Object value = model.get(key);
 				request.setAttribute(key, value);
 			}
-			
+
 			// Add the data that normally would have been added by
 			// PortletAdapterServlet.java.  This attribute is used to
 			// distinguish adapter request from regular request.
@@ -1966,7 +1972,7 @@ public class GwtServerHelper {
 			request.setAttribute("javax.portlet.request",  renderReq                     );
 			request.setAttribute("javax.portlet.response", renderRes                     );
 			request.setAttribute(PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE);
-			
+
 			// Add the data that normally would have been added by
 			// mashup_canvas_view.jsp.
 			Map map1 = new HashMap();
@@ -1979,7 +1985,7 @@ public class GwtServerHelper {
 			request.setAttribute("ss_mashupTableItemCount",  map1           );
 			request.setAttribute("ss_mashupTableItemCount2", map2           );
 			request.setAttribute("ss_mashupListDepth",       Long.valueOf(0));
-			
+
 			// Add the data that normally would have been added by
 			// MashupTag.java.
 			if (null != configStr) {
@@ -1997,7 +2003,7 @@ public class GwtServerHelper {
 								value1 = URLDecoder.decode(v.replaceAll("\\+", "%2B"), "UTF-8");
 							}
 							catch(Exception e) {/* Ignore. */}
-							
+
 							if ((null != a) && (!(a.equalsIgnoreCase("width"))) && (!(a.equalsIgnoreCase("height"))) && (!(a.equalsIgnoreCase("overflow")))) {
 								mashupItemAttributes.put(a, value1);
 							}
@@ -2011,7 +2017,7 @@ public class GwtServerHelper {
 					request.setAttribute("mashup_view",       "view"              );
 				}
 			}
-			
+
 			// landing_page_calendar.jsp and
 			// landing_page_my_calendar_events.jsp require a unique
 			// prefix so there can be more than one calendar on a
@@ -2030,8 +2036,8 @@ public class GwtServerHelper {
 		
 		return results;
 	}
-	
-	
+
+
 	/**
 	 * Execute the given JSP and return the resultant HTML.
 	 * 

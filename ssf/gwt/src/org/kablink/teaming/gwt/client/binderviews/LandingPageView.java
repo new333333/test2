@@ -310,7 +310,7 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 	{
 		m_mainPanel = new VibeFlowPanel();
 		m_mainPanel.addStyleName( "landingPageMainPanel" );
-		//m_mainPanel.addStyleName( "landingPageOverflowAuto" );
+		m_mainPanel.addStyleName( "landingPageOverflowAuto" );
 		
 		initWidget( m_mainPanel );
 	}
