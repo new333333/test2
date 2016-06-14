@@ -96,7 +96,7 @@ class MicroFocusVibeLauncher{
 				}
 				urlText=urlText.substring(0,doIndex+2)+";"+urlText.substring(sessionIndex)+urlText.substring(doIndex+2,sessionIndex-1);
 				Runtime runtime=Runtime.getRuntime();
-				Process result=runtime.exec("javaws "+urlText);
+				Process result=runtime.exec("javaws \""+urlText+"\"");
 				result.waitFor();
 				logger.info("Executing Result "+result.exitValue());
 				writeMessage("Process Completed");
