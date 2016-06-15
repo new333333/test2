@@ -146,7 +146,7 @@ RabbitMQ Java client library 3.1.5 (dual-licensed under the MPL and the GPL v2.)
 ridl.jar (from OpenOffice 2.0)
 SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
 Saxpath 1.0 (for ssfs)
-Servlet 3.1/JSP 2.3
+Servlet 3.1/JSP 2.3 (from Tomcat distribution)
 Simple Logging Facade for Java (SLF4J) api 1.7.7
 Simple Logging Facade for Java (SLF4J) log4j12 1.7.7
 Slide jaas 2.2pre1
@@ -174,6 +174,7 @@ Trove 3.0.1
 unoil.jar (from OpenOffice 2.0)
 Velocity 1.5
 Velocity-tools-view 1.4
+websocket 1.1 (from Tomcat distribution; new in Java EE 7)
 WSDL4J 1.5.1
 WSS4J 1.5.3
 Xalan 2.7.0 (XPath and XSLT implementation; used by WSS4J and others; also includes serializer)
