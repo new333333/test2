@@ -1181,7 +1181,57 @@ public Map getGroups(Map options) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
 		options.put(ObjectKeys.SEARCH_MODE, Integer.valueOf(Constants.SEARCH_MODE_SELF_CONTAINED_ONLY));
-        return loadProcessor(binder).getBinderEntries(binder, groupDocType, options);        
+        Map entries = loadProcessor(binder).getBinderEntries(binder, groupDocType, options);        
+        
+        User user = RequestContextHolder.getRequestContext().getUser();
+        if(!user.isSuper() && Utils.canUserOnlySeeCommonGroupMembers(user)) {
+	    	List searchEntries = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
+	    	if(searchEntries != null) {
+		    	Integer searchCountTotal = (Integer)entries.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+		    	Integer totalSearchCount = (Integer)entries.get(ObjectKeys.TOTAL_SEARCH_COUNT);
+		    	Integer totalSearchRecordsReturned = (Integer)entries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
+		    	
+		    	List filteredSearchEntries = new ArrayList<Map>();
+		    	
+				Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), user.getZoneId());
+		    	
+		    	int size = searchEntries.size();
+		    	for(int i = 0; i < size; i++) {
+		    		Map entry = (Map)searchEntries.get(i);
+		    		String reservedId = (String)entry.get(Constants.RESERVEDID_FIELD);
+		    		String id = (String)entry.get(Constants.DOCID_FIELD);
+		    		if(ObjectKeys.ALL_USERS_GROUP_INTERNALID.equalsIgnoreCase(reservedId)) {
+		    			if(user.getIdentityInfo().isInternal())
+		    				filteredSearchEntries.add(entry);
+		    		}
+		    		else if (ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID.equalsIgnoreCase(reservedId)) {
+		    			if(!user.getIdentityInfo().isInternal())
+		    				filteredSearchEntries.add(entry);
+		    		}
+		    		else {
+		    			Long longId = null;
+		    			try {
+		    				longId = Long.valueOf(id);
+		    			}
+		    			catch(NumberFormatException ignore) {}
+		    			if(longId != null && userGroupIds.contains(longId))
+		    				filteredSearchEntries.add(entry);
+		    		}
+		    	}
+		    	
+		    	int diff = searchEntries.size() - filteredSearchEntries.size();
+		    	
+		    	entries.put(ObjectKeys.SEARCH_ENTRIES, filteredSearchEntries);
+		    	if(searchCountTotal != null)
+		    		entries.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(searchCountTotal - diff));
+		    	if(totalSearchCount != null)
+		    		entries.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(totalSearchCount - diff));
+		    	if(totalSearchRecordsReturned != null)
+		    		entries.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(totalSearchRecordsReturned - diff));
+	    	}
+        }
+        
+        return entries;
     }
 	//RO transaction
 	@Override
