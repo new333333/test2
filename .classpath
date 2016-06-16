@@ -210,5 +210,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-client-impl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-commons-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/chemistry-opencmis-commons-impl.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/owasp-java-html-sanitizer-r239.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
