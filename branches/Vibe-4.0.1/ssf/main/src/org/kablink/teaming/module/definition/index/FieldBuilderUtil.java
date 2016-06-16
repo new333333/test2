@@ -39,6 +39,7 @@ import org.apache.lucene.document.NumericField;
 
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.util.cache.ClassInstanceCache;
+import org.kablink.util.search.Constants;
 
 /**
  * ?
@@ -64,6 +65,10 @@ public class FieldBuilderUtil {
 	 */
 	@SuppressWarnings("deprecation")
 	public static NumericField mapBasicFieldToNumericField(Field field) {
+		// 4/26/2016 JK (bug 971209)
+		if(field == null || Constants.GENERAL_TEXT_FIELD.equals(field.name())) 
+			return null;
+		
 		// Do we have a Field with a value?
 		NumericField reply = null;
 		String fValue = ((null == field) ? null : field.stringValue());
