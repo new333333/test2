@@ -211,35 +211,26 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                 throw new AccessControlException();
             }
         }
-		if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
+        if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
             if (recipient.getIdentityInfo().isInternal()) {
-                if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
-					return;
-                }
+                binderModule.checkAccess(binder, BinderOperation.allowSharing);
             } else {
-                if (binderModule.testAccess(binder, BinderOperation.allowSharingExternal)) {
-					return;
-                }
+                binderModule.checkAccess(binder, BinderOperation.allowSharingExternal);
             }
         } else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
             if (((User)recipient).isShared()) {
-                if (binderModule.testAccess(binder, BinderOperation.allowSharingPublic)) {
-					return;
-                }
+                binderModule.checkAccess(binder, BinderOperation.allowSharingPublic);
             } else if (recipient.getIdentityInfo().isInternal()) {
-                if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
-					return;
-                }
+                binderModule.checkAccess(binder, BinderOperation.allowSharing);
             } else {
-                if (binderModule.testAccess(binder, BinderOperation.allowSharingExternal)) {
-					return;
-                }
+                binderModule.checkAccess(binder, BinderOperation.allowSharingExternal);
             }
         } else if (shareItem.getRecipientType().equals(RecipientType.team)) {
             //Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
             throw new AccessControlException();
+        } else {
+            throw new AccessControlException();
         }
-		throw new AccessControlException();
 	}
 
 	private void checkRoleToGrant(ShareItem shareItem, EntityIdentifier entityIdentifier) {
