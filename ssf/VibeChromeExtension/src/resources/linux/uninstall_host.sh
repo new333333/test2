@@ -17,5 +17,5 @@ else
   fi
 fi
 HOST_NAME=com.microfocus.jnlplauncher
-rm "$TARGET_DIR/mf_nh_manifest.json"
+rm -rf "$TARGET_DIR/$HOST_NAME.json"
 echo "Native messaging host $HOST_NAME has been uninstalled."

@@ -1,9 +1,0 @@
-{
-	"name":"com.microfocus.jnlplauncher",
-	"description":"Launches JNLP without downloading",
-	"path":"MicroFocusVibeLauncher.sh",
-	"type":"stdio",
-	"allowed_origins":[
-		"chrome-extension://flpanpiekcogfljocjoommgghfpciiic/"
-	]
-}
