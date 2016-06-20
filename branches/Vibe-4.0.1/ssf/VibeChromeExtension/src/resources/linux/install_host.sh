@@ -19,11 +19,14 @@ HOST_NAME=com.microfocus.jnlplauncher
 # Create directory to store native messaging host.
 mkdir -p "$TARGET_DIR"
 # Copy native messaging host manifest.
-cp "$DIR/mf_nh_manifest.json" "$TARGET_DIR"
+cp "$DIR/$HOST_NAME.json" "$TARGET_DIR"
 # Update host path in the manifest.
-HOST_PATH=$DIR/native-messaging-vibe-host
+HOST_PATH=$DIR/MicroFocusVibeLauncher.sh
+DIR_PATH="$DIR/chrome_extension-1.0.0.jar"
 ESCAPED_HOST_PATH=${HOST_PATH////\\/}
+ESCAPED_DIR_PATH=${DIR_PATH////\\/}
 sed -i -e "s/HOST_PATH/$ESCAPED_HOST_PATH/" "$TARGET_DIR/$HOST_NAME.json"
+sed -i -e "s/DIR_PATH/$ESCAPED_DIR_PATH/" "$DIR/MicroFocusVibeLauncher.sh"
 # Set permissions for the manifest so that all users can read it.
 chmod o+r "$TARGET_DIR/$HOST_NAME.json"
 echo "Native messaging host $HOST_NAME has been installed."
