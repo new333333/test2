@@ -107,16 +107,16 @@ public class SharingPermission {
             internal = fileSharing.internal;
         }
         if (fileSharing.external!=null) {
-            internal = fileSharing.external;
+            external = fileSharing.external;
         }
         if (fileSharing.public_!=null) {
-            internal = fileSharing.public_;
+            public_ = fileSharing.public_;
         }
         if (fileSharing.publicLink!=null) {
-            internal = fileSharing.publicLink;
+            publicLink = fileSharing.publicLink;
         }
         if (fileSharing.grantReshare!=null) {
-            internal = fileSharing.grantReshare;
+            grantReshare = fileSharing.grantReshare;
         }
     }
 }
