@@ -1,0 +1,9 @@
+{
+	"name":"com.microfocus.jnlplauncher",
+	"description":"Launches JNLP without downloading",
+	"path":"HOST_PATH",
+	"type":"stdio",
+	"allowed_origins":[
+		"chrome-extension://flpanpiekcogfljocjoommgghfpciiic/"
+	]
+}
