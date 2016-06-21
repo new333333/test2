@@ -429,6 +429,16 @@
 	.vibe-discussionWSView_TitlePanel, .vibe-teamWSView_TitlePanel
 	{
 	}
+
+	.vibe-grid
+	{
+		overflow: hidden;
+	}
+
+	.vibe-grid tbody tr
+	{
+		vertical-align: top;
+	}
 	
 	/* ...Start:  Personal Workspace view styles. */
 		.vibe-personalWorkspaceView_AccessoriesPanel {}
