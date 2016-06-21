@@ -148,6 +148,7 @@ public abstract class ViewBase extends ResizeComposite
 		if (parent==null) {
 			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
 		}
+		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). Parent=" + parent.getClass().getSimpleName() + "; Parent height: " + parent.getOffsetWidth());
 		setPixelSize((parent.getOffsetWidth() + m_contentWidthAdjust), (parent.getOffsetHeight() + m_contentHeightAdjust));
 	}
 	
