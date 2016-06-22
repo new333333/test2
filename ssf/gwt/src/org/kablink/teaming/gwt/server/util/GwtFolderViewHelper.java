@@ -128,8 +128,9 @@ public class GwtFolderViewHelper {
     }
 
     public static boolean hasCustomView(AllModulesInjected ami, Binder binder) {
-        Definition def2 = binder.getDefaultViewDef();
-        return !def2.getName().startsWith("_");
+//        Definition def2 = binder.getDefaultViewDef();
+//        return !def2.getName().startsWith("_");
+        return true;
     }
 
     /*

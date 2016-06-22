@@ -38,28 +38,16 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.ResizeComposite;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.event.shared.HandlerRegistration;
-import org.kablink.teaming.gwt.client.BlogArchiveFolder;
-import org.kablink.teaming.gwt.client.BlogArchiveMonth;
-import org.kablink.teaming.gwt.client.BlogPage;
+import com.google.gwt.user.client.ui.*;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
-import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.*;
 import org.kablink.teaming.gwt.client.rpc.shared.*;
-import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.*;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.widgets.LandingPageWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeGrid;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,7 +56,7 @@ import java.util.Map;
  * 
  * @author david
  */
-public class CustomBinderView extends WorkspaceViewBase implements ViewReady, ToolPanelReady
+public class CustomBinderView extends WorkspaceViewBase implements ViewReady, ToolPanelReady, ProvidesResize, RequiresResize
 {
 	private VibeFlowPanel m_mainPanel;
 	private VibeFlowPanel m_breadCrumbPanel;
@@ -104,15 +92,15 @@ public class CustomBinderView extends WorkspaceViewBase implements ViewReady, To
 	{
 		GwtClientHelper.consoleLog("CustomBinderView: constructView()");
 		m_mainPanel = new VibeFlowPanel();
-		m_mainPanel.setWidth("100%");
-		m_mainPanel.setHeight("100%");
-		m_mainPanel.addStyleName( "vibe-genericWSView_MainPanel" );
+		//m_mainPanel.setWidth("100%");
+		//m_mainPanel.setHeight("100%");
+		m_mainPanel.addStyleName( "vibe-binderView" );
 
 		// Add a place for the bread crumb control to live.
 		{
 			GwtClientHelper.consoleLog("CustomBinderView: Creating BreadCrumbPanel");
 			m_breadCrumbPanel = new VibeFlowPanel();
-			m_breadCrumbPanel.addStyleName( "vibe-genericWSView_BreadCrumbPanel" );
+			m_breadCrumbPanel.addStyleName( "vibe-binderView_BreadCrumbPanel" );
 			m_mainPanel.add( m_breadCrumbPanel );
 
 			BreadCrumbPanel.createAsync( this, getBinderInfo(), this, new ToolPanelBase.ToolPanelClient()
@@ -135,7 +123,7 @@ public class CustomBinderView extends WorkspaceViewBase implements ViewReady, To
 		{
 			GwtClientHelper.consoleLog("CustomBinderView: Creating Description Panel");
 			m_descPanel = new VibeFlowPanel();
-			m_descPanel.addStyleName( "vibe-genericWSView_DescPanel" );
+			m_descPanel.addStyleName( "vibe-binderView_DescPanel" );
 			m_mainPanel.add( m_descPanel );
 
 			DescriptionPanel.createAsync( this, getBinderInfo(), this, new ToolPanelBase.ToolPanelClient()
@@ -158,16 +146,16 @@ public class CustomBinderView extends WorkspaceViewBase implements ViewReady, To
 		{
 			GwtClientHelper.consoleLog("CustomBinderView: Creating Layout Panel");
 			m_layoutPanel = new VibeFlowPanel();
-			m_layoutPanel.setWidth("100%");
-			m_layoutPanel.setHeight("100%");
-			m_layoutPanel.addStyleName( "vibe-customView_LayoutPanel" );
+			//m_layoutPanel.setWidth("100%");
+			//m_layoutPanel.setHeight("100%");
+			m_layoutPanel.addStyleName( "vibe-binderView_LayoutPanel" );
 			m_mainPanel.add( m_layoutPanel );
 		}
 
 		// ...add a place for the accessories.
 		GwtClientHelper.consoleLog("CustomBinderView: Creating Accessories Panel");
 		m_accessoriesPanel = new VibeFlowPanel();
-		m_accessoriesPanel.addStyleName( "vibe-genericWSView_AccessoriesPanel" );
+		m_accessoriesPanel.addStyleName( "vibe-binderView_AccessoriesPanel" );
 		m_mainPanel.add( m_accessoriesPanel );
 
 		AccessoriesPanel.createAsync( this, getBinderInfo(), this, new ToolPanelBase.ToolPanelClient()
@@ -189,7 +177,7 @@ public class CustomBinderView extends WorkspaceViewBase implements ViewReady, To
 		{
 			GwtClientHelper.consoleLog("CustomBinderView: Creating Footer Panel");
 			m_footerPanel = new VibeFlowPanel();
-			m_footerPanel.addStyleName( "vibe-genericWSView_FooterPanel" );
+			m_footerPanel.addStyleName( "vibe-binderView_FooterPanel" );
 			m_mainPanel.add( m_footerPanel );
 
 			FooterPanel.createAsync( this, getBinderInfo(), this, new ToolPanelBase.ToolPanelClient()
@@ -225,15 +213,16 @@ public class CustomBinderView extends WorkspaceViewBase implements ViewReady, To
 		if (viewDef instanceof BinderViewContainer) {
 			VibeEntityViewPanel viewPanel;
 			if (viewDef instanceof BinderViewTwoColumnTable) {
+				GwtClientHelper.consoleLog("CustomBinderView: BinderViewTwoColumnTable ");
 				BinderViewTwoColumnTable tableDef = (BinderViewTwoColumnTable) viewDef;
 				GwtClientHelper.consoleLog("CustomBinderView: constructing 2 column VibeGrid");
 				VibeGrid viewGrid = new VibeGrid(1,2);
 				viewGrid.addStyleName("vibe-grid");
-				viewGrid.setHeight("100%");
+				//viewGrid.setHeight("100%");
 				if (tableDef.getWidth() != null) {
 					viewGrid.setWidth(tableDef.getWidth().toString());
-				} else {
-					viewGrid.setWidth("100%");
+//				} else {
+//					viewGrid.setWidth("100%");
 				}
 				if (tableDef.getColumn1Width()!=null) {
 					viewGrid.getColumnFormatter().setWidth(0, tableDef.getColumn1Width().toString());
@@ -247,11 +236,11 @@ public class CustomBinderView extends WorkspaceViewBase implements ViewReady, To
 				GwtClientHelper.consoleLog("CustomBinderView: constructing 3 column VibeGrid");
 				VibeGrid viewGrid = new VibeGrid(1,3);
 				viewGrid.addStyleName("vibe-grid");
-				viewGrid.setHeight("100%");
+				//viewGrid.setHeight("100%");
 				if (tableDef.getWidth()!=null) {
 					viewGrid.setWidth(tableDef.getWidth().toString());
-				} else {
-					viewGrid.setWidth("100%");
+//				} else {
+//					viewGrid.setWidth("100%");
 				}
 				if (tableDef.getColumn1Width()!=null) {
 					viewGrid.getColumnFormatter().setWidth(0, tableDef.getColumn1Width().toString());
@@ -268,11 +257,11 @@ public class CustomBinderView extends WorkspaceViewBase implements ViewReady, To
 				GwtClientHelper.consoleLog("CustomBinderView: constructing VibeFlowPanel");
 				VibeFlowPanel flowPanel = new VibeFlowPanel();
 				flowPanel.addStyleName("vibe-flow");
-				flowPanel.setHeight("100%");
+				//flowPanel.setHeight("100%");
 				if (containerDef.getWidth()!=null) {
 					flowPanel.setWidth(containerDef.getWidth().toString());
-				} else {
-					flowPanel.setWidth("100%");
+//				} else {
+//					flowPanel.setWidth("100%");
 				}
 				viewPanel = flowPanel;
 			}
@@ -282,8 +271,8 @@ public class CustomBinderView extends WorkspaceViewBase implements ViewReady, To
 		} else {
 			VibeFlowPanel flowPanel = new VibeFlowPanel();
 			flowPanel.addStyleName("vibe-flow");
-			flowPanel.setWidth("100%");
-			flowPanel.setHeight("100%");
+//			flowPanel.setWidth("100%");
+			//flowPanel.setHeight("100%");
 			parentWidget.showWidget(flowPanel);
 			if (viewDef instanceof BinderViewFolderListing) {
 				BinderInfo bi = getBinderInfo();
@@ -311,21 +300,18 @@ public class CustomBinderView extends WorkspaceViewBase implements ViewReady, To
 	 */
 	public static void createAsync( final BinderInfo folderInfo, final ViewType viewType, final BinderViewLayout viewLayout, final ViewReady viewReady, final ViewClient vClient )
 	{
-		GWT.runAsync( CustomBinderView.class, new RunAsyncCallback()
-		{			
+		GWT.runAsync(CustomBinderView.class, new RunAsyncCallback() {
 			@Override
-			public void onSuccess()
-			{
+			public void onSuccess() {
 				CustomBinderView customBinderView;
-				
-				customBinderView = new CustomBinderView( folderInfo, viewType, viewLayout, viewReady );
-				vClient.onSuccess( customBinderView );
+
+				customBinderView = new CustomBinderView(folderInfo, viewType, viewLayout, viewReady);
+				vClient.onSuccess(customBinderView);
 			}
-			
+
 			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( m_messages.codeSplitFailure_CustomBinderView() );
+			public void onFailure(Throwable reason) {
+				Window.alert(m_messages.codeSplitFailure_CustomBinderView());
 				vClient.onUnavailable();
 			}
 		});
@@ -411,6 +397,15 @@ public class CustomBinderView extends WorkspaceViewBase implements ViewReady, To
 		}
 	}
 
+	public void setViewSize() {
+		UIObject parent = m_parent;
+		if (parent==null) {
+			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
+		}
+		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). Parent=" + parent.getClass().getSimpleName() + "; Parent height: " + parent.getOffsetWidth());
+		setPixelSize((parent.getOffsetWidth() + getContentHeightAdjust()), (parent.getOffsetHeight() + getContentWidthAdjust()));
+	}
+
 	/**
 	 * Implements the ToolPanelReady.toolPanelReady() method.
 	 */
@@ -419,5 +414,40 @@ public class CustomBinderView extends WorkspaceViewBase implements ViewReady, To
 	{
 		// Nothing to do.  We don't need to know when tool panels are ready.
 	}
+
+	/**
+	 */
+	@Override
+	public void onResize()
+	{
+		onResizeAsync();
+	}//end onResize()
+
+	/*
+	 * Asynchronously resizes the flow panel.
+	 */
+	private void onResizeAsync()
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				onResizeNow();
+			}
+		});
+	}//end onResizeAsync()
+
+	/*
+	 * Synchronously resizes the flow panel.
+	 */
+	private void onResizeNow()
+	{
+		GwtClientHelper.consoleLog("CustomBinderView: onResizeNow()");
+		super.onResize();
+		m_mainPanel.onResize();
+	}//end onResizeNow()
+
+
 }
 
