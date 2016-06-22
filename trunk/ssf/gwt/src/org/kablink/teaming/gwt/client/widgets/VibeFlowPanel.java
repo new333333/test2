@@ -83,7 +83,9 @@ public class VibeFlowPanel extends FlowPanel
 	 */
 	private void onResizeNow()
 	{
-		for (Widget child : getChildren())
+		WidgetCollection children = getChildren();
+		GwtClientHelper.consoleLog("VibeFlowPanel ("  + this.getStyleName() + "): onResizeNow().  Child count: " + children.size());
+		for (Widget child : children)
 	    {
 	    	if (child instanceof RequiresResize)
 	        {
@@ -94,6 +96,7 @@ public class VibeFlowPanel extends FlowPanel
 
 	@Override
 	public void showWidget(Widget widget) {
+		GwtClientHelper.consoleLog("VibeFlowPanel ("  + this.getStyleName() + "): showWidget() for " + widget.getClass().getName());
 		add(widget);
 	}
 }

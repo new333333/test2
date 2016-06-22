@@ -61,7 +61,7 @@ public abstract class ViewBase extends ResizeComposite
 	// for padding, ...
 	private int m_contentHeightAdjust	= GwtConstants.CONTENT_HEIGHT_ADJUST;
 	private int m_contentWidthAdjust	= GwtConstants.CONTENT_WIDTH_ADJUST;
-	private UIObject m_parent;
+	protected UIObject m_parent;
 
 	/**
 	 * Callback interface used to interact with a view asynchronously
@@ -144,12 +144,12 @@ public abstract class ViewBase extends ResizeComposite
 	 * that holds it.
 	 */
 	public void setViewSize() {
-		UIObject parent = m_parent;
-		if (parent==null) {
-			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
-		}
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). Parent=" + parent.getClass().getSimpleName() + "; Parent height: " + parent.getOffsetWidth());
-		setPixelSize((parent.getOffsetWidth() + m_contentWidthAdjust), (parent.getOffsetHeight() + m_contentHeightAdjust));
+//		UIObject parent = m_parent;
+//		if (parent==null) {
+//			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
+//		}
+//		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). Parent=" + parent.getClass().getSimpleName() + "; Parent height: " + parent.getOffsetWidth());
+//		setPixelSize((parent.getOffsetWidth() + m_contentWidthAdjust), (parent.getOffsetHeight() + m_contentHeightAdjust));
 	}
 	
 	/**
