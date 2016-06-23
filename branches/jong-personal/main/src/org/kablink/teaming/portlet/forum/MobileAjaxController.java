@@ -109,6 +109,7 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -557,10 +558,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
-    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	AuthenticationException ex = (AuthenticationException) session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
     	if(ex != null) {
     		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
-    		session.removeAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    		session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
 
 			if ( ex instanceof TextVerificationException )
     		{
@@ -612,10 +613,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response, String portletName, String operation) throws Exception {
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
 		Map model = new HashMap();
-    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    	AuthenticationException ex = (AuthenticationException) session.getAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
     	if(ex != null) {
     		model.put(WebKeys.LOGIN_ERROR, ex.getMessage());
-    		session.removeAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
+    		session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
     	}
 		model.put("ss_teamingLiveStatus", "reload");
         session.setAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE, new Date());

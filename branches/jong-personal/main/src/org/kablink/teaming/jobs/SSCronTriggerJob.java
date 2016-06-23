@@ -40,10 +40,16 @@ import org.kablink.teaming.ConfigurationException;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-
+import org.quartz.Trigger.TriggerState;
+import org.quartz.TriggerKey;
+import org.quartz.impl.JobDetailImpl;
+import org.quartz.impl.triggers.CronTriggerImpl;
+import static org.quartz.JobKey.*;
+import static org.quartz.TriggerKey.*;
 
 public abstract class SSCronTriggerJob extends SSStatefulJob {
 	/**
@@ -54,15 +60,15 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 	public void setScheduleInfo(CronJobDescription job, ScheduleInfo info) {
 		try {
 			Scheduler scheduler = getScheduler();		
-		 	JobDetail jobDetail=scheduler.getJobDetail(job.getJobName(), job.getJobGroup());
+		 	JobDetailImpl jobDetail = (JobDetailImpl) scheduler.getJobDetail(jobKey(job.getJobName(), job.getJobGroup()));
 		 	//never been scheduled -start now
 		 	if (jobDetail == null) {
  				//volitility(not stored in db),durablilty(remains after trigger removed),recover(after recover or fail-over)
-		 		jobDetail = new JobDetail(job.getJobName(), job.getJobGroup(),
-		 				this.getClass(),false, job.getDurability(), false);
+		 		jobDetail = new JobDetailImpl(job.getJobName(), job.getJobGroup(),
+		 				this.getClass(), job.getDurability(), false);
 				jobDetail.setDescription(job.getJobDescription());
 				jobDetail.setJobDataMap((JobDataMap)info.getDetails());
-				jobDetail.addJobListener(getDefaultCleanupListener());
+				//jobDetail.addJobListener(getDefaultCleanupListener());
 				scheduler.addJob(jobDetail, true);
 		 	} else {
 		 		//update data if necessary
@@ -71,7 +77,7 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 		 			scheduler.addJob(jobDetail, true);
 		 		}
 		 	}
-  			CronTrigger trigger = (CronTrigger)scheduler.getTrigger(job.getTriggerName(), job.getTriggerGroup());
+  			CronTrigger trigger = (CronTrigger)scheduler.getTrigger(triggerKey(job.getTriggerName(), job.getTriggerGroup()));
   			//see if stopped
   			if (trigger == null) {
   				if (info.isEnabled()) {
@@ -85,15 +91,15 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
   					String nSched = info.getSchedule().getQuartzSchedule();
   					if (!nSched.equals(cSched)) {
   						trigger = buildCronTrigger(job, info.getSchedule());
-  				 		scheduler.rescheduleJob(job.getJobName(), job.getJobGroup(), trigger);
+  				 		scheduler.rescheduleJob(new TriggerKey(job.getJobName(), job.getJobGroup()), trigger);
  	 				} else {
- 	 					int state = scheduler.getTriggerState(job.getTriggerName(), job.getTriggerGroup());
- 	 					if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE)) {
- 	 						scheduler.resumeJob(job.getJobName(), job.getJobGroup());
+ 	 					TriggerState state = scheduler.getTriggerState(new TriggerKey(job.getTriggerName(), job.getTriggerGroup()));
+ 	 					if ((state == Trigger.TriggerState.PAUSED) || (state == Trigger.TriggerState.NONE)) {
+ 	 						scheduler.resumeJob(new JobKey(job.getJobName(), job.getJobGroup()));
  	 					}
  	 				}
   				} else {
-			 		scheduler.unscheduleJob(job.getJobName(), job.getJobGroup());  					
+			 		scheduler.unscheduleJob(new TriggerKey(job.getJobName(), job.getJobGroup()));  					
   				}
 				
   			}
@@ -112,14 +118,14 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 	public ScheduleInfo getScheduleInfo(CronJobDescription job) {
 		try {
 			Scheduler scheduler = getScheduler();		
-			JobDetail jobDetail=scheduler.getJobDetail(job.getJobName(), job.getJobGroup());
+			JobDetail jobDetail=scheduler.getJobDetail(new JobKey(job.getJobName(), job.getJobGroup()));
 			if (jobDetail == null) {
 				return job.getDefaultScheduleInfo();
 			}
 			
 			ScheduleInfo info = new ScheduleInfo(job.getZoneId());
-			int state = scheduler.getTriggerState(job.getTriggerName(), job.getTriggerGroup());
-			if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE))
+			TriggerState state = scheduler.getTriggerState(new TriggerKey(job.getTriggerName(), job.getTriggerGroup()));
+			if ((state == Trigger.TriggerState.PAUSED) || (state == Trigger.TriggerState.NONE))
 				info.setEnabled(false);
 			else
 				info.setEnabled(true);
@@ -133,10 +139,10 @@ public abstract class SSCronTriggerJob extends SSStatefulJob {
 
 	public CronTrigger buildCronTrigger(CronJobDescription job, Schedule schedule) throws ParseException{
     	
-   		CronTrigger trigger = new CronTrigger(job.getJobName(), job.getJobGroup(), job.getTriggerName(), 
+   		CronTriggerImpl trigger = new CronTriggerImpl(job.getJobName(), job.getJobGroup(), job.getTriggerName(), 
    					job.getTriggerGroup(), schedule.getQuartzSchedule(), job.getTimeZone());
    		trigger.setMisfireInstruction(job.getMisfireInstruction());
-   		trigger.setVolatility(false);
+   		//trigger.setVolatility(false);
    		trigger.setPriority(job.getPriority());
  
 		return trigger;    	

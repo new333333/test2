@@ -257,6 +257,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  	
  	@Override
 	public void initZones() {
+ 		// $$$$$$$$$$$$$$ JK TODO remove this!!!
+ 		int k = 0;
+ 		if(k == 0) return;
+ 		
+
+ 		
 		boolean closeSession = false;
 		if (!SessionUtil.sessionActive()) {
 			SessionUtil.sessionStartup();	

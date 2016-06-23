@@ -48,6 +48,7 @@ public class SchedulerFactoryBean extends org.springframework.scheduling.quartz.
 	
 	private static final int CHECK_INTERVAL = 30; // 30 seconds
 
+	@Override
 	protected void startScheduler(final Scheduler scheduler, final int startupDelay) throws SchedulerException {
 		if (startupDelay <= 0) {
 			logger.info("Starting Quartz Scheduler now");

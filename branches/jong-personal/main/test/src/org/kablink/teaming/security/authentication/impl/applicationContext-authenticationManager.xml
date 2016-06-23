@@ -17,8 +17,8 @@
 	     For example, this configuration does not depend upon JNDI for datasource
 	     lookup, etc. -->
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-		<property name="dataSource"><ref local="dataSource"/></property>
-		<property name="lobHandler"><ref local="lobHandler"/></property>
+		<property name="dataSource"><ref bean="dataSource"/></property>
+		<property name="lobHandler"><ref bean="lobHandler"/></property>
   		<property name="hibernateProperties">
  		   <props>
   		    <prop key="hibernate.show_sql">true</prop>

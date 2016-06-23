@@ -51,7 +51,7 @@ public class DefaultWorkflowTimeout extends SimpleTriggerJob implements Workflow
 
 	public void doExecute(JobExecutionContext context) throws JobExecutionException {	
 		if (logger.isDebugEnabled())
-			logger.debug("Starting job " + context.getJobDetail().getFullName());
+			logger.debug("Starting job " + context.getJobDetail().getKey());
 		
 		WorkflowModule work = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
 		work.processTimers();
