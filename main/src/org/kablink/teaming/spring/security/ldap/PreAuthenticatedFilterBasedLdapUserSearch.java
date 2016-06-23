@@ -93,7 +93,7 @@ public class PreAuthenticatedFilterBasedLdapUserSearch implements LdapUserSearch
 
         } catch (IncorrectResultSizeDataAccessException notFound) {
             if (notFound.getActualSize() == 0) {
-                throw new UsernameNotFoundException("User " + username + " not found in directory.", username);
+                throw new UsernameNotFoundException("User " + username + " not found in directory.");
             }
             // Search should never return multiple results if properly configured, so just rethrow
             throw notFound;

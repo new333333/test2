@@ -3,10 +3,10 @@
     xmlns:aop="http://www.springframework.org/schema/aop"
     xmlns:security="http://www.springframework.org/schema/security"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
-    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-4.3.xsd
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.1.xsd">
 
 	<!-- ============================== Modules ============================= -->
 
@@ -133,11 +133,11 @@
 	</bean>
 
 	<!-- =========================== Timer-based scheduler for non-stateful jobs ====================== -->
-	<bean id="timer" class="org.springframework.scheduling.timer.TimerFactoryBean" depends-on="sessionFactory">
-		<property name="scheduledTimerTasks">
+	<bean id="timer" class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean" depends-on="sessionFactory">
+		<property name="scheduledExecutorTasks">
 			<list>
 				<!-- Extension hot-deploy listener -->
-				<bean class="org.springframework.scheduling.timer.ScheduledTimerTask">	
+				<bean class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">	
 					<!-- period between invocations (ms) 5mins -->
 					<property name="period" value="300000" />
 					<!-- Do not execute this task until after this much time (2 mins) passes after server start.
@@ -145,12 +145,7 @@
 					     the server startup process carried out by the main thread, for example, zone upgrade 
 					     procedure, etc. -->
 					<property name="delay" value="120000" />
-					<property name="timerTask">
-						<bean class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
-							<property name="targetObject" ref="extDeployer" />
-							<property name="targetMethod" value="check" />
-						</bean>
-					</property>
+					<property name="runnable" ref="extDeployer" />
 				</bean>
 			</list>
 		</property>

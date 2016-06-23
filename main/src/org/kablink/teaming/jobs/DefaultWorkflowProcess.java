@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Map;
+import java.util.Set;
 
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.InternalException;
@@ -61,9 +62,13 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
+import org.quartz.impl.triggers.SimpleTriggerImpl;
+import static org.quartz.TriggerKey.*;
+import static org.quartz.impl.matchers.GroupMatcher.*;
 
 /**
  *
@@ -122,12 +127,12 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
 		       		} else {
 		       			//update jobdata
 		       			jobDataMap.put("workflowStatus", status);
-		       			SimpleTrigger trigger = (SimpleTrigger)context.getTrigger();
+		       			SimpleTriggerImpl trigger = (SimpleTriggerImpl)context.getTrigger();
 		       			if (status.getRetrySeconds()*1000 != trigger.getRepeatInterval()) {
 		       				//	change time
 		       				trigger.setRepeatInterval(status.getRetrySeconds()*1000);
 		       				try {
-		       					context.getScheduler().rescheduleJob(context.getJobDetail().getName(), context.getJobDetail().getGroup(), trigger);
+		       					context.getScheduler().rescheduleJob(triggerKey(context.getJobDetail().getKey().getName(), context.getJobDetail().getKey().getGroup()), trigger);
 		       				} catch (SchedulerException se) {			
 		       					throw new ConfigurationException(se.getLocalizedMessage());			
 		       				}
@@ -153,9 +158,9 @@ public class DefaultWorkflowProcess extends SimpleTriggerJob implements Workflow
 		String groupName = getGroupName(entry, wfState);
 		Scheduler scheduler = getScheduler();		
 		try {
-			String[] jobNames = scheduler.getJobNames(groupName);
-			for (int i=0; i<jobNames.length; ++i) {
-				scheduler.unscheduleJob(jobNames[i], groupName);
+			Set<JobKey> jobKeys = scheduler.getJobKeys(jobGroupEquals(groupName));
+			for(JobKey jobKey:jobKeys) {
+				scheduler.unscheduleJob(triggerKey(jobKey.getName(), groupName));
 			}
 		} catch (SchedulerException se) {			
 			logger.error(se.getLocalizedMessage()==null?se.getMessage():se.getLocalizedMessage());

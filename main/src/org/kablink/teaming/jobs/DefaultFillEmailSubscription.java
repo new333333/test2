@@ -64,7 +64,7 @@ public class DefaultFillEmailSubscription extends SimpleTriggerJob implements Fi
 	 */
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
 		//assume old job from v1 where each changed entry registered a job
-		if (!zoneId.toString().equals(context.getTrigger().getJobName())) {
+		if (!zoneId.toString().equals(context.getTrigger().getJobKey().getName())) {
 				deleteJob(context);
 		} else {			
 			if (!getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled()) {
