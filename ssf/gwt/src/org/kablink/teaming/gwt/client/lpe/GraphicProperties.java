@@ -321,7 +321,8 @@ public class GraphicProperties
 	public void setHeightUnits( Style.Unit units )
 	{
 		// Ignore this.  The height is always in px
-		m_heightUnits = Style.Unit.PX;
+		//m_heightUnits = Style.Unit.PX;
+		m_heightUnits = units;
 	}
 	
 	/**
