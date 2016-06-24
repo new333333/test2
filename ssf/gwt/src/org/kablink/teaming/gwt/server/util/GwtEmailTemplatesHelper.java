@@ -214,6 +214,10 @@ public class GwtEmailTemplatesHelper {
 	private static void deleteCustomizedEmailTemplatesImpl(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, DeleteCustomizedEmailTemplatesRpcResponseData reply) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtEmailTemplatesHelper.deleteCustomizedEmailTemplatesImpl()");
 		try {
+			// (bug 986430, 986431) This checking is necessary to ensure that the user
+			// has the right to delete custom email template.
+			bs.getAdminModule().checkAccess(AdminOperation.manageFunction);
+
 			// Were we given any proxy identities to delete?
 			if (MiscUtil.hasItems(entityIds)) {
 				// Yes!  Scan them.
@@ -225,6 +229,13 @@ public class GwtEmailTemplatesHelper {
 						// Yes!  Does it exist in the customized email
 						// templates directory?
 						String name = eid.getEmailTemplateName();
+						
+						// (bug 986430, 986431) We must validate the specified file name to guard against potential attack.
+						if(name != null && (name.contains("/") || name.contains("\\"))) {
+							// Don't allow file name to contain path delimiter.
+							throw new IllegalArgumentException("Illegal file name '" + name + "'");
+						}
+
 						String fullPath = (customPath + name);
 						File f = new File(fullPath);
 						if (!(f.exists())) {
