@@ -1763,6 +1763,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
+        		getCoreDao().flush();
                 copyBinder_postSave(source, destination, binder, ctx);
                 return null;
         	}
@@ -1845,9 +1846,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    binder.setWorkflowAssociations(source.getWorkflowAssociations());
 		    binder.setDefinitionsInherited(source.isDefinitionsInherited());
 		    binder.setFunctionMembershipInherited(source.isFunctionMembershipInherited()); // The actual ACL will be copied later on.
-		    binder.setTeamMembershipInherited(source.isTeamMembershipInherited());
-		    
-			getCoreDao().flush();
+		    binder.setTeamMembershipInherited(source.isTeamMembershipInherited());		    		
        } catch (Exception e) {
     	   throw new InternalException("Error copying '" + source + "' into '" + destination + "' with title '" + title + "'", e);
        }
