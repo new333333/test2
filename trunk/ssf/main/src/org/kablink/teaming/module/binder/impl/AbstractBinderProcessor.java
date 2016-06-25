@@ -1763,7 +1763,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		getCoreDao().flush();959070 
+        		getCoreDao().flush(); 
                 copyBinder_postSave(source, destination, binder, ctx);
                 return null;
         	}
