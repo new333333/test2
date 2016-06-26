@@ -2345,6 +2345,15 @@ public class EventHelper {
 				}
 				break;
 
+			case SHOW_STANDARD_BINDER_VIEW:
+				// A ShowStandardBinderViewEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof ShowStandardBinderViewEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowStandardBinderViewEvent.registerEvent(eventBus, ((ShowStandardBinderViewEvent.Handler) eventHandler));
+				}
+				break;
+
 			case SHOW_DISCUSSION_FOLDER:
 				// A ShowDiscussionFolderEvent!  Can the event handler
 				// we were given handle that?
