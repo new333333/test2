@@ -264,7 +264,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                     if (!accessControlManager.testRightGrantedBySharing(user,
                             (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_FORWARD)) {
                         //The entry didn't have the right due to sharing, so now check the parent folder
-                        if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingForward)) {
+                        if (!binderModule.testAccess(topFolder, BinderOperation.allowFileSharingForward)) {
                             throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
                         }
                     }
@@ -273,14 +273,14 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                     if (recipient.getIdentityInfo().isInternal()) {
                         if (!accessControlManager.testRightGrantedBySharing(user,
                                 (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_INTERNAL)) {
-                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowFileSharing)) {
                                 throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
                             }
                         }
                     } else {
                         if (!accessControlManager.testRightGrantedBySharing(user,
                                 (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_EXTERNAL)) {
-                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowFileSharingExternal)) {
                                 throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
                             }
                         }
@@ -289,21 +289,21 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                     if (((User)recipient).isShared()) {
                         if (!accessControlManager.testRightGrantedBySharing(user,
                                 (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_PUBLIC)) {
-                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingPublic)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowFileSharingPublic)) {
                                 throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
                             }
                         }
                     } else if (recipient.getIdentityInfo().isInternal()) {
                         if (!accessControlManager.testRightGrantedBySharing(user,
                                 (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_INTERNAL)) {
-                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowFileSharing)) {
                                 throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
                             }
                         }
                     } else {
                         if (!accessControlManager.testRightGrantedBySharing(user,
                                 (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_EXTERNAL)) {
-                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowFileSharingExternal)) {
                                 throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
                             }
                         }

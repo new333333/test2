@@ -557,6 +557,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					}
 				}
 				break;
+				/*
+				 * The following 4 operations - 
+				 * 
+				 * allowSharing
+				 * allowSharingExternal
+				 * allowSharingPublic
+				 * allowSharingForward
+				 * 
+				 * - share the same subtle semantics.
+				 * 
+				 * a) For Home Folder - maps to the right controlling BOTH files and folders
+				 * b) For Personal Folder - maps to the right controlling BOTH files and folders
+				 * c) For Net Folder (non Home Folder) - maps to the right controlling ONLY folders
+				 */
 			case allowSharing:				
 				getAccessControlManager().checkOperation(user, binder,
 						binder.isFolderInNetFolder() ? WorkAreaOperation.ALLOW_FOLDER_SHARING_INTERNAL : WorkAreaOperation.ALLOW_SHARING_INTERNAL);
@@ -569,6 +583,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				getAccessControlManager().checkOperation(user, binder,
 						binder.isFolderInNetFolder() ? WorkAreaOperation.ALLOW_FOLDER_SHARING_PUBLIC : WorkAreaOperation.ALLOW_SHARING_PUBLIC);
 				break;
+			case allowSharingForward:
+				getAccessControlManager().checkOperation(user, binder,
+						binder.isFolderInNetFolder() ? WorkAreaOperation.ALLOW_FOLDER_SHARING_FORWARD : WorkAreaOperation.ALLOW_SHARING_FORWARD);
+				break;
 			case allowSharingPublicLinks:
 				// Currently, the product only supports file link but not folder link.
 				// Until we do, short-circuit this check and always fail.
@@ -578,14 +596,40 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						WorkAreaOperation.ALLOW_SHARING_PUBLIC_LINKS);
 				break;
 				*/
-			case allowSharingForward:
-				getAccessControlManager().checkOperation(user, binder,
-						binder.isFolderInNetFolder() ? WorkAreaOperation.ALLOW_FOLDER_SHARING_FORWARD : WorkAreaOperation.ALLOW_SHARING_FORWARD);
-				break;
 			case allowAccessNetFolder:
 				getAccessControlManager().checkOperation(user, binder,
 						WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
+				break;		
+				/*
+				 * The following 4 operations - 
+				 * 
+				 * allowFileSharing
+				 * allowFileSharingExternal
+				 * allowFileSharingPublic
+				 * allowFileSharingForward
+				 * 
+				 * - share the same subtle semantics.
+				 * 
+				 * a) For Home Folder - maps to the right controlling BOTH files and folders
+				 * b) For Personal Folder - maps to the right controlling BOTH files and folders
+				 * c) For Net Folder (non Home Folder) - maps to the right controlling ONLY files
+				 */
+			case allowFileSharing:				
+				getAccessControlManager().checkOperation(user, binder,
+						WorkAreaOperation.ALLOW_SHARING_INTERNAL);
 				break;
+			case allowFileSharingExternal:
+				getAccessControlManager().checkOperation(user, binder,
+						WorkAreaOperation.ALLOW_SHARING_EXTERNAL);
+				break;
+			case allowFileSharingPublic:
+				getAccessControlManager().checkOperation(user, binder,
+						WorkAreaOperation.ALLOW_SHARING_PUBLIC);
+				break;
+			case allowFileSharingForward:
+				getAccessControlManager().checkOperation(user, binder,
+						WorkAreaOperation.ALLOW_SHARING_FORWARD);
+				break;			
 			default:
 				throw new NotSupportedException(operation.toString(),
 						"checkAccess");
