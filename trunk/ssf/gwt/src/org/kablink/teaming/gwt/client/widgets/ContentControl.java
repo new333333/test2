@@ -87,6 +87,7 @@ public class ContentControl extends Composite
 		ShowCalendarFolderEvent.Handler,
 		ShowCollectionViewEvent.Handler,
 		ShowCustomBinderViewEvent.Handler,
+		ShowStandardBinderViewEvent.Handler,
 		ShowDiscussionFolderEvent.Handler,
 		ShowDiscussionWSEvent.Handler,
 		ShowFileFolderEvent.Handler,
@@ -145,6 +146,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_CALENDAR_FOLDER,
 		TeamingEvents.SHOW_COLLECTION_VIEW,
 		TeamingEvents.SHOW_CUSTOM_BINDER_VIEW,
+		TeamingEvents.SHOW_STANDARD_BINDER_VIEW,
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_WORKSPACE,
 		TeamingEvents.SHOW_FILE_FOLDER,
@@ -508,7 +510,7 @@ public class ContentControl extends Composite
 	{
 		// Simply call the JavaScript implementation method on the
 		// sanitized URL.
-		jsPushContentHistoryUrl( sanitizeHistoryUrl( url ) );
+		jsPushContentHistoryUrl(sanitizeHistoryUrl(url));
 	}// end pushContentHistoryUrl()
 	
 	/**
@@ -653,7 +655,7 @@ public class ContentControl extends Composite
 		// into it.
 		m_mainContentPanel.remove( m_contentFrame );
 		m_contentFrame.setUrl(     newUrl         );
-		m_mainContentPanel.add(    m_contentFrame );
+		m_mainContentPanel.add(m_contentFrame);
 	}// end setContentFrameUrl()
 	
 
@@ -664,7 +666,7 @@ public class ContentControl extends Composite
 	private void setContentFrameUrl( String url )
 	{
 		// Always use the initial form of the method.
-		setContentFrameUrl( url, null );
+		setContentFrameUrl(url, null);
 	}// end setContentFrameUrl()
 	
 	/*
@@ -1291,14 +1293,12 @@ public class ContentControl extends Composite
 	 */
 	private void onDeleteSelectedEntitiesAsync( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
 	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
-				onDeleteSelectedEntitiesNow( selectedEntityIds, targetBinderPermalink );
+			public void execute() {
+				onDeleteSelectedEntitiesNow(selectedEntityIds, targetBinderPermalink);
 			}// end execute()
-		} );
+		});
 	}// end onDeleteSelectedEntitiesAsync()
 	
 	/*
@@ -1310,36 +1310,30 @@ public class ContentControl extends Composite
 		// redisplay things with the entries deleted.
 		final boolean deletingBinders = EntityId.areBindersInEntityIds( selectedEntityIds );
 		BinderViewsHelper.deleteSelections(
-			selectedEntityIds,
-			new DeleteEntitiesCallback()
-		{
-			@Override
-			public void operationCanceled()
-			{
-				if ( deletingBinders )
-				{
-					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-				}
-				postDeleteReloadAsync( targetBinderPermalink );
-			}// end operationCanceled())
+				selectedEntityIds,
+				new DeleteEntitiesCallback() {
+					@Override
+					public void operationCanceled() {
+						if (deletingBinders) {
+							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+						}
+						postDeleteReloadAsync(targetBinderPermalink);
+					}// end operationCanceled())
 
-			@Override
-			public void operationComplete()
-			{
-				if ( deletingBinders )
-				{
-					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-				}
-				postDeleteReloadAsync( targetBinderPermalink );
-			}// end operationComplete()
-			
-			@Override
-			public void operationFailed()
-			{
-				// Nothing to do.  The delete call will have told the
-				// user about the failure.
-			}// end operationFailed()
-		} );
+					@Override
+					public void operationComplete() {
+						if (deletingBinders) {
+							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+						}
+						postDeleteReloadAsync(targetBinderPermalink);
+					}// end operationComplete()
+
+					@Override
+					public void operationFailed() {
+						// Nothing to do.  The delete call will have told the
+						// user about the failure.
+					}// end operationFailed()
+				});
 	}// end onDeleteSelectedEntitiesNow()
 	
 	
@@ -1351,7 +1345,7 @@ public class ContentControl extends Composite
 	@Override
 	public void onGetCurrentViewInfo( GetCurrentViewInfoEvent event )
 	{
-		event.getViewInfoCallback().viewInfo( m_currentView );
+		event.getViewInfoCallback().viewInfo(m_currentView);
 	}
 
 	
@@ -1464,6 +1458,23 @@ public class ContentControl extends Composite
 				event.getViewLayout(),
 				event.getViewReady(),
 				new BinderViewClient(event));
+	}
+
+	/**
+	 * Handles onShowStandardBinderView's received by this class.
+	 *
+	 * Implements the ShowStandardBinderViewEvent.Handler.onShowStandardBinderView() method.
+	 *
+	 * @param event
+	 */
+	@Override
+	public void onShowStandardBinderView(ShowStandardBinderViewEvent event) {
+		StandardBinderView.createAsync(
+				event.getBinderInfo(),
+				event.getViewType(),
+				event.getViewReady(),
+				new BinderViewClient(event)
+		);
 	}
 
 	/**
@@ -1985,11 +1996,11 @@ public class ContentControl extends Composite
 		BinderInfo bi = vi.getBinderInfo();
 		ViewType vt = vi.getViewType();
 
-		ShowBinderEvent viewEvent;
+		ShowBinderEvent viewEvent = null;
 		if (vi.isCustomLayout() && vi.getViewLayout()!=null) {
 			viewEvent = new ShowCustomBinderViewEvent(bi, vt, vi.getViewLayout(), parent, viewReady);
-		} else {
-			viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, vt, parent, viewReady);
+		} else if (GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, vt, parent, viewReady)!=null) {
+			viewEvent = new ShowStandardBinderViewEvent(bi, vt, parent, viewReady);
 		}
 
 		if (viewEvent!=null) {
