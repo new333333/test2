@@ -2209,7 +2209,7 @@ public class ContentControl extends Composite
 		public void onSuccess( ViewBase view )
 		{
 			view.setParent((UIObject) event.getViewPanel());
-			view.setViewSize();
+			//view.setViewSize();
 			event.getViewPanel().showWidget( view );
 		}
 	};

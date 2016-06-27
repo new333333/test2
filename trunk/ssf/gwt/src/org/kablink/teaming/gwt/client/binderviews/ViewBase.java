@@ -109,7 +109,6 @@ public abstract class ViewBase extends ResizeComposite
 	 */
 	@Override
 	protected void initWidget(Widget widget) {
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ": initWidget() for " + widget.getClass().getSimpleName());
 		super.initWidget(widget);
 		addStyleName("vibe-viewBase");
 	}
@@ -131,6 +130,7 @@ public abstract class ViewBase extends ResizeComposite
 	 */
 	@Override
 	public void onResize() {
+		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ": onResize()");
 		super.onResize();
 		setViewSize();
 	}
@@ -148,7 +148,7 @@ public abstract class ViewBase extends ResizeComposite
 		if (parent==null) {
 			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
 		}
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). Parent=" + parent.getClass().getSimpleName() + "; Parent height: " + parent.getOffsetWidth());
+		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). Parent=" + parent.getClass().getSimpleName() + "; Parent height: " + parent.getOffsetHeight());
 		setPixelSize((parent.getOffsetWidth() + getContentWidthAdjust()), (parent.getOffsetHeight() + getContentHeightAdjust()));
 	}
 	
