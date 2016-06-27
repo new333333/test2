@@ -3607,9 +3607,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	public void onResize() {
 		// Pass the resize on to the super class...
 		super.onResize();
-
-		// ...and do what we need to do locally.
-		onResizeAsync(m_dataTable);
+		if (m_dataTable!=null) {
+			// ...and do what we need to do locally.
+			onResizeAsync(m_dataTable);
+		}
 	}
 
 	/*

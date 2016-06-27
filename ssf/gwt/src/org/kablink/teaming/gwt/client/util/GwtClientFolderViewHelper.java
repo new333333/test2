@@ -56,7 +56,6 @@ public class GwtClientFolderViewHelper {
             case FOLDER:
                 // What type of folder is it?
                 FolderType ft = bi.getFolderType();
-                GwtClientHelper.consoleLog("GwtClientFolderViewHelper: buildGwtBinderLayoutEvent() for folder " + ft.name() + " with parent " + parent.getClass().getName());
                 switch ( ft )
                 {
                     case CALENDAR:
@@ -115,7 +114,6 @@ public class GwtClientFolderViewHelper {
             case WORKSPACE:
                 // What type of workspace is it?
                 WorkspaceType wt = bi.getWorkspaceType();
-                GwtClientHelper.consoleLog("GwtClientFolderViewHelper: buildGwtBinderLayoutEvent() for workspace " + wt.name() + " with parent " + parent.getClass().getName());
                 switch ( wt )
                 {
                     case LANDING_PAGE:

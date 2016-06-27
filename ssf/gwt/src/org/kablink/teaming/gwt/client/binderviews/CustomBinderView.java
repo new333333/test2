@@ -80,20 +80,16 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 	}
 
 	public void addChildControls(BinderViewContainer parentDef, VibeEntityViewPanel parentWidget) {
-		GwtClientHelper.consoleLog("CustomBinderView: addChildControls() for " + parentDef.getClass().getName());
 		for (BinderViewDefBase child : parentDef.getChildren()) {
 			addControl(child, parentWidget);
 		}
 	}
 
 	public void addControl(BinderViewDefBase viewDef, VibeEntityViewPanel parentWidget) {
-		GwtClientHelper.consoleLog("CustomBinderView: addControl() for " + viewDef.getClass().getName());
 		if (viewDef instanceof BinderViewContainer) {
 			VibeEntityViewPanel viewPanel;
 			if (viewDef instanceof BinderViewTwoColumnTable) {
-				GwtClientHelper.consoleLog("CustomBinderView: BinderViewTwoColumnTable ");
 				BinderViewTwoColumnTable tableDef = (BinderViewTwoColumnTable) viewDef;
-				GwtClientHelper.consoleLog("CustomBinderView: constructing 2 column VibeGrid");
 				VibeGrid viewGrid = new VibeGrid(1,2);
 				viewGrid.addStyleName("vibe-grid");
 				//viewGrid.setHeight("100%");
@@ -111,7 +107,6 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 				viewPanel = viewGrid;
 			} else if (viewDef instanceof BinderViewThreeColumnTable) {
 				BinderViewThreeColumnTable tableDef = (BinderViewThreeColumnTable) viewDef;
-				GwtClientHelper.consoleLog("CustomBinderView: constructing 3 column VibeGrid");
 				VibeGrid viewGrid = new VibeGrid(1,3);
 				viewGrid.addStyleName("vibe-grid");
 				//viewGrid.setHeight("100%");
@@ -132,7 +127,6 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 				viewPanel = viewGrid;
 			} else {
 				BinderViewContainer containerDef = (BinderViewContainer) viewDef;
-				GwtClientHelper.consoleLog("CustomBinderView: constructing VibeFlowPanel");
 				VibeFlowPanel flowPanel = new VibeFlowPanel();
 				flowPanel.addStyleName("vibe-flow");
 				//flowPanel.setHeight("100%");
@@ -143,7 +137,6 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 				}
 				viewPanel = flowPanel;
 			}
-			GwtClientHelper.consoleLog("CustomBinderView: parentWidget=" + parentWidget.getClass().getSimpleName() + "; viewPanel=" + viewPanel.getClass().getSimpleName());
 			parentWidget.showWidget((Widget) viewPanel);
 			addChildControls((BinderViewContainer) viewDef, viewPanel);
 		} else {
@@ -155,14 +148,12 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 			if (viewDef instanceof BinderViewFolderListing) {
 				BinderInfo bi = getBinderInfo();
 				m_delegatingViewReady.incrementComponent();
-				GwtClientHelper.consoleLog("CustomBinderView: new async component.  componentTotal = " + m_delegatingViewReady.getComponentCount());
 				ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, m_viewType, flowPanel, this);
 				if (viewEvent != null) {
 					GwtTeaming.fireEvent(viewEvent);
 				}
 			} else if (viewDef instanceof BinderViewJsp) {
 				m_delegatingViewReady.incrementComponent();
-				GwtClientHelper.consoleLog("CustomBinderView: new async component.  componentTotal = " + m_delegatingViewReady.getComponentCount());
 				executeJspAsync((BinderViewJsp) viewDef, flowPanel, this);
 			}
 		}
