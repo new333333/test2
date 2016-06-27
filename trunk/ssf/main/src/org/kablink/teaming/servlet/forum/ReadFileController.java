@@ -716,6 +716,10 @@ public class ReadFileController extends AbstractReadFileController {
 			// Do we have both a type and filename?
 			String type     = args[WebUrlUtil.FILE_URL_EMAIL_TEMPLATE_TYPE];
 			String fileName = args[WebUrlUtil.FILE_URL_EMAIL_TEMPLATE_FILENAME];
+			if(fileName != null && (fileName.contains("/") || fileName.contains("\\"))) {
+				// Don't allow file name to contain path delimiter.
+				throw new IllegalArgumentException("Illegal file name '" + fileName + "'");
+			}
 			if (MiscUtil.hasString(type) && MiscUtil.hasString(fileName)) {
 				// Yes!  Construct a full path to the file.
 				boolean defaultEmailTemplate = (type.equals(WebUrlUtil.FILE_URL_EMAIL_TEMPLATE_TYPE_DEFAULT));
