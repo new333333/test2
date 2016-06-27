@@ -42,6 +42,7 @@
 	-moz-border-radius: 6px;
 	border-radius: 6px;
 	-webkit-border-radius: 6px;
+	overflow:auto;
 }
 
 /* Style used for the title on widgets in a landing page. */
