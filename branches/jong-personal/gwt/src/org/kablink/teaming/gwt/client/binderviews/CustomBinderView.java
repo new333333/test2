@@ -34,38 +34,32 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.ResizeComposite;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.web.bindery.event.shared.HandlerRegistration;
-import org.kablink.teaming.gwt.client.BlogArchiveFolder;
-import org.kablink.teaming.gwt.client.BlogArchiveMonth;
-import org.kablink.teaming.gwt.client.BlogPage;
+import com.google.gwt.user.client.ui.*;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
+import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.event.*;
 import org.kablink.teaming.gwt.client.rpc.shared.*;
-import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.*;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeGrid;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Custom binder view.
  * 
  * @author david
  */
-public class CustomBinderView extends WorkspaceViewBase implements VibeEntityViewPanel
+public class CustomBinderView extends StandardBinderView implements ViewReady, ToolPanelReady, ProvidesResize, RequiresResize
 {
 	private BinderViewLayout m_viewLayout;
-	private ViewType m_viewType;
+
 	/**
 	 * Constructor method.
 	 *
@@ -75,19 +69,14 @@ public class CustomBinderView extends WorkspaceViewBase implements VibeEntityVie
 	private CustomBinderView(BinderInfo binderInfo, ViewType viewType, BinderViewLayout viewLayout, ViewReady viewReady)
 	{
 		// Simply initialize the super class.
-		super( binderInfo, viewReady);
+		super( binderInfo, viewType, viewReady);
 		m_viewLayout = viewLayout;
-		m_viewType = viewType;
-		constructView();
 	}
-	
-	/**
-	 * Called to construct the view.
-	 */
-	public void constructView()
-	{
-		GwtClientHelper.consoleLog("CustomBinderView: constructView()");
-		this.addChildControls(m_viewLayout , this);
+
+
+	@Override
+	protected void layoutContent(VibeFlowPanel layoutPanel) {
+		this.addChildControls(m_viewLayout, layoutPanel);
 	}
 
 	public void addChildControls(BinderViewContainer parentDef, VibeEntityViewPanel parentWidget) {
@@ -102,57 +91,79 @@ public class CustomBinderView extends WorkspaceViewBase implements VibeEntityVie
 		if (viewDef instanceof BinderViewContainer) {
 			VibeEntityViewPanel viewPanel;
 			if (viewDef instanceof BinderViewTwoColumnTable) {
+				GwtClientHelper.consoleLog("CustomBinderView: BinderViewTwoColumnTable ");
 				BinderViewTwoColumnTable tableDef = (BinderViewTwoColumnTable) viewDef;
+				GwtClientHelper.consoleLog("CustomBinderView: constructing 2 column VibeGrid");
 				VibeGrid viewGrid = new VibeGrid(1,2);
 				viewGrid.addStyleName("vibe-grid");
+				//viewGrid.setHeight("100%");
 				if (tableDef.getWidth() != null) {
 					viewGrid.setWidth(tableDef.getWidth().toString());
+//				} else {
+//					viewGrid.setWidth("100%");
 				}
 				if (tableDef.getColumn1Width()!=null) {
-					viewGrid.getColumnFormatter().setWidth(1, tableDef.getColumn1Width().toString());
+					viewGrid.getColumnFormatter().setWidth(0, tableDef.getColumn1Width().toString());
 				}
 				if (tableDef.getColumn2Width()!=null) {
-					viewGrid.getColumnFormatter().setWidth(2, tableDef.getColumn2Width().toString());
+					viewGrid.getColumnFormatter().setWidth(1, tableDef.getColumn2Width().toString());
 				}
 				viewPanel = viewGrid;
 			} else if (viewDef instanceof BinderViewThreeColumnTable) {
 				BinderViewThreeColumnTable tableDef = (BinderViewThreeColumnTable) viewDef;
+				GwtClientHelper.consoleLog("CustomBinderView: constructing 3 column VibeGrid");
 				VibeGrid viewGrid = new VibeGrid(1,3);
 				viewGrid.addStyleName("vibe-grid");
+				//viewGrid.setHeight("100%");
 				if (tableDef.getWidth()!=null) {
 					viewGrid.setWidth(tableDef.getWidth().toString());
+//				} else {
+//					viewGrid.setWidth("100%");
 				}
 				if (tableDef.getColumn1Width()!=null) {
-					viewGrid.getColumnFormatter().setWidth(1, tableDef.getColumn1Width().toString());
+					viewGrid.getColumnFormatter().setWidth(0, tableDef.getColumn1Width().toString());
 				}
 				if (tableDef.getColumn2Width()!=null) {
-					viewGrid.getColumnFormatter().setWidth(2, tableDef.getColumn2Width().toString());
+					viewGrid.getColumnFormatter().setWidth(1, tableDef.getColumn2Width().toString());
 				}
 				if (tableDef.getColumn3Width()!=null) {
-					viewGrid.getColumnFormatter().setWidth(3, tableDef.getColumn2Width().toString());
+					viewGrid.getColumnFormatter().setWidth(2, tableDef.getColumn3Width().toString());
 				}
 				viewPanel = viewGrid;
 			} else {
 				BinderViewContainer containerDef = (BinderViewContainer) viewDef;
+				GwtClientHelper.consoleLog("CustomBinderView: constructing VibeFlowPanel");
 				VibeFlowPanel flowPanel = new VibeFlowPanel();
 				flowPanel.addStyleName("vibe-flow");
+				//flowPanel.setHeight("100%");
 				if (containerDef.getWidth()!=null) {
 					flowPanel.setWidth(containerDef.getWidth().toString());
+//				} else {
+//					flowPanel.setWidth("100%");
 				}
 				viewPanel = flowPanel;
 			}
+			GwtClientHelper.consoleLog("CustomBinderView: parentWidget=" + parentWidget.getClass().getSimpleName() + "; viewPanel=" + viewPanel.getClass().getSimpleName());
 			parentWidget.showWidget((Widget) viewPanel);
 			addChildControls((BinderViewContainer) viewDef, viewPanel);
 		} else {
+			VibeFlowPanel flowPanel = new VibeFlowPanel();
+			flowPanel.addStyleName("vibe-flow");
+//			flowPanel.setWidth("100%");
+			//flowPanel.setHeight("100%");
+			parentWidget.showWidget(flowPanel);
 			if (viewDef instanceof BinderViewFolderListing) {
 				BinderInfo bi = getBinderInfo();
-				ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, m_viewType, parentWidget, null);
-				if (viewEvent!=null) {
+				m_delegatingViewReady.incrementComponent();
+				GwtClientHelper.consoleLog("CustomBinderView: new async component.  componentTotal = " + m_delegatingViewReady.getComponentCount());
+				ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, m_viewType, flowPanel, this);
+				if (viewEvent != null) {
 					GwtTeaming.fireEvent(viewEvent);
 				}
-			} else {
-				VibeEntityViewPanel viewPanel = new VibeFlowPanel();
-				parentWidget.showWidget((Widget)viewPanel);
+			} else if (viewDef instanceof BinderViewJsp) {
+				m_delegatingViewReady.incrementComponent();
+				GwtClientHelper.consoleLog("CustomBinderView: new async component.  componentTotal = " + m_delegatingViewReady.getComponentCount());
+				executeJspAsync((BinderViewJsp) viewDef, flowPanel, this);
 			}
 		}
 	}
@@ -167,29 +178,86 @@ public class CustomBinderView extends WorkspaceViewBase implements VibeEntityVie
 	 */
 	public static void createAsync( final BinderInfo folderInfo, final ViewType viewType, final BinderViewLayout viewLayout, final ViewReady viewReady, final ViewClient vClient )
 	{
-		GWT.runAsync( CustomBinderView.class, new RunAsyncCallback()
-		{			
+		GWT.runAsync(CustomBinderView.class, new RunAsyncCallback() {
 			@Override
-			public void onSuccess()
-			{
+			public void onSuccess() {
 				CustomBinderView customBinderView;
-				
-				customBinderView = new CustomBinderView( folderInfo, viewType, viewLayout, viewReady );
-				vClient.onSuccess( customBinderView );
+
+				customBinderView = new CustomBinderView(folderInfo, viewType, viewLayout, viewReady);
+				customBinderView.constructView();
+				vClient.onSuccess(customBinderView);
 			}
-			
+
 			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( m_messages.codeSplitFailure_CustomBinderView() );
+			public void onFailure(Throwable reason) {
+				Window.alert(m_messages.codeSplitFailure_CustomBinderView());
 				vClient.onUnavailable();
 			}
 		});
 	}
 
-	@Override
-	public void showWidget(Widget widget) {
-		GwtClientHelper.consoleLog("CustomBinderView: showWidget() for " + widget.getClass().getName());
-		this.initWidget(widget);
+	/*
+    * Asynchronously loads the next part of the accessories panel.
+    */
+	private void executeJspAsync(final BinderViewJsp jspView, final VibeFlowPanel parent, final ViewReady viewReady) {
+		GwtClientHelper.deferCommand(new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				executeJspNow(jspView, parent, viewReady);
+			}
+		});
+	}
+
+	/*
+     * Synchronously loads the next part of the accessories panel.
+     */
+	private void executeJspNow(BinderViewJsp jspView, final VibeFlowPanel parent, final ViewReady viewReady) {
+		Map<String,Object> model = new HashMap<String,Object>();
+		model.put("jsp", jspView.getJsp());
+		model.put("binderId", getBinderInfo().getBinderId());
+		model.put("itemId", jspView.getItemId());
+		GwtClientHelper.executeCommand(
+				new GetJspHtmlCmd(VibeJspHtmlType.BUILT_IN_JSP, model),
+				new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(Throwable t) {
+						GwtClientHelper.handleGwtRPCFailure(
+								t,
+								m_messages.rpcFailure_GetJspHtml(),
+								VibeJspHtmlType.BUILT_IN_JSP.toString());
+					}
+
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						// Store the accessory panel HTML and continue loading.
+						JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
+						String html = responseData.getHtml();
+						HTMLPanel htmlPanel = new HTMLPanel(html);
+						parent.add(htmlPanel);
+						executeJavaScriptAsync(htmlPanel, viewReady);
+					}
+				});
+	}
+
+	/*
+	 * Asynchronously executes the JavaScript in the HTML panel.
+	 */
+	private void executeJavaScriptAsync(final HTMLPanel htmlPanel, final ViewReady viewReady) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				executeJavaScriptNow(htmlPanel, viewReady);
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously executes the JavaScript in the HTML panel.
+	 */
+	private void executeJavaScriptNow(HTMLPanel htmlPanel, final ViewReady viewReady) {
+		GwtClientHelper.jsExecuteJavaScript(htmlPanel.getElement(), true);
+		GwtClientHelper.jsOnLoadInit();
+		viewReady.viewReady();
 	}
 }
+

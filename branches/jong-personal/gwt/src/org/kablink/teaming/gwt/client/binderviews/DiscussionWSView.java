@@ -58,13 +58,8 @@ import com.google.gwt.user.client.Window;
 public class DiscussionWSView extends WorkspaceViewBase implements ToolPanelReady
 {
 	private VibeFlowPanel m_mainPanel;
-	private VibeFlowPanel m_breadCrumbPanel;
-	private VibeFlowPanel m_titlePanel;
-	private VibeFlowPanel m_descPanel;
 	private VibeFlowPanel m_lpPanel;
-	private VibeFlowPanel m_accessoriesPanel;
 	private VibeFlowPanel m_listOfChildrenPanel;
-	private VibeFlowPanel m_footerPanel;
 	private VibeFlowPanel m_htmlElementPanel;
 	
 	/**
@@ -92,54 +87,6 @@ public class DiscussionWSView extends WorkspaceViewBase implements ToolPanelRead
 		m_mainPanel = new VibeFlowPanel();
 		m_mainPanel.addStyleName( "vibe-discussionWSView_MainPanel" );
 		
-		// Add a place for the bread crumb control to live.
-		{
-			m_breadCrumbPanel = new VibeFlowPanel();
-			m_breadCrumbPanel.addStyleName( "vibe-discussionWSView_BreadCrumbPanel" );
-			m_mainPanel.add( m_breadCrumbPanel );
-
-			BreadCrumbPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase breadCrumb )
-				{
-					m_breadCrumbPanel.add( breadCrumb );
-				}
-			});
-		}
-
-		m_titlePanel = new VibeFlowPanel();
-		m_titlePanel.addStyleName( "vibe-discussionWSView_TitlePanel" );
-		m_mainPanel.add( m_titlePanel );
-		
-		// Add a place for the description to live.
-		{
-			m_descPanel = new VibeFlowPanel();
-			m_descPanel.addStyleName( "vibe-discussionWSView_DescPanel" );
-			m_mainPanel.add( m_descPanel );
-			
-			DescriptionPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase tpb )
-				{
-					m_descPanel.add( tpb );
-				}
-			} );
-		}
-
 		// Add a place for landing page elements.  The LandingPage widget will display the description
 		// if there is one.
 		{
@@ -162,29 +109,7 @@ public class DiscussionWSView extends WorkspaceViewBase implements ToolPanelRead
 				}
 			} );
 		}
-		
-		// Add a place for the accessories.
-		{
-			m_accessoriesPanel = new VibeFlowPanel();
-			m_accessoriesPanel.addStyleName( "vibe-discussionWSView_AccessoriesPanel" );
-			m_mainPanel.add( m_accessoriesPanel );
-			
-			AccessoriesPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase accessories )
-				{
-					m_accessoriesPanel.add( accessories );
-				}
-			});
-		}
-		
+
 		// Add a place for an HTML element.
 		{
 			m_htmlElementPanel = new VibeFlowPanel();
@@ -225,28 +150,6 @@ public class DiscussionWSView extends WorkspaceViewBase implements ToolPanelRead
 				public void onSuccess( ToolPanelBase cbWidget )
 				{
 					m_listOfChildrenPanel.add( cbWidget );
-				}
-			} );
-		}
-
-		// Add a place for the footer
-		{
-			m_footerPanel = new VibeFlowPanel();
-			m_footerPanel.addStyleName( "vibe-discussionWSView_FooterPanel" );
-			m_mainPanel.add( m_footerPanel );
-
-			FooterPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase tpb )
-				{
-					m_footerPanel.add( tpb );
 				}
 			} );
 		}

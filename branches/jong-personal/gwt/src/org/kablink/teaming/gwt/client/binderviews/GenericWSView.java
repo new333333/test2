@@ -57,11 +57,7 @@ import com.google.gwt.user.client.Window;
 public class GenericWSView extends WorkspaceViewBase implements ToolPanelReady
 {
 	private VibeFlowPanel m_mainPanel;
-	private VibeFlowPanel m_breadCrumbPanel;
-	private VibeFlowPanel m_descPanel;
 	private VibeFlowPanel m_lpPanel;
-	private VibeFlowPanel m_accessoriesPanel;
-	private VibeFlowPanel m_footerPanel;
 	private VibeFlowPanel m_htmlElementPanel;
 	
 	/**
@@ -87,50 +83,6 @@ public class GenericWSView extends WorkspaceViewBase implements ToolPanelReady
 		m_mainPanel = new VibeFlowPanel();
 		m_mainPanel.addStyleName( "vibe-genericWSView_MainPanel" );
 		
-		// Add a place for the bread crumb control to live.
-		{
-			m_breadCrumbPanel = new VibeFlowPanel();
-			m_breadCrumbPanel.addStyleName( "vibe-genericWSView_BreadCrumbPanel" );
-			m_mainPanel.add( m_breadCrumbPanel );
-
-			BreadCrumbPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase breadCrumb )
-				{
-					m_breadCrumbPanel.add( breadCrumb );
-				}
-			});
-		}
-
-		// Add a place for the description to live.
-		{
-			m_descPanel = new VibeFlowPanel();
-			m_descPanel.addStyleName( "vibe-genericWSView_DescPanel" );
-			m_mainPanel.add( m_descPanel );
-			
-			DescriptionPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase tpb )
-				{
-					m_descPanel.add( tpb );
-				}
-			} );
-		}
-
 		// If we're not in Filr mode...
 		if ( ! ( GwtClientHelper.isLicenseFilr() ) )
 		{
@@ -157,26 +109,6 @@ public class GenericWSView extends WorkspaceViewBase implements ToolPanelReady
 				} );
 			}
 
-			// ...add a place for the accessories.
-			m_accessoriesPanel = new VibeFlowPanel();
-			m_accessoriesPanel.addStyleName( "vibe-genericWSView_AccessoriesPanel" );
-			m_mainPanel.add( m_accessoriesPanel );
-			
-			AccessoriesPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase accessories )
-				{
-					m_accessoriesPanel.add( accessories );
-				}
-			});
-			
 			// ...add a place for HTML elements.
 			m_htmlElementPanel = new VibeFlowPanel();
 			m_htmlElementPanel.addStyleName( "vibe-genericWSView_HtmlElementPanel" );
@@ -198,28 +130,6 @@ public class GenericWSView extends WorkspaceViewBase implements ToolPanelReady
 			});
 		}
 		
-		// Add a place for the footer
-		{
-			m_footerPanel = new VibeFlowPanel();
-			m_footerPanel.addStyleName( "vibe-genericWSView_FooterPanel" );
-			m_mainPanel.add( m_footerPanel );
-
-			FooterPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase tpb )
-				{
-					m_footerPanel.add( tpb );
-				}
-			} );
-		}
-
 		super.viewReady();
 		
 		initWidget( m_mainPanel );

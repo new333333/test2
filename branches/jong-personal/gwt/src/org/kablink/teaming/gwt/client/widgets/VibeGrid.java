@@ -28,8 +28,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 public class VibeGrid extends Grid
         implements ProvidesResize, RequiresResize, VibeEntityViewPanel
 {
-    private int currRow;
-    private int currCol;
+    private int currRow = 0;
+    private int currCol = 0;
 
     public VibeGrid() {
         super();
@@ -41,14 +41,19 @@ public class VibeGrid extends Grid
 
     @Override
     public void showWidget(Widget widget) {
+        GwtClientHelper.consoleLog("VibeGrid.showWidget() before: currRow=" + currRow + "; currCol=" + currCol + "; numRows=" + numRows + "; numCols=" + numColumns);
         if (currRow>=numRows) {
+            GwtClientHelper.consoleLog("VibeGrid.showWidget() resize: numRows=" + (numRows+1) + "; numCols=" + numColumns);
             this.resize(numRows+1, numColumns);
         }
-        this.setWidget(currRow, currCol++, widget);
+        GwtClientHelper.consoleLog("VibeGrid.showWidget() setWidget: currRow=" + currRow + "; currCol=" + currCol + "; widget=" + widget.getClass().getSimpleName());
+        this.setWidget(currRow, currCol, widget);
+        currCol++;
         if (currCol>=numColumns) {
             currCol = 0;
             currRow++;
         }
+        GwtClientHelper.consoleLog("VibeGrid.showWidget() after: currRow=" + currRow + "; currCol=" + currCol + "; numRows=" + numRows + "; numCols=" + numColumns);
     }
 
     /**
@@ -79,11 +84,17 @@ public class VibeGrid extends Grid
      */
     private void onResizeNow()
     {
+        GwtClientHelper.consoleLog("VibeGrid.onResizeNow(): numRows=" + numRows + "; numCols=" + numColumns);
         for (int row=0; row<numRows; row++) {
             for (int col=0; col<numColumns; col++) {
                 Widget child = this.getWidget(row, col);
                 if (child!=null && child instanceof RequiresResize) {
+                    GwtClientHelper.consoleLog("Calling onResize() for child: " + child.getClass().getSimpleName());
                     ((RequiresResize) child).onResize();
+                } else if (child!=null) {
+                    GwtClientHelper.consoleLog("Won't call onResize() for child because it doesn't implement RequiresResize: " + child.getClass().getSimpleName());
+                } else {
+                    GwtClientHelper.consoleLog("Child is null: row=" + row + "; col=" + col);
                 }
             }
         }

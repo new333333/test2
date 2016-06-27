@@ -1,3 +1,5 @@
+<%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf" %>
+<%@ page isELIgnored="false" %>
 <%
 /**
  * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
@@ -31,74 +33,56 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+if(request.getParameter("launchJnlp")!=null){	
+	String url = request.getRequestURL().toString();
+	String baseURL = url.substring(0, url.length() - request.getRequestURI().length()) + request.getContextPath() + "/";
 %>
-<%@ include file="/WEB-INF/jsp/common/servlet.include.jsp" %>
-
-<script>
-function setFileName${ssEntryId}${ss_namespace}(strURLValue)
-{
-	//var fileOpenAppletObject =  document.getElementById("fileopenobj${ssEntryId}${ss_namespace}");
-	//fileOpenAppletObject.setFileToBeOpened(strURLValue);
+<jnlp
+  spec="1.0+"
+  codebase="<%=baseURL%>ssf/applets"
+  href="">
+  <information>
+	<title>Micro Focus Filr</title>
+	<vendor>Micro Focus</vendor>
+	<homepage href="http://www.microfocus.com"/>
+	<description>Filr WebDav Client.</description>
+	<description kind="short">Filr WebDAV Client</description>
+	<offline-allowed/>
+  </information>
+  <resources>
+	<j2se version="1.5+"/>
+	<jar href="<%= request.getContextPath() %>/applets/fileopen/kablink-teaming-fileopen-applet.jar"/>
+  </resources>
+  <security>
+	<all-permissions/>
+  </security>
+    <applet-desc name="Filr Edit In Place" width="1" height="1" main-class="org.kablink.teaming.applets.fileopen.FileOpen">
+	    <param name = "scriptable" value="true"></param>
+	    <param name = "NAME" value = "fileopen"></param>
+	    <param name = "startingDir" value=""></param>
+	    <param name = "fileToOpen" value="${ssEntryAttachmentURL}"></param>
+	    <param name = "editorType" value="${ssEntryAttachmentEditorType}"></param>
+        <param name = "isLicenseRequiredEdition" value="${ssIsLicenseRequiredEdition}"></param>
+        <param name = "isOfficeAddInAllowed" value="${ssIsOfficeAddInAllowed}"></param>
+        <param name = "userName" value="${ssUser.name}"></param>
+	    <param name = "checkEditClicked" value="ss_checkEditClickLocal${ssEntryId}${ss_namespace}"></param>
+	    <param name = "resetEditClicked" value="ss_resetEditClickLocal${ssEntryId}${ss_namespace}"></param>
+	    <param name = "operatingSystem" value="${ssOSInfo}"></param>
+		<param name = "uploadErrorFileTooLarge" value="<ssf:nlt tag="applet.errorFileTooLarge"/>"></param>
+		<param name = "fileUploadMaxSize" value="${ss_binder_file_max_file_size}"></param>
+		<param name = "fileUploadSizeExceeded" value="<ssf:nlt tag="file.maxSizeExceeded"/>" ></param>
+	    <param name = "uploadErrorMessage" value="<ssf:nlt tag="exception.codedError.title"/>"></param>
+	    <param name = "editorErrorMessage" value="<ssf:nlt tag="applet.editorError" />"></param>
+  </applet-desc>
+</jnlp>
+<%
 }
-function fileName() {
-	//alert("${ssEntryAttachmentURL}");
+else{
+	String url=request.getRequestURL()+"?"+request.getQueryString()+"&launchJnlp=true"+"&jsessionid="+request.getSession().getId();
+%>
+    <script>
+		window.location="<%=url%>"
+	</script>
+<%
 }
-
-function ss_checkEditClickLocal${ssEntryId}${ss_namespace}() {
-	var strEditClickValue = parent.ss_checkEditClicked('${ssEntryId}', '${ss_namespace}');
-	return strEditClickValue;
-}
-
-function ss_resetEditClickLocal${ssEntryId}${ss_namespace}() {
-	parent.ss_resetEditClicked('${ssEntryId}', '${ss_namespace}');
-}
-</script>
-
-<body align="top" class="ss_entryContent" onLoad="javascript:fileName()">
-OpenFile Applet
-<br/ >
-	<%
-	 boolean isIE = org.kablink.util.BrowserSniffer.is_ie(request);
-	%>
-
-	<!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
-	<c:if test="<%= isIE %>">
-		<object id="fileopenobj${ssEntryId}${ss_namespace}" name="fileopenobj${ssEntryId}${ss_namespace}" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="fileopen" 
-		  WIDTH = "1" HEIGHT = "1" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
-		  codebase="http://java.sun.com/update/1.7.0/jinstall-7u72-windows-i586.cab">
-	</c:if>
-	<c:if test="<%= !isIE %>">
-	<applet name="fileopenobj${ssEntryId}${ss_namespace}" id="fileopenobj${ssEntryId}${ss_namespace}" CODE = "org.kablink.teaming.applets.fileopen.FileOpen" 
-	  JAVA_CODEBASE = "<html:appletPath/>applets" 
-	  ARCHIVE = "fileopen/kablink-teaming-fileopen-applet.jar" 
-	  WIDTH = "1" HEIGHT = "1" MAYSCRIPT="true">
-	</c:if>
-	    <PARAM NAME="CODE" value = "org.kablink.teaming.applets.fileopen.FileOpen" />
-	    <PARAM NAME ="CODEBASE" value = "<html:appletPath/>applets" />
-	    <PARAM NAME ="ARCHIVE" value = "fileopen/kablink-teaming-fileopen-applet.jar" />
-	    <PARAM NAME ="type" value="application/x-java-applet;version=1.7" />
-	    <param name = "scriptable" value="true" />
-	    <PARAM NAME = "NAME" value = "fileopen" />
-	    <PARAM NAME = "startingDir" value=""/>
-	    <PARAM NAME = "fileToOpen" value="${ssEntryAttachmentURL}"/>
-	    <PARAM NAME = "editorType" value="${ssEntryAttachmentEditorType}"/>
-        <PARAM NAME = "isLicenseRequiredEdition" value="${ssIsLicenseRequiredEdition}"/>
-        <PARAM NAME = "isOfficeAddInAllowed" value="${ssIsOfficeAddInAllowed}"/>
-        <PARAM NAME = "userName" value="${ssUser.name}"/>
-	    <PARAM NAME = "checkEditClicked" value="ss_checkEditClickLocal${ssEntryId}${ss_namespace}"/>
-	    <PARAM NAME = "resetEditClicked" value="ss_resetEditClickLocal${ssEntryId}${ss_namespace}"/>
-	    <PARAM NAME = "operatingSystem" value="${ssOSInfo}"/>
-		<PARAM NAME = "uploadErrorFileTooLarge" value="<ssf:nlt tag="applet.errorFileTooLarge" />" />
-		<PARAM NAME = "fileUploadMaxSize" value="${ss_binder_file_max_file_size}" />
-		<PARAM NAME = "fileUploadSizeExceeded" value="<ssf:nlt tag="file.maxSizeExceeded" />" />
-	    <PARAM NAME = "uploadErrorMessage" value="<ssf:nlt tag="exception.codedError.title" />" />
-	    <PARAM NAME = "editorErrorMessage" value="<ssf:nlt tag="applet.editorError" />" />
-	<c:if test="<%= !isIE %>">
-	</applet>
-	</c:if>
-	<c:if test="<%= isIE %>">
-	</object>
-	</c:if>
-	<!--NOVELL_REWRITE_ATTRIBUTE_OFF='value'-->
-
-</body>
+%>

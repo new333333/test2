@@ -241,6 +241,7 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_PERSONAL_WORKSPACES,						// Shows the Personal workspaces binder.
 	SHOW_PHOTO_ALBUM_FOLDER,						// Shows a photo album folder.
 	SHOW_PROJECT_MANAGEMENT_WORKSPACE,				// Show a project management workspace.
+	SHOW_STANDARD_BINDER_VIEW,						// Shows a standard binder view.
 	SHOW_SURVEY_FOLDER,								// Shows a survey folder.
 	SHOW_TASK_FOLDER,								// Shows a task folder.
 	SHOW_TEAM_ROOT_WORKSPACE,						// Shows the team root workspace.

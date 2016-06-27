@@ -103,7 +103,11 @@ public interface BinderModule {
 		allowSharingPublic,
 		allowSharingForward,
 		allowAccessNetFolder,
-		allowSharingPublicLinks
+		allowSharingPublicLinks,
+		allowFileSharing,
+		allowFileSharingExternal,
+		allowFileSharingPublic,
+		allowFileSharingForward,
 	}
     /**
      * Add a new <code>Folder</code> or <code>Workspace</code>.  Use definition type to determine which

@@ -119,7 +119,6 @@ public abstract class FolderViewBase extends ViewBase
 	private boolean								m_viewReady;					// Set true once the view and all its components are ready.
 	private boolean								m_pinning;						// true -> We're showing pinned items.                      false -> We're not.
 	private boolean								m_sharedFiles;					// true -> We're showing shared only shared files.          false -> We're not.
-	private boolean								m_showHtmlElement;				// true -> We're showing the HtmlElementPanel in the view.  false -> We're not.
 	private boolean								m_showUserList;					// true -> We're showing the UserListPanel in the view.     false -> We're not.
 	private CalendarDisplayDataProvider			m_calendarDisplayDataProvider;	// A CalendarDisplayDataProvider to use to obtain a CalendarDisplayDataRpcResponseData object.
 	private CanAddEntitiesRpcResponseData		m_canAddEntities;				// Contains information about the user's rights to add entities to the current folder.
@@ -167,11 +166,10 @@ public abstract class FolderViewBase extends ViewBase
 	public final static int FILTER_PANEL_INDEX				=  6;
 	public final static int BINDER_OWNER_AVATAR_PANEL_INDEX	=  7;
 	public final static int USER_LIST_PANEL_INDEX			=  8;
-	public final static int HTML_ELEMENT_PANEL_INDEX		=  9;
-	public final static int ENTRY_MENU_PANEL_INDEX			= 10;
-	public final static int CALENDAR_NAVIGATION_PANEL_INDEX	= 11;
-	public final static int VIEW_CONTENT_PANEL_INDEX		= 12;
-	public final static int FOOTER_PANEL_INDEX				= 13;
+	public final static int ENTRY_MENU_PANEL_INDEX			=  9;
+	public final static int CALENDAR_NAVIGATION_PANEL_INDEX	= 10;
+	public final static int VIEW_CONTENT_PANEL_INDEX		= 11;
+	public final static int FOOTER_PANEL_INDEX				= 12;
 
 	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
 	private final static int NO_VSCROLL_ADJUST			=  20;	// Height adjustment required so there's no vertical scroll bar by default.
@@ -190,7 +188,6 @@ public abstract class FolderViewBase extends ViewBase
 		FILTER,
 		BINDER_OWNER_AVATAR,
 		USER_LIST,
-		HTML_ELEMENT,
 		ENTRY_MENU,
 		CALENDAR_NAVIGATION,
 		FOOTER,
@@ -232,8 +229,9 @@ public abstract class FolderViewBase extends ViewBase
 		 * Synchronously resizes the panel.
 		 */
 		private void onResizeNow() {
-			setHeight(getNonNegativeInt(m_rootPanel.getOffsetHeight() + getContentHeightAdjust()) + "px");
-			setWidth( getNonNegativeInt(m_rootPanel.getOffsetWidth()  + getContentWidthAdjust())  + "px");
+			GwtClientHelper.consoleLog("FolderViewBase: onResizeNow()");
+			//setHeight(getNonNegativeInt(m_rootPanel.getOffsetHeight() + getContentHeightAdjust()) + "px");
+			//setWidth( getNonNegativeInt(m_rootPanel.getOffsetWidth()  + getContentWidthAdjust())  + "px");
 			
 			m_verticalFlowPanel.onResize();
 		}
@@ -656,7 +654,6 @@ public abstract class FolderViewBase extends ViewBase
 		case CALENDAR_NAVIGATION:
 		case TASK_GRAPHS:   reply = false;             break;
 		case USER_LIST:     reply = m_showUserList;    break;
-		case HTML_ELEMENT:  reply = m_showHtmlElement; break;
 		default:            reply = true;              break;
 		}
 		return reply;
@@ -716,22 +713,22 @@ public abstract class FolderViewBase extends ViewBase
 		GwtClientHelper.executeCommand(
 				new GetCanAddEntitiesCmd(m_folderInfo),
 				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetCanAddEntities(),
-					m_folderInfo.getBinderIdAsLong());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Store the information about what rights the user has
-				// to add things to the current folder.
-				m_canAddEntities = ((CanAddEntitiesRpcResponseData) response.getResponseData());
-				loadPart2Async();
-			}
-		});
+					@Override
+					public void onFailure(Throwable t) {
+						GwtClientHelper.handleGwtRPCFailure(
+								t,
+								m_messages.rpcFailure_GetCanAddEntities(),
+								m_folderInfo.getBinderIdAsLong());
+					}
+
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						// Store the information about what rights the user has
+						// to add things to the current folder.
+						m_canAddEntities = ((CanAddEntitiesRpcResponseData) response.getResponseData());
+						loadPart2Async();
+					}
+				});
 	}
 
 	/*
@@ -813,7 +810,6 @@ public abstract class FolderViewBase extends ViewBase
 					// to construct itself.
 					HasOtherComponentsRpcResponseData reply = ((HasOtherComponentsRpcResponseData) response.getResponseData());
 					m_showUserList    = reply.getShowUserList();
-					m_showHtmlElement = reply.getShowHtmlElement();
 					loadPart4Async();
 				}
 			});
@@ -825,26 +821,25 @@ public abstract class FolderViewBase extends ViewBase
 			GwtClientHelper.executeCommand(
 					new GetFolderDisplayDataCmd(m_folderInfo),
 					new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable t) {
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						m_messages.rpcFailure_GetFolderDisplayData(),
-						m_folderInfo.getBinderIdAsLong());
-				}
-				
-				@Override
-				public void onSuccess(VibeRpcResponse response) {
-					// Store the core folder display data and tell the view
-					// to construct itself.
-					m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
-					m_pinning           = m_folderDisplayData.getViewPinnedEntries();
-					m_sharedFiles       = m_folderDisplayData.getViewSharedFiles();
-					m_showHtmlElement   = m_folderDisplayData.getShowHtmlElement();
-					m_showUserList      = m_folderDisplayData.getShowUserList();
-					loadPart4Async();
-				}
-			});
+						@Override
+						public void onFailure(Throwable t) {
+							GwtClientHelper.handleGwtRPCFailure(
+									t,
+									m_messages.rpcFailure_GetFolderDisplayData(),
+									m_folderInfo.getBinderIdAsLong());
+						}
+
+						@Override
+						public void onSuccess(VibeRpcResponse response) {
+							// Store the core folder display data and tell the view
+							// to construct itself.
+							m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
+							m_pinning = m_folderDisplayData.getViewPinnedEntries();
+							m_sharedFiles = m_folderDisplayData.getViewSharedFiles();
+							m_showUserList = m_folderDisplayData.getShowUserList();
+							loadPart4Async();
+						}
+					});
 		}
 	}
 
@@ -876,13 +871,13 @@ public abstract class FolderViewBase extends ViewBase
 	 * Loads the DownloadPanel.
 	 */
 	private void loadPart4Now() {
-		DownloadPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+		DownloadPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
 				// provider.
 			}
-			
+
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, DOWNLOAD_PANEL_INDEX);
@@ -901,7 +896,7 @@ public abstract class FolderViewBase extends ViewBase
 		if (!(includePanel(FolderPanels.MAILTO))) {
 			// ...we don't show the submit panel.
 			insertToolPanelPlaceholder(MAILTO_PANEL_INDEX);
-			loadPart6Async();
+			loadPart7Async();
 			return;
 		}
 		
@@ -919,59 +914,16 @@ public abstract class FolderViewBase extends ViewBase
 	 * Loads the MailToPanel.
 	 */
 	private void loadPart5Now() {
-		MailToPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+		MailToPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
 				// provider.
 			}
-			
+
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, MAILTO_PANEL_INDEX);
-				loadPart6Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the BreadCrumbPanel.
-	 */
-	private void loadPart6Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.BREADCRUMB))) {
-			// ...we don't show the bread crumbs.
-			insertToolPanelPlaceholder(BREADCRUMB_PANEL_INDEX);
-			loadPart7Async();
-			return;
-		}
-		
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart6Now();
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously loads the next part of the view.
-	 * 
-	 * Loads the BreadCrumbPanel.
-	 */
-	private void loadPart6Now() {
-		BreadCrumbPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, BREADCRUMB_PANEL_INDEX);
 				loadPart7Async();
 			}
 		});
@@ -1005,13 +957,13 @@ public abstract class FolderViewBase extends ViewBase
 	 * Loads the AccessoriesPanel.
 	 */
 	private void loadPart7Now() {
-		AccessoriesPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+		AccessoriesPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
 				// provider.
 			}
-			
+
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, ACCESSORY_PANEL_INDEX);
@@ -1048,13 +1000,13 @@ public abstract class FolderViewBase extends ViewBase
 	 * Loads the DescriptionPanel.
 	 */
 	private void loadPart8Now() {
-		DescriptionPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+		DescriptionPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
 				// provider.
 			}
-			
+
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, DESCRIPTION_PANEL_INDEX);
@@ -1091,13 +1043,13 @@ public abstract class FolderViewBase extends ViewBase
 	 * Loads the DescriptionPanel.
 	 */
 	private void loadPart9Now() {
-		TaskGraphsPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+		TaskGraphsPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
 				// provider.
 			}
-			
+
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, TASK_GRAPHS_PANEL_INDEX);
@@ -1135,13 +1087,13 @@ public abstract class FolderViewBase extends ViewBase
 	 * Loads the FilterPanel.
 	 */
 	private void loadPart10Now() {
-		FilterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+		FilterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
 				// provider.
 			}
-			
+
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, FILTER_PANEL_INDEX);
@@ -1160,7 +1112,7 @@ public abstract class FolderViewBase extends ViewBase
 		if (!(includePanel(FolderPanels.ENTRY_MENU))) {
 			// ...we don't show the entry menu.
 			insertToolPanelPlaceholder(ENTRY_MENU_PANEL_INDEX);
-			loadPart12Async();
+			loadPart13Async();
 			return;
 		}
 		
@@ -1188,63 +1140,11 @@ public abstract class FolderViewBase extends ViewBase
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, ENTRY_MENU_PANEL_INDEX);
-				loadPart12Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FooterPanel.
-	 */
-	private void loadPart12Async() {
-		// If we need to show the footer panel...
-		boolean showFooter = includePanel(FolderPanels.FOOTER);
-		if (showFooter) {
-			if (!SHOW_FILR_FOOTER) {
-				showFooter = (!(GwtClientHelper.isLicenseFilr()));
-			}
-		}
-		
-		if (showFooter) {
-			// ...load it...
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					loadPart12Now();
-				}
-			});
-		}
-		
-		else {
-			// ...otherwise, insert a place holder for it.
-			insertToolPanelPlaceholder(FOOTER_PANEL_INDEX);
-			loadPart13Async();
-		}
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FooterPanel.
-	 */
-	private void loadPart12Now() {
-		FooterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, FOOTER_PANEL_INDEX);
 				loadPart13Async();
 			}
 		});
 	}
-	
+
 	/*
 	 * Asynchronously loads the next part of the view.
 	 */
@@ -1328,10 +1228,10 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	private void loadPart15Async() {
 		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.HTML_ELEMENT))) {
+		if (!(includePanel(FolderPanels.CALENDAR_NAVIGATION))) {
 			// ...we don't show the calendar navigation panel.
-			insertToolPanelPlaceholder(HTML_ELEMENT_PANEL_INDEX);
-			loadPart16Async();
+			insertToolPanelPlaceholder(CALENDAR_NAVIGATION_PANEL_INDEX);
+			constructViewAsync();
 			return;
 		}
 		
@@ -1347,45 +1247,6 @@ public abstract class FolderViewBase extends ViewBase
 	 * Synchronously loads the next part of the view.
 	 */
 	private void loadPart15Now() {
-		HtmlElementPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, FolderViewBase.HTML_ELEMENT_PANEL_INDEX);
-				loadPart16Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 */
-	private void loadPart16Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.CALENDAR_NAVIGATION))) {
-			// ...we don't show the calendar navigation panel.
-			insertToolPanelPlaceholder(CALENDAR_NAVIGATION_PANEL_INDEX);
-			constructViewAsync();
-			return;
-		}
-		
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart16Now();
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously loads the next part of the view.
-	 */
-	private void loadPart16Now() {
 		CalendarNavigationPanel.createAsync(this, m_calendarDisplayDataProvider, getFolderInfo(), this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
