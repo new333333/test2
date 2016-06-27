@@ -38,6 +38,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.event.ShowBinderEvent;
@@ -196,8 +197,8 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 			"; main: " + m_mainPanel.getOffsetHeight() + "; bread crumb: " + m_breadCrumbPanel.getOffsetHeight() + "; desc:" + m_descPanel.getOffsetHeight() +
 			"; accessories: " + m_accessoriesPanel.getOffsetHeight() + "; footer: " + m_footerPanel.getOffsetHeight());
 
-		int height = parent.getOffsetHeight() + getContentWidthAdjust() * 4;
-		int width = parent.getOffsetWidth() + getContentWidthAdjust() * 3;
+		int height = parent.getOffsetHeight() + GwtConstants.BINDER_VIEW_ADJUST * 4;
+		int width = parent.getOffsetWidth() + GwtConstants.BINDER_VIEW_ADJUST * 3;
 
 		if (allowToScroll) {
 			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New min size: (" + width + "," + height + ")");

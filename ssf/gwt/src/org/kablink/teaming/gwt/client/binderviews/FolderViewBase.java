@@ -334,12 +334,6 @@ public abstract class FolderViewBase extends ViewBase
 		m_rootPanel = new VibeFlowPanel();
 		m_rootPanel.addStyleName("vibe-folderViewBase " + m_styleBase + " vibe-verticalScroll");
 
-		// ...set the sizing adjustments the account for the padding in
-		// ...the vibe-folderViewBase style...
-		final int padAdjust = (2 * GwtConstants.PANEL_PADDING);
-		setContentHeightAdjust(getContentHeightAdjust() - padAdjust);
-		setContentWidthAdjust( getContentWidthAdjust()  - padAdjust);
-
 		// ...create a vertical panel to holds the layout that flows
 		// ...down the view...
 		m_verticalFlowPanel = new VibeFlowPanel();
