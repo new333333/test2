@@ -41,7 +41,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class HasOtherComponentsRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private boolean	m_showHtmlElement;	//
 	private boolean	m_showUserList;		//
 	
 	/*
@@ -58,15 +57,13 @@ public class HasOtherComponentsRpcResponseData implements IsSerializable, VibeRp
 	 * Constructor method.
 	 * 
 	 * @param showUserList
-	 * @param showHtmlElement
 	 */
-	public HasOtherComponentsRpcResponseData(boolean showUserList, boolean showHtmlElement) {
+	public HasOtherComponentsRpcResponseData(boolean showUserList) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
 		setShowUserList(   showUserList   );
-		setShowHtmlElement(showHtmlElement);
 	}
 	
 	/**
@@ -74,7 +71,6 @@ public class HasOtherComponentsRpcResponseData implements IsSerializable, VibeRp
 	 * 
 	 * @return
 	 */
-	public boolean getShowHtmlElement() {return m_showHtmlElement;}
 	public boolean getShowUserList()    {return m_showUserList;   }
 	
 	/**
@@ -82,6 +78,5 @@ public class HasOtherComponentsRpcResponseData implements IsSerializable, VibeRp
 	 * 
 	 * @param
 	 */
-	public void setShowHtmlElement(boolean showHtmlElement) {m_showHtmlElement = showHtmlElement;}
 	public void setShowUserList(   boolean showUserList)    {m_showUserList    = showUserList;   }
 }

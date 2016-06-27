@@ -285,7 +285,7 @@ public class LandingPageWidget  extends VibeWidget
 	{
 		m_mainPanel = new VibeFlowPanel();
 		m_mainPanel.addStyleName( "landingPageMainPanel" );
-		//m_mainPanel.addStyleName( "landingPageOverflowAuto" );
+		m_mainPanel.addStyleName( "landingPageOverflowAuto" );
 		
 		initWidget( m_mainPanel );
 	}

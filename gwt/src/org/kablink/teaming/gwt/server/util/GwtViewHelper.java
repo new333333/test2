@@ -59,6 +59,7 @@ import java.util.TreeMap;
 
 import javax.portlet.PortletRequest;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -175,6 +176,8 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
+import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilesErrors.Problem;
@@ -250,6 +253,7 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
+import org.kablink.util.servlet.DynamicServletRequest;
 
 import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
@@ -3629,14 +3633,13 @@ public class GwtViewHelper {
 		try {
 			Binder binder = bs.getBinderModule().getBinder(binderInfo.getBinderIdAsLong());
 			boolean showUserList    = ((binder instanceof Folder) ? GwtUserListHelper.getFolderHasUserList((Folder) binder) : false);
-			boolean showHtmlElement = GwtHtmlElementHelper.getBinderHasHtmlElement(binder);
-			return new HasOtherComponentsRpcResponseData(showUserList, showHtmlElement);
+			return new HasOtherComponentsRpcResponseData(showUserList);
 		}
 		
 		catch (Exception e) {
 			// Log the error and assume there are no user_list's.
 			GwtLogHelper.error(m_logger, "GwtViewHelper.getBinderHasOtherComponents( SOURCE EXCEPTION ):  ", e);
-			return new HasOtherComponentsRpcResponseData(false, false);
+			return new HasOtherComponentsRpcResponseData(false);
 		}
 		
 		finally {
@@ -4894,11 +4897,6 @@ public class GwtViewHelper {
 				folderIsMyFilesStorage = false;
 			}
 
-			// Does the Binder have any HTML elements? 
-			boolean showHtmlElement = (
-				GwtHtmlElementHelper.getBinderHasHtmlElement(binder) &&
-				GwtHtmlElementHelper.getHtmlElementStatus(bs, request, folderId));
-
 			// Finally, use the data we obtained to create a
 			// FolderDisplayDataRpcResponseData and return that. 
 			return
@@ -4910,7 +4908,6 @@ public class GwtViewHelper {
 					cwData.getColumnWidths(),
 					folderSupportsPinning,
 					showUserList,
-					showHtmlElement,
 					viewPinnedEntries,
 					viewSharedFiles,
 					folderOwnedByCurrentUser,
@@ -6428,49 +6425,7 @@ public class GwtViewHelper {
 				try {
 					// Build request and render objects needed to build
 					// the toolbar.
-					String		portletName = "ss_forum";
-					PortletInfo	portletInfo = ((PortletInfo) AdaptedPortlets.getPortletInfo(portletName));
-					
-					RenderRequestImpl renderReq = new RenderRequestImpl(request, portletInfo, AdaptedPortlets.getPortletContext());
-					
-					Map<String, Object> params = new HashMap<String, Object>();
-					params.put(KeyNames.PORTLET_URL_PORTLET_NAME, new String[]{portletName});
-					renderReq.setRenderParameters(params);
-					
-					RenderResponseImpl renderRes = new RenderResponseImpl(renderReq, response, portletName);
-					String charEncoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
-					renderRes.setContentType("text/html; charset=" + charEncoding);
-					renderReq.defineObjects(portletInfo.getPortletConfig(), renderRes);
-					
-					renderReq.setAttribute(PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE);
-
-					// Display the whole accessory panel.
-					User user = RequestContextHolder.getRequestContext().getUser();
-					String s_binderId = (String) model.get("binderId");
-					Binder binder = bm.getBinder(Long.valueOf(s_binderId));
-
-					UserProperties userProperties = new UserProperties(user.getId());
-					Map userProps = new HashMap();
-		    		if (null != userProperties.getProperties()) {
-		    			userProps = userProperties.getProperties();
-		    		}
-
-		    		if (null != user) {
-		    			userProperties = pm.getUserProperties(user.getId());
-		    		}
-		    		
-					// Build the 'Add Accessory' toolbar.
-		    		Map<String,Object> panelModel = new HashMap<String,Object>();
-					DashboardHelper.getDashboardMap(binder, userProps, panelModel);
-					Toolbar dashboardToolbar = new Toolbar();
-					BinderHelper.buildDashboardToolbar(renderReq, renderRes, bs, binder, dashboardToolbar, panelModel);
-
-					// Set up the beans used by the jsp.
-					panelModel.put(WebKeys.BINDER_ID, binder.getId());
-					panelModel.put(WebKeys.BINDER, binder);
-					panelModel.put(WebKeys.USER_PROPERTIES, userProps);
-					panelModel.put(WebKeys.SNIPPET, true);	// Signal that <html> and <head> should not be output.
-					panelModel.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
+					Map<String, Object> panelModel = getAccessoryPanelModelMap(bs, request, response, model);
 					
 					jspPath = "definition_elements/view_dashboard_canvas.jsp";
 					html = GwtServerHelper.executeJsp(bs, request, response, servletContext, jspPath, panelModel);
@@ -6622,21 +6577,24 @@ public class GwtViewHelper {
 				
 				break;
 			}
-			
-			case CUSTOM_JSP:  {
+			case BUILT_IN_JSP:  {
 				// Create a model Map for the custom JSP...
-				Map<String, Object> htmlElementModel = buildCustomJspModelMap(model);
+				Map<String, Object> htmlElementModel = getBinderViewModelMap(bs, request, response, model);
+
+				HttpServletRequest req = new DynamicServletRequest(request);
+				req.setAttribute("item", htmlElementModel.get(WebKeys.CONFIG_ELEMENT));
 	    		
-				jspPath = ("/WEB-INF/jsp/custom_jsps/" + buildJspName((String) model.get("customJsp")));
+				jspPath = (String) model.get("jsp");
 				try {
 		    		// ...and run the JSP to produce the target HTML.
-					html = GwtServerHelper.executeJsp(
+					html = GwtServerHelper.executeLandingPageJsp(
 						bs,
-						request,
+						req,
 						response,
 						servletContext,
-						null,		// null -> Not the JSP name...
+						(String) model.get("binderId"),
 						jspPath,	// ...just it's path.
+						null,
 						htmlElementModel);
 				}
 				
@@ -6650,7 +6608,34 @@ public class GwtViewHelper {
 				break;
 			}
 			
-			default: 
+			case CUSTOM_JSP:  {
+				// Create a model Map for the custom JSP...
+				Map<String, Object> htmlElementModel = buildCustomJspModelMap(model);
+
+				jspPath = ("/WEB-INF/jsp/custom_jsps/" + buildJspName((String) model.get("customJsp")));
+				try {
+		    		// ...and run the JSP to produce the target HTML.
+					html = GwtServerHelper.executeJsp(
+						bs,
+						request,
+						response,
+						servletContext,
+						null,		// null -> Not the JSP name...
+						jspPath,	// ...just it's path.
+						htmlElementModel);
+				}
+
+				catch (Exception e) {
+					// ...simply log any errors and assuming there
+					// ...wasn't a custom JSP.
+					GwtLogHelper.error(m_logger, "GwtViewHelper.getJspHtml( " + jspType.name() + ":" + jspPath + ", EXCEPTION ):  ", e);
+					html = "";
+				}
+
+				break;
+			}
+
+			default:
 				// Log an error that we encountered an unhandled command.
 				m_logger.error("JspHtmlRpcResponseData( Unknown jsp type ):  " + jspType.name());
 				break;
@@ -6668,6 +6653,172 @@ public class GwtViewHelper {
 					e,
 					"GwtViewHelper.getJspHtml( SOURCE EXCEPTION ):  ");
 		}
+	}
+
+	private static Map<String, Object> getAccessoryPanelModelMap(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
+		BinderModule  bm = bs.getBinderModule();
+		ProfileModule pm = bs.getProfileModule();
+		String		portletName = "ss_forum";
+		PortletInfo portletInfo = ((PortletInfo) AdaptedPortlets.getPortletInfo(portletName));
+
+		RenderRequestImpl renderReq = new RenderRequestImpl(request, portletInfo, AdaptedPortlets.getPortletContext());
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(KeyNames.PORTLET_URL_PORTLET_NAME, new String[]{portletName});
+		renderReq.setRenderParameters(params);
+
+		RenderResponseImpl renderRes = new RenderResponseImpl(renderReq, response, portletName);
+		String charEncoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+		renderRes.setContentType("text/html; charset=" + charEncoding);
+		renderReq.defineObjects(portletInfo.getPortletConfig(), renderRes);
+
+		renderReq.setAttribute(PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE);
+
+		// Display the whole accessory panel.
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String s_binderId = (String) model.get("binderId");
+		Binder binder = bm.getBinder(Long.valueOf(s_binderId));
+
+		UserProperties userProperties = new UserProperties(user.getId());
+		Map userProps = new HashMap();
+		if (null != userProperties.getProperties()) {
+            userProps = userProperties.getProperties();
+        }
+
+		if (null != user) {
+            userProperties = pm.getUserProperties(user.getId());
+        }
+
+		// Build the 'Add Accessory' toolbar.
+		Map<String,Object> panelModel = new HashMap<String,Object>();
+		DashboardHelper.getDashboardMap(binder, userProps, panelModel);
+		Toolbar dashboardToolbar = new Toolbar();
+		BinderHelper.buildDashboardToolbar(renderReq, renderRes, bs, binder, dashboardToolbar, panelModel);
+
+		// Set up the beans used by the jsp.
+		panelModel.put(WebKeys.BINDER_ID, binder.getId());
+		panelModel.put(WebKeys.BINDER, binder);
+		panelModel.put(WebKeys.USER_PROPERTIES, userProps);
+		panelModel.put(WebKeys.SNIPPET, true);	// Signal that <html> and <head> should not be output.
+		panelModel.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
+		return panelModel;
+	}
+
+	private static Map<String, Object> getBinderViewModelMap(AllModulesInjected bs, HttpServletRequest request, HttpServletResponse response, Map<String, Object> model) {
+		BinderModule  bm = bs.getBinderModule();
+		String s_binderId = (String) model.get("binderId");
+		Binder binder = bm.getBinder(Long.valueOf(s_binderId));
+
+		String itemId = (String) model.get("itemId");
+
+		Map<String, Object> req = new HashMap<String, Object>();
+
+		DefinitionHelper.getDefinitions(binder, req);
+		req.put(WebKeys.BINDER, binder);
+		req.put(WebKeys.FOLDER, binder);
+		req.put(WebKeys.DEFINITION_ENTRY, binder);
+		req.put(WebKeys.USER_PROPERTIES, bs.getProfileModule().getUserProperties(null).getProperties());
+		req.put("property_name", "");
+		req.put("property_caption", "");
+		req.put("property_required", "false");
+
+		Document configDefinition = (Document) req.get(WebKeys.CONFIG_DEFINITION);
+		Element configElement = (Element) configDefinition.getRootElement().selectSingleNode("//item[@id='" + itemId + "']");
+		req.put(WebKeys.CONFIG_ELEMENT, configElement);
+
+		DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
+		List<Element> itemList;
+		if (true) {
+			itemList = new ArrayList<Element>();
+			itemList.add(configElement);
+		} else {
+			itemList = configElement.elements("item");
+		}
+
+		for (Element nextItem:itemList) {
+			String itemType = nextItem.attributeValue("name", "");
+			Element itemDefinition = configBuilder.getItem(configDefinition, itemType);
+
+			//Also set up the default values for all properties defined in the definition configuration
+			//  These will be overwritten by the real values (if they exist) below
+			List<Element> itemDefinitionProperties = new ArrayList<Element>();
+			if ("dataView".equals(nextItem.attributeValue("type"))) {
+				//See if this data item has properties from the form element
+				Element entryFormItem = (Element) configDefinition.getRootElement().selectSingleNode("item[@type='form']");
+				if (entryFormItem != null) {
+					String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
+					if (Validator.isNotNull(nameValue)) {
+						//Find the actual data element if the form part of the definition
+						Element itemEle = (Element) entryFormItem.selectSingleNode(".//item/properties/property[@name='name' and @value='" + nameValue + "']");
+						if (itemEle != null) {
+							itemDefinitionProperties.addAll(itemEle.selectNodes("../../properties/property"));
+						}
+					}
+				}
+			}
+
+			itemDefinitionProperties.addAll(itemDefinition.selectNodes("properties/property"));
+			String propertyName = "";
+			String propertyConfigType = "";
+			String propertyValue = "";
+			for (Element property : itemDefinitionProperties) {
+				propertyName = property.attributeValue("name", "");
+				if (Validator.isNull(propertyName)) continue;
+				//Get the type from the config definition
+				propertyConfigType = property.attributeValue("type", "text");
+				propertyValue = "";
+				//Get the value(s) from the actual definition
+				if (propertyConfigType.equals("selectbox")) {
+					//get all items with same name
+					List<Element> selProperties = nextItem.selectNodes("properties/property[@name='" + propertyName + "']");
+					if (selProperties == null) continue;
+					//There might be multiple values so build a list
+					List propertyValues = new ArrayList();
+					for (Element selItem : selProperties) {
+						String selValue = NLT.getDef(selItem.attributeValue("value", ""));
+						if (Validator.isNotNull(selValue)) propertyValues.add(selValue);
+
+					}
+					req.put("propertyValues_" + propertyName, propertyValues);
+					req.put("property_" + propertyName, "");
+				} else if (propertyConfigType.equals("workflowStatesList")) {
+					//get all items with same name
+					Element statesProperty = (Element) nextItem.selectSingleNode("properties/property[@name='states']");
+					if (statesProperty == null) continue;
+					//There might be multiple values so build a list
+					List propertyValues = new ArrayList();
+					for (Element stateEle : (List<Element>) statesProperty.selectNodes("./workflowState")) {
+						String state = NLT.getDef(stateEle.attributeValue("name", ""));
+						if (Validator.isNotNull(state)) propertyValues.add(state);
+
+					}
+					req.put("propertyValues_" + propertyName, propertyValues);
+					req.put("property_" + propertyName, statesProperty.attributeValue("workflowDefinitionId"));
+				} else {
+					Element selItem = (Element) nextItem.selectSingleNode("properties/property[@name='" + propertyName + "']");
+					if (selItem == null) selItem = property;
+					if (propertyConfigType.equals("textarea")) {
+						propertyValue = selItem.getText();
+					} else {
+						propertyValue = NLT.getDef(selItem.attributeValue("value", ""));
+					}
+					//defaults don't apply here
+					//Set up any "setAttribute" values that need to be passed along. Save the old value so it can be restored
+					String reqAttrName = property.attributeValue("setAttribute", "");
+					if (Validator.isNotNull(reqAttrName)) {
+						//Find this property in the current config
+						req.put(reqAttrName, propertyValue);
+					}
+					if (Validator.isNull(propertyValue)) {
+						propertyValue = property.attributeValue("default", "");
+						if (!Validator.isNull(propertyValue)) propertyValue = NLT.getDef(propertyValue);
+					}
+					req.put("property_" + propertyName, propertyValue);
+
+				}
+			}
+		}
+		return req;
 	}
 
 	/*

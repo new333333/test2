@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.UploadInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.EmailTemplatesHelper;
 import org.kablink.teaming.util.FileIconsHelper;
@@ -162,7 +163,11 @@ public class GwtEmailTemplatesHelper {
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public static void copyCustomizedEmailTemplate(FileInputStream fis, String fileName) throws FileNotFoundException, IOException {
+	public static void copyCustomizedEmailTemplate(AllModulesInjected bs, FileInputStream fis, String fileName) throws FileNotFoundException, IOException {
+		// (bug 981245, 981383) This checking is necessary to ensure that the user
+		// has the right to upload custom email template.
+		bs.getAdminModule().checkAccess(AdminOperation.manageFunction);
+		
 		String filePath = (EmailTemplatesHelper.getEmailTemplatesCustomizedPath(true) + fileName);
 		File fo = new File(filePath);
 		FileOutputStream fos = null;
@@ -209,6 +214,10 @@ public class GwtEmailTemplatesHelper {
 	private static void deleteCustomizedEmailTemplatesImpl(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, DeleteCustomizedEmailTemplatesRpcResponseData reply) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtEmailTemplatesHelper.deleteCustomizedEmailTemplatesImpl()");
 		try {
+			// (bug 986430, 986431) This checking is necessary to ensure that the user
+			// has the right to delete custom email template.
+			bs.getAdminModule().checkAccess(AdminOperation.manageFunction);
+
 			// Were we given any proxy identities to delete?
 			if (MiscUtil.hasItems(entityIds)) {
 				// Yes!  Scan them.
@@ -220,6 +229,13 @@ public class GwtEmailTemplatesHelper {
 						// Yes!  Does it exist in the customized email
 						// templates directory?
 						String name = eid.getEmailTemplateName();
+						
+						// (bug 986430, 986431) We must validate the specified file name to guard against potential attack.
+						if(name != null && (name.contains("/") || name.contains("\\"))) {
+							// Don't allow file name to contain path delimiter.
+							throw new IllegalArgumentException("Illegal file name '" + name + "'");
+						}
+
 						String fullPath = (customPath + name);
 						File f = new File(fullPath);
 						if (!(f.exists())) {

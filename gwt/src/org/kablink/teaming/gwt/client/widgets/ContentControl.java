@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.binderviews.*;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryDlg.FolderEntryDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
@@ -86,6 +87,7 @@ public class ContentControl extends Composite
 		ShowCalendarFolderEvent.Handler,
 		ShowCollectionViewEvent.Handler,
 		ShowCustomBinderViewEvent.Handler,
+		ShowStandardBinderViewEvent.Handler,
 		ShowDiscussionFolderEvent.Handler,
 		ShowDiscussionWSEvent.Handler,
 		ShowFileFolderEvent.Handler,
@@ -144,6 +146,7 @@ public class ContentControl extends Composite
 		TeamingEvents.SHOW_CALENDAR_FOLDER,
 		TeamingEvents.SHOW_COLLECTION_VIEW,
 		TeamingEvents.SHOW_CUSTOM_BINDER_VIEW,
+		TeamingEvents.SHOW_STANDARD_BINDER_VIEW,
 		TeamingEvents.SHOW_DISCUSSION_FOLDER,
 		TeamingEvents.SHOW_DISCUSSION_WORKSPACE,
 		TeamingEvents.SHOW_FILE_FOLDER,
@@ -507,7 +510,7 @@ public class ContentControl extends Composite
 	{
 		// Simply call the JavaScript implementation method on the
 		// sanitized URL.
-		jsPushContentHistoryUrl( sanitizeHistoryUrl( url ) );
+		jsPushContentHistoryUrl(sanitizeHistoryUrl(url));
 	}// end pushContentHistoryUrl()
 	
 	/**
@@ -652,7 +655,7 @@ public class ContentControl extends Composite
 		// into it.
 		m_mainContentPanel.remove( m_contentFrame );
 		m_contentFrame.setUrl(     newUrl         );
-		m_mainContentPanel.add(    m_contentFrame );
+		m_mainContentPanel.add(m_contentFrame);
 	}// end setContentFrameUrl()
 	
 
@@ -663,7 +666,7 @@ public class ContentControl extends Composite
 	private void setContentFrameUrl( String url )
 	{
 		// Always use the initial form of the method.
-		setContentFrameUrl( url, null );
+		setContentFrameUrl(url, null);
 	}// end setContentFrameUrl()
 	
 	/*
@@ -1290,14 +1293,12 @@ public class ContentControl extends Composite
 	 */
 	private void onDeleteSelectedEntitiesAsync( final List<EntityId> selectedEntityIds, final String targetBinderPermalink )
 	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
-				onDeleteSelectedEntitiesNow( selectedEntityIds, targetBinderPermalink );
+			public void execute() {
+				onDeleteSelectedEntitiesNow(selectedEntityIds, targetBinderPermalink);
 			}// end execute()
-		} );
+		});
 	}// end onDeleteSelectedEntitiesAsync()
 	
 	/*
@@ -1309,36 +1310,30 @@ public class ContentControl extends Composite
 		// redisplay things with the entries deleted.
 		final boolean deletingBinders = EntityId.areBindersInEntityIds( selectedEntityIds );
 		BinderViewsHelper.deleteSelections(
-			selectedEntityIds,
-			new DeleteEntitiesCallback()
-		{
-			@Override
-			public void operationCanceled()
-			{
-				if ( deletingBinders )
-				{
-					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-				}
-				postDeleteReloadAsync( targetBinderPermalink );
-			}// end operationCanceled())
+				selectedEntityIds,
+				new DeleteEntitiesCallback() {
+					@Override
+					public void operationCanceled() {
+						if (deletingBinders) {
+							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+						}
+						postDeleteReloadAsync(targetBinderPermalink);
+					}// end operationCanceled())
 
-			@Override
-			public void operationComplete()
-			{
-				if ( deletingBinders )
-				{
-					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-				}
-				postDeleteReloadAsync( targetBinderPermalink );
-			}// end operationComplete()
-			
-			@Override
-			public void operationFailed()
-			{
-				// Nothing to do.  The delete call will have told the
-				// user about the failure.
-			}// end operationFailed()
-		} );
+					@Override
+					public void operationComplete() {
+						if (deletingBinders) {
+							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+						}
+						postDeleteReloadAsync(targetBinderPermalink);
+					}// end operationComplete()
+
+					@Override
+					public void operationFailed() {
+						// Nothing to do.  The delete call will have told the
+						// user about the failure.
+					}// end operationFailed()
+				});
 	}// end onDeleteSelectedEntitiesNow()
 	
 	
@@ -1350,7 +1345,7 @@ public class ContentControl extends Composite
 	@Override
 	public void onGetCurrentViewInfo( GetCurrentViewInfoEvent event )
 	{
-		event.getViewInfoCallback().viewInfo( m_currentView );
+		event.getViewInfoCallback().viewInfo(m_currentView);
 	}
 
 	
@@ -1398,8 +1393,7 @@ public class ContentControl extends Composite
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Handles ShowBlogFolderEvent's received by this class.
 	 * 
@@ -1410,27 +1404,8 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowBlogFolder( final ShowBlogFolderEvent event )
 	{
-		ViewClient vClient;
-		
-		// Display a Blog folder for the given binder id.
-		vClient = new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess( ViewBase blogFolderView )
-			{
-				blogFolderView.setViewSize();
-				event.getViewPanel().showWidget( blogFolderView );
-			}
-		};
-		
 		// Create a BlogFolderView widget for the selected binder.
-		BlogFolderView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		BlogFolderView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1447,21 +1422,7 @@ public class ContentControl extends Composite
 		CalendarFolderView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase tfView )
-			{
-				tfView.setViewSize();
-				event.getViewPanel().showWidget( tfView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowCalendarFolder()
 	
 	/**
@@ -1478,21 +1439,7 @@ public class ContentControl extends Composite
 		CollectionView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase cView )
-			{
-				cView.setViewSize();
-				event.getViewPanel().showWidget( cView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowCollection()
 
 	/**
@@ -1510,23 +1457,24 @@ public class ContentControl extends Composite
 				event.getViewType(),
 				event.getViewLayout(),
 				event.getViewReady(),
-				new ViewClient()
-				{
-					@Override
-					public void onUnavailable()
-					{
-						GwtClientHelper.consoleLog("Failed to create CustomBinderView");
-						// Nothing to do.  Error handled in asynchronous provider.
-					}// end onUnavailable()
+				new BinderViewClient(event));
+	}
 
-					@Override
-					public void onSuccess( ViewBase dfView )
-					{
-						GwtClientHelper.consoleLog("Successfully created CustomBinderView.  ViewPanel: " + event.getViewPanel().getClass().getSimpleName());
-						dfView.setViewSize();
-						event.getViewPanel().showWidget( dfView );
-					}// end onSuccess()
-				});
+	/**
+	 * Handles onShowStandardBinderView's received by this class.
+	 *
+	 * Implements the ShowStandardBinderViewEvent.Handler.onShowStandardBinderView() method.
+	 *
+	 * @param event
+	 */
+	@Override
+	public void onShowStandardBinderView(ShowStandardBinderViewEvent event) {
+		StandardBinderView.createAsync(
+				event.getBinderInfo(),
+				event.getViewType(),
+				event.getViewReady(),
+				new BinderViewClient(event)
+		);
 	}
 
 	/**
@@ -1543,23 +1491,7 @@ public class ContentControl extends Composite
 		DiscussionFolderView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				GwtClientHelper.consoleLog("Failed to create DiscussionFolderView");
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase dfView )
-			{
-				GwtClientHelper.consoleLog("Successfully created DiscussionFolderView.  ViewPanel: " + event.getViewPanel().getClass().getSimpleName());
-				dfView.setViewSize();
-				event.getViewPanel().showWidget( dfView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowDiscussionFolder()
 	
 	/**
@@ -1570,27 +1502,8 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowDiscussionWS(final ShowDiscussionWSEvent event )
 	{
-		// Display a Discussion Workspace for the given binder id.
-		ViewClient vClient;
-		
-		vClient = new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess( ViewBase discussionWS )
-			{
-				discussionWS.setViewSize();
-				event.getViewPanel().showWidget( discussionWS );
-			}
-		};
-		
 		// Create a DiscussionWSView widget for the selected binder.
-		DiscussionWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		DiscussionWSView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1607,21 +1520,7 @@ public class ContentControl extends Composite
 		FileFolderView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase ffView )
-			{
-				ffView.setViewSize();
-				event.getViewPanel().showWidget( ffView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowFileFolder()
 	
 	/**
@@ -1704,27 +1603,8 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowGenericWS(final ShowGenericWSEvent event )
 	{
-		ViewClient vClient;
-		
-		// Display a Generic Workspace for the given binder id.
-		vClient = new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess( ViewBase genericWS )
-			{
-				genericWS.setViewSize();
-				event.getViewPanel().showWidget( genericWS );
-			}
-		};
-		
 		// Create a GenericWSView widget for the selected binder.
-		GenericWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		GenericWSView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1735,28 +1615,9 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowGlobalWS(final ShowGlobalWSEvent event )
 	{
-		ViewClient vClient;
-		
-		// Display a Generic Workspace for the given binder id.
-		vClient = new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess( ViewBase genericWS )
-			{
-				genericWS.setViewSize();
-				event.getViewPanel().showWidget( genericWS );
-			}
-		};
-		
 		// Create a GlobalWorkspacesView widget for the selected
 		// binder.
-		GlobalWorkspacesView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		GlobalWorkspacesView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1773,21 +1634,7 @@ public class ContentControl extends Composite
 		GuestbookFolderView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase gbfView )
-			{
-				gbfView.setViewSize();
-				event.getViewPanel().showWidget( gbfView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowGuestbookFolder()
 	
 	/**
@@ -1798,27 +1645,8 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowHomeWS(final ShowHomeWSEvent event )
 	{
-		ViewClient vClient;
-		
-		// Display a Generic Workspace for the given binder id.
-		vClient = new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess( ViewBase homeWS )
-			{
-				homeWS.setViewSize();
-				event.getViewPanel().showWidget( homeWS );
-			}
-		};
-		
 		// Create a HomeWSView widget for the selected binder.
-		HomeWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		HomeWSView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1829,27 +1657,8 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowLandingPage(final ShowLandingPageEvent event )
 	{
-		// Display a landing page for the given binder id.
-		ViewClient vClient;
-		
-		vClient = new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess( ViewBase landingPage )
-			{
-				landingPage.setViewSize();
-				event.getViewPanel().showWidget( landingPage );
-			}// end onSuccess()
-		};
-		
 		// Create a LandingPage widget for the selected binder.
-		LandingPageView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		LandingPageView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
 	}// end onShowLandingPage()
 	
 	/**
@@ -1866,21 +1675,7 @@ public class ContentControl extends Composite
 		MicroBlogFolderView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase mbfView )
-			{
-				mbfView.setViewSize();
-				event.getViewPanel().showWidget( mbfView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowMicroBlogFolder()
 	
 	/**
@@ -1897,21 +1692,7 @@ public class ContentControl extends Composite
 		MilestoneFolderView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase msfView )
-			{
-				msfView.setViewSize();
-				event.getViewPanel().showWidget( msfView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowMilestoneFolder()
 	
 	/**
@@ -1929,21 +1710,7 @@ public class ContentControl extends Composite
 		MirroredFileFolderView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase mffView )
-			{
-				mffView.setViewSize();
-				event.getViewPanel().showWidget( mffView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowMirroredFileFolder()
 	
 	/**
@@ -1954,27 +1721,8 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowNetFoldersWS(final ShowNetFoldersWSEvent event )
 	{
-		ViewClient vClient;
-		
-		// Display a NetFolders Workspace for the given binder id.
-		vClient = new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess( ViewBase genericWS )
-			{
-				genericWS.setViewSize();
-				event.getViewPanel().showWidget( genericWS );
-			}
-		};
-		
 		// Create a NetFoldersWSView widget for the selected binder.
-		NetFoldersWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		NetFoldersWSView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1989,22 +1737,8 @@ public class ContentControl extends Composite
 		// binder.
 		PersonalWorkspaceView.createAsync(
 				event.getBinderInfo(),
-				event.getViewReady(), 
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( ViewBase pwsView )
-			{
-				pwsView.setViewSize();
-				event.getViewPanel().showWidget( pwsView );
-			}// end onSuccess()
-		} );
+				event.getViewReady(),
+				new BinderViewClient(event));
 	}// end onShowPersonalWorkspace()
 	
 	/**
@@ -2019,22 +1753,8 @@ public class ContentControl extends Composite
 		// binder.
 		PersonalWorkspacesView.createAsync(
 				event.getBinderInfo(),
-				event.getViewReady(), 
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( ViewBase pwsView )
-			{
-				pwsView.setViewSize();
-				event.getViewPanel().showWidget( pwsView );
-			}// end onSuccess()
-		} );
+				event.getViewReady(),
+				new BinderViewClient(event));
 	}// end onShowPersonalWorkspaces()
 	
 	/**
@@ -2052,21 +1772,7 @@ public class ContentControl extends Composite
 		PhotoAlbumFolderView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase tfView )
-			{
-				tfView.setViewSize();
-				event.getViewPanel().showWidget( tfView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowPhotoAlbumFolder()
 	
 	/**
@@ -2077,27 +1783,8 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowProjectManagementWS(final ShowProjectManagementWSEvent event )
 	{
-		ViewClient vClient;
-		
-		// Display a Project Management Workspace for the given binder id.
-		vClient = new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess( ViewBase projectManagementWS )
-			{
-				projectManagementWS.setViewSize();
-				event.getViewPanel().showWidget( projectManagementWS );
-			}
-		};
-		
 		// Create a ProjectManagementWSView widget for the selected binder.
-		ProjectManagementWSView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		ProjectManagementWSView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -2114,21 +1801,7 @@ public class ContentControl extends Composite
 		SurveyFolderView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase sfView )
-			{
-				sfView.setViewSize();
-				event.getViewPanel().showWidget( sfView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowSurveyFolder()
 	
 	/**
@@ -2145,21 +1818,7 @@ public class ContentControl extends Composite
 		TaskFolderView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase tfView )
-			{
-				tfView.setViewSize();
-				event.getViewPanel().showWidget( tfView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowTaskFolder()
 	
 	/**
@@ -2172,25 +1831,8 @@ public class ContentControl extends Composite
 	{
 		ViewClient vClient;
 		
-		// Display a Generic Workspace for the given binder id.
-		vClient = new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess( ViewBase genericWS )
-			{
-				genericWS.setViewSize();
-				event.getViewPanel().showWidget( genericWS );
-			}
-		};
-		
 		// Create the view widget for the selected binder.
-		TeamWorkspacesView.createAsync( event.getBinderInfo(), event.getViewReady(), vClient );
+		TeamWorkspacesView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -2201,27 +1843,8 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowTeamWS(final ShowTeamWSEvent event )
 	{
-		ViewClient vClient;
-		
-		// Display a Team Workspace for the given binder id.
-		vClient = new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}
-			
-			@Override
-			public void onSuccess( ViewBase teamWS )
-			{
-				teamWS.setViewSize();
-				event.getViewPanel().showWidget( teamWS );
-			}
-		};
-		
 		// Create a TeamWSView widget for the selected binder.
-		TeamWSView.createAsync(event.getBinderInfo(), event.getViewReady(), vClient);
+		TeamWSView.createAsync(event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event));
 	}
 	
 	/**
@@ -2238,21 +1861,7 @@ public class ContentControl extends Composite
 		TrashView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase tView )
-			{
-				tView.setViewSize();
-				event.getViewPanel().showWidget( tView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowTrash()
 	
 
@@ -2270,21 +1879,7 @@ public class ContentControl extends Composite
 		WikiFolderView.createAsync(
 				event.getBinderInfo(),
 				event.getViewReady(),
-				new ViewClient()
-		{
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in asynchronous provider.
-			}// end onUnavailable()
-
-			@Override
-			public void onSuccess( ViewBase tfView )
-			{
-				tfView.setViewSize();
-				event.getViewPanel().showWidget( tfView );
-			}// end onSuccess()
-		});
+				new BinderViewClient(event));
 	}// end onShowWikiFolder()
 	
 	/*
@@ -2401,11 +1996,11 @@ public class ContentControl extends Composite
 		BinderInfo bi = vi.getBinderInfo();
 		ViewType vt = vi.getViewType();
 
-		ShowBinderEvent viewEvent;
+		ShowBinderEvent viewEvent = null;
 		if (vi.isCustomLayout() && vi.getViewLayout()!=null) {
 			viewEvent = new ShowCustomBinderViewEvent(bi, vt, vi.getViewLayout(), parent, viewReady);
-		} else {
-			viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, vt, parent, viewReady);
+		} else if (GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, vt, parent, viewReady)!=null) {
+			viewEvent = new ShowStandardBinderViewEvent(bi, vt, parent, viewReady);
 		}
 
 		if (viewEvent!=null) {
@@ -2595,4 +2190,27 @@ public class ContentControl extends Composite
 			}
 		} );
 	}
+
+	public static class BinderViewClient implements ViewClient
+	{
+		private ShowBinderEvent event;
+
+		public BinderViewClient(ShowBinderEvent event) {
+			this.event = event;
+		}
+
+		@Override
+		public void onUnavailable()
+		{
+			// Nothing to do.  Error handled in asynchronous provider.
+		}
+
+		@Override
+		public void onSuccess( ViewBase view )
+		{
+			view.setParent((UIObject) event.getViewPanel());
+			view.setViewSize();
+			event.getViewPanel().showWidget( view );
+		}
+	};
 }// end ContentControl

@@ -42,7 +42,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 
 import java.util.*;
@@ -118,8 +117,10 @@ public class GwtFolderViewHelper {
             } else {
                 String jsp = configBuilder.getItemJspByStyle(viewItem, name, Definition.JSP_STYLE_DEFAULT);
                 if (jsp != null) {
-                    binderView = new BinderViewJsp(jsp);
-                    binderView.setName(name);
+                    BinderViewJsp binderJspView = new BinderViewJsp(jsp);
+                    binderJspView.setName(name);
+                    binderJspView.setItemId(viewItem.attributeValue("id"));
+                    binderView = binderJspView;
                 }
             }
         }
@@ -127,9 +128,9 @@ public class GwtFolderViewHelper {
     }
 
     public static boolean hasCustomView(AllModulesInjected ami, Binder binder) {
-//        Definition def2 = binder.getDefaultViewDef();
-//        return !def2.getName().startsWith("_");
-        return false;
+        Definition def2 = binder.getDefaultViewDef();
+        return !def2.getName().startsWith("_");
+//        return true;
     }
 
     /*

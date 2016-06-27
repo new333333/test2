@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -53,13 +54,14 @@ public abstract class ViewBase extends ResizeComposite
 		// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler
 {
-	protected   final        ViewReady			m_viewReady;							// Stores a ViewReady created for the classes that extends it.
+	protected          ViewReady			m_viewReady;							// Stores a ViewReady created for the classes that extends it.
 	protected final static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized string resource.
 
 	// The following are used when setting the view's size to account
 	// for padding, ...
 	private int m_contentHeightAdjust	= GwtConstants.CONTENT_HEIGHT_ADJUST;
 	private int m_contentWidthAdjust	= GwtConstants.CONTENT_WIDTH_ADJUST;
+	protected UIObject m_parent;
 
 	/**
 	 * Callback interface used to interact with a view asynchronously
@@ -133,13 +135,21 @@ public abstract class ViewBase extends ResizeComposite
 		setViewSize();
 	}
 
+	public void setParent(UIObject parent) {
+		m_parent = parent;
+	}
+
 	/**
 	 * Sets the size of the view based on the MainContentLayoutPanel
 	 * that holds it.
 	 */
 	public void setViewSize() {
-		MainContentLayoutPanel clp = GwtTeaming.getMainPage().getMainContentLayoutPanel();
-		setPixelSize((clp.getOffsetWidth() + m_contentWidthAdjust), (clp.getOffsetHeight() + m_contentHeightAdjust));
+		UIObject parent = m_parent;
+		if (parent==null) {
+			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
+		}
+		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). Parent=" + parent.getClass().getSimpleName() + "; Parent height: " + parent.getOffsetWidth());
+		setPixelSize((parent.getOffsetWidth() + getContentWidthAdjust()), (parent.getOffsetHeight() + getContentHeightAdjust()));
 	}
 	
 	/**

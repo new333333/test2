@@ -70,6 +70,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 	private TextBox m_widthCtrl = null;
 	private TextBox m_heightCtrl = null;
 	private ListBox m_widthUnitListBox = null;
+	private ListBox m_heightUnitListBox = null;
 	
 	/**
 	 * 
@@ -194,7 +195,20 @@ public class GraphicWidgetDlgBox extends DlgBox
 			m_heightCtrl.addKeyPressHandler( this );
 			m_heightCtrl.setVisibleLength( 3 );
 			sizeTable.setWidget( 1, 1, m_heightCtrl );
-			sizeTable.setText( 1, 2, GwtTeaming.getMessages().pxLabel() );
+			
+			// Create a listbox that holds the possible units for the height
+			{
+				m_heightUnitListBox = new ListBox( false );
+				m_heightUnitListBox.setVisibleItemCount( 1 );
+				
+				m_heightUnitListBox.addItem( GwtTeaming.getMessages().percent(), "%" );
+				m_heightUnitListBox.addItem( GwtTeaming.getMessages().pxLabel(), "px" );
+				
+				sizeTable.setWidget( 1, 2, m_heightUnitListBox );
+			}
+						
+			
+			//sizeTable.setText( 1, 2, GwtTeaming.getMessages().pxLabel() );
 
 			panel.add( sizeTable );
 			table.setWidget( 3, 0, panel );
@@ -227,6 +241,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 		m_widthCtrl.setEnabled( enabled );
 		m_widthUnitListBox.setEnabled( enabled );
 		m_heightCtrl.setEnabled( enabled );
+		m_heightUnitListBox.setEnabled( enabled );
 	}
 	
 	/**
@@ -260,9 +275,10 @@ public class GraphicWidgetDlgBox extends DlgBox
 			
 			// Get the height
 			height = getHeight();
-
+			units=getHeightUnits();			
 			properties.setHeight( height );
-			properties.setHeightUnits( Unit.PX );
+			properties.setHeightUnits( units );
+			
 			properties.setOverflow( getOverflow() );
 		}
 
@@ -439,6 +455,30 @@ public class GraphicWidgetDlgBox extends DlgBox
 		return unit;
 	}
 	
+	/**
+	 * 
+	 */
+	private Style.Unit getHeightUnits()
+	{
+		Style.Unit unit = Style.Unit.PCT;
+		int selectedIndex;
+		String value;
+		
+		// Yes
+		// Get the selected index from the listbox that holds the list of units.
+		selectedIndex = m_heightUnitListBox.getSelectedIndex();
+		if ( selectedIndex < 0 )
+			selectedIndex = 0;
+		
+		value = m_heightUnitListBox.getValue( selectedIndex );
+		if ( value != null && value.equalsIgnoreCase( "%" ) )
+			unit = Style.Unit.PCT;
+		else
+			unit = Style.Unit.PX;
+		
+		return unit;
+	}	
+	
 
 	/**
 	 * Initialize the controls on the page with the values from the properties.
@@ -477,6 +517,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 		// Initialize the controls dealing with width and height
 		{
 			Style.Unit widthUnits;
+			Style.Unit heightUnits;
 			String unitValue;
 			int width;
 			int height;
@@ -484,6 +525,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 			height = properties.getHeight();
 			width = properties.getWidth();
 			widthUnits = properties.getWidthUnits();
+			heightUnits=properties.getHeightUnits();
 			
 			if ( width > 0 || height > 0 )
 			{
@@ -516,6 +558,24 @@ public class GraphicWidgetDlgBox extends DlgBox
 				if ( nextUnit != null && nextUnit.equalsIgnoreCase( unitValue ) )
 				{
 					m_widthUnitListBox.setSelectedIndex( i );
+					break;
+				}
+			}
+			
+			if ( heightUnits == Style.Unit.PCT )
+				unitValue = "%";
+			else
+				unitValue = "px";
+
+			// Select the appropriate unit in the listbox.
+			for (i = 0; i < m_heightUnitListBox.getItemCount(); ++i)
+			{
+				String nextUnit;
+				
+				nextUnit = m_heightUnitListBox.getValue( i );
+				if ( nextUnit != null && nextUnit.equalsIgnoreCase( unitValue ) )
+				{
+					m_heightUnitListBox.setSelectedIndex( i );
 					break;
 				}
 			}

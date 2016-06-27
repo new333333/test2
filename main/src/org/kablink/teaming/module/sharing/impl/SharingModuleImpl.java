@@ -211,35 +211,26 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                 throw new AccessControlException();
             }
         }
-		if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
+        if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
             if (recipient.getIdentityInfo().isInternal()) {
-                if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
-					return;
-                }
+                binderModule.checkAccess(binder, BinderOperation.allowSharing);
             } else {
-                if (binderModule.testAccess(binder, BinderOperation.allowSharingExternal)) {
-					return;
-                }
+                binderModule.checkAccess(binder, BinderOperation.allowSharingExternal);
             }
         } else if (shareItem.getRecipientType().equals(RecipientType.user) && recipient != null) {
             if (((User)recipient).isShared()) {
-                if (binderModule.testAccess(binder, BinderOperation.allowSharingPublic)) {
-					return;
-                }
+                binderModule.checkAccess(binder, BinderOperation.allowSharingPublic);
             } else if (recipient.getIdentityInfo().isInternal()) {
-                if (binderModule.testAccess(binder, BinderOperation.allowSharing)) {
-					return;
-                }
+                binderModule.checkAccess(binder, BinderOperation.allowSharing);
             } else {
-                if (binderModule.testAccess(binder, BinderOperation.allowSharingExternal)) {
-					return;
-                }
+                binderModule.checkAccess(binder, BinderOperation.allowSharingExternal);
             }
         } else if (shareItem.getRecipientType().equals(RecipientType.team)) {
             //Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
             throw new AccessControlException();
+        } else {
+            throw new AccessControlException();
         }
-		throw new AccessControlException();
 	}
 
 	private void checkRoleToGrant(ShareItem shareItem, EntityIdentifier entityIdentifier) {
@@ -273,7 +264,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                     if (!accessControlManager.testRightGrantedBySharing(user,
                             (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_FORWARD)) {
                         //The entry didn't have the right due to sharing, so now check the parent folder
-                        if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingForward)) {
+                        if (!binderModule.testAccess(topFolder, BinderOperation.allowFileSharingForward)) {
                             throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
                         }
                     }
@@ -282,14 +273,14 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                     if (recipient.getIdentityInfo().isInternal()) {
                         if (!accessControlManager.testRightGrantedBySharing(user,
                                 (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_INTERNAL)) {
-                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowFileSharing)) {
                                 throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
                             }
                         }
                     } else {
                         if (!accessControlManager.testRightGrantedBySharing(user,
                                 (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_EXTERNAL)) {
-                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowFileSharingExternal)) {
                                 throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
                             }
                         }
@@ -298,21 +289,21 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                     if (((User)recipient).isShared()) {
                         if (!accessControlManager.testRightGrantedBySharing(user,
                                 (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_PUBLIC)) {
-                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingPublic)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowFileSharingPublic)) {
                                 throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
                             }
                         }
                     } else if (recipient.getIdentityInfo().isInternal()) {
                         if (!accessControlManager.testRightGrantedBySharing(user,
                                 (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_INTERNAL)) {
-                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharing)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowFileSharing)) {
                                 throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
                             }
                         }
                     } else {
                         if (!accessControlManager.testRightGrantedBySharing(user,
                                 (WorkArea)fe, WorkAreaOperation.ALLOW_SHARING_EXTERNAL)) {
-                            if (!binderModule.testAccess(topFolder, BinderOperation.allowSharingExternal)) {
+                            if (!binderModule.testAccess(topFolder, BinderOperation.allowFileSharingExternal)) {
                                 throw new AccessControlException("errorcode.sharing.topNetfolder.notAllowed", new Object[] {});
                             }
                         }

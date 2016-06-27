@@ -68,11 +68,9 @@ public class VibeFlowPanel extends FlowPanel
 	 */
 	private void onResizeAsync()
 	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
+			public void execute() {
 				onResizeNow();
 			}
 		});
@@ -83,7 +81,9 @@ public class VibeFlowPanel extends FlowPanel
 	 */
 	private void onResizeNow()
 	{
-		for (Widget child : getChildren())
+		WidgetCollection children = getChildren();
+		GwtClientHelper.consoleLog("VibeFlowPanel (" + this.getStyleName() + "): onResizeNow().  Child count: " + children.size());
+		for (Widget child : children)
 	    {
 	    	if (child instanceof RequiresResize)
 	        {
@@ -94,6 +94,12 @@ public class VibeFlowPanel extends FlowPanel
 
 	@Override
 	public void showWidget(Widget widget) {
+		GwtClientHelper.consoleLog("VibeFlowPanel ("  + this.getStyleName() + "): showWidget() for " + widget.getClass().getName());
 		add(widget);
+	}
+
+	public void setMinPixelSize(int width, int height) {
+		getStyleElement().setAttribute("min-width", "" + width + "px");
+		getStyleElement().setAttribute("min-height", "" + height + "px");
 	}
 }

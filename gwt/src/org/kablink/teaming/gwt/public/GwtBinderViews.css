@@ -152,9 +152,9 @@
 		.vibe-userListPerUserPresence-disabled {color: #c4c4c4;}
 		.vibe-userListPerUserPresence-enabled  {color: #353838;}
 	/* ...End:  User list panel styles. */
-	
+
+		.vibe-binderView               {border: 8px solid transparent;}
 	/* ...Start:  Generic folder view styles. */
-		.vibe-folderViewBase               {border: 8px solid transparent;}
 		.vibe-folderViewBase-dndHint       {position: absolute !important; top: 8px; left: 25%; right: 25%; color: black; font-size: 1em; font-weight: bold; text-align: center; padding: 10px; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px; background: #09f;}
 		.vibe-folderViewBase-dndPanel      {position: relative;}
 		.vibe-folderViewBase-dndPanelHover {}
@@ -428,6 +428,16 @@
 	
 	.vibe-discussionWSView_TitlePanel, .vibe-teamWSView_TitlePanel
 	{
+	}
+
+	.vibe-grid
+	{
+		overflow: hidden;
+	}
+
+	.vibe-grid tbody tr
+	{
+		vertical-align: top;
 	}
 	
 	/* ...Start:  Personal Workspace view styles. */

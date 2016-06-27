@@ -421,25 +421,26 @@ public class WorkspaceTreeHelper {
 			String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 			DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
 			
-			
-			if (operation.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
-				model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
-				getTeamMembers(bs, formData, request, response, (Workspace)binder, model);
-			} else {
-				Document searchFilter = BinderHelper.getSearchFilter(bs, binder, userFolderProperties);
-				Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
-				String viewType = null;
-				if (!showTrash) {
-					viewType = DefinitionUtils.getViewType(configDocument);
-				}
-				if (viewType == null) viewType = "";
-				if (viewType.equals(Definition.VIEW_STYLE_DISCUSSION_WORKSPACE)) {
-					getShowDiscussionWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model);					
-				} else if (viewType.equals(Definition.VIEW_STYLE_PROJECT_WORKSPACE)) {
-					getShowWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model, showTrash);
-					getShowProjectWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model);
+			if (binder instanceof Workspace) {
+				if (operation.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
+					model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
+					getTeamMembers(bs, formData, request, response, (Workspace) binder, model);
 				} else {
-					getShowWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model, showTrash);
+					Document searchFilter = BinderHelper.getSearchFilter(bs, binder, userFolderProperties);
+					Document configDocument = (Document) model.get(WebKeys.CONFIG_DEFINITION);
+					String viewType = null;
+					if (!showTrash) {
+						viewType = DefinitionUtils.getViewType(configDocument);
+					}
+					if (viewType == null) viewType = "";
+					if (viewType.equals(Definition.VIEW_STYLE_DISCUSSION_WORKSPACE)) {
+						getShowDiscussionWorkspace(bs, formData, request, response, (Workspace) binder, searchFilter, model);
+					} else if (viewType.equals(Definition.VIEW_STYLE_PROJECT_WORKSPACE)) {
+						getShowWorkspace(bs, formData, request, response, (Workspace) binder, searchFilter, model, showTrash);
+						getShowProjectWorkspace(bs, formData, request, response, (Workspace) binder, searchFilter, model);
+					} else {
+						getShowWorkspace(bs, formData, request, response, (Workspace) binder, searchFilter, model, showTrash);
+					}
 				}
 			}
 			Map tagResults = TagUtil.uniqueTags(bs.getBinderModule().getTags(binder));
