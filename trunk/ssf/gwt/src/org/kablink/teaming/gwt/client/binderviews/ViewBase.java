@@ -57,10 +57,6 @@ public abstract class ViewBase extends ResizeComposite
 	protected          ViewReady			m_viewReady;							// Stores a ViewReady created for the classes that extends it.
 	protected final static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized string resource.
 
-	// The following are used when setting the view's size to account
-	// for padding, ...
-	private int m_contentHeightAdjust	= GwtConstants.CONTENT_HEIGHT_ADJUST;
-	private int m_contentWidthAdjust	= GwtConstants.CONTENT_WIDTH_ADJUST;
 	protected UIObject m_parent;
 
 	/**
@@ -83,23 +79,6 @@ public abstract class ViewBase extends ResizeComposite
 		super();
 		m_viewReady = viewReady;
 	}
-
-	/**
-	 * Get'er methods.
-	 * 
-	 * @return
-	 */
-	public int getContentHeightAdjust() {return m_contentHeightAdjust;}
-	public int getContentWidthAdjust()  {return m_contentWidthAdjust; }
-
-	/**
-	 * Set'er methods.
-	 * 
-	 * @param contentHeightAdjust
-	 * @param contentWidthAdjust
-	 */
-	public void setContentHeightAdjust(int contentHeightAdjust) {m_contentHeightAdjust = contentHeightAdjust;}
-	public void setContentWidthAdjust( int contentWidthAdjust)  {m_contentWidthAdjust = contentWidthAdjust;  }
 
 	/**
 	 * Intercepts the initWidget call to the composite so that a
@@ -148,8 +127,11 @@ public abstract class ViewBase extends ResizeComposite
 		if (parent==null) {
 			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
 		}
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). Parent=" + parent.getClass().getSimpleName() + "; Parent height: " + parent.getOffsetHeight());
-		setPixelSize((parent.getOffsetWidth() + getContentWidthAdjust()), (parent.getOffsetHeight() + getContentHeightAdjust()));
+		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). Parent height: " + parent.getOffsetHeight());
+		int width = parent.getOffsetWidth();
+		int height = parent.getOffsetHeight() + GwtConstants.CONTENT_WIDTH_ADJUST;
+		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). New size: (" + width + "," + height + ")");
+		setPixelSize(width, height);
 	}
 	
 	/**

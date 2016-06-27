@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveAccessoryStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -115,7 +116,11 @@ public class AccessoriesPanel extends ToolPanelBase
 		m_fp.addStyleName("vibe-binderViewTools vibe-accessoriesPanel");
 
 		initWidget(m_fp);
-		loadPart1Async();
+		if (binderInfo.getCollectionType() == CollectionType.NOT_A_COLLECTION) {
+			loadPart1Async();
+		} else if (m_notifyOnReady) {
+			toolPanelReady();
+		}
 	}
 
 	/*
