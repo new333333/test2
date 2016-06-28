@@ -52,6 +52,7 @@ public class ReleaseInfo {
 	
 	static String name;
 	static String version;
+	static String versionTag;
 	static String buildNumber,buildDate;
 	static Date serverStartTime;
 	static String startTime;
@@ -64,6 +65,7 @@ public class ReleaseInfo {
 			licenseRequiredEdition = false;
 			
 		version = SPropsUtil.getString("release.version", "0");
+		versionTag = SPropsUtil.getString("release.version.tag", null);
 
 		// Are we running Filr
 		if ( Utils.checkIfFilr() )
@@ -91,7 +93,7 @@ public class ReleaseInfo {
 	}
 	
 	private static final String buildReleaseInfoString(String buildDateStr) {
-		return name + " " + version + " (" + NLT.get( "releaseInfo.build" ) + buildNumber  + " / " + buildDateStr + ")";
+		return name + " " + getDisplayVersion() + " (" + NLT.get( "releaseInfo.build" ) + buildNumber  + " / " + buildDateStr + ")";
 	}
 	
 	/**
@@ -109,6 +111,14 @@ public class ReleaseInfo {
 	public static final String getVersion() {
 		return version;
 	}
+
+	public static final String getDisplayVersion() {
+		if (versionTag==null) {
+			return version;
+		} else {
+			return version + " " + versionTag;
+		}
+	}
 	
 	public static final String getName() {
 		return name;
@@ -119,7 +129,7 @@ public class ReleaseInfo {
 	 */
 	public static final String getNameAndVersion()
 	{
-		return name + " " + version;
+		return name + " " + getDisplayVersion();
 	}
 	
 	/**
