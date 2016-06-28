@@ -101,6 +101,7 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 		}
 
 		// Add a place for the bread crumb control to live.
+		if (showBreadCrumbPanel())
 		{
 			m_breadCrumbPanel = new VibeFlowPanel();
 			m_breadCrumbPanel.addStyleName( "vibe-binderView_BreadCrumbPanel" );
@@ -155,6 +156,10 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 		this.layoutContent(m_layoutPanel);
 	}
 
+	protected boolean showBreadCrumbPanel() {
+		return !getBinderInfo().isBinderLandingPageWS();
+	}
+
 	protected void layoutContent(VibeFlowPanel layoutPanel) {
 		BinderInfo bi = getBinderInfo();
 		m_delegatingViewReady.incrementComponent();
@@ -201,7 +206,7 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
 		}
 		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Heights: parent: " + parent.getOffsetHeight() +
-			"; main: " + m_mainPanel.getOffsetHeight() + "; bread crumb: " + m_breadCrumbPanel.getOffsetHeight() + "; desc:" + m_descPanel.getOffsetHeight() +
+			"; main: " + m_mainPanel.getOffsetHeight() + "; bread crumb: " + getBreadCrumbHeight() + "; desc:" + m_descPanel.getOffsetHeight() +
 			"; accessories: " + m_accessoriesPanel.getOffsetHeight() + "; footer: " + m_footerPanel.getOffsetHeight());
 
 		int height = parent.getOffsetHeight() + GwtConstants.BINDER_VIEW_ADJUST * 4;
@@ -210,13 +215,20 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New size: (" + width + "," + height + ")");
 		this.setPixelSize(width, height);
 		if (!allowToScroll) {
-			height = height - m_breadCrumbPanel.getOffsetHeight() - m_descPanel.getOffsetHeight() -
+			height = height - getBreadCrumbHeight() - m_descPanel.getOffsetHeight() -
 					m_accessoriesPanel.getOffsetHeight() - m_footerPanel.getOffsetHeight();
 			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New layout panel size: (" + width + "," + height + ")");
 			m_layoutPanel.setPixelSize(width, height);
 			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Layout panel resized.");
 			m_layoutPanel.onResize();
 		}
+	}
+
+	public int getBreadCrumbHeight() {
+		if (m_breadCrumbPanel!=null) {
+			return m_breadCrumbPanel.getOffsetHeight();
+		}
+		return 0;
 	}
 
 	/**

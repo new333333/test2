@@ -257,6 +257,15 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	}
 	
 	/**
+	 * Returns true if this BinderInfo defines the top workspace and false otherwise.
+	 *
+	 * @return
+	 */
+	public boolean isBinderLandingPageWS() {
+		return (isBinderWorkspace() && m_wsType.isLandingPage());
+	}
+
+	/**
 	 * Returns true if this BinderInfo defines proxy identities view
 	 * and false otherwise.
 	 * 

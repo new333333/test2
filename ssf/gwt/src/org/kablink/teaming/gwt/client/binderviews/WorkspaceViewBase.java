@@ -292,7 +292,8 @@ public abstract class WorkspaceViewBase extends ViewBase
 
 	@Override
 	protected boolean scrollEntireView() {
-		return m_binderInfo.isBinderWorkspace();
+		return m_binderInfo.isBinderWorkspace() && !m_binderInfo.isBinderGlobalRootWS()
+				&& !m_binderInfo.isBinderProfilesRootWS() && !m_binderInfo.isBinderTeamsRootWS();
 	}
 
 	/*
