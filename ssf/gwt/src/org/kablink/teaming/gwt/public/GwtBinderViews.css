@@ -14,6 +14,9 @@
 .vibe_binderView {}
 
 .vibe-binderView_LayoutPanel {
+}
+
+.vibe-binderView_OverflowAuto {
 	overflow: auto;
 }
 

@@ -118,20 +118,27 @@ public abstract class ViewBase extends ResizeComposite
 		m_parent = parent;
 	}
 
+	protected boolean scrollEntireView() {
+		return false;
+	}
+
+
 	/**
 	 * Sets the size of the view based on the MainContentLayoutPanel
 	 * that holds it.
 	 */
 	public void setViewSize() {
-		UIObject parent = m_parent;
-		if (parent==null) {
-			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
+		if (!scrollEntireView()) {
+			UIObject parent = m_parent;
+			if (parent == null) {
+				parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
+			}
+			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). Parent height: " + parent.getOffsetHeight());
+			int width = parent.getOffsetWidth();
+			int height = parent.getOffsetHeight() + GwtConstants.CONTENT_WIDTH_ADJUST;
+			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). New size: (" + width + "," + height + ")");
+			setPixelSize(width, height);
 		}
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). Parent height: " + parent.getOffsetHeight());
-		int width = parent.getOffsetWidth();
-		int height = parent.getOffsetHeight() + GwtConstants.CONTENT_WIDTH_ADJUST;
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). New size: (" + width + "," + height + ")");
-		setPixelSize(width, height);
 	}
 	
 	/**

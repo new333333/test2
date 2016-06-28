@@ -137,7 +137,6 @@ public class FolderEntryView extends ViewBase {
 			m_composite.onResize();
 		}
 	}
-	
 
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */

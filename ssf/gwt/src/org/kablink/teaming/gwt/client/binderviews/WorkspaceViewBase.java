@@ -289,7 +289,12 @@ public abstract class WorkspaceViewBase extends ViewBase
 	{
 		m_binderInfo = binderInfo;
 	}
-	
+
+	@Override
+	protected boolean scrollEntireView() {
+		return m_binderInfo.isBinderWorkspace();
+	}
+
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */
