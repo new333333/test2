@@ -220,9 +220,6 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 				// Add the landing page widget to the page.
 				m_mainPanel.add( lpWidget );
 
-				// Add the footer to the page
-				if ( configData.getHideFooter() == false )
-					addFooter();
 			}
 		} );
 

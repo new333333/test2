@@ -97,7 +97,7 @@ public class VibeFlowPanel extends FlowPanel
 	}
 
 	public void setMinPixelSize(int width, int height) {
-		getStyleElement().setAttribute("min-width", "" + width + "px");
-		getStyleElement().setAttribute("min-height", "" + height + "px");
+		getElement().getStyle().setProperty("minWidth", "" + width + "px");
+		getElement().getStyle().setProperty("minHeight", "" + height + "px");
 	}
 }
