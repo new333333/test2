@@ -54,9 +54,7 @@ public class DelegatingViewReady implements ViewReady {
 
 	public void viewReady() {
 		readyComponents++;
-		GwtClientHelper.consoleLog("DelegatingViewReady: component ready (" + readyComponents + "/" + componentCount + ")");
 		if (readyComponents==componentCount) {
-			GwtClientHelper.consoleLog("DelegatingViewReady: calling view ready");
 			for (ViewReady delegate : delegates) {
 				delegate.viewReady();
 			}

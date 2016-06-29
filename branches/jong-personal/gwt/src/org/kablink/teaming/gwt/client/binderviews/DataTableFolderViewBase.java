@@ -588,9 +588,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * @param viewReady
 	 * @param folderStyles
 	 */
-	public DataTableFolderViewBase(BinderInfo folderInfo, ViewReady viewReady, String folderStyles) {
+	public DataTableFolderViewBase(BinderInfo folderInfo, UIObject parent, ViewReady viewReady, String folderStyles) {
 		// Initialize the super class...
-		super(folderInfo, viewReady, "vibe-dataTableFolder", true);
+		super(folderInfo, parent, viewReady, "vibe-dataTableFolder", true);
 
 		// ...and initialize any other data members.
 		initDataMembers(folderStyles);
@@ -2078,10 +2078,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Store the folder columns and complete the population of the view.
 				FolderColumnsRpcResponseData responseData = ((FolderColumnsRpcResponseData) response.getResponseData());
 				m_folderColumnsList = responseData.getFolderColumns();
+				processFolderColumnsList(m_folderColumnsList);
 				populateViewAsync();
 			}
 		});
 	}
+	
+	protected void processFolderColumnsList(List<FolderColumn> folderColumnsList){}
 	
 	/*
 	 * Asynchronously mails the public link of the entity using a
@@ -3607,9 +3610,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	public void onResize() {
 		// Pass the resize on to the super class...
 		super.onResize();
-
-		// ...and do what we need to do locally.
-		onResizeAsync(m_dataTable);
+		if (m_dataTable!=null) {
+			// ...and do what we need to do locally.
+			onResizeAsync(m_dataTable);
+		}
 	}
 
 	/*

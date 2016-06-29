@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
@@ -212,9 +213,9 @@ public class CalendarFolderView extends FolderViewBase
 	 * @param folderInfo
 	 * @param viewReady
 	 */
-	public CalendarFolderView(BinderInfo folderInfo, ViewReady viewReady) {
+	public CalendarFolderView(BinderInfo folderInfo, UIObject parent, ViewReady viewReady) {
 		// Initialize the super class...
-		super(folderInfo, viewReady, "vibe-calendarFolder", false);
+		super(folderInfo, parent, viewReady, "vibe-calendarFolder", false);
 
 		// ...initialize anything else that requires it...
 		m_browserTZOffset = (GwtClientHelper.getTimeZoneOffsetMillis(new Date()) * (-1l));
@@ -1914,11 +1915,11 @@ public class CalendarFolderView extends FolderViewBase
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(CalendarFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				CalendarFolderView dfView = new CalendarFolderView(folderInfo, viewReady);
+				CalendarFolderView dfView = new CalendarFolderView(folderInfo, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			

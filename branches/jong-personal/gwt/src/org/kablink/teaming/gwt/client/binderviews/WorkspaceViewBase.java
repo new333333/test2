@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
@@ -75,9 +76,9 @@ public abstract class WorkspaceViewBase extends ViewBase
 	 * 
 	 * MUST be called by classes that extend this base class.
 	 */
-	public WorkspaceViewBase( BinderInfo binderInfo, ViewReady viewReady )
+	public WorkspaceViewBase( BinderInfo binderInfo, UIObject parent, ViewReady viewReady )
 	{
-		super( viewReady );
+		super( parent, viewReady );
 		
 		m_binderInfo = binderInfo;
 		m_contributorIds = new ArrayList<Long>();
@@ -113,7 +114,7 @@ public abstract class WorkspaceViewBase extends ViewBase
 		
 		binderId = getBinderId();
 		if ( binderId != null )
-			return String.valueOf( binderId );
+			return String.valueOf(binderId);
 		
 		return null;
 	}
@@ -210,10 +211,10 @@ public abstract class WorkspaceViewBase extends ViewBase
 		{
 			// ...register the events.
 			EventHelper.registerEventHandlers(
-										GwtTeaming.getEventBus(),
-										m_registeredEvents,
-										this,
-										m_registeredEventHandlers );
+					GwtTeaming.getEventBus(),
+					m_registeredEvents,
+					this,
+					m_registeredEventHandlers);
 		}
 	}
 
@@ -278,7 +279,7 @@ public abstract class WorkspaceViewBase extends ViewBase
 			
 			// Issue an rpc request to get the contributor ids for this workspace
 			cmd = new GetWorkspaceContributorIdsCmd( binderId );
-			GwtClientHelper.executeCommand( cmd, rpcCallback );
+			GwtClientHelper.executeCommand(cmd, rpcCallback);
 		}
 	}
 
@@ -289,7 +290,13 @@ public abstract class WorkspaceViewBase extends ViewBase
 	{
 		m_binderInfo = binderInfo;
 	}
-	
+
+	@Override
+	protected boolean scrollEntireView() {
+		return m_binderInfo.isBinderWorkspace() && !m_binderInfo.isBinderGlobalRootWS()
+				&& !m_binderInfo.isBinderProfilesRootWS() && !m_binderInfo.isBinderTeamsRootWS();
+	}
+
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */

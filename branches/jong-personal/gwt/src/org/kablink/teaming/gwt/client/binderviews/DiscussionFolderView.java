@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 
@@ -52,9 +53,9 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private DiscussionFolderView(BinderInfo folderInfo, ViewReady viewReady) {
+	private DiscussionFolderView(BinderInfo folderInfo, UIObject parent, ViewReady viewReady) {
 		// Simply initialize the base class.
-		super(folderInfo, viewReady, "vibe-discussionFolderDataTable");
+		super(folderInfo, parent, viewReady, "vibe-discussionFolderDataTable");
 	}
 	
 	/**
@@ -81,11 +82,11 @@ public class DiscussionFolderView extends DataTableFolderViewBase {
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(DiscussionFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				DiscussionFolderView dfView = new DiscussionFolderView(folderInfo, viewReady);
+				DiscussionFolderView dfView = new DiscussionFolderView(folderInfo, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			

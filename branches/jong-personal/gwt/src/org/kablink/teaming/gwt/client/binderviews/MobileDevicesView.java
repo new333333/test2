@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.Map;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
@@ -62,9 +63,9 @@ public class MobileDevicesView extends DataTableFolderViewBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private MobileDevicesView(BinderInfo folderInfo, ViewReady viewReady) {
+	private MobileDevicesView(BinderInfo folderInfo, UIObject parent, ViewReady viewReady) {
 		// Initialize the super class.
-		super(folderInfo, viewReady, "vibe-mobileDevicesDataTable");
+		super(folderInfo, parent, viewReady, "vibe-mobileDevicesDataTable");
 	}
 	
 	/**
@@ -112,11 +113,11 @@ public class MobileDevicesView extends DataTableFolderViewBase {
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(MobileDevicesView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				MobileDevicesView dfView = new MobileDevicesView(folderInfo, viewReady);
+				MobileDevicesView dfView = new MobileDevicesView(folderInfo, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			
