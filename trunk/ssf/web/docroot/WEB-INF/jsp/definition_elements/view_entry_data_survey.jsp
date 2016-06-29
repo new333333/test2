@@ -332,6 +332,15 @@
 				<ssf:nlt tag="survey.vote.notAllowed.empty"/>
 			</c:when>
 			<c:otherwise>
+				<!-- Some times when script is included using GWT it wont work due to GWT secure parsing, so this is workaround in those scenarios. -->
+				<script type="text/javascript">
+					(function(){
+						var scr=document.createElement("script");
+						scr.src="<html:rootPath/>js/common/ss_survey.js";
+						scr.type="text/javascript";
+						document.body.appendChild(scr);							
+					})();
+				</script>			
 				<input class="marginleft1" type="button" value="<ssf:nlt tag="survey.vote"/>"
 					onclick="ssSurvey.vote('ssSurveyForm_${property_name}${ss_surveyFormCounter}', ${ssBinder.id}, ${ssDefinitionEntry.id}, {<% int qraCount = 0; %><c:forEach var="question" items="${surveyModel.questions}"><c:if test="${question.requiredAnswer}"><% qraCount += 1; if (1 < qraCount) { %>,<% } %>${question.index}:[<c:if test="${question.type != 'input'}"><c:forEach var="answer" items="${question.answers}" varStatus="status">${answer.index}<c:if test="${!status.last}">,</c:if></c:forEach></c:if>]</c:if></c:forEach>}, '${ss_survey_prefix}_${property_name}');"/>
 					
