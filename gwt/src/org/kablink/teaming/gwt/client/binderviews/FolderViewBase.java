@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
@@ -245,9 +246,9 @@ public abstract class FolderViewBase extends ViewBase
 	 * @param styleBase
 	 * @param allowColumnSizing
 	 */
-	public FolderViewBase(BinderInfo folderInfo, ViewReady viewReady, String styleBase, boolean allowColumnSizing) {
+	public FolderViewBase(BinderInfo folderInfo, UIObject parent, ViewReady viewReady, String styleBase, boolean allowColumnSizing) {
 		// Initialize the super class...
-		super(viewReady);
+		super(parent, viewReady);
 
 		// ...store the parameters...
 		m_folderInfo        = folderInfo;
@@ -333,12 +334,6 @@ public abstract class FolderViewBase extends ViewBase
 		// ...create the main panel for the content...
 		m_rootPanel = new VibeFlowPanel();
 		m_rootPanel.addStyleName("vibe-folderViewBase " + m_styleBase + " vibe-verticalScroll");
-
-		// ...set the sizing adjustments the account for the padding in
-		// ...the vibe-folderViewBase style...
-		final int padAdjust = (2 * GwtConstants.PANEL_PADDING);
-		setContentHeightAdjust(getContentHeightAdjust() - padAdjust);
-		setContentWidthAdjust( getContentWidthAdjust()  - padAdjust);
 
 		// ...create a vertical panel to holds the layout that flows
 		// ...down the view...
@@ -837,10 +832,15 @@ public abstract class FolderViewBase extends ViewBase
 							m_pinning = m_folderDisplayData.getViewPinnedEntries();
 							m_sharedFiles = m_folderDisplayData.getViewSharedFiles();
 							m_showUserList = m_folderDisplayData.getShowUserList();
+							processFolderDisplayData(m_folderDisplayData);
 							loadPart4Async();
 						}
 					});
 		}
+	}
+	
+	protected void processFolderDisplayData(FolderDisplayDataRpcResponseData folderDisplayData){
+		
 	}
 
 	/*

@@ -511,7 +511,7 @@ public class ManageEmailTemplatesDlg extends DlgBox
 		m_rootPanel.clear();
 		
 		// Create a EmailTemplatesView widget...
-		EmailTemplatesView.createAsync(m_manageEmailTemplatesInfo.getEmailTemplatesRootWSInfo(), this, new ViewClient() {
+		EmailTemplatesView.createAsync(m_manageEmailTemplatesInfo.getEmailTemplatesRootWSInfo(), m_rootPanel, this, new ViewClient() {
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous

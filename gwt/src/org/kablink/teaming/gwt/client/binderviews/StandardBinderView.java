@@ -38,6 +38,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.event.ShowBinderEvent;
@@ -76,10 +77,10 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 	 * @param binderInfo
 	 * @param viewReady
 	 */
-	protected StandardBinderView(BinderInfo binderInfo, ViewType viewType, ViewReady viewReady)
+	protected StandardBinderView(BinderInfo binderInfo, UIObject parent, ViewType viewType, ViewReady viewReady)
 	{
 		// Simply initialize the super class.
-		super( binderInfo, viewReady);
+		super( binderInfo, parent, viewReady);
 		m_viewReady = new DelegatingViewReady(viewReady, new SimpleViewReady());
 		m_delegatingViewReady = (DelegatingViewReady) m_viewReady;
 		m_viewType = viewType;
@@ -90,15 +91,18 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 	 */
 	public void constructView()
 	{
-		GwtClientHelper.consoleLog("CustomBinderView: constructView()");
 		m_mainPanel = new VibeFlowPanel();
 		//m_mainPanel.setWidth("100%");
 		//m_mainPanel.setHeight("100%");
 		m_mainPanel.addStyleName( "vibe-binderView" );
+		boolean scrollEntireView = scrollEntireView();
+		if (scrollEntireView) {
+			m_mainPanel.addStyleName("vibe-binderView_OverflowAuto");
+		}
 
 		// Add a place for the bread crumb control to live.
+		if (showBreadCrumbPanel())
 		{
-			GwtClientHelper.consoleLog("CustomBinderView: Creating BreadCrumbPanel");
 			m_breadCrumbPanel = new VibeFlowPanel();
 			m_breadCrumbPanel.addStyleName( "vibe-binderView_BreadCrumbPanel" );
 			m_mainPanel.add(m_breadCrumbPanel);
@@ -109,7 +113,6 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 
 		// Add a place for the description to live.
 		{
-			GwtClientHelper.consoleLog("CustomBinderView: Creating Description Panel");
 			m_descPanel = new VibeFlowPanel();
 			m_descPanel.addStyleName( "vibe-binderView_DescPanel" );
 			m_mainPanel.add(m_descPanel);
@@ -120,16 +123,17 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 
 		// Add a place for the layout based on the binder definition
 		{
-			GwtClientHelper.consoleLog("CustomBinderView: Creating Layout Panel");
 			m_layoutPanel = new VibeFlowPanel();
 			//m_layoutPanel.setWidth("100%");
 			//m_layoutPanel.setHeight("100%");
 			m_layoutPanel.addStyleName( "vibe-binderView_LayoutPanel" );
+			if (!scrollEntireView) {
+				m_layoutPanel.addStyleName("vibe-binderView_OverflowAuto");
+			}
 			m_mainPanel.add( m_layoutPanel );
 		}
 
 		// ...add a place for the accessories.
-		GwtClientHelper.consoleLog("CustomBinderView: Creating Accessories Panel");
 		m_accessoriesPanel = new VibeFlowPanel();
 		m_accessoriesPanel.addStyleName( "vibe-binderView_AccessoriesPanel" );
 		m_mainPanel.add(m_accessoriesPanel);
@@ -139,7 +143,6 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 
 		// Add a place for the footer
 		{
-			GwtClientHelper.consoleLog("CustomBinderView: Creating Footer Panel");
 			m_footerPanel = new VibeFlowPanel();
 			m_footerPanel.addStyleName( "vibe-binderView_FooterPanel" );
 			m_mainPanel.add(m_footerPanel);
@@ -153,10 +156,13 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 		this.layoutContent(m_layoutPanel);
 	}
 
+	protected boolean showBreadCrumbPanel() {
+		return !getBinderInfo().isBinderLandingPageWS();
+	}
+
 	protected void layoutContent(VibeFlowPanel layoutPanel) {
 		BinderInfo bi = getBinderInfo();
 		m_delegatingViewReady.incrementComponent();
-		GwtClientHelper.consoleLog("CustomBinderView: new async component.  componentTotal = " + m_delegatingViewReady.getComponentCount());
 		ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, m_viewType, layoutPanel, this);
 		if (viewEvent != null) {
 			GwtTeaming.fireEvent(viewEvent);
@@ -172,14 +178,14 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo folderInfo, final ViewType viewType, final ViewReady viewReady, final ViewClient vClient )
+	public static void createAsync( final BinderInfo folderInfo, final UIObject parent, final ViewType viewType, final ViewReady viewReady, final ViewClient vClient )
 	{
 		GWT.runAsync(StandardBinderView.class, new RunAsyncCallback() {
 			@Override
 			public void onSuccess() {
 				StandardBinderView customBinderView;
 
-				customBinderView = new StandardBinderView(folderInfo, viewType, viewReady);
+				customBinderView = new StandardBinderView(folderInfo, parent, viewType, viewReady);
 				customBinderView.constructView();
 				vClient.onSuccess(customBinderView);
 			}
@@ -193,30 +199,36 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 	}
 
 	public void setViewSize() {
-		boolean allowToScroll = false;
+		boolean allowToScroll = scrollEntireView();
 
 		UIObject parent = m_parent;
 		if (parent==null) {
 			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
 		}
 		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Heights: parent: " + parent.getOffsetHeight() +
-			"; main: " + m_mainPanel.getOffsetHeight() + "; bread crumb: " + m_breadCrumbPanel.getOffsetHeight() + "; desc:" + m_descPanel.getOffsetHeight() +
+			"; main: " + m_mainPanel.getOffsetHeight() + "; bread crumb: " + getBreadCrumbHeight() + "; desc:" + m_descPanel.getOffsetHeight() +
 			"; accessories: " + m_accessoriesPanel.getOffsetHeight() + "; footer: " + m_footerPanel.getOffsetHeight());
 
-		int height = parent.getOffsetHeight() + getContentWidthAdjust() * 4;
-		int width = parent.getOffsetWidth() + getContentWidthAdjust() * 3;
+		int height = parent.getOffsetHeight() + GwtConstants.BINDER_VIEW_ADJUST * 4;
+		int width = parent.getOffsetWidth() + GwtConstants.BINDER_VIEW_ADJUST * 2;
 
-		if (allowToScroll) {
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New min size: (" + width + "," + height + ")");
-			m_layoutPanel.setMinPixelSize(width, height);
-		} else {
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New size: (" + width + "," + height + ")");
-			this.setPixelSize(width, height);
-			height = height - m_breadCrumbPanel.getOffsetHeight() - m_descPanel.getOffsetHeight() -
+		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New size: (" + width + "," + height + ")");
+		this.setPixelSize(width, height);
+		if (!allowToScroll) {
+			height = height - getBreadCrumbHeight() - m_descPanel.getOffsetHeight() -
 					m_accessoriesPanel.getOffsetHeight() - m_footerPanel.getOffsetHeight();
 			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New layout panel size: (" + width + "," + height + ")");
 			m_layoutPanel.setPixelSize(width, height);
+			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Layout panel resized.");
+			m_layoutPanel.onResize();
 		}
+	}
+
+	public int getBreadCrumbHeight() {
+		if (m_breadCrumbPanel!=null) {
+			return m_breadCrumbPanel.getOffsetHeight();
+		}
+		return 0;
 	}
 
 	/**
@@ -233,7 +245,7 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 	@Override
 	public void onResize()
 	{
-		//onResizeAsync();
+		onResizeAsync();
 	}//end onResize()
 
 	/*
@@ -256,7 +268,7 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 	 */
 	private void onResizeNow()
 	{
-		GwtClientHelper.consoleLog("CustomBinderView: onResizeNow()");
+		GwtClientHelper.consoleLog("StandardBinderView: onResizeNow()");
 		super.onResize();
 		//m_mainPanel.onResize();
 	}//end onResizeNow()
@@ -286,6 +298,7 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 		@Override
 		public void viewReady() {
 			setViewSize();
+
 		}
 	}
 }

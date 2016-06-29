@@ -82,7 +82,6 @@ public class VibeFlowPanel extends FlowPanel
 	private void onResizeNow()
 	{
 		WidgetCollection children = getChildren();
-		GwtClientHelper.consoleLog("VibeFlowPanel (" + this.getStyleName() + "): onResizeNow().  Child count: " + children.size());
 		for (Widget child : children)
 	    {
 	    	if (child instanceof RequiresResize)
@@ -94,12 +93,11 @@ public class VibeFlowPanel extends FlowPanel
 
 	@Override
 	public void showWidget(Widget widget) {
-		GwtClientHelper.consoleLog("VibeFlowPanel ("  + this.getStyleName() + "): showWidget() for " + widget.getClass().getName());
 		add(widget);
 	}
 
 	public void setMinPixelSize(int width, int height) {
-		getStyleElement().setAttribute("min-width", "" + width + "px");
-		getStyleElement().setAttribute("min-height", "" + height + "px");
+		getElement().getStyle().setProperty("minWidth", "" + width + "px");
+		getElement().getStyle().setProperty("minHeight", "" + height + "px");
 	}
 }

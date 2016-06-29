@@ -3230,7 +3230,7 @@ public class GwtViewHelper {
 			else if (colName.equals("author"))                {fc.setColumnSearchKey(Constants.PRINCIPAL_FIELD);                 fc.setColumnSortKey(Constants.SORT_CREATOR_TITLE_FIELD);           }
 			else if (colName.equals("comments"))              {fc.setColumnSearchKey(Constants.TOTALREPLYCOUNT_FIELD);                                                                              }
 			else if (colName.equals("date"))                  {fc.setColumnSearchKey(dateCSK);                                                                                                      }
-			else if (colName.equals("description"))           {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                                         }
+			else if (colName.equals("description"))           {fc.setColumnSearchKey(Constants.DESC_FIELD);						 												                    }
 			else if (colName.equals("descriptionHtml"))       {fc.setColumnSearchKey(Constants.DESC_FIELD);                                                                                         }
 			else if (colName.equals("deviceDescription"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_DESCRIPTION);    fc.setColumnSortKey(ObjectKeys.FIELD_MOBILE_DEVICE_DESCRIPTION);   }
 			else if (colName.equals("deviceLastLogin"))       {fc.setColumnSearchKey(FolderColumn.COLUMN_DEVICE_LAST_LOGIN);     fc.setColumnSortKey(ObjectKeys.FIELD_MOBILE_DEVICE_LAST_LOGIN);    }

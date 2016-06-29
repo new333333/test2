@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.BlogArchiveFolder;
 import org.kablink.teaming.gwt.client.BlogArchiveMonth;
 import org.kablink.teaming.gwt.client.BlogPage;
@@ -152,10 +153,10 @@ public class BlogFolderView extends FolderViewBase
 	 * @param folderInfo
 	 * @param viewReady
 	 */
-	private BlogFolderView( BinderInfo folderInfo, ViewReady viewReady )
+	private BlogFolderView( BinderInfo folderInfo, UIObject parent, ViewReady viewReady )
 	{
 		// Simply initialize the super class.
-		super( folderInfo, viewReady, "vibe-blogFolder", false );
+		super( folderInfo, parent, viewReady, "vibe-blogFolder", false );
 		
 		m_binderId = folderInfo.getBinderId();
 		m_binderTitle = folderInfo.getBinderTitle();
@@ -1106,7 +1107,7 @@ public class BlogFolderView extends FolderViewBase
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient )
+	public static void createAsync( final BinderInfo folderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient )
 	{
 		GWT.runAsync( BlogFolderView.class, new RunAsyncCallback()
 		{			
@@ -1115,7 +1116,7 @@ public class BlogFolderView extends FolderViewBase
 			{
 				BlogFolderView blogFolderView;
 				
-				blogFolderView = new BlogFolderView( folderInfo, viewReady );
+				blogFolderView = new BlogFolderView( folderInfo, parent, viewReady );
 				vClient.onSuccess( blogFolderView );
 			}
 			

@@ -620,6 +620,7 @@ public class TaskListing extends Composite implements TaskProvider {
 	private void resizeNow_View() {
 		// Get the sizes we need to calculate the height of the <DIV>.
 		FooterPanel fp  = m_taskFolderView.getFooterPanel();
+		int tlWidth 	= m_taskFolderView.getOffsetWidth() - 2;			// Width of the view - 2 for the 1px border.
 		int viewHeight	= m_taskFolderView.getOffsetHeight();				// Height of the view.
 		int viewTop		= m_taskFolderView.getAbsoluteTop();				// Absolute top of the view.		
 		int tlDivTop	= (m_taskListingDIV.getAbsoluteTop() - viewTop);	// Top of the task listing relative to the top of the view.		
@@ -635,9 +636,10 @@ public class TaskListing extends Composite implements TaskProvider {
 			// on the vertical scroll bar.
 			tlHeight = minHeight;
 		}
-		
+
+		GwtClientHelper.consoleLog("TaskListing new size: (" + tlWidth + "," + tlHeight + ")");
 		// Set the height of the taskListing.
-		m_taskListingDIV.setHeight(tlHeight + "px");
+		m_taskListingDIV.setPixelSize(tlWidth, tlHeight);
 	}
 
 	/**

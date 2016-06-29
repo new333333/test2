@@ -585,7 +585,7 @@ public class ManageMobileDevicesDlg extends DlgBox
 		m_rootPanel.clear();
 		
 		// Create a MobileDevicesView widget...
-		MobileDevicesView.createAsync(m_manageMobileDevicesInfo.getProfilesRootWSInfo(), this, new ViewClient() {
+		MobileDevicesView.createAsync(m_manageMobileDevicesInfo.getProfilesRootWSInfo(), m_rootPanel, this, new ViewClient() {
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous

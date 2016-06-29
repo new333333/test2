@@ -1405,7 +1405,7 @@ public class ContentControl extends Composite
 	public void onShowBlogFolder( final ShowBlogFolderEvent event )
 	{
 		// Create a BlogFolderView widget for the selected binder.
-		BlogFolderView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
+		BlogFolderView.createAsync( event.getBinderInfo(), (UIObject) event.getViewPanel(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1421,6 +1421,7 @@ public class ContentControl extends Composite
 		// Create a CalendarFolderView widget for the selected binder.
 		CalendarFolderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowCalendarFolder()
@@ -1438,6 +1439,7 @@ public class ContentControl extends Composite
 		// Create a CollectionView widget for the selected BinderInfo.
 		CollectionView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowCollection()
@@ -1454,6 +1456,7 @@ public class ContentControl extends Composite
 		// Create a DiscussionFolderView widget for the selected binder.
 		CustomBinderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewType(),
 				event.getViewLayout(),
 				event.getViewReady(),
@@ -1471,6 +1474,7 @@ public class ContentControl extends Composite
 	public void onShowStandardBinderView(ShowStandardBinderViewEvent event) {
 		StandardBinderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewType(),
 				event.getViewReady(),
 				new BinderViewClient(event)
@@ -1490,6 +1494,7 @@ public class ContentControl extends Composite
 		// Create a DiscussionFolderView widget for the selected binder.
 		DiscussionFolderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowDiscussionFolder()
@@ -1503,7 +1508,7 @@ public class ContentControl extends Composite
 	public void onShowDiscussionWS(final ShowDiscussionWSEvent event )
 	{
 		// Create a DiscussionWSView widget for the selected binder.
-		DiscussionWSView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
+		DiscussionWSView.createAsync( event.getBinderInfo(), (UIObject) event.getViewPanel(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1519,6 +1524,7 @@ public class ContentControl extends Composite
 		// Create a FileFolderView widget for the selected binder.
 		FileFolderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowFileFolder()
@@ -1543,6 +1549,7 @@ public class ContentControl extends Composite
 			// selected entity.
 			FolderEntryView.createAsync(
 					vfei,
+					m_mainPage.getMainContentLayoutPanel(),
 					viewReady,
 					new ViewClient()
 			{
@@ -1604,7 +1611,7 @@ public class ContentControl extends Composite
 	public void onShowGenericWS(final ShowGenericWSEvent event )
 	{
 		// Create a GenericWSView widget for the selected binder.
-		GenericWSView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
+		GenericWSView.createAsync( event.getBinderInfo(), (UIObject) event.getViewPanel(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1617,7 +1624,7 @@ public class ContentControl extends Composite
 	{
 		// Create a GlobalWorkspacesView widget for the selected
 		// binder.
-		GlobalWorkspacesView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
+		GlobalWorkspacesView.createAsync( event.getBinderInfo(), (UIObject) event.getViewPanel(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1633,6 +1640,7 @@ public class ContentControl extends Composite
 		// Create a GuestbookFolderView widget for the selected binder.
 		GuestbookFolderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowGuestbookFolder()
@@ -1646,7 +1654,7 @@ public class ContentControl extends Composite
 	public void onShowHomeWS(final ShowHomeWSEvent event )
 	{
 		// Create a HomeWSView widget for the selected binder.
-		HomeWSView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
+		HomeWSView.createAsync( event.getBinderInfo(), (UIObject) event.getViewPanel(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1658,7 +1666,7 @@ public class ContentControl extends Composite
 	public void onShowLandingPage(final ShowLandingPageEvent event )
 	{
 		// Create a LandingPage widget for the selected binder.
-		LandingPageView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
+		LandingPageView.createAsync( event.getBinderInfo(), (UIObject) event.getViewPanel(), event.getViewReady(), new BinderViewClient(event) );
 	}// end onShowLandingPage()
 	
 	/**
@@ -1674,6 +1682,7 @@ public class ContentControl extends Composite
 		// Create a MicroBlogFolderView widget for the selected binder.
 		MicroBlogFolderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowMicroBlogFolder()
@@ -1691,6 +1700,7 @@ public class ContentControl extends Composite
 		// Create a MilestoneFolderView widget for the selected binder.
 		MilestoneFolderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowMilestoneFolder()
@@ -1709,6 +1719,7 @@ public class ContentControl extends Composite
 		// binder.
 		MirroredFileFolderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowMirroredFileFolder()
@@ -1722,7 +1733,7 @@ public class ContentControl extends Composite
 	public void onShowNetFoldersWS(final ShowNetFoldersWSEvent event )
 	{
 		// Create a NetFoldersWSView widget for the selected binder.
-		NetFoldersWSView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
+		NetFoldersWSView.createAsync( event.getBinderInfo(), (UIObject) event.getViewPanel(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1737,6 +1748,7 @@ public class ContentControl extends Composite
 		// binder.
 		PersonalWorkspaceView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowPersonalWorkspace()
@@ -1753,6 +1765,7 @@ public class ContentControl extends Composite
 		// binder.
 		PersonalWorkspacesView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowPersonalWorkspaces()
@@ -1771,6 +1784,7 @@ public class ContentControl extends Composite
 		// binder.
 		PhotoAlbumFolderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowPhotoAlbumFolder()
@@ -1784,7 +1798,7 @@ public class ContentControl extends Composite
 	public void onShowProjectManagementWS(final ShowProjectManagementWSEvent event )
 	{
 		// Create a ProjectManagementWSView widget for the selected binder.
-		ProjectManagementWSView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
+		ProjectManagementWSView.createAsync( event.getBinderInfo(), (UIObject) event.getViewPanel(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1800,6 +1814,7 @@ public class ContentControl extends Composite
 		// Create a SurveyFolderView widget for the selected binder.
 		SurveyFolderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowSurveyFolder()
@@ -1817,6 +1832,7 @@ public class ContentControl extends Composite
 		// Create a TaskFolderView widget for the selected binder.
 		TaskFolderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowTaskFolder()
@@ -1832,7 +1848,7 @@ public class ContentControl extends Composite
 		ViewClient vClient;
 		
 		// Create the view widget for the selected binder.
-		TeamWorkspacesView.createAsync( event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event) );
+		TeamWorkspacesView.createAsync( event.getBinderInfo(), (UIObject) event.getViewPanel(), event.getViewReady(), new BinderViewClient(event) );
 	}
 	
 	/**
@@ -1844,7 +1860,7 @@ public class ContentControl extends Composite
 	public void onShowTeamWS(final ShowTeamWSEvent event )
 	{
 		// Create a TeamWSView widget for the selected binder.
-		TeamWSView.createAsync(event.getBinderInfo(), event.getViewReady(), new BinderViewClient(event));
+		TeamWSView.createAsync(event.getBinderInfo(), (UIObject) event.getViewPanel(), event.getViewReady(), new BinderViewClient(event));
 	}
 	
 	/**
@@ -1860,6 +1876,7 @@ public class ContentControl extends Composite
 		// Create a TrashView widget for the selected binder.
 		TrashView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowTrash()
@@ -1878,6 +1895,7 @@ public class ContentControl extends Composite
 		// Create a WikiFolderView widget for the selected binder.
 		WikiFolderView.createAsync(
 				event.getBinderInfo(),
+				(UIObject) event.getViewPanel(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}// end onShowWikiFolder()
@@ -2208,8 +2226,7 @@ public class ContentControl extends Composite
 		@Override
 		public void onSuccess( ViewBase view )
 		{
-			view.setParent((UIObject) event.getViewPanel());
-			view.setViewSize();
+			//view.setViewSize();
 			event.getViewPanel().showWidget( view );
 		}
 	};

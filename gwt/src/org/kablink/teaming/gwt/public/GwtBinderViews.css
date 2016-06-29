@@ -11,6 +11,15 @@
 	}
 /* End:  Generic binder view tools styles. */
 
+.vibe_binderView {}
+
+.vibe-binderView_LayoutPanel {
+}
+
+.vibe-binderView_OverflowAuto {
+	overflow: auto;
+}
+
 /* Start:  GWT folder view styles. */
 	/* ...Start:  Accessory styles. */
 		.vibe-accessoriesPanel {}

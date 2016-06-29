@@ -520,7 +520,7 @@ public class ManageProxyIdentitiesDlg extends DlgBox
 		m_rootPanel.clear();
 		
 		// Create a ProxyIdentitiesView widget...
-		ProxyIdentitiesView.createAsync(m_manageProxyIdentitiesInfo.getProxyIdentitiesRootWSInfo(), this, new ViewClient() {
+		ProxyIdentitiesView.createAsync(m_manageProxyIdentitiesInfo.getProxyIdentitiesRootWSInfo(), m_rootPanel, this, new ViewClient() {
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous

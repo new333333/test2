@@ -162,7 +162,7 @@ public class ProfileAttributeWidget  {
 						if(attr.getValue() != null) {
 							String s = attr.getValue().toString();
 							if(hasAttrValue(s)){
-								widget = new HTML(s);
+								widget = new Label(s);
 							}
 						}
 						break;
