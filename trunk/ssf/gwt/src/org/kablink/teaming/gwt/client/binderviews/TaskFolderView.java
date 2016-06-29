@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
@@ -98,9 +99,9 @@ public class TaskFolderView extends FolderViewBase
 	 * @param folderInfo
 	 * @param viewReady
 	 */
-	public TaskFolderView(BinderInfo folderInfo, ViewReady viewReady) {
+	public TaskFolderView(BinderInfo folderInfo, UIObject parent, ViewReady viewReady) {
 		// Simply initialize the super class.
-		super(folderInfo, viewReady, "vibe-taskFolder", false);
+		super(folderInfo, parent, viewReady, "vibe-taskFolder", false);
 	}
 	
 	/**
@@ -550,11 +551,11 @@ public class TaskFolderView extends FolderViewBase
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(TaskFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				TaskFolderView dfView = new TaskFolderView(folderInfo, viewReady);
+				TaskFolderView dfView = new TaskFolderView(folderInfo, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			

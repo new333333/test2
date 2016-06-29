@@ -569,7 +569,7 @@ public class ManageAdministratorsDlg extends DlgBox
 
 		// Create a AdministratorsView widget for the selected binder.
 		final BinderInfo pwsBI = m_manageAdministratorsInfo.getProfilesRootWSInfo();
-		AdministratorsView.createAsync(pwsBI, this, new ViewClient() {
+		AdministratorsView.createAsync(pwsBI, m_rootPanel, this, new ViewClient() {
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous

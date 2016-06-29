@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
@@ -245,9 +246,9 @@ public abstract class FolderViewBase extends ViewBase
 	 * @param styleBase
 	 * @param allowColumnSizing
 	 */
-	public FolderViewBase(BinderInfo folderInfo, ViewReady viewReady, String styleBase, boolean allowColumnSizing) {
+	public FolderViewBase(BinderInfo folderInfo, UIObject parent, ViewReady viewReady, String styleBase, boolean allowColumnSizing) {
 		// Initialize the super class...
-		super(viewReady);
+		super(parent, viewReady);
 
 		// ...store the parameters...
 		m_folderInfo        = folderInfo;

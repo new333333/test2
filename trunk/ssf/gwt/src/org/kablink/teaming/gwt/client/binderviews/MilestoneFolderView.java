@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
@@ -61,9 +62,9 @@ public class MilestoneFolderView extends DataTableFolderViewBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private MilestoneFolderView(BinderInfo folderInfo, ViewReady viewReady) {
+	private MilestoneFolderView(BinderInfo folderInfo, UIObject parent, ViewReady viewReady) {
 		// Simply initialize the base class.
-		super(folderInfo, viewReady, "vibe-milestoneFolderDataTable");
+		super(folderInfo, parent, viewReady, "vibe-milestoneFolderDataTable");
 	}
 	
 	/**
@@ -108,11 +109,11 @@ public class MilestoneFolderView extends DataTableFolderViewBase {
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(MilestoneFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				MilestoneFolderView dfView = new MilestoneFolderView(folderInfo, viewReady);
+				MilestoneFolderView dfView = new MilestoneFolderView(folderInfo, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			

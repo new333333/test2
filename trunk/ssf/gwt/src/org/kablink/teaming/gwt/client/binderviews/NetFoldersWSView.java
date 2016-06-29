@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
@@ -68,9 +69,9 @@ public class NetFoldersWSView extends WorkspaceViewBase implements ToolPanelRead
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private NetFoldersWSView(BinderInfo binderInfo, ViewReady viewReady) {
+	private NetFoldersWSView(BinderInfo binderInfo, UIObject parent, ViewReady viewReady) {
 		// Initialize the super class...
-		super(binderInfo, viewReady);
+		super(binderInfo, parent, viewReady);
 		
 		// ...and build this view.
 		buildView();
@@ -193,7 +194,7 @@ public class NetFoldersWSView extends WorkspaceViewBase implements ToolPanelRead
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo binderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(NetFoldersWSView.class, new RunAsyncCallback() {			
 			@Override
 			public void onFailure(Throwable reason) {
@@ -203,7 +204,7 @@ public class NetFoldersWSView extends WorkspaceViewBase implements ToolPanelRead
 
 			@Override
 			public void onSuccess() {
-				NetFoldersWSView view = new NetFoldersWSView(binderInfo, viewReady);
+				NetFoldersWSView view = new NetFoldersWSView(binderInfo, parent, viewReady);
 				vClient.onSuccess(view);
 			}
 		});

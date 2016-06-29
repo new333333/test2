@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.Map;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
@@ -59,9 +60,9 @@ public class TeamWorkspacesView extends DataTableFolderViewBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private TeamWorkspacesView(BinderInfo folderInfo, ViewReady viewReady) {
+	private TeamWorkspacesView(BinderInfo folderInfo, UIObject parent, ViewReady viewReady) {
 		// Simply initialize the base class.
-		super(folderInfo, viewReady, "vibe-teamWorkspacesDataTable");
+		super(folderInfo, parent, viewReady, "vibe-teamWorkspacesDataTable");
 	}
 	
 	/**
@@ -105,11 +106,11 @@ public class TeamWorkspacesView extends DataTableFolderViewBase {
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(TeamWorkspacesView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				TeamWorkspacesView dfView = new TeamWorkspacesView(folderInfo, viewReady);
+				TeamWorkspacesView dfView = new TeamWorkspacesView(folderInfo, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			

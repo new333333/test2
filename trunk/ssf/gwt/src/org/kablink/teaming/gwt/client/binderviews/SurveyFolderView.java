@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
@@ -61,9 +62,9 @@ public class SurveyFolderView extends DataTableFolderViewBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private SurveyFolderView(BinderInfo folderInfo, ViewReady viewReady) {
+	private SurveyFolderView(BinderInfo folderInfo, UIObject parent, ViewReady viewReady) {
 		// Simply initialize the base class.
-		super(folderInfo, viewReady, "vibe-surveyFolderDataTable");
+		super(folderInfo, parent, viewReady, "vibe-surveyFolderDataTable");
 	}
 	
 	/**
@@ -106,11 +107,11 @@ public class SurveyFolderView extends DataTableFolderViewBase {
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(SurveyFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				SurveyFolderView dfView = new SurveyFolderView(folderInfo, viewReady);
+				SurveyFolderView dfView = new SurveyFolderView(folderInfo, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			

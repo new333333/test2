@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
@@ -104,9 +105,9 @@ public class WikiFolderView extends FolderViewBase
 	 * @param folderInfo
 	 * @param viewReady
 	 */
-	public WikiFolderView(BinderInfo folderInfo, ViewReady viewReady) {
+	public WikiFolderView(BinderInfo folderInfo, UIObject parent, ViewReady viewReady) {
 		// Simply initialize the super class.
-		super(folderInfo, viewReady, "vibe-wikiFolderView", false);
+		super(folderInfo, parent, viewReady, "vibe-wikiFolderView", false);
 	}
 	
 	/**
@@ -516,11 +517,11 @@ public class WikiFolderView extends FolderViewBase
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(WikiFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				WikiFolderView dfView = new WikiFolderView(folderInfo, viewReady);
+				WikiFolderView dfView = new WikiFolderView(folderInfo, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			

@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryComposite.FolderEntryCompositeClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
@@ -60,9 +61,9 @@ public class FolderEntryView extends ViewBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FolderEntryView(ViewFolderEntryInfo vfei, ViewReady viewReady) {
+	private FolderEntryView(ViewFolderEntryInfo vfei, UIObject parent, ViewReady viewReady) {
 		// Initialize the super class...
-		super(viewReady);
+		super(parent, viewReady);
 		
 		// ...create a panel to hold the view's content...
 		m_fp = new VibeFlowPanel();
@@ -151,11 +152,11 @@ public class FolderEntryView extends ViewBase {
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final ViewFolderEntryInfo vfei, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final ViewFolderEntryInfo vfei, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(FolderEntryView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				FolderEntryView dfView = new FolderEntryView(vfei, viewReady);
+				FolderEntryView dfView = new FolderEntryView(vfei, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			

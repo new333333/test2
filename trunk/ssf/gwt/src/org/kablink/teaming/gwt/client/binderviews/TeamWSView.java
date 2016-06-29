@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
@@ -64,9 +65,9 @@ public class TeamWSView extends WorkspaceViewBase implements ToolPanelReady
 	/**
 	 * 
 	 */
-	private TeamWSView( BinderInfo binderInfo, ViewReady viewReady )
+	private TeamWSView( BinderInfo binderInfo, UIObject parent, ViewReady viewReady )
 	{
-		super( binderInfo, viewReady );
+		super( binderInfo, parent, viewReady );
 		
 		// Build this view
 		buildView();
@@ -83,7 +84,7 @@ public class TeamWSView extends WorkspaceViewBase implements ToolPanelReady
 	private void buildView()
 	{
 		m_mainPanel = new VibeFlowPanel();
-		m_mainPanel.addStyleName( "vibe-teamWSView_MainPanel" );
+		m_mainPanel.addStyleName("vibe-teamWSView_MainPanel");
 		
 		// Add a place for landing page elements.  The LandingPage widget will display the description
 		// if there is one.
@@ -164,7 +165,7 @@ public class TeamWSView extends WorkspaceViewBase implements ToolPanelReady
 	 * @param binderInfo
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo binderInfo, final ViewReady viewReady, final ViewClient vClient )
+	public static void createAsync( final BinderInfo binderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient )
 	{
 		GWT.runAsync( TeamWSView.class, new RunAsyncCallback()
 		{			
@@ -180,7 +181,7 @@ public class TeamWSView extends WorkspaceViewBase implements ToolPanelReady
 			{
 				TeamWSView view;
 				
-				view = new TeamWSView( binderInfo, viewReady );
+				view = new TeamWSView( binderInfo, parent, viewReady );
 				vClient.onSuccess( view );
 			}
 		} );

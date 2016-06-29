@@ -66,10 +66,10 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 	 * @param binderInfo
 	 * @param viewReady
 	 */
-	private CustomBinderView(BinderInfo binderInfo, ViewType viewType, BinderViewLayout viewLayout, ViewReady viewReady)
+	private CustomBinderView(BinderInfo binderInfo, UIObject parent, ViewType viewType, BinderViewLayout viewLayout, ViewReady viewReady)
 	{
 		// Simply initialize the super class.
-		super( binderInfo, viewType, viewReady);
+		super( binderInfo, parent, viewType, viewReady);
 		m_viewLayout = viewLayout;
 	}
 
@@ -167,14 +167,14 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo folderInfo, final ViewType viewType, final BinderViewLayout viewLayout, final ViewReady viewReady, final ViewClient vClient )
+	public static void createAsync( final BinderInfo folderInfo, final UIObject parent, final ViewType viewType, final BinderViewLayout viewLayout, final ViewReady viewReady, final ViewClient vClient )
 	{
 		GWT.runAsync(CustomBinderView.class, new RunAsyncCallback() {
 			@Override
 			public void onSuccess() {
 				CustomBinderView customBinderView;
 
-				customBinderView = new CustomBinderView(folderInfo, viewType, viewLayout, viewReady);
+				customBinderView = new CustomBinderView(folderInfo, parent, viewType, viewLayout, viewReady);
 				customBinderView.constructView();
 				vClient.onSuccess(customBinderView);
 			}

@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.binderviews;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
@@ -55,9 +56,9 @@ public class MirroredFileFolderView extends DataTableFolderViewBase {
 	 * @param folderInfo
 	 * @param viewReady
 	 */
-	public MirroredFileFolderView(BinderInfo folderInfo, ViewReady viewReady) {
+	public MirroredFileFolderView(BinderInfo folderInfo, UIObject parent, ViewReady viewReady) {
 		// Simply initialize the base class.
-		super(folderInfo, viewReady, "vibe-mirroredFileFolderDataTable");
+		super(folderInfo, parent, viewReady, "vibe-mirroredFileFolderDataTable");
 	}
 	
 	/**
@@ -110,11 +111,11 @@ public class MirroredFileFolderView extends DataTableFolderViewBase {
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(MirroredFileFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				MirroredFileFolderView dfView = new MirroredFileFolderView(folderInfo, viewReady);
+				MirroredFileFolderView dfView = new MirroredFileFolderView(folderInfo, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			
