@@ -2078,10 +2078,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Store the folder columns and complete the population of the view.
 				FolderColumnsRpcResponseData responseData = ((FolderColumnsRpcResponseData) response.getResponseData());
 				m_folderColumnsList = responseData.getFolderColumns();
+				processFolderColumnsList(m_folderColumnsList);
 				populateViewAsync();
 			}
 		});
 	}
+	
+	protected void processFolderColumnsList(List<FolderColumn> folderColumnsList){}
 	
 	/*
 	 * Asynchronously mails the public link of the entity using a
