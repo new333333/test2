@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
@@ -104,9 +105,9 @@ public class PhotoAlbumFolderView extends FolderViewBase
 	 * @param folderInfo
 	 * @param viewReady
 	 */
-	public PhotoAlbumFolderView(BinderInfo folderInfo, ViewReady viewReady) {
+	public PhotoAlbumFolderView(BinderInfo folderInfo, UIObject parent, ViewReady viewReady) {
 		// Simply initialize the super class.
-		super(folderInfo, viewReady, "vibe-photoAlbumFolderView", false);
+		super(folderInfo, parent, viewReady, "vibe-photoAlbumFolderView", false);
 	}
 	
 	/**
@@ -517,11 +518,11 @@ public class PhotoAlbumFolderView extends FolderViewBase
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(PhotoAlbumFolderView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				PhotoAlbumFolderView dfView = new PhotoAlbumFolderView(folderInfo, viewReady);
+				PhotoAlbumFolderView dfView = new PhotoAlbumFolderView(folderInfo, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			

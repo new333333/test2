@@ -75,9 +75,10 @@ public abstract class ViewBase extends ResizeComposite
 	 * 
 	 * @param viewReady
 	 */
-	public ViewBase(ViewReady viewReady) {
+	public ViewBase(UIObject parent, ViewReady viewReady) {
 		super();
 		m_viewReady = viewReady;
+		m_parent = parent;
 	}
 
 	/**
@@ -112,10 +113,6 @@ public abstract class ViewBase extends ResizeComposite
 		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ": onResize()");
 		super.onResize();
 		setViewSize();
-	}
-
-	public void setParent(UIObject parent) {
-		m_parent = parent;
 	}
 
 	protected boolean scrollEntireView() {

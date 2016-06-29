@@ -77,10 +77,10 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 	 * @param binderInfo
 	 * @param viewReady
 	 */
-	protected StandardBinderView(BinderInfo binderInfo, ViewType viewType, ViewReady viewReady)
+	protected StandardBinderView(BinderInfo binderInfo, UIObject parent, ViewType viewType, ViewReady viewReady)
 	{
 		// Simply initialize the super class.
-		super( binderInfo, viewReady);
+		super( binderInfo, parent, viewReady);
 		m_viewReady = new DelegatingViewReady(viewReady, new SimpleViewReady());
 		m_delegatingViewReady = (DelegatingViewReady) m_viewReady;
 		m_viewType = viewType;
@@ -178,14 +178,14 @@ public class StandardBinderView extends WorkspaceViewBase implements ViewReady, 
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo folderInfo, final ViewType viewType, final ViewReady viewReady, final ViewClient vClient )
+	public static void createAsync( final BinderInfo folderInfo, final UIObject parent, final ViewType viewType, final ViewReady viewReady, final ViewClient vClient )
 	{
 		GWT.runAsync(StandardBinderView.class, new RunAsyncCallback() {
 			@Override
 			public void onSuccess() {
 				StandardBinderView customBinderView;
 
-				customBinderView = new StandardBinderView(folderInfo, viewType, viewReady);
+				customBinderView = new StandardBinderView(folderInfo, parent, viewType, viewReady);
 				customBinderView.constructView();
 				vClient.onSuccess(customBinderView);
 			}

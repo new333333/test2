@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
@@ -62,9 +63,9 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 	/**
 	 * 
 	 */
-	private LandingPageView( final BinderInfo binderInfo, final ViewReady viewReady )
+	private LandingPageView( final BinderInfo binderInfo, UIObject parent, final ViewReady viewReady )
 	{
-		super( binderInfo, viewReady );
+		super( binderInfo, parent, viewReady );
 		
 		init();
 		
@@ -87,7 +88,7 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 	 */
 	private LandingPageView( final ConfigData configData )
 	{
-		super( null, null );
+		super( null, null, null );
 		
 		init();
 
@@ -249,7 +250,7 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 	 * @param binderInfo
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo binderInfo, final ViewReady viewReady, final ViewClient vClient )
+	public static void createAsync( final BinderInfo binderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient )
 	{
 		GWT.runAsync( LandingPageView.class, new RunAsyncCallback()
 		{			
@@ -258,7 +259,7 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 			{
 				LandingPageView lp;
 				
-				lp = new LandingPageView( binderInfo, viewReady );
+				lp = new LandingPageView( binderInfo, parent, viewReady );
 				vClient.onSuccess( lp );
 			}
 			

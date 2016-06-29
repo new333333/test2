@@ -536,7 +536,7 @@ public class LimitUserVisibilityDlg extends DlgBox
 		
 		// ...repopulate it with data from the server...
 		final BinderInfo rwsBI = m_limitUserVisibilityInfo.getRootWSInfo();
-		LimitUserVisibilityView.createAsync(rwsBI, this, new ViewClient() {
+		LimitUserVisibilityView.createAsync(rwsBI, m_rootPanel, this, new ViewClient() {
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
@@ -74,9 +75,9 @@ public class TrashView extends DataTableFolderViewBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private TrashView(BinderInfo binderInfo, ViewReady viewReady) {
+	private TrashView(BinderInfo binderInfo, UIObject parent, ViewReady viewReady) {
 		// Initialize the super class.
-		super(binderInfo, viewReady, "vibe-trashDataTable");
+		super(binderInfo, parent, viewReady, "vibe-trashDataTable");
 	}
 	
 	/**
@@ -172,11 +173,11 @@ public class TrashView extends DataTableFolderViewBase {
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo binderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(TrashView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				TrashView dfView = new TrashView(binderInfo, viewReady);
+				TrashView dfView = new TrashView(binderInfo, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			

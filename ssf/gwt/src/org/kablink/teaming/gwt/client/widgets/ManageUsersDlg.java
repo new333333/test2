@@ -774,7 +774,7 @@ public class ManageUsersDlg extends DlgBox
 			// workspaces binder.
 			BinderInfo trashBI = pwsBI.copyBinderInfo();
 			trashBI.setWorkspaceType(WorkspaceType.TRASH);
-			TrashView.createAsync(trashBI, this, new ViewClient() {
+			TrashView.createAsync(trashBI, m_rootPanel, this, new ViewClient() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in asynchronous
@@ -794,7 +794,7 @@ public class ManageUsersDlg extends DlgBox
 			// No, we aren't viewing the trash on the personal
 			// workspaces!  Create a PersonalWorkspacesView widget for
 			// the selected binder.
-			PersonalWorkspacesView.createAsync(pwsBI, this, new ViewClient() {
+			PersonalWorkspacesView.createAsync(pwsBI, m_rootPanel, this, new ViewClient() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in asynchronous

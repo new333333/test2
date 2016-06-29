@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.Map;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
@@ -58,9 +59,9 @@ public class CollectionView extends DataTableFolderViewBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private CollectionView(BinderInfo folderInfo, ViewReady viewReady) {
+	private CollectionView(BinderInfo folderInfo, UIObject parent, ViewReady viewReady) {
 		// Simply initialize the base class.
-		super(folderInfo, viewReady, "vibe-collectionDataTable");
+		super(folderInfo, parent, viewReady, "vibe-collectionDataTable");
 	}
 	
 	/**
@@ -130,11 +131,11 @@ public class CollectionView extends DataTableFolderViewBase {
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo folderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo folderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(CollectionView.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				CollectionView dfView = new CollectionView(folderInfo, viewReady);
+				CollectionView dfView = new CollectionView(folderInfo, parent, viewReady);
 				vClient.onSuccess(dfView);
 			}
 			

@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelReady;
@@ -73,9 +74,9 @@ public class PersonalWorkspaceView extends WorkspaceViewBase implements ToolPane
 	/*
 	 * Constructor method.
 	 */
-	private PersonalWorkspaceView(BinderInfo binderInfo, ViewReady viewReady) {
+	private PersonalWorkspaceView(BinderInfo binderInfo, UIObject parent, ViewReady viewReady) {
 		// Initialize the super class...
-		super(binderInfo, viewReady);
+		super(binderInfo, parent, viewReady);
 
 		// ...initialize the main panel...
 		m_mainPanel = new VibeFlowPanel();
@@ -240,7 +241,7 @@ public class PersonalWorkspaceView extends WorkspaceViewBase implements ToolPane
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync(final BinderInfo binderInfo, final ViewReady viewReady, final ViewClient vClient) {
+	public static void createAsync(final BinderInfo binderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(PersonalWorkspaceView.class, new RunAsyncCallback() {			
 			@Override
 			public void onFailure(Throwable reason)
@@ -251,7 +252,7 @@ public class PersonalWorkspaceView extends WorkspaceViewBase implements ToolPane
 
 			@Override
 			public void onSuccess() {
-				PersonalWorkspaceView view = new PersonalWorkspaceView(binderInfo, viewReady);
+				PersonalWorkspaceView view = new PersonalWorkspaceView(binderInfo, parent, viewReady);
 				vClient.onSuccess(view);
 			}
 		});

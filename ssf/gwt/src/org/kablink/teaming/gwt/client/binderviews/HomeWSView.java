@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
@@ -60,9 +61,9 @@ public class HomeWSView extends WorkspaceViewBase implements ToolPanelReady
 	/**
 	 * 
 	 */
-	private HomeWSView( BinderInfo binderInfo, ViewReady viewReady )
+	private HomeWSView( BinderInfo binderInfo, UIObject parent, ViewReady viewReady )
 	{
-		super( binderInfo, viewReady );
+		super( binderInfo, parent, viewReady );
 		
 		// Build this view
 		buildView();
@@ -114,7 +115,7 @@ public class HomeWSView extends WorkspaceViewBase implements ToolPanelReady
 	 * @param binderInfo
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo binderInfo, final ViewReady viewReady, final ViewClient vClient )
+	public static void createAsync( final BinderInfo binderInfo, final UIObject parent, final ViewReady viewReady, final ViewClient vClient )
 	{
 		GWT.runAsync( HomeWSView.class, new RunAsyncCallback()
 		{			
@@ -130,7 +131,7 @@ public class HomeWSView extends WorkspaceViewBase implements ToolPanelReady
 			{
 				HomeWSView view;
 				
-				view = new HomeWSView( binderInfo, viewReady );
+				view = new HomeWSView( binderInfo, parent, viewReady );
 				vClient.onSuccess( view );
 			}
 		} );

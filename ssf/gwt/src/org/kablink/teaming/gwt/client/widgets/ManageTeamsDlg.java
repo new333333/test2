@@ -406,7 +406,7 @@ public class ManageTeamsDlg extends DlgBox
 			// binder.
 			BinderInfo trashBI = pwsBI.copyBinderInfo();
 			trashBI.setWorkspaceType(WorkspaceType.TRASH);
-			TrashView.createAsync(trashBI, this, new ViewClient() {
+			TrashView.createAsync(trashBI, m_rootPanel, this, new ViewClient() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in asynchronous
@@ -426,7 +426,7 @@ public class ManageTeamsDlg extends DlgBox
 			// No, we aren't viewing the trash on the team workspaces!
 			// Create a TeamWorkspacesView widget for the selected
 			// binder.
-			TeamWorkspacesView.createAsync(pwsBI, this, new ViewClient() {
+			TeamWorkspacesView.createAsync(pwsBI, m_rootPanel, this, new ViewClient() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in asynchronous
