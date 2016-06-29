@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.user.client.ui.UIObject;
@@ -40,6 +41,7 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.util.search.Constants;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -214,5 +216,18 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 	@Override
 	protected boolean showEntryTitleIcon() {
 		return false;
+	}
+	
+	protected void processFolderColumnsList(List<FolderColumn> folderColumnsList){
+		if(folderColumnsList!=null){
+			for(FolderColumn fColumn:folderColumnsList){
+				if(fColumn.getColumnName()!=null && fColumn.getColumnName().equalsIgnoreCase("title")){
+					fColumn.setColumnSortKey("_modificationDate");
+				}
+				else if(fColumn.getColumnName()!=null && fColumn.getColumnName().equalsIgnoreCase("description")){
+					fColumn.setColumnSortKey("description");					
+				}
+			}
+		}
 	}
 }
