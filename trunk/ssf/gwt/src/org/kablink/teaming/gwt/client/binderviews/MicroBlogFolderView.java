@@ -39,6 +39,7 @@ import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.util.search.Constants;
@@ -222,11 +223,19 @@ public class MicroBlogFolderView extends DataTableFolderViewBase {
 		if(folderColumnsList!=null){
 			for(FolderColumn fColumn:folderColumnsList){
 				if(fColumn.getColumnName()!=null && fColumn.getColumnName().equalsIgnoreCase("title")){
-					fColumn.setColumnSortKey("_modificationDate");
+					fColumn.setColumnSortKey("_creationDate");
 				}
 				else if(fColumn.getColumnName()!=null && fColumn.getColumnName().equalsIgnoreCase("description")){
 					fColumn.setColumnSortKey("description");					
 				}
+			}
+		}
+	}
+	
+	protected void processFolderDisplayData(FolderDisplayDataRpcResponseData folderDisplayData){
+		if(folderDisplayData!=null){
+			if(folderDisplayData.getFolderSortBy()!=null && folderDisplayData.getFolderSortBy().equalsIgnoreCase("title")){
+				folderDisplayData.setFolderSortBy("_creationData");
 			}
 		}
 	}
