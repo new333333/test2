@@ -832,10 +832,15 @@ public abstract class FolderViewBase extends ViewBase
 							m_pinning = m_folderDisplayData.getViewPinnedEntries();
 							m_sharedFiles = m_folderDisplayData.getViewSharedFiles();
 							m_showUserList = m_folderDisplayData.getShowUserList();
+							processFolderDisplayData(m_folderDisplayData);
 							loadPart4Async();
 						}
 					});
 		}
+	}
+	
+	protected void processFolderDisplayData(FolderDisplayDataRpcResponseData folderDisplayData){
+		
 	}
 
 	/*
