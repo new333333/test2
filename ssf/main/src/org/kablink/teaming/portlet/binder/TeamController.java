@@ -79,6 +79,27 @@ public class TeamController extends AbstractBinderController {
 				Set memberIds = new HashSet();
 				if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
 				if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
+				//Switch the group type external or internal
+				if(formData.containsKey("allowExternalUsers")){
+					try
+					{
+						getProfileModule().markGroupAsExternal( binder.getTeamGroupId() );
+					}
+					catch ( Exception ex )
+					{
+						logger.error( "Error marking team group as external: " + binder.getTitle(), ex );
+					}		
+				}
+				else{
+					try
+					{
+						getProfileModule().markGroupAsInternal( binder.getTeamGroupId() );
+					}
+					catch ( Exception ex )
+					{
+						logger.error( "Error marking team group as external: " + binder.getTitle(), ex );
+					}					
+				}
 				//Save the team members 
 				getBinderModule().setTeamMembers(binderId, memberIds);
 			}
@@ -100,6 +121,7 @@ public class TeamController extends AbstractBinderController {
 		//split into users/groups
 		model.put(WebKeys.USERS, getProfileModule().getUsers(memberIds));
 		model.put(WebKeys.GROUPS, getProfileModule().getGroups(memberIds));
+		model.put("ss_isExternalGroup",getProfileModule().isExternalGroup(binder.getTeamGroupId())?"checked":"");
 		return new ModelAndView(WebKeys.VIEW_ADD_TEAM_MEMBERS, model);
 	}
 
