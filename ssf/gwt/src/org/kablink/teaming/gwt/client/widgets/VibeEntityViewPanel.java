@@ -39,4 +39,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public interface VibeEntityViewPanel {
     public void showWidget(Widget widget);
+    public int getContainingWidth(Widget widget);
+    public int getContainingHeight(Widget widget);
 }

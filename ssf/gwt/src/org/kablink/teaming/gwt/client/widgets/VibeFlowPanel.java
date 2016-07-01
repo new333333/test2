@@ -33,6 +33,8 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import com.google.gwt.user.client.ui.*;
+import org.kablink.teaming.gwt.client.GwtConstants;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -46,6 +48,8 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 public class VibeFlowPanel extends FlowPanel
 	implements ProvidesResize, RequiresResize, VibeEntityViewPanel
 {
+	private boolean fillParent = false;
+
 	/**
 	 * Constructor method.
 	 */
@@ -54,7 +58,32 @@ public class VibeFlowPanel extends FlowPanel
 		// Initialize the super class.
 		super();
 	}
-	
+
+	public VibeFlowPanel(boolean fillParent) {
+		this.fillParent = fillParent;
+	}
+
+	public void setViewSize() {
+		if (fillParent) {
+			UIObject parent = getParent();
+			int width;
+			int height;
+			if (parent instanceof VibeEntityViewPanel) {
+				width = ((VibeEntityViewPanel)parent).getContainingWidth(this);
+				height = ((VibeEntityViewPanel)parent).getContainingHeight(this);
+			} else {
+				width = parent.getOffsetWidth();
+				height = parent.getOffsetHeight();
+			}
+			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Parent: " + parent.getClass().getSimpleName() + "; Parent size: (" + width + ", " + height + ")");
+			height += GwtConstants.CONTENT_WIDTH_ADJUST;
+			width += GwtConstants.CONTENT_WIDTH_ADJUST;
+			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). New size: (" + width + "," + height + ")");
+			setPixelSize(width, height);
+		}
+	}
+
+
 	/**
 	 */
 	@Override
@@ -89,6 +118,7 @@ public class VibeFlowPanel extends FlowPanel
 	        	((RequiresResize) child).onResize();
 	        }
 	    }
+		setViewSize();
 	}//end onResizeNow()
 
 	@Override
@@ -99,5 +129,15 @@ public class VibeFlowPanel extends FlowPanel
 	public void setMinPixelSize(int width, int height) {
 		getElement().getStyle().setProperty("minWidth", "" + width + "px");
 		getElement().getStyle().setProperty("minHeight", "" + height + "px");
+	}
+
+	@Override
+	public int getContainingHeight(Widget widget) {
+		return getOffsetHeight();
+	}
+
+	@Override
+	public int getContainingWidth(Widget widget) {
+		return getOffsetWidth();
 	}
 }

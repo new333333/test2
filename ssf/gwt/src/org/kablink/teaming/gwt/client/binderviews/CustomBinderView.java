@@ -140,10 +140,9 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 			parentWidget.showWidget((Widget) viewPanel);
 			addChildControls((BinderViewContainer) viewDef, viewPanel);
 		} else {
-			VibeFlowPanel flowPanel = new VibeFlowPanel();
+			VibeFlowPanel flowPanel = new VibeFlowPanel(true);
 			flowPanel.addStyleName("vibe-flow");
-//			flowPanel.setWidth("100%");
-			//flowPanel.setHeight("100%");
+			//flowPanel.setWidth("100%");
 			parentWidget.showWidget(flowPanel);
 			if (viewDef instanceof BinderViewFolderListing) {
 				BinderInfo bi = getBinderInfo();
