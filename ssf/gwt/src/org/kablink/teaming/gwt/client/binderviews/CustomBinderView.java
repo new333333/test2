@@ -140,11 +140,10 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 			parentWidget.showWidget((Widget) viewPanel);
 			addChildControls((BinderViewContainer) viewDef, viewPanel);
 		} else {
-			VibeFlowPanel flowPanel = new VibeFlowPanel(true);
-			flowPanel.addStyleName("vibe-flow");
-			//flowPanel.setWidth("100%");
-			parentWidget.showWidget(flowPanel);
 			if (viewDef instanceof BinderViewFolderListing) {
+				VibeFlowPanel flowPanel = new VibeFlowPanel(true);
+				flowPanel.addStyleName("vibe-flow");
+				parentWidget.showWidget(flowPanel);
 				BinderInfo bi = getBinderInfo();
 				m_delegatingViewReady.incrementComponent();
 				ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, m_viewType, flowPanel, this);
@@ -152,6 +151,9 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 					GwtTeaming.fireEvent(viewEvent);
 				}
 			} else if (viewDef instanceof BinderViewJsp) {
+				VibeFlowPanel flowPanel = new VibeFlowPanel();
+				flowPanel.addStyleName("vibe-flow");
+				parentWidget.showWidget(flowPanel);
 				m_delegatingViewReady.incrementComponent();
 				executeJspAsync((BinderViewJsp) viewDef, flowPanel, this);
 			}

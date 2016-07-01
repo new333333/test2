@@ -73,13 +73,15 @@ public class VibeFlowPanel extends FlowPanel
 				height = ((VibeEntityViewPanel)parent).getContainingHeight(this);
 			} else {
 				width = parent.getOffsetWidth();
-				height = parent.getOffsetHeight();
+				height = parent.getOffsetHeight() + GwtConstants.CONTENT_WIDTH_ADJUST;
 			}
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Parent: " + parent.getClass().getSimpleName() + "; Parent size: (" + width + ", " + height + ")");
-			height += GwtConstants.CONTENT_WIDTH_ADJUST;
-			width += GwtConstants.CONTENT_WIDTH_ADJUST;
 			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). New size: (" + width + "," + height + ")");
-			setPixelSize(width, height);
+			if (width!=getOffsetWidth()) {
+				setWidth(width + "px");
+			}
+			if (height!=getOffsetHeight()) {
+				setHeight(height + "px");
+			}
 		}
 	}
 
