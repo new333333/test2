@@ -65,11 +65,9 @@ public class VibeGrid extends Grid
      */
     private void onResizeAsync()
     {
-        GwtClientHelper.deferCommand(new Scheduler.ScheduledCommand()
-        {
+        GwtClientHelper.deferCommand(new Scheduler.ScheduledCommand() {
             @Override
-            public void execute()
-            {
+            public void execute() {
                 onResizeNow();
             }
         });
@@ -95,5 +93,49 @@ public class VibeGrid extends Grid
             }
         }
     }//end onResizeNow()
+
+    @Override
+    public int getContainingHeight(Widget widget) {
+        int row = getRow(widget);
+        GwtClientHelper.consoleLog("VibeGrid.getContainingHeight(): widget=" + widget.getClass().getSimpleName() + "; row=" + row);
+        if (row>=0 && row<numRows) {
+            return getRowFormatter().getElement(row).getOffsetHeight();
+        }
+        return 10;
+    }
+
+    @Override
+    public int getContainingWidth(Widget widget) {
+        int col = getCol(widget);
+        GwtClientHelper.consoleLog("VibeGrid.getContainingWidth(): widget=" + widget.getClass().getSimpleName() + "; col=" + col);
+        if (col>=0 && col<numColumns) {
+            return getColumnFormatter().getElement(col).getOffsetWidth();
+        }
+        return 10;
+    }
+
+    private int getCol(Widget widget) {
+        for (int row=0; row<numRows; row++) {
+            for (int col = 0; col < numColumns; col++) {
+                Widget child = this.getWidget(row, col);
+                if (child == widget) {
+                    return col;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private int getRow(Widget widget) {
+        for (int row=0; row<numRows; row++) {
+            for (int col = 0; col < numColumns; col++) {
+                Widget child = this.getWidget(row, col);
+                if (child == widget) {
+                    return row;
+                }
+            }
+        }
+        return -1;
+    }
 
 }
