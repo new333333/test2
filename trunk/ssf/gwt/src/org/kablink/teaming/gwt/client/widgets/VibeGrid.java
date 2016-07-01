@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ProvidesResize;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 /**
@@ -80,6 +81,7 @@ public class VibeGrid extends Grid
     {
         GwtClientHelper.consoleLog("VibeGrid.onResizeNow(): numRows=" + numRows + "; numCols=" + numColumns);
         for (int row=0; row<numRows; row++) {
+            GwtClientHelper.consoleLog("VibeGrid.onResizeNow(): row " + row + " height: " + getRowHeight(row));
             for (int col=0; col<numColumns; col++) {
                 Widget child = this.getWidget(row, col);
                 if (child!=null && child instanceof RequiresResize) {
@@ -98,20 +100,28 @@ public class VibeGrid extends Grid
     public int getContainingHeight(Widget widget) {
         int row = getRow(widget);
         GwtClientHelper.consoleLog("VibeGrid.getContainingHeight(): widget=" + widget.getClass().getSimpleName() + "; row=" + row);
-        if (row>=0 && row<numRows) {
-            return getRowFormatter().getElement(row).getOffsetHeight();
-        }
-        return 10;
+        return getRowHeight(row);
     }
 
     @Override
     public int getContainingWidth(Widget widget) {
         int col = getCol(widget);
         GwtClientHelper.consoleLog("VibeGrid.getContainingWidth(): widget=" + widget.getClass().getSimpleName() + "; col=" + col);
-        if (col>=0 && col<numColumns) {
-            return getColumnFormatter().getElement(col).getOffsetWidth();
+        return getColumnWidth(col);
+    }
+
+    private int getRowHeight(int row) {
+        if (row>=0 && row<numRows) {
+            return getRowFormatter().getElement(row).getOffsetHeight() - 2;
         }
-        return 10;
+        return 0;
+    }
+
+    private int getColumnWidth(int col) {
+        if (col>=0 && col<numColumns) {
+            return getColumnFormatter().getElement(col).getOffsetWidth() - 2;
+        }
+        return 0;
     }
 
     private int getCol(Widget widget) {
