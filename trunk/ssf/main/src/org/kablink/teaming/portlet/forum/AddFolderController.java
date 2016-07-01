@@ -174,6 +174,25 @@ public class AddFolderController extends SAbstractController {
 							}
 						}
 					}
+					else{
+						Long groupId;
+						
+						// Yes
+						// Get the id of the team group associated with the binder
+						groupId = newBinder.getTeamGroupId();
+						
+						if ( groupId != null )
+						{
+							try
+							{
+								getProfileModule().markGroupAsInternal( groupId );
+							}
+							catch ( Exception ex )
+							{
+								logger.error( "Error marking team group as external: " + newBinder.getTitle(), ex );
+							}
+						}						
+					}
 				}
 				
 				//See if there are any folders to be created
