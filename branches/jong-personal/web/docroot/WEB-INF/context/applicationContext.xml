@@ -173,7 +173,6 @@
 	
 	<bean id="aopallianceWsLoggingInterceptor" class="org.kablink.teaming.util.aopalliance.WsLoggingInterceptor"/>
 	
-	<!-- 
 	<bean id="scheduler" class="org.kablink.teaming.spring.scheduling.quartz.SchedulerFactoryBean">
 		<property name="dataSource"><ref bean="dataSource"/></property>
 		<property name="autoStartup"><value>${org.quartz.auto.startup}</value></property>
@@ -198,8 +197,8 @@
 			</list>
 		</property>
 	</bean>
-	-->
 
+	<!-- 
 	<bean id="scheduler" class="org.kablink.teaming.spring.scheduling.quartz.SchedulerFactoryBean">
 		<property name="autoStartup"><value>${org.quartz.auto.startup}</value></property>
 		<property name="startupDelay"><value>60</value></property>
@@ -220,6 +219,7 @@
 			</list>
 		</property>
 	</bean>
+	-->
 
 	<!-- Local transaction manager. If using JTA, comment out this element -->
 	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
