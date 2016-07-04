@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.MainContentLayoutPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
 /**
  * Base class that binder views MUST extend so that they'll say when
@@ -130,11 +131,22 @@ public abstract class ViewBase extends ResizeComposite
 			if (parent == null) {
 				parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
 			}
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). Parent height: " + parent.getOffsetHeight());
-			int width = parent.getOffsetWidth();
-			int height = parent.getOffsetHeight() + GwtConstants.CONTENT_WIDTH_ADJUST;
+			int width;
+			int height;
+			if (parent instanceof VibeEntityViewPanel) {
+				width = ((VibeEntityViewPanel)parent).getContainingWidth(this);
+				height = ((VibeEntityViewPanel)parent).getContainingHeight(this);
+			} else {
+				width = parent.getOffsetWidth();
+				height = parent.getOffsetHeight() + GwtConstants.CONTENT_WIDTH_ADJUST;
+			}
 			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). New size: (" + width + "," + height + ")");
-			setPixelSize(width, height);
+			if (width!=getOffsetWidth()) {
+				setWidth(width + "px");
+			}
+			if (height!=getOffsetHeight()) {
+				setHeight(height + "px");
+			}
 		}
 	}
 	

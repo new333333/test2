@@ -3611,6 +3611,39 @@ public String[] getUsernameAndDecryptedPasswordForAuth(String username) {
     }
     
     /**
+     * Mark the given group as being an internal group meaning it can contain only internal users/groups
+     */
+    @Override
+    public void markGroupAsInternal( Long groupId ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+    {
+    	Principal principal;
+    	
+    	if ( groupId == null )
+    		return;
+    	
+    	principal = getEntry( groupId );
+    	if ( principal != null && principal instanceof Group )
+    		markGroupAsInternal( (Group) principal );
+    }
+    
+    /**
+     * Check if the group is external
+     */
+    @Override
+    public boolean isExternalGroup( Long groupId ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+    {
+    	Principal principal;
+    	
+    	if ( groupId == null )
+    		return false;
+    	
+    	principal = getEntry( groupId );
+    	if ( principal != null && principal instanceof Group )
+    		return isExternalGroup( (Group) principal );
+    	return false;
+    }   
+    
+    /**
      * Mark the given group as being an external group, meaning it can contain external users/groups
      */
     @Override
@@ -3631,6 +3664,46 @@ public String[] getUsernameAndDecryptedPasswordForAuth(String username) {
 		inputData = new MapInputData( inputMap );
 
 		modifyEntry( group.getId(), inputData );
+    }
+    
+    /**
+     * Mark the given group as being an internal group, meaning it can contain only internal users/groups
+     */
+    @Override
+    public void markGroupAsInternal( Group group ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+    {
+		HashMap<String, Object> inputMap = new HashMap<String, Object>();
+		MapInputData inputData;
+		IdentityInfo identityInfo;
+
+		if ( group == null )
+			return;
+		
+		// Mark it as internal
+		identityInfo = group.getIdentityInfo();
+		identityInfo.setInternal( true );
+		inputMap.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
+
+		inputData = new MapInputData( inputMap );
+
+		modifyEntry( group.getId(), inputData );
+    }
+    
+    /**
+     * Check if the group is external
+     */
+    @Override
+    public boolean isExternalGroup( Group group ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+    {
+		HashMap<String, Object> inputMap = new HashMap<String, Object>();
+		MapInputData inputData;
+		IdentityInfo identityInfo;
+
+		if ( group == null )
+			return false;
+
+		identityInfo = group.getIdentityInfo();
+		return !identityInfo.isInternal();
     }
     
 	/**

@@ -96,7 +96,7 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel implements VibeE
 	
 	public void showActivityStream()
 	{
-		showActivityStream( ActivityStreamDataType.OTHER );
+		showActivityStream(ActivityStreamDataType.OTHER);
 	}
 	
 	/**
@@ -143,4 +143,15 @@ public class MainContentLayoutPanel extends VibeDockLayoutPanel implements VibeE
 		if ( composite != null )
 			m_contentFlowPanel.add( composite );
 	}
+
+	@Override
+	public int getContainingHeight(Widget widget) {
+		return getOffsetHeight();
+	}
+
+	@Override
+	public int getContainingWidth(Widget widget) {
+		return getOffsetWidth();
+	}
+
 }
