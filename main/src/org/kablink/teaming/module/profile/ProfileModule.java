@@ -986,6 +986,14 @@ public interface ProfileModule {
 	 */
 	public void markGroupAsExternal( Long groupId ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	public void markGroupAsExternal( Group group ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+	
+	/**
+	 * Mark the given group as internal, meaning it can contain only internal users/groups
+	 */
+	public void markGroupAsInternal( Long groupId ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+	public void markGroupAsInternal( Group group ) throws AccessControlException, WriteFilesException, WriteEntryDataException;	
+	public boolean isExternalGroup( Long groupId ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+	public boolean isExternalGroup( Group group ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
 
 	/**
 	 * Sets the default locale language and country for new users.

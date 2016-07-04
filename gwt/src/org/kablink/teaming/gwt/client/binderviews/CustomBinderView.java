@@ -140,19 +140,22 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 			parentWidget.showWidget((Widget) viewPanel);
 			addChildControls((BinderViewContainer) viewDef, viewPanel);
 		} else {
-			VibeFlowPanel flowPanel = new VibeFlowPanel();
-			flowPanel.addStyleName("vibe-flow");
-//			flowPanel.setWidth("100%");
-			//flowPanel.setHeight("100%");
-			parentWidget.showWidget(flowPanel);
 			if (viewDef instanceof BinderViewFolderListing) {
+                GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Adding folder listing...");
+				VibeFlowPanel flowPanel = new VibeFlowPanel(true);
+				flowPanel.addStyleName("vibe-flow");
+				parentWidget.showWidget(flowPanel);
 				BinderInfo bi = getBinderInfo();
 				m_delegatingViewReady.incrementComponent();
 				ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, m_viewType, flowPanel, this);
+                GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Firing event: "+ viewEvent.getClass().getSimpleName());
 				if (viewEvent != null) {
 					GwtTeaming.fireEvent(viewEvent);
 				}
 			} else if (viewDef instanceof BinderViewJsp) {
+				VibeFlowPanel flowPanel = new VibeFlowPanel();
+				flowPanel.addStyleName("vibe-flow");
+				parentWidget.showWidget(flowPanel);
 				m_delegatingViewReady.incrementComponent();
 				executeJspAsync((BinderViewJsp) viewDef, flowPanel, this);
 			}
