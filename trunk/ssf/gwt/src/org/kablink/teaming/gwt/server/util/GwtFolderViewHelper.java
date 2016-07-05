@@ -112,6 +112,9 @@ public class GwtFolderViewHelper {
                         tableView.setColumn1Width(Width.parseWidth(properties.get("width1")));
                         tableView.setColumn2Width(Width.parseWidth(properties.get("width2")));
                         tableView.setColumn3Width(Width.parseWidth(properties.get("width3")));
+                    } else if (binderView instanceof BinderViewBox) {
+                        BinderViewBox boxView = (BinderViewBox) binderView;
+                        boxView.setBorder("square".equals(properties.get("style")));
                     }
                 }
             } else {
@@ -128,9 +131,9 @@ public class GwtFolderViewHelper {
     }
 
     public static boolean hasCustomView(AllModulesInjected ami, Binder binder) {
-        Definition def2 = binder.getDefaultViewDef();
-        return !def2.getName().startsWith("_");
-//        return true;
+//        Definition def2 = binder.getDefaultViewDef();
+//        return !def2.getName().startsWith("_");
+        return true;
     }
 
     /*
