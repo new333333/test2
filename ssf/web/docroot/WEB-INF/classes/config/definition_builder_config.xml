@@ -3520,6 +3520,9 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/box.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewBox" />
+		</folderViews>
 		<notify velocity="box.vm" />
 	</item>
 		
