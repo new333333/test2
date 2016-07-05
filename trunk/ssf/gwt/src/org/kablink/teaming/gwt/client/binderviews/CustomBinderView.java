@@ -92,7 +92,6 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 				BinderViewTwoColumnTable tableDef = (BinderViewTwoColumnTable) viewDef;
 				VibeGrid viewGrid = new VibeGrid(1,2);
 				viewGrid.addStyleName("vibe-grid");
-				//viewGrid.setHeight("100%");
 				if (tableDef.getWidth() != null) {
 					viewGrid.setWidth(tableDef.getWidth().toString());
 //				} else {
@@ -106,25 +105,33 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 				}
 				viewPanel = viewGrid;
 			} else if (viewDef instanceof BinderViewThreeColumnTable) {
-				BinderViewThreeColumnTable tableDef = (BinderViewThreeColumnTable) viewDef;
-				VibeGrid viewGrid = new VibeGrid(1,3);
-				viewGrid.addStyleName("vibe-grid");
-				//viewGrid.setHeight("100%");
-				if (tableDef.getWidth()!=null) {
-					viewGrid.setWidth(tableDef.getWidth().toString());
+                BinderViewThreeColumnTable tableDef = (BinderViewThreeColumnTable) viewDef;
+                VibeGrid viewGrid = new VibeGrid(1, 3);
+                viewGrid.addStyleName("vibe-grid");
+                //viewGrid.setHeight("100%");
+                if (tableDef.getWidth() != null) {
+                    viewGrid.setWidth(tableDef.getWidth().toString());
 //				} else {
 //					viewGrid.setWidth("100%");
-				}
-				if (tableDef.getColumn1Width()!=null) {
-					viewGrid.getColumnFormatter().setWidth(0, tableDef.getColumn1Width().toString());
-				}
-				if (tableDef.getColumn2Width()!=null) {
-					viewGrid.getColumnFormatter().setWidth(1, tableDef.getColumn2Width().toString());
-				}
-				if (tableDef.getColumn3Width()!=null) {
-					viewGrid.getColumnFormatter().setWidth(2, tableDef.getColumn3Width().toString());
-				}
-				viewPanel = viewGrid;
+                }
+                if (tableDef.getColumn1Width() != null) {
+                    viewGrid.getColumnFormatter().setWidth(0, tableDef.getColumn1Width().toString());
+                }
+                if (tableDef.getColumn2Width() != null) {
+                    viewGrid.getColumnFormatter().setWidth(1, tableDef.getColumn2Width().toString());
+                }
+                if (tableDef.getColumn3Width() != null) {
+                    viewGrid.getColumnFormatter().setWidth(2, tableDef.getColumn3Width().toString());
+                }
+                viewPanel = viewGrid;
+            } else if (viewDef instanceof BinderViewBox) {
+                BinderViewBox boxDef = (BinderViewBox) viewDef;
+                VibeFlowPanel flowPanel = new VibeFlowPanel();
+                flowPanel.addStyleName("vibe-flow");
+                if (boxDef.isBorder()) {
+                    flowPanel.addStyleName("vibe-binderView_Box");
+                }
+                viewPanel = flowPanel;
 			} else {
 				BinderViewContainer containerDef = (BinderViewContainer) viewDef;
 				VibeFlowPanel flowPanel = new VibeFlowPanel();
@@ -144,7 +151,7 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
                 GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Adding folder listing...");
 				VibeFlowPanel flowPanel = new VibeFlowPanel(true);
 				flowPanel.addStyleName("vibe-flow");
-				parentWidget.showWidget(flowPanel);
+                parentWidget.showWidget(flowPanel);
 				BinderInfo bi = getBinderInfo();
 				m_delegatingViewReady.incrementComponent();
 				ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, m_viewType, flowPanel, this);

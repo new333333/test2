@@ -20,6 +20,10 @@
 	overflow: auto;
 }
 
+.vibe-binderView_Box {
+	border: 1px;
+}
+
 /* Start:  GWT folder view styles. */
 	/* ...Start:  Accessory styles. */
 		.vibe-accessoriesPanel {}
