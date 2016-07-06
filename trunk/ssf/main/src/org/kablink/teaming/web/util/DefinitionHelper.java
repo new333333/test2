@@ -36,20 +36,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Collection;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.SortedMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -131,6 +118,13 @@ import org.springframework.core.io.ClassPathResource;
  */
 @SuppressWarnings({"unchecked", "unused"})
 public class DefinitionHelper {
+	private static final Set<String> contentProperties = new HashSet<String>() {
+		{
+			add("htmlTop");
+			add("htmlBottom");
+		}
+	};
+
 	protected static final Log logger = LogFactory.getLog(Definition.class);
 	
 	private static DefinitionHelper instance; // A singleton instance
@@ -2018,7 +2012,13 @@ public class DefinitionHelper {
 		for (Element property : propNodes) {
 			String propertyName = property.attributeValue("name", "");
 			if (!Validator.isNull(propertyName)) {
-				props.put(propertyName, property.attributeValue("value", ""));
+				String value;
+				if (contentProperties.contains(propertyName)) {
+					value = property.getStringValue();
+				} else {
+					value = property.attributeValue("value", "");
+				}
+				props.put(propertyName, value);
 			}
 		}
 		return props;

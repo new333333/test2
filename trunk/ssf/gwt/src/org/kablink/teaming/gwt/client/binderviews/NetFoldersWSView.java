@@ -150,7 +150,7 @@ public class NetFoldersWSView extends WorkspaceViewBase implements ToolPanelRead
 			m_htmlElementPanel.addStyleName("vibe-netFoldersWSView_HtmlElementPanel");
 			m_mainPanel.add(m_htmlElementPanel);
 			
-			HtmlElementPanel.createAsync(this, getBinderInfo(), this, new ToolPanelClient() {			
+			HtmlElementPanel.createAsync(this, getBinderInfo(), null, this, new ToolPanelClient() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in asynchronous
