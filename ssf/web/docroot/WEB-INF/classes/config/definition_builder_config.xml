@@ -2551,6 +2551,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/workspace_binder_list.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewBinderList" />
+		</folderViews>
 	</item>
 		
 
@@ -4084,6 +4087,9 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewHtmlEntry" />
+		</folderViews>
 		<notify velocity="html.vm" />
 	</item>
 	<item name="customJsp" caption="__custom_jsp" type="data" dataType="customJsp" category="generalLayout" display="form">

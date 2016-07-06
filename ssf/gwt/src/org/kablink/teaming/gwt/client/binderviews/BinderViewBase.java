@@ -182,27 +182,6 @@ public abstract class BinderViewBase extends WorkspaceViewBase implements ViewRe
 		//m_mainPanel.onResize();
 	}//end onResizeNow()
 
-	protected class ToolPanelClientImpl implements ToolPanelBase.ToolPanelClient {
-		private VibeFlowPanel parentPanel;
-		private ViewReady viewReady;
-
-		public ToolPanelClientImpl(VibeFlowPanel parentPanel, ViewReady viewReady) {
-			this.parentPanel = parentPanel;
-			this.viewReady = viewReady;
-		}
-
-		@Override
-		public void onSuccess(ToolPanelBase tpb) {
-			parentPanel.add(tpb);
-			viewReady.viewReady();
-		}
-
-		@Override
-		public void onUnavailable() {
-			// Nothing to do.  Error handled in asynchronous provider.
-		}
-	}
-
 	private class SimpleViewReady implements ViewReady {
 		@Override
 		public void viewReady() {

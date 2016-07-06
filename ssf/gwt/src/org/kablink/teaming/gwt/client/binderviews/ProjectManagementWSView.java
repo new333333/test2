@@ -118,7 +118,7 @@ public class ProjectManagementWSView extends WorkspaceViewBase implements ToolPa
 			m_htmlElementPanel.addStyleName( "vibe-projectManagementWSView_HtmlElementPanel" );
 			m_mainPanel.add( m_htmlElementPanel );
 			
-			HtmlElementPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
+			HtmlElementPanel.createAsync( this, getBinderInfo(), null, this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()

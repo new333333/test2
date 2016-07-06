@@ -114,6 +114,12 @@ public class GwtFolderViewHelper {
                         BinderViewBox boxView = (BinderViewBox) binderView;
                         boxView.setBorder("square".equals(properties.get("style")));
                     }
+                } else {
+                    if (binderView instanceof BinderViewHtmlEntry) {
+                        BinderViewHtmlEntry htmlEntry = (BinderViewHtmlEntry) binderView;
+                        htmlEntry.setHtmlTop(properties.get("htmlTop"));
+                        htmlEntry.setHtmlBottom(properties.get("htmlBottom"));
+                    }
                 }
             } else {
                 String jsp = configBuilder.getItemJspByStyle(viewItem, name, Definition.JSP_STYLE_DEFAULT);
