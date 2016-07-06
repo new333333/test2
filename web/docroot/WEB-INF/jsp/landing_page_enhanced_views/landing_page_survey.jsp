@@ -32,6 +32,10 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<script type="text/javascript">
+	var ss_reloadUrl = "${ss_reloadUrl}";
+	var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
+</script>
 <%
 /**
  * This is an example of a custom jsp for showing a survey entry on a landing page
