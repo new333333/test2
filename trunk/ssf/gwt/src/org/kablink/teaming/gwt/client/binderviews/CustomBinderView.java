@@ -39,6 +39,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
+import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.event.*;
@@ -56,8 +57,9 @@ import java.util.Map;
  * 
  * @author david
  */
-public class CustomBinderView extends StandardBinderView implements ViewReady, ToolPanelReady, ProvidesResize, RequiresResize
+public class CustomBinderView extends BinderViewBase implements ViewReady, ToolPanelReady, ProvidesResize, RequiresResize
 {
+	protected VibeFlowPanel m_layoutPanel;
 	private BinderViewLayout m_viewLayout;
 
 	/**
@@ -74,9 +76,45 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 	}
 
 
+	public void setViewSize() {
+		boolean allowToScroll = scrollEntireView();
+
+		UIObject parent = m_parent;
+		if (parent==null) {
+			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
+		}
+		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Heights: parent: " + parent.getOffsetHeight() +
+				"; main: " + m_mainPanel.getOffsetHeight() + "; footer: " + m_footerPanel.getOffsetHeight());
+
+		int height = parent.getOffsetHeight() + GwtConstants.BINDER_VIEW_ADJUST * 4;
+		int width = parent.getOffsetWidth() + GwtConstants.BINDER_VIEW_ADJUST * 2;
+
+		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New size: (" + width + "," + height + ")");
+		this.setPixelSize(width, height);
+		if (!allowToScroll) {
+			height = height - m_footerPanel.getOffsetHeight();
+			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New layout panel size: (" + width + "," + height + ")");
+			m_layoutPanel.setPixelSize(width, height);
+			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Layout panel resized.");
+			m_layoutPanel.onResize();
+		}
+	}
+
 	@Override
-	protected void layoutContent(VibeFlowPanel layoutPanel) {
-		this.addChildControls(m_viewLayout, layoutPanel);
+	protected void layoutContent(VibeFlowPanel parentPanel, boolean scrollEntireView) {
+		// Add a place for the layout based on the binder definition
+		{
+			m_layoutPanel = new VibeFlowPanel();
+			//m_layoutPanel.setWidth("100%");
+			//m_layoutPanel.setHeight("100%");
+			m_layoutPanel.addStyleName( "vibe-binderView_LayoutPanel" );
+			if (!scrollEntireView) {
+				m_layoutPanel.addStyleName("vibe-binderView_OverflowAuto");
+			}
+			parentPanel.add( m_layoutPanel );
+		}
+
+		this.addChildControls(m_viewLayout, m_layoutPanel);
 	}
 
 	public void addChildControls(BinderViewContainer parentDef, VibeEntityViewPanel parentWidget) {
@@ -159,6 +197,12 @@ public class CustomBinderView extends StandardBinderView implements ViewReady, T
 				if (viewEvent != null) {
 					GwtTeaming.fireEvent(viewEvent);
 				}
+			} else if (viewDef instanceof BinderViewBreadCrumb) {
+				buildBreadCrumbPanel((HasWidgets) parentWidget);
+			} else if (viewDef instanceof BinderViewDescription) {
+				buildDescriptionPanel((HasWidgets) parentWidget);
+			} else if (viewDef instanceof BinderViewAccessories) {
+				buildAccessoriesPanel((HasWidgets) parentWidget);
 			} else if (viewDef instanceof BinderViewJsp) {
 				VibeFlowPanel flowPanel = new VibeFlowPanel();
 				flowPanel.addStyleName("vibe-flow");
