@@ -53,7 +53,6 @@ import java.util.*;
 public class GwtFolderViewHelper {
     private static Set<String> binderViewsToSkip = new HashSet<String>() {
         {
-            add("folderDescriptionView");
         }
     };
 
