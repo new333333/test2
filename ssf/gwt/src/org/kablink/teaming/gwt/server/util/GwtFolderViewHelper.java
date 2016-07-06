@@ -38,6 +38,7 @@ import org.dom4j.Node;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
@@ -52,9 +53,7 @@ import java.util.*;
 public class GwtFolderViewHelper {
     private static Set<String> binderViewsToSkip = new HashSet<String>() {
         {
-            add("folderTitleView");
             add("folderDescriptionView");
-            add("dashboardCanvas");
         }
     };
 
@@ -131,8 +130,13 @@ public class GwtFolderViewHelper {
     }
 
     public static boolean hasCustomView(AllModulesInjected ami, Binder binder) {
-//        Definition def2 = binder.getDefaultViewDef();
-//        return !def2.getName().startsWith("_");
+        if (binder==null) {
+            return false;
+        }
+        if (binder instanceof Workspace) {
+            Definition def2 = binder.getDefaultViewDef();
+            return !def2.getName().startsWith("_");
+        }
         return true;
     }
 

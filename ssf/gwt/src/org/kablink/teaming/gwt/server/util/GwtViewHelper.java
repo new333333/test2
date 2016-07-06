@@ -9554,7 +9554,8 @@ public class GwtViewHelper {
 		if (null == bi) {
 			return false;
 		}
-		
+
+		Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(binderId);
 		// Is the binder a workspace?
 		User user = GwtServerHelper.getCurrentUser();
 		vi.setViewType(ViewType.BINDER);
@@ -9574,13 +9575,15 @@ public class GwtViewHelper {
 				if (null == homeId)
 				     bi = GwtServerHelper.buildCollectionBI(ct, user.getWorkspaceId());
 				else bi = GwtServerHelper.getBinderInfo(bs, request, String.valueOf(homeId));
+			} else if (GwtFolderViewHelper.hasCustomView(bs, binder)) {
+				vi.setViewLayout(GwtFolderViewHelper.buildBinderViewLayout(binder));
+				vi.setCustomLayout(true);
 			}
 		}
 
 		// No, the binder isn't a workspace!  Is it a folder?
 		else if (bi.isBinderFolder()) {
 			// Yes!  Is it a 'My Files Storage' folder?
-			Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(binderId);
 			if ((null != binder) && BinderHelper.isBinderMyFilesStorage(binder) && (!(showMyFilesStorageAsFolder()))) {
 				// Yes!  Is it the current user's?
 				Binder userWS          = binder.getParentBinder();
@@ -9630,7 +9633,7 @@ public class GwtViewHelper {
 		// Are we supposed to invoke the share dialog on this binder?
 		if (isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE, "1")) {
 			// Yes!  Mark the ViewInfo accordingly.
-			Binder	binder             = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
+			binder             = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
 			boolean	invokeShare        = (null != binder);
 			boolean	invokeShareEnabled = (invokeShare && GwtShareHelper.isEntitySharable(bs, binder));
 			vi.setInvokeShare(       invokeShare       );
