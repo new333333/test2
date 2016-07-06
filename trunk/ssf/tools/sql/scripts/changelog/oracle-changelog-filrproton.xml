@@ -45,9 +45,6 @@
     <changeSet author="dhivya" context="schema" failOnError="true" id="6">
         <comment>Increase name column size from 64 to 128 characters</comment>
         <modifyDataType tableName="SS_NetFolderConfig" columnName="name" newDataType="VARCHAR2(128 CHAR)"/>
-        <modifySql dbms="oracle">
-            <append value=" NOT NULL"/>
-        </modifySql>
     </changeSet>
     
     <changeSet author="girish" context="schema" failOnError="true" id="7">
