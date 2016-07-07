@@ -138,8 +138,9 @@ public class TypeToFindAjaxController extends SAbstractController {
 		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
 		String foldersOnly = PortletRequestUtils.getStringParameter(request, "foldersOnly", "false");
+		boolean showInternalOnly = PortletRequestUtils.getBooleanParameter(request, "showInternalOnly", false);
 		String searchSubFolders = PortletRequestUtils.getStringParameter(request, "searchSubFolders", "false");
-		String showFolderTitles = PortletRequestUtils.getStringParameter(request, "showFolderTitles", "false");
+		String showFolderTitles = PortletRequestUtils.getStringParameter(request, "showFolderTitles", "false");		
 		String binderId = PortletRequestUtils.getStringParameter(request, "binderId", "");
 		String showUserTitleOnly = PortletRequestUtils.getStringParameter(request, "showUserTitleOnly", "false");
 		boolean addCurrentUser = PortletRequestUtils.getBooleanParameter(request, "addCurrentUser", false);
@@ -228,6 +229,10 @@ public class TypeToFindAjaxController extends SAbstractController {
 				// Don't include "team groups" in the search results.
 				searchTermFilter.addAndTeamGroupFilter( false );
 			}
+		}
+		
+		if(findType.equals(WebKeys.FIND_TYPE_GROUP) || findType.equals(WebKeys.FIND_TYPE_USER)){
+			searchTermFilter.addAndInternalFilter(showInternalOnly);
 		}
 
 		try {
