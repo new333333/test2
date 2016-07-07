@@ -91,7 +91,6 @@ public abstract class ViewBase extends ResizeComposite
 	@Override
 	protected void initWidget(Widget widget) {
 		super.initWidget(widget);
-		addStyleName("vibe-viewBase");
 	}
 	
 	/**

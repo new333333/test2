@@ -41,6 +41,11 @@ public class VibeGrid extends Grid
     }
 
     @Override
+    public void add(Widget child) {
+        showWidget(child);
+    }
+
+    @Override
     public void showWidget(Widget widget) {
         if (currRow>=numRows) {
             this.resize(numRows+1, numColumns);

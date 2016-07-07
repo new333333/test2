@@ -87,6 +87,7 @@ public abstract class BinderViewBase extends WorkspaceViewBase implements ViewRe
 		//m_mainPanel.setWidth("100%");
 		//m_mainPanel.setHeight("100%");
 		m_mainPanel.addStyleName( "vibe-binderView" );
+		m_mainPanel.addStyleName("vibe-viewBase");
 		boolean scrollEntireView = scrollEntireView();
 		if (scrollEntireView) {
 			m_mainPanel.addStyleName("vibe-binderView_OverflowAuto");

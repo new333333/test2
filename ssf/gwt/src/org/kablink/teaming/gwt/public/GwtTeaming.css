@@ -2437,7 +2437,7 @@ body, table td, select
 .mainContentControl, .vibe-viewBase
 {
 	position: relative;
-	top: 8px !important;
+	margin-top: 8px !important;
 	background-color:#fff;
 	border-radius: 6px;
 	-moz-border-radius: 6px;
