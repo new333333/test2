@@ -51,6 +51,20 @@ import java.util.*;
  * Created by david on 4/13/16.
  */
 public class GwtFolderViewHelper {
+    private static Set<WorkspaceType> standardBinderViews = new HashSet<WorkspaceType>() {
+        {
+            add(WorkspaceType.ADMINISTRATOR_MANAGEMENT);
+            add(WorkspaceType.EMAIL_TEMPLATES);
+            add(WorkspaceType.GLOBAL_ROOT);
+            add(WorkspaceType.NET_FOLDERS_ROOT);
+            add(WorkspaceType.PROFILE_ROOT);
+            add(WorkspaceType.PROFILE_ROOT_MANAGEMENT);
+            add(WorkspaceType.TEAM_ROOT);
+            add(WorkspaceType.TEAM_ROOT_MANAGEMENT);
+            add(WorkspaceType.TRASH);
+        }
+    };
+
     private static Set<String> binderViewsToSkip = new HashSet<String>() {
         {
         }
@@ -147,8 +161,8 @@ public class GwtFolderViewHelper {
             return false;
         }
         if (binder instanceof Workspace) {
-            Definition def2 = binder.getDefaultViewDef();
-            return !def2.getName().startsWith("_");
+            WorkspaceType workspaceType = GwtServerHelper.getWorkspaceType(binder);
+            return !standardBinderViews.contains(workspaceType);
         }
         return true;
     }
