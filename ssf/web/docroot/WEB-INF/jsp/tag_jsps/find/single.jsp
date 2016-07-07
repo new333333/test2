@@ -62,6 +62,7 @@ onload="dojo.addOnLoad(function(){
 	if (!window['findSingle${prefix}']) {<%-- prevents FF problem - img.onload called sometimes twice --%>
 		window['findSingle${prefix}'] = ssFind.configSingle({
 		inputId: 'ss_combobox_autocomplete_${prefix}',
+		allowExternalUsersId: 'allowExternalUsersId',
 		findMultipleObj: '${ssFindMultipleObj}', 
 		prefix: '${prefix}', 
 		displayValue: '${ssDisplayValue}',
