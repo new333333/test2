@@ -3155,6 +3155,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// If membership didn't change then bail.
 		if ( getTeamMemberIds( binder ).equals(memberIds) )
 			return;
+		
+		//Remove the fake memberId added from the UI side to trigger team members sync
+		memberIds.remove(00001111);
 
 		//See if the guest user is included in the list
 		User guest = getProfileModule().getGuestUser();
