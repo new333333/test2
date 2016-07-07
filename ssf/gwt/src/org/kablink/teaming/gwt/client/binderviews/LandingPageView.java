@@ -158,28 +158,6 @@ public class LandingPageView extends WorkspaceViewBase implements ToolPanelReady
 		// page view.
 		doViewReady();
 
-		binderInfo = getBinderInfo();
-		String binderId = ((null == binderInfo) ? null : binderInfo.getBinderId());
-		if ( configData.isPreviewMode() == false && binderId != null )
-		{
-			// Add the description to the page.
-			DescriptionPanel.createAsync( this, binderInfo, this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase tpb )
-				{
-					// Insert the description as the first element on the landing page.
-					m_mainPanel.insert( tpb, 0 );
-				}
-			} );
-		}
-		
 		// Is a background color specified?
 		bgColor = configData.getBackgroundColor();
 		if ( bgColor != null && bgColor.length() > 0 )
