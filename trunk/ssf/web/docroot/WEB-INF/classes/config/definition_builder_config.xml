@@ -821,6 +821,9 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_data.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewFolderDataItem" />
+		</folderViews>
 	</item>
 	
 	<item name="folderList" caption="__folder_listing" category="folderViewData"  display="view">
@@ -2544,6 +2547,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_workspace_data.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewFolderDataItem" />
+		</folderViews>
 	</item>
 	
 	<item name="workspaceBinderList" caption="__workspace_binder_list" category="workspaceViewData" display="view">

@@ -53,6 +53,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import org.kablink.teaming.gwt.client.widgets.ChildBindersWidget;
+import org.kablink.teaming.gwt.client.widgets.LandingPageWidget;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 /**
@@ -302,6 +303,30 @@ public abstract class WorkspaceViewBase extends ViewBase
 		}
 		ChildBindersWidget.createAsync(this, getBinderInfo(), this, new ToolPanelClientImpl(listOfChildrenPanel, viewReady));
 		return listOfChildrenPanel;
+	}
+
+	protected VibeFlowPanel buildLandingPageLayout(HasWidgets parentPanel, final ViewReady viewReady) {
+		final VibeFlowPanel lpPanel = new VibeFlowPanel();
+		lpPanel.addStyleName("vibe-binderView_LPPanel");
+		parentPanel.add(lpPanel);
+		if (viewReady instanceof DelegatingViewReady) {
+			((DelegatingViewReady)viewReady).incrementComponent();
+		}
+		LandingPageWidget.createAsync(getBinderInfo(), new LandingPageWidget.LandingPageWidgetClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+
+			@Override
+			public void onSuccess(LandingPageWidget landingPage) {
+				lpPanel.add(landingPage);
+				if (viewReady!=null) {
+					viewReady.viewReady();
+				}
+			}
+		});
+		return lpPanel;
 	}
 
 	protected VibeFlowPanel buildHTMLPanel(HasWidgets parentPanel, BinderViewHtmlEntry htmlEntry, ViewReady viewReady) {
