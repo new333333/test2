@@ -193,8 +193,8 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 				BinderInfo bi = getBinderInfo();
 				m_delegatingViewReady.incrementComponent();
 				ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, m_viewType, flowPanel, this);
-                GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Firing event: "+ viewEvent.getClass().getSimpleName());
 				if (viewEvent != null) {
+					GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Firing event: "+ viewEvent.getClass().getSimpleName());
 					GwtTeaming.fireEvent(viewEvent);
 				}
 			} else if (viewDef instanceof BinderViewBreadCrumb) {
