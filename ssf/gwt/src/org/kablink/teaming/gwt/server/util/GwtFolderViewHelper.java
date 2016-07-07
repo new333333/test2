@@ -119,9 +119,17 @@ public class GwtFolderViewHelper {
                         BinderViewHtmlEntry htmlEntry = (BinderViewHtmlEntry) binderView;
                         htmlEntry.setHtmlTop(properties.get("htmlTop"));
                         htmlEntry.setHtmlBottom(properties.get("htmlBottom"));
+                    } else if (binderView instanceof BinderViewFolderDataItem) {
+                        String formItem = viewItem.attributeValue("formItem");
+                        if ("mashupCanvas".equals(formItem)) {
+                            binderView = new BinderViewLandingPageLayout();
+                        } else {
+                            binderView = null;
+                        }
                     }
                 }
-            } else {
+            }
+            if (binderView == null) {
                 String jsp = configBuilder.getItemJspByStyle(viewItem, name, Definition.JSP_STYLE_DEFAULT);
                 if (jsp != null) {
                     BinderViewJsp binderJspView = new BinderViewJsp(jsp);

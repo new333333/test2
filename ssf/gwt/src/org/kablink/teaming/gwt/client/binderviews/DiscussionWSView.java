@@ -90,26 +90,7 @@ public class DiscussionWSView extends WorkspaceViewBase implements ToolPanelRead
 		
 		// Add a place for landing page elements.  The LandingPage widget will display the description
 		// if there is one.
-		{
-			m_lpPanel = new VibeFlowPanel();
-			m_lpPanel.addStyleName( "vibe-discussionWSView_LPPanel" );
-			m_mainPanel.add( m_lpPanel );
-
-			LandingPageWidget.createAsync( getBinderInfo(), new LandingPageWidgetClient()
-			{
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( LandingPageWidget landingPage )
-				{
-					m_lpPanel.add( landingPage );
-				}
-			} );
-		}
+		m_lpPanel = buildLandingPageLayout(m_mainPanel, null);
 
 		// Add a place for an HTML element.
 		{

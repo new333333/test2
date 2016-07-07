@@ -207,6 +207,8 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 				buildChildBindersPanel((HasWidgets) parentWidget, m_delegatingViewReady);
 			} else if (viewDef instanceof BinderViewHtmlEntry) {
 				buildHTMLPanel((HasWidgets) parentWidget, (BinderViewHtmlEntry) viewDef, m_delegatingViewReady);
+			} else if (viewDef instanceof BinderViewLandingPageLayout) {
+				buildLandingPageLayout((HasWidgets) parentWidget, m_delegatingViewReady);
 			} else if (viewDef instanceof BinderViewJsp) {
 				VibeFlowPanel flowPanel = new VibeFlowPanel();
 				flowPanel.addStyleName("vibe-flow");
