@@ -371,7 +371,8 @@ public interface ObjectKeys {
     public static final String BINDER_PROPERTY_TASK_MODIFIED = "taskModified";
     public static final String BINDER_PROPERTY_TASK_EXPAND_GRAPHS = "taskExpandGraphs";
     public static final String BINDER_PROPERTY_CLOUD_FOLDER_ROOT = "cloudFolderRoot";
-    
+    public static final String BINDER_PROPERTY_RENDER_JSP_VIEW = "renderJspView";
+
     // Global properties
     public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "defaultLocale";
     public static final String GLOBAL_PROPERTY_DEFAULT_TIME_ZONE = "defaultTimeZone";
@@ -783,6 +784,7 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_IS_HOME_DIR = "homeDir";
 	public static final String FIELD_BINDER_IS_MYFILES_DIR = "myFilesDir";
 	public static final String FIELD_BINDER_SYNC_SCHEDULE_OPTION = "syncScheduleOption";
+	public static final String FIELD_BINDER_RENDER_JSP_VIEW = "renderJspView";
 	public static final String FIELD_WS_SEARCHTITLE="searchTitle";
 	public static final String FIELD_BINDER_FULL_SYNC_DIR_ONLY = "fullSyncDirOnly";
     public static final String FIELD_BINDER_USE_INHERITED_INDEX_CONTENT = "useInheritedIndexContent";
@@ -1123,7 +1125,7 @@ public interface ObjectKeys {
     
     public final static String CSV_OPTIONS_ATTRS_TO_SKIP = "attrsToSkip";
     public final static String CSV_DELIMITER = "csvDelim";
-    
-    //Database 
+
+    //Database
     public final static int SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT = 4;
 }

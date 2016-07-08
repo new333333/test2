@@ -2015,9 +2015,9 @@ public class ContentControl extends Composite
 		ViewType vt = vi.getViewType();
 
 		ShowBinderEvent viewEvent = null;
-		if (vi.isCustomLayout() && vi.getViewLayout()!=null) {
+		if (showCustomGwtBinderView(vi, bi)) {
 			viewEvent = new ShowCustomBinderViewEvent(bi, vt, vi.getViewLayout(), parent, viewReady);
-		} else if (GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, vt, parent, viewReady)!=null) {
+		} else if (showStandardGwtBinderView(vi, viewReady, parent, bi, vt)) {
 			viewEvent = new ShowStandardBinderViewEvent(bi, vt, parent, viewReady);
 		}
 
@@ -2063,6 +2063,18 @@ public class ContentControl extends Composite
 			}
 		}
 		return viewMode;
+	}
+
+	private static boolean showStandardGwtBinderView(ViewInfo vi, ViewReady viewReady, VibeEntityViewPanel parent, BinderInfo bi, ViewType vt) {
+		return (vi.getRenderEngine() == RenderEngine.GWT_STANDARD ||
+				(vi.getRenderEngine() == RenderEngine.GWT_CUSTOMIZED && vi.getViewLayout()==null)) &&
+				!bi.isForceJspRendering() &&
+				GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, vt, parent, viewReady)!=null;
+	}
+
+	private static boolean showCustomGwtBinderView(ViewInfo vi, BinderInfo bi) {
+		return vi.getRenderEngine() == RenderEngine.GWT_CUSTOMIZED && vi.getViewLayout()!=null &&
+				!bi.isForceJspRendering();
 	}
 
 	/**

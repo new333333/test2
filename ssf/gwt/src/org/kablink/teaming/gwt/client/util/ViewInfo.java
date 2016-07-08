@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.binderviews.RenderEngine;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -47,7 +48,7 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	private boolean				m_invokeShare;			// true -> Invoke the sharing dialog on the entity after the view initiates.
 	private boolean				m_invokeShareEnabled;	// true -> The entity is sharable.  false -> It isn't.
 	private boolean				m_invokeSubscribe;		// true -> Invoke the subscribe dialog on the entity after the view initiates.
-	private boolean				m_customLayout;
+	private RenderEngine 		m_renderEngine;			// The engine (JSP or GWT) to use to render the view.
 	private String				m_entryViewUrl;			// If m_viewType is BINDER_WITH_ENTRY_VIEW, the URL to use to view the entry AFTER loading the binder.
 	private String				m_overrideUrl;			// If supplied, is a URL that should override the want that initially let to this ViewInfo being constructed.
 	private Long				m_baseBinderId;			// For all m_viewTypes, any binderId found in the URL.
@@ -66,6 +67,7 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 		
 		// ...and any data members requiring it.
 		m_viewType = ViewType.OTHER;
+		m_renderEngine = RenderEngine.GWT_STANDARD;
 	}
 
 	/**
@@ -91,7 +93,7 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	public boolean             isInvokeShare()        {return m_invokeShare;                                                                                      }
 	public boolean             isInvokeShareEnabled() {return m_invokeShareEnabled;                                                                               }
 	public boolean             isInvokeSubscribe()    {return m_invokeSubscribe;                                                                                  }
-	public boolean             isCustomLayout()       {return m_customLayout;                                                                                  }
+	public RenderEngine        getRenderEngine()      {return m_renderEngine;                                                                                  }
 	public BinderInfo          getBinderInfo()        {return m_binderInfo;                                                                                       }
 	public Long                getBaseBinderId()      {return m_baseBinderId;                                                                                     }
 	public String              getEntryViewUrl()      {return m_entryViewUrl;                                                                                     }
@@ -109,7 +111,7 @@ public class ViewInfo implements IsSerializable, VibeRpcResponseData {
 	public void setInvokeShare(        boolean             invokeShare)        {m_invokeShare        = invokeShare;       }
 	public void setInvokeShareEnabled( boolean             invokeShareEnabled) {m_invokeShareEnabled = invokeShareEnabled;}
 	public void setInvokeSubscribe(    boolean             invokeSubscribe)    {m_invokeSubscribe    = invokeSubscribe;   }
-	public void setCustomLayout(       boolean             customLayout)       {m_customLayout       = customLayout;      }
+	public void setRenderEngine(       RenderEngine        renderEngine)       {m_renderEngine       = renderEngine;      }
 	public void setBaseBinderId(       Long                baseBinderId)       {m_baseBinderId       = baseBinderId;      }
 	public void setEntryViewUrl(       String              entryViewUrl)       {m_entryViewUrl       = entryViewUrl;      }
 	public void setOverrideUrl(        String              overrideUrl)        {m_overrideUrl        = overrideUrl;       }

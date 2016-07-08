@@ -51,6 +51,7 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	private boolean       			m_folderMyFilesStorage;											//
 	private boolean       			m_library;														//
 	private boolean       			m_mirroredDriverConfigured;										//
+	private boolean					m_forceJspRendering;
 	private CollectionType			m_collectionType           = CollectionType.NOT_A_COLLECTION;	//
 	private FolderType    			m_folderType               = FolderType.NOT_A_FOLDER;			//
 	private Long          			m_numUnread;													// Number of unread entries in this binder and sub binders.
@@ -114,6 +115,7 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	public boolean               isFolderMyFilesStorage()     {return                            m_folderMyFilesStorage;    }
 	public boolean               isLibrary()                  {return                            m_library;                 }
 	public boolean               isMirroredDriverConfigured() {return                            m_mirroredDriverConfigured;}
+	public boolean               isForceJspRendering() 		  {return                            m_forceJspRendering;}
 	public CollectionType        getCollectionType()          {return                            m_collectionType;          }
 	public FolderType            getFolderType()              {return                            m_folderType;              }
 	public Long                  getBinderIdAsLong()          {return Long.parseLong(            m_binderId);               }
@@ -546,6 +548,10 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	public void setMirroredDriverConfigured(boolean mirroredDriverConfigured) {
 		m_mirroredDriverConfigured = mirroredDriverConfigured;
+	}
+
+	public void setForceJspRendering(boolean forceJspRendering) {
+		this.m_forceJspRendering = forceJspRendering;
 	}
 
 	/**
