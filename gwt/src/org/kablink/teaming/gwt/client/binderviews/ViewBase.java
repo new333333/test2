@@ -91,7 +91,6 @@ public abstract class ViewBase extends ResizeComposite
 	@Override
 	protected void initWidget(Widget widget) {
 		super.initWidget(widget);
-		addStyleName("vibe-viewBase");
 	}
 	
 	/**
@@ -135,17 +134,17 @@ public abstract class ViewBase extends ResizeComposite
 			int height;
 			if (parent instanceof VibeEntityViewPanel) {
 				width = ((VibeEntityViewPanel)parent).getContainingWidth(this);
-				height = ((VibeEntityViewPanel)parent).getContainingHeight(this);
+				height = ((VibeEntityViewPanel)parent).getContainingHeight(this) + GwtConstants.BINDER_VIEW_EMBEDDED_ADJUST;
 			} else {
 				width = parent.getOffsetWidth();
-				height = parent.getOffsetHeight() + GwtConstants.CONTENT_WIDTH_ADJUST;
+				height = parent.getOffsetHeight() + GwtConstants.BINDER_VIEW_ADJUST;
 			}
 			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). New size: (" + width + "," + height + ")");
 			if (width!=getOffsetWidth()) {
-				setWidth(width + "px");
+				setWidth(Math.max(width,0) + "px");
 			}
 			if (height!=getOffsetHeight()) {
-				setHeight(height + "px");
+				setHeight(Math.max(height,0) + "px");
 			}
 		}
 	}

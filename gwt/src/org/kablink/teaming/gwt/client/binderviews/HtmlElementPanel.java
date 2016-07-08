@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.HtmlElementInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.HtmlElementInfoRpcResponseData.HtmlElementInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderViewHtmlEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -63,6 +64,7 @@ public class HtmlElementPanel extends ToolPanelBase {
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's localized message resources.
 	private HtmlElementInfoRpcResponseData	m_htmlElementInfo;			// The HtmlElementInfoRpcResponseData for this binder's HTML elements, once they've been queried.
 	private VibeFlowPanel					m_fp;						// The panel holding the HtmlElementPanel's contents.
+	private BinderViewHtmlEntry				m_htmlEntry;
 
 	/*
 	 * Constructor method.
@@ -71,12 +73,13 @@ public class HtmlElementPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private HtmlElementPanel(RequiresResize containerResizer, BinderInfo binderInfo, ToolPanelReady toolPanelReady) {
+	private HtmlElementPanel(RequiresResize containerResizer, BinderInfo binderInfo, BinderViewHtmlEntry htmlEntry, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
 		super(containerResizer, binderInfo, toolPanelReady);
 		
 		// ...store the parameters...
 		m_binderInfo = binderInfo;
+		m_htmlEntry = htmlEntry;
 		
 		// ...initialize the data members...
 		m_messages = GwtTeaming.getMessages();
@@ -85,7 +88,11 @@ public class HtmlElementPanel extends ToolPanelBase {
 		m_fp = new VibeFlowPanel();
 		m_fp.addStyleName("vibe-binderViewTools vibe-htmlElementPanel");
 		initWidget(m_fp);
-		loadPart1Async();
+		if (htmlEntry==null) {
+			loadPart1Async();
+		} else {
+			populatePanelFromBinderViewHtml(htmlEntry);
+		}
 	}
 
 	/**
@@ -97,14 +104,14 @@ public class HtmlElementPanel extends ToolPanelBase {
 	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		GWT.runAsync(HtmlElementPanel.class, new RunAsyncCallback() {			
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final BinderViewHtmlEntry htmlEntry, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+		GWT.runAsync(HtmlElementPanel.class, new RunAsyncCallback() {
 			@Override
 			public void onSuccess() {
-				HtmlElementPanel fp = new HtmlElementPanel(containerResizer, binderInfo, toolPanelReady);
+				HtmlElementPanel fp = new HtmlElementPanel(containerResizer, binderInfo, htmlEntry, toolPanelReady);
 				tpClient.onSuccess(fp);
 			}
-			
+
 			@Override
 			public void onFailure(Throwable reason) {
 				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_HtmlElementPanel());
@@ -156,21 +163,21 @@ public class HtmlElementPanel extends ToolPanelBase {
 		GwtClientHelper.executeCommand(
 				new GetHtmlElementInfoCmd(m_binderInfo),
 				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetHtmlElementInfo(),
-					m_binderInfo.getBinderIdAsLong());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// ...and use it to populate the panel.
-				m_htmlElementInfo = ((HtmlElementInfoRpcResponseData) response.getResponseData());
-				populatePanelFromDataAsync();
-			}
-		});
+					@Override
+					public void onFailure(Throwable t) {
+						GwtClientHelper.handleGwtRPCFailure(
+								t,
+								m_messages.rpcFailure_GetHtmlElementInfo(),
+								m_binderInfo.getBinderIdAsLong());
+					}
+
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						// ...and use it to populate the panel.
+						m_htmlElementInfo = ((HtmlElementInfoRpcResponseData) response.getResponseData());
+						populatePanelFromDataAsync();
+					}
+				});
 	}
 
 	/**
@@ -231,44 +238,14 @@ public class HtmlElementPanel extends ToolPanelBase {
 			int     count   = 0;
 			for (HtmlElementInfo htmlElement:  htmlElements) {
 				// Create a panel to hold this HTML element's HTML.
-				count += 1;
-				VibeFlowPanel htmlElementPanel = new VibeFlowPanel();
-				htmlElementPanel.addStyleName("vibe-htmlElementPerElementPanel");
-				if (1 < count) {
-					htmlElementPanel.addStyleName("padding10T");
-				}
-				m_fp.add(htmlElementPanel);
-
-				// Does the HTML element contain HTML from a custom
-				// JSP?
-				HTMLPanel htmlPanel = null;
-				String html = htmlElement.getCustomJspHtml();
-				if (GwtClientHelper.hasString(html)) {
-					// Yes!  Create an HTML panel to render it.
-					htmlPanel = new HTMLPanel(html);
-				}
-				
-				else {
-					// No, the HTML doesn't contain HTML from a custom
-					// JSP!  Does it contain any top or bottom HTML
-					String top    = htmlElement.getHtmlTop();    boolean hasTop    = GwtClientHelper.hasString(top   );
-					String bottom = htmlElement.getHtmlBottom(); boolean hasBottom = GwtClientHelper.hasString(bottom);
-					if (hasTop || hasBottom) {
-						if (hasTop)
-						     html = top;
-						else html = "";
-						if (hasBottom) {
-							html += bottom;	// Do we need to do anything between top and bottom?
-						}
-						htmlPanel = new HTMLPanel(html);
+				VibeFlowPanel htmlElementPanel = buildHtmlPanel(htmlElement);
+				if (htmlElementPanel!=null) {
+					count += 1;
+					if (1 < count) {
+						htmlElementPanel.addStyleName("padding10T");
 					}
-				}
-
-				// Do we have an HTMLPanel to add to the view?
-				if (null != htmlPanel) {
-					// Yes!  Add it.
+					m_fp.add(htmlElementPanel);
 					hasHtml = true;
-					htmlElementPanel.add(htmlPanel);
 				}
 			}
 
@@ -285,6 +262,55 @@ public class HtmlElementPanel extends ToolPanelBase {
 		// Everything's constructed and this panel is now ready.
 		toolPanelReady();
 	}
+
+	private void populatePanelFromBinderViewHtml(BinderViewHtmlEntry htmlEntry) {
+		HtmlElementInfo elementInfo = new HtmlElementInfo(null, null, htmlEntry.getHtmlTop(), htmlEntry.getHtmlBottom(), null);
+		VibeFlowPanel htmlElementPanel = buildHtmlPanel(elementInfo);
+		if (htmlElementPanel!=null) {
+			m_fp.add(htmlElementPanel);
+			if (m_panelAttached)
+				executeJavaScriptAsync();
+			else m_executeJavaScripOnAttach = true;
+		}
+	}
+
+	private VibeFlowPanel buildHtmlPanel(HtmlElementInfo htmlElement) {
+		// Does the HTML element contain HTML from a custom
+		// JSP?
+		HTMLPanel htmlPanel = null;
+		String html = htmlElement.getCustomJspHtml();
+		if (GwtClientHelper.hasString(html)) {
+			// Yes!  Create an HTML panel to render it.
+			htmlPanel = new HTMLPanel(html);
+		}
+
+		else {
+			// No, the HTML doesn't contain HTML from a custom
+			// JSP!  Does it contain any top or bottom HTML
+			String top    = htmlElement.getHtmlTop();    boolean hasTop    = GwtClientHelper.hasString(top   );
+			String bottom = htmlElement.getHtmlBottom(); boolean hasBottom = GwtClientHelper.hasString(bottom);
+			if (hasTop || hasBottom) {
+				if (hasTop)
+					html = top;
+				else html = "";
+				if (hasBottom) {
+					html += bottom;	// Do we need to do anything between top and bottom?
+				}
+				htmlPanel = new HTMLPanel(html);
+			}
+		}
+
+		VibeFlowPanel htmlElementPanel = null;
+		// Do we have an HTMLPanel to add to the view?
+		if (null != htmlPanel) {
+			// Yes!  Add it.
+			htmlElementPanel = new VibeFlowPanel();
+			htmlElementPanel.addStyleName("vibe-htmlElementPerElementPanel");
+			htmlElementPanel.add(htmlPanel);
+			return htmlElementPanel;
+		}
+		return htmlElementPanel;
+	}
 	
 	/**
 	 * Called from the binder view to allow the panel to do any
@@ -296,6 +322,10 @@ public class HtmlElementPanel extends ToolPanelBase {
 	public void resetPanel() {
 		// Reset the widgets and reload the HTML element.
 		m_fp.clear();
-		loadPart1Async();
+		if (m_htmlEntry==null) {
+			loadPart1Async();
+		} else {
+			populatePanelFromBinderViewHtml(m_htmlEntry);
+		}
 	}
 }

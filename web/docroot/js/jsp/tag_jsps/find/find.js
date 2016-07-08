@@ -101,6 +101,7 @@ ssFind.configSingle = function(params) {
 	
 	// initialize single find
 	var inputId = ("inputId" in params) ? params.inputId : null;
+	var allowExternalUsersId = ("allowExternalUsersId" in params) ? params.allowExternalUsersId : null;
 	var prefix = ("prefix" in params) ? params.prefix : null;
 	var clickRoutineObj = ("clickRoutineObj" in params) ? params.clickRoutineObj : null;	
 	var clickRoutine = ("clickRoutine" in params) ? params.clickRoutine : null;
@@ -127,8 +128,8 @@ ssFind.configSingle = function(params) {
 		
 	findObj.single(inputId, prefix, clickRoutineObj, clickRoutine, viewUrl, viewAccesibleUrl, searchUrl, appendToSearchUrlRoutine, 
 					leaveResultsVisible, sendingEmail, listType, renderNamespace, binderId, subFolders, foldersOnly, 
-					showFolderTitles, showUserTitleOnly, displayArrow, displayValue, displayValueOnly, 
-					addCurrentUserToResult, searchOnInitialClick, clearSubordinates);
+					showFolderTitles, showUserTitleOnly, displayArrow, displayValue, displayValueOnly,  
+					addCurrentUserToResult, searchOnInitialClick, clearSubordinates, allowExternalUsersId);
 	
 	return findObj;
 }
@@ -139,6 +140,9 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	
 	this.inputId = false;
 	this._inputObj = false;
+	
+	this._allowExternalUsers = false;
+	this.allowExternalUsersId = false;
 	
 	this._multiplePrefix = multiplePrefix;
 	this._multipleClickRoutineObj = multipleClickRoutineObj;
@@ -193,7 +197,11 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	
 	this.init = function() {
 		if (that.inputId) {
-			that._inputObj = document.getElementById(that.inputId);
+			that._inputObj = document.getElementById(that.inputId);			
+		}
+		
+		if (this.allowExternalUsersId) {
+			that._allowExternalUsers = document.getElementById(that.allowExternalUsersId);
 		}
 		
 		if (that._inputObj) {
@@ -287,10 +295,14 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 						   singleLeaveResultsVisible, singleSendingEmail, singleListType, singleRenderNamespace,
 						   singleBinderId, singleSubFolders, singleFoldersOnly,
 						   showFolderTitles, showUserTitleOnly, displayArrow, displayValue, displayValueOnly,
-						   addCurrentUserToResult, searchOnInitialClick, clearSubordinates) {
+						   addCurrentUserToResult, searchOnInitialClick, clearSubordinates, allowExternalUsersId) {
 		that.inputId = inputId;
 		if (that.inputId) {
 			that._inputObj = document.getElementById(that.inputId);
+		}
+		that.allowExternalUsersId = allowExternalUsersId;
+		if (that.allowExternalUsersId){
+			that._allowExternalUsers = document.getElementById(that.allowExternalUsersId);
 		}
 		that._singlePrefix = singlePrefix;
 		that._singleClickRoutineObj = singleClickRoutineObj;
@@ -310,7 +322,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		that._showUserTitleOnly = showUserTitleOnly;
 		that._displayArrow = displayArrow;
 		that._displayValue = displayValue;
-		that._displayValueOnly = displayValueOnly;
+		that._displayValueOnly = displayValueOnly;	
 		that._addCurrentUserToResult = addCurrentUserToResult;
 		that._searchOnInitialClick = searchOnInitialClick;
 		that._clearSubordinates = clearSubordinates;
@@ -337,6 +349,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 	
 	this.search = function (searchText) {
 		var text = that._inputObj.value;
+		var showInternalOnly = that._allowExternalUsers ? !that._allowExternalUsers.checked : false;
 		if (searchText) {
 			text = searchText;
 		}
@@ -425,7 +438,8 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 										+ "&showFolderTitles=" + that._showFolderTitles
 										+ "&showUserTitleOnly=" + that._showUserTitleOnly
 										+ "&namespace=" + that._singlePrefix
-										+ "&addCurrentUser=" + that._addCurrentUserToResult;
+										+ "&addCurrentUser=" + that._addCurrentUserToResult
+										+ "&showInternalOnly=" + showInternalOnly;
 		if (that._singleBinderId != null) url += "&binderId=" + that._singleBinderId;
 		if (that._singleSubFolders != null) url +="&searchSubFolders=" + that._singleSubFolders;
 		if (that._singleFoldersOnly != null) url += "&foldersOnly=" + that._singleFoldersOnly;

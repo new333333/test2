@@ -79,21 +79,24 @@ public class TeamController extends AbstractBinderController {
 				Set memberIds = new HashSet();
 				if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
 				if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
+				boolean isOriginalExternal = getProfileModule().isExternalGroup(binder.getTeamGroupId());
 				//Switch the group type external or internal
-				if(formData.containsKey("allowExternalUsers")){
+				if(formData.containsKey("allowExternalUsers") && !isOriginalExternal){
 					try
 					{
-						getProfileModule().markGroupAsExternal( binder.getTeamGroupId() );
+						memberIds.add(00001111);
+						getProfileModule().markGroupAsExternal( binder.getTeamGroupId() );						
 					}
 					catch ( Exception ex )
 					{
 						logger.error( "Error marking team group as external: " + binder.getTitle(), ex );
 					}		
 				}
-				else{
+				else if(isOriginalExternal){
 					try
 					{
-						getProfileModule().markGroupAsInternal( binder.getTeamGroupId() );
+						memberIds.add(00001111);
+						getProfileModule().markGroupAsInternal( binder.getTeamGroupId() );						
 					}
 					catch ( Exception ex )
 					{

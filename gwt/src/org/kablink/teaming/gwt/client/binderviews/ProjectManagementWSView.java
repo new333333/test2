@@ -91,26 +91,7 @@ public class ProjectManagementWSView extends WorkspaceViewBase implements ToolPa
 		
 		// Add a place for landing page elements.  The LandingPage widget will display the description
 		// if there is one.
-		{
-			m_lpPanel = new VibeFlowPanel();
-			m_lpPanel.addStyleName( "vibe-teamWSView_LPPanel" );
-			m_mainPanel.add( m_lpPanel );
-
-			LandingPageWidget.createAsync( getBinderInfo(), new LandingPageWidget.LandingPageWidgetClient()
-			{
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-
-				@Override
-				public void onSuccess( LandingPageWidget landingPage )
-				{
-					m_lpPanel.add( landingPage );
-				}
-			} );
-		}
+		m_lpPanel = buildLandingPageLayout(m_mainPanel, null);
 
 		// Add a place for an HTML element.
 		{
@@ -118,7 +99,7 @@ public class ProjectManagementWSView extends WorkspaceViewBase implements ToolPa
 			m_htmlElementPanel.addStyleName( "vibe-projectManagementWSView_HtmlElementPanel" );
 			m_mainPanel.add( m_htmlElementPanel );
 			
-			HtmlElementPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
+			HtmlElementPanel.createAsync( this, getBinderInfo(), null, this, new ToolPanelClient()
 			{			
 				@Override
 				public void onUnavailable()

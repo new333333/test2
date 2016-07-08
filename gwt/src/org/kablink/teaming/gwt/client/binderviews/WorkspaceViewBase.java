@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
@@ -45,11 +46,15 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetWorkspaceContributorIdsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetWorkspaceContributorIdsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderViewHtmlEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
+import org.kablink.teaming.gwt.client.widgets.ChildBindersWidget;
+import org.kablink.teaming.gwt.client.widgets.LandingPageWidget;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 /**
  * Base class that workspace views MUST extend.
@@ -57,7 +62,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author jwootton@novell.com
  */
 public abstract class WorkspaceViewBase extends ViewBase
-	implements ContributorIdsRequestEvent.Handler
+	implements ContributorIdsRequestEvent.Handler, ToolPanelReady
 {
 	private List<Long> m_contributorIds;
 	private BinderInfo m_binderInfo;
@@ -175,20 +180,18 @@ public abstract class WorkspaceViewBase extends ViewBase
 		final Long eventBinderId = event.getBinderId();
 
 		// Is this request for the workspace we are working with?
-		if ( eventBinderId.equals( getBinderId() ) )
+		if ( eventBinderId.equals(getBinderId()) )
 		{
 			// Yes!  Asynchronously fire the corresponding reply event with the contributor IDs.
-			GwtClientHelper.deferCommand(new ScheduledCommand()
-			{
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
-				public void execute()
-				{
+				public void execute() {
 					ContributorIdsReplyEvent replyEvent;
-					
+
 					replyEvent = new ContributorIdsReplyEvent(
-														eventBinderId,
-														m_contributorIds ); 
-					GwtTeaming.fireEvent( replyEvent );
+							eventBinderId,
+							m_contributorIds);
+					GwtTeaming.fireEvent(replyEvent);
 				}
 			});
 		}
@@ -291,6 +294,53 @@ public abstract class WorkspaceViewBase extends ViewBase
 		m_binderInfo = binderInfo;
 	}
 
+	protected VibeFlowPanel buildChildBindersPanel(HasWidgets parentPanel, ViewReady viewReady) {
+		VibeFlowPanel listOfChildrenPanel = new VibeFlowPanel();
+		listOfChildrenPanel.addStyleName("vibe-binderView_ListOfChildrenPanel");
+		parentPanel.add(listOfChildrenPanel);
+		if (viewReady instanceof DelegatingViewReady) {
+			((DelegatingViewReady)viewReady).incrementComponent();
+		}
+		ChildBindersWidget.createAsync(this, getBinderInfo(), this, new ToolPanelClientImpl(listOfChildrenPanel, viewReady));
+		return listOfChildrenPanel;
+	}
+
+	protected VibeFlowPanel buildLandingPageLayout(HasWidgets parentPanel, final ViewReady viewReady) {
+		final VibeFlowPanel lpPanel = new VibeFlowPanel();
+		lpPanel.addStyleName("vibe-binderView_LPPanel");
+		parentPanel.add(lpPanel);
+		if (viewReady instanceof DelegatingViewReady) {
+			((DelegatingViewReady)viewReady).incrementComponent();
+		}
+		LandingPageWidget.createAsync(getBinderInfo(), new LandingPageWidget.LandingPageWidgetClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous provider.
+			}
+
+			@Override
+			public void onSuccess(LandingPageWidget landingPage) {
+				lpPanel.add(landingPage);
+				if (viewReady!=null) {
+					viewReady.viewReady();
+				}
+			}
+		});
+		return lpPanel;
+	}
+
+	protected VibeFlowPanel buildHTMLPanel(HasWidgets parentPanel, BinderViewHtmlEntry htmlEntry, ViewReady viewReady) {
+		VibeFlowPanel htmlElementPanel = new VibeFlowPanel();
+		htmlElementPanel.addStyleName("vibe-binderView_HtmlElementPanel");
+		parentPanel.add( htmlElementPanel );
+
+		if (viewReady instanceof DelegatingViewReady) {
+			((DelegatingViewReady)viewReady).incrementComponent();
+		}
+		HtmlElementPanel.createAsync( this, getBinderInfo(), htmlEntry, this, new ToolPanelClientImpl(htmlElementPanel, viewReady));
+		return htmlElementPanel;
+	}
+
 	@Override
 	protected boolean scrollEntireView() {
 		return m_binderInfo.isBinderWorkspace() && !m_binderInfo.isBinderGlobalRootWS()
@@ -309,4 +359,28 @@ public abstract class WorkspaceViewBase extends ViewBase
 			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
 		}
 	}
+
+	protected class ToolPanelClientImpl implements ToolPanelBase.ToolPanelClient {
+		private VibeFlowPanel parentPanel;
+		private ViewReady viewReady;
+
+		public ToolPanelClientImpl(VibeFlowPanel parentPanel, ViewReady viewReady) {
+			this.parentPanel = parentPanel;
+			this.viewReady = viewReady;
+		}
+
+		@Override
+		public void onSuccess(ToolPanelBase tpb) {
+			parentPanel.add(tpb);
+			if (viewReady!=null) {
+				viewReady.viewReady();
+			}
+		}
+
+		@Override
+		public void onUnavailable() {
+			// Nothing to do.  Error handled in asynchronous provider.
+		}
+	}
+
 }

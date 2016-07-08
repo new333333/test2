@@ -184,6 +184,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewDescription" />
+		</folderViews>
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription"/>
 	</item>
 	<item name="entryAttachments" caption="__entry_attachments" category="commonEntryViewData" display="view">
@@ -205,6 +208,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_dashboard_canvas.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewAccessories" />
+		</folderViews>
 	</item>
 	
 <!-- folder entry items -->
@@ -758,6 +764,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_binder_title.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewBreadCrumb" />
+		</folderViews>
 	</item>
 	
 	<item name="folderDescriptionView" caption="__description" category="folderViewData" display="view">
@@ -774,6 +783,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_description.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewDescription" />
+		</folderViews>
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription"/>
 	</item>
 
@@ -809,6 +821,9 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_folder_data.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewFolderDataItem" />
+		</folderViews>
 	</item>
 	
 	<item name="folderList" caption="__folder_listing" category="folderViewData"  display="view">
@@ -2499,6 +2514,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_binder_title.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewBreadCrumb" />
+		</folderViews>
 	</item>
 	
 	<item name="workspaceTitleDescriptionView" caption="__description" category="folderViewData" display="view">
@@ -2529,6 +2547,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_workspace_data.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewFolderDataItem" />
+		</folderViews>
 	</item>
 	
 	<item name="workspaceBinderList" caption="__workspace_binder_list" category="workspaceViewData" display="view">
@@ -2536,6 +2557,9 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/workspace_binder_list.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewBinderList" />
+		</folderViews>
 	</item>
 		
 
@@ -4069,6 +4093,9 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html.jsp" />
 		</jsps>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewHtmlEntry" />
+		</folderViews>
 		<notify velocity="html.vm" />
 	</item>
 	<item name="customJsp" caption="__custom_jsp" type="data" dataType="customJsp" category="generalLayout" display="form">

@@ -38,6 +38,7 @@ import org.dom4j.Node;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
@@ -50,11 +51,22 @@ import java.util.*;
  * Created by david on 4/13/16.
  */
 public class GwtFolderViewHelper {
+    private static Set<WorkspaceType> standardBinderViews = new HashSet<WorkspaceType>() {
+        {
+            add(WorkspaceType.ADMINISTRATOR_MANAGEMENT);
+            add(WorkspaceType.EMAIL_TEMPLATES);
+            add(WorkspaceType.GLOBAL_ROOT);
+            add(WorkspaceType.NET_FOLDERS_ROOT);
+            add(WorkspaceType.PROFILE_ROOT);
+            add(WorkspaceType.PROFILE_ROOT_MANAGEMENT);
+            add(WorkspaceType.TEAM_ROOT);
+            add(WorkspaceType.TEAM_ROOT_MANAGEMENT);
+            add(WorkspaceType.TRASH);
+        }
+    };
+
     private static Set<String> binderViewsToSkip = new HashSet<String>() {
         {
-            add("folderTitleView");
-            add("folderDescriptionView");
-            add("dashboardCanvas");
         }
     };
 
@@ -116,8 +128,22 @@ public class GwtFolderViewHelper {
                         BinderViewBox boxView = (BinderViewBox) binderView;
                         boxView.setBorder("square".equals(properties.get("style")));
                     }
+                } else {
+                    if (binderView instanceof BinderViewHtmlEntry) {
+                        BinderViewHtmlEntry htmlEntry = (BinderViewHtmlEntry) binderView;
+                        htmlEntry.setHtmlTop(properties.get("htmlTop"));
+                        htmlEntry.setHtmlBottom(properties.get("htmlBottom"));
+                    } else if (binderView instanceof BinderViewFolderDataItem) {
+                        String formItem = viewItem.attributeValue("formItem");
+                        if ("mashupCanvas".equals(formItem)) {
+                            binderView = new BinderViewLandingPageLayout();
+                        } else {
+                            binderView = null;
+                        }
+                    }
                 }
-            } else {
+            }
+            if (binderView == null) {
                 String jsp = configBuilder.getItemJspByStyle(viewItem, name, Definition.JSP_STYLE_DEFAULT);
                 if (jsp != null) {
                     BinderViewJsp binderJspView = new BinderViewJsp(jsp);
@@ -131,8 +157,13 @@ public class GwtFolderViewHelper {
     }
 
     public static boolean hasCustomView(AllModulesInjected ami, Binder binder) {
-//        Definition def2 = binder.getDefaultViewDef();
-//        return !def2.getName().startsWith("_");
+        if (binder==null) {
+            return false;
+        }
+        if (binder instanceof Workspace) {
+            WorkspaceType workspaceType = GwtServerHelper.getWorkspaceType(binder);
+            return !standardBinderViews.contains(workspaceType);
+        }
         return true;
     }
 
