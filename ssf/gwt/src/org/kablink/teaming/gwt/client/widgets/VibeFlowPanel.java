@@ -75,7 +75,7 @@ public class VibeFlowPanel extends FlowPanel
 				width = parent.getOffsetWidth();
 				height = parent.getOffsetHeight() + GwtConstants.CONTENT_WIDTH_ADJUST;
 			}
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). New size: (" + width + "," + height + ")");
+			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize() (" + this.getStyleName() + ").  New size: (" + width + "," + height + ")");
 			if (width!=getOffsetWidth()) {
 				setWidth(width + "px");
 			}
@@ -112,6 +112,7 @@ public class VibeFlowPanel extends FlowPanel
 	 */
 	private void onResizeNow()
 	{
+		setViewSize();
 		WidgetCollection children = getChildren();
 		for (Widget child : children)
 	    {
@@ -120,7 +121,6 @@ public class VibeFlowPanel extends FlowPanel
 	        	((RequiresResize) child).onResize();
 	        }
 	    }
-		setViewSize();
 	}//end onResizeNow()
 
 	@Override
