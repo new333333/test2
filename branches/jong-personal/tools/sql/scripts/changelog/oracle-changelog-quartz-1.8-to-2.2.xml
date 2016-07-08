@@ -248,91 +248,233 @@ CREATE TABLE SSQRTZ_SIMPROP_TRIGGERS
    	    </sql>
     </changeSet>	
 
+	<!-- Drop old indexes, so that we can define new ones with the same names -->
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-1">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_J_REQ_RECOVERY"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_J_REQ_RECOVERY" tableName="SSQRTZ_JOB_DETAILS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-2">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_J_GRP"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_J_GRP" tableName="SSQRTZ_JOB_DETAILS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-3">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_T_J"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_T_J" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-4">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_T_JG"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_T_JG" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-5">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_T_C"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_T_C" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-6">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_T_G"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_T_G" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-7">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_T_STATE"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_T_STATE" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-8">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_T_N_STATE"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_T_N_STATE" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-9">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_T_N_G_STATE"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_T_N_G_STATE" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-10">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_T_NEXT_FIRE_TIME"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_T_NEXT_FIRE_TIME" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-11">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_T_NFT_ST"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_T_NFT_ST" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-12">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_T_NFT_MISFIRE"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_T_NFT_MISFIRE" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-13">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_T_NFT_ST_MISFIRE"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_T_NFT_ST_MISFIRE" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-14">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_T_NFT_ST_MISFIRE_GRP"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_T_NFT_ST_MISFIRE_GRP" tableName="SSQRTZ_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-15">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_FT_TRIG_INST_NAME"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_FT_TRIG_INST_NAME" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-16">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_FT_INST_JOB_REQ_RCVRY"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_FT_INST_JOB_REQ_RCVRY" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-17">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_FT_J_G"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_FT_J_G" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-18">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_FT_JG"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_FT_JG" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-19">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_FT_T_G"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_FT_T_G" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="10-20">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="IDX_QRTZ_FT_TG"/>
+        </preConditions>
+        <dropIndex indexName="IDX_QRTZ_FT_TG" tableName="SSQRTZ_FIRED_TRIGGERS"/>        
+    </changeSet>
+
     <!-- Create indexes for faster queries -->
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-1">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-1">
    	    <sql>CREATE INDEX IDX_QRTZ_J_REQ_RECOVERY ON SSQRTZ_JOB_DETAILS(SCHED_NAME,REQUESTS_RECOVERY);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-2">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-2">
    	    <sql>CREATE INDEX IDX_QRTZ_J_GRP ON SSQRTZ_JOB_DETAILS(SCHED_NAME,JOB_GROUP);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-3">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-3">
    	    <sql>CREATE INDEX IDX_QRTZ_T_J ON SSQRTZ_TRIGGERS(SCHED_NAME,JOB_NAME,JOB_GROUP);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-4">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-4">
    	    <sql>CREATE INDEX IDX_QRTZ_T_JG ON SSQRTZ_TRIGGERS(SCHED_NAME,JOB_GROUP);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-5">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-5">
    	    <sql>CREATE INDEX IDX_QRTZ_T_C ON SSQRTZ_TRIGGERS(SCHED_NAME,CALENDAR_NAME);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-6">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-6">
    	    <sql>CREATE INDEX IDX_QRTZ_T_G ON SSQRTZ_TRIGGERS(SCHED_NAME,TRIGGER_GROUP);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-7">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-7">
    	    <sql>CREATE INDEX IDX_QRTZ_T_STATE ON SSQRTZ_TRIGGERS(SCHED_NAME,TRIGGER_STATE);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-8">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-8">
    	    <sql>CREATE INDEX IDX_QRTZ_T_N_STATE ON SSQRTZ_TRIGGERS(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP,TRIGGER_STATE);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-9">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-9">
    	    <sql>CREATE INDEX IDX_QRTZ_T_N_G_STATE ON SSQRTZ_TRIGGERS(SCHED_NAME,TRIGGER_GROUP,TRIGGER_STATE);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-10">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-10">
    	    <sql>CREATE INDEX IDX_QRTZ_T_NEXT_FIRE_TIME ON SSQRTZ_TRIGGERS(SCHED_NAME,NEXT_FIRE_TIME);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-11">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-11">
    	    <sql>CREATE INDEX IDX_QRTZ_T_NFT_ST ON SSQRTZ_TRIGGERS(SCHED_NAME,TRIGGER_STATE,NEXT_FIRE_TIME);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-12">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-12">
    	    <sql>CREATE INDEX IDX_QRTZ_T_NFT_MISFIRE ON SSQRTZ_TRIGGERS(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-13">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-13">
    	    <sql>CREATE INDEX IDX_QRTZ_T_NFT_ST_MISFIRE ON SSQRTZ_TRIGGERS(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME,TRIGGER_STATE);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-14">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-14">
    	    <sql>CREATE INDEX IDX_QRTZ_T_NFT_ST_MISFIRE_GRP ON SSQRTZ_TRIGGERS(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME,TRIGGER_GROUP,TRIGGER_STATE);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-15">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-15">
    	    <sql>CREATE INDEX IDX_QRTZ_FT_TRIG_INST_NAME ON SSQRTZ_FIRED_TRIGGERS(SCHED_NAME,INSTANCE_NAME);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-16">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-16">
    	    <sql>CREATE INDEX IDX_QRTZ_FT_INST_JOB_REQ_RCVRY ON SSQRTZ_FIRED_TRIGGERS(SCHED_NAME,INSTANCE_NAME,REQUESTS_RECOVERY);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-17">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-17">
    	    <sql>CREATE INDEX IDX_QRTZ_FT_J_G ON SSQRTZ_FIRED_TRIGGERS(SCHED_NAME,JOB_NAME,JOB_GROUP);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-18">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-18">
    	    <sql>CREATE INDEX IDX_QRTZ_FT_JG ON SSQRTZ_FIRED_TRIGGERS(SCHED_NAME,JOB_GROUP);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-19">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-19">
    	    <sql>CREATE INDEX IDX_QRTZ_FT_T_G ON SSQRTZ_FIRED_TRIGGERS(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP);</sql>
     </changeSet>	
     
-    <changeSet author="jong" context="schema" failOnError="true" id="10-20">
+    <changeSet author="jong" context="schema" failOnError="true" id="11-20">
    	    <sql>CREATE INDEX IDX_QRTZ_FT_TG ON SSQRTZ_FIRED_TRIGGERS(SCHED_NAME,TRIGGER_GROUP);</sql>
     </changeSet>	
 
 	<!-- Add new 'SCHED_TIME' column to 'SSQRTZ_FIRED_TRIGGERS' table -->
 	
-    <changeSet author="jong" context="schema" failOnError="true" id="11-1">
+    <changeSet author="jong" context="schema" failOnError="true" id="12-1">
    	    <sql>alter table SSQRTZ_FIRED_TRIGGERS add SCHED_TIME NUMBER(13) not null;</sql>
     </changeSet>
 
