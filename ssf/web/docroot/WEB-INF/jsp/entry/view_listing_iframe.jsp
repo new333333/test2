@@ -53,8 +53,8 @@ if (op2 != null && !op2.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING) && !op2.equal
 	}
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
+<link href="<html:rootPath/>js/gwt/gwtteaming/LegacyJspSupport.css" rel="stylesheet" type="text/css" />
 <c:set var="showFolderPage" value="true"/>
 <c:if test="${!ss_snippet}">
 <body class="ss_style_body tundra">
