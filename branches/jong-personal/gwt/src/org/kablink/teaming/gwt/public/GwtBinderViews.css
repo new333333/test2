@@ -404,7 +404,7 @@
 	{
 	}
 	
-	.vibe-discussionWSView_HtmlElementPanel, .vibe-teamWSView_HtmlElementPanel, .vibe-genericWSView_HtmlElementPanel, .vibe-projectManagementWSView_HtmlElementPanel, .vibe-personalWorkspacesView_HtmlElementPanel, .vibe-netFoldersWSView_HtmlElementPanel
+	.vibe-discussionWSView_HtmlElementPanel, .vibe-teamWSView_HtmlElementPanel, .vibe-binderView_HtmlElementPanel, .vibe-genericWSView_HtmlElementPanel, .vibe-projectManagementWSView_HtmlElementPanel, .vibe-personalWorkspacesView_HtmlElementPanel, .vibe-netFoldersWSView_HtmlElementPanel
 	{
 	}
 	
@@ -425,12 +425,12 @@
 	{
 	}
 	
-	.vibe-teamWSView_ListOfChildrenPanel
+	.vibe-binderView_ListOfChildrenPanel
 	{
 		margin-top: 8px;
 	}
 	
-	.vibe-discussionWSView_LPPanel, .vibe-teamWSView_LPPanel, .vibe-homeWSView_LPPanel
+	.vibe-discussionWSView_LPPanel, .vibe-teamWSView_LPPanel, .vibe-homeWSView_LPPanel, .vibe-binderView_LPPanel
 	{
 	}
 	

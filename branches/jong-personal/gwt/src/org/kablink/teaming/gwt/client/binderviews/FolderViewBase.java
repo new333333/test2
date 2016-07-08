@@ -939,7 +939,7 @@ public abstract class FolderViewBase extends ViewBase
 		if (GwtClientHelper.isLicenseFilr() || (!(includePanel(FolderPanels.ACCESSORIES)))) {
 			// ...we don't show the accessories.
 			insertToolPanelPlaceholder(ACCESSORY_PANEL_INDEX);
-			loadPart8Async();
+			loadPart9Async();
 			return;
 		}
 		
@@ -967,54 +967,11 @@ public abstract class FolderViewBase extends ViewBase
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, ACCESSORY_PANEL_INDEX);
-				loadPart8Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the DescriptionPanel.
-	 */
-	private void loadPart8Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.DESCRIPTION))) {
-			// ...we don't show the description.
-			insertToolPanelPlaceholder(DESCRIPTION_PANEL_INDEX);
-			loadPart9Async();
-			return;
-		}
-		
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart8Now();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the DescriptionPanel.
-	 */
-	private void loadPart8Now() {
-		DescriptionPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, DESCRIPTION_PANEL_INDEX);
 				loadPart9Async();
 			}
 		});
 	}
-
+	
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 

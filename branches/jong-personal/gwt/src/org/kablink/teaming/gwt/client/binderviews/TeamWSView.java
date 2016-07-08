@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.binderviews;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.UIObject;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
@@ -88,77 +89,19 @@ public class TeamWSView extends WorkspaceViewBase implements ToolPanelReady
 		
 		// Add a place for landing page elements.  The LandingPage widget will display the description
 		// if there is one.
-		{
-			m_lpPanel = new VibeFlowPanel();
-			m_lpPanel.addStyleName( "vibe-teamWSView_LPPanel" );
-			m_mainPanel.add( m_lpPanel );
-
-			LandingPageWidget.createAsync( getBinderInfo(), new LandingPageWidgetClient()
-			{
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( LandingPageWidget landingPage )
-				{
-					m_lpPanel.add( landingPage );
-				}
-			} );
-		}
+		m_lpPanel = buildLandingPageLayout(m_mainPanel, null);
 		
 		// Add a place for the ChildBindersWidget
-		{
-			m_listOfChildrenPanel = new VibeFlowPanel();
-			m_listOfChildrenPanel.addStyleName( "vibe-teamWSView_ListOfChildrenPanel" );
-			m_mainPanel.add( m_listOfChildrenPanel );
-
-			ChildBindersWidget.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
-			{
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase cbWidget )
-				{
-					m_listOfChildrenPanel.add( cbWidget );
-				}
-			} );
-		}
+		m_listOfChildrenPanel = buildChildBindersPanel(m_mainPanel, null);
 
 		// Add a place for an HTML element.
-		{
-			m_htmlElementPanel = new VibeFlowPanel();
-			m_htmlElementPanel.addStyleName( "vibe-teamWSView_HtmlElementPanel" );
-			m_mainPanel.add( m_htmlElementPanel );
-			
-			HtmlElementPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( ToolPanelBase htmlElement )
-				{
-					m_htmlElementPanel.add( htmlElement );
-				}
-			});
-		}
-		
+		m_htmlElementPanel = buildHTMLPanel(m_mainPanel, null, null);
+
 		super.viewReady();
 		
 		initWidget( m_mainPanel );
 	}
-	
-	
+
 	/**
 	 * Loads the TeamWSView split point and returns an instance of it via the callback.
 	 *

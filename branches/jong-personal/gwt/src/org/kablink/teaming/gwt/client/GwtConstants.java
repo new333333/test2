@@ -44,6 +44,7 @@ public class GwtConstants {
 	public static final int		CONTENT_HEIGHT_ADJUST		= (-20);	// ...and this vertically.
 
 	public static final int		BINDER_VIEW_ADJUST			= ( -8);
+	public static final int		BINDER_VIEW_EMBEDDED_ADJUST	= ( -3);
 
 	public static final double	HEADER_HEIGHT				= 200;		// Default height of the header panel.
 	public static final int		WORKSPACE_TREE_WIDTH		= 250;		// Must match the definition of the workspaceTreeWidth style. 
