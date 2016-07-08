@@ -2654,7 +2654,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     		String title;
     		int len;
     		
-    		len = SPropsUtil.getInt( "team.group.name.maxlen", 80 );
+    		len = SPropsUtil.getInt("team.group.name.maxlen", 80);
     		title = binder.getTitle();
     		if ( title != null )
     		{
@@ -2820,8 +2820,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		// Do the necessary work as the admin user.
 		retValue = RunasTemplate.runasAdmin(
-										callback,
-										RequestContextHolder.getRequestContext().getZoneName() );
+				callback,
+				RequestContextHolder.getRequestContext().getZoneName());
 		
     }
     
@@ -2841,7 +2841,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     		final Group group;
     		
     		// Yes
-    		group = getTeamGroup( binder );
+    		group = getTeamGroup(binder);
     		if ( group != null )
     		{
 				RunasCallback callback;
@@ -2957,7 +2957,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     {
     	Set<Long> setOfMemberIds;
     	
-    	setOfMemberIds = getTeamMemberIds( binder );
+    	setOfMemberIds = getTeamMemberIds(binder);
     	if ( setOfMemberIds == null || setOfMemberIds.size() == 0 )
     		return false;
     	
@@ -3011,7 +3011,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		
 		// explode groups
 		if ( explodeGroups )
-			return getProfileDao().explodeGroups( ids, binder.getZoneId() );
+			return getProfileDao().explodeGroups(ids, binder.getZoneId());
 		
 		return ids;
 	}
@@ -3157,7 +3157,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			return;
 		
 		//Remove the fake memberId added from the UI side to trigger team members sync
-		memberIds.remove(00001111);
+		if (memberIds!=null) {
+			memberIds.remove(00001111);
+		}
 
 		//See if the guest user is included in the list
 		User guest = getProfileModule().getGuestUser();

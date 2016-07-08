@@ -2015,16 +2015,21 @@ public class ContentControl extends Composite
 		ViewType vt = vi.getViewType();
 
 		ShowBinderEvent viewEvent = null;
-		if (showCustomGwtBinderView(vi, bi)) {
+		GwtClientHelper.consoleLog("ContentControl: Determining how to render the binder view...");
+		if (showCustomGwtBinderView(vi, viewReady, parent, bi, vt)) {
+			GwtClientHelper.consoleLog("ContentControl: Show custom GWT binder view?");
 			viewEvent = new ShowCustomBinderViewEvent(bi, vt, vi.getViewLayout(), parent, viewReady);
 		} else if (showStandardGwtBinderView(vi, viewReady, parent, bi, vt)) {
+			GwtClientHelper.consoleLog("ContentControl: Show standard GWT binder view?");
 			viewEvent = new ShowStandardBinderViewEvent(bi, vt, parent, viewReady);
 		}
 
 		if (viewEvent!=null) {
+			GwtClientHelper.consoleLog("ContentControl: GWT binder view.");
 			GwtTeaming.fireEvent(viewEvent);
 			viewMode = ViewMode.GWT_CONTENT_VIEW;
 		} else {
+			GwtClientHelper.consoleLog("ContentControl: JSP binder view.");
 			viewMode = ViewMode.JSP_CONTENT_VIEW;
 			BinderType bt = bi.getBinderType();
 			if (bt==BinderType.OTHER) {
@@ -2072,9 +2077,10 @@ public class ContentControl extends Composite
 				GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, vt, parent, viewReady)!=null;
 	}
 
-	private static boolean showCustomGwtBinderView(ViewInfo vi, BinderInfo bi) {
+	private static boolean showCustomGwtBinderView(ViewInfo vi, ViewReady viewReady, VibeEntityViewPanel parent, BinderInfo bi, ViewType vt) {
 		return vi.getRenderEngine() == RenderEngine.GWT_CUSTOMIZED && vi.getViewLayout()!=null &&
-				!bi.isForceJspRendering();
+				!bi.isForceJspRendering() &&
+				GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, vt, parent, viewReady)!=null;
 	}
 
 	/**
