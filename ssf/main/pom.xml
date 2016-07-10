@@ -272,5 +272,17 @@
             <groupId>easymock</groupId>
             <artifactId>easymock</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <version>7.0.64</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>7.0.64</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

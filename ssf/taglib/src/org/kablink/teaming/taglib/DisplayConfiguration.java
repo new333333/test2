@@ -48,6 +48,8 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.tagext.TagSupport;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -77,6 +79,7 @@ import org.kablink.util.servlet.StringServletResponse;
  *
  */
 public class DisplayConfiguration extends BodyTagSupport implements ParamAncestorTag {
+	protected static Log logger = LogFactory.getLog(DisplayConfiguration.class);
 	private static final long serialVersionUID=1L;
     private Document configDefinition;
     private Element configElement;
@@ -439,6 +442,7 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 									pageContext.getOut().print(res.getString());
 									pageContext.getOut().print("\n<!-- end " + jsp.substring(jsp.lastIndexOf('/')+1) + " -->\n");
 								} catch(Exception e) {
+									logger.warn("Unable to execute the JSP: " + jsp, e);
 									pageContext.getOut().print("\n<!-- " + jsp + " -->\n");
 									pageContext.getOut().print("<!-- Error: itemType=" +itemType);
 									pageContext.getOut().print(", formType=" + formItem);
