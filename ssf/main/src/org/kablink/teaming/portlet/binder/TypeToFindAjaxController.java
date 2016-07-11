@@ -232,7 +232,9 @@ public class TypeToFindAjaxController extends SAbstractController {
 		}
 		
 		if(findType.equals(WebKeys.FIND_TYPE_GROUP) || findType.equals(WebKeys.FIND_TYPE_USER)){
-			searchTermFilter.addAndInternalFilter(showInternalOnly);
+			if(showInternalOnly){
+				searchTermFilter.addAndInternalFilter(showInternalOnly);
+			}
 		}
 
 		try {
