@@ -3153,7 +3153,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 
 		// If membership didn't change then bail.
-		if ( getTeamMemberIds( binder ).equals(memberIds) )
+		if ( memberIds!=null && getTeamMemberIds( binder ).equals(memberIds) )
 			return;
 		
 		//Remove the fake memberId added from the UI side to trigger team members sync
