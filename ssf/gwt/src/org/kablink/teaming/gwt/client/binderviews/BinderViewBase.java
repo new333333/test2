@@ -44,10 +44,7 @@ import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.event.ShowBinderEvent;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.GwtClientFolderViewHelper;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.ViewType;
+import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 /**
@@ -57,6 +54,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
  */
 public abstract class BinderViewBase extends WorkspaceViewBase implements ViewReady, ToolPanelReady, ProvidesResize, RequiresResize
 {
+	protected BinderViewLayoutData m_layoutData;
 	protected VibeFlowPanel m_mainPanel;
 	protected VibeFlowPanel m_footerPanel;
 
@@ -66,16 +64,17 @@ public abstract class BinderViewBase extends WorkspaceViewBase implements ViewRe
 	/**
 	 * Constructor method.
 	 *
-	 * @param binderInfo
+	 * @param layoutData
 	 * @param viewReady
 	 */
-	protected BinderViewBase(BinderInfo binderInfo, UIObject parent, ViewType viewType, ViewReady viewReady)
+	protected BinderViewBase(BinderViewLayoutData layoutData, UIObject parent, ViewReady viewReady)
 	{
 		// Simply initialize the super class.
-		super( binderInfo, parent, viewReady);
+		super(layoutData.getBinderInfo(), parent, viewReady);
+		m_layoutData = layoutData;
 		m_viewReady = new DelegatingViewReady(viewReady, new SimpleViewReady());
 		m_delegatingViewReady = (DelegatingViewReady) m_viewReady;
-		m_viewType = viewType;
+		m_viewType = layoutData.getViewType();
 	}
 
 	/**
@@ -96,15 +95,18 @@ public abstract class BinderViewBase extends WorkspaceViewBase implements ViewRe
 		this.layoutContent(m_mainPanel, scrollEntireView);
 
 		// Add a place for the footer
-		{
-			m_footerPanel = new VibeFlowPanel();
-			m_footerPanel.addStyleName( "vibe-binderView_FooterPanel" );
-			m_mainPanel.add(m_footerPanel);
+		buildFooterPanel();
 
-			m_delegatingViewReady.incrementComponent();
-			FooterPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClientImpl(m_footerPanel, m_viewReady));
-		}
 		initWidget( m_mainPanel );
+	}
+
+	private void buildFooterPanel() {
+		m_footerPanel = new VibeFlowPanel();
+		m_footerPanel.addStyleName("vibe-binderView_FooterPanel");
+		m_mainPanel.add(m_footerPanel);
+
+		m_delegatingViewReady.incrementComponent();
+		FooterPanel.createAsync(this, getBinderInfo(), this, new ToolPanelClientImpl(m_footerPanel, m_viewReady));
 	}
 
 	abstract protected void layoutContent(VibeFlowPanel parentPanel, boolean scrollEntireView);

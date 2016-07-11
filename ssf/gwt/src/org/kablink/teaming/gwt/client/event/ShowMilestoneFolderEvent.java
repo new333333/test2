@@ -60,10 +60,9 @@ public class ShowMilestoneFolderEvent extends ShowBinderEvent<ShowMilestoneFolde
 	 * Constructor method.
 	 * 
 	 * @param folderInfo
-	 * @param viewReady
 	 */
-	public ShowMilestoneFolderEvent(BinderInfo folderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(folderInfo, viewPanel, viewReady);
+	public ShowMilestoneFolderEvent(BinderInfo folderInfo) {
+		super(folderInfo);
 	}
 	
 	/**

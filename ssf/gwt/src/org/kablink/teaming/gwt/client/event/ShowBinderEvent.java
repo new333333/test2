@@ -60,7 +60,17 @@ public abstract class ShowBinderEvent<H extends EventHandler> extends ShowEntity
 		super(viewPanel, viewReady);
 		m_binderInfo = binderInfo;
 	}
-	
+
+	/**
+	 * Class constructor.
+	 *
+	 * @param binderInfo
+	 */
+	public ShowBinderEvent(BinderInfo binderInfo) {
+		super(null, null);
+		m_binderInfo = binderInfo;
+	}
+
 	/**
 	 * Get'er methods.
 	 * 
@@ -69,5 +79,10 @@ public abstract class ShowBinderEvent<H extends EventHandler> extends ShowEntity
 	public BinderInfo getBinderInfo()
 	{
 		return m_binderInfo;
+	}
+
+	public void initialize(VibeEntityViewPanel viewPanel, ViewReady viewReady) {
+		setViewPanel(viewPanel);
+		setViewReady(viewReady);
 	}
 }

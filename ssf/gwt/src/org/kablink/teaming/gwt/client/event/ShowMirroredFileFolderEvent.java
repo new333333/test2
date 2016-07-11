@@ -61,11 +61,10 @@ public class ShowMirroredFileFolderEvent extends ShowBinderEvent<ShowMirroredFil
 	 * Constructor method.
 	 * 
 	 * @param folderInfo
-	 * @param viewReady
 	 */
-	public ShowMirroredFileFolderEvent(BinderInfo folderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
+	public ShowMirroredFileFolderEvent(BinderInfo folderInfo) {
 		// Initialize this object...
-		super(folderInfo, viewPanel, viewReady);
+		super(folderInfo);
 	}
 	
 	/**

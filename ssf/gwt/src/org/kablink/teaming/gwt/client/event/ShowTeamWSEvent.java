@@ -62,11 +62,10 @@ public class ShowTeamWSEvent extends ShowBinderEvent<ShowTeamWSEvent.Handler>
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowTeamWSEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady )
+	public ShowTeamWSEvent(BinderInfo binderInfo)
 	{
-		super(binderInfo, viewPanel, viewReady);
+		super(binderInfo);
 	}
 
 	/**

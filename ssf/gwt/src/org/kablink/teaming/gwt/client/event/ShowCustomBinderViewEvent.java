@@ -39,6 +39,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderViewLayout;
+import org.kablink.teaming.gwt.client.util.BinderViewLayoutData;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
@@ -47,86 +48,74 @@ import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
  * 
  * @author david
  */
-public class ShowCustomBinderViewEvent extends ShowBinderEvent<ShowCustomBinderViewEvent.Handler>
-{
+public class ShowCustomBinderViewEvent extends ShowBinderEvent<ShowCustomBinderViewEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-	private BinderViewLayout m_viewLayout;
-	private ViewType m_viewType;
+	private BinderViewLayoutData m_layoutData;
 
-	public ShowCustomBinderViewEvent(BinderInfo binderInfo, ViewType viewType, BinderViewLayout viewLayout, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(binderInfo, viewPanel, viewReady);
-		m_viewLayout = viewLayout;
-		m_viewType = viewType;
+	public ShowCustomBinderViewEvent(BinderViewLayoutData layoutData, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
+		super(layoutData.getBinderInfo(), viewPanel, viewReady);
+		m_layoutData = layoutData;
 	}
 
 	/**
 	 * Handler interface for this event.
 	 */
-	public interface Handler extends EventHandler
-	{
+	public interface Handler extends EventHandler {
 		void onShowCustomBinderView(ShowCustomBinderViewEvent event);
 	}
-	
+
 	/**
 	 * Dispatches this event when one is triggered.
-	 * 
+	 * <p/>
 	 * Implements the VibeEventBase.doDispatch() method.
-	 * 
+	 *
 	 * @param handler
 	 */
 	@Override
-	protected void doDispatch( Handler handler )
-	{
-		handler.onShowCustomBinderView(this );
+	protected void doDispatch(Handler handler) {
+		handler.onShowCustomBinderView(this);
 	}
-	
+
 	/**
 	 * Returns the GwtEvent.Type of this event.
-	 *
+	 * <p/>
 	 * Implements GwtEvent.getAssociatedType()
-	 * 
+	 *
 	 * @return
 	 */
 	@Override
-	public Type<Handler> getAssociatedType()
-	{
+	public Type<Handler> getAssociatedType() {
 		return TYPE;
 	}
 
 	/**
 	 * Returns the TeamingEvents enumeration value corresponding to
 	 * this event.
-	 * 
+	 * <p/>
 	 * Implements VibeBaseEvent.getEventEnum()
-	 * 
+	 *
 	 * @return
 	 */
 	@Override
-	public TeamingEvents getEventEnum()
-	{
+	public TeamingEvents getEventEnum() {
 		return TeamingEvents.SHOW_CUSTOM_BINDER_VIEW;
 	}
-		
+
 	/**
 	 * Registers this event on the given event bus and returns its
 	 * HandlerRegistration.
-	 * 
+	 *
 	 * @param eventBus
 	 * @param handler
-	 * 
 	 * @return
 	 */
-	public static HandlerRegistration registerEvent( SimpleEventBus eventBus, Handler handler )
-	{
-		return eventBus.addHandler( TYPE, handler );
+	public static HandlerRegistration registerEvent(SimpleEventBus eventBus, Handler handler) {
+		return eventBus.addHandler(TYPE, handler);
 	}
 
-	public BinderViewLayout getViewLayout() {
-		return m_viewLayout;
-	}
-
-	public ViewType getViewType() {
-		return m_viewType;
+	public BinderViewLayoutData getViewLayoutData() {
+		return m_layoutData;
 	}
 }
+

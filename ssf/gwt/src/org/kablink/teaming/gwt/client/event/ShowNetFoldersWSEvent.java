@@ -60,11 +60,10 @@ public class ShowNetFoldersWSEvent extends ShowBinderEvent<ShowNetFoldersWSEvent
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowNetFoldersWSEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
+	public ShowNetFoldersWSEvent(BinderInfo binderInfo) {
 		// Initialize the super class...
-		super(binderInfo, viewPanel, viewReady);
+		super(binderInfo);
 	}
 	
 	/**

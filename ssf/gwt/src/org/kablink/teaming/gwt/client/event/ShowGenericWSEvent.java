@@ -62,11 +62,10 @@ public class ShowGenericWSEvent extends ShowBinderEvent<ShowGenericWSEvent.Handl
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowGenericWSEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady )
+	public ShowGenericWSEvent(BinderInfo binderInfo)
 	{
-		super(binderInfo, viewPanel, viewReady);
+		super(binderInfo);
 	}
 	
 	/**

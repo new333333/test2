@@ -60,10 +60,9 @@ public class ShowTrashEvent extends ShowBinderEvent<ShowTrashEvent.Handler> {
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowTrashEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(binderInfo, viewPanel, viewReady);
+	public ShowTrashEvent(BinderInfo binderInfo) {
+		super(binderInfo);
 	}
 	
 	/**

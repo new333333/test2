@@ -34,25 +34,13 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.event.ShowBinderEvent;
-import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.*;
-import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
-import org.kablink.teaming.gwt.client.widgets.VibeGrid;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Custom binder view.
@@ -69,13 +57,12 @@ public class StandardBinderView extends BinderViewBase implements ViewReady, Too
 	/**
 	 * Constructor method.
 	 *
-	 * @param binderInfo
 	 * @param viewReady
 	 */
-	protected StandardBinderView(BinderInfo binderInfo, UIObject parent, ViewType viewType, ViewReady viewReady)
+	protected StandardBinderView(BinderViewLayoutData layoutData, UIObject parent, ViewReady viewReady)
 	{
 		// Simply initialize the super class.
-		super( binderInfo, parent, viewType, viewReady);
+		super(layoutData, parent, viewReady);
 	}
 
 	/**
@@ -106,7 +93,7 @@ public class StandardBinderView extends BinderViewBase implements ViewReady, Too
 
 		BinderInfo bi = getBinderInfo();
 		m_delegatingViewReady.incrementComponent();
-		ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, m_viewType, m_layoutPanel, this);
+		ShowBinderEvent viewEvent = m_layoutData.getUnderlyingShowBinderEvent(m_layoutPanel, this);
 		if (viewEvent != null) {
 			GwtTeaming.fireEvent(viewEvent);
 		}
@@ -116,18 +103,17 @@ public class StandardBinderView extends BinderViewBase implements ViewReady, Too
 	 * Loads the StandardBinderView split point and returns an instance of
 	 * it via the callback.
 	 *
-	 * @param folderInfo
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo folderInfo, final UIObject parent, final ViewType viewType, final ViewReady viewReady, final ViewClient vClient )
+	public static void createAsync(final BinderViewLayoutData layoutData, final UIObject parent, final ViewReady viewReady, final ViewClient vClient)
 	{
 		GWT.runAsync(StandardBinderView.class, new RunAsyncCallback() {
 			@Override
 			public void onSuccess() {
 				StandardBinderView customBinderView;
 
-				customBinderView = new StandardBinderView(folderInfo, parent, viewType, viewReady);
+				customBinderView = new StandardBinderView(layoutData, parent, viewReady);
 				customBinderView.constructView();
 				vClient.onSuccess(customBinderView);
 			}

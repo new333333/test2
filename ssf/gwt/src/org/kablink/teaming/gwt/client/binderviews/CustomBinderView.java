@@ -41,7 +41,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.event.*;
 import org.kablink.teaming.gwt.client.rpc.shared.*;
 import org.kablink.teaming.gwt.client.util.*;
@@ -65,15 +64,13 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 	/**
 	 * Constructor method.
 	 *
-	 * @param binderInfo
 	 * @param viewReady
 	 */
-	private CustomBinderView(BinderInfo binderInfo, UIObject parent, ViewType viewType, BinderViewLayout viewLayout, ViewReady viewReady)
-	{
+    private CustomBinderView(BinderViewLayoutData layoutData, UIObject parent, ViewReady viewReady) {
 		// Simply initialize the super class.
-		super( binderInfo, parent, viewType, viewReady);
-		m_viewLayout = viewLayout;
-	}
+        super(layoutData, parent, viewReady);
+        m_viewLayout = layoutData.getViewLayout();
+    }
 
 
 	public void setViewSize() {
@@ -192,8 +189,8 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
                 parentWidget.showWidget(flowPanel);
 				BinderInfo bi = getBinderInfo();
 				m_delegatingViewReady.incrementComponent();
-				ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, m_viewType, flowPanel, this);
-				if (viewEvent != null) {
+                ShowBinderEvent viewEvent = m_layoutData.getUnderlyingShowBinderEvent(flowPanel, this);
+                if (viewEvent != null) {
 					GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Firing event: "+ viewEvent.getClass().getSimpleName());
 					GwtTeaming.fireEvent(viewEvent);
 				}
@@ -209,8 +206,8 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 				buildHTMLPanel((HasWidgets) parentWidget, (BinderViewHtmlEntry) viewDef, m_delegatingViewReady);
 			} else if (viewDef instanceof BinderViewLandingPageLayout) {
 				buildLandingPageLayout((HasWidgets) parentWidget, m_delegatingViewReady);
-			} else if (viewDef instanceof BinderViewJsp) {
-				VibeFlowPanel flowPanel = new VibeFlowPanel();
+            } else if (viewDef instanceof BinderViewJsp) {
+                VibeFlowPanel flowPanel = new VibeFlowPanel();
 				flowPanel.addStyleName("vibe-flow");
 				parentWidget.showWidget(flowPanel);
 				m_delegatingViewReady.incrementComponent();
@@ -227,15 +224,14 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo folderInfo, final UIObject parent, final ViewType viewType, final BinderViewLayout viewLayout, final ViewReady viewReady, final ViewClient vClient )
-	{
+    public static void createAsync(final BinderViewLayoutData layoutData, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(CustomBinderView.class, new RunAsyncCallback() {
 			@Override
 			public void onSuccess() {
 				CustomBinderView customBinderView;
 
-				customBinderView = new CustomBinderView(folderInfo, parent, viewType, viewLayout, viewReady);
-				customBinderView.constructView();
+                customBinderView = new CustomBinderView(layoutData, parent, viewReady);
+                customBinderView.constructView();
 				vClient.onSuccess(customBinderView);
 			}
 
