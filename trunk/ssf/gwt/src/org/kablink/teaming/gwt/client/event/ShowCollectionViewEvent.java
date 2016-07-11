@@ -60,11 +60,10 @@ public class ShowCollectionViewEvent extends ShowBinderEvent<ShowCollectionViewE
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowCollectionViewEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
+	public ShowCollectionViewEvent(BinderInfo binderInfo) {
 		// Initialize this object...
-		super(binderInfo, viewPanel, viewReady);
+		super(binderInfo);
 	}
 	
 	/**

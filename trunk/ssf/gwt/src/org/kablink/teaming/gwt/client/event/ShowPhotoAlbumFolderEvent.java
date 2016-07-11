@@ -61,10 +61,9 @@ public class ShowPhotoAlbumFolderEvent extends ShowBinderEvent<ShowPhotoAlbumFol
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowPhotoAlbumFolderEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(binderInfo, viewPanel, viewReady);
+	public ShowPhotoAlbumFolderEvent(BinderInfo binderInfo) {
+		super(binderInfo);
 	}
 	
 	/**

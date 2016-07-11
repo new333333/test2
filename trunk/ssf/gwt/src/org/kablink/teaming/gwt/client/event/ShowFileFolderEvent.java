@@ -60,10 +60,9 @@ public class ShowFileFolderEvent extends ShowBinderEvent<ShowFileFolderEvent.Han
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowFileFolderEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(binderInfo, viewPanel, viewReady);
+	public ShowFileFolderEvent(BinderInfo binderInfo) {
+		super(binderInfo);
 	}
 	
 	/**

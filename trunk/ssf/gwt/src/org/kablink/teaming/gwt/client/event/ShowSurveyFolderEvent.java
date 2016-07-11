@@ -60,10 +60,9 @@ public class ShowSurveyFolderEvent extends ShowBinderEvent<ShowSurveyFolderEvent
 	 * Constructor metho.
 	 * 
 	 * @param folderInfo
-	 * @param viewReady
 	 */
-	public ShowSurveyFolderEvent(BinderInfo folderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(folderInfo, viewPanel, viewReady);
+	public ShowSurveyFolderEvent(BinderInfo folderInfo) {
+		super(folderInfo);
 	}
 	
 	/**

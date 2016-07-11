@@ -60,10 +60,9 @@ public class ShowTaskFolderEvent extends ShowBinderEvent<ShowTaskFolderEvent.Han
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowTaskFolderEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(binderInfo, viewPanel, viewReady);
+	public ShowTaskFolderEvent(BinderInfo binderInfo) {
+		super(binderInfo);
 	}
 	
 	/**

@@ -62,11 +62,10 @@ public class ShowPersonalWorkspacesEvent extends ShowBinderEvent<ShowPersonalWor
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowPersonalWorkspacesEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady )
+	public ShowPersonalWorkspacesEvent(BinderInfo binderInfo)
 	{
-		super(binderInfo, viewPanel, viewReady);
+		super(binderInfo);
 	}
 	
 	/**
