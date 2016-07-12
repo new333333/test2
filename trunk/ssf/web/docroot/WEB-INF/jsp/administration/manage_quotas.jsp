@@ -290,7 +290,7 @@ function ss_checkForAllUsersGroup() {
 	  <c:if test="${ss_quotasEnabled}">checked=checked</c:if>
 	  />
 	  <b><ssf:nlt tag="administration.quotas.enable" /></b>
-	  <ssf:showHelp guideName="admin" pageId="dataquota" />
+	  <ssf:showHelp guideName="admin" pageId="manage-user-data-quotas" sectionId="dataquota"/>
 	  </legend>
 		
 	<table style="margin: 10px">
