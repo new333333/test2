@@ -96,4 +96,19 @@ public class BinderViewLayoutData {
                 typeBasedEvent != null;
     }
 
+    public BinderType getBinderType() {
+        return getBinderInfo().getBinderType();
+    }
+
+    public boolean isWorkspace() {
+        return getBinderInfo().isBinderWorkspace();
+    }
+
+    public WorkspaceType getWorkspaceType() {
+        BinderInfo info = getBinderInfo();
+        if (info.isBinderWorkspace()){
+            return info.getWorkspaceType();
+        }
+        return null;
+    }
 }

@@ -75,7 +75,7 @@ public class VibeFlowPanel extends FlowPanel
 				width = parent.getOffsetWidth();
 				height = parent.getOffsetHeight() + GwtConstants.CONTENT_WIDTH_ADJUST;
 			}
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize() (" + this.getStyleName() + ").  New size: (" + width + "," + height + ")");
+//			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize() (" + this.getStyleName() + ").  New size: (" + width + "," + height + ")");
 			if (width!=getOffsetWidth()) {
 				setWidth(width + "px");
 			}
@@ -136,14 +136,14 @@ public class VibeFlowPanel extends FlowPanel
 	@Override
 	public int getContainingHeight(Widget widget) {
 		int totalHeight = getOffsetHeight();
-		GwtClientHelper.consoleLog("VibeFlowPanel.getContainingHeight(): totalHeight=" + totalHeight);
+//		GwtClientHelper.consoleLog("VibeFlowPanel.getContainingHeight(): totalHeight=" + totalHeight);
 		for (Widget child : getChildren()) {
 			if (child!=widget) {
-				GwtClientHelper.consoleLog("VibeFlowPanel.getContainingHeight(): found other widget; height=" + child.getOffsetHeight());
+//				GwtClientHelper.consoleLog("VibeFlowPanel.getContainingHeight(): found other widget; height=" + child.getOffsetHeight());
 				totalHeight -= child.getOffsetHeight();
 			}
 		}
-		GwtClientHelper.consoleLog("VibeFlowPanel.getContainingHeight(): final containing height=" + totalHeight);
+//		GwtClientHelper.consoleLog("VibeFlowPanel.getContainingHeight(): final containing height=" + totalHeight);
 		return totalHeight;
 	}
 

@@ -42,6 +42,7 @@ import com.google.gwt.user.client.ui.*;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.*;
+import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.rpc.shared.*;
 import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
@@ -60,6 +61,7 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 {
 	protected VibeFlowPanel m_layoutPanel;
 	private BinderViewLayout m_viewLayout;
+	private ConfigData m_landingPageConfigData;
 
 	/**
 	 * Constructor method.
@@ -70,7 +72,13 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 		// Simply initialize the super class.
         super(layoutData, parent, viewReady);
         m_viewLayout = layoutData.getViewLayout();
+		initialize();
     }
+
+	private void initializeWithConfigData(ConfigData landingPageConfigData) {
+		m_landingPageConfigData = landingPageConfigData;
+		configurationComplete();
+	}
 
 
 	public void setViewSize() {
@@ -80,19 +88,19 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 		if (parent==null) {
 			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
 		}
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Heights: parent: " + parent.getOffsetHeight() +
-				"; main: " + m_mainPanel.getOffsetHeight() + "; footer: " + m_footerPanel.getOffsetHeight());
+//		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Heights: parent: " + parent.getOffsetHeight() +
+//				"; main: " + m_mainPanel.getOffsetHeight() + "; footer: " + getFooterHeight());
 
 		int height = parent.getOffsetHeight() + GwtConstants.BINDER_VIEW_ADJUST * 4;
 		int width = parent.getOffsetWidth() + GwtConstants.BINDER_VIEW_ADJUST * 2;
 
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New size: (" + width + "," + height + ")");
+//		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New size: (" + width + "," + height + ")");
 		this.setPixelSize(width, height);
 		if (!allowToScroll) {
-			height = height - m_footerPanel.getOffsetHeight();
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New layout panel size: (" + width + "," + height + ")");
+			height = height - getFooterHeight();
+//			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New layout panel size: (" + width + "," + height + ")");
 			m_layoutPanel.setPixelSize(width, height);
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Layout panel resized.");
+//			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Layout panel resized.");
 			m_layoutPanel.onResize();
 		}
 	}
@@ -183,7 +191,7 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 			addChildControls((BinderViewContainer) viewDef, viewPanel);
 		} else {
 			if (viewDef instanceof BinderViewFolderListing) {
-                GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Adding folder listing...");
+                //GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Adding folder listing...");
 				VibeFlowPanel flowPanel = new VibeFlowPanel(true);
 				flowPanel.addStyleName("vibe-flow");
                 parentWidget.showWidget(flowPanel);
@@ -191,7 +199,7 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 				m_delegatingViewReady.incrementComponent();
                 ShowBinderEvent viewEvent = m_layoutData.getUnderlyingShowBinderEvent(flowPanel, this);
                 if (viewEvent != null) {
-					GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Firing event: "+ viewEvent.getClass().getSimpleName());
+					//GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Firing event: "+ viewEvent.getClass().getSimpleName());
 					GwtTeaming.fireEvent(viewEvent);
 				}
 			} else if (viewDef instanceof BinderViewBreadCrumb) {
@@ -217,10 +225,9 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 	}
 
 	/**
-	 * Loads the BlogFolderView split point and returns an instance of
+	 * Loads the CustomBinderView split point and returns an instance of
 	 * it via the callback.
 	 * 
-	 * @param folderInfo
 	 * @param viewReady
 	 * @param vClient
 	 */
@@ -231,7 +238,6 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 				CustomBinderView customBinderView;
 
                 customBinderView = new CustomBinderView(layoutData, parent, viewReady);
-                customBinderView.constructView();
 				vClient.onSuccess(customBinderView);
 			}
 
@@ -305,6 +311,60 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 		GwtClientHelper.jsExecuteJavaScript(htmlPanel.getElement(), true);
 		GwtClientHelper.jsOnLoadInit();
 		viewReady.viewReady();
+	}
+
+	@Override
+	protected boolean includeFooterPanel() {
+		return m_landingPageConfigData==null || !m_landingPageConfigData.getHideFooter();
+	}
+
+	@Override
+	protected boolean requiresAdditionalConfiguration() {
+		//GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".requiresAdditionalConfiguration().  Workspace type: " + this.m_layoutData.getWorkspaceType());
+		return this.m_layoutData.getWorkspaceType()==WorkspaceType.LANDING_PAGE;
+	}
+
+	@Override
+	protected void fetchAdditionalConfiguration() {
+		//GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".fetchAdditionalConfiguration().  Getting landing page config data...");
+		final String binderId = getBinderIdAsString();
+		GetLandingPageDataCmd cmd = new GetLandingPageDataCmd(binderId);
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 *
+			 */
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetLandingPageData(),
+						binderId );
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				final ConfigData configData;
+
+				configData = (ConfigData) response.getResponseData();
+
+				GwtClientHelper.deferCommand(new ScheduledCommand()
+				{
+					/**
+					 *
+					 */
+					@Override
+					public void execute()
+					{
+						// FInish initialization
+						initializeWithConfigData( configData );
+					}
+				});
+			}
+		} );
+
 	}
 }
 
