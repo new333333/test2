@@ -37,7 +37,8 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.fileUploadLimits") %>' scope="request"/>
 <c:set var="helpGuideName" value="admin" scope="request" />
-<c:set var="helpPageId" value="dataquota_filelimit" scope="request" />
+<c:set var="helpPageId" value="manage-file-upload-size" scope="request"/>
+<c:set var="helpSectionId" value="dataquota_filelimit" scope="request" />
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 
