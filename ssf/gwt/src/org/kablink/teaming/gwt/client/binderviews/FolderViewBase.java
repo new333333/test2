@@ -230,7 +230,6 @@ public abstract class FolderViewBase extends ViewBase
 		 * Synchronously resizes the panel.
 		 */
 		private void onResizeNow() {
-			GwtClientHelper.consoleLog("FolderViewBase: onResizeNow()");
 			//setHeight(getNonNegativeInt(m_rootPanel.getOffsetHeight() + getContentHeightAdjust()) + "px");
 			//setWidth( getNonNegativeInt(m_rootPanel.getOffsetWidth()  + getContentWidthAdjust())  + "px");
 			

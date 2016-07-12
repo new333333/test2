@@ -637,7 +637,7 @@ public class TaskListing extends Composite implements TaskProvider {
 			tlHeight = minHeight;
 		}
 
-		GwtClientHelper.consoleLog("TaskListing new size: (" + tlWidth + "," + tlHeight + ")");
+//		GwtClientHelper.consoleLog("TaskListing new size: (" + tlWidth + "," + tlHeight + ")");
 		// Set the height of the taskListing.
 		m_taskListingDIV.setPixelSize(tlWidth, tlHeight);
 	}

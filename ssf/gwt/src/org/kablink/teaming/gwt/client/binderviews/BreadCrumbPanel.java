@@ -197,9 +197,9 @@ public class BreadCrumbPanel extends ToolPanelBase
 		GWT.runAsync(BreadCrumbPanel.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				if (binderInfo.isBinderWorkspace()) {
-					GwtClientHelper.consoleLog("BreadCrumbPanel for workspace type: " + binderInfo.getWorkspaceType().name());
-				}
+//				if (binderInfo.isBinderWorkspace()) {
+//					GwtClientHelper.consoleLog("BreadCrumbPanel for workspace type: " + binderInfo.getWorkspaceType().name());
+//				}
 				BreadCrumbPanel bcp = new BreadCrumbPanel(containerResizer, binderInfo, toolPanelReady);
 				tpClient.onSuccess(bcp);
 			}

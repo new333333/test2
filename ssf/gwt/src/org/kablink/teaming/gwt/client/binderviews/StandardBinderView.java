@@ -63,6 +63,7 @@ public class StandardBinderView extends BinderViewBase implements ViewReady, Too
 	{
 		// Simply initialize the super class.
 		super(layoutData, parent, viewReady);
+		initialize();
 	}
 
 	/**
@@ -114,7 +115,6 @@ public class StandardBinderView extends BinderViewBase implements ViewReady, Too
 				StandardBinderView customBinderView;
 
 				customBinderView = new StandardBinderView(layoutData, parent, viewReady);
-				customBinderView.constructView();
 				vClient.onSuccess(customBinderView);
 			}
 
@@ -133,21 +133,21 @@ public class StandardBinderView extends BinderViewBase implements ViewReady, Too
 		if (parent==null) {
 			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
 		}
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Heights: parent: " + parent.getOffsetHeight() +
-			"; main: " + m_mainPanel.getOffsetHeight() + "; bread crumb: " + m_breadCrumbPanel.getOffsetHeight() + "; desc:" + m_descPanel.getOffsetHeight() +
-			"; accessories: " + m_accessoriesPanel.getOffsetHeight() + "; footer: " + m_footerPanel.getOffsetHeight());
+//		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Heights: parent: " + parent.getOffsetHeight() +
+//			"; main: " + m_mainPanel.getOffsetHeight() + "; bread crumb: " + m_breadCrumbPanel.getOffsetHeight() + "; desc:" + m_descPanel.getOffsetHeight() +
+//			"; accessories: " + m_accessoriesPanel.getOffsetHeight() + "; footer: " + getFooterHeight());
 
 		int height = parent.getOffsetHeight() + GwtConstants.BINDER_VIEW_ADJUST * 4;
 		int width = parent.getOffsetWidth() + GwtConstants.BINDER_VIEW_ADJUST * 2;
 
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New size: (" + width + "," + height + ")");
+//		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New size: (" + width + "," + height + ")");
 		this.setPixelSize(width, height);
 		if (!allowToScroll) {
 			height = height - m_breadCrumbPanel.getOffsetHeight() - m_descPanel.getOffsetHeight() -
-					m_accessoriesPanel.getOffsetHeight() - m_footerPanel.getOffsetHeight();
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New layout panel size: (" + width + "," + height + ")");
+					m_accessoriesPanel.getOffsetHeight() - getFooterHeight();
+//			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New layout panel size: (" + width + "," + height + ")");
 			m_layoutPanel.setPixelSize(width, height);
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Layout panel resized.");
+//			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Layout panel resized.");
 			m_layoutPanel.onResize();
 		}
 	}
