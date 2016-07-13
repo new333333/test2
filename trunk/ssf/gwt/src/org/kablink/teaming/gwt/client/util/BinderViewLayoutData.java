@@ -53,7 +53,24 @@ public class BinderViewLayoutData {
 
     public ShowBinderEvent getShowBinderEvent(VibeEntityViewPanel parent, ViewReady viewReady) {
         ShowBinderEvent viewEvent = null;
-        GwtClientHelper.consoleLog("BinderViewLayoutData: Determining how to render the binder view...");
+
+        String typeStr = "?";
+        BinderInfo bi = viewInfo.getBinderInfo();
+        if (bi!=null) {
+            BinderType type = bi.getBinderType();
+            typeStr = type.name();
+            if (type == BinderType.FOLDER && bi.getFolderType()!=null) {
+                typeStr += "/" + bi.getFolderType().name();
+            } else if (type == BinderType.WORKSPACE && bi.getWorkspaceType()!=null) {
+                typeStr += "/" + bi.getWorkspaceType().name();
+            } else if (type == BinderType.COLLECTION && bi.getCollectionType()!=null) {
+                typeStr += "/" + bi.getCollectionType().name();
+            }
+        } else if (viewInfo.getViewType()!=null) {
+            typeStr = viewInfo.getViewType().name();
+        }
+
+        GwtClientHelper.consoleLog("BinderViewLayoutData: Determining how to render the binder view: " + typeStr);
         if (showCustomGwtBinderView()) {
             GwtClientHelper.consoleLog("BinderViewLayoutData: Show custom GWT binder view?");
             viewEvent = new ShowCustomBinderViewEvent(this, parent, viewReady);
