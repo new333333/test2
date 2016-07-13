@@ -895,7 +895,7 @@ public abstract class FolderViewBase extends ViewBase
 		if (!(includePanel(FolderPanels.MAILTO))) {
 			// ...we don't show the submit panel.
 			insertToolPanelPlaceholder(MAILTO_PANEL_INDEX);
-			loadPart7Async();
+			loadPart9Async();
 			return;
 		}
 		
@@ -923,49 +923,6 @@ public abstract class FolderViewBase extends ViewBase
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, MAILTO_PANEL_INDEX);
-				loadPart7Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the AccessoriesPanel.
-	 */
-	private void loadPart7Async() {
-		// If we're in Filr mode or a super class doesn't want it...
-		if (GwtClientHelper.isLicenseFilr() || (!(includePanel(FolderPanels.ACCESSORIES)))) {
-			// ...we don't show the accessories.
-			insertToolPanelPlaceholder(ACCESSORY_PANEL_INDEX);
-			loadPart9Async();
-			return;
-		}
-		
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart7Now();
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously loads the next part of the view.
-	 * 
-	 * Loads the AccessoriesPanel.
-	 */
-	private void loadPart7Now() {
-		AccessoriesPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, ACCESSORY_PANEL_INDEX);
 				loadPart9Async();
 			}
 		});
