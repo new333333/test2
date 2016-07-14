@@ -135,7 +135,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
   <td class="ss_sliding_table_row0" width="100%" style="<%= sizingTableHeaderCellStyle %>">&nbsp; </td>
  </tr>
 </table>
-<table id="findThisTable2" cellspacing="0" cellpadding="2" width="100%" style="padding-bottom: 15px;">
+<table id="findThisTable2" cellspacing="0" cellpadding="2" width="100%" style="padding-bottom: 2px;">
 <%		
 		int rowCount = 1;
 		String rowStyle = "ss_sliding_table_row0";
@@ -149,7 +149,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 <%
 			} else {
 %>
-<tr class="<%= rowStyle %>"><td nowrap width="100%" >&nbsp;</td></tr>
+<tr class="<%= rowStyle %>"><td class="<%= rowStyle %>" nowrap width="100%" >&nbsp;</td></tr>
 <%
 			}
 			rowCount++;
