@@ -5226,7 +5226,7 @@ public class GwtViewHelper {
 		spec.setSharedEntityIdentifier(new EntityIdentifier(fed.getEntityId().getEntityId(), EntityType.folderEntry));
 		Long userId = GwtServerHelper.getCurrentUserId();
 		List<Long>	groups = GwtServerHelper.getGroupIds(request, bs, userId);
-		List<Long>	teams  = GwtServerHelper.getTeamIds( request, bs, userId);
+		List<Long>	teams  = GwtServerHelper.getTeamIds(request, bs, userId);
 		List<Long>	users  = new ArrayList<Long>(); users.add(userId);
 		spec.setRecipients(users, groups, teams);
 		

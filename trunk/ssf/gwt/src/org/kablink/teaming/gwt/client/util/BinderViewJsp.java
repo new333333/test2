@@ -37,6 +37,7 @@ package org.kablink.teaming.gwt.client.util;
  */
 public class BinderViewJsp extends BinderViewEntry {
     private String jsp;
+    private boolean custom;
 
     public BinderViewJsp() {
     }
@@ -51,5 +52,13 @@ public class BinderViewJsp extends BinderViewEntry {
 
     public void setJsp(String jsp) {
         this.jsp = jsp;
+    }
+
+    public boolean isCustom() {
+        return custom;
+    }
+
+    public void setCustom(boolean custom) {
+        this.custom = custom;
     }
 }

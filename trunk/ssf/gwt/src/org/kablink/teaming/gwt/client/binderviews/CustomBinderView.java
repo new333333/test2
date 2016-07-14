@@ -233,20 +233,20 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 	 */
     public static void createAsync(final BinderViewLayoutData layoutData, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(CustomBinderView.class, new RunAsyncCallback() {
-			@Override
-			public void onSuccess() {
-				CustomBinderView customBinderView;
+            @Override
+            public void onSuccess() {
+                CustomBinderView customBinderView;
 
                 customBinderView = new CustomBinderView(layoutData, parent, viewReady);
-				vClient.onSuccess(customBinderView);
-			}
+                vClient.onSuccess(customBinderView);
+            }
 
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(m_messages.codeSplitFailure_CustomBinderView());
-				vClient.onUnavailable();
-			}
-		});
+            @Override
+            public void onFailure(Throwable reason) {
+                Window.alert(m_messages.codeSplitFailure_CustomBinderView());
+                vClient.onUnavailable();
+            }
+        });
 	}
 
 	/*
@@ -254,11 +254,11 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
     */
 	private void executeJspAsync(final BinderViewJsp jspView, final VibeFlowPanel parent, final ViewReady viewReady) {
 		GwtClientHelper.deferCommand(new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				executeJspNow(jspView, parent, viewReady);
-			}
-		});
+            @Override
+            public void execute() {
+                executeJspNow(jspView, parent, viewReady);
+            }
+        });
 	}
 
 	/*
@@ -266,18 +266,25 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
      */
 	private void executeJspNow(BinderViewJsp jspView, final VibeFlowPanel parent, final ViewReady viewReady) {
 		Map<String,Object> model = new HashMap<String,Object>();
-		model.put("jsp", jspView.getJsp());
 		model.put("binderId", getBinderInfo().getBinderId());
 		model.put("itemId", jspView.getItemId());
+        final VibeJspHtmlType jspType;
+        if (jspView.isCustom()) {
+            jspType = VibeJspHtmlType.CUSTOM_JSP;
+            model.put("customJsp", jspView.getJsp());
+        } else {
+            jspType = VibeJspHtmlType.BUILT_IN_JSP;
+            model.put("jsp", jspView.getJsp());
+        }
 		GwtClientHelper.executeCommand(
-				new GetJspHtmlCmd(VibeJspHtmlType.BUILT_IN_JSP, model),
+				new GetJspHtmlCmd(jspType, model),
 				new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 								t,
 								m_messages.rpcFailure_GetJspHtml(),
-								VibeJspHtmlType.BUILT_IN_JSP.toString());
+								jspType.toString());
 					}
 
 					@Override
@@ -297,11 +304,11 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 	 */
 	private void executeJavaScriptAsync(final HTMLPanel htmlPanel, final ViewReady viewReady) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				executeJavaScriptNow(htmlPanel, viewReady);
-			}
-		});
+            @Override
+            public void execute() {
+                executeJavaScriptNow(htmlPanel, viewReady);
+            }
+        });
 	}
 
 	/*
@@ -329,41 +336,36 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 		//GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".fetchAdditionalConfiguration().  Getting landing page config data...");
 		final String binderId = getBinderIdAsString();
 		GetLandingPageDataCmd cmd = new GetLandingPageDataCmd(binderId);
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 *
-			 */
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-						t,
-						GwtTeaming.getMessages().rpcFailure_GetLandingPageData(),
-						binderId );
-			}
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+            /**
+             *
+             */
+            @Override
+            public void onFailure(Throwable t) {
+                GwtClientHelper.handleGwtRPCFailure(
+                        t,
+                        GwtTeaming.getMessages().rpcFailure_GetLandingPageData(),
+                        binderId);
+            }
 
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				final ConfigData configData;
+            @Override
+            public void onSuccess(VibeRpcResponse response) {
+                final ConfigData configData;
 
-				configData = (ConfigData) response.getResponseData();
+                configData = (ConfigData) response.getResponseData();
 
-				GwtClientHelper.deferCommand(new ScheduledCommand()
-				{
-					/**
-					 *
-					 */
-					@Override
-					public void execute()
-					{
-						// FInish initialization
-						initializeWithConfigData( configData );
-					}
-				});
-			}
-		} );
+                GwtClientHelper.deferCommand(new ScheduledCommand() {
+                    /**
+                     *
+                     */
+                    @Override
+                    public void execute() {
+                        // FInish initialization
+                        initializeWithConfigData(configData);
+                    }
+                });
+            }
+        });
 
 	}
 }
