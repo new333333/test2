@@ -1815,7 +1815,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		}
 		if(end != null) {
 			java.util.Date endDate = end.getDate();
-			if (end.getParameter(Value.DATE.getName()) != null) {
+			if (matches(end, Value.DATE)) {
 				// only date (no time) so it's all day event
 				// intern we store the date of last event's day - so get one day before
 	 			endDate = new org.joda.time.DateTime(endDate).minusDays(1).toDate();
@@ -1825,7 +1825,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			event.setDtEnd(endCal);
 		} else if (due != null) {
 			java.util.Date endDate = due.getDate();
-			if (due.getParameter(Value.DATE.getName()) != null) {
+			if (matches(due, Value.DATE)) {
 				// Only date (no time) so it's an all day event.  It
 				// needs to end on the last second of the day.
 				endDate = new org.joda.time.DateTime(endDate).plusDays(1).minusSeconds(1).toDate();
@@ -1892,8 +1892,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	
 	private boolean isAllDaysEvent(DtStart start) {
 		return start != null && !((start.getParameter(Parameter.TZID) != null) || 
-				(start.getParameter(Parameter.TZID) == null && 
-					start.getParameter(Value.DATE.getName()) == null));
+				(start.getParameter(Parameter.TZID) == null &&
+						matches(start, Value.DATE)));
 	}
 
 	/*
@@ -2346,8 +2346,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			DateTime end = getEndDT(event);
 			boolean hasEnd = (null != end);
 			if (hasEnd) {
-				long endTime = (end.getTime() + org.kablink.util.cal.Duration.MILLIS_PER_DAY);
-				vToDo = new VToDo(start, new DateTime(endTime), entry.getTitle());
+				vToDo = new VToDo(start, end, entry.getTitle());
 			}
 			else {
 				Dur duration = null;
@@ -2945,5 +2944,9 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		}
 
 		component.getProperties().add(new Uid(uid));
+	}
+
+	private boolean matches(DateProperty date, Value type) {
+		return date.getParameter(type.getName())==type;
 	}
 }
