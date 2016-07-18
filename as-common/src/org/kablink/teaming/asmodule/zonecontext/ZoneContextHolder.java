@@ -55,7 +55,7 @@ public class ZoneContextHolder {
     }
     
     public static String getServerName() {
-    	return ZONE_CONTEXT.get().getServerName();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getServerName();
     }
     
     public static void setServerPort(Integer serverPort) {
@@ -63,7 +63,7 @@ public class ZoneContextHolder {
     }
     
     public static Integer getServerPort() {
-    	return ZONE_CONTEXT.get().getServerPort();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getServerPort();
     }
     
     public static void setSecure(Boolean secure) {
@@ -71,7 +71,7 @@ public class ZoneContextHolder {
     }
     
     public static Boolean isSecure() {
-    	return ZONE_CONTEXT.get().getSecure();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getSecure();
     }
     
     public static void setClientAddr(String clientAddr) {
@@ -79,7 +79,7 @@ public class ZoneContextHolder {
     }
     
     public static String getClientAddr() {
-    	return ZONE_CONTEXT.get().getClientAddr();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getClientAddr();
     }
     
     public static void setWebappName(String webappName) {
@@ -87,7 +87,7 @@ public class ZoneContextHolder {
     }
     
     public static String getWebappName() {
-    	return ZONE_CONTEXT.get().getWebappName();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getWebappName();
     }
     
     public static void setUseRuntimeContext(Boolean useRuntimeContext) {
@@ -95,7 +95,7 @@ public class ZoneContextHolder {
     }
     
     public static Boolean getUseRuntimeContext() {
-    	return ZONE_CONTEXT.get().getUseRuntimeContext();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getUseRuntimeContext();
     }
     
     public static Object getProperty(Object key) {
@@ -116,7 +116,7 @@ public class ZoneContextHolder {
     }
     
     public static HttpServletRequest getHttpServletRequest() {
-    	return ZONE_CONTEXT.get().getHttpServletRequest();
+    	return (ZONE_CONTEXT.get() == null)? null : ZONE_CONTEXT.get().getHttpServletRequest();
     }
     
     public static void setHttpServletRequest(HttpServletRequest httpServletRequest) {
