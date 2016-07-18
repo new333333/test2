@@ -242,7 +242,7 @@ public class ContentControl extends Composite
 	 */
 	private void clear()
 	{
-		setContentFrameUrl( "/ssf/html/empty.html" );
+		setContentFrameUrl("/ssf/html/empty.html");
 	}
 	
 	/**
@@ -573,7 +573,7 @@ public class ContentControl extends Composite
 		
 		// Set the width and height of the frame.
 		setSize( (width + "px"), (height + "px") );
-		m_contentFrame.setPixelSize( width, height );
+		m_contentFrame.setPixelSize(width, height);
 
 		// Does the content panel contain a task listing?
 		FrameElement fe = getContentFrame();
@@ -705,38 +705,32 @@ public class ContentControl extends Composite
 			// No, we aren't running the admin console!  Use the URL to
 			// get a ViewInfo for the new context.
 			GetViewInfoCmd cmd = new GetViewInfoCmd( url );
-			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>()
-			{
+			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
-				public void onFailure( Throwable t )
-				{
+				public void onFailure(Throwable t) {
 					GwtClientHelper.deferredAlert("GetViewInfoCmd failed (" + t.getClass().getName() + "): " + t.getMessage());
 					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						GwtTeaming.getMessages().rpcFailure_GetViewInfo(),
-						url );
+							t,
+							GwtTeaming.getMessages().rpcFailure_GetViewInfo(),
+							url);
 				}// end onFailure()
-				
+
 				@Override
-				public void onSuccess( VibeRpcResponse response )
-				{
+				public void onSuccess(VibeRpcResponse response) {
 					// Show the context asynchronously so that we can
 					// release the AJAX request ASAP.
 					String targetUrl;
 					ViewInfo vi = ((ViewInfo) response.getResponseData());
-					if ( null == vi )
-					{
+					if (null == vi) {
 						targetUrl = url;
-					}
-					else
-					{
+					} else {
 						//GwtClientHelper.deferredAlert("GetViewInfoCmd custom layout: " + vi.isCustomLayout());
 						String overrideUrl = vi.getOverrideUrl();
-						if ( GwtClientHelper.hasString( overrideUrl ) )
-						     targetUrl = overrideUrl;
+						if (GwtClientHelper.hasString(overrideUrl))
+							targetUrl = overrideUrl;
 						else targetUrl = url;
 					}
-					setViewAsync( vi, targetUrl, instigator, historyAction, historySelectedMastheadCollection );
+					setViewAsync(vi, targetUrl, instigator, historyAction, historySelectedMastheadCollection);
 				}//end onSuccess()
 			});
 		}
@@ -1052,7 +1046,7 @@ public class ContentControl extends Composite
 	{		
 		// Is the event data is valid?
 		OnSelectBinderInfo osbInfo = event.getOnSelectBinderInfo();
-		if ( GwtClientHelper.validateOSBI( osbInfo, false ))
+		if (GwtClientHelper.validateOSBI(osbInfo, false))
 		{
 			// Yes!  Tell everybody the context is about to be changed
 			// and change it.
@@ -1357,8 +1351,8 @@ public class ContentControl extends Composite
 	@Override
 	public void onGotoUrl( GotoUrlEvent event )
 	{
-		ContextChangingEvent.fireOne();						
-		setViewAsync( null, event.getUrl(), Instigator.GOTO_CONTENT_URL, false, null );
+		ContextChangingEvent.fireOne();
+		setViewAsync(null, event.getUrl(), Instigator.GOTO_CONTENT_URL, false, null);
 	}
 
 	
@@ -1455,10 +1449,8 @@ public class ContentControl extends Composite
 	public void onShowCustomBinderView(final ShowCustomBinderViewEvent event) {
 		// Create a DiscussionFolderView widget for the selected binder.
 		CustomBinderView.createAsync(
-				event.getBinderInfo(),
+				event.getViewLayoutData(),
 				(UIObject) event.getViewPanel(),
-				event.getViewType(),
-				event.getViewLayout(),
 				event.getViewReady(),
 				new BinderViewClient(event));
 	}
@@ -1473,9 +1465,8 @@ public class ContentControl extends Composite
 	@Override
 	public void onShowStandardBinderView(ShowStandardBinderViewEvent event) {
 		StandardBinderView.createAsync(
-				event.getBinderInfo(),
+				event.getViewLayoutData(),
 				(UIObject) event.getViewPanel(),
-				event.getViewType(),
 				event.getViewReady(),
 				new BinderViewClient(event)
 		);
@@ -1910,7 +1901,7 @@ public class ContentControl extends Composite
 			@Override
 			public void execute()
 			{
-				postDeleteReloadNow( targetBinderPermalink );
+				postDeleteReloadNow(targetBinderPermalink);
 			}// end execute()
 		} );
 	}// end postDeleteReloadAsync();
@@ -1953,7 +1944,7 @@ public class ContentControl extends Composite
 			@Override
 			public void execute()
 			{
-				showFolderEntryDlgNow( vfei, viewReady );
+				showFolderEntryDlgNow(vfei, viewReady);
 			}// end execute()
 		} );
 	}// end showFolderEntryDlgAsync()
@@ -2011,20 +2002,18 @@ public class ContentControl extends Composite
 	public static ViewMode layoutBinder(ViewInfo vi, ViewReady viewReady, VibeEntityViewPanel parent) {
 		ViewMode viewMode;
 
+		BinderViewLayoutData layoutData = GwtClientFolderViewHelper.buildBinderLayoutData(vi);
+		ShowBinderEvent viewEvent = layoutData.getShowBinderEvent(parent, viewReady);
+
 		BinderInfo bi = vi.getBinderInfo();
 		ViewType vt = vi.getViewType();
 
-		ShowBinderEvent viewEvent = null;
-		if (vi.isCustomLayout() && vi.getViewLayout()!=null) {
-			viewEvent = new ShowCustomBinderViewEvent(bi, vt, vi.getViewLayout(), parent, viewReady);
-		} else if (GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, vt, parent, viewReady)!=null) {
-			viewEvent = new ShowStandardBinderViewEvent(bi, vt, parent, viewReady);
-		}
-
 		if (viewEvent!=null) {
+			GwtClientHelper.consoleLog("ContentControl: GWT binder view.");
 			GwtTeaming.fireEvent(viewEvent);
 			viewMode = ViewMode.GWT_CONTENT_VIEW;
 		} else {
+			GwtClientHelper.consoleLog("ContentControl: JSP binder view.");
 			viewMode = ViewMode.JSP_CONTENT_VIEW;
 			BinderType bt = bi.getBinderType();
 			if (bt==BinderType.OTHER) {

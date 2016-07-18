@@ -62,11 +62,10 @@ public class ShowProjectManagementWSEvent extends ShowBinderEvent<ShowProjectMan
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowProjectManagementWSEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady )
+	public ShowProjectManagementWSEvent(BinderInfo binderInfo)
 	{
-		super(binderInfo, viewPanel, viewReady);
+		super(binderInfo);
 	}
 	
 	/**

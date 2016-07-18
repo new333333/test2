@@ -576,7 +576,7 @@ public class DefinitionHelper {
   	if (definitionConfig == null) {
     		return Collections.EMPTY_MAP;
     	}
-  		Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm' or @name='customJsp']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
+  		Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm' or @name='customJsp']//item[@name='selectbox' and properties/property[@name='name' and @value='" + attributeName.replaceAll("'", "") + "']]");
     	if (node == null) {
     		return Collections.EMPTY_MAP;
     	}    	
@@ -653,7 +653,7 @@ public class DefinitionHelper {
     	if (node == null) {
     		return Collections.EMPTY_LIST;
     	}
-    	return findRadioSelections((Element)node);
+    	return findRadioSelections((Element) node);
     }
     
     public static List findRadioSelections(Element element) {
@@ -682,7 +682,7 @@ public class DefinitionHelper {
     	return result;
     }
     public static Map findRadioSelectionsAsMap(String attributeName, Document definitionConfig) {
-       	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm' or @name='customJsp']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
+       	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm' or @name='customJsp']//item[@name='radio' and properties/property[@name='name' and @value='" + attributeName.replaceAll("'", "") + "']]");
     	if (node == null) {
     		return Collections.EMPTY_MAP;
     	}
@@ -1231,7 +1231,7 @@ public class DefinitionHelper {
 		CustomAttribute attr;
 		
 		
-		attr = entity.getCustomAttribute( "mashup__properties" );
+		attr = entity.getCustomAttribute("mashup__properties");
 		if ( attr != null )
 		{
 			Document doc;
@@ -2022,5 +2022,13 @@ public class DefinitionHelper {
 			}
 		}
 		return props;
+	}
+
+	public static String getCustomJspName(Element itemDefinition) {
+		Element jspNode = (Element) itemDefinition.selectSingleNode("jsps/jsp[@name='custom']");
+		if (jspNode!=null) {
+			return jspNode.attributeValue("value", "");
+		}
+		return null;
 	}
 }

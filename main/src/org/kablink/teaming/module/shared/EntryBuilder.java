@@ -121,6 +121,7 @@ public class EntryBuilder {
 		for (Iterator iter=kvps.iterator(); iter.hasNext();) {
 			entry = (Map.Entry)iter.next();
 			String attr = (String)entry.getKey();
+
 			Object val = entry.getValue();
 			try {
 				Object currentVal = InvokeUtil.invokeGetter(target, attr);

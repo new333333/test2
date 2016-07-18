@@ -945,7 +945,7 @@ public class EditBrandingDlg extends DlgBox
 		
 		helpData = new HelpData();
 		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "brand" );
+		helpData.setPageId( "site-wide-brand" );
 		
 		return helpData;
 	}

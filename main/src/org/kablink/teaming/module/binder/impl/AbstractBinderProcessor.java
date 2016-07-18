@@ -519,7 +519,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	if (obj instanceof Event)
         		getCoreDao().save(obj);
         }
-        doBinderFillin(parent, binder, inputData, entryData);
+        doBinderFillin(parent, binder, inputData, entryData, new HashMap());
         //can add these fields on creation, but cannot use modifyBinder to change them
    		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY)) {
    			entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY)));
@@ -763,7 +763,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	indexBinder(binder, fileUploadItems, null, true, tags);
     }
  	//common fillin for add/modify
- 	protected void doBinderFillin(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {  
+ 	protected void doBinderFillin(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map propertyData) {
    		if (inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION) && !entryData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
    			String val = inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_DESCRIPTION);
    			entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, new Description(val) );
@@ -956,7 +956,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		if(library != null) {
 			entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, library);
 		}
- 	}
+
+		if (inputData.exists(ObjectKeys.FIELD_BINDER_RENDER_JSP_VIEW) && !propertyData.containsKey(ObjectKeys.FIELD_BINDER_RENDER_JSP_VIEW)) {
+			Boolean renderJsp = Boolean.valueOf((String)inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RENDER_JSP_VIEW));
+			propertyData.put( ObjectKeys.FIELD_BINDER_RENDER_JSP_VIEW, renderJsp );
+		}
+	}
     //***********************************************************************************************************
     //no transaction    
     @Override
@@ -1108,9 +1113,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         				getCoreDao().save(obj);
         	}
         }
-        doBinderFillin(binder.getParentBinder(), binder, inputData, entryData);
-               
+		Map propertyData = new HashMap();
+        doBinderFillin(binder.getParentBinder(), binder, inputData, entryData, propertyData);
+
         EntryBuilder.updateEntry(binder, entryData);
+
+		updateProperties(binder, propertyData);
 
         boolean library;
 	   	if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY))
@@ -1120,7 +1128,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
  		checkConstraintMirrored(binder.getParentBinder(), binder, oldTitle, library, inputData);
     }
-    //no transaction    
+
+	private void updateProperties(Binder binder, Map propertyData) {
+		for (Object o : propertyData.entrySet()) {
+			Map.Entry entry = (Map.Entry) o;
+			binder.setProperty((String) entry.getKey(), entry.getValue());
+		}
+	}
+
+	//no transaction
     protected void modifyBinder_removeAttachments(Binder binder, Collection deleteAttachments,
     		List<FileAttachment> filesToDeindex, List<FileAttachment> filesToReindex, Map ctx) {
     	removeAttachments(binder, binder, deleteAttachments, filesToDeindex, filesToReindex);

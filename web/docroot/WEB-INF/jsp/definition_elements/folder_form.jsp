@@ -65,7 +65,26 @@
   			configJspStyle="${ssConfigJspStyle}"
   			entry="${ssDefinitionEntry}" />
 
-		<br>
+		<br/>
+		<c:set var="cb_checked" value=""/>
+		<c:if test='${ssDefinitionEntry.properties.get("renderJspView")==true}' >
+			<c:set var="cb_checked" value=" checked "/>
+		</c:if>
+
+		<div style="display:block">
+			<input type="checkbox" name="ss_renderJspView"
+				<c:out value="${cb_checked}" />
+				onClick="if (document.${formName}.ss_renderJspView.checked) document.${formName}.renderJspView.value='true'; else document.${formName}.renderJspView.value='false';">
+			&nbsp;
+			<span class="ss_labelRight">
+				<ssf:nlt tag="binder.view.useJspRenderer">
+					<ssf:param name="value" value="${productName}"/>
+				</ssf:nlt>
+			</span>
+		</div>
+		<input type="hidden" name="renderJspView" value='${ssDefinitionEntry.properties.get("renderJspView")==true}'/>
+
+		<br/>
 		<c:set var="cb_checked" value=""/>
 		<c:if test="${ssDefinitionEntry.library}" >
 			<c:set var="cb_checked" value=" checked "/>
@@ -91,7 +110,9 @@
 			<input type="checkbox" name="ss_unique" 
 			<c:if test="${ssDefinitionEntry.mirrored || 
 			  (!ssBinderIsEmpty && ssDefinitionEntry.library && ssDefinitionEntry.uniqueTitles)}"> disabled </c:if>
-			<c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_unique.checked) document.${formName}.uniqueTitles.value='true'; else document.${formName}.uniqueTitles.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isUniqueTitles"/></span></input>
+			<c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_unique.checked) document.${formName}.uniqueTitles.value='true'; else document.${formName}.uniqueTitles.value='false';">
+			&nbsp;
+			<span class="ss_labelRight"><ssf:nlt tag="folder.isUniqueTitles"/></span></input>
 		</div>
 		<input type="hidden" name="uniqueTitles" value="${ssDefinitionEntry.uniqueTitles}"/>
 		<br/>

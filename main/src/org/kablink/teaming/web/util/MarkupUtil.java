@@ -1680,8 +1680,14 @@ public class MarkupUtil {
 		}
 		return bodyParts;
 	}
+
 	//Routine to split a body of text into sections
 	public static String markupSectionsReplacement(String body) {
+		String unescapedBody = StringEscapeUtils.unescapeHtml(body);
+		return _markupSectionsReplacement(unescapedBody);
+	}
+
+	private static String _markupSectionsReplacement(String body) {
 		List<Map> bodyParts = new ArrayList();
     	int loopDetector = 0;
     	Matcher m0 = sectionPattern.matcher(body);

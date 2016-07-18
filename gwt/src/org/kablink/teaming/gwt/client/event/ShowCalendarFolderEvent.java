@@ -56,8 +56,8 @@ public class ShowCalendarFolderEvent extends ShowBinderEvent<ShowCalendarFolderE
 		void onShowCalendarFolder(ShowCalendarFolderEvent event);
 	}
 
-	public ShowCalendarFolderEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(binderInfo, viewPanel, viewReady);
+	public ShowCalendarFolderEvent(BinderInfo binderInfo) {
+		super(binderInfo);
 	}
 
 	/**

@@ -499,7 +499,6 @@ div.ss_entryContent a:hover {
 	font-family: ${ss_style_title_font_family};
   	font-size: 13px;
   	padding: 5px;
-    border-top: 1px solid #C4C4C4;
 	border-bottom-left-radius: 5px;
 	border-bottom-right-radius: 5px;
 	-moz-border-radius-bottomleft: 5px;
@@ -4405,8 +4404,7 @@ div.ss_questionContainer {
 	margin: 10px 0px;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
-	border-radius: 5px;	
-	-webkit-border-radius: 5px;	
+	-webkit-border-radius: 5px;
 }
 div.ss_subsection {
 	position: relative;
@@ -4723,13 +4721,12 @@ div.ss_content_outer table.ss_tasks_list {
 }
 
 table.ss_tasks_list {
-	margin:6px 0px 4px 8px;
+    margin:6px 4px 4px 4px;
 	padding: 0px;
 	border-top: 1px solid #e0e0e0;
 	border-left: 1px solid #e0e0e0;
 	border-right: 1px solid #e0e0e0;
 	border-spacing: 0px;
-	width: 99%;
 	empty-cells: show;
 	border-collapse: collapse;
 }

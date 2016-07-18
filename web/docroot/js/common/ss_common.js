@@ -1144,6 +1144,8 @@ function ss_executePhasedJavascript(xmlNode) {
 function ss_executeJavascriptPhase1(scripts, xmlNode) {
 	// Scan the <script>'s in xmlNode.
     var executedJSFromSrc = false;
+	var immediateScripts = [];
+	var delayedScripts = [];
     for (var i = 0; i < scripts.length; i++) {
     	// Is this <script> JavaScript?
         var script = scripts[i];
@@ -1152,22 +1154,42 @@ function ss_executeJavascriptPhase1(scripts, xmlNode) {
         	// Yes!  Does it have a 'src=...' setting?
         	var jsSrc = script.getAttribute("src");
         	if (jsSrc && (null != jsSrc) && (0 < jsSrc.length)) {
-        		// Yes!  Force it's source to actually be loaded
-        		// via the <HEAD> tag.
-        		var tag = document.createElement("script");
-                tag.setAttribute("type", "text/javascript");
-        		tag.src = jsSrc;
-        		tag.onload = function(){ss_executeJavascriptPhase2(scripts, xmlNode, true);}
-        		document.getElementsByTagName("head")[0].appendChild(tag);
-        		executedJSFromSrc = true;
-        	}
+				// Yes!  Load it immediately
+				immediateScripts.push(script);
+        	} else {
+				// No!  Delay executing it until after the immediate scripts are loaded.
+				delayedScripts.push(script);
+			}
         }
     }
 
+	var count = 0;
+	var counterFunction = function() {
+		// Keep track of how many immediate scripts have finished loading.
+		count++;
+		if (count==immediateScripts.length) {
+			// When all are done, execute the delayed scripts.
+			ss_executeJavascriptPhase2(delayedScripts, xmlNode, true);
+		}
+	}
+
+	for (i = 0; i<immediateScripts.length; i++) {
+		// Force it's source to actually be loaded
+		// via the <HEAD> tag.
+		var script = immediateScripts[i];
+		var tag = document.createElement("script");
+		tag.setAttribute("type", "text/javascript");
+		tag.src = script.getAttribute("src");
+		tag.onload = counterFunction;
+		tag.onerror = counterFunction;
+		document.getElementsByTagName("head")[0].appendChild(tag);
+	}
+
     // Return true if we executed any JavaScript from a src="..." and
     // false otherwise.
-    return executedJSFromSrc;
+    return immediateScripts.length>0;
 }
+
 
 // Executes <SCRIPT> tags without a src="...".
 function ss_executeJavascriptPhase2(scripts, xmlNode, globalScope) {

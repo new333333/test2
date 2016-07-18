@@ -60,10 +60,9 @@ public class ShowMicroBlogFolderEvent extends ShowBinderEvent<ShowMicroBlogFolde
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowMicroBlogFolderEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(binderInfo, viewPanel, viewReady);
+	public ShowMicroBlogFolderEvent(BinderInfo binderInfo) {
+		super(binderInfo);
 	}
 	
 	/**

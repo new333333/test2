@@ -50,8 +50,8 @@ public class ShowBlogFolderEvent extends ShowBinderEvent<ShowBlogFolderEvent.Han
 {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-	public ShowBlogFolderEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(binderInfo, viewPanel, viewReady);
+	public ShowBlogFolderEvent(BinderInfo binderInfo) {
+		super(binderInfo);
 	}
 
 	/**

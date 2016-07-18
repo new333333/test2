@@ -61,10 +61,9 @@ public class ShowDiscussionFolderEvent extends ShowBinderEvent<ShowDiscussionFol
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowDiscussionFolderEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(binderInfo, viewPanel, viewReady);
+	public ShowDiscussionFolderEvent(BinderInfo binderInfo) {
+		super(binderInfo);
 	}
 	
 	/**

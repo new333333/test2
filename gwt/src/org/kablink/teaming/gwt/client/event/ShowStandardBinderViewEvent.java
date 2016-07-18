@@ -39,6 +39,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderViewLayout;
+import org.kablink.teaming.gwt.client.util.BinderViewLayoutData;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
 
@@ -51,11 +52,11 @@ public class ShowStandardBinderViewEvent extends ShowBinderEvent<ShowStandardBin
 {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-	private ViewType m_viewType;
+	private BinderViewLayoutData m_layoutData;
 
-	public ShowStandardBinderViewEvent(BinderInfo binderInfo, ViewType viewType, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(binderInfo, viewPanel, viewReady);
-		m_viewType = viewType;
+	public ShowStandardBinderViewEvent(BinderViewLayoutData layoutData, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
+		super(layoutData.getBinderInfo(), viewPanel, viewReady);
+		m_layoutData = layoutData;
 	}
 
 	/**
@@ -120,7 +121,7 @@ public class ShowStandardBinderViewEvent extends ShowBinderEvent<ShowStandardBin
 		return eventBus.addHandler( TYPE, handler );
 	}
 
-	public ViewType getViewType() {
-		return m_viewType;
+	public BinderViewLayoutData getViewLayoutData() {
+		return m_layoutData;
 	}
 }

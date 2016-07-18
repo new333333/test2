@@ -60,10 +60,9 @@ public class ShowGuestbookFolderEvent extends ShowBinderEvent<ShowGuestbookFolde
 	 * Constructor method.
 	 * 
 	 * @param folderInfo
-	 * @param viewReady
 	 */
-	public ShowGuestbookFolderEvent(BinderInfo folderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(folderInfo, viewPanel, viewReady);
+	public ShowGuestbookFolderEvent(BinderInfo folderInfo) {
+		super(folderInfo);
 	}
 	
 	/**

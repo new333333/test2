@@ -44,10 +44,7 @@ import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.event.ShowBinderEvent;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.GwtClientFolderViewHelper;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.ViewType;
+import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 /**
@@ -57,6 +54,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
  */
 public abstract class BinderViewBase extends WorkspaceViewBase implements ViewReady, ToolPanelReady, ProvidesResize, RequiresResize
 {
+	protected BinderViewLayoutData m_layoutData;
 	protected VibeFlowPanel m_mainPanel;
 	protected VibeFlowPanel m_footerPanel;
 
@@ -66,23 +64,20 @@ public abstract class BinderViewBase extends WorkspaceViewBase implements ViewRe
 	/**
 	 * Constructor method.
 	 *
-	 * @param binderInfo
+	 * @param layoutData
 	 * @param viewReady
 	 */
-	protected BinderViewBase(BinderInfo binderInfo, UIObject parent, ViewType viewType, ViewReady viewReady)
+	protected BinderViewBase(BinderViewLayoutData layoutData, UIObject parent, ViewReady viewReady)
 	{
 		// Simply initialize the super class.
-		super( binderInfo, parent, viewReady);
+		super(layoutData.getBinderInfo(), parent, viewReady);
+		m_layoutData = layoutData;
 		m_viewReady = new DelegatingViewReady(viewReady, new SimpleViewReady());
 		m_delegatingViewReady = (DelegatingViewReady) m_viewReady;
-		m_viewType = viewType;
+		m_viewType = layoutData.getViewType();
 	}
 
-	/**
-	 * Called to construct the view.
-	 */
-	public void constructView()
-	{
+	protected void initialize() {
 		m_mainPanel = new VibeFlowPanel();
 		//m_mainPanel.setWidth("100%");
 		//m_mainPanel.setHeight("100%");
@@ -93,23 +88,64 @@ public abstract class BinderViewBase extends WorkspaceViewBase implements ViewRe
 			m_mainPanel.addStyleName("vibe-binderView_OverflowAuto");
 		}
 
-		this.layoutContent(m_mainPanel, scrollEntireView);
+		initWidget( m_mainPanel );
+
+		if (requiresAdditionalConfiguration()) {
+			fetchAdditionalConfiguration();
+		} else {
+			configurationComplete();
+		}
+	}
+
+	protected void fetchAdditionalConfiguration() {
+		configurationComplete();
+	}
+
+	protected void configurationComplete() {
+		constructView();
+	}
+
+ 	/**
+	 * Called to construct the view.
+	 */
+	protected void constructView()
+	{
+		this.layoutContent(m_mainPanel, scrollEntireView());
 
 		// Add a place for the footer
-		{
-			m_footerPanel = new VibeFlowPanel();
-			m_footerPanel.addStyleName( "vibe-binderView_FooterPanel" );
-			m_mainPanel.add(m_footerPanel);
-
-			m_delegatingViewReady.incrementComponent();
-			FooterPanel.createAsync( this, getBinderInfo(), this, new ToolPanelClientImpl(m_footerPanel, m_viewReady));
+		if (includeFooterPanel()) {
+			buildFooterPanel();
 		}
-		initWidget( m_mainPanel );
+
+	}
+
+	private void buildFooterPanel() {
+		m_footerPanel = new VibeFlowPanel();
+		m_footerPanel.addStyleName("vibe-binderView_FooterPanel");
+		m_mainPanel.add(m_footerPanel);
+
+		m_delegatingViewReady.incrementComponent();
+		FooterPanel.createAsync(this, getBinderInfo(), this, new ToolPanelClientImpl(m_footerPanel, m_viewReady));
 	}
 
 	abstract protected void layoutContent(VibeFlowPanel parentPanel, boolean scrollEntireView);
 
 	abstract public void setViewSize();
+
+	protected boolean requiresAdditionalConfiguration() {
+		return false;
+	}
+
+	protected boolean includeFooterPanel() {
+		return true;
+	}
+
+	public int getFooterHeight() {
+		if (m_footerPanel==null) {
+			return 0;
+		}
+		return m_footerPanel.getOffsetHeight();
+	}
 
 	protected VibeFlowPanel buildAccessoriesPanel(HasWidgets parentPanel) {
 		VibeFlowPanel accessoriesPanel = new VibeFlowPanel();
@@ -178,7 +214,7 @@ public abstract class BinderViewBase extends WorkspaceViewBase implements ViewRe
 	 */
 	private void onResizeNow()
 	{
-		GwtClientHelper.consoleLog("BinderViewBase: onResizeNow()");
+//		GwtClientHelper.consoleLog("BinderViewBase: onResizeNow()");
 		super.onResize();
 		//m_mainPanel.onResize();
 	}//end onResizeNow()
@@ -190,6 +226,7 @@ public abstract class BinderViewBase extends WorkspaceViewBase implements ViewRe
 
 		}
 	}
+
 
 }
 

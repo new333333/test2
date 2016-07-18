@@ -149,7 +149,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 <%
 			} else {
 %>
-<tr class="<%= rowStyle %>"><td nowrap width="100%" >&nbsp;</td></tr>
+<tr class="<%= rowStyle %>"><td class="<%= rowStyle %>" nowrap width="100%" >&nbsp;</td></tr>
 <%
 			}
 			rowCount++;

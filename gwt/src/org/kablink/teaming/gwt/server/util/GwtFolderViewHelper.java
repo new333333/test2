@@ -97,6 +97,7 @@ public class GwtFolderViewHelper {
         BinderViewDefBase binderView = null;
         String name = viewItem.attributeValue("name");
         if (!binderViewsToSkip.contains(name)) {
+            boolean skip = false;
             DefinitionConfigurationBuilder configBuilder = DefinitionHelper.getDefinitionBuilderConfig();
             String folderViewClass = configBuilder.getItemGwtFolderViewByStyle(viewItem, name, Definition.JSP_STYLE_DEFAULT);
             if (folderViewClass != null) {
@@ -140,10 +141,20 @@ public class GwtFolderViewHelper {
                         } else {
                             binderView = null;
                         }
+                    } else if (binderView instanceof BinderViewJsp) {
+                        String jspName = DefinitionHelper.getCustomJspName(viewItem);
+                        if (jspName!=null) {
+                            BinderViewJsp jspView = (BinderViewJsp) binderView;
+                            jspView.setCustom(true);
+                            jspView.setJsp(jspName);
+                            binderView = jspView;
+                        } else {
+                            skip = true;
+                        }
                     }
                 }
             }
-            if (binderView == null) {
+            if (binderView == null && !skip) {
                 String jsp = configBuilder.getItemJspByStyle(viewItem, name, Definition.JSP_STYLE_DEFAULT);
                 if (jsp != null) {
                     BinderViewJsp binderJspView = new BinderViewJsp(jsp);

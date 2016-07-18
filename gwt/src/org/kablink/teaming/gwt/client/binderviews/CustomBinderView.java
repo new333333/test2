@@ -41,8 +41,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.event.*;
+import org.kablink.teaming.gwt.client.lpe.ConfigData;
 import org.kablink.teaming.gwt.client.rpc.shared.*;
 import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.gwt.client.widgets.VibeEntityViewPanel;
@@ -61,18 +61,23 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 {
 	protected VibeFlowPanel m_layoutPanel;
 	private BinderViewLayout m_viewLayout;
+	private ConfigData m_landingPageConfigData;
 
 	/**
 	 * Constructor method.
 	 *
-	 * @param binderInfo
 	 * @param viewReady
 	 */
-	private CustomBinderView(BinderInfo binderInfo, UIObject parent, ViewType viewType, BinderViewLayout viewLayout, ViewReady viewReady)
-	{
+    private CustomBinderView(BinderViewLayoutData layoutData, UIObject parent, ViewReady viewReady) {
 		// Simply initialize the super class.
-		super( binderInfo, parent, viewType, viewReady);
-		m_viewLayout = viewLayout;
+        super(layoutData, parent, viewReady);
+        m_viewLayout = layoutData.getViewLayout();
+		initialize();
+    }
+
+	private void initializeWithConfigData(ConfigData landingPageConfigData) {
+		m_landingPageConfigData = landingPageConfigData;
+		configurationComplete();
 	}
 
 
@@ -83,19 +88,19 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 		if (parent==null) {
 			parent = GwtTeaming.getMainPage().getMainContentLayoutPanel();
 		}
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Heights: parent: " + parent.getOffsetHeight() +
-				"; main: " + m_mainPanel.getOffsetHeight() + "; footer: " + m_footerPanel.getOffsetHeight());
+//		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Heights: parent: " + parent.getOffsetHeight() +
+//				"; main: " + m_mainPanel.getOffsetHeight() + "; footer: " + getFooterHeight());
 
 		int height = parent.getOffsetHeight() + GwtConstants.BINDER_VIEW_ADJUST * 4;
 		int width = parent.getOffsetWidth() + GwtConstants.BINDER_VIEW_ADJUST * 2;
 
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New size: (" + width + "," + height + ")");
+//		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New size: (" + width + "," + height + ")");
 		this.setPixelSize(width, height);
 		if (!allowToScroll) {
-			height = height - m_footerPanel.getOffsetHeight();
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New layout panel size: (" + width + "," + height + ")");
+			height = height - getFooterHeight();
+//			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  New layout panel size: (" + width + "," + height + ")");
 			m_layoutPanel.setPixelSize(width, height);
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Layout panel resized.");
+//			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize().  Layout panel resized.");
 			m_layoutPanel.onResize();
 		}
 	}
@@ -186,15 +191,15 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 			addChildControls((BinderViewContainer) viewDef, viewPanel);
 		} else {
 			if (viewDef instanceof BinderViewFolderListing) {
-                GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Adding folder listing...");
+                //GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Adding folder listing...");
 				VibeFlowPanel flowPanel = new VibeFlowPanel(true);
 				flowPanel.addStyleName("vibe-flow");
                 parentWidget.showWidget(flowPanel);
 				BinderInfo bi = getBinderInfo();
 				m_delegatingViewReady.incrementComponent();
-				ShowBinderEvent viewEvent = GwtClientFolderViewHelper.buildGwtBinderLayoutEvent(bi, m_viewType, flowPanel, this);
-				if (viewEvent != null) {
-					GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Firing event: "+ viewEvent.getClass().getSimpleName());
+                ShowBinderEvent viewEvent = m_layoutData.getUnderlyingShowBinderEvent(flowPanel, this);
+                if (viewEvent != null) {
+					//GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".addControl().  Firing event: "+ viewEvent.getClass().getSimpleName());
 					GwtTeaming.fireEvent(viewEvent);
 				}
 			} else if (viewDef instanceof BinderViewBreadCrumb) {
@@ -209,8 +214,8 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 				buildHTMLPanel((HasWidgets) parentWidget, (BinderViewHtmlEntry) viewDef, m_delegatingViewReady);
 			} else if (viewDef instanceof BinderViewLandingPageLayout) {
 				buildLandingPageLayout((HasWidgets) parentWidget, m_delegatingViewReady);
-			} else if (viewDef instanceof BinderViewJsp) {
-				VibeFlowPanel flowPanel = new VibeFlowPanel();
+            } else if (viewDef instanceof BinderViewJsp) {
+                VibeFlowPanel flowPanel = new VibeFlowPanel();
 				flowPanel.addStyleName("vibe-flow");
 				parentWidget.showWidget(flowPanel);
 				m_delegatingViewReady.incrementComponent();
@@ -220,31 +225,28 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 	}
 
 	/**
-	 * Loads the BlogFolderView split point and returns an instance of
+	 * Loads the CustomBinderView split point and returns an instance of
 	 * it via the callback.
 	 * 
-	 * @param folderInfo
 	 * @param viewReady
 	 * @param vClient
 	 */
-	public static void createAsync( final BinderInfo folderInfo, final UIObject parent, final ViewType viewType, final BinderViewLayout viewLayout, final ViewReady viewReady, final ViewClient vClient )
-	{
+    public static void createAsync(final BinderViewLayoutData layoutData, final UIObject parent, final ViewReady viewReady, final ViewClient vClient) {
 		GWT.runAsync(CustomBinderView.class, new RunAsyncCallback() {
-			@Override
-			public void onSuccess() {
-				CustomBinderView customBinderView;
+            @Override
+            public void onSuccess() {
+                CustomBinderView customBinderView;
 
-				customBinderView = new CustomBinderView(folderInfo, parent, viewType, viewLayout, viewReady);
-				customBinderView.constructView();
-				vClient.onSuccess(customBinderView);
-			}
+                customBinderView = new CustomBinderView(layoutData, parent, viewReady);
+                vClient.onSuccess(customBinderView);
+            }
 
-			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(m_messages.codeSplitFailure_CustomBinderView());
-				vClient.onUnavailable();
-			}
-		});
+            @Override
+            public void onFailure(Throwable reason) {
+                Window.alert(m_messages.codeSplitFailure_CustomBinderView());
+                vClient.onUnavailable();
+            }
+        });
 	}
 
 	/*
@@ -252,11 +254,11 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
     */
 	private void executeJspAsync(final BinderViewJsp jspView, final VibeFlowPanel parent, final ViewReady viewReady) {
 		GwtClientHelper.deferCommand(new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				executeJspNow(jspView, parent, viewReady);
-			}
-		});
+            @Override
+            public void execute() {
+                executeJspNow(jspView, parent, viewReady);
+            }
+        });
 	}
 
 	/*
@@ -264,18 +266,25 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
      */
 	private void executeJspNow(BinderViewJsp jspView, final VibeFlowPanel parent, final ViewReady viewReady) {
 		Map<String,Object> model = new HashMap<String,Object>();
-		model.put("jsp", jspView.getJsp());
 		model.put("binderId", getBinderInfo().getBinderId());
 		model.put("itemId", jspView.getItemId());
+        final VibeJspHtmlType jspType;
+        if (jspView.isCustom()) {
+            jspType = VibeJspHtmlType.CUSTOM_JSP;
+            model.put("customJsp", jspView.getJsp());
+        } else {
+            jspType = VibeJspHtmlType.BUILT_IN_JSP;
+            model.put("jsp", jspView.getJsp());
+        }
 		GwtClientHelper.executeCommand(
-				new GetJspHtmlCmd(VibeJspHtmlType.BUILT_IN_JSP, model),
+				new GetJspHtmlCmd(jspType, model),
 				new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 								t,
 								m_messages.rpcFailure_GetJspHtml(),
-								VibeJspHtmlType.BUILT_IN_JSP.toString());
+								jspType.toString());
 					}
 
 					@Override
@@ -295,11 +304,11 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 	 */
 	private void executeJavaScriptAsync(final HTMLPanel htmlPanel, final ViewReady viewReady) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				executeJavaScriptNow(htmlPanel, viewReady);
-			}
-		});
+            @Override
+            public void execute() {
+                executeJavaScriptNow(htmlPanel, viewReady);
+            }
+        });
 	}
 
 	/*
@@ -309,6 +318,55 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 		GwtClientHelper.jsExecuteJavaScript(htmlPanel.getElement(), true);
 		GwtClientHelper.jsOnLoadInit();
 		viewReady.viewReady();
+	}
+
+	@Override
+	protected boolean includeFooterPanel() {
+		return m_landingPageConfigData==null || !m_landingPageConfigData.getHideFooter();
+	}
+
+	@Override
+	protected boolean requiresAdditionalConfiguration() {
+		//GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".requiresAdditionalConfiguration().  Workspace type: " + this.m_layoutData.getWorkspaceType());
+		return this.m_layoutData.getWorkspaceType()==WorkspaceType.LANDING_PAGE;
+	}
+
+	@Override
+	protected void fetchAdditionalConfiguration() {
+		//GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".fetchAdditionalConfiguration().  Getting landing page config data...");
+		final String binderId = getBinderIdAsString();
+		GetLandingPageDataCmd cmd = new GetLandingPageDataCmd(binderId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+            /**
+             *
+             */
+            @Override
+            public void onFailure(Throwable t) {
+                GwtClientHelper.handleGwtRPCFailure(
+                        t,
+                        GwtTeaming.getMessages().rpcFailure_GetLandingPageData(),
+                        binderId);
+            }
+
+            @Override
+            public void onSuccess(VibeRpcResponse response) {
+                final ConfigData configData;
+
+                configData = (ConfigData) response.getResponseData();
+
+                GwtClientHelper.deferCommand(new ScheduledCommand() {
+                    /**
+                     *
+                     */
+                    @Override
+                    public void execute() {
+                        // FInish initialization
+                        initializeWithConfigData(configData);
+                    }
+                });
+            }
+        });
+
 	}
 }
 

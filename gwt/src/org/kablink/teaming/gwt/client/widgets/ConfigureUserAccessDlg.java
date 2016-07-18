@@ -335,7 +335,8 @@ public class ConfigureUserAccessDlg extends DlgBox
 		
 		helpData = new HelpData();
 		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "access" );
+		helpData.setPageId( "allow-guest-access" );
+		helpData.setSectionId("web-access");
 		
 		return helpData;
 	}
