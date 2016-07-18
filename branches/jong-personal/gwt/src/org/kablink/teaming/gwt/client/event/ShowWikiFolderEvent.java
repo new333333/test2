@@ -60,10 +60,9 @@ public class ShowWikiFolderEvent extends ShowBinderEvent<ShowWikiFolderEvent.Han
 	 * Class constructor.
 	 * 
 	 * @param binderInfo
-	 * @param viewReady
 	 */
-	public ShowWikiFolderEvent(BinderInfo binderInfo, VibeEntityViewPanel viewPanel, ViewReady viewReady) {
-		super(binderInfo, viewPanel, viewReady);
+	public ShowWikiFolderEvent(BinderInfo binderInfo) {
+		super(binderInfo);
 	}
 	
 	/**

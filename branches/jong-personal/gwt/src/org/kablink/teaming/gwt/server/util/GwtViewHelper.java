@@ -114,6 +114,7 @@ import org.kablink.teaming.fi.FileNotFoundException;
 import org.kablink.teaming.fi.PathTooLongException;
 import org.kablink.teaming.fi.auth.AuthException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.gwt.client.binderviews.RenderEngine;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
@@ -2198,7 +2199,7 @@ public class GwtViewHelper {
 		}
 		GwtLogHelper.debug(m_logger, "......"                                        );
 		GwtLogHelper.debug(m_logger, "......Folder admin:  " + fcData.isFolderAdmin());
-		dumpFolderColumns("......List:  ",     "......", fcData.getFolderColumns()   );
+		dumpFolderColumns("......List:  ", "......", fcData.getFolderColumns());
 		dumpFolderColumns("......List all:  ", "......", fcData.getFolderColumnsAll());
 	}
 	
@@ -5225,7 +5226,7 @@ public class GwtViewHelper {
 		spec.setSharedEntityIdentifier(new EntityIdentifier(fed.getEntityId().getEntityId(), EntityType.folderEntry));
 		Long userId = GwtServerHelper.getCurrentUserId();
 		List<Long>	groups = GwtServerHelper.getGroupIds(request, bs, userId);
-		List<Long>	teams  = GwtServerHelper.getTeamIds( request, bs, userId);
+		List<Long>	teams  = GwtServerHelper.getTeamIds(request, bs, userId);
 		List<Long>	users  = new ArrayList<Long>(); users.add(userId);
 		spec.setRecipients(users, groups, teams);
 		
@@ -6355,7 +6356,7 @@ public class GwtViewHelper {
 		reply.setAvatarUrl(GwtServerHelper.getPrincipalAvatarUrl(bs, request, p));
 		reply.setEmailAddress(      p.getEmailAddress()      );
 		reply.setMobileEmailAddress(p.getMobileEmailAddress());
-		reply.setTextEmailAddress(  p.getTxtEmailAddress()   );
+		reply.setTextEmailAddress(p.getTxtEmailAddress());
 		if (p instanceof User) {
 			reply.setPhone(((User) p).getPhone());
 		}
@@ -9559,6 +9560,7 @@ public class GwtViewHelper {
 		// Is the binder a workspace?
 		User user = GwtServerHelper.getCurrentUser();
 		vi.setViewType(ViewType.BINDER);
+		boolean checkBinderForJspOverride = false;
 		if (bi.isBinderWorkspace()) {
 			// Yes!  Does it have the showCollection parameter?
 			String showCollection = getQueryParameterString(nvMap, WebKeys.URL_SHOW_COLLECTION);
@@ -9572,12 +9574,20 @@ public class GwtViewHelper {
 				if (CollectionType.MY_FILES.equals(ct) && SearchUtils.useHomeAsMyFiles(bs))
 				     homeId = SearchUtils.getHomeFolderId(bs);
 				else homeId = null;
-				if (null == homeId)
-				     bi = GwtServerHelper.buildCollectionBI(ct, user.getWorkspaceId());
-				else bi = GwtServerHelper.getBinderInfo(bs, request, String.valueOf(homeId));
+				if (null == homeId) {
+					bi = GwtServerHelper.buildCollectionBI(ct, user.getWorkspaceId());
+					vi.setRenderEngine(RenderEngine.GWT_STANDARD);
+				} else {
+					bi = GwtServerHelper.getBinderInfo(bs, request, String.valueOf(homeId));
+					vi.setRenderEngine(RenderEngine.GWT_CUSTOMIZED);
+				}
 			} else if (GwtFolderViewHelper.hasCustomView(bs, binder)) {
 				vi.setViewLayout(GwtFolderViewHelper.buildBinderViewLayout(binder));
-				vi.setCustomLayout(true);
+				vi.setRenderEngine(RenderEngine.GWT_CUSTOMIZED);
+				checkBinderForJspOverride = true;
+			} else {
+				vi.setRenderEngine(RenderEngine.GWT_STANDARD);
+				checkBinderForJspOverride = true;
 			}
 		}
 
@@ -9597,6 +9607,10 @@ public class GwtViewHelper {
 						bi = GwtServerHelper.buildCollectionBI(
 							CollectionType.MY_FILES,
 							currentUserWSId);
+						vi.setRenderEngine(RenderEngine.GWT_STANDARD);
+					} else {
+						vi.setRenderEngine(RenderEngine.GWT_CUSTOMIZED);
+						checkBinderForJspOverride = true;
 					}
 				}
 				else  {
@@ -9609,13 +9623,23 @@ public class GwtViewHelper {
 						vi.setViewType(ViewType.BINDER);
 						vi.setOverrideUrl(GwtProfileHelper.getUserProfileUrl(request, userWS));
 						bi = GwtServerHelper.getBinderInfo(bs, request, userWS.getId());
+						vi.setRenderEngine(RenderEngine.GWT_STANDARD);
+					} else {
+						vi.setRenderEngine(RenderEngine.GWT_CUSTOMIZED);
+						checkBinderForJspOverride = true;
 					}
 				}
 			} else if (GwtFolderViewHelper.hasCustomView(bs, binder)) {
 				vi.setViewLayout(GwtFolderViewHelper.buildBinderViewLayout(binder));
-				vi.setCustomLayout(true);
+				vi.setRenderEngine(RenderEngine.GWT_CUSTOMIZED);
+				checkBinderForJspOverride = true;
 			}
+		}
 
+		if (checkBinderForJspOverride) {
+			if (Boolean.TRUE.equals(binder.getProperty(ObjectKeys.BINDER_PROPERTY_RENDER_JSP_VIEW))) {
+				bi.setForceJspRendering(true);
+			}
 		}
 		
 		// Store any BinderInfo change we made in the ViewInfo.

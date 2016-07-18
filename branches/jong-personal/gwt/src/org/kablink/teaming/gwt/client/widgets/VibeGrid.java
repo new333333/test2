@@ -84,13 +84,13 @@ public class VibeGrid extends Grid
      */
     private void onResizeNow()
     {
-        GwtClientHelper.consoleLog("VibeGrid.onResizeNow(): numRows=" + numRows + "; numCols=" + numColumns);
+//        GwtClientHelper.consoleLog("VibeGrid.onResizeNow(): numRows=" + numRows + "; numCols=" + numColumns);
         for (int row=0; row<numRows; row++) {
-            GwtClientHelper.consoleLog("VibeGrid.onResizeNow(): row " + row + " height: " + getRowHeight(row));
+//            GwtClientHelper.consoleLog("VibeGrid.onResizeNow(): row " + row + " height: " + getRowHeight(row));
             for (int col=0; col<numColumns; col++) {
                 Widget child = this.getWidget(row, col);
                 if (child!=null && child instanceof RequiresResize) {
-                    GwtClientHelper.consoleLog("Calling onResize() for child: " + child.getClass().getSimpleName());
+//                    GwtClientHelper.consoleLog("Calling onResize() for child: " + child.getClass().getSimpleName());
                     ((RequiresResize) child).onResize();
                 } else if (child!=null) {
                     GwtClientHelper.consoleLog("Won't call onResize() for child because it doesn't implement RequiresResize: " + child.getClass().getSimpleName());
@@ -104,14 +104,14 @@ public class VibeGrid extends Grid
     @Override
     public int getContainingHeight(Widget widget) {
         int row = getRow(widget);
-        GwtClientHelper.consoleLog("VibeGrid.getContainingHeight(): widget=" + widget.getClass().getSimpleName() + "; row=" + row);
+//        GwtClientHelper.consoleLog("VibeGrid.getContainingHeight(): widget=" + widget.getClass().getSimpleName() + "; row=" + row);
         return getRowHeight(row);
     }
 
     @Override
     public int getContainingWidth(Widget widget) {
         int col = getCol(widget);
-        GwtClientHelper.consoleLog("VibeGrid.getContainingWidth(): widget=" + widget.getClass().getSimpleName() + "; col=" + col);
+//        GwtClientHelper.consoleLog("VibeGrid.getContainingWidth(): widget=" + widget.getClass().getSimpleName() + "; col=" + col);
         return getColumnWidth(col);
     }
 

@@ -4168,6 +4168,9 @@
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
+		<folderViews>
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewJsp" />
+		</folderViews>
 		<help>ihelp.designers.custom_jsp</help>
 		<notify velocity="custom.vm" />
 	</item>

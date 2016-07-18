@@ -64,7 +64,26 @@
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />
 
-<div class="ss_buttonBarRight margintop3 marginbottom3">
+	<br/>
+	<c:set var="cb_checked" value=""/>
+	<c:if test='${ssDefinitionEntry.properties.get("renderJspView")==true}' >
+		<c:set var="cb_checked" value=" checked "/>
+	</c:if>
+
+	<div style="display:block">
+		<input type="checkbox" name="ss_renderJspView"
+			<c:out value="${cb_checked}" />
+			   onClick="if (document.${formName}.ss_renderJspView.checked) document.${formName}.renderJspView.value='true'; else document.${formName}.renderJspView.value='false';">
+		&nbsp;
+			<span class="ss_labelRight">
+				<ssf:nlt tag="binder.view.useJspRenderer">
+					<ssf:param name="value" value="${productName}"/>
+				</ssf:nlt>
+			</span>
+	</div>
+	<input type="hidden" name="renderJspView" value='${ssDefinitionEntry.properties.get("renderJspView")==true}'/>
+
+	<div class="ss_buttonBarRight margintop3 marginbottom3">
 <input type="submit" class="ss_submit" name="okBtn" 
   value="<ssf:nlt tag="button.ok" text="  OK  "/>"  onClick="ss_buttonSelect('okBtn');">
 <input type="submit" class="ss_submit" name="cancelBtn" 
