@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="websocket-lib/src"/>
 	<classpathentry kind="src" path="rest-lib/src"/>
 	<classpathentry kind="src" path="samples/rest-client/src"/>
 	<classpathentry kind="src" path="rest-client/src"/>
@@ -211,5 +212,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring-web-4.3.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-4.3.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet-4.3.0.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/websocket-api.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
