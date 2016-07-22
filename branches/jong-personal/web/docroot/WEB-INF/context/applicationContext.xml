@@ -1661,5 +1661,10 @@ text/calendar											  ics
 		<property name="adminModule"><ref bean="adminModule"/></property>
 		<property name="luceneSessionFactory"><ref bean="luceneSessionFactory"/></property>
 	</bean>
+
+	<!-- ================================ Websocket Support =============================== -->
+	
+	<bean id="roomEndpointManager" class="org.kablink.teaming.web.socket.room.impl.RoomEndpointManagerImpl">
+	</bean>
 	
 </beans>
