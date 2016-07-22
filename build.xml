@@ -114,6 +114,7 @@
 		<ant dir="main-minimum" target="clean" inheritAll="false"/>
 		<ant dir="main" target="clean" inheritAll="false"/>
 		<ant dir="rest-lib" target="clean" inheritAll="false"/>
+		<ant dir="websocket-lib" target="clean" inheritAll="false"/>
 		<ant dir="slide-webdavclient" target="clean" inheritAll="false"/>
 		<ant dir="portal-module" target="clean" inheritAll="false"/>
 		<!--<ant dir="liferay" target="clean" inheritAll="false"/>
@@ -161,6 +162,7 @@
 		<ant dir="main-minimum" target="compile" inheritall="false"/>
 		<ant dir="main" target="compile" inheritall="false"/>
 		<ant dir="rest-lib" target="compile" inheritall="false"/>
+		<ant dir="websocket-lib" target="compile" inheritall="false"/>
 		<ant dir="slide-webdavclient" target="compile" inheritall="false"/>
 
 		<ant dir="portal-module" target="compile" inheritall="false"/>
@@ -202,6 +204,7 @@
 		<ant dir="main-minimum" target="jar" inheritall="false"/>
 		<ant dir="main" target="jar" inheritall="false"/>
 		<ant dir="rest-lib" target="jar" inheritall="false"/>
+		<ant dir="websocket-lib" target="jar" inheritall="false"/>
 		<ant dir="slide-webdavclient" target="jar" inheritall="false"/>
 		<ant dir="portal-module" target="jar" inheritall="false"/>
 		<!--<ant dir="liferay" target="jar" inheritall="false"/>
@@ -260,6 +263,8 @@
 		
 		<ant dir="web" target="deploy" inheritall="false"/>
 		
+		<ant dir="websocket-lib" target="deploy" inheritall="false"/>
+
 		<!--<ant dir="ssfs" target="deploy" inheritall="false"/>-->
 		
 		<ant dir="ssr" target="deploy" inheritall="false"/>
@@ -295,6 +300,7 @@
 		<ant dir="main-minimum" target="java2html" inheritAll="false"/>
 		<ant dir="main" target="java2html" inheritAll="false"/>
 		<ant dir="rest-lib" target="java2html" inheritAll="false"/>
+		<ant dir="websocket-lib" target="java2html" inheritAll="false"/>
 		<ant dir="slide-webdavclient" target="java2html" inheritAll="false"/>
 		<ant dir="portal-module" target="java2html" inheritAll="false"/>
 		<!--<ant dir="liferay" target="java2html" inheritAll="false"/>
@@ -330,6 +336,7 @@
 		<ant dir="main-minimum" target="javadoc" inheritAll="false"/>
 		<ant dir="main" target="javadoc" inheritAll="false"/>
 		<ant dir="rest-lib" target="javadoc" inheritAll="false"/>
+		<ant dir="websocket-lib" target="javadoc" inheritAll="false"/>
 		<ant dir="slide-webdavclient" target="javadoc" inheritAll="false"/>
 		<ant dir="portal-module" target="javadoc" inheritAll="false"/>
 		<!--<ant dir="liferay" target="javadoc" inheritAll="false"/>
