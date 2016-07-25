@@ -141,14 +141,10 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 							String jspName = jspEle.attributeValue("value");
 							if ("true".equals(jspEle.attributeValue("inherit"))) inherit=Boolean.TRUE;							
 							if (!inherit && Validator.isNotNull(jspName)) {
-								if (Validator.isNotNull(jspBase)) {
-									customJsp = jspBase + jspName;
-								} else {
-									String [] extJsp = extractJspExtensionName(jspName);
-									if (extJsp!=null) {
-										customJsp = DEFAULT_EXT_BASE + Utils.getZoneKey() +
-												File.separator + extJsp[0] + File.separator + "jsp" +
-												File.separator + extJsp[1];
+								customJsp = DirPath.findCustomJsp(jspName, extensionName);
+								if (customJsp==null) {
+									if (Validator.isNotNull(jspBase)) {
+										customJsp = jspBase + jspName;
 									} else {
 										customJsp = DEFAULT_JSP_BASE + jspName;
 									}
@@ -535,14 +531,6 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 			_params = new HashMap();
 		}
 		_params.put(name, value);
-	}
-
-	private static String [] extractJspExtensionName(String jspName) {
-		String [] parts = jspName.split("[\\/\\\\]", 3);
-		if (parts.length==3 && parts[0].length()>0 && parts[1].equals("jsp")) {
-			return new String [] {parts[0], parts[2]};
-		}
-		return null;
 	}
 }
 
