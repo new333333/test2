@@ -75,16 +75,8 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarAppointmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
-import org.kablink.teaming.gwt.client.util.AssignmentInfo;
-import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.CalendarAppointment;
-import org.kablink.teaming.gwt.client.util.CalendarAttendee;
-import org.kablink.teaming.gwt.client.util.CalendarDayView;
-import org.kablink.teaming.gwt.client.util.CalendarHours;
-import org.kablink.teaming.gwt.client.util.CalendarRecurrence;
-import org.kablink.teaming.gwt.client.util.CalendarShow;
+import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
-import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -694,140 +686,20 @@ public class GwtCalendarHelper {
 				Map<Long, AppointmentStyle> binderColorMap = new HashMap<Long, AppointmentStyle>();
 				int nextColor = 0;
 				for (Map event:  events) {
-					// What attributes do we use for accessing
-					// information about this event?
-					String  fieldName = GwtEventHelper.getStringFromEntryMapRaw(event, (Constants.EVENT_FIELD + "0"));
-					boolean isTask    = fieldName.equals(Constants.EVENT_FIELD_START_END);
-					
-					String  attrGroups;
-					String  attrIndividuals;
-					String  attrTeams;
-					if (isTask) {
-						attrGroups      = TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME;
-						attrIndividuals = TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME;
-						attrTeams       = TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME;
-					}
-					else {
-						attrGroups      = EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME;
-						attrIndividuals = EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME;
-						attrTeams       = EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME;
-					}
-					
-					// Create a base CalendarAppointment for this event
-					// and added it to the response data.
-					CalendarAppointment appointment = new CalendarAppointment(isTask);
-					reply.addAppointment(appointment);
+					CalendarAppointment appointment = buildCalendarAppointmentFromMap(event, request, browserTZOffset, physicalByActivity, physicalByDate, seenMap);
 
-					boolean allDay;
-					if (!physicalByDate) {
-						// Set whether this is an all day appointment.
-						String tz = GwtEventHelper.getStringFromEntryMapRaw(
-							event,
-							GwtEventHelper.buildEventFieldName(
-								fieldName,
-								Constants.EVENT_FIELD_TIME_ZONE_ID));
-						allDay = (!(MiscUtil.hasString(tz)));
-						appointment.setAllDay(allDay);
-					}
-					else {
-						// When viewing by date, we never treat things
-						// as an all day event.
-						allDay = false;
-					}
-
-					// Set appointment's attendees.
-					setVibeAttendees(     appointment, GwtEventHelper.getAssignmentInfoListFromEntryMap(event, attrIndividuals, AssigneeType.INDIVIDUAL));
-					setVibeAttendeeGroups(appointment, GwtEventHelper.getAssignmentInfoListFromEntryMap(event, attrGroups,      AssigneeType.GROUP     ));
-					setVibeAttendeeTeams( appointment, GwtEventHelper.getAssignmentInfoListFromEntryMap(event, attrTeams,       AssigneeType.TEAM      ));
-					
-					// Set the appointment's created by.
-					appointment.setCreatedBy(GwtEventHelper.getStringFromEntryMapRaw(event, Constants.CREATOR_TITLE_FIELD));
-					appointment.setCreatorId(GwtEventHelper.getLongFromEntryMap(     event, Constants.CREATORID_FIELD    ));
-					
-					// Set the appointment's description.
-					String value = GwtViewHelper.getEntryDescriptionFromMap(request, event);
-					if ((Description.FORMAT_HTML == getEntryDescFormatFromEM(event)) && MiscUtil.hasString(value)) {
-						appointment.setDescriptionHtml(value);
-						value = Html.stripHtml(value);
-					}
-					appointment.setDescription(value);
-					
-					// Are we viewing physical events by a date?
-					if (physicalByDate) {
-						// Yes!  Can we get the appropriate date?
-						String field = (physicalByActivity ? Constants.LASTACTIVITY_FIELD : Constants.CREATION_DATE_FIELD);
-						Date date = GwtEventHelper.getDateFromEntryMap(event, field);
-						if (null != date) {
-							// Yes!  Use it as the start and end dates
-							// of the event.
-							appointment.setEnd(  date);
-							appointment.setStart(date);
-						}
-					}
-					else {
-						// No, we aren't viewing physical events by a
-						// date!  Set the appointment's end date.
-						Date endDate = GwtEventHelper.getDateFromEntryMap(
-							event,
-							GwtEventHelper.buildEventFieldName(
-								fieldName,
-								Constants.EVENT_FIELD_LOGICAL_END_DATE));
-						if (null != endDate) {
-							if (allDay) {
-								endDate = adjustDateForAllDay(endDate, browserTZOffset);
-							}
-							appointment.setEnd(endDate);
-						}
-						
-						// Set the appointment's start date.
-						Date startDay = GwtEventHelper.getDateFromEntryMap(
-							event,
-							GwtEventHelper.buildEventFieldName(
-								fieldName,
-								Constants.EVENT_FIELD_LOGICAL_START_DATE));
-						if (null != startDay) {
-							if (allDay) {
-								startDay = adjustDateForAllDay(startDay, browserTZOffset);
-							}
-							appointment.setStart(startDay);
-						}
-					}
-										
-					// Set the appointment's IDs.
-					Long   eventFolderId = GwtEventHelper.getLongFromEntryMap(     event, Constants.BINDER_ID_FIELD);
-					String eventId       = GwtEventHelper.getStringFromEntryMapRaw(event, Constants.DOCID_FIELD    );
-					appointment.setEntityId(new EntityId(eventFolderId, Long.parseLong(eventId), EntityId.FOLDER_ENTRY));
-					appointment.setId(eventId);
-
-					// Set the appointment's seen flag.
-					appointment.setSeen(seenMap.checkIfSeen(event));
-										
 					// Set the appointment's style.
-					AppointmentStyle thisColor = binderColorMap.get(eventFolderId);
+					AppointmentStyle thisColor = binderColorMap.get(appointment.getFolderId());
 					if (null == thisColor) {
 						thisColor = BINDER_COLORS[nextColor];
 						if (nextColor == (BINDER_COLORS.length - 1))
-						     nextColor  = 0;
+							nextColor  = 0;
 						else nextColor += 1;
-						binderColorMap.put(eventFolderId, thisColor);
+						binderColorMap.put(appointment.getFolderId(), thisColor);
 					}
 					appointment.setStyle(thisColor);
-										
-					// Set the appointment's title.
-					value= GwtServerHelper.getStringFromEntryMap(event, Constants.TITLE_FIELD);
-					appointment.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 
-					// Does the entry have any recurrence dates?
-					CalendarRecurrence cr = getRecurrenceFromEntryMap(
-						event,
-						GwtEventHelper.buildEventFieldName(
-							fieldName,
-							Constants.EVENT_RECURRENCE_DATES_FIELD));
-					
-					if ((null != cr) && cr.isRecurrent()) {
-						// Yes!  Add them to the appointment.
-						appointment.setServerRecurrence(cr);
-					}
+					reply.addAppointment(appointment);
 				}
 			}
 
@@ -863,6 +735,148 @@ public class GwtCalendarHelper {
 			}
 			throw GwtLogHelper.getGwtClientException(e);
 		}
+	}
+
+	private static CalendarAppointment buildCalendarAppointmentFromMap(Map event, HttpServletRequest request, long browserTZOffset, boolean physicalByActivity, boolean physicalByDate, SeenMap seenMap) {
+		// What attributes do we use for accessing
+		// information about this event?
+		String  fieldName = GwtEventHelper.getStringFromEntryMapRaw(event, (Constants.EVENT_FIELD + "0"));
+		boolean isTask    = fieldName.equals(Constants.EVENT_FIELD_START_END);
+
+		String  attrGroups;
+		String  attrIndividuals;
+		String  attrTeams;
+		if (isTask) {
+            attrGroups      = TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME;
+            attrIndividuals = TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME;
+            attrTeams       = TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME;
+        }
+        else {
+            attrGroups      = EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME;
+            attrIndividuals = EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME;
+            attrTeams       = EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME;
+        }
+
+		// Create a base CalendarAppointment for this event
+		// and added it to the response data.
+		CalendarAppointment appointment = new CalendarAppointment(isTask);
+
+		boolean allDay;
+		if (!physicalByDate) {
+            // Set whether this is an all day appointment.
+            String tz = GwtEventHelper.getStringFromEntryMapRaw(
+                event,
+                GwtEventHelper.buildEventFieldName(
+                    fieldName,
+                    Constants.EVENT_FIELD_TIME_ZONE_ID));
+            allDay = (!(MiscUtil.hasString(tz)));
+            appointment.setAllDay(allDay);
+        }
+        else {
+            // When viewing by date, we never treat things
+            // as an all day event.
+            allDay = false;
+        }
+
+		// Set appointment's attendees.
+		setVibeAttendees(     appointment, GwtEventHelper.getAssignmentInfoListFromEntryMap(event, attrIndividuals, AssigneeType.INDIVIDUAL));
+		setVibeAttendeeGroups(appointment, GwtEventHelper.getAssignmentInfoListFromEntryMap(event, attrGroups,      AssigneeType.GROUP     ));
+		setVibeAttendeeTeams( appointment, GwtEventHelper.getAssignmentInfoListFromEntryMap(event, attrTeams,       AssigneeType.TEAM      ));
+
+		// Set the appointment's created by.
+		appointment.setCreatedBy(GwtEventHelper.getStringFromEntryMapRaw(event, Constants.CREATOR_TITLE_FIELD));
+		appointment.setCreatorId(GwtEventHelper.getLongFromEntryMap(     event, Constants.CREATORID_FIELD    ));
+
+		// Set the appointment's description.
+		String value = GwtViewHelper.getEntryDescriptionFromMap(request, event);
+		if ((Description.FORMAT_HTML == getEntryDescFormatFromEM(event)) && MiscUtil.hasString(value)) {
+            appointment.setDescriptionHtml(value);
+            value = Html.stripHtml(value);
+        }
+		appointment.setDescription(value);
+
+		// Are we viewing physical events by a date?
+		if (physicalByDate) {
+            // Yes!  Can we get the appropriate date?
+            String field = (physicalByActivity ? Constants.LASTACTIVITY_FIELD : Constants.CREATION_DATE_FIELD);
+            Date date = GwtEventHelper.getDateFromEntryMap(event, field);
+            if (null != date) {
+                // Yes!  Use it as the start and end dates
+                // of the event.
+                appointment.setEnd(  date);
+                appointment.setStart(date);
+            }
+        }
+        else {
+			// Set the appointment's start date.
+			Date startDay = GwtEventHelper.getDateFromEntryMap(
+					event,
+					GwtEventHelper.buildEventFieldName(
+							fieldName,
+							Constants.EVENT_FIELD_LOGICAL_START_DATE));
+			if (null != startDay) {
+				if (allDay) {
+					startDay = adjustDateForAllDay(startDay, browserTZOffset);
+				}
+				appointment.setStart(startDay);
+			}
+
+            // No, we aren't viewing physical events by a
+            // date!  Set the appointment's end date.
+			Date endDate = getEndDateFromMap(event, startDay, fieldName);
+			if (null != endDate) {
+                if (allDay) {
+                    endDate = adjustDateForAllDay(endDate, browserTZOffset);
+                }
+                appointment.setEnd(endDate);
+            }
+        }
+
+		// Set the appointment's IDs.
+		Long   eventFolderId = GwtEventHelper.getLongFromEntryMap(     event, Constants.BINDER_ID_FIELD);
+		String eventId       = GwtEventHelper.getStringFromEntryMapRaw(event, Constants.DOCID_FIELD    );
+		appointment.setEntityId(new EntityId(eventFolderId, Long.parseLong(eventId), EntityId.FOLDER_ENTRY));
+		appointment.setId(eventId);
+
+		// Set the appointment's seen flag.
+		appointment.setSeen(seenMap.checkIfSeen(event));
+
+		// Set the appointment's title.
+		value= GwtServerHelper.getStringFromEntryMap(event, Constants.TITLE_FIELD);
+		appointment.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
+
+		// Does the entry have any recurrence dates?
+		CalendarRecurrence cr = getRecurrenceFromEntryMap(
+            event,
+            GwtEventHelper.buildEventFieldName(
+                fieldName,
+                Constants.EVENT_RECURRENCE_DATES_FIELD));
+
+		if ((null != cr) && cr.isRecurrent()) {
+            // Yes!  Add them to the appointment.
+            appointment.setServerRecurrence(cr);
+        }
+		return appointment;
+	}
+
+	private static Date getEndDateFromMap(Map event, Date startDate, String fieldName) {
+		Date endDate = GwtEventHelper.getDateFromEntryMap(
+				event,
+				GwtEventHelper.buildEventFieldName(
+						fieldName,
+						Constants.EVENT_FIELD_LOGICAL_END_DATE));
+		if (endDate==null && startDate!=null) {
+			TaskListItem.TaskDuration duration = GwtTaskHelper.buildTaskDuration(event);
+			GregorianCalendar calendar = new GregorianCalendar();
+			calendar.setTime(startDate);
+			calendar.add(Calendar.DAY_OF_YEAR, duration.getDays());
+			calendar.add(Calendar.HOUR_OF_DAY, duration.getHours());
+			calendar.add(Calendar.MINUTE, duration.getMinutes());
+			calendar.add(Calendar.SECOND, duration.getSeconds());
+			calendar.add(Calendar.WEEK_OF_YEAR, duration.getWeeks());
+			endDate = calendar.getTime();
+		}
+		return endDate;
 	}
 
 	/**
