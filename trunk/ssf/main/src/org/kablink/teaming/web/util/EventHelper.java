@@ -551,7 +551,9 @@ public class EventHelper {
         	GregorianCalendar endc = new GregorianCalendar();
         	endc.setTime(end);
         	event.setDtEnd(endc);
-        }
+        } else if (eventDur!=null) {
+			event.setCalculatedEndDate(startc, eventDur);
+		}
         
         if (!isAllDayEvent(inputData, id)) {
         	event.setTimeZone(getTimeZone(inputData, id));
