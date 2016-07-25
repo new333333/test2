@@ -785,6 +785,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		setDtCalcEnd(parseDateTime(end));
 	}
 
+	public void setCalculatedEndDate(Calendar start, Duration duration) {
+		setDtCalcEnd(buildEnd(start, duration));
+	}
+
 	/**
 	 * @hibernate.property
 	 * Get the frequency of the recurrence.

@@ -81,6 +81,16 @@
 	 */
 %>
 
+<c:set var="interval" value="0" />
+<c:set var="frequency" value="none" />
+<c:set var="sundaySeleted" value="false" />
+<c:set var="mondaySeleted" value="false" />
+<c:set var="tuesdaySeleted" value="false" />
+<c:set var="wednesdaySeleted" value="false" />
+<c:set var="thursdaySeleted" value="false" />
+<c:set var="fridaySeleted" value="false" />
+<c:set var="saturdaySeleted" value="false" />
+
 <div class="ss_event_editor tundra">
 	<table class="ss_style">
 		<tr>
