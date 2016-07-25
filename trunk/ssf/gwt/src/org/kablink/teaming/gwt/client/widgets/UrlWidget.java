@@ -119,7 +119,9 @@ public class UrlWidget extends VibeWidget
 						// Yes
 						width = Window.getClientWidth();
 						height = Window.getClientHeight();
-						Window.open( m_properties.getUrl(), "_urlWidget", "height=" + String.valueOf( height ) + ",resizeable,scrollbars,width=" + String.valueOf( width ) );
+						//Changing the window name from "_urlWidget" to "_blank" to fix bug 970606
+						//Window.open( m_properties.getUrl(), "_urlWidget", "height=" + String.valueOf( height ) + ",resizeable,scrollbars,width=" + String.valueOf( width ) );
+						Window.open( m_properties.getUrl(), "_blank", "height=" + String.valueOf( height ) + ",resizeable,scrollbars,menubar=yes,status=yes,titlebar=yes,toolbar=yes,width=" + String.valueOf( width ) );
 					}
 					else
 						GwtTeaming.fireEvent( new GotoUrlEvent( m_properties.getUrl() ) );
