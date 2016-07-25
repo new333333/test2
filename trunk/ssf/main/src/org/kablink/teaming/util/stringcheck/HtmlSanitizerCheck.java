@@ -15,7 +15,7 @@ public class HtmlSanitizerCheck implements StringCheck {
         factory = new HtmlPolicyBuilder()
                 .allowCommonBlockElements()
                 .allowCommonInlineFormattingElements()
-                .allowAttributes("class", "alt").globally()
+                .allowAttributes("class", "alt", "name").globally() // name attribute is added by lokesh.  This is need by few customers since they have references in long html pages.
                 .allowElements("table", "tbody", "td", "tr", "hr")
                 .allowElements("a", "img", "input", "span")
                 .allowStandardUrlProtocols()
@@ -28,7 +28,7 @@ public class HtmlSanitizerCheck implements StringCheck {
                     //.matching(Pattern.compile("^\\{\\{.*\\}\\}$"))
                     .onElements("img")
                 .allowStyling()
-                .requireRelNofollowOnLinks()
+                //.requireRelNofollowOnLinks() // Disabled by Lokesh.  Follow links is needed by few customers since they have references in long html pages.
                 .toFactory();
     }
 
