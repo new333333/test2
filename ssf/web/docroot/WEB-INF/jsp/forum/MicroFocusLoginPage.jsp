@@ -52,7 +52,7 @@
 				</div>
 			</div>
 			<div class="copyright">
-				<span class="copyright">&copy; 2016 Micro Focus Inc. All rights reserved.</span>
+				<span class="copyright">&copy; <ssf:nlt tag="loginDlg.copyRightText" /></span>
 			</div>
 		</div>		
 	</form>
