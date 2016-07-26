@@ -28,7 +28,6 @@ import javax.websocket.server.ServerEndpoint;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.InternalException;
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContext;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -52,7 +51,6 @@ import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.socket.ServerEndpointConfigurator;
 import org.kablink.teaming.web.socket.WebsocketException;
 import org.kablink.teaming.web.socket.room.impl.RoomEndpointManagerImpl;
-import org.kablink.util.search.Constants;
 
 /**
  * @author jong
