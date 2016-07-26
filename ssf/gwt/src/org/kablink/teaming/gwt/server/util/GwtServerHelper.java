@@ -7773,8 +7773,17 @@ public class GwtServerHelper {
 				// Yes!  Take the first string value.
 				String[] emValues = ((SearchFieldResult) emValue).getValueArray().toArray(new String[0]);
 				int emCount = ((null == emValues) ? 0 : emValues.length);
-				if (0 < emCount)
-				     reply = emValues[0];
+				if (0 < emCount){
+				     // reply = emValues[0]; //Modified by Lokesh - Not sure why we are returning only the first value.
+					// Modifying to fix bug 983052.
+					reply="";
+					for(int j=0;j<emValues.length;j++){						
+						reply+=emValues[j];
+						if(j<emValues.length-1){
+							reply+=",";
+						}
+					}
+				}
 				else reply = "";
 			}
 			else {
