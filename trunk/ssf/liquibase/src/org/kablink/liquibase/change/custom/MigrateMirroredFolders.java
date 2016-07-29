@@ -49,7 +49,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
 
@@ -253,7 +253,7 @@ public class MigrateMirroredFolders {
 				List<Map<String,Object>> rows = new ArrayList<Map<String,Object>>();
 				Map<String,Object> row;
 				while(rs.next()) {
-					row = new HashMap<String,Object>();
+					row = new TreeMap<String,Object>(String.CASE_INSENSITIVE_ORDER);
 					for(int i = 1; i <= columnCount; i++) {
 						String columnName = rsmd.getColumnName(i);
 						Object columnValue = rs.getObject(i);
