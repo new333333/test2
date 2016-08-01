@@ -61,12 +61,7 @@ import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.util.DirPath;
-import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.ResolveIds;
-import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.*;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Validator;
@@ -264,7 +259,8 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 								req.setAttribute("property_name", "");
 								req.setAttribute("property_caption", "");
 								req.setAttribute("property_required", "false");
-									
+								req.setAttribute("productName", ReleaseInfo.getName());
+
 								//Also set up the default values for all properties defined in the definition configuration
 								//  These will be overwritten by the real values (if they exist) below
 								List<Element> itemDefinitionProperties = new ArrayList<Element>();
