@@ -9575,7 +9575,7 @@ public class GwtViewHelper {
 					bi = GwtServerHelper.getBinderInfo(bs, request, String.valueOf(homeId));
 					vi.setRenderEngine(RenderEngine.GWT_CUSTOMIZED);
 				}
-			} else if (GwtFolderViewHelper.hasCustomView(bs, binder)) {
+			} else if (GwtFolderViewHelper.hasCustomView(bs, binder, showTrash)) {
 				vi.setViewLayout(GwtFolderViewHelper.buildBinderViewLayout(binder));
 				vi.setRenderEngine(RenderEngine.GWT_CUSTOMIZED);
 				checkBinderForJspOverride = true;
@@ -9623,7 +9623,7 @@ public class GwtViewHelper {
 						checkBinderForJspOverride = true;
 					}
 				}
-			} else if (GwtFolderViewHelper.hasCustomView(bs, binder)) {
+			} else if (GwtFolderViewHelper.hasCustomView(bs, binder, showTrash)) {
 				vi.setViewLayout(GwtFolderViewHelper.buildBinderViewLayout(binder));
 				vi.setRenderEngine(RenderEngine.GWT_CUSTOMIZED);
 				checkBinderForJspOverride = true;
@@ -9645,6 +9645,7 @@ public class GwtViewHelper {
 			// accordingly.
 			if      (bi.isBinderFolder())    bi.setFolderType(   FolderType.TRASH   );
 			else if (bi.isBinderWorkspace()) bi.setWorkspaceType(WorkspaceType.TRASH);
+			bi.setForceJspRendering(false);
 		}
 
 		// Are we supposed to invoke the share dialog on this binder?
