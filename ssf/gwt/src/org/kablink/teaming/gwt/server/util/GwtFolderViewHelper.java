@@ -167,8 +167,11 @@ public class GwtFolderViewHelper {
         return binderView;
     }
 
-    public static boolean hasCustomView(AllModulesInjected ami, Binder binder) {
+    public static boolean hasCustomView(AllModulesInjected ami, Binder binder, boolean trash) {
         if (binder==null) {
+            return false;
+        }
+        if (trash) {
             return false;
         }
         if (binder instanceof Workspace) {

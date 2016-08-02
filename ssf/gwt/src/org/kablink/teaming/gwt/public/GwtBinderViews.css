@@ -134,7 +134,7 @@
 
 	/* ...Start:  Footer panel styles. */
 		.vibe-footerPanel                       {padding-top: 5px !important;}
-		.vibe-footerAnchor                      {cursor: pointer; color: #666;}
+		.vibe-footerAnchor                      {cursor: pointer}
 		.vibe-footerAnchor-hover                {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 		.vibe-footerAnchorLabel                 {font-size: small;}
 		.vibe-footerAnchorPanel                 {text-align: center;}

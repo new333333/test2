@@ -116,7 +116,7 @@ public class AccessoriesPanel extends ToolPanelBase
 		m_fp.addStyleName("vibe-binderViewTools vibe-accessoriesPanel");
 
 		initWidget(m_fp);
-		if (binderInfo.getCollectionType() == CollectionType.NOT_A_COLLECTION) {
+		if (binderInfo.getCollectionType() == CollectionType.NOT_A_COLLECTION && !binderInfo.isBinderTrash()) {
 			loadPart1Async();
 		} else if (m_notifyOnReady) {
 			toolPanelReady();

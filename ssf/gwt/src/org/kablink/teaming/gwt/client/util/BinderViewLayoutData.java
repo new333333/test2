@@ -70,12 +70,15 @@ public class BinderViewLayoutData {
             typeStr = viewInfo.getViewType().name();
         }
 
-        GwtClientHelper.consoleLog("BinderViewLayoutData: Determining how to render the binder view: " + typeStr);
+//        GwtClientHelper.consoleLog("BinderViewLayoutData: Determining how to render the binder view: " + typeStr);
+//        GwtClientHelper.consoleLog("BinderViewLayoutData: Render engine: " + viewInfo.getRenderEngine().name() +
+//                "; view layout: " + viewInfo.getViewLayout() + "; force JSP: " + viewInfo.getBinderInfo().isForceJspRendering() +
+//                "; GWT show event: " + typeBasedEvent);
         if (showCustomGwtBinderView()) {
-            GwtClientHelper.consoleLog("BinderViewLayoutData: Show custom GWT binder view?");
+//            GwtClientHelper.consoleLog("BinderViewLayoutData: Show custom GWT binder view?");
             viewEvent = new ShowCustomBinderViewEvent(this, parent, viewReady);
         } else if (showStandardGwtBinderView()) {
-            GwtClientHelper.consoleLog("BinderViewLayoutData: Show standard GWT binder view?");
+//            GwtClientHelper.consoleLog("BinderViewLayoutData: Show standard GWT binder view?");
             viewEvent = new ShowStandardBinderViewEvent(this, parent, viewReady);
         }
         return viewEvent;
