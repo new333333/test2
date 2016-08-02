@@ -598,7 +598,7 @@ public class MarkupUtil {
 			public String getVibeFunctionResult(String functionText) {
 				String defId = (String)searchResults.get(Constants.COMMAND_DEFINITION_FIELD);
 				Definition def = null;
-				if (defId != null) def = definitionModule.getDefinition(defId);
+				if (defId != null) def = getDefinitionModule().getDefinition(defId);
 				User user = RequestContextHolder.getRequestContext().getUser();
 				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 				String result = "";
@@ -946,7 +946,7 @@ public class MarkupUtil {
 
 			//vibe functions
 			public String getVibeFunctionResult(String functionText) {
-				Definition def = definitionModule.getDefinition(entity.getEntryDefId());
+				Definition def = getDefinitionModule().getDefinition(entity.getEntryDefId());
 				User user = RequestContextHolder.getRequestContext().getUser();
 				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 				String result = "";
