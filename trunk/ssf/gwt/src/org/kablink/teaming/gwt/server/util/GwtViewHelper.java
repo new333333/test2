@@ -6102,6 +6102,10 @@ public class GwtViewHelper {
 											// store it.
 											String descFmt = GwtServerHelper. getStringFromEntryMap(entryMap, Constants.DESC_FORMAT_FIELD);
 											boolean isHtml = ((null != descFmt) && "1".equals(descFmt));
+											if (isHtml) {
+												value = MarkupUtil.markupStringReplacement(null, null, request, null,
+															user, value, WebKeys.MARKUP_VIEW);
+											}
 											fr.setColumnValue(fc, new DescriptionHtml(value, isHtml));
 										}
 										
