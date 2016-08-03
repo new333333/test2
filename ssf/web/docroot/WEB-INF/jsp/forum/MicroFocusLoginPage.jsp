@@ -39,7 +39,7 @@
 				<div id="termsContainer" class="gwt-CheckBox" style="display: none; float: left;">
 					<div>
 						<input id="acceptTermsCheckBox" type="checkbox" style="float: left;" /> 
-						<label id="acceptTermsAnchor" style="position: absolute; margin-top: -2px;">I accept <span style="cursor: pointer; color: #fff; text-decoration: underline;">terms and conditions</span></label>
+						<label id="acceptTermsAnchor" style="position: absolute; margin-top: -2px;"><ssf:nlt tag="loginDlg.iAccept" /> <span style="cursor: pointer; color: #fff; text-decoration: underline;"><ssf:nlt tag="loginDlg.termsAndConditions" /></span></label>
 					</div>
 				</div>
 			</div>
