@@ -26,40 +26,40 @@ public class RoomEndpointManagerImpl implements RoomEndpointManager {
 	@Override
 	public void addRoomEndpoint(RoomEndpoint roomEndpoint) {
 		Long roomId = roomEndpoint.getRoomId();
-		Set<RoomEndpoint> roomConnections = connections.get(roomId);
-		if(roomConnections == null) {
+		Set<RoomEndpoint> roomEndpoints = connections.get(roomId);
+		if(roomEndpoints == null) {
 			// Only then synchronize
 			synchronized (connections) {
-				roomConnections = connections.get(roomId);
+				roomEndpoints = connections.get(roomId);
 				// Set up an empty set for the room only if it's still not there
-				if(roomConnections == null) {
-					roomConnections = new CopyOnWriteArraySet<RoomEndpoint>();
-					connections.put(roomId, roomConnections);
+				if(roomEndpoints == null) {
+					roomEndpoints = new CopyOnWriteArraySet<RoomEndpoint>();
+					connections.put(roomId, roomEndpoints);
 				}
 			}
 		}
-		roomConnections.add(roomEndpoint);
+		roomEndpoints.add(roomEndpoint);
 	}
 
 	@Override
 	public void removeRoomEndpoint(RoomEndpoint roomEndpoint) {
-		Set<RoomEndpoint> roomConnections = connections.get(roomEndpoint.getRoomId());
-		if(roomConnections != null)
-			roomConnections.remove(roomEndpoint);
+		Set<RoomEndpoint> roomEndpoints = connections.get(roomEndpoint.getRoomId());
+		if(roomEndpoints != null)
+			roomEndpoints.remove(roomEndpoint);
 	}
 
 	@Override
 	public void broadcast(Long roomId, String message) {
-		Set<RoomEndpoint> roomConnections = connections.get(roomId);
-		if(roomConnections != null) {
-	        for (RoomEndpoint roomConnection : roomConnections) {
+		Set<RoomEndpoint> roomEndpoints = connections.get(roomId);
+		if(roomEndpoints != null) {
+	        for (RoomEndpoint roomEndpoint : roomEndpoints) {
 	        	try {
-	        		roomConnection.sendMessage(message);
+	        		roomEndpoint.sendMessage(message);
 	        	}
 	        	catch(Exception e) {
-	                logger.error("Failed to send message to client on: " + roomConnection, e);
-	                roomConnections.remove(roomConnection);
-	                roomConnection.close();
+	                logger.error("Failed to send message to client on: " + roomEndpoint, e);
+	                roomEndpoints.remove(roomEndpoint);
+	                roomEndpoint.close();
 	        	}
 	        }
 		}
