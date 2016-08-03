@@ -396,7 +396,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox implements KeyPressHandler, 
 		ckboxPanel2.addStyleName("marginleft1 margintop2");
 		mainPanel.add(ckboxPanel2);
 
-		m_allowCachedFilesCleanUpIntervalModificationCB = new CheckBox("Allow user to modify cached files lifetime");
+		m_allowCachedFilesCleanUpIntervalModificationCB = new CheckBox(m_messages.fileSyncAllowModifyCachedFilesLifeTimeLabel());
 		FlowPanel tmpPanel2 = new FlowPanel();
 		tmpPanel2.add(m_allowCachedFilesCleanUpIntervalModificationCB);
 		ckboxPanel2.add(tmpPanel2);
