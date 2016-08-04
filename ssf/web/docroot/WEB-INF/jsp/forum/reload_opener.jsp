@@ -57,16 +57,22 @@ function ss_doReload() {
 		}
 	} catch(e) {}
 	if (self.opener && self.opener.ss_reloadUrl) {
-		var url = self.opener.ss_reloadUrl;
-		if (typeof self.opener.ss_reloadUrl${ssBinderId} != "undefined") 
-			url = self.opener.ss_reloadUrl${ssBinderId};
-		ss_random++;
-		url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
-		url = ss_replaceSubStr(url, "ss_randomPlaceholder", ss_random)
-		if (self.opener.top.m_requestInfo) {
+		if (ss_isGwtUIActive) {
 			self.opener.top.m_requestInfo.refreshSidebarTree = true;
+			self.opener.top.ss_setContentLocation(self.opener.top.ss_getUrlFromContentHistory(0))
 		}
-		self.opener.location.href = url;
+		else {
+			var url = self.opener.ss_reloadUrl;
+			if (typeof self.opener.ss_reloadUrl${ssBinderId} != "undefined") 
+				url = self.opener.ss_reloadUrl${ssBinderId};
+			ss_random++;
+			url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
+			url = ss_replaceSubStr(url, "ss_randomPlaceholder", ss_random)
+			if (self.opener.top.m_requestInfo) {
+				self.opener.top.m_requestInfo.refreshSidebarTree = true;
+			}
+			self.opener.location.href = url;
+		}
 		self.opener.focus();
 	} else if (self.opener) {
 		if (ss_isGwtUIActive) {
