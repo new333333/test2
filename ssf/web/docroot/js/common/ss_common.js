@@ -1,5 +1,4 @@
 /**
- * Copyright (c) 1998-2015 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0
  * (the "CPAL"); you may not use this file except in compliance with the CPAL.
@@ -811,14 +810,15 @@ function ss_reloadOpener(fallBackUrl) {
 		}
 	} else if (self.opener) {
 		try {
-			if (self.opener.ss_reloadUrl && self.opener.ss_reloadUrl != "") {
-				self.opener.location.replace(self.opener.ss_reloadUrl);
+			//The order of if else condition is modified by lokesh to fix bug 991141 
+			if (ss_isGwtUIActive) {
+				self.opener.top.m_requestInfo.refreshSidebarTree = "true";
+				ss_setOpenerLocation(fallBackUrl);
 				setTimeout('self.window.close();', 200)
-			} else {
-				if (ss_isGwtUIActive) {
-					self.opener.top.m_requestInfo.refreshSidebarTree = "true";
-					ss_setOpenerLocation(fallBackUrl);
-				}
+			}else {
+				if (self.opener.ss_reloadUrl && self.opener.ss_reloadUrl != "") {
+					self.opener.location.replace(self.opener.ss_reloadUrl);					
+				} 
 				else {
 					self.opener.location.href = fallBackUrl;
 				}
