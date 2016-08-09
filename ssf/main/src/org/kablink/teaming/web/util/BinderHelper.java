@@ -1346,6 +1346,32 @@ public class BinderHelper {
 		return viewType;
 	}
 
+	public static boolean useJspRenderer(Binder binder) {
+		Boolean jspOverride = (Boolean) binder.getProperty(ObjectKeys.BINDER_PROPERTY_RENDER_JSP_VIEW);
+		if (jspOverride==null) {
+			jspOverride = getForceJspRenderingSettingInDefinition(binder);
+		}
+		return Boolean.TRUE.equals(jspOverride);
+	}
+
+	static public Boolean getForceJspRenderingSettingInDefinition(Binder binder) {
+		Boolean jspOverride = null;
+		Definition viewDef    = binder.getDefaultViewDef();
+		Document viewDefDoc = ((null == viewDef) ? null : viewDef.getDefinition());
+		if (null != viewDefDoc) {
+			// Yes!  Does it contain any HTML <item>'s?
+			String viewName;
+			if (binder instanceof Folder)
+				viewName = "forumView";
+			else viewName = "workspaceView";
+			Element reply = (Element) viewDefDoc.selectSingleNode("//item[@name='" + viewName + "']/properties/property[@name='forceJspRenderer']");
+			if (reply!=null) {
+				jspOverride = "true".equalsIgnoreCase(reply.attributeValue("value"));
+			}
+		}
+		return jspOverride;
+	}
+
 	static public String getViewListingJsp(AllModulesInjected bs) {
 		return getViewListingJsp(bs, "");
 	}

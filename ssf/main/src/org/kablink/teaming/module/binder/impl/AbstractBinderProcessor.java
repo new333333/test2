@@ -959,7 +959,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
 		if (inputData.exists(ObjectKeys.FIELD_BINDER_RENDER_JSP_VIEW) && !propertyData.containsKey(ObjectKeys.FIELD_BINDER_RENDER_JSP_VIEW)) {
 			Boolean renderJsp = Boolean.valueOf((String)inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RENDER_JSP_VIEW));
-			propertyData.put( ObjectKeys.FIELD_BINDER_RENDER_JSP_VIEW, renderJsp );
+			if (renderJsp!=BinderHelper.getForceJspRenderingSettingInDefinition(binder)) {
+				propertyData.put(ObjectKeys.FIELD_BINDER_RENDER_JSP_VIEW, renderJsp);
+			} else {
+				propertyData.put(ObjectKeys.FIELD_BINDER_RENDER_JSP_VIEW, null);
+			}
 		}
 	}
     //***********************************************************************************************************

@@ -34,6 +34,7 @@
 %>
 <% //Add/modify a workspace %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="org.kablink.teaming.web.util.BinderHelper" %>
 <%
 	//Get the form item being displayed
 	Element item = (Element) request.getAttribute("item");
@@ -52,6 +53,8 @@
 	if (methodName == null || methodName.equals("")) {
 		methodName = "post";
 	}
+
+	boolean forceRenderJsp = BinderHelper.useJspRenderer((Binder)request.getAttribute("ssBinder"));
 %>
 <c:set var="ss_form_form_formName" value="<%= formName %>" scope="request"/>
 <div class="ss_style ss_portlet" width="100%">
@@ -66,7 +69,7 @@
 
 	<br/>
 	<c:set var="cb_checked" value=""/>
-	<c:if test='${ssDefinitionEntry.properties.get("renderJspView")==true}' >
+	<c:if test='<%= forceRenderJsp %>' >
 		<c:set var="cb_checked" value=" checked "/>
 	</c:if>
 
@@ -76,12 +79,12 @@
 			   onClick="if (document.${formName}.ss_renderJspView.checked) document.${formName}.renderJspView.value='true'; else document.${formName}.renderJspView.value='false';">
 		&nbsp;
 			<span class="ss_labelRight">
-				<ssf:nlt tag="binder.view.useJspRenderer">
+				<ssf:nlt tag="__useJspRenderer">
 					<ssf:param name="value" value="${productName}"/>
 				</ssf:nlt>
 			</span>
 	</div>
-	<input type="hidden" name="renderJspView" value='${ssDefinitionEntry.properties.get("renderJspView")==true}'/>
+	<input type="hidden" name="renderJspView" value='<%= forceRenderJsp %>'/>
 
 	<div class="ss_buttonBarRight margintop3 marginbottom3">
 <input type="submit" class="ss_submit" name="okBtn" 
