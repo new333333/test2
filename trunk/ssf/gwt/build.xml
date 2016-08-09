@@ -109,7 +109,7 @@
 	<target name="init-gwt-production" if="production.build">
 		<echo message="Compiling ${build.gwt.module} for production."/>
 		<property name="gwt.base"            value="${build.gwt.module}_prod" />
-		<property name="gwt.localWorkers"    value="-localWorkers 4"          />
+		<property name="gwt.localWorkers"    value="-localWorkers 12"           />
 		<property name="gwt.logLevel"        value="-logLevel INFO"           />
 		<property name="gwt.style"           value="-style OBF"               />
 		<property name="gwt.additionalArgs1" value=""                         />
