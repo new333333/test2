@@ -9634,10 +9634,8 @@ public class GwtViewHelper {
 			}
 		}
 
-		if (checkBinderForJspOverride) {
-			if (Boolean.TRUE.equals(binder.getProperty(ObjectKeys.BINDER_PROPERTY_RENDER_JSP_VIEW))) {
-				bi.setForceJspRendering(true);
-			}
+		if (checkBinderForJspOverride && binder!=null && BinderHelper.useJspRenderer(binder)) {
+			bi.setForceJspRendering(true);
 		}
 		
 		// Store any BinderInfo change we made in the ViewInfo.
