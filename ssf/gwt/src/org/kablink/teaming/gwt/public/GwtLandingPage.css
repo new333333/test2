@@ -29,13 +29,7 @@
 
 
 /* Style used for all widgets on a landing page. */
-.landingPageWidgetMainPanel 
-{
-	background: transparent;
-	margin: 6px;
-}
-
-.landingPageWidgetMainPanel_dark 
+.landingPageWidgetMainPanel, .landingPageWidgetMainPanel_dark 
 {
 	background: transparent;
 	margin: 6px;
@@ -68,7 +62,7 @@
   -webkit-border-radius: 6px;
 }
 
-.landingPageWidgetContentPanel, .landingPageWidgetContentPanel_dark
+.landingPageWidgetContentPanel_dark
 {
 	background: #ededed;
 }
