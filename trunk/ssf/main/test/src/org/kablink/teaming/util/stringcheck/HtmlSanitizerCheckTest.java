@@ -30,11 +30,17 @@ public class HtmlSanitizerCheckTest extends TestCase {
         sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"http://localhost:8080/ssf/s/readFile/folderEntry/16/-/1461957717981/last/gedit-logo.png\" alt=\" \" />");
         sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"{{attachmentUrl: somename.png}}\" alt=\" \" />");
         sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"cid:{{attachmentUrl: somename.png}}\" alt=\" \" />");
+        sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"data:image/png;abcdef\" alt=\" \" />");
+        sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"data:text/html;abcdef\" alt=\" \" />");
         sanitized = sanitizer.check("<p> {{youtubeUrl: url=https://www.youtube.com/watch?v=HRqZhJcae3M width=425 height=344}}</p>");
         sanitized = sanitizer.check("<img src='>' onerror='alert(1)'>");
         sanitized = sanitizer.check("<p><a href=\"\tjavascript:alert(1)\">clickme</a></p>");
         sanitized = sanitizer.check("<p><a href=\"http://www.novell.com\">clickme</a></p>");
-        sanitized = sanitizer.check("<p><a href=\"http://www.novell.com\">clickme</a></p>");
+        sanitized = sanitizer.check("<p><a href=\"https://www.novell.com\">clickme</a></p>");
+        sanitized = sanitizer.check("<p><a href=\"mailto://www.novell.com\">clickme</a></p>");
+        sanitized = sanitizer.check("<p><a href=\"cid:{{fsakjfldsa}}\">clickme</a></p>");
+        sanitized = sanitizer.check("<p><a href=\"data:text/html;abcde\">clickme</a></p>");
+        sanitized = sanitizer.check("<p><a href=\"data:image/png;abcde\">clickme</a></p>");
 
 
         assertEquals("<a >clickme</a>", xssCheck.check("<a href=\"\tjavascript:alert(1)\">clickme</a>"));
