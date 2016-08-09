@@ -9,6 +9,27 @@ import java.util.regex.Pattern;
  * Created by david on 4/28/16.
  */
 public class HtmlSanitizerCheck implements StringCheck {
+    private static String PROTOCOL_HTTP = "^http[:].*$";
+    private static String PROTOCOL_HTTPS = "^https[:].*$";
+    private static String PROTOCOL_MAILTO = "^mailto[:].*$";
+    private static String PROTOCOL_CID= "^cid[:].*$";
+    private static String PROTOCOL_DATA_IMAGE= "^data[:]image/.*$";
+
+    private static Pattern A_PATTERN = Pattern.compile(
+            "(" + PROTOCOL_HTTP +
+            ")|(" + PROTOCOL_HTTPS +
+            ")|(" + PROTOCOL_MAILTO +
+            ")|(" + PROTOCOL_CID + ")", Pattern.CASE_INSENSITIVE
+    );
+
+    private static Pattern IMG_PATTERN = Pattern.compile(
+            "(" + PROTOCOL_HTTP +
+            ")|(" + PROTOCOL_HTTPS +
+            ")|(" + PROTOCOL_MAILTO +
+            ")|(" + PROTOCOL_CID +
+            ")|(" + PROTOCOL_DATA_IMAGE + ")", Pattern.CASE_INSENSITIVE
+    );
+
     private PolicyFactory factory;
 
     public HtmlSanitizerCheck() {
@@ -20,12 +41,13 @@ public class HtmlSanitizerCheck implements StringCheck {
                 .allowElements("a", "img", "input", "span")
                 .allowStandardUrlProtocols()
                 .allowUrlProtocols("cid")
+                // Pasted images in Firefox
+                .allowUrlProtocols("data")
                 .allowAttributes("href")
-                    //.matching(Pattern.compile("(^http:\\/\\/)|(^https:\\/\\/)|(^\\{\\{.*\\}\\}$)"))
+                    .matching(A_PATTERN)
                     .onElements("a")
                 .allowAttributes("src")
-                    //.matching(Pattern.compile("(^http:\\/\\/)|(^https:\\/\\/)|(^\\{\\{.*\\}\\}$)"))
-                    //.matching(Pattern.compile("^\\{\\{.*\\}\\}$"))
+                    .matching(IMG_PATTERN)
                     .onElements("img")
                 .allowStyling()
                 //.requireRelNofollowOnLinks() // Disabled by Lokesh.  Follow links is needed by few customers since they have references in long html pages.
