@@ -31,6 +31,9 @@ public class HtmlSanitizerCheckTest extends TestCase {
         sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"{{attachmentUrl: somename.png}}\" alt=\" \" />");
         sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"cid:{{attachmentUrl: somename.png}}\" alt=\" \" />");
         sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"data:image/png;abcdef\" alt=\" \" />");
+        sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"data:image/jpeg;abcdef\" alt=\" \" />");
+        sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"data:image/gif;abcdef\" alt=\" \" />");
+        sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"data:image/svg;abcdef\" alt=\" \" />");
         sanitized = sanitizer.check("<img class=\" ss_addimage_att \" src=\"data:text/html;abcdef\" alt=\" \" />");
         sanitized = sanitizer.check("<p> {{youtubeUrl: url=https://www.youtube.com/watch?v=HRqZhJcae3M width=425 height=344}}</p>");
         sanitized = sanitizer.check("<img src='>' onerror='alert(1)'>");

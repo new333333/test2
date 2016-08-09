@@ -13,7 +13,7 @@ public class HtmlSanitizerCheck implements StringCheck {
     private static String PROTOCOL_HTTPS = "^https[:].*$";
     private static String PROTOCOL_MAILTO = "^mailto[:].*$";
     private static String PROTOCOL_CID= "^cid[:].*$";
-    private static String PROTOCOL_DATA_IMAGE= "^data[:]image/.*$";
+    private static String PROTOCOL_DATA_IMAGE= "^data[:]image/(jpeg|png|gif).*$";
 
     private static Pattern A_PATTERN = Pattern.compile(
             "(" + PROTOCOL_HTTP +
@@ -48,7 +48,7 @@ public class HtmlSanitizerCheck implements StringCheck {
                     .onElements("a")
                 .allowAttributes("src")
                     .matching(IMG_PATTERN)
-                    .onElements("img")
+                .onElements("img")
                 .allowStyling()
                 //.requireRelNofollowOnLinks() // Disabled by Lokesh.  Follow links is needed by few customers since they have references in long html pages.
                 .toFactory();
