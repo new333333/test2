@@ -60,6 +60,7 @@ ss_createOnLoadObj("ss_scrollToTop", function() {
 <c:if test="${!empty ss_mashupCss}">
   <link href="<html:rootPath/>${ss_mashupCss}" rel="stylesheet" type="text/css" />
 </c:if>
+<link href="<html:rootPath/>js/gwt/gwtteaming/LegacyJspSupport.css"          rel="stylesheet" type="text/css" />
 <link href="<html:rootPath/>css/ss_mobile_common.css" rel="stylesheet" type="text/css" />
 <link href="<html:rootPath/>css/ss_mobile_iphone.css" rel="stylesheet" type="text/css" />
 <%
