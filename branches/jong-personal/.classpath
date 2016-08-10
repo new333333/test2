@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
-	<classpathentry kind="src" path="websocket-lib/src"/>
 	<classpathentry kind="src" path="rest-lib/src"/>
 	<classpathentry kind="src" path="samples/rest-client/src"/>
 	<classpathentry kind="src" path="rest-client/src"/>
