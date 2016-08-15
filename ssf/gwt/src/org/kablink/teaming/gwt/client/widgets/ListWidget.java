@@ -103,7 +103,8 @@ public class ListWidget extends VibeWidget
 			child.addStyleName( "fontSizeMedium" );
 			table.getFlexCellFormatter().setWidth( 0, 1, "100%" );
 
-			table.getCellFormatter().getElement( 0, 0 ).getStyle().setPaddingTop( .5, Unit.EM );
+			table.getCellFormatter().getElement( 0, 0 ).getStyle().setPaddingLeft( .5, Unit.EM );
+			table.getCellFormatter().getElement( 0, 0 ).getStyle().setPaddingRight( .5, Unit.EM );
 
 			flowPanel = new VibeFlowPanel();
 			flowPanel.add( table );
