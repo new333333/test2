@@ -38,4 +38,8 @@ package org.kablink.teaming.gwt.client.util;
 public class BinderViewLayout extends BinderViewContainer {
     public BinderViewLayout() {
     }
+
+    public boolean hasLandingPageLayout() {
+        return hasChild(BinderViewLandingPageLayout.class);
+    }
 }

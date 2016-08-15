@@ -328,7 +328,7 @@ public class CustomBinderView extends BinderViewBase implements ViewReady, ToolP
 	@Override
 	protected boolean requiresAdditionalConfiguration() {
 		//GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".requiresAdditionalConfiguration().  Workspace type: " + this.m_layoutData.getWorkspaceType());
-		return this.m_layoutData.getWorkspaceType()==WorkspaceType.LANDING_PAGE;
+		return this.m_layoutData.getWorkspaceType()==WorkspaceType.LANDING_PAGE || this.m_viewLayout.hasLandingPageLayout();
 	}
 
 	@Override
