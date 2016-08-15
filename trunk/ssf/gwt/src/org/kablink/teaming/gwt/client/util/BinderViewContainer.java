@@ -61,4 +61,18 @@ public class BinderViewContainer extends BinderViewDefBase {
     public void setWidth(Width width) {
         this.width = width;
     }
+
+    public boolean hasChild(Class<? extends BinderViewDefBase> clss) {
+        for (BinderViewDefBase child : children) {
+            if (child.getClass()==clss) {
+                return true;
+            } else if (child instanceof BinderViewContainer) {
+                if (((BinderViewContainer)child).hasChild(clss)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }

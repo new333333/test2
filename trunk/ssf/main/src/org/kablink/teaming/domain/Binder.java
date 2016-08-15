@@ -873,12 +873,9 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      */
     public Document getLandingPageProperties()
     {
-		CustomAttribute customAttr;
-		Document doc;
-
-		doc = null;
-		customAttr = getCustomAttribute( "mashup" + DefinitionModule.MASHUP_PROPERTIES );
-		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.XML )
+		Document doc = null;
+        CustomAttribute customAttr = getMashupPropertiesAttribute();
+		if ( customAttr != null )
 		{
 			doc = (Document) customAttr.getValue();
 		}
@@ -891,10 +888,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      */
 	public Binder getLandingPagePropertiesSourceBinder()
 	{
-		Document doc;
-		
-		doc = getLandingPageProperties();
-		if ( doc != null )
+        CustomAttribute customAttr = getMashupPropertiesAttribute();
+		if ( customAttr != null )
     		return this;
         
     	if ( parentBinder == null )

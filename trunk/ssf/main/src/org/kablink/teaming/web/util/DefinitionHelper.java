@@ -1231,7 +1231,7 @@ public class DefinitionHelper {
 		CustomAttribute attr;
 		
 		
-		attr = entity.getCustomAttribute("mashup__properties");
+		attr = entity.getMashupPropertiesAttribute();
 		if ( attr != null )
 		{
 			Document doc;
