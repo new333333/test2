@@ -6767,5 +6767,11 @@ td.datePickerMonth {
 	font-size:14px !important;
 }
 /* End of Fix for Bug 991123 */
+
+/* Fix for Bug 992470 */
+.customJspWidgetHtmlWithJavaScriptPanel table{
+	float:none !important;
+}
+/* End of Fix for Bug 992470 */
 	
 /* End Of File */
