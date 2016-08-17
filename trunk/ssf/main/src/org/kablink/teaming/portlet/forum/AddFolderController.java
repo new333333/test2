@@ -52,6 +52,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
@@ -87,7 +88,7 @@ public class AddFolderController extends SAbstractController {
 	throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));	
 		Boolean isShortForm = PortletRequestUtils.getBooleanParameter(request, "shortForm", false);				
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");				
 		String addEntryFromIFrame = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "");
@@ -238,11 +239,12 @@ public class AddFolderController extends SAbstractController {
 				response.setRenderParameter(WebKeys.NAMESPACE, namespace);
 			}
 			else {
-				if (isShortForm) {
+				/*if (isShortForm) {
 					setupReloadBinder(response, newId);
 				} else {
 					setupReloadOpener(response, newId);
-				}
+				}*/
+				setupReloadBinder(response, newId);
 			}
 			
 		} else if (formData.containsKey("addBtn") && WebHelper.isMethodPost(request)) {
@@ -274,9 +276,25 @@ public class AddFolderController extends SAbstractController {
 			setupCloseWindow(response);
 		} else {
 			response.setRenderParameters(formData);
-		}
-			
+		}			
 	}
+	
+	private void setupViewBinder(ActionResponse response, Long binderId, String binderType) {
+		if (binderType.equals(EntityIdentifier.EntityType.folder.name())) {
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
+		} else if (binderType.equals(EntityIdentifier.EntityType.workspace.name())) {
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
+		} else if (binderType.equals(EntityIdentifier.EntityType.profiles.name())) {
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
+		} else throw new IllegalArgumentException("Unknown binderType" + binderType);		
+	}
+	
 	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
