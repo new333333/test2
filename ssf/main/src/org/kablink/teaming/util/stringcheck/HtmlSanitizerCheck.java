@@ -45,6 +45,7 @@ public class HtmlSanitizerCheck implements StringCheck {
             "rules",
             "style",
             "summary",
+            "float",
     };
 
     private PolicyFactory factory;
@@ -53,7 +54,7 @@ public class HtmlSanitizerCheck implements StringCheck {
         factory = new HtmlPolicyBuilder()
                 .allowCommonBlockElements()
                 .allowCommonInlineFormattingElements()
-                .allowAttributes(ALLOWED_ATTRIBUTES).globally() // name attribute is added by lokesh.  This is need by few customers since they have references in long html pages.
+                .allowAttributes(ALLOWED_ATTRIBUTES).globally() // name and float attributes is added by lokesh.  This is need by few customers since they have references in long html pages.
                 .allowElements("table", "tbody", "td", "tr", "hr")
                 .allowElements("a", "img", "input", "span")
                 .allowStandardUrlProtocols()
