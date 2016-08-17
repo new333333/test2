@@ -278,23 +278,7 @@ public class AddFolderController extends SAbstractController {
 			response.setRenderParameters(formData);
 		}			
 	}
-	
-	private void setupViewBinder(ActionResponse response, Long binderId, String binderType) {
-		if (binderType.equals(EntityIdentifier.EntityType.folder.name())) {
-			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
-		} else if (binderType.equals(EntityIdentifier.EntityType.workspace.name())) {
-			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
-			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
-		} else if (binderType.equals(EntityIdentifier.EntityType.profiles.name())) {
-			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
-		} else throw new IllegalArgumentException("Unknown binderType" + binderType);		
-	}
-	
+
 	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
