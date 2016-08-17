@@ -2,6 +2,8 @@ package org.kablink.teaming.util.stringcheck;
 
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
+import org.owasp.html.CssSchema;
+import java.util.Arrays;
 
 import java.util.regex.Pattern;
 
@@ -44,9 +46,17 @@ public class HtmlSanitizerCheck implements StringCheck {
             "name",
             "rules",
             "style",
-            "summary",
-            "float",
+            "summary"
     };
+    
+    /**
+     * The following CSS properties do not appear in the default whitelist from OWASP, but they
+     * improve the fidelity of the HTML display without unacceptable risk.
+     */
+    private static final CssSchema ADDITIONAL_CSS = CssSchema.withProperties(Arrays.asList(
+            "float",
+            "display"
+    ));
 
     private PolicyFactory factory;
 
@@ -67,7 +77,7 @@ public class HtmlSanitizerCheck implements StringCheck {
                 .allowAttributes("src")
                     .matching(IMG_PATTERN)
                 .onElements("img")
-                .allowStyling()
+                .allowStyling(CssSchema.union(CssSchema.DEFAULT, ADDITIONAL_CSS))
                 //.requireRelNofollowOnLinks() // Disabled by Lokesh.  Follow links is needed by few customers since they have references in long html pages.
                 .toFactory();
     }
