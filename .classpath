@@ -212,5 +212,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-4.3.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet-4.3.0.RELEASE.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/websocket-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-websocket-4.3.0.RELEASE.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
