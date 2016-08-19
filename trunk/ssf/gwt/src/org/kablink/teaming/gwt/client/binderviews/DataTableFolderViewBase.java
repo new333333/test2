@@ -965,12 +965,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void doResizeAsync(int delay) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				doResizeNow();
-			}
-		},
-		delay);
+										 @Override
+										 public void execute() {
+											 doResizeNow();
+										 }
+									 },
+				delay);
 	}
 
 	/*
@@ -2193,8 +2193,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.clearUsersAdHocFolders(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
+					EntityId.getLongsFromEntityIds(selectedEntityIds),
+					new FullUIReloadEvent());
 		}
 	}
 	
@@ -2216,8 +2216,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.clearUsersDownload(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
+					EntityId.getLongsFromEntityIds(selectedEntityIds),
+					new FullUIReloadEvent());
 		}
 	}
 	
@@ -2297,9 +2297,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				@Override
 				public void execute() {
 					GwtTeaming.fireEvent(
-						new ContributorIdsReplyEvent(
-							eventBinderId,
-							m_contributorIds));
+							new ContributorIdsReplyEvent(
+									eventBinderId,
+									m_contributorIds));
 				}
 			});
 		}
@@ -2595,8 +2595,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the disable.
 			BinderViewsHelper.disableUsers(
-				EntityId.getLongsFromEntityIds(
-					getSelectedEntityIds()));
+					EntityId.getLongsFromEntityIds(
+							getSelectedEntityIds()));
 		}
 	}
 	
@@ -2618,8 +2618,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.disableUsersAdHocFolders(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
+					EntityId.getLongsFromEntityIds(selectedEntityIds),
+					new FullUIReloadEvent());
 		}
 	}
 	
@@ -2641,8 +2641,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.disableUsersDownload(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
+					EntityId.getLongsFromEntityIds(selectedEntityIds),
+					new FullUIReloadEvent());
 		}
 	}
 	
@@ -2664,8 +2664,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.disableUsersWebAccess(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
+					EntityId.getLongsFromEntityIds(selectedEntityIds),
+					new FullUIReloadEvent());
 		}
 	}
 	
@@ -2687,8 +2687,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Invoke the download.
 			BinderViewsHelper.downloadFolderAsCSVFile(
-				getDownloadPanel().getForm(),
-				dlFolderId);
+					getDownloadPanel().getForm(),
+					dlFolderId);
 		}
 	}
 	
@@ -2802,36 +2802,36 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					// Nothing to do.  Error handled in
 					// asynchronous provider.
 				}
-				
+
 				@Override
 				public void onSuccess(ConfirmDlg cDlg) {
 					ConfirmDlg.initAndShow(
-						cDlg,
-						new ConfirmCallback() {
-							@Override
-							public void dialogReady() {
-								// Ignored.  We don't really care when the
-								// dialog is ready.
-							}
+							cDlg,
+							new ConfirmCallback() {
+								@Override
+								public void dialogReady() {
+									// Ignored.  We don't really care when the
+									// dialog is ready.
+								}
 
-							@Override
-							public void accepted() {
-								// Yes, they're sure!  Remove the
-								// selection from the entries they
-								// don't have rights to share and
-								// perform the edit public link on the
-								// rest.
-								removeRowEntities(                  selectedEntities, invalidRows);
-								deselectRows(                                         invalidRows);
-								editSelectedEntitiesPublicLinkAsync(selectedEntities             );
-							}
+								@Override
+								public void accepted() {
+									// Yes, they're sure!  Remove the
+									// selection from the entries they
+									// don't have rights to share and
+									// perform the edit public link on the
+									// rest.
+									removeRowEntities(selectedEntities, invalidRows);
+									deselectRows(invalidRows);
+									editSelectedEntitiesPublicLinkAsync(selectedEntities);
+								}
 
-							@Override
-							public void rejected() {
-								// No, they're not sure!
-							}
-						},
-						confirmPrompt);
+								@Override
+								public void rejected() {
+									// No, they're not sure!
+								}
+							},
+							confirmPrompt);
 				}
 			});
 		}
@@ -2996,8 +2996,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (eventWorkspaceId.equals(getFolderId())) {
 			// Yes!  Invoke the enable.
 			BinderViewsHelper.enableUsers(
-				EntityId.getLongsFromEntityIds(
-					getSelectedEntityIds()));
+					EntityId.getLongsFromEntityIds(
+							getSelectedEntityIds()));
 		}
 	}
 	
@@ -3019,8 +3019,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.enableUsersAdHocFolders(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
+					EntityId.getLongsFromEntityIds(selectedEntityIds),
+					new FullUIReloadEvent());
 		}
 	}
 	
@@ -3042,8 +3042,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.enableUsersDownload(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
+					EntityId.getLongsFromEntityIds(selectedEntityIds),
+					new FullUIReloadEvent());
 		}
 	}
 	
@@ -3289,7 +3289,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			public void execute() {
 				onInvokeCopyFiltersDlgNow(folderInfo);
 			}
-		} );
+		});
 	}
 	
 	/*
@@ -3572,7 +3572,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Yes!  Update the column values in the row based on
 				// wipe schedule from the event.
 				fr.setColumnWipeScheduled(fc, wipeSchedule.isWipeScheduled());
-				fr.setColumnValue(        fc, wipeSchedule.getDisplay()     );
+				fr.setColumnValue(fc, wipeSchedule.getDisplay());
 			}
 		}
 	}
@@ -3670,7 +3670,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// on the vertical scroll bar.
 			dataTableHeight = minHeight;
 		}
-		
+
+		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".onResizeNow(). New height: " + dataTableHeight);
 		// Set the height of the data table.
 		dg.setHeight(dataTableHeight + "px");
 	}
@@ -3857,9 +3858,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	
 				// ...and invoke the binder share rights dialog.
 				GwtTeaming.fireEventAsync(
-					new InvokeBinderShareRightsDlgEvent(
-						eventFolderId,
-						selectedBinderList));
+						new InvokeBinderShareRightsDlgEvent(
+								eventFolderId,
+								selectedBinderList));
 			}
 		}
 	}
@@ -4292,8 +4293,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.showSelectedShares(
-				getFolderInfo().getCollectionType(),
-				selectedEntityIds);
+					getFolderInfo().getCollectionType(),
+					selectedEntityIds);
 		}
 	}
 	
@@ -4380,36 +4381,36 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					// Nothing to do.  Error handled in
 					// asynchronous provider.
 				}
-				
+
 				@Override
 				public void onSuccess(ConfirmDlg cDlg) {
 					ConfirmDlg.initAndShow(
-						cDlg,
-						new ConfirmCallback() {
-							@Override
-							public void dialogReady() {
-								// Ignored.  We don't really care when the
-								// dialog is ready.
-							}
+							cDlg,
+							new ConfirmCallback() {
+								@Override
+								public void dialogReady() {
+									// Ignored.  We don't really care when the
+									// dialog is ready.
+								}
 
-							@Override
-							public void accepted() {
-								// Yes, they're sure!  Remove the
-								// selection from the entries they
-								// don't have rights to subscribe to
-								// and perform the subscribe on the
-								// rest.
-								removeRowEntities(               selectedEntities, invalidRows);
-								deselectRows(                                      invalidRows);
-								subscribeToSelectedEntitiesAsync(selectedEntities);
-							}
+								@Override
+								public void accepted() {
+									// Yes, they're sure!  Remove the
+									// selection from the entries they
+									// don't have rights to subscribe to
+									// and perform the subscribe on the
+									// rest.
+									removeRowEntities(selectedEntities, invalidRows);
+									deselectRows(invalidRows);
+									subscribeToSelectedEntitiesAsync(selectedEntities);
+								}
 
-							@Override
-							public void rejected() {
-								// No, they're not sure!
-							}
-						},
-						m_messages.vibeDataTable_Confirm_CantSubscribe());
+								@Override
+								public void rejected() {
+									// No, they're not sure!
+								}
+							},
+							m_messages.vibeDataTable_Confirm_CantSubscribe());
 				}
 			});
 		}
@@ -4434,8 +4435,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				@Override
 				public void onFailure(Throwable caught) {
 					GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						GwtTeaming.getMessages().rpcFailure_SaveSharedFilesState());
+							caught,
+							GwtTeaming.getMessages().rpcFailure_SaveSharedFilesState());
 				}
 
 				@Override
@@ -4663,9 +4664,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.zipAndDownloadFiles(
-				getDownloadPanel().getForm(),
-				selectedEntityIds,
-				event.isRecursive());
+					getDownloadPanel().getForm(),
+					selectedEntityIds,
+					event.isRecursive());
 		}
 	}
 	
@@ -4975,10 +4976,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// Yes, we've instantiated a Cloud Folder authentication
 			// dialog already!  Simply show it.
 			showCloudFolderAuthenticationDlgNow(
-				cfAuthentication,
-				vdt,
-				folderId,
-				range);
+					cfAuthentication,
+					vdt,
+					folderId,
+					range);
 		}
 	}
 
@@ -5094,12 +5095,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void showBinderShareRightsDlgAsync(final List<Long> selectedBinderList, final UIObject showRelativeTo) {
 		GwtClientHelper.deferCommand(
-			new ScheduledCommand() {
-				@Override
-				public void execute() {
-					showBinderShareRightsDlgNow(selectedBinderList, showRelativeTo);
-				}
-			});
+				new ScheduledCommand() {
+					@Override
+					public void execute() {
+						showBinderShareRightsDlgNow(selectedBinderList, showRelativeTo);
+					}
+				});
 	}
 
 	/*
@@ -5165,15 +5166,15 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	private void showSizeColumnsDlgNow() {
 		SizeColumnsDlg.initAndShow(
-			m_sizeColumnsDlg,
-			getFolderInfo(),
-			getColumnsForSizing(),
-			m_columnWidths,
-			m_defaultColumnWidth,
-			m_defaultColumnWidths,
-			this,
-			m_dataTable.getAbsoluteTop(),
-			m_fixedLayout);
+				m_sizeColumnsDlg,
+				getFolderInfo(),
+				getColumnsForSizing(),
+				m_columnWidths,
+				m_defaultColumnWidth,
+				m_defaultColumnWidths,
+				this,
+				m_dataTable.getAbsoluteTop(),
+				m_fixedLayout);
 	}
 
 	/**
@@ -5392,5 +5393,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// ...list.)
 			EventHelper.unregisterEventHandlers(m_dtfvb_registeredEventHandlers);
 		}
+	}
+
+	@Override
+	public int getMinimumViewHeight() {
+		int viewTop			= getAbsoluteTop();								// Absolute top of the view.
+		int dtTop			= (m_dataTable.getAbsoluteTop() - viewTop);				// Top of the data table relative to the top of the view.
+		int dtPagerHeight	= m_dataTablePager.getOffsetHeight();			// Height of the data table's pager.
+
+		return getMinimumContentHeight() + dtTop + dtPagerHeight + getNoVScrollAdjustment();
 	}
 }
