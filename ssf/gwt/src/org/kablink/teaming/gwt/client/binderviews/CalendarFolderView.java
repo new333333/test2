@@ -369,7 +369,7 @@ public class CalendarFolderView extends FolderViewBase
 					GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantUpdateWhenViewByDate());
 					event.setCancelled(true);
 					FullUIReloadEvent.fireOneAsync();
-					return;					
+					return;
 				}
 
 				// Does the user have rights to modify this event?
@@ -380,17 +380,17 @@ public class CalendarFolderView extends FolderViewBase
 					GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantModify());
 					event.setCancelled(true);
 					FullUIReloadEvent.fireOneAsync();
-					return;					
+					return;
 				}
-				
+
 				// Is this an instance of a recurrent event?
 				if (ca.isClientRecurrentInstance()) {
 					// Yes  Regardless of what else we do, cancel the
 					// event.  They either can't drag and drop it or
 					// we'll do a full refresh when they do.
 					event.setCancelled(true);
-					
-					
+
+
 					// Is this the second or later in a sequence of
 					// recurrent events?
 					if (0 < ca.getClientRecurrenceIndex()) {
@@ -399,7 +399,7 @@ public class CalendarFolderView extends FolderViewBase
 						// bail.
 						GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantUpdateRecurrence());
 						FullUIReloadEvent.fireOneAsync();
-						return;					
+						return;
 					}
 				}
 
@@ -407,37 +407,37 @@ public class CalendarFolderView extends FolderViewBase
 				GwtClientHelper.executeCommand(
 						new UpdateCalendarEventCmd(m_browserTZOffset, getFolderInfo().getBinderIdAsLong(), ca),
 						new AsyncCallback<VibeRpcResponse>() {
-					@Override
-					public void onFailure(Throwable t) {
-						// No!  Tell the user about the problem...
-						GwtClientHelper.handleGwtRPCFailure(
-							t,
-							m_messages.rpcFailure_UpdateCalendarEvent(),
-							(ca.isTask()                                        ?
-								m_messages.rpcFailure_UpdateCalendarEventTask() :
-								m_messages.rpcFailure_UpdateCalendarEventAppointment()));
-						
-						// ...and repopulate the view to get back what
-						// ...was displayed.
-						doFullCalendarRefreshAsync();
-					}
-					
-					@Override
-					public void onSuccess(VibeRpcResponse response) {
-						// Yes, the event has been updated!  Is it an
-						// instance of a recurrent event that we just
-						// updated?
-						if (ca.isClientRecurrentInstance()) {
-							// Yes!  Repopulate the view so that all
-							// recurrences get updated too.
-							doFullCalendarRefreshAsync();
-						}
-						
-						// Otherwise, there's nothing more to do as the
-						// drag and drop will have positioned the event
-						// correctly.
-					}
-				});
+							@Override
+							public void onFailure(Throwable t) {
+								// No!  Tell the user about the problem...
+								GwtClientHelper.handleGwtRPCFailure(
+										t,
+										m_messages.rpcFailure_UpdateCalendarEvent(),
+										(ca.isTask() ?
+												m_messages.rpcFailure_UpdateCalendarEventTask() :
+												m_messages.rpcFailure_UpdateCalendarEventAppointment()));
+
+								// ...and repopulate the view to get back what
+								// ...was displayed.
+								doFullCalendarRefreshAsync();
+							}
+
+							@Override
+							public void onSuccess(VibeRpcResponse response) {
+								// Yes, the event has been updated!  Is it an
+								// instance of a recurrent event that we just
+								// updated?
+								if (ca.isClientRecurrentInstance()) {
+									// Yes!  Repopulate the view so that all
+									// recurrences get updated too.
+									doFullCalendarRefreshAsync();
+								}
+
+								// Otherwise, there's nothing more to do as the
+								// drag and drop will have positioned the event
+								// correctly.
+							}
+						});
 			}
 		});
 	}
@@ -518,24 +518,24 @@ public class CalendarFolderView extends FolderViewBase
 		GwtClientHelper.executeCommand(
 				new GetCalendarNextPreviousPeriodCmd(m_browserTZOffset, getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData, next),
 				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetCalendarNextPreviousPeriod());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Yes!  Put the new calendar display data into
-				// affect...
-				m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
-				GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
+					@Override
+					public void onFailure(Throwable t) {
+						GwtClientHelper.handleGwtRPCFailure(
+								t,
+								m_messages.rpcFailure_GetCalendarNextPreviousPeriod());
+					}
 
-				// ...and repopulate the view.
-				doFullCalendarRefreshAsync();
-			}
-		});
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						// Yes!  Put the new calendar display data into
+						// affect...
+						m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
+						GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
+
+						// ...and repopulate the view.
+						doFullCalendarRefreshAsync();
+					}
+				});
 	}
 	
 	/*
@@ -571,8 +571,7 @@ public class CalendarFolderView extends FolderViewBase
 					// ...force the calendar to
 					// ...refresh.
 					doFullCalendarRefreshAsync();
-				}
-				else {
+				} else {
 					// ...otherwise, remove the
 					// ...appointment from the
 					// ...calendar.
@@ -638,11 +637,11 @@ public class CalendarFolderView extends FolderViewBase
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
-					String.valueOf(entryId));
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
+						String.valueOf(entryId));
 			}
-			
+
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				String viewFolderEntryUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
@@ -1096,24 +1095,24 @@ public class CalendarFolderView extends FolderViewBase
 			GwtClientHelper.executeCommand(
 					new SaveCalendarDayViewCmd(m_browserTZOffset, getFolderInfo(), event.getDayView(), event.getDate()),
 					new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable t) {
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						m_messages.rpcFailure_SaveCalendarDayView());
-				}
-				
-				@Override
-				public void onSuccess(VibeRpcResponse response) {
-					// Yes!  Put the new calendar display data into
-					// affect...
-					m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
-					GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
+						@Override
+						public void onFailure(Throwable t) {
+							GwtClientHelper.handleGwtRPCFailure(
+									t,
+									m_messages.rpcFailure_SaveCalendarDayView());
+						}
 
-					// ...and repopulate the view.
-					doFullCalendarRefreshAsync();
-				}
-			});
+						@Override
+						public void onSuccess(VibeRpcResponse response) {
+							// Yes!  Put the new calendar display data into
+							// affect...
+							m_calendarDisplayData = ((CalendarDisplayDataRpcResponseData) response.getResponseData());
+							GwtTeaming.fireEvent(new CalendarChangedEvent(getFolderId(), m_calendarDisplayData));
+
+							// ...and repopulate the view.
+							doFullCalendarRefreshAsync();
+						}
+					});
 		}
 	}
 	
@@ -1606,26 +1605,26 @@ public class CalendarFolderView extends FolderViewBase
 		GwtClientHelper.executeCommand(
 				new GetCalendarAppointmentsCmd(m_browserTZOffset, getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData, m_quickFilter),
 				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetCalendarAppointments());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Yes!  Add the appointments to the calendar.
-				CalendarAppointmentsRpcResponseData responseData = ((CalendarAppointmentsRpcResponseData) response.getResponseData());
-				m_appointments = expandRecurrentAppointments(responseData.getAppointments());
-				m_calendar.suspendLayout();
-				m_calendar.addAppointments(m_appointments);
-				m_calendar.resumeLayout();
-				if (CalendarDayView.ONE_DAY.equals(m_calendarDisplayData.getDayView())) {
-					m_calendar.scrollToHour(m_calendarDisplayData.getWorkDayStart());
-				}
-			}
-		});
+					@Override
+					public void onFailure(Throwable t) {
+						GwtClientHelper.handleGwtRPCFailure(
+								t,
+								m_messages.rpcFailure_GetCalendarAppointments());
+					}
+
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						// Yes!  Add the appointments to the calendar.
+						CalendarAppointmentsRpcResponseData responseData = ((CalendarAppointmentsRpcResponseData) response.getResponseData());
+						m_appointments = expandRecurrentAppointments(responseData.getAppointments());
+						m_calendar.suspendLayout();
+						m_calendar.addAppointments(m_appointments);
+						m_calendar.resumeLayout();
+						if (CalendarDayView.ONE_DAY.equals(m_calendarDisplayData.getDayView())) {
+							m_calendar.scrollToHour(m_calendarDisplayData.getWorkDayStart());
+						}
+					}
+				});
 	}
 	
 	/*
@@ -1713,6 +1712,14 @@ public class CalendarFolderView extends FolderViewBase
 		
 		// Set the height of the calendar.
 		m_calendar.setHeight(cHeight + "px");
+	}
+
+	@Override
+	public int getMinimumViewHeight() {
+		int viewTop			= getAbsoluteTop();								// Absolute top of the view.
+		int dtTop			= (m_calendar.getAbsoluteTop() - viewTop);				// Top of the data table relative to the top of the view.
+
+		return getMinimumContentHeight() + dtTop + getNoVScrollAdjustment();
 	}
 
 	/*
