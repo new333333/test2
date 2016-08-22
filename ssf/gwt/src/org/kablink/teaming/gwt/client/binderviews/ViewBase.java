@@ -139,7 +139,7 @@ public abstract class ViewBase extends ResizeComposite
 				width = parent.getOffsetWidth();
 				height = parent.getOffsetHeight() + GwtConstants.BINDER_VIEW_ADJUST;
 			}
-			GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). New size: (" + width + "," + height + ")");
+			//GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".setViewSize(). New size: (" + width + "," + height + ")");
 			if (width!=getOffsetWidth()) {
 				setWidth(Math.max(width, getMinimumViewHeight()) + "px");
 			}

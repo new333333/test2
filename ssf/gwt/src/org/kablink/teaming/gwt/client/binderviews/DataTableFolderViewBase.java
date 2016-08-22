@@ -3671,7 +3671,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			dataTableHeight = minHeight;
 		}
 
-		GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".onResizeNow(). New height: " + dataTableHeight);
+		//GwtClientHelper.consoleLog(this.getClass().getSimpleName() + ".onResizeNow(). New height: " + dataTableHeight);
 		// Set the height of the data table.
 		dg.setHeight(dataTableHeight + "px");
 	}

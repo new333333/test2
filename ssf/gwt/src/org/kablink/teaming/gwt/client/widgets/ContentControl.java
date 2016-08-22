@@ -43,11 +43,8 @@ import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
 import org.kablink.teaming.gwt.client.event.*;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
-import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetParentBinderPermalinkCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.lpe.ConfigData;
+import org.kablink.teaming.gwt.client.rpc.shared.*;
 import org.kablink.teaming.gwt.client.util.*;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.GwtConstants;
@@ -1839,7 +1836,7 @@ public class ContentControl extends Composite
 		ViewClient vClient;
 		
 		// Create the view widget for the selected binder.
-		TeamWorkspacesView.createAsync( event.getBinderInfo(), (UIObject) event.getViewPanel(), event.getViewReady(), new BinderViewClient(event) );
+		TeamWorkspacesView.createAsync(event.getBinderInfo(), (UIObject) event.getViewPanel(), event.getViewReady(), new BinderViewClient(event));
 	}
 	
 	/**
@@ -1939,14 +1936,12 @@ public class ContentControl extends Composite
 	 */
 	private void showFolderEntryDlgAsync( final ViewFolderEntryInfo vfei, final ViewReady viewReady )
 	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
-			public void execute()
-			{
+			public void execute() {
 				showFolderEntryDlgNow(vfei, viewReady);
 			}// end execute()
-		} );
+		});
 	}// end showFolderEntryDlgAsync()
 	
 	/*
@@ -1955,7 +1950,7 @@ public class ContentControl extends Composite
 	private void showFolderEntryDlgNow( ViewFolderEntryInfo vfei, ViewReady viewReady )
 	{
 		// Initialize and show the dialog.
-		FolderEntryDlg.initAndShow( m_folderEntryDlg, vfei, viewReady );
+		FolderEntryDlg.initAndShow(m_folderEntryDlg, vfei, viewReady);
 	}// end showFolderEntryDlgNow()
 
 	/**
@@ -1985,16 +1980,62 @@ public class ContentControl extends Composite
 			ActivityStreamExitEvent.fireOne( ExitMode.EXIT_FOR_CONTEXT_SWITCH );
 		}
 		
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				setViewFromUrl(
+						event.getViewForumEntryUrl(),
+						Instigator.VIEW_FOLDER_ENTRY,
+						false,    // false -> Not a history action.
+						null);    // null  -> No history Filr masthead action.
+			}
+		});
+	}
+
+	private static void fetchAndApplyLandingPagePropertiesAsync(final String binderId) {
 		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
-			public void execute() 
+			public void execute()
 			{
-				setViewFromUrl(
-					event.getViewForumEntryUrl(),
-					Instigator.VIEW_FOLDER_ENTRY,
-					false,	// false -> Not a history action.
-					null );	// null  -> No history Filr masthead action.
+				fetchAndApplyLandingPagePropertiesNow(binderId);
+			}// end execute()
+		} );
+
+	}
+
+	private static void fetchAndApplyLandingPagePropertiesNow(final String binderId) {
+
+		// Issue an ajax request to get the landing page configuration data.
+		GetLandingPageDataCmd cmd = new GetLandingPageDataCmd( binderId );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 *
+			 */
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetLandingPageData(),
+						binderId );
+			}
+
+			/**
+			 *
+			 * @param response
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				final ConfigData configData = (ConfigData) response.getResponseData();
+				GwtTeaming.getMainPage().handleLandingPageOptions(
+						binderId,
+						configData.getHideMasthead(),
+						configData.getHideNavPanel(),
+						false,
+						configData.getHideMenu() );
 			}
 		} );
 	}
@@ -2009,11 +2050,17 @@ public class ContentControl extends Composite
 		ViewType vt = vi.getViewType();
 
 		if (viewEvent!=null) {
-			GwtClientHelper.consoleLog("ContentControl: GWT binder view.");
+//			GwtClientHelper.consoleLog("ContentControl: GWT binder view.");
 			GwtTeaming.fireEvent(viewEvent);
 			viewMode = ViewMode.GWT_CONTENT_VIEW;
 		} else {
-			GwtClientHelper.consoleLog("ContentControl: JSP binder view.");
+//			GwtClientHelper.consoleLog("ContentControl: JSP binder view.");
+			BinderViewLayout layout = vi.getViewLayout();
+			if (bi.getBinderId()!=null &&
+					(layoutData.getWorkspaceType()==WorkspaceType.LANDING_PAGE || (layout!=null && layout.hasLandingPageLayout()))) {
+//				GwtClientHelper.consoleLog("ContentControl: JSP binder view has landing page.  Need to get landing page properties.");
+				fetchAndApplyLandingPagePropertiesAsync(bi.getBinderId());
+			}
 			viewMode = ViewMode.JSP_CONTENT_VIEW;
 			BinderType bt = bi.getBinderType();
 			if (bt==BinderType.OTHER) {
@@ -2136,7 +2183,7 @@ public class ContentControl extends Composite
 			@Override
 			public void onFailure( Throwable reason )
 			{
-				GwtClientHelper.deferredAlert( GwtTeaming.getMessages().codeSplitFailure_ContentControl() );
+				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_ContentControl());
 			}
 
 			@Override
@@ -2168,7 +2215,7 @@ public class ContentControl extends Composite
 			public void onSuccess()
 			{
 				if ( contentControl != null )
-					contentControl.setContentFrameUrl( newUrl, instigator );
+					contentControl.setContentFrameUrl(newUrl, instigator);
 			}
 		} );
 	}// end setContentFrameUrl()
@@ -2193,7 +2240,7 @@ public class ContentControl extends Composite
 			public void onSuccess()
 			{
 				if ( contentControl != null )
-					contentControl.setDimensions( width, height );
+					contentControl.setDimensions(width, height);
 			}
 		} );
 	}
