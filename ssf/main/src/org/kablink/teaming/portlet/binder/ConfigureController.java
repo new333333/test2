@@ -47,6 +47,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
@@ -59,6 +60,7 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.SimpleNameAlreadyExistsException;
 import org.kablink.teaming.smtp.SMTPManager;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -69,6 +71,7 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 
 import org.springframework.web.portlet.ModelAndView;
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 /**
  * ?
@@ -102,6 +105,7 @@ public class ConfigureController extends AbstractBinderController {
 			Map workflowAssociations = new HashMap();
 			getDefinitions(request, definitions, workflowAssociations);
 			getBinderModule().setDefinitions(binderId, definitions, workflowAssociations);
+			updateRenderJspProperty(binder, request);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} else if (formData.containsKey("updateEmailButton") && WebHelper.isMethodPost(request)) {
 			getBinderModule().setPostingEnabled(binderId, formData.containsKey("allow_simple_email"));
@@ -275,6 +279,7 @@ public class ConfigureController extends AbstractBinderController {
 			//Build the navigation beans
 			model.put(WebKeys.DEFINITION_ENTRY, binder);
 			BinderHelper.buildNavigationLinkBeans(this, binder, model);
+			model.put("productName", ReleaseInfo.getName());
 			
 			//Build the simple URL beans
 			BinderHelper.buildSimpleUrlBeans(this,  request, binder, model);
@@ -390,4 +395,15 @@ public class ConfigureController extends AbstractBinderController {
 			model.put(WebKeys.REPLY_DEFINITION_MAP, DefinitionHelper.getReplyDefinitions(binder.getEntryDefinitions()));
 		}
 	}
+
+	private void updateRenderJspProperty(Binder binder, ActionRequest request) throws PortletRequestBindingException {
+		Boolean renderJsp = PortletRequestUtils.getBooleanParameter(request, ObjectKeys.BINDER_PROPERTY_RENDER_JSP_VIEW);
+		if (renderJsp!=null) {
+			if (renderJsp==BinderHelper.getForceJspRenderingSettingInDefinition(binder)) {
+				renderJsp = null;
+			}
+			getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_RENDER_JSP_VIEW, renderJsp);
+		}
+	}
 }
+
