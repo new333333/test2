@@ -34,6 +34,8 @@
 %>
 
 <%@ page import="org.kablink.teaming.util.NLT,org.kablink.util.PropsUtil" %>
+<%@ page import="org.kablink.teaming.domain.Binder" %>
+<%@ page import="org.kablink.teaming.web.util.BinderHelper" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("binder.configure.definitions.workspace") %>' scope="request"/>
 <c:if test="${ssBinder.entityType == 'folder' }">
@@ -80,6 +82,10 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 <c:if test="${ssOperation == 'simpleUrls'}"><c:set var="ss_tab_simpleUrls" value="on"/></c:if>
 <%@ include file="/WEB-INF/jsp/binder/configure_tabs.jsp" %>
 
+<%
+	Binder binder = (Binder)request.getAttribute("ssBinder");
+	boolean forceRenderJsp = (binder==null) ? false : BinderHelper.useJspRenderer(binder);
+%>
 <div style="display:block;" class="wg-tab-content marginbottom3">
 <div class="ss_style ss_form" style="margin:0px;">
 <div style="width:100%;">
@@ -100,7 +106,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 <br/>
 <c:if test="${ssOperation == 'simpleUrls'}">
 <c:if test="${ssSimpleUrlChangeAccess}">
-<form method="post" action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
+<form method="post" name="configure_form" action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param
 		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><ssf:param 
 		name="binderId" value="${ssBinder.id}"/><ssf:param 
 	name="operation" value="simpleUrls"/></ssf:url>" >
@@ -425,7 +431,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 <table cellspacing="0" cellpadding="0" width="99%">
 <tr>
 <td width="50%" valign="top">
-<form method="post" action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
+<form method="post" name="configure_jsp_form" action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param
 		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><ssf:param 
 		name="binderId" value="${ssBinder.id}"/></ssf:url>" >
 
@@ -457,9 +463,27 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	     <c:if test="${item.value.visibility == 3}"></del></c:if><br/>
         </c:if>
     </c:forEach>
-    <br>
-      
-<c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
+
+		<c:set var="cb_checked" value=""/>
+		<c:if test='<%= forceRenderJsp %>' >
+			<c:set var="cb_checked" value=" checked "/>
+		</c:if>
+		<div style="display:block">
+			<input type="checkbox" name="ss_renderJspView"
+				<c:out value="${cb_checked}" />
+				   onClick="if (document.configure_jsp_form.ss_renderJspView.checked) document.configure_jsp_form.renderJspView.value='true'; else document.configure_jsp_form.renderJspView.value='false';">
+
+			&nbsp;
+			<span class="ss_labelRight">
+				<ssf:nlt tag="__useJspRenderer">
+					<ssf:param name="value" value="${productName}"/>
+				</ssf:nlt>
+			</span>
+		</div>
+		<input type="hidden" name="renderJspView" value='<%= forceRenderJsp %>'/>
+		<br>
+
+		<c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
     </fieldset>
@@ -494,8 +518,6 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 		      <c:if test="${item.value.visibility == 3}"></del></c:if><br/>
 		</c:if>
      </c:forEach>
-    <br>
-    
 <c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
@@ -516,7 +538,27 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
         </c:if>
       </c:forEach>
       <br>
-<c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
+
+		<c:set var="cb_checked" value=""/>
+		<c:if test='<%= forceRenderJsp %>' >
+			<c:set var="cb_checked" value=" checked "/>
+		</c:if>
+		<div style="display:block">
+			<input type="checkbox" name="ss_renderJspView"
+				<c:out value="${cb_checked}" />
+				   onClick="if (document.configure_jsp_form.ss_renderJspView.checked) document.configure_jsp_form.renderJspView.value='true'; else document.configure_jsp_form.renderJspView.value='false';">
+
+			&nbsp;
+			<span class="ss_labelRight">
+				<ssf:nlt tag="__useJspRenderer">
+					<ssf:param name="value" value="${productName}"/>
+				</ssf:nlt>
+			</span>
+		</div>
+		<input type="hidden" name="renderJspView" value='<%= forceRenderJsp %>'/>
+		<br>
+
+		<c:if test="${!ssBinder.definitionInheritanceSupported || !ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
     </fieldset>
