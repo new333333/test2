@@ -83,6 +83,7 @@ import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Touch;
 import com.google.gwt.dom.client.Style.Display;
+import com.google.gwt.dom.client.Style.TableLayout;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -1846,7 +1847,8 @@ public class LoginDlg extends DlgBox
 			
 			row = 0;
 			table = new FlexTable();
-			table.setWidth("100%");
+			table.getElement().getStyle().setTableLayout(TableLayout.FIXED);
+			//table.setWidth("100%");
 			
 			m_selfRegPanel.add( table );
 			
