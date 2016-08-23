@@ -610,7 +610,7 @@ public class DefinitionHelper {
     }
     
     public static List findSelectboxSelections(String attributeName, Document definitionConfig) {
-    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm' or @name='customJsp']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
+    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm' or @name='customJsp']//item[@name='selectbox' and properties/property[@name='name' and @value='" + attributeName.replaceAll("'", "") + "']]");
     	if (node == null) {
     		return Collections.EMPTY_LIST;
     	}
@@ -644,12 +644,12 @@ public class DefinitionHelper {
     }
     
     public static List findRadioSelections(String attributeName, String definitionId) {
-    	return DefinitionHelper.findRadioSelections(attributeName, 
-    			DefinitionHelper.getDefinition(definitionId).getDefinition());
+    	return DefinitionHelper.findRadioSelections(attributeName,
+				DefinitionHelper.getDefinition(definitionId).getDefinition());
     }
     
     public static List findRadioSelections(String attributeName, Document definitionConfig) {
-    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm' or @name='customJsp']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
+    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm' or @name='customJsp']//item[@name='radio' and properties/property[@name='name' and @value='" + attributeName.replaceAll("'", "") + "']]");
     	if (node == null) {
     		return Collections.EMPTY_LIST;
     	}
@@ -1208,7 +1208,7 @@ public class DefinitionHelper {
 	{
 		HttpServletRequest servletRequest;
 		
-		servletRequest = WebHelper.getHttpServletRequest( request );
+		servletRequest = WebHelper.getHttpServletRequest(request);
 	
 		return getLandingPageProperties( servletRequest, entity );
 	}
@@ -1737,7 +1737,13 @@ public class DefinitionHelper {
     				mashupValues[i] = mashupValues[i].replaceFirst(",entryId="+entryId+",", ",entryId="+newEntryId+",");
     				mashupValues[i] = mashupValues[i].replaceFirst(",zoneUUID=[^,;$]*", "");
     			}
-    		}
+    		} else if (ObjectKeys.MASHUP_TYPE_HTML.equals(type) &&
+					mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_DATA) &&
+					!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_DATA).equals("")) {
+				String data = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_DATA);
+				data = MarkupUtil.fixupAllV2Urls(data);
+				mashupValues[i] = ObjectKeys.MASHUP_TYPE_HTML + ",data=" + data;
+			}
     	}
     	String result = "";
     	for (int i = 0; i < mashupValues.length; i++) {
