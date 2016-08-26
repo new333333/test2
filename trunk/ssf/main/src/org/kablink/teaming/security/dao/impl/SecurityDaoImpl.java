@@ -60,10 +60,11 @@ import org.kablink.teaming.security.accesstoken.impl.TokenInfoSession;
 import org.kablink.teaming.security.dao.SecurityDao;
 import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.Function;
+
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.util.cache.ThreadBoundLRUCache;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 /**
  *
@@ -77,20 +78,22 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     private static final String FUNCTION_ID = "functionId";
     private static final String WORK_AREA_OPERATION_NAME = "operationName";
     private static final String PRINCIPAL_IDS = "principalIds";
-    private static final String RESERVED_ID = "internalId";
-    private static final String FUNCTION_SCOPE = "scope";
     
     public void save(Object obj) {
         getHibernateTemplate().save(obj);
+        resetWorkAreaFunctionMemberships(obj);
     }
 
     public void update(Object obj) {
         getHibernateTemplate().update(obj);
+        resetWorkAreaFunctionMemberships(obj);
     }
 
     public void delete(Object obj) {
         getHibernateTemplate().delete(obj);
+        resetWorkAreaFunctionMemberships(obj);
     }
+    
     public Function loadFunction(Long zoneId, Long id)  throws NoObjectByTheIdException {
 		long begin = System.nanoTime();
 		try {
@@ -496,5 +499,20 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     	finally {
     		end(begin, "deleteTokenInfoOlderThan()");
     	}    	
+    }
+    
+    //only consider roles that are controlled externally 
+    private void resetWorkAreaFunctionMemberships(Object obj) {
+        if (obj instanceof WorkAreaFunctionMembership) {
+        	WorkAreaFunctionMembership wam = (WorkAreaFunctionMembership)obj;
+        	Function f = loadFunction(wam.getZoneId(), wam.getFunctionId());
+	    	@SuppressWarnings("unchecked")
+			Set<WorkAreaOperation> operations = (Set<WorkAreaOperation>)f.getOperations();
+			for (WorkAreaOperation wao : operations) {
+				String op = wao.toString();
+				if (op.equalsIgnoreCase((WorkAreaOperation.READ_ENTRIES).toString())|| op.equalsIgnoreCase((WorkAreaOperation.VIEW_BINDER_TITLE).toString()) || op.equalsIgnoreCase((WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER).toString()))
+					ThreadBoundLRUCache.remove("findWorkAreaFunctionMembershipsByOperation", wam.getWorkAreaId(), wam.getWorkAreaType(), op);
+	    	}
+        }
     }
  }
