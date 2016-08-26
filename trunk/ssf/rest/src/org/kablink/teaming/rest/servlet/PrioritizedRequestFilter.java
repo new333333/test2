@@ -128,6 +128,11 @@ public class PrioritizedRequestFilter implements Filter {
         String path = httpRequest.getPathInfo();
         String method = httpRequest.getMethod();
         String priority = null;
+
+        if (path == null) {
+        	path = "";
+        }
+        
         for (PriorityEndpoints endpoints : priorityEndpoints) {
             if (endpoints.matches(path, method)) {
                 priority = endpoints.priority;
