@@ -6047,6 +6047,7 @@ public class GwtServerHelper {
 			CustomAttribute customAttr = LandingPageHelper.getLandingPageMashupAttribute(bs, binderId);
     		if ((customAttr != null) && (customAttr.getValueType() == CustomAttribute.STRING)) {
     			String configStr = ((String) customAttr.getValue());
+				configStr = MarkupUtil.fixupAllV2Urls(configStr);
     			configData.setConfigStr(configStr);
     		}
     		
