@@ -39,11 +39,10 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="postingAgentInternalId" value="<%= ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID %>"/>
 <c:set var="syncAgentInternalId" value="<%= ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID %>"/>
-<c:set var="fileSyncAgentInternalId" value="<%= ObjectKeys.FILE_SYNCHRONIZATION_AGENT_INTERNALID %>"/>
   <div class="folders">
 	<div class="folder-content">
 <c:forEach var="entry" items="${ssWorkspaces}" >
-  <c:if test="${entry.internalId != postingAgentInternalId && entry.internalId != syncAgentInternalId && entry.internalId != fileSyncAgentInternalId}">
+  <c:if test="${entry.internalId != postingAgentInternalId && entry.internalId != syncAgentInternalId}">
 	<div class="entry">
 	  <div class="entry-title">
 	    <a href="<ssf:url adapter="true" portletName="ss_forum" 
