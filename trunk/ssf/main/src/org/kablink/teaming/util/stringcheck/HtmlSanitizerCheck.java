@@ -1,5 +1,6 @@
 package org.kablink.teaming.util.stringcheck;
 
+import org.owasp.html.AttributePolicy;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.owasp.html.CssSchema;
@@ -71,6 +72,7 @@ public class HtmlSanitizerCheck implements StringCheck {
                 .allowUrlProtocols("cid")
                 // Pasted images in Firefox
                 .allowUrlProtocols("data")
+                .allowUrlsInStyles(AttributePolicy.IDENTITY_ATTRIBUTE_POLICY)
                 .allowAttributes("href")
                     .matching(A_PATTERN)
                     .onElements("a")
