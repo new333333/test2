@@ -507,7 +507,7 @@
             <dependency>
                 <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
                 <artifactId>owasp-java-html-sanitizer</artifactId>
-                <version>r239</version>
+                <version>20160827.1</version>
             </dependency>
             <dependency>
                 <groupId>com.github.axet</groupId>
