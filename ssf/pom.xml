@@ -524,6 +524,11 @@
                 <artifactId>enunciate-core-annotations</artifactId>
                 <version>2.2.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>1.9.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
