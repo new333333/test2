@@ -54,6 +54,13 @@ public class BinderViewContainer extends BinderViewDefBase {
         this.children = children;
     }
 
+    public void addChild(BinderViewDefBase child) {
+        if (this.children==null) {
+            this.children = new ArrayList<BinderViewDefBase>();
+        }
+        this.children.add(child);
+    }
+
     public Width getWidth() {
         return width;
     }

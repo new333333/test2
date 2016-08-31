@@ -54,6 +54,10 @@
             <artifactId>javaxt-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>kablink-teaming-main</artifactId>
             <version>${project.version}</version>

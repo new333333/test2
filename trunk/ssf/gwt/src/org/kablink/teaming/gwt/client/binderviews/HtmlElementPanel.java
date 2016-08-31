@@ -33,7 +33,9 @@
 package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.List;
+import java.util.Map;
 
+import com.google.gwt.user.client.Element;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHtmlElementInfoCmd;
@@ -41,7 +43,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.HtmlElementInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.HtmlElementInfoRpcResponseData.HtmlElementInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.BinderViewHtmlEntry;
+import org.kablink.teaming.gwt.client.util.BinderViewHtmlBlock;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -51,6 +53,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RequiresResize;
+import org.kablink.teaming.gwt.client.widgets.VibeHtmlPanel;
 
 /**
  * Class used for the content of an HTML element the binder views.  
@@ -64,7 +67,7 @@ public class HtmlElementPanel extends ToolPanelBase {
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's localized message resources.
 	private HtmlElementInfoRpcResponseData	m_htmlElementInfo;			// The HtmlElementInfoRpcResponseData for this binder's HTML elements, once they've been queried.
 	private VibeFlowPanel					m_fp;						// The panel holding the HtmlElementPanel's contents.
-	private BinderViewHtmlEntry				m_htmlEntry;
+	private BinderViewHtmlBlock m_htmlEntry;
 
 	/*
 	 * Constructor method.
@@ -73,7 +76,7 @@ public class HtmlElementPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private HtmlElementPanel(RequiresResize containerResizer, BinderInfo binderInfo, BinderViewHtmlEntry htmlEntry, ToolPanelReady toolPanelReady) {
+	private HtmlElementPanel(RequiresResize containerResizer, BinderInfo binderInfo, BinderViewHtmlBlock htmlEntry, ToolPanelReady toolPanelReady) {
 		// Initialize the super class...
 		super(containerResizer, binderInfo, toolPanelReady);
 		
@@ -104,7 +107,7 @@ public class HtmlElementPanel extends ToolPanelBase {
 	 * @param toolPanelReady
 	 * @param tpClient
 	 */
-	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final BinderViewHtmlEntry htmlEntry, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
+	public static void createAsync(final RequiresResize containerResizer, final BinderInfo binderInfo, final BinderViewHtmlBlock htmlEntry, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
 		GWT.runAsync(HtmlElementPanel.class, new RunAsyncCallback() {
 			@Override
 			public void onSuccess() {
@@ -263,8 +266,8 @@ public class HtmlElementPanel extends ToolPanelBase {
 		toolPanelReady();
 	}
 
-	private void populatePanelFromBinderViewHtml(BinderViewHtmlEntry htmlEntry) {
-		HtmlElementInfo elementInfo = new HtmlElementInfo(null, null, htmlEntry.getHtmlTop(), htmlEntry.getHtmlBottom(), null);
+	private void populatePanelFromBinderViewHtml(BinderViewHtmlBlock htmlEntry) {
+		HtmlElementInfo elementInfo = new HtmlElementInfo(htmlEntry.getTag(), htmlEntry.getAttributes(), htmlEntry.getInnerHtml());
 		VibeFlowPanel htmlElementPanel = buildHtmlPanel(elementInfo);
 		if (htmlElementPanel!=null) {
 			m_fp.add(htmlElementPanel);
@@ -277,17 +280,17 @@ public class HtmlElementPanel extends ToolPanelBase {
 	private VibeFlowPanel buildHtmlPanel(HtmlElementInfo htmlElement) {
 		// Does the HTML element contain HTML from a custom
 		// JSP?
-		HTMLPanel htmlPanel = null;
+		VibeHtmlPanel htmlPanel = null;
 		String html = htmlElement.getCustomJspHtml();
 		if (GwtClientHelper.hasString(html)) {
 			// Yes!  Create an HTML panel to render it.
-			htmlPanel = new HTMLPanel(html);
+			htmlPanel = new VibeHtmlPanel(html);
 		}
 
 		else {
 			// No, the HTML doesn't contain HTML from a custom
 			// JSP!  Does it contain any top or bottom HTML
-			String top    = htmlElement.getHtmlTop();    boolean hasTop    = GwtClientHelper.hasString(top   );
+			String top    = htmlElement.getHtmlTop();    boolean hasTop    = GwtClientHelper.hasString(top);
 			String bottom = htmlElement.getHtmlBottom(); boolean hasBottom = GwtClientHelper.hasString(bottom);
 			if (hasTop || hasBottom) {
 				if (hasTop)
@@ -296,7 +299,13 @@ public class HtmlElementPanel extends ToolPanelBase {
 				if (hasBottom) {
 					html += bottom;	// Do we need to do anything between top and bottom?
 				}
-				htmlPanel = new HTMLPanel(html);
+				String tagName = htmlElement.getRootTagName();
+				if (tagName!=null) {
+					htmlPanel = new VibeHtmlPanel(tagName, html);
+					htmlPanel.setRootAttributes(htmlElement.getRootAttributes());
+				} else {
+					htmlPanel = new VibeHtmlPanel(html);
+				}
 			}
 		}
 

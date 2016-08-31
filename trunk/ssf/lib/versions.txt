@@ -94,8 +94,9 @@ JPA 2.0 1.0.0.Final (from Hibernate distribution, needed by Hibernate)
 jQuery 1.2.6 (Javascript library)
 jQuery UI Tabs 1.5.2 (Javascript library)
 Json-lib 1.1 for jdk15
+JSoup HTML Parser 1.9.2
 JSR 311 (JAX-RS) API 1.1.1 (from Jersey distribution)
-JSTL 1.0.5
+JSTL 1.0.5H
 JSTL Implementation (from Apache) 1.0.6
 JTA 1.0.1b
 JTDS 1.3.1 (SQL Server JDBC Driver) - 1.3.* requires JDK7 as minimum

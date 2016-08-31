@@ -32,29 +32,50 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by david on 4/13/16.
  */
-public class BinderViewHtmlEntry extends BinderViewEntry {
-    private String htmlTop;
-    private String htmlBottom;
+public class BinderViewHtmlBlock extends BinderViewEntry implements BinderViewHtml {
+    private String tag;
+    private Map<String, String> attributes;
+    private String innerHtml;
 
-    public BinderViewHtmlEntry() {
+    public BinderViewHtmlBlock() {
     }
 
-    public String getHtmlBottom() {
-        return htmlBottom;
+    public void setInnerHtml(String innerHtml) {
+        this.innerHtml = innerHtml;
     }
 
-    public void setHtmlBottom(String htmlBottom) {
-        this.htmlBottom = htmlBottom;
+    public String getInnerHtml() {
+        return innerHtml;
     }
 
-    public String getHtmlTop() {
-        return htmlTop;
+    public Map<String, String> getAttributes() {
+        return attributes;
     }
 
-    public void setHtmlTop(String htmlTop) {
-        this.htmlTop = htmlTop;
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
+
+    @Override
+    public void setAttribute(String key, String value) {
+        if (attributes==null) {
+            attributes = new HashMap<String, String>();
+        }
+        attributes.put(key, value);
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    @Override
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 }

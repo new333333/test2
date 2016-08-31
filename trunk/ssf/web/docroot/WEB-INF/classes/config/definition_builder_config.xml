@@ -4096,7 +4096,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html.jsp" />
 		</jsps>
 		<folderViews>
-			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewHtmlEntry" />
+			<folderView name="default" value="org.kablink.teaming.gwt.client.util.BinderViewHtmlContainer" />
 		</folderViews>
 		<notify velocity="html.vm" />
 	</item>
