@@ -141,6 +141,7 @@ public class MarkupUtil {
 	protected final static Pattern m_dataMceSrcPattern = Pattern.compile( "((data-mce-src=\")([^\"]*))", Pattern.CASE_INSENSITIVE );
 
 	protected final static Pattern attachmentUrlPattern = Pattern.compile("(cid:\\{\\{attachmentUrl: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
+	protected final static Pattern attachmentUrlPattern2 = Pattern.compile("(cid:%7b%7battachmentUrl:%20(.*?)%7d%7d)", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern v2AttachmentUrlPattern = Pattern.compile("(?<!cid:)(\\{\\{attachmentUrl: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern v1AttachmentFileIdPattern = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern titleUrlPattern = Pattern.compile("(cid:\\{\\{titleUrl: ([^\\}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
@@ -1079,7 +1080,7 @@ public class MarkupUtil {
 			HttpServletRequest httpReq, HttpServletResponse httpRes, UrlBuilder builder, 
 			String entityId, String entityType, String inputString, String type, Boolean isMobile) {
 		if (Validator.isNull(inputString)) return inputString;  //don't waste time
-		StringBuffer outputBuf = new StringBuffer(inputString);
+		StringBuffer outputBuf = new StringBuffer(StringEscapeUtils.unescapeHtml(inputString));
 
 //why?		outputString = outputString.replaceAll("%20", " ");
 //		outputString = outputString.replaceAll("%7B", "{");
@@ -1122,7 +1123,7 @@ public class MarkupUtil {
 			}
 
 			//Replace the markup urls with real urls "cid:{{attachmentUrl: tempFileHandle}}"
-			outputBuf = markupReplaceAttachmentReference(outputBuf, attachmentUrlPattern, builder);
+			outputBuf = markupReplaceAttachmentReference(outputBuf, attachmentUrlPattern2, builder);
 			//Replace the markup urls with real urls "{{attachmentUrl: tempFileHandle}}"
 			outputBuf = markupReplaceAttachmentReference(outputBuf, v2AttachmentUrlPattern, builder);
 
