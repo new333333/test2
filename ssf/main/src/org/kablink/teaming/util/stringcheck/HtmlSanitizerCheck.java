@@ -95,7 +95,7 @@ public class HtmlSanitizerCheck implements StringCheck {
         if (checkOnly && !safeHtml.equals(input)) {
             throw new XSSCheckException();
         }
-        return safeHtml;
+        return safeHtml.replace("{<!-- -->{", "{{");
     }
 
     @Override
