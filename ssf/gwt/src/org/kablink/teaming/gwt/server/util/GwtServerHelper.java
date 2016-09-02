@@ -2093,10 +2093,20 @@ public class GwtServerHelper {
 			renderReq.defineObjects(portletInfo.getPortletConfig(), renderRes);
 			
 			renderReq.setAttribute(PortletRequest.LIFECYCLE_PHASE, PortletRequest.RENDER_PHASE);
-			if (model.containsKey(WebKeys.BINDER_ID)) {
-				Long binderIdL = ((Long) model.get(WebKeys.BINDER_ID));
+			Object binderIdObj = model.get(WebKeys.BINDER_ID);
+			if (binderIdObj==null) {
+				binderIdObj = model.get("binderId");
+			}
+			if (binderIdObj!=null) {
+				Long binderIdL = null;
+				if (binderIdObj instanceof Number) {
+					binderIdL = ((Number) binderIdObj).longValue();
+				} else {
+					binderIdL = Long.parseLong(binderIdObj.toString());
+				}
 				Binder binder = bs.getBinderModule().getBinder(binderIdL);
 				model.put(WebKeys.BINDER, binder);
+				model.put(WebKeys.DEFINITION_ENTRY, binder);
 				BinderHelper.setupStandardBeans(bs, renderReq, renderRes, model, binderIdL);
 			}
 			else {
