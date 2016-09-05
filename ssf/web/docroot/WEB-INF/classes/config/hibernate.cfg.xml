@@ -248,7 +248,6 @@
  		<class-cache class="org.kablink.teaming.domain.SimpleName" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Subscription" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Tag" usage="read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.UserProperties" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.WorkflowResponse" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.WorkflowState" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.ZoneConfig" usage="nonstrict-read-write"/>
