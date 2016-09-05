@@ -71,6 +71,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
@@ -4830,7 +4831,7 @@ public class BinderHelper {
 			if (bs.getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
 				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
 				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER_LIST, columnOrder);
-				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, null);
+				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, StringUtils.join(columnOrder, "|"));
 				bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_TITLES, columnsText);
 			}
 		}
